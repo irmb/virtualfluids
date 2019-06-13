@@ -5,7 +5,8 @@
 
 class Parameter;
 class PreProcessor;
+class CudaMemoryManager;
 
-void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor);
+void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<CudaMemoryManager> cudaManager);
 
 #endif

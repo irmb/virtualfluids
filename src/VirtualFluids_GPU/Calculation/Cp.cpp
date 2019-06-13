@@ -14,13 +14,13 @@ using namespace std;
 
 
 
-void calcCp(Parameter* para, int lev)
+void calcCp(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//copy to host
-	para->cudaCopyCpTop(lev);
-	para->cudaCopyCpBottom(lev);
-	para->cudaCopyCpBottom2(lev);
+	cudaManager->cudaCopyCpTop(lev);
+	cudaManager->cudaCopyCpBottom(lev);
+	cudaManager->cudaCopyCpBottom2(lev);
 	//////////////////////////////////////////////////////////////////////////
 	//Parameter
 	double rhoSI = 1.204; // kg/m^3
@@ -94,7 +94,7 @@ void printCpTopIntermediateStep(Parameter* para, unsigned int t, int lev)
 
 
 
-void printCpTop(Parameter* para, int lev)
+void printCpTop(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set filename
@@ -121,13 +121,13 @@ void printCpTop(Parameter* para, int lev)
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
 	para->getParH(lev)->cpTop.clear();
-	para->cudaFreeCpTop(lev);
+	cudaManager->cudaFreeCpTop(lev);
 	//////////////////////////////////////////////////////////////////////////
 }
 
 
 
-void printCpBottom(Parameter* para)
+void printCpBottom(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level
@@ -157,13 +157,13 @@ void printCpBottom(Parameter* para)
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
 	para->getParH(lev)->cpBottom.clear();
-	para->cudaFreeCpBottom(lev);
+	cudaManager->cudaFreeCpBottom(lev);
 	//////////////////////////////////////////////////////////////////////////
 }
 
 
 
-void printCpBottom2(Parameter* para)
+void printCpBottom2(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level
@@ -193,7 +193,7 @@ void printCpBottom2(Parameter* para)
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
 	para->getParH(lev)->cpBottom2.clear();
-	para->cudaFreeCpBottom2(lev);
+	cudaManager->cudaFreeCpBottom2(lev);
 	//////////////////////////////////////////////////////////////////////////
 }
 
@@ -280,11 +280,11 @@ void excludeGridInterfaceNodesForMirror(Parameter* para, int lev)
 
 
 
-void calcPressForMirror(Parameter* para, int lev)
+void calcPressForMirror(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//copy to host
-	para->cudaCopyCpTop(lev);
+	cudaManager->cudaCopyCpTop(lev);
 	//////////////////////////////////////////////////////////////////////////
 	//Parameter
 	double pressSI;

@@ -7,6 +7,7 @@
 #include "Utilities/SimulationParameter/SimulationParameter.h"
 #include "Utilities/VirtualFluidSimulation/VirtualFluidSimulationImp.h"
 
+#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
@@ -110,10 +111,16 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 	return para;
 }
 
-std::shared_ptr<NumericalTestGridReader> VirtualFluidSimulationFactoryImp::makeGridReader(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para)
+std::shared_ptr<NumericalTestGridReader> VirtualFluidSimulationFactoryImp::makeGridReader(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
-	std::shared_ptr<NumericalTestGridReader> grid = NumericalTestGridReader::getNewInstance(para, initialCondition);
+	std::shared_ptr<NumericalTestGridReader> grid = NumericalTestGridReader::getNewInstance(para, initialCondition, cudaManager);
 	return grid;
+}
+
+std::shared_ptr<CudaMemoryManager> VirtualFluidSimulationFactoryImp::makeCudaMemoryManager(std::shared_ptr<Parameter> para)
+{
+	std::shared_ptr<CudaMemoryManager> cudaManager = CudaMemoryManager::make(para);
+	return cudaManager;
 }
 
 void VirtualFluidSimulationFactoryImp::initInitialConditions(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para)
@@ -135,8 +142,11 @@ std::vector<std::shared_ptr<VirtualFluidSimulation> > VirtualFluidSimulationFact
 		vfSim->setParameter(para);
 		testSim.at(i)->setParameter(para);
 
+		std::shared_ptr<CudaMemoryManager> cudaManager = makeCudaMemoryManager(para);
+		vfSim->setCudaMemoryManager(cudaManager);
+
 		initInitialConditions(testSim.at(i)->getInitialCondition(), para);
-		std::shared_ptr<NumericalTestGridReader> grid = makeGridReader(testSim.at(i)->getInitialCondition(), para);
+		std::shared_ptr<NumericalTestGridReader> grid = makeGridReader(testSim.at(i)->getInitialCondition(), para, cudaManager);
 		
 		vfSim->setGridProvider(grid);
 		vfSim->setDataWriter(testSim.at(i)->getDataWriter());

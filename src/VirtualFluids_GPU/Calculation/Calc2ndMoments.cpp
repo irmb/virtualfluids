@@ -2,13 +2,13 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-void alloc2ndMoments(Parameter* para)
+void alloc2ndMoments(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//allocation (device-memory + host-memory)
-		para->cudaAlloc2ndMoments(lev, para->getParH(lev)->size_Mat_SP);
+		cudaManager->cudaAlloc2ndMoments(lev, para->getParH(lev)->size_Mat_SP);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }
@@ -35,7 +35,7 @@ void init2ndMoments(Parameter* para)
 
 
 
-void calc2ndMoments(Parameter* para)
+void calc2ndMoments(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
@@ -56,7 +56,7 @@ void calc2ndMoments(Parameter* para)
 								para->getParD(lev)->evenOrOdd);
 		//////////////////////////////////////////////////////////////////////////
 		//copy results to host
-		para->cudaCopy2ndMoments(lev, para->getParH(lev)->size_Mat_SP);
+		cudaManager->cudaCopy2ndMoments(lev, para->getParH(lev)->size_Mat_SP);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }
@@ -97,13 +97,13 @@ void calc2ndMoments(Parameter* para)
 
 
 
-void alloc3rdMoments(Parameter* para)
+void alloc3rdMoments(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//allocation (device-memory + host-memory)
-		para->cudaAlloc3rdMoments(lev, para->getParH(lev)->size_Mat_SP);
+		cudaManager->cudaAlloc3rdMoments(lev, para->getParH(lev)->size_Mat_SP);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }
@@ -132,7 +132,7 @@ void init3rdMoments(Parameter* para)
 
 
 
-void calc3rdMoments(Parameter* para)
+void calc3rdMoments(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
@@ -155,7 +155,7 @@ void calc3rdMoments(Parameter* para)
 								para->getParD(lev)->evenOrOdd);
 		//////////////////////////////////////////////////////////////////////////
 		//copy results to host
-		para->cudaCopy3rdMoments(lev, para->getParH(lev)->size_Mat_SP);
+		cudaManager->cudaCopy3rdMoments(lev, para->getParH(lev)->size_Mat_SP);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }
@@ -196,13 +196,13 @@ void calc3rdMoments(Parameter* para)
 
 
 
-void allocHigherOrderMoments(Parameter* para)
+void allocHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//allocation (device-memory + host-memory)
-		para->cudaAllocHigherMoments(lev, para->getParH(lev)->size_Mat_SP);
+		cudaManager->cudaAllocHigherMoments(lev, para->getParH(lev)->size_Mat_SP);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }
@@ -234,7 +234,7 @@ void initHigherOrderMoments(Parameter* para)
 
 
 
-void calcHigherOrderMoments(Parameter* para)
+void calcHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
@@ -260,7 +260,7 @@ void calcHigherOrderMoments(Parameter* para)
 									para->getParD(lev)->evenOrOdd);
 		//////////////////////////////////////////////////////////////////////////
 		//copy results to host
-		para->cudaCopyHigherMoments(lev, para->getParH(lev)->size_Mat_SP);
+		cudaManager->cudaCopyHigherMoments(lev, para->getParH(lev)->size_Mat_SP);
 		//////////////////////////////////////////////////////////////////////////
 	}
 }

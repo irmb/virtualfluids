@@ -10,7 +10,7 @@
 
 
 
-void updateGrid27(Parameter* para, Communicator* comm, std::vector<std::shared_ptr<PorousMedia>> pm, int level, int max_level, unsigned int t)
+void updateGrid27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, std::vector<std::shared_ptr<PorousMedia>> pm, int level, int max_level, unsigned int t)
 {
    if ( level == para->getFine() )
    {
@@ -530,21 +530,21 @@ void updateGrid27(Parameter* para, Communicator* comm, std::vector<std::shared_p
 			//exchangePostCollDataGPU27(para, comm, level);
 			//3D domain decomposition
 			//printf("start exchange Post X (level: %d, myID: %d) \n", level, para->getMyID());
-			exchangePostCollDataXGPU27(para, comm, level);
+			exchangePostCollDataXGPU27(para, comm, cudaManager, level);
 			//printf("end exchange Post X (level: %d, myID: %d) \n", level, para->getMyID());
 			//printf("start exchange Post Y (level: %d, myID: %d) \n", level, para->getMyID());
-			exchangePostCollDataYGPU27(para, comm, level);
+			exchangePostCollDataYGPU27(para, comm, cudaManager, level);
 			//printf("end exchange Post Y (level: %d, myID: %d) \n", level, para->getMyID());
 			//printf("start exchange Post Z (level: %d, myID: %d) \n", level, para->getMyID());
-			exchangePostCollDataZGPU27(para, comm, level);
+			exchangePostCollDataZGPU27(para, comm, cudaManager, level);
 			//printf("end exchange Post Z (level: %d, myID: %d) \n", level, para->getMyID());
 			//////////////////////////////////////////////////////////////////////////
 			//3D domain decomposition convection diffusion
 			if (para->getDiffOn()==true)
 			{
-				exchangePostCollDataADXGPU27(para, comm, level);
-				exchangePostCollDataADYGPU27(para, comm, level);
-				exchangePostCollDataADZGPU27(para, comm, level);
+				exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
+				exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
+				exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
 			}
 		}
 		 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -865,21 +865,21 @@ void updateGrid27(Parameter* para, Communicator* comm, std::vector<std::shared_p
 			 //exchangePreCollDataGPU27(para, comm, level);
 			 //3D domain decomposition
 			 //printf("start exchange Pre X (level: %d, myID: %d) \n", level, para->getMyID());
-			 exchangePreCollDataXGPU27(para, comm, level);
+			 exchangePreCollDataXGPU27(para, comm, cudaManager, level);
 			 //printf("end exchange Pre X (level: %d, myID: %d) \n", level, para->getMyID());
 			 //printf("start exchange Pre Y (level: %d, myID: %d) \n", level, para->getMyID());
-			 exchangePreCollDataYGPU27(para, comm, level);
+			 exchangePreCollDataYGPU27(para, comm, cudaManager, level);
 			 //printf("end exchange Pre Y (level: %d, myID: %d) \n", level, para->getMyID());
 			 //printf("start exchange Pre Z (level: %d, myID: %d) \n", level, para->getMyID());
-			 exchangePreCollDataZGPU27(para, comm, level);
+			 exchangePreCollDataZGPU27(para, comm, cudaManager, level);
 			 //printf("end exchange Pre Z (level: %d, myID: %d) \n", level, para->getMyID());
 			 //////////////////////////////////////////////////////////////////////////
 			 //3D domain decomposition convection diffusion
 			 if (para->getDiffOn()==true)
 			 {
-				 exchangePreCollDataADXGPU27(para, comm, level);
-				 exchangePreCollDataADYGPU27(para, comm, level);
-				 exchangePreCollDataADZGPU27(para, comm, level);
+				 exchangePreCollDataADXGPU27(para, comm, cudaManager, level);
+				 exchangePreCollDataADYGPU27(para, comm, cudaManager, level);
+				 exchangePreCollDataADZGPU27(para, comm, cudaManager, level);
 			 }
 		 }
 
@@ -924,7 +924,7 @@ void updateGrid27(Parameter* para, Communicator* comm, std::vector<std::shared_p
       for (int internaltimestep=0;internaltimestep<2;internaltimestep++)
       {
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         updateGrid27(para, comm, pm, level+1, max_level, t);
+         updateGrid27(para, comm, cudaManager, pm, level+1, max_level, t);
 		 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		  //if (t>para->getStartTurn()){
 			 // //para->setPhi((para->getPhi()+para->getParD(level)->deltaPhi));
@@ -1428,21 +1428,21 @@ void updateGrid27(Parameter* para, Communicator* comm, std::vector<std::shared_p
 			 //exchangePostCollDataGPU27(para, comm, level);
 			 //3D domain decomposition
 			 //printf("start exchange Post X (level: %d, myID: %d) \n", level, para->getMyID());
-			 exchangePostCollDataXGPU27(para, comm, level);
+			 exchangePostCollDataXGPU27(para, comm, cudaManager, level);
 			 //printf("end exchange Post X (level: %d, myID: %d) \n", level, para->getMyID());
 			 //printf("start exchange Post Y (level: %d, myID: %d) \n", level, para->getMyID());
-			 exchangePostCollDataYGPU27(para, comm, level);
+			 exchangePostCollDataYGPU27(para, comm, cudaManager, level);
 			 //printf("end exchange Post Y (level: %d, myID: %d) \n", level, para->getMyID());
 			 //printf("start exchange Post Z (level: %d, myID: %d) \n", level, para->getMyID());
-			 exchangePostCollDataZGPU27(para, comm, level);
+			 exchangePostCollDataZGPU27(para, comm, cudaManager, level);
 			 //printf("end exchange Post Z (level: %d, myID: %d) \n", level, para->getMyID());
 			 //////////////////////////////////////////////////////////////////////////
 			 //3D domain decomposition convection diffusion
 			 if (para->getDiffOn()==true)
 			 {
-				 exchangePostCollDataADXGPU27(para, comm, level);
-				 exchangePostCollDataADYGPU27(para, comm, level);
-				 exchangePostCollDataADZGPU27(para, comm, level);
+				 exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
+				 exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
+				 exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
 			 }
 		 }
 		 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1680,21 +1680,21 @@ void updateGrid27(Parameter* para, Communicator* comm, std::vector<std::shared_p
 			 //exchangePreCollDataGPU27(para, comm, level);
 			 //3D domain decomposition
 			 //printf("start exchange Pre X (level: %d, myID: %d) \n", level, para->getMyID());
-			 exchangePreCollDataXGPU27(para, comm, level);
+			 exchangePreCollDataXGPU27(para, comm, cudaManager, level);
 			 //printf("end exchange Pre X (level: %d, myID: %d) \n", level, para->getMyID());
 			 //printf("start exchange Pre Y (level: %d, myID: %d) \n", level, para->getMyID());
-			 exchangePreCollDataYGPU27(para, comm, level);
+			 exchangePreCollDataYGPU27(para, comm, cudaManager, level);
 			 //printf("end exchange Pre Y (level: %d, myID: %d) \n", level, para->getMyID());
 			 //printf("start exchange Pre Z (level: %d, myID: %d) \n", level, para->getMyID());
-			 exchangePreCollDataZGPU27(para, comm, level);
+			 exchangePreCollDataZGPU27(para, comm, cudaManager, level);
 			 //printf("end exchange Pre Z (level: %d, myID: %d) \n", level, para->getMyID());
 			 //////////////////////////////////////////////////////////////////////////
 			 //3D domain decomposition convection diffusion
 			 if (para->getDiffOn()==true)
 			 {
-				 exchangePreCollDataADXGPU27(para, comm, level);
-				 exchangePreCollDataADYGPU27(para, comm, level);
-				 exchangePreCollDataADZGPU27(para, comm, level);
+				 exchangePreCollDataADXGPU27(para, comm, cudaManager, level);
+				 exchangePreCollDataADYGPU27(para, comm, cudaManager, level);
+				 exchangePreCollDataADZGPU27(para, comm, cudaManager, level);
 			 }
 		 }
 		 //////////////////////////////////////////////////////////////////////////////////

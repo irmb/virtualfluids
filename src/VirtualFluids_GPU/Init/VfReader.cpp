@@ -1,13 +1,15 @@
 #include "Init/VfReader.h"
 
+#include "GPU/CudaMemoryManager.h"
+
 ////////////////////////////////////////////////////////////////////////////////
-void readVFkFull(Parameter* para, const std::string geometryFile)
+void readVFkFull(Parameter* para, CudaMemoryManager* cudaManager, const std::string geometryFile)
 {
 	kFullReader::readFileForAlloc(geometryFile, para);
 
 	for (int lev = 0; lev <= para->getMaxLevel(); lev++)
 	{
-		para->cudaAllocFull(lev);
+		cudaManager->cudaAllocFull(lev);
 		//////////////////////////////////////////////////////////////////////////
 		for(unsigned int ix3=0; ix3<para->getParH(lev)->nz; ix3++)
 		{
@@ -58,14 +60,14 @@ void readVFgeoFull(Parameter* para, const std::string geometryFile)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void readVecSP(Parameter* para)
+void readVecSP(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	PositionReader::readFileForAlloc(para->getgeoVec(), para);
 
 	//alloc
 	for (int lev = 0; lev <= para->getMaxLevel(); lev++)
 	{
-		para->cudaAllocSP(lev);
+		cudaManager->cudaAllocSP(lev);
 	}
 
 	//geoSP
@@ -94,7 +96,7 @@ void readVecSP(Parameter* para)
 			para->getParH(lev)->vz_SP_Med[u]    = 0.0f;
 			para->getParH(lev)->press_SP_Med[u] = 0.0f;
 		}
-		para->cudaCopySP(lev);
+		cudaManager->cudaCopySP(lev);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -102,14 +104,14 @@ void readVecSP(Parameter* para)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void readInterfaceCF(Parameter* para)
+void readInterfaceCF(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	PositionReader::readFileInterfaceForAlloc(para->getscaleCFC(), "CF", para);
 
 	//alloc
 	for (int lev = 0; lev < para->getMaxLevel(); lev++)
 	{
-		para->cudaAllocInterfaceCF(lev);
+		cudaManager->cudaAllocInterfaceCF(lev);
 	}
 
 	//Scale Coarse to Fine - Coarse
@@ -120,7 +122,7 @@ void readInterfaceCF(Parameter* para)
 	//Copy Host -> Device
 	for (int lev = 0; lev < para->getMaxLevel(); lev++)
 	{
-		para->cudaCopyInterfaceCF(lev);
+		cudaManager->cudaCopyInterfaceCF(lev);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -128,14 +130,14 @@ void readInterfaceCF(Parameter* para)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void readInterfaceFC(Parameter* para)
+void readInterfaceFC(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	PositionReader::readFileInterfaceForAlloc(para->getscaleFCC(), "FC", para);
 
 	//alloc
 	for (int lev = 0; lev < para->getMaxLevel(); lev++)
 	{
-		para->cudaAllocInterfaceFC(lev);
+		cudaManager->cudaAllocInterfaceFC(lev);
 	}
 
 	//Scale Fine to Coarse - Coarse
@@ -146,7 +148,7 @@ void readInterfaceFC(Parameter* para)
 	//Copy Host -> Device
 	for (int lev = 0; lev < para->getMaxLevel(); lev++)
 	{
-		para->cudaCopyInterfaceFC(lev);
+		cudaManager->cudaCopyInterfaceFC(lev);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -154,20 +156,20 @@ void readInterfaceFC(Parameter* para)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void readInterfaceOffCF(Parameter* para, const std::string geometryFile)
+void readInterfaceOffCF(Parameter* para, CudaMemoryManager* cudaManager, const std::string geometryFile)
 {
 	PositionReader::readFileInterfaceOffsetForAlloc(geometryFile, "CF", para);
 
 	for (int lev = 0; lev < para->getMaxLevel(); lev++)
 	{
-		para->cudaAllocInterfaceOffCF(lev);
+		cudaManager->cudaAllocInterfaceOffCF(lev);
 	}
 
 	PositionReader::readFileInterfaceOffset(geometryFile, "CF", para);
 
 	for (int lev = 0; lev < para->getMaxLevel(); lev++)
 	{
-		para->cudaCopyInterfaceOffCF(lev);
+		cudaManager->cudaCopyInterfaceOffCF(lev);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -175,20 +177,20 @@ void readInterfaceOffCF(Parameter* para, const std::string geometryFile)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void readInterfaceOffFC(Parameter* para, const std::string geometryFile)
+void readInterfaceOffFC(Parameter* para, CudaMemoryManager* cudaManager, const std::string geometryFile)
 {
 	PositionReader::readFileInterfaceOffsetForAlloc(geometryFile, "FC", para);
 
 	for (int lev = 0; lev < para->getMaxLevel(); lev++)
 	{
-		para->cudaAllocInterfaceOffFC(lev);
+		cudaManager->cudaAllocInterfaceOffFC(lev);
 	}
 
 	PositionReader::readFileInterfaceOffset(geometryFile, "FC", para);
 
 	for (int lev = 0; lev < para->getMaxLevel(); lev++)
 	{
-		para->cudaCopyInterfaceOffFC(lev);
+		cudaManager->cudaCopyInterfaceOffFC(lev);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -196,14 +198,14 @@ void readInterfaceOffFC(Parameter* para, const std::string geometryFile)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void readNoSlipBc(Parameter* para)
+void readNoSlipBc(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	PositionReader::readFileNoSlipBcForAlloc(para->getnoSlipBcPos(), para);
 	PositionReader::readFileNoSlipBcQreadForAlloc(para->getnoSlipBcQs(), para);
 
 	for (int lev = 0; lev <= para->getMaxLevel(); lev++)
 	{
-		para->cudaAllocWallBC(lev);
+		cudaManager->cudaAllocWallBC(lev);
 	}
 
 	PositionReader::readFileNoSlipBcPos(para->getnoSlipBcPos(), para);
@@ -214,7 +216,7 @@ void readNoSlipBc(Parameter* para)
 
 	for (int lev = 0; lev <= para->getMaxLevel(); lev++)
 	{
-		para->cudaCopyWallBC(lev);
+		cudaManager->cudaCopyWallBC(lev);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -222,14 +224,14 @@ void readNoSlipBc(Parameter* para)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void readSlipBc(Parameter* para)
+void readSlipBc(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	PositionReader::readFileSlipBcForAlloc(para->getslipBcPos(), para);
 	PositionReader::readFileSlipBcQreadForAlloc(para->getslipBcQs(), para);
 
 	for (int lev = 0; lev <= para->getMaxLevel(); lev++)
 	{
-		para->cudaAllocSlipBC(lev);
+		cudaManager->cudaAllocSlipBC(lev);
 	}
 
 	PositionReader::readFileSlipBcPos(para->getslipBcPos(), para);
@@ -240,7 +242,7 @@ void readSlipBc(Parameter* para)
 
 	for (int lev = 0; lev <= para->getMaxLevel(); lev++)
 	{
-		para->cudaCopySlipBC(lev);
+		cudaManager->cudaCopySlipBC(lev);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -248,14 +250,14 @@ void readSlipBc(Parameter* para)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void readPressBc(Parameter* para)
+void readPressBc(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	PositionReader::readFilePressBcForAlloc(para->getpressBcPos(), para);
 	PositionReader::readFilePressBcQreadForAlloc(para->getpressBcQs(), para);
 
 	for (int lev = 0; lev <= para->getMaxLevel(); lev++)
 	{
-		para->cudaAllocPress(lev);
+		cudaManager->cudaAllocPress(lev);
 	}
 	//only Coarse
 	//para->cudaAllocPress(para->getCoarse());
@@ -268,7 +270,7 @@ void readPressBc(Parameter* para)
 
 	for (int lev = 0; lev <= para->getMaxLevel(); lev++)
 	{
-		para->cudaCopyPress(lev);
+		cudaManager->cudaCopyPress(lev);
 	}
 	//only Coarse
 	//para->cudaCopyPress(para->getCoarse());
@@ -278,23 +280,23 @@ void readPressBc(Parameter* para)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void readPropellerCylinder(Parameter* para)
+void readPropellerCylinder(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	PositionReader::readFilePropellerCylinderForAlloc(para);
 
-	para->cudaAllocVeloPropeller(para->getFine());
+	cudaManager->cudaAllocVeloPropeller(para->getFine());
 
 	PositionReader::readFilePropellerCylinder(para);
 	//PositionReader::definePropellerQs(para);
 
-	para->cudaCopyVeloPropeller(para->getFine());
+	cudaManager->cudaCopyVeloPropeller(para->getFine());
 }
 ////////////////////////////////////////////////////////////////////////////////
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void readMeasurePoints(Parameter* para)
+void readMeasurePoints(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	//read measure points from file
 	PositionReader::readMeasurePoints(para);
@@ -317,7 +319,7 @@ void readMeasurePoints(Parameter* para)
 		
 		printf("Level: %d, numberOfValuesMP: %d, memSizeIntkMP: %d, memSizerealkMP: %d\n",lev,para->getParH(lev)->numberOfValuesMP,para->getParH(lev)->memSizeIntkMP, para->getParD(lev)->memSizerealkMP);
 
-		para->cudaAllocMeasurePointsIndex(lev);
+		cudaManager->cudaAllocMeasurePointsIndex(lev);
 
 		//loop over all measure points per level 
 		for(int index = 0; index < (int)para->getParH(lev)->MP.size(); index++)
@@ -336,7 +338,7 @@ void readMeasurePoints(Parameter* para)
 		}
 
 		//copy indices-arrays
-		para->cudaCopyMeasurePointsIndex(lev);
+		cudaManager->cudaCopyMeasurePointsIndex(lev);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////

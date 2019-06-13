@@ -3,6 +3,7 @@
 
 #include "VirtualFluidSimulationFactory.h"
 
+class CudaMemoryManager;
 class NumericalTestGridReader;
 class InitialCondition;
 class Parameter;
@@ -18,7 +19,8 @@ protected:
 	VirtualFluidSimulationFactoryImp();
 	
 	std::shared_ptr<Parameter> makeParameter(std::shared_ptr<SimulationParameter> simPara);
-	std::shared_ptr<NumericalTestGridReader> makeGridReader(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para);
+	std::shared_ptr<NumericalTestGridReader> makeGridReader(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
+	std::shared_ptr<CudaMemoryManager> makeCudaMemoryManager(std::shared_ptr<Parameter> para);
 	void initInitialConditions(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para);
 
 private:

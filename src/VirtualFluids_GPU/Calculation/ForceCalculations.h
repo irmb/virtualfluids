@@ -7,12 +7,14 @@
 #include <iostream>
 #include <stdio.h>
 
+class CudaMemoryManager;
+
 class ForceCalculations
 {
 public:
 	ForceCalculations(Parameter* para);
 	~ForceCalculations();
-	void calcPIDControllerForForce(Parameter* para);
+	void calcPIDControllerForForce(Parameter* para, CudaMemoryManager* cudaManager);
 	void printForcing(Parameter* para);
 
 private:

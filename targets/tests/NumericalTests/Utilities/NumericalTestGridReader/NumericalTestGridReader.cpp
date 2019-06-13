@@ -8,9 +8,9 @@
 #include <math.h>
 
 
-std::shared_ptr<NumericalTestGridReader> NumericalTestGridReader::getNewInstance(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition)
+std::shared_ptr<NumericalTestGridReader> NumericalTestGridReader::getNewInstance(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
-	return std::shared_ptr<NumericalTestGridReader>(new NumericalTestGridReader(para, initialCondition));
+	return std::shared_ptr<NumericalTestGridReader>(new NumericalTestGridReader(para, initialCondition, cudaManager));
 }
 
 void NumericalTestGridReader::setInitalNodeValues(const int numberOfNodes, const int level) const
@@ -25,7 +25,7 @@ void NumericalTestGridReader::setInitalNodeValues(const int numberOfNodes, const
 	}
 }
 
-NumericalTestGridReader::NumericalTestGridReader(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition) : GridReader(true, para), initialCondition(initialCondition)
+NumericalTestGridReader::NumericalTestGridReader(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<CudaMemoryManager> cudaManager) : GridReader(true, para, cudaManager), initialCondition(initialCondition)
 {
 
 }

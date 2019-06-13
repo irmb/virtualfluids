@@ -27,7 +27,7 @@ private:
 	std::vector<std::shared_ptr<BoundaryValues> > BC_Values;
 
 public:
-	GridReader(bool binaer, std::shared_ptr<Parameter> para);
+	GridReader(bool binaer, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
     ~GridReader();
 	void allocArrays_CoordNeighborGeo()override;
 	void allocArrays_BoundaryValues()override;

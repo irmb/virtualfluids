@@ -12,6 +12,7 @@
 #include "LBM/LB.h"
 
 class Communicator;
+class CudaMemoryManager;
 class Parameter;
 class GridProvider;
 class PorousMedia;
@@ -31,7 +32,7 @@ public:
 	Simulation();
 	~Simulation();
 	void run();
-	void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter);
+	void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter, std::shared_ptr<CudaMemoryManager> cudaManager);
 	void free();
 	void bulk();
 	void porousMedia();
@@ -60,6 +61,7 @@ protected:
     SPtr<Parameter> para;
     SPtr<GridProvider> gridProvider;
     SPtr<DataWriter> dataWriter;
+	SPtr<CudaMemoryManager> cudaManager;
 	std::vector < SPtr< Kernel>> kernels;
 	std::vector < SPtr< ADKernel>> adKernels;
 	std::shared_ptr<PreProcessor> preProcessor;

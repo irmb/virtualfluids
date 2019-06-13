@@ -10,7 +10,7 @@ struct VectorWriterInformationStruct;
 class ToVectorWriter : public DataWriter
 {
 public:
-	void writeInit(std::shared_ptr<Parameter> para);
+	void writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
 	void writeTimestep(std::shared_ptr<Parameter> para, unsigned int t);
 	
 protected:

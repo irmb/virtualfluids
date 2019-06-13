@@ -6,12 +6,14 @@
 #include "Parameter/Parameter.h"
 #include "Temperature/FindQTemp.h"
 
-extern "C" void initTemperatur(Parameter* para, int lev);
+class CudaMemoryManager;
 
-extern "C" void findTempSim(Parameter* para);
+extern "C" void initTemperatur(Parameter* para, CudaMemoryManager* cudaManager, int lev);
+
+extern "C" void findTempSim(Parameter* para, CudaMemoryManager* cudaManager);
 							
-extern "C" void findTempVelSim(Parameter* para);
+extern "C" void findTempVelSim(Parameter* para, CudaMemoryManager* cudaManager);
 								
-extern "C" void findTempPressSim(Parameter* para);
+extern "C" void findTempPressSim(Parameter* para, CudaMemoryManager* cudaManager);
 
 #endif

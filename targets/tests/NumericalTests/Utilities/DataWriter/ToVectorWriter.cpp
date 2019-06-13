@@ -2,9 +2,12 @@
 
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 
 #include "Utilities/Structs/VectorWriterInformationStruct.h"
+
+#include "GPU/CudaMemoryManager.h"
 
 ToVectorWriter::ToVectorWriter(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength)
 {
@@ -17,10 +20,14 @@ ToVectorWriter::ToVectorWriter(std::shared_ptr<VectorWriterInformationStruct> ve
 	this->timeStepLength = timeStepLength;
 }
 
-void ToVectorWriter::writeInit(std::shared_ptr<Parameter> para)
+void ToVectorWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
-	if (startTimeVectorWriter == 0)
+	if (startTimeVectorWriter == 0) {
+		for (int level = para->getCoarse(); level <= para->getFine(); level++)
+			cudaManager->cudaCopyPrint(level);
 		writeTimestep(para, 0);
+	}
+		
 	if (writeVTKFiles && startTimeVTKWriter == 0)
 		vtkFileWriter->writeTimestep(para, 0);
 }
@@ -29,12 +36,8 @@ void ToVectorWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int
 {
 	if (startTimeVectorWriter <= t)
 	{
-		for (int level = para->getCoarse(); level <= para->getFine(); level++)
-		{
-			if(t==0)
-				para->cudaCopyPrint(level);
+		for (int level = para->getCoarse(); level <= para->getFine(); level++)				
 			writeTimestep(para, t, level);
-		}
 	}
 	if (writeVTKFiles && startTimeVTKWriter < t)
 		vtkFileWriter->writeTimestep(para, t);

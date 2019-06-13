@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 
+class CudaMemoryManager;
 class InitialCondition;
 class DataWriter;
 class Parameter;
@@ -25,6 +26,7 @@ public:
 	static std::shared_ptr<VirtualFluidSimulationImp> getNewInstance();
 
 	void setParameter(std::shared_ptr<Parameter> para);
+	void setCudaMemoryManager(std::shared_ptr<CudaMemoryManager> cudaManager);
 	void setGridProvider(std::shared_ptr<GridProvider> grid);
 	void setDataWriter(std::shared_ptr<DataWriter> dataWriter);
 	void setNumericalTestSuite(std::shared_ptr<NumericalTestSuite> numericalTestSuite);
@@ -38,6 +40,7 @@ protected:
 		
 private:
 	std::shared_ptr<Parameter> para;
+	std::shared_ptr<CudaMemoryManager> cudaManager;
 	std::shared_ptr<InitialCondition> initialCondition;
 	std::shared_ptr<GridProvider> grid;
 	std::shared_ptr<DataWriter> dataWriter;

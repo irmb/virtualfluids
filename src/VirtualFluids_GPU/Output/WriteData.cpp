@@ -12,18 +12,19 @@
 #include "Output/MeasurePointWriter.hpp"
 
 #include "Parameter/Parameter.h"
+#include "GPU/CudaMemoryManager.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void writeInit(SPtr<Parameter> para)
+void writeInit(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaManager)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//copy Data to host
-		para->cudaCopyPrint(lev);
-		if (para->getCalcMedian()) para->cudaCopyMedianPrint(lev);
-		if (para->getUseWale())    para->cudaCopyTurbulentViscosityDH(lev);
+		cudaManager->cudaCopyPrint(lev);
+		if (para->getCalcMedian()) cudaManager->cudaCopyMedianPrint(lev);
+		if (para->getUseWale())    cudaManager->cudaCopyTurbulentViscosityDH(lev);
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		const unsigned int numberOfParts = para->getParH(lev)->size_Mat_SP / para->getlimitOfNodesForVTK() + 1;
 		std::vector<std::string> fname;
@@ -187,13 +188,13 @@ void writeInit(SPtr<Parameter> para)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void writeTimestep(Parameter* para, unsigned int t)
+void writeTimestep(Parameter* para, CudaMemoryManager* cudaManager, unsigned int t)
 {
 	////////////////////////////////////////////////////////////////////////////////
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		if (para->getUseWale())    para->cudaCopyTurbulentViscosityDH(lev);
+		if (para->getUseWale())    cudaManager->cudaCopyTurbulentViscosityDH(lev);
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		const unsigned int numberOfParts = para->getParH(lev)->size_Mat_SP / para->getlimitOfNodesForVTK() + 1;
 		std::vector<std::string> fname;

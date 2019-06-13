@@ -6,9 +6,10 @@
 #include "GPU/GPU_Interface.h"
 #include "Temperature/FindTemperature.h"
 #include "PreProcessor/PreProcessor.h"
+#include "GPU/CudaMemoryManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor)
+void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<CudaMemoryManager> cudaManager)
 {
     for (int lev=para->getFine(); lev >= para->getCoarse(); lev--)
     {
@@ -69,7 +70,7 @@ void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor)
 		if (para->getDiffOn()==true){
 			//malloc
 			//printf("vor cudaAllocConc\n");
-			para->cudaAllocConc(lev);
+			cudaManager->cudaAllocConc(lev);
 			//define init conc/temp
 			//printf("vor Schleife\n");
 			for (unsigned int i = 0; i < para->getParH(lev)->size_Mat_SP; i++)
@@ -78,7 +79,7 @@ void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor)
 			}
 			//malloc and init fs
 			//printf("vor initTemperatur\n");
-			initTemperatur(para.get(), lev);
+			initTemperatur(para.get(), cudaManager.get(), lev);
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }

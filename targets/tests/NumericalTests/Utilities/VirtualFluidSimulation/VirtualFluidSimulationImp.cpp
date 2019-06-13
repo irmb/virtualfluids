@@ -12,7 +12,7 @@ void VirtualFluidSimulationImp::run()
 	numericalTestSuite->makeSimulationHeadOutput();
 	Simulation sim;
 	sim.setFactories(kernelFactory, preProcessorFactory);
-	sim.init(para, grid, dataWriter);
+	sim.init(para, grid, dataWriter, cudaManager);
 
 	timeTracking->setSimulationStartTime();
 	sim.run();
@@ -26,6 +26,11 @@ void VirtualFluidSimulationImp::run()
 void VirtualFluidSimulationImp::setParameter(std::shared_ptr<Parameter> para)
 {
 	this->para = para;
+}
+
+void VirtualFluidSimulationImp::setCudaMemoryManager(std::shared_ptr<CudaMemoryManager> cudaManager)
+{
+	this->cudaManager = cudaManager;
 }
 
 void VirtualFluidSimulationImp::setGridProvider(std::shared_ptr<GridProvider> grid)

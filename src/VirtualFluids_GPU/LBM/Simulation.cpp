@@ -76,10 +76,11 @@ void Simulation::setFactories(std::shared_ptr<KernelFactory> kernelFactory, std:
 }
 
 
-void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter)
+void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
    this->dataWriter = dataWriter;
    this->gridProvider = gridProvider;
+   this->cudaManager = cudaManager;
    gridProvider->initalGridInformations();
    comm = Communicator::getInstanz();
    this->para = para;
@@ -130,7 +131,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
 
    /////////////////////////////////////////////////////////////////////////
-   para->setMemsizeGPU(0, true);
+   cudaManager->setMemsizeGPU(0, true);
    //////////////////////////////////////////////////////////////////////////
    gridProvider->allocArrays_CoordNeighborGeo();
    gridProvider->allocArrays_BoundaryValues();
@@ -143,6 +144,9 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
 
    kernels = kernelFactory->makeKernels(para);
+   
+   if (para->getDiffOn())
+	   adKernels = kernelFactory->makeAdvDifKernels(para);
 
    //////////////////////////////////////////////////////////////////////////
    //PreProcessor init
@@ -157,9 +161,9 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    if (para->getCalcParticle())
    {
-	   rearrangeGeometry(para.get());
+	   rearrangeGeometry(para.get(), cudaManager.get());
 	   //////////////////////////////////////////////////////////////////////////
-	   allocParticles(para.get());
+	   allocParticles(para.get(), cudaManager.get());
 	   //////////////////////////////////////////////////////////////////////////
 	   ////CUDA random number generation
 	   //para->cudaAllocRandomValues();
@@ -193,21 +197,21 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    //Allocate Memory for Plane Conc Calculation
    //////////////////////////////////////////////////////////////////////////
-   if (para->getDiffOn()) allocPlaneConc(para.get());
+   if (para->getDiffOn()) allocPlaneConc(para.get(), cudaManager.get());
 
 
    //////////////////////////////////////////////////////////////////////////
    //Median
    //////////////////////////////////////////////////////////////////////////
-   if (para->getCalcMedian())   allocMedian(para.get());
+   if (para->getCalcMedian())   allocMedian(para.get(), cudaManager.get());
 
 
    //////////////////////////////////////////////////////////////////////////
    //allocate memory and initialize 2nd, 3rd and higher order moments
    //////////////////////////////////////////////////////////////////////////
-   if (para->getCalc2ndOrderMoments()){  alloc2ndMoments(para.get());         init2ndMoments(para.get());         }
-   if (para->getCalc3rdOrderMoments()){  alloc3rdMoments(para.get());         init3rdMoments(para.get());         }
-   if (para->getCalcHighOrderMoments()){ allocHigherOrderMoments(para.get()); initHigherOrderMoments(para.get()); }
+   if (para->getCalc2ndOrderMoments()){  alloc2ndMoments(para.get(), cudaManager.get());         init2ndMoments(para.get());         }
+   if (para->getCalc3rdOrderMoments()){  alloc3rdMoments(para.get(), cudaManager.get());         init3rdMoments(para.get());         }
+   if (para->getCalcHighOrderMoments()){ allocHigherOrderMoments(para.get(), cudaManager.get()); initHigherOrderMoments(para.get()); }
 
 
    //////////////////////////////////////////////////////////////////////////
@@ -216,7 +220,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    if (para->getUseMeasurePoints())
    {
 	   output << "read measure points...";
-	   readMeasurePoints(para.get());
+	   readMeasurePoints(para.get(), cudaManager.get());
 	   output << "done.\n";
    }
 
@@ -255,7 +259,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //output << "done.\n";
 
    output << "init lattice..." ;
-   initLattice(para, preProcessor);
+   initLattice(para, preProcessor, cudaManager);
    output << "done.\n";
 
    //output << "set geo for Q...\n" ;
@@ -301,7 +305,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
 	   output << "Alloc Memory for CheckPoint / Restart...";
 	   for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	   {
-		   para->cudaAllocFsForCheckPointAndRestart(lev);
+		   cudaManager->cudaAllocFsForCheckPointAndRestart(lev);
 	   }
 	   output << "done.\n";
    }
@@ -320,7 +324,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
 	   for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	   {
 		   //////////////////////////////////////////////////////////////////////////
-		   para->cudaCopyFsForRestart(lev);
+		   cudaManager->cudaCopyFsForRestart(lev);
 		   //////////////////////////////////////////////////////////////////////////
 		   //macroscopic values
 			CalcMacSP27(para->getParD(lev)->vx_SP,       
@@ -348,13 +352,13 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //Print Init
    //////////////////////////////////////////////////////////////////////////
    output << "Print files Init...";
-   dataWriter->writeInit(para);
+   dataWriter->writeInit(para, cudaManager);
    if (para->getCalcParticle()) 
-       copyAndPrintParticles(para.get(), 0, true);
+       copyAndPrintParticles(para.get(), cudaManager.get(), 0, true);
    output << "done.\n";
 
    //////////////////////////////////////////////////////////////////////////
-   output << "used Device Memory: " << para->getMemsizeGPU() / 1000000.0 << " MB\n";
+   output << "used Device Memory: " << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n";
    //////////////////////////////////////////////////////////////////////////
 
    
@@ -418,7 +422,7 @@ void Simulation::run()
 		getLastCudaError("before starting a kernel we get an execution failed");
 		if (para->getMaxLevel()>=1)
          {
-            updateGrid27(para.get(), comm, pm, 1, para->getMaxLevel(), t);
+            updateGrid27(para.get(), comm, cudaManager.get(), pm, 1, para->getMaxLevel(), t);
          }
          ////////////////////////////////////////////////////////////////////////////////
          // Collision and Propagation
@@ -687,21 +691,21 @@ void Simulation::run()
 			//////////////////////////////////////////////////////////////////////////
 			//3D domain decomposition
 			//output << "start exchange Post X (level 0) \n";
-			exchangePostCollDataXGPU27(para.get(), comm, 0);
+			exchangePostCollDataXGPU27(para.get(), comm, cudaManager.get(), 0);
 			//output << "end exchange Post X (level 0) \n";
 			//output << "start exchange Post Y (level 0) \n";
-			exchangePostCollDataYGPU27(para.get(), comm, 0);
+			exchangePostCollDataYGPU27(para.get(), comm, cudaManager.get(), 0);
 			//output << "end exchange Post Y (level 0) \n";
 			//output << "start exchange Post Z (level 0) \n";
-			exchangePostCollDataZGPU27(para.get(), comm, 0);
+			exchangePostCollDataZGPU27(para.get(), comm, cudaManager.get(), 0);
 			//output << "end exchange Post Z (level 0) \n";
 			////////////////////////////////////////////////////////////////////////
 			//3D domain decomposition convection diffusion
 			if (para->getDiffOn()==true)
 			{
-				exchangePostCollDataADXGPU27(para.get(), comm, 0);
-				exchangePostCollDataADYGPU27(para.get(), comm, 0);
-				exchangePostCollDataADZGPU27(para.get(), comm, 0);
+				exchangePostCollDataADXGPU27(para.get(), comm, cudaManager.get(), 0);
+				exchangePostCollDataADYGPU27(para.get(), comm, cudaManager.get(), 0);
+				exchangePostCollDataADZGPU27(para.get(), comm, cudaManager.get(), 0);
 			}
 		}
 		////////////////////////////////////////////////////////////////////////////////
@@ -1414,21 +1418,21 @@ void Simulation::run()
 				 //exchangePreCollDataGPU27(para, comm, 0);
 				 //3D domain decomposition
 				 //output << "start exchange Pre X (level 0) \n";
-				 exchangePreCollDataXGPU27(para.get(), comm, 0);
+				 exchangePreCollDataXGPU27(para.get(), comm, cudaManager.get(), 0);
 				 //output << "end exchange Pre X (level 0) \n";
 				 //output << "start exchange Pre Y (level 0) \n";
-				 exchangePreCollDataYGPU27(para.get(), comm, 0);
+				 exchangePreCollDataYGPU27(para.get(), comm, cudaManager.get(), 0);
 				 //output << "end exchange Pre Y (level 0) \n";
 				 //output << "start exchange Pre Z (level 0) \n";
-				 exchangePreCollDataZGPU27(para.get(), comm, 0);
+				 exchangePreCollDataZGPU27(para.get(), comm, cudaManager.get(), 0);
 				 //output << "end exchange Pre Z (level 0) \n";
 				 //////////////////////////////////////////////////////////////////////////
 				 //3D domain decomposition convection diffusion
 				 if (para->getDiffOn()==true)
 				 {
-					 exchangePreCollDataADXGPU27(para.get(), comm, 0);
-					 exchangePreCollDataADYGPU27(para.get(), comm, 0);
-					 exchangePreCollDataADZGPU27(para.get(), comm, 0);
+					 exchangePreCollDataADXGPU27(para.get(), comm, cudaManager.get(), 0);
+					 exchangePreCollDataADYGPU27(para.get(), comm, cudaManager.get(), 0);
+					 exchangePreCollDataADZGPU27(para.get(), comm, cudaManager.get(), 0);
 				 }
 			 }
 		    //////////////////////////////////////////////////////////////////////////
@@ -1704,7 +1708,7 @@ void Simulation::run()
 
 			  for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 			  {
-				  para->cudaCopyFsForCheckPoint(lev);
+				  cudaManager->cudaCopyFsForCheckPoint(lev);
 			  }
 
 			  output << "Dateien fuer CheckPoint schreiben t=" << t << "...";
@@ -1752,7 +1756,7 @@ void Simulation::run()
 		  {
 			  for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 			  {
-				  para->cudaCopyMeasurePointsToHost(lev);
+				  cudaManager->cudaCopyMeasurePointsToHost(lev);
 				  para->copyMeasurePointsArrayToVector(lev);
 				  output << "\n Write MeasurePoints at level = " << lev << " and timestep = " << t << "\n";
 				  for (int j = 0; j < (int)para->getParH(lev)->MP.size(); j++)
@@ -1812,7 +1816,7 @@ void Simulation::run()
 		  //////////////////////////////////////////////////////////////////////////////////
 		  ////Calculation of concentration at the plane
 		  //////////////////////////////////////////////////////////////////////////////////
-		  calcPlaneConc(para.get(), 0);
+		  calcPlaneConc(para.get(), cudaManager.get(), 0);
 	  }
 	  //////////////////////////////////////////////////////////////////////////////////
 
@@ -1868,21 +1872,21 @@ void Simulation::run()
 			 //exchangePreCollDataGPU27(para, comm, 0);
 			 //3D domain decomposition
 			 //output << "(print) start exchange Pre X (level 0) \n";
-			 exchangePreCollDataXGPU27(para.get(), comm, 0);
+			 exchangePreCollDataXGPU27(para.get(), comm, cudaManager.get(), 0);
 			 //output << "(print) end exchange Pre X (level 0) \n";
 			 //output << "(print) start exchange Pre Y (level 0) \n";
-			 exchangePreCollDataYGPU27(para.get(), comm, 0);
+			 exchangePreCollDataYGPU27(para.get(), comm, cudaManager.get(), 0);
 			 //output << "(print) end exchange Pre Y (level 0) \n";
 			 //output << "(print) start exchange Pre Z (level 0) \n";
-			 exchangePreCollDataZGPU27(para.get(), comm, 0);
+			 exchangePreCollDataZGPU27(para.get(), comm, cudaManager.get(), 0);
 			 //output << "(print) end exchange Pre Z (level 0) \n";
 			 //////////////////////////////////////////////////////////////////////////
 			 //3D domain decomposition convection diffusion
 			 if (para->getDiffOn()==true)
 			 {
-				 exchangePreCollDataADXGPU27(para.get(), comm, 0);
-				 exchangePreCollDataADYGPU27(para.get(), comm, 0);
-				 exchangePreCollDataADZGPU27(para.get(), comm, 0);
+				 exchangePreCollDataADXGPU27(para.get(), comm, cudaManager.get(), 0);
+				 exchangePreCollDataADYGPU27(para.get(), comm, cudaManager.get(), 0);
+				 exchangePreCollDataADZGPU27(para.get(), comm, cudaManager.get(), 0);
 			 }
 		 }
 		 //////////////////////////////////////////////////////////////////////////
@@ -1994,10 +1998,10 @@ void Simulation::run()
 
 				 //}
 
-			   para->cudaCopyPrint(lev);
+				   cudaManager->cudaCopyPrint(lev);
 			   if (para->getCalcMedian())
 			   {
-				   para->cudaCopyMedianPrint(lev);
+				   cudaManager->cudaCopyMedianPrint(lev);
 			   }
 
 
@@ -2031,7 +2035,7 @@ void Simulation::run()
                      getLastCudaError("CalcMacTh27 execution failed"); 
                   }
 
-				  para->cudaCopyConcDH(lev);
+				  cudaManager->cudaCopyConcDH(lev);
                   //cudaMemoryCopy(para->getParH(lev)->Conc, para->getParD(lev)->Conc,  para->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost);
                }
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2111,9 +2115,9 @@ void Simulation::run()
 			////////////////////////////////////////////////////////////////////////
 			//calculate 2nd, 3rd and higher order moments
 			////////////////////////////////////////////////////////////////////////
-			if (para->getCalc2ndOrderMoments())  calc2ndMoments(para.get());
-			if (para->getCalc3rdOrderMoments())  calc3rdMoments(para.get());
-			if (para->getCalcHighOrderMoments()) calcHigherOrderMoments(para.get());
+			if (para->getCalc2ndOrderMoments())  calc2ndMoments(para.get(), cudaManager.get());
+			if (para->getCalc3rdOrderMoments())  calc3rdMoments(para.get(), cudaManager.get());
+			if (para->getCalcHighOrderMoments()) calcHigherOrderMoments(para.get(), cudaManager.get());
 			////////////////////////////////////////////////////////////////////////
 
 			////////////////////////////////////////////////////////////////////////
@@ -2135,7 +2139,7 @@ void Simulation::run()
 			////////////////////////////////////////////////////////////////////////
 			//printDragLift(para, t);
 			////////////////////////////////////////////////////////////////////////
-			if (para->getCalcParticle()) copyAndPrintParticles(para.get(), t, false);
+			if (para->getCalcParticle()) copyAndPrintParticles(para.get(), cudaManager.get(), t, false);
 			////////////////////////////////////////////////////////////////////////
 			output << "done.\n";
 			////////////////////////////////////////////////////////////////////////
@@ -2184,7 +2188,7 @@ void Simulation::run()
 	////////////////////////////////////////////////////////////////////////////////
 
 	////////////////////////////////////////////////////////////////////////////////
-	if (para->getDiffOn()==true) printPlaneConc(para.get());
+	if (para->getDiffOn()==true) printPlaneConc(para.get(), cudaManager.get());
 	////////////////////////////////////////////////////////////////////////////////
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -2341,10 +2345,10 @@ void Simulation::definePMarea(std::shared_ptr<PorousMedia> pMedia)
 	}
 
 	output << "definePMarea....cuda copy SP \n";
-	para->cudaCopySP(level);
+	cudaManager->cudaCopySP(level);
 	pMedia->setSizePM(counter);
 	output << "definePMarea....cuda alloc PM \n";
-	para->cudaAllocPorousMedia(pMedia.get(), level);
+	cudaManager->cudaAllocPorousMedia(pMedia.get(), level);
 	unsigned int *tpmArrayIDs = pMedia->getHostNodeIDsPM();
 	
 	output << "definePMarea....copy vector to array \n";
@@ -2355,7 +2359,7 @@ void Simulation::definePMarea(std::shared_ptr<PorousMedia> pMedia)
 	
 	pMedia->setHostNodeIDsPM(tpmArrayIDs);
 	output << "definePMarea....cuda copy PM \n";
-	para->cudaCopyPorousMedia(pMedia.get(), level);
+	cudaManager->cudaCopyPorousMedia(pMedia.get(), level);
 }
 
 void Simulation::free()
@@ -2364,11 +2368,11 @@ void Simulation::free()
 	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		//para->cudaFreeFull(lev);
-		para->cudaFreeCoord(lev);
-		para->cudaFreeSP(lev);
+		cudaManager->cudaFreeCoord(lev);
+		cudaManager->cudaFreeSP(lev);
 		if (para->getCalcMedian())
 		{
-			para->cudaFreeMedianSP(lev);
+			cudaManager->cudaFreeMedianSP(lev);
 		}
 		//para->cudaFreeVeloBC(lev);
 		//para->cudaFreeWallBC(lev);
@@ -2382,10 +2386,10 @@ void Simulation::free()
 	{
 		for (int lev = para->getCoarse(); lev < para->getFine(); lev++)
 		{
-			para->cudaFreeInterfaceCF(lev);
-			para->cudaFreeInterfaceFC(lev);
-			para->cudaFreeInterfaceOffCF(lev);
-			para->cudaFreeInterfaceOffFC(lev);
+			cudaManager->cudaFreeInterfaceCF(lev);
+			cudaManager->cudaFreeInterfaceFC(lev);
+			cudaManager->cudaFreeInterfaceOffCF(lev);
+			cudaManager->cudaFreeInterfaceOffFC(lev);
 			//para->cudaFreePressX1(lev);
 		}
 	}
@@ -2421,7 +2425,7 @@ void Simulation::free()
 	{
 		for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 		{
-			para->cudaFree2ndMoments(lev);
+			cudaManager->cudaFree2ndMoments(lev);
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////
@@ -2430,7 +2434,7 @@ void Simulation::free()
 	{
 		for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 		{
-			para->cudaFree3rdMoments(lev);
+			cudaManager->cudaFree3rdMoments(lev);
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////
@@ -2439,7 +2443,7 @@ void Simulation::free()
 	{
 		for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 		{
-			para->cudaFreeHigherMoments(lev);
+			cudaManager->cudaFreeHigherMoments(lev);
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////
@@ -2468,17 +2472,17 @@ void Simulation::free()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsX(lev, "send"); i++)
 			{
-				para->cudaFreeProcessNeighborX(lev, i);
+				cudaManager->cudaFreeProcessNeighborX(lev, i);
 			}
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsY(lev, "send"); i++)
 			{
-				para->cudaFreeProcessNeighborY(lev, i);
+				cudaManager->cudaFreeProcessNeighborY(lev, i);
 			}
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++)
 			{
-				para->cudaFreeProcessNeighborZ(lev, i);
+				cudaManager->cudaFreeProcessNeighborZ(lev, i);
 			}
 		}
 	}
@@ -2487,7 +2491,7 @@ void Simulation::free()
 	if (para->getIsGeoNormal()) {
 		for (int lev = para->getCoarse(); lev < para->getFine(); lev++)
 		{
-			para->cudaFreeGeomNormals(lev);
+			cudaManager->cudaFreeGeomNormals(lev);
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////

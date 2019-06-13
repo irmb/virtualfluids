@@ -4,7 +4,8 @@
 #include "LBM/LB.h"
 #include "Parameter/Parameter.h"
 #include "Communication/Communicator.h"
+#include "GPU/CudaMemoryManager.h"
 
-extern "C" void defineGrid(Parameter* para, Communicator* comm);
+extern "C" void defineGrid(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager);
 
 #endif

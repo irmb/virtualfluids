@@ -10,13 +10,13 @@ class InitialCondition;
 class NumericalTestGridReader : public GridReader
 {
 public:
-	static std::shared_ptr<NumericalTestGridReader> getNewInstance(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition);
+	static std::shared_ptr<NumericalTestGridReader> getNewInstance(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<CudaMemoryManager> cudaManager);
 
 protected:
 	void setInitalNodeValues(const int numberOfNodes, const int level) const;
 		
 private:
-	NumericalTestGridReader(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition);
+	NumericalTestGridReader(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<CudaMemoryManager> cudaManager);
 
 	std::shared_ptr<InitialCondition> initialCondition;
 	

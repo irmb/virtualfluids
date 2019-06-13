@@ -4,9 +4,10 @@
 #include <core/PointerDefinitions.h>
 
 class Parameter;
+class CudaMemoryManager;
 
-void writeInit(SPtr<Parameter> para);
-void writeTimestep(Parameter* para, unsigned int t);
+void writeInit(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaManager);
+void writeTimestep(Parameter* para, CudaMemoryManager* cudaManager, unsigned int t);
 void writeParticle(Parameter* para, unsigned int t);
 
 #endif

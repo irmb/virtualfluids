@@ -1,18 +1,18 @@
 #include "FindQ/DefineBCs.h"
 #include "FindQ/FindQ.h"
 
-void findPressQShip(Parameter* para)
+void findPressQShip(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	//x = begin (0)
 	findKforQPressX0(para, para->getCoarse());
-	para->cudaAllocPressX0(para->getCoarse());
+	cudaManager->cudaAllocPressX0(para->getCoarse());
 	findQPressX0(para, para->getCoarse());
-	para->cudaCopyPressX0(para->getCoarse());
+	cudaManager->cudaCopyPressX0(para->getCoarse());
 	//x = end (1)
 	findKforQPressX1(para, para->getCoarse());
-	para->cudaAllocPressX1(para->getCoarse());
+	cudaManager->cudaAllocPressX1(para->getCoarse());
 	findQPressX1(para, para->getCoarse());
-	para->cudaCopyPressX1(para->getCoarse());
+	cudaManager->cudaCopyPressX1(para->getCoarse());
 	//for (int lev = para->getFine(); lev >= para->getCoarse(); lev--)
 	//{
 	//	findKforQPressX1(para, lev);
@@ -25,7 +25,7 @@ void findPressQShip(Parameter* para)
 
 
 
-void findQ27(Parameter* para)
+void findQ27(Parameter* para, CudaMemoryManager* cudaManager)
 {
    for (int lev = para->getFine(); lev >= para->getCoarse(); lev--)
    {
@@ -36,7 +36,7 @@ void findQ27(Parameter* para)
 	  para->getParD(lev)->QWall.kQ = para->getParH(lev)->QWall.kQ;
       printf("kQ= %d\n", para->getParH(lev)->kQ);
 
-	  para->cudaAllocWallBC(lev);
+	  cudaManager->cudaAllocWallBC(lev);
 
       findQ(para, lev);
 
@@ -45,14 +45,14 @@ void findQ27(Parameter* para)
 	  para->getParD(lev)->QWall.kQ = para->getParH(lev)->QWall.kQ;
       printf("kQ= %d\n", para->getParH(lev)->kQ);
 
-	  para->cudaCopyWallBC(lev);
+	  cudaManager->cudaCopyWallBC(lev);
    }
 }
 
 
 
 
-void findBC27(Parameter* para)
+void findBC27(Parameter* para, CudaMemoryManager* cudaManager)
 {                                      
    if ( para->getMyID() == 0)
    {
@@ -64,11 +64,11 @@ void findBC27(Parameter* para)
 	  para->getParD(para->getCoarse())->kInflowQ = para->getParH(para->getCoarse())->Qinflow.kQ;
       printf("kInflowQ= %d\n", para->getParH(para->getCoarse())->kInflowQ);
 
-	  para->cudaAllocVeloBC(0); //level = 0
+	  cudaManager->cudaAllocVeloBC(0); //level = 0
 
       findQInflow(para);
 
-	  para->cudaCopyVeloBC(0); //level = 0
+	  cudaManager->cudaCopyVeloBC(0); //level = 0
    }
 
    //...!!!...next if gets a block comment for a simple test... 

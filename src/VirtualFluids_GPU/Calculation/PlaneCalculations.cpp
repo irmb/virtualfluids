@@ -162,7 +162,7 @@ void calcFlowRate(Parameter* para, int lev)
 //advection + diffusion
 //////////////////////////////////////////////////////////////////////////
 
-void calcPlaneConc(Parameter* para, int lev)
+void calcPlaneConc(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//copy to host
@@ -180,9 +180,9 @@ void calcPlaneConc(Parameter* para, int lev)
 	////Version cp bottom
 	//unsigned int NoN = para->getParH(lev)->numberOfPointsCpBottom;
 
-	para->cudaCopyPlaneConcIn(lev, NoNin);
-	para->cudaCopyPlaneConcOut1(lev, NoNout1);
-	para->cudaCopyPlaneConcOut2(lev, NoNout2);
+	cudaManager->cudaCopyPlaneConcIn(lev, NoNin);
+	cudaManager->cudaCopyPlaneConcOut1(lev, NoNout1);
+	cudaManager->cudaCopyPlaneConcOut2(lev, NoNout2);
 	////////////////////////////////////////////
 	//calculate concentration
 	double concPlaneIn = 0.;
@@ -235,7 +235,7 @@ void calcPlaneConc(Parameter* para, int lev)
 
 
 
-void allocPlaneConc(Parameter* para)
+void allocPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level   ---> maybe we need a loop
@@ -246,9 +246,9 @@ void allocPlaneConc(Parameter* para)
 	//please test -> Copy == Alloc ??
 	////////////////////////////////////////////
 	//Version Press neighbor
-	para->cudaAllocPlaneConcIn(lev, para->getParH(lev)->numberOfPointsCpTop);
-	para->cudaAllocPlaneConcOut1(lev, para->getParH(lev)->numberOfPointsCpBottom);
-	para->cudaAllocPlaneConcOut2(lev, para->getParH(lev)->QPress.kQ);
+	cudaManager->cudaAllocPlaneConcIn(lev, para->getParH(lev)->numberOfPointsCpTop);
+	cudaManager->cudaAllocPlaneConcOut1(lev, para->getParH(lev)->numberOfPointsCpBottom);
+	cudaManager->cudaAllocPlaneConcOut2(lev, para->getParH(lev)->QPress.kQ);
 	printf("\n Number of elements plane concentration = %d + %d + %d \n", para->getParH(lev)->numberOfPointsCpTop, para->getParH(lev)->numberOfPointsCpBottom, para->getParH(lev)->QPress.kQ);
 	////////////////////////////////////////////
 	////Version cp top
@@ -263,7 +263,7 @@ void allocPlaneConc(Parameter* para)
 
 
 
-void printPlaneConc(Parameter* para)
+void printPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//set level   ---> maybe we need a loop
@@ -328,7 +328,7 @@ void printPlaneConc(Parameter* para)
 	//close file
 	ostrOut2.close();
 	//////////////////////////////////////////////////////////////////////////
-	para->cudaFreePlaneConc(lev);
+	cudaManager->cudaFreePlaneConc(lev);
 	//////////////////////////////////////////////////////////////////////////
 }
 
@@ -338,7 +338,7 @@ void printPlaneConc(Parameter* para)
 
 //////////////////////////////////////////////////////////////////////////
 //Print Test round of Error
-void printRE(Parameter* para, int timestep)
+void printRE(Parameter* para, CudaMemoryManager* cudaManager, int timestep)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level
@@ -380,7 +380,7 @@ void printRE(Parameter* para, int timestep)
 	//////////////////////////////////////////////////////////////////////////
 	if (timestep == para->getTEnd())
 	{
-		para->cudaFreeTestRE(lev);
+		cudaManager->cudaFreeTestRE(lev);
 	}
 	//////////////////////////////////////////////////////////////////////////
 }

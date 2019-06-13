@@ -14,8 +14,8 @@ class CudaMemoryManager;
 class VF_PUBLIC GridProvider
 {
 public:
-    static std::shared_ptr<GridProvider> makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para);
-    static std::shared_ptr<GridProvider> makeGridReader(bool readBinaryFiles, std::shared_ptr<Parameter> para);
+    static std::shared_ptr<GridProvider> makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
+    static std::shared_ptr<GridProvider> makeGridReader(bool readBinaryFiles, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
 
 	virtual void allocArrays_CoordNeighborGeo() = 0;
 	virtual void allocArrays_BoundaryValues() = 0;

@@ -8,11 +8,11 @@
 #include <iostream>
 #include "utilities/math/Math.h"
 
-GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para)
+GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
 	this->builder = builder;
     this->para = para;
-    this->cudaMemoryManager = CudaMemoryManager::make(para);
+    this->cudaMemoryManager = cudaManager;
 }
 
 GridGenerator::~GridGenerator()
@@ -278,10 +278,10 @@ void GridGenerator::allocArrays_OffsetScale()
         para->getParD(level)->mem_size_kFC_off = sizeof(real)* para->getParD(level)->K_FC;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //alloc
-        para->cudaAllocInterfaceCF(level);
-        para->cudaAllocInterfaceFC(level);
-        para->cudaAllocInterfaceOffCF(level);
-        para->cudaAllocInterfaceOffFC(level);
+		cudaMemoryManager->cudaAllocInterfaceCF(level);
+		cudaMemoryManager->cudaAllocInterfaceFC(level);
+		cudaMemoryManager->cudaAllocInterfaceOffCF(level);
+		cudaMemoryManager->cudaAllocInterfaceOffFC(level);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //init
         builder->setOffsetCF(para->getParH(level)->offCF.xOffCF, para->getParH(level)->offCF.yOffCF, para->getParH(level)->offCF.zOffCF, level);
@@ -289,10 +289,10 @@ void GridGenerator::allocArrays_OffsetScale()
         builder->getGridInterfaceIndices(para->getParH(level)->intCF.ICellCFC, para->getParH(level)->intCF.ICellCFF, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.ICellFCF, level);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy
-        para->cudaCopyInterfaceCF(level);
-        para->cudaCopyInterfaceFC(level);
-        para->cudaCopyInterfaceOffCF(level);
-        para->cudaCopyInterfaceOffFC(level);
+		cudaMemoryManager->cudaCopyInterfaceCF(level);
+		cudaMemoryManager->cudaCopyInterfaceFC(level);
+		cudaMemoryManager->cudaCopyInterfaceOffCF(level);
+		cudaMemoryManager->cudaCopyInterfaceOffFC(level);
     }
 }
 

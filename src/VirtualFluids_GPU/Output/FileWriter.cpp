@@ -8,17 +8,18 @@
 #include <utilities/StringUtil/StringUtil.h>
 
 #include "Parameter/Parameter.h"
+#include "GPU/CudaMemoryManager.h"
 
 #include "LBM/LB.h"
 #include "LBM/D3Q27.h"
 
 #include <VirtualFluidsBasics/basics/writer/WbWriterVtkXmlBinary.h>
 
-void FileWriter::writeInit(std::shared_ptr<Parameter> para)
+void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
     unsigned int timestep = para->getTInit();
 	for (int level = para->getCoarse(); level <= para->getFine(); level++) {
-		para->cudaCopyPrint(level);
+		cudaManager->cudaCopyPrint(level);
 		writeTimestep(para, timestep, level);
 
 	}

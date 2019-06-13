@@ -11,10 +11,10 @@
 #include <GPU/CudaMemoryManager.h>
 #include "OffsetScale.h"
 
-GridReader::GridReader(bool binaer, std::shared_ptr<Parameter> para)
+GridReader::GridReader(bool binaer, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
     this->para = para;
-    this->cudaMemoryManager = CudaMemoryManager::make(para);
+    this->cudaMemoryManager = cudaManager;
 
 	this->binaer=binaer;
 	channelDirections.resize(6);
@@ -80,14 +80,14 @@ void GridReader::allocArrays_CoordNeighborGeo()
 
         ///////////////////////////
         //F3
-        para->cudaAllocF3SP(level);
+		cudaMemoryManager->cudaAllocF3SP(level);
         ///////////////////////////
         if (para->getCalcMedian())
-            para->cudaAllocMedianSP(level);
+			cudaMemoryManager->cudaAllocMedianSP(level);
         if (para->getCalcParticle() || para->getUseWale())
-            para->cudaAllocNeighborWSB(level);
+			cudaMemoryManager->cudaAllocNeighborWSB(level);
         if (para->getUseWale())
-            para->cudaAllocTurbulentViscosity(level);
+			cudaMemoryManager->cudaAllocTurbulentViscosity(level);
 
 		coordX.initalCoords(para->getParH(level)->coordX_SP, level);
 		coordY.initalCoords(para->getParH(level)->coordY_SP, level);
@@ -170,10 +170,10 @@ void GridReader::allocArrays_OffsetScale()
         para->getParD(i)->mem_size_kFC_off = sizeof(real)* para->getParD(i)->K_FC;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //alloc
-        para->cudaAllocInterfaceCF(i);
-        para->cudaAllocInterfaceFC(i);
-        para->cudaAllocInterfaceOffCF(i);
-        para->cudaAllocInterfaceOffFC(i);
+		cudaMemoryManager->cudaAllocInterfaceCF(i);
+		cudaMemoryManager->cudaAllocInterfaceFC(i);
+		cudaMemoryManager->cudaAllocInterfaceOffCF(i);
+		cudaMemoryManager->cudaAllocInterfaceOffFC(i);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //init
         obj_offCF->initArrayOffset(para->getParH(i)->offCF.xOffCF, para->getParH(i)->offCF.yOffCF, para->getParH(i)->offCF.zOffCF, i);
@@ -184,10 +184,10 @@ void GridReader::allocArrays_OffsetScale()
         obj_scaleFCF->initScale(para->getParH(i)->intFC.ICellFCF, i);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy
-        para->cudaCopyInterfaceCF(i);
-        para->cudaCopyInterfaceFC(i);
-        para->cudaCopyInterfaceOffCF(i);
-        para->cudaCopyInterfaceOffFC(i);
+		cudaMemoryManager->cudaCopyInterfaceCF(i);
+		cudaMemoryManager->cudaCopyInterfaceFC(i);
+		cudaMemoryManager->cudaCopyInterfaceOffCF(i);
+		cudaMemoryManager->cudaCopyInterfaceOffFC(i);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
     cout << "Gesamtanzahl Knoten CF = " << AnzahlKnotenGesCF << endl;
