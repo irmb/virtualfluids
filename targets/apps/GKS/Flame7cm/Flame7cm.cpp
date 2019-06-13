@@ -187,8 +187,8 @@ void thermalCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim, 10.0 );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim, 10.0 );
     //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), false );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), false );
 
@@ -208,8 +208,8 @@ void thermalCavity( std::string path, std::string simulationName )
 
     if( threeDimensional )
     {
-        bcMY = std::make_shared<Open>( dataBase, prim );
-        bcPY = std::make_shared<Open>( dataBase, prim );
+        bcMY = std::make_shared<Open>( dataBase, prim, 10.0 );
+        bcPY = std::make_shared<Open>( dataBase, prim, 10.0 );
 
         bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*L; } );
         bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*L; } );
@@ -230,7 +230,7 @@ void thermalCavity( std::string path, std::string simulationName )
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, 0.0, prim.lambda, 0.0, 0.0) );
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<Open>( dataBase );
 
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<Open>( dataBase, prim );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<Open>( dataBase, prim, 10.0 );
     
     bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0 /*&& std::sqrt(center.x*center.x + center.y*center.y) >= 0.5*0.071*/; } );
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > H  ; } );

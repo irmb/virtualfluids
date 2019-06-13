@@ -141,7 +141,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool threeDimensional = true;
+    bool threeDimensional = false;
 
     if( threeDimensional )
     {
@@ -409,7 +409,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
         if( 
             //( iter >= 100 && iter % 10 == 0 ) || 
-            ( iter % 10000 == 0 )
+            ( iter % 400 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
@@ -417,7 +417,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
         }
 
-        if( iter % 10000 == 0 )
+        if( iter % 4000 == 0 )
         {
             Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ), iter );
         }
