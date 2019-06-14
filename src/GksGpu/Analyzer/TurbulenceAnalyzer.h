@@ -81,11 +81,31 @@ public:
     std::vector<real> h_TT;
     std::vector<real> h_p ;
 
+    bool collect_U ;
+    bool collect_V ;
+    bool collect_W ;
+    
+    bool collect_UU;
+    bool collect_VV;
+    bool collect_WW;
+    
+    bool collect_UV;
+    bool collect_UW;
+    bool collect_VW;
+    
+    bool collect_T ;
+    bool collect_TT;
+    bool collect_p ;
+
 public:
 
     ~TurbulenceAnalyzer();
 
     TurbulenceAnalyzer( SPtr<DataBase> dataBase, uint analyzeStartIter );
+
+    void free();
+
+    void allocate();
 
     bool run( uint iter, Parameters parameters );
 
