@@ -107,8 +107,8 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     {
         flux.rho = boundaryCondition.velocity * boundaryCondition.rho;
 
-        //flux.rhoE = ( parameters.K + three ) / ( four * boundaryCondition.lambda ) * flux.rho;
-        flux.rhoE = (parameters.K + three) / (four * domainCellPrim.lambda) * flux.rho;
+        flux.rhoE = ( parameters.K + three ) / ( four * boundaryCondition.lambda ) * flux.rho;
+        //flux.rhoE = (parameters.K + three) / (four * domainCellPrim.lambda) * flux.rho;
 
     #ifdef USE_PASSIVE_SCALAR
         flux.rhoS_1 = flux.rho;
