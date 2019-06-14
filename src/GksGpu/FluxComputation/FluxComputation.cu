@@ -185,8 +185,18 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
         if(false)
         {
-            parameters.mu += getTurbulentViscositySmagorinsky( parameters, facePrim, gradN, gradT1, gradT2 );
-            parameters.D   = parameters.mu;
+            real muTurb = getTurbulentViscositySmagorinsky( parameters, facePrim, gradN, gradT1, gradT2 );
+
+            if( muTurb > parameters.mu )
+            {
+                real turbSc = real(0.3);
+                real turbPr = real(0.5);
+
+                parameters.mu = muTurb;
+
+                parameters.D  = muTurb / turbSc;
+                parameters.Pr = turbPr;
+            }
         }
 
         //////////////////////////////////////////////////////////////////////////
@@ -218,7 +228,9 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             // this one works for some time
             real S = parameters.dx * parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
             //k += real(0.00002) / real(0.015625) * S;
-            k += real(2.0e-3) * S;
+            real T = getT(facePrim);
+            //if( T > 20 )
+                k += real(2.0e-3) * S;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             
             //real S = parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
