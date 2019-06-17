@@ -57,14 +57,15 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
             {
                 //const real heatOfReaction = real(802310.0); // kJ / kmol
-                const real heatOfReaction = real(8000.0); // kJ / kmol
+                //const real heatOfReaction = real(8000.0); // kJ / kmol  
+                const real heatOfReaction = real(4192.0); // kJ / kmol  // see Xin & Gore et al 2005
                 //const real heatOfReaction = two * real(1000.0); // kJ / kmol
 
                 //////////////////////////////////////////////////////////////////////////
 
                 PrimitiveVariables limitPrim = prim;
 
-                real r = 1.001;
+                real r = 1.005;
 
                 limitPrim.lambda /= r;
 

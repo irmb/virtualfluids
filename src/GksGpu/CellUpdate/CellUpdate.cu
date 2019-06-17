@@ -38,7 +38,7 @@ void CellUpdate::run( SPtr<DataBase> dataBase, Parameters parameters, uint level
                dataBase->toStruct(),
                parameters,
                dataBase->perLevelCount[ level ].startOfCells );
-
+    
     cudaDeviceSynchronize();
 
     getLastCudaError("CellUpdate::run( SPtr<DataBase> dataBase, Parameters parameters, uint level )");

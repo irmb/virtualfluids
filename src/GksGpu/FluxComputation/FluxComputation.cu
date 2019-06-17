@@ -230,7 +230,8 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             //k += real(0.00002) / real(0.015625) * S;
             real T = getT(facePrim);
             //if( T > 20 )
-                k += real(2.0e-3) * S;
+                //k += real(2.0e-3) * S;
+                k += real(1.0e-3) * S;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             
             //real S = parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );

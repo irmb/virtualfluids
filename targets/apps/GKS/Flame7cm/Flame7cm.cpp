@@ -154,18 +154,18 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 1.2*R, 0.5*H );
-    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.1*R, 0.4*H );
+    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 1.5*R, 0.25*H );
+    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.1*R, 0.05*H );
     
     Conglomerate refRing;
-    refRing.add     ( new VerticalCylinder( 0.0, 0.0, 0.0, 0.5 * 0.08, 0.03 ) );
-    refRing.subtract( new VerticalCylinder( 0.0, 0.0, 0.0, 0.5 * 0.06, 1.0    ) );
+    refRing.add     ( new VerticalCylinder( 0.0, 0.0, 0.0, 1.2*R, 0.02 ) );
+    refRing.subtract( new VerticalCylinder( 0.0, 0.0, 0.0, 0.8*R, 1.0    ) );
 
     gridBuilder->setNumberOfLayers(0,10);
     
     gridBuilder->addGrid( &cylinder1 );
     //gridBuilder->addGrid( &cylinder2 );
-    //gridBuilder->addGrid( &refRing, 1 );
+    gridBuilder->addGrid( &refRing );
 
     if( threeDimensional ) gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     else                   gridBuilder->setPeriodicBoundaryCondition(false, true,  false);
@@ -336,7 +336,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 100000 );
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -398,6 +398,10 @@ int main( int argc, char* argv[])
     std::string simulationName ( "Flame" );
 
     logging::Logger::addStream(&std::cout);
+    
+    std::ofstream logFile( path + simulationName + ".log" );
+    logging::Logger::addStream(&logFile);
+
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
@@ -409,7 +413,7 @@ int main( int argc, char* argv[])
     try
     {
         uint restartIter = INVALID_INDEX;
-        //uint restartIter = 400000;
+        //uint restartIter = 100000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
@@ -428,5 +432,7 @@ int main( int argc, char* argv[])
         *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
     }
 
-   return 0;
+    logFile.close();
+
+    return 0;
 }
