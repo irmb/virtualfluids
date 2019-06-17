@@ -59,8 +59,8 @@
 void multipleLevel(const std::string& configPath)
 {
 	//std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
-	std::ofstream logFile("F:/Basel2019/log/gridGeneratorLog.txt");
-	logging::Logger::addStream(&logFile);
+	//std::ofstream logFile("F:/Basel2019/log/gridGeneratorLog.txt");
+	//logging::Logger::addStream(&logFile);
 
 	logging::Logger::addStream(&std::cout);
 	logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
@@ -87,26 +87,39 @@ void multipleLevel(const std::string& configPath)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifdef _WIN32
+	//Baumbart
+	std::string gridpath = "F:/Basel2019";
+#else
+	//Phoenix
+	std::string gridpath = "/work/marschoe/Basel4GPU";
+#endif // _WIN32
+
+	
+	std::ofstream logFile;
+	logFile.open(gridpath + "/gridGeneratorLog.txt");
 
 	bool useGridGenerator = false;
 
 	if (useGridGenerator) {
 
-		real dx = 1.2;
+		real dx = 1.0;
 		real vx = 0.05;
 
-		//TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
+#ifdef _WIN32
+		//Baumbart
 		TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
+#else
+		//Phoenix
+		TriangularMesh* BaselSTL = TriangularMesh::make(gridpath + "/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
+#endif
+
 
 		gridBuilder->addCoarseGrid(-256.0, -256.0, -8.0,
 			256.0, 256.0, 160.0, dx);
 
 		gridBuilder->addGeometry(BaselSTL);
 
-		//Forcing
-		//gridBuilder->setPeriodicBoundaryCondition(true, true, false);
-		//no Forcing
-		//gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 		//Merged for Wind in X Direction
 		gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
@@ -127,35 +140,38 @@ void multipleLevel(const std::string& configPath)
 		gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
 
 		//////////////////////////////////////////////////////////////////////////
-		//Forcing
-		//gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUni/Basel_Grid");
-		//SimulationFileWriter::write("M:/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
-		//no Forcing
-		//gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUniNoForcing/Basel_Grid");
-		//SimulationFileWriter::write("M:/Basel2019/grids/BaselUniNoForcing/", gridBuilder, FILEFORMAT::BINARY);
 		//Merged for Wind in X Direction
-		gridBuilder->writeGridsToVtk("F:/Basel2019/grids/BaselUniMergedXAllStreets/Basel_Grid");
-		SimulationFileWriter::write("F:/Basel2019/grids/BaselUniMergedXAllStreets/", gridBuilder, FILEFORMAT::BINARY);
+		//gridBuilder->writeGridsToVtk(gridpath + "/grids/BaselUni/Basel_Grid");
+		//SimulationFileWriter::write(gridpath + "/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
+		////////////////////
+		//one street closed
+		gridBuilder->writeGridsToVtk(gridpath + "/grids/BaselUniOSC_1m/Basel_Grid");
+		SimulationFileWriter::write(gridpath + "/grids/BaselUniOSC_1m/", gridBuilder, FILEFORMAT::BINARY);
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		StreetPointFinder finder;
-
+#ifdef _WIN32
+		//Baumbart
 		finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/Streets.txt");
+#else
+		//Phoenix
+		finder.readStreets(gridpath + "/source/git/targets/apps/LBM/Basel/resources/Streets.txt");
+#endif
 
-		finder.writeVTK("F:/Basel2019/results/ExampleStreets.vtk");
+		finder.writeVTK(gridpath + "/results/ExampleStreets.vtk");
 
 		finder.findIndicesLB(gridBuilder->getGrid(0), 7.0);
 
-		//Forcing
-		//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-		//finder.writeSimulationFile("M:/Basel2019/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
-		//no Forcing
-		//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniNoForcing/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-		//finder.writeSimulationFile("M:/Basel2019/grids/BaselUniNoForcing/", 1.0, gridBuilder->getNumberOfLevels(), 0);
-		//Merged for Wind in X Direction
-		finder.writeConnectionVTK("F:/Basel2019/grids/BaselUniMergedXAllStreets/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-		finder.writeSimulationFile("F:/Basel2019/grids/BaselUniMergedXAllStreets/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+		//all Streets
+		//finder.writeConnectionVTK(gridpath + "/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+		//finder.writeSimulationFile(gridpath + "/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+		//finder.writeStreetVectorFile(gridpath + "/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+		////////////////////
+		//one street closed
+		finder.writeConnectionVTK(gridpath + "/grids/BaselUniOSC_1m/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+		finder.writeSimulationFile(gridpath + "/grids/BaselUniOSC_1m/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+		finder.writeStreetVectorFile(gridpath + "/grids/BaselUniOSC_1m/", 1.0, gridBuilder->getNumberOfLevels(), 0);
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		return;
@@ -177,13 +193,6 @@ void multipleLevel(const std::string& configPath)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-	//std::ifstream stream;
-	//stream.open(configPath.c_str(), std::ios::in);
-	//if (stream.fail())
-	//    throw std::runtime_error("can not open config file!");
-
-	//UPtr<input::Input> input = input::Input::makeInput(stream, "config");
 
 	Simulation sim;
 	SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
