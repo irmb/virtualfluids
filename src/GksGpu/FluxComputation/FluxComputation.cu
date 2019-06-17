@@ -183,7 +183,7 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
         //////////////////////////////////////////////////////////////////////////
 
-        if(false)
+        if(parameters.useSmagorinsky)
         {
             real muTurb = getTurbulentViscositySmagorinsky( parameters, facePrim, gradN, gradT1, gradT2 );
 
@@ -201,7 +201,7 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
         //////////////////////////////////////////////////////////////////////////
 
-        if(true){
+        if(parameters.useTemperatureLimiter){
             real k = parameters.mu / parameters.Pr;
 
             real dUdx1 = ( gradN.rhoU  - facePrim.U * gradN.rho  );
@@ -228,10 +228,11 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             // this one works for some time
             real S = parameters.dx * parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
             //k += real(0.00002) / real(0.015625) * S;
-            real T = getT(facePrim);
+            //real T = getT(facePrim);
+
             //if( T > 20 )
-                //k += real(2.0e-3) * S;
-                k += real(1.0e-3) * S;
+                k += parameters.temperatureLimiter * S;
+
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             
             //real S = parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
@@ -253,15 +254,15 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
     //////////////////////////////////////////////////////////////////////////
 
-    if(true){
+    if(parameters.usePassiveScalarLimiter){
     #ifdef USE_PASSIVE_SCALAR
         if( facePrim.S_1 < zero )
         {
-            parameters.D += - real(0.1) * facePrim.S_1;
+            parameters.D += - parameters.passiveScalarLimiter * facePrim.S_1;
         }
         if( facePrim.S_1 > one )
         {
-            parameters.D +=   real(0.1) * ( facePrim.S_1 - one );
+            parameters.D +=   parameters.passiveScalarLimiter * ( facePrim.S_1 - one );
         }
 
     #endif // USE_PASSIVE_SCALAR

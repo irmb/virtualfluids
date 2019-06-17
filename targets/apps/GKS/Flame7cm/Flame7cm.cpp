@@ -94,12 +94,17 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
+    real dh = 4192.0; // kJ / kmol  / T_FAKTOR
+
+    //////////////////////////////////////////////////////////////////////////
+
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
     *logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
     *logging::out << logging::Logger::INFO_HIGH << "cs = " << cs << " m/s\n";
     *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
+    *logging::out << logging::Logger::INFO_HIGH << "Pr = " << Pr << "\n";
 
-    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * rho * M_PI * R * R * 800000.0 / 0.016 / 1000.0 << " kW\n";
+    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * rho * M_PI * R * R * ( dh * 100 ) / 0.016 / 1000.0 << " kW\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -122,12 +127,17 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     parameters.rhoRef    = rho;
 
+    parameters.heatOfReaction = dh;
+
     parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
     //parameters.viscosityModel = ViscosityModel::constant;
 
     parameters.enableReaction = true;
 
-    *logging::out << logging::Logger::INFO_HIGH << "Pr = " << parameters.Pr << "\n";
+    parameters.useReactionLimiter      = true;
+    parameters.useTemperatureLimiter   = true;
+    parameters.usePassiveScalarLimiter = true;
+    parameters.useSmagorinsky          = false;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

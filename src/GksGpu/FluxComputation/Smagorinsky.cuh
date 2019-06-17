@@ -43,7 +43,7 @@ inline __host__ __device__ real getTurbulentViscositySmagorinsky(const Parameter
 
     real S = sqrt( two * ( S11sq + S22sq + S33sq + two * ( S12sq + S13sq + S23sq ) ) - c2o3 * divergence * divergence );
 
-    real Cs = real(0.2);
+    real Cs = parameters.smagorinskyConstant;
 
     return facePrim.rho * Cs*Cs * parameters.dx*parameters.dx * S;
 }

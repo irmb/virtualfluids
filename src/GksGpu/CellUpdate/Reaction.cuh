@@ -56,32 +56,28 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
             ///////////////////////////////////////////////////////////////////////////////
 
             {
-                //const real heatOfReaction = real(802310.0); // kJ / kmol
-                //const real heatOfReaction = real(8000.0); // kJ / kmol  
-                const real heatOfReaction = real(4192.0); // kJ / kmol  // see Xin & Gore et al 2005
-                //const real heatOfReaction = two * real(1000.0); // kJ / kmol
-
-                //////////////////////////////////////////////////////////////////////////
-
-                PrimitiveVariables limitPrim = prim;
-
-                real r = 1.005;
-
-                limitPrim.lambda /= r;
-
-                ConservedVariables limitCons = toConservedVariables(limitPrim, parameters.K);
-
-                real maxHeatRelease = limitCons.rhoE - cons.rhoE;
-
-                real dX_F_max = maxHeatRelease * M / cons.rho / heatOfReaction;
-
                 //////////////////////////////////////////////////////////////////////////
 
                 real dX_F = fminf(X_F, c1o2 * X_O2);
 
                 //////////////////////////////////////////////////////////////////////////
 
-                dX_F = fminf(dX_F_max, dX_F);
+                if( parameters.useReactionLimiter )
+                {
+                    PrimitiveVariables limitPrim = prim;
+
+                    limitPrim.lambda /= parameters.reactionLimiter;
+
+                    ConservedVariables limitCons = toConservedVariables(limitPrim, parameters.K);
+
+                    real maxHeatRelease = limitCons.rhoE - cons.rhoE;
+
+                    real dX_F_max = maxHeatRelease * M / cons.rho / parameters.heatOfReaction;
+
+                    dX_F = fminf(dX_F_max, dX_F);
+                }
+
+                //////////////////////////////////////////////////////////////////////////
 
                 if( dX_F < zero ) dX_F = zero;
 
@@ -89,7 +85,7 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
                 real dn_F = cons.rho * dX_F / M;
 
-                real releasedHeat = dn_F * heatOfReaction;
+                real releasedHeat = dn_F * parameters.heatOfReaction;
 
                 ///////////////////////////////////////////////////////////////////////////////
 
