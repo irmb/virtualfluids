@@ -127,6 +127,13 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
 
     parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
 
+    parameters.useReactionLimiter      = false;
+    parameters.useTemperatureLimiter   = false;
+    parameters.usePassiveScalarLimiter = false;
+    parameters.useSmagorinsky          = true;
+
+    parameters.forcingSchemeIdx = 0;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                M e s h    G e n e r a t i o n
