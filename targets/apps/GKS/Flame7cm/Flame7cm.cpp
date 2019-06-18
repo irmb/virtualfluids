@@ -94,7 +94,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
-    real dh = 4192.0; // kJ / kmol  / T_FAKTOR
+    //real dh = 4192.0; // kJ / kmol  / T_FAKTOR
+    real dh = 8000.0; // kJ / kmol  / T_FAKTOR
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -104,7 +105,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
     *logging::out << logging::Logger::INFO_HIGH << "Pr = " << Pr << "\n";
 
-    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * rho * M_PI * R * R * ( dh * 100 ) / 0.016 / 1000.0 << " kW\n";
+    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * /*rho*/ 0.68 * M_PI * R * R * ( dh * 100 ) / 0.016 / 1000.0 << " kW\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -138,6 +139,13 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     parameters.useTemperatureLimiter   = true;
     parameters.usePassiveScalarLimiter = true;
     parameters.useSmagorinsky          = false;
+
+    parameters.reactionLimiter = 1.005;
+
+    parameters.useSpongeLayer = true;
+    parameters.spongeLayerIdx = 0;
+
+    parameters.forcingSchemeIdx = 2;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -267,7 +275,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> burner = std::make_shared<CreepingMassFlux>( dataBase, rho, U, prim.lambda );
+    SPtr<BoundaryCondition> burner = std::make_shared<CreepingMassFlux>( dataBase, /*rho*/0.68, U, prim.lambda );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
         
@@ -342,7 +350,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, true, 10000 );
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
 
@@ -361,7 +369,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
-            //( iter >= 100 && iter % 10 == 0 ) || 
+            //( iter >= 144820 && iter % 1 == 0 ) || 
             ( iter % 10000 == 0 )
           )
         {
@@ -423,7 +431,7 @@ int main( int argc, char* argv[])
     try
     {
         uint restartIter = INVALID_INDEX;
-        //uint restartIter = 100000;
+        //uint restartIter = 140000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 

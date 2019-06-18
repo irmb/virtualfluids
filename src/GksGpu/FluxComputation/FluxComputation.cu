@@ -116,25 +116,30 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
     //////////////////////////////////////////////////////////////////////////
 
-    //{   // SpongeLayer
-    //    real x = dataBase.faceCenter[ VEC_X(faceIndex, dataBase.numberOfFaces) ];
-    //    real z = dataBase.faceCenter[ VEC_Z(faceIndex, dataBase.numberOfFaces) ];
+    if( parameters.useSpongeLayer )
+    {
+        if( parameters.spongeLayerIdx == 0 )
+        {
+            real x = dataBase.faceCenter[VEC_X(faceIndex, dataBase.numberOfFaces)];
+            real z = dataBase.faceCenter[VEC_Z(faceIndex, dataBase.numberOfFaces)];
 
-    //    real muNew = parameters.mu;
+            real muNew = parameters.mu;
 
-    //    if( fabsf(x) > three )
-    //    {
-    //        muNew += ( fabsf(x) - three ) * ten * parameters.mu;
-    //    }
-    //    if( fabsf(z) > seven )
-    //    {
-    //        muNew += ( fabs(z) - seven ) * ten * parameters.mu;
-    //    }
+            //if (fabsf(x) > three)
+            //{
+            //    muNew += (fabsf(x) - three) * ten * parameters.mu;
+            //}
 
-    //    //parameters.Pr = muNew / parameters.mu;
+            real zStart = real(0.35);
 
-    //    parameters.mu = muNew;
-    //}
+            if (fabsf(z) > zStart)
+            {
+                muNew += (fabs(z) - zStart) * ten * ten * ten * parameters.mu;
+            }
+
+            parameters.mu = muNew;
+        }
+    }
 
     //////////////////////////////////////////////////////////////////////////
 

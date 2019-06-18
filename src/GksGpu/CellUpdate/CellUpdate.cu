@@ -94,7 +94,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if(false)
+    if(parameters.forcingSchemeIdx == 0)
     {
         // consistent source term treatment of Tian et al. (2007)
         cons.rhoU += parameters.force.x * parameters.dt * cons.rho;
@@ -109,7 +109,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = zero;
     }
 
-    if(false)
+    if(parameters.forcingSchemeIdx == 1)
     {
         // forcing only on density variation
         cons.rhoU += parameters.force.x * parameters.dt * ( cons.rho - parameters.rhoRef );
@@ -124,7 +124,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = zero;
     }
 
-    if(true)
+    if(parameters.forcingSchemeIdx == 2)
     {
         PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
         real lambda = prim.lambda;

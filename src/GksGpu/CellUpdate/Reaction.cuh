@@ -29,7 +29,7 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
     {
         CellProperties cellProperties = dataBase.cellProperties[ cellIndex ];
 
-        if( !isCellProperties( cellProperties, CELL_PROPERTIES_FINE_GHOST ) )
+        //if( !isCellProperties( cellProperties, CELL_PROPERTIES_FINE_GHOST ) )
         //if( !isCellProperties( cellProperties, CELL_PROPERTIES_GHOST ) )
         {
             PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
