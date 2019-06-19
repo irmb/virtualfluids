@@ -32,6 +32,8 @@ struct VF_PUBLIC DataBaseStruct
     double* dataUpdate;
 
     real* massFlux;
+
+    int* crashCellIndex;
 };
 
 

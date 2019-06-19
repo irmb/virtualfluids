@@ -94,6 +94,8 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
 
     real* massFlux;
 
+    int* crashCellIndex;
+
     //////////////////////////////////////////////////////////////////////////
     // Host only data
     //////////////////////////////////////////////////////////////////////////
@@ -120,6 +122,8 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     void copyDataDeviceToHost();
 
     void copyDataDeviceToHost( real* dataHost );
+
+    int getCrashCellIndex();
 
     DataBaseStruct toStruct();
 

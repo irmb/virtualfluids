@@ -368,6 +368,17 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
+        int crashCellIndex = dataBase->getCrashCellIndex();
+
+        if( crashCellIndex >= 0 )
+        {
+            *logging::out << logging::Logger::ERROR << "Simulation Crashed at CellIndex = " << crashCellIndex << "\n";
+            dataBase->copyDataDeviceToHost();
+            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
+
+            break;
+        }
+
         if( 
             //( iter >= 144820 && iter % 1 == 0 ) || 
             ( iter % 10000 == 0 )

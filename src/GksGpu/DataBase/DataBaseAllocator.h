@@ -32,6 +32,8 @@ public:
     
     virtual void copyDataDeviceToHost( SPtr<DataBase> dataBase, real* hostData ) = 0;
 
+    virtual int  getCrashCellIndex( SPtr<DataBase> dataBase ) = 0;
+
     //////////////////////////////////////////////////////////////////////////
 
     virtual void freeMemory( BoundaryCondition& boundaryCondition ) = 0;

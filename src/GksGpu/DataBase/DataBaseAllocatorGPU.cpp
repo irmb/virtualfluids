@@ -48,6 +48,8 @@ void DataBaseAllocatorGPU::freeMemory( DataBase& dataBase )
 
     checkCudaErrors( cudaFree ( dataBase.massFlux ) );
 
+    checkCudaErrors( cudaFree ( dataBase.crashCellIndex ) );
+
     dataBase.dataHost.clear();
 }
 
@@ -78,6 +80,8 @@ void DataBaseAllocatorGPU::allocateMemory(SPtr<DataBase> dataBase)
     checkCudaErrors( cudaMalloc ( &dataBase->dataUpdate, sizeof(double) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
 
     checkCudaErrors( cudaMalloc ( &dataBase->massFlux ,  sizeof(real) * LENGTH_VECTOR    * dataBase->numberOfCells ) );
+
+    checkCudaErrors( cudaMalloc ( &dataBase->crashCellIndex,  sizeof(int) ) );
 
     dataBase->dataHost.resize( LENGTH_CELL_DATA * dataBase->numberOfCells );
 }
@@ -194,6 +198,10 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
     checkCudaErrors( cudaMemcpy ( dataBase->coarseToFine,   coarseToFineBuffer.data(),   sizeof(uint) * LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells  , cudaMemcpyHostToDevice ) );
 
     //////////////////////////////////////////////////////////////////////////
+
+    checkCudaErrors( cudaMemset( dataBase->crashCellIndex, -1, sizeof(int) ) );
+
+    //////////////////////////////////////////////////////////////////////////
 }
 
 void DataBaseAllocatorGPU::copyDataHostToDevice(SPtr<DataBase> dataBase)
@@ -204,6 +212,15 @@ void DataBaseAllocatorGPU::copyDataHostToDevice(SPtr<DataBase> dataBase)
 void DataBaseAllocatorGPU::copyDataDeviceToHost(SPtr<DataBase> dataBase,  real* hostData )
 {
     checkCudaErrors( cudaMemcpy( hostData, dataBase->data, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
+}
+
+int DataBaseAllocatorGPU::getCrashCellIndex(SPtr<DataBase> dataBase)
+{
+    int crashCellIndex;
+
+    checkCudaErrors( cudaMemcpy( &crashCellIndex, dataBase->crashCellIndex, sizeof(int), cudaMemcpyDeviceToHost ) );
+
+    return crashCellIndex;
 }
 
 void DataBaseAllocatorGPU::freeMemory(BoundaryCondition& boundaryCondition)

@@ -132,6 +132,11 @@ void DataBase::copyDataDeviceToHost( real* dataHost )
     this->myAllocator->copyDataDeviceToHost( shared_from_this(), dataHost );
 }
 
+int DataBase::getCrashCellIndex()
+{
+    return this->myAllocator->getCrashCellIndex(shared_from_this());
+}
+
 DataBaseStruct DataBase::toStruct()
 {
     DataBaseStruct dataBase;
@@ -164,6 +169,8 @@ DataBaseStruct DataBase::toStruct()
     dataBase.dataUpdate               = this->dataUpdate;
 
     dataBase.massFlux                 = this->massFlux;
+
+    dataBase.crashCellIndex           = this->crashCellIndex;
 
     return dataBase;
 }

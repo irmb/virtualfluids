@@ -22,6 +22,8 @@ public:
     
     virtual void copyDataDeviceToHost( SPtr<DataBase> dataBase, real* dataHost ) override;
 
+    virtual int  getCrashCellIndex( SPtr<DataBase> dataBase ) override;
+
     //////////////////////////////////////////////////////////////////////////
 
     virtual void freeMemory( BoundaryCondition& boundaryCondition ) override;

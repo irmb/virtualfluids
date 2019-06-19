@@ -90,6 +90,15 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         //prim.lambda = testPrim.lambda;
         //cons = toConservedVariables( prim, parameters.K );
         //////////////////////////////////////////////////////////////////////////
+
+        if( isnan(cons.rho ) ||
+            isnan(cons.rhoU) ||
+            isnan(cons.rhoV) ||
+            isnan(cons.rhoW) ||
+            isnan(cons.rhoE) )
+        {
+            *dataBase.crashCellIndex = cellIndex;
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

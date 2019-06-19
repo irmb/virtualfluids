@@ -45,6 +45,8 @@ void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
 
     delete [] dataBase.massFlux;
 
+    delete [] dataBase.crashCellIndex;
+
     dataBase.dataHost.clear();
 }
 
@@ -75,6 +77,8 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<DataBase> dataBase)
     dataBase->dataUpdate = new double [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
 
     dataBase->massFlux   = new real [ LENGTH_VECTOR    * dataBase->numberOfCells ];
+
+    dataBase->crashCellIndex = new int;
 
     dataBase->dataHost.resize( LENGTH_CELL_DATA * dataBase->numberOfCells );
 }
@@ -159,6 +163,10 @@ void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
     //////////////////////////////////////////////////////////////////////////
 
     memcpy ( dataBase->cellProperties, dataBase->cellPropertiesHost.data(), sizeof(CellProperties) * dataBase->numberOfCells );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    *dataBase->crashCellIndex = -1;
 }
 
 void DataBaseAllocatorCPU::copyDataHostToDevice(SPtr<DataBase> dataBase)
@@ -169,6 +177,11 @@ void DataBaseAllocatorCPU::copyDataHostToDevice(SPtr<DataBase> dataBase)
 void DataBaseAllocatorCPU::copyDataDeviceToHost(SPtr<DataBase> dataBase, real* hostData)
 {
     memcpy( hostData, dataBase->data, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells );
+}
+
+int DataBaseAllocatorCPU::getCrashCellIndex(SPtr<DataBase> dataBase)
+{
+    return *dataBase->crashCellIndex;
 }
 
 void DataBaseAllocatorCPU::freeMemory(BoundaryCondition& boundaryCondition)
