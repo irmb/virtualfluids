@@ -18,6 +18,8 @@ struct  VF_PUBLIC Parameters
     real K  = real(2.0);
     real Pr = real(1.0);
     real D  = real(0.01);
+    real D1 = real(0.01);
+    real D2 = real(0.01);
 
     real dt = real(0.01);
     real dx = real(0.01);

@@ -63,7 +63,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 128;
+    uint nx = 256;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -90,7 +90,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
-    real CFL = 0.125;
+    real CFL = 0.06125;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -138,7 +138,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     parameters.useReactionLimiter      = true;
     parameters.useTemperatureLimiter   = true;
     parameters.usePassiveScalarLimiter = true;
-    parameters.useSmagorinsky          = false;
+    parameters.useSmagorinsky          = true;
 
     parameters.reactionLimiter = 1.005;
 
@@ -380,17 +380,17 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
         }
 
         if( 
-            //( iter >= 144820 && iter % 1 == 0 ) || 
+            //( iter >= 39360 && iter % 1 == 0 ) || 
             ( iter % 10000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
-
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
         }
 
-        if( iter % 10000 == 0 )
+        if( iter % 10000 == 0 /*|| iter == 39000*/)
         {
+            dataBase->copyDataDeviceToHost();
             Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ), iter );
         }
 
@@ -442,7 +442,7 @@ int main( int argc, char* argv[])
     try
     {
         uint restartIter = INVALID_INDEX;
-        //uint restartIter = 140000;
+        //uint restartIter = 30000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 

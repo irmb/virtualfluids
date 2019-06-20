@@ -136,7 +136,7 @@ bool CreepingMassFlux::isWall()
 
 bool CreepingMassFlux::isFluxBC()
 {
-    return false;
+    return true;
 }
 
 bool CreepingMassFlux::secondCellsNeeded()

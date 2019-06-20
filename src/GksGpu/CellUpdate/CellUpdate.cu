@@ -82,6 +82,20 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         //PrimitiveVariables testPrim = toPrimitiveVariables(testCons, parameters.K);
         //////////////////////////////////////////////////////////////////////////
 
+        //////////////////////////////////////////////////////////////////////////
+        //if( cellIndex == 415179 )
+        //{
+        //    //printf( "rho   = %14.4e  |  dRho   = %14.4e \n", cons.rho   , (one / cellVolume) * update.rho    );
+        //    //printf( "rhoU  = %14.4e  |  dRhoU  = %14.4e \n", cons.rhoU  , (one / cellVolume) * update.rhoU   );
+        //    //printf( "rhoV  = %14.4e  |  dRhoV  = %14.4e \n", cons.rhoV  , (one / cellVolume) * update.rhoV   );
+        //    //printf( "rhoW  = %14.4e  |  dRhoW  = %14.4e \n", cons.rhoW  , (one / cellVolume) * update.rhoW   );
+        //    printf( "rhoE  = %14.4e  |  dRhoE  = %14.4e \n", cons.rhoE  , (one / cellVolume) * update.rhoE   );
+        //    //printf( "rhoS1 = %14.4e  |  dRhoS1 = %14.4e \n", cons.rhoS_1, (one / cellVolume) * update.rhoS_1 );
+        //    //printf( "rhoS2 = %14.4e  |  dRhoS2 = %14.4e \n", cons.rhoS_2, (one / cellVolume) * update.rhoS_2 );
+        //    printf( "=================================================================\n" );
+        //}
+        //////////////////////////////////////////////////////////////////////////
+
         cons = cons + (one / cellVolume) * update;
         
         //////////////////////////////////////////////////////////////////////////

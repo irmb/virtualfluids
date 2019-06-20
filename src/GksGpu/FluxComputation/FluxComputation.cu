@@ -114,6 +114,9 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
     direction = dataBase.faceOrientation[ faceIndex ];
 
+    parameters.D1 = parameters.D;
+    parameters.D2 = parameters.D;
+
     //////////////////////////////////////////////////////////////////////////
 
     if( parameters.useSpongeLayer )
@@ -259,17 +262,19 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
     //////////////////////////////////////////////////////////////////////////
 
+    parameters.D1 = parameters.D;
+    parameters.D2 = parameters.D;
+
     if(parameters.usePassiveScalarLimiter){
     #ifdef USE_PASSIVE_SCALAR
-        if( facePrim.S_1 < zero )
-        {
-            parameters.D += - parameters.passiveScalarLimiter * facePrim.S_1;
-        }
-        if( facePrim.S_1 > one )
-        {
-            parameters.D +=   parameters.passiveScalarLimiter * ( facePrim.S_1 - one );
-        }
 
+        if( facePrim.S_1 < zero ) parameters.D1 += - parameters.passiveScalarLimiter *   facePrim.S_1;
+        if( facePrim.S_1 > one  ) parameters.D1 +=   parameters.passiveScalarLimiter * ( facePrim.S_1 - one );
+        
+        parameters.D2 = parameters.D1;
+
+        if( facePrim.S_2 < zero ) parameters.D2 += - real(0.1)*parameters.passiveScalarLimiter *   facePrim.S_2;
+        if( facePrim.S_2 > one  ) parameters.D2 +=   real(0.1)*parameters.passiveScalarLimiter * ( facePrim.S_2 - one );
     #endif // USE_PASSIVE_SCALAR
     }
 

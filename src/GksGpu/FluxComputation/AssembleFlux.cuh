@@ -207,6 +207,8 @@ __host__ __device__ inline void computeTimeCoefficients(const PrimitiveVariables
 {
     real r   = parameters.lambdaRef / facePrim.lambda;
 
+    //if( r < zero ) printf( "ERROR: %f/%f\n", parameters.lambdaRef, facePrim.lambda );
+
     real mu;
     if ( parameters.viscosityModel == ViscosityModel::constant ){
         mu = parameters.mu;
@@ -539,19 +541,28 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
 	flux_3.rhoS_2 = at[6] * momentU[0 + 1]
 				  / ( two * facePrim.lambda );
 
-    
-	real tauS = parameters.D * two * facePrim.lambda;
+    //////////////////////////////////////////////////////////////////////////
 
 	real dt = parameters.dt;
-
     real timeCoefficientsScalar [3];
 
-	timeCoefficientsScalar[0] =							dt;
-	timeCoefficientsScalar[1] =					-tauS * dt;
-	timeCoefficientsScalar[2] = c1o2 * dt * dt - tauS * dt;
+    {
+        real tauS = parameters.D1 * two * facePrim.lambda;
+        timeCoefficientsScalar[0] = dt;
+        timeCoefficientsScalar[1] = -tauS * dt;
+        timeCoefficientsScalar[2] = c1o2 * dt * dt - tauS * dt;
 
-    flux.rhoS_1 = flux.rho * facePrim.S_1 + ( timeCoefficientsScalar[1] * flux_2.rhoS_1 + timeCoefficientsScalar[2] * flux_3.rhoS_1 ) * parameters.dx * parameters.dx * facePrim.rho;
-    flux.rhoS_2 = flux.rho * facePrim.S_2 + ( timeCoefficientsScalar[1] * flux_2.rhoS_2 + timeCoefficientsScalar[2] * flux_3.rhoS_2 ) * parameters.dx * parameters.dx * facePrim.rho;
+        flux.rhoS_1 = flux.rho * facePrim.S_1 + ( timeCoefficientsScalar[1] * flux_2.rhoS_1 + timeCoefficientsScalar[2] * flux_3.rhoS_1 ) * parameters.dx * parameters.dx * facePrim.rho;
+    }
+
+    {
+        real tauS = parameters.D2 * two * facePrim.lambda;
+        timeCoefficientsScalar[0] = dt;
+        timeCoefficientsScalar[1] = -tauS * dt;
+        timeCoefficientsScalar[2] = c1o2 * dt * dt - tauS * dt;
+
+        flux.rhoS_2 = flux.rho * facePrim.S_2 + ( timeCoefficientsScalar[1] * flux_2.rhoS_2 + timeCoefficientsScalar[2] * flux_3.rhoS_2 ) * parameters.dx * parameters.dx * facePrim.rho;
+    }
 
 #endif // USE_PASSIVE_SCALAR
 }
