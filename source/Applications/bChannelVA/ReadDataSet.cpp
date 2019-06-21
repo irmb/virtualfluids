@@ -6,14 +6,14 @@
 #include <vtkXMLPPolyDataReader.h>
 #include <vtkXMLStructuredGridReader.h>
 #include <vtkXMLRectilinearGridReader.h>
-#include <vtkXMLHyperOctreeReader.h>
+//#include <vtkXMLHyperOctreeReader.h>
 #include <vtkXMLCompositeDataReader.h>
 #include <vtkXMLStructuredGridReader.h>
 #include <vtkXMLImageDataReader.h>
 #include <vtkDataSetReader.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkRectilinearGrid.h>
-#include <vtkHyperOctree.h>
+//#include <vtkHyperOctree.h>
 #include <vtkImageData.h>
 #include <vtkPolyData.h>
 #include <vtkStructuredGrid.h>
@@ -48,10 +48,10 @@ vtkDataSet* ReadDataSet(std::string fileName)
    {
       return ReadAnXMLFile<vtkXMLImageDataReader> (fileName);
    }
-   else if (extension == ".vto")
-   {
-      return ReadAnXMLFile<vtkXMLHyperOctreeReader> (fileName);
-   }
+   //else if (extension == ".vto")
+   //{
+   //   return ReadAnXMLFile<vtkXMLHyperOctreeReader> (fileName);
+   //}
    else if (extension == ".vtk")
    {
       return ReadAnXMLFile<vtkDataSetReader> (fileName);

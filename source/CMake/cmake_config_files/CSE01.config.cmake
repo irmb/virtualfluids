@@ -15,3 +15,8 @@ IF(${USE_METIS})
   SET(METIS_DEBUG_LIBRARY "d:/metis-5.1.0/build/libmetis/Debug/metis.lib") 
   SET(METIS_RELEASE_LIBRARY "d:/metis-5.1.0/build/libmetis/Release/metis.lib") 
 ENDIF()
+#################################################################################
+#  VTK  
+#################################################################################
+set(VTK_DIR "d:/tools/VTK/build/VTK-8.2.0")
+#################################################################################

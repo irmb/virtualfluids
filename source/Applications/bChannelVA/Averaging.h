@@ -11,41 +11,60 @@ class Averaging
 public:
    void createGeoMatrix(std::string dataNameG);
    void writeGeoMatrixToImageFile(std::string output);
+   void readGeoMatrix(std::string dataNameG);
+   void writeGeoMatrixToBinaryFiles(std::string fname);
+   void readGeoMatrixFromBinaryFiles(std::string fname);
+
    void createMQMatrix(std::string dataNameMQ);
-   void writeMatrixToImageFile(std::string output, std::array<CbArray3D<double>, 4> matrix);
+   void writeMqMatrixToBinaryFiles(std::string fname, int timeStep);
+   void readMqMatrixFromBinaryFiles(std::string fname, int timeStep);
    void writeMqMatrixToImageFile(std::string output);
    void writeVaMatrixToImageFile(std::string output);
    void writeVaSumMatrixToImageFile(std::string output);
    void writeMeanMatrixToImageFile(std::string output);
-   void volumeAveragingWithMPI(double l_real);
-   void readGeoMatrix(std::string dataNameG);
-   void writeGeoMatrixToBinaryFiles(std::string fname);
-   void readGeoMatrixFromBinaryFiles(std::string fname);
-   void writeMqMatrixToBinaryFiles(std::string fname, int timeStep);
-   void readMqMatrixFromBinaryFiles(std::string fname, int timeStep);
+   void writeMatrixToImageFile(std::string output, std::array<CbArray3D<double>, 4> matrix);
+
    void initVolumeAveragingValues();
+   void initVolumeAveragingFluctStressValues();
    void initMeanVolumeAveragingValues();
-   void initFluctuationsofVolumeAveragingValues();
-   void initMeanOfFluctuations();
-   void initStresses();
-   void initSumOfStresses();
-   void initMeanOfStresses();
-   void initPlanarAveragingMQ();
+   void initMeanVolumeAveragingFluctStressValues();
+   void volumeAveragingWithMPI(double l_real);
+   void volumeAveragingFluctStressWithMPI(double l_real);
+   void meanOfVolumeAveragingValues(int numberOfTimeSteps);
    void sumOfVolumeAveragingValues();
    void writeVolumeAveragingValuesToBinaryFiles(std::string ffname, int timeStep);
-   void meanOfVolumeAveragingValues(int numberOfTimeSteps);
-   void writeMeanVolumeAveragingValuesToBinaryFiles(std::string ffname);
-   void fluctuationsOfVolumeAveragingValue();
-   void sumOfFluctuations();
-   void initSumOfFluctuations();
-   void writeFluctuationsToBinaryFiles(std::string fname, int timeStep);
-   void writeStressesToBinaryFiles(std::string fname, int timeStep);
-   void meanOfFluctuations(int numberOfTimeSteps);
-   void sumOfStresses();
-   void meanOfStresses(int numberOfTimeSteps);
-   void planarAveragingMQ();
-   void writeToCSV(std::string path, double origin, double deltax);
    void readVolumeAveragingValuesFromBinaryFiles(std::string fname, int timeStep);
+   void writeMeanVolumeAveragingValuesToBinaryFiles(std::string ffname);
+   void readMeanVolumeAveragingValuesFromBinaryFiles(std::string fname);
+
+   void initFluctuations();
+   void initMeanOfVaFluctuations();
+   void initSumOfVaFluctuations();
+   void fluctuationsStress();
+   void meanOfVaFluctuations(int numberOfTimeSteps);
+   void sumOfVaFluctuations();
+   void writeVaFluctuationsToBinaryFiles(std::string fname, int timeStep);
+   void readVaFluctuationsFromBinaryFiles(std::string fname, int timeStep);
+   void writeMeanVaFluctuationsToBinaryFiles(std::string ffname);
+   void readMeanVaFluctuationsFromBinaryFiles(std::string ffname);
+   void writeMeanOfVaFluctuationsToImageFile(std::string ffname);
+   void writeFluctuationsToImageFile(std::string ffname);
+   void writeVaFluctuationsToImageFile(std::string ffname);
+
+   void initStresses();
+   void initSumOfVaStresses();
+   void initMeanOfVaStresses();
+   void sumOfVaStresses();
+   void meanOfVaStresses(int numberOfTimeSteps);
+   void writeVaStressesToBinaryFiles(std::string fname, int timeStep);
+   void readVaStressesFromBinaryFiles(std::string fname, int timeStep);
+   void writeMeanVaStressesToBinaryFiles(std::string ffname);
+   void readMeanVaStressesFromBinaryFiles(std::string ffname);
+
+   void initPlanarAveraging();
+   void planarAveraging();
+ 
+   void writeToCSV(std::string path, double origin, double deltax);
 
    std::array<int, 3> getDimensions() const { return dimensions; }
    void setDimensions(std::array<int, 3> val) { dimensions = val; }
@@ -75,82 +94,85 @@ private:
    CbArray3D<double> vzMatrix;
    CbArray3D<double> prMatrix;
 
-   CbArray3D<double> sumVaVxMatrix;
-   CbArray3D<double> sumVaVyMatrix;
-   CbArray3D<double> sumVaVzMatrix;
-   CbArray3D<double> sumVaPrMatrix;
-
    CbArray3D<double> vaVxMatrix;
    CbArray3D<double> vaVyMatrix;
    CbArray3D<double> vaVzMatrix;
    CbArray3D<double> vaPrMatrix;
 
-   CbArray3D<double> meanVxMatrix;
-   CbArray3D<double> meanVyMatrix;
-   CbArray3D<double> meanVzMatrix;
-   CbArray3D<double> meanPrMatrix;
+   CbArray3D<double> sumVaVxMatrix;
+   CbArray3D<double> sumVaVyMatrix;
+   CbArray3D<double> sumVaVzMatrix;
+   CbArray3D<double> sumVaPrMatrix;
 
+   CbArray3D<double> meanVaVxMatrix;
+   CbArray3D<double> meanVaVyMatrix;
+   CbArray3D<double> meanVaVzMatrix;
+   CbArray3D<double> meanVaPrMatrix;
+//----------------------------------------
    CbArray3D<double> FlucVxMatrix;
    CbArray3D<double> FlucVyMatrix;
    CbArray3D<double> FlucVzMatrix;
    CbArray3D<double> FlucPrMatrix;
 
+   CbArray3D<double> vaFlucVxMatrix;
+   CbArray3D<double> vaFlucVyMatrix;
+   CbArray3D<double> vaFlucVzMatrix;
+   CbArray3D<double> vaFlucPrMatrix;
+
+   CbArray3D<double> sumVaFlucVx;
+   CbArray3D<double> sumVaFlucVy;
+   CbArray3D<double> sumVaFlucVz;
+   CbArray3D<double> sumVaFlucPr;
+
+   CbArray3D<double> meanVaFlucVx;
+   CbArray3D<double> meanVaFlucVy;
+   CbArray3D<double> meanVaFlucVz;
+   CbArray3D<double> meanVaFlucPr;
+//----------------------------------------
    CbArray3D<double> StressXX;
+   CbArray3D<double> StressYY;
+   CbArray3D<double> StressZZ;
    CbArray3D<double> StressXY;
    CbArray3D<double> StressXZ;
-   CbArray3D<double> StressYX;
-   CbArray3D<double> StressYY;
    CbArray3D<double> StressYZ;
-   CbArray3D<double> StressZX;
-   CbArray3D<double> StressZY;
-   CbArray3D<double> StressZZ;
 
-   CbArray3D<double> sumFlucVx;
-   CbArray3D<double> sumFlucVy;
-   CbArray3D<double> sumFlucVz;
-   CbArray3D<double> sumFlucPr;
+   CbArray3D<double> vaStressXX;
+   CbArray3D<double> vaStressYY;
+   CbArray3D<double> vaStressZZ;
+   CbArray3D<double> vaStressXY;
+   CbArray3D<double> vaStressXZ;
+   CbArray3D<double> vaStressYZ;
 
-   CbArray3D<double> meanFlucVx;
-   CbArray3D<double> meanFlucVy;
-   CbArray3D<double> meanFlucVz;
-   CbArray3D<double> meanFlucPr;
+   CbArray3D<double> SumVaStressXX;
+   CbArray3D<double> SumVaStressYY;
+   CbArray3D<double> SumVaStressZZ;
+   CbArray3D<double> SumVaStressXY;
+   CbArray3D<double> SumVaStressXZ;
+   CbArray3D<double> SumVaStressYZ;
 
-   CbArray3D<double> SumStressXX;
-   CbArray3D<double> SumStressXY;
-   CbArray3D<double> SumStressXZ;
-   CbArray3D<double> SumStressYX;
-   CbArray3D<double> SumStressYY;
-   CbArray3D<double> SumStressYZ;
-   CbArray3D<double> SumStressZX;
-   CbArray3D<double> SumStressZY;
-   CbArray3D<double> SumStressZZ;
-
-   CbArray3D<double> meanStressXX;
-   CbArray3D<double> meanStressXY;
-   CbArray3D<double> meanStressXZ;
-   CbArray3D<double> meanStressYX;
-   CbArray3D<double> meanStressYY;
-   CbArray3D<double> meanStressYZ;
-   CbArray3D<double> meanStressZX;
-   CbArray3D<double> meanStressZY;
-   CbArray3D<double> meanStressZZ;
-
+   CbArray3D<double> meanVaStressXX;
+   CbArray3D<double> meanVaStressYY;
+   CbArray3D<double> meanVaStressZZ;
+   CbArray3D<double> meanVaStressXY;
+   CbArray3D<double> meanVaStressXZ;
+   CbArray3D<double> meanVaStressYZ;
+//----------------------------------------
    std::vector<double> PlanarVx;
    std::vector<double> PlanarVy;
    std::vector<double> PlanarVz;
    std::vector<double> PlanarPr;
 
+   std::vector<double> PlanarFlucVx;
+   std::vector<double> PlanarFlucVy;
+   std::vector<double> PlanarFlucVz;
+   std::vector<double> PlanarFlucPr;
+
    std::vector<double> PlanarStressXX;
+   std::vector<double> PlanarStressYY;
+   std::vector<double> PlanarStressZZ;
    std::vector<double> PlanarStressXY;
    std::vector<double> PlanarStressXZ;
-  
-   std::vector<double> PlanarStressYX;
-   std::vector<double> PlanarStressYY;
    std::vector<double> PlanarStressYZ;
-   
-   std::vector<double> PlanarStressZX;
-   std::vector<double> PlanarStressZY;
-   std::vector<double> PlanarStressZZ;
 };
 
 //////////////////////////////////////////////////////////////////////////
