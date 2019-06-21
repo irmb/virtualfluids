@@ -1007,18 +1007,15 @@ void Averaging::sumOfVaFluctuations()
    vector<double>& vzFluc = vaFlucVzMatrix.getDataVector();
    vector<double>& prFluc = vaFlucPrMatrix.getDataVector();
 
-   vector<double>& SumFlucVx = vaFlucVxMatrix.getDataVector();
-   vector<double>& SumFlucVy = vaFlucVyMatrix.getDataVector();
-   vector<double>& SumFlucVz = vaFlucVzMatrix.getDataVector();
-   vector<double>& SumFlucPr = vaFlucPrMatrix.getDataVector();
+   vector<double>& SumFlucVx = sumVaFlucVx.getDataVector();
+   vector<double>& SumFlucVy = sumVaFlucVy.getDataVector();
+   vector<double>& SumFlucVz = sumVaFlucVz.getDataVector();
+   vector<double>& SumFlucPr = sumVaFlucPr.getDataVector();
 
    int size = (int)vxFluc.size();
 
-   //UBLOG(logINFO, "             size= " + UbSystem::toString(size));
    for (int i = 0; i < size; i++)
    {
-      //if(i == 90000)
-      //   UBLOG(logINFO, "             vxFluc[i]= " + UbSystem::toString(vxFluc[i]));
       SumFlucVx[i] += vxFluc[i];
       SumFlucVy[i] += vyFluc[i];
       SumFlucVz[i] += vzFluc[i];
@@ -1034,13 +1031,12 @@ void Averaging::meanOfVaFluctuations(int numberOfTimeSteps)
    vector<double>& MeanFlucVz = meanVaFlucVz.getDataVector();
    vector<double>& MeanFlucPr = meanVaFlucPr.getDataVector();
 
-   vector<double>& SumFlucVx = vaFlucVxMatrix.getDataVector();
-   vector<double>& SumFlucVy = vaFlucVyMatrix.getDataVector();
-   vector<double>& SumFlucVz = vaFlucVzMatrix.getDataVector();
-   vector<double>& SumFlucPr = vaFlucPrMatrix.getDataVector();
+   vector<double>& SumFlucVx = sumVaFlucVx.getDataVector();
+   vector<double>& SumFlucVy = sumVaFlucVy.getDataVector();
+   vector<double>& SumFlucVz = sumVaFlucVz.getDataVector();
+   vector<double>& SumFlucPr = sumVaFlucPr.getDataVector();
 
    int size = (int)SumFlucVx.size();
-   //UBLOG(logINFO, "             numberOfTimeSteps: " + UbSystem::toString(numberOfTimeSteps));
 
    for (int i = 0; i < size; i++)
    {
