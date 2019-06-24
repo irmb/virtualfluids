@@ -47,7 +47,7 @@ void TestQueueImp::calcTestNumbers()
 			numberOfFailedTest++;
 			numberOfExecutedTest++;
 			break;
-		case error: 
+		case test_error: 
 			numberOfErrorTest++;
 			break;
 		case simulationCrashed:

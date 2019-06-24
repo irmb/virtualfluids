@@ -5,7 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-SimulationResults::SimulationResults(std::shared_ptr<SimulationParameter> simPara)
+SimulationResults::SimulationResults(std::shared_ptr<SimulationParameter> simPara) : ResultsImp(simPara->getL0())
 {
 	this->xNodes = simPara->getLx();
 	this->yNodes = 1;

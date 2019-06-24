@@ -3,29 +3,26 @@
 #include "Simulations/TaylorGreenVortexUx/TaylorGreenVortexUxParameterStruct.h"
 #include "Utilities/Structs/GridInformationStruct.h"
 
+#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
+
 #include <sstream>
 
-std::shared_ptr<SimulationParameter> SimulationParameterTaylorGreenUx::getNewInstance(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
+std::shared_ptr<SimulationParameter> SimulationParameterTaylorGreenUx::getNewInstance(KernelType kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
 {
-	return std::shared_ptr<SimulationParameter>(new SimulationParameterTaylorGreenUx(kernelName, viscosity, tgvParameterStruct, gridInfo));
+	return std::shared_ptr<SimulationParameter>(new SimulationParameterTaylorGreenUx(kernel, viscosity, tgvParameterStruct, gridInfo));
 }
 
-double SimulationParameterTaylorGreenUx::getMaxVelocity()
+SimulationParameterTaylorGreenUx::SimulationParameterTaylorGreenUx(KernelType kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
+:SimulationParameterImp(kernel, viscosity, tgvParameterStruct->basicSimulationParameter, gridInfo)
 {
-	return ux / (lx / l0);
-}
-
-SimulationParameterTaylorGreenUx::SimulationParameterTaylorGreenUx(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
-:SimulationParameterImp(kernelName, viscosity, tgvParameterStruct->basicSimulationParameter, gridInfo)
-{
-	this->ux = tgvParameterStruct->ux;
-	this->amplitude = tgvParameterStruct->amplitude;
-	this->l0 = tgvParameterStruct->l0;
+	this->maxVelocity = tgvParameterStruct->ux / (lx / l0);
 	this->timeStepLength = tgvParameterStruct->basicTimeStepLength * (gridInfo->lx / l0)*(gridInfo->lx / l0);
-	this->rho0 = tgvParameterStruct->rho0;
+
+	std::shared_ptr<KernelMapper> myKernelMapper = KernelMapper::getInstance();
+	std::string kernelName = myKernelMapper->getString(kernel);
 
 	std::ostringstream oss;
-	oss << tgvParameterStruct->vtkFilePath << "/TaylorGreenVortex Ux/Viscosity_" << viscosity << "/ux_" << ux << "_amplitude_" << amplitude << "/" << kernelName << "/grid" << lx;
+	oss << tgvParameterStruct->vtkFilePath << "/TaylorGreenVortex Ux/Viscosity_" << viscosity << "/ux_" << tgvParameterStruct->ux << "_amplitude_" << tgvParameterStruct->amplitude << "/" << kernelName << "/grid" << lx;
 	generateFileDirectionInMyStystem(oss.str());
 	this->filePath = oss.str();
 }

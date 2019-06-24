@@ -6,13 +6,16 @@
 #include <memory>
 #include <vector>
 
+enum DataCombination{ EqualSimulationsForDifferentKernels , EqualKernelSimulationsForDifferentViscosities};
+
 class LogFileData;
 class LogFileDataGroup;
+class LogFileDataAssistantStrategy;
 
 class LogFileDataAssistant
 {
 public:
-	virtual std::vector<std::shared_ptr<LogFileDataGroup> > findEqualSimulationsForDifferentKernels(std::vector<std::shared_ptr<LogFileData> > allLogFileData, BasicSimulation simulation) = 0;
-	virtual std::vector<std::shared_ptr<LogFileDataGroup> > findEqualKernelSimulationsForDifferentViscosities(std::vector<std::shared_ptr<LogFileData> > allLogFileData, BasicSimulation simulation) = 0;
+	virtual std::vector<std::shared_ptr<LogFileDataGroup> > findDataCombination(std::vector<std::shared_ptr<LogFileData> > allLogFileData, std::shared_ptr<LogFileDataAssistantStrategy> strategy, DataCombination combination) = 0;
+
 };
 #endif

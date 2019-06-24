@@ -1,13 +1,16 @@
 #include "VirtualFluidSimulationFactoryImp.h"
 
-#include "Utilities/GridReaderforTesting/GridReaderforTesting.h"
+#include "Utilities/NumericalTestGridReader/NumericalTestGridReader.h"
 #include "Utilities/InitialCondition/InitialCondition.h"
 #include "Utilities/KernelConfiguration/KernelConfiguration.h"
 #include "Utilities/TestSimulation/TestSimulation.h"
 #include "Utilities/SimulationParameter/SimulationParameter.h"
 #include "Utilities/VirtualFluidSimulation/VirtualFluidSimulationImp.h"
 
+#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
+#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 
 std::shared_ptr<VirtualFluidSimulationFactory> VirtualFluidSimulationFactoryImp::getNewInstance()
 {
@@ -104,15 +107,21 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 	para->setMainKernel(simPara->getKernelConfiguration()->getMainKernel());
 	para->setMultiKernelOn(simPara->getKernelConfiguration()->getMultiKernelOn());
 	para->setMultiKernelLevel(simPara->getKernelConfiguration()->getMultiKernelLevel());
-	para->setMultiKernelName(simPara->getKernelConfiguration()->getMultiKernelName());
+	para->setMultiKernel(simPara->getKernelConfiguration()->getMultiKernel());
 
 	return para;
 }
 
-std::shared_ptr<GridReaderforTesting> VirtualFluidSimulationFactoryImp::makeGridReaderForTesting(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para)
+std::shared_ptr<NumericalTestGridReader> VirtualFluidSimulationFactoryImp::makeGridReader(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
-	std::shared_ptr<GridReaderforTesting> grid = GridReaderforTesting::getNewInstance(para, initialCondition);
+	std::shared_ptr<NumericalTestGridReader> grid = NumericalTestGridReader::getNewInstance(para, initialCondition, cudaManager);
 	return grid;
+}
+
+std::shared_ptr<CudaMemoryManager> VirtualFluidSimulationFactoryImp::makeCudaMemoryManager(std::shared_ptr<Parameter> para)
+{
+	std::shared_ptr<CudaMemoryManager> cudaManager = CudaMemoryManager::make(para);
+	return cudaManager;
 }
 
 void VirtualFluidSimulationFactoryImp::initInitialConditions(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para)
@@ -124,6 +133,9 @@ std::vector<std::shared_ptr<VirtualFluidSimulation> > VirtualFluidSimulationFact
 {
 	std::vector<std::shared_ptr<VirtualFluidSimulation> > vfSimulations;
 
+	std::shared_ptr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
+	std::shared_ptr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
+
 	for (int i = 0; i < testSim.size(); i++) {
 		std::shared_ptr<VirtualFluidSimulationImp> vfSim = VirtualFluidSimulationImp::getNewInstance();
 		
@@ -131,13 +143,20 @@ std::vector<std::shared_ptr<VirtualFluidSimulation> > VirtualFluidSimulationFact
 		vfSim->setParameter(para);
 		testSim.at(i)->setParameter(para);
 
+		std::shared_ptr<CudaMemoryManager> cudaManager = makeCudaMemoryManager(para);
+		vfSim->setCudaMemoryManager(cudaManager);
+
 		initInitialConditions(testSim.at(i)->getInitialCondition(), para);
-		std::shared_ptr<GridReaderforTesting> grid = makeGridReaderForTesting(testSim.at(i)->getInitialCondition(), para);
+		std::shared_ptr<NumericalTestGridReader> grid = makeGridReader(testSim.at(i)->getInitialCondition(), para, cudaManager);
 		
 		vfSim->setGridProvider(grid);
 		vfSim->setDataWriter(testSim.at(i)->getDataWriter());
 		vfSim->setNumericalTestSuite(testSim.at(i));
 		vfSim->setTimeTracking(testSim.at(i)->getTimeTracking());
+
+		vfSim->setKernelFactory(kernelFactory);
+		vfSim->setPreProcessorFactory(preProcessorFactory);
+
 		vfSimulations.push_back(vfSim);		
 	}
 

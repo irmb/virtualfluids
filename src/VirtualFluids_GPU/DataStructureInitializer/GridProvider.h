@@ -6,6 +6,8 @@
 #include <memory>
 
 #include <VirtualFluidsDefinitions.h>
+#include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
+
 
 class Parameter;
 class GridBuilder;
@@ -14,6 +16,9 @@ class CudaMemoryManager;
 class VF_PUBLIC GridProvider
 {
 public:
+    static std::shared_ptr<GridProvider> makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
+    static std::shared_ptr<GridProvider> makeGridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
+
 	virtual void allocArrays_CoordNeighborGeo() = 0;
 	virtual void allocArrays_BoundaryValues() = 0;
 	virtual void allocArrays_BoundaryQs() = 0;

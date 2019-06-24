@@ -25,7 +25,7 @@ void NyTest::evaluate()
 		testStatus = checkTestPassed(orderOfAccuracy);
 	}
 	else
-		testStatus = error;
+		testStatus = test_error;
 	
 
 	makeConsoleOutput();

@@ -140,6 +140,11 @@ void LogFileDataImp::setShearWaveLogFileData(std::shared_ptr<ShearWaveLogFileDat
 	this->shearWaveLogFileData = data;
 }
 
+void LogFileDataImp::setBasicSimulation(BasicSimulation sim)
+{
+	this->sim = sim;
+}
+
 LogFileDataImp::~LogFileDataImp()
 {
 }
@@ -277,6 +282,11 @@ std::shared_ptr<TaylorGreenVortexUzLogFileData> LogFileDataImp::getTaylorGreenVo
 std::shared_ptr<ShearWaveLogFileData> LogFileDataImp::getShearWaveLogFileData()
 {
 	return shearWaveLogFileData;
+}
+
+BasicSimulation LogFileDataImp::getBasicSimulation()
+{
+	return sim;
 }
 
 LogFileDataImp::LogFileDataImp()

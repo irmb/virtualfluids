@@ -10,7 +10,7 @@
 
 #include "Core/NonCreatable.h"
 
-#include "global.h"
+#include "GridGenerator/global.h"
 
 class UnstructuredGridBuilder;
 class GridBuilder;

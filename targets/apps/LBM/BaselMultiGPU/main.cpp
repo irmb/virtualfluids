@@ -28,6 +28,7 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
+#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
 #include "global.h"
 
@@ -82,7 +83,8 @@ void multipleLevel(const std::string& configPath)
 	Communicator* comm = Communicator::getInstanz();
 
     SPtr<Parameter> para = Parameter::make(configData, comm);
-    SPtr<GridProvider> gridGenerator;
+	SPtr<CudaMemoryManager> cudaMemManager = CudaMemoryManager::make(para);
+	SPtr<GridProvider> gridGenerator;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,14 +197,16 @@ void multipleLevel(const std::string& configPath)
 
 		return;
 
-        gridGenerator = GridGenerator::make(gridBuilder, para);
+		gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemManager);
+		//gridGenerator = GridGenerator::make(gridBuilder, para);
 
     }
     else
     {
-        gridGenerator = GridReader::make(FileFormat::BINARY, para);
-        //gridGenerator = GridReader::make(FileFormat::ASCII, para);
-    }
+		gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemManager);
+		//gridGenerator = GridReader::make(FileFormat::BINARY, para);
+		//gridGenerator = GridReader::make(FileFormat::ASCII, para);
+	}
 
     logFile2.close();
 
@@ -222,7 +226,7 @@ void multipleLevel(const std::string& configPath)
 
     Simulation sim;
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-    sim.init(para, gridGenerator, fileWriter);
+    sim.init(para, gridGenerator, fileWriter, cudaMemManager);
     sim.run();
 	sim.free();
 }
@@ -244,7 +248,7 @@ int main( int argc, char* argv[])
             }
             catch (const std::exception& e)
             {
-                *logging::out << logging::Logger::ERROR << e.what() << "\n";
+                *logging::out << logging::Logger::LOGGED_ERROR << e.what() << "\n";
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }
             catch (...)
@@ -264,20 +268,20 @@ int main( int argc, char* argv[])
             catch (const std::exception& e)
             {
                 
-                *logging::out << logging::Logger::ERROR << e.what() << "\n";
+                *logging::out << logging::Logger::LOGGED_ERROR << e.what() << "\n";
                 //std::cout << e.what() << std::flush;
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }
             catch (const std::bad_alloc e)
             {
                 
-                *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+                *logging::out << logging::Logger::LOGGED_ERROR << "Bad Alloc:" << e.what() << "\n";
                 //std::cout << e.what() << std::flush;
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }
             catch (...)
             {
-                *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+                *logging::out << logging::Logger::LOGGED_ERROR << "Unknown exception!\n";
                 //std::cout << "unknown exeption" << std::endl;
             }
 

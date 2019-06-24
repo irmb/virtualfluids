@@ -8,7 +8,7 @@ std::shared_ptr<L2NormCalculator> L2CalculatorNormalizeWithBasicData::getInstanc
 	return uniqueInstance;
 }
 
-double L2CalculatorNormalizeWithBasicData::calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz)
+double L2CalculatorNormalizeWithBasicData::calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz, double l0)
 {
 	double counter = calcCounter(basicData, divergentData, level, lx, lz);
 	double denominator = 0.0;

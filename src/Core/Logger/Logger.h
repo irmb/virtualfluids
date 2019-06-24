@@ -18,20 +18,20 @@ namespace logging
     public:
         virtual ~Logger();
 
-        enum Level
-        {
-            INFO_LOW = 3,
-            INFO_INTERMEDIATE = 2,
-            INFO_HIGH = 1,
-            WARNING = 0,
-            ERROR = -1
-        };
+		enum Level
+		{
+			INFO_LOW = 3,
+			INFO_INTERMEDIATE = 2,
+			INFO_HIGH = 1,
+			WARNING = 0,
+			LOGGED_ERROR = -1
+		};
 
         enum TimeStamp
         {
             ENABLE,
             DISABLE
-        };
+		};
 
         static void setStream(std::ostream* stream);
         static void addStream(std::ostream* stream);
@@ -39,7 +39,7 @@ namespace logging
 
         static void timeStamp(TimeStamp timeStamp);
 
-        static void setDebugLevel(const Level &level = Level::ERROR);
+        static void setDebugLevel(const Level &level = Level::LOGGED_ERROR);
         static void enablePrintedRankNumbers(bool printRankNumbers);
 
         virtual Logger& operator<<(const Level &level) = 0;

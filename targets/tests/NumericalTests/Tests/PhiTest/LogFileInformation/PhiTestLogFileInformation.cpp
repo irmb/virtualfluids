@@ -51,6 +51,7 @@ std::string PhiTestLogFileInformation::getOutput()
 			else
 				failMessageOOA << lx.at(2 * j) << "_" << lx.at(2 * j + 1) << "_" << dataToCalc.at(j) << " ";
 		}
+		oss << std::endl;
 			
 	}
 	std::string failPhi = failMessagePhi.str();
@@ -84,8 +85,17 @@ void PhiTestLogFileInformation::fillMyData(std::vector<std::shared_ptr<PhiTest> 
 	dataToCalc.resize(0);
 	status.resize(0);
 	for (int i = 0; i < testGroup.size(); i++) {
+		status.push_back(testGroup.at(i)->getTestStatus());
+		status.push_back(testGroup.at(i)->getTestStatus());
+
 		std::vector<int> myLx = testGroup.at(i)->getLx();
-		std::vector<double> myPhiDiff = testGroup.at(i)->getPhiDiff();
+		std::vector<double> myPhiDiff;
+		if (testGroup.at(i)->getTestStatus() == simulationCrashed || testGroup.at(i)->getTestStatus() == test_error) {
+			for (int i = 0; i < myLx.size(); i++)
+				myPhiDiff.push_back((double)0.0);
+		}
+		else
+			myPhiDiff = testGroup.at(i)->getPhiDiff();
 
 		lx.insert(lx.end(), myLx.begin(), myLx.end());
 		lxForErase.insert(lxForErase.end(), myLx.begin(), myLx.end());
@@ -93,8 +103,7 @@ void PhiTestLogFileInformation::fillMyData(std::vector<std::shared_ptr<PhiTest> 
 		orderOfAccuracy.push_back(testGroup.at(i)->getOrderOfAccuracy());
 		dataToCalc.push_back(testGroup.at(i)->getDataToCalculate());
 		dataToCalc.push_back(testGroup.at(i)->getDataToCalculate());
-		status.push_back(testGroup.at(i)->getTestStatus());
-		status.push_back(testGroup.at(i)->getTestStatus());
+		
 	}
 
 	for (int i = 0; i < lxForErase.size(); i++) 

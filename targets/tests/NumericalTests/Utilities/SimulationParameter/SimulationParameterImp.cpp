@@ -7,10 +7,10 @@
 
 #include <experimental/filesystem>
 
-SimulationParameterImp::SimulationParameterImp(std::string kernelName, double viscosity, std::shared_ptr<BasicSimulationParameterStruct> basicSimPara, std::shared_ptr<GridInformationStruct> gridInfo)
+SimulationParameterImp::SimulationParameterImp(KernelType kernel, double viscosity, std::shared_ptr<BasicSimulationParameterStruct> basicSimPara, std::shared_ptr<GridInformationStruct> gridInfo)
 	: viscosity(viscosity)
 {
-	kernelConfig = KernelConfigurationImp::getNewInstance(kernelName);
+	kernelConfig = KernelConfigurationImp::getNewInstance(kernel);
 
 	devices = basicSimPara->devices;
 	numberOfTimeSteps = basicSimPara->numberOfTimeSteps;
@@ -18,6 +18,7 @@ SimulationParameterImp::SimulationParameterImp(std::string kernelName, double vi
 	gridPath = gridInfo->gridPath;
 	lx = gridInfo->lx;
 	lz = gridInfo->lz;
+	l0 = basicSimPara->l0;
 	maxLevel = gridInfo->maxLevel;
 	numberOfGridLevels = gridInfo->numberOfGridLevels;
 }
@@ -69,9 +70,19 @@ unsigned int SimulationParameterImp::getLz()
 	return lz;
 }
 
+unsigned int SimulationParameterImp::getL0()
+{
+	return l0;
+}
+
 std::vector<unsigned int> SimulationParameterImp::getDevices()
 {
 	return devices;
+}
+
+double SimulationParameterImp::getMaxVelocity()
+{
+	return maxVelocity;
 }
 
 std::shared_ptr<KernelConfiguration> SimulationParameterImp::getKernelConfiguration()

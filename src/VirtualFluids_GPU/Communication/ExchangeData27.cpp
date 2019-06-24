@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // X
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataXGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePreCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -24,7 +24,7 @@ void exchangePreCollDataXGPU27(Parameter* para, Communicator* comm, int level)
 						  para->getParD(level)->evenOrOdd,
 						  para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborXFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborXFsDH(level, i);
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
@@ -72,7 +72,7 @@ void exchangePreCollDataXGPU27(Parameter* para, Communicator* comm, int level)
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		para->cudaCopyProcessNeighborXFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborXFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPreDev27(para->getParD(level)->d0SP.f[0],
 						  para->getParD(level)->recvProcessNeighborX[i].f[0],
@@ -88,7 +88,7 @@ void exchangePreCollDataXGPU27(Parameter* para, Communicator* comm, int level)
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataXGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePostCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -105,7 +105,7 @@ void exchangePostCollDataXGPU27(Parameter* para, Communicator* comm, int level)
 						   para->getParD(level)->evenOrOdd,
 						   para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborXFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborXFsDH(level, i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
@@ -153,7 +153,7 @@ void exchangePostCollDataXGPU27(Parameter* para, Communicator* comm, int level)
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		para->cudaCopyProcessNeighborXFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborXFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPostDev27(para->getParD(level)->d0SP.f[0],
 						   para->getParD(level)->recvProcessNeighborX[i].f[0],
@@ -176,7 +176,7 @@ void exchangePostCollDataXGPU27(Parameter* para, Communicator* comm, int level)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Y
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataYGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePreCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -193,7 +193,7 @@ void exchangePreCollDataYGPU27(Parameter* para, Communicator* comm, int level)
 						  para->getParD(level)->evenOrOdd,
 						  para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborYFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborYFsDH(level, i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
@@ -241,7 +241,7 @@ void exchangePreCollDataYGPU27(Parameter* para, Communicator* comm, int level)
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		para->cudaCopyProcessNeighborYFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborYFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPreDev27(para->getParD(level)->d0SP.f[0],
 						  para->getParD(level)->recvProcessNeighborY[i].f[0],
@@ -257,7 +257,7 @@ void exchangePreCollDataYGPU27(Parameter* para, Communicator* comm, int level)
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataYGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePostCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -274,7 +274,7 @@ void exchangePostCollDataYGPU27(Parameter* para, Communicator* comm, int level)
 						   para->getParD(level)->evenOrOdd,
 						   para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborYFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborYFsDH(level, i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
@@ -322,7 +322,7 @@ void exchangePostCollDataYGPU27(Parameter* para, Communicator* comm, int level)
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		para->cudaCopyProcessNeighborYFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborYFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPostDev27(para->getParD(level)->d0SP.f[0],
 						   para->getParD(level)->recvProcessNeighborY[i].f[0],
@@ -345,7 +345,7 @@ void exchangePostCollDataYGPU27(Parameter* para, Communicator* comm, int level)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Z
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataZGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePreCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -362,7 +362,7 @@ void exchangePreCollDataZGPU27(Parameter* para, Communicator* comm, int level)
 						  para->getParD(level)->evenOrOdd,
 						  para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborZFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborZFsDH(level, i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
@@ -410,7 +410,7 @@ void exchangePreCollDataZGPU27(Parameter* para, Communicator* comm, int level)
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		para->cudaCopyProcessNeighborZFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborZFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPreDev27(para->getParD(level)->d0SP.f[0],
 						  para->getParD(level)->recvProcessNeighborZ[i].f[0],
@@ -426,7 +426,7 @@ void exchangePreCollDataZGPU27(Parameter* para, Communicator* comm, int level)
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataZGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePostCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -443,7 +443,7 @@ void exchangePostCollDataZGPU27(Parameter* para, Communicator* comm, int level)
 						   para->getParD(level)->evenOrOdd,
 						   para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborZFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborZFsDH(level, i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
@@ -491,7 +491,7 @@ void exchangePostCollDataZGPU27(Parameter* para, Communicator* comm, int level)
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		para->cudaCopyProcessNeighborZFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborZFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPostDev27(para->getParD(level)->d0SP.f[0],
 						   para->getParD(level)->recvProcessNeighborZ[i].f[0],
@@ -529,7 +529,7 @@ void exchangePostCollDataZGPU27(Parameter* para, Communicator* comm, int level)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //1D domain decomposition
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePreCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighbors(level, "send")); i++)
 	{
@@ -545,7 +545,7 @@ void exchangePreCollDataGPU27(Parameter* para, Communicator* comm, int level)
 						  para->getParD(level)->evenOrOdd,
 						  para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborFsDH(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		comm->exchngDataGPU(para->getParH(level)->sendProcessNeighbor[i].f[0], 
 							para->getParH(level)->sendProcessNeighbor[i].numberOfFs,
@@ -553,7 +553,7 @@ void exchangePreCollDataGPU27(Parameter* para, Communicator* comm, int level)
 							para->getParH(level)->recvProcessNeighbor[i].numberOfFs,
 							para->getParH(level)->sendProcessNeighbor[i].rankNeighbor);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPreDev27(para->getParD(level)->d0SP.f[0],
 						  para->getParD(level)->recvProcessNeighbor[i].f[0],
@@ -574,7 +574,7 @@ void exchangePreCollDataGPU27(Parameter* para, Communicator* comm, int level)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighbors(level, "send")); i++)
 	{
@@ -590,7 +590,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, int level)
 						   para->getParD(level)->evenOrOdd,
 						   para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborFsDH(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		comm->exchngDataGPU(para->getParH(level)->sendProcessNeighbor[i].f[0], 
 							para->getParH(level)->sendProcessNeighbor[i].numberOfFs,
@@ -598,7 +598,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, int level)
 							para->getParH(level)->recvProcessNeighbor[i].numberOfFs,
 							para->getParH(level)->sendProcessNeighbor[i].rankNeighbor);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPostDev27(para->getParD(level)->d0SP.f[0],
 						   para->getParD(level)->recvProcessNeighbor[i].f[0],
@@ -932,7 +932,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, int level)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // X
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataADXGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePreCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -949,7 +949,7 @@ void exchangePreCollDataADXGPU27(Parameter* para, Communicator* comm, int level)
 						  para->getParD(level)->evenOrOdd,
 						  para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborADXFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborADXFsDH(level, i);
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
@@ -997,7 +997,7 @@ void exchangePreCollDataADXGPU27(Parameter* para, Communicator* comm, int level)
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		para->cudaCopyProcessNeighborADXFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborADXFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPreDev27(para->getParD(level)->d27.f[0],
 						  para->getParD(level)->recvProcessNeighborADX[i].f[0],
@@ -1013,7 +1013,7 @@ void exchangePreCollDataADXGPU27(Parameter* para, Communicator* comm, int level)
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataADXGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePostCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1030,7 +1030,7 @@ void exchangePostCollDataADXGPU27(Parameter* para, Communicator* comm, int level
 						   para->getParD(level)->evenOrOdd,
 						   para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborADXFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborADXFsDH(level, i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
@@ -1078,7 +1078,7 @@ void exchangePostCollDataADXGPU27(Parameter* para, Communicator* comm, int level
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		para->cudaCopyProcessNeighborADXFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborADXFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPostDev27(para->getParD(level)->d27.f[0],
 						   para->getParD(level)->recvProcessNeighborADX[i].f[0],
@@ -1101,7 +1101,7 @@ void exchangePostCollDataADXGPU27(Parameter* para, Communicator* comm, int level
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Y
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataADYGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePreCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1118,7 +1118,7 @@ void exchangePreCollDataADYGPU27(Parameter* para, Communicator* comm, int level)
 						  para->getParD(level)->evenOrOdd,
 						  para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborADYFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborADYFsDH(level, i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
@@ -1166,7 +1166,7 @@ void exchangePreCollDataADYGPU27(Parameter* para, Communicator* comm, int level)
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		para->cudaCopyProcessNeighborADYFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborADYFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPreDev27(para->getParD(level)->d27.f[0],
 						  para->getParD(level)->recvProcessNeighborADY[i].f[0],
@@ -1182,7 +1182,7 @@ void exchangePreCollDataADYGPU27(Parameter* para, Communicator* comm, int level)
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataADYGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePostCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1199,7 +1199,7 @@ void exchangePostCollDataADYGPU27(Parameter* para, Communicator* comm, int level
 						   para->getParD(level)->evenOrOdd,
 						   para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborADYFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborADYFsDH(level, i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
@@ -1247,7 +1247,7 @@ void exchangePostCollDataADYGPU27(Parameter* para, Communicator* comm, int level
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		para->cudaCopyProcessNeighborADYFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborADYFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPostDev27(para->getParD(level)->d27.f[0],
 						   para->getParD(level)->recvProcessNeighborADY[i].f[0],
@@ -1270,7 +1270,7 @@ void exchangePostCollDataADYGPU27(Parameter* para, Communicator* comm, int level
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Z
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataADZGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePreCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1287,7 +1287,7 @@ void exchangePreCollDataADZGPU27(Parameter* para, Communicator* comm, int level)
 						  para->getParD(level)->evenOrOdd,
 						  para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborADZFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborADZFsDH(level, i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
@@ -1335,7 +1335,7 @@ void exchangePreCollDataADZGPU27(Parameter* para, Communicator* comm, int level)
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		para->cudaCopyProcessNeighborADZFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborADZFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPreDev27(para->getParD(level)->d27.f[0],
 						  para->getParD(level)->recvProcessNeighborADZ[i].f[0],
@@ -1351,7 +1351,7 @@ void exchangePreCollDataADZGPU27(Parameter* para, Communicator* comm, int level)
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataADZGPU27(Parameter* para, Communicator* comm, int level)
+void exchangePostCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1368,7 +1368,7 @@ void exchangePostCollDataADZGPU27(Parameter* para, Communicator* comm, int level
 						   para->getParD(level)->evenOrOdd,
 						   para->getParD(level)->numberofthreads);
 		//////////////////////////////////////////////////////////////////////////
-		para->cudaCopyProcessNeighborADZFsDH(level, i);
+		cudaManager->cudaCopyProcessNeighborADZFsDH(level, i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
@@ -1416,7 +1416,7 @@ void exchangePostCollDataADZGPU27(Parameter* para, Communicator* comm, int level
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		para->cudaCopyProcessNeighborADZFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborADZFsHD(level, i);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPostDev27(para->getParD(level)->d27.f[0],
 						   para->getParD(level)->recvProcessNeighborADZ[i].f[0],

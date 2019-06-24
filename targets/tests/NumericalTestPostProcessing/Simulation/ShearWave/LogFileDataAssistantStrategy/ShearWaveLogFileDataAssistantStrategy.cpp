@@ -13,7 +13,7 @@ std::string ShearWaveLogFileDataAssistantStrategy::getSimulationName()
 	return simName;
 }
 
-bool ShearWaveLogFileDataAssistantStrategy::checkSimulationParamerer(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2)
+bool ShearWaveLogFileDataAssistantStrategy::checkSimulationParameter(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2)
 {
 	if (!equalDouble(logFileData1->getShearWaveLogFileData()->getUx().at(0), logFileData2->getShearWaveLogFileData()->getUx().at(0)))
 		return false;

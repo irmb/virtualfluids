@@ -7,13 +7,18 @@
 #include "Utilities/LogFileInformation/LogFileTimeInformation/LogFileTimeInformation.h"
 #include "Utilities/LogFileInformation/TestLogFileInformation/TestLogFileInformation.h"
 
+#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
+
 #include <helper_functions.h>
 #include <iomanip>
 #include <ctime>
 #include <experimental/filesystem>
 
-LogFileWriterImp::LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity) : kernelName(kernelName), viscosity(viscosity)
+LogFileWriterImp::LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, KernelType kernel, double viscosity) : viscosity(viscosity)
 {
+	std::shared_ptr<KernelMapper> myKernelMapper = KernelMapper::getInstance();
+	kernelName = myKernelMapper->getString(kernel);
+
 	logFileInfo.push_back(logFileHead);
 	logFileInfo.push_back(basicSimInfo);
 	this->simLogInfo = simLogInfo;
@@ -24,9 +29,9 @@ LogFileWriterImp::LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std
 		logFileInfo.push_back(testLogFiles.at(i));
 }
 
-std::shared_ptr<LogFileWriterImp> LogFileWriterImp::getNewInstance(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity)
+std::shared_ptr<LogFileWriterImp> LogFileWriterImp::getNewInstance(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, KernelType kernel, double viscosity)
 {
-	return std::shared_ptr<LogFileWriterImp>(new LogFileWriterImp(logFileHead, basicSimInfo, basicTestInfo, testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity));
+	return std::shared_ptr<LogFileWriterImp>(new LogFileWriterImp(logFileHead, basicSimInfo, basicTestInfo, testLogFiles, logFileTimeInfo, simLogInfo, kernel, viscosity));
 }
 
 void LogFileWriterImp::writeLogFile(std::string basicFilePath)
@@ -34,10 +39,10 @@ void LogFileWriterImp::writeLogFile(std::string basicFilePath)
 	logFilePath = buildFilePath(basicFilePath);
 	logFile.open(logFilePath, std::ios::out);
 
-	bool open = logFile.is_open();
-
 	for (int i = 0; i < logFileInfo.size(); i++)
 		logFile << logFileInfo.at(i)->getOutput();	
+
+	logFile.close();
 }
 
 
@@ -53,7 +58,7 @@ std::string LogFileWriterImp::calcDateAndTime()
 std::string LogFileWriterImp::buildFilePath(std::string basicFilePath)
 {
 	std::ostringstream filePath;
-	filePath << basicFilePath << simLogInfo->getFilePathExtensionOne() << "viscosity_" << viscosity << "/" << simLogInfo->getFilePathExtensionTwo() << kernelName;
+	filePath << basicFilePath << simLogInfo->getFilePathExtension().at(0) << "/viscosity_" << viscosity << "/" << simLogInfo->getFilePathExtension().at(1) << "/" << kernelName;
 	
 	std::experimental::filesystem::path dir(filePath.str());
 	if (!(std::experimental::filesystem::exists(dir)))

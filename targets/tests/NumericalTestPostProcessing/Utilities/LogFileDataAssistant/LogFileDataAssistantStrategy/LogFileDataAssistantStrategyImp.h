@@ -7,7 +7,7 @@ class LogFileDataAssistantStrategyImp : public LogFileDataAssistantStrategy
 {
 public:
 	virtual std::string getSimulationName() = 0;
-	virtual bool checkSimulationParamerer(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2) = 0;
+	virtual bool checkSimulationParameter(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2) = 0;
 
 protected:
 	bool equalDouble(double num1, double num2);

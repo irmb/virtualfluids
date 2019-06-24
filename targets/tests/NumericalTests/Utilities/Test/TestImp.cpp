@@ -6,18 +6,33 @@
 
 void TestImp::update()
 {
-	if (testStatus != simulationCrashed) {
-		for (int i = 0; i < simulations.size(); i++){
-			if (simulationRun.at(i) == false){
-				if (simulations.at(i)->getSimulationRun()){
-					simulationRun.at(i) = true;
-					postProStrategies.at(i)->evaluate();
-				}
+	for (int i = 0; i < simulations.size(); i++){
+		if (simulationRun.at(i) == false){
+			switch (simulations.at(i)->getSimulationStatus())
+			{
+			case executed: 
+				simulationRun.at(i) = true;
+				postProStrategies.at(i)->evaluate();
+				break;
+			case crashed:
+				simulationRun.at(i) = true;
+				testStatus = simulationCrashed;
+				break;
+			case initialized:
+				simulationRun.at(i) = false;
+				break;
+			default:
+				break;
 			}
 		}
-		if (CheckAllSimulationRun())
+	}
+	if (CheckAllSimulationRun()) {
+		if (testStatus != simulationCrashed)
 			evaluate();
-	}			
+		else
+			makeConsoleOutput();
+	}
+	
 }
 
 void TestImp::addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<PostProcessingStrategy> postProStrategy)
@@ -26,17 +41,6 @@ void TestImp::addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::s
 	simInfos.push_back(simInfo);
 	postProStrategies.push_back(postProStrategy);
 	simulationRun.push_back(false);
-}
-
-void TestImp::setSimulationCrashed()
-{
-	testStatus = simulationCrashed;
-	for (int i = 0; i < simulations.size(); i++)
-		if (simulationRun.at(i) == false)
-			if (simulations.at(i)->getSimulationRun())
-				simulationRun.at(i) = true;
-	if (CheckAllSimulationRun())
-		makeConsoleOutput();
 }
 
 TestStatus TestImp::getTestStatus()
@@ -52,7 +56,7 @@ void TestImp::makeConsoleOutput()
 		break;
 	case failed: colorOutput->makeTestOutput(buildTestOutput(), testStatus);
 		break;
-	case error: colorOutput->makeTestOutput(buildErrorTestOutput(), testStatus);
+	case test_error: colorOutput->makeTestOutput(buildErrorTestOutput(), testStatus);
 		break;
 	case simulationCrashed: colorOutput->makeTestOutput(buildSimulationFailedTestOutput(), testStatus);
 		break;

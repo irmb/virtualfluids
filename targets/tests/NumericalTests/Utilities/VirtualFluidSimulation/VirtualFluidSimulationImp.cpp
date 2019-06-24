@@ -10,12 +10,12 @@
 void VirtualFluidSimulationImp::run()
 {
 	numericalTestSuite->makeSimulationHeadOutput();
-	timeTracking->setSimulationStartTime();
-
 	Simulation sim;
-	sim.init(para, grid, dataWriter);
-	sim.run();
+	sim.setFactories(kernelFactory, preProcessorFactory);
+	sim.init(para, grid, dataWriter, cudaManager);
 
+	timeTracking->setSimulationStartTime();
+	sim.run();
 	timeTracking->setSimulationEndTime();
 
 	numericalTestSuite->startPostProcessing();
@@ -26,6 +26,11 @@ void VirtualFluidSimulationImp::run()
 void VirtualFluidSimulationImp::setParameter(std::shared_ptr<Parameter> para)
 {
 	this->para = para;
+}
+
+void VirtualFluidSimulationImp::setCudaMemoryManager(std::shared_ptr<CudaMemoryManager> cudaManager)
+{
+	this->cudaManager = cudaManager;
 }
 
 void VirtualFluidSimulationImp::setGridProvider(std::shared_ptr<GridProvider> grid)
@@ -51,4 +56,14 @@ void VirtualFluidSimulationImp::setNumericalTestSuite(std::shared_ptr<NumericalT
 void VirtualFluidSimulationImp::setTimeTracking(std::shared_ptr<TimeTracking> timeTracking)
 {
 	this->timeTracking = timeTracking;
+}
+
+void VirtualFluidSimulationImp::setKernelFactory(std::shared_ptr<KernelFactory> kernelFactory)
+{
+	this->kernelFactory = kernelFactory;
+}
+
+void VirtualFluidSimulationImp::setPreProcessorFactory(std::shared_ptr<PreProcessorFactory> preProcessorFactory)
+{
+	this->preProcessorFactory = preProcessorFactory;
 }

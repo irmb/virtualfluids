@@ -12,6 +12,7 @@ public:
 
 	std::vector<double> getBasicGridLengths();
 	std::string getBasicKernel();
+	std::string getDivergentKernel();
 	std::string getDataToCalculate();
 	int getTimeStep();
 	std::vector<double> getL2NormForBasicKernel();
@@ -21,6 +22,7 @@ public:
 
 	void setBasicGridLengths(std::vector<double> basicGridLengths);
 	void setBasicKernel(std::string basicKernel);
+	void setDivergentKernel(std::string divergentKernel);
 	void setDataToCalculate(std::string dataToCalc);
 	void setTimeStep(int timeStep);
 	void setL2NormForBasicKernel(std::vector<double> l2Norm);
@@ -35,6 +37,7 @@ private:
 
 	std::vector<double> basicGridLengths;
 	std::string basicKernel;
+	std::string divergentKernel;
 	std::string dataToCalc;
 	int timeStep;
 	std::vector<double> l2NormForBasicKernel;

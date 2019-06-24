@@ -27,7 +27,7 @@ void ShearWaveAnalyticalResults::calc(std::shared_ptr<SimulationResults> simResu
 }
 
 ShearWaveAnalyticalResults::ShearWaveAnalyticalResults(double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct)
-	: AnalyticalResultsImp()
+	: AnalyticalResultsImp(simParaStruct->l0)
 {
 	this->viscosity = viscosity;
 	this->u0 = simParaStruct->ux;

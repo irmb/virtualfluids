@@ -4,6 +4,7 @@
 #include "SimulationParameter.h"
 
 #include "LBM/LB.h"
+#include "VirtualFluids_GPU/Kernel//Utilities/KernelType.h"
 
 struct GridInformationStruct;
 struct BasicSimulationParameterStruct;
@@ -19,26 +20,29 @@ public:
 	unsigned int getTimeStepLength();
 	unsigned int getLx();
 	unsigned int getLz();
+	unsigned int getL0();
 	std::vector<unsigned int> getDevices();
+	double getMaxVelocity();
 	
 	std::shared_ptr<KernelConfiguration> getKernelConfiguration();
 
 protected:
 	SimulationParameterImp() {};
-	SimulationParameterImp(std::string kernelName, double viscosity, std::shared_ptr<BasicSimulationParameterStruct> basicSimPara, std::shared_ptr<GridInformationStruct> gridInfo);
+	SimulationParameterImp(KernelType kernelName, double viscosity, std::shared_ptr<BasicSimulationParameterStruct> basicSimPara, std::shared_ptr<GridInformationStruct> gridInfo);
 
 	void generateFileDirectionInMyStystem(std::string filePath);
 
-	real viscosity;
+	unsigned int timeStepLength;
+	std::string filePath;
+	double maxVelocity;
 	real lx, l0, lz;
+
+private:
+	real viscosity;
 	unsigned int numberOfTimeSteps, basisTimeStepLength;
 	std::string gridPath;
-	std::string filePath;
 	std::vector<unsigned int> devices;
-
 	unsigned int maxLevel, numberOfGridLevels;
-	unsigned int timeStepLength;
-
 	std::shared_ptr<KernelConfiguration> kernelConfig;
 };
 

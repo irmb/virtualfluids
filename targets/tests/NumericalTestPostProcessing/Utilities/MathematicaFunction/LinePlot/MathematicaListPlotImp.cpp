@@ -23,7 +23,7 @@ MathematicaListPlotImp::MathematicaListPlotImp(std::vector<std::shared_ptr<Mathe
 		else
 			mathematicaFunction << pointList.at(i)->getListName() << "\"}";
 	}
-	mathematicaFunction << ", AxesLabel -> {" << xAxes << ", " << yAxes << "}, Joined -> True, PlotMarkers->Automatic, PlotStyle -> Dashed]";
+	mathematicaFunction << ", AxesLabel -> {\"" << xAxes << "\", \"" << yAxes << "\"}, Joined -> True, PlotMarkers->Automatic, PlotStyle -> Dashed]";
 }
 
 MathematicaListPlotImp::MathematicaListPlotImp()

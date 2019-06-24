@@ -108,7 +108,7 @@ void ColorConsoleOutputImp::printTestEnd(TestStatus status)
 		break;
 	case failed: testing::internal::ColoredPrintf(color, "[     FAILED]");
 		break;
-	case error: testing::internal::ColoredPrintf(color, "[      ERROR]");
+	case test_error: testing::internal::ColoredPrintf(color, "[      ERROR]");
 		break;
 	case simulationCrashed: testing::internal::ColoredPrintf(color, "[Sim crashed]");
 		break;
@@ -143,7 +143,7 @@ void ColorConsoleOutputImp::setColor(TestStatus status)
 		break;
 	case failed: color = testing::internal::COLOR_RED;
 		break;
-	case error: color = testing::internal::COLOR_YELLOW;
+	case test_error: color = testing::internal::COLOR_YELLOW;
 		break;
 	case simulationCrashed: color = testing::internal::COLOR_YELLOW;
 		break;

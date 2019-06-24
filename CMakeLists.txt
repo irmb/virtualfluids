@@ -44,6 +44,8 @@ include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FileUtilities.cmake)
 #############################################################
 ###                   PROJECT SETTINGS                    ###
 #############################################################
+set(CUDA_TOOLKIT_ROOT_DIR "C:/Program Files/NVIDIA GPU Computing Toolkit")
+set(CUDACXX "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/bin/nvcc.exe")
 
 project(VirtualFluidsGpuCodes)
 
@@ -80,7 +82,7 @@ option(BUILD_SHARED_LIBS        "Build shared libraries"  ON )
 option(HULC.BUILD_VF_GPU        "Build VirtualFluids GPU" ON )
 option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" OFF)
 option(HULC.BUILD_JSONCPP       "Builds json cpp "        ON )
-option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     OFF )
+option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     ON )
 
 option(VF_DOUBLE_ACCURACY       "Build shared libraries"  OFF )
 

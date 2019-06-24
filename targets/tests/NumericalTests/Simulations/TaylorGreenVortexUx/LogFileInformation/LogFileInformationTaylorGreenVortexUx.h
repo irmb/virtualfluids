@@ -16,8 +16,8 @@ public:
 	static std::shared_ptr<LogFileInformationTaylorGreenUx> getNewInstance(std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
 	
 	std::string getOutput();
-	std::string getFilePathExtensionOne();
-	std::string getFilePathExtensionTwo();
+	std::vector<std::string> getFilePathExtension();
+	
 
 private:
 	LogFileInformationTaylorGreenUx() {};

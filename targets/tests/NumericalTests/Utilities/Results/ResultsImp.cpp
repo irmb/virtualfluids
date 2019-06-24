@@ -82,6 +82,11 @@ std::vector<std::vector<double> > ResultsImp::getRho()
 	return rho;
 }
 
+int ResultsImp::getL0()
+{
+	return l0;
+}
+
 bool ResultsImp::checkYourData()
 {
 	std::cout << "checking Simulation Results Data...";
@@ -122,4 +127,14 @@ bool ResultsImp::checkYourData()
 	std::cout << "done." << std::endl;
 	std::cout << "Simulation Result Data contains no failure data." << std::endl;
 	return true;
+}
+
+ResultsImp::ResultsImp(int l0)
+{
+	this->l0 = l0;
+}
+
+ResultsImp::ResultsImp()
+{
+
 }

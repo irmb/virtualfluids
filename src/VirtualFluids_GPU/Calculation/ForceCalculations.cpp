@@ -7,7 +7,9 @@
 #include <stdio.h>
 #include <fstream>
 #include <sstream>
-#include "Core/StringUtilities/StringUtil.h"
+#include "utilities/StringUtil.hpp"
+#include "GPU/CudaMemoryManager.h"
+
 using namespace std;
 //////////////////////////////////////////////////////////////////////////
 
@@ -39,7 +41,7 @@ ForceCalculations::~ForceCalculations()
 
 
 
-void ForceCalculations::calcPIDControllerForForce(Parameter* para)
+void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryManager* cudaManager)
  {
 	 //////////////////////////////////////////////////////////////////////////
 	 double tempVeloX = 0.0, tempVeloY = 0.0, tempVeloZ = 0.0;
@@ -69,7 +71,7 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para)
 							 para->getParD(lev)->evenOrOdd);
 			 getLastCudaError("CalcMacSP27 execution failed");
 			 //////////////////////////////////////////////////////////////////
-			 para->cudaCopyPrint(lev);
+			 cudaManager->cudaCopyPrint(lev);
 //			 para->cudaCopyForceVelo(i,numberOfElements);
 			 //////////////////////////////////////////////////////////////////
 			 for (int j = 0; j < numberOfElements; j++)
@@ -114,7 +116,7 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para)
 	 para->getForcesHost()[1] = (real)(para->getForcesHost()[1] + y) * (real)0.0;
 	 para->getForcesHost()[2] = (real)(para->getForcesHost()[2] + y) * (real)0.0;
 	 //////////////////////////////////////////////////////////////////////////
-	 para->cudaCopyForcingToDevice();
+	 cudaManager->cudaCopyForcingToDevice();
 	 //////////////////////////////////////////////////////////////////////////
  }
 

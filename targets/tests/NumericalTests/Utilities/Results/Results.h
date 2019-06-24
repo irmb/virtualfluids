@@ -22,5 +22,7 @@ public:
 
 	virtual bool checkYourData() = 0;
 
+	virtual int getL0() = 0;
+
 };
 #endif

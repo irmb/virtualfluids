@@ -12,7 +12,7 @@ public:
 	void calc(std::shared_ptr<SimulationResults> simResults);
 
 private:
-	ShearWaveAnalyticalResults() {};
+	ShearWaveAnalyticalResults();
 	ShearWaveAnalyticalResults(double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct);
 
 	double viscosity, rho0;

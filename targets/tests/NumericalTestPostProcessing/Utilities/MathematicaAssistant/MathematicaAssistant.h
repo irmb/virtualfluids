@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+enum Assistant{Phi, Ny, L2Norm, L2NormBetweenKernels, Time };
+
 class LogFileDataGroup;
 class MathematicaFile;
 

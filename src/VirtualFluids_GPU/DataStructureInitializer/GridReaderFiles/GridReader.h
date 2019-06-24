@@ -1,42 +1,33 @@
 #ifndef GridReaderFiles_H
 #define GridReaderFiles_H
 
-//#include <VirtualFluidsDefinitions.h>
-#include "LBM/LB.h"
+#include <VirtualFluidsDefinitions.h>
+
 #include "../GridProvider.h"
 
 #include <vector>
 #include <string>
 #include <memory>
 
+#include "LBM/LB.h"
 
 class Parameter;
 class BoundaryValues;
 class BoundaryQs;
 class CoordNeighborGeoV;
 
-enum class FileFormat
-{
-    BINARY, ASCII
-};
-
-
 class VF_PUBLIC GridReader
 	: public GridProvider
 {
 private:
 	bool binaer;
-    FileFormat format;
 	std::vector<std::string> channelDirections;
 	std::vector<std::string> channelBoundaryConditions;
 	std::shared_ptr<CoordNeighborGeoV> neighX, neighY, neighZ, neighWSB;
 	std::vector<std::shared_ptr<BoundaryValues> > BC_Values;
 
 public:
-    static std::shared_ptr<GridProvider> make(FileFormat format, std::shared_ptr<Parameter> para);
-
-    GridReader(bool binaer, std::shared_ptr<Parameter> para);
-    GridReader(FileFormat format, std::shared_ptr<Parameter> para);
+	GridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
     ~GridReader();
 	void allocArrays_CoordNeighborGeo()override;
 	void allocArrays_BoundaryValues()override;
@@ -47,6 +38,7 @@ public:
 	void setChannelBoundaryCondition();
 
 	void allocArrays_BoundaryQs()override;
+	bool getBinaer();
 	void setDimensions();
 	void setBoundingBox();
 	void initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned int> > > periodV, std::vector<std::vector<unsigned int> > periodIndex, std::string way);
@@ -76,7 +68,7 @@ private:
 	void printQSize(std::string bc, std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 	void setSizeNoSlip(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 	void setSizeGeoQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
-	void setQ27Size(QforBoundaryConditions& Q, real* QQ, unsigned int sizeQ) const;
+	void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
 	bool hasQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 public:
     void initalGridInformations() override;

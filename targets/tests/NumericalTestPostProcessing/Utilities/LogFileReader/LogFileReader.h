@@ -21,6 +21,7 @@ private:
 
 	std::vector<std::string> getAllFilesInDir(const std::string &dirPath, const std::string &fileExtension);
 	std::string removeCharsFromString(std::string str, char* charsToRemove);
+	bool checkEqualDouble(double one, double two);
 
 };
 

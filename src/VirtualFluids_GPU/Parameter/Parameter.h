@@ -24,6 +24,8 @@
 #include "Core/PointerDefinitions.h"
 #include "VirtualFluidsDefinitions.h"
 
+#include "Kernel/Utilities/KernelType.h"
+
 class ConfigData;
 class Communicator;
 
@@ -89,6 +91,9 @@ struct ParameterStruct{
 	real *vx,    *vy,    *vz,    *rho;
 	real *vx_SP, *vy_SP, *vz_SP, *rho_SP, *press_SP;
 	real vis, omega;
+
+	//derivations for iso test
+	real *dxxUx, *dyyUy, *dzzUz;
 
 	//median-macro-values/////
 	real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
@@ -602,6 +607,7 @@ public:
 	void setTEnd(unsigned int tend);
 	void setTOut(unsigned int tout);
 	void setTStartOut(unsigned int tStartOut);
+	void setTimestepOfCoarseLevel(unsigned int timestep);
 	void setCalcMedian(bool calcMedian);
 	void setTimeCalcMedStart(int CalcMedStart);
 	void setTimeCalcMedEnd(int CalcMedEnd);
@@ -766,10 +772,12 @@ public:
 	void setOutflowBoundaryNormalY(std::string outflowNormalY);
 	void setOutflowBoundaryNormalZ(std::string outflowNormalZ);
 	//Kernel
-	void setMainKernel(std::string kernelName);
+	void setMainKernel(KernelType kernel);
 	void setMultiKernelOn(bool isOn);
 	void setMultiKernelLevel(std::vector< int> kernelLevel);
-	void setMultiKernelName(std::vector< std::string> kernelName);
+	void setMultiKernel(std::vector< KernelType> kernel);
+
+	void setADKernel(ADKernelType adKernel);
 
 	//getter
 	double* getForcesDouble();
@@ -883,6 +891,7 @@ public:
 	unsigned int getTOut();
 	unsigned int getTStartOut();
 	unsigned int getTimestepForMP();
+	unsigned int getTimestepOfCoarseLevel();
 	real getDiffusivity();
 	real getTemperatureInit();
 	real getTemperatureBC();
@@ -921,8 +930,8 @@ public:
 	TempPressforBoundaryConditions* getTempPressD();
 	unsigned int getTimeDoCheckPoint();
 	unsigned int	getTimeDoRestart();   
-	bool	getDoCheckPoint();
-	bool	getDoRestart();
+	bool getDoCheckPoint();
+	bool getDoRestart();
 	bool overWritingRestart(unsigned int t);
 	bool getIsGeo();
 	bool getIsGeoNormal();
@@ -967,10 +976,12 @@ public:
 	//CUDA random number
 	curandState* getRandomState();
 	//Kernel
-	std::string getMainKernelName();
+	KernelType getMainKernel();
 	bool getMultiKernelOn();
 	std::vector< int> getMultiKernelLevel();
-	std::vector< std::string> getMultiKernelName();
+	std::vector< KernelType> getMultiKernel();
+
+	ADKernelType getADKernel();
 
 	~Parameter();
 
@@ -992,12 +1003,16 @@ private:
 	double memsizeGPU;
 	unsigned int limitOfNodesForVTK;
 	unsigned int outputCount;
+	unsigned int timestep;
+
 
 	//Kernel
-	std::string mainKernelName;
+	KernelType mainKernel;
 	bool multiKernelOn;
 	std::vector< int> multiKernelLevel;
-	std::vector< std::string> multiKernelName;
+	std::vector< KernelType> multiKernel;
+
+	ADKernelType adKernel;
 
 	//////////////////////////////////////////////////////////////////////////
 	//particles

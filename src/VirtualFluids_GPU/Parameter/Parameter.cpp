@@ -18,6 +18,7 @@
 #include "Core/Input/ConfigData/ConfigData.h"
 #include "Core/StringUtilities/StringUtil.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
 //#ifdef WIN32
 //   #include <Winsock2.h>
 //#endif
@@ -39,6 +40,8 @@ Parameter::Parameter()
 }
 Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 {
+	std::shared_ptr<KernelMapper> kernelMapper = KernelMapper::getInstance();
+
 	//////////////////////////////////////////////////////////////////////////
 	this->setNumprocs(comm->getNummberOfProcess());
 	this->setMyID(comm->getPID());
@@ -485,9 +488,9 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Kernel
 	if (configData->isMainKernelInConfigFile())
-		this->setMainKernel(configData->getMainKernel());
+		this->setMainKernel(kernelMapper->getEnum(configData->getMainKernel()));
 	else
-		this->setMainKernel("CumulantOneCompSP27");
+		this->setMainKernel(kernelMapper->getEnum("CumulantOneCompSP27"));
 
 	if (configData->isMultiKernelOnInConfigFile())
 		this->setMultiKernelOn(configData->getMultiKernelOn());
@@ -508,19 +511,26 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 	else
 		this->setMultiKernelLevel(std::vector<int>(0));
 
-	if (configData->isMultiKernelNameInConfigFile())
-		this->setMultiKernelName(configData->getMultiKernelName());
+	if (configData->isMultiKernelNameInConfigFile()) {
+		std::vector<KernelType> kernels;
+		for (int i = 0; i < configData->getMultiKernelName().size(); i++) {
+			kernels.push_back(kernelMapper->getEnum(configData->getMultiKernelName().at(i)));
+		}
+		this->setMultiKernel(kernels);
+	}
 	else if (this->getMultiKernelOn())
 	{
-		std::vector<std::string> tmp;
+		std::vector<KernelType> tmp;
 		for (int i = 0; i < this->getMaxLevel()+1; i++)
 		{
-			tmp.push_back("CumulantOneCompSP27");
+			tmp.push_back(kernelMapper->getEnum("CumulantOneCompSP27"));
 		}
-		this->setMultiKernelName(tmp);
+		this->setMultiKernel(tmp);
 	}
-	else
-		this->setMultiKernelName(std::vector<std::string>(0));
+	else {
+		std::vector<KernelType> tmp;
+		this->setMultiKernel(tmp);
+	}		
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 Parameter::~Parameter()
@@ -3409,6 +3419,10 @@ void Parameter::setTStartOut(unsigned int tStartOut)
 {
 	ic.tStartOut = tStartOut;
 }
+void Parameter::setTimestepOfCoarseLevel(unsigned int timestep)
+{
+	this->timestep = timestep;
+}
 void Parameter::setCalcMedian(bool calcMedian)
 {
 	ic.calcMedian = calcMedian;
@@ -4187,9 +4201,9 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 {
 	ic.outflowNormalZ = outflowNormalZ;
 }
-void Parameter::setMainKernel(std::string kernelName)
+void Parameter::setMainKernel(KernelType kernel)
 {
-	this->mainKernelName = kernelName;
+	this->mainKernel = kernel;
 }
 void Parameter::setMultiKernelOn(bool isOn)
 {
@@ -4199,9 +4213,13 @@ void Parameter::setMultiKernelLevel(std::vector< int> kernelLevel)
 {
 	this->multiKernelLevel = multiKernelLevel;
 }
-void Parameter::setMultiKernelName(std::vector< std::string> kernelName)
+void Parameter::setMultiKernel(std::vector< KernelType> kernel)
 {
-	this->multiKernelName = kernelName;
+	this->multiKernel = kernel;
+}
+void Parameter::setADKernel(ADKernelType adKernel)
+{
+	this->adKernel = adKernel;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4931,6 +4949,10 @@ unsigned int Parameter::getTimestepForMP()
 {
 	return ic.timeStepForMP;
 }
+unsigned int Parameter::getTimestepOfCoarseLevel()
+{
+	return this->timestep;
+}
 double Parameter::getMemsizeGPU()
 {
 	return this->memsizeGPU;
@@ -5082,9 +5104,9 @@ curandState* Parameter::getRandomState()
 	return this->devState;
 }
 
-std::string Parameter::getMainKernelName()
+KernelType Parameter::getMainKernel()
 {
-	return mainKernelName;
+	return mainKernel;
 }
 bool Parameter::getMultiKernelOn()
 {
@@ -5094,9 +5116,13 @@ std::vector< int> Parameter::getMultiKernelLevel()
 {
 	return multiKernelLevel;
 }
-std::vector< std::string> Parameter::getMultiKernelName()
+std::vector< KernelType> Parameter::getMultiKernel()
 {
-	return multiKernelName;
+	return multiKernel;
+}
+ADKernelType Parameter::getADKernel()
+{
+	return adKernel;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -22,14 +22,14 @@ PhiTestPostProcessingStrategy::PhiTestPostProcessingStrategy(std::shared_ptr<Sim
 	fftCalculator = FFTCalculator::getInstance();
 }
 
-std::vector<std::vector<double> > PhiTestPostProcessingStrategy::reduceDataToTimeSteps(std::vector<std::vector<double> > data, unsigned int startTimeStep, unsigned int endTimeStep)
+std::vector<std::vector<double> > PhiTestPostProcessingStrategy::reduceDataToTimeSteps(std::vector<std::vector<double> > data)
 {
 	std::vector<int> timeStepsToDelete;
 
 	for (int i = simResult->getTimeSteps().size() - 1; i >= 0; i--) {
-		if (simResult->getTimeSteps().at(i) > endTimeStep)
+		if (simResult->getTimeSteps().at(i) > endTimeStepCalculation)
 			timeStepsToDelete.push_back(i);
-		if (simResult->getTimeSteps().at(i) < startTimeStep)
+		if (simResult->getTimeSteps().at(i) < startTimeStepCalculation)
 			timeStepsToDelete.push_back(i);
 	}
 
@@ -42,22 +42,26 @@ std::vector<std::vector<double> > PhiTestPostProcessingStrategy::reduceDataToTim
 void PhiTestPostProcessingStrategy::evaluate()
 {
 	if (!isEvaluated) {
+		bool transpose = false;
+		int xNodes = simResult->getNumberOfXNodes();
+		int zNodes = simResult->getNumberOfZNodes();
+		int timeStepLength = simResult->getTimeStepLength();
 		for (int i = 0; i < dataToCalculate.size(); i++) {
-			if (dataToCalculate.at(i) == "Vx") {
-				phiDiff.at(i) = fftCalculator->calcPhiDiff(reduceDataToTimeSteps(simResult->getVx(), startTimeStepCalculation, endTimeStepCalculation), false, simResult->getNumberOfXNodes(), simResult->getNumberOfZNodes(), simResult->getTimeStepLength());
-			}
-			if (dataToCalculate.at(i) == "Vy") {
-				phiDiff.at(i) = abs(fftCalculator->calcPhiDiff(reduceDataToTimeSteps(simResult->getVy(), startTimeStepCalculation, endTimeStepCalculation), false, simResult->getNumberOfXNodes(), simResult->getNumberOfZNodes(), simResult->getTimeStepLength()));
-			}
-			if (dataToCalculate.at(i) == "Vz") {
-				phiDiff.at(i) = fftCalculator->calcPhiDiff(reduceDataToTimeSteps(simResult->getVz(), startTimeStepCalculation, endTimeStepCalculation), true, simResult->getNumberOfXNodes(), simResult->getNumberOfZNodes(), simResult->getTimeStepLength());
-			}
-			if (dataToCalculate.at(i) == "Press") {
-				phiDiff.at(i) = fftCalculator->calcPhiDiff(reduceDataToTimeSteps(simResult->getPress(), startTimeStepCalculation, endTimeStepCalculation), false, simResult->getNumberOfXNodes(), simResult->getNumberOfZNodes(), simResult->getTimeStepLength());
-			}
-			if (dataToCalculate.at(i) == "Rho") {
-				phiDiff.at(i) = fftCalculator->calcPhiDiff(reduceDataToTimeSteps(simResult->getRho(), startTimeStepCalculation, endTimeStepCalculation), false, simResult->getNumberOfXNodes(), simResult->getNumberOfZNodes(), simResult->getTimeStepLength());
-			}
+			std::vector<std::vector<double>> basicData;
+			if (dataToCalculate.at(i) == "Vx")
+				basicData = simResult->getVx();
+			if (dataToCalculate.at(i) == "Vy")
+				basicData = simResult->getVy();
+			if (dataToCalculate.at(i) == "Vz") 
+				basicData = simResult->getVz();
+			if (dataToCalculate.at(i) == "Press")
+				basicData = simResult->getPress();
+			if (dataToCalculate.at(i) == "Rho")
+				basicData = simResult->getRho();
+
+			std::vector<std::vector<double>> dataForCalculation;
+			dataForCalculation = reduceDataToTimeSteps(basicData);
+			phiDiff.at(i) = fftCalculator->calcPhiDiff(dataForCalculation, transpose, xNodes, zNodes, timeStepLength);
 		}
 		isEvaluated = true;
 	}

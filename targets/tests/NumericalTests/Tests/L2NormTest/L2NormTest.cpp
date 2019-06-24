@@ -34,7 +34,7 @@ void L2NormTest::evaluate()
 	diffL2Norm = resultDivergentTimeStep - resultBasicTimestep;
 
 	if (resultBasicTimestep < 0 || resultDivergentTimeStep < 0) {
-		testStatus = error;
+		testStatus = test_error;
 	}
 	else
 	{

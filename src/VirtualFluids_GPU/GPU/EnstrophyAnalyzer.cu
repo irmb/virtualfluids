@@ -13,7 +13,7 @@
 
 #include <iomanip>
 
-#include "Core/Logger/Logger.h"
+//#include "Core/Logger/Logger.h"
 
 #include "Parameter/Parameter.h"
 // includes, kernels
@@ -319,7 +319,8 @@ EnstrophyAnalyzer::EnstrophyAnalyzer(SPtr<Parameter> para, uint analyzeIter)
 
 void EnstrophyAnalyzer::writeToFile( std::string filename )
 {
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "EnstrophyAnalyzer::writeToFile( " << filename << " )" << "\n";
+    //*logging::out << logging::Logger::INFO_INTERMEDIATE << "EnstrophyAnalyzer::writeToFile( " << filename << " )" << "\n";
+	std::cout << "EnstrophyAnalyzer::writeToFile( " << filename << " )" << "\n";
 
     std::ofstream file;
 
@@ -330,7 +331,8 @@ void EnstrophyAnalyzer::writeToFile( std::string filename )
 
     file.close();
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+	std::cout << "done!\n";
+	//*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
 

@@ -14,13 +14,13 @@ using namespace std;
 
 
 
-void calcDragLift(Parameter* para, int lev)
+void calcDragLift(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//copy to host
 	//finest Grid ... with the geometry nodes
 	//please test -> Copy == Alloc ??
-	para->cudaCopyDragLift(lev, para->getParH(lev)->QGeom.kQ);
+	cudaManager->cudaCopyDragLift(lev, para->getParH(lev)->QGeom.kQ);
 	//////////////////////////////////////////////////////////////////////////
 	//calc drag
 	double dragX = 0., dragY = 0., dragZ = 0.;
@@ -79,7 +79,7 @@ void calcDragLift(Parameter* para, int lev)
 
 
 
-void allocDragLift(Parameter* para)
+void allocDragLift(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level
@@ -88,14 +88,14 @@ void allocDragLift(Parameter* para)
 	//allocation
 	//finest Grid ... with the geometry nodes
 	//please test -> Copy == Alloc ??
-	para->cudaAllocDragLift(lev, para->getParH(lev)->QGeom.kQ);
+	cudaManager->cudaAllocDragLift(lev, para->getParH(lev)->QGeom.kQ);
 	//////////////////////////////////////////////////////////////////////////
 	printf("\n Anzahl Elemente fuer Drag Lift = %d \n", para->getParH(lev)->QGeom.kQ);
 }
 
 
 
-void printDragLift(Parameter* para, int timestep)
+void printDragLift(Parameter* para, CudaMemoryManager* cudaManager, int timestep)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//set level
@@ -122,7 +122,7 @@ void printDragLift(Parameter* para, int timestep)
 	//////////////////////////////////////////////////////////////////////////
 	if (timestep == para->getTEnd())
 	{
-		para->cudaFreeDragLift(lev);
+		cudaManager->cudaFreeDragLift(lev);
 	}
 	//////////////////////////////////////////////////////////////////////////
 }

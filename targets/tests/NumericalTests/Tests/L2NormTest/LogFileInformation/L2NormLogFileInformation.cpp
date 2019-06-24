@@ -42,7 +42,7 @@ std::string L2NormInformation::getOutput()
 	for (int i = 0; i < tests.size(); i++) {
 		if (tests.at(i)->getTestStatus() == passed || tests.at(i)->getTestStatus() == failed)
 			oss << tests.at(i)->getLogFileOutput();
-		if (tests.at(i)->getTestStatus() == error || tests.at(i)->getTestStatus() == simulationCrashed)
+		if (tests.at(i)->getTestStatus() == test_error || tests.at(i)->getTestStatus() == simulationCrashed)
 			failMessage << tests.at(i)->getErrorLogFileOutput() << " ";
 	}
 	std::string fail = failMessage.str();

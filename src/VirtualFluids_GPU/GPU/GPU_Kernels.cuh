@@ -59,60 +59,6 @@ extern "C" __global__ void LB_Kernel_Casc_Kum_SP_27(real s9,
                                                     int size_Mat,
                                                     bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_BGK_Plus_SP_27(real omega,
-													unsigned int* bcMatD,
-													unsigned int* neighborX,
-													unsigned int* neighborY,
-													unsigned int* neighborZ,
-													real* DDStart,
-													int size_Mat,
-													bool EvenOrOdd);
-
-extern "C" __global__ void LB_Kernel_BGK_Plus_Comp_SP_27(real omega,
-														 unsigned int* bcMatD,
-														 unsigned int* neighborX,
-														 unsigned int* neighborY,
-														 unsigned int* neighborZ,
-														 real* DDStart,
-														 int size_Mat,
-														 bool EvenOrOdd);
-
-extern "C" __global__ void LB_Kernel_BGK_Comp_SP_27(real omega,
-													unsigned int* bcMatD,
-													unsigned int* neighborX,
-													unsigned int* neighborY,
-													unsigned int* neighborZ,
-													real* DDStart,
-													int size_Mat,
-													bool EvenOrOdd);
-
-extern "C" __global__ void LB_Kernel_BGK_SP_27( real omega,
-												unsigned int* bcMatD,
-												unsigned int* neighborX,
-												unsigned int* neighborY,
-												unsigned int* neighborZ,
-												real* DDStart,
-												int size_Mat,
-												bool EvenOrOdd);
-
-extern "C" __global__ void LB_Kernel_MRT_SP_27( real omega,
-												unsigned int* bcMatD,
-												unsigned int* neighborX,
-												unsigned int* neighborY,
-												unsigned int* neighborZ,
-												real* DDStart,
-												int size_Mat,
-												bool EvenOrOdd);
-
-extern "C" __global__ void LB_Kernel_MRT_Comp_SP_27(real omega,
-													unsigned int* bcMatD,
-													unsigned int* neighborX,
-													unsigned int* neighborY,
-													unsigned int* neighborZ,
-													real* DDStart,
-													int size_Mat,
-													bool EvenOrOdd);
-
 extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
@@ -123,30 +69,6 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(real omega,
 														int level,
 														real* forces,
 														bool EvenOrOdd);
-
-//extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3_2018(	real omega,
-//															unsigned int* bcMatD,
-//															unsigned int* neighborX,
-//															unsigned int* neighborY,
-//															unsigned int* neighborZ,
-//															real* DDStart,
-//															real* F3,
-//															int size_Mat,
-//															int level,
-//															real* forces,
-//															bool EvenOrOdd);
-
-//extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
-//														unsigned int* bcMatD,
-//														unsigned int* neighborX,
-//														unsigned int* neighborY,
-//														unsigned int* neighborZ,
-//														real* DDStart,
-//														real* F3,
-//														int size_Mat,
-//														int level,
-//														real* forces,
-//														bool EvenOrOdd);
 
 	
 extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
@@ -161,18 +83,6 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 																bool EvenOrOdd);
 
 
-
-//extern "C" __global__ void LB_Kernel_Kum_New_Comp_Sponge_SP_27(real omega,
-//														       unsigned int* bcMatD,
-//														       unsigned int* neighborX,
-//														       unsigned int* neighborY,
-//														       unsigned int* neighborZ,
-//													           real* coordX,
-//													           real* coordY,
-//													           real* coordZ,
-//														       real* DDStart,
-//														       int size_Mat,
-//														       bool EvenOrOdd);
 
 extern "C" __global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
 													real deltaPhi,
@@ -197,15 +107,6 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27( real s9,
 													int size_Mat,
 													bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Cascade_Comp_SP_27(real s9,
-														unsigned int* bcMatD,
-														unsigned int* neighborX,
-														unsigned int* neighborY,
-														unsigned int* neighborZ,
-														real* DDStart,
-														int size_Mat,
-														bool EvenOrOdd);
-
 extern "C" __global__ void LB_Kernel_Kum_New_SP_27( real s9,
 													unsigned int* bcMatD,
 													unsigned int* neighborX,
@@ -214,28 +115,6 @@ extern "C" __global__ void LB_Kernel_Kum_New_SP_27( real s9,
 													real* DDStart,
 													int size_Mat,
 													bool EvenOrOdd);
-
-//extern "C" __global__ void LB_Kernel_Kum_New_Comp_Bulk_SP_27(real omega,
-//															 unsigned int* bcMatD,
-//															 unsigned int* neighborX,
-//															 unsigned int* neighborY,
-//															 unsigned int* neighborZ,
-//															 real* DDStart,
-//															 int size_Mat,
-//															 int level,
-//															 real* forces,
-//															 bool EvenOrOdd);
-
-//extern "C" __global__ void LB_Kernel_Kum_New_Comp_SP_27(real omega,
-//														unsigned int* bcMatD,
-//														unsigned int* neighborX,
-//														unsigned int* neighborY,
-//														unsigned int* neighborZ,
-//														real* DDStart,
-//														int size_Mat,
-//														int level,
-//														real* forces,
-//														bool EvenOrOdd);
 
 extern "C" __global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
 														unsigned int* bcMatD,
@@ -305,85 +184,6 @@ inline __device__ void backwardChimeraWithK(real &mfa, real &mfb, real &mfc, rea
 
 
 
-extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(real omega,
-															 unsigned int* bcMatD,
-															 unsigned int* neighborX,
-															 unsigned int* neighborY,
-															 unsigned int* neighborZ,
-															 unsigned int* neighborWSB,
-															 real* veloX,
-															 real* veloY,
-															 real* veloZ,
-															 real* DDStart,
-															 real* turbulentViscosity,
-															 int size_Mat,
-															 int level,
-															 unsigned int timestep,
-															 real* forces,
-															 bool EvenOrOdd);
-
-extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( real omega,
-																 unsigned int* bcMatD,
-																 unsigned int* neighborX,
-																 unsigned int* neighborY,
-																 unsigned int* neighborZ,
-																 unsigned int* neighborWSB,
-																 real* veloX,
-																 real* veloY,
-																 real* veloZ,
-																 real* DDStart,
-																 real* turbulentViscosity,
-																 int size_Mat,
-																 int level,
-																 unsigned int timestep,
-																 real* forces,
-																 bool EvenOrOdd);
-
-extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Debug_Comp_SP_27(
-	real omega_in,
-	unsigned int* bcMatD,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	unsigned int* neighborWSB,
-	real* veloX,
-	real* veloY,
-	real* veloZ,
-	real* DDStart,
-	real* turbulentViscosity,
-	real* gSij,
-	real* gSDij,
-	real* gDxvx,
-	real* gDyvx,
-	real* gDzvx,
-	real* gDxvy,
-	real* gDyvy,
-	real* gDzvy,
-	real* gDxvz,
-	real* gDyvz,
-	real* gDzvz,
-	int size_Mat,
-	int level,
-	real* forces,
-	bool EvenOrOdd);
-
-extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
-	real omega_in,
-	unsigned int* bcMatD,
-	unsigned int* neighborX,
-	unsigned int* neighborY,
-	unsigned int* neighborZ,
-	unsigned int* neighborWSB,
-	real* veloX,
-	real* veloY,
-	real* veloZ,
-	real* DDStart,
-	real* turbulentViscosity,
-	int size_Mat,
-	int level,
-	real* forces,
-	bool EvenOrOdd);
-
 extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27(
 	real omega_in,
 	unsigned int* bcMatD,
@@ -416,26 +216,6 @@ extern "C" __global__ void LB_Kernel_PM_Cum_One_Comp_SP_27( real omega,
 															unsigned int sizeOfPorousMedia,
 															unsigned int* nodeIdsPorousMedia,
 															bool EvenOrOdd);
-
-extern "C" __global__ void LB_Kernel_ThS7(real diffusivity,
-                                          unsigned int* bcMatD,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          real* DDStart,
-                                          real* DD7,
-                                          int size_Mat,
-                                          bool EvenOrOdd);
-
-extern "C" __global__ void LB_Kernel_ThS27(real diffusivity,
-                                           unsigned int* bcMatD,
-                                           unsigned int* neighborX,
-                                           unsigned int* neighborY,
-                                           unsigned int* neighborZ,
-                                           real* DDStart,
-                                           real* DD27,
-                                           int size_Mat,
-                                           bool EvenOrOdd);
 
 extern "C" __global__ void LB_Kernel_AD_Incomp_7( real diffusivity,
 												  unsigned int* bcMatD,
@@ -473,30 +253,6 @@ extern "C" __global__ void LBInit27( int myid,
                                      int lev,
                                      int maxlev);
 
-extern "C" __global__ void LBInitF3(unsigned int* neighborX,
-									unsigned int* neighborY,
-									unsigned int* neighborZ,
-									unsigned int* geoD,
-									real* rho,
-									real* ux,
-									real* uy,
-									real* uz,
-									unsigned int size_Mat,
-									real* G6,
-									bool EvenOrOdd);
-
-extern "C" __global__ void LBInitSP27( unsigned int* neighborX,
-                                       unsigned int* neighborY,
-                                       unsigned int* neighborZ,
-                                       unsigned int* geoD,
-                                       real* rho,
-                                       real* ux,
-                                       real* uy,
-                                       real* uz,
-                                       unsigned int size_Mat,
-                                       real* DD,
-                                       bool EvenOrOdd);
-
 extern "C" __global__ void LBInitNonEqPartSP27(unsigned int* neighborX,
                                                unsigned int* neighborY,
                                                unsigned int* neighborZ,
@@ -510,18 +266,6 @@ extern "C" __global__ void LBInitNonEqPartSP27(unsigned int* neighborX,
                                                real* DD,
                                                real omega,
                                                bool EvenOrOdd);
-
-extern "C" __global__ void LBInitCompSP27( unsigned int* neighborX,
-										   unsigned int* neighborY,
-										   unsigned int* neighborZ,
-										   unsigned int* geoD,
-										   real* rho,
-										   real* ux,
-										   real* uy,
-										   real* uz,
-										   unsigned int size_Mat,
-										   real* DD,
-										   bool EvenOrOdd);
 
 extern "C" __global__ void LBInitThS7( unsigned int* neighborX,
                                        unsigned int* neighborY,
@@ -546,30 +290,6 @@ extern "C" __global__ void LBInitThS27(unsigned int* neighborX,
                                        unsigned int size_Mat,
                                        real* DD27,
                                        bool EvenOrOdd);
-
-extern "C" __global__ void LBInitIncompAD7(unsigned int* neighborX,
-										   unsigned int* neighborY,
-										   unsigned int* neighborZ,
-										   unsigned int* geoD,
-										   real* Conc,
-										   real* ux,
-										   real* uy,
-										   real* uz,
-										   unsigned int size_Mat,
-										   real* DD7,
-										   bool EvenOrOdd);
-
-extern "C" __global__ void LBInitIncompAD27(unsigned int* neighborX,
-										    unsigned int* neighborY,
-										    unsigned int* neighborZ,
-										    unsigned int* geoD,
-										    real* Conc,
-										    real* ux,
-										    real* uy,
-										    real* uz,
-										    unsigned int size_Mat,
-										    real* DD27,
-										    bool EvenOrOdd);
 
 extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(
 	real omega,

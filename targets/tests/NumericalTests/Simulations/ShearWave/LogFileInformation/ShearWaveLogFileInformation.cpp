@@ -30,18 +30,14 @@ std::string ShearWaveInformation::getOutput()
 	return oss.str();
 }
 
-std::string ShearWaveInformation::getFilePathExtensionOne()
+std::vector<std::string> ShearWaveInformation::getFilePathExtension()
 {
+	std::vector<std::string> myFilePath;
+	myFilePath.push_back("ShearWave");
 	std::ostringstream oss;
-	oss << "ShearWave/";
-	return oss.str();
-}
-
-std::string ShearWaveInformation::getFilePathExtensionTwo()
-{
-	std::ostringstream oss;
-	oss << "ux_" << ux << "_uz_" << uz << "/";
-	return oss.str();
+	oss << "ux_" << ux << "_uz_" << uz;
+	myFilePath.push_back(oss.str());
+	return myFilePath;
 }
 
 ShearWaveInformation::ShearWaveInformation(std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)

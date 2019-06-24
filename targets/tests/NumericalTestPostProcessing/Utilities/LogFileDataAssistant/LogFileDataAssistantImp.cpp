@@ -4,7 +4,9 @@
 #include "Utilities/LogFileData/LogFileData.h"
 #include "Utilities/LogFileData/LogFileDataGroup/LogFileDataGroupImp.h"
 #include "Utilities/LogFileDataAssistant/LogFileDataAssistantStrategy/LogFileDataAssistantStrategy.h"
-#include "Utilities/LogFileDataAssistant/LogFileDataAssistantStrategy/LogFileDataAssistantStrategyFactory/LogFileDataAssistantStrategyFactoryImp.h"
+
+
+#include <iostream>
 
 std::vector<std::vector<std::shared_ptr<LogFileData>>> LogFileDataAssistantImp::sortLogFileDataAfterKernels(std::vector<std::shared_ptr<LogFileData>> logFileData)
 {
@@ -61,6 +63,16 @@ bool LogFileDataAssistantImp::checkEqualKernel(std::shared_ptr<LogFileData> logF
 	return true;
 }
 
+bool LogFileDataAssistantImp::checkBasicSimulationIsInLogFiles(std::vector<std::shared_ptr<LogFileData>> allLogFileData, std::string simName)
+{
+	bool isInLogFileData = false;
+	for (int i = 0; i < allLogFileData.size(); i++) {
+		if (allLogFileData.at(i)->getSimName() == simName)
+			return true;
+	}
+	return false;
+}
+
 std::vector<std::shared_ptr<LogFileDataGroup>> LogFileDataAssistantImp::castToLogFileDataGroup(std::vector<std::shared_ptr<LogFileDataGroupImp>> data)
 {
 	std::vector<std::shared_ptr<LogFileDataGroup>> casted;
@@ -96,10 +108,34 @@ std::shared_ptr<LogFileDataAssistant> LogFileDataAssistantImp::getNewInstance()
 	return std::shared_ptr<LogFileDataAssistant>(new LogFileDataAssistantImp());
 }
 
-std::vector<std::shared_ptr<LogFileDataGroup>> LogFileDataAssistantImp::findEqualSimulationsForDifferentKernels(std::vector<std::shared_ptr<LogFileData>> allLogFileData, BasicSimulation simulation)
+std::vector<std::shared_ptr<LogFileDataGroup>> LogFileDataAssistantImp::findDataCombination(std::vector<std::shared_ptr<LogFileData>> allLogFileData, std::shared_ptr<LogFileDataAssistantStrategy> strategy, DataCombination combination)
 {
-	std::shared_ptr<LogFileDataAssistantStrategy> strategy = assistentStrategyFactory->makeLogFileDataAssistantStrategy(simulation);
+	std::vector<std::shared_ptr<LogFileDataGroup>> myLogFileDataGroup;
+	if (checkBasicSimulationIsInLogFiles(allLogFileData, strategy->getSimulationName())) {
+		if (allLogFileData.size() > 1) {
+			switch (combination)
+			{
+			case EqualSimulationsForDifferentKernels:
+				myLogFileDataGroup = findEqualSimulationsForDifferentKernels(allLogFileData, strategy);
+				break;
+			case EqualKernelSimulationsForDifferentViscosities:
+				myLogFileDataGroup = findEqualKernelSimulationsForDifferentViscosities(allLogFileData, strategy);
+				break;
+			default:
+				break;
+			}
+		}
+		else {
+			std::shared_ptr<LogFileDataGroupImp> newGroup = LogFileDataGroupImp::getNewInstance();
+			newGroup->addLogFileData(allLogFileData.at(0));
+			myLogFileDataGroup.push_back(newGroup);
+		}
+	}
+	return myLogFileDataGroup;
+}
 
+std::vector<std::shared_ptr<LogFileDataGroup>> LogFileDataAssistantImp::findEqualSimulationsForDifferentKernels(std::vector<std::shared_ptr<LogFileData>> allLogFileData, std::shared_ptr<LogFileDataAssistantStrategy> strategy)
+{
 	std::vector<std::shared_ptr<LogFileData>> myLogFileData = getSimulationGroupLogFileData(strategy->getSimulationName(), allLogFileData);
 
 	std::vector<std::shared_ptr<LogFileDataGroupImp>  > kernelGroups;
@@ -111,7 +147,7 @@ std::vector<std::shared_ptr<LogFileDataGroup>> LogFileDataAssistantImp::findEqua
 		for (int j = 0; j < kernelGroups.size(); j++) {
 			if (checkEqualSimulationData(myLogFileData.at(i), kernelGroups.at(j)->getLogFileData(0))) {
 				if (checkEqualViscosity(myLogFileData.at(i), kernelGroups.at(j)->getLogFileData(0))) {
-					if (strategy->checkSimulationParamerer(myLogFileData.at(i), kernelGroups.at(j)->getLogFileData(0))) {
+					if (strategy->checkSimulationParameter(myLogFileData.at(i), kernelGroups.at(j)->getLogFileData(0))) {
 						kernelGroups.at(j)->addLogFileData(myLogFileData.at(i));
 						added = true;
 					}
@@ -128,11 +164,8 @@ std::vector<std::shared_ptr<LogFileDataGroup>> LogFileDataAssistantImp::findEqua
 	return castToLogFileDataGroup(kernelGroups);
 }
 
-std::vector<std::shared_ptr<LogFileDataGroup> > LogFileDataAssistantImp::findEqualKernelSimulationsForDifferentViscosities(std::vector<std::shared_ptr<LogFileData>> allLogFileData, BasicSimulation simulation)
+std::vector<std::shared_ptr<LogFileDataGroup> > LogFileDataAssistantImp::findEqualKernelSimulationsForDifferentViscosities(std::vector<std::shared_ptr<LogFileData>> allLogFileData, std::shared_ptr<LogFileDataAssistantStrategy> strategy)
 {
-	
-	std::shared_ptr<LogFileDataAssistantStrategy> strategy = assistentStrategyFactory->makeLogFileDataAssistantStrategy(simulation);
-
 	std::vector<std::shared_ptr<LogFileData>> myLogFileData = getSimulationGroupLogFileData(strategy->getSimulationName(), allLogFileData);
 
 	std::vector<std::shared_ptr<LogFileDataGroupImp>  > viscosityGroups;
@@ -144,7 +177,7 @@ std::vector<std::shared_ptr<LogFileDataGroup> > LogFileDataAssistantImp::findEqu
 		for (int j = 0; j < viscosityGroups.size(); j++) {
 			if (checkEqualSimulationData(myLogFileData.at(i), viscosityGroups.at(j)->getLogFileData(0))) {
 				if (checkEqualKernel(myLogFileData.at(i), viscosityGroups.at(j)->getLogFileData(0))) {
-					if (strategy->checkSimulationParamerer(myLogFileData.at(i), viscosityGroups.at(j)->getLogFileData(0))) {
+					if (strategy->checkSimulationParameter(myLogFileData.at(i), viscosityGroups.at(j)->getLogFileData(0))) {
 						viscosityGroups.at(j)->addLogFileData(myLogFileData.at(i));
 						added = true;
 					}
@@ -163,5 +196,5 @@ std::vector<std::shared_ptr<LogFileDataGroup> > LogFileDataAssistantImp::findEqu
 
 LogFileDataAssistantImp::LogFileDataAssistantImp()
 {
-	assistentStrategyFactory = LogFileDataAssistantStrategyFactoryImp::getNewInstance();
+	
 }

@@ -23,6 +23,7 @@ public:
 
 	virtual unsigned int getLx() = 0;
 	virtual unsigned int getLz() = 0;
+	virtual unsigned int getL0() = 0; 
 };
 
 #endif
