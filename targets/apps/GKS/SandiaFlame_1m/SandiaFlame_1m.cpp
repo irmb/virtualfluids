@@ -14,6 +14,7 @@
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
 #include "Core/Logger/Logger.h"
+#include "Core/buildInfo.h"
 
 #include "GridGenerator/geometries/Cuboid/Cuboid.h"
 #include "GridGenerator/geometries/Sphere/Sphere.h"
@@ -67,14 +68,14 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real L = 0.15;
-    real H = 0.4;
+    real L = 3.0;
+    real H = 4.0;
 
-    real R = 0.5 * 0.071;
+    real R = 0.5;
 
     real dx = H / real(nx);
 
-    real U = 0.0314;
+    real U = 0.058823;
 
     real Pr  = 0.71;
     real K   = 2.0;
@@ -142,7 +143,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     parameters.reactionLimiter = 1.005;
 
-    parameters.useSpongeLayer = true;
+    parameters.useSpongeLayer = false;
     parameters.spongeLayerIdx = 0;
 
     parameters.forcingSchemeIdx = 2;
@@ -176,14 +177,14 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.1*R, 0.05*H );
     
     Conglomerate refRing;
-    refRing.add     ( new VerticalCylinder( 0.0, 0.0, 0.0, 1.2*R, 0.02 ) );
+    refRing.add     ( new VerticalCylinder( 0.0, 0.0, 0.0, 1.2*R, 0.1 ) );
     refRing.subtract( new VerticalCylinder( 0.0, 0.0, 0.0, 0.8*R, 1.0    ) );
 
     gridBuilder->setNumberOfLayers(0,10);
     
     gridBuilder->addGrid( &cylinder1 );
     //gridBuilder->addGrid( &cylinder2 );
-    gridBuilder->addGrid( &refRing );
+    //gridBuilder->addGrid( &refRing );
 
     if( threeDimensional ) gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     else                   gridBuilder->setPeriodicBoundaryCondition(false, true,  false);
@@ -419,7 +420,7 @@ int main( int argc, char* argv[])
 {
 
 #ifdef _WIN32
-    std::string path( "F:/Work/Computations/out/Flame7cm/" );
+    std::string path( "F:/Work/Computations/out/SandiaFlame_1m/" );
 #else
     std::string path( "out/" );
 #endif
@@ -434,6 +435,10 @@ int main( int argc, char* argv[])
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
+    //////////////////////////////////////////////////////////////////////////
+
+    *logging::out << logging::Logger::INFO_HIGH << buildInfo::gitCommitHash() << "\n";
+
     if( sizeof(real) == 4 )
         *logging::out << logging::Logger::INFO_HIGH << "Using Single Precision\n";
     else
@@ -441,8 +446,8 @@ int main( int argc, char* argv[])
 
     try
     {
-        uint restartIter = INVALID_INDEX;
-        //uint restartIter = 30000;
+        //uint restartIter = INVALID_INDEX;
+        uint restartIter = 50000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
