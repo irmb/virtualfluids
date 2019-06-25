@@ -81,16 +81,16 @@ void CupsAnalyzer::printCups(uint iter, real simTime, real currentRunTime, real 
     std::stringstream body;
 
     header << "| ";
-    header << "        Iter" << " | "; 
-    header << "   sim. time" << " | "; 
-    header << "   wall time" << " | "; 
-    header << "       MCUPS" << " | ";
+    header << "           Iter" << " | "; 
+    header << "      sim. time" << " | "; 
+    header << "      wall time" << " | "; 
+    header << "          MCUPS" << " | ";
 
     body   << "| ";
-    body   << std::setw(20) << std::setprecision(4) << iter                                        << " | ";
-    body   << std::setw(20) << std::setprecision(4) << this->getTimeString(simTime).c_str()        << " | ";
-    body   << std::setw(20) << std::setprecision(4) << this->getTimeString(currentRunTime).c_str() << " | ";
-    body   << std::setw(20) << std::setprecision(4) << cups / 1.0e6                                << " | ";
+    body   << std::setw(15) << std::setprecision(4) << iter                                        << " | ";
+    body   << std::setw(15) << std::setprecision(4) << this->getTimeString(simTime).c_str()        << " | ";
+    body   << std::setw(15) << std::setprecision(4) << this->getTimeString(currentRunTime).c_str() << " | ";
+    body   << std::setw(15) << std::setprecision(4) << cups / 1.0e6                                << " | ";
 
     *logging::out << logging::Logger::INFO_HIGH << "Performance:" << "\n";
     *logging::out << logging::Logger::INFO_HIGH << header.str() << "\n";

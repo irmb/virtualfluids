@@ -127,29 +127,22 @@ void PointTimeSeriesAnalyzer::findCellIndex(GksMeshAdapter & adapter, Vec3 coord
 {
     real minDistance = 1.0e99;
 
-    for( uint level = 0; level < adapter.numberOfLevels; level++ )
+    for( uint cellIdx = 0 ; cellIdx < adapter.cells.size(); cellIdx++ )
     {
-        uint startIdx = adapter.startOfCellsPerLevel[level] 
-                      + adapter.numberOfBulkCellsPerLevel[level];
+        MeshCell& cell = adapter.cells[ cellIdx ];
 
-        uint endIdx   = adapter.startOfCellsPerLevel[level] 
-                      + adapter.numberOfCellsPerLevel[level];
+        Vec3 vec = cell.cellCenter - coordinate;
 
-        for( uint cellIdx = startIdx ; cellIdx < endIdx; cellIdx++ )
+        real distance = sqrt( vec.x*vec.x + vec.y*vec.y + vec.z*vec.z );
+
+        if( distance < minDistance )
         {
-            MeshCell& cell = adapter.cells[ cellIdx ];
-
-            Vec3 vec = cell.cellCenter - coordinate;
-
-            real distance = sqrt( vec.x*vec.x + vec.z*vec.z + vec.z*vec.z );
-
-            if( distance < minDistance )
-            {
-                this->cellIndex = cellIndex;
-                minDistance = distance;
-            }
+            this->cellIndex = cellIdx;
+            minDistance = distance;
         }
     }
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "PointTimeSeriesAnalyzer::cellIndex = " << this->cellIndex << "\n";
 }
 
 void PointTimeSeriesAnalyzer::writeToFile(std::string filename)
