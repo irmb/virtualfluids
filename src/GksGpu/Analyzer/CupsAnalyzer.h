@@ -1,6 +1,8 @@
 #ifndef  CupsAnalyzer_H
 #define  CupsAnalyzer_H
 
+#include <string>
+
 #include "VirtualFluidsDefinitions.h"
 
 #include "Core/PointerDefinitions.h"
@@ -38,14 +40,16 @@ public:
 
     void restart();
 
-    void run( uint iter );
+    void run( uint iter, real dt );
 
 private:
 
     bool checkOutputPerTime( real currentRuntime );
     bool checkOutputPerIter( uint iter );
 
-    void printCups(uint iter, real currentRunTime, real cups);
+    void printCups(uint iter, real simTime, real currentRunTime, real cups);
+
+    std::string getTimeString( real time );
 };
 
 #endif

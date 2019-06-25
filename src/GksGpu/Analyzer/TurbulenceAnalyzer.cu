@@ -36,8 +36,6 @@ bool TurbulenceAnalyzer::run(uint iter, Parameters parameters)
 {
     if( iter < this->analyzeStartIter ) return false;
 
-    thrust::device_vector<real> kineticEnergy( this->dataBase->perLevelCount[ 0 ].numberOfBulkCells );
-
     CudaUtility::CudaGrid grid( dataBase->numberOfCells, 32 );
 
     runKernel( turbulenceKernel,

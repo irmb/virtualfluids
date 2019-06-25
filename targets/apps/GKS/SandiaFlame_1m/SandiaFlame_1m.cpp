@@ -55,6 +55,7 @@
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
 #include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
+#include "GksGpu/Analyzer/PointTimeseriesAnalyzer.h"
 
 #include "GksGpu/Restart/Restart.h"
 
@@ -75,19 +76,20 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real dx = H / real(nx);
 
-    real U = 0.058823;
+    real U = 0.074;
 
     real Pr  = 0.71;
     real K   = 2.0;
     
     real g   = 9.81;
     real rho = 1.2;
-    
+    real rhoFuel = 0.5405;
+
     real mu = 1.5e-5;
 
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
-    setLambdaFromT( prim, 3.0 / T_FAKTOR );
+    setLambdaFromT( prim, 2.85 / T_FAKTOR );
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
@@ -106,7 +108,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
     *logging::out << logging::Logger::INFO_HIGH << "Pr = " << Pr << "\n";
 
-    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * /*rho*/ 0.68 * M_PI * R * R * ( dh * 100 ) / 0.016 / 1000.0 << " kW\n";
+    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * rhoFuel * M_PI * R * R * ( dh * 100 ) / 0.016 / 1000.0 << " kW\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -141,7 +143,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     parameters.usePassiveScalarLimiter = true;
     parameters.useSmagorinsky          = true;
 
-    parameters.reactionLimiter = 1.005;
+    parameters.reactionLimiter = 1.0005;
 
     parameters.useSpongeLayer = false;
     parameters.spongeLayerIdx = 0;
@@ -276,7 +278,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> burner = std::make_shared<CreepingMassFlux>( dataBase, /*rho*/0.68, U, prim.lambda );
+    SPtr<BoundaryCondition> burner = std::make_shared<CreepingMassFlux>( dataBase, rhoFuel, U, prim.lambda );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
         
@@ -306,6 +308,10 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
         dataBase->boundaryConditions.push_back( bcMY_2 );
         dataBase->boundaryConditions.push_back( bcPY_2 );
     }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    auto pointTimeSeriesAnalyzer = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 0.5), 'W' );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -363,11 +369,13 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     for( uint iter = startIter + 1; iter <= 2000000; iter++ )
     {
-        cupsAnalyzer.run( iter );
+        cupsAnalyzer.run( iter, parameters.dt );
 
         convergenceAnalyzer.run( iter );
 
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+
+        pointTimeSeriesAnalyzer->run(iter, parameters);
 
         int crashCellIndex = dataBase->getCrashCellIndex();
 
@@ -400,6 +408,11 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
             turbulenceAnalyzer->download();
 
             writeTurbulenceVtkXML( dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_" + std::to_string( iter ) );
+        }
+
+        if( iter % 10000 == 0 )
+        {
+            pointTimeSeriesAnalyzer->writeToFile(path + simulationName + "_TimeSeries_" + pointTimeSeriesAnalyzer->quantity + "_" + std::to_string( iter ));
         }
 
         turbulenceAnalyzer->run( iter, parameters );
@@ -437,8 +450,6 @@ int main( int argc, char* argv[])
 
     //////////////////////////////////////////////////////////////////////////
 
-    *logging::out << logging::Logger::INFO_HIGH << buildInfo::gitCommitHash() << "\n";
-
     if( sizeof(real) == 4 )
         *logging::out << logging::Logger::INFO_HIGH << "Using Single Precision\n";
     else
@@ -446,8 +457,8 @@ int main( int argc, char* argv[])
 
     try
     {
-        //uint restartIter = INVALID_INDEX;
-        uint restartIter = 50000;
+        uint restartIter = INVALID_INDEX;
+        //uint restartIter = 50000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 

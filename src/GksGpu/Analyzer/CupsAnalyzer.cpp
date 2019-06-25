@@ -41,7 +41,7 @@ void CupsAnalyzer::restart()
     this->timerRestart.start();
 }
 
-void CupsAnalyzer::run( uint iter )
+void CupsAnalyzer::run( uint iter, real dt )
 {
     real currentRuntime             = this->timer.getCurrentRuntimeInSeconds();
     real currentRuntimeSinceRestart = this->timerRestart.getCurrentRuntimeInSeconds();
@@ -54,7 +54,7 @@ void CupsAnalyzer::run( uint iter )
 
         real CUPS = real(numberOfCellUpdates) / currentRuntimeSinceRestart;
 
-        this->printCups( iter, currentRuntime, CUPS );
+        this->printCups( iter, iter * dt, currentRuntime, CUPS );
 
         this->restart();
     }
@@ -75,22 +75,49 @@ bool CupsAnalyzer::checkOutputPerIter(uint iter)
     return outputPerIter && (iter % outputIter == 0);
 }
 
-void CupsAnalyzer::printCups(uint iter, real currentRunTime, real cups)
+void CupsAnalyzer::printCups(uint iter, real simTime, real currentRunTime, real cups)
 {
     std::stringstream header;
     std::stringstream body;
 
     header << "| ";
-    header << "      Iter" << " | "; 
-    header << " runtime/s" << " | "; 
-    header << "     MCUPS" << " | ";
+    header << "        Iter" << " | "; 
+    header << "   sim. time" << " | "; 
+    header << "   wall time" << " | "; 
+    header << "       MCUPS" << " | ";
 
     body   << "| ";
-    body   << std::setw(10) << std::setprecision(4) << iter  << " | ";
-    body   << std::setw(10) << std::setprecision(4) << currentRunTime << " | ";
-    body   << std::setw(10) << std::setprecision(4) << cups / 1.0e6 << " | ";
+    body   << std::setw(20) << std::setprecision(4) << iter                                        << " | ";
+    body   << std::setw(20) << std::setprecision(4) << this->getTimeString(simTime).c_str()        << " | ";
+    body   << std::setw(20) << std::setprecision(4) << this->getTimeString(currentRunTime).c_str() << " | ";
+    body   << std::setw(20) << std::setprecision(4) << cups / 1.0e6                                << " | ";
 
     *logging::out << logging::Logger::INFO_HIGH << "Performance:" << "\n";
     *logging::out << logging::Logger::INFO_HIGH << header.str() << "\n";
     *logging::out << logging::Logger::INFO_HIGH << body.str()   << "\n";
 }
+
+std::string CupsAnalyzer::getTimeString(real time)
+{
+    int seconds = int(time);
+    int minutes = seconds / 60;
+    int hours   = minutes / 60;
+    int days    = hours   / 24;
+
+    hours   -=     days * 24;
+    minutes -=   ( days * 24 + hours ) * 60;
+    seconds -= ( ( days * 24 + hours ) * 60 + minutes ) * 60;
+
+    int milliseconds = int( 1000.0 * ( time - seconds) );
+
+    std::stringstream timeString;
+    timeString << std::setw(2) << std::setfill('0') << days    << ":";
+    timeString << std::setw(2) << std::setfill('0') << hours   << ":";
+    timeString << std::setw(2) << std::setfill('0') << minutes << ":";
+    timeString << std::setw(2) << std::setfill('0') << seconds << ".";
+    timeString << std::setw(3) << std::setfill('0') << milliseconds;
+
+    return timeString.str();
+}
+
+
