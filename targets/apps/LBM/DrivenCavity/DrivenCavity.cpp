@@ -56,6 +56,9 @@
 #include "utilities/communication.h"
 #include "utilities/transformator/TransformatorImp.h"
 
+#include "Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
+#include "PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+
 void multipleLevel(const std::string& configPath)
 {
     logging::Logger::addStream(&std::cout);
@@ -136,9 +139,13 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Simulation sim;
-    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
+	SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
+	SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
+	SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
+	sim.setFactories(kernelFactory, preProcessorFactory);
     sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
     sim.run();
+	sim.free();
 }
 
 int main( int argc, char* argv[])
