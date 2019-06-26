@@ -48,11 +48,11 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
         const real coordZ = para->getParH(level)->coordZ_SP[j];
         const real velocity = para->getVelocity();
 
-        para->getParH(level)->rho_SP[j] = real((velocity * velocity) * 3.0 / 4.0 * (cos(coordX * 4.0*PI / gridX) + cos(coordZ * 4.0*PI / gridZ))) * gridZ / gridX;
+        para->getParH(level)->rho_SP[j] = real(0.0); //real((velocity * velocity) * 3.0 / 4.0 * (cos(coordX * 4.0*PI / gridX) + cos(coordZ * 4.0*PI / gridZ))) * gridZ / gridX;
 
         para->getParH(level)->vy_SP[j] = real(0.0);
-        para->getParH(level)->vx_SP[j] = real( velocity * sin(coordX * 2.0*PI / gridX) * cos(coordZ * 2.0*PI / gridZ)) + uAdvect * (1.0 + para->getParH(level)->rho_SP[j]);
-        para->getParH(level)->vz_SP[j] = real(-velocity * cos(coordX * 2.0*PI / gridX) * sin(coordZ * 2.0*PI / gridZ)); // *(real)(gridZ) / (real)(gridX);
+        para->getParH(level)->vx_SP[j] = real(0.0); //real( velocity * sin(coordX * 2.0*PI / gridX) * cos(coordZ * 2.0*PI / gridZ)) + uAdvect * (1.0 + para->getParH(level)->rho_SP[j]);
+        para->getParH(level)->vz_SP[j] = real(0.0); //real(-velocity * cos(coordX * 2.0*PI / gridX) * sin(coordZ * 2.0*PI / gridZ)); // *(real)(gridZ) / (real)(gridX);
 
        //para->getParH(level)->vx_SP[j] = 0.001;
        //para->getParH(level)->vy_SP[j] = 0.0;
