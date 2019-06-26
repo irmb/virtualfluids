@@ -24,7 +24,7 @@ namespace logging
 			INFO_INTERMEDIATE = 2,
 			INFO_HIGH = 1,
 			WARNING = 0,
-			LOGGED_ERROR = -1
+			LOGGER_ERROR = -1
 		};
 
         enum TimeStamp
@@ -39,7 +39,7 @@ namespace logging
 
         static void timeStamp(TimeStamp timeStamp);
 
-        static void setDebugLevel(const Level &level = Level::LOGGED_ERROR);
+        static void setDebugLevel(const Level &level = Level::LOGGER_ERROR);
         static void enablePrintedRankNumbers(bool printRankNumbers);
 
         virtual Logger& operator<<(const Level &level) = 0;

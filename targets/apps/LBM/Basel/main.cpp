@@ -200,11 +200,11 @@ void multipleLevel(const std::string& configPath)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	std::shared_ptr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-	std::shared_ptr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
 
 	Simulation sim;
 	SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
+	SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
+	SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
 	sim.setFactories(kernelFactory, preProcessorFactory);
 	sim.init(para, gridGenerator, fileWriter, cudaMemManager);
 	sim.run();
@@ -228,7 +228,7 @@ int main(int argc, char* argv[])
 			}
 			catch (const std::exception& e)
 			{
-				*logging::out << logging::Logger::LOGGED_ERROR << e.what() << "\n";
+				*logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
 				//MPI_Abort(MPI_COMM_WORLD, -1);
 			}
 			catch (...)
@@ -249,20 +249,20 @@ int main(int argc, char* argv[])
 			catch (const std::exception& e)
 			{
 
-				*logging::out << logging::Logger::LOGGED_ERROR << e.what() << "\n";
+				*logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
 				//std::cout << e.what() << std::flush;
 				//MPI_Abort(MPI_COMM_WORLD, -1);
 			}
 			catch (const std::bad_alloc e)
 			{
 
-				*logging::out << logging::Logger::LOGGED_ERROR << "Bad Alloc:" << e.what() << "\n";
+				*logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
 				//std::cout << e.what() << std::flush;
 				//MPI_Abort(MPI_COMM_WORLD, -1);
 			}
 			catch (...)
 			{
-				*logging::out << logging::Logger::LOGGED_ERROR << "Unknown exception!\n";
+				*logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
 				//std::cout << "unknown exeption" << std::endl;
 			}
 
