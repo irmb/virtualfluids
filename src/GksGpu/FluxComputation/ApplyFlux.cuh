@@ -18,17 +18,17 @@ __host__ __device__ inline void applyFluxToNegCell( const DataBaseStruct& dataBa
                                                     const char direction,
                                                     const real& dt)
 {
-    double* dataUpdate = dataBase.dataUpdate;
+    realAccumulator* dataUpdate = dataBase.dataUpdate;
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-    atomicAdd( &( dataUpdate[ RHO__(negCellIdx, dataBase.numberOfCells) ] ), - (double)flux.rho  );
-    atomicAdd( &( dataUpdate[ RHO_U(negCellIdx, dataBase.numberOfCells) ] ), - (double)flux.rhoU );
-    atomicAdd( &( dataUpdate[ RHO_V(negCellIdx, dataBase.numberOfCells) ] ), - (double)flux.rhoV );
-    atomicAdd( &( dataUpdate[ RHO_W(negCellIdx, dataBase.numberOfCells) ] ), - (double)flux.rhoW );
-    atomicAdd( &( dataUpdate[ RHO_E(negCellIdx, dataBase.numberOfCells) ] ), - (double)flux.rhoE );
+    atomicAdd( &( dataUpdate[ RHO__(negCellIdx, dataBase.numberOfCells) ] ), - (realAccumulator)flux.rho  );
+    atomicAdd( &( dataUpdate[ RHO_U(negCellIdx, dataBase.numberOfCells) ] ), - (realAccumulator)flux.rhoU );
+    atomicAdd( &( dataUpdate[ RHO_V(negCellIdx, dataBase.numberOfCells) ] ), - (realAccumulator)flux.rhoV );
+    atomicAdd( &( dataUpdate[ RHO_W(negCellIdx, dataBase.numberOfCells) ] ), - (realAccumulator)flux.rhoW );
+    atomicAdd( &( dataUpdate[ RHO_E(negCellIdx, dataBase.numberOfCells) ] ), - (realAccumulator)flux.rhoE );
 #ifdef USE_PASSIVE_SCALAR
-	atomicAdd( &( dataUpdate[ RHO_S_1(negCellIdx, dataBase.numberOfCells) ] ), - (double)flux.rhoS_1 );
-	atomicAdd( &( dataUpdate[ RHO_S_2(negCellIdx, dataBase.numberOfCells) ] ), - (double)flux.rhoS_2 );
+	atomicAdd( &( dataUpdate[ RHO_S_1(negCellIdx, dataBase.numberOfCells) ] ), - (realAccumulator)flux.rhoS_1 );
+	atomicAdd( &( dataUpdate[ RHO_S_2(negCellIdx, dataBase.numberOfCells) ] ), - (realAccumulator)flux.rhoS_2 );
 #endif // USE_PASSIVE_SCALAR
     
     if( direction == 'x' )
@@ -73,17 +73,17 @@ __host__ __device__ inline void applyFluxToPosCell( const DataBaseStruct& dataBa
                                                     const char& direction,
                                                     const real& dt )
 {
-    double* dataUpdate = dataBase.dataUpdate;
+    realAccumulator* dataUpdate = dataBase.dataUpdate;
 
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-    atomicAdd( &( dataUpdate[ RHO__(posCellIdx, dataBase.numberOfCells) ] ),   (double)flux.rho  );
-    atomicAdd( &( dataUpdate[ RHO_U(posCellIdx, dataBase.numberOfCells) ] ),   (double)flux.rhoU );
-    atomicAdd( &( dataUpdate[ RHO_V(posCellIdx, dataBase.numberOfCells) ] ),   (double)flux.rhoV );
-    atomicAdd( &( dataUpdate[ RHO_W(posCellIdx, dataBase.numberOfCells) ] ),   (double)flux.rhoW );
-    atomicAdd( &( dataUpdate[ RHO_E(posCellIdx, dataBase.numberOfCells) ] ),   (double)flux.rhoE );
+    atomicAdd( &( dataUpdate[ RHO__(posCellIdx, dataBase.numberOfCells) ] ),   (realAccumulator)flux.rho  );
+    atomicAdd( &( dataUpdate[ RHO_U(posCellIdx, dataBase.numberOfCells) ] ),   (realAccumulator)flux.rhoU );
+    atomicAdd( &( dataUpdate[ RHO_V(posCellIdx, dataBase.numberOfCells) ] ),   (realAccumulator)flux.rhoV );
+    atomicAdd( &( dataUpdate[ RHO_W(posCellIdx, dataBase.numberOfCells) ] ),   (realAccumulator)flux.rhoW );
+    atomicAdd( &( dataUpdate[ RHO_E(posCellIdx, dataBase.numberOfCells) ] ),   (realAccumulator)flux.rhoE );
 #ifdef USE_PASSIVE_SCALAR
-	atomicAdd( &( dataUpdate[ RHO_S_1(posCellIdx, dataBase.numberOfCells) ] ),   (double)flux.rhoS_1 );
-	atomicAdd( &( dataUpdate[ RHO_S_2(posCellIdx, dataBase.numberOfCells) ] ),   (double)flux.rhoS_2 );
+	atomicAdd( &( dataUpdate[ RHO_S_1(posCellIdx, dataBase.numberOfCells) ] ),   (realAccumulator)flux.rhoS_1 );
+	atomicAdd( &( dataUpdate[ RHO_S_2(posCellIdx, dataBase.numberOfCells) ] ),   (realAccumulator)flux.rhoS_2 );
 #endif // USE_PASSIVE_SCALAR
     
     if( direction == 'x' )

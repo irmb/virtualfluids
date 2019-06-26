@@ -76,8 +76,8 @@ void DataBaseAllocatorGPU::allocateMemory(SPtr<DataBase> dataBase)
     checkCudaErrors( cudaMalloc ( &dataBase->fineToCoarse, sizeof(uint) * LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells ) );
     checkCudaErrors( cudaMalloc ( &dataBase->coarseToFine, sizeof(uint) * LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells   ) );
 
-    checkCudaErrors( cudaMalloc ( &dataBase->data,       sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
-    checkCudaErrors( cudaMalloc ( &dataBase->dataUpdate, sizeof(double) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
+    checkCudaErrors( cudaMalloc ( &dataBase->data,       sizeof(real) *            LENGTH_CELL_DATA * dataBase->numberOfCells ) );
+    checkCudaErrors( cudaMalloc ( &dataBase->dataUpdate, sizeof(realAccumulator) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
 
     checkCudaErrors( cudaMalloc ( &dataBase->massFlux ,  sizeof(real) * LENGTH_VECTOR    * dataBase->numberOfCells ) );
 

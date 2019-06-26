@@ -73,8 +73,8 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<DataBase> dataBase)
     dataBase->fineToCoarse = new uint [ LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells ];
     dataBase->coarseToFine = new uint [ LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells   ];
 
-    dataBase->data       = new real [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
-    dataBase->dataUpdate = new double [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
+    dataBase->data       = new real            [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
+    dataBase->dataUpdate = new realAccumulator [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
 
     dataBase->massFlux   = new real [ LENGTH_VECTOR    * dataBase->numberOfCells ];
 

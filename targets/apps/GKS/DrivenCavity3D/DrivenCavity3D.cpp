@@ -28,6 +28,8 @@
 #include "GksGpu/Parameters/Parameters.h"
 #include "GksGpu/Initializer/Initializer.h"
 
+#include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
+
 #include "GksGpu/BoundaryConditions/BoundaryCondition.h"
 #include "GksGpu/BoundaryConditions/IsothermalWall.h"
 #include "GksGpu/BoundaryConditions/Periodic.h"
@@ -204,7 +206,7 @@ void drivenCavity( std::string path, std::string simulationName )
 
     for( uint iter = 1; iter <= 1000000; iter++ )
     {
-        TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
+        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( iter % 10000 == 0 )
         {
@@ -213,7 +215,7 @@ void drivenCavity( std::string path, std::string simulationName )
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
         }
 
-        cupsAnalyzer.run( iter );
+        cupsAnalyzer.run( iter, parameters.dt );
 
         turbulenceAnalyzer->run( iter, parameters );
 
@@ -240,7 +242,7 @@ void drivenCavity( std::string path, std::string simulationName )
 
 int main( int argc, char* argv[])
 {
-    std::string path( "F:/Work/Computations/out/" );
+    std::string path( "E:/DrivenCavity/resultsGKS/" );
     //std::string path( "out/" );
     std::string simulationName ( "DrivenCavity" );
 
@@ -254,15 +256,15 @@ int main( int argc, char* argv[])
     }
     catch (const std::exception& e)
     {     
-        *logging::out << logging::Logger::ERROR << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
     }
     catch (const std::bad_alloc& e)
     {  
-        *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
     }
     catch (...)
     {
-        *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
     }
 
    return 0;

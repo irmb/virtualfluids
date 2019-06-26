@@ -13,6 +13,8 @@
 
 #include "VirtualFluidsDefinitions.h"
 
+#include "Definitions/AccumulatorDataType.h"
+
 #include "CellProperties/CellProperties.cuh"
 
 class  GksMeshAdapter;
@@ -89,8 +91,8 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     // Host/Device data - READ MODIFY
     //////////////////////////////////////////////////////////////////////////
 
-    real* data;
-    double* dataUpdate;
+    real*            data;
+    realAccumulator* dataUpdate;
 
     real* massFlux;
 

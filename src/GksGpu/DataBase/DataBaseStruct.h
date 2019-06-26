@@ -28,8 +28,8 @@ struct VF_PUBLIC DataBaseStruct
 
     char* faceOrientation;
 
-    real* data;
-    double* dataUpdate;
+    real*            data;
+    realAccumulator* dataUpdate;
 
     real* massFlux;
 
