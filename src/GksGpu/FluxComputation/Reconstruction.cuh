@@ -9,7 +9,15 @@
 #include "Parameters/Parameters.h"
 
 #include "FlowStateData/FlowStateData.cuh"
+#include "FlowStateData/FlowStateDataConversion.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
+#include "FlowStateData/ThermalDependencies.cuh"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 __host__ __device__ inline void getCellIndicesN ( const uint faceIndex,
                                                   const DataBaseStruct& dataBase,
@@ -62,8 +70,6 @@ __host__ __device__ inline void getCellIndicesTZ( const uint faceIndex,
     negCellIndexTZ[1] = dataBase.cellToCell[ CELL_TO_CELL( negCellIndexN, 5, dataBase.numberOfCells ) ];
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +86,8 @@ __host__ __device__ inline void computeFaceCons( const ConservedVariables& posCo
     faceCons.rhoW = c1o2 * ( negCons.rhoW + posCons.rhoW );
     faceCons.rhoE = c1o2 * ( negCons.rhoE + posCons.rhoE );
 #ifdef USE_PASSIVE_SCALAR
-	faceCons.rhoS = c1o2 * ( negCons.rhoS + posCons.rhoS );
+	faceCons.rhoS_1 = c1o2 * ( negCons.rhoS_1 + posCons.rhoS_1 );
+	faceCons.rhoS_2 = c1o2 * ( negCons.rhoS_2 + posCons.rhoS_2 );
 #endif // USE_PASSIVE_SCALAR
 }
 
@@ -96,7 +103,8 @@ __host__ __device__ inline void computeGradN( const Parameters& parameters,
     gradN.rhoW = ( posCons.rhoW - negCons.rhoW ) / ( parameters.dx * facePrim.rho );
     gradN.rhoE = ( posCons.rhoE - negCons.rhoE ) / ( parameters.dx * facePrim.rho );
 #ifdef USE_PASSIVE_SCALAR
-	gradN.rhoS = ( posCons.rhoS - negCons.rhoS ) / ( parameters.dx * facePrim.rho );
+	gradN.rhoS_1 = ( posCons.rhoS_1 - negCons.rhoS_1 ) / ( parameters.dx * facePrim.rho );
+	gradN.rhoS_2 = ( posCons.rhoS_2 - negCons.rhoS_2 ) / ( parameters.dx * facePrim.rho );
 #endif // USE_PASSIVE_SCALAR
 }
 
@@ -119,7 +127,8 @@ __host__ __device__ inline void computeGradT( const DataBaseStruct& dataBase,
         gradN.rhoW += c1o2 * cons.rhoW;
         gradN.rhoE += c1o2 * cons.rhoE;
     #ifdef USE_PASSIVE_SCALAR
-        gradN.rhoS += c1o2 * cons.rhoS;
+        gradN.rhoS_1 += c1o2 * cons.rhoS_1;
+        gradN.rhoS_2 += c1o2 * cons.rhoS_2;
     #endif // USE_PASSIVE_SCALAR
     }
     {
@@ -131,7 +140,8 @@ __host__ __device__ inline void computeGradT( const DataBaseStruct& dataBase,
         gradN.rhoW += c1o2 * cons.rhoW;
         gradN.rhoE += c1o2 * cons.rhoE;
     #ifdef USE_PASSIVE_SCALAR
-        gradN.rhoS += c1o2 * cons.rhoS;
+        gradN.rhoS_1 += c1o2 * cons.rhoS_1;
+        gradN.rhoS_2 += c1o2 * cons.rhoS_2;
     #endif // USE_PASSIVE_SCALAR
     }
     //////////////////////////////////////////////////////////////////////////
@@ -144,7 +154,8 @@ __host__ __device__ inline void computeGradT( const DataBaseStruct& dataBase,
         gradN.rhoW -= c1o2 * cons.rhoW;
         gradN.rhoE -= c1o2 * cons.rhoE;
     #ifdef USE_PASSIVE_SCALAR
-        gradN.rhoS -= c1o2 * cons.rhoS;
+        gradN.rhoS_1 -= c1o2 * cons.rhoS_1;
+        gradN.rhoS_2 -= c1o2 * cons.rhoS_2;
     #endif // USE_PASSIVE_SCALAR
     }
     {
@@ -156,7 +167,8 @@ __host__ __device__ inline void computeGradT( const DataBaseStruct& dataBase,
         gradN.rhoW -= c1o2 * cons.rhoW;
         gradN.rhoE -= c1o2 * cons.rhoE;
     #ifdef USE_PASSIVE_SCALAR
-        gradN.rhoS -= c1o2 * cons.rhoS;
+        gradN.rhoS_1 -= c1o2 * cons.rhoS_1;
+        gradN.rhoS_2 -= c1o2 * cons.rhoS_2;
     #endif // USE_PASSIVE_SCALAR
     }
     //////////////////////////////////////////////////////////////////////////
@@ -167,7 +179,8 @@ __host__ __device__ inline void computeGradT( const DataBaseStruct& dataBase,
         gradN.rhoW /= two * parameters.dx * facePrim.rho;
         gradN.rhoE /= two * parameters.dx * facePrim.rho;
     #ifdef USE_PASSIVE_SCALAR
-        gradN.rhoS /= two * parameters.dx * facePrim.rho;
+        gradN.rhoS_1 /= two * parameters.dx * facePrim.rho;
+        gradN.rhoS_2 /= two * parameters.dx * facePrim.rho;
     #endif // USE_PASSIVE_SCALAR
     }
     //////////////////////////////////////////////////////////////////////////
@@ -188,14 +201,14 @@ __host__ __device__ inline void reconstructFiniteDifferences( const uint faceInd
                                                               ConservedVariables& gradN,
                                                               ConservedVariables& gradT1,
                                                               ConservedVariables& gradT2,
-                                                              PrimitiveVariables& facePrim )
+                                                              PrimitiveVariables& facePrim,
+                                                              real& K )
 {
     uint posCellIndexN, negCellIndexN;
 
     getCellIndicesN( faceIndex, dataBase, posCellIndexN, negCellIndexN );
     
     {
-
         ConservedVariables posCons, negCons, faceCons;
 
         readCellData(posCellIndexN, dataBase, posCons);
@@ -203,7 +216,13 @@ __host__ __device__ inline void reconstructFiniteDifferences( const uint faceInd
         
         computeFaceCons(posCons, negCons, faceCons);
 
-        facePrim = toPrimitiveVariables( faceCons, parameters.K );
+    #ifdef USE_PASSIVE_SCALAR
+        {
+            //K = getK(faceCons);
+        }
+    #endif
+
+        facePrim = toPrimitiveVariables( faceCons, K, false );
 
         computeGradN( parameters, posCons, negCons, facePrim, gradN );
     }

@@ -39,9 +39,13 @@ struct VF_PUBLIC BoundaryCondition : virtual public BoundaryConditionStruct, pub
 
     ~BoundaryCondition();
 
-    virtual void findBoundaryCells( GksMeshAdapter& adapter, std::function<bool(Vec3)> boundaryFinder);
+    virtual void findBoundaryCells( GksMeshAdapter& adapter, bool allowGhostCells, std::function<bool(Vec3)> boundaryFinder);
 
     virtual bool isWall() = 0;
+
+    virtual bool isFluxBC();
+    
+    virtual bool isInsulated();
 
     virtual bool secondCellsNeeded();
 

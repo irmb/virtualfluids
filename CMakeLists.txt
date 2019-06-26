@@ -23,7 +23,7 @@ if(POLICY CMP0054)
 endif()
 
 
-if(APPLE)
+if(UNIX)
   set(CMAKE_CXX_STANDARD 11)
 endif()
 
@@ -79,8 +79,13 @@ ENDIF(MSVC)
 ###                         OPTIONS                       ###
 #############################################################
 option(BUILD_SHARED_LIBS        "Build shared libraries"  ON )
+<<<<<<< HEAD
 option(HULC.BUILD_VF_GPU        "Build VirtualFluids GPU" ON )
 option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" OFF)
+=======
+option(HULC.BUILD_VF_GPU        "Build VirtualFluids GPU" OFF)
+option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" ON )
+>>>>>>> origin/development/Stephan
 option(HULC.BUILD_JSONCPP       "Builds json cpp "        ON )
 option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     ON )
 
@@ -151,6 +156,7 @@ IF (HULC.BUILD_VF_GKS)
 
 	#add_subdirectory(targets/apps/GKS/gksTest)
 	#add_subdirectory(targets/apps/GKS/ChannelFlow)
+<<<<<<< HEAD
     #add_subdirectory(targets/apps/GKS/ShearWave)
 
 	add_subdirectory(targets/apps/GKS/TaylorGreen3D)
@@ -160,6 +166,38 @@ IF (HULC.BUILD_VF_GKS)
     add_subdirectory(targets/apps/GKS/ThermalCavityMultiGPU)
 
     add_subdirectory(targets/apps/GKS/SalinasVazquez)
+=======
+	add_subdirectory(targets/apps/GKS/ChannelFlowObstacle)
+    #add_subdirectory(targets/apps/GKS/ShearWave)
+
+    add_subdirectory(targets/apps/GKS/LiFuXu)
+
+	#add_subdirectory(targets/apps/GKS/TaylorGreen3D)
+    #add_subdirectory(targets/apps/GKS/DrivenCavity3D)
+    #add_subdirectory(targets/apps/GKS/ThermalCavity)
+
+    #add_subdirectory(targets/apps/GKS/ThermalCavityMultiGPU)
+    #add_subdirectory(targets/apps/GKS/DrivenCavityMultiGPU)
+
+    add_subdirectory(targets/apps/GKS/SalinasVazquez)
+    #add_subdirectory(targets/apps/GKS/BoundaryJet)
+
+    #add_subdirectory(targets/apps/GKS/PropaneFlame)
+    add_subdirectory(targets/apps/GKS/ConfinedCombustion)
+    #add_subdirectory(targets/apps/GKS/MethaneFlame)
+    
+    #add_subdirectory(targets/apps/GKS/Room)
+    #add_subdirectory(targets/apps/GKS/RoomMultiGPU)
+    
+    add_subdirectory(targets/apps/GKS/RoomFire)
+    add_subdirectory(targets/apps/GKS/PoolFire)
+    add_subdirectory(targets/apps/GKS/Flame7cm)
+    add_subdirectory(targets/apps/GKS/SandiaFlame_1m)
+    add_subdirectory(targets/apps/GKS/Candle)
+    
+    add_subdirectory(targets/apps/GKS/MultiGPU)
+    add_subdirectory(targets/apps/GKS/MultiGPU_2D)
+>>>>>>> origin/development/Stephan
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids GKS." )
 ENDIF()

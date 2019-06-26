@@ -25,7 +25,7 @@ BoundaryCondition::~BoundaryCondition()
     this->myAllocator->freeMemory( *this );
 }
 
-void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, std::function<bool(Vec3)> boundaryFinder)
+void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, bool allowGhostCells, std::function<bool(Vec3)> boundaryFinder)
 {
     this->myAllocator->freeMemory( *this );
 
@@ -51,8 +51,16 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, std::functio
             MeshCell& cell = adapter.cells[ cellIdx ];
 
             if( !boundaryFinder( cell.cellCenter ) ) continue;
-         
-            for( uint idx = 0; idx < 27; idx++ )
+
+            if( cell.type != STOPPER_OUT_OF_GRID && cell.type != STOPPER_OUT_OF_GRID_BOUNDARY && cell.type != STOPPER_SOLID ) continue;
+
+            // look in all directions
+            uint maximalSearchDirection = 27;
+
+            // in case of Flux BC look only at face neighbors
+            if( this->isFluxBC() ) maximalSearchDirection = 6;
+
+            for( uint idx = 0; idx < maximalSearchDirection; idx++ )
             {
                 uint neighborCellIdx = cell.cellToCell[ idx ];
 
@@ -60,18 +68,27 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, std::functio
 
                 MeshCell& neighborCell = adapter.cells[ neighborCellIdx ];
 
-                if( neighborCell.type != STOPPER_OUT_OF_GRID &&
-                    neighborCell.type != STOPPER_OUT_OF_GRID_BOUNDARY )
+                bool neighborCellIsFluid = neighborCell.type != STOPPER_OUT_OF_GRID && 
+                                           neighborCell.type != STOPPER_OUT_OF_GRID_BOUNDARY && 
+                                           neighborCell.type != STOPPER_SOLID;
+
+                bool neighborCellIsValidGhostCell = !this->isFluxBC() && allowGhostCells && !boundaryFinder( neighborCell.cellCenter );
+
+                if( neighborCellIsFluid || neighborCellIsValidGhostCell )
                 {
                     ghostCells.push_back ( cellIdx );
                     domainCells.push_back( neighborCellIdx );
-                
+
                     this->numberOfCellsPerLevel[ level ]++;
 
                     if( this->secondCellsNeeded() )
                     {
                         secondCells.push_back( neighborCell.cellToCell[ idx ] );
                     }
+
+                    cell.isWall      = this->isWall();
+                    cell.isFluxBC    = this->isFluxBC();
+                    cell.isInsulated = this->isInsulated();
 
                     break;
                 }
@@ -90,6 +107,16 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, std::functio
     this->numberOfCells = ghostCells.size();
 
     this->myAllocator->allocateMemory( shared_from_this(), ghostCells, domainCells, secondCells );
+}
+
+bool BoundaryCondition::isFluxBC()
+{
+    return false;
+}
+
+bool BoundaryCondition::isInsulated()
+{
+    return false;
 }
 
 bool BoundaryCondition::secondCellsNeeded()

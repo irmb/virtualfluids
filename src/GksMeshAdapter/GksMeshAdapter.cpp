@@ -10,8 +10,9 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <mpi.h>
 
-#include "core/Logger/Logger.h"
+#include "Core/Logger/Logger.h"
 
 #include "GridGenerator/grid/distributions/D3Q27.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
@@ -37,6 +38,8 @@ void GksMeshAdapter::inputGrid()
 
     //////////////////////////////////////////////////////////////////////////
 
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Allocate gridToMesh[][]" << "\n";
+
     this->gridToMesh.resize( this->gridBuilder->getNumberOfGridLevels() );
 
     for( uint level = 0; level < this->gridBuilder->getNumberOfGridLevels(); level++ ){
@@ -56,7 +59,7 @@ void GksMeshAdapter::inputGrid()
     for( uint level = 0; level < this->gridBuilder->getNumberOfGridLevels(); level++ ){
         for( uint gridIdx = 0; gridIdx < grids[level]->getSize(); gridIdx++ ){
             if (grids[level]->getFieldEntry(gridIdx)  != STOPPER_COARSE_UNDER_FINE &&
-                grids[level]->getFieldEntry(gridIdx)  != STOPPER_SOLID &&
+                //grids[level]->getFieldEntry(gridIdx)  != STOPPER_SOLID &&
                 grids[level]->getFieldEntry(gridIdx)  != INVALID_COARSE_UNDER_FINE &&
                 grids[level]->getFieldEntry(gridIdx)  != INVALID_OUT_OF_GRID &&
                 grids[level]->getFieldEntry(gridIdx)  != INVALID_SOLID )
@@ -71,6 +74,8 @@ void GksMeshAdapter::inputGrid()
     //    S e t    M e s h    t o    G r i d    i n f o r m a t i o n
     //
     //////////////////////////////////////////////////////////////////////////
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Allocate " << numberOfCells << " cells" << "\n";
 
     this->cells.resize( numberOfCells );
 
@@ -102,6 +107,10 @@ void GksMeshAdapter::inputGrid()
     this->sortFaces();
     this->countFaces();
     this->generateInterfaceConnectivity();
+
+    //////////////////////////////////////////////////////////////////////////
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "inputGrid() finished!" << "\n";
 }
 
 void GksMeshAdapter::findQuadtreeConnectivity()
@@ -109,6 +118,8 @@ void GksMeshAdapter::findQuadtreeConnectivity()
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "findQuadtreeConnectivity()" << "\n";
 
     std::vector< SPtr<Grid> > grids = this->gridBuilder->getGrids();
+
+    Distribution dirs = DistributionHelper::getDistribution27();
 
     for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
     
@@ -123,7 +134,6 @@ void GksMeshAdapter::findQuadtreeConnectivity()
 
             for( uint idx = 0; idx < 8; idx++ )
             {
-                Distribution dirs = DistributionHelper::getDistribution27();
 
                 real xSign = dirs.directions[idx + 19][0];
                 real ySign = dirs.directions[idx + 19][1];
@@ -135,12 +145,13 @@ void GksMeshAdapter::findQuadtreeConnectivity()
             }
 
             // register parent
-            for( uint child = 0; child < 8; child++ )
-                this->cells[ cell.children[child] ].parent = cellIdx;
+            if( cell.type == FLUID_CFC )
+                for (uint child = 0; child < 8; child++)
+                    this->cells[cell.children[child]].parent = cellIdx;
 
             // set correct type for CFF cells
-            for( uint child = 0; child < 8; child++ )
-                if( this->cells[ cell.children[child] ].type != FLUID_FCF ) 
+            if( cell.type == FLUID_CFC )
+                for( uint child = 0; child < 8; child++ )
                     this->cells[ cell.children[child] ].type = FLUID_CFF;
 
         }
@@ -152,6 +163,8 @@ void GksMeshAdapter::findCellToCellConnectivity()
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "findCellToCellConnectivity()" << "\n";
 
     std::vector< SPtr<Grid> > grids = this->gridBuilder->getGrids();
+
+    Distribution dirs = DistributionHelper::getDistribution27();
 
     for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
     
@@ -165,8 +178,6 @@ void GksMeshAdapter::findCellToCellConnectivity()
         for( uint idx = 0; idx < 27; idx++ )
         {
             if( idx == DIR_27_ZERO ) continue;
-
-            Distribution dirs = DistributionHelper::getDistribution27();
 
             int xSign = dirs.directions[idx][0];
             int ySign = dirs.directions[idx][1];
@@ -190,6 +201,8 @@ void GksMeshAdapter::findCellToCellConnectivity()
 
 void GksMeshAdapter::countCells()
 {
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "countCells()" << "\n";
+
     this->numberOfCellsPerLevel    .resize( this->numberOfLevels );
     this->numberOfBulkCellsPerLevel.resize( this->numberOfLevels );
     this->startOfCellsPerLevel     .resize( this->numberOfLevels );
@@ -216,6 +229,8 @@ void GksMeshAdapter::countCells()
 
 void GksMeshAdapter::partitionCells()
 {
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "partitionCells()" << "\n";
+
     for( uint level = 0; level < this->numberOfLevels; level++ ){
 
         std::vector<uint> idxMap( this->cells.size() );
@@ -252,6 +267,8 @@ void GksMeshAdapter::partitionCells()
 
 void GksMeshAdapter::refreshCellConnectivity(const std::vector<uint>& idxMap)
 {
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "refreshCellConnectivity()" << "\n";
+
     for( auto& cell : this->cells ){
         for( uint idx = 0; idx < 27; idx++ )
             if( cell.cellToCell[ idx ] != INVALID_INDEX )
@@ -291,11 +308,13 @@ void GksMeshAdapter::generateNodes()
 
     nodes.reserve( 2 * this->cells.size() );
 
+    Distribution dirs = DistributionHelper::getDistribution27();
+
     for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
     
         MeshCell& cell = this->cells[ cellIdx ];
 
-        if( cell.type == STOPPER_SOLID ) continue;
+        //if( cell.type == STOPPER_SOLID ) continue;
 
         real x, y, z;
         grids[cell.level]->transIndexToCoords(cell.gridIdx, x, y, z);
@@ -308,7 +327,6 @@ void GksMeshAdapter::generateNodes()
         {
             if( cell.cellToNode[idx] == INVALID_INDEX )
             {
-                Distribution dirs = DistributionHelper::getDistribution27();
 
                 real dx = dirs.directions[idx + 19][0] * d;
                 real dy = dirs.directions[idx + 19][1] * d;
@@ -321,8 +339,6 @@ void GksMeshAdapter::generateNodes()
                 //// register new node at neighbor cells on same level
                 for (uint idx = 0; idx < 8; idx++)
                 {
-                    Distribution dirs = DistributionHelper::getDistribution27();
-
                     real dxNeighbor = -dirs.directions[idx + 19][0] * d;
                     real dyNeighbor = -dirs.directions[idx + 19][1] * d;
                     real dzNeighbor = -dirs.directions[idx + 19][2] * d;
@@ -367,6 +383,8 @@ void GksMeshAdapter::computeCellGeometry()
 
 void GksMeshAdapter::generateFaces()
 {
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "generateFaces()" << "\n";
+
     std::vector< SPtr<Grid> > grids = this->gridBuilder->getGrids();
 
     this->faces.reserve( 2 * this->cells.size() );
@@ -375,7 +393,7 @@ void GksMeshAdapter::generateFaces()
     
         MeshCell& cell = this->cells[ cellIdx ];
 
-        if( cell.type == BC_SOLID || cell.type == STOPPER_SOLID ) continue;
+        //if( cell.type == BC_SOLID || cell.type == STOPPER_SOLID ) continue;
 
         // generate faces in positive direction
         for( uint neighborIdx = 0; neighborIdx < 6; neighborIdx += 2 ){
@@ -442,8 +460,8 @@ void GksMeshAdapter::generateFaces()
 
             //////////////////////////////////////////////////////////////////////////
 
-            if ( cell.type == FLUID_CFF && neighborCell.type == FLUID_FCF ) newFace.negCellCoarse = cell.parent;
-            if ( cell.type == FLUID_FCF && neighborCell.type == FLUID_CFF ) newFace.posCellCoarse = neighborCell.parent;
+            //if ( cell.type == FLUID_CFF && neighborCell.type == FLUID_FCF ) newFace.negCellCoarse = cell.parent;
+            //if ( cell.type == FLUID_FCF && neighborCell.type == FLUID_CFF ) newFace.posCellCoarse = neighborCell.parent;
 
             //////////////////////////////////////////////////////////////////////////
             
@@ -462,37 +480,191 @@ void GksMeshAdapter::generateFaces()
     }
 }
 
+#define OLD_SORTING
+#ifdef  OLD_SORTING
+
 void GksMeshAdapter::sortFaces()
 {
-    real xMax = ( *std::max_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.x < rhs.faceCenter.x; } ) ).faceCenter.x;
-    real yMax = ( *std::max_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.y < rhs.faceCenter.y; } ) ).faceCenter.y;
-    real zMax = ( *std::max_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.z < rhs.faceCenter.z; } ) ).faceCenter.z;
-    
-    real xMin = ( *std::min_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.x < rhs.faceCenter.x; } ) ).faceCenter.x;
-    real yMin = ( *std::min_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.y < rhs.faceCenter.y; } ) ).faceCenter.y;
-    real zMin = ( *std::min_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.z < rhs.faceCenter.z; } ) ).faceCenter.z;
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "sortFaces()" << "\n";
 
-    real xRange = xMax - xMin;
-    real yRange = yMax - yMin;
-    real zRange = zMax - zMin;
+    std::stable_sort(this->faces.begin(), this->faces.end(),
+            [&, this](MeshFace lhs, MeshFace rhs)
+            {
+                if( lhs.level != rhs.level ) return lhs.level < rhs.level;
 
-    std::sort(  this->faces.begin(), this->faces.end(),
-                [&,this]( MeshFace lhs, MeshFace rhs ){
-
-                    if( lhs.level != rhs.level ) return lhs.level < rhs.level;
-
-                    if( lhs.orientation != rhs.orientation ){
-                        if      ( lhs.orientation == 'x' && rhs.orientation == 'y' ) return true;
-                        else if ( lhs.orientation == 'y' && rhs.orientation == 'z' ) return true;
-                        else if ( lhs.orientation == 'x' && rhs.orientation == 'z' ) return true;
-                        else                                                         return false;
-                    }
-
-                    return ( ten * ten * lhs.faceCenter.z / zRange + ten * lhs.faceCenter.y / yRange + lhs.faceCenter.x / xRange ) < 
-                           ( ten * ten * rhs.faceCenter.z / zRange + ten * rhs.faceCenter.y / yRange + rhs.faceCenter.x / xRange );
+                if (lhs.orientation != rhs.orientation) {
+                    if      (lhs.orientation == 'x' && rhs.orientation == 'y') return true;
+                    else if (lhs.orientation == 'y' && rhs.orientation == 'z') return true;
+                    else if (lhs.orientation == 'x' && rhs.orientation == 'z') return true;
+                    else                                                       return false;
                 }
-             );
+
+                return false;
+            }
+    );
+
+    countFaces();
+
+    std::array<char, 3> orientations = {'x', 'y', 'z'};
+
+    for( uint level = 0; level < this->gridBuilder->getNumberOfLevels(); level++ )
+    {
+        for( uint idx = 0; idx < 3; idx++ )
+        {
+            uint start =         this->startOfFacesPerLevelXYZ [ 3 * level + idx];
+            uint end   = start + this->numberOfFacesPerLevelXYZ[ 3 * level + idx];
+
+            real xMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.x < rhs.faceCenter.x; })).faceCenter.x;
+            real yMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.y < rhs.faceCenter.y; })).faceCenter.y;
+            real zMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.z < rhs.faceCenter.z; })).faceCenter.z;
+
+            real xMin = (*std::min_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.x < rhs.faceCenter.x; })).faceCenter.x;
+            real yMin = (*std::min_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.y < rhs.faceCenter.y; })).faceCenter.y;
+            real zMin = (*std::min_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.z < rhs.faceCenter.z; })).faceCenter.z;
+
+            real xRange = xMax - xMin;
+            real yRange = yMax - yMin;
+            real zRange = zMax - zMin;
+
+            uint blockDim = 8;
+
+            real dx = this->gridBuilder->getGrid(level)->getDelta();
+
+            std::sort(this->faces.begin() + start, this->faces.begin() + end,
+                [&, this](MeshFace lhs, MeshFace rhs)
+            {
+                uint xIdxLhs = lround((lhs.faceCenter.x - xMin) / dx);
+                uint yIdxLhs = lround((lhs.faceCenter.y - yMin) / dx);
+                uint zIdxLhs = lround((lhs.faceCenter.z - zMin) / dx);
+
+                uint xIdxRhs = lround((rhs.faceCenter.x - xMin) / dx);
+                uint yIdxRhs = lround((rhs.faceCenter.y - yMin) / dx);
+                uint zIdxRhs = lround((rhs.faceCenter.z - zMin) / dx);
+
+                real xBlockLhs = xIdxLhs / blockDim;
+                real yBlockLhs = yIdxLhs / blockDim;
+                real zBlockLhs = zIdxLhs / blockDim;
+
+                real xBlockRhs = xIdxRhs / blockDim;
+                real yBlockRhs = yIdxRhs / blockDim;
+                real zBlockRhs = zIdxRhs / blockDim;
+
+                if (zBlockLhs < zBlockRhs) return true;
+                if (zBlockLhs > zBlockRhs) return false;
+                if (yBlockLhs < yBlockRhs) return true;
+                if (yBlockLhs > yBlockRhs) return false;
+                if (xBlockLhs < xBlockRhs) return true;
+                if (xBlockLhs > xBlockRhs) return false;
+
+                if (zIdxLhs < zIdxRhs) return true;
+                if (zIdxLhs > zIdxRhs) return false;
+                if (yIdxLhs < yIdxRhs) return true;
+                if (yIdxLhs > yIdxRhs) return false;
+                if (xIdxLhs < xIdxRhs) return true;
+                if (xIdxLhs > xIdxRhs) return false;
+
+                return true;
+            }
+            );
+        }
+    }
 }
+
+#else
+
+void GksMeshAdapter::sortFaces()
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "sortFaces()" << "\n";
+
+    std::stable_sort(this->faces.begin(), this->faces.end(),
+            [&, this](MeshFace lhs, MeshFace rhs)
+            {
+                if( lhs.level != rhs.level ) return lhs.level < rhs.level;
+
+                return false;
+            }
+    );
+
+    countFaces();
+
+    std::array<char, 3> orientations = {'x', 'y', 'z'};
+
+    for( uint level = 0; level < this->gridBuilder->getNumberOfLevels(); level++ )
+    {
+        uint start =         this->startOfFacesPerLevelXYZ [ 3 * level ];
+        uint end   = start + this->numberOfFacesPerLevelXYZ[ 3 * level + 0]
+                           + this->numberOfFacesPerLevelXYZ[ 3 * level + 1]
+                           + this->numberOfFacesPerLevelXYZ[ 3 * level + 2];
+
+        uint blockDim = 16;
+
+        real dx = this->gridBuilder->getGrid(level)->getDelta();
+
+        real xMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.x < rhs.faceCenter.x; })).faceCenter.x + 0.5 * dx;
+        real yMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.y < rhs.faceCenter.y; })).faceCenter.y + 0.5 * dx;
+        real zMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.z < rhs.faceCenter.z; })).faceCenter.z + 0.5 * dx;
+
+        real xMin = (*std::min_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.x < rhs.faceCenter.x; })).faceCenter.x + 0.5 * dx;
+        real yMin = (*std::min_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.y < rhs.faceCenter.y; })).faceCenter.y + 0.5 * dx;
+        real zMin = (*std::min_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.z < rhs.faceCenter.z; })).faceCenter.z + 0.5 * dx; 
+
+        std::stable_sort(this->faces.begin() + start, this->faces.begin() + end,
+            [&, this](MeshFace lhs, MeshFace rhs)
+        {
+            Vec3 lhsCenter = lhs.faceCenter;
+            Vec3 rhsCenter = rhs.faceCenter;
+
+            if( lhs.orientation == 'x' ) lhsCenter.x += 0.5 * dx;
+            if( lhs.orientation == 'y' ) lhsCenter.y += 0.5 * dx;
+            if( lhs.orientation == 'z' ) lhsCenter.z += 0.5 * dx;
+
+            if( rhs.orientation == 'x' ) rhsCenter.x += 0.5 * dx;
+            if( rhs.orientation == 'y' ) rhsCenter.y += 0.5 * dx;
+            if( rhs.orientation == 'z' ) rhsCenter.z += 0.5 * dx;
+
+            uint xIdxLhs = lround((lhsCenter.x - xMin) / dx);
+            uint yIdxLhs = lround((lhsCenter.y - yMin) / dx);
+            uint zIdxLhs = lround((lhsCenter.z - zMin) / dx);
+
+            uint xIdxRhs = lround((rhsCenter.x - xMin) / dx);
+            uint yIdxRhs = lround((rhsCenter.y - yMin) / dx);
+            uint zIdxRhs = lround((rhsCenter.z - zMin) / dx);
+
+            uint xBlockLhs = xIdxLhs / blockDim;
+            uint yBlockLhs = yIdxLhs / blockDim;
+            uint zBlockLhs = zIdxLhs / blockDim;
+
+            uint xBlockRhs = xIdxRhs / blockDim;
+            uint yBlockRhs = yIdxRhs / blockDim;
+            uint zBlockRhs = zIdxRhs / blockDim;
+
+            if (zBlockLhs < zBlockRhs) return true;
+            if (zBlockLhs > zBlockRhs) return false;
+            if (yBlockLhs < yBlockRhs) return true;
+            if (yBlockLhs > yBlockRhs) return false;
+            if (xBlockLhs < xBlockRhs) return true;
+            if (xBlockLhs > xBlockRhs) return false;
+
+            if (lhs.orientation != rhs.orientation) {
+                if      (lhs.orientation == 'x' && rhs.orientation == 'y') return true;
+                else if (lhs.orientation == 'y' && rhs.orientation == 'z') return true;
+                else if (lhs.orientation == 'x' && rhs.orientation == 'z') return true;
+                else                                                       return false;
+            }
+
+            if (zIdxLhs < zIdxRhs) return true;
+            if (zIdxLhs > zIdxRhs) return false;
+            if (yIdxLhs < yIdxRhs) return true;
+            if (yIdxLhs > yIdxRhs) return false;
+            if (xIdxLhs < xIdxRhs) return true;
+            if (xIdxLhs > xIdxRhs) return false;
+
+            return false;
+        });
+    }
+}
+
+#endif
 
 void GksMeshAdapter::countFaces()
 {
@@ -553,35 +725,42 @@ void GksMeshAdapter::generateInterfaceConnectivity()
 
             connectivity[  0 ] = cellIdx;
 
-            connectivity[  1 ] = cell.cellToCell[ 0 ];
-            connectivity[  2 ] = cell.cellToCell[ 1 ];
-            connectivity[  3 ] = cell.cellToCell[ 2 ];
-            connectivity[  4 ] = cell.cellToCell[ 3 ];
-            connectivity[  5 ] = cell.cellToCell[ 4 ];
-            connectivity[  6 ] = cell.cellToCell[ 5 ];
+            //connectivity[  1 ] = cell.cellToCell[ 0 ];
+            //connectivity[  2 ] = cell.cellToCell[ 1 ];
+            //connectivity[  3 ] = cell.cellToCell[ 2 ];
+            //connectivity[  4 ] = cell.cellToCell[ 3 ];
+            //connectivity[  5 ] = cell.cellToCell[ 4 ];
+            //connectivity[  6 ] = cell.cellToCell[ 5 ];
 
-            connectivity[  7 ] = cell.children[ 0 ];
-            connectivity[  8 ] = cell.children[ 1 ];
-            connectivity[  9 ] = cell.children[ 2 ];
-            connectivity[ 10 ] = cell.children[ 3 ];
-            connectivity[ 11 ] = cell.children[ 4 ];
-            connectivity[ 12 ] = cell.children[ 5 ];
-            connectivity[ 13 ] = cell.children[ 6 ];
-            connectivity[ 14 ] = cell.children[ 7 ];
+            //connectivity[  7 ] = cell.children[ 0 ];
+            //connectivity[  8 ] = cell.children[ 1 ];
+            //connectivity[  9 ] = cell.children[ 2 ];
+            //connectivity[ 10 ] = cell.children[ 3 ];
+            //connectivity[ 11 ] = cell.children[ 4 ];
+            //connectivity[ 12 ] = cell.children[ 5 ];
+            //connectivity[ 13 ] = cell.children[ 6 ];
+            //connectivity[ 14 ] = cell.children[ 7 ];
+
+            connectivity[ 1 ] = cell.children[ 0 ];
+            connectivity[ 2 ] = cell.children[ 1 ];
+            connectivity[ 3 ] = cell.children[ 2 ];
+            connectivity[ 4 ] = cell.children[ 3 ];
+            connectivity[ 5 ] = cell.children[ 4 ];
+            connectivity[ 6 ] = cell.children[ 5 ];
+            connectivity[ 7 ] = cell.children[ 6 ];
+            connectivity[ 8 ] = cell.children[ 7 ];
 
             this->coarseToFine.push_back( connectivity );
 
             numberOfCoarseToFinePerLevel[ cell.level ]++;
         }
     }
-
-        std::cout << numberOfCoarseToFinePerLevel[ 0 ] << " " << this->numberOfFineToCoarsePerLevel[ 0 ] << std::endl;
     
     this->startOfFineToCoarsePerLevel[0] = 0;
     this->startOfCoarseToFinePerLevel[0] = 0;
 
-    for( uint level = 1; level < this->numberOfLevels; level++ ){
-        
+    for( uint level = 1; level < this->numberOfLevels; level++ )
+    {
         this->startOfFineToCoarsePerLevel[level] = this->startOfFineToCoarsePerLevel [level - 1]
                                                  + this->numberOfFineToCoarsePerLevel[level - 1];
         
@@ -596,6 +775,9 @@ void GksMeshAdapter::findPeriodicBoundaryNeighbors()
     {
         SPtr<Grid> grid = this->gridBuilder->getGrid(level);
 
+        if( !grid->getPeriodicityX() && !grid->getPeriodicityY() && !grid->getPeriodicityZ() )
+            throw std::runtime_error( "GksMeshAdapter::findPeriodicBoundaryNeighbors() failed, because no periodic direction is set!" );
+
         uint startIdx = startOfCellsPerLevel[ level ] + numberOfBulkCellsPerLevel[ level ];
 
         uint endIdx   = startOfCellsPerLevel[ level ] + numberOfCellsPerLevel[ level ];
@@ -604,13 +786,15 @@ void GksMeshAdapter::findPeriodicBoundaryNeighbors()
         {
             MeshCell cell = this->cells[ cellIdx ];
 
+            if( cell.type != STOPPER_OUT_OF_GRID && cell.type != STOPPER_OUT_OF_GRID_BOUNDARY && cell.type != STOPPER_SOLID ) continue;
+
             Vec3 gridStart ( grid->getStartX() + c1o2 * grid->getDelta(),
-                             grid->getStartX() + c1o2 * grid->getDelta(),
-                             grid->getStartX() + c1o2 * grid->getDelta() );
+                             grid->getStartY() + c1o2 * grid->getDelta(),
+                             grid->getStartZ() + c1o2 * grid->getDelta() );
 
             Vec3 gridEnd   ( grid->getEndX()   - c1o2 * grid->getDelta(),
-                             grid->getEndX()   - c1o2 * grid->getDelta(),
-                             grid->getEndX()   - c1o2 * grid->getDelta() );
+                             grid->getEndY()   - c1o2 * grid->getDelta(),
+                             grid->getEndZ()   - c1o2 * grid->getDelta() );
 
             Vec3 size = gridEnd - gridStart;
 
@@ -629,11 +813,11 @@ void GksMeshAdapter::findPeriodicBoundaryNeighbors()
                                                             cell.cellCenter.y + delta.y,
                                                             cell.cellCenter.z + delta.z );
             
-            if( neighborGridIdx == INVALID_INDEX ) throw std::runtime_error( std::string("No periodic cell found! 1") );
+            if( neighborGridIdx == INVALID_INDEX ) throw std::runtime_error( std::string("No periodic cell found!") );
 
             uint neighborIdx = this->gridToMesh[ level ][ neighborGridIdx ];
 
-            if( neighborIdx == cellIdx ) neighborIdx == INVALID_INDEX;
+            //if( neighborIdx == cellIdx ) neighborIdx == INVALID_INDEX;
 
             if( neighborIdx == INVALID_INDEX )
             {
@@ -652,6 +836,60 @@ void GksMeshAdapter::findPeriodicBoundaryNeighbors()
             this->periodicBoundaryNeighbors.push_back( {cellIdx, neighborIdx} );
         }
     }
+}
+
+void GksMeshAdapter::getCommunicationIndices()
+{
+    this->communicationProcesses[0] = this->gridBuilder->getCommunicationProcess(0);
+    this->communicationProcesses[1] = this->gridBuilder->getCommunicationProcess(1);
+    this->communicationProcesses[2] = this->gridBuilder->getCommunicationProcess(2);
+    this->communicationProcesses[3] = this->gridBuilder->getCommunicationProcess(3);
+    this->communicationProcesses[4] = this->gridBuilder->getCommunicationProcess(4);
+    this->communicationProcesses[5] = this->gridBuilder->getCommunicationProcess(5);
+
+    this->communicationIndices.resize( this->gridBuilder->getNumberOfLevels() );
+
+    int rank = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int mpiWorldSize = 1;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    for( int i = 0; i < rank; i++ ) MPI_Barrier(MPI_COMM_WORLD);
+
+    for( uint level = 0; level < this->gridBuilder->getNumberOfLevels(); level++ )
+    {
+        //////////////////////////////////////////////////////////////////////////
+
+        SPtr<Grid> grid = this->gridBuilder->getGrid(level);
+
+        for (uint direction = 0; direction < 6; direction++)
+        {
+            for (uint index = 0; index < grid->getNumberOfSendNodes(direction); index++)
+            {
+                this->communicationIndices[level].sendIndices[direction].push_back(this->gridToMesh[level][grid->getSendIndex(direction, index)]);
+            }
+
+            for (uint index = 0; index < grid->getNumberOfReceiveNodes(direction); index++)
+            {
+                this->communicationIndices[level].recvIndices[direction].push_back(this->gridToMesh[level][grid->getReceiveIndex(direction, index)]);
+            }
+
+            std::stringstream msg;
+
+            msg << "Rank " << rank << " | Level " << level << " | dir " << direction << " | ";
+            msg << "Send " << this->communicationIndices[level].sendIndices[direction].size() << " | ";
+            msg << "Recv " << this->communicationIndices[level].recvIndices[direction].size() << std::endl;
+
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << msg.str();
+        }
+
+        //////////////////////////////////////////////////////////////////////////
+    }
+
+    for( int i = rank; i < mpiWorldSize; i++ ) MPI_Barrier(MPI_COMM_WORLD);
 }
 
 void GksMeshAdapter::writeMeshVTK(std::string filename)

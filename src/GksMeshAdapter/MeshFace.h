@@ -39,8 +39,6 @@ struct VF_PUBLIC MeshFace
 
     char orientation;
 
-    bool isWall;
-
     uint level;
 
     MeshFace();

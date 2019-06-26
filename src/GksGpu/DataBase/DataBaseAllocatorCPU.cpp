@@ -9,7 +9,11 @@
 
 #include "DataBase/DataBase.h"
 
+#include "CellProperties/CellProperties.cuh"
+
 #include "BoundaryConditions/BoundaryCondition.h"
+
+#include "Communication/Communicator.h"
 
 #include "Definitions/MemoryAccessPattern.h"
 
@@ -17,6 +21,8 @@ void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
 {
     dataBase.cellToNode.clear();
     dataBase.faceToNode.clear();
+
+    dataBase.cellPropertiesHost.clear();
 
     delete [] dataBase.cellToCell;
 
@@ -27,7 +33,9 @@ void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
     delete [] dataBase.faceCenter;
     delete [] dataBase.cellCenter;
 
-    delete [] dataBase.faceIsWall;
+    delete [] dataBase.cellProperties;
+
+    delete [] dataBase.faceOrientation;
 
     delete [] dataBase.fineToCoarse;
     delete [] dataBase.coarseToFine;
@@ -37,6 +45,8 @@ void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
 
     delete [] dataBase.massFlux;
 
+    delete [] dataBase.crashCellIndex;
+
     dataBase.dataHost.clear();
 }
 
@@ -45,22 +55,30 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<DataBase> dataBase)
     dataBase->cellToNode.resize( dataBase->numberOfCells );
     dataBase->faceToNode.resize( dataBase->numberOfFaces );
 
+    dataBase->cellPropertiesHost.resize( dataBase->numberOfCells );
+
     dataBase->cellToCell = new uint [ LENGTH_CELL_TO_CELL * dataBase->numberOfCells ];
 
     dataBase->faceToCell = new uint [ LENGTH_FACE_TO_CELL * dataBase->numberOfFaces ];
 
+    dataBase->parentCell = new uint [ dataBase->numberOfCells ];
+
     dataBase->faceCenter = new real [ LENGTH_VECTOR * dataBase->numberOfFaces ];
     dataBase->cellCenter = new real [ LENGTH_VECTOR * dataBase->numberOfCells ];
 
-    dataBase->faceIsWall = new bool [ dataBase->numberOfFaces ];
+    dataBase->cellProperties = new CellProperties [ dataBase->numberOfCells ];
+
+    dataBase->faceOrientation = new char [ dataBase->numberOfFaces ];
 
     dataBase->fineToCoarse = new uint [ LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells ];
     dataBase->coarseToFine = new uint [ LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells   ];
 
     dataBase->data       = new real [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
-    dataBase->dataUpdate = new real [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
+    dataBase->dataUpdate = new double [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
 
     dataBase->massFlux   = new real [ LENGTH_VECTOR    * dataBase->numberOfCells ];
+
+    dataBase->crashCellIndex = new int;
 
     dataBase->dataHost.resize( LENGTH_CELL_DATA * dataBase->numberOfCells );
 }
@@ -86,9 +104,28 @@ void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
             dataBase->cellToCell[ CELL_TO_CELL( cellIdx, neighbordx, dataBase->numberOfCells ) ] 
                 = adapter.cells[ cellIdx ].cellToCell[ neighbordx ];
 
+        dataBase->parentCell[ cellIdx ] = adapter.cells[ cellIdx ].parent;
+
         dataBase->cellCenter[ VEC_X( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.x;
         dataBase->cellCenter[ VEC_Y( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.y;
         dataBase->cellCenter[ VEC_Z( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.z;
+
+        dataBase->cellPropertiesHost[ cellIdx ] = CELL_PROPERTIES_DEFAULT;
+
+        if( adapter.cells[ cellIdx ].isWall )
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_WALL ); 
+
+        if( adapter.cells[ cellIdx ].isFluxBC )
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_IS_FLUX_BC );
+
+        if( adapter.cells[ cellIdx ].isInsulated )
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_IS_INSULATED ); 
+
+        if( adapter.cells[ cellIdx ].isGhostCell )
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_GHOST ); 
+
+        if( adapter.cells[ cellIdx ].isFineGhostCell() )
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_FINE_GHOST ); 
     }
 
     for( uint faceIdx = 0; faceIdx < dataBase->numberOfFaces; faceIdx++ )
@@ -102,8 +139,9 @@ void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
 
         dataBase->faceCenter[ VEC_X( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.x;
         dataBase->faceCenter[ VEC_Y( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.y;
+        dataBase->faceCenter[ VEC_Z( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.z;
 
-        dataBase->faceIsWall[ faceIdx ] = adapter.faces[ faceIdx ].isWall;
+        dataBase->faceOrientation[ faceIdx ] = adapter.faces[ faceIdx ].orientation;
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -121,6 +159,14 @@ void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
                 = adapter.coarseToFine[idx][connectivityIdx];
         }
     }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    memcpy ( dataBase->cellProperties, dataBase->cellPropertiesHost.data(), sizeof(CellProperties) * dataBase->numberOfCells );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    *dataBase->crashCellIndex = -1;
 }
 
 void DataBaseAllocatorCPU::copyDataHostToDevice(SPtr<DataBase> dataBase)
@@ -131,6 +177,11 @@ void DataBaseAllocatorCPU::copyDataHostToDevice(SPtr<DataBase> dataBase)
 void DataBaseAllocatorCPU::copyDataDeviceToHost(SPtr<DataBase> dataBase, real* hostData)
 {
     memcpy( hostData, dataBase->data, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells );
+}
+
+int DataBaseAllocatorCPU::getCrashCellIndex(SPtr<DataBase> dataBase)
+{
+    return *dataBase->crashCellIndex;
 }
 
 void DataBaseAllocatorCPU::freeMemory(BoundaryCondition& boundaryCondition)
@@ -149,6 +200,42 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<BoundaryCondition> boundaryCondit
     memcpy ( boundaryCondition->ghostCells , ghostCells.data() , sizeof(uint) * ghostCells.size()  );
     memcpy ( boundaryCondition->domainCells, domainCells.data(), sizeof(uint) * domainCells.size() );
     memcpy ( boundaryCondition->secondCells, secondCells.data(), sizeof(uint) * secondCells.size() );
+}
+
+void DataBaseAllocatorCPU::freeMemory(Communicator & communicator)
+{
+    delete [] communicator.sendIndices;
+    delete [] communicator.recvIndices;
+    
+    delete [] communicator.sendBuffer;
+    delete [] communicator.recvBuffer;
+}
+
+void DataBaseAllocatorCPU::allocateMemory(Communicator & communicator, std::vector<uint>& sendIndices, std::vector<uint>& recvIndices)
+{
+    communicator.sendIndices = new uint[communicator.numberOfSendNodes];
+    communicator.recvIndices = new uint[communicator.numberOfRecvNodes];
+
+    communicator.sendBuffer  = new real[LENGTH_CELL_DATA * communicator.numberOfSendNodes];
+    communicator.recvBuffer  = new real[LENGTH_CELL_DATA * communicator.numberOfRecvNodes];
+
+    memcpy ( communicator.sendIndices , sendIndices.data() , sizeof(uint) * communicator.numberOfSendNodes );
+    memcpy ( communicator.recvIndices , recvIndices.data() , sizeof(uint) * communicator.numberOfRecvNodes );
+}
+
+void DataBaseAllocatorCPU::copyDataDeviceToDevice(SPtr<Communicator> dst, SPtr<Communicator> src)
+{
+    memcpy( dst->recvBuffer, src->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * src->numberOfSendNodes );
+}
+
+void DataBaseAllocatorCPU::copyBuffersDeviceToHost(SPtr<Communicator> communicator)
+{
+    memcpy( communicator->sendBufferHost.data(), communicator->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes );
+}
+
+void DataBaseAllocatorCPU::copyBuffersHostToDevice(SPtr<Communicator> communicator)
+{
+    memcpy( communicator->recvBuffer, communicator->recvBufferHost.data(), LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes );
 }
 
 std::string DataBaseAllocatorCPU::getDeviceType()

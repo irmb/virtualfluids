@@ -10,7 +10,7 @@
 #define LENGTH_VECTOR       3
 
 #ifdef USE_PASSIVE_SCALAR
-    #define LENGTH_CELL_DATA    6
+    #define LENGTH_CELL_DATA    7
 #else
     #define LENGTH_CELL_DATA    5
 #endif
@@ -21,7 +21,7 @@
 
 #define LENGTH_FINE_TO_COARSE 9
 
-#define LENGTH_COARSE_TO_FINE 15
+#define LENGTH_COARSE_TO_FINE 9
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -38,7 +38,8 @@
 #define RHO_E( cellIdx, numberOfCells ) ( 4 * numberOfCells   + cellIdx )
 
 #ifdef USE_PASSIVE_SCALAR
-    #define RHO_S( cellIdx, numberOfCells ) ( 5 * numberOfCells   + cellIdx )
+    #define RHO_S_1( cellIdx, numberOfCells ) ( 5 * numberOfCells   + cellIdx )
+    #define RHO_S_2( cellIdx, numberOfCells ) ( 6 * numberOfCells   + cellIdx )
 #endif // USE_PASSIVE_SCALAR
 
 #define CELL_TO_CELL( cellIdx, neighborIdx, numberOfCells ) ( neighborIdx * numberOfCells + cellIdx )
@@ -66,7 +67,8 @@
 #define RHO_E( cellIdx, numberOfCells ) ( cellIdx * LENGTH_CELL_DATA + 4 )
 
 #ifdef USE_PASSIVE_SCALAR
-    #define RHO_S( cellIdx, numberOfCells ) ( cellIdx * LENGTH_CELL_DATA + 5 )
+    #define RHO_S_1( cellIdx, numberOfCells ) ( cellIdx * LENGTH_CELL_DATA + 5 )
+    #define RHO_S_2( cellIdx, numberOfCells ) ( cellIdx * LENGTH_CELL_DATA + 6 )
 #endif // USE_PASSIVE_SCALAR
                                                                          
 #define CELL_TO_CELL( cellIdx, neighborIdx, numberOfCells ) ( cellIdx * LENGTH_CELL_TO_CELL + neighborIdx )

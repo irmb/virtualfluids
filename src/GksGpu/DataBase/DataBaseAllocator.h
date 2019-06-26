@@ -12,6 +12,7 @@
 class  GksMeshAdapter;
 struct DataBase;
 struct BoundaryCondition;
+struct Communicator;
 
 class VF_PUBLIC DataBaseAllocator {
 
@@ -31,11 +32,24 @@ public:
     
     virtual void copyDataDeviceToHost( SPtr<DataBase> dataBase, real* hostData ) = 0;
 
+    virtual int  getCrashCellIndex( SPtr<DataBase> dataBase ) = 0;
+
     //////////////////////////////////////////////////////////////////////////
 
     virtual void freeMemory( BoundaryCondition& boundaryCondition ) = 0;
 
     virtual void allocateMemory( SPtr<BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells ) = 0;
+
+    //////////////////////////////////////////////////////////////////////////
+
+    virtual void freeMemory( Communicator& communicator ) = 0;
+
+    virtual void allocateMemory( Communicator& communicator, std::vector<uint>& sendIndices, std::vector<uint>& recvIndices ) = 0;
+
+    virtual void copyDataDeviceToDevice( SPtr<Communicator> dst, SPtr<Communicator> src ) = 0;
+
+    virtual void copyBuffersDeviceToHost( SPtr<Communicator> communicator ) = 0;
+    virtual void copyBuffersHostToDevice( SPtr<Communicator> communicator ) = 0;
 
     //////////////////////////////////////////////////////////////////////////
 

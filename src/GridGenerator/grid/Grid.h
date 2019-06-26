@@ -84,7 +84,7 @@ public:
 
     HOST virtual void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) = 0;
 
-    HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox) = 0;
+    HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) = 0;
     
     HOST virtual void enableFindSolidBoundaryNodes() = 0;
     HOST virtual void enableComputeQs() = 0;
@@ -106,6 +106,8 @@ public:
     HOST virtual bool getPeriodicityY() = 0;
     HOST virtual bool getPeriodicityZ() = 0;
 
+    HOST virtual void setEnableFixRefinementIntoTheWall( bool enableFixRefinementIntoTheWall ) = 0;
+
     HOST virtual void freeMemory() = 0;
 
 
@@ -126,7 +128,7 @@ public:
 
     HOST virtual void setNumberOfLayers( uint numberOfLayers ) = 0;
 
-    virtual void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox) = 0;
+    virtual void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) = 0;
 
     virtual uint getNumberOfSendNodes(int direction) = 0;
     virtual uint getNumberOfReceiveNodes(int direction)  = 0;

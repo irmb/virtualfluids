@@ -11,8 +11,8 @@
 CudaUtility::CudaGrid::CudaGrid( uint numberOfEntities, uint threadsPerBlock )
 {
     this->numberOfEntities = numberOfEntities;
-    this->threads = threadsPerBlock;
-    this->blocks  = ( numberOfEntities + threadsPerBlock - 1 ) / threadsPerBlock;
+    this->threads.x = threadsPerBlock;
+    this->blocks.x  = ( numberOfEntities + threadsPerBlock - 1 ) / threadsPerBlock;
 }
 
 void CudaUtility::printCudaMemoryUsage()
@@ -32,6 +32,13 @@ void CudaUtility::printCudaMemoryUsage()
     *logging::out << logging::Logger::INFO_HIGH << "    total = " << total_db/1024.0/1024.0/1024.0 << " GB\n";
 }
 
+int CudaUtility::getCudaDeviceCount()
+{    
+    int deviceCount = 0;
+    checkCudaErrors( cudaGetDeviceCount(&deviceCount) );
+    return deviceCount;
+}
+
 void CudaUtility::setCudaDevice(int device)
 {    
     checkCudaErrors( cudaSetDevice( device ) );
@@ -41,4 +48,17 @@ void CudaUtility::setCudaDevice(int device)
     cudaGetDeviceProperties(&prop, device);
 
     *logging::out << logging::Logger::INFO_HIGH << "Set device " << device << ": " << prop.name << "\n";
+}
+
+int CudaUtility::getCudaDevice()
+{
+    int device;
+    checkCudaErrors( cudaGetDevice( &device ) );
+
+    cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, device);
+
+    *logging::out << logging::Logger::INFO_HIGH << "The current device " << device << ": " << prop.name << "\n";
+
+    return device;
 }

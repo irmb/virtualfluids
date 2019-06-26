@@ -85,6 +85,8 @@ private:
 
 	uint numberOfSolidBoundaryNodes;
 
+    bool enableFixRefinementIntoTheWall;
+
 public:
     HOST void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) override;
     HOST void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) override;
@@ -99,6 +101,8 @@ public:
     bool getPeriodicityY() override;
     bool getPeriodicityZ() override;
 
+    void setEnableFixRefinementIntoTheWall( bool enableFixRefinementIntoTheWall ) override;
+
     HOSTDEVICE void setCellTo(uint index, char type);
     HOSTDEVICE void setNonStopperOutOfGridCellTo(uint index, char type);
 
@@ -109,7 +113,7 @@ public:
 
     HOST void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
 
-    HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox) override;
+    HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
 
     HOST void freeMemory() override;
 
@@ -135,6 +139,8 @@ public:
 
     HOSTDEVICE void findInnerNode(uint index);
 
+    HOSTDEVICE void discretize(Object* object, char innerType, char outerType);
+
     bool isInside(const Cell& cell) const;
 
     HOSTDEVICE void setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid);
@@ -152,6 +158,7 @@ public:
     HOSTDEVICE void findGridInterfaceCF(uint index, GridImp& finerGrid, LbmOrGks lbmOrGks);
     HOSTDEVICE void findGridInterfaceFC(uint index, GridImp& finerGrid);
     HOSTDEVICE void findOverlapStopper(uint index, GridImp& finerGrid);
+    HOSTDEVICE void findInvalidBoundaryNodes(uint index);
 
     HOSTDEVICE void setNodeTo(uint index, char type);
     HOSTDEVICE bool isNode(uint index, char type) const;
@@ -272,7 +279,7 @@ private:
 
 public:
 
-    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox);
+    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
     void findCommunicationIndex( uint index, real coordinate, real limit, int direction );
 
     uint getNumberOfSendNodes(int direction) override;

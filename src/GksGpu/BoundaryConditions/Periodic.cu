@@ -20,7 +20,7 @@
 #include "Definitions/PassiveScalar.h"
 
 #include "FlowStateData/FlowStateData.cuh"
-#include "FlowstateData/AccessDeviceData.cuh"
+#include "FlowStateData/AccessDeviceData.cuh"
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
@@ -56,7 +56,9 @@ void Periodic::runBoundaryConditionKernel(const SPtr<DataBase> dataBase,
                parameters,
                this->startOfCellsPerLevel[ level ] );
 
-    getLastCudaError("IsothermalWall::runBoundaryConditionKernel( const SPtr<DataBase> dataBase, const Parameters parameters, const uint level )");
+    cudaDeviceSynchronize();
+
+    getLastCudaError("Periodic::runBoundaryConditionKernel( const SPtr<DataBase> dataBase, const Parameters parameters, const uint level )");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -71,7 +73,7 @@ __global__ void boundaryConditionKernel(const DataBaseStruct dataBase,
 {
     uint index = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if( index > numberOfEntities ) return;
+    if( index >= numberOfEntities ) return;
 
     boundaryConditionFunction( dataBase, boundaryCondition, parameters, startIndex, index );
 }
@@ -84,22 +86,17 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 {
     uint ghostCellIdx  = boundaryCondition.ghostCells [ startIndex + index ];
     uint domainCellIdx = boundaryCondition.domainCells[ startIndex + index ];
-
-    dataBase.data[ RHO__(ghostCellIdx, dataBase.numberOfCells) ] = dataBase.data[ RHO__(domainCellIdx, dataBase.numberOfCells) ];
-    dataBase.data[ RHO_U(ghostCellIdx, dataBase.numberOfCells) ] = dataBase.data[ RHO_U(domainCellIdx, dataBase.numberOfCells) ];
-    dataBase.data[ RHO_V(ghostCellIdx, dataBase.numberOfCells) ] = dataBase.data[ RHO_V(domainCellIdx, dataBase.numberOfCells) ];
-    dataBase.data[ RHO_W(ghostCellIdx, dataBase.numberOfCells) ] = dataBase.data[ RHO_W(domainCellIdx, dataBase.numberOfCells) ];
-    dataBase.data[ RHO_E(ghostCellIdx, dataBase.numberOfCells) ] = dataBase.data[ RHO_E(domainCellIdx, dataBase.numberOfCells) ];
-#ifdef USE_PASSIVE_SCALAR
-	dataBase.data[ RHO_S(ghostCellIdx, dataBase.numberOfCells) ] = dataBase.data[ RHO_S(domainCellIdx, dataBase.numberOfCells) ];
-#endif // USE_PASSIVE_SCALAR
+    
+    ConservedVariables domainCellData;
+    readCellData ( domainCellIdx, dataBase, domainCellData );
+    writeCellData( ghostCellIdx , dataBase, domainCellData );
 }
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-void Periodic::findBoundaryCells(GksMeshAdapter & adapter, std::function<bool(Vec3)> boundaryFinder)
+void Periodic::findBoundaryCells(GksMeshAdapter & adapter, bool allowGhostCells, std::function<bool(Vec3)> boundaryFinder)
 {
     this->myAllocator->freeMemory( *this );
 

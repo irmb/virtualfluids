@@ -26,7 +26,8 @@ void Initializer::interpret(SPtr<DataBase> dataBase, std::function<ConservedVari
         dataBase->dataHost[ RHO_W(cellIdx, dataBase->numberOfCells) ] = cellCons.rhoW;
         dataBase->dataHost[ RHO_E(cellIdx, dataBase->numberOfCells) ] = cellCons.rhoE;
     #ifdef USE_PASSIVE_SCALAR
-	    dataBase->dataHost[ RHO_S(cellIdx, dataBase->numberOfCells) ] = cellCons.rhoS;
+	    dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ] = cellCons.rhoS_1;
+	    dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ] = cellCons.rhoS_2;
     #endif // USE_PASSIVE_SCALAR
     }
 

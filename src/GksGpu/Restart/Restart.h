@@ -1,0 +1,28 @@
+#ifndef Restart_h
+#define Restart_h
+
+#include <string>
+#include <memory>
+
+#include <VirtualFluidsDefinitions.h>
+
+#include "Core/PointerDefinitions.h"
+#include "Core/DataTypes.h"
+
+struct DataBase;
+
+class VF_PUBLIC Restart
+{
+
+public:
+    static void writeRestart( SPtr<DataBase> dataBase, std::string filename, uint  iter );
+
+    static bool readRestart ( SPtr<DataBase> dataBase, std::string filename, uint& iter );
+
+private:
+    Restart(){}
+    ~Restart(){}
+};
+
+
+#endif

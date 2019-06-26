@@ -16,9 +16,13 @@
 
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
+#include "Core/Logger/Logger.h"
+
+#include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
 
 #include "GksGpu/Definitions/MemoryAccessPattern.h"
 #include "GksGpu/FlowStateData/FlowStateData.cuh"
+#include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
 
 vtkGridPtr getVtkUnstructuredOctGrid( SPtr<DataBase> dataBase, bool excludeGhostCells )
 {
@@ -139,10 +143,18 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
         cons.rhoV = dataBase->dataHost[ RHO_V(cellIdx, dataBase->numberOfCells) ];
         cons.rhoW = dataBase->dataHost[ RHO_W(cellIdx, dataBase->numberOfCells) ];
         cons.rhoE = dataBase->dataHost[ RHO_E(cellIdx, dataBase->numberOfCells) ];
+#ifdef USE_PASSIVE_SCALAR
+        cons.rhoS_1 = dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ];
+        cons.rhoS_2 = dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ];
+#endif // USE_PASSIVE_SCALAR
 
         PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
-
+        
+#ifdef USE_PASSIVE_SCALAR
+        return getT(prim);
+#else // USE_PASSIVE_SCALAR
         return 1.0 / prim.lambda;
+#endif // USE_PASSIVE_SCALAR
     } );
 
     addScalarRealCellData( grid, dataBase->numberOfCells, "lambda", [&] (uint cellIdx) {
@@ -154,6 +166,10 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
         cons.rhoV = dataBase->dataHost[ RHO_V(cellIdx, dataBase->numberOfCells) ];
         cons.rhoW = dataBase->dataHost[ RHO_W(cellIdx, dataBase->numberOfCells) ];
         cons.rhoE = dataBase->dataHost[ RHO_E(cellIdx, dataBase->numberOfCells) ];
+#ifdef USE_PASSIVE_SCALAR
+        cons.rhoS_1 = dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ];
+        cons.rhoS_2 = dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ];
+#endif // USE_PASSIVE_SCALAR
 
         PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
 
@@ -169,6 +185,10 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
         cons.rhoV = dataBase->dataHost[ RHO_V(cellIdx, dataBase->numberOfCells) ];
         cons.rhoW = dataBase->dataHost[ RHO_W(cellIdx, dataBase->numberOfCells) ];
         cons.rhoE = dataBase->dataHost[ RHO_E(cellIdx, dataBase->numberOfCells) ];
+#ifdef USE_PASSIVE_SCALAR
+        cons.rhoS_1 = dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ];
+        cons.rhoS_2 = dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ];
+#endif // USE_PASSIVE_SCALAR
 
         PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
 
@@ -199,8 +219,26 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
     } );
 
 #ifdef USE_PASSIVE_SCALAR
-	addScalarRealCellData( grid, dataBase->numberOfCells, "PassiveScalar", [&] (uint cellIdx) {
-	    return dataBase->dataHost[ RHO_S(cellIdx, dataBase->numberOfCells) ];
+	addScalarRealCellData( grid, dataBase->numberOfCells, "Y_F", [&] (uint cellIdx) {
+	    return dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ]
+             / dataBase->dataHost[ RHO__(cellIdx, dataBase->numberOfCells)   ];
+	} );
+
+	addScalarRealCellData( grid, dataBase->numberOfCells, "Y_P", [&] (uint cellIdx) {
+	    return dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ]
+             / dataBase->dataHost[ RHO__(cellIdx, dataBase->numberOfCells)   ];
+	} );
+
+	addScalarRealCellData( grid, dataBase->numberOfCells, "Y_A", [&] (uint cellIdx) {
+	    return one - dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ]
+                   / dataBase->dataHost[ RHO__  (cellIdx, dataBase->numberOfCells) ]
+                   - dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ]
+                   / dataBase->dataHost[ RHO__  (cellIdx, dataBase->numberOfCells) ]
+               ;
+	} );
+
+	addScalarRealCellData( grid, dataBase->numberOfCells, "rhoE", [&] (uint cellIdx) {
+	    return dataBase->dataHost[ RHO_E(cellIdx, dataBase->numberOfCells) ];
 	} );
 #endif // USE_PASSIVE_SCALAR
 
@@ -220,6 +258,55 @@ void writeVtkUnstructuredGrid( vtkGridPtr grid, int mode, std::string filename )
     writer->SetInputData( grid );
 
     writer->Write();
+}
+
+void VF_PUBLIC writeVtkParallelUnstructuredGridSummaryFile(vtkGridPtr grid, std::string filename, uint mpiWorldSize)
+{
+    uint numberOfArrays = grid->GetCellData()->GetNumberOfArrays();
+
+    const auto filenameWithoutPath=filename.substr( filename.find_last_of('/') + 1 );
+
+    std::ofstream file;
+
+    file.open( filename + ".pvtu" );
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
+    file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
+
+    file << "    <PCellData>" << std::endl;
+
+    for( uint i = 0; i < numberOfArrays; i++ )
+    {
+        int typeID( grid->GetCellData()->GetArray(i)->GetDataType() );
+        std::string name( grid->GetCellData()->GetArray(i)->GetName() );
+
+        uint numberOfComponents = grid->GetCellData()->GetArray(i)->GetNumberOfComponents();
+
+        std::string type;
+        if( typeID == VTK_INT    ) type = "Int32";
+        if( typeID == VTK_FLOAT  ) type = "Float32";
+        if( typeID == VTK_DOUBLE ) type = "Float64";
+
+        file << "      <PDataArray type=\"" << type << "\" Name=\"" << name << "\" NumberOfComponents=\"" << numberOfComponents << "\"/>" << std::endl;
+    }
+
+    file << "    </PCellData>" << std::endl;
+
+    file << "    <PPoints>" << std::endl;
+    file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
+    file << "    </PPoints>" << std::endl;
+
+    for( uint rank = 0; rank < mpiWorldSize; rank++ )
+    {
+        file << "    <Piece Source=\"" << filenameWithoutPath << "_rank_" << rank << ".vtu\"/>" << std::endl;
+    }
+
+    file << "  </PUnstructuredGrid>" << std::endl;
+    file << "</VTKFile>" << std::endl;
+
+    //////////////////////////////////////////////////////////////////////////
 }
 
 rgbColor colorMapCoolToWarmExtended( double value, double min, double max )
@@ -325,7 +412,7 @@ void writeVtkXML(std::shared_ptr<DataBase> dataBase,
                  int mode, 
                  std::string filename)
 {
-    std::cout << "Write " << filename << ".vtu" << " ... ";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".vtu" << " ... \n";
 
     vtkGridPtr grid = getVtkUnstructuredOctGrid(dataBase);
 
@@ -333,7 +420,171 @@ void writeVtkXML(std::shared_ptr<DataBase> dataBase,
 
     writeVtkUnstructuredGrid( grid, vtkXMLWriter::Binary, filename );
 
-    std::cout << "done!"<< std::endl;
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+}
+
+void VF_PUBLIC writeVtkXMLParallelSummaryFile(std::shared_ptr<DataBase> dataBase, Parameters parameters, std::string filename, uint mpiWorldSize)
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".pvtu" << " ... \n";
+
+    vtkGridPtr grid = getVtkUnstructuredOctGrid(dataBase);
+
+    addBaseData( grid, dataBase, parameters );
+
+    writeVtkParallelUnstructuredGridSummaryFile( grid, filename, mpiWorldSize );
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+}
+
+void writeTurbulenceVtkXML(std::shared_ptr<DataBase> dataBase, 
+                           std::shared_ptr<TurbulenceAnalyzer> turbulenceAnalyzer,
+                           int mode, 
+                           std::string filename)
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".vtu" << " ... \n";
+
+    vtkGridPtr grid = getVtkUnstructuredOctGrid(dataBase);
+
+    addScalarIntCellData( grid, dataBase->numberOfCells, "CellIdx", [&] (uint cellIdx) {
+        return cellIdx;
+    } );
+
+    addScalarIntCellData( grid, dataBase->numberOfCells, "GhostCell", [&] (uint cellIdx) -> int {
+        return dataBase->isGhostCell( cellIdx );
+    } );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if( turbulenceAnalyzer->collect_U )
+        addScalarRealCellData(grid, dataBase->numberOfCells, "U", [&](uint cellIdx) {
+            return turbulenceAnalyzer->h_U[ cellIdx ];
+        });
+    
+    if( turbulenceAnalyzer->collect_V )
+        addScalarRealCellData(grid, dataBase->numberOfCells, "V", [&](uint cellIdx) {
+            return turbulenceAnalyzer->h_V[ cellIdx ];
+        });
+    
+    if( turbulenceAnalyzer->collect_W )
+        addScalarRealCellData(grid, dataBase->numberOfCells, "W", [&](uint cellIdx) {
+            return turbulenceAnalyzer->h_W[ cellIdx ];
+        });
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    if( turbulenceAnalyzer->collect_UU )
+        addScalarRealCellData(grid, dataBase->numberOfCells, "UU", [&](uint cellIdx) {
+            return turbulenceAnalyzer->h_UU[ cellIdx ];
+        });
+    
+    if( turbulenceAnalyzer->collect_VV )
+        addScalarRealCellData(grid, dataBase->numberOfCells, "VV", [&](uint cellIdx) {
+            return turbulenceAnalyzer->h_VV[ cellIdx ];
+        });
+    
+    if( turbulenceAnalyzer->collect_WW )
+        addScalarRealCellData(grid, dataBase->numberOfCells, "WW", [&](uint cellIdx) {
+            return turbulenceAnalyzer->h_WW[ cellIdx ];
+        });
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    if( turbulenceAnalyzer->collect_UV )
+        addScalarRealCellData(grid, dataBase->numberOfCells, "UV", [&](uint cellIdx) {
+            return turbulenceAnalyzer->h_UV[ cellIdx ];
+        });
+    
+    if( turbulenceAnalyzer->collect_UW )
+        addScalarRealCellData(grid, dataBase->numberOfCells, "UW", [&](uint cellIdx) {
+            return turbulenceAnalyzer->h_UW[ cellIdx ];
+        });
+    
+    if( turbulenceAnalyzer->collect_VW )
+        addScalarRealCellData(grid, dataBase->numberOfCells, "VW", [&](uint cellIdx) {
+            return turbulenceAnalyzer->h_VW[ cellIdx ];
+        });
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    if( turbulenceAnalyzer->collect_T )
+        addScalarRealCellData(grid, dataBase->numberOfCells, "T", [&](uint cellIdx) {
+            return turbulenceAnalyzer->h_T[ cellIdx ];
+        });
+    
+    if( turbulenceAnalyzer->collect_TT )
+        addScalarRealCellData(grid, dataBase->numberOfCells, "TT", [&](uint cellIdx) {
+            return turbulenceAnalyzer->h_TT[ cellIdx ];
+        });
+    
+    if( turbulenceAnalyzer->collect_p )
+        addScalarRealCellData(grid, dataBase->numberOfCells, "p", [&](uint cellIdx) {
+            return turbulenceAnalyzer->h_p[ cellIdx ];
+        });
+
+    //////////////////////////////////////////////////////////////////////////
+
+    writeVtkUnstructuredGrid( grid, vtkXMLWriter::Binary, filename );
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+}
+
+void VF_PUBLIC writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<DataBase> dataBase, std::shared_ptr<TurbulenceAnalyzer> turbulenceAnalyzer,Parameters parameters, std::string filename, uint mpiWorldSize)
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".pvtu" << " ... \n";
+
+    vtkGridPtr grid = getVtkUnstructuredOctGrid(dataBase);
+    
+    //////////////////////////////////////////////////////////////////////////
+
+    const auto filenameWithoutPath=filename.substr( filename.find_last_of('/') + 1 );
+
+    std::ofstream file;
+
+    file.open( filename + ".pvtu" );
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
+    file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
+
+    file << "    <PCellData>" << std::endl;
+
+        file << "      <PDataArray type=\"" << "Int32"   << "\" Name=\"" << "CellIdx"   << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        file << "      <PDataArray type=\"" << "Int32"   << "\" Name=\"" << "GhostCell" << "\" NumberOfComponents=\"1\"/>" << std::endl;
+
+        if( turbulenceAnalyzer->collect_U  ) file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "U"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        if( turbulenceAnalyzer->collect_V  ) file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "V"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        if( turbulenceAnalyzer->collect_W  ) file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "W"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+
+        if( turbulenceAnalyzer->collect_UU ) file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UU"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        if( turbulenceAnalyzer->collect_VV ) file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "VV"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        if( turbulenceAnalyzer->collect_WW ) file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "WW"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+
+        if( turbulenceAnalyzer->collect_UV ) file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UV"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        if( turbulenceAnalyzer->collect_UW ) file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UW"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        if( turbulenceAnalyzer->collect_VW ) file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "VW"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+
+        if( turbulenceAnalyzer->collect_T  ) file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "T"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        if( turbulenceAnalyzer->collect_TT ) file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "TT"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        if( turbulenceAnalyzer->collect_p  ) file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "p"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+
+    file << "    </PCellData>" << std::endl;
+
+    file << "    <PPoints>" << std::endl;
+    file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
+    file << "    </PPoints>" << std::endl;
+
+    for( uint rank = 0; rank < mpiWorldSize; rank++ )
+    {
+        file << "    <Piece Source=\"" << filenameWithoutPath << "_rank_" << rank << ".vtu\"/>" << std::endl;
+    }
+
+    file << "  </PUnstructuredGrid>" << std::endl;
+    file << "</VTKFile>" << std::endl;
+
+    //////////////////////////////////////////////////////////////////////////
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
 void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> target)
@@ -343,11 +594,17 @@ void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> targ
 
     //////////////////////////////////////////////////////////////////////////
 
-    vtkSmartPointer<vtkDoubleArray> data = vtkSmartPointer<vtkDoubleArray>::New();
+    vtkSmartPointer<vtkDoubleArray> rho  = vtkSmartPointer<vtkDoubleArray>::New();
+    vtkSmartPointer<vtkDoubleArray> rhoU = vtkSmartPointer<vtkDoubleArray>::New();
+    vtkSmartPointer<vtkDoubleArray> rhoE = vtkSmartPointer<vtkDoubleArray>::New();
             
-    data->SetNumberOfComponents( 4 );
+    rho->SetNumberOfComponents ( 1 );
+    rhoU->SetNumberOfComponents( 3 );
+    rhoE->SetNumberOfComponents( 1 );
 
-    data->SetName( "Cons" );
+    rho->SetName ( "rho"  );
+    rhoU->SetName( "rhoU" );
+    rhoE->SetName( "rhoW" );
 
     for( uint cellIdx = 0; cellIdx < base->numberOfCells; cellIdx++ ){
 
@@ -360,29 +617,38 @@ void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> targ
         cons.rhoV = base->dataHost[ RHO_V(cellIdx, base->numberOfCells) ];
         cons.rhoW = base->dataHost[ RHO_W(cellIdx, base->numberOfCells) ];
         cons.rhoE = base->dataHost[ RHO_E(cellIdx, base->numberOfCells) ];
-        data->InsertNextTuple4( cons.rho, cons.rhoU, cons.rhoV, cons.rhoE );
+
+        rho->InsertNextTuple1 ( cons.rho );
+        rhoU->InsertNextTuple3( cons.rhoU, cons.rhoV, cons.rhoW );
+        rhoE->InsertNextTuple1( cons.rhoE );
     }
 
-    gridBase->GetCellData()->AddArray( data );
+    gridBase->GetCellData()->AddArray( rho  );
+    gridBase->GetCellData()->AddArray( rhoU );
+    gridBase->GetCellData()->AddArray( rhoE );
         
 #ifdef USE_PASSIVE_SCALAR
 
-    vtkSmartPointer<vtkDoubleArray> dataS = vtkSmartPointer<vtkDoubleArray>::New();
-            
-    dataS->SetNumberOfComponents( 1 );
+        vtkSmartPointer<vtkDoubleArray> dataS_1 = vtkSmartPointer<vtkDoubleArray>::New();
+        vtkSmartPointer<vtkDoubleArray> dataS_2 = vtkSmartPointer<vtkDoubleArray>::New();
 
-    dataS->SetName( "rhoS" );
+        dataS_1->SetNumberOfComponents(1);
+        dataS_2->SetNumberOfComponents(1);
 
-    for( uint cellIdx = 0; cellIdx < base->numberOfCells; cellIdx++ ){
+        dataS_1->SetName("rhoS_1");
+        dataS_2->SetName("rhoS_2");
 
-        if( base->isGhostCell( cellIdx ) ) continue;
-        
-        ;
-        dataS->InsertNextTuple1( base->dataHost[ RHO_S(cellIdx, base->numberOfCells) ] );
-    }
+        for (uint cellIdx = 0; cellIdx < base->numberOfCells; cellIdx++) {
 
-    gridBase->GetCellData()->AddArray( dataS );
-    
+            if (base->isGhostCell(cellIdx)) continue;
+
+            dataS_1->InsertNextTuple1(base->dataHost[RHO_S_1(cellIdx, base->numberOfCells)]);
+            dataS_2->InsertNextTuple1(base->dataHost[RHO_S_2(cellIdx, base->numberOfCells)]);
+        }
+
+        gridBase->GetCellData()->AddArray(dataS_1);
+        gridBase->GetCellData()->AddArray(dataS_2);
+
 #endif // USE_PASSIVE_SCALAR
 
     //////////////////////////////////////////////////////////////////////////
@@ -416,19 +682,24 @@ void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> targ
 
         if( target->isGhostCell( cellIdx ) ) continue;
 
-        double* cons = gridTarget->GetCellData()->GetArray(1)->GetTuple4(gridCellIdx);
+        double  rho  = gridTarget->GetCellData()->GetArray(1)->GetTuple1(gridCellIdx);
+        double* rhoU = gridTarget->GetCellData()->GetArray(2)->GetTuple3(gridCellIdx);
+        double  rhoE = gridTarget->GetCellData()->GetArray(3)->GetTuple1(gridCellIdx);
 
-        target->dataHost[ RHO__(cellIdx, target->numberOfCells) ] = cons[0];
-        target->dataHost[ RHO_U(cellIdx, target->numberOfCells) ] = cons[1];
-        target->dataHost[ RHO_V(cellIdx, target->numberOfCells) ] = cons[2];
-        target->dataHost[ RHO_E(cellIdx, target->numberOfCells) ] = cons[3];
+        target->dataHost[ RHO__(cellIdx, target->numberOfCells) ] = rho;
+        target->dataHost[ RHO_U(cellIdx, target->numberOfCells) ] = rhoU[0];
+        target->dataHost[ RHO_V(cellIdx, target->numberOfCells) ] = rhoU[1];
+        target->dataHost[ RHO_W(cellIdx, target->numberOfCells) ] = rhoU[2];
+        target->dataHost[ RHO_E(cellIdx, target->numberOfCells) ] = rhoE;
 
 #ifdef USE_PASSIVE_SCALAR
+        {
+            double  rhoS_1 = gridTarget->GetCellData()->GetArray(4)->GetTuple1(gridCellIdx);
+            double  rhoS_2 = gridTarget->GetCellData()->GetArray(5)->GetTuple1(gridCellIdx);
 
-        double  rhoS = gridTarget->GetCellData()->GetArray(2)->GetTuple1(gridCellIdx);
-
-        target->dataHost[ RHO_S(cellIdx, target->numberOfCells) ] = rhoS;
-
+            target->dataHost[RHO_S_1(cellIdx, target->numberOfCells)] = rhoS_1;
+            target->dataHost[RHO_S_2(cellIdx, target->numberOfCells)] = rhoS_2;
+        }
 #endif // USE_PASSIVE_SCALAR
 
         gridCellIdx++;

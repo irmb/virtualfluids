@@ -453,16 +453,21 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
 
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start with Q Computation\n";
 
-        grids[grids.size() - 1]->mesh(solidObject);
+        //for( uint level = 0; level < grids.size(); level++ )
+        uint level = grids.size() - 1;
+        {
+            grids[level]->mesh(solidObject);
 
-        if( enableThinWalls ){
-            grids[grids.size() - 1]->enableFindSolidBoundaryNodes();
-            grids[grids.size() - 1]->findQs(solidObject);
-            grids[grids.size() - 1]->closeNeedleCellsThinWall();
-            grids[grids.size() - 1]->enableComputeQs();
+            if (enableThinWalls) {
+                grids[level]->enableFindSolidBoundaryNodes();
+                grids[level]->findQs(solidObject);
+                grids[level]->closeNeedleCellsThinWall();
+                grids[level]->enableComputeQs();
+            }
+
+            if( lbmOrGks == LBM )
+                grids[level]->findQs(solidObject);
         }
-
-        grids[grids.size() - 1]->findQs(solidObject);
 
         //for (size_t i = 0; i < grids.size(); i++){
         //    grids[i]->mesh(solidObject);
@@ -477,7 +482,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
 
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
-            grids[i]->limitToSubDomain( this->subDomainBox );
+            grids[i]->limitToSubDomain( this->subDomainBox, lbmOrGks );
 
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->repairGridInterfaceOnMultiGPU(grids[i + 1]);
@@ -508,13 +513,13 @@ void MultipleGridBuilder::emitGridIsNotInCoarseGridWarning()
     *logging::out << logging::Logger::WARNING << "Grid lies not inside of coarse grid. Actual Grid is not added.\n";
 }
 
-void MultipleGridBuilder::findCommunicationIndices(int direction)
+void MultipleGridBuilder::findCommunicationIndices(int direction, LbmOrGks lbmOrGks)
 {
     *logging::out << logging::Logger::INFO_HIGH << "Start findCommunicationIndices()\n";
 
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
-            grids[i]->findCommunicationIndices(direction, this->subDomainBox);
+            grids[i]->findCommunicationIndices(direction, this->subDomainBox, lbmOrGks);
 
     *logging::out << logging::Logger::INFO_HIGH << "Done with findCommunicationIndices()\n";
 }

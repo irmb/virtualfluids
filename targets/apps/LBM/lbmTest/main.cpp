@@ -674,12 +674,12 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
             
             if( generatePart == 0 ){
-                gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
+                gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
                 gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 1);
             }
             
             if( generatePart == 1 ){
-                gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
+                gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
                 gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
             }
 

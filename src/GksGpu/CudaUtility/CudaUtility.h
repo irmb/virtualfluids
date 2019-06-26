@@ -12,7 +12,7 @@ class VF_PUBLIC CudaUtility
 {
 public:
 
-    static struct CudaGrid 
+    struct CudaGrid 
     {
         dim3 threads;
         dim3 blocks;
@@ -24,7 +24,11 @@ public:
 
     static void printCudaMemoryUsage();
 
+    static int getCudaDeviceCount();
+
     static void setCudaDevice( int device );
+
+    static int getCudaDevice(  );
 };
 
 #endif

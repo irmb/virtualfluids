@@ -24,12 +24,16 @@ struct VF_PUBLIC DataBaseStruct
     real* faceCenter;
     real* cellCenter;
 
-    bool* faceIsWall;
+    CellProperties* cellProperties;
+
+    char* faceOrientation;
 
     real* data;
-    real* dataUpdate;
+    double* dataUpdate;
 
     real* massFlux;
+
+    int* crashCellIndex;
 };
 
 

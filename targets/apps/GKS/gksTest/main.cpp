@@ -8,6 +8,7 @@
 #include <fstream>
 #include <memory>
 
+#include "Core/Timer/Timer.h"
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
@@ -33,10 +34,57 @@
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
 
+#include "GksGpu/Analyzer/CupsAnalyzer.h"
+
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
 void gksTest( std::string path )
 {
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    real L = 1.0;
+
+    real dx = L / 8.0;
+
+    real Re  = 2.0e3;
+    real U  = 0.1;
+    real Ma = 0.1;
+    
+    real Pr  = 1.0;
+    real K   = 0.0;
+
+    real rho = 1.0;
+
+    real mu = U * rho * L / Re;
+
+    real cs = U / Ma;
+    real lambda = c1o2 * ( ( K + 4.0 ) / ( K + 2.0 ) ) / ( cs * cs );
+
+    real CFL = 0.5;
+
+    real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    Parameters parameters;
+
+    parameters.K  = K;
+    parameters.Pr = Pr;
+    parameters.mu = mu;
+
+    parameters.force.x = 0;
+    parameters.force.y = 0;
+    parameters.force.z = 0;
+
+    parameters.dt = dt;
+    parameters.dx = dx;
+
+    parameters.lambdaRef = lambda;
+
+    parameters.viscosityModel = ViscosityModel::constant;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     auto gridFactory = GridFactory::make();
     gridFactory->setGridStrategy(Device::CPU);
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
@@ -45,15 +93,13 @@ void gksTest( std::string path )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real dx = 1.0 / 4.0;
-
     gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
                                 0.5,  0.5,  0.5, dx);
 
-    Cuboid cube(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
+    Cuboid refBox(-1.0, -1.0, 0, 1.0, 1.0, 0.55);
 
-    //gridBuilder->setNumberOfLayers(6,6);
-    //gridBuilder->addGrid( &cube, 1);
+    gridBuilder->setNumberOfLayers(1,1);
+    gridBuilder->addGrid( &refBox, 1);
 
     gridBuilder->setPeriodicBoundaryCondition(true, false, false);
 
@@ -67,40 +113,44 @@ void gksTest( std::string path )
 
     meshAdapter.inputGrid();
 
-    //meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
+    meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
 
-    //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
+    meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
 
     meshAdapter.findPeriodicBoundaryNeighbors();
+
+    return;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     CudaUtility::setCudaDevice(0);
 
-    Parameters parameters;
-
-    parameters.dx = dx;
-    //parameters.force.z = -0.01;
-    
-    auto dataBase = std::make_shared<DataBase>( "CPU" );
+    auto dataBase = std::make_shared<DataBase>( "GPU" );
     dataBase->setMesh( meshAdapter );
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
 
-    bcMX->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
-        return center.x < -0.5 || center.x > 0.5;
-    } );
+    //bcMX->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+    //    return center.x < -0.5 || center.x > 0.5;
+    //} );
 
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3( 1.0, 1.0 ,0.0 ), 1.0, 0.0 );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3( U, U, 0.0 ), lambda, 0.0, true );
 
-    bcPZ->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
         return center.z > 0.5;
     } );
+
+    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, 0.0, true );
+
+    bcWall->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
+        return center.z < 0.5;
+    } );
     
-    dataBase->boundaryConditions.push_back( bcMX );
-    //dataBase->boundaryConditions.push_back( bcPZ );
+    //dataBase->boundaryConditions.push_back( bcMX );
+    dataBase->boundaryConditions.push_back( bcPZ );
+    dataBase->boundaryConditions.push_back( bcWall );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -110,40 +160,48 @@ void gksTest( std::string path )
         
         real radius = cellCenter.length();
 
-        return toConservedVariables( PrimitiveVariables( 1.0, cellCenter.x, cellCenter.y, cellCenter.z, 1.0, radius ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( 1.0, 0.0, 0.0, 0.0, lambda, 0.0 ), parameters.K );
     });
 
-    Initializer::initializeDataUpdate(dataBase);
-
     dataBase->copyDataHostToDevice();
+
+    Initializer::initializeDataUpdate(dataBase);
 
     writeVtkXML( dataBase, parameters, 0, path + "grid/Test_0" );
 
     //////////////////////////////////////////////////////////////////////////
 
-    for( uint iter = 0; iter < 100; iter++ )
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
+
+    cupsAnalyzer.start();
+
+    for( uint iter = 1; iter < 100000; iter++ )
     {
-        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+        TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
+
+        if( iter % 10000 == 0 )
+        {
+            dataBase->copyDataDeviceToHost();
+
+            writeVtkXML( dataBase, parameters, 0, path + "grid/Test_" + std::to_string( iter ) );
+        }
+
+        cupsAnalyzer.run( iter );
     }
-
-    //testBC->runBoundaryConditionKernel( dataBase, parameters, 0 );
-    //testBC->runBoundaryConditionKernel( dataBase, parameters, 1 );
-
-    //testBC2->runBoundaryConditionKernel( dataBase, parameters, 0 );
-    //testBC2->runBoundaryConditionKernel( dataBase, parameters, 1 );
 
     //////////////////////////////////////////////////////////////////////////
 
     dataBase->copyDataDeviceToHost();
 
-    writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
+    //writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
 
 
 }
 
 int main( int argc, char* argv[])
 {
-    std::string path( "F:/Work/Computations/gridGenerator/" );
+    std::string path( "F:/Work/Computations/" );
+    //std::string path( "out/" );
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);

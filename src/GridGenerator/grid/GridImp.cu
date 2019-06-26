@@ -41,6 +41,10 @@ HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, rea
     gridStrategy(gridStrategy),
     distribution(distribution),
     level(level),
+    periodicityX(false),
+    periodicityY(false),
+    periodicityZ(false),
+    enableFixRefinementIntoTheWall(false),
     gridInterface(nullptr),
     neighborIndexX(nullptr),
     neighborIndexY(nullptr),
@@ -105,8 +109,11 @@ HOST void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixOddCells()\n";
     gridStrategy->fixOddCells( shared_from_this() );
     
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixRefinementIntoWall()\n";
-    gridStrategy->fixRefinementIntoWall(shared_from_this());
+    if( enableFixRefinementIntoTheWall )
+    {
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixRefinementIntoWall()\n";
+        gridStrategy->fixRefinementIntoWall(shared_from_this());
+    }
     
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start findEndOfGridStopperNodes()\n";
 	gridStrategy->findEndOfGridStopperNodes(shared_from_this());
@@ -165,6 +172,25 @@ HOSTDEVICE void GridImp::findInnerNode(uint index)
             yIndex != 0 && yIndex != this->ny-1 &&
             zIndex != 0 && zIndex != this->nz-1 )
             this->field.setFieldEntryToFluid(index);
+    }
+}
+
+HOSTDEVICE void GridImp::discretize(Object* solidObject, char innerType, char outerType)
+{
+#pragma omp parallel for
+    for (int index = 0; index < this->size; index++)
+    {
+        this->sparseIndices[index] = index;
+
+        if( this->getFieldEntry(index) == innerType ) continue;
+        
+        real x, y, z;
+        this->transIndexToCoords(index, x, y, z);
+
+        if( solidObject->isPointInObject(x, y, z, 0.0, 0.0) )
+            this->setFieldEntry(index, innerType);
+        //else
+        //    this->setFieldEntry(index, outerType);
     }
 }
 
@@ -704,6 +730,11 @@ bool GridImp::getPeriodicityZ()
     return this->periodicityZ;
 }
 
+void GridImp::setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall)
+{
+    this->enableFixRefinementIntoTheWall = enableFixRefinementIntoTheWall;
+}
+
 HOSTDEVICE uint GridImp::transCoordToIndex(const real &x, const real &y, const real &z) const
 {
     const uint xIndex = getXIndex(x);
@@ -983,7 +1014,7 @@ HOSTDEVICE void GridImp::repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid)
     this->gridInterface->repairGridInterfaceOnMultiGPU( shared_from_this(), std::static_pointer_cast<GridImp>(fineGrid) );
 }
 
-HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox)
+HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks)
 {
     for( uint index = 0; index < this->size; index++ ){
 
@@ -994,17 +1025,28 @@ HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox)
             BoundingBox tmpSubDomainBox = *subDomainBox;
 
             // one layer for receive nodes and one for stoppers
-            tmpSubDomainBox.extend(this->delta);
+            if( lbmOrGks == LBM )
+                tmpSubDomainBox.extend(this->delta);
 
-            if (!tmpSubDomainBox.isInside(x, y, z))
+            if (!tmpSubDomainBox.isInside(x, y, z) 
+                && ( this->getFieldEntry(index) == FLUID ||
+                     this->getFieldEntry(index) == FLUID_CFC ||
+                     this->getFieldEntry(index) == FLUID_CFF ||
+                     this->getFieldEntry(index) == FLUID_FCC ||
+                     this->getFieldEntry(index) == FLUID_FCF ) )
+            {
                 this->setFieldEntry(index, STOPPER_OUT_OF_GRID_BOUNDARY);
+            }
         }
 
         {
             BoundingBox tmpSubDomainBox = *subDomainBox;
 
             // one layer for receive nodes and one for stoppers
-            tmpSubDomainBox.extend(2.0 * this->delta);
+            if( lbmOrGks == LBM )
+                tmpSubDomainBox.extend(2.0 * this->delta);
+            else
+                tmpSubDomainBox.extend(1.0 * this->delta);
 
             if (!tmpSubDomainBox.isInside(x, y, z))
                 this->setFieldEntry(index, INVALID_OUT_OF_GRID);
@@ -1035,6 +1077,11 @@ HOSTDEVICE void GridImp::findOverlapStopper(uint index, GridImp& finerGrid)
     gridInterface->findOverlapStopper(index, this, &finerGrid);
 }
 
+HOSTDEVICE void GridImp::findInvalidBoundaryNodes(uint index)
+{
+    gridInterface->findInvalidBoundaryNodes(index, this);
+}
+
 // --------------------------------------------------------- //
 //                    Mesh Triangle                          //
 // --------------------------------------------------------- //
@@ -1044,12 +1091,12 @@ HOST void GridImp::mesh(Object* object)
     if (triangularMesh)
         triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, INVALID_SOLID, FLUID);
     else
-        gridStrategy->findInnerNodes(shared_from_this()); //TODO: adds INNERTYPE AND OUTERTYPE to findInnerNodes 
+        //gridStrategy->findInnerNodes(shared_from_this()); //TODO: adds INNERTYPE AND OUTERTYPE to findInnerNodes 
 		//new method for geometric primitives (not cell based) to be implemented
+        this->discretize(object, INVALID_SOLID, FLUID);
 
     this->closeNeedleCells();
 
-	//gridStrategy->findStopperNodes(shared_from_this()); //deprecated
 	gridStrategy->findSolidStopperNodes(shared_from_this());
 	gridStrategy->findBoundarySolidNodes(shared_from_this());
 }
@@ -1357,7 +1404,7 @@ HOSTDEVICE bool GridImp::checkIfAtLeastOneValidQ(const uint index, const Vertex 
     return false;
 }
 
-void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox)
+void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks)
 {
     for( uint index = 0; index < this->size; index++ ){
         
@@ -1369,8 +1416,9 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
             this->getFieldEntry(index) == INVALID_COARSE_UNDER_FINE ||
             this->getFieldEntry(index) == STOPPER_SOLID ||
             this->getFieldEntry(index) == STOPPER_OUT_OF_GRID ||
-            this->getFieldEntry(index) == STOPPER_OUT_OF_GRID_BOUNDARY ||
             this->getFieldEntry(index) == STOPPER_COARSE_UNDER_FINE ) continue;
+
+        if( lbmOrGks == LBM && this->getFieldEntry(index) == STOPPER_OUT_OF_GRID_BOUNDARY ) continue;
 
         if( direction == CommunicationDirections::MX ) findCommunicationIndex( index, x, subDomainBox->minX, direction);
         if( direction == CommunicationDirections::PX ) findCommunicationIndex( index, x, subDomainBox->maxX, direction);
@@ -1382,16 +1430,16 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
 }
 
 void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, int direction ){
-        
+        //
     // negative direction get a negative sign
     real s = ( direction % 2 == 0 ) ? ( -1.0 ) : ( 1.0 );  
 
 
-	if (std::abs(coordinate - (limit + s * 0.5 * this->delta)) < 0.01 * this->delta) {
+	if (std::abs(coordinate - (limit + s * 0.5 * this->delta)) < 0.1 * this->delta) {
 		this->communicationIndices[direction].receiveIndices.push_back(index);
 	}
 
-	if ( std::abs( coordinate - ( limit - s * 0.5 * this->delta ) ) < 0.01 * this->delta) {
+	if (std::abs(coordinate - (limit - s * 0.5 * this->delta)) < 0.1 * this->delta) {
 		this->communicationIndices[direction].sendIndices.push_back(index);
 	}
 }

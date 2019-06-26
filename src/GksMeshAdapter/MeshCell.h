@@ -55,8 +55,14 @@ struct VF_PUBLIC MeshCell{
 
     // order: +x, -x, +y, -y, +z, -z (see cellToCell)
     bool_6 faceExists;
+    
+    bool isGhostCell;   // this denotes cells that do not have all neighbors, excluding coarse ghost cells
 
-    bool isGhostCell;
+    bool isWall;
+
+    bool isFluxBC;
+
+    bool isInsulated;
 
     char type;
 

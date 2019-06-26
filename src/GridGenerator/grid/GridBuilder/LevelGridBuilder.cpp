@@ -126,6 +126,12 @@ void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
     }
 }
 
+VF_PUBLIC void LevelGridBuilder::setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall)
+{
+    for( uint level = 0; level < this->grids.size(); level++ )
+        grids[level]->setEnableFixRefinementIntoTheWall( enableFixRefinementIntoTheWall );
+}
+
 VF_PUBLIC void LevelGridBuilder::setCommunicationProcess(int direction, uint process)
 {
     this->communicationProcesses[direction] = process;

@@ -95,6 +95,16 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
 
+    struct CommunicationIndices
+    {
+        std::array< std::vector< uint >, 6 > sendIndices;
+        std::array< std::vector< uint >, 6 > recvIndices;
+    };
+
+    std::vector< CommunicationIndices > communicationIndices;
+
+    std::array<uint, 6> communicationProcesses;
+
 public:
 
     GksMeshAdapter( SPtr<MultipleGridBuilder> gridBuilder );
@@ -126,6 +136,8 @@ public:
     void generateInterfaceConnectivity();
 
     void findPeriodicBoundaryNeighbors();
+
+    void getCommunicationIndices();
 
     void writeMeshVTK( std::string filename );
 

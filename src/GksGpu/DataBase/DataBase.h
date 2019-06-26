@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <array>
 
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -12,6 +13,8 @@
 
 #include "VirtualFluidsDefinitions.h"
 
+#include "CellProperties/CellProperties.cuh"
+
 class  GksMeshAdapter;
 
 struct BoundaryCondition;
@@ -19,6 +22,7 @@ class  DataBaseAllocator;
 struct DataBase;
 struct PerLevelCounts;
 struct DataBaseStruct;
+struct Communicator;
 
 struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
 {
@@ -29,6 +33,8 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     SPtr<DataBaseAllocator> myAllocator;
 
     std::vector< SPtr<BoundaryCondition> > boundaryConditions;
+
+    std::vector< std::array< SPtr< Communicator >, 6 > > communicators;
 
     //////////////////////////////////////////////////////////////////////////
     // Sizes
@@ -57,6 +63,8 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     std::vector<uint_8> cellToNode;
     std::vector<uint_4> faceToNode;
 
+    std::vector<CellProperties> cellPropertiesHost;
+
     //////////////////////////////////////////////////////////////////////////
     // Host/Device geometry and connectivity - READ ONLY
     //////////////////////////////////////////////////////////////////////////
@@ -70,7 +78,9 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     real* faceCenter;     // 3
     real* cellCenter;     // 3
 
-    bool* faceIsWall;     // 1
+    CellProperties* cellProperties;     // 1 x byte
+
+    char* faceOrientation;
 
     uint* fineToCoarse;   // 9
     uint* coarseToFine;   // 15
@@ -80,9 +90,11 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     //////////////////////////////////////////////////////////////////////////
 
     real* data;
-    real* dataUpdate;
+    double* dataUpdate;
 
     real* massFlux;
+
+    int* crashCellIndex;
 
     //////////////////////////////////////////////////////////////////////////
     // Host only data
@@ -103,11 +115,15 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
 
     void setMesh( GksMeshAdapter& adapter );
 
+    void setCommunicators( GksMeshAdapter& adapter );
+
     void copyDataHostToDevice();
 
     void copyDataDeviceToHost();
 
     void copyDataDeviceToHost( real* dataHost );
+
+    int getCrashCellIndex();
 
     DataBaseStruct toStruct();
 

@@ -25,7 +25,8 @@ struct PrimitiveVariables
     real W;
     real lambda;
     #ifdef USE_PASSIVE_SCALAR
-    real S;
+    real S_1;
+    real S_2;
     #endif
 
     //////////////////////////////////////////////////////////////////////////
@@ -37,7 +38,8 @@ struct PrimitiveVariables
          ,W     (zero)
          ,lambda(zero)
     #ifdef USE_PASSIVE_SCALAR
-         ,S     (zero)
+         ,S_1   (zero)
+         ,S_2   (zero)
     #endif
     {}
 
@@ -49,7 +51,8 @@ struct PrimitiveVariables
                                           ,real W
                                           ,real lambda
     #ifdef USE_PASSIVE_SCALAR
-                                          ,real S
+                                          ,real S_1 = zero
+                                          ,real S_2 = zero
     #endif
     )
         : rho   (rho   )
@@ -58,7 +61,8 @@ struct PrimitiveVariables
          ,W     (W     )
          ,lambda(lambda)
     #ifdef USE_PASSIVE_SCALAR
-         ,S     (S     )
+         ,S_1   (S_1   )
+         ,S_2   (S_2   )
     #endif
     {}
 
@@ -77,7 +81,8 @@ struct ConservedVariables
     real rhoW;
     real rhoE;
     #ifdef USE_PASSIVE_SCALAR
-    real rhoS;
+    real rhoS_1;
+    real rhoS_2;
     #endif
 
     //////////////////////////////////////////////////////////////////////////
@@ -89,7 +94,8 @@ struct ConservedVariables
          ,rhoW(zero)
          ,rhoE(zero)
     #ifdef USE_PASSIVE_SCALAR
-         ,rhoS(zero)
+         ,rhoS_1(zero)
+         ,rhoS_2(zero)
     #endif
     {}
 
@@ -101,7 +107,8 @@ struct ConservedVariables
                                           ,real rhoW
                                           ,real rhoE
     #ifdef USE_PASSIVE_SCALAR
-                                          ,real rhoS
+                                          ,real rhoS_1 = zero
+                                          ,real rhoS_2 = zero
     #endif
     )
         : rho (rho )
@@ -110,45 +117,136 @@ struct ConservedVariables
          ,rhoW(rhoW)
          ,rhoE(rhoE)
     #ifdef USE_PASSIVE_SCALAR
-         ,rhoS(rhoS)
+         ,rhoS_1(rhoS_1)
+         ,rhoS_2(rhoS_2)
     #endif
     {}
 
     //////////////////////////////////////////////////////////////////////////
 };
 
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__host__ __device__ inline ConservedVariables toConservedVariables( const PrimitiveVariables& prim, real K )
+__host__ __device__ inline PrimitiveVariables operator+ ( const PrimitiveVariables& left, const PrimitiveVariables& right )
 {
-    return ConservedVariables(prim.rho
-                             ,prim.U * prim.rho
-                             ,prim.V * prim.rho
-                             ,prim.W * prim.rho
-                             ,( K + three ) / ( four * prim.lambda ) * prim.rho + c1o2 * prim.rho * ( prim.U * prim.U + prim.V * prim.V + prim.W * prim.W )
-    #ifdef USE_PASSIVE_SCALAR
-                             ,prim.S * prim.rho
-    #endif
-    );
+    PrimitiveVariables result;
+
+    result.rho    = left.rho    + right.rho   ;
+    result.U      = left.U      + right.U     ;
+    result.V      = left.V      + right.V     ;
+    result.W      = left.W      + right.W     ;
+    result.lambda = left.lambda + right.lambda;
+
+#ifdef USE_PASSIVE_SCALAR
+    result.S_1    = left.S_1    + right.S_1   ;
+    result.S_2    = left.S_2    + right.S_2   ;
+#endif
+
+    return result;
+}
+
+__host__ __device__ inline ConservedVariables operator+ ( const ConservedVariables& left, const ConservedVariables& right )
+{
+    ConservedVariables result;
+
+    result.rho    = left.rho    + right.rho   ;
+    result.rhoU   = left.rhoU   + right.rhoU  ;
+    result.rhoV   = left.rhoV   + right.rhoV  ;
+    result.rhoW   = left.rhoW   + right.rhoW  ;
+    result.rhoE   = left.rhoE   + right.rhoE  ;
+
+#ifdef USE_PASSIVE_SCALAR
+    result.rhoS_1 = left.rhoS_1 + right.rhoS_1;
+    result.rhoS_2 = left.rhoS_2 + right.rhoS_2;
+#endif
+
+    return result;
 }
 
 //////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
+
+__host__ __device__ inline PrimitiveVariables operator- ( const PrimitiveVariables& left, const PrimitiveVariables& right )
+{
+    PrimitiveVariables result;
+
+    result.rho    = left.rho    - right.rho   ;
+    result.U      = left.U      - right.U     ;
+    result.V      = left.V      - right.V     ;
+    result.W      = left.W      - right.W     ;
+    result.lambda = left.lambda - right.lambda;
+
+#ifdef USE_PASSIVE_SCALAR
+    result.S_1    = left.S_1    - right.S_1   ;
+    result.S_2    = left.S_2    - right.S_2   ;
+#endif
+
+    return result;
+}
+
+__host__ __device__ inline ConservedVariables operator- ( const ConservedVariables& left, const ConservedVariables& right )
+{
+    ConservedVariables result;
+
+    result.rho    = left.rho    - right.rho   ;
+    result.rhoU   = left.rhoU   - right.rhoU  ;
+    result.rhoV   = left.rhoV   - right.rhoV  ;
+    result.rhoW   = left.rhoW   - right.rhoW  ;
+    result.rhoE   = left.rhoE   - right.rhoE  ;
+
+#ifdef USE_PASSIVE_SCALAR
+    result.rhoS_1 = left.rhoS_1 - right.rhoS_1;
+    result.rhoS_2 = left.rhoS_2 - right.rhoS_2;
+#endif
+
+    return result;
+}
+
 //////////////////////////////////////////////////////////////////////////
 
-__host__ __device__ inline PrimitiveVariables toPrimitiveVariables( const ConservedVariables& cons, real K )
+__host__ __device__ inline PrimitiveVariables operator* ( const real left, const PrimitiveVariables& right )
 {
-	return PrimitiveVariables(cons.rho
-						     ,cons.rhoU / cons.rho
-						     ,cons.rhoV / cons.rho
-						     ,cons.rhoW / cons.rho
-						     ,( K + three ) * cons.rho / ( four * ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) )
-    #ifdef USE_PASSIVE_SCALAR
-                             ,cons.rhoS / cons.rho
-    #endif
-	);
+    PrimitiveVariables result;
+
+    result.rho    = left * right.rho   ;
+    result.U      = left * right.U     ;
+    result.V      = left * right.V     ;
+    result.W      = left * right.W     ;
+    result.lambda = left * right.lambda;
+
+#ifdef USE_PASSIVE_SCALAR
+    result.S_1    = left * right.S_1   ;
+    result.S_2    = left * right.S_2   ;
+#endif
+
+    return result;
+}
+
+__host__ __device__ inline ConservedVariables operator* ( const real left, const ConservedVariables& right )
+{
+    ConservedVariables result;
+
+    result.rho    = left * right.rho   ;
+    result.rhoU   = left * right.rhoU  ;
+    result.rhoV   = left * right.rhoV  ;
+    result.rhoW   = left * right.rhoW  ;
+    result.rhoE   = left * right.rhoE  ;
+
+#ifdef USE_PASSIVE_SCALAR
+    result.rhoS_1 = left * right.rhoS_1;
+    result.rhoS_2 = left * right.rhoS_2;
+#endif
+
+    return result;
 }
 
 #endif
