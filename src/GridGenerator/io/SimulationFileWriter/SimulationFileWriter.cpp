@@ -27,12 +27,11 @@ void SimulationFileWriter::write(std::string folder, SPtr<GridBuilder> builder, 
     SimulationFileWriter::folder = folder;
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start writing simulation files to " << folder << ":\n";
-    Timer timer;
-    timer.start();
+    auto timer = Timer::makeStart();
 
     write(builder, format);
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Time writing files: " << timer.getCurrentRuntimeInSeconds() << " sec\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Time writing files: " << timer->getCurrentRuntimeInSeconds() << " sec\n";
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done writing simulation Files!\n";
 }
 

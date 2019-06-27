@@ -1,30 +1,22 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include <chrono>
-
 #include "VirtualFluidsDefinitions.h"
 
 #include "DataTypes.h"
+#include "PointerDefinitions.h"
 
 class VF_PUBLIC Timer
 {
 public:
 
-    typedef std::chrono::high_resolution_clock::time_point timePoint;
+    static SPtr<Timer> makeStart();
 
-    Timer();
-    static Timer makeStart();
+    virtual void start() = 0;
+    virtual void end() = 0;
 
-    void start();
-    void end();
-
-    real getTimeInSeconds() const;
-    real getCurrentRuntimeInSeconds() const;
-
-private:
-    timePoint startTime;
-    timePoint endTime;
+    virtual real getTimeInSeconds() const = 0;
+    virtual real getCurrentRuntimeInSeconds() const = 0;
 };
 
 #endif

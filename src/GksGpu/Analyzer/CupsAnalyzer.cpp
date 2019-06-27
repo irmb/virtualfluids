@@ -31,20 +31,20 @@ CupsAnalyzer::CupsAnalyzer(SPtr<DataBase> dataBase,
 void CupsAnalyzer::start()
 {
     this->counter = 0;
-    this->timer.start();
-    this->timerRestart.start();
+    this->timer->start();
+    this->timerRestart->start();
 }
 
 void CupsAnalyzer::restart()
 {
     this->counter = 0;
-    this->timerRestart.start();
+    this->timerRestart->start();
 }
 
 void CupsAnalyzer::run( uint iter, real dt )
 {
-    real currentRuntime             = this->timer.getCurrentRuntimeInSeconds();
-    real currentRuntimeSinceRestart = this->timerRestart.getCurrentRuntimeInSeconds();
+    real currentRuntime             = this->timer->getCurrentRuntimeInSeconds();
+    real currentRuntimeSinceRestart = this->timerRestart->getCurrentRuntimeInSeconds();
 
     this->counter++;
 

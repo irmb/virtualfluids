@@ -242,7 +242,8 @@ void drivenCavity( std::string path, std::string simulationName )
 
 int main( int argc, char* argv[])
 {
-    std::string path( "E:/DrivenCavity/resultsGKS/" );
+    //std::string path( "E:/DrivenCavity/resultsGKS/" );
+    std::string path( "F:/Work/Computations/out/DrivenCavity/" );
     //std::string path( "out/" );
     std::string simulationName ( "DrivenCavity" );
 

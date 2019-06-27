@@ -1,26 +1,42 @@
-//#define MPI_LOGGING
 
-//Martin Branch
-
-#include <mpi.h>
-#if defined( MPI_LOGGING )
-	#include <mpe.h>
-#endif
-
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
 #include <fstream>
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <exception>
+#include <memory>
 
-//#include "metis.h"
+//////////////////////////////////////////////////////////////////////////
+
+#include "Core/DataTypes.h"
+#include "Core/PointerDefinitions.h"
 
 #include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
 #include "Core/Input/ConfigFileReader/ConfigFileReader.h"
+
+#include "Core/VectorTypes.h"
+#include "Core/Logger/Logger.h"
+
+//////////////////////////////////////////////////////////////////////////
+
+//#include "GridGenerator/global.h"
+
+#include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
+#include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
+#include "GridGenerator/grid/BoundaryConditions/Side.h"
+#include "GridGenerator/grid/GridFactory.h"
+
+#include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
+#include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
+#include "GridGenerator/io/STLReaderWriter/STLReader.h"
+#include "GridGenerator/io/STLReaderWriter/STLWriter.h"
+
+//////////////////////////////////////////////////////////////////////////
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
@@ -30,34 +46,34 @@
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 
-#include "global.h"
-
-#include "geometries/Sphere/Sphere.h"
-#include "geometries/VerticalCylinder/VerticalCylinder.h"
-#include "geometries/Cuboid/Cuboid.h"
-#include "geometries/TriangularMesh/TriangularMesh.h"
-#include "geometries/Conglomerate/Conglomerate.h"
-#include "geometries/TriangularMesh/TriangularMeshStrategy.h"
-
-#include "grid/GridBuilder/LevelGridBuilder.h"
-#include "grid/GridBuilder/MultipleGridBuilder.h"
-#include "grid/BoundaryConditions/Side.h"
-#include "grid/BoundaryConditions/BoundaryCondition.h"
-#include "grid/GridFactory.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
+#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
-#include "io/SimulationFileWriter/SimulationFileWriter.h"
-#include "io/GridVTKWriter/GridVTKWriter.h"
-#include "io/STLReaderWriter/STLReader.h"
-#include "io/STLReaderWriter/STLWriter.h"
+//////////////////////////////////////////////////////////////////////////
 
-#include "utilities/math/Math.h"
-#include "utilities/communication.h"
-#include "utilities/transformator/TransformatorImp.h"
+#include "GksMeshAdapter/GksMeshAdapter.h"
 
-#include "Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
-#include "PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+#include "GksVtkAdapter/VTKInterface.h"
+
+#include "GksGpu/DataBase/DataBase.h"
+#include "GksGpu/Parameters/Parameters.h"
+#include "GksGpu/Initializer/Initializer.h"
+
+#include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
+
+#include "GksGpu/BoundaryConditions/BoundaryCondition.h"
+#include "GksGpu/BoundaryConditions/IsothermalWall.h"
+
+#include "GksGpu/TimeStepping/NestedTimeStep.h"
+
+#include "GksGpu/Analyzer/CupsAnalyzer.h"
+#include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
+
+#include "GksGpu/CudaUtility/CudaUtility.h"
+
+//////////////////////////////////////////////////////////////////////////
 
 void multipleLevel(const std::string& configPath)
 {
@@ -80,6 +96,8 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    LbmOrGks lbmOrGks = LBM;
+
 	const real L = 1.0;
 
     const real Re = 1000;
@@ -93,7 +111,7 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosity = nx * velocity / Re; // LB units
 
-    *logging::out << logging::Logger::INFO_HIGH << "velocity = " << velocity << " s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "velocity  = " << velocity << " s\n";
 
     *logging::out << logging::Logger::INFO_HIGH << "viscosity = " << viscosity << "\n";
 
@@ -108,44 +126,86 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->buildGrids(LBM, false); // buildGrids() has to be called before setting the BCs!!!!
 
-	gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-	gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-	gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-	gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-	gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  vy, 0.0);
-	gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	//////////////////////////////////////////////////////////////////////////
+    if( lbmOrGks == LBM )
+    {
+	    gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
+	    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
+	    gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
+	    gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
+	    gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  vy, 0.0);
+	    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
 
-	SPtr<Parameter> para = Parameter::make(configData, comm);
-	//SPtr<Parameter> para = Parameter::make();
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
+        SPtr<Parameter> para = Parameter::make(configData, comm);
+        //SPtr<Parameter> para = Parameter::make();
 
-	SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+        SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
-    para->setVelocity( velocity );
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    para->setViscosity( viscosity );
+        para->setVelocity(velocity);
 
-    para->setVelocityRatio( 1.0 / velocity );
+        para->setViscosity(viscosity);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->setVelocityRatio(1.0 / velocity);
 
-    Simulation sim;
-	SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-	SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-	SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-	sim.setFactories(kernelFactory, preProcessorFactory);
-    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
-    sim.run();
-	sim.free();
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        Simulation sim;
+        SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
+        SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
+        SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
+        sim.setFactories(kernelFactory, preProcessorFactory);
+        sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
+        sim.run();
+        sim.free();
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
+    else
+    {
+        CudaUtility::setCudaDevice(0);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        GksMeshAdapter meshAdapter( gridBuilder );
+
+        meshAdapter.inputGrid();
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        auto dataBase = std::make_shared<DataBase>( "GPU" );
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        real lambda = 0.1;
+
+        SPtr<BoundaryCondition> bcLid  = std::make_shared<IsothermalWall>( dataBase, Vec3(  vx, 0.0, 0.0 ), lambda, false );
+        SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, false );
+
+        bcLid->findBoundaryCells ( meshAdapter, true,  [&](Vec3 center){ return center.y > 0.5; } );
+        bcWall->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < 0.5; } );
+
+        dataBase->boundaryConditions.push_back( bcLid  );
+        dataBase->boundaryConditions.push_back( bcWall );
+    
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
 }
 
 int main( int argc, char* argv[])

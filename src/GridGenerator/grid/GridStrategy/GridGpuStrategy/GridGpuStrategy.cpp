@@ -297,7 +297,7 @@ void GridGpuStrategy::allocMatrixIndicesOnGPU(SPtr<GridImp> grid)
 void GridGpuStrategy::allocAndCopyTrianglesToGPU(TriangularMesh &geom)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "start copying triangles ...\n";
-    clock_t begin = clock();
+    //clock_t begin = clock();
     int size_in_bytes_triangles = sizeof(Triangle)*geom.size;
     real sizeInMB = size_in_bytes_triangles / (1024.f*1024.f);
 
@@ -308,9 +308,9 @@ void GridGpuStrategy::allocAndCopyTrianglesToGPU(TriangularMesh &geom)
     CudaSafeCall(cudaMemcpy(triangles_d, geom.triangles, size_in_bytes_triangles, cudaMemcpyHostToDevice));
     geom.triangles = triangles_d;
     CudaCheckError();
-    clock_t end = clock();
-    real time = real(end - begin) / CLOCKS_PER_SEC;
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "time copying triangles: " << time << "s\n";
+    //clock_t end = clock();
+    //real time = real(end - begin) / CLOCKS_PER_SEC;
+    //*logging::out << logging::Logger::INFO_INTERMEDIATE << "time copying triangles: " << time << "s\n";
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "...copying triangles finish!\n\n";
 }
 

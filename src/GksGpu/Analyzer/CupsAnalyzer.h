@@ -14,8 +14,8 @@ struct DataBase;
 class VF_PUBLIC CupsAnalyzer
 {
 private:
-    Timer timer;
-    Timer timerRestart;
+    SPtr<Timer> timer;
+    SPtr<Timer> timerRestart;
 
     bool outputPerTime;
 

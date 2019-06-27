@@ -1,8 +1,15 @@
 setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR}) 
 
 set(linkDirectories "")
-set(libsToLink VirtualFluids_GPU GridGenerator)
-set(includeDirectories "${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/src/VirtualFluids_GPU" "${CMAKE_SOURCE_DIR}/src/GridGenerator" "${CMAKE_SOURCE_DIR}/src/VirtualFluidsBasics")
+set(libsToLink Core VirtualFluids_GPU GridGenerator GksMeshAdapter GksVtkAdapter GksGpu)
+set(includeDirectories "${CMAKE_SOURCE_DIR}/src"
+                       "${CMAKE_SOURCE_DIR}/src/Core"
+                       "${CMAKE_SOURCE_DIR}/src/VirtualFluids_GPU" 
+                       "${CMAKE_SOURCE_DIR}/src/GridGenerator" 
+                       "${CMAKE_SOURCE_DIR}/src/VirtualFluidsBasics"
+                       "${CMAKE_SOURCE_DIR}/src/GksMeshAdapter"
+                       "${CMAKE_SOURCE_DIR}/src/GksVtkAdapter"
+                       "${CMAKE_SOURCE_DIR}/src/GksGpu")
 
 #glob files and save in MY_SRCS
 include(CMakePackage.cmake)
