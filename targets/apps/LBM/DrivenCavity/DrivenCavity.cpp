@@ -81,8 +81,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-LbmOrGks lbmOrGks = GKS;
-//LbmOrGks lbmOrGks = LBM;
+//LbmOrGks lbmOrGks = GKS;
+LbmOrGks lbmOrGks = LBM;
 
 const real L  = 1.0;
 
@@ -90,7 +90,7 @@ const real Re = 1000.0;
 
 const real velocity  = 1.0;
 
-const real dt = 1.0e-3;
+const real dt = 0.5e-3;
 
 const uint nx = 64;
 
@@ -99,7 +99,7 @@ std::string path("F:/Work/Computations/out/DrivenCavity/");
 std::string simulationName("DrivenCavity");
 
 const uint timeStepOut = 10000;
-const uint timeStepEnd = 100000;
+const uint timeStepEnd = 1000000;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,7 +221,6 @@ void multipleLevel(const std::string& configPath)
     
         parameters.K  = 2.0;
         parameters.Pr = 1.0;
-        parameters.K  = 2.0;
         
         const real Ma = 0.1;
 
@@ -232,7 +231,9 @@ void multipleLevel(const std::string& configPath)
 
         const real mu = velocity * L * rho / Re;
 
-        *logging::out << logging::Logger::INFO_HIGH << "CFL = " << dx / ( dt * ( velocity + cs ) ) << " s\n";
+        *logging::out << logging::Logger::INFO_HIGH << "mu  = " << mu << " m^2/s\n";
+
+        *logging::out << logging::Logger::INFO_HIGH << "CFL = " << dt * ( velocity + cs ) / dx << "\n";
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -261,8 +262,8 @@ void multipleLevel(const std::string& configPath)
         SPtr<BoundaryCondition> bcLid  = std::make_shared<IsothermalWall>( dataBase, Vec3(  vx,  vy, 0.0 ), lambda, false );
         SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, false );
 
-        bcLid->findBoundaryCells ( meshAdapter, true,  [&](Vec3 center){ return center.y > 0.5; } );
-        bcWall->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < 0.5; } );
+        bcLid->findBoundaryCells ( meshAdapter, true,  [&](Vec3 center){ return center.z > 0.5; } );
+        bcWall->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.z < 0.5; } );
 
         dataBase->boundaryConditions.push_back( bcLid  );
         dataBase->boundaryConditions.push_back( bcWall );
@@ -292,16 +293,28 @@ void multipleLevel(const std::string& configPath)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        for( uint iter = 1; iter <= 1000000; iter++ )
+        for( uint iter = 1; iter <= timeStepEnd; iter++ )
         {
             TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
-            if( iter % 10000 == 0 )
+            if( iter % timeStepOut == 0 )
             {
                 dataBase->copyDataDeviceToHost();
 
                 writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
             }
+            
+            int crashCellIndex = dataBase->getCrashCellIndex();
+            if( crashCellIndex >= 0 )
+            {
+                *logging::out << logging::Logger::LOGGER_ERROR << "Simulation Crashed at CellIndex = " << crashCellIndex << "\n";
+                dataBase->copyDataDeviceToHost();
+                writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
+
+                break;
+            }
+
+            dataBase->getCrashCellIndex();
 
             cupsAnalyzer.run( iter, parameters.dt );
 

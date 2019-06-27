@@ -20,6 +20,9 @@ CupsAnalyzer::CupsAnalyzer(SPtr<DataBase> dataBase,
       outputPerTimeCounter(1),
       counter(0)
 {
+    this->timer        = Timer::makeStart();
+    this->timerRestart = Timer::makeStart();
+
     this->numberOfCellUpdatesPerTimeStep = 0;
 
     for( uint level = 0; level < dataBase->numberOfLevels; level++ )
