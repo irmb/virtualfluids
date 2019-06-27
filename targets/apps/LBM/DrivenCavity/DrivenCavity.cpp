@@ -24,8 +24,6 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-//#include "GridGenerator/global.h"
-
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
@@ -73,7 +71,39 @@
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//          U s e r    s e t t i n g s
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+LbmOrGks lbmOrGks = GKS;
+//LbmOrGks lbmOrGks = LBM;
+
+const real L  = 1.0;
+
+const real Re = 1000.0;
+
+const real velocity  = 1.0;
+
+const real dt = 1.0e-3;
+
+const uint nx = 64;
+
+std::string path("F:/Work/Computations/out/DrivenCavity/");
+
+std::string simulationName("DrivenCavity");
+
+const uint timeStepOut = 10000;
+const uint timeStepEnd = 100000;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void multipleLevel(const std::string& configPath)
 {
@@ -96,27 +126,6 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    LbmOrGks lbmOrGks = LBM;
-
-	const real L = 1.0;
-
-    const real Re = 1000;
-
-    const uint nx = 64;
-
-	const real vx = 0.05; // LB units
-	const real vy = 0.05; // LB units
-
-	const real velocity = sqrt(vx*vx + vy*vy);
-
-    const real viscosity = nx * velocity / Re; // LB units
-
-    *logging::out << logging::Logger::INFO_HIGH << "velocity  = " << velocity << " s\n";
-
-    *logging::out << logging::Logger::INFO_HIGH << "viscosity = " << viscosity << "\n";
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 	real dx = L / real(nx);
 
 	gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
@@ -124,7 +133,7 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-	gridBuilder->buildGrids(LBM, false); // buildGrids() has to be called before setting the BCs!!!!
+	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,6 +146,44 @@ void multipleLevel(const std::string& configPath)
 
     if( lbmOrGks == LBM )
     {
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        SPtr<Parameter> para = Parameter::make(configData, comm);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        const real velocityLB = velocity * dt / dx; // LB units
+
+	    const real vx = velocityLB / sqrt(2.0); // LB units
+	    const real vy = velocityLB / sqrt(2.0); // LB units
+
+        const real viscosityLB = nx * velocityLB / Re; // LB units
+
+        *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
+        *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx/dt] = " << viscosityLB << "\n";
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        para->setOutputPath( path );
+        para->setOutputPrefix( simulationName );
+
+        para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+
+        para->setPrintFiles(true);
+
+        para->setMaxLevel(1);
+
+        para->setVelocity(velocityLB);
+        para->setViscosity(viscosityLB);
+
+        para->setVelocityRatio(1.0 / velocityLB);
+
+        para->setTOut( timeStepOut );
+        para->setTEnd( timeStepEnd );
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	    gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
 	    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
 	    gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
@@ -146,22 +193,9 @@ void multipleLevel(const std::string& configPath)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        SPtr<Parameter> para = Parameter::make(configData, comm);
-        //SPtr<Parameter> para = Parameter::make();
-
         SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
         SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        para->setVelocity(velocity);
-
-        para->setViscosity(viscosity);
-
-        para->setVelocityRatio(1.0 / velocity);
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         Simulation sim;
         SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
@@ -177,9 +211,40 @@ void multipleLevel(const std::string& configPath)
     else
     {
         CudaUtility::setCudaDevice(0);
+        
+        Parameters parameters;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	    const real vx = velocity / sqrt(2.0);
+	    const real vy = velocity / sqrt(2.0);
+    
+        parameters.K  = 2.0;
+        parameters.Pr = 1.0;
+        parameters.K  = 2.0;
         
+        const real Ma = 0.1;
+
+        real rho = 1.0;
+
+        real cs = velocity / Ma;
+        real lambda = c1o2 * ( ( parameters.K + 5.0 ) / ( parameters.K + 3.0 ) ) / ( cs * cs );
+
+        const real mu = velocity * L * rho / Re;
+
+        *logging::out << logging::Logger::INFO_HIGH << "CFL = " << dx / ( dt * ( velocity + cs ) ) << " s\n";
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        parameters.mu = mu;
+
+        parameters.dt = dt;
+        parameters.dx = dx;
+
+        parameters.lambdaRef = lambda;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         GksMeshAdapter meshAdapter( gridBuilder );
 
         meshAdapter.inputGrid();
@@ -193,9 +258,7 @@ void multipleLevel(const std::string& configPath)
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        real lambda = 0.1;
-
-        SPtr<BoundaryCondition> bcLid  = std::make_shared<IsothermalWall>( dataBase, Vec3(  vx, 0.0, 0.0 ), lambda, false );
+        SPtr<BoundaryCondition> bcLid  = std::make_shared<IsothermalWall>( dataBase, Vec3(  vx,  vy, 0.0 ), lambda, false );
         SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, false );
 
         bcLid->findBoundaryCells ( meshAdapter, true,  [&](Vec3 center){ return center.y > 0.5; } );
@@ -205,6 +268,45 @@ void multipleLevel(const std::string& configPath)
         dataBase->boundaryConditions.push_back( bcWall );
     
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        dataBase->setMesh( meshAdapter );
+
+        Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables {
+
+            return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda ), parameters.K );
+        });
+
+        dataBase->copyDataHostToDevice();
+
+        Initializer::initializeDataUpdate(dataBase);
+
+        writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        CupsAnalyzer cupsAnalyzer( dataBase, false, 60.0, true, 10000 );
+
+        ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
+
+        cupsAnalyzer.start();
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        for( uint iter = 1; iter <= 1000000; iter++ )
+        {
+            TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+
+            if( iter % 10000 == 0 )
+            {
+                dataBase->copyDataDeviceToHost();
+
+                writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
+            }
+
+            cupsAnalyzer.run( iter, parameters.dt );
+
+            convergenceAnalyzer.run( iter );
+        }
     }
 }
 
@@ -219,12 +321,6 @@ int main( int argc, char* argv[])
         try
         {
             //////////////////////////////////////////////////////////////////////////
-
-			
-
-			//std::stringstream targetPath; targetPath << __FILE__;
-			//
-			//std::cout << targetPath.str() << std::endl;
 
 			std::string targetPath;
 
