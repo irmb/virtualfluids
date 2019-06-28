@@ -94,7 +94,8 @@ const real dt = 0.5e-3;
 
 const uint nx = 64;
 
-std::string path("F:/Work/Computations/out/DrivenCavity/");
+//std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
+std::string path("E:/DrivenCavity/results/"); //TESLA03
 
 std::string simulationName("DrivenCavity");
 
