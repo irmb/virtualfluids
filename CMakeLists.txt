@@ -44,8 +44,6 @@ include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FileUtilities.cmake)
 #############################################################
 ###                   PROJECT SETTINGS                    ###
 #############################################################
-set(CUDA_TOOLKIT_ROOT_DIR "C:/Program Files/NVIDIA GPU Computing Toolkit")
-set(CUDACXX "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/bin/nvcc.exe")
 
 project(VirtualFluidsGpuCodes)
 
