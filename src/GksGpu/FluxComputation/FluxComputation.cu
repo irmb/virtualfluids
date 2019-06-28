@@ -348,6 +348,11 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             uint negCellIdx = dataBase.faceToCell[ NEG_CELL(faceIndex, dataBase.numberOfFaces) ];
             uint posCellIdx = dataBase.faceToCell[ POS_CELL(faceIndex, dataBase.numberOfFaces) ];
 
+        #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+            atomicAdd( &( dataBase.diffusivity[ negCellIdx ] ), parameters.D );
+            atomicAdd( &( dataBase.diffusivity[ posCellIdx ] ), parameters.D );
+        #endif
+
             CellProperties negCellProperties = dataBase.cellProperties[ negCellIdx ];
             CellProperties posCellProperties = dataBase.cellProperties[ posCellIdx ];
 

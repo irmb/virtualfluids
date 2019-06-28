@@ -111,7 +111,7 @@ std::string CupsAnalyzer::getTimeString(real time)
     minutes -=   ( days * 24 + hours ) * 60;
     seconds -= ( ( days * 24 + hours ) * 60 + minutes ) * 60;
 
-    int milliseconds = int( 1000.0 * ( time - seconds) );
+    int milliseconds = int( 1000.0 * ( time - real(seconds)) );
 
     std::stringstream timeString;
     timeString << std::setw(2) << std::setfill('0') << days    << ":";

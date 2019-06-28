@@ -242,6 +242,10 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
 	} );
 #endif // USE_PASSIVE_SCALAR
 
+	addScalarRealCellData( grid, dataBase->numberOfCells, "D_LES", [&] (uint cellIdx) {
+	    return dataBase->diffusivityHost[ cellIdx ];
+	} );
+
 }
 
 void writeVtkUnstructuredGrid( vtkGridPtr grid, int mode, std::string filename )

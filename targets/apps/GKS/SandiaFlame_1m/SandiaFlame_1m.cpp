@@ -138,7 +138,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     parameters.enableReaction = true;
 
-    parameters.useReactionLimiter      = true;
+    parameters.useReactionLimiter      = false;
     parameters.useTemperatureLimiter   = true;
     parameters.usePassiveScalarLimiter = true;
     parameters.useSmagorinsky          = true;
@@ -381,7 +381,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
         if( crashCellIndex >= 0 )
         {
-            *logging::out << logging::Logger::ERROR << "Simulation Crashed at CellIndex = " << crashCellIndex << "\n";
+            *logging::out << logging::Logger::LOGGER_ERROR << "Simulation Crashed at CellIndex = " << crashCellIndex << "\n";
             dataBase->copyDataDeviceToHost();
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
 
@@ -466,15 +466,15 @@ int main( int argc, char* argv[])
     }
     catch (const std::exception& e)
     {     
-        *logging::out << logging::Logger::ERROR << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
     }
     catch (const std::bad_alloc& e)
     {  
-        *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
     }
     catch (...)
     {
-        *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
     }
 
     logFile.close();

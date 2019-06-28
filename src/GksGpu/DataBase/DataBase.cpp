@@ -31,7 +31,8 @@ DataBase::DataBase( std::string type )
           coarseToFine   (nullptr),
           data           (nullptr),
           dataUpdate     (nullptr),
-          massFlux       (nullptr)
+          massFlux       (nullptr),
+          diffusivity      (nullptr)
 {
 }
 
@@ -169,6 +170,8 @@ DataBaseStruct DataBase::toStruct()
     dataBase.dataUpdate               = this->dataUpdate;
 
     dataBase.massFlux                 = this->massFlux;
+
+    dataBase.diffusivity                = this->diffusivity;
 
     dataBase.crashCellIndex           = this->crashCellIndex;
 
