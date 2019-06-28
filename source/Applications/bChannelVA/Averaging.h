@@ -41,6 +41,7 @@ public:
    void initMeanOfVaFluctuations();
    void initSumOfVaFluctuations();
    void fluctuationsStress();
+   void fluctuationsStress2();
    void meanOfVaFluctuations(int numberOfTimeSteps);
    void sumOfVaFluctuations();
    void writeVaFluctuationsToBinaryFiles(std::string fname, int timeStep);
@@ -60,6 +61,7 @@ public:
    void readVaStressesFromBinaryFiles(std::string fname, int timeStep);
    void writeMeanVaStressesToBinaryFiles(std::string ffname);
    void readMeanVaStressesFromBinaryFiles(std::string ffname);
+   void writeMeanOfVaStressesToImageFile(std::string ffname);
 
    void initPlanarAveraging();
    void planarAveraging();
