@@ -44,8 +44,6 @@ public:
    void fluctuationsStress2();
    void meanOfVaFluctuations(int numberOfTimeSteps);
    void sumOfVaFluctuations();
-   void writeVaFluctuationsToBinaryFiles(std::string fname, int timeStep);
-   void readVaFluctuationsFromBinaryFiles(std::string fname, int timeStep);
    void writeMeanVaFluctuationsToBinaryFiles(std::string ffname);
    void readMeanVaFluctuationsFromBinaryFiles(std::string ffname);
    void writeMeanOfVaFluctuationsToImageFile(std::string ffname);
@@ -74,6 +72,39 @@ public:
    void setOrigin(std::array<double, 3> val) { geo_origin = val; }
    void setSpacing(std::array<double, 3> val) { geo_spacing = val; }
    void setDeltaX(double val) { deltax = val; }
+
+   ////////////////////////////////////////////////////////////////
+   //new implimentation
+   ////////////////////////////////////////////////////////////////
+
+   ////////////////////////////////////////////////////////////////
+   //compute mean of MQ values
+   void initMeanMqValues();
+   void sumMqValues();
+   void computeMeanMqValues(int numberOfTimeSteps);
+   void writeMeanMqValuesToBinaryFiles(std::string fname);
+   void readMeanMqValuesFromBinaryFiles(std::string fname);
+   void volumeAveragingOfMeanMqValuesWithMPI(double l_real);
+   void writeVaMeanMqValuesToBinaryFiles(std::string fname);
+   void readVaMeanMqValuesFromBinaryFiles(std::string fname);
+
+   ////////////////////////////////////////////////////////////////
+   //compute fluctuations of MQ values
+   void initFluctuationsOfMqValues();
+   void computeFluctuationsOfMqValues();
+   void writeFluctuationsOfMqValuesToBinaryFiles(std::string fname, int timeStep);
+   void readFluctuationsOfMqValuesFromBinaryFiles(std::string fname, int timeStep);
+   void volumeAveragingOfFluctuationsWithMPI(double l_real);
+   void writeVaFluctuationsToBinaryFiles(std::string fname, int timeStep);
+   void readVaFluctuationsFromBinaryFiles(std::string fname, int timeStep);
+   void initMeanOfVolumeAveragedValues();
+   void sumVolumeAveragedValues();
+   void computeVolumeAveragedValues(int numberOfTimeSteps);
+   void writeVolumeAveragedValuesToBinaryFiles(std::string fname);
+   void readVolumeAveragedValuesFromBinaryFiles(std::string fname);
+
+   //
+
 protected:
    void getNodeIndexes(std::array<double, 3> x, std::array<int, 3>& ix);
    double G(double x, double l);
@@ -96,6 +127,11 @@ private:
    CbArray3D<double> vzMatrix;
    CbArray3D<double> prMatrix;
 
+   CbArray3D<double> meanVxMatrix;
+   CbArray3D<double> meanVyMatrix;
+   CbArray3D<double> meanVzMatrix;
+   CbArray3D<double> meanPrMatrix;
+
    CbArray3D<double> vaVxMatrix;
    CbArray3D<double> vaVyMatrix;
    CbArray3D<double> vaVzMatrix;
@@ -111,10 +147,10 @@ private:
    CbArray3D<double> meanVaVzMatrix;
    CbArray3D<double> meanVaPrMatrix;
 //----------------------------------------
-   CbArray3D<double> FlucVxMatrix;
-   CbArray3D<double> FlucVyMatrix;
-   CbArray3D<double> FlucVzMatrix;
-   CbArray3D<double> FlucPrMatrix;
+   CbArray3D<double> flucVxMatrix;
+   CbArray3D<double> flucVyMatrix;
+   CbArray3D<double> flucVzMatrix;
+   CbArray3D<double> flucPrMatrix;
 
    CbArray3D<double> vaFlucVxMatrix;
    CbArray3D<double> vaFlucVyMatrix;

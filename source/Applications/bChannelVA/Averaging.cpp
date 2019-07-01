@@ -171,6 +171,469 @@ void Averaging::writeGeoMatrixToImageFile(std::string output)
    timer_write->StopTimer();
    UBLOG(logINFO, "write data set time: " << UbSystem::toString(timer_write->GetElapsedTime()) << " s");
 }
+void Averaging::initMeanMqValues()
+{
+   meanVxMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVyMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVzMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanPrMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+}
+void Averaging::sumMqValues()
+{
+   vector<double>& vxSum = meanVxMatrix.getDataVector();
+   vector<double>& vySum = meanVyMatrix.getDataVector();
+   vector<double>& vzSum = meanVzMatrix.getDataVector();
+   vector<double>& prSum = meanPrMatrix.getDataVector();
+
+   vector<double>& vxVa = vxMatrix.getDataVector();
+   vector<double>& vyVa = vyMatrix.getDataVector();
+   vector<double>& vzVa = vzMatrix.getDataVector();
+   vector<double>& prVa = prMatrix.getDataVector();
+
+   int size = (int)vxVa.size();
+
+   for (int i = 0; i < size; i++)
+   {
+      vxSum[i] += vxVa[i];
+      vySum[i] += vyVa[i];
+      vzSum[i] += vzVa[i];
+      prSum[i] += prVa[i];
+   }
+}
+void Averaging::computeMeanMqValues(int numberOfTimeSteps)
+{
+   vector<double>& vxSum = meanVxMatrix.getDataVector();
+   vector<double>& vySum = meanVyMatrix.getDataVector();
+   vector<double>& vzSum = meanVzMatrix.getDataVector();
+   vector<double>& prSum = meanPrMatrix.getDataVector();
+
+   vector<double>& vxMean = meanVxMatrix.getDataVector();
+   vector<double>& vyMean = meanVyMatrix.getDataVector();
+   vector<double>& vzMean = meanVzMatrix.getDataVector();
+   vector<double>& prMean = meanPrMatrix.getDataVector();
+
+   int size = (int)vxSum.size();
+
+   for (int i = 0; i < size; i++)
+   {
+      vxMean[i] = vxSum[i] / numberOfTimeSteps;
+      vyMean[i] = vySum[i] / numberOfTimeSteps;
+      vzMean[i] = vzSum[i] / numberOfTimeSteps;
+      prMean[i] = prSum[i] / numberOfTimeSteps;
+   }
+}
+void Averaging::writeMeanMqValuesToBinaryFiles(std::string fname)
+{
+   writeMatrixToBinaryFiles<double>(meanVxMatrix, fname + "Vx" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVyMatrix, fname + "Vy" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVzMatrix, fname + "Vz" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanPrMatrix, fname + "Pr" + ".bin");
+}
+void Averaging::readMeanMqValuesFromBinaryFiles(std::string fname)
+{
+   readMatrixFromBinaryFiles<double>(fname + "Vx" + ".bin", meanVxMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Vy" + ".bin", meanVyMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Vz" + ".bin", meanVzMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Pr" + ".bin", meanPrMatrix);
+}
+void Averaging::volumeAveragingOfMeanMqValuesWithMPI(double l_real)
+{
+   vtkSmartPointer<vtkTimerLog> timer_averaging = vtkSmartPointer<vtkTimerLog>::New();
+
+   UBLOG(logINFO, "volume averaging: start");
+   timer_averaging->StartTimer();
+
+   double l = round(l_real / deltax);
+   UBLOG(logINFO, "l = " + UbSystem::toString(l));
+
+   double lQuadrat = l * l;
+   double lNorm = lQuadrat * lQuadrat * lQuadrat;
+
+   UBLOG(logINFO, "NX1 x NX2 x NX3 = " + UbSystem::toString(dimensions[0]) << " x " + UbSystem::toString(dimensions[1]) << " x " << UbSystem::toString(dimensions[2]));
+
+   int size = dimensions[0] * dimensions[1] * dimensions[2];
+   meanVaVxMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVaVyMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVaVzMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVaPrMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+
+   int numprocs, PID;
+   MPI_Comm_rank(MPI_COMM_WORLD, &PID);
+   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+
+   int part = (int)round((double)dimensions[0] / (double)numprocs);
+   UBLOG(logINFO, "part = " + UbSystem::toString(part));
+
+   int startX1 = part * PID;
+   int stopX1 = startX1 + part;
+   if (PID == numprocs - 1)
+   {
+      stopX1 = dimensions[0];
+   }
+
+   UBLOG(logINFO, "startX1 = " + UbSystem::toString(startX1));
+   UBLOG(logINFO, "stopX1 = " + UbSystem::toString(stopX1));
+
+   vtkSmartPointer<vtkTimerLog> timer_inloop = vtkSmartPointer<vtkTimerLog>::New();
+   //timer_inloop->StartTimer();
+   int p = 1000000;
+
+   //omp_set_num_threads(8);
+
+   //#pragma omp parallel num_threads(4) //private(i)
+   {
+      int i = 0;
+
+#pragma omp parallel for //private(i)//scheduler(dynamic, 1)
+      for (int x3 = 0; x3 < dimensions[2]; x3++)
+         for (int x2 = 0; x2 < dimensions[1]; x2++)
+            for (int x1 = startX1; x1 < stopX1; x1++)
+            {
+               int ID = omp_get_thread_num();
+               if (i == 0 && ID == 0)
+               {
+                  timer_inloop->StartTimer();
+                  UBLOG(logINFO, "point id = " + UbSystem::toString(i));
+               }
+               double vx = 0.0;
+               double vy = 0.0;
+               double vz = 0.0;
+               double pr = 0.0;
+
+               int ll = (int)l;
+               int llz = ll;
+
+               if (x3 - ll < 0) llz = x3;
+
+               if (x3 + ll >= dimensions[2]) llz = dimensions[2] - 1 - x3;
+
+               //#pragma omp parallel for
+               for (int z = -llz; z <= +llz; z++)
+                  for (int y = -ll; y <= +ll; y++)
+                     for (int x = -ll; x <= +ll; x++)
+                     {
+                        int xx = x1 + x;
+                        int yy = x2 + y;
+                        int zz = x3 + z;
+
+                        //correctIndex(xx, yy, zz);
+                        if (xx < 0)   xx = dimensions[0] + xx;
+                        if (xx >= dimensions[0]) xx = xx - dimensions[0];
+
+                        if (yy < 0)   yy = dimensions[1] + yy;
+                        if (yy >= dimensions[1]) yy = yy - dimensions[1];
+
+                        if (zz < 0) zz = 0;
+                        if (zz >= dimensions[2]) zz = dimensions[2] - 1;
+
+                        double mm = (G((double)x, l) * G((double)y, l) * G((double)z, (double)l)) / lNorm;
+                        double gamma = (double)geoMatrix(xx, yy, zz);
+
+                        vx += gamma * mm * meanVxMatrix(xx, yy, zz);
+                        vy += gamma * mm * meanVyMatrix(xx, yy, zz);
+                        vz += gamma * mm * meanVzMatrix(xx, yy, zz);
+                        pr += gamma * mm * meanPrMatrix(xx, yy, zz);
+
+                     }
+
+               meanVaVxMatrix(x1, x2, x3) = vx;
+               meanVaVyMatrix(x1, x2, x3) = vy;
+               meanVaVzMatrix(x1, x2, x3) = vz;
+               meanVaPrMatrix(x1, x2, x3) = pr;
+
+               if (i % p == 0 && i != 0 && ID == 0)
+               {
+                  timer_inloop->StopTimer();
+                  UBLOG(logINFO, "point id = " + UbSystem::toString(i));
+                  UBLOG(logINFO, "time per " + UbSystem::toString(p) + " points: " + UbSystem::toString(timer_inloop->GetElapsedTime()) + " s");
+                  UBLOG(logINFO, "actual memory usage: " << UbSystem::toString(Utilities::getPhysMemUsedByMe() / 1e9) << " GByte");
+                  timer_inloop->StartTimer();
+                  UBLOG(logINFO, "thread id: " + UbSystem::toString(ID));
+                  UBLOG(logINFO, "Number of treads: " + UbSystem::toString(omp_get_num_threads()));
+               }
+               i++;
+            }
+   }
+
+   if (PID == 0)
+   {
+      vector<double> receiveBuffer;
+      for (int i = 1; i < numprocs; i++)
+      {
+         int count, lstartX1, lstopX1;
+         MPI_Status status;
+         MPI_Recv(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+         receiveBuffer.resize(count);
+         MPI_Recv(&receiveBuffer[0], count, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
+         MPI_Recv(&lstartX1, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+         MPI_Recv(&lstopX1, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+         int c = 0;
+         for (int x3 = 0; x3 < dimensions[2]; x3++)
+            for (int x2 = 0; x2 < dimensions[1]; x2++)
+               for (int x1 = lstartX1; x1 < lstopX1; x1++)
+               {
+                  vaVxMatrix(x1, x2, x3) = receiveBuffer[c++];
+                  vaVyMatrix(x1, x2, x3) = receiveBuffer[c++];
+                  vaVzMatrix(x1, x2, x3) = receiveBuffer[c++];
+                  vaPrMatrix(x1, x2, x3) = receiveBuffer[c++];
+               }
+      }
+   }
+   else
+   {
+      vector<double> sendBuffer;
+      for (int x3 = 0; x3 < dimensions[2]; x3++)
+         for (int x2 = 0; x2 < dimensions[1]; x2++)
+            for (int x1 = startX1; x1 < stopX1; x1++)
+            {
+               sendBuffer.push_back(vaVxMatrix(x1, x2, x3));
+               sendBuffer.push_back(vaVyMatrix(x1, x2, x3));
+               sendBuffer.push_back(vaVzMatrix(x1, x2, x3));
+               sendBuffer.push_back(vaPrMatrix(x1, x2, x3));
+            }
+      int count = (int)sendBuffer.size();
+      MPI_Send(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+      MPI_Send(&sendBuffer[0], count, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+      MPI_Send(&startX1, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+      MPI_Send(&stopX1, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+   }
+
+   timer_averaging->StopTimer();
+   UBLOG(logINFO, "volume averaging: end");
+   UBLOG(logINFO, "volume averaging time: " + UbSystem::toString(timer_averaging->GetElapsedTime()) + " s");
+}
+void Averaging::writeVaMeanMqValuesToBinaryFiles(std::string fname)
+{
+   writeMatrixToBinaryFiles<double>(meanVaVxMatrix, fname + "Vx" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVaVyMatrix, fname + "Vy" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVaVzMatrix, fname + "Vz" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVaPrMatrix, fname + "Pr" + ".bin");
+}
+void Averaging::readVaMeanMqValuesFromBinaryFiles(std::string fname)
+{
+   readMatrixFromBinaryFiles<double>(fname + "Vx" + ".bin", meanVaVxMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Vy" + ".bin", meanVaVyMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Vz" + ".bin", meanVaVzMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Pr" + ".bin", meanVaPrMatrix);
+}
+void Averaging::initFluctuationsOfMqValues()
+{
+   flucVxMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   flucVyMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   flucVzMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   flucPrMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+}
+void Averaging::computeFluctuationsOfMqValues()
+{
+   vector<double>& vxF = vxMatrix.getDataVector();
+   vector<double>& vyF = vyMatrix.getDataVector();
+   vector<double>& vzF = vzMatrix.getDataVector();
+   vector<double>& prF = prMatrix.getDataVector();
+
+   vector<double>& vxMean = meanVxMatrix.getDataVector();
+   vector<double>& vyMean = meanVyMatrix.getDataVector();
+   vector<double>& vzMean = meanVzMatrix.getDataVector();
+   vector<double>& prMean = meanPrMatrix.getDataVector();
+
+   vector<double>& vxFluc = flucVxMatrix.getDataVector();
+   vector<double>& vyFluc = flucVyMatrix.getDataVector();
+   vector<double>& vzFluc = flucVzMatrix.getDataVector();
+   vector<double>& prFluc = flucPrMatrix.getDataVector();
+
+   int size = (int)vxF.size();
+
+   for (int i = 0; i < size; i++)
+   {
+      vxFluc[i] = vxF[i] - vxMean[i];
+      vyFluc[i] = vyF[i] - vyMean[i];
+      vzFluc[i] = vzF[i] - vzMean[i];
+      prFluc[i] = prF[i] - prMean[i];
+   }
+}
+void Averaging::writeFluctuationsOfMqValuesToBinaryFiles(std::string fname, int timeStep)
+{
+   writeMatrixToBinaryFiles<double>(flucVxMatrix, fname + "Vx" + UbSystem::toString(timeStep) + ".bin");
+   writeMatrixToBinaryFiles<double>(flucVyMatrix, fname + "Vy" + UbSystem::toString(timeStep) + ".bin");
+   writeMatrixToBinaryFiles<double>(flucVzMatrix, fname + "Vz" + UbSystem::toString(timeStep) + ".bin");
+   writeMatrixToBinaryFiles<double>(flucPrMatrix, fname + "Pr" + UbSystem::toString(timeStep) + ".bin");
+}
+void Averaging::readFluctuationsOfMqValuesFromBinaryFiles(std::string fname, int timeStep)
+{
+   readMatrixFromBinaryFiles<double>(fname + "Vx" + UbSystem::toString(timeStep) + ".bin", flucVxMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Vy" + UbSystem::toString(timeStep) + ".bin", flucVyMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Vz" + UbSystem::toString(timeStep) + ".bin", flucVzMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Pr" + UbSystem::toString(timeStep) + ".bin", flucPrMatrix);
+}
+void Averaging::volumeAveragingOfFluctuationsWithMPI(double l_real)
+{
+   vtkSmartPointer<vtkTimerLog> timer_averaging = vtkSmartPointer<vtkTimerLog>::New();
+
+   UBLOG(logINFO, "volume averaging fluct and stress: start");
+   timer_averaging->StartTimer();
+
+   double l = round(l_real / deltax);
+   UBLOG(logINFO, "l = " + UbSystem::toString(l));
+
+   double lQuadrat = l * l;
+   double lNorm = lQuadrat * lQuadrat * lQuadrat;
+
+   UBLOG(logINFO, "NX1 x NX2 x NX3 = " + UbSystem::toString(dimensions[0]) << " x " + UbSystem::toString(dimensions[1]) << " x " << UbSystem::toString(dimensions[2]));
+
+   int size = dimensions[0] * dimensions[1] * dimensions[2];
+   vaFlucVxMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   vaFlucVyMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   vaFlucVzMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   vaFlucPrMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+
+   int numprocs, PID;
+   MPI_Comm_rank(MPI_COMM_WORLD, &PID);
+   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+
+   int part = (int)round((double)dimensions[0] / (double)numprocs);
+   UBLOG(logINFO, "part = " + UbSystem::toString(part));
+
+   int startX1 = part * PID;
+   int stopX1 = startX1 + part;
+   if (PID == numprocs - 1)
+   {
+      stopX1 = dimensions[0];
+   }
+
+   UBLOG(logINFO, "startX1 = " + UbSystem::toString(startX1));
+   UBLOG(logINFO, "stopX1 = " + UbSystem::toString(stopX1));
+
+   vtkSmartPointer<vtkTimerLog> timer_inloop = vtkSmartPointer<vtkTimerLog>::New();
+   //timer_inloop->StartTimer();
+   int p = 1000000;
+
+   //omp_set_num_threads(8);
+
+   //#pragma omp parallel num_threads(4) //private(i)
+   {
+      int i = 0;
+#pragma omp parallel for //private(i)//scheduler(dynamic, 1)
+      for (int x3 = 0; x3 < dimensions[2]; x3++)
+         for (int x2 = 0; x2 < dimensions[1]; x2++)
+            for (int x1 = startX1; x1 < stopX1; x1++)
+            {
+               int ID = omp_get_thread_num();
+               if (i == 0 && ID == 0)
+               {
+                  timer_inloop->StartTimer();
+                  UBLOG(logINFO, "point id = " + UbSystem::toString(i));
+               }
+               double flucvx = 0.0;
+               double flucvy = 0.0;
+               double flucvz = 0.0;
+               double flucpr = 0.0;
+               double stressXX = 0.0;
+               double stressYY = 0.0;
+               double stressZZ = 0.0;
+               double stressXY = 0.0;
+               double stressXZ = 0.0;
+               double stressYZ = 0.0;
+
+               int ll = (int)l;
+               int llz = ll;
+
+               if (x3 - ll < 0) llz = x3;
+
+               if (x3 + ll >= dimensions[2]) llz = dimensions[2] - 1 - x3;
+
+               //#pragma omp parallel for
+               for (int z = -llz; z <= +llz; z++)
+                  for (int y = -ll; y <= +ll; y++)
+                     for (int x = -ll; x <= +ll; x++)
+                     {
+                        int xx = x1 + x;
+                        int yy = x2 + y;
+                        int zz = x3 + z;
+
+                        //correctIndex(xx, yy, zz);
+                        if (xx < 0)   xx = dimensions[0] + xx;
+                        if (xx >= dimensions[0]) xx = xx - dimensions[0];
+
+                        if (yy < 0)   yy = dimensions[1] + yy;
+                        if (yy >= dimensions[1]) yy = yy - dimensions[1];
+
+                        if (zz < 0)   zz = 0;
+                        if (zz >= dimensions[2]) zz = dimensions[2] - 1;
+
+                        double mm = (G((double)x, l) * G((double)y, l) * G((double)z, (double)llz)) / lNorm;
+                        double gamma = (double)geoMatrix(xx, yy, zz);
+
+                        flucvx += gamma * mm * flucVxMatrix(xx, yy, zz);
+                        flucvy += gamma * mm * flucVyMatrix(xx, yy, zz);
+                        flucvz += gamma * mm * flucVzMatrix(xx, yy, zz);
+                        flucpr += gamma * mm * flucPrMatrix(xx, yy, zz);
+                     }
+
+               vaFlucVxMatrix(x1, x2, x3) = flucvx;
+               vaFlucVyMatrix(x1, x2, x3) = flucvy;
+               vaFlucVzMatrix(x1, x2, x3) = flucvz;
+               vaFlucPrMatrix(x1, x2, x3) = flucpr;
+
+               if (i % p == 0 && i != 0 && ID == 0)
+               {
+                  timer_inloop->StopTimer();
+                  UBLOG(logINFO, "point id = " + UbSystem::toString(i));
+                  UBLOG(logINFO, "time per " + UbSystem::toString(p) + " points: " + UbSystem::toString(timer_inloop->GetElapsedTime()) + " s");
+                  UBLOG(logINFO, "actual memory usage: " << UbSystem::toString(Utilities::getPhysMemUsedByMe() / 1e9) << " GByte");
+                  timer_inloop->StartTimer();
+                  UBLOG(logINFO, "thread id: " + UbSystem::toString(ID));
+                  UBLOG(logINFO, "Number of treads: " + UbSystem::toString(omp_get_num_threads()));
+               }
+               i++;
+            }
+   }
+
+   if (PID == 0)
+   {
+      vector<double> receiveBuffer;
+      for (int i = 1; i < numprocs; i++)
+      {
+         int count, lstartX1, lstopX1;
+         MPI_Status status;
+         MPI_Recv(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+         receiveBuffer.resize(count);
+         MPI_Recv(&receiveBuffer[0], count, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
+         MPI_Recv(&lstartX1, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+         MPI_Recv(&lstopX1, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+         int c = 0;
+         for (int x3 = 0; x3 < dimensions[2]; x3++)
+            for (int x2 = 0; x2 < dimensions[1]; x2++)
+               for (int x1 = lstartX1; x1 < lstopX1; x1++)
+               {
+                  vaFlucVxMatrix(x1, x2, x3) = receiveBuffer[c++];
+                  vaFlucVyMatrix(x1, x2, x3) = receiveBuffer[c++];
+                  vaFlucVzMatrix(x1, x2, x3) = receiveBuffer[c++];
+                  vaFlucPrMatrix(x1, x2, x3) = receiveBuffer[c++];
+               }
+      }
+   }
+   else
+   {
+      vector<double> sendBuffer;
+      for (int x3 = 0; x3 < dimensions[2]; x3++)
+         for (int x2 = 0; x2 < dimensions[1]; x2++)
+            for (int x1 = startX1; x1 < stopX1; x1++)
+            {
+               sendBuffer.push_back(vaFlucVxMatrix(x1, x2, x3));
+               sendBuffer.push_back(vaFlucVyMatrix(x1, x2, x3));
+               sendBuffer.push_back(vaFlucVzMatrix(x1, x2, x3));
+               sendBuffer.push_back(vaFlucPrMatrix(x1, x2, x3));
+            }
+      int count = (int)sendBuffer.size();
+      MPI_Send(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+      MPI_Send(&sendBuffer[0], count, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+      MPI_Send(&startX1, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+      MPI_Send(&stopX1, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+   }
+
+   timer_averaging->StopTimer();
+   UBLOG(logINFO, "volume averaging fluct and stress: end");
+   UBLOG(logINFO, "volume averaging fluct and stress time: " + UbSystem::toString(timer_averaging->GetElapsedTime()) + " s");
+}
 //////////////////////////////////////////////////////////////////////////
 void Averaging::getNodeIndexes(std::array<double, 3> x, std::array<int, 3>& ix)
 {
@@ -798,10 +1261,10 @@ void Averaging::volumeAveragingFluctStressWithMPI(double l_real)
                         double mm = (G((double)x, l)*G((double)y, l)*G((double)z, l)) / lNorm;
                         double gamma = (double)geoMatrix(xx, yy, zz);
 
-                        flucvx += gamma*mm*FlucVxMatrix(xx, yy, zz);
-                        flucvy += gamma*mm*FlucVyMatrix(xx, yy, zz);
-                        flucvz += gamma*mm*FlucVzMatrix(xx, yy, zz);
-                        flucpr += gamma*mm*FlucPrMatrix(xx, yy, zz);
+                        flucvx += gamma*mm*flucVxMatrix(xx, yy, zz);
+                        flucvy += gamma*mm*flucVyMatrix(xx, yy, zz);
+                        flucvz += gamma*mm*flucVzMatrix(xx, yy, zz);
+                        flucpr += gamma*mm*flucPrMatrix(xx, yy, zz);
 
                         stressXX += gamma*mm*StressXX(xx, yy, zz);
                         stressYY += gamma*mm*StressYY(xx, yy, zz);
@@ -945,10 +1408,10 @@ void Averaging::readMeanVolumeAveragingValuesFromBinaryFiles(std::string ffname)
 //------------------------------ fluctuations -----------------------
 void Averaging::initFluctuations()
 {
-   FlucVxMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
-   FlucVyMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
-   FlucVzMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
-   FlucPrMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   flucVxMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   flucVyMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   flucVzMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   flucPrMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
    vaFlucVxMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
    vaFlucVyMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
    vaFlucVzMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
@@ -980,10 +1443,10 @@ void Averaging::fluctuationsStress()
    vector<double>& vzMean = meanVaVzMatrix.getDataVector();
    vector<double>& prMean = meanVaPrMatrix.getDataVector();
 
-   vector<double>& vxFluc = FlucVxMatrix.getDataVector();
-   vector<double>& vyFluc = FlucVyMatrix.getDataVector();
-   vector<double>& vzFluc = FlucVzMatrix.getDataVector();
-   vector<double>& prFluc = FlucPrMatrix.getDataVector();
+   vector<double>& vxFluc = flucVxMatrix.getDataVector();
+   vector<double>& vyFluc = flucVyMatrix.getDataVector();
+   vector<double>& vzFluc = flucVzMatrix.getDataVector();
+   vector<double>& prFluc = flucPrMatrix.getDataVector();
 
    vector<double>& XXStress = StressXX.getDataVector();
    vector<double>& YYStress = StressYY.getDataVector();
@@ -1113,6 +1576,118 @@ void Averaging::readVaFluctuationsFromBinaryFiles(std::string fname, int timeSte
    readMatrixFromBinaryFiles<double>(fname + "Vz" + UbSystem::toString(timeStep) + ".bin", vaFlucVzMatrix);
    readMatrixFromBinaryFiles<double>(fname + "Pr" + UbSystem::toString(timeStep) + ".bin", vaFlucPrMatrix);
 }
+void Averaging::initMeanOfVolumeAveragedValues()
+{
+   meanVaFlucVx.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVaFlucVy.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVaFlucVz.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVaFlucPr.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+
+   meanVaStressXX.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVaStressYY.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVaStressZZ.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVaStressXY.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVaStressXZ.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanVaStressYZ.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+}
+void Averaging::sumVolumeAveragedValues()
+{
+   static int counter = 0;
+   vector<double>& vxFluc = vaFlucVxMatrix.getDataVector();
+   vector<double>& vyFluc = vaFlucVyMatrix.getDataVector();
+   vector<double>& vzFluc = vaFlucVzMatrix.getDataVector();
+   vector<double>& prFluc = vaFlucPrMatrix.getDataVector();
+
+   vector<double>& sumFlucVx = meanVaFlucVx.getDataVector();
+   vector<double>& sumFlucVy = meanVaFlucVy.getDataVector();
+   vector<double>& sumFlucVz = meanVaFlucVz.getDataVector();
+   vector<double>& sumFlucPr = meanVaFlucPr.getDataVector();
+
+   vector<double>& sumStressXX = meanVaStressXX.getDataVector();
+   vector<double>& sumStressYY = meanVaStressYY.getDataVector();
+   vector<double>& sumStressZZ = meanVaStressZZ.getDataVector();
+   vector<double>& sumStressXY = meanVaStressXY.getDataVector();
+   vector<double>& sumStressXZ = meanVaStressXZ.getDataVector();
+   vector<double>& sumStressYZ = meanVaStressYZ.getDataVector();
+
+   int size = (int)vxFluc.size();
+
+   for (int i = 0; i < size; i++)
+   {
+      sumFlucVx[i] += vxFluc[i];
+      sumFlucVy[i] += vyFluc[i];
+      sumFlucVz[i] += vzFluc[i];
+      sumFlucPr[i] += prFluc[i];
+
+      sumStressXX[i] += vxFluc[i] * vxFluc[i];
+      sumStressYY[i] += vyFluc[i] * vyFluc[i];
+      sumStressZZ[i] += vzFluc[i] * vzFluc[i];
+      sumStressXY[i] += vxFluc[i] * vyFluc[i];
+      sumStressXZ[i] += vxFluc[i] * vzFluc[i];
+      sumStressYZ[i] += vyFluc[i] * vzFluc[i];
+
+      counter++;
+   }
+}
+void Averaging::computeVolumeAveragedValues(int numberOfTimeSteps)
+{
+   vector<double>& meanFlucVx = meanVaFlucVx.getDataVector();
+   vector<double>& meanFlucVy = meanVaFlucVy.getDataVector();
+   vector<double>& meanFlucVz = meanVaFlucVz.getDataVector();
+   vector<double>& meanFlucPr = meanVaFlucPr.getDataVector();
+
+   vector<double>& meanStressXX = meanVaStressXX.getDataVector();
+   vector<double>& meanStressYY = meanVaStressYY.getDataVector();
+   vector<double>& meanStressZZ = meanVaStressZZ.getDataVector();
+   vector<double>& meanStressXY = meanVaStressXY.getDataVector();
+   vector<double>& meanStressXZ = meanVaStressXZ.getDataVector();
+   vector<double>& meanStressYZ = meanVaStressYZ.getDataVector();
+
+   int size = (int)meanFlucVx.size();
+
+   for (int i = 0; i < size; i++)
+   {
+      meanFlucVx[i] = meanFlucVx[i] / numberOfTimeSteps;
+      meanFlucVy[i] = meanFlucVy[i] / numberOfTimeSteps;
+      meanFlucVz[i] = meanFlucVz[i] / numberOfTimeSteps;
+      meanFlucPr[i] = meanFlucPr[i] / numberOfTimeSteps;
+
+      meanStressXX[i] = meanStressXX[i] / numberOfTimeSteps;
+      meanStressYY[i] = meanStressYY[i] / numberOfTimeSteps;
+      meanStressZZ[i] = meanStressZZ[i] / numberOfTimeSteps;
+      meanStressXY[i] = meanStressXY[i] / numberOfTimeSteps;
+      meanStressXZ[i] = meanStressXZ[i] / numberOfTimeSteps;
+      meanStressYZ[i] = meanStressYZ[i] / numberOfTimeSteps;
+   }
+}
+void Averaging::writeVolumeAveragedValuesToBinaryFiles(std::string fname)
+{
+   writeMatrixToBinaryFiles<double>(meanVaFlucVx, fname + "Vx" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVaFlucVy, fname + "Vy" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVaFlucVz, fname + "Vz" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVaFlucPr, fname + "Pr" + ".bin");
+
+   writeMatrixToBinaryFiles<double>(meanVaStressXX, fname + "XX" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVaStressYY, fname + "YY" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVaStressZZ, fname + "ZZ" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVaStressXY, fname + "XY" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVaStressXZ, fname + "XZ" + ".bin");
+   writeMatrixToBinaryFiles<double>(meanVaStressYZ, fname + "YZ" + ".bin");
+}
+void Averaging::readVolumeAveragedValuesFromBinaryFiles(std::string fname)
+{
+   readMatrixFromBinaryFiles<double>(fname + "Vx" + ".bin", meanVaFlucVx);
+   readMatrixFromBinaryFiles<double>(fname + "Vy" + ".bin", meanVaFlucVy);
+   readMatrixFromBinaryFiles<double>(fname + "Vz" + ".bin", meanVaFlucVz);
+   readMatrixFromBinaryFiles<double>(fname + "Pr" + ".bin", meanVaFlucPr);
+
+   readMatrixFromBinaryFiles<double>(fname + "XX" + ".bin", meanVaStressXX);
+   readMatrixFromBinaryFiles<double>(fname + "YY" + ".bin", meanVaStressYY);
+   readMatrixFromBinaryFiles<double>(fname + "ZZ" + ".bin", meanVaStressZZ);
+   readMatrixFromBinaryFiles<double>(fname + "XY" + ".bin", meanVaStressXY);
+   readMatrixFromBinaryFiles<double>(fname + "XZ" + ".bin", meanVaStressXZ);
+   readMatrixFromBinaryFiles<double>(fname + "YZ" + ".bin", meanVaStressYZ);
+}
 void Averaging::writeMeanVaFluctuationsToBinaryFiles(std::string fname)
 {
    writeMatrixToBinaryFiles<double>(meanVaFlucVx, fname + "Vx" + ".bin");
@@ -1134,7 +1709,7 @@ void Averaging::writeMeanOfVaFluctuationsToImageFile(std::string output)
 }
 void Averaging::writeFluctuationsToImageFile(std::string output)
 {
-   array < CbArray3D<double>, 4 > matrix = { FlucVxMatrix, FlucVyMatrix, FlucVzMatrix, FlucPrMatrix };
+   array < CbArray3D<double>, 4 > matrix = { flucVxMatrix, flucVyMatrix, flucVzMatrix, flucPrMatrix };
    writeMatrixToImageFile(output, matrix);
 }
 void Averaging::writeVaFluctuationsToImageFile(std::string output)
@@ -1347,7 +1922,7 @@ void Averaging::planarAveraging()
 void Averaging::writeToCSV(std::string path, double origin, double deltax)
    {
       std::ofstream ostr;
-      std::string fname = path + "/av/" + "av" + ".csv";
+      std::string fname = path + ".csv";
 
       ostr.open(fname.c_str(), std::ios_base::out);
       if (!ostr)

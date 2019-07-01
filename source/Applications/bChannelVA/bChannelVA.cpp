@@ -42,95 +42,14 @@ int main(int argc, char* argv[])
       std::array<double, 3> geo_origin = { halfDeltaX, halfDeltaX, halfDeltaX };
       std::array<double, 3> geo_spacing = { 10,10,10 };
       std::array<int, 6> geo_extent = { 0, dimensions[0] - 1, 0, dimensions[1] - 1, 0, dimensions[2] - 1 };
-      double real_l = 40;
-      double l = 40;
+      double real_l = 20;
+      double l = 20;
 
       int startTimeStep = 60000;
       int timeStep = 1000;
       int numberOfTimeSteps = 65000;
       int numberOfSamples = (numberOfTimeSteps - startTimeStep) / timeStep + 1;
       int numberOfGridPoints = dimensions[0] * dimensions[1] * dimensions[2];
-
-      //Averaging av;
-      //av.setDimensions(dimensions);
-      //av.setExtent(geo_extent);
-      //av.setOrigin(geo_origin);
-      //av.setSpacing(geo_spacing);
-      //av.setDeltaX(deltaX);
-
-      //av.createGeoMatrix(pathIn + "/bc/bc0.pvtu");
-      //if (myid == 0) av.writeGeoMatrixToBinaryFiles(pathOut + "/va/geomatrix.bin");
-      ////av.readGeoMatrixFromBinaryFiles(pathOut + "/va/geomatrix.bin");
-      //av.initVolumeAveragingValues();
-
-      //for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
-      //{
-      //    av.createMQMatrix(pathIn + "/mq/mq" + UbSystem::toString(t) + ".pvtu");
-      //    if (myid == 0) av.writeMqMatrixToBinaryFiles(pathOut + "/va/mq/mq" + UbSystem::toString(t) + "/mq", t);
-      //    av.volumeAveragingWithMPI(real_l);
-      //    if (myid == 0)
-      //    {
-      //       av.sumOfVolumeAveragingValues();
-      //       av.writeVolumeAveragingValuesToBinaryFiles(pathOut + "/va/vav/vav", t);
-      //    }
-      //}
-
-      ////av.writeMqMatrixToImageFile(pathOut + "/va/vav/mq");
-      ////if (myid == 0) av.readVolumeAveragingValuesFromBinaryFiles(pathOut + "/va/vav/vav", 60000);
-      ////if (myid == 0) av.writeVaMatrixToImageFile(pathOut + "/va/vav/vav");
-
-      //if (myid == 0)
-      //{
-      //   av.initMeanVolumeAveragingValues();
-      //   av.meanOfVolumeAveragingValues(numberOfSamples);
-      //   av.writeMeanVolumeAveragingValuesToBinaryFiles(pathOut + "/va/mean/mean");
-      //   av.writeMeanMatrixToImageFile(pathOut + "/va/vav/vavMean");
-      //}
-
-      ////for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
-      ////{
-      ////   av.readVolumeAveragingValuesFromBinaryFiles(pathOut + "/va/vav/vav", t);
-      ////   av.sumOfVolumeAveragingValues();
-      ////}
-
-      ////av.initMeanVolumeAveragingValues();
-      ////av.meanOfVolumeAveragingValues(numberOfSamples);
-      ////av.writeMeanVolumeAveragingValuesToBinaryFiles(pathOut + "/va/mean/mean");
-      ////av.writeMeanMatrixToImageFile(pathOut + "/va/vav/vavMean");
-
-      //av.initFluctuations();
-      //av.initSumOfVaFluctuations();
-      //av.initMeanOfVaFluctuations();
-
-      //av.initStresses();
-      //av.initSumOfVaStresses();
-      //av.initMeanOfVaStresses();
-      //av.initPlanarAveraging();
-
-      //av.initVolumeAveragingFluctStressValues();
-
-      //for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
-      //{
-      //    //av.readVolumeAveragingValuesFromBinaryFiles(pathOut + "/va/vav/vav", t);
-      //    //av.readMqMatrixFromBinaryFiles(pathOut + "/va/mq/mq" + UbSystem::toString(t) + "/mq", t);
-      //    av.fluctuationsStress();
-      //    av.writeFluctuationsToImageFile(pathOut + "/va/vav/vaFluct");
-
-      //    av.volumeAveragingFluctStressWithMPI(real_l);
-      //    av.writeVaFluctuationsToBinaryFiles(pathOut + "/va/av/Fluc", t);
-      //    av.writeVaStressesToBinaryFiles(pathOut + "/va/av/Stresses", t);
-      //    av.writeVaFluctuationsToImageFile(pathOut + "/va/vav/vaVAFluct");
-
-      //    av.sumOfVaFluctuations();
-      //    av.sumOfVaStresses();
-      //}
-
-      //av.meanOfVaFluctuations(numberOfSamples);
-      //av.meanOfVaStresses(numberOfSamples);
-      //av.writeMeanOfVaFluctuationsToImageFile(pathOut + "/va/vav/vaMeanFluct");
-
-      //av.planarAveraging();
-      //av.writeToCSV(pathOut + "/va/av", geo_origin[2], deltaX);
 
       Averaging av;
 
@@ -140,85 +59,58 @@ int main(int argc, char* argv[])
       av.setSpacing(geo_spacing);
       av.setDeltaX(deltaX);
 
-      av.readGeoMatrixFromBinaryFiles(pathOut + "/va/geomatrix.bin");
+      //read geo matrix
+      av.createGeoMatrix(pathIn + "/bc/bc0.pvtu");
+      if (myid == 0) av.writeGeoMatrixToBinaryFiles(pathOut + "/va/geo/geomatrix.bin");
+      av.readGeoMatrixFromBinaryFiles(pathOut + "/va/geo/geomatrix.bin");
 
-      av.initFluctuations();
-      av.initSumOfVaFluctuations();
-      av.initMeanOfVaFluctuations();
-
-      av.initStresses();
-      av.initSumOfVaStresses();
-      av.initMeanOfVaStresses();
-      av.initPlanarAveraging();
-
-      //av.initVolumeAveragingFluctStressValues();
-
-      av.readMeanVolumeAveragingValuesFromBinaryFiles(pathOut + "/va/mean/mean");
-      av.writeMeanMatrixToImageFile(pathOut + "/va/vav/vavMean");
-
-      //for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
-      //{
-      //   av.readVolumeAveragingValuesFromBinaryFiles(pathOut + "/va/vav/vav", t);
-      //   av.readMqMatrixFromBinaryFiles(pathOut + "/va/mq/mq" + UbSystem::toString(t) + "/mq", t);
-      //   av.fluctuationsStress();
-      //   //av.writeFluctuationsToImageFile(pathOut + "/va/vav/vaFluct");
-
-      //   av.volumeAveragingFluctStressWithMPI(real_l);
-      //   av.writeVaFluctuationsToBinaryFiles(pathOut + "/va/vaFluc/vaFluc" + UbSystem::toString(t) + "/vaFluc", t);
-      //   av.writeVaStressesToBinaryFiles(pathOut + "/va/vaStress/vaStress" + UbSystem::toString(t) + "/vaStress", t);
-      //   //av.writeVaFluctuationsToImageFile(pathOut + "/va/vav/vaVAFluct");
-
-      //   //av.sumOfVaFluctuations();
-      //   //av.sumOfVaStresses();
-      //}
-
-      av.initVolumeAveragingValues();
-
+      //read mq matrix
       for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
       {
          av.createMQMatrix(pathIn + "/mq/mq" + UbSystem::toString(t) + ".pvtu");
-         //av.readMqMatrixFromBinaryFiles(pathOut + "/va/mq/mq" + UbSystem::toString(t) + "/mq", t);
-         av.volumeAveragingWithMPI(real_l);
-         if (myid == 0)
-         {
-            av.sumOfVolumeAveragingValues();
-            av.writeVolumeAveragingValuesToBinaryFiles(pathOut + "/va/vav/vav", t);
-            av.writeVaMatrixToImageFile(pathOut + "/va/vav/vav" + UbSystem::toString(t));
-         }
+         av.writeMqMatrixToBinaryFiles(pathOut + "/va/mq/mq", t);
       }
 
-      if (myid == 0)
-      {
-         av.initMeanVolumeAveragingValues();
-         av.meanOfVolumeAveragingValues(numberOfSamples);
-         av.writeMeanVolumeAveragingValuesToBinaryFiles(pathOut + "/va/mean/mean");
-         av.writeMeanMatrixToImageFile(pathOut + "/va/vav/vavMean");
-      }
-
-      av.initVolumeAveragingFluctStressValues();
-
+      //compute mq values
+      av.initMeanMqValues();
       for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
       {
-         av.readVolumeAveragingValuesFromBinaryFiles(pathOut + "/va/vav/vav", t);
-         //av.readMqMatrixFromBinaryFiles(pathOut + "/va/mq/mq" + UbSystem::toString(t) + "/mq", t);
-         av.fluctuationsStress2();
-         //av.writeFluctuationsToImageFile(pathOut + "/va/vav/vaFluct");
+         av.readMqMatrixFromBinaryFiles(pathOut + "/va/mq/mq", t);
+         av.sumMqValues();
+      }
+      av.computeMeanMqValues(numberOfSamples);
+      av.writeMeanMqValuesToBinaryFiles(pathOut + "/va/mean/mean");
 
-         //av.volumeAveragingFluctStressWithMPI(real_l);
-         av.writeVaFluctuationsToBinaryFiles(pathOut + "/va/vaFluc/vaFluc" + UbSystem::toString(t) + "/vaFluc", t);
-         av.writeVaStressesToBinaryFiles(pathOut + "/va/vaStress/vaStress" + UbSystem::toString(t) + "/vaStress", t);
-         //av.writeVaFluctuationsToImageFile(pathOut + "/va/vav/vaVAFluct");
+      //compute volume averaging of Reynolds averaged MQ values
+      av.volumeAveragingOfMeanMqValuesWithMPI(l);
+      av.writeVaMeanMqValuesToBinaryFiles(pathOut + "/va/vaMean/vaMean");
 
-         av.sumOfVaFluctuations();
-         av.sumOfVaStresses();
+      //compute fluctuations
+      av.readMeanMqValuesFromBinaryFiles(pathOut + "/va/mean/mean");
+      av.initFluctuationsOfMqValues();
+      for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
+      {
+         av.readMqMatrixFromBinaryFiles(pathOut + "/va/mq/mq", t);
+         av.computeFluctuationsOfMqValues();
+         av.writeFluctuationsOfMqValuesToBinaryFiles(pathOut + "/va/fluc/fluc", t);
       }
 
-      av.meanOfVaFluctuations(numberOfSamples);
-      av.meanOfVaStresses(numberOfSamples);
-      av.writeMeanOfVaFluctuationsToImageFile(pathOut + "/va/vav/vaMeanFluct");
+      //compute volume averaged fluctuations
+      av.initMeanOfVolumeAveragedValues();
+      for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
+      {
+         av.readFluctuationsOfMqValuesFromBinaryFiles(pathOut + "/va/fluc/fluc", t);
+         av.volumeAveragingOfFluctuationsWithMPI(l);
+         av.writeVaFluctuationsToBinaryFiles(pathOut + "/va/vaFluc/vaFluc", t);
+         av.sumVolumeAveragedValues();
+      }
+      av.computeVolumeAveragedValues(numberOfSamples);
+      av.writeVolumeAveragedValuesToBinaryFiles(pathOut + "/va/values/val");
 
+      //planar averaging
+      av.initPlanarAveraging();
       av.planarAveraging();
-      av.writeToCSV(pathOut + "/va/av", geo_origin[2], deltaX);
+      av.writeToCSV(pathOut + "/va/planar/planar", geo_origin[2], deltaX);
    }
    catch (const std::exception& e)
    {
