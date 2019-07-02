@@ -82,7 +82,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real g   = 9.81;
     real rho = 1.2;
     
-    real mu = 1.5e-5;
+    real mu = 1.8e-5;
 
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 

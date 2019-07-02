@@ -61,11 +61,12 @@
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
-void thermalCavity( std::string path, std::string simulationName, uint restartIter )
+void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex, uint _testIndex, uint _nx, uint restartIter )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 128;
+    //uint nx = 64;
+    uint nx = _nx;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -76,16 +77,20 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real dx = H / real(nx);
 
-    real U = 0.074;
-
     real Pr  = 0.71;
     real K   = 2.0;
     
     real g   = 9.81;
     real rho = 1.2;
-    real rhoFuel = 0.5405;
 
-    real mu = 1.5e-5;
+    real mu = 1.8e-5;
+
+    real U = 0.0;
+    real rhoFuel = 0.0;
+
+    if( _testIndex == 14 ) { U = 0.074; rhoFuel = 0.5405; }    // Test 14      low flow rates
+    if( _testIndex == 24 ) { U = 0.097; rhoFuel = 0.5464; }    // Test 24      medium flow rate
+    if( _testIndex == 17 ) { U = 0.117; rhoFuel = 0.5641; }    // Test 17      high flow rate
 
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
@@ -97,7 +102,6 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
-    //real dh = 4192.0; // kJ / kmol  / T_FAKTOR
     real dh = 8000.0; // kJ / kmol  / T_FAKTOR
 
     //////////////////////////////////////////////////////////////////////////
@@ -138,7 +142,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     parameters.enableReaction = true;
 
-    parameters.useReactionLimiter      = false;
+    parameters.useReactionLimiter      = true;
     parameters.useTemperatureLimiter   = true;
     parameters.usePassiveScalarLimiter = true;
     parameters.useSmagorinsky          = true;
@@ -210,7 +214,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(1);
+    CudaUtility::setCudaDevice(_gpuIndex);
 
     auto dataBase = std::make_shared<DataBase>( "GPU" );
 
@@ -266,8 +270,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
-    //SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, true );
+    //SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
+    SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, true );
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, 0.0, prim.lambda, 0.0, 0.0) );
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<Open>( dataBase );
 
@@ -279,6 +283,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     //////////////////////////////////////////////////////////////////////////
 
     SPtr<BoundaryCondition> burner = std::make_shared<CreepingMassFlux>( dataBase, rhoFuel, U, prim.lambda );
+    //SPtr<BoundaryCondition> burner = std::make_shared<Inflow>( dataBase, Vec3(0,0,U), prim.lambda, rhoFuel, 1, 0, 0, 1.0 );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
         
@@ -308,6 +313,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
         dataBase->boundaryConditions.push_back( bcMY_2 );
         dataBase->boundaryConditions.push_back( bcPY_2 );
     }
+
+    //dataBase->boundaryConditions.push_back( burner );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -431,12 +438,30 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
 int main( int argc, char* argv[])
 {
+    uint restartIter = INVALID_INDEX;
+    //uint restartIter = 50000;
+        
+    uint gpuIndex = 1;
+    uint testIndex = 14;
+    uint nx = 64;
+
+    if( argc > 1 ) gpuIndex    = atoi( argv[1] );
+
+    if( argc > 2 ) testIndex   = atoi( argv[2] );
+
+    if( argc > 3 ) nx          = atoi( argv[3] );
+
+    if( argc > 4 ) restartIter = atoi( argv[4] );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
     std::string path( "F:/Work/Computations/out/SandiaFlame_1m/" );
 #else
     std::string path( "out/" );
 #endif
+
+    path += "Test_" + std::to_string(testIndex) + "/";
 
     std::string simulationName ( "Flame" );
 
@@ -457,12 +482,7 @@ int main( int argc, char* argv[])
 
     try
     {
-        uint restartIter = INVALID_INDEX;
-        //uint restartIter = 50000;
-
-        if( argc > 1 ) restartIter = atoi( argv[1] );
-
-        thermalCavity( path, simulationName, restartIter );
+        thermalCavity( path, simulationName, gpuIndex, testIndex, nx, restartIter );
     }
     catch (const std::exception& e)
     {     
