@@ -21,7 +21,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
+__host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
 {
 
 #ifdef USE_PASSIVE_SCALAR
@@ -89,10 +89,10 @@ __host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Par
 
                 //////////////////////////////////////////////////////////////////////////
 
-                if( releasedHeat > real(20.0) * parameters.dt )
-                {
-                    dX_F = real(20.0) * parameters.dt * M / cons.rho / parameters.heatOfReaction;
-                }
+                //if( releasedHeat > real(20.0) * parameters.dt )
+                //{
+                //    dX_F = real(20.0) * parameters.dt * M / cons.rho / parameters.heatOfReaction;
+                //}
 
                 //////////////////////////////////////////////////////////////////////////
 
@@ -166,7 +166,7 @@ __host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Par
 #endif // USE_PASSIVE_SCALAR
 }
 
-__host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
+__host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
 {
     // see FDS 5 Technical reference guide, section 6.1.4 for combustion model
 #ifdef USE_PASSIVE_SCALAR
@@ -178,15 +178,15 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
         //////////////////////////////////////////////////////////////////////////
 
-        real diffusivity = c1o6 * dataBase.diffusivity[ cellIndex ];
+        real diffusivity = dataBase.diffusivity[ cellIndex ] / ( six * parameters.dx * parameters.dx * parameters.dt );
         dataBase.diffusivity[ cellIndex ] = zero;
 
         //////////////////////////////////////////////////////////////////////////
 
         real mixingTimeScale = real(0.1) * parameters.dx * parameters.dx / diffusivity;
 
-        if( mixingTimeScale < one )
-            mixingTimeScale = one;
+        //if( mixingTimeScale < one )
+        //    mixingTimeScale = one;
 
         //////////////////////////////////////////////////////////////////////////
 

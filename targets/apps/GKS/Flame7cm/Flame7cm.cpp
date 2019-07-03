@@ -74,8 +74,6 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real dx = H / real(nx);
 
-    real U = 0.0314;
-
     real Pr  = 0.71;
     real K   = 2.0;
     
@@ -84,6 +82,9 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     
     real mu = 1.8e-5;
 
+    real U = 0.0314;
+    real rhoFuel = 0.68;
+
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
     setLambdaFromT( prim, 3.0 / T_FAKTOR );
@@ -91,6 +92,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
     real CFL = 0.06125;
+    //real CFL = 0.25;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -105,7 +107,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
     *logging::out << logging::Logger::INFO_HIGH << "Pr = " << Pr << "\n";
 
-    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * /*rho*/ 0.68 * M_PI * R * R * ( dh * 100 ) / 0.016 / 1000.0 << " kW\n";
+    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * rhoFuel * M_PI * R * R * ( dh * 100 ) / 0.016 / 1000.0 << " kW\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -140,7 +142,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     parameters.usePassiveScalarLimiter = true;
     parameters.useSmagorinsky          = true;
 
-    parameters.reactionLimiter = 1.005;
+    parameters.reactionLimiter    = 1.005;
+    parameters.temperatureLimiter = 1.0e-3;
 
     parameters.useSpongeLayer = true;
     parameters.spongeLayerIdx = 0;
@@ -172,8 +175,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 1.5*R, 0.25*H );
-    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.1*R, 0.05*H );
+    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 1.8*R, 0.75*H );
+    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.3*R, 0.15*H );
     
     Conglomerate refRing;
     refRing.add     ( new VerticalCylinder( 0.0, 0.0, 0.0, 1.2*R, 0.02 ) );
@@ -182,8 +185,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     gridBuilder->setNumberOfLayers(0,10);
     
     gridBuilder->addGrid( &cylinder1 );
-    //gridBuilder->addGrid( &cylinder2 );
-    gridBuilder->addGrid( &refRing );
+    gridBuilder->addGrid( &cylinder2 );
+    //gridBuilder->addGrid( &refRing );
 
     if( threeDimensional ) gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     else                   gridBuilder->setPeriodicBoundaryCondition(false, true,  false);
@@ -275,7 +278,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> burner = std::make_shared<CreepingMassFlux>( dataBase, /*rho*/0.68, U, prim.lambda );
+    SPtr<BoundaryCondition> burner = std::make_shared<CreepingMassFlux>( dataBase, rhoFuel, U, prim.lambda );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
         
@@ -354,7 +357,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 100000 );
 
     //////////////////////////////////////////////////////////////////////////
 
