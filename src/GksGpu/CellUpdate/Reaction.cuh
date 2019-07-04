@@ -21,7 +21,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
+__host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
 {
 
 #ifdef USE_PASSIVE_SCALAR
@@ -166,7 +166,7 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 #endif // USE_PASSIVE_SCALAR
 }
 
-__host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
+__host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
 {
     // see FDS 5 Technical reference guide, section 6.1.4 for combustion model
 #ifdef USE_PASSIVE_SCALAR
@@ -184,6 +184,8 @@ __host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Par
         //////////////////////////////////////////////////////////////////////////
 
         real mixingTimeScale = real(0.1) * parameters.dx * parameters.dx / diffusivity;
+
+        //real mixingTimeScale = parameters.dt;
 
         //if( mixingTimeScale < one )
         //    mixingTimeScale = one;
@@ -203,7 +205,7 @@ __host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Par
 
         real s = M_F / ( two * 0.032 );
 
-        real heatReleaseRate = cons.rho * fminf(Y_F, s * Y_O2) / mixingTimeScale * parameters.heatOfReaction / M_F;
+        real heatReleaseRate = cons.rho * fminf(Y_F, s * Y_O2) / mixingTimeScale * ( parameters.heatOfReaction / M_F );
 
         //////////////////////////////////////////////////////////////////////////
 
@@ -212,15 +214,19 @@ __host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Par
 
         //////////////////////////////////////////////////////////////////////////
 
-        real maximalHeatReleaseRate = real(20000.0); // 2000 kW / m^3
+        real maximalHeatReleaseRate = real(5000000.0); // 2000 kW / m^3
 
         if( heatReleaseRate > maximalHeatReleaseRate )
             heatReleaseRate = maximalHeatReleaseRate;
 
         //////////////////////////////////////////////////////////////////////////
 
-        cons.rhoS_1 -= heatReleaseRate * parameters.dt / ( parameters.heatOfReaction / M_F );
-        cons.rhoS_2 += heatReleaseRate * parameters.dt / ( parameters.heatOfReaction / M_F );
+        real drhoY_F = heatReleaseRate * parameters.dt / ( parameters.heatOfReaction / M_F );
+
+        real r = one + one / ( two * real(0.21) ) * M_A / M_F;
+
+        cons.rhoS_1 -=     drhoY_F;
+        cons.rhoS_2 += r * drhoY_F;
         cons.rhoE   += heatReleaseRate * parameters.dt;
 
         //////////////////////////////////////////////////////////////////////////

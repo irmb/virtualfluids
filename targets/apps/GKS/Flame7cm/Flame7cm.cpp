@@ -175,8 +175,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 1.8*R, 0.75*H );
-    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.3*R, 0.15*H );
+    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 2.1*R, 0.75*H );
+    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.5*R, 0.15*H );
     
     Conglomerate refRing;
     refRing.add     ( new VerticalCylinder( 0.0, 0.0, 0.0, 1.2*R, 0.02 ) );
