@@ -59,11 +59,11 @@
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
-void thermalCavity( std::string path, std::string simulationName, uint restartIter )
+void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex, uint _nx, uint restartIter )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 64;
+    uint nx = _nx;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -91,8 +91,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
-    real CFL = 0.06125;
-    //real CFL = 0.25;
+    //real CFL = 0.06125;
+    real CFL = 0.125;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -138,7 +138,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     parameters.enableReaction = true;
 
     parameters.useReactionLimiter      = true;
-    parameters.useTemperatureLimiter   = true;
+    parameters.useTemperatureLimiter   = false;
     parameters.usePassiveScalarLimiter = true;
     parameters.useSmagorinsky          = true;
 
@@ -184,8 +184,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     gridBuilder->setNumberOfLayers(0,10);
     
-    gridBuilder->addGrid( &cylinder1 );
-    gridBuilder->addGrid( &cylinder2 );
+    //gridBuilder->addGrid( &cylinder1 );
+    //gridBuilder->addGrid( &cylinder2 );
     //gridBuilder->addGrid( &refRing );
 
     if( threeDimensional ) gridBuilder->setPeriodicBoundaryCondition(false, false, false);
@@ -210,7 +210,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(1);
+    CudaUtility::setCudaDevice(_gpuIndex);
 
     auto dataBase = std::make_shared<DataBase>( "GPU" );
 
@@ -353,17 +353,23 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    uint iterPerSecond = uint( one / parameters.dt ) + 1;
+
+    *logging::out << logging::Logger::INFO_HIGH << "iterPerSecond = " << iterPerSecond << "\n";
+
+    //////////////////////////////////////////////////////////////////////////
+
     CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, true, 10000 );
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 100000 );
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 10 * iterPerSecond );
 
     //////////////////////////////////////////////////////////////////////////
 
     cupsAnalyzer.start();
 
-    for( uint iter = startIter + 1; iter <= 2000000; iter++ )
+    for( uint iter = startIter + 1; iter <= 40 * iterPerSecond; iter++ )
     {
         cupsAnalyzer.run( iter, parameters.dt );
 
@@ -420,11 +426,25 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
 int main( int argc, char* argv[])
 {
+    uint restartIter = INVALID_INDEX;
+    //uint restartIter = 30000;
+
+    uint gpuIndex = 1;
+    uint nx = 100;
+
+    if( argc > 1 ) gpuIndex    = atoi( argv[1] );
+    if( argc > 2 ) nx          = atoi( argv[2] );
+    if( argc > 3 ) restartIter = atoi( argv[3] );
+
+    //////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
     std::string path( "F:/Work/Computations/out/Flame7cm/" );
 #else
     std::string path( "out/" );
+    path += "nx_";
+    path += std::to_string(nx);
+    path += "/";
 #endif
 
     std::string simulationName ( "Flame" );
@@ -444,12 +464,7 @@ int main( int argc, char* argv[])
 
     try
     {
-        uint restartIter = INVALID_INDEX;
-        //uint restartIter = 30000;
-
-        if( argc > 1 ) restartIter = atoi( argv[1] );
-
-        thermalCavity( path, simulationName, restartIter );
+        thermalCavity( path, simulationName, gpuIndex, nx, restartIter );
     }
     catch (const std::exception& e)
     {     
