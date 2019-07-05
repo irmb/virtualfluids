@@ -236,8 +236,8 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             // this one works for some time
             real S = parameters.dx * parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
             //k += real(0.00002) / real(0.015625) * S;
-            //real T = getT(facePrim);
 
+            //real T = getT(facePrim);
             //if( T > 20 )
                 k += parameters.temperatureLimiter * S;
 

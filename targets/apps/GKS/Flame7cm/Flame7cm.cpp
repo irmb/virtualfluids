@@ -137,13 +137,15 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     parameters.enableReaction = true;
 
-    parameters.useReactionLimiter      = true;
-    parameters.useTemperatureLimiter   = false;
-    parameters.usePassiveScalarLimiter = true;
-    parameters.useSmagorinsky          = true;
+    parameters.useHeatReleaseRateLimiter = true;
+    parameters.useReactionLimiter        = true;
+    parameters.useTemperatureLimiter     = true;
+    parameters.usePassiveScalarLimiter   = true;
+    parameters.useSmagorinsky            = true;
 
-    parameters.reactionLimiter    = 1.005;
-    parameters.temperatureLimiter = 1.0e-3;
+    parameters.heatReleaseRateLimiter = 5000000.0;
+    parameters.reactionLimiter        = 1.005;
+    parameters.temperatureLimiter     = 1.0e-3;
 
     parameters.useSpongeLayer = true;
     parameters.spongeLayerIdx = 0;

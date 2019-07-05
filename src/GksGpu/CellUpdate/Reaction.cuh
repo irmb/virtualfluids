@@ -214,10 +214,9 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
         //////////////////////////////////////////////////////////////////////////
 
-        real maximalHeatReleaseRate = real(5000000.0); // 2000 kW / m^3
-
-        if( heatReleaseRate > maximalHeatReleaseRate )
-            heatReleaseRate = maximalHeatReleaseRate;
+        if( parameters.useHeatReleaseRateLimiter )
+        if( heatReleaseRate > parameters.heatReleaseRateLimiter )
+            heatReleaseRate = parameters.heatReleaseRateLimiter;
 
         //////////////////////////////////////////////////////////////////////////
 

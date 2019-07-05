@@ -101,7 +101,7 @@ ELSE(MSVC)
 ENDIF(MSVC)
 
 # only use this with device of CC larger than 6.0
-#set(CMAKE_CUDA_FLAGS " -arch=sm_60" CACHE STRING "" FORCE)
+set(CMAKE_CUDA_FLAGS " -arch=sm_60" CACHE STRING "" FORCE)
 
 set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
 
@@ -209,6 +209,6 @@ endif()
 ###					Annas Traffic Sim				      ###
 #############################################################
 
-add_subdirectory(targets/libs/Traffic)
+#add_subdirectory(targets/libs/Traffic)
 
-add_subdirectory(targets/apps/LBM/TrafficTest)
+#add_subdirectory(targets/apps/LBM/TrafficTest)
