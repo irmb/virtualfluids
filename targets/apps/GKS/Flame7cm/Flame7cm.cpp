@@ -59,7 +59,7 @@
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
-void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex, uint _nx, uint restartIter )
+void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex, uint _nx, bool _useTempLimiter, uint restartIter )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -139,13 +139,13 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     parameters.useHeatReleaseRateLimiter = true;
     parameters.useReactionLimiter        = true;
-    parameters.useTemperatureLimiter     = true;
+    parameters.useTemperatureLimiter     = _useTempLimiter;
     parameters.usePassiveScalarLimiter   = true;
     parameters.useSmagorinsky            = true;
 
     parameters.heatReleaseRateLimiter = 5000000.0;
     parameters.reactionLimiter        = 1.005;
-    parameters.temperatureLimiter     = 1.0e-8;//1.0e-3;
+    parameters.temperatureLimiter     = 1.0e-8;
 
     parameters.useSpongeLayer = true;
     parameters.spongeLayerIdx = 0;
@@ -433,10 +433,12 @@ int main( int argc, char* argv[])
 
     uint gpuIndex = 1;
     uint nx = 100;
+    bool useTempLimiter = true;
 
-    if( argc > 1 ) gpuIndex    = atoi( argv[1] );
-    if( argc > 2 ) nx          = atoi( argv[2] );
-    if( argc > 3 ) restartIter = atoi( argv[3] );
+    if( argc > 1 ) gpuIndex       = atoi( argv[1] );
+    if( argc > 2 ) nx             = atoi( argv[2] );
+    if( argc > 3 ) useTempLimiter = atoi( argv[3] );
+    if( argc > 4 ) restartIter    = atoi( argv[4] );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -446,6 +448,8 @@ int main( int argc, char* argv[])
     std::string path( "out/" );
     path += "nx_";
     path += std::to_string(nx);
+    if( useTempLimiter )
+        path += "_withTempLimiter";
     path += "/";
 #endif
 
@@ -466,7 +470,7 @@ int main( int argc, char* argv[])
 
     try
     {
-        thermalCavity( path, simulationName, gpuIndex, nx, restartIter );
+        thermalCavity( path, simulationName, gpuIndex, nx, useTempLimiter, restartIter );
     }
     catch (const std::exception& e)
     {     
