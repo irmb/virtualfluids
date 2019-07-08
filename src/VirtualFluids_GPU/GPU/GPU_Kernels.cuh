@@ -50,14 +50,17 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real s9,
                                                          int size_Mat,
                                                          bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Casc_Kum_SP_27(real s9,
-                                                    unsigned int* bcMatD,
-                                                    unsigned int* neighborX,
-                                                    unsigned int* neighborY,
-                                                    unsigned int* neighborZ,
-                                                    real* DDStart,
-                                                    int size_Mat,
-                                                    bool EvenOrOdd);
+extern "C" __global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
+	real omega,
+	unsigned int* bcMatD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	real* DDStart,
+	int size_Mat,
+	int level,
+	real* forces,
+	bool EvenOrOdd);
 
 extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(real omega,
 														unsigned int* bcMatD,

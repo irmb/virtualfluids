@@ -58,15 +58,18 @@ extern "C" void KernelCasSPMSOHM27( unsigned int numberOfThreads,
                                    int size_Mat,
                                    bool EvenOrOdd);
 
-extern "C" void KernelCasKumSP27(unsigned int numberOfThreads, 
-								 real s9,
-								 unsigned int* bcMatD,
-								 unsigned int* neighborX,
-								 unsigned int* neighborY,
-								 unsigned int* neighborZ,
-								 real* DD,
-								 int size_Mat,
-								 bool EvenOrOdd);
+extern "C" void KernelKumCompSRTSP27(
+	unsigned int numberOfThreads,
+	real omega,
+	unsigned int* bcMatD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	real* DDStart,
+	int size_Mat,
+	int level,
+	real* forces,
+	bool EvenOrOdd);
 
 extern "C" void KernelCumulantD3Q27All4(unsigned int numberOfThreads,
 									    real s9,

@@ -149,15 +149,18 @@ extern "C" void KernelCasSPMSOHM27( unsigned int numberOfThreads,
       getLastCudaError("LB_Kernel_Casc_SP_MS_OHM_27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelCasKumSP27(unsigned int numberOfThreads, 
-                                 real s9,
-                                 unsigned int* bcMatD,
-                                 unsigned int* neighborX,
-                                 unsigned int* neighborY,
-                                 unsigned int* neighborZ,
-                                 real* DD,
-                                 int size_Mat,
-                                 bool EvenOrOdd)
+extern "C" void KernelKumCompSRTSP27(
+	unsigned int numberOfThreads,
+	real omega,
+	unsigned int* bcMatD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	real* DDStart,
+	int size_Mat,
+	int level,
+	real* forces,
+	bool EvenOrOdd)
 {
    int Grid = (size_Mat / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -174,15 +177,18 @@ extern "C" void KernelCasKumSP27(unsigned int numberOfThreads,
    dim3 grid(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      LB_Kernel_Casc_Kum_SP_27<<< grid, threads >>>(s9,
-                                                    bcMatD,
-                                                    neighborX,
-                                                    neighborY,
-                                                    neighborZ,
-                                                    DD,
-                                                    size_Mat,
-                                                    EvenOrOdd); 
-      getLastCudaError("LB_Kernel_Casc_Kum_SP_27 execution failed"); 
+   LB_Kernel_Kum_New_Comp_SRT_SP_27 <<< grid, threads >>>(
+	   omega,
+	   bcMatD,
+	   neighborX,
+	   neighborY,
+	   neighborZ,
+	   DDStart,
+	   size_Mat,
+	   level,
+	   forces,
+	   EvenOrOdd); 
+      getLastCudaError("LB_Kernel_Kum_New_Comp_SRT_SP_27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void KernelKum1hSP27(    unsigned int numberOfThreads, 
