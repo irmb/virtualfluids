@@ -476,11 +476,51 @@ void Simulation::run()
 		} 
 		else
 		{
-			kernels.at(0)->run();
+			//kernels.at(0)->run();
 
 		}
 
 
+		//CumulantOneChimCompSP27(
+		//	para->getParD(0)->numberofthreads,
+		//	para->getParD(0)->omega,
+		//	para->getParD(0)->geoSP,
+		//	para->getParD(0)->neighborX_SP, 
+		//	para->getParD(0)->neighborY_SP, 
+		//	para->getParD(0)->neighborZ_SP,
+		//	para->getParD(0)->d0SP.f[0],
+		//	para->getParD(0)->size_Mat_SP,
+		//	para->getParD(0)->size_Mat_SP,
+		//	0,
+		//	para->getForcesDev(),
+		//	para->getParD(0)->evenOrOdd);
+
+		CumulantOnePreconditionedChimCompSP27(
+			para->getParD(0)->numberofthreads,
+			para->getParD(0)->omega,
+			para->getParD(0)->geoSP,
+			para->getParD(0)->neighborX_SP, 
+			para->getParD(0)->neighborY_SP, 
+			para->getParD(0)->neighborZ_SP,
+			para->getParD(0)->d0SP.f[0],
+			para->getParD(0)->size_Mat_SP,
+			para->getParD(0)->size_Mat_SP,
+			0,
+			para->getForcesDev(),
+			para->getParD(0)->evenOrOdd);
+
+		//KernelKumCompSRTSP27(
+		//	para->getParD(0)->numberofthreads,
+		//	para->getParD(0)->omega,
+		//	para->getParD(0)->geoSP,
+		//	para->getParD(0)->neighborX_SP,
+		//	para->getParD(0)->neighborY_SP,
+		//	para->getParD(0)->neighborZ_SP,
+		//	para->getParD(0)->d0SP.f[0],
+		//	para->getParD(0)->size_Mat_SP,
+		//	0,
+		//	para->getForcesDev(),
+		//	para->getParD(0)->evenOrOdd);
 
 
          ////////////////////////////////////////////////////////////////////////////////
@@ -807,12 +847,30 @@ void Simulation::run()
 							//para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
 							//para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
 		     // getLastCudaError("QVelDevComp27 execution failed");
-		      QVelDevCompZeroPress27(para->getParD(0)->numberofthreads, para->getParD(0)->nx,             para->getParD(0)->ny,
-									 para->getParD(0)->Qinflow.Vx,      para->getParD(0)->Qinflow.Vy,     para->getParD(0)->Qinflow.Vz,
-									 para->getParD(0)->d0SP.f[0],       para->getParD(0)->Qinflow.k,      para->getParD(0)->Qinflow.q27[0], 
-									 para->getParD(0)->kInflowQ,        para->getParD(0)->Qinflow.kArray, para->getParD(0)->omega,
-									 para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP,   para->getParD(0)->neighborZ_SP,
-									 para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
+		      //QVelDevCompZeroPress27(para->getParD(0)->numberofthreads, para->getParD(0)->nx,             para->getParD(0)->ny,
+								//	 para->getParD(0)->Qinflow.Vx,      para->getParD(0)->Qinflow.Vy,     para->getParD(0)->Qinflow.Vz,
+								//	 para->getParD(0)->d0SP.f[0],       para->getParD(0)->Qinflow.k,      para->getParD(0)->Qinflow.q27[0], 
+								//	 para->getParD(0)->kInflowQ,        para->getParD(0)->Qinflow.kArray, para->getParD(0)->omega,
+								//	 para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP,   para->getParD(0)->neighborZ_SP,
+								//	 para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
+		      //getLastCudaError("QVelDevComp27 execution failed");
+
+			  QVelDevicePlainBB27(
+				  para->getParD(0)->numberofthreads,
+				  para->getParD(0)->Qinflow.Vx,      
+				  para->getParD(0)->Qinflow.Vy,     
+				  para->getParD(0)->Qinflow.Vz,
+				  para->getParD(0)->d0SP.f[0],       
+				  para->getParD(0)->Qinflow.k,      
+				  para->getParD(0)->Qinflow.q27[0], 
+				  para->getParD(0)->kInflowQ,        
+				  para->getParD(0)->Qinflow.kArray, 
+				  para->getParD(0)->omega,
+				  para->getParD(0)->neighborX_SP,    
+				  para->getParD(0)->neighborY_SP,   
+				  para->getParD(0)->neighborZ_SP,
+				  para->getParD(0)->size_Mat_SP,     
+				  para->getParD(0)->evenOrOdd);
 		      getLastCudaError("QVelDevComp27 execution failed");
 
 			  ////////////////////////////////////////////////////////////////////////////
@@ -1092,7 +1150,6 @@ void Simulation::run()
           else                                    para->getParD(0)->evenOrOdd=true;
 
           ////////////////////////////////////////////////////////////////////////////////
-
 
 		if (para->getUseWale())
 		{

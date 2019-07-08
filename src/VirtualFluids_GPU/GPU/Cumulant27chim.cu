@@ -12,7 +12,29 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
-////helper
+inline __device__ void forwardInverseChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real Kinverse, real K) {
+	real m2 = mfa + mfc;
+	real m1 = mfc - mfa;
+	real m0 = m2 + mfb;
+	mfa = m0;
+	m0 *= Kinverse;
+	m0 += one;
+	mfb = (m1*Kinverse - m0 * vv) * K;
+	mfc = ((m2 - two*	m1 * vv)*Kinverse + v2 * m0) * K;
+}
+
+inline __device__ void backwardInverseChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real Kinverse, real K) {
+	real m0 = (((mfc - mfb) * c1o2 + mfb *  vv)*Kinverse + (mfa*Kinverse + one) * (v2 - vv) * c1o2) * K;
+	real m1 = (((mfa - mfc) -  two * mfb *  vv)*Kinverse + (mfa*Kinverse + one) * (           -v2)) * K;
+	mfc     = (((mfc + mfb) * c1o2 + mfb *  vv)*Kinverse + (mfa*Kinverse + one) * (v2 + vv) * c1o2) * K;
+	mfa = m0;
+	mfb = m1;
+}
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
 inline __device__ void forwardChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real K) {
 
@@ -20,9 +42,12 @@ inline __device__ void forwardChimeraWithK(real &mfa, real &mfb, real &mfc, real
 	real m1 = mfc - mfa;
 	real m0 = m2 + mfb;
 	mfa = m0;
-	m0 += K;
-	mfb = m1 - m0 * vv;
-	mfc = m2 - two*	m1 * vv + v2 * m0;
+	//m0     += K;
+	mfb = (m1 - K*vv) - m0 * vv;
+	mfc = ((m2 - two*	m1 * vv) + v2*K) + v2 * m0;
+	//m0 += K;
+	//mfb = m1 - m0 * vv;
+	//mfc = m2 - two*	m1 * vv + v2 * m0;
 }
 
 inline __device__ void forwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2) {
@@ -1803,139 +1828,118 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 			Distributions27 D;
 			if (EvenOrOdd == true)
 			{
-				D.f[dirE] = &DDStart[dirE   *size_Mat];
-				D.f[dirW] = &DDStart[dirW   *size_Mat];
-				D.f[dirN] = &DDStart[dirN   *size_Mat];
-				D.f[dirS] = &DDStart[dirS   *size_Mat];
-				D.f[dirT] = &DDStart[dirT   *size_Mat];
-				D.f[dirB] = &DDStart[dirB   *size_Mat];
-				D.f[dirNE] = &DDStart[dirNE  *size_Mat];
-				D.f[dirSW] = &DDStart[dirSW  *size_Mat];
-				D.f[dirSE] = &DDStart[dirSE  *size_Mat];
-				D.f[dirNW] = &DDStart[dirNW  *size_Mat];
-				D.f[dirTE] = &DDStart[dirTE  *size_Mat];
-				D.f[dirBW] = &DDStart[dirBW  *size_Mat];
-				D.f[dirBE] = &DDStart[dirBE  *size_Mat];
-				D.f[dirTW] = &DDStart[dirTW  *size_Mat];
-				D.f[dirTN] = &DDStart[dirTN  *size_Mat];
-				D.f[dirBS] = &DDStart[dirBS  *size_Mat];
-				D.f[dirBN] = &DDStart[dirBN  *size_Mat];
-				D.f[dirTS] = &DDStart[dirTS  *size_Mat];
+				D.f[dirE   ] = &DDStart[dirE   *size_Mat];
+				D.f[dirW   ] = &DDStart[dirW   *size_Mat];
+				D.f[dirN   ] = &DDStart[dirN   *size_Mat];
+				D.f[dirS   ] = &DDStart[dirS   *size_Mat];
+				D.f[dirT   ] = &DDStart[dirT   *size_Mat];
+				D.f[dirB   ] = &DDStart[dirB   *size_Mat];
+				D.f[dirNE  ] = &DDStart[dirNE  *size_Mat];
+				D.f[dirSW  ] = &DDStart[dirSW  *size_Mat];
+				D.f[dirSE  ] = &DDStart[dirSE  *size_Mat];
+				D.f[dirNW  ] = &DDStart[dirNW  *size_Mat];
+				D.f[dirTE  ] = &DDStart[dirTE  *size_Mat];
+				D.f[dirBW  ] = &DDStart[dirBW  *size_Mat];
+				D.f[dirBE  ] = &DDStart[dirBE  *size_Mat];
+				D.f[dirTW  ] = &DDStart[dirTW  *size_Mat];
+				D.f[dirTN  ] = &DDStart[dirTN  *size_Mat];
+				D.f[dirBS  ] = &DDStart[dirBS  *size_Mat];
+				D.f[dirBN  ] = &DDStart[dirBN  *size_Mat];
+				D.f[dirTS  ] = &DDStart[dirTS  *size_Mat];
 				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirTNE] = &DDStart[dirTNE *size_Mat];
-				D.f[dirTSW] = &DDStart[dirTSW *size_Mat];
-				D.f[dirTSE] = &DDStart[dirTSE *size_Mat];
-				D.f[dirTNW] = &DDStart[dirTNW *size_Mat];
-				D.f[dirBNE] = &DDStart[dirBNE *size_Mat];
-				D.f[dirBSW] = &DDStart[dirBSW *size_Mat];
-				D.f[dirBSE] = &DDStart[dirBSE *size_Mat];
-				D.f[dirBNW] = &DDStart[dirBNW *size_Mat];
+				D.f[dirTNE ] = &DDStart[dirTNE *size_Mat];
+				D.f[dirTSW ] = &DDStart[dirTSW *size_Mat];
+				D.f[dirTSE ] = &DDStart[dirTSE *size_Mat];
+				D.f[dirTNW ] = &DDStart[dirTNW *size_Mat];
+				D.f[dirBNE ] = &DDStart[dirBNE *size_Mat];
+				D.f[dirBSW ] = &DDStart[dirBSW *size_Mat];
+				D.f[dirBSE ] = &DDStart[dirBSE *size_Mat];
+				D.f[dirBNW ] = &DDStart[dirBNW *size_Mat];
 			}
 			else
 			{
-				D.f[dirW] = &DDStart[dirE   *size_Mat];
-				D.f[dirE] = &DDStart[dirW   *size_Mat];
-				D.f[dirS] = &DDStart[dirN   *size_Mat];
-				D.f[dirN] = &DDStart[dirS   *size_Mat];
-				D.f[dirB] = &DDStart[dirT   *size_Mat];
-				D.f[dirT] = &DDStart[dirB   *size_Mat];
-				D.f[dirSW] = &DDStart[dirNE  *size_Mat];
-				D.f[dirNE] = &DDStart[dirSW  *size_Mat];
-				D.f[dirNW] = &DDStart[dirSE  *size_Mat];
-				D.f[dirSE] = &DDStart[dirNW  *size_Mat];
-				D.f[dirBW] = &DDStart[dirTE  *size_Mat];
-				D.f[dirTE] = &DDStart[dirBW  *size_Mat];
-				D.f[dirTW] = &DDStart[dirBE  *size_Mat];
-				D.f[dirBE] = &DDStart[dirTW  *size_Mat];
-				D.f[dirBS] = &DDStart[dirTN  *size_Mat];
-				D.f[dirTN] = &DDStart[dirBS  *size_Mat];
-				D.f[dirTS] = &DDStart[dirBN  *size_Mat];
-				D.f[dirBN] = &DDStart[dirTS  *size_Mat];
+				D.f[dirW   ] = &DDStart[dirE   *size_Mat];
+				D.f[dirE   ] = &DDStart[dirW   *size_Mat];
+				D.f[dirS   ] = &DDStart[dirN   *size_Mat];
+				D.f[dirN   ] = &DDStart[dirS   *size_Mat];
+				D.f[dirB   ] = &DDStart[dirT   *size_Mat];
+				D.f[dirT   ] = &DDStart[dirB   *size_Mat];
+				D.f[dirSW  ] = &DDStart[dirNE  *size_Mat];
+				D.f[dirNE  ] = &DDStart[dirSW  *size_Mat];
+				D.f[dirNW  ] = &DDStart[dirSE  *size_Mat];
+				D.f[dirSE  ] = &DDStart[dirNW  *size_Mat];
+				D.f[dirBW  ] = &DDStart[dirTE  *size_Mat];
+				D.f[dirTE  ] = &DDStart[dirBW  *size_Mat];
+				D.f[dirTW  ] = &DDStart[dirBE  *size_Mat];
+				D.f[dirBE  ] = &DDStart[dirTW  *size_Mat];
+				D.f[dirBS  ] = &DDStart[dirTN  *size_Mat];
+				D.f[dirTN  ] = &DDStart[dirBS  *size_Mat];
+				D.f[dirTS  ] = &DDStart[dirBN  *size_Mat];
+				D.f[dirBN  ] = &DDStart[dirTS  *size_Mat];
 				D.f[dirZERO] = &DDStart[dirZERO*size_Mat];
-				D.f[dirBSW] = &DDStart[dirTNE *size_Mat];
-				D.f[dirBNE] = &DDStart[dirTSW *size_Mat];
-				D.f[dirBNW] = &DDStart[dirTSE *size_Mat];
-				D.f[dirBSE] = &DDStart[dirTNW *size_Mat];
-				D.f[dirTSW] = &DDStart[dirBNE *size_Mat];
-				D.f[dirTNE] = &DDStart[dirBSW *size_Mat];
-				D.f[dirTNW] = &DDStart[dirBSE *size_Mat];
-				D.f[dirTSE] = &DDStart[dirBNW *size_Mat];
+				D.f[dirBSW ] = &DDStart[dirTNE *size_Mat];
+				D.f[dirBNE ] = &DDStart[dirTSW *size_Mat];
+				D.f[dirBNW ] = &DDStart[dirTSE *size_Mat];
+				D.f[dirBSE ] = &DDStart[dirTNW *size_Mat];
+				D.f[dirTSW ] = &DDStart[dirBNE *size_Mat];
+				D.f[dirTNE ] = &DDStart[dirBSW *size_Mat];
+				D.f[dirTNW ] = &DDStart[dirBSE *size_Mat];
+				D.f[dirTSE ] = &DDStart[dirBNW *size_Mat];
 			}
-
 			////////////////////////////////////////////////////////////////////////////////
 			//index
-			//unsigned int kzero= k;
-			//unsigned int ke   = k;
 			unsigned int kw = neighborX[k];
-			//unsigned int kn   = k;
 			unsigned int ks = neighborY[k];
-			//unsigned int kt   = k;
 			unsigned int kb = neighborZ[k];
 			unsigned int ksw = neighborY[kw];
-			//unsigned int kne  = k;
-			//unsigned int kse  = ks;
-			//unsigned int knw  = kw;
 			unsigned int kbw = neighborZ[kw];
-			//unsigned int kte  = k;
-			//unsigned int kbe  = kb;
-			//unsigned int ktw  = kw;
 			unsigned int kbs = neighborZ[ks];
-			//unsigned int ktn  = k;
-			//unsigned int kbn  = kb;
-			//unsigned int kts  = ks;
-			//unsigned int ktse = ks;
-			//unsigned int kbnw = kbw;
-			//unsigned int ktnw = kw;
-			//unsigned int kbse = kbs;
-			//unsigned int ktsw = ksw;
-			//unsigned int kbne = kb;
-			//unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
-
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[dirE])[k];//[ke   ];// +  c2over27 ;(D.f[dirE   ])[k  ];//ke
-			real mfabb = (D.f[dirW])[kw];//[kw   ];// +  c2over27 ;(D.f[dirW   ])[kw ];
-			real mfbcb = (D.f[dirN])[k];//[kn   ];// +  c2over27 ;(D.f[dirN   ])[k  ];//kn
-			real mfbab = (D.f[dirS])[ks];//[ks   ];// +  c2over27 ;(D.f[dirS   ])[ks ];
-			real mfbbc = (D.f[dirT])[k];//[kt   ];// +  c2over27 ;(D.f[dirT   ])[k  ];//kt
-			real mfbba = (D.f[dirB])[kb];//[kb   ];// +  c2over27 ;(D.f[dirB   ])[kb ];
-			real mfccb = (D.f[dirNE])[k];//[kne  ];// +  c1over54 ;(D.f[dirNE  ])[k  ];//kne
-			real mfaab = (D.f[dirSW])[ksw];//[ksw  ];// +  c1over54 ;(D.f[dirSW  ])[ksw];
-			real mfcab = (D.f[dirSE])[ks];//[kse  ];// +  c1over54 ;(D.f[dirSE  ])[ks ];//kse
-			real mfacb = (D.f[dirNW])[kw];//[knw  ];// +  c1over54 ;(D.f[dirNW  ])[kw ];//knw
-			real mfcbc = (D.f[dirTE])[k];//[kte  ];// +  c1over54 ;(D.f[dirTE  ])[k  ];//kte
-			real mfaba = (D.f[dirBW])[kbw];//[kbw  ];// +  c1over54 ;(D.f[dirBW  ])[kbw];
-			real mfcba = (D.f[dirBE])[kb];//[kbe  ];// +  c1over54 ;(D.f[dirBE  ])[kb ];//kbe
-			real mfabc = (D.f[dirTW])[kw];//[ktw  ];// +  c1over54 ;(D.f[dirTW  ])[kw ];//ktw
-			real mfbcc = (D.f[dirTN])[k];//[ktn  ];// +  c1over54 ;(D.f[dirTN  ])[k  ];//ktn
-			real mfbaa = (D.f[dirBS])[kbs];//[kbs  ];// +  c1over54 ;(D.f[dirBS  ])[kbs];
-			real mfbca = (D.f[dirBN])[kb];//[kbn  ];// +  c1over54 ;(D.f[dirBN  ])[kb ];//kbn
-			real mfbac = (D.f[dirTS])[ks];//[kts  ];// +  c1over54 ;(D.f[dirTS  ])[ks ];//kts
-			real mfbbb = (D.f[dirZERO])[k];//[kzero];// +  c8over27 ;(D.f[dirZERO])[k  ];//kzero
-			real mfccc = (D.f[dirTNE])[k];//[ktne ];// +  c1over216;(D.f[dirTNE ])[k  ];//ktne
-			real mfaac = (D.f[dirTSW])[ksw];//[ktsw ];// +  c1over216;(D.f[dirTSW ])[ksw];//ktsw
-			real mfcac = (D.f[dirTSE])[ks];//[ktse ];// +  c1over216;(D.f[dirTSE ])[ks ];//ktse
-			real mfacc = (D.f[dirTNW])[kw];//[ktnw ];// +  c1over216;(D.f[dirTNW ])[kw ];//ktnw
-			real mfcca = (D.f[dirBNE])[kb];//[kbne ];// +  c1over216;(D.f[dirBNE ])[kb ];//kbne
-			real mfaaa = (D.f[dirBSW])[kbsw];//[kbsw ];// +  c1over216;(D.f[dirBSW ])[kbsw];
-			real mfcaa = (D.f[dirBSE])[kbs];//[kbse ];// +  c1over216;(D.f[dirBSE ])[kbs];//kbse
-			real mfaca = (D.f[dirBNW])[kbw];//[kbnw ];// +  c1over216;(D.f[dirBNW ])[kbw];//kbnw
+			////////////////////////////////////////////////////////////////////////////////////
+			real mfcbb = (D.f[dirE   ])[k   ];
+			real mfabb = (D.f[dirW   ])[kw  ];
+			real mfbcb = (D.f[dirN   ])[k   ];
+			real mfbab = (D.f[dirS   ])[ks  ];
+			real mfbbc = (D.f[dirT   ])[k   ];
+			real mfbba = (D.f[dirB   ])[kb  ];
+			real mfccb = (D.f[dirNE  ])[k   ];
+			real mfaab = (D.f[dirSW  ])[ksw ];
+			real mfcab = (D.f[dirSE  ])[ks  ];
+			real mfacb = (D.f[dirNW  ])[kw  ];
+			real mfcbc = (D.f[dirTE  ])[k   ];
+			real mfaba = (D.f[dirBW  ])[kbw ];
+			real mfcba = (D.f[dirBE  ])[kb  ];
+			real mfabc = (D.f[dirTW  ])[kw  ];
+			real mfbcc = (D.f[dirTN  ])[k   ];
+			real mfbaa = (D.f[dirBS  ])[kbs ];
+			real mfbca = (D.f[dirBN  ])[kb  ];
+			real mfbac = (D.f[dirTS  ])[ks  ];
+			real mfbbb = (D.f[dirZERO])[k   ];
+			real mfccc = (D.f[dirTNE ])[k   ];
+			real mfaac = (D.f[dirTSW ])[ksw ];
+			real mfcac = (D.f[dirTSE ])[ks  ];
+			real mfacc = (D.f[dirTNW ])[kw  ];
+			real mfcca = (D.f[dirBNE ])[kb  ];
+			real mfaaa = (D.f[dirBSW ])[kbsw];
+			real mfcaa = (D.f[dirBSE ])[kbs ];
+			real mfaca = (D.f[dirBNW ])[kbw ];
 			////////////////////////////////////////////////////////////////////////////////////
 			real drho = ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
 				(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 				((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 
 			real rho = one + drho;
+			real OOrho = one / rho;
 			////////////////////////////////////////////////////////////////////////////////////
 			real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 				(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
-				(mfcbb - mfabb)) / rho;
+				(mfcbb - mfabb)) * OOrho;
 			real vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
 				(((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
-				(mfbcb - mfbab)) / rho;
+				(mfbcb - mfbab)) * OOrho;
 			real vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
 				(((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
-				(mfbbc - mfbba)) / rho;
+				(mfbbc - mfbba)) * OOrho;
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
 			real fx = forces[0] / (pow(two, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
@@ -1961,91 +1965,54 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 			real qudricLimitP = c1o100;// * 0.0001f;
 			real qudricLimitM = c1o100;// * 0.0001f;
 			real qudricLimitD = c1o100;// * 0.001f;
-			//real s9 = minusomega;
-			//test
-			//s9 = 0.;
 			////////////////////////////////////////////////////////////////////////////////////
 			//Hin
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit 1/36, 1/9, 1/36, 1/9, 4/9, 1/9, 1/36, 1/9, 1/36  Konditionieren
 			////////////////////////////////////////////////////////////////////////////////////
 			// Z - Dir
-			forwardChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c1o36);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, c1o9);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c1o36);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, c1o9);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2, c4o9);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, c1o9);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c1o36);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, c1o9);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c1o36);
-			////////////////////////////////////////////////////////////////////////////////////
+			forwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, 36.0f, c1o36);
+			forwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, 9.0f , c1o9 );
+			forwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, 36.0f, c1o36);
+			forwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, 9.0f , c1o9 );
+			forwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2, 2.25f, c4o9 );
+			forwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, 9.0f , c1o9 );
+			forwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, 36.0f, c1o36);
+			forwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, 9.0f , c1o9 );
+			forwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, 36.0f, c1o36);
+
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit  1/6, 0, 1/18, 2/3, 0, 2/9, 1/6, 0, 1/18 Konditionieren
 			////////////////////////////////////////////////////////////////////////////////////
 			// Y - Dir
-			forwardChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, c1o6);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimera(mfaab, mfabb, mfacb, vvy, vy2);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c1o18);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2, c2o3);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimera(mfbab, mfbbb, mfbcb, vvy, vy2);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2, c2o9);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, c1o6);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimera(mfcab, mfcbb, mfccb, vvy, vy2);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c1o18);
-			////////////////////////////////////////////////////////////////////////////////////
+			forwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, 6.0f , c1o6 );
+			forwardChimera(     mfaab, mfabb, mfacb, vvy, vy2);
+			forwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, 18.0f, c1o18);
+			forwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2, 1.5f , c2o3 );
+			forwardChimera(     mfbab, mfbbb, mfbcb, vvy, vy2);
+			forwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2, 4.5f , c2o9 );
+			forwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, 6.0f , c1o6 );
+			forwardChimera(     mfcab, mfcbb, mfccb, vvy, vy2);
+			forwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, 18.0f, c1o18);
+
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9		Konditionieren
 			////////////////////////////////////////////////////////////////////////////////////
 			// X - Dir
-			forwardChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, one);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimera(mfaba, mfbba, mfcba, vvx, vx2);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c1o3);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimera(mfaab, mfbab, mfcab, vvx, vx2);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimera(mfabb, mfbbb, mfcbb, vvx, vx2);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimera(mfacb, mfbcb, mfccb, vvx, vx2);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c1o3);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimera(mfabc, mfbbc, mfcbc, vvx, vx2);
-			////////////////////////////////////////////////////////////////////////////////////
-			forwardChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c1o9);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-
+			forwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, one, one);
+			forwardChimera(     mfaba, mfbba, mfcba, vvx, vx2);
+			forwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, 3.0f, c1o3);
+			forwardChimera(     mfaab, mfbab, mfcab, vvx, vx2);
+			forwardChimera(     mfabb, mfbbb, mfcbb, vvx, vx2);
+			forwardChimera(     mfacb, mfbcb, mfccb, vvx, vx2);
+			forwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, 3.0f, c1o3);
+			forwardChimera(     mfabc, mfbbc, mfcbc, vvx, vx2);
+			forwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, 9.0f, c1o9);
 
 			////////////////////////////////////////////////////////////////////////////////////
 			// Cumulants
 			////////////////////////////////////////////////////////////////////////////////////
-			real OxxPyyPzz = one; //omega; // one;	//set the bulk viscosity one is high / two is very low and zero is (too) high
-
+			real OxxPyyPzz = one;
 			////////////////////////////////////////////////////////////
 			//3.
 			//////////////////////////////
@@ -2069,35 +2036,32 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 
 			//central moments to cumulants
 			//4.
-			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) / rho;
-			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) / rho;
-			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) / rho;
+			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) * OOrho;
+			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) * OOrho;
+			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) * OOrho;
 
-			real CUMcca = mfcca - (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
-			real CUMcac = mfcac - (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
-			real CUMacc = mfacc - (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
+			real CUMcca = mfcca - (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) * OOrho - c1o9*(drho * OOrho));
+			real CUMcac = mfcac - (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) * OOrho - c1o9*(drho * OOrho));
+			real CUMacc = mfacc - (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) * OOrho - c1o9*(drho * OOrho));
 
 			//5.
-			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
-			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
-			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
+			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) * OOrho;
+			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) * OOrho;
+			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) * OOrho;
 
 			//6.
-
 			real CUMccc = mfccc + ((-four *  mfbbb * mfbbb
 				- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
 				- four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-				- two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
+				- two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
 				+ (four * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-					+ two * (mfcaa * mfaca * mfaac)
-					+ sixteen *  mfbba * mfbab * mfabb) / (rho * rho)
-				- c1o3 * (mfacc + mfcac + mfcca) / rho
-				- c1o9 * (mfcaa + mfaca + mfaac) / rho
+				+ two * (mfcaa * mfaca * mfaac)
+				+ sixteen *  mfbba * mfbab * mfabb) * OOrho * OOrho
+				- c1o3 * (mfacc + mfcac + mfcca) * OOrho
+				- c1o9 * (mfcaa + mfaca + mfaac) * OOrho
 				+ (two * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
-					+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3
-				+ c1o27*((drho * drho - drho) / (rho*rho)));
-
-
+				+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) * OOrho * OOrho  * c2o3
+				+ c1o27*((drho * drho - drho) * OOrho * OOrho ));
 
 
 			//2.
@@ -2192,32 +2156,33 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 
 			//back cumulants to central moments
 			//4.
-			mfcbb = CUMcbb + ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) / rho; 
-			mfbcb = CUMbcb + ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) / rho; 
-			mfbbc = CUMbbc + ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) / rho; 
+			mfcbb = CUMcbb + c1o3*((three*mfcaa + one) * mfabb + six * mfbba * mfbab) * OOrho; 
+			mfbcb = CUMbcb + c1o3*((three*mfaca + one) * mfbab + six * mfbba * mfabb) * OOrho;
+			mfbbc = CUMbbc + c1o3*((three*mfaac + one) * mfbba + six * mfbab * mfabb) * OOrho;
 
-			mfcca = CUMcca + (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
-			mfcac = CUMcac + (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
-			mfacc = CUMacc + (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
+			mfcca = CUMcca + (((mfcaa * mfaca + two * mfbba * mfbba)*nine + three * (mfcaa + mfaca)) * OOrho - (drho * OOrho))*c1o9;
+			mfcac = CUMcac + (((mfcaa * mfaac + two * mfbab * mfbab)*nine + three * (mfcaa + mfaac)) * OOrho - (drho * OOrho))*c1o9;
+			mfacc = CUMacc + (((mfaac * mfaca + two * mfabb * mfabb)*nine + three * (mfaac + mfaca)) * OOrho - (drho * OOrho))*c1o9;
 
 			//5.
-			mfbcc = CUMbcc + ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
-			mfcbc = CUMcbc + ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
-			mfccb = CUMccb + ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
+			mfbcc = CUMbcc + c1o3 *(three*(mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + (mfbca + mfbac)) * OOrho;
+			mfcbc = CUMcbc + c1o3 *(three*(mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + (mfcba + mfabc)) * OOrho;
+			mfccb = CUMccb + c1o3 *(three*(mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) +  (mfacb + mfcab)) * OOrho;
 
 			//6.
-			mfccc = CUMccc - ((-four *  mfbbb * mfbbb
+			mfccc = 
+				CUMccc - ((-four *  mfbbb * mfbbb
 				- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
 				- four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-				- two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
+				- two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
 				+ (four * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-					+ two * (mfcaa * mfaca * mfaac)
-					+ sixteen *  mfbba * mfbab * mfabb) / (rho * rho)
-				- c1o3 * (mfacc + mfcac + mfcca) / rho
-				- c1o9 * (mfcaa + mfaca + mfaac) / rho
+				+ two * (mfcaa * mfaca * mfaac)
+				+ sixteen *  mfbba * mfbab * mfabb) * OOrho * OOrho
+				- c1o3 * (mfacc + mfcac + mfcca) * OOrho
+				- c1o9 * (mfcaa + mfaca + mfaac) * OOrho
 				+ (two * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
-					+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3
-				+ c1o27*((drho * drho - drho) / (rho*rho)));
+				+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) * OOrho * OOrho * c2o3
+				+ c1o27*((drho * drho - drho) * OOrho * OOrho ));
 
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
@@ -2232,75 +2197,44 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 			////////////////////////////////////////////////////////////////////////////////////
 			//mit 1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9   Konditionieren
 			////////////////////////////////////////////////////////////////////////////////////
-			// Z - Dir
-			backwardChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, one);
-			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimera(mfaba, mfabb, mfabc, vvz, vz2);
-			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c1o3);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimera(mfbaa, mfbab, mfbac, vvz, vz2);
-			/////////b//////////////////////////////////////////////////////////////////////////
-			backwardChimera(mfbba, mfbbb, mfbbc, vvz, vz2);
-			/////////b//////////////////////////////////////////////////////////////////////////
-			backwardChimera(mfbca, mfbcb, mfbcc, vvz, vz2);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c1o3);
-			/////////c//////////////////////////////////////////////////////////////////////////
-			backwardChimera(mfcba, mfcbb, mfcbc, vvz, vz2);
-			/////////c//////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c1o9);
-			////////////////////////////////////////////////////////////////////////////////////
+			// X - Dir
+			backwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, one, one);
+			backwardChimera(			mfaba, mfbba, mfcba, vvx, vx2);
+			backwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, 3.0f, c1o3);
+			backwardChimera(			mfaab, mfbab, mfcab, vvx, vx2);
+			backwardChimera(			mfabb, mfbbb, mfcbb, vvx, vx2);
+			backwardChimera(			mfacb, mfbcb, mfccb, vvx, vx2);
+			backwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, 3.0f, c1o3);
+			backwardChimera(			mfabc, mfbbc, mfcbc, vvx, vx2);
+			backwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, 9.0f, c1o9);
+
 			////////////////////////////////////////////////////////////////////////////////////
 			//mit 1/6, 2/3, 1/6, 0, 0, 0, 1/18, 2/9, 1/18   Konditionieren
 			////////////////////////////////////////////////////////////////////////////////////
 			// Y - Dir
-			backwardChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, c1o6);
-			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfaab, mfabb, mfacb, vvy, vy2, c2o3);
-			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c1o6);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimera(mfbaa, mfbba, mfbca, vvz, vz2);
-			/////////b//////////////////////////////////////////////////////////////////////////
-			backwardChimera(mfbab, mfbbb, mfbcb, vvz, vz2);
-			/////////b//////////////////////////////////////////////////////////////////////////
-			backwardChimera(mfbac, mfbbc, mfbcc, vvz, vz2);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, c1o18);
-			/////////c//////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfcab, mfcbb, mfccb, vvy, vy2, c2o9);
-			/////////c//////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c1o18);
-			////////////////////////////////////////////////////////////////////////////////////
+			backwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, 6.0f , c1o6 );
+			backwardChimera(			mfaab, mfabb, mfacb, vvy, vy2);
+			backwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, 18.0f, c1o18);
+			backwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2, 1.5f , c2o3 );
+			backwardChimera(			mfbab, mfbbb, mfbcb, vvy, vy2);
+			backwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2, 4.5f , c2o9 );
+			backwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, 6.0f , c1o6 );
+			backwardChimera(			mfcab, mfcbb, mfccb, vvy, vy2);
+			backwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, 18.0f, c1o18);
+
 			////////////////////////////////////////////////////////////////////////////////////
 			//mit 1/36, 1/9, 1/36, 1/9, 4/9, 1/9, 1/36, 1/9, 1/36 Konditionieren
 			////////////////////////////////////////////////////////////////////////////////////
-			// X - Dir
-			backwardChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1o36);
-			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfaba, mfbba, mfcba, vvx, vx2, c1o9);
-			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c1o36);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfaab, mfbab, mfcab, vvx, vx2, c1o9);
-			///////////b////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfabb, mfbbb, mfcbb, vvx, vx2, c4o9);
-			///////////b////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfacb, mfbcb, mfccb, vvx, vx2, c1o9);
-			////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c1o36);
-			///////////c////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfabc, mfbbc, mfcbc, vvx, vx2, c1o9);
-			///////////c////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c1o36);
-			////////////////////////////////////////////////////////////////////////////////////
+			// Z - Dir
+			backwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, 36.0f, c1o36);
+			backwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, 9.0f , c1o9 );
+			backwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, 36.0f, c1o36);
+			backwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, 9.0f , c1o9 );
+			backwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2, 2.25f, c4o9 );
+			backwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, 9.0f , c1o9 );
+			backwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, 36.0f, c1o36);
+			backwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, 9.0f , c1o9 );
+			backwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, 36.0f, c1o36);
 
 			//////////////////////////////////////////////////////////////////////////////////////
 			real drhoPost =
@@ -2309,34 +2243,33 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 					((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 			mfbbb += drho - drhoPost;
 			////////////////////////////////////////////////////////////////////////////////////
-			(D.f[dirE])[k] = mfabb;//(D.f[ dirE   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ dirE   ])[k   ]                                                                     
-			(D.f[dirW])[kw] = mfcbb;//(D.f[ dirW   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ dirW   ])[kw  ]                                                                   
-			(D.f[dirN])[k] = mfbab;//(D.f[ dirN   ])[kn   ] = mfbab;// -  c2over27 ;	 (D.f[ dirN   ])[k   ]
-			(D.f[dirS])[ks] = mfbcb;//(D.f[ dirS   ])[ks   ] = mfbcb;// -  c2over27 ;	 (D.f[ dirS   ])[ks  ]
-			(D.f[dirT])[k] = mfbba;//(D.f[ dirT   ])[kt   ] = mfbba;// -  c2over27 ;	 (D.f[ dirT   ])[k   ]
-			(D.f[dirB])[kb] = mfbbc;//(D.f[ dirB   ])[kb   ] = mfbbc;// -  c2over27 ;	 (D.f[ dirB   ])[kb  ]
-			(D.f[dirNE])[k] = mfaab;//(D.f[ dirNE  ])[kne  ] = mfaab;// -  c1over54 ;	 (D.f[ dirNE  ])[k   ]
-			(D.f[dirSW])[ksw] = mfccb;//(D.f[ dirSW  ])[ksw  ] = mfccb;// -  c1over54 ;	 (D.f[ dirSW  ])[ksw ]
-			(D.f[dirSE])[ks] = mfacb;//(D.f[ dirSE  ])[kse  ] = mfacb;// -  c1over54 ;	 (D.f[ dirSE  ])[ks  ]
-			(D.f[dirNW])[kw] = mfcab;//(D.f[ dirNW  ])[knw  ] = mfcab;// -  c1over54 ;	 (D.f[ dirNW  ])[kw  ]
-			(D.f[dirTE])[k] = mfaba;//(D.f[ dirTE  ])[kte  ] = mfaba;// -  c1over54 ;	 (D.f[ dirTE  ])[k   ]
-			(D.f[dirBW])[kbw] = mfcbc;//(D.f[ dirBW  ])[kbw  ] = mfcbc;// -  c1over54 ;	 (D.f[ dirBW  ])[kbw ]
-			(D.f[dirBE])[kb] = mfabc;//(D.f[ dirBE  ])[kbe  ] = mfabc;// -  c1over54 ;	 (D.f[ dirBE  ])[kb  ]
-			(D.f[dirTW])[kw] = mfcba;//(D.f[ dirTW  ])[ktw  ] = mfcba;// -  c1over54 ;	 (D.f[ dirTW  ])[kw  ]
-			(D.f[dirTN])[k] = mfbaa;//(D.f[ dirTN  ])[ktn  ] = mfbaa;// -  c1over54 ;	 (D.f[ dirTN  ])[k   ]
-			(D.f[dirBS])[kbs] = mfbcc;//(D.f[ dirBS  ])[kbs  ] = mfbcc;// -  c1over54 ;	 (D.f[ dirBS  ])[kbs ]
-			(D.f[dirBN])[kb] = mfbac;//(D.f[ dirBN  ])[kbn  ] = mfbac;// -  c1over54 ;	 (D.f[ dirBN  ])[kb  ]
-			(D.f[dirTS])[ks] = mfbca;//(D.f[ dirTS  ])[kts  ] = mfbca;// -  c1over54 ;	 (D.f[ dirTS  ])[ks  ]
-			(D.f[dirZERO])[k] = mfbbb;//(D.f[ dirZERO])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ dirZERO])[k   ]
-			(D.f[dirTNE])[k] = mfaaa;//(D.f[ dirTNE ])[ktne ] = mfaaa;// -  c1over216;	 (D.f[ dirTNE ])[k   ]
-			(D.f[dirTSE])[ks] = mfaca;//(D.f[ dirTSE ])[ktse ] = mfaca;// -  c1over216;	 (D.f[ dirTSE ])[ks  ]
-			(D.f[dirBNE])[kb] = mfaac;//(D.f[ dirBNE ])[kbne ] = mfaac;// -  c1over216;	 (D.f[ dirBNE ])[kb  ]
-			(D.f[dirBSE])[kbs] = mfacc;//(D.f[ dirBSE ])[kbse ] = mfacc;// -  c1over216;	 (D.f[ dirBSE ])[kbs ]
-			(D.f[dirTNW])[kw] = mfcaa;//(D.f[ dirTNW ])[ktnw ] = mfcaa;// -  c1over216;	 (D.f[ dirTNW ])[kw  ]
-			(D.f[dirTSW])[ksw] = mfcca;//(D.f[ dirTSW ])[ktsw ] = mfcca;// -  c1over216;	 (D.f[ dirTSW ])[ksw ]
-			(D.f[dirBNW])[kbw] = mfcac;//(D.f[ dirBNW ])[kbnw ] = mfcac;// -  c1over216;	 (D.f[ dirBNW ])[kbw ]
-			(D.f[dirBSW])[kbsw] = mfccc;//(D.f[ dirBSW ])[kbsw ] = mfccc;// -  c1over216;	 (D.f[ dirBSW ])[kbsw]
-			////////////////////////////////////////////////////////////////////////////////////
+			(D.f[dirE   ])[k   ] = mfabb;                                                                   
+			(D.f[dirW   ])[kw  ] = mfcbb;                                                                 
+			(D.f[dirN   ])[k   ] = mfbab;
+			(D.f[dirS   ])[ks  ] = mfbcb;
+			(D.f[dirT   ])[k   ] = mfbba;
+			(D.f[dirB   ])[kb  ] = mfbbc;
+			(D.f[dirNE  ])[k   ] = mfaab;
+			(D.f[dirSW  ])[ksw ] = mfccb;
+			(D.f[dirSE  ])[ks  ] = mfacb;
+			(D.f[dirNW  ])[kw  ] = mfcab;
+			(D.f[dirTE  ])[k   ] = mfaba;
+			(D.f[dirBW  ])[kbw ] = mfcbc;
+			(D.f[dirBE  ])[kb  ] = mfabc;
+			(D.f[dirTW  ])[kw  ] = mfcba;
+			(D.f[dirTN  ])[k   ] = mfbaa;
+			(D.f[dirBS  ])[kbs ] = mfbcc;
+			(D.f[dirBN  ])[kb  ] = mfbac;
+			(D.f[dirTS  ])[ks  ] = mfbca;
+			(D.f[dirZERO])[k   ] = mfbbb;
+			(D.f[dirTNE ])[k   ] = mfaaa;
+			(D.f[dirTSE ])[ks  ] = mfaca;
+			(D.f[dirBNE ])[kb  ] = mfaac;
+			(D.f[dirBSE ])[kbs ] = mfacc;
+			(D.f[dirTNW ])[kw  ] = mfcaa;
+			(D.f[dirTSW ])[ksw ] = mfcca;
+			(D.f[dirBNW ])[kbw ] = mfcac;
+			(D.f[dirBSW ])[kbsw] = mfccc;
 		}
 	}
 }
