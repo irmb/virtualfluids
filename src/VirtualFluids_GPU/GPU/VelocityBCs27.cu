@@ -3763,33 +3763,34 @@ extern "C" __global__ void QVelDevPlainBB27(real* vx,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
 	  ////////////////////////////////////////////////////////////////////////////////
-      real q;
-      q = q_dirE[k];	if (q>=zero && q<=one)	(D.f[dirW  ])[kw  ]=f_E   + c2over27  * VeloX;	
-      q = q_dirW[k];	if (q>=zero && q<=one)	(D.f[dirE  ])[ke  ]=f_W   - c2over27  * VeloX;	
-      q = q_dirN[k];	if (q>=zero && q<=one)	(D.f[dirS  ])[ks  ]=f_N   + c2over27  * VeloY;	
-      q = q_dirS[k];	if (q>=zero && q<=one)	(D.f[dirN  ])[kn  ]=f_S   - c2over27  * VeloY;	
-      q = q_dirT[k];	if (q>=zero && q<=one)	(D.f[dirB  ])[kb  ]=f_T   + c2over27  * VeloZ;
-      q = q_dirB[k];	if (q>=zero && q<=one)	(D.f[dirT  ])[kt  ]=f_B   - c2over27  * VeloZ;
-      q = q_dirNE[k];	if (q>=zero && q<=one)	(D.f[dirSW ])[ksw ]=f_NE  + c1over54  * VeloX + c1over54  * VeloY;
-	  q = q_dirSW[k];	if (q>=zero && q<=one)	(D.f[dirNE ])[kne ]=f_SW  - c1over54  * VeloX - c1over54  * VeloY;
-	  q = q_dirSE[k];	if (q>=zero && q<=one)	(D.f[dirNW ])[knw ]=f_SE  + c1over54  * VeloX - c1over54  * VeloY;
-	  q = q_dirNW[k];	if (q>=zero && q<=one)	(D.f[dirSE ])[kse ]=f_NW  - c1over54  * VeloX + c1over54  * VeloY;
-	  q = q_dirTE[k];	if (q>=zero && q<=one)	(D.f[dirBW ])[kbw ]=f_TE  + c1over54  * VeloX + c1over54  * VeloZ;
-	  q = q_dirBW[k];	if (q>=zero && q<=one)	(D.f[dirTE ])[kte ]=f_BW  - c1over54  * VeloX - c1over54  * VeloZ;
-	  q = q_dirBE[k];	if (q>=zero && q<=one)	(D.f[dirTW ])[ktw ]=f_BE  + c1over54  * VeloX - c1over54  * VeloZ;
-	  q = q_dirTW[k];	if (q>=zero && q<=one)	(D.f[dirBE ])[kbe ]=f_TW  - c1over54  * VeloX + c1over54  * VeloZ;
-	  q = q_dirTN[k];	if (q>=zero && q<=one)	(D.f[dirBS ])[kbs ]=f_TN  + c1over54  * VeloY + c1over54  * VeloZ;
-	  q = q_dirBS[k];	if (q>=zero && q<=one)	(D.f[dirTN ])[ktn ]=f_BS  - c1over54  * VeloY - c1over54  * VeloZ;
-	  q = q_dirBN[k];	if (q>=zero && q<=one)	(D.f[dirTS ])[kts ]=f_BN  + c1over54  * VeloY - c1over54  * VeloZ;
-	  q = q_dirTS[k];	if (q>=zero && q<=one)	(D.f[dirBN ])[kbn ]=f_TS  - c1over54  * VeloY + c1over54  * VeloZ;
-      q = q_dirTNE[k];	if (q>=zero && q<=one)	(D.f[dirBSW])[kbsw]=f_TNE + c1over216 * VeloX + c1over216 * VeloY + c1over216 * VeloZ;
-      q = q_dirBSW[k];	if (q>=zero && q<=one)	(D.f[dirTNE])[ktne]=f_BSW - c1over216 * VeloX - c1over216 * VeloY - c1over216 * VeloZ;
-      q = q_dirBNE[k];	if (q>=zero && q<=one)	(D.f[dirTSW])[ktsw]=f_BNE + c1over216 * VeloX + c1over216 * VeloY - c1over216 * VeloZ;
-      q = q_dirTSW[k];	if (q>=zero && q<=one)	(D.f[dirBNE])[kbne]=f_TSW - c1over216 * VeloX - c1over216 * VeloY + c1over216 * VeloZ;
-      q = q_dirTSE[k];	if (q>=zero && q<=one)	(D.f[dirBNW])[kbnw]=f_TSE + c1over216 * VeloX - c1over216 * VeloY + c1over216 * VeloZ;
-      q = q_dirBNW[k];	if (q>=zero && q<=one)	(D.f[dirTSE])[ktse]=f_BNW - c1over216 * VeloX + c1over216 * VeloY - c1over216 * VeloZ;
-      q = q_dirBSE[k];	if (q>=zero && q<=one)	(D.f[dirTNW])[ktnw]=f_BSE + c1over216 * VeloX - c1over216 * VeloY - c1over216 * VeloZ;
-      q = q_dirTNW[k];	if (q>=zero && q<=one)	(D.f[dirBSE])[kbse]=f_TNW - c1over216 * VeloX + c1over216 * VeloY + c1over216 * VeloZ;
+	  real q;
+      q = q_dirE[k];	if (q>=zero && q<=one)	(D.f[dirW  ])[kw  ]=f_E   - c2over27  * VeloX;	
+      q = q_dirW[k];	if (q>=zero && q<=one)	(D.f[dirE  ])[ke  ]=f_W   + c2over27  * VeloX;	
+      q = q_dirN[k];	if (q>=zero && q<=one)	(D.f[dirS  ])[ks  ]=f_N   - c2over27  * VeloY;	
+      q = q_dirS[k];	if (q>=zero && q<=one)	(D.f[dirN  ])[kn  ]=f_S   + c2over27  * VeloY;	
+      q = q_dirT[k];	if (q>=zero && q<=one)	(D.f[dirB  ])[kb  ]=f_T   - c2over27  * VeloZ;
+      q = q_dirB[k];	if (q>=zero && q<=one)	(D.f[dirT  ])[kt  ]=f_B   + c2over27  * VeloZ;
+      q = q_dirNE[k];	if (q>=zero && q<=one)	(D.f[dirSW ])[ksw ]=f_NE  - c1over54  * VeloX - c1over54  * VeloY;
+	  q = q_dirSW[k];	if (q>=zero && q<=one)	(D.f[dirNE ])[kne ]=f_SW  + c1over54  * VeloX + c1over54  * VeloY;
+	  q = q_dirSE[k];	if (q>=zero && q<=one)	(D.f[dirNW ])[knw ]=f_SE  - c1over54  * VeloX + c1over54  * VeloY;
+	  q = q_dirNW[k];	if (q>=zero && q<=one)	(D.f[dirSE ])[kse ]=f_NW  + c1over54  * VeloX - c1over54  * VeloY;
+	  q = q_dirTE[k];	if (q>=zero && q<=one)	(D.f[dirBW ])[kbw ]=f_TE  - c1over54  * VeloX - c1over54  * VeloZ;
+	  q = q_dirBW[k];	if (q>=zero && q<=one)	(D.f[dirTE ])[kte ]=f_BW  + c1over54  * VeloX + c1over54  * VeloZ;
+	  q = q_dirBE[k];	if (q>=zero && q<=one)	(D.f[dirTW ])[ktw ]=f_BE  - c1over54  * VeloX + c1over54  * VeloZ;
+	  q = q_dirTW[k];	if (q>=zero && q<=one)	(D.f[dirBE ])[kbe ]=f_TW  + c1over54  * VeloX - c1over54  * VeloZ;
+	  q = q_dirTN[k];	if (q>=zero && q<=one)	(D.f[dirBS ])[kbs ]=f_TN  - c1over54  * VeloY - c1over54  * VeloZ;
+	  q = q_dirBS[k];	if (q>=zero && q<=one)	(D.f[dirTN ])[ktn ]=f_BS  + c1over54  * VeloY + c1over54  * VeloZ;
+	  q = q_dirBN[k];	if (q>=zero && q<=one)	(D.f[dirTS ])[kts ]=f_BN  - c1over54  * VeloY + c1over54  * VeloZ;
+	  q = q_dirTS[k];	if (q>=zero && q<=one)	(D.f[dirBN ])[kbn ]=f_TS  + c1over54  * VeloY - c1over54  * VeloZ;
+      q = q_dirTNE[k];	if (q>=zero && q<=one)	(D.f[dirBSW])[kbsw]=f_TNE - c1over216 * VeloX - c1over216 * VeloY - c1over216 * VeloZ;
+      q = q_dirBSW[k];	if (q>=zero && q<=one)	(D.f[dirTNE])[ktne]=f_BSW + c1over216 * VeloX + c1over216 * VeloY + c1over216 * VeloZ;
+      q = q_dirBNE[k];	if (q>=zero && q<=one)	(D.f[dirTSW])[ktsw]=f_BNE - c1over216 * VeloX - c1over216 * VeloY + c1over216 * VeloZ;
+      q = q_dirTSW[k];	if (q>=zero && q<=one)	(D.f[dirBNE])[kbne]=f_TSW + c1over216 * VeloX + c1over216 * VeloY - c1over216 * VeloZ;
+      q = q_dirTSE[k];	if (q>=zero && q<=one)	(D.f[dirBNW])[kbnw]=f_TSE - c1over216 * VeloX + c1over216 * VeloY - c1over216 * VeloZ;
+      q = q_dirBNW[k];	if (q>=zero && q<=one)	(D.f[dirTSE])[ktse]=f_BNW + c1over216 * VeloX - c1over216 * VeloY + c1over216 * VeloZ;
+      q = q_dirBSE[k];	if (q>=zero && q<=one)	(D.f[dirTNW])[ktnw]=f_BSE - c1over216 * VeloX + c1over216 * VeloY + c1over216 * VeloZ;
+      q = q_dirTNW[k];	if (q>=zero && q<=one)	(D.f[dirBSE])[kbse]=f_TNW + c1over216 * VeloX - c1over216 * VeloY - c1over216 * VeloZ;
+	  ////////////////////////////////////////////////////////////////////////////////
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
