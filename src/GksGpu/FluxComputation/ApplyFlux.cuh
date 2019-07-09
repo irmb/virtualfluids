@@ -16,7 +16,7 @@ __host__ __device__ inline void applyFluxToNegCell( const DataBaseStruct& dataBa
                                                     const uint& negCellIdx,
                                                     const ConservedVariables& flux,
                                                     const char direction,
-                                                    const real& dt)
+                                                    const Parameters& parameters)
 {
     realAccumulator* dataUpdate = dataBase.dataUpdate;
 
@@ -31,12 +31,15 @@ __host__ __device__ inline void applyFluxToNegCell( const DataBaseStruct& dataBa
 	atomicAdd( &( dataUpdate[ RHO_S_2(negCellIdx, dataBase.numberOfCells) ] ), - (realAccumulator)flux.rhoS_2 );
 #endif // USE_PASSIVE_SCALAR
     
-    if( direction == 'x' )
-        atomicAdd( &( dataBase.massFlux[ VEC_X(negCellIdx, dataBase.numberOfCells) ] ), flux.rho );
-    if( direction == 'y' )
-        atomicAdd( &( dataBase.massFlux[ VEC_Y(negCellIdx, dataBase.numberOfCells) ] ), flux.rho );
-    if( direction == 'z' )
-        atomicAdd( &( dataBase.massFlux[ VEC_Z(negCellIdx, dataBase.numberOfCells) ] ), flux.rho );
+    if( parameters.forcingSchemeIdx == 0 || parameters.forcingSchemeIdx == 1 )
+    {
+        if (direction == 'x')
+            atomicAdd(&(dataBase.massFlux[VEC_X(negCellIdx, dataBase.numberOfCells)]), flux.rho);
+        if (direction == 'y')
+            atomicAdd(&(dataBase.massFlux[VEC_Y(negCellIdx, dataBase.numberOfCells)]), flux.rho);
+        if (direction == 'z')
+            atomicAdd(&(dataBase.massFlux[VEC_Z(negCellIdx, dataBase.numberOfCells)]), flux.rho);
+    }
 #else
 #pragma omp atomic
     dataUpdate[ RHO__(negCellIdx, dataBase.numberOfCells) ] -= flux.rho ;
@@ -53,16 +56,19 @@ __host__ __device__ inline void applyFluxToNegCell( const DataBaseStruct& dataBa
 	dataUpdate[ RHO_S_1(negCellIdx, dataBase.numberOfCells) ] -= flux.rhoS_1;
 	dataUpdate[ RHO_S_2(negCellIdx, dataBase.numberOfCells) ] -= flux.rhoS_2;
 #endif // USE_PASSIVE_SCALAR
-    
-    if( direction == 'x' )
-#pragma omp atomic
-        dataBase.massFlux[ VEC_X(negCellIdx, dataBase.numberOfCells) ] += flux.rho;
-    if( direction == 'y' )
-#pragma omp atomic
-        dataBase.massFlux[ VEC_Y(negCellIdx, dataBase.numberOfCells) ] += flux.rho;
-    if( direction == 'z' )
-#pragma omp atomic
-        dataBase.massFlux[ VEC_Z(negCellIdx, dataBase.numberOfCells) ] += flux.rho;
+
+    if( parameters.forcingSchemeIdx == 0 || parameters.forcingSchemeIdx == 1 )
+    {
+        if( direction == 'x' )
+    #pragma omp atomic
+            dataBase.massFlux[ VEC_X(negCellIdx, dataBase.numberOfCells) ] += flux.rho;
+        if( direction == 'y' )
+    #pragma omp atomic
+            dataBase.massFlux[ VEC_Y(negCellIdx, dataBase.numberOfCells) ] += flux.rho;
+        if( direction == 'z' )
+    #pragma omp atomic
+            dataBase.massFlux[ VEC_Z(negCellIdx, dataBase.numberOfCells) ] += flux.rho;
+    }
 #endif
 
 }
@@ -71,7 +77,7 @@ __host__ __device__ inline void applyFluxToPosCell( const DataBaseStruct& dataBa
                                                     const uint& posCellIdx,
                                                     const ConservedVariables& flux,
                                                     const char& direction,
-                                                    const real& dt )
+                                                    const Parameters& parameters)
 {
     realAccumulator* dataUpdate = dataBase.dataUpdate;
 
@@ -86,12 +92,15 @@ __host__ __device__ inline void applyFluxToPosCell( const DataBaseStruct& dataBa
 	atomicAdd( &( dataUpdate[ RHO_S_2(posCellIdx, dataBase.numberOfCells) ] ),   (realAccumulator)flux.rhoS_2 );
 #endif // USE_PASSIVE_SCALAR
     
-    if( direction == 'x' )
-        atomicAdd( &( dataBase.massFlux[ VEC_X(posCellIdx, dataBase.numberOfCells) ] ), flux.rho );
-    if( direction == 'y' )
-        atomicAdd( &( dataBase.massFlux[ VEC_Y(posCellIdx, dataBase.numberOfCells) ] ), flux.rho );
-    if( direction == 'z' )
-        atomicAdd( &( dataBase.massFlux[ VEC_Z(posCellIdx, dataBase.numberOfCells) ] ), flux.rho );
+    if( parameters.forcingSchemeIdx == 0 || parameters.forcingSchemeIdx == 1 )
+    {
+        if (direction == 'x')
+            atomicAdd(&(dataBase.massFlux[VEC_X(posCellIdx, dataBase.numberOfCells)]), flux.rho);
+        if (direction == 'y')
+            atomicAdd(&(dataBase.massFlux[VEC_Y(posCellIdx, dataBase.numberOfCells)]), flux.rho);
+        if (direction == 'z')
+            atomicAdd(&(dataBase.massFlux[VEC_Z(posCellIdx, dataBase.numberOfCells)]), flux.rho);
+    }
 #else
 #pragma omp atomic
     dataUpdate[ RHO__(posCellIdx, dataBase.numberOfCells) ] += flux.rho ;
@@ -109,15 +118,18 @@ __host__ __device__ inline void applyFluxToPosCell( const DataBaseStruct& dataBa
 	dataUpdate[ RHO_S_2(posCellIdx, dataBase.numberOfCells) ] += flux.rhoS_2;
 #endif // USE_PASSIVE_SCALAR
     
-    if( direction == 'x' )
-#pragma omp atomic
-        dataBase.massFlux[ VEC_X(posCellIdx, dataBase.numberOfCells) ] += flux.rho;
-    if( direction == 'y' )
-#pragma omp atomic
-        dataBase.massFlux[ VEC_Y(posCellIdx, dataBase.numberOfCells) ] += flux.rho;
-    if( direction == 'z' )
-#pragma omp atomic
-        dataBase.massFlux[ VEC_Z(posCellIdx, dataBase.numberOfCells) ] += flux.rho;
+    if( parameters.forcingSchemeIdx == 0 || parameters.forcingSchemeIdx == 1 )
+    {
+        if (direction == 'x')
+    #pragma omp atomic
+            dataBase.massFlux[VEC_X(posCellIdx, dataBase.numberOfCells)] += flux.rho;
+        if (direction == 'y')
+    #pragma omp atomic
+            dataBase.massFlux[VEC_Y(posCellIdx, dataBase.numberOfCells)] += flux.rho;
+        if (direction == 'z')
+    #pragma omp atomic
+            dataBase.massFlux[VEC_Z(posCellIdx, dataBase.numberOfCells)] += flux.rho;
+    }
 #endif
 }
 

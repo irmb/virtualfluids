@@ -163,10 +163,6 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         prim = toPrimitiveVariables(cons, parameters.K);
         prim.lambda = lambda;
         cons = toConservedVariables(prim, parameters.K);
-
-        dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] = zero;
-        dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] = zero;
-        dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = zero;
     }
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

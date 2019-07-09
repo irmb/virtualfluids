@@ -105,7 +105,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
     flux.rhoE = boundaryCondition.HRRPUA * parameters.dt * parameters.dx * parameters.dx;
 
-    applyFluxToPosCell(dataBase, domainCellIdx, flux, 'z', parameters.dt);
+    applyFluxToPosCell(dataBase, domainCellIdx, flux, 'z', parameters);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

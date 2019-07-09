@@ -387,18 +387,18 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
                 {
                     if (negCellParentIdx != INVALID_INDEX)
                     {
-                        applyFluxToNegCell(dataBase, negCellParentIdx, flux, direction, parameters.dt);
+                        applyFluxToNegCell(dataBase, negCellParentIdx, flux, direction, parameters);
                     }
 
                     if (posCellParentIdx != INVALID_INDEX)
                     {
-                        applyFluxToPosCell(dataBase, posCellParentIdx, flux, direction, parameters.dt);
+                        applyFluxToPosCell(dataBase, posCellParentIdx, flux, direction, parameters);
                     }
                 }
             }
 
-            applyFluxToNegCell(dataBase, negCellIdx, flux, direction, parameters.dt);
-            applyFluxToPosCell(dataBase, posCellIdx, flux, direction, parameters.dt);
+            applyFluxToNegCell(dataBase, negCellIdx, flux, direction, parameters);
+            applyFluxToPosCell(dataBase, posCellIdx, flux, direction, parameters);
         }
     }
 }

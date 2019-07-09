@@ -115,7 +115,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     #endif // USE_PASSIVE_SCALAR
         flux = (parameters.dt * parameters.dx * parameters.dx) * flux;
 
-        applyFluxToPosCell(dataBase, domainCellIdx, flux, 'z', parameters.dt);
+        applyFluxToPosCell(dataBase, domainCellIdx, flux, 'z', parameters);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
