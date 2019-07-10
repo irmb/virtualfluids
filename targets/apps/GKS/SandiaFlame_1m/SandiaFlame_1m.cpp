@@ -149,10 +149,11 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
     parameters.usePassiveScalarLimiter   = true;
     parameters.useSmagorinsky            = true;
 
-    parameters.reactionLimiter = 1.0005;
+    parameters.reactionLimiter    = 1.0005;
+    parameters.temperatureLimiter = 1.0e-3;
 
-    parameters.useSpongeLayer = false;
-    parameters.spongeLayerIdx = 0;
+    parameters.useSpongeLayer = true;
+    parameters.spongeLayerIdx = 1;
 
     parameters.forcingSchemeIdx = 2;
 
@@ -380,17 +381,29 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    uint iterPerSecond = uint( one / parameters.dt ) + 1;
+
+    *logging::out << logging::Logger::INFO_HIGH << "iterPerSecond = " << iterPerSecond << "\n";
+
+    //////////////////////////////////////////////////////////////////////////
+
     CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, true, 10000 );
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 10 * iterPerSecond );
+
+    turbulenceAnalyzer->collect_UU = true;
+    turbulenceAnalyzer->collect_VV = true;
+    turbulenceAnalyzer->collect_WW = true;
+
+    turbulenceAnalyzer->allocate();
 
     //////////////////////////////////////////////////////////////////////////
 
     cupsAnalyzer.start();
-
-    for( uint iter = startIter + 1; iter <= 2000000; iter++ )
+    
+    for( uint iter = startIter + 1; iter <= 40 * iterPerSecond; iter++ )
     {
         cupsAnalyzer.run( iter, parameters.dt );
 
@@ -471,22 +484,38 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     //////////////////////////////////////////////////////////////////////////
 
-    dataBase->copyDataDeviceToHost();
+    //dataBase->copyDataDeviceToHost();
 
     //writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
 
-    //turbulenceAnalyzer->download();
+    turbulenceAnalyzer->download();
 
-    //writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence");
+    writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_final");
+
+    pointTimeSeriesAnalyzerU_P1->writeToFile(path + simulationName + "_P1_TimeSeries_" + pointTimeSeriesAnalyzerU_P1->quantity + "_final");
+    pointTimeSeriesAnalyzerV_P1->writeToFile(path + simulationName + "_P1_TimeSeries_" + pointTimeSeriesAnalyzerV_P1->quantity + "_final");
+    pointTimeSeriesAnalyzerW_P1->writeToFile(path + simulationName + "_P1_TimeSeries_" + pointTimeSeriesAnalyzerW_P1->quantity + "_final");
+
+    pointTimeSeriesAnalyzerU_P2->writeToFile(path + simulationName + "_P2_TimeSeries_" + pointTimeSeriesAnalyzerU_P2->quantity + "_final");
+    pointTimeSeriesAnalyzerV_P2->writeToFile(path + simulationName + "_P2_TimeSeries_" + pointTimeSeriesAnalyzerV_P2->quantity + "_final");
+    pointTimeSeriesAnalyzerW_P2->writeToFile(path + simulationName + "_P2_TimeSeries_" + pointTimeSeriesAnalyzerW_P2->quantity + "_final");
+
+    pointTimeSeriesAnalyzerU_P3->writeToFile(path + simulationName + "_P3_TimeSeries_" + pointTimeSeriesAnalyzerU_P3->quantity + "_final");
+    pointTimeSeriesAnalyzerV_P3->writeToFile(path + simulationName + "_P3_TimeSeries_" + pointTimeSeriesAnalyzerV_P3->quantity + "_final");
+    pointTimeSeriesAnalyzerW_P3->writeToFile(path + simulationName + "_P3_TimeSeries_" + pointTimeSeriesAnalyzerW_P3->quantity + "_final");
+
+    pointTimeSeriesAnalyzerU_P4->writeToFile(path + simulationName + "_P4_TimeSeries_" + pointTimeSeriesAnalyzerU_P4->quantity + "_final");
+    pointTimeSeriesAnalyzerV_P4->writeToFile(path + simulationName + "_P4_TimeSeries_" + pointTimeSeriesAnalyzerV_P4->quantity + "_final");
+    pointTimeSeriesAnalyzerW_P4->writeToFile(path + simulationName + "_P4_TimeSeries_" + pointTimeSeriesAnalyzerW_P4->quantity + "_final");
 }
 
 int main( int argc, char* argv[])
 {
     uint restartIter = INVALID_INDEX;
-    //uint restartIter = 50000;
+    //uint restartIter = 90000;
         
     uint gpuIndex = 1;
-    uint testIndex = 14;
+    uint testIndex = 17;
     uint nx = 128;
 
     if( argc > 1 ) gpuIndex    = atoi( argv[1] );
@@ -505,7 +534,7 @@ int main( int argc, char* argv[])
     std::string path( "out/" );
 #endif
 
-    //path += "Test_" + std::to_string(testIndex) + "/";
+    path += "Test_" + std::to_string(testIndex) + "_" + std::to_string(nx) + "/";
 
     std::string simulationName ( "Flame" );
 

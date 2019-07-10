@@ -367,6 +367,12 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 10 * iterPerSecond );
 
+    turbulenceAnalyzer->collect_UU = true;
+    turbulenceAnalyzer->collect_VV = true;
+    turbulenceAnalyzer->collect_WW = true;
+
+    turbulenceAnalyzer->allocate();
+
     //////////////////////////////////////////////////////////////////////////
 
     cupsAnalyzer.start();
