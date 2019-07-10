@@ -8,3 +8,5 @@ SET(FFTW_ROOT ${CMAKE_SOURCE_DIR}/3rdParty/fftw/fftw-3.3.7 CACHE PATH "JSONCPP R
 #SET TO CORRECT PATH:
 SET(BOOST_ROOT  "C:\\Program Files\\boost\\boost_1_63_0"  CACHE PATH "BOOST_ROOT")
 SET(BOOST_LIBRARYDIR  "C:\\Program Files\\boost\\boost_1_63_0\\stage\\x64\\lib" CACHE PATH "BOOST_LIBRARYDIR")
+SET(VTK_DIR "E:/libraries/VTK-8.2.0/build" CACHE PATH "VTK directory override" FORCE)
+
