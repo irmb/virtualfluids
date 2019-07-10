@@ -163,12 +163,8 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         prim = toPrimitiveVariables(cons, parameters.K);
         prim.lambda = lambda;
         cons = toConservedVariables(prim, parameters.K);
-
-        dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] = zero;
-        dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] = zero;
-        dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = zero;
     }
-
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // mass conserving fix for out of bounds scalars
@@ -186,12 +182,12 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
     //    Z1 /= faktor;
     //    Z2 /= faktor;
     //}
-
-
+    
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     chemicalReaction(dataBase, parameters, cellIndex, cons);
-
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Dirty fix that limits the velocity
 

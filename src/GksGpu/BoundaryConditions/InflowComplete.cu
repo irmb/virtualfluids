@@ -193,7 +193,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
         transformLocalToGlobal( flux, 'z' );
 
-        applyFluxToPosCell(dataBase, domainCellIdx, flux, 'z', parameters.dt);
+        applyFluxToPosCell(dataBase, domainCellIdx, flux, 'z', parameters);
 
         return;
     }
@@ -288,8 +288,8 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
                 }
             }
 
-            applyFluxToPosCell(dataBase, domainCellIdx, flux, 'z', parameters.dt);
-            applyFluxToNegCell(dataBase, ghostCellIdx , flux, 'z', parameters.dt);
+            applyFluxToPosCell(dataBase, domainCellIdx, flux, 'z', parameters);
+            applyFluxToNegCell(dataBase, ghostCellIdx , flux, 'z', parameters);
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -59,11 +59,11 @@
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
-void thermalCavity( std::string path, std::string simulationName, uint restartIter )
+void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex, uint _nx, bool _useTempLimiter, uint restartIter )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 128;
+    uint nx = _nx;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -74,15 +74,16 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real dx = H / real(nx);
 
-    real U = 0.0314;
-
     real Pr  = 0.71;
     real K   = 2.0;
     
     real g   = 9.81;
     real rho = 1.2;
     
-    real mu = 1.5e-5;
+    real mu = 1.8e-5;
+
+    real U = 0.0314;
+    real rhoFuel = 0.68;
 
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
@@ -90,7 +91,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
-    real CFL = 0.06125;
+    //real CFL = 0.06125;
+    real CFL = 0.125;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -105,7 +107,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
     *logging::out << logging::Logger::INFO_HIGH << "Pr = " << Pr << "\n";
 
-    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * /*rho*/ 0.68 * M_PI * R * R * ( dh * 100 ) / 0.016 / 1000.0 << " kW\n";
+    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * rhoFuel * M_PI * R * R * ( dh * 100 ) / 0.016 / 1000.0 << " kW\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -135,12 +137,15 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     parameters.enableReaction = true;
 
-    parameters.useReactionLimiter      = true;
-    parameters.useTemperatureLimiter   = true;
-    parameters.usePassiveScalarLimiter = true;
-    parameters.useSmagorinsky          = true;
+    parameters.useHeatReleaseRateLimiter = true;
+    parameters.useReactionLimiter        = true;
+    parameters.useTemperatureLimiter     = _useTempLimiter;
+    parameters.usePassiveScalarLimiter   = true;
+    parameters.useSmagorinsky            = true;
 
-    parameters.reactionLimiter = 1.005;
+    parameters.heatReleaseRateLimiter = 5000000.0;
+    parameters.reactionLimiter        = 1.005;
+    parameters.temperatureLimiter     = 1.0e-8;
 
     parameters.useSpongeLayer = true;
     parameters.spongeLayerIdx = 0;
@@ -172,8 +177,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 1.5*R, 0.25*H );
-    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.1*R, 0.05*H );
+    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 2.1*R, 0.75*H );
+    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.5*R, 0.15*H );
     
     Conglomerate refRing;
     refRing.add     ( new VerticalCylinder( 0.0, 0.0, 0.0, 1.2*R, 0.02 ) );
@@ -181,9 +186,9 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     gridBuilder->setNumberOfLayers(0,10);
     
-    gridBuilder->addGrid( &cylinder1 );
+    //gridBuilder->addGrid( &cylinder1 );
     //gridBuilder->addGrid( &cylinder2 );
-    gridBuilder->addGrid( &refRing );
+    //gridBuilder->addGrid( &refRing );
 
     if( threeDimensional ) gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     else                   gridBuilder->setPeriodicBoundaryCondition(false, true,  false);
@@ -207,7 +212,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(1);
+    CudaUtility::setCudaDevice(_gpuIndex);
 
     auto dataBase = std::make_shared<DataBase>( "GPU" );
 
@@ -275,7 +280,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> burner = std::make_shared<CreepingMassFlux>( dataBase, /*rho*/0.68, U, prim.lambda );
+    SPtr<BoundaryCondition> burner = std::make_shared<CreepingMassFlux>( dataBase, rhoFuel, U, prim.lambda );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
         
@@ -350,19 +355,31 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    uint iterPerSecond = uint( one / parameters.dt ) + 1;
+
+    *logging::out << logging::Logger::INFO_HIGH << "iterPerSecond = " << iterPerSecond << "\n";
+
+    //////////////////////////////////////////////////////////////////////////
+
     CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, true, 10000 );
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 10 * iterPerSecond );
+
+    turbulenceAnalyzer->collect_UU = true;
+    turbulenceAnalyzer->collect_VV = true;
+    turbulenceAnalyzer->collect_WW = true;
+
+    turbulenceAnalyzer->allocate();
 
     //////////////////////////////////////////////////////////////////////////
 
     cupsAnalyzer.start();
 
-    for( uint iter = startIter + 1; iter <= 2000000; iter++ )
+    for( uint iter = startIter + 1; iter <= 40 * iterPerSecond; iter++ )
     {
-        cupsAnalyzer.run( iter );
+        cupsAnalyzer.run( iter, parameters.dt );
 
         convergenceAnalyzer.run( iter );
 
@@ -372,7 +389,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
         if( crashCellIndex >= 0 )
         {
-            *logging::out << logging::Logger::ERROR << "Simulation Crashed at CellIndex = " << crashCellIndex << "\n";
+            *logging::out << logging::Logger::LOGGER_ERROR << "Simulation Crashed at CellIndex = " << crashCellIndex << "\n";
             dataBase->copyDataDeviceToHost();
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
 
@@ -417,11 +434,29 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
 int main( int argc, char* argv[])
 {
+    uint restartIter = INVALID_INDEX;
+    //uint restartIter = 30000;
+
+    uint gpuIndex = 1;
+    uint nx = 100;
+    bool useTempLimiter = true;
+
+    if( argc > 1 ) gpuIndex       = atoi( argv[1] );
+    if( argc > 2 ) nx             = atoi( argv[2] );
+    if( argc > 3 ) useTempLimiter = atoi( argv[3] );
+    if( argc > 4 ) restartIter    = atoi( argv[4] );
+
+    //////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
     std::string path( "F:/Work/Computations/out/Flame7cm/" );
 #else
     std::string path( "out/" );
+    path += "nx_";
+    path += std::to_string(nx);
+    if( useTempLimiter )
+        path += "_withTempLimiter";
+    path += "/";
 #endif
 
     std::string simulationName ( "Flame" );
@@ -441,24 +476,19 @@ int main( int argc, char* argv[])
 
     try
     {
-        uint restartIter = INVALID_INDEX;
-        //uint restartIter = 30000;
-
-        if( argc > 1 ) restartIter = atoi( argv[1] );
-
-        thermalCavity( path, simulationName, restartIter );
+        thermalCavity( path, simulationName, gpuIndex, nx, useTempLimiter, restartIter );
     }
     catch (const std::exception& e)
     {     
-        *logging::out << logging::Logger::ERROR << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
     }
     catch (const std::bad_alloc& e)
     {  
-        *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
     }
     catch (...)
     {
-        *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
     }
 
     logFile.close();

@@ -55,13 +55,15 @@ struct  VF_PUBLIC Parameters
 
     real heatOfReaction = real(8000.0); // kJ / kmol  
 
-    bool useReactionLimiter      = false;
-    bool useTemperatureLimiter   = false;
-    bool usePassiveScalarLimiter = false;
+    bool useHeatReleaseRateLimiter = false;
+    bool useReactionLimiter        = false;
+    bool useTemperatureLimiter     = false;
+    bool usePassiveScalarLimiter   = false;
 
-    real reactionLimiter      = real(1.005);
-    real temperatureLimiter   = real(1.0e-3);
-    real passiveScalarLimiter = real(0.1);
+    real heatReleaseRateLimiter = real(20000.0);
+    real reactionLimiter        = real(1.005);
+    real temperatureLimiter     = real(1.0e-3);
+    real passiveScalarLimiter   = real(0.1);
 };
 
 #endif

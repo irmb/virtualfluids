@@ -21,7 +21,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
+__host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
 {
 
 #ifdef USE_PASSIVE_SCALAR
@@ -87,7 +87,14 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
                 real releasedHeat = dn_F * parameters.heatOfReaction;
 
-                ///////////////////////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////////////////
+
+                //if( releasedHeat > real(20.0) * parameters.dt )
+                //{
+                //    dX_F = real(20.0) * parameters.dt * M / cons.rho / parameters.heatOfReaction;
+                //}
+
+                //////////////////////////////////////////////////////////////////////////
 
                 //real X_F_new = X_F - dX_F;
                 //real X_P_new = X_P + dX_F;
@@ -154,6 +161,74 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
         //    cons.rhoS_1 /= faktor;
         //    cons.rhoS_2 /= faktor;
         //}
+    }
+
+#endif // USE_PASSIVE_SCALAR
+}
+
+__host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
+{
+    // see FDS 5 Technical reference guide, section 6.1.4 for combustion model
+#ifdef USE_PASSIVE_SCALAR
+    if (parameters.enableReaction)
+    {
+        CellProperties cellProperties = dataBase.cellProperties[ cellIndex ];
+
+        PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
+
+        //////////////////////////////////////////////////////////////////////////
+
+        real diffusivity = dataBase.diffusivity[ cellIndex ] / ( six * parameters.dx * parameters.dx * parameters.dt );
+        dataBase.diffusivity[ cellIndex ] = zero;
+
+        //////////////////////////////////////////////////////////////////////////
+
+        real mixingTimeScale = real(0.1) * parameters.dx * parameters.dx / diffusivity;
+
+        //real mixingTimeScale = parameters.dt;
+
+        //if( mixingTimeScale < one )
+        //    mixingTimeScale = one;
+
+        //////////////////////////////////////////////////////////////////////////
+
+        real Y_F = prim.S_1;
+        real Y_P = prim.S_2;
+
+        real Y_A = one - Y_F - Y_P;
+
+        ///////////////////////////////////////////////////////////////////////////////
+
+        real Y_O2 = real(0.21) * Y_A * 0.032 / M_A;
+
+        ///////////////////////////////////////////////////////////////////////////////
+
+        real s = M_F / ( two * 0.032 );
+
+        real heatReleaseRate = cons.rho * fminf(Y_F, s * Y_O2) / mixingTimeScale * ( parameters.heatOfReaction / M_F );
+
+        //////////////////////////////////////////////////////////////////////////
+
+        if( heatReleaseRate < zero )
+            heatReleaseRate = zero;
+
+        //////////////////////////////////////////////////////////////////////////
+
+        if( parameters.useHeatReleaseRateLimiter )
+        if( heatReleaseRate > parameters.heatReleaseRateLimiter )
+            heatReleaseRate = parameters.heatReleaseRateLimiter;
+
+        //////////////////////////////////////////////////////////////////////////
+
+        real drhoY_F = heatReleaseRate * parameters.dt / ( parameters.heatOfReaction / M_F );
+
+        real r = one + one / ( two * real(0.21) ) * M_A / M_F;
+
+        cons.rhoS_1 -=     drhoY_F;
+        cons.rhoS_2 += r * drhoY_F;
+        cons.rhoE   += heatReleaseRate * parameters.dt;
+
+        //////////////////////////////////////////////////////////////////////////
     }
 
 #endif // USE_PASSIVE_SCALAR

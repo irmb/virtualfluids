@@ -9,6 +9,7 @@
 #include "CellUpdate/CellUpdate.h"
 #include "FluxComputation/FluxComputation.h"
 #include "Interface/Interface.h"
+#include "Initializer/Initializer.h"
 
 void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase, 
                                    Parameters parameters,

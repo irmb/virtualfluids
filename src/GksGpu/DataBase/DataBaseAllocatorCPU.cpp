@@ -45,6 +45,8 @@ void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
 
     delete [] dataBase.massFlux;
 
+    delete [] dataBase.diffusivity;
+
     delete [] dataBase.crashCellIndex;
 
     dataBase.dataHost.clear();
@@ -78,9 +80,13 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<DataBase> dataBase)
 
     dataBase->massFlux   = new real [ LENGTH_VECTOR    * dataBase->numberOfCells ];
 
+    dataBase->diffusivity  = new real [ dataBase->numberOfCells ];
+
     dataBase->crashCellIndex = new int;
 
     dataBase->dataHost.resize( LENGTH_CELL_DATA * dataBase->numberOfCells );
+
+    dataBase->diffusivityHost.resize( dataBase->numberOfCells );
 }
 
 void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & adapter)
@@ -177,6 +183,8 @@ void DataBaseAllocatorCPU::copyDataHostToDevice(SPtr<DataBase> dataBase)
 void DataBaseAllocatorCPU::copyDataDeviceToHost(SPtr<DataBase> dataBase, real* hostData)
 {
     memcpy( hostData, dataBase->data, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells );
+    
+    memcpy( dataBase->diffusivityHost.data(), dataBase->diffusivity, sizeof(real) * dataBase->numberOfCells );
 }
 
 int DataBaseAllocatorCPU::getCrashCellIndex(SPtr<DataBase> dataBase)

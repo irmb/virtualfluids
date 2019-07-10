@@ -61,11 +61,12 @@
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
-void thermalCavity( std::string path, std::string simulationName, uint restartIter )
+void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex, uint _testIndex, uint _nx, uint restartIter )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 128;
+    //uint nx = 64;
+    uint nx = _nx;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -76,16 +77,20 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real dx = H / real(nx);
 
-    real U = 0.074;
-
     real Pr  = 0.71;
     real K   = 2.0;
     
     real g   = 9.81;
     real rho = 1.2;
-    real rhoFuel = 0.5405;
 
-    real mu = 1.5e-5;
+    real mu = 1.8e-5;
+
+    real U = 0.0;
+    real rhoFuel = 0.0;
+
+    if( _testIndex == 14 ) { U = 0.074; rhoFuel = 0.5405; }    // Test 14      low flow rates
+    if( _testIndex == 24 ) { U = 0.097; rhoFuel = 0.5464; }    // Test 24      medium flow rate
+    if( _testIndex == 17 ) { U = 0.117; rhoFuel = 0.5641; }    // Test 17      high flow rate
 
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
@@ -93,11 +98,11 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
-    real CFL = 0.06125;
+    //real CFL = 0.06125;
+    real CFL = 0.125;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
-    //real dh = 4192.0; // kJ / kmol  / T_FAKTOR
     real dh = 8000.0; // kJ / kmol  / T_FAKTOR
 
     //////////////////////////////////////////////////////////////////////////
@@ -138,15 +143,17 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     parameters.enableReaction = true;
 
-    parameters.useReactionLimiter      = true;
-    parameters.useTemperatureLimiter   = true;
-    parameters.usePassiveScalarLimiter = true;
-    parameters.useSmagorinsky          = true;
+    parameters.useHeatReleaseRateLimiter = true;
+    parameters.useReactionLimiter        = true;
+    parameters.useTemperatureLimiter     = true;
+    parameters.usePassiveScalarLimiter   = true;
+    parameters.useSmagorinsky            = true;
 
-    parameters.reactionLimiter = 1.0005;
+    parameters.reactionLimiter    = 1.0005;
+    parameters.temperatureLimiter = 1.0e-3;
 
-    parameters.useSpongeLayer = false;
-    parameters.spongeLayerIdx = 0;
+    parameters.useSpongeLayer = true;
+    parameters.spongeLayerIdx = 1;
 
     parameters.forcingSchemeIdx = 2;
 
@@ -184,7 +191,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     gridBuilder->setNumberOfLayers(0,10);
     
-    gridBuilder->addGrid( &cylinder1 );
+    //gridBuilder->addGrid( &cylinder1 );
     //gridBuilder->addGrid( &cylinder2 );
     //gridBuilder->addGrid( &refRing );
 
@@ -210,7 +217,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(1);
+    CudaUtility::setCudaDevice(_gpuIndex);
 
     auto dataBase = std::make_shared<DataBase>( "GPU" );
 
@@ -279,6 +286,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     //////////////////////////////////////////////////////////////////////////
 
     SPtr<BoundaryCondition> burner = std::make_shared<CreepingMassFlux>( dataBase, rhoFuel, U, prim.lambda );
+    //SPtr<BoundaryCondition> burner = std::make_shared<Inflow>( dataBase, Vec3(0,0,U), prim.lambda, rhoFuel, 1, 0, 0, 1.0 );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
         
@@ -309,9 +317,25 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
         dataBase->boundaryConditions.push_back( bcPY_2 );
     }
 
+    //dataBase->boundaryConditions.push_back( burner );
+
     //////////////////////////////////////////////////////////////////////////
 
-    auto pointTimeSeriesAnalyzer = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 0.5), 'W' );
+    auto pointTimeSeriesAnalyzerU_P1 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 0.505), 'U' );
+    auto pointTimeSeriesAnalyzerV_P1 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 0.505), 'V' );
+    auto pointTimeSeriesAnalyzerW_P1 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 0.505), 'W' );
+
+    auto pointTimeSeriesAnalyzerU_P2 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 0.505), 'U' );
+    auto pointTimeSeriesAnalyzerV_P2 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 0.505), 'V' );
+    auto pointTimeSeriesAnalyzerW_P2 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 0.505), 'W' );
+
+    auto pointTimeSeriesAnalyzerU_P3 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 2.0), 'U' );
+    auto pointTimeSeriesAnalyzerV_P3 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 2.0), 'V' );
+    auto pointTimeSeriesAnalyzerW_P3 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 2.0), 'W' );
+
+    auto pointTimeSeriesAnalyzerU_P4 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 2.0), 'U' );
+    auto pointTimeSeriesAnalyzerV_P4 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 2.0), 'V' );
+    auto pointTimeSeriesAnalyzerW_P4 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 2.0), 'W' );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -357,17 +381,29 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    uint iterPerSecond = uint( one / parameters.dt ) + 1;
+
+    *logging::out << logging::Logger::INFO_HIGH << "iterPerSecond = " << iterPerSecond << "\n";
+
+    //////////////////////////////////////////////////////////////////////////
+
     CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, true, 10000 );
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 10 * iterPerSecond );
+
+    turbulenceAnalyzer->collect_UU = true;
+    turbulenceAnalyzer->collect_VV = true;
+    turbulenceAnalyzer->collect_WW = true;
+
+    turbulenceAnalyzer->allocate();
 
     //////////////////////////////////////////////////////////////////////////
 
     cupsAnalyzer.start();
-
-    for( uint iter = startIter + 1; iter <= 2000000; iter++ )
+    
+    for( uint iter = startIter + 1; iter <= 40 * iterPerSecond; iter++ )
     {
         cupsAnalyzer.run( iter, parameters.dt );
 
@@ -375,13 +411,27 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
-        pointTimeSeriesAnalyzer->run(iter, parameters);
+        pointTimeSeriesAnalyzerU_P1->run(iter, parameters);
+        pointTimeSeriesAnalyzerV_P1->run(iter, parameters);
+        pointTimeSeriesAnalyzerW_P1->run(iter, parameters);
+
+        pointTimeSeriesAnalyzerU_P2->run(iter, parameters);
+        pointTimeSeriesAnalyzerV_P2->run(iter, parameters);
+        pointTimeSeriesAnalyzerW_P2->run(iter, parameters);
+
+        pointTimeSeriesAnalyzerU_P3->run(iter, parameters);
+        pointTimeSeriesAnalyzerV_P3->run(iter, parameters);
+        pointTimeSeriesAnalyzerW_P3->run(iter, parameters);
+
+        pointTimeSeriesAnalyzerU_P4->run(iter, parameters);
+        pointTimeSeriesAnalyzerV_P4->run(iter, parameters);
+        pointTimeSeriesAnalyzerW_P4->run(iter, parameters);
 
         int crashCellIndex = dataBase->getCrashCellIndex();
 
         if( crashCellIndex >= 0 )
         {
-            *logging::out << logging::Logger::ERROR << "Simulation Crashed at CellIndex = " << crashCellIndex << "\n";
+            *logging::out << logging::Logger::LOGGER_ERROR << "Simulation Crashed at CellIndex = " << crashCellIndex << "\n";
             dataBase->copyDataDeviceToHost();
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
 
@@ -410,9 +460,23 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
             writeTurbulenceVtkXML( dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_" + std::to_string( iter ) );
         }
 
-        if( iter % 10000 == 0 )
+        if( iter % 100000 == 0 )
         {
-            pointTimeSeriesAnalyzer->writeToFile(path + simulationName + "_TimeSeries_" + pointTimeSeriesAnalyzer->quantity + "_" + std::to_string( iter ));
+            pointTimeSeriesAnalyzerU_P1->writeToFile(path + simulationName + "_P1_TimeSeries_" + pointTimeSeriesAnalyzerU_P1->quantity + "_" + std::to_string( iter ));
+            pointTimeSeriesAnalyzerV_P1->writeToFile(path + simulationName + "_P1_TimeSeries_" + pointTimeSeriesAnalyzerV_P1->quantity + "_" + std::to_string( iter ));
+            pointTimeSeriesAnalyzerW_P1->writeToFile(path + simulationName + "_P1_TimeSeries_" + pointTimeSeriesAnalyzerW_P1->quantity + "_" + std::to_string( iter ));
+
+            pointTimeSeriesAnalyzerU_P2->writeToFile(path + simulationName + "_P2_TimeSeries_" + pointTimeSeriesAnalyzerU_P2->quantity + "_" + std::to_string( iter ));
+            pointTimeSeriesAnalyzerV_P2->writeToFile(path + simulationName + "_P2_TimeSeries_" + pointTimeSeriesAnalyzerV_P2->quantity + "_" + std::to_string( iter ));
+            pointTimeSeriesAnalyzerW_P2->writeToFile(path + simulationName + "_P2_TimeSeries_" + pointTimeSeriesAnalyzerW_P2->quantity + "_" + std::to_string( iter ));
+
+            pointTimeSeriesAnalyzerU_P3->writeToFile(path + simulationName + "_P3_TimeSeries_" + pointTimeSeriesAnalyzerU_P3->quantity + "_" + std::to_string( iter ));
+            pointTimeSeriesAnalyzerV_P3->writeToFile(path + simulationName + "_P3_TimeSeries_" + pointTimeSeriesAnalyzerV_P3->quantity + "_" + std::to_string( iter ));
+            pointTimeSeriesAnalyzerW_P3->writeToFile(path + simulationName + "_P3_TimeSeries_" + pointTimeSeriesAnalyzerW_P3->quantity + "_" + std::to_string( iter ));
+
+            pointTimeSeriesAnalyzerU_P4->writeToFile(path + simulationName + "_P4_TimeSeries_" + pointTimeSeriesAnalyzerU_P4->quantity + "_" + std::to_string( iter ));
+            pointTimeSeriesAnalyzerV_P4->writeToFile(path + simulationName + "_P4_TimeSeries_" + pointTimeSeriesAnalyzerV_P4->quantity + "_" + std::to_string( iter ));
+            pointTimeSeriesAnalyzerW_P4->writeToFile(path + simulationName + "_P4_TimeSeries_" + pointTimeSeriesAnalyzerW_P4->quantity + "_" + std::to_string( iter ));
         }
 
         turbulenceAnalyzer->run( iter, parameters );
@@ -420,23 +484,57 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //////////////////////////////////////////////////////////////////////////
 
-    dataBase->copyDataDeviceToHost();
+    //dataBase->copyDataDeviceToHost();
 
     //writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
 
-    //turbulenceAnalyzer->download();
+    turbulenceAnalyzer->download();
 
-    //writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence");
+    writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_final");
+
+    pointTimeSeriesAnalyzerU_P1->writeToFile(path + simulationName + "_P1_TimeSeries_" + pointTimeSeriesAnalyzerU_P1->quantity + "_final");
+    pointTimeSeriesAnalyzerV_P1->writeToFile(path + simulationName + "_P1_TimeSeries_" + pointTimeSeriesAnalyzerV_P1->quantity + "_final");
+    pointTimeSeriesAnalyzerW_P1->writeToFile(path + simulationName + "_P1_TimeSeries_" + pointTimeSeriesAnalyzerW_P1->quantity + "_final");
+
+    pointTimeSeriesAnalyzerU_P2->writeToFile(path + simulationName + "_P2_TimeSeries_" + pointTimeSeriesAnalyzerU_P2->quantity + "_final");
+    pointTimeSeriesAnalyzerV_P2->writeToFile(path + simulationName + "_P2_TimeSeries_" + pointTimeSeriesAnalyzerV_P2->quantity + "_final");
+    pointTimeSeriesAnalyzerW_P2->writeToFile(path + simulationName + "_P2_TimeSeries_" + pointTimeSeriesAnalyzerW_P2->quantity + "_final");
+
+    pointTimeSeriesAnalyzerU_P3->writeToFile(path + simulationName + "_P3_TimeSeries_" + pointTimeSeriesAnalyzerU_P3->quantity + "_final");
+    pointTimeSeriesAnalyzerV_P3->writeToFile(path + simulationName + "_P3_TimeSeries_" + pointTimeSeriesAnalyzerV_P3->quantity + "_final");
+    pointTimeSeriesAnalyzerW_P3->writeToFile(path + simulationName + "_P3_TimeSeries_" + pointTimeSeriesAnalyzerW_P3->quantity + "_final");
+
+    pointTimeSeriesAnalyzerU_P4->writeToFile(path + simulationName + "_P4_TimeSeries_" + pointTimeSeriesAnalyzerU_P4->quantity + "_final");
+    pointTimeSeriesAnalyzerV_P4->writeToFile(path + simulationName + "_P4_TimeSeries_" + pointTimeSeriesAnalyzerV_P4->quantity + "_final");
+    pointTimeSeriesAnalyzerW_P4->writeToFile(path + simulationName + "_P4_TimeSeries_" + pointTimeSeriesAnalyzerW_P4->quantity + "_final");
 }
 
 int main( int argc, char* argv[])
 {
+    uint restartIter = INVALID_INDEX;
+    //uint restartIter = 90000;
+        
+    uint gpuIndex = 1;
+    uint testIndex = 17;
+    uint nx = 128;
+
+    if( argc > 1 ) gpuIndex    = atoi( argv[1] );
+
+    if( argc > 2 ) testIndex   = atoi( argv[2] );
+
+    if( argc > 3 ) nx          = atoi( argv[3] );
+
+    if( argc > 4 ) restartIter = atoi( argv[4] );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
     std::string path( "F:/Work/Computations/out/SandiaFlame_1m/" );
 #else
     std::string path( "out/" );
 #endif
+
+    path += "Test_" + std::to_string(testIndex) + "_" + std::to_string(nx) + "/";
 
     std::string simulationName ( "Flame" );
 
@@ -457,24 +555,19 @@ int main( int argc, char* argv[])
 
     try
     {
-        uint restartIter = INVALID_INDEX;
-        //uint restartIter = 50000;
-
-        if( argc > 1 ) restartIter = atoi( argv[1] );
-
-        thermalCavity( path, simulationName, restartIter );
+        thermalCavity( path, simulationName, gpuIndex, testIndex, nx, restartIter );
     }
     catch (const std::exception& e)
     {     
-        *logging::out << logging::Logger::ERROR << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
     }
     catch (const std::bad_alloc& e)
     {  
-        *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
     }
     catch (...)
     {
-        *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
     }
 
     logFile.close();

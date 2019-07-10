@@ -44,8 +44,6 @@ include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FileUtilities.cmake)
 #############################################################
 ###                   PROJECT SETTINGS                    ###
 #############################################################
-set(CUDA_TOOLKIT_ROOT_DIR "C:/Program Files/NVIDIA GPU Computing Toolkit")
-set(CUDACXX "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/bin/nvcc.exe")
 
 project(VirtualFluidsGpuCodes)
 
@@ -79,10 +77,10 @@ ENDIF(MSVC)
 ###                         OPTIONS                       ###
 #############################################################
 option(BUILD_SHARED_LIBS        "Build shared libraries"  ON )
-option(HULC.BUILD_VF_GPU        "Build VirtualFluids GPU" ON )
+option(HULC.BUILD_VF_GPU        "Build VirtualFluids GPU" OFF)
 option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" ON )
-option(HULC.BUILD_JSONCPP       "Builds json cpp "        ON )
-option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     ON )
+option(HULC.BUILD_JSONCPP       "Builds json cpp "        OFF)
+option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     OFF)
 
 option(VF_DOUBLE_ACCURACY       "Build shared libraries"  OFF )
 
@@ -103,7 +101,7 @@ ELSE(MSVC)
 ENDIF(MSVC)
 
 # only use this with device of CC larger than 6.0
-#set(CMAKE_CUDA_FLAGS " -arch=sm_60" CACHE STRING "" FORCE)
+set(CMAKE_CUDA_FLAGS " -arch=sm_60" CACHE STRING "" FORCE)
 
 set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
 
@@ -120,7 +118,7 @@ add_subdirectory(targets/libs/VirtualFluidsBasics)
 add_subdirectory(targets/libs/Core)
 
 add_subdirectory(targets/libs/GridGenerator)
-add_subdirectory(3rdParty/metis/metis-5.1.0)
+#add_subdirectory(3rdParty/metis/metis-5.1.0)
 
 #############################################################
 ###                  Virtual Fluids GPU                   ###
@@ -173,11 +171,12 @@ IF (HULC.BUILD_VF_GKS)
     
     #add_subdirectory(targets/apps/GKS/Room)
     #add_subdirectory(targets/apps/GKS/RoomMultiGPU)
-    
     #add_subdirectory(targets/apps/GKS/RoomFire)
+    add_subdirectory(targets/apps/GKS/RoomFireExtended)
+    
     #add_subdirectory(targets/apps/GKS/PoolFire)
-    #add_subdirectory(targets/apps/GKS/Flame7cm)
-    #add_subdirectory(targets/apps/GKS/SandiaFlame_1m)
+    add_subdirectory(targets/apps/GKS/Flame7cm)
+    add_subdirectory(targets/apps/GKS/SandiaFlame_1m)
     #add_subdirectory(targets/apps/GKS/Candle)
     
     #add_subdirectory(targets/apps/GKS/MultiGPU)
@@ -211,6 +210,6 @@ endif()
 ###					Annas Traffic Sim				      ###
 #############################################################
 
-add_subdirectory(targets/libs/Traffic)
+#add_subdirectory(targets/libs/Traffic)
 
-add_subdirectory(targets/apps/LBM/TrafficTest)
+#add_subdirectory(targets/apps/LBM/TrafficTest)

@@ -60,4 +60,6 @@ __host__ __device__ inline void initializeDataUpdateFunction(DataBaseStruct data
     dataBase.massFlux[ VEC_X(index, dataBase.numberOfCells) ]   = zero;
     dataBase.massFlux[ VEC_Y(index, dataBase.numberOfCells) ]   = zero;
     dataBase.massFlux[ VEC_Z(index, dataBase.numberOfCells) ]   = zero;
+
+    dataBase.diffusivity[ index ] = one;
 }

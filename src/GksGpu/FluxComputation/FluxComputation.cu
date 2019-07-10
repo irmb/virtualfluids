@@ -128,12 +128,23 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
             real muNew = parameters.mu;
 
-            //if (fabsf(x) > three)
-            //{
-            //    muNew += (fabsf(x) - three) * ten * parameters.mu;
-            //}
-
             real zStart = real(0.35);
+
+            if (fabsf(z) > zStart)
+            {
+                muNew += (fabs(z) - zStart) * ten * ten * ten * parameters.mu;
+            }
+
+            parameters.mu = muNew;
+        }
+        if( parameters.spongeLayerIdx == 1 )
+        {
+            real x = dataBase.faceCenter[VEC_X(faceIndex, dataBase.numberOfFaces)];
+            real z = dataBase.faceCenter[VEC_Z(faceIndex, dataBase.numberOfFaces)];
+
+            real muNew = parameters.mu;
+
+            real zStart = real(3.5);
 
             if (fabsf(z) > zStart)
             {
@@ -234,20 +245,20 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // this one works for some time
-            real S = parameters.dx * parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
+            //real S = parameters.dx * parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
             //k += real(0.00002) / real(0.015625) * S;
-            //real T = getT(facePrim);
 
+            //real T = getT(facePrim);
             //if( T > 20 )
-                k += parameters.temperatureLimiter * S;
+                //k += parameters.temperatureLimiter * S;
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             
             //real S = parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
             //k += real(0.00001) * real(0.0025) * S * S;
             
-            //real S = parameters.dx * parameters.dx * ( dTdx1 * dTdx1 + dTdx2 * dTdx2 + dTdx3 * dTdx3 );
-            //k += real(0.00001) * real(0.001) * S;
+            real S = parameters.dx * parameters.dx * ( dTdx1 * dTdx1 + dTdx2 * dTdx2 + dTdx3 * dTdx3 );
+            k += fminf(real(0.001), parameters.temperatureLimiter * S);
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // this one works for some time
@@ -348,6 +359,11 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             uint negCellIdx = dataBase.faceToCell[ NEG_CELL(faceIndex, dataBase.numberOfFaces) ];
             uint posCellIdx = dataBase.faceToCell[ POS_CELL(faceIndex, dataBase.numberOfFaces) ];
 
+        #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
+            atomicAdd( &( dataBase.diffusivity[ negCellIdx ] ), parameters.D * parameters.dx * parameters.dx * parameters.dt );
+            atomicAdd( &( dataBase.diffusivity[ posCellIdx ] ), parameters.D * parameters.dx * parameters.dx * parameters.dt );
+        #endif
+
             CellProperties negCellProperties = dataBase.cellProperties[ negCellIdx ];
             CellProperties posCellProperties = dataBase.cellProperties[ posCellIdx ];
 
@@ -382,18 +398,18 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
                 {
                     if (negCellParentIdx != INVALID_INDEX)
                     {
-                        applyFluxToNegCell(dataBase, negCellParentIdx, flux, direction, parameters.dt);
+                        applyFluxToNegCell(dataBase, negCellParentIdx, flux, direction, parameters);
                     }
 
                     if (posCellParentIdx != INVALID_INDEX)
                     {
-                        applyFluxToPosCell(dataBase, posCellParentIdx, flux, direction, parameters.dt);
+                        applyFluxToPosCell(dataBase, posCellParentIdx, flux, direction, parameters);
                     }
                 }
             }
 
-            applyFluxToNegCell(dataBase, negCellIdx, flux, direction, parameters.dt);
-            applyFluxToPosCell(dataBase, posCellIdx, flux, direction, parameters.dt);
+            applyFluxToNegCell(dataBase, negCellIdx, flux, direction, parameters);
+            applyFluxToPosCell(dataBase, posCellIdx, flux, direction, parameters);
         }
     }
 }
