@@ -481,21 +481,7 @@ void Simulation::run()
 		}
 
 
-		//CumulantOneChimCompSP27(
-		//	para->getParD(0)->numberofthreads,
-		//	para->getParD(0)->omega,
-		//	para->getParD(0)->geoSP,
-		//	para->getParD(0)->neighborX_SP, 
-		//	para->getParD(0)->neighborY_SP, 
-		//	para->getParD(0)->neighborZ_SP,
-		//	para->getParD(0)->d0SP.f[0],
-		//	para->getParD(0)->size_Mat_SP,
-		//	para->getParD(0)->size_Mat_SP,
-		//	0,
-		//	para->getForcesDev(),
-		//	para->getParD(0)->evenOrOdd);
-
-		CumulantOnePreconditionedChimCompSP27(
+		CumulantOneChimCompSP27(
 			para->getParD(0)->numberofthreads,
 			para->getParD(0)->omega,
 			para->getParD(0)->geoSP,
@@ -508,6 +494,20 @@ void Simulation::run()
 			0,
 			para->getForcesDev(),
 			para->getParD(0)->evenOrOdd);
+
+		//CumulantOnePreconditionedChimCompSP27(
+		//	para->getParD(0)->numberofthreads,
+		//	para->getParD(0)->omega,
+		//	para->getParD(0)->geoSP,
+		//	para->getParD(0)->neighborX_SP, 
+		//	para->getParD(0)->neighborY_SP, 
+		//	para->getParD(0)->neighborZ_SP,
+		//	para->getParD(0)->d0SP.f[0],
+		//	para->getParD(0)->size_Mat_SP,
+		//	para->getParD(0)->size_Mat_SP,
+		//	0,
+		//	para->getForcesDev(),
+		//	para->getParD(0)->evenOrOdd);
 
 		//KernelKumCompSRTSP27(
 		//	para->getParD(0)->numberofthreads,
