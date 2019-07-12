@@ -153,6 +153,21 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
             parameters.mu = muNew;
         }
+        if( parameters.spongeLayerIdx == 2 )
+        {
+            real y = dataBase.faceCenter[VEC_Y(faceIndex, dataBase.numberOfFaces)];
+
+            real muNew = parameters.mu;
+
+            real yStart = real(3.0);
+
+            if (fabsf(y) > yStart)
+            {
+                muNew += (fabs(y) - yStart) * ten * ten * parameters.mu;
+            }
+
+            parameters.mu = muNew;
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -257,8 +272,11 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             //real S = parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
             //k += real(0.00001) * real(0.0025) * S * S;
             
+            //real kMax = real(0.01) * c1o2 * parameters.dx * parameters.dx / parameters.dt;
+            real kMax = real(0.01);
+
             real S = parameters.dx * parameters.dx * ( dTdx1 * dTdx1 + dTdx2 * dTdx2 + dTdx3 * dTdx3 );
-            k += fminf(real(0.001), parameters.temperatureLimiter * S);
+            k += fminf(kMax, parameters.temperatureLimiter * S);
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // this one works for some time
