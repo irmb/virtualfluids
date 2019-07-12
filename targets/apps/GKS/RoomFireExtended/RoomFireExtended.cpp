@@ -81,6 +81,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real mu      = 1.8e-5;
     real U       = 0.01;
+    //real U       = 0.005;
     real rhoFuel = 0.5405;
 
     real CFL = 0.125;
@@ -149,6 +150,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 #ifdef _WIN32
     //TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/Unterzug.stl");
     TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/RoomExtended2.stl");
+    //TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/RoomExtended3.stl");
 #else
     //TriangularMesh* stl = TriangularMesh::make("inp/Unterzug.stl");
     TriangularMesh* stl = TriangularMesh::make("inp/RoomExtended.stl");
@@ -239,6 +241,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     bcBurner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
         return center.z < HBurner && std::sqrt(center.x*center.x) < 0.5 * LBurner - dx && std::sqrt(center.y*center.y) < 0.5 * LBurner - dx;
+        //return center.z < 0.0 && std::sqrt(center.x*center.x) < 1.5 * LBurner - dx && std::sqrt(center.y*center.y) < 1.5 * LBurner - dx;
     } );
 
     //////////////////////////////////////////////////////////////////////////
