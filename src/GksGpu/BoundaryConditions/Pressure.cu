@@ -104,18 +104,18 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         }
 
         //ghostCellPrim.rho    = two * domainCellPrim.rho    - secondCellPrim.rho;
-        ghostCellPrim.U      = two * domainCellPrim.U      - secondCellPrim.U;
-        ghostCellPrim.V      = two * domainCellPrim.V      - secondCellPrim.V;
-        ghostCellPrim.W      = two * domainCellPrim.W      - secondCellPrim.W;
-        ghostCellPrim.lambda = two * domainCellPrim.lambda - secondCellPrim.lambda;
+        ghostCellPrim.U      = c2o1 * domainCellPrim.U      - secondCellPrim.U;
+        ghostCellPrim.V      = c2o1 * domainCellPrim.V      - secondCellPrim.V;
+        ghostCellPrim.W      = c2o1 * domainCellPrim.W      - secondCellPrim.W;
+        ghostCellPrim.lambda = c2o1 * domainCellPrim.lambda - secondCellPrim.lambda;
     #ifdef USE_PASSIVE_SCALAR
-        ghostCellPrim.S_1    = two * domainCellPrim.S_1    - secondCellPrim.S_1;
-        ghostCellPrim.S_2    = two * domainCellPrim.S_2    - secondCellPrim.S_2;
+        ghostCellPrim.S_1    = c2o1 * domainCellPrim.S_1    - secondCellPrim.S_1;
+        ghostCellPrim.S_2    = c2o1 * domainCellPrim.S_2    - secondCellPrim.S_2;
     #endif // USE_PASSIVE_SCALAR
 
 
-        real rho0 = ( two * boundaryCondition.p0 * c1o2 * ( domainCellPrim.lambda + ghostCellPrim.lambda ) );
-        ghostCellPrim.rho = two * rho0 - domainCellPrim.rho;
+        real rho0 = ( c2o1 * boundaryCondition.p0 * c1o2 * ( domainCellPrim.lambda + ghostCellPrim.lambda ) );
+        ghostCellPrim.rho = c2o1 * rho0 - domainCellPrim.rho;
 
         //real lambda0 = ( c1o2 * ( domainCellPrim.rho + ghostCellPrim.rho  ) * c1o2 / boundaryCondition.p0 );
         //ghostCellPrim.lambda = two * lambda0 - domainCellPrim.lambda;

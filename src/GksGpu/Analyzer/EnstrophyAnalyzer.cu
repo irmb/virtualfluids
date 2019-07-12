@@ -51,7 +51,7 @@ bool EnstrophyAnalyzer::run(uint iter)
 
     getLastCudaError("KineticEnergyAnalyzer::run(uint iter)");
 
-    real EnstrophyTmp = thrust::reduce( enstrophy.begin(), enstrophy.end(), zero, thrust::plus<real>() )
+    real EnstrophyTmp = thrust::reduce( enstrophy.begin(), enstrophy.end(), c0o1, thrust::plus<real>() )
                       / real(dataBase->perLevelCount[ 0 ].numberOfBulkCells);
 
     this->enstrophyTimeSeries.push_back( EnstrophyTmp );
@@ -225,12 +225,12 @@ __host__ __device__ void enstrophyFunction(DataBaseStruct dataBase, Parameters p
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real dVdx = ( (twentyeight * eight) * ( V_xP1 - V_xM1 ) - (seven * eight) * ( V_xP2 - V_xM2 ) + (eight * four * c1o3) * ( V_xP3 - V_xM3 ) - ( V_xP4 - V_xM4 ) ) / (seven * ten * four * parameters.dx);
-    real dWdx = ( (twentyeight * eight) * ( W_xP1 - W_xM1 ) - (seven * eight) * ( W_xP2 - W_xM2 ) + (eight * four * c1o3) * ( W_xP3 - W_xM3 ) - ( W_xP4 - W_xM4 ) ) / (seven * ten * four * parameters.dx);
-    real dUdy = ( (twentyeight * eight) * ( U_yP1 - U_yM1 ) - (seven * eight) * ( U_yP2 - U_yM2 ) + (eight * four * c1o3) * ( U_yP3 - U_yM3 ) - ( U_yP4 - U_yM4 ) ) / (seven * ten * four * parameters.dx);
-    real dWdy = ( (twentyeight * eight) * ( W_yP1 - W_yM1 ) - (seven * eight) * ( W_yP2 - W_yM2 ) + (eight * four * c1o3) * ( W_yP3 - W_yM3 ) - ( W_yP4 - W_yM4 ) ) / (seven * ten * four * parameters.dx);
-    real dUdz = ( (twentyeight * eight) * ( U_zP1 - U_zM1 ) - (seven * eight) * ( U_zP2 - U_zM2 ) + (eight * four * c1o3) * ( U_zP3 - U_zM3 ) - ( U_zP4 - U_zM4 ) ) / (seven * ten * four * parameters.dx);
-    real dVdz = ( (twentyeight * eight) * ( V_zP1 - V_zM1 ) - (seven * eight) * ( V_zP2 - V_zM2 ) + (eight * four * c1o3) * ( V_zP3 - V_zM3 ) - ( V_zP4 - V_zM4 ) ) / (seven * ten * four * parameters.dx);
+    real dVdx = ( (c28o1 * c8o1) * ( V_xP1 - V_xM1 ) - (c7o1 * c8o1) * ( V_xP2 - V_xM2 ) + (c8o1 * c4o1 * c1o3) * ( V_xP3 - V_xM3 ) - ( V_xP4 - V_xM4 ) ) / (c7o1 * c10o1 * c4o1 * parameters.dx);
+    real dWdx = ( (c28o1 * c8o1) * ( W_xP1 - W_xM1 ) - (c7o1 * c8o1) * ( W_xP2 - W_xM2 ) + (c8o1 * c4o1 * c1o3) * ( W_xP3 - W_xM3 ) - ( W_xP4 - W_xM4 ) ) / (c7o1 * c10o1 * c4o1 * parameters.dx);
+    real dUdy = ( (c28o1 * c8o1) * ( U_yP1 - U_yM1 ) - (c7o1 * c8o1) * ( U_yP2 - U_yM2 ) + (c8o1 * c4o1 * c1o3) * ( U_yP3 - U_yM3 ) - ( U_yP4 - U_yM4 ) ) / (c7o1 * c10o1 * c4o1 * parameters.dx);
+    real dWdy = ( (c28o1 * c8o1) * ( W_yP1 - W_yM1 ) - (c7o1 * c8o1) * ( W_yP2 - W_yM2 ) + (c8o1 * c4o1 * c1o3) * ( W_yP3 - W_yM3 ) - ( W_yP4 - W_yM4 ) ) / (c7o1 * c10o1 * c4o1 * parameters.dx);
+    real dUdz = ( (c28o1 * c8o1) * ( U_zP1 - U_zM1 ) - (c7o1 * c8o1) * ( U_zP2 - U_zM2 ) + (c8o1 * c4o1 * c1o3) * ( U_zP3 - U_zM3 ) - ( U_zP4 - U_zM4 ) ) / (c7o1 * c10o1 * c4o1 * parameters.dx);
+    real dVdz = ( (c28o1 * c8o1) * ( V_zP1 - V_zM1 ) - (c7o1 * c8o1) * ( V_zP2 - V_zM2 ) + (c8o1 * c4o1 * c1o3) * ( V_zP3 - V_zM3 ) - ( V_zP4 - V_zM4 ) ) / (c7o1 * c10o1 * c4o1 * parameters.dx);
 
     real tmpX = dWdy - dVdz;
     real tmpY = dUdz - dWdx;

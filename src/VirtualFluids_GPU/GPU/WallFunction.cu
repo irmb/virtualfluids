@@ -1,6 +1,7 @@
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "GPU/constant.h"
+#include "Core/RealConstants.h"
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -199,21 +200,21 @@ extern "C" __global__ void WallFunction27(int inx,
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
-                (f_E - f_W)) / (one + drho); 
+                (f_E - f_W)) / (c1o1 + drho); 
          
 
       vx2    =   ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                  ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
-                 (f_N - f_S)) / (one + drho); 
+                 (f_N - f_S)) / (c1o1 + drho); 
 
       vx3    =   (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
-                 (f_T - f_B)) / (one + drho); 
+                 (f_T - f_B)) / (c1o1 + drho); 
 
       //real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
-	  real nu = c1o3 * (one / om1 - c1o2);
-	  real qw = one;
+	  real nu = c1o3 * (c1o1 / om1 - c1o2);
+	  real qw = c1o1;
 	  real uTau = sqrt(nu * (vx1 - VeloX) / qw);
 
 	  if (abs(uTau)/nu>11){
@@ -224,7 +225,7 @@ extern "C" __global__ void WallFunction27(int inx,
 	  vx[k] = vx1 - uTau * uTau * qw / nu;
 	  vx[k] = (vx[k]> 0.05) ? 0.05 : ((vx[k]< -0.05) ? -0.05 : vx[k] );  
 	  }
-	  else{ vx[k]=zero; }
+	  else{ vx[k]=c0o1; }
 	  //vy[k] = 0.01;							//Test...muss wieder raus
 	  //vz[k] = 0.01;							//Test...muss wieder raus
 

@@ -497,7 +497,7 @@ enum {
 typedef struct {
      int problem_kind;
      void (*hash) (const problem *ego, md5 *p);
-     void (*zero) (const problem *ego);
+     void (*c0o1) (const problem *ego);
      void (*print) (const problem *ego, printer *p);
      void (*destroy) (problem *ego);
 } problem_adt;

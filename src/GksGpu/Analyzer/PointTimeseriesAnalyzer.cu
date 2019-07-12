@@ -86,7 +86,7 @@ __host__ __device__ void pointTimeSeriesFunction(DataBaseStruct dataBase, PointT
 #ifdef USE_PASSIVE_SCALAR
     if( pointTimeSeriesAnalyzer.quantity == 'T' ) pointTimeSeriesAnalyzer.deviceSeries [ pointTimeSeriesAnalyzer.counter ] = getT(prim);
 #else
-    if( pointTimeSeriesAnalyzer.quantity == 'T' ) pointTimeSeriesAnalyzer.deviceSeries [ pointTimeSeriesAnalyzer.counter ] = one / prim.lambda;
+    if( pointTimeSeriesAnalyzer.quantity == 'T' ) pointTimeSeriesAnalyzer.deviceSeries [ pointTimeSeriesAnalyzer.counter ] = c1o1 / prim.lambda;
 #endif
 
     //////////////////////////////////////////////////////////////////////////
@@ -180,7 +180,7 @@ void PointTimeSeriesAnalyzer::download()
 {
     uint oldSize = hostSeries.size();
 
-    this->hostSeries.resize( oldSize + this->outputIter, zero );
+    this->hostSeries.resize( oldSize + this->outputIter, c0o1 );
 
     checkCudaErrors( cudaMemcpy( this->hostSeries.data() + oldSize, this->deviceSeries , sizeof(real) * outputIter, cudaMemcpyDeviceToHost ) );
 }

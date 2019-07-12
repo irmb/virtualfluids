@@ -1,6 +1,7 @@
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "GPU/constant.h"
+#include "Core/RealConstants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void GetVeloforForcing27( real* DD, 
@@ -149,7 +150,7 @@ extern "C" __global__ void GetVeloforForcing27( real* DD,
 		////////////////////////////////////////////////////////////////////////////////////
 		real rho   = (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
 					 	 mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +
-						 mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb + one);//!!!!Achtung + one
+						 mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb + c1o1);//!!!!Achtung + one
 		////////////////////////////////////////////////////////////////////////////////////
 		real vx =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 			         (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +

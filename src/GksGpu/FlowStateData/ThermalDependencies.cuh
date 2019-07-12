@@ -67,9 +67,9 @@ __host__ __device__ inline real getMolarMass( const ConservedVariables& cons )
     real Y_F = cons.rhoS_1 / cons.rho;
     real Y_P = cons.rhoS_2 / cons.rho;
 
-    real Y_A = one - Y_F - Y_P;
+    real Y_A = c1o1 - Y_F - Y_P;
 
-    real M = one / ( Y_A / M_A
+    real M = c1o1 / ( Y_A / M_A
                    + Y_F / M_F
                    + Y_P / M_P );
 
@@ -82,9 +82,9 @@ __host__ __device__ inline real getMolarMass( const PrimitiveVariables& prim )
     real Y_F = prim.S_1;
     real Y_P = prim.S_2;
 
-    real Y_A = one - Y_F - Y_P;
+    real Y_A = c1o1 - Y_F - Y_P;
 
-    real M = one / ( Y_A / M_A
+    real M = c1o1 / ( Y_A / M_A
                    + Y_F / M_F
                    + Y_P / M_P );
 
@@ -104,9 +104,9 @@ __host__ __device__ inline void getMoleFractions( real Z1, real Z2,
     real Y_F = Z1;
     real Y_P = Z2;
 
-    real Y_A = one - Y_F - Y_P;
+    real Y_A = c1o1 - Y_F - Y_P;
 
-    M = one / ( Y_A / M_A
+    M = c1o1 / ( Y_A / M_A
               + Y_F / M_F
               + Y_P / M_P );
 
@@ -177,7 +177,7 @@ __host__ __device__ inline real getT( const PrimitiveVariables& prim )
     //real M = getMolarMass(prim);
     real M = M_A;
 
-    real T = M / ( two * prim.lambda * R_U );
+    real T = M / ( c2o1 * prim.lambda * R_U );
 
     return T;
 }
@@ -272,7 +272,7 @@ __host__ __device__ inline void setLambdaFromT( PrimitiveVariables& prim, real T
     //real M = getMolarMass(prim);
     real M = M_A;
 
-    prim.lambda =  M / ( two * T * R_U );
+    prim.lambda =  M / ( c2o1 * T * R_U );
 }
 
 #endif // USE_PASSIVE_SCALAR

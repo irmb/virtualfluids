@@ -1,6 +1,7 @@
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "GPU/constant.h"
+#include "Core/RealConstants.h"
 
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QSlipDevice27(real* DD, 
@@ -263,7 +264,7 @@ extern "C" __global__ void QSlipDevice27(real* DD,
       //Test
       //(D.f[dirZERO])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real fac = one;//c99o100;
+	  real fac = c1o1;//c99o100;
 	  real VeloX = fac*vx1;
 	  real VeloY = fac*vx2;
 	  real VeloZ = fac*vx3;
@@ -272,342 +273,342 @@ extern "C" __global__ void QSlipDevice27(real* DD,
 	  bool z = false;
 
       q = q_dirE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = zero;
+		 VeloX = c0o1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
 		 x = true;
-         feq=c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq); 
-         (D.f[dirW])[kw]=(one-q)/(one+q)*(f_E-feq*om1)/(one-om1)+(q*(f_E+f_W)-six*c2over27*( VeloX     ))/(one+q);
+         feq=c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq); 
+         (D.f[dirW])[kw]=(c1o1-q)/(c1o1+q)*(f_E-feq*om1)/(c1o1-om1)+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q);
          //(D.f[dirW])[kw]=zero;
       }
 
       q = q_dirW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = zero;
+		 VeloX = c0o1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
 		 x = true;
-         feq=c2over27* (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq); 
-         (D.f[dirE])[ke]=(one-q)/(one+q)*(f_W-feq*om1)/(one-om1)+(q*(f_W+f_E)-six*c2over27*(-VeloX     ))/(one+q);
+         feq=c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq); 
+         (D.f[dirE])[ke]=(c1o1-q)/(c1o1+q)*(f_W-feq*om1)/(c1o1-om1)+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q);
          //(D.f[dirE])[ke]=zero;
       }
 
       q = q_dirN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
-		 VeloY = zero;
+		 VeloY = c0o1;
 	     VeloZ = fac*vx3;
 		 y = true;
-         feq=c2over27* (drho+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq); 
-         (D.f[dirS])[ks]=(one-q)/(one+q)*(f_N-feq*om1)/(one-om1)+(q*(f_N+f_S)-six*c2over27*( VeloY     ))/(one+q);
+         feq=c2o27* (drho+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq); 
+         (D.f[dirS])[ks]=(c1o1-q)/(c1o1+q)*(f_N-feq*om1)/(c1o1-om1)+(q*(f_N+f_S)-c6o1*c2o27*( VeloY     ))/(c1o1+q);
          //(D.f[dirS])[ks]=zero;
       }
 
       q = q_dirS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
-		 VeloY = zero;
+		 VeloY = c0o1;
 	     VeloZ = fac*vx3;
 		 y = true;
-         feq=c2over27* (drho+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq); 
-         (D.f[dirN])[kn]=(one-q)/(one+q)*(f_S-feq*om1)/(one-om1)+(q*(f_S+f_N)-six*c2over27*(-VeloY     ))/(one+q);
+         feq=c2o27* (drho+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq); 
+         (D.f[dirN])[kn]=(c1o1-q)/(c1o1+q)*(f_S-feq*om1)/(c1o1-om1)+(q*(f_S+f_N)-c6o1*c2o27*(-VeloY     ))/(c1o1+q);
          //(D.f[dirN])[kn]=zero;
       }
 
       q = q_dirT[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
-		 VeloZ = zero;
+		 VeloZ = c0o1;
 		 z = true;
-         feq=c2over27* (drho+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq); 
-         (D.f[dirB])[kb]=(one-q)/(one+q)*(f_T-feq*om1)/(one-om1)+(q*(f_T+f_B)-six*c2over27*( VeloZ     ))/(one+q);
+         feq=c2o27* (drho+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq); 
+         (D.f[dirB])[kb]=(c1o1-q)/(c1o1+q)*(f_T-feq*om1)/(c1o1-om1)+(q*(f_T+f_B)-c6o1*c2o27*( VeloZ     ))/(c1o1+q);
          //(D.f[dirB])[kb]=one;
       }
 
       q = q_dirB[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
-		 VeloZ = zero;
+		 VeloZ = c0o1;
 		 z = true;
-         feq=c2over27* (drho+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq); 
-         (D.f[dirT])[kt]=(one-q)/(one+q)*(f_B-feq*om1)/(one-om1)+(q*(f_B+f_T)-six*c2over27*(-VeloZ     ))/(one+q);
+         feq=c2o27* (drho+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq); 
+         (D.f[dirT])[kt]=(c1o1-q)/(c1o1+q)*(f_B-feq*om1)/(c1o1-om1)+(q*(f_B+f_T)-c6o1*c2o27*(-VeloZ     ))/(c1o1+q);
          //(D.f[dirT])[kt]=zero;
       }
 
       q = q_dirNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-         feq=c1over54* (drho+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); 
-         (D.f[dirSW])[ksw]=(one-q)/(one+q)*(f_NE-feq*om1)/(one-om1)+(q*(f_NE+f_SW)-six*c1over54*(VeloX+VeloY))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+         feq=c1o54* (drho+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); 
+         (D.f[dirSW])[ksw]=(c1o1-q)/(c1o1+q)*(f_NE-feq*om1)/(c1o1-om1)+(q*(f_NE+f_SW)-c6o1*c1o54*(VeloX+VeloY))/(c1o1+q);
          //(D.f[dirSW])[ksw]=zero;
       }
 
       q = q_dirSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-         feq=c1over54* (drho+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); 
-         (D.f[dirNE])[kne]=(one-q)/(one+q)*(f_SW-feq*om1)/(one-om1)+(q*(f_SW+f_NE)-six*c1over54*(-VeloX-VeloY))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+         feq=c1o54* (drho+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); 
+         (D.f[dirNE])[kne]=(c1o1-q)/(c1o1+q)*(f_SW-feq*om1)/(c1o1-om1)+(q*(f_SW+f_NE)-c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q);
          //(D.f[dirNE])[kne]=zero;
       }
 
       q = q_dirSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-         feq=c1over54* (drho+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); 
-         (D.f[dirNW])[knw]=(one-q)/(one+q)*(f_SE-feq*om1)/(one-om1)+(q*(f_SE+f_NW)-six*c1over54*( VeloX-VeloY))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+         feq=c1o54* (drho+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); 
+         (D.f[dirNW])[knw]=(c1o1-q)/(c1o1+q)*(f_SE-feq*om1)/(c1o1-om1)+(q*(f_SE+f_NW)-c6o1*c1o54*( VeloX-VeloY))/(c1o1+q);
          //(D.f[dirNW])[knw]=zero;
       }
 
       q = q_dirNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-         feq=c1over54* (drho+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); 
-         (D.f[dirSE])[kse]=(one-q)/(one+q)*(f_NW-feq*om1)/(one-om1)+(q*(f_NW+f_SE)-six*c1over54*(-VeloX+VeloY))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+         feq=c1o54* (drho+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); 
+         (D.f[dirSE])[kse]=(c1o1-q)/(c1o1+q)*(f_NW-feq*om1)/(c1o1-om1)+(q*(f_NW+f_SE)-c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q);
          //(D.f[dirSE])[kse]=zero;
       }
 
       q = q_dirTE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); 
-         (D.f[dirBW])[kbw]=(one-q)/(one+q)*(f_TE-feq*om1)/(one-om1)+(q*(f_TE+f_BW)-six*c1over54*( VeloX+VeloZ))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); 
+         (D.f[dirBW])[kbw]=(c1o1-q)/(c1o1+q)*(f_TE-feq*om1)/(c1o1-om1)+(q*(f_TE+f_BW)-c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q);
          //(D.f[dirBW])[kbw]=zero;
       }
 
       q = q_dirBW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); 
-         (D.f[dirTE])[kte]=(one-q)/(one+q)*(f_BW-feq*om1)/(one-om1)+(q*(f_BW+f_TE)-six*c1over54*(-VeloX-VeloZ))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); 
+         (D.f[dirTE])[kte]=(c1o1-q)/(c1o1+q)*(f_BW-feq*om1)/(c1o1-om1)+(q*(f_BW+f_TE)-c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q);
          //(D.f[dirTE])[kte]=zero;
       }
 
       q = q_dirBE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); 
-         (D.f[dirTW])[ktw]=(one-q)/(one+q)*(f_BE-feq*om1)/(one-om1)+(q*(f_BE+f_TW)-six*c1over54*( VeloX-VeloZ))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); 
+         (D.f[dirTW])[ktw]=(c1o1-q)/(c1o1+q)*(f_BE-feq*om1)/(c1o1-om1)+(q*(f_BE+f_TW)-c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q);
          //(D.f[dirTW])[ktw]=zero;
       }
 
       q = q_dirTW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); 
-         (D.f[dirBE])[kbe]=(one-q)/(one+q)*(f_TW-feq*om1)/(one-om1)+(q*(f_TW+f_BE)-six*c1over54*(-VeloX+VeloZ))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); 
+         (D.f[dirBE])[kbe]=(c1o1-q)/(c1o1+q)*(f_TW-feq*om1)/(c1o1-om1)+(q*(f_TW+f_BE)-c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q);
          //(D.f[dirBE])[kbe]=zero;
       }
 
       q = q_dirTN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); 
-         (D.f[dirBS])[kbs]=(one-q)/(one+q)*(f_TN-feq*om1)/(one-om1)+(q*(f_TN+f_BS)-six*c1over54*( VeloY+VeloZ))/(one+q);
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); 
+         (D.f[dirBS])[kbs]=(c1o1-q)/(c1o1+q)*(f_TN-feq*om1)/(c1o1-om1)+(q*(f_TN+f_BS)-c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q);
          //(D.f[dirBS])[kbs]=zero;
       }
 
       q = q_dirBS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); 
-         (D.f[dirTN])[ktn]=(one-q)/(one+q)*(f_BS-feq*om1)/(one-om1)+(q*(f_BS+f_TN)-six*c1over54*( -VeloY-VeloZ))/(one+q);
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); 
+         (D.f[dirTN])[ktn]=(c1o1-q)/(c1o1+q)*(f_BS-feq*om1)/(c1o1-om1)+(q*(f_BS+f_TN)-c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q);
          //(D.f[dirTN])[ktn]=zero;
       }
 
       q = q_dirBN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); 
-         (D.f[dirTS])[kts]=(one-q)/(one+q)*(f_BN-feq*om1)/(one-om1)+(q*(f_BN+f_TS)-six*c1over54*( VeloY-VeloZ))/(one+q);
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); 
+         (D.f[dirTS])[kts]=(c1o1-q)/(c1o1+q)*(f_BN-feq*om1)/(c1o1-om1)+(q*(f_BN+f_TS)-c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q);
          //(D.f[dirTS])[kts]=zero;
       }
 
       q = q_dirTS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); 
-         (D.f[dirBN])[kbn]=(one-q)/(one+q)*(f_TS-feq*om1)/(one-om1)+(q*(f_TS+f_BN)-six*c1over54*( -VeloY+VeloZ))/(one+q);
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); 
+         (D.f[dirBN])[kbn]=(c1o1-q)/(c1o1+q)*(f_TS-feq*om1)/(c1o1-om1)+(q*(f_TS+f_BN)-c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q);
          //(D.f[dirBN])[kbn]=zero;
       }
 
       q = q_dirTNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); 
-         (D.f[dirBSW])[kbsw]=(one-q)/(one+q)*(f_TNE-feq*om1)/(one-om1)+(q*(f_TNE+f_BSW)-six*c1over216*( VeloX+VeloY+VeloZ))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); 
+         (D.f[dirBSW])[kbsw]=(c1o1-q)/(c1o1+q)*(f_TNE-feq*om1)/(c1o1-om1)+(q*(f_TNE+f_BSW)-c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q);
          //(D.f[dirBSW])[kbsw]=zero;
       }
 
       q = q_dirBSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); 
-         (D.f[dirTNE])[ktne]=(one-q)/(one+q)*(f_BSW-feq*om1)/(one-om1)+(q*(f_BSW+f_TNE)-six*c1over216*(-VeloX-VeloY-VeloZ))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); 
+         (D.f[dirTNE])[ktne]=(c1o1-q)/(c1o1+q)*(f_BSW-feq*om1)/(c1o1-om1)+(q*(f_BSW+f_TNE)-c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q);
          //(D.f[dirTNE])[ktne]=zero;
       }
 
       q = q_dirBNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); 
-         (D.f[dirTSW])[ktsw]=(one-q)/(one+q)*(f_BNE-feq*om1)/(one-om1)+(q*(f_BNE+f_TSW)-six*c1over216*( VeloX+VeloY-VeloZ))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); 
+         (D.f[dirTSW])[ktsw]=(c1o1-q)/(c1o1+q)*(f_BNE-feq*om1)/(c1o1-om1)+(q*(f_BNE+f_TSW)-c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q);
          //(D.f[dirTSW])[ktsw]=zero;
       }
 
       q = q_dirTSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); 
-         (D.f[dirBNE])[kbne]=(one-q)/(one+q)*(f_TSW-feq*om1)/(one-om1)+(q*(f_TSW+f_BNE)-six*c1over216*(-VeloX-VeloY+VeloZ))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); 
+         (D.f[dirBNE])[kbne]=(c1o1-q)/(c1o1+q)*(f_TSW-feq*om1)/(c1o1-om1)+(q*(f_TSW+f_BNE)-c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q);
          //(D.f[dirBNE])[kbne]=zero;
       }
 
       q = q_dirTSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); 
-         (D.f[dirBNW])[kbnw]=(one-q)/(one+q)*(f_TSE-feq*om1)/(one-om1)+(q*(f_TSE+f_BNW)-six*c1over216*( VeloX-VeloY+VeloZ))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); 
+         (D.f[dirBNW])[kbnw]=(c1o1-q)/(c1o1+q)*(f_TSE-feq*om1)/(c1o1-om1)+(q*(f_TSE+f_BNW)-c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q);
          //(D.f[dirBNW])[kbnw]=zero;
       }
 
       q = q_dirBNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); 
-         (D.f[dirTSE])[ktse]=(one-q)/(one+q)*(f_BNW-feq*om1)/(one-om1)+(q*(f_BNW+f_TSE)-six*c1over216*(-VeloX+VeloY-VeloZ))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); 
+         (D.f[dirTSE])[ktse]=(c1o1-q)/(c1o1+q)*(f_BNW-feq*om1)/(c1o1-om1)+(q*(f_BNW+f_TSE)-c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q);
          //(D.f[dirTSE])[ktse]=zero;
       }
 
       q = q_dirBSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); 
-         (D.f[dirTNW])[ktnw]=(one-q)/(one+q)*(f_BSE-feq*om1)/(one-om1)+(q*(f_BSE+f_TNW)-six*c1over216*( VeloX-VeloY-VeloZ))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); 
+         (D.f[dirTNW])[ktnw]=(c1o1-q)/(c1o1+q)*(f_BSE-feq*om1)/(c1o1-om1)+(q*(f_BSE+f_TNW)-c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q);
          //(D.f[dirTNW])[ktnw]=zero;
       }
 
       q = q_dirTNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); 
-         (D.f[dirBSE])[kbse]=(one-q)/(one+q)*(f_TNW-feq*om1)/(one-om1)+(q*(f_TNW+f_BSE)-six*c1over216*(-VeloX+VeloY+VeloZ))/(one+q);
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); 
+         (D.f[dirBSE])[kbse]=(c1o1-q)/(c1o1+q)*(f_TNW-feq*om1)/(c1o1-om1)+(q*(f_TNW+f_BSE)-c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
          //(D.f[dirBSE])[kbse]=zero;
       }
    }
@@ -835,18 +836,18 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
-                (f_E - f_W)) / (one + drho); 
+                (f_E - f_W)) / (c1o1 + drho); 
          
 
       vx2    =   ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                  ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
-                 (f_N - f_S)) / (one + drho); 
+                 (f_N - f_S)) / (c1o1 + drho); 
 
       vx3    =   (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
-                 (f_T - f_B)) / (one + drho); 
+                 (f_T - f_B)) / (c1o1 + drho); 
 
-      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -913,7 +914,7 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
       //Test
       //(D.f[dirZERO])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real fac = one;//c99o100;
+	  real fac = c1o1;//c99o100;
 	  real VeloX = fac*vx1;
 	  real VeloY = fac*vx2;
 	  real VeloZ = fac*vx3;
@@ -922,392 +923,392 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
 	  bool z = false;
 
       q = q_dirE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = zero;
+		 VeloX = c0o1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
 		 x = true;
-         feq=c2over27* (drho/*+three*( vx1        )*/+c9over2*( vx1        )*( vx1        ) * (one + drho)-cu_sq); 
-         (D.f[dirW])[kw]=(one-q)/(one+q)*(f_E-f_W+(f_E+f_W-two*feq*om1)/(one-om1))*c1o2+(q*(f_E+f_W)-six*c2over27*( VeloX     ))/(one+q) - c2over27 * drho;
+         feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirW])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q) - c2o27 * drho;
          //feq=c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq); 
          //(D.f[dirW])[kw]=(one-q)/(one+q)*(f_E-feq*om1)/(one-om1)+(q*(f_E+f_W)-six*c2over27*( VeloX     ))/(one+q);
          //(D.f[dirW])[kw]=zero;
       }
 
       q = q_dirW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-		 VeloX = zero;
+		 VeloX = c0o1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
 		 x = true;
-         feq=c2over27* (drho/*+three*(-vx1        )*/+c9over2*(-vx1        )*(-vx1        ) * (one + drho)-cu_sq); 
-         (D.f[dirE])[ke]=(one-q)/(one+q)*(f_W-f_E+(f_W+f_E-two*feq*om1)/(one-om1))*c1o2+(q*(f_W+f_E)-six*c2over27*(-VeloX     ))/(one+q) - c2over27 * drho;
+         feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirE])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q) - c2o27 * drho;
          //feq=c2over27* (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq); 
          //(D.f[dirE])[ke]=(one-q)/(one+q)*(f_W-feq*om1)/(one-om1)+(q*(f_W+f_E)-six*c2over27*(-VeloX     ))/(one+q);
          //(D.f[dirE])[ke]=zero;
       }
 
       q = q_dirN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
-		 VeloY = zero;
+		 VeloY = c0o1;
 	     VeloZ = fac*vx3;
 		 y = true;
-         feq=c2over27* (drho/*+three*(    vx2     )*/+c9over2*(     vx2    )*(     vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirS])[ks]=(one-q)/(one+q)*(f_N-f_S+(f_N+f_S-two*feq*om1)/(one-om1))*c1o2+(q*(f_N+f_S)-six*c2over27*( VeloY     ))/(one+q) - c2over27 * drho;
+         feq=c2o27* (drho/*+three*(    vx2     )*/+c9o2*(     vx2    )*(     vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirS])[ks]=(c1o1-q)/(c1o1+q)*(f_N-f_S+(f_N+f_S-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_N+f_S)-c6o1*c2o27*( VeloY     ))/(c1o1+q) - c2o27 * drho;
          //feq=c2over27* (drho+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq); 
          //(D.f[dirS])[ks]=(one-q)/(one+q)*(f_N-feq*om1)/(one-om1)+(q*(f_N+f_S)-six*c2over27*( VeloY     ))/(one+q);
          //(D.f[dirS])[ks]=zero;
       }
 
       q = q_dirS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
-		 VeloY = zero;
+		 VeloY = c0o1;
 	     VeloZ = fac*vx3;
 		 y = true;
-         feq=c2over27* (drho/*+three*(   -vx2     )*/+c9over2*(    -vx2    )*(    -vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirN])[kn]=(one-q)/(one+q)*(f_S-f_N+(f_S+f_N-two*feq*om1)/(one-om1))*c1o2+(q*(f_S+f_N)-six*c2over27*(-VeloY     ))/(one+q) - c2over27 * drho;
+         feq=c2o27* (drho/*+three*(   -vx2     )*/+c9o2*(    -vx2    )*(    -vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirN])[kn]=(c1o1-q)/(c1o1+q)*(f_S-f_N+(f_S+f_N-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_S+f_N)-c6o1*c2o27*(-VeloY     ))/(c1o1+q) - c2o27 * drho;
          //feq=c2over27* (drho+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq); 
          //(D.f[dirN])[kn]=(one-q)/(one+q)*(f_S-feq*om1)/(one-om1)+(q*(f_S+f_N)-six*c2over27*(-VeloY     ))/(one+q);
          //(D.f[dirN])[kn]=zero;
       }
 
       q = q_dirT[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
-		 VeloZ = zero;
+		 VeloZ = c0o1;
 		 z = true;
-         feq=c2over27* (drho/*+three*(         vx3)*/+c9over2*(         vx3)*(         vx3) * (one + drho)-cu_sq); 
-         (D.f[dirB])[kb]=(one-q)/(one+q)*(f_T-f_B+(f_T+f_B-two*feq*om1)/(one-om1))*c1o2+(q*(f_T+f_B)-six*c2over27*( VeloZ     ))/(one+q) - c2over27 * drho;
+         feq=c2o27* (drho/*+three*(         vx3)*/+c9o2*(         vx3)*(         vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirB])[kb]=(c1o1-q)/(c1o1+q)*(f_T-f_B+(f_T+f_B-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_T+f_B)-c6o1*c2o27*( VeloZ     ))/(c1o1+q) - c2o27 * drho;
          //feq=c2over27* (drho+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq); 
          //(D.f[dirB])[kb]=(one-q)/(one+q)*(f_T-feq*om1)/(one-om1)+(q*(f_T+f_B)-six*c2over27*( VeloZ     ))/(one+q);
          //(D.f[dirB])[kb]=one;
       }
 
       q = q_dirB[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
-		 VeloZ = zero;
+		 VeloZ = c0o1;
 		 z = true;
-         feq=c2over27* (drho/*+three*(        -vx3)*/+c9over2*(        -vx3)*(        -vx3) * (one + drho)-cu_sq); 
-         (D.f[dirT])[kt]=(one-q)/(one+q)*(f_B-f_T+(f_B+f_T-two*feq*om1)/(one-om1))*c1o2+(q*(f_B+f_T)-six*c2over27*(-VeloZ     ))/(one+q) - c2over27 * drho;
+         feq=c2o27* (drho/*+three*(        -vx3)*/+c9o2*(        -vx3)*(        -vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirT])[kt]=(c1o1-q)/(c1o1+q)*(f_B-f_T+(f_B+f_T-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_B+f_T)-c6o1*c2o27*(-VeloZ     ))/(c1o1+q) - c2o27 * drho;
          //feq=c2over27* (drho+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq); 
          //(D.f[dirT])[kt]=(one-q)/(one+q)*(f_B-feq*om1)/(one-om1)+(q*(f_B+f_T)-six*c2over27*(-VeloZ     ))/(one+q);
          //(D.f[dirT])[kt]=zero;
       }
 
       q = q_dirNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-         feq=c1over54* (drho/*+three*( vx1+vx2    )*/+c9over2*( vx1+vx2    )*( vx1+vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirSW])[ksw]=(one-q)/(one+q)*(f_NE-f_SW+(f_NE+f_SW-two*feq*om1)/(one-om1))*c1o2+(q*(f_NE+f_SW)-six*c1over54*(VeloX+VeloY))/(one+q) - c1over54 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+         feq=c1o54* (drho/*+three*( vx1+vx2    )*/+c9o2*( vx1+vx2    )*( vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirSW])[ksw]=(c1o1-q)/(c1o1+q)*(f_NE-f_SW+(f_NE+f_SW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NE+f_SW)-c6o1*c1o54*(VeloX+VeloY))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); 
          //(D.f[dirSW])[ksw]=(one-q)/(one+q)*(f_NE-feq*om1)/(one-om1)+(q*(f_NE+f_SW)-six*c1over54*(VeloX+VeloY))/(one+q);
          //(D.f[dirSW])[ksw]=zero;
       }
 
       q = q_dirSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-         feq=c1over54* (drho/*+three*(-vx1-vx2    )*/+c9over2*(-vx1-vx2    )*(-vx1-vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirNE])[kne]=(one-q)/(one+q)*(f_SW-f_NE+(f_SW+f_NE-two*feq*om1)/(one-om1))*c1o2+(q*(f_SW+f_NE)-six*c1over54*(-VeloX-VeloY))/(one+q) - c1over54 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+         feq=c1o54* (drho/*+three*(-vx1-vx2    )*/+c9o2*(-vx1-vx2    )*(-vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirNE])[kne]=(c1o1-q)/(c1o1+q)*(f_SW-f_NE+(f_SW+f_NE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SW+f_NE)-c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); 
          //(D.f[dirNE])[kne]=(one-q)/(one+q)*(f_SW-feq*om1)/(one-om1)+(q*(f_SW+f_NE)-six*c1over54*(-VeloX-VeloY))/(one+q);
          //(D.f[dirNE])[kne]=zero;
       }
 
       q = q_dirSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-         feq=c1over54* (drho/*+three*( vx1-vx2    )*/+c9over2*( vx1-vx2    )*( vx1-vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirNW])[knw]=(one-q)/(one+q)*(f_SE-f_NW+(f_SE+f_NW-two*feq*om1)/(one-om1))*c1o2+(q*(f_SE+f_NW)-six*c1over54*( VeloX-VeloY))/(one+q) - c1over54 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+         feq=c1o54* (drho/*+three*( vx1-vx2    )*/+c9o2*( vx1-vx2    )*( vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirNW])[knw]=(c1o1-q)/(c1o1+q)*(f_SE-f_NW+(f_SE+f_NW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SE+f_NW)-c6o1*c1o54*( VeloX-VeloY))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); 
          //(D.f[dirNW])[knw]=(one-q)/(one+q)*(f_SE-feq*om1)/(one-om1)+(q*(f_SE+f_NW)-six*c1over54*( VeloX-VeloY))/(one+q);
          //(D.f[dirNW])[knw]=zero;
       }
 
       q = q_dirNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-         feq=c1over54* (drho/*+three*(-vx1+vx2    )*/+c9over2*(-vx1+vx2    )*(-vx1+vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirSE])[kse]=(one-q)/(one+q)*(f_NW-f_SE+(f_NW+f_SE-two*feq*om1)/(one-om1))*c1o2+(q*(f_NW+f_SE)-six*c1over54*(-VeloX+VeloY))/(one+q) - c1over54 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+         feq=c1o54* (drho/*+three*(-vx1+vx2    )*/+c9o2*(-vx1+vx2    )*(-vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirSE])[kse]=(c1o1-q)/(c1o1+q)*(f_NW-f_SE+(f_NW+f_SE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NW+f_SE)-c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); 
          //(D.f[dirSE])[kse]=(one-q)/(one+q)*(f_NW-feq*om1)/(one-om1)+(q*(f_NW+f_SE)-six*c1over54*(-VeloX+VeloY))/(one+q);
          //(D.f[dirSE])[kse]=zero;
       }
 
       q = q_dirTE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho/*+three*( vx1    +vx3)*/+c9over2*( vx1    +vx3)*( vx1    +vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBW])[kbw]=(one-q)/(one+q)*(f_TE-f_BW+(f_TE+f_BW-two*feq*om1)/(one-om1))*c1o2+(q*(f_TE+f_BW)-six*c1over54*( VeloX+VeloZ))/(one+q) - c1over54 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho/*+three*( vx1    +vx3)*/+c9o2*( vx1    +vx3)*( vx1    +vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBW])[kbw]=(c1o1-q)/(c1o1+q)*(f_TE-f_BW+(f_TE+f_BW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TE+f_BW)-c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); 
          //(D.f[dirBW])[kbw]=(one-q)/(one+q)*(f_TE-feq*om1)/(one-om1)+(q*(f_TE+f_BW)-six*c1over54*( VeloX+VeloZ))/(one+q);
          //(D.f[dirBW])[kbw]=zero;
       }
 
       q = q_dirBW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho/*+three*(-vx1    -vx3)*/+c9over2*(-vx1    -vx3)*(-vx1    -vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTE])[kte]=(one-q)/(one+q)*(f_BW-f_TE+(f_BW+f_TE-two*feq*om1)/(one-om1))*c1o2+(q*(f_BW+f_TE)-six*c1over54*(-VeloX-VeloZ))/(one+q) - c1over54 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho/*+three*(-vx1    -vx3)*/+c9o2*(-vx1    -vx3)*(-vx1    -vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTE])[kte]=(c1o1-q)/(c1o1+q)*(f_BW-f_TE+(f_BW+f_TE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BW+f_TE)-c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); 
          //(D.f[dirTE])[kte]=(one-q)/(one+q)*(f_BW-feq*om1)/(one-om1)+(q*(f_BW+f_TE)-six*c1over54*(-VeloX-VeloZ))/(one+q);
          //(D.f[dirTE])[kte]=zero;
       }
 
       q = q_dirBE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho/*+three*( vx1    -vx3)*/+c9over2*( vx1    -vx3)*( vx1    -vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTW])[ktw]=(one-q)/(one+q)*(f_BE-f_TW+(f_BE+f_TW-two*feq*om1)/(one-om1))*c1o2+(q*(f_BE+f_TW)-six*c1over54*( VeloX-VeloZ))/(one+q) - c1over54 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho/*+three*( vx1    -vx3)*/+c9o2*( vx1    -vx3)*( vx1    -vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTW])[ktw]=(c1o1-q)/(c1o1+q)*(f_BE-f_TW+(f_BE+f_TW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BE+f_TW)-c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); 
          //(D.f[dirTW])[ktw]=(one-q)/(one+q)*(f_BE-feq*om1)/(one-om1)+(q*(f_BE+f_TW)-six*c1over54*( VeloX-VeloZ))/(one+q);
          //(D.f[dirTW])[ktw]=zero;
       }
 
       q = q_dirTW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho/*+three*(-vx1    +vx3)*/+c9over2*(-vx1    +vx3)*(-vx1    +vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBE])[kbe]=(one-q)/(one+q)*(f_TW-f_BE+(f_TW+f_BE-two*feq*om1)/(one-om1))*c1o2+(q*(f_TW+f_BE)-six*c1over54*(-VeloX+VeloZ))/(one+q) - c1over54 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho/*+three*(-vx1    +vx3)*/+c9o2*(-vx1    +vx3)*(-vx1    +vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBE])[kbe]=(c1o1-q)/(c1o1+q)*(f_TW-f_BE+(f_TW+f_BE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TW+f_BE)-c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); 
          //(D.f[dirBE])[kbe]=(one-q)/(one+q)*(f_TW-feq*om1)/(one-om1)+(q*(f_TW+f_BE)-six*c1over54*(-VeloX+VeloZ))/(one+q);
          //(D.f[dirBE])[kbe]=zero;
       }
 
       q = q_dirTN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho/*+three*(     vx2+vx3)*/+c9over2*(     vx2+vx3)*(     vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBS])[kbs]=(one-q)/(one+q)*(f_TN-f_BS+(f_TN+f_BS-two*feq*om1)/(one-om1))*c1o2+(q*(f_TN+f_BS)-six*c1over54*( VeloY+VeloZ))/(one+q) - c1over54 * drho;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho/*+three*(     vx2+vx3)*/+c9o2*(     vx2+vx3)*(     vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBS])[kbs]=(c1o1-q)/(c1o1+q)*(f_TN-f_BS+(f_TN+f_BS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TN+f_BS)-c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); 
          //(D.f[dirBS])[kbs]=(one-q)/(one+q)*(f_TN-feq*om1)/(one-om1)+(q*(f_TN+f_BS)-six*c1over54*( VeloY+VeloZ))/(one+q);
          //(D.f[dirBS])[kbs]=zero;
       }
 
       q = q_dirBS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho/*+three*(    -vx2-vx3)*/+c9over2*(    -vx2-vx3)*(    -vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTN])[ktn]=(one-q)/(one+q)*(f_BS-f_TN+(f_BS+f_TN-two*feq*om1)/(one-om1))*c1o2+(q*(f_BS+f_TN)-six*c1over54*( -VeloY-VeloZ))/(one+q) - c1over54 * drho;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho/*+three*(    -vx2-vx3)*/+c9o2*(    -vx2-vx3)*(    -vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTN])[ktn]=(c1o1-q)/(c1o1+q)*(f_BS-f_TN+(f_BS+f_TN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BS+f_TN)-c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); 
          //(D.f[dirTN])[ktn]=(one-q)/(one+q)*(f_BS-feq*om1)/(one-om1)+(q*(f_BS+f_TN)-six*c1over54*( -VeloY-VeloZ))/(one+q);
          //(D.f[dirTN])[ktn]=zero;
       }
 
       q = q_dirBN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho/*+three*(     vx2-vx3)*/+c9over2*(     vx2-vx3)*(     vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTS])[kts]=(one-q)/(one+q)*(f_BN-f_TS+(f_BN+f_TS-two*feq*om1)/(one-om1))*c1o2+(q*(f_BN+f_TS)-six*c1over54*( VeloY-VeloZ))/(one+q) - c1over54 * drho;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho/*+three*(     vx2-vx3)*/+c9o2*(     vx2-vx3)*(     vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTS])[kts]=(c1o1-q)/(c1o1+q)*(f_BN-f_TS+(f_BN+f_TS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BN+f_TS)-c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); 
          //(D.f[dirTS])[kts]=(one-q)/(one+q)*(f_BN-feq*om1)/(one-om1)+(q*(f_BN+f_TS)-six*c1over54*( VeloY-VeloZ))/(one+q);
          //(D.f[dirTS])[kts]=zero;
       }
 
       q = q_dirTS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over54* (drho/*+three*(    -vx2+vx3)*/+c9over2*(    -vx2+vx3)*(    -vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBN])[kbn]=(one-q)/(one+q)*(f_TS-f_BN+(f_TS+f_BN-two*feq*om1)/(one-om1))*c1o2+(q*(f_TS+f_BN)-six*c1over54*( -VeloY+VeloZ))/(one+q) - c1over54 * drho;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o54* (drho/*+three*(    -vx2+vx3)*/+c9o2*(    -vx2+vx3)*(    -vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBN])[kbn]=(c1o1-q)/(c1o1+q)*(f_TS-f_BN+(f_TS+f_BN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TS+f_BN)-c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); 
          //(D.f[dirBN])[kbn]=(one-q)/(one+q)*(f_TS-feq*om1)/(one-om1)+(q*(f_TS+f_BN)-six*c1over54*( -VeloY+VeloZ))/(one+q);
          //(D.f[dirBN])[kbn]=zero;
       }
 
       q = q_dirTNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho/*+three*( vx1+vx2+vx3)*/+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBSW])[kbsw]=(one-q)/(one+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-two*feq*om1)/(one-om1))*c1o2+(q*(f_TNE+f_BSW)-six*c1over216*( VeloX+VeloY+VeloZ))/(one+q) - c1over216 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho/*+three*( vx1+vx2+vx3)*/+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBSW])[kbsw]=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNE+f_BSW)-c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); 
          //(D.f[dirBSW])[kbsw]=(one-q)/(one+q)*(f_TNE-feq*om1)/(one-om1)+(q*(f_TNE+f_BSW)-six*c1over216*( VeloX+VeloY+VeloZ))/(one+q);
          //(D.f[dirBSW])[kbsw]=zero;
       }
 
       q = q_dirBSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho/*+three*(-vx1-vx2-vx3)*/+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTNE])[ktne]=(one-q)/(one+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-two*feq*om1)/(one-om1))*c1o2+(q*(f_BSW+f_TNE)-six*c1over216*(-VeloX-VeloY-VeloZ))/(one+q) - c1over216 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho/*+three*(-vx1-vx2-vx3)*/+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTNE])[ktne]=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSW+f_TNE)-c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); 
          //(D.f[dirTNE])[ktne]=(one-q)/(one+q)*(f_BSW-feq*om1)/(one-om1)+(q*(f_BSW+f_TNE)-six*c1over216*(-VeloX-VeloY-VeloZ))/(one+q);
          //(D.f[dirTNE])[ktne]=zero;
       }
 
       q = q_dirBNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho/*+three*( vx1+vx2-vx3)*/+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTSW])[ktsw]=(one-q)/(one+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-two*feq*om1)/(one-om1))*c1o2+(q*(f_BNE+f_TSW)-six*c1over216*( VeloX+VeloY-VeloZ))/(one+q) - c1over216 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho/*+three*( vx1+vx2-vx3)*/+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTSW])[ktsw]=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNE+f_TSW)-c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); 
          //(D.f[dirTSW])[ktsw]=(one-q)/(one+q)*(f_BNE-feq*om1)/(one-om1)+(q*(f_BNE+f_TSW)-six*c1over216*( VeloX+VeloY-VeloZ))/(one+q);
          //(D.f[dirTSW])[ktsw]=zero;
       }
 
       q = q_dirTSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho/*+three*(-vx1-vx2+vx3)*/+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBNE])[kbne]=(one-q)/(one+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-two*feq*om1)/(one-om1))*c1o2+(q*(f_TSW+f_BNE)-six*c1over216*(-VeloX-VeloY+VeloZ))/(one+q) - c1over216 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho/*+three*(-vx1-vx2+vx3)*/+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBNE])[kbne]=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSW+f_BNE)-c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); 
          //(D.f[dirBNE])[kbne]=(one-q)/(one+q)*(f_TSW-feq*om1)/(one-om1)+(q*(f_TSW+f_BNE)-six*c1over216*(-VeloX-VeloY+VeloZ))/(one+q);
          //(D.f[dirBNE])[kbne]=zero;
       }
 
       q = q_dirTSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho/*+three*( vx1-vx2+vx3)*/+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBNW])[kbnw]=(one-q)/(one+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-two*feq*om1)/(one-om1))*c1o2+(q*(f_TSE+f_BNW)-six*c1over216*( VeloX-VeloY+VeloZ))/(one+q) - c1over216 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho/*+three*( vx1-vx2+vx3)*/+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBNW])[kbnw]=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSE+f_BNW)-c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); 
          //(D.f[dirBNW])[kbnw]=(one-q)/(one+q)*(f_TSE-feq*om1)/(one-om1)+(q*(f_TSE+f_BNW)-six*c1over216*( VeloX-VeloY+VeloZ))/(one+q);
          //(D.f[dirBNW])[kbnw]=zero;
       }
 
       q = q_dirBNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho/*+three*(-vx1+vx2-vx3)*/+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTSE])[ktse]=(one-q)/(one+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-two*feq*om1)/(one-om1))*c1o2+(q*(f_BNW+f_TSE)-six*c1over216*(-VeloX+VeloY-VeloZ))/(one+q) - c1over216 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho/*+three*(-vx1+vx2-vx3)*/+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTSE])[ktse]=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNW+f_TSE)-c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); 
          //(D.f[dirTSE])[ktse]=(one-q)/(one+q)*(f_BNW-feq*om1)/(one-om1)+(q*(f_BNW+f_TSE)-six*c1over216*(-VeloX+VeloY-VeloZ))/(one+q);
          //(D.f[dirTSE])[ktse]=zero;
       }
 
       q = q_dirBSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho/*+three*( vx1-vx2-vx3)*/+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTNW])[ktnw]=(one-q)/(one+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-two*feq*om1)/(one-om1))*c1o2+(q*(f_BSE+f_TNW)-six*c1over216*( VeloX-VeloY-VeloZ))/(one+q) - c1over216 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho/*+three*( vx1-vx2-vx3)*/+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTNW])[ktnw]=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSE+f_TNW)-c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); 
          //(D.f[dirTNW])[ktnw]=(one-q)/(one+q)*(f_BSE-feq*om1)/(one-om1)+(q*(f_BSE+f_TNW)-six*c1over216*( VeloX-VeloY-VeloZ))/(one+q);
          //(D.f[dirTNW])[ktnw]=zero;
       }
 
       q = q_dirTNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = fac*vx1;
 	     VeloY = fac*vx2;
 	     VeloZ = fac*vx3;
-		 if (x == true) VeloX = zero;
-		 if (y == true) VeloY = zero;
-		 if (z == true) VeloZ = zero;
-         feq=c1over216*(drho/*+three*(-vx1+vx2+vx3)*/+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBSE])[kbse]=(one-q)/(one+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-two*feq*om1)/(one-om1))*c1o2+(q*(f_TNW+f_BSE)-six*c1over216*(-VeloX+VeloY+VeloZ))/(one+q) - c1over216 * drho;
+		 if (x == true) VeloX = c0o1;
+		 if (y == true) VeloY = c0o1;
+		 if (z == true) VeloZ = c0o1;
+         feq=c1o216*(drho/*+three*(-vx1+vx2+vx3)*/+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBSE])[kbse]=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNW+f_BSE)-c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
          //feq=c1over216*(drho+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); 
          //(D.f[dirBSE])[kbse]=(one-q)/(one+q)*(f_TNW-feq*om1)/(one-om1)+(q*(f_TNW+f_BSE)-six*c1over216*(-VeloX+VeloY+VeloZ))/(one+q);
          //(D.f[dirBSE])[kbse]=zero;
@@ -1636,18 +1637,18 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
-                (f_E - f_W)) / (one + drho); 
+                (f_E - f_W)) / (c1o1 + drho); 
          
 
       vx2    =   ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                  ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
-                 (f_N - f_S)) / (one + drho); 
+                 (f_N - f_S)) / (c1o1 + drho); 
 
       vx3    =   (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
-                 (f_T - f_B)) / (one + drho); 
+                 (f_T - f_B)) / (c1o1 + drho); 
 
-      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -1714,17 +1715,17 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 	  real VeloX = vx1;
 	  real VeloY = vx2;
 	  real VeloZ = vx3;
-	  real fac = zero;//0.5;
- 	  real phi = zero;
+	  real fac = c0o1;//0.5;
+ 	  real phi = c0o1;
 	  real alpha = c1o100;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real kxyFromfcNEQ = -(three * om1 / (one-om1))*((f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE ) / (one + drho) - ((vx1*vx2)));
-      real kyzFromfcNEQ = -(three * om1 / (one-om1))*((f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW ) / (one + drho) - ((vx2*vx3)));
-      real kxzFromfcNEQ = -(three * om1 / (one-om1))*((f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE ) / (one + drho) - ((vx1*vx3)));
+      real kxyFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE ) / (c1o1 + drho) - ((vx1*vx2)));
+      real kyzFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW ) / (c1o1 + drho) - ((vx2*vx3)));
+      real kxzFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE ) / (c1o1 + drho) - ((vx1*vx3)));
 
-	  real kxxFromfcNEQ = -(three * om1 / (one-om1))*((f_E+f_NE+f_SE+f_TE+f_BE+f_W+f_NW+f_SW+f_TW+f_BW+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx1*vx1)));
-	  real kyyFromfcNEQ = -(three * om1 / (one-om1))*((f_N+f_NE+f_NW+f_TN+f_BN+f_S+f_SE+f_SW+f_TS+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx2*vx2)));
-	  real kzzFromfcNEQ = -(three * om1 / (one-om1))*((f_T+f_TE+f_TW+f_TN+f_BS+f_B+f_BE+f_BW+f_BN+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx3*vx3)));
+	  real kxxFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_E+f_NE+f_SE+f_TE+f_BE+f_W+f_NW+f_SW+f_TW+f_BW+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (c1o1 + drho) - ((c1o3*drho + vx1*vx1)));
+	  real kyyFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_N+f_NE+f_NW+f_TN+f_BN+f_S+f_SE+f_SW+f_TS+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (c1o1 + drho) - ((c1o3*drho + vx2*vx2)));
+	  real kzzFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_T+f_TE+f_TW+f_TN+f_BS+f_B+f_BE+f_BW+f_BN+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (c1o1 + drho) - ((c1o3*drho + vx3*vx3)));
 
 	  real magS = sqrtf(kxyFromfcNEQ*kxyFromfcNEQ + kyzFromfcNEQ*kyzFromfcNEQ + kxzFromfcNEQ*kxzFromfcNEQ + kxxFromfcNEQ*kxxFromfcNEQ + kyyFromfcNEQ*kyyFromfcNEQ + kzzFromfcNEQ*kzzFromfcNEQ);
 
@@ -1777,10 +1778,10 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 	  //real phi = fac / (qMed + fac);
 	  //phi = (phi > one) ? one:one;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real testQ = two;
+	  real testQ = c2o1;
 
       q = q_dirE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirE[k] + vx2 * ny_dirE[k] + vx3 * nz_dirE[k]) * nx_dirE[k];
 		 //phi = fac * (one + magS / (Op0000002+uk) * (one-q));
@@ -1789,12 +1790,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 q = testQ; //AAAAHHHHHH bitte wieder raus nehmen!!!!
 		 phi = fac / (q * fabs( nx_dirE[k]) + fac);
 		 VeloX *= phi;
-         feq=c2over27* (drho/*+three*( vx1        )*/+c9over2*( vx1        )*( vx1        ) * (one + drho)-cu_sq); 
-         (D.f[dirW])[kw]=(one-q)/(one+q)*(f_E-f_W+(f_E+f_W-two*feq*om1)/(one-om1))*c1o2+(q*(f_E+f_W)-six*c2over27*( VeloX     ))/(one+q) - c2over27 * drho;
+         feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirW])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c6o1*c2o27*( VeloX     ))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirW[k] + vx2 * ny_dirW[k] + vx3 * nz_dirW[k]) * nx_dirW[k];
 		 //phi = fac * (one + magS / (Op0000002+uk) * (one-q));
@@ -1803,12 +1804,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 q = testQ; //AAAAHHHHHH bitte wieder raus nehmen!!!!
 		 phi = fac / (q * fabs(-nx_dirW[k]) + fac);
 		 VeloX *= phi;
-         feq=c2over27* (drho/*+three*(-vx1        )*/+c9over2*(-vx1        )*(-vx1        ) * (one + drho)-cu_sq); 
-         (D.f[dirE])[ke]=(one-q)/(one+q)*(f_W-f_E+(f_W+f_E-two*feq*om1)/(one-om1))*c1o2+(q*(f_W+f_E)-six*c2over27*(-VeloX     ))/(one+q) - c2over27 * drho;
+         feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirE])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c6o1*c2o27*(-VeloX     ))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloY = vx2 - (vx1 * nx_dirN[k] + vx2 * ny_dirN[k] + vx3 * nz_dirN[k]) * ny_dirN[k];
 		 //phi = fac * (one + magS / (Op0000002+uk) * (one-q));
@@ -1817,12 +1818,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 q = testQ; //AAAAHHHHHH bitte wieder raus nehmen!!!!
 		 phi = fac / (q * fabs( ny_dirN[k]) + fac);
 		 VeloY *= phi;
-         feq=c2over27* (drho/*+three*(    vx2     )*/+c9over2*(     vx2    )*(     vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirS])[ks]=(one-q)/(one+q)*(f_N-f_S+(f_N+f_S-two*feq*om1)/(one-om1))*c1o2+(q*(f_N+f_S)-six*c2over27*( VeloY     ))/(one+q) - c2over27 * drho;
+         feq=c2o27* (drho/*+three*(    vx2     )*/+c9o2*(     vx2    )*(     vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirS])[ks]=(c1o1-q)/(c1o1+q)*(f_N-f_S+(f_N+f_S-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_N+f_S)-c6o1*c2o27*( VeloY     ))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloY = vx2 - (vx1 * nx_dirS[k] + vx2 * ny_dirS[k] + vx3 * nz_dirS[k]) * ny_dirS[k];
 		 //phi = fac * (one + magS / (Op0000002+uk) * (one-q));
@@ -1831,12 +1832,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 q = testQ; //AAAAHHHHHH bitte wieder raus nehmen!!!!
 		 phi = fac / (q * fabs(-ny_dirS[k]) + fac);
 		 VeloY *= phi;
-         feq=c2over27* (drho/*+three*(   -vx2     )*/+c9over2*(    -vx2    )*(    -vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirN])[kn]=(one-q)/(one+q)*(f_S-f_N+(f_S+f_N-two*feq*om1)/(one-om1))*c1o2+(q*(f_S+f_N)-six*c2over27*(-VeloY     ))/(one+q) - c2over27 * drho;
+         feq=c2o27* (drho/*+three*(   -vx2     )*/+c9o2*(    -vx2    )*(    -vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirN])[kn]=(c1o1-q)/(c1o1+q)*(f_S-f_N+(f_S+f_N-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_S+f_N)-c6o1*c2o27*(-VeloY     ))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirT[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloZ = vx3 - (vx1 * nx_dirT[k] + vx2 * ny_dirT[k] + vx3 * nz_dirT[k]) * nz_dirT[k];
 		 //phi = fac * (one + magS / (Op0000002+uk) * (one-q));
@@ -1845,12 +1846,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 q = testQ; //AAAAHHHHHH bitte wieder raus nehmen!!!!
 		 phi = fac / (q * fabs( nz_dirT[k]) + fac);
 		 VeloZ *= phi;
-         feq=c2over27* (drho/*+three*(         vx3)*/+c9over2*(         vx3)*(         vx3) * (one + drho)-cu_sq); 
-         (D.f[dirB])[kb]=(one-q)/(one+q)*(f_T-f_B+(f_T+f_B-two*feq*om1)/(one-om1))*c1o2+(q*(f_T+f_B)-six*c2over27*( VeloZ     ))/(one+q) - c2over27 * drho;
+         feq=c2o27* (drho/*+three*(         vx3)*/+c9o2*(         vx3)*(         vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirB])[kb]=(c1o1-q)/(c1o1+q)*(f_T-f_B+(f_T+f_B-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_T+f_B)-c6o1*c2o27*( VeloZ     ))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirB[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloZ = vx3 - (vx1 * nx_dirB[k] + vx2 * ny_dirB[k] + vx3 * nz_dirB[k]) * nz_dirB[k];
 		 //phi = fac * (one + magS / (Op0000002+uk) * (one-q));
@@ -1859,12 +1860,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 q = testQ; //AAAAHHHHHH bitte wieder raus nehmen!!!!
 		 phi = fac / (q * fabs(-nz_dirB[k]) + fac);
 		 VeloZ *= phi;
-         feq=c2over27* (drho/*+three*(        -vx3)*/+c9over2*(        -vx3)*(        -vx3) * (one + drho)-cu_sq); 
-         (D.f[dirT])[kt]=(one-q)/(one+q)*(f_B-f_T+(f_B+f_T-two*feq*om1)/(one-om1))*c1o2+(q*(f_B+f_T)-six*c2over27*(-VeloZ     ))/(one+q) - c2over27 * drho;
+         feq=c2o27* (drho/*+three*(        -vx3)*/+c9o2*(        -vx3)*(        -vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirT])[kt]=(c1o1-q)/(c1o1+q)*(f_B-f_T+(f_B+f_T-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_B+f_T)-c6o1*c2o27*(-VeloZ     ))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirNE[k] + vx2 * ny_dirNE[k] + vx3 * nz_dirNE[k]) * nx_dirNE[k];
 		 VeloY = vx2 - (vx1 * nx_dirNE[k] + vx2 * ny_dirNE[k] + vx3 * nz_dirNE[k]) * ny_dirNE[k];
@@ -1875,12 +1876,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 phi = fac / (q * fabs( nx_dirNE[k] + ny_dirNE[k]) + fac);
 		 VeloX *= phi;
 		 VeloY *= phi;
-         feq=c1over54* (drho/*+three*( vx1+vx2    )*/+c9over2*( vx1+vx2    )*( vx1+vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirSW])[ksw]=(one-q)/(one+q)*(f_NE-f_SW+(f_NE+f_SW-two*feq*om1)/(one-om1))*c1o2+(q*(f_NE+f_SW)-six*c1over54*(VeloX+VeloY))/(one+q) - c1over54 * drho;
+         feq=c1o54* (drho/*+three*( vx1+vx2    )*/+c9o2*( vx1+vx2    )*( vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirSW])[ksw]=(c1o1-q)/(c1o1+q)*(f_NE-f_SW+(f_NE+f_SW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NE+f_SW)-c6o1*c1o54*(VeloX+VeloY))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirSW[k] + vx2 * ny_dirSW[k] + vx3 * nz_dirSW[k]) * nx_dirSW[k];
 		 VeloY = vx2 - (vx1 * nx_dirSW[k] + vx2 * ny_dirSW[k] + vx3 * nz_dirSW[k]) * ny_dirSW[k];
@@ -1891,12 +1892,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 phi = fac / (q * fabs(-nx_dirSW[k] - ny_dirSW[k]) + fac);
 		 VeloX *= phi;
 		 VeloY *= phi;
-         feq=c1over54* (drho/*+three*(-vx1-vx2    )*/+c9over2*(-vx1-vx2    )*(-vx1-vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirNE])[kne]=(one-q)/(one+q)*(f_SW-f_NE+(f_SW+f_NE-two*feq*om1)/(one-om1))*c1o2+(q*(f_SW+f_NE)-six*c1over54*(-VeloX-VeloY))/(one+q) - c1over54 * drho;
+         feq=c1o54* (drho/*+three*(-vx1-vx2    )*/+c9o2*(-vx1-vx2    )*(-vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirNE])[kne]=(c1o1-q)/(c1o1+q)*(f_SW-f_NE+(f_SW+f_NE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SW+f_NE)-c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirSE[k] + vx2 * ny_dirSE[k] + vx3 * nz_dirSE[k]) * nx_dirSE[k];
 		 VeloY = vx2 - (vx1 * nx_dirSE[k] + vx2 * ny_dirSE[k] + vx3 * nz_dirSE[k]) * ny_dirSE[k];
@@ -1907,12 +1908,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 phi = fac / (q * fabs( nx_dirSE[k] - ny_dirSE[k]) + fac);
 		 VeloX *= phi;
 		 VeloY *= phi;
-         feq=c1over54* (drho/*+three*( vx1-vx2    )*/+c9over2*( vx1-vx2    )*( vx1-vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirNW])[knw]=(one-q)/(one+q)*(f_SE-f_NW+(f_SE+f_NW-two*feq*om1)/(one-om1))*c1o2+(q*(f_SE+f_NW)-six*c1over54*( VeloX-VeloY))/(one+q) - c1over54 * drho;
+         feq=c1o54* (drho/*+three*( vx1-vx2    )*/+c9o2*( vx1-vx2    )*( vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirNW])[knw]=(c1o1-q)/(c1o1+q)*(f_SE-f_NW+(f_SE+f_NW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SE+f_NW)-c6o1*c1o54*( VeloX-VeloY))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirNW[k] + vx2 * ny_dirNW[k] + vx3 * nz_dirNW[k]) * nx_dirNW[k];
 		 VeloY = vx2 - (vx1 * nx_dirNW[k] + vx2 * ny_dirNW[k] + vx3 * nz_dirNW[k]) * ny_dirNW[k];
@@ -1923,12 +1924,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 phi = fac / (q * fabs(-nx_dirNW[k] + ny_dirNW[k]) + fac);
 		 VeloX *= phi;
 		 VeloY *= phi;
-         feq=c1over54* (drho/*+three*(-vx1+vx2    )*/+c9over2*(-vx1+vx2    )*(-vx1+vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirSE])[kse]=(one-q)/(one+q)*(f_NW-f_SE+(f_NW+f_SE-two*feq*om1)/(one-om1))*c1o2+(q*(f_NW+f_SE)-six*c1over54*(-VeloX+VeloY))/(one+q) - c1over54 * drho;
+         feq=c1o54* (drho/*+three*(-vx1+vx2    )*/+c9o2*(-vx1+vx2    )*(-vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirSE])[kse]=(c1o1-q)/(c1o1+q)*(f_NW-f_SE+(f_NW+f_SE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NW+f_SE)-c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirTE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirTE[k] + vx2 * ny_dirTE[k] + vx3 * nz_dirTE[k]) * nx_dirTE[k];
 		 VeloZ = vx3 - (vx1 * nx_dirTE[k] + vx2 * ny_dirTE[k] + vx3 * nz_dirTE[k]) * nz_dirTE[k];
@@ -1939,12 +1940,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 phi = fac / (q * fabs( nx_dirTE[k] + nz_dirTE[k]) + fac);
 		 VeloX *= phi;
 		 VeloZ *= phi;
-         feq=c1over54* (drho/*+three*( vx1    +vx3)*/+c9over2*( vx1    +vx3)*( vx1    +vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBW])[kbw]=(one-q)/(one+q)*(f_TE-f_BW+(f_TE+f_BW-two*feq*om1)/(one-om1))*c1o2+(q*(f_TE+f_BW)-six*c1over54*( VeloX+VeloZ))/(one+q) - c1over54 * drho;
+         feq=c1o54* (drho/*+three*( vx1    +vx3)*/+c9o2*( vx1    +vx3)*( vx1    +vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBW])[kbw]=(c1o1-q)/(c1o1+q)*(f_TE-f_BW+(f_TE+f_BW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TE+f_BW)-c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirBW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirBW[k] + vx2 * ny_dirBW[k] + vx3 * nz_dirBW[k]) * nx_dirBW[k];
 		 VeloZ = vx3 - (vx1 * nx_dirBW[k] + vx2 * ny_dirBW[k] + vx3 * nz_dirBW[k]) * nz_dirBW[k];
@@ -1955,12 +1956,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 phi = fac / (q * fabs(-nx_dirBW[k] - nz_dirBW[k]) + fac);
 		 VeloX *= phi;
 		 VeloZ *= phi;
-         feq=c1over54* (drho/*+three*(-vx1    -vx3)*/+c9over2*(-vx1    -vx3)*(-vx1    -vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTE])[kte]=(one-q)/(one+q)*(f_BW-f_TE+(f_BW+f_TE-two*feq*om1)/(one-om1))*c1o2+(q*(f_BW+f_TE)-six*c1over54*(-VeloX-VeloZ))/(one+q) - c1over54 * drho;
+         feq=c1o54* (drho/*+three*(-vx1    -vx3)*/+c9o2*(-vx1    -vx3)*(-vx1    -vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTE])[kte]=(c1o1-q)/(c1o1+q)*(f_BW-f_TE+(f_BW+f_TE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BW+f_TE)-c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirBE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirBE[k] + vx2 * ny_dirBE[k] + vx3 * nz_dirBE[k]) * nx_dirBE[k];
 		 VeloZ = vx3 - (vx1 * nx_dirBE[k] + vx2 * ny_dirBE[k] + vx3 * nz_dirBE[k]) * nz_dirBE[k];
@@ -1971,12 +1972,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 phi = fac / (q * fabs( nx_dirBE[k] - nz_dirBE[k]) + fac);
 		 VeloX *= phi;
 		 VeloZ *= phi;
-         feq=c1over54* (drho/*+three*( vx1    -vx3)*/+c9over2*( vx1    -vx3)*( vx1    -vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTW])[ktw]=(one-q)/(one+q)*(f_BE-f_TW+(f_BE+f_TW-two*feq*om1)/(one-om1))*c1o2+(q*(f_BE+f_TW)-six*c1over54*( VeloX-VeloZ))/(one+q) - c1over54 * drho;
+         feq=c1o54* (drho/*+three*( vx1    -vx3)*/+c9o2*( vx1    -vx3)*( vx1    -vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTW])[ktw]=(c1o1-q)/(c1o1+q)*(f_BE-f_TW+(f_BE+f_TW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BE+f_TW)-c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirTW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirTW[k] + vx2 * ny_dirTW[k] + vx3 * nz_dirTW[k]) * nx_dirTW[k];
 		 VeloZ = vx3 - (vx1 * nx_dirTW[k] + vx2 * ny_dirTW[k] + vx3 * nz_dirTW[k]) * nz_dirTW[k];
@@ -1987,12 +1988,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 phi = fac / (q * fabs(-nx_dirTW[k] + nz_dirTW[k]) + fac);
 		 VeloX *= phi;
 		 VeloZ *= phi;
-         feq=c1over54* (drho/*+three*(-vx1    +vx3)*/+c9over2*(-vx1    +vx3)*(-vx1    +vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBE])[kbe]=(one-q)/(one+q)*(f_TW-f_BE+(f_TW+f_BE-two*feq*om1)/(one-om1))*c1o2+(q*(f_TW+f_BE)-six*c1over54*(-VeloX+VeloZ))/(one+q) - c1over54 * drho;
+         feq=c1o54* (drho/*+three*(-vx1    +vx3)*/+c9o2*(-vx1    +vx3)*(-vx1    +vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBE])[kbe]=(c1o1-q)/(c1o1+q)*(f_TW-f_BE+(f_TW+f_BE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TW+f_BE)-c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirTN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloY = vx2 - (vx1 * nx_dirTN[k] + vx2 * ny_dirTN[k] + vx3 * nz_dirTN[k]) * ny_dirTN[k];
 		 VeloZ = vx3 - (vx1 * nx_dirTN[k] + vx2 * ny_dirTN[k] + vx3 * nz_dirTN[k]) * nz_dirTN[k];
@@ -2003,12 +2004,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 phi = fac / (q * fabs( ny_dirTN[k] + nz_dirTN[k]) + fac);
 		 VeloY *= phi;
 		 VeloZ *= phi;
-         feq=c1over54* (drho/*+three*(     vx2+vx3)*/+c9over2*(     vx2+vx3)*(     vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBS])[kbs]=(one-q)/(one+q)*(f_TN-f_BS+(f_TN+f_BS-two*feq*om1)/(one-om1))*c1o2+(q*(f_TN+f_BS)-six*c1over54*( VeloY+VeloZ))/(one+q) - c1over54 * drho;
+         feq=c1o54* (drho/*+three*(     vx2+vx3)*/+c9o2*(     vx2+vx3)*(     vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBS])[kbs]=(c1o1-q)/(c1o1+q)*(f_TN-f_BS+(f_TN+f_BS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TN+f_BS)-c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirBS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloY = vx2 - (vx1 * nx_dirBS[k] + vx2 * ny_dirBS[k] + vx3 * nz_dirBS[k]) * ny_dirBS[k];
 		 VeloZ = vx3 - (vx1 * nx_dirBS[k] + vx2 * ny_dirBS[k] + vx3 * nz_dirBS[k]) * nz_dirBS[k];
@@ -2019,12 +2020,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 phi = fac / (q * fabs(-ny_dirBS[k] - nz_dirBS[k]) + fac);
 		 VeloY *= phi;
 		 VeloZ *= phi;
-         feq=c1over54* (drho/*+three*(    -vx2-vx3)*/+c9over2*(    -vx2-vx3)*(    -vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTN])[ktn]=(one-q)/(one+q)*(f_BS-f_TN+(f_BS+f_TN-two*feq*om1)/(one-om1))*c1o2+(q*(f_BS+f_TN)-six*c1over54*( -VeloY-VeloZ))/(one+q) - c1over54 * drho;
+         feq=c1o54* (drho/*+three*(    -vx2-vx3)*/+c9o2*(    -vx2-vx3)*(    -vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTN])[ktn]=(c1o1-q)/(c1o1+q)*(f_BS-f_TN+(f_BS+f_TN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BS+f_TN)-c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirBN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloY = vx2 - (vx1 * nx_dirBN[k] + vx2 * ny_dirBN[k] + vx3 * nz_dirBN[k]) * ny_dirBN[k];
 		 VeloZ = vx3 - (vx1 * nx_dirBN[k] + vx2 * ny_dirBN[k] + vx3 * nz_dirBN[k]) * nz_dirBN[k];
@@ -2035,12 +2036,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 phi = fac / (q * fabs( ny_dirBN[k] - nz_dirBN[k]) + fac);
 		 VeloY *= phi;
 		 VeloZ *= phi;
-         feq=c1over54* (drho/*+three*(     vx2-vx3)*/+c9over2*(     vx2-vx3)*(     vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTS])[kts]=(one-q)/(one+q)*(f_BN-f_TS+(f_BN+f_TS-two*feq*om1)/(one-om1))*c1o2+(q*(f_BN+f_TS)-six*c1over54*( VeloY-VeloZ))/(one+q) - c1over54 * drho;
+         feq=c1o54* (drho/*+three*(     vx2-vx3)*/+c9o2*(     vx2-vx3)*(     vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTS])[kts]=(c1o1-q)/(c1o1+q)*(f_BN-f_TS+(f_BN+f_TS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BN+f_TS)-c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirTS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloY = vx2 - (vx1 * nx_dirTS[k] + vx2 * ny_dirTS[k] + vx3 * nz_dirTS[k]) * ny_dirTS[k];
 		 VeloZ = vx3 - (vx1 * nx_dirTS[k] + vx2 * ny_dirTS[k] + vx3 * nz_dirTS[k]) * nz_dirTS[k];
@@ -2051,12 +2052,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 phi = fac / (q * fabs(-ny_dirTS[k] + nz_dirTS[k]) + fac);
 		 VeloY *= phi;
 		 VeloZ *= phi;
-         feq=c1over54* (drho/*+three*(    -vx2+vx3)*/+c9over2*(    -vx2+vx3)*(    -vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBN])[kbn]=(one-q)/(one+q)*(f_TS-f_BN+(f_TS+f_BN-two*feq*om1)/(one-om1))*c1o2+(q*(f_TS+f_BN)-six*c1over54*( -VeloY+VeloZ))/(one+q) - c1over54 * drho;
+         feq=c1o54* (drho/*+three*(    -vx2+vx3)*/+c9o2*(    -vx2+vx3)*(    -vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBN])[kbn]=(c1o1-q)/(c1o1+q)*(f_TS-f_BN+(f_TS+f_BN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TS+f_BN)-c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirTNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirTNE[k] + vx2 * ny_dirTNE[k] + vx3 * nz_dirTNE[k]) * nx_dirTNE[k];
 		 VeloY = vx2 - (vx1 * nx_dirTNE[k] + vx2 * ny_dirTNE[k] + vx3 * nz_dirTNE[k]) * ny_dirTNE[k];
@@ -2069,12 +2070,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 VeloX *= phi;
 		 VeloY *= phi;
 		 VeloZ *= phi;
-         feq=c1over216*(drho/*+three*( vx1+vx2+vx3)*/+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBSW])[kbsw]=(one-q)/(one+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-two*feq*om1)/(one-om1))*c1o2+(q*(f_TNE+f_BSW)-six*c1over216*( VeloX+VeloY+VeloZ))/(one+q) - c1over216 * drho;
+         feq=c1o216*(drho/*+three*( vx1+vx2+vx3)*/+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBSW])[kbsw]=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNE+f_BSW)-c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirBSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirBSW[k] + vx2 * ny_dirBSW[k] + vx3 * nz_dirBSW[k]) * nx_dirBSW[k];
 		 VeloY = vx2 - (vx1 * nx_dirBSW[k] + vx2 * ny_dirBSW[k] + vx3 * nz_dirBSW[k]) * ny_dirBSW[k];
@@ -2087,12 +2088,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 VeloX *= phi;
 		 VeloY *= phi;
 		 VeloZ *= phi;
-         feq=c1over216*(drho/*+three*(-vx1-vx2-vx3)*/+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTNE])[ktne]=(one-q)/(one+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-two*feq*om1)/(one-om1))*c1o2+(q*(f_BSW+f_TNE)-six*c1over216*(-VeloX-VeloY-VeloZ))/(one+q) - c1over216 * drho;
+         feq=c1o216*(drho/*+three*(-vx1-vx2-vx3)*/+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTNE])[ktne]=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSW+f_TNE)-c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirBNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirBNE[k] + vx2 * ny_dirBNE[k] + vx3 * nz_dirBNE[k]) * nx_dirBNE[k];
 		 VeloY = vx2 - (vx1 * nx_dirBNE[k] + vx2 * ny_dirBNE[k] + vx3 * nz_dirBNE[k]) * ny_dirBNE[k];
@@ -2105,12 +2106,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 VeloX *= phi;
 		 VeloY *= phi;
 		 VeloZ *= phi;
-         feq=c1over216*(drho/*+three*( vx1+vx2-vx3)*/+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTSW])[ktsw]=(one-q)/(one+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-two*feq*om1)/(one-om1))*c1o2+(q*(f_BNE+f_TSW)-six*c1over216*( VeloX+VeloY-VeloZ))/(one+q) - c1over216 * drho;
+         feq=c1o216*(drho/*+three*( vx1+vx2-vx3)*/+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTSW])[ktsw]=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNE+f_TSW)-c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirTSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirTSW[k] + vx2 * ny_dirTSW[k] + vx3 * nz_dirTSW[k]) * nx_dirTSW[k];
 		 VeloY = vx2 - (vx1 * nx_dirTSW[k] + vx2 * ny_dirTSW[k] + vx3 * nz_dirTSW[k]) * ny_dirTSW[k];
@@ -2123,12 +2124,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 VeloX *= phi;
 		 VeloY *= phi;
 		 VeloZ *= phi;
-         feq=c1over216*(drho/*+three*(-vx1-vx2+vx3)*/+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBNE])[kbne]=(one-q)/(one+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-two*feq*om1)/(one-om1))*c1o2+(q*(f_TSW+f_BNE)-six*c1over216*(-VeloX-VeloY+VeloZ))/(one+q) - c1over216 * drho;
+         feq=c1o216*(drho/*+three*(-vx1-vx2+vx3)*/+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBNE])[kbne]=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSW+f_BNE)-c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirTSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirTSE[k] + vx2 * ny_dirTSE[k] + vx3 * nz_dirTSE[k]) * nx_dirTSE[k];
 		 VeloY = vx2 - (vx1 * nx_dirTSE[k] + vx2 * ny_dirTSE[k] + vx3 * nz_dirTSE[k]) * ny_dirTSE[k];
@@ -2141,12 +2142,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 VeloX *= phi;
 		 VeloY *= phi;
 		 VeloZ *= phi;
-         feq=c1over216*(drho/*+three*( vx1-vx2+vx3)*/+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBNW])[kbnw]=(one-q)/(one+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-two*feq*om1)/(one-om1))*c1o2+(q*(f_TSE+f_BNW)-six*c1over216*( VeloX-VeloY+VeloZ))/(one+q) - c1over216 * drho;
+         feq=c1o216*(drho/*+three*( vx1-vx2+vx3)*/+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBNW])[kbnw]=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSE+f_BNW)-c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirBNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirBNW[k] + vx2 * ny_dirBNW[k] + vx3 * nz_dirBNW[k]) * nx_dirBNW[k];
 		 VeloY = vx2 - (vx1 * nx_dirBNW[k] + vx2 * ny_dirBNW[k] + vx3 * nz_dirBNW[k]) * ny_dirBNW[k];
@@ -2159,12 +2160,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 VeloX *= phi;
 		 VeloY *= phi;
 		 VeloZ *= phi;
-         feq=c1over216*(drho/*+three*(-vx1+vx2-vx3)*/+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTSE])[ktse]=(one-q)/(one+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-two*feq*om1)/(one-om1))*c1o2+(q*(f_BNW+f_TSE)-six*c1over216*(-VeloX+VeloY-VeloZ))/(one+q) - c1over216 * drho;
+         feq=c1o216*(drho/*+three*(-vx1+vx2-vx3)*/+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTSE])[ktse]=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNW+f_TSE)-c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirBSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirBSE[k] + vx2 * ny_dirBSE[k] + vx3 * nz_dirBSE[k]) * nx_dirBSE[k];
 		 VeloY = vx2 - (vx1 * nx_dirBSE[k] + vx2 * ny_dirBSE[k] + vx3 * nz_dirBSE[k]) * ny_dirBSE[k];
@@ -2177,12 +2178,12 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 VeloX *= phi;
 		 VeloY *= phi;
 		 VeloZ *= phi;
-         feq=c1over216*(drho/*+three*( vx1-vx2-vx3)*/+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTNW])[ktnw]=(one-q)/(one+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-two*feq*om1)/(one-om1))*c1o2+(q*(f_BSE+f_TNW)-six*c1over216*( VeloX-VeloY-VeloZ))/(one+q) - c1over216 * drho;
+         feq=c1o216*(drho/*+three*( vx1-vx2-vx3)*/+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTNW])[ktnw]=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSE+f_TNW)-c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirTNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirTNW[k] + vx2 * ny_dirTNW[k] + vx3 * nz_dirTNW[k]) * nx_dirTNW[k];
 		 VeloY = vx2 - (vx1 * nx_dirTNW[k] + vx2 * ny_dirTNW[k] + vx3 * nz_dirTNW[k]) * ny_dirTNW[k];
@@ -2195,8 +2196,8 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 		 VeloX *= phi;
 		 VeloY *= phi;
 		 VeloZ *= phi;
-         feq=c1over216*(drho/*+three*(-vx1+vx2+vx3)*/+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBSE])[kbse]=(one-q)/(one+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-two*feq*om1)/(one-om1))*c1o2+(q*(f_TNW+f_BSE)-six*c1over216*(-VeloX+VeloY+VeloZ))/(one+q) - c1over216 * drho;
+         feq=c1o216*(drho/*+three*(-vx1+vx2+vx3)*/+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBSE])[kbse]=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNW+f_BSE)-c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q) - c1o216 * drho;
       }
    }
 }
@@ -2522,18 +2523,18 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 
       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
-                (f_E - f_W)) / (one + drho); 
+                (f_E - f_W)) / (c1o1 + drho); 
          
 
       vx2    =   ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                  ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
-                 (f_N - f_S)) / (one + drho); 
+                 (f_N - f_S)) / (c1o1 + drho); 
 
       vx3    =   (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
-                 (f_T - f_B)) / (one + drho); 
+                 (f_T - f_B)) / (c1o1 + drho); 
 
-      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -2601,24 +2602,24 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 	  real VeloY = vx2;
 	  real VeloZ = vx3;
 	  real fac = c1o100;//0.5;
- 	  real phi = zero;
+ 	  real phi = c0o1;
 	  real alpha = c1o100;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real kxyFromfcNEQ = -(three * om1 / (one-om1))*((f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE ) / (one + drho) - ((vx1*vx2)));
-      real kyzFromfcNEQ = -(three * om1 / (one-om1))*((f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW ) / (one + drho) - ((vx2*vx3)));
-      real kxzFromfcNEQ = -(three * om1 / (one-om1))*((f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE ) / (one + drho) - ((vx1*vx3)));
+      real kxyFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE ) / (c1o1 + drho) - ((vx1*vx2)));
+      real kyzFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW ) / (c1o1 + drho) - ((vx2*vx3)));
+      real kxzFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE ) / (c1o1 + drho) - ((vx1*vx3)));
 
-	  real kxxFromfcNEQ = -(three * om1 / (one-om1))*((f_E+f_NE+f_SE+f_TE+f_BE+f_W+f_NW+f_SW+f_TW+f_BW+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx1*vx1)));
-	  real kyyFromfcNEQ = -(three * om1 / (one-om1))*((f_N+f_NE+f_NW+f_TN+f_BN+f_S+f_SE+f_SW+f_TS+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx2*vx2)));
-	  real kzzFromfcNEQ = -(three * om1 / (one-om1))*((f_T+f_TE+f_TW+f_TN+f_BS+f_B+f_BE+f_BW+f_BN+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx3*vx3)));
+	  real kxxFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_E+f_NE+f_SE+f_TE+f_BE+f_W+f_NW+f_SW+f_TW+f_BW+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (c1o1 + drho) - ((c1o3*drho + vx1*vx1)));
+	  real kyyFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_N+f_NE+f_NW+f_TN+f_BN+f_S+f_SE+f_SW+f_TS+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (c1o1 + drho) - ((c1o3*drho + vx2*vx2)));
+	  real kzzFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_T+f_TE+f_TW+f_TN+f_BS+f_B+f_BE+f_BW+f_BN+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (c1o1 + drho) - ((c1o3*drho + vx3*vx3)));
 
 	  real magS = sqrtf(kxyFromfcNEQ*kxyFromfcNEQ + kyzFromfcNEQ*kyzFromfcNEQ + kxzFromfcNEQ*kxzFromfcNEQ + kxxFromfcNEQ*kxxFromfcNEQ + kyyFromfcNEQ*kyyFromfcNEQ + kzzFromfcNEQ*kzzFromfcNEQ);
 
-	  fac = fac * magS / (c1o3 * (one / om1 - c1o2));
+	  fac = fac * magS / (c1o3 * (c1o1 / om1 - c1o2));
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real *facAst = &QQ[dirZERO *sizeQ];
 
-	  fac = fac * alpha + facAst[k] * (one - alpha);
+	  fac = fac * alpha + facAst[k] * (c1o1 - alpha);
 	  facAst[k] = fac;
 	  //(&QQ[dirZERO *sizeQ])[KQK] = fac;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2664,14 +2665,14 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 	  //phi = (phi > one) ? one:one;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real sliplength = 0.9f;//c1o2;
-	  real qSlip = zero;
-	  real un = zero;
-	  real ut = zero;
-	  real tangential = zero;
+	  real qSlip = c0o1;
+	  real un = c0o1;
+	  real ut = c0o1;
+	  real tangential = c0o1;
 	  //real smallSingle = Op0000002;
 
       q = q_dirE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirE[k] + vx2 * ny_dirE[k] + vx3 * nz_dirE[k]) * nx_dirE[k];
 		 un = fabs((vx1 * nx_dirE[k] + vx2 * ny_dirE[k] + vx3 * nz_dirE[k]) * nx_dirE[k]);
@@ -2680,13 +2681,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( nx_dirE[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c2over27* (drho/*+three*( vx1        )*/+c9over2*( vx1        )*( vx1        ) * (one + drho)-cu_sq); 
-         (D.f[dirW])[kw]=(one-q)/(one+q)*(f_E-f_W+(f_E+f_W-two*feq*om1)/(one-om1))*c1o2+(q*(f_E+f_W))/(one+q) - c2over27 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirW])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirW[k] + vx2 * ny_dirW[k] + vx3 * nz_dirW[k]) * nx_dirW[k];
 		 un = fabs(-(vx1 * nx_dirW[k] + vx2 * ny_dirW[k] + vx3 * nz_dirW[k]) * nx_dirW[k]);
@@ -2695,13 +2696,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-nx_dirW[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c2over27* (drho/*+three*(-vx1        )*/+c9over2*(-vx1        )*(-vx1        ) * (one + drho)-cu_sq); 
-         (D.f[dirE])[ke]=(one-q)/(one+q)*(f_W-f_E+(f_W+f_E-two*feq*om1)/(one-om1))*c1o2+(q*(f_W+f_E))/(one+q) - c2over27 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirE])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloY = vx2 - (vx1 * nx_dirN[k] + vx2 * ny_dirN[k] + vx3 * nz_dirN[k]) * ny_dirN[k];
 		 un = fabs( (vx1 * nx_dirN[k] + vx2 * ny_dirN[k] + vx3 * nz_dirN[k]) * ny_dirN[k]);
@@ -2710,13 +2711,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( ny_dirN[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c2over27* (drho/*+three*(    vx2     )*/+c9over2*(     vx2    )*(     vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirS])[ks]=(one-q)/(one+q)*(f_N-f_S+(f_N+f_S-two*feq*om1)/(one-om1))*c1o2+(q*(f_N+f_S))/(one+q) - c2over27 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c2o27* (drho/*+three*(    vx2     )*/+c9o2*(     vx2    )*(     vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirS])[ks]=(c1o1-q)/(c1o1+q)*(f_N-f_S+(f_N+f_S-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_N+f_S))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloY = vx2 - (vx1 * nx_dirS[k] + vx2 * ny_dirS[k] + vx3 * nz_dirS[k]) * ny_dirS[k];
 		 un = fabs(-(vx1 * nx_dirS[k] + vx2 * ny_dirS[k] + vx3 * nz_dirS[k]) * ny_dirS[k]);
@@ -2725,13 +2726,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-ny_dirS[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c2over27* (drho/*+three*(   -vx2     )*/+c9over2*(    -vx2    )*(    -vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirN])[kn]=(one-q)/(one+q)*(f_S-f_N+(f_S+f_N-two*feq*om1)/(one-om1))*c1o2+(q*(f_S+f_N))/(one+q) - c2over27 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c2o27* (drho/*+three*(   -vx2     )*/+c9o2*(    -vx2    )*(    -vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirN])[kn]=(c1o1-q)/(c1o1+q)*(f_S-f_N+(f_S+f_N-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_S+f_N))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirT[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloZ = vx3 - (vx1 * nx_dirT[k] + vx2 * ny_dirT[k] + vx3 * nz_dirT[k]) * nz_dirT[k];
 		 un = fabs( (vx1 * nx_dirT[k] + vx2 * ny_dirT[k] + vx3 * nz_dirT[k]) * nz_dirT[k]);
@@ -2740,13 +2741,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( nz_dirT[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c2over27* (drho/*+three*(         vx3)*/+c9over2*(         vx3)*(         vx3) * (one + drho)-cu_sq); 
-         (D.f[dirB])[kb]=(one-q)/(one+q)*(f_T-f_B+(f_T+f_B-two*feq*om1)/(one-om1))*c1o2+(q*(f_T+f_B))/(one+q) - c2over27 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c2o27* (drho/*+three*(         vx3)*/+c9o2*(         vx3)*(         vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirB])[kb]=(c1o1-q)/(c1o1+q)*(f_T-f_B+(f_T+f_B-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_T+f_B))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirB[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloZ = vx3 - (vx1 * nx_dirB[k] + vx2 * ny_dirB[k] + vx3 * nz_dirB[k]) * nz_dirB[k];
 		 un = fabs(-(vx1 * nx_dirB[k] + vx2 * ny_dirB[k] + vx3 * nz_dirB[k]) * nz_dirB[k]);
@@ -2755,13 +2756,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-nz_dirB[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c2over27* (drho/*+three*(        -vx3)*/+c9over2*(        -vx3)*(        -vx3) * (one + drho)-cu_sq); 
-         (D.f[dirT])[kt]=(one-q)/(one+q)*(f_B-f_T+(f_B+f_T-two*feq*om1)/(one-om1))*c1o2+(q*(f_B+f_T))/(one+q) - c2over27 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c2o27* (drho/*+three*(        -vx3)*/+c9o2*(        -vx3)*(        -vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirT])[kt]=(c1o1-q)/(c1o1+q)*(f_B-f_T+(f_B+f_T-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_B+f_T))/(c1o1+q) - c2o27 * drho;
       }
 
       q = q_dirNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirNE[k] + vx2 * ny_dirNE[k] + vx3 * nz_dirNE[k]) * nx_dirNE[k];
 		 VeloY = vx2 - (vx1 * nx_dirNE[k] + vx2 * ny_dirNE[k] + vx3 * nz_dirNE[k]) * ny_dirNE[k];
@@ -2771,13 +2772,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( nx_dirNE[k]+ny_dirNE[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over54* (drho/*+three*( vx1+vx2    )*/+c9over2*( vx1+vx2    )*( vx1+vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirSW])[ksw]=(one-q)/(one+q)*(f_NE-f_SW+(f_NE+f_SW-two*feq*om1)/(one-om1))*c1o2+(q*(f_NE+f_SW))/(one+q) - c1over54 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o54* (drho/*+three*( vx1+vx2    )*/+c9o2*( vx1+vx2    )*( vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirSW])[ksw]=(c1o1-q)/(c1o1+q)*(f_NE-f_SW+(f_NE+f_SW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NE+f_SW))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirSW[k] + vx2 * ny_dirSW[k] + vx3 * nz_dirSW[k]) * nx_dirSW[k];
 		 VeloY = vx2 - (vx1 * nx_dirSW[k] + vx2 * ny_dirSW[k] + vx3 * nz_dirSW[k]) * ny_dirSW[k];
@@ -2787,13 +2788,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-nx_dirSW[k]-ny_dirSW[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over54* (drho/*+three*(-vx1-vx2    )*/+c9over2*(-vx1-vx2    )*(-vx1-vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirNE])[kne]=(one-q)/(one+q)*(f_SW-f_NE+(f_SW+f_NE-two*feq*om1)/(one-om1))*c1o2+(q*(f_SW+f_NE))/(one+q) - c1over54 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o54* (drho/*+three*(-vx1-vx2    )*/+c9o2*(-vx1-vx2    )*(-vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirNE])[kne]=(c1o1-q)/(c1o1+q)*(f_SW-f_NE+(f_SW+f_NE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SW+f_NE))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirSE[k] + vx2 * ny_dirSE[k] + vx3 * nz_dirSE[k]) * nx_dirSE[k];
 		 VeloY = vx2 - (vx1 * nx_dirSE[k] + vx2 * ny_dirSE[k] + vx3 * nz_dirSE[k]) * ny_dirSE[k];
@@ -2803,13 +2804,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( nx_dirSE[k]-ny_dirSE[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over54* (drho/*+three*( vx1-vx2    )*/+c9over2*( vx1-vx2    )*( vx1-vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirNW])[knw]=(one-q)/(one+q)*(f_SE-f_NW+(f_SE+f_NW-two*feq*om1)/(one-om1))*c1o2+(q*(f_SE+f_NW))/(one+q) - c1over54 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o54* (drho/*+three*( vx1-vx2    )*/+c9o2*( vx1-vx2    )*( vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirNW])[knw]=(c1o1-q)/(c1o1+q)*(f_SE-f_NW+(f_SE+f_NW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SE+f_NW))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirNW[k] + vx2 * ny_dirNW[k] + vx3 * nz_dirNW[k]) * nx_dirNW[k];
 		 VeloY = vx2 - (vx1 * nx_dirNW[k] + vx2 * ny_dirNW[k] + vx3 * nz_dirNW[k]) * ny_dirNW[k];
@@ -2819,13 +2820,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-nx_dirNW[k]+ny_dirNW[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over54* (drho/*+three*(-vx1+vx2    )*/+c9over2*(-vx1+vx2    )*(-vx1+vx2    ) * (one + drho)-cu_sq); 
-         (D.f[dirSE])[kse]=(one-q)/(one+q)*(f_NW-f_SE+(f_NW+f_SE-two*feq*om1)/(one-om1))*c1o2+(q*(f_NW+f_SE))/(one+q) - c1over54 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o54* (drho/*+three*(-vx1+vx2    )*/+c9o2*(-vx1+vx2    )*(-vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirSE])[kse]=(c1o1-q)/(c1o1+q)*(f_NW-f_SE+(f_NW+f_SE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NW+f_SE))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirTE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirTE[k] + vx2 * ny_dirTE[k] + vx3 * nz_dirTE[k]) * nx_dirTE[k];
 		 VeloZ = vx3 - (vx1 * nx_dirTE[k] + vx2 * ny_dirTE[k] + vx3 * nz_dirTE[k]) * nz_dirTE[k];
@@ -2835,13 +2836,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( nx_dirTE[k]+nz_dirTE[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over54* (drho/*+three*( vx1    +vx3)*/+c9over2*( vx1    +vx3)*( vx1    +vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBW])[kbw]=(one-q)/(one+q)*(f_TE-f_BW+(f_TE+f_BW-two*feq*om1)/(one-om1))*c1o2+(q*(f_TE+f_BW))/(one+q) - c1over54 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o54* (drho/*+three*( vx1    +vx3)*/+c9o2*( vx1    +vx3)*( vx1    +vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBW])[kbw]=(c1o1-q)/(c1o1+q)*(f_TE-f_BW+(f_TE+f_BW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TE+f_BW))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirBW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirBW[k] + vx2 * ny_dirBW[k] + vx3 * nz_dirBW[k]) * nx_dirBW[k];
 		 VeloZ = vx3 - (vx1 * nx_dirBW[k] + vx2 * ny_dirBW[k] + vx3 * nz_dirBW[k]) * nz_dirBW[k];
@@ -2851,13 +2852,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-nx_dirBW[k]-nz_dirBW[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over54* (drho/*+three*(-vx1    -vx3)*/+c9over2*(-vx1    -vx3)*(-vx1    -vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTE])[kte]=(one-q)/(one+q)*(f_BW-f_TE+(f_BW+f_TE-two*feq*om1)/(one-om1))*c1o2+(q*(f_BW+f_TE))/(one+q) - c1over54 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o54* (drho/*+three*(-vx1    -vx3)*/+c9o2*(-vx1    -vx3)*(-vx1    -vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTE])[kte]=(c1o1-q)/(c1o1+q)*(f_BW-f_TE+(f_BW+f_TE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BW+f_TE))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirBE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirBE[k] + vx2 * ny_dirBE[k] + vx3 * nz_dirBE[k]) * nx_dirBE[k];
 		 VeloZ = vx3 - (vx1 * nx_dirBE[k] + vx2 * ny_dirBE[k] + vx3 * nz_dirBE[k]) * nz_dirBE[k];
@@ -2867,13 +2868,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( nx_dirBE[k]-nz_dirBE[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over54* (drho/*+three*( vx1    -vx3)*/+c9over2*( vx1    -vx3)*( vx1    -vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTW])[ktw]=(one-q)/(one+q)*(f_BE-f_TW+(f_BE+f_TW-two*feq*om1)/(one-om1))*c1o2+(q*(f_BE+f_TW))/(one+q) - c1over54 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o54* (drho/*+three*( vx1    -vx3)*/+c9o2*( vx1    -vx3)*( vx1    -vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTW])[ktw]=(c1o1-q)/(c1o1+q)*(f_BE-f_TW+(f_BE+f_TW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BE+f_TW))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirTW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirTW[k] + vx2 * ny_dirTW[k] + vx3 * nz_dirTW[k]) * nx_dirTW[k];
 		 VeloZ = vx3 - (vx1 * nx_dirTW[k] + vx2 * ny_dirTW[k] + vx3 * nz_dirTW[k]) * nz_dirTW[k];
@@ -2883,13 +2884,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-nx_dirTW[k]+nz_dirTW[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over54* (drho/*+three*(-vx1    +vx3)*/+c9over2*(-vx1    +vx3)*(-vx1    +vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBE])[kbe]=(one-q)/(one+q)*(f_TW-f_BE+(f_TW+f_BE-two*feq*om1)/(one-om1))*c1o2+(q*(f_TW+f_BE))/(one+q) - c1over54 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o54* (drho/*+three*(-vx1    +vx3)*/+c9o2*(-vx1    +vx3)*(-vx1    +vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBE])[kbe]=(c1o1-q)/(c1o1+q)*(f_TW-f_BE+(f_TW+f_BE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TW+f_BE))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirTN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloY = vx2 - (vx1 * nx_dirTN[k] + vx2 * ny_dirTN[k] + vx3 * nz_dirTN[k]) * ny_dirTN[k];
 		 VeloZ = vx3 - (vx1 * nx_dirTN[k] + vx2 * ny_dirTN[k] + vx3 * nz_dirTN[k]) * nz_dirTN[k];
@@ -2899,13 +2900,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( ny_dirTN[k]+nz_dirTN[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over54* (drho/*+three*(     vx2+vx3)*/+c9over2*(     vx2+vx3)*(     vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBS])[kbs]=(one-q)/(one+q)*(f_TN-f_BS+(f_TN+f_BS-two*feq*om1)/(one-om1))*c1o2+(q*(f_TN+f_BS))/(one+q) - c1over54 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o54* (drho/*+three*(     vx2+vx3)*/+c9o2*(     vx2+vx3)*(     vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBS])[kbs]=(c1o1-q)/(c1o1+q)*(f_TN-f_BS+(f_TN+f_BS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TN+f_BS))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirBS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloY = vx2 - (vx1 * nx_dirBS[k] + vx2 * ny_dirBS[k] + vx3 * nz_dirBS[k]) * ny_dirBS[k];
 		 VeloZ = vx3 - (vx1 * nx_dirBS[k] + vx2 * ny_dirBS[k] + vx3 * nz_dirBS[k]) * nz_dirBS[k];
@@ -2915,13 +2916,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-ny_dirBS[k]-nz_dirBS[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over54* (drho/*+three*(    -vx2-vx3)*/+c9over2*(    -vx2-vx3)*(    -vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTN])[ktn]=(one-q)/(one+q)*(f_BS-f_TN+(f_BS+f_TN-two*feq*om1)/(one-om1))*c1o2+(q*(f_BS+f_TN))/(one+q) - c1over54 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o54* (drho/*+three*(    -vx2-vx3)*/+c9o2*(    -vx2-vx3)*(    -vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTN])[ktn]=(c1o1-q)/(c1o1+q)*(f_BS-f_TN+(f_BS+f_TN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BS+f_TN))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirBN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloY = vx2 - (vx1 * nx_dirBN[k] + vx2 * ny_dirBN[k] + vx3 * nz_dirBN[k]) * ny_dirBN[k];
 		 VeloZ = vx3 - (vx1 * nx_dirBN[k] + vx2 * ny_dirBN[k] + vx3 * nz_dirBN[k]) * nz_dirBN[k];
@@ -2931,13 +2932,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( ny_dirBN[k]-nz_dirBN[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over54* (drho/*+three*(     vx2-vx3)*/+c9over2*(     vx2-vx3)*(     vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTS])[kts]=(one-q)/(one+q)*(f_BN-f_TS+(f_BN+f_TS-two*feq*om1)/(one-om1))*c1o2+(q*(f_BN+f_TS))/(one+q) - c1over54 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o54* (drho/*+three*(     vx2-vx3)*/+c9o2*(     vx2-vx3)*(     vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTS])[kts]=(c1o1-q)/(c1o1+q)*(f_BN-f_TS+(f_BN+f_TS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BN+f_TS))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirTS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloY = vx2 - (vx1 * nx_dirTS[k] + vx2 * ny_dirTS[k] + vx3 * nz_dirTS[k]) * ny_dirTS[k];
 		 VeloZ = vx3 - (vx1 * nx_dirTS[k] + vx2 * ny_dirTS[k] + vx3 * nz_dirTS[k]) * nz_dirTS[k];
@@ -2947,13 +2948,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-ny_dirTS[k]+nz_dirTS[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over54* (drho/*+three*(    -vx2+vx3)*/+c9over2*(    -vx2+vx3)*(    -vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBN])[kbn]=(one-q)/(one+q)*(f_TS-f_BN+(f_TS+f_BN-two*feq*om1)/(one-om1))*c1o2+(q*(f_TS+f_BN))/(one+q) - c1over54 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o54* (drho/*+three*(    -vx2+vx3)*/+c9o2*(    -vx2+vx3)*(    -vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBN])[kbn]=(c1o1-q)/(c1o1+q)*(f_TS-f_BN+(f_TS+f_BN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TS+f_BN))/(c1o1+q) - c1o54 * drho;
       }
 
       q = q_dirTNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirTNE[k] + vx2 * ny_dirTNE[k] + vx3 * nz_dirTNE[k]) * nx_dirTNE[k];
 		 VeloY = vx2 - (vx1 * nx_dirTNE[k] + vx2 * ny_dirTNE[k] + vx3 * nz_dirTNE[k]) * ny_dirTNE[k];
@@ -2966,13 +2967,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( nx_dirTNE[k] + ny_dirTNE[k] + nz_dirTNE[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over216*(drho/*+three*( vx1+vx2+vx3)*/+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBSW])[kbsw]=(one-q)/(one+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-two*feq*om1)/(one-om1))*c1o2+(q*(f_TNE+f_BSW))/(one+q) - c1over216 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o216*(drho/*+three*( vx1+vx2+vx3)*/+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBSW])[kbsw]=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNE+f_BSW))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirBSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirBSW[k] + vx2 * ny_dirBSW[k] + vx3 * nz_dirBSW[k]) * nx_dirBSW[k];
 		 VeloY = vx2 - (vx1 * nx_dirBSW[k] + vx2 * ny_dirBSW[k] + vx3 * nz_dirBSW[k]) * ny_dirBSW[k];
@@ -2985,13 +2986,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-nx_dirBSW[k] - ny_dirBSW[k] - nz_dirBSW[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over216*(drho/*+three*(-vx1-vx2-vx3)*/+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTNE])[ktne]=(one-q)/(one+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-two*feq*om1)/(one-om1))*c1o2+(q*(f_BSW+f_TNE))/(one+q) - c1over216 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o216*(drho/*+three*(-vx1-vx2-vx3)*/+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTNE])[ktne]=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSW+f_TNE))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirBNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirBNE[k] + vx2 * ny_dirBNE[k] + vx3 * nz_dirBNE[k]) * nx_dirBNE[k];
 		 VeloY = vx2 - (vx1 * nx_dirBNE[k] + vx2 * ny_dirBNE[k] + vx3 * nz_dirBNE[k]) * ny_dirBNE[k];
@@ -3004,13 +3005,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( nx_dirBNE[k] + ny_dirBNE[k] - nz_dirBNE[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over216*(drho/*+three*( vx1+vx2-vx3)*/+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTSW])[ktsw]=(one-q)/(one+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-two*feq*om1)/(one-om1))*c1o2+(q*(f_BNE+f_TSW))/(one+q) - c1over216 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o216*(drho/*+three*( vx1+vx2-vx3)*/+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTSW])[ktsw]=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNE+f_TSW))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirTSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirTSW[k] + vx2 * ny_dirTSW[k] + vx3 * nz_dirTSW[k]) * nx_dirTSW[k];
 		 VeloY = vx2 - (vx1 * nx_dirTSW[k] + vx2 * ny_dirTSW[k] + vx3 * nz_dirTSW[k]) * ny_dirTSW[k];
@@ -3023,13 +3024,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-nx_dirTSW[k] - ny_dirTSW[k] + nz_dirTSW[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over216*(drho/*+three*(-vx1-vx2+vx3)*/+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBNE])[kbne]=(one-q)/(one+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-two*feq*om1)/(one-om1))*c1o2+(q*(f_TSW+f_BNE))/(one+q) - c1over216 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o216*(drho/*+three*(-vx1-vx2+vx3)*/+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBNE])[kbne]=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSW+f_BNE))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirTSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirTSE[k] + vx2 * ny_dirTSE[k] + vx3 * nz_dirTSE[k]) * nx_dirTSE[k];
 		 VeloY = vx2 - (vx1 * nx_dirTSE[k] + vx2 * ny_dirTSE[k] + vx3 * nz_dirTSE[k]) * ny_dirTSE[k];
@@ -3042,13 +3043,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( nx_dirTSE[k] - ny_dirTSE[k] + nz_dirTSE[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over216*(drho/*+three*( vx1-vx2+vx3)*/+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBNW])[kbnw]=(one-q)/(one+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-two*feq*om1)/(one-om1))*c1o2+(q*(f_TSE+f_BNW))/(one+q) - c1over216 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o216*(drho/*+three*( vx1-vx2+vx3)*/+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBNW])[kbnw]=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSE+f_BNW))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirBNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirBNW[k] + vx2 * ny_dirBNW[k] + vx3 * nz_dirBNW[k]) * nx_dirBNW[k];
 		 VeloY = vx2 - (vx1 * nx_dirBNW[k] + vx2 * ny_dirBNW[k] + vx3 * nz_dirBNW[k]) * ny_dirBNW[k];
@@ -3061,13 +3062,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-nx_dirBNW[k] + ny_dirBNW[k] - nz_dirBNW[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over216*(drho/*+three*(-vx1+vx2-vx3)*/+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTSE])[ktse]=(one-q)/(one+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-two*feq*om1)/(one-om1))*c1o2+(q*(f_BNW+f_TSE))/(one+q) - c1over216 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o216*(drho/*+three*(-vx1+vx2-vx3)*/+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTSE])[ktse]=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNW+f_TSE))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirBSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirBSE[k] + vx2 * ny_dirBSE[k] + vx3 * nz_dirBSE[k]) * nx_dirBSE[k];
 		 VeloY = vx2 - (vx1 * nx_dirBSE[k] + vx2 * ny_dirBSE[k] + vx3 * nz_dirBSE[k]) * ny_dirBSE[k];
@@ -3080,13 +3081,13 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs( nx_dirBSE[k] - ny_dirBSE[k] - nz_dirBSE[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over216*(drho/*+three*( vx1-vx2-vx3)*/+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3) * (one + drho)-cu_sq); 
-         (D.f[dirTNW])[ktnw]=(one-q)/(one+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-two*feq*om1)/(one-om1))*c1o2+(q*(f_BSE+f_TNW))/(one+q) - c1over216 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o216*(drho/*+three*( vx1-vx2-vx3)*/+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirTNW])[ktnw]=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSE+f_TNW))/(c1o1+q) - c1o216 * drho;
       }
 
       q = q_dirTNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
 		 VeloX = vx1 - (vx1 * nx_dirTNW[k] + vx2 * ny_dirTNW[k] + vx3 * nz_dirTNW[k]) * nx_dirTNW[k];
 		 VeloY = vx2 - (vx1 * nx_dirTNW[k] + vx2 * ny_dirTNW[k] + vx3 * nz_dirTNW[k]) * ny_dirTNW[k];
@@ -3099,9 +3100,9 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 		 qSlip = sliplength * fabs(-nx_dirTNW[k] + ny_dirTNW[k] + nz_dirTNW[k]);		//sliplength * e_i * n_i
 		 //qSlip = (qSlip < zero) ? zero:qSlip;
 		 //tangential = (tangential > one) ? one:tangential;
-		 q = (q + qSlip)/(one + qSlip * (one - tangential) / (smallSingle + q));
-         feq=c1over216*(drho/*+three*(-vx1+vx2+vx3)*/+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3) * (one + drho)-cu_sq); 
-         (D.f[dirBSE])[kbse]=(one-q)/(one+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-two*feq*om1)/(one-om1))*c1o2+(q*(f_TNW+f_BSE))/(one+q) - c1over216 * drho;
+		 q = (q + qSlip)/(c1o1 + qSlip * (c1o1 - tangential) / (smallSingle + q));
+         feq=c1o216*(drho/*+three*(-vx1+vx2+vx3)*/+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
+         (D.f[dirBSE])[kbse]=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNW+f_BSE))/(c1o1+q) - c1o216 * drho;
       }
    }
 }

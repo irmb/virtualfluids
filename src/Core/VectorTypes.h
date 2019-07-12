@@ -19,7 +19,7 @@ struct VF_PUBLIC Vec3 {
     real x, y, z; 
 
     __host__ __device__ Vec3(real x, real y, real z) : x(x), y(y), z(z) {}
-    __host__ __device__ Vec3() : x(zero), y(zero), z(zero) {}
+    __host__ __device__ Vec3() : x(c0o1), y(c0o1), z(c0o1) {}
 
     __host__ __device__ real length() {
         return std::sqrt( x*x + y*y + z*z );

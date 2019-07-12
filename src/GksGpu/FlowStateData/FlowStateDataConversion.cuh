@@ -32,7 +32,7 @@ __host__ __device__ inline ConservedVariables toConservedVariables( const Primit
                              ,prim.V * prim.rho
                              ,prim.W * prim.rho
                              //,getEint(prim) * prim.rho + c1o2 * prim.rho * ( prim.U * prim.U + prim.V * prim.V + prim.W * prim.W )
-                             ,( K + three ) / ( four * prim.lambda ) * prim.rho + c1o2 * prim.rho * ( prim.U * prim.U + prim.V * prim.V + prim.W * prim.W )
+                             ,( K + c3o1 ) / ( c4o1 * prim.lambda ) * prim.rho + c1o2 * prim.rho * ( prim.U * prim.U + prim.V * prim.V + prim.W * prim.W )
                              ,prim.S_1 * prim.rho
                              ,prim.S_2 * prim.rho
     );
@@ -41,7 +41,7 @@ __host__ __device__ inline ConservedVariables toConservedVariables( const Primit
                              ,prim.U * prim.rho
                              ,prim.V * prim.rho
                              ,prim.W * prim.rho
-                             ,( K + three ) / ( four * prim.lambda ) * prim.rho + c1o2 * prim.rho * ( prim.U * prim.U + prim.V * prim.V + prim.W * prim.W )
+                             ,( K + c3o1 ) / ( c4o1 * prim.lambda ) * prim.rho + c1o2 * prim.rho * ( prim.U * prim.U + prim.V * prim.V + prim.W * prim.W )
     );
 #endif
 }
@@ -62,7 +62,7 @@ __host__ __device__ inline PrimitiveVariables toPrimitiveVariables( const Conser
 						     ,cons.rhoV / cons.rho
 						     ,cons.rhoW / cons.rho
 						     //,getlambda(cons)
-						     ,( K + three ) * cons.rho / ( four * ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) )
+						     ,( K + c3o1 ) * cons.rho / ( c4o1 * ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) )
                              ,cons.rhoS_1 / cons.rho
                              ,cons.rhoS_2 / cons.rho
 	);
@@ -71,7 +71,7 @@ __host__ __device__ inline PrimitiveVariables toPrimitiveVariables( const Conser
 						     ,cons.rhoU / cons.rho
 						     ,cons.rhoV / cons.rho
 						     ,cons.rhoW / cons.rho
-						     ,( K + three ) * cons.rho / ( four * ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) )
+						     ,( K + c3o1 ) * cons.rho / ( c4o1 * ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) )
 	);
 #endif
 }

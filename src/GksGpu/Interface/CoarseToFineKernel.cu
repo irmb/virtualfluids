@@ -335,13 +335,13 @@ __host__ __device__ inline void coarseToFineFunctionPrimitiveInterpolation( Data
     readCellData(cellToCell[5], dataBase, cons[5]);
     readCellData(cellIndex, dataBase, cons[6]);
 
-    prim[0] = toPrimitiveVariables(cons[0], two);
-    prim[1] = toPrimitiveVariables(cons[1], two);
-    prim[2] = toPrimitiveVariables(cons[2], two);
-    prim[3] = toPrimitiveVariables(cons[3], two);
-    prim[4] = toPrimitiveVariables(cons[4], two);
-    prim[5] = toPrimitiveVariables(cons[5], two);
-    prim[6] = toPrimitiveVariables(cons[6], two);
+    prim[0] = toPrimitiveVariables(cons[0], c2o1);
+    prim[1] = toPrimitiveVariables(cons[1], c2o1);
+    prim[2] = toPrimitiveVariables(cons[2], c2o1);
+    prim[3] = toPrimitiveVariables(cons[3], c2o1);
+    prim[4] = toPrimitiveVariables(cons[4], c2o1);
+    prim[5] = toPrimitiveVariables(cons[5], c2o1);
+    prim[6] = toPrimitiveVariables(cons[6], c2o1);
 
     PrimitiveVariables childPrim [8];
     PrimitiveVariables zeroPrim;
@@ -361,7 +361,7 @@ __host__ __device__ inline void coarseToFineFunctionPrimitiveInterpolation( Data
 
         uint childCellIndex = dataBase.coarseToFine[ COARSE_TO_FINE( index, ( 1 + childIndex ), dataBase.numberOfFineGhostCells ) ];
 
-        ConservedVariables childCons = toConservedVariables(childPrim[childIndex], two);
+        ConservedVariables childCons = toConservedVariables(childPrim[childIndex], c2o1);
 
         writeCellData(childCellIndex, dataBase, childCons);
     }

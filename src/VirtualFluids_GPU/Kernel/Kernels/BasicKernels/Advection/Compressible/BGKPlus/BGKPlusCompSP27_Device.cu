@@ -1,6 +1,7 @@
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
+#include "Core/RealConstants.h"
 #include "math.h"
-#include "GPU/constant.h"
 
 extern "C" __global__ void LB_Kernel_BGK_Plus_Comp_SP_27(
 	real omega,
@@ -158,7 +159,7 @@ extern "C" __global__ void LB_Kernel_BGK_Plus_Comp_SP_27(
 											////////////////////////////////////////////////////////////////////////////////////
 			real rho = (mfccc + mfaaa + mfaca + mfcac + mfacc + mfcaa + mfaac + mfcca +
 				mfbac + mfbca + mfbaa + mfbcc + mfabc + mfcba + mfaba + mfcbc + mfacb + mfcab + mfaab + mfccb +
-				mfabb + mfcbb + mfbab + mfbcb + mfbba + mfbbc + mfbbb + one);//!!!!Achtung + one
+				mfabb + mfcbb + mfbab + mfbcb + mfbba + mfbbc + mfbbb + c1o1);//!!!!Achtung + one
 																			 ////////////////////////////////////////////////////////////////////////////////////
 			real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 				(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
@@ -185,50 +186,50 @@ extern "C" __global__ void LB_Kernel_BGK_Plus_Comp_SP_27(
 				mfbba + mfbbc);
 			////////////////////////////////////////////////////////////////////////////////////
 			//Galilei Korrektur
-			real Gx = -three * vx2 * (-c1o2 * (three * m200 / rho + one / rho - one - three * vx2)) * (one - omega * c1o2);
-			real Gy = -three * vy2 * (-c1o2 * (three * m020 / rho + one / rho - one - three * vy2)) * (one - omega * c1o2);
-			real Gz = -three * vz2 * (-c1o2 * (three * m002 / rho + one / rho - one - three * vz2)) * (one - omega * c1o2);
+			real Gx = -c3o1 * vx2 * (-c1o2 * (c3o1 * m200 / rho + c1o1 / rho - c1o1 - c3o1 * vx2)) * (c1o1 - omega * c1o2);
+			real Gy = -c3o1 * vy2 * (-c1o2 * (c3o1 * m020 / rho + c1o1 / rho - c1o1 - c3o1 * vy2)) * (c1o1 - omega * c1o2);
+			real Gz = -c3o1 * vz2 * (-c1o2 * (c3o1 * m002 / rho + c1o1 / rho - c1o1 - c3o1 * vz2)) * (c1o1 - omega * c1o2);
 			//real Gx     = zero;
 			//real Gy     = zero;
 			//real Gz     = zero;
 			////////////////////////////////////////////////////////////////////////////////////
 			real XXb = -c2o3 + vx2 + Gx;
-			real XXc = -c1o2 * (XXb + one + vvx);
+			real XXc = -c1o2 * (XXb + c1o1 + vvx);
 			real XXa = XXc + vvx;
 			real YYb = -c2o3 + vy2 + Gy;
-			real YYc = -c1o2 * (YYb + one + vvy);
+			real YYc = -c1o2 * (YYb + c1o1 + vvy);
 			real YYa = YYc + vvy;
 			real ZZb = -c2o3 + vz2 + Gz;
-			real ZZc = -c1o2 * (ZZb + one + vvz);
+			real ZZc = -c1o2 * (ZZb + c1o1 + vvz);
 			real ZZa = ZZc + vvz;
 			////////////////////////////////////////////////////////////////////////////////////
-			mfcbb = mfcbb * (one - omega) + omega * (-rho * XXc * YYb * ZZb - c2over27);
-			mfabb = mfabb * (one - omega) + omega * (-rho * XXa * YYb * ZZb - c2over27);
-			mfbcb = mfbcb * (one - omega) + omega * (-rho * XXb * YYc * ZZb - c2over27);
-			mfbab = mfbab * (one - omega) + omega * (-rho * XXb * YYa * ZZb - c2over27);
-			mfbbc = mfbbc * (one - omega) + omega * (-rho * XXb * YYb * ZZc - c2over27);
-			mfbba = mfbba * (one - omega) + omega * (-rho * XXb * YYb * ZZa - c2over27);
-			mfccb = mfccb * (one - omega) + omega * (-rho * XXc * YYc * ZZb - c1over54);
-			mfaab = mfaab * (one - omega) + omega * (-rho * XXa * YYa * ZZb - c1over54);
-			mfcab = mfcab * (one - omega) + omega * (-rho * XXc * YYa * ZZb - c1over54);
-			mfacb = mfacb * (one - omega) + omega * (-rho * XXa * YYc * ZZb - c1over54);
-			mfcbc = mfcbc * (one - omega) + omega * (-rho * XXc * YYb * ZZc - c1over54);
-			mfaba = mfaba * (one - omega) + omega * (-rho * XXa * YYb * ZZa - c1over54);
-			mfcba = mfcba * (one - omega) + omega * (-rho * XXc * YYb * ZZa - c1over54);
-			mfabc = mfabc * (one - omega) + omega * (-rho * XXa * YYb * ZZc - c1over54);
-			mfbcc = mfbcc * (one - omega) + omega * (-rho * XXb * YYc * ZZc - c1over54);
-			mfbaa = mfbaa * (one - omega) + omega * (-rho * XXb * YYa * ZZa - c1over54);
-			mfbca = mfbca * (one - omega) + omega * (-rho * XXb * YYc * ZZa - c1over54);
-			mfbac = mfbac * (one - omega) + omega * (-rho * XXb * YYa * ZZc - c1over54);
-			mfbbb = mfbbb * (one - omega) + omega * (-rho * XXb * YYb * ZZb - c8over27);
-			mfccc = mfccc * (one - omega) + omega * (-rho * XXc * YYc * ZZc - c1over216);
-			mfaac = mfaac * (one - omega) + omega * (-rho * XXa * YYa * ZZc - c1over216);
-			mfcac = mfcac * (one - omega) + omega * (-rho * XXc * YYa * ZZc - c1over216);
-			mfacc = mfacc * (one - omega) + omega * (-rho * XXa * YYc * ZZc - c1over216);
-			mfcca = mfcca * (one - omega) + omega * (-rho * XXc * YYc * ZZa - c1over216);
-			mfaaa = mfaaa * (one - omega) + omega * (-rho * XXa * YYa * ZZa - c1over216);
-			mfcaa = mfcaa * (one - omega) + omega * (-rho * XXc * YYa * ZZa - c1over216);
-			mfaca = mfaca * (one - omega) + omega * (-rho * XXa * YYc * ZZa - c1over216);
+			mfcbb = mfcbb * (c1o1 - omega) + omega * (-rho * XXc * YYb * ZZb - c2o27);
+			mfabb = mfabb * (c1o1 - omega) + omega * (-rho * XXa * YYb * ZZb - c2o27);
+			mfbcb = mfbcb * (c1o1 - omega) + omega * (-rho * XXb * YYc * ZZb - c2o27);
+			mfbab = mfbab * (c1o1 - omega) + omega * (-rho * XXb * YYa * ZZb - c2o27);
+			mfbbc = mfbbc * (c1o1 - omega) + omega * (-rho * XXb * YYb * ZZc - c2o27);
+			mfbba = mfbba * (c1o1 - omega) + omega * (-rho * XXb * YYb * ZZa - c2o27);
+			mfccb = mfccb * (c1o1 - omega) + omega * (-rho * XXc * YYc * ZZb - c1o54);
+			mfaab = mfaab * (c1o1 - omega) + omega * (-rho * XXa * YYa * ZZb - c1o54);
+			mfcab = mfcab * (c1o1 - omega) + omega * (-rho * XXc * YYa * ZZb - c1o54);
+			mfacb = mfacb * (c1o1 - omega) + omega * (-rho * XXa * YYc * ZZb - c1o54);
+			mfcbc = mfcbc * (c1o1 - omega) + omega * (-rho * XXc * YYb * ZZc - c1o54);
+			mfaba = mfaba * (c1o1 - omega) + omega * (-rho * XXa * YYb * ZZa - c1o54);
+			mfcba = mfcba * (c1o1 - omega) + omega * (-rho * XXc * YYb * ZZa - c1o54);
+			mfabc = mfabc * (c1o1 - omega) + omega * (-rho * XXa * YYb * ZZc - c1o54);
+			mfbcc = mfbcc * (c1o1 - omega) + omega * (-rho * XXb * YYc * ZZc - c1o54);
+			mfbaa = mfbaa * (c1o1 - omega) + omega * (-rho * XXb * YYa * ZZa - c1o54);
+			mfbca = mfbca * (c1o1 - omega) + omega * (-rho * XXb * YYc * ZZa - c1o54);
+			mfbac = mfbac * (c1o1 - omega) + omega * (-rho * XXb * YYa * ZZc - c1o54);
+			mfbbb = mfbbb * (c1o1 - omega) + omega * (-rho * XXb * YYb * ZZb - c8o27);
+			mfccc = mfccc * (c1o1 - omega) + omega * (-rho * XXc * YYc * ZZc - c1o216);
+			mfaac = mfaac * (c1o1 - omega) + omega * (-rho * XXa * YYa * ZZc - c1o216);
+			mfcac = mfcac * (c1o1 - omega) + omega * (-rho * XXc * YYa * ZZc - c1o216);
+			mfacc = mfacc * (c1o1 - omega) + omega * (-rho * XXa * YYc * ZZc - c1o216);
+			mfcca = mfcca * (c1o1 - omega) + omega * (-rho * XXc * YYc * ZZa - c1o216);
+			mfaaa = mfaaa * (c1o1 - omega) + omega * (-rho * XXa * YYa * ZZa - c1o216);
+			mfcaa = mfcaa * (c1o1 - omega) + omega * (-rho * XXc * YYa * ZZa - c1o216);
+			mfaca = mfaca * (c1o1 - omega) + omega * (-rho * XXa * YYc * ZZa - c1o216);
 			//			////////////////////////////////////////////////////////////////////////////////////
 			//			//fast
 			//			real oMdrho = one; //comp special

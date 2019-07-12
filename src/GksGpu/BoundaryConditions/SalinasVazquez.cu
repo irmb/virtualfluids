@@ -88,15 +88,15 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     {
         real x = dataBase.cellCenter[ VEC_X(ghostCellIdx, dataBase.numberOfCells) ];
 
-        real TMX = one / boundaryCondition.lambdaMX;
-        real TPX = one / boundaryCondition.lambdaPX;
+        real TMX = c1o1 / boundaryCondition.lambdaMX;
+        real TPX = c1o1 / boundaryCondition.lambdaPX;
 
         real T = TPX + ( TMX - TPX ) * ( boundaryCondition.a0 
                                        + boundaryCondition.a1*x 
                                        + boundaryCondition.a2*x*x 
                                        + boundaryCondition.a3*x*x*x );
 
-        lambda = one / T;
+        lambda = c1o1 / T;
     }
 
     PrimitiveVariables ghostCellPrim;
@@ -119,7 +119,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         ghostCellPrim.U      =              - domainCellPrim.U;
         ghostCellPrim.V      =              - domainCellPrim.V;
         ghostCellPrim.W      =              - domainCellPrim.W;
-        ghostCellPrim.lambda = two * lambda - domainCellPrim.lambda;
+        ghostCellPrim.lambda = c2o1 * lambda - domainCellPrim.lambda;
     #ifdef USE_PASSIVE_SCALAR
         ghostCellPrim.S_1    =                domainCellPrim.S_1;
         ghostCellPrim.S_2    =                domainCellPrim.S_2;
@@ -130,12 +130,12 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
             real p1 = c1o2 * domainCellPrim.rho / domainCellPrim.lambda;
             real p2 = c1o2 * secondCellPrim.rho / secondCellPrim.lambda;
 
-            ghostCellPrim.rho = two * ( two * p1 - p2 ) * ghostCellPrim.lambda;
+            ghostCellPrim.rho = c2o1 * ( c2o1 * p1 - p2 ) * ghostCellPrim.lambda;
         }
         else{
             real p = c1o2 * domainCellPrim.rho / domainCellPrim.lambda;
 
-            ghostCellPrim.rho = two * p * ghostCellPrim.lambda;
+            ghostCellPrim.rho = c2o1 * p * ghostCellPrim.lambda;
         }
     }
 

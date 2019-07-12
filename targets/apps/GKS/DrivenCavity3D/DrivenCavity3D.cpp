@@ -66,7 +66,7 @@ void drivenCavity( std::string path, std::string simulationName )
 
     real CFL = 0.5;
 
-    real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+    real dt  = CFL * ( dx / ( ( U + cs ) * ( c1o1 + ( c2o1 * mu ) / ( U * dx * rho ) ) ) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
 

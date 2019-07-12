@@ -6,9 +6,10 @@
 //
 //////////////////////////////////////////////////////////////////////////
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
+#include "Core/RealConstants.h"
 #include "math.h"
-#include "GPU/constant.h"
 
 /////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
@@ -200,7 +201,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 				(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 				((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 
-			real rho = one + drho;
+			real rho = c1o1 + drho;
 			////////////////////////////////////////////////////////////////////////////////////
 			real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 				(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
@@ -213,14 +214,14 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 				(mfbbc - mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
-			real fx = forces[0] / (pow(two, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
-			real fy = forces[1] / (pow(two, level)); //zero;
-			real fz = forces[2] / (pow(two, level)); //zero;
+			real fx = forces[0] / (pow(c2o1, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
+			real fy = forces[1] / (pow(c2o1, level)); //zero;
+			real fz = forces[2] / (pow(c2o1, level)); //zero;
 			vvx += fx;
 			vvy += fy;
 			vvz += fz;
 			////////////////////////////////////////////////////////////////////////////////////
-			real oMdrho = one; // comp special
+			real oMdrho = c1o1; // comp special
 			real m0, m1, m2;
 			real vx2;
 			real vy2;
@@ -245,7 +246,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfaaa = m0;
 			m0 += c1o36 * oMdrho;
 			mfaab = m1 - m0 * vvz;
-			mfaac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfaac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfaba + mfabc;
 			m1 = mfabc - mfaba;
@@ -253,7 +254,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfaba = m0;
 			m0 += c1o9 * oMdrho;
 			mfabb = m1 - m0 * vvz;
-			mfabc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfabc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfaca + mfacc;
 			m1 = mfacc - mfaca;
@@ -261,7 +262,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfaca = m0;
 			m0 += c1o36 * oMdrho;
 			mfacb = m1 - m0 * vvz;
-			mfacc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfacc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfbaa + mfbac;
@@ -270,7 +271,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfbaa = m0;
 			m0 += c1o9 * oMdrho;
 			mfbab = m1 - m0 * vvz;
-			mfbac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfbba + mfbbc;
 			m1 = mfbbc - mfbba;
@@ -278,7 +279,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfbba = m0;
 			m0 += c4o9 * oMdrho;
 			mfbbb = m1 - m0 * vvz;
-			mfbbc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfbca + mfbcc;
 			m1 = mfbcc - mfbca;
@@ -286,7 +287,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfbca = m0;
 			m0 += c1o9 * oMdrho;
 			mfbcb = m1 - m0 * vvz;
-			mfbcc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbcc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfcaa + mfcac;
@@ -295,7 +296,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfcaa = m0;
 			m0 += c1o36 * oMdrho;
 			mfcab = m1 - m0 * vvz;
-			mfcac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfcac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfcba + mfcbc;
 			m1 = mfcbc - mfcba;
@@ -303,7 +304,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfcba = m0;
 			m0 += c1o9 * oMdrho;
 			mfcbb = m1 - m0 * vvz;
-			mfcbc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfcbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfcca + mfccc;
 			m1 = mfccc - mfcca;
@@ -311,7 +312,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfcca = m0;
 			m0 += c1o36 * oMdrho;
 			mfccb = m1 - m0 * vvz;
-			mfccc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit  1/6, 0, 1/18, 2/3, 0, 2/9, 1/6, 0, 1/18 Konditionieren
@@ -323,14 +324,14 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfaaa = m0;
 			m0 += c1o6 * oMdrho;
 			mfaba = m1 - m0 * vvy;
-			mfaca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfaca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfaab + mfacb;
 			m1 = mfacb - mfaab;
 			m0 = m2 + mfabb;
 			mfaab = m0;
 			mfabb = m1 - m0 * vvy;
-			mfacb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfacb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfaac + mfacc;
 			m1 = mfacc - mfaac;
@@ -338,7 +339,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfaac = m0;
 			m0 += c1o18 * oMdrho;
 			mfabc = m1 - m0 * vvy;
-			mfacc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfacc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfbaa + mfbca;
@@ -347,14 +348,14 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfbaa = m0;
 			m0 += c2o3 * oMdrho;
 			mfbba = m1 - m0 * vvy;
-			mfbca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfbab + mfbcb;
 			m1 = mfbcb - mfbab;
 			m0 = m2 + mfbbb;
 			mfbab = m0;
 			mfbbb = m1 - m0 * vvy;
-			mfbcb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbcb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfbac + mfbcc;
 			m1 = mfbcc - mfbac;
@@ -362,7 +363,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfbac = m0;
 			m0 += c2o9 * oMdrho;
 			mfbbc = m1 - m0 * vvy;
-			mfbcc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbcc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfcaa + mfcca;
@@ -371,14 +372,14 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfcaa = m0;
 			m0 += c1o6 * oMdrho;
 			mfcba = m1 - m0 * vvy;
-			mfcca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfcca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfcab + mfccb;
 			m1 = mfccb - mfcab;
 			m0 = m2 + mfcbb;
 			mfcab = m0;
 			mfcbb = m1 - m0 * vvy;
-			mfccb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfccb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfcac + mfccc;
 			m1 = mfccc - mfcac;
@@ -386,7 +387,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfcac = m0;
 			m0 += c1o18 * oMdrho;
 			mfcbc = m1 - m0 * vvy;
-			mfccc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9		Konditionieren
@@ -396,16 +397,16 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			m1 = mfcaa - mfaaa;
 			m0 = m2 + mfbaa;
 			mfaaa = m0;
-			m0 += one* oMdrho;
+			m0 += c1o1* oMdrho;
 			mfbaa = m1 - m0 * vvx;
-			mfcaa = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcaa = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfaba + mfcba;
 			m1 = mfcba - mfaba;
 			m0 = m2 + mfbba;
 			mfaba = m0;
 			mfbba = m1 - m0 * vvx;
-			mfcba = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcba = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfaca + mfcca;
 			m1 = mfcca - mfaca;
@@ -413,7 +414,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfaca = m0;
 			m0 += c1o3 * oMdrho;
 			mfbca = m1 - m0 * vvx;
-			mfcca = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcca = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfaab + mfcab;
@@ -421,21 +422,21 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			m0 = m2 + mfbab;
 			mfaab = m0;
 			mfbab = m1 - m0 * vvx;
-			mfcab = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcab = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfabb + mfcbb;
 			m1 = mfcbb - mfabb;
 			m0 = m2 + mfbbb;
 			mfabb = m0;
 			mfbbb = m1 - m0 * vvx;
-			mfcbb = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcbb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfacb + mfccb;
 			m1 = mfccb - mfacb;
 			m0 = m2 + mfbcb;
 			mfacb = m0;
 			mfbcb = m1 - m0 * vvx;
-			mfccb = m2 - two*	m1 * vvx + vx2 * m0;
+			mfccb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfaac + mfcac;
@@ -444,14 +445,14 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfaac = m0;
 			m0 += c1o3 * oMdrho;
 			mfbac = m1 - m0 * vvx;
-			mfcac = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcac = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfabc + mfcbc;
 			m1 = mfcbc - mfabc;
 			m0 = m2 + mfbbc;
 			mfabc = m0;
 			mfbbc = m1 - m0 * vvx;
-			mfcbc = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcbc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2 = mfacc + mfccc;
 			m1 = mfccc - mfacc;
@@ -459,65 +460,65 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mfacc = m0;
 			m0 += c1o9 * oMdrho;
 			mfbcc = m1 - m0 * vvx;
-			mfccc = m2 - two*	m1 * vvx + vx2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 
 			////////////////////////////////////////////////////////////////////////////////////
 			// Cumulants
 			////////////////////////////////////////////////////////////////////////////////////
-			real OxxPyyPzz = one;	//set the bulk viscosity one is high / two is very low and zero is (too) high ... (also called omega 2)
+			real OxxPyyPzz = c1o1;	//set the bulk viscosity one is high / two is very low and zero is (too) high ... (also called omega 2)
 
 									////////////////////////////////////////////////////////////
 									//3.
 									//////////////////////////////
-			real OxyyPxzz = eight*(-two + omega)*(one + two*omega) / (-eight - fourteen*omega + seven*omega*omega);//one;
-			real OxyyMxzz = eight*(-two + omega)*(-seven + four*omega) / (fiftysix - fifty*omega + nine*omega*omega);//one;
-			real Oxyz = twentyfour*(-two + omega)*(-two - seven*omega + three*omega*omega) / (fourtyeight + c152*omega - c130*omega*omega + twentynine*omega*omega*omega);//one;
+			real OxyyPxzz = c8o1*(-c2o1 + omega)*(c1o1 + c2o1*omega) / (-c8o1 - c14o1*omega + c7o1*omega*omega);//one;
+			real OxyyMxzz = c8o1*(-c2o1 + omega)*(-c7o1 + c4o1*omega) / (c56o1 - c50o1*omega + c9o1*omega*omega);//one;
+			real Oxyz = c24o1*(-c2o1 + omega)*(-c2o1 - c7o1*omega + c3o1*omega*omega) / (c48o1 + c152o1*omega - c130o1*omega*omega + c29o1*omega*omega*omega);//one;
 																																										  ////////////////////////////////////////////////////////////
 																																										  //4.
 																																										  //////////////////////////////
-			real O4 = one;
+			real O4 = c1o1;
 			//////////////////////////////
 			//real O4        = omega;//TRT
 			////////////////////////////////////////////////////////////
 			//5.
 			//////////////////////////////
-			real O5 = one;
+			real O5 = c1o1;
 			////////////////////////////////////////////////////////////
 			//6.
 			//////////////////////////////
-			real O6 = one;
+			real O6 = c1o1;
 			////////////////////////////////////////////////////////////
 
 
 			//central moments to cumulants
 			//4.
-			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) / rho;
-			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) / rho;
-			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) / rho;
+			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho;
+			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho;
+			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho;
 
-			real CUMcca = mfcca - (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
-			real CUMcac = mfcac - (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
-			real CUMacc = mfacc - (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
+			real CUMcca = mfcca - (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
+			real CUMcac = mfcac - (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
+			real CUMacc = mfacc - (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
 
 			//5.
-			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
-			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
-			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
+			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
+			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
+			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
 
 			//6.
 
-			real CUMccc = mfccc + ((-four *  mfbbb * mfbbb
+			real CUMccc = mfccc + ((-c4o1 *  mfbbb * mfbbb
 				- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-				- four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-				- two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
-				+ (four * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-					+ two * (mfcaa * mfaca * mfaac)
-					+ sixteen *  mfbba * mfbab * mfabb) / (rho * rho)
+				- c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+				- c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
+				+ (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+					+ c2o1 * (mfcaa * mfaca * mfaac)
+					+ c16o1 *  mfbba * mfbab * mfabb) / (rho * rho)
 				- c1o3 * (mfacc + mfcac + mfcca) / rho
 				- c1o9 * (mfcaa + mfaca + mfaac) / rho
-				+ (two * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+				+ (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
 					+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3
 				+ c1o27*((drho * drho - drho) / (rho*rho)));
 
@@ -528,9 +529,9 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			real mxxMzz = mfcaa - mfaac;
 
 			////////////////////////////////////////////////////////////////////////////
-			real Dxy = -three*omega*mfbba;
-			real Dxz = -three*omega*mfbab;
-			real Dyz = -three*omega*mfabb;
+			real Dxy = -c3o1*omega*mfbba;
+			real Dxz = -c3o1*omega*mfbab;
+			real Dyz = -c3o1*omega*mfabb;
 
 			//3.
 			// linear combinations
@@ -560,13 +561,13 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			mgbbc = vvz*dzuz;
 
 			//relax
-			mxxPyyPzz += OxxPyyPzz*(mfaaa - mxxPyyPzz) - three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz)
-				+ (six - three * (omega + OxxPyyPzz) + omega * OxxPyyPzz) / (three * omega) *
+			mxxPyyPzz += OxxPyyPzz*(mfaaa - mxxPyyPzz) - c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz)
+				+ (c6o1 - c3o1 * (omega + OxxPyyPzz) + omega * OxxPyyPzz) / (c3o1 * omega) *
 				(dxuxdxux + dyuydyuy + dzuzdzuz);
-			mxxMyy += omega * (-mxxMyy) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy)
-				+ omega * (two*(one / omega - c1o2) * (one / omega - c1o2) - c1o6) * (dxuxdxux - dyuydyuy);
-			mxxMzz += omega * (-mxxMzz) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz)
-				+ omega * (two*(one / omega - c1o2) * (one / omega - c1o2) - c1o6) *(dxuxdxux - dzuzdzuz);
+			mxxMyy += omega * (-mxxMyy) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy)
+				+ omega * (c2o1*(c1o1 / omega - c1o2) * (c1o1 / omega - c1o2) - c1o6) * (dxuxdxux - dyuydyuy);
+			mxxMzz += omega * (-mxxMzz) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz)
+				+ omega * (c2o1*(c1o1 / omega - c1o2) * (c1o1 / omega - c1o2) - c1o6) *(dxuxdxux - dzuzdzuz);
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

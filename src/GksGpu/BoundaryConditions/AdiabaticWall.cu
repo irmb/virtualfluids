@@ -103,9 +103,9 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
             }
         }
 
-        ghostCellPrim.U      = two * boundaryCondition.velocity.x - domainCellPrim.U;
-        ghostCellPrim.V      = two * boundaryCondition.velocity.y - domainCellPrim.V;
-        ghostCellPrim.W      = two * boundaryCondition.velocity.z - domainCellPrim.W;
+        ghostCellPrim.U      = c2o1 * boundaryCondition.velocity.x - domainCellPrim.U;
+        ghostCellPrim.V      = c2o1 * boundaryCondition.velocity.y - domainCellPrim.V;
+        ghostCellPrim.W      = c2o1 * boundaryCondition.velocity.z - domainCellPrim.W;
 
         ghostCellPrim.lambda = domainCellPrim.lambda;
     #ifdef USE_PASSIVE_SCALAR
@@ -118,12 +118,12 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
             real p1 = c1o2 * domainCellPrim.rho / domainCellPrim.lambda;
             real p2 = c1o2 * secondCellPrim.rho / secondCellPrim.lambda;
 
-            ghostCellPrim.rho = two * ( two * p1 - p2 ) * ghostCellPrim.lambda;
+            ghostCellPrim.rho = c2o1 * ( c2o1 * p1 - p2 ) * ghostCellPrim.lambda;
         }
         else{
             real p = c1o2 * domainCellPrim.rho / domainCellPrim.lambda;
 
-            ghostCellPrim.rho = two * p * ghostCellPrim.lambda;
+            ghostCellPrim.rho = c2o1 * p * ghostCellPrim.lambda;
         }
     }
 

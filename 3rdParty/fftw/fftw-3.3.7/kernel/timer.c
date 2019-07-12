@@ -146,7 +146,7 @@ typedef crude_time ticks;
        int repeat;
 
        X(plan_awake)(pln, AWAKE_ZERO);
-       p->adt->zero(p);
+       p->adt->c0o1(p);
 
   start_over:
        for (iter = 1; iter; iter *= 2) {

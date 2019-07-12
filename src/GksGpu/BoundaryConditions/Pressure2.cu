@@ -104,9 +104,9 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         }
 
         //ghostCellPrim.rho    = two * domainCellPrim.rho    - secondCellPrim.rho;
-        ghostCellPrim.U      = two * domainCellPrim.U      - secondCellPrim.U;
-        ghostCellPrim.V      = two * domainCellPrim.V      - secondCellPrim.V;
-        ghostCellPrim.W      = two * domainCellPrim.W      - secondCellPrim.W;
+        ghostCellPrim.U      = c2o1 * domainCellPrim.U      - secondCellPrim.U;
+        ghostCellPrim.V      = c2o1 * domainCellPrim.V      - secondCellPrim.V;
+        ghostCellPrim.W      = c2o1 * domainCellPrim.W      - secondCellPrim.W;
         //ghostCellPrim.lambda = two * domainCellPrim.lambda - secondCellPrim.lambda;
         ghostCellPrim.lambda = domainCellPrim.lambda;
     #ifdef USE_PASSIVE_SCALAR
@@ -119,8 +119,8 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     #endif // USE_PASSIVE_SCALAR
 
 
-        real rho0 = ( two * boundaryCondition.p0 * c1o2 * ( domainCellPrim.lambda + ghostCellPrim.lambda ) );
-        ghostCellPrim.rho = two * rho0 - domainCellPrim.rho;
+        real rho0 = ( c2o1 * boundaryCondition.p0 * c1o2 * ( domainCellPrim.lambda + ghostCellPrim.lambda ) );
+        ghostCellPrim.rho = c2o1 * rho0 - domainCellPrim.rho;
 
         //real lambda0 = ( c1o2 * ( domainCellPrim.rho + ghostCellPrim.rho  ) * c1o2 / boundaryCondition.p0 );
         //ghostCellPrim.lambda = two * lambda0 - domainCellPrim.lambda;
@@ -145,14 +145,14 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
         //////////////////////////////////////////////////////////////////////////
 
-        if( sign < zero )
+        if( sign < c0o1 )
         {
             //ghostCellPrim.U = - domainCellPrim.U;
             //ghostCellPrim.V = - domainCellPrim.V;
             //ghostCellPrim.W = - domainCellPrim.W;
-            ghostCellPrim.U = zero;
-            ghostCellPrim.V = zero;
-            ghostCellPrim.W = zero;
+            ghostCellPrim.U = c0o1;
+            ghostCellPrim.V = c0o1;
+            ghostCellPrim.W = c0o1;
         }
     }
 

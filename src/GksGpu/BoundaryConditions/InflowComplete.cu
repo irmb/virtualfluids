@@ -117,8 +117,8 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
             //#endif // USE_PASSIVE_SCALAR
 
             ghostCellPrim.rho = boundaryCondition.prim.rho;
-            ghostCellPrim.U = two * boundaryCondition.prim.U - domainCellPrim.U;
-            ghostCellPrim.V = two * boundaryCondition.prim.V - domainCellPrim.V;
+            ghostCellPrim.U = c2o1 * boundaryCondition.prim.U - domainCellPrim.U;
+            ghostCellPrim.V = c2o1 * boundaryCondition.prim.V - domainCellPrim.V;
             //ghostCellPrim.W = two * boundaryCondition.prim.W - domainCellPrim.W;
             ghostCellPrim.W      = boundaryCondition.prim.W;
             //ghostCellPrim.lambda = boundaryCondition.prim.lambda;
@@ -132,9 +132,9 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
             real r = sqrt(y*y + x*x);
 
-            ghostCellPrim.W *= (one - four*r*r);
+            ghostCellPrim.W *= (c1o1 - c4o1*r*r);
 #ifdef USE_PASSIVE_SCALAR
-            ghostCellPrim.S_1 *= (one - four*r*r);
+            ghostCellPrim.S_1 *= (c1o1 - c4o1*r*r);
             ghostCellPrim.S_2 = boundaryCondition.prim.S_2 - ghostCellPrim.S_1;
 #endif // USE_PASSIVE_SCALAR
         }
@@ -180,7 +180,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         //                   + momentU[0 + 1] * momentW [2]
         //                   + momentU[0 + 1] * momentXi[2] );
 
-        flux.rhoE = momentU[0 + 1] * c1o4 * ( parameters.K + five ) / boundaryCondition.prim.lambda;
+        flux.rhoE = momentU[0 + 1] * c1o4 * ( parameters.K + c5o1 ) / boundaryCondition.prim.lambda;
 
         //////////////////////////////////////////////////////////////////////////
 
@@ -221,10 +221,10 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     #pragma unroll
         for( uint i = 0; i < LENGTH_CELL_DATA; i++ )
         { 
-            ax[i] = zero; 
-            ay[i] = zero; 
-            az[i] = zero; 
-            at[i] = zero;
+            ax[i] = c0o1; 
+            ay[i] = c0o1; 
+            az[i] = c0o1; 
+            at[i] = c0o1;
         }
         
         {

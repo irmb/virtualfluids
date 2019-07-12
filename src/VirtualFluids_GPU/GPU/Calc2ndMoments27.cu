@@ -1,6 +1,8 @@
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "GPU/constant.h"
+#include "Core/RealConstants.h"
+
 
 ////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
@@ -150,20 +152,20 @@ extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
 	  f_BNW  = (D.f[dirBNW ])[kbnw ];
       //////////////////////////////////////////////////////////////////////////
 	  real vx1, vx2, vx3;
-      kxyFromfcNEQ[k]       = zero;
-	  kyzFromfcNEQ[k]       = zero;
-	  kxzFromfcNEQ[k]       = zero;
-	  kxxMyyFromfcNEQ[k]    = zero;
-	  kxxMzzFromfcNEQ[k]    = zero;
+      kxyFromfcNEQ[k]       = c0o1;
+	  kyzFromfcNEQ[k]       = c0o1;
+	  kxzFromfcNEQ[k]       = c0o1;
+	  kxxMyyFromfcNEQ[k]    = c0o1;
+	  kxxMzzFromfcNEQ[k]    = c0o1;
 
       if(geoD[k] == GEO_FLUID)
       {
 		  vx1                = ((f_TNE-f_BSW)+(f_BSE-f_TNW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W);
 		  vx2                = ((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S);
 		  vx3                = ((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSW-f_BNE)+(f_TSE-f_BNW)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B);
-		  kxyFromfcNEQ[k]    = -three *(f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE-(vx1*vx2));
-		  kyzFromfcNEQ[k]    = -three *(f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW-(vx2*vx3));
-		  kxzFromfcNEQ[k]    = -three *(f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE-(vx1*vx3));
+		  kxyFromfcNEQ[k]    = -c3o1 *(f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE-(vx1*vx2));
+		  kyzFromfcNEQ[k]    = -c3o1 *(f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW-(vx2*vx3));
+		  kxzFromfcNEQ[k]    = -c3o1 *(f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE-(vx1*vx3));
 		  kxxMyyFromfcNEQ[k] = -c3o2 * (f_BW+f_W+f_TW-f_BS-f_S-f_TS-f_BN-f_N-f_TN+f_BE+f_E+f_TE-(vx1*vx1-vx2*vx2));		//all E+W minus all N+S (no combinations of xy left)
 		  kxxMzzFromfcNEQ[k] = -c3o2 * (f_SW+f_W+f_NW-f_BS-f_TS-f_B-f_T-f_BN-f_TN+f_SE+f_E+f_NE-(vx1*vx1-vx3*vx3));		//all E+W minus all T+B (no combinations of xz left)
       }
@@ -349,24 +351,24 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 	  f_BNW  = (D.f[dirBNW ])[kbnw ];
       //////////////////////////////////////////////////////////////////////////
 	  real vx1, vx2, vx3, drho, rho;
-      kxyFromfcNEQ[k]       = zero;
-	  kyzFromfcNEQ[k]       = zero;
-	  kxzFromfcNEQ[k]       = zero;
-	  kxxMyyFromfcNEQ[k]    = zero;
-	  kxxMzzFromfcNEQ[k]    = zero;
+      kxyFromfcNEQ[k]       = c0o1;
+	  kyzFromfcNEQ[k]       = c0o1;
+	  kxzFromfcNEQ[k]       = c0o1;
+	  kxxMyyFromfcNEQ[k]    = c0o1;
+	  kxxMzzFromfcNEQ[k]    = c0o1;
 
       if(geoD[k] == GEO_FLUID)
       {
 		  drho               = ((f_TNE+f_BSW)+(f_BSE+f_TNW)+(f_BNE+f_TSW)+(f_TSE+f_BNW)) + 
 							   ((f_NE+f_SW)+(f_TE+f_BW)+(f_SE+f_NW)+(f_BE+f_TW)+(f_BN+f_TS)+(f_TN+f_BS)) + 
 							   ((f_E-f_W) + (f_N-f_S) + (f_T-f_B)) + f_ZERO;
-		  rho                = rho + one;
+		  rho                = rho + c1o1;
 		  vx1                = ((f_TNE-f_BSW)+(f_BSE-f_TNW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W) / rho;
 		  vx2                = ((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S) / rho;
 		  vx3                = ((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSW-f_BNE)+(f_TSE-f_BNW)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B) / rho;
-		  kxyFromfcNEQ[k]    = -three *(f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE-(vx1*vx2));
-		  kyzFromfcNEQ[k]    = -three *(f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW-(vx2*vx3));
-		  kxzFromfcNEQ[k]    = -three *(f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE-(vx1*vx3));
+		  kxyFromfcNEQ[k]    = -c3o1 *(f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE-(vx1*vx2));
+		  kyzFromfcNEQ[k]    = -c3o1 *(f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW-(vx2*vx3));
+		  kxzFromfcNEQ[k]    = -c3o1 *(f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE-(vx1*vx3));
 		  kxxMyyFromfcNEQ[k] = -c3o2 * (f_BW+f_W+f_TW-f_BS-f_S-f_TS-f_BN-f_N-f_TN+f_BE+f_E+f_TE-(vx1*vx1-vx2*vx2));		//all E+W minus all N+S (no combinations of xy left)
 		  kxxMzzFromfcNEQ[k] = -c3o2 * (f_SW+f_W+f_NW-f_BS-f_TS-f_B-f_T-f_BN-f_TN+f_SE+f_E+f_NE-(vx1*vx1-vx3*vx3));		//all E+W minus all T+B (no combinations of xz left)
       }
@@ -549,7 +551,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba));
 			////////////////////////////////////////////////////////////////////////////////////
-			real oMdrho = one - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
+			real oMdrho = c1o1 - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
 								   mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +
 								   mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb);
 			////////////////////////////////////////////////////////////////////////////////////
@@ -572,7 +574,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfaaa = m0;
 			m0   += c1o36 * oMdrho;	
 			mfaab = m1 -		m0 * vvz;
-			mfaac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfaac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaba  + mfabc;
 			m1    = mfabc  - mfaba;
@@ -580,7 +582,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfaba = m0;
 			m0   += c1o9 * oMdrho;
 			mfabb = m1 -		m0 * vvz;
-			mfabc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfabc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaca  + mfacc;
 			m1    = mfacc  - mfaca;
@@ -588,7 +590,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfaca = m0;
 			m0   += c1o36 * oMdrho;
 			mfacb = m1 -		m0 * vvz;
-			mfacc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfacc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbaa	+ mfbac;
@@ -597,7 +599,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfbaa = m0;
 			m0   += c1o9 * oMdrho;
 			mfbab = m1 -		m0 * vvz;
-			mfbac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbba  + mfbbc;
 			m1    = mfbbc  - mfbba;
@@ -605,7 +607,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfbba = m0;
 			m0   += c4o9 * oMdrho;
 			mfbbb = m1 -		m0 * vvz;
-			mfbbc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbca  + mfbcc;
 			m1    = mfbcc  - mfbca;
@@ -613,7 +615,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfbca = m0;
 			m0   += c1o9 * oMdrho;
 			mfbcb = m1 -		m0 * vvz;
-			mfbcc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbcc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcaa	+ mfcac;
@@ -622,7 +624,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfcaa = m0;
 			m0   += c1o36 * oMdrho;
 			mfcab = m1 -		m0 * vvz;
-			mfcac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfcac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcba  + mfcbc;
 			m1    = mfcbc  - mfcba;
@@ -630,7 +632,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfcba = m0;
 			m0   += c1o9 * oMdrho;
 			mfcbb = m1 -		m0 * vvz;
-			mfcbc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfcbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcca  + mfccc;
 			m1    = mfccc  - mfcca;
@@ -638,7 +640,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfcca = m0;
 			m0   += c1o36 * oMdrho;
 			mfccb = m1 -		m0 * vvz;
-			mfccc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit  1/6, 0, 1/18, 2/3, 0, 2/9, 1/6, 0, 1/18 Konditionieren
@@ -650,14 +652,14 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfaaa = m0;
 			m0   += c1o6 * oMdrho;
 			mfaba = m1 -		m0 * vvy;
-			mfaca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfaca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaab  + mfacb;
 			m1    = mfacb  - mfaab;
 			m0    = m2		+ mfabb;
 			mfaab = m0;
 			mfabb = m1 -		m0 * vvy;
-			mfacb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfacb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaac  + mfacc;
 			m1    = mfacc  - mfaac;
@@ -665,7 +667,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfaac = m0;
 			m0   += c1o18 * oMdrho;
 			mfabc = m1 -		m0 * vvy;
-			mfacc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfacc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbaa	+ mfbca;
@@ -674,14 +676,14 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfbaa = m0;
 			m0   += c2o3 * oMdrho;
 			mfbba = m1 -		m0 * vvy;
-			mfbca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbab  + mfbcb;
 			m1    = mfbcb  - mfbab;
 			m0    = m2		+ mfbbb;
 			mfbab = m0;
 			mfbbb = m1 -		m0 * vvy;
-			mfbcb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbcb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbac  + mfbcc;
 			m1    = mfbcc  - mfbac;
@@ -689,7 +691,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfbac = m0;
 			m0   += c2o9 * oMdrho;
 			mfbbc = m1 -		m0 * vvy;
-			mfbcc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbcc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcaa	+ mfcca;
@@ -698,14 +700,14 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfcaa = m0;
 			m0   += c1o6 * oMdrho;
 			mfcba = m1 -		m0 * vvy;
-			mfcca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfcca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcab  + mfccb;
 			m1    = mfccb  - mfcab;
 			m0    = m2		+ mfcbb;
 			mfcab = m0;
 			mfcbb = m1 -		m0 * vvy;
-			mfccb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfccb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcac  + mfccc;
 			m1    = mfccc  - mfcac;
@@ -713,7 +715,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfcac = m0;
 			m0   += c1o18 * oMdrho;
 			mfcbc = m1 -		m0 * vvy;
-			mfccc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9		Konditionieren
@@ -723,16 +725,16 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			m1    = mfcaa	- mfaaa;
 			m0    = m2		+ mfbaa;
 			mfaaa = m0;
-			m0   += one* oMdrho;
+			m0   += c1o1* oMdrho;
 			mfbaa = m1 -		m0 * vvx;
-			mfcaa = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcaa = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaba  + mfcba;
 			m1    = mfcba  - mfaba;
 			m0    = m2		+ mfbba;
 			mfaba = m0;
 			mfbba = m1 -		m0 * vvx;
-			mfcba = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcba = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaca  + mfcca;
 			m1    = mfcca  - mfaca;
@@ -740,7 +742,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfaca = m0;
 			m0   += c1o3 * oMdrho;
 			mfbca = m1 -		m0 * vvx;
-			mfcca = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcca = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaab	+ mfcab;
@@ -748,21 +750,21 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			m0    = m2		+ mfbab;
 			mfaab = m0;
 			mfbab = m1 -		m0 * vvx;
-			mfcab = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcab = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfabb  + mfcbb;
 			m1    = mfcbb  - mfabb;
 			m0    = m2		+ mfbbb;
 			mfabb = m0;
 			mfbbb = m1 -		m0 * vvx;
-			mfcbb = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcbb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfacb  + mfccb;
 			m1    = mfccb  - mfacb;
 			m0    = m2		+ mfbcb;
 			mfacb = m0;
 			mfbcb = m1 -		m0 * vvx;
-			mfccb = m2 - two*	m1 * vvx + vx2 * m0;
+			mfccb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaac	+ mfcac;
@@ -771,14 +773,14 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfaac = m0;
 			m0   += c1o3 * oMdrho;
 			mfbac = m1 -		m0 * vvx;
-			mfcac = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcac = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfabc  + mfcbc;
 			m1    = mfcbc  - mfabc;
 			m0    = m2		+ mfbbc;
 			mfabc = m0;
 			mfbbc = m1 -		m0 * vvx;
-			mfcbc = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcbc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfacc  + mfccc;
 			m1    = mfccc  - mfacc;
@@ -786,7 +788,7 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
 			mfacc = m0;
 			m0   += c1o9 * oMdrho;
 			mfbcc = m1 -		m0 * vvx;
-			mfccc = m2 - two*	m1 * vvx + vx2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 
@@ -977,7 +979,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
 							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
 
-			real rho = one+drho;
+			real rho = c1o1+drho;
 			////////////////////////////////////////////////////////////////////////////////////
 			real vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
@@ -989,7 +991,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
-			real oMdrho = one; // comp special
+			real oMdrho = c1o1; // comp special
 			////////////////////////////////////////////////////////////////////////////////////
 			real m0, m1, m2;	
 			real vx2;
@@ -1010,7 +1012,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfaaa = m0;
 			m0   += c1o36 * oMdrho;	
 			mfaab = m1 -		m0 * vvz;
-			mfaac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfaac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaba  + mfabc;
 			m1    = mfabc  - mfaba;
@@ -1018,7 +1020,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfaba = m0;
 			m0   += c1o9 * oMdrho;
 			mfabb = m1 -		m0 * vvz;
-			mfabc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfabc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaca  + mfacc;
 			m1    = mfacc  - mfaca;
@@ -1026,7 +1028,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfaca = m0;
 			m0   += c1o36 * oMdrho;
 			mfacb = m1 -		m0 * vvz;
-			mfacc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfacc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbaa	+ mfbac;
@@ -1035,7 +1037,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfbaa = m0;
 			m0   += c1o9 * oMdrho;
 			mfbab = m1 -		m0 * vvz;
-			mfbac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbba  + mfbbc;
 			m1    = mfbbc  - mfbba;
@@ -1043,7 +1045,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfbba = m0;
 			m0   += c4o9 * oMdrho;
 			mfbbb = m1 -		m0 * vvz;
-			mfbbc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbca  + mfbcc;
 			m1    = mfbcc  - mfbca;
@@ -1051,7 +1053,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfbca = m0;
 			m0   += c1o9 * oMdrho;
 			mfbcb = m1 -		m0 * vvz;
-			mfbcc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbcc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcaa	+ mfcac;
@@ -1060,7 +1062,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfcaa = m0;
 			m0   += c1o36 * oMdrho;
 			mfcab = m1 -		m0 * vvz;
-			mfcac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfcac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcba  + mfcbc;
 			m1    = mfcbc  - mfcba;
@@ -1068,7 +1070,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfcba = m0;
 			m0   += c1o9 * oMdrho;
 			mfcbb = m1 -		m0 * vvz;
-			mfcbc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfcbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcca  + mfccc;
 			m1    = mfccc  - mfcca;
@@ -1076,7 +1078,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfcca = m0;
 			m0   += c1o36 * oMdrho;
 			mfccb = m1 -		m0 * vvz;
-			mfccc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit  1/6, 0, 1/18, 2/3, 0, 2/9, 1/6, 0, 1/18 Konditionieren
@@ -1088,14 +1090,14 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfaaa = m0;
 			m0   += c1o6 * oMdrho;
 			mfaba = m1 -		m0 * vvy;
-			mfaca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfaca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaab  + mfacb;
 			m1    = mfacb  - mfaab;
 			m0    = m2		+ mfabb;
 			mfaab = m0;
 			mfabb = m1 -		m0 * vvy;
-			mfacb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfacb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaac  + mfacc;
 			m1    = mfacc  - mfaac;
@@ -1103,7 +1105,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfaac = m0;
 			m0   += c1o18 * oMdrho;
 			mfabc = m1 -		m0 * vvy;
-			mfacc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfacc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbaa	+ mfbca;
@@ -1112,14 +1114,14 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfbaa = m0;
 			m0   += c2o3 * oMdrho;
 			mfbba = m1 -		m0 * vvy;
-			mfbca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbab  + mfbcb;
 			m1    = mfbcb  - mfbab;
 			m0    = m2		+ mfbbb;
 			mfbab = m0;
 			mfbbb = m1 -		m0 * vvy;
-			mfbcb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbcb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbac  + mfbcc;
 			m1    = mfbcc  - mfbac;
@@ -1127,7 +1129,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfbac = m0;
 			m0   += c2o9 * oMdrho;
 			mfbbc = m1 -		m0 * vvy;
-			mfbcc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbcc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcaa	+ mfcca;
@@ -1136,14 +1138,14 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfcaa = m0;
 			m0   += c1o6 * oMdrho;
 			mfcba = m1 -		m0 * vvy;
-			mfcca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfcca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcab  + mfccb;
 			m1    = mfccb  - mfcab;
 			m0    = m2		+ mfcbb;
 			mfcab = m0;
 			mfcbb = m1 -		m0 * vvy;
-			mfccb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfccb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcac  + mfccc;
 			m1    = mfccc  - mfcac;
@@ -1151,7 +1153,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfcac = m0;
 			m0   += c1o18 * oMdrho;
 			mfcbc = m1 -		m0 * vvy;
-			mfccc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9		Konditionieren
@@ -1161,16 +1163,16 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			m1    = mfcaa	- mfaaa;
 			m0    = m2		+ mfbaa;
 			mfaaa = m0;
-			m0   += one* oMdrho;
+			m0   += c1o1* oMdrho;
 			mfbaa = m1 -		m0 * vvx;
-			mfcaa = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcaa = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaba  + mfcba;
 			m1    = mfcba  - mfaba;
 			m0    = m2		+ mfbba;
 			mfaba = m0;
 			mfbba = m1 -		m0 * vvx;
-			mfcba = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcba = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaca  + mfcca;
 			m1    = mfcca  - mfaca;
@@ -1178,7 +1180,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfaca = m0;
 			m0   += c1o3 * oMdrho;
 			mfbca = m1 -		m0 * vvx;
-			mfcca = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcca = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaab	+ mfcab;
@@ -1186,21 +1188,21 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			m0    = m2		+ mfbab;
 			mfaab = m0;
 			mfbab = m1 -		m0 * vvx;
-			mfcab = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcab = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfabb  + mfcbb;
 			m1    = mfcbb  - mfabb;
 			m0    = m2		+ mfbbb;
 			mfabb = m0;
 			mfbbb = m1 -		m0 * vvx;
-			mfcbb = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcbb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfacb  + mfccb;
 			m1    = mfccb  - mfacb;
 			m0    = m2		+ mfbcb;
 			mfacb = m0;
 			mfbcb = m1 -		m0 * vvx;
-			mfccb = m2 - two*	m1 * vvx + vx2 * m0;
+			mfccb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaac	+ mfcac;
@@ -1209,14 +1211,14 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfaac = m0;
 			m0   += c1o3 * oMdrho;
 			mfbac = m1 -		m0 * vvx;
-			mfcac = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcac = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfabc  + mfcbc;
 			m1    = mfcbc  - mfabc;
 			m0    = m2		+ mfbbc;
 			mfabc = m0;
 			mfbbc = m1 -		m0 * vvx;
-			mfcbc = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcbc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfacc  + mfccc;
 			m1    = mfccc  - mfacc;
@@ -1224,7 +1226,7 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
 			mfacc = m0;
 			m0   += c1o9 * oMdrho;
 			mfbcc = m1 -		m0 * vvx;
-			mfccc = m2 - two*	m1 * vvx + vx2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 
@@ -1424,7 +1426,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba));
 			////////////////////////////////////////////////////////////////////////////////////
-			real oMdrho = one - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
+			real oMdrho = c1o1 - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
 								   mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +
 								   mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb);
 			////////////////////////////////////////////////////////////////////////////////////
@@ -1447,7 +1449,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfaaa = m0;
 			m0   += c1o36 * oMdrho;	
 			mfaab = m1 -		m0 * vvz;
-			mfaac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfaac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaba  + mfabc;
 			m1    = mfabc  - mfaba;
@@ -1455,7 +1457,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfaba = m0;
 			m0   += c1o9 * oMdrho;
 			mfabb = m1 -		m0 * vvz;
-			mfabc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfabc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaca  + mfacc;
 			m1    = mfacc  - mfaca;
@@ -1463,7 +1465,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfaca = m0;
 			m0   += c1o36 * oMdrho;
 			mfacb = m1 -		m0 * vvz;
-			mfacc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfacc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbaa	+ mfbac;
@@ -1472,7 +1474,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfbaa = m0;
 			m0   += c1o9 * oMdrho;
 			mfbab = m1 -		m0 * vvz;
-			mfbac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbba  + mfbbc;
 			m1    = mfbbc  - mfbba;
@@ -1480,7 +1482,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfbba = m0;
 			m0   += c4o9 * oMdrho;
 			mfbbb = m1 -		m0 * vvz;
-			mfbbc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbca  + mfbcc;
 			m1    = mfbcc  - mfbca;
@@ -1488,7 +1490,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfbca = m0;
 			m0   += c1o9 * oMdrho;
 			mfbcb = m1 -		m0 * vvz;
-			mfbcc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbcc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcaa	+ mfcac;
@@ -1497,7 +1499,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfcaa = m0;
 			m0   += c1o36 * oMdrho;
 			mfcab = m1 -		m0 * vvz;
-			mfcac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfcac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcba  + mfcbc;
 			m1    = mfcbc  - mfcba;
@@ -1505,7 +1507,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfcba = m0;
 			m0   += c1o9 * oMdrho;
 			mfcbb = m1 -		m0 * vvz;
-			mfcbc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfcbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcca  + mfccc;
 			m1    = mfccc  - mfcca;
@@ -1513,7 +1515,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfcca = m0;
 			m0   += c1o36 * oMdrho;
 			mfccb = m1 -		m0 * vvz;
-			mfccc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit  1/6, 0, 1/18, 2/3, 0, 2/9, 1/6, 0, 1/18 Konditionieren
@@ -1525,14 +1527,14 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfaaa = m0;
 			m0   += c1o6 * oMdrho;
 			mfaba = m1 -		m0 * vvy;
-			mfaca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfaca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaab  + mfacb;
 			m1    = mfacb  - mfaab;
 			m0    = m2		+ mfabb;
 			mfaab = m0;
 			mfabb = m1 -		m0 * vvy;
-			mfacb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfacb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaac  + mfacc;
 			m1    = mfacc  - mfaac;
@@ -1540,7 +1542,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfaac = m0;
 			m0   += c1o18 * oMdrho;
 			mfabc = m1 -		m0 * vvy;
-			mfacc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfacc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbaa	+ mfbca;
@@ -1549,14 +1551,14 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfbaa = m0;
 			m0   += c2o3 * oMdrho;
 			mfbba = m1 -		m0 * vvy;
-			mfbca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbab  + mfbcb;
 			m1    = mfbcb  - mfbab;
 			m0    = m2		+ mfbbb;
 			mfbab = m0;
 			mfbbb = m1 -		m0 * vvy;
-			mfbcb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbcb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbac  + mfbcc;
 			m1    = mfbcc  - mfbac;
@@ -1564,7 +1566,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfbac = m0;
 			m0   += c2o9 * oMdrho;
 			mfbbc = m1 -		m0 * vvy;
-			mfbcc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbcc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcaa	+ mfcca;
@@ -1573,14 +1575,14 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfcaa = m0;
 			m0   += c1o6 * oMdrho;
 			mfcba = m1 -		m0 * vvy;
-			mfcca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfcca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcab  + mfccb;
 			m1    = mfccb  - mfcab;
 			m0    = m2		+ mfcbb;
 			mfcab = m0;
 			mfcbb = m1 -		m0 * vvy;
-			mfccb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfccb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcac  + mfccc;
 			m1    = mfccc  - mfcac;
@@ -1588,7 +1590,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfcac = m0;
 			m0   += c1o18 * oMdrho;
 			mfcbc = m1 -		m0 * vvy;
-			mfccc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9		Konditionieren
@@ -1598,16 +1600,16 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			m1    = mfcaa	- mfaaa;
 			m0    = m2		+ mfbaa;
 			mfaaa = m0;
-			m0   += one* oMdrho;
+			m0   += c1o1* oMdrho;
 			mfbaa = m1 -		m0 * vvx;
-			mfcaa = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcaa = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaba  + mfcba;
 			m1    = mfcba  - mfaba;
 			m0    = m2		+ mfbba;
 			mfaba = m0;
 			mfbba = m1 -		m0 * vvx;
-			mfcba = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcba = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaca  + mfcca;
 			m1    = mfcca  - mfaca;
@@ -1615,7 +1617,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfaca = m0;
 			m0   += c1o3 * oMdrho;
 			mfbca = m1 -		m0 * vvx;
-			mfcca = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcca = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaab	+ mfcab;
@@ -1623,21 +1625,21 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			m0    = m2		+ mfbab;
 			mfaab = m0;
 			mfbab = m1 -		m0 * vvx;
-			mfcab = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcab = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfabb  + mfcbb;
 			m1    = mfcbb  - mfabb;
 			m0    = m2		+ mfbbb;
 			mfabb = m0;
 			mfbbb = m1 -		m0 * vvx;
-			mfcbb = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcbb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfacb  + mfccb;
 			m1    = mfccb  - mfacb;
 			m0    = m2		+ mfbcb;
 			mfacb = m0;
 			mfbcb = m1 -		m0 * vvx;
-			mfccb = m2 - two*	m1 * vvx + vx2 * m0;
+			mfccb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaac	+ mfcac;
@@ -1646,14 +1648,14 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfaac = m0;
 			m0   += c1o3 * oMdrho;
 			mfbac = m1 -		m0 * vvx;
-			mfcac = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcac = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfabc  + mfcbc;
 			m1    = mfcbc  - mfabc;
 			m0    = m2		+ mfbbc;
 			mfabc = m0;
 			mfbbc = m1 -		m0 * vvx;
-			mfcbc = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcbc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfacc  + mfccc;
 			m1    = mfccc  - mfacc;
@@ -1661,7 +1663,7 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			mfacc = m0;
 			m0   += c1o9 * oMdrho;
 			mfbcc = m1 -		m0 * vvx;
-			mfccc = m2 - two*	m1 * vvx + vx2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 
@@ -1670,30 +1672,30 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
 			// Cumulants
 			////////////////////////////////////////////////////////////////////////////////////
 			//Cum 4.
-			CUMcbb[k]      = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + two * mfbba * mfbab); 
-			CUMbcb[k]      = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + two * mfbba * mfabb); 
-			CUMbbc[k]      = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + two * mfbab * mfabb); 
+			CUMcbb[k]      = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + c2o1 * mfbba * mfbab); 
+			CUMbcb[k]      = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + c2o1 * mfbba * mfabb); 
+			CUMbbc[k]      = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + c2o1 * mfbab * mfabb); 
 
-			CUMcca[k]      = mfcca - ((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9*(oMdrho-one)*oMdrho);
-			CUMcac[k]      = mfcac - ((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9*(oMdrho-one)*oMdrho);
-			CUMacc[k]      = mfacc - ((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9*(oMdrho-one)*oMdrho);
+			CUMcca[k]      = mfcca - ((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9*(oMdrho-c1o1)*oMdrho);
+			CUMcac[k]      = mfcac - ((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9*(oMdrho-c1o1)*oMdrho);
+			CUMacc[k]      = mfacc - ((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9*(oMdrho-c1o1)*oMdrho);
 
 			//Cum 5.
-			CUMbcc[k]      = mfbcc - (mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
-			CUMcbc[k]      = mfcbc - (mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
-			CUMccb[k]      = mfccb - (mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
+			CUMbcc[k]      = mfbcc - (mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
+			CUMcbc[k]      = mfcbc - (mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
+			CUMccb[k]      = mfccb - (mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
 
 			//Cum 6.
-			CUMccc[k]      = mfccc  +((-four *  mfbbb * mfbbb  
+			CUMccc[k]      = mfccc  +((-c4o1 *  mfbbb * mfbbb  
 							-           (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-							-    four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-							-     two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
-							+(   four * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-							+     two * (mfcaa * mfaca * mfaac)
-							+ sixteen *  mfbba * mfbab * mfabb)
+							-    c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+							-     c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
+							+(   c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+							+     c2o1 * (mfcaa * mfaca * mfaac)
+							+ c16o1 *  mfbba * mfbab * mfabb)
 							-    c1o3 * (mfacc + mfcac + mfcca) * oMdrho  -c1o9*oMdrho*oMdrho
-							-    c1o9 * (mfcaa + mfaca + mfaac) * oMdrho*(one-two* oMdrho)- c1o27* oMdrho * oMdrho*(-two* oMdrho)
-							+(    two * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+							-    c1o9 * (mfcaa + mfaca + mfaac) * oMdrho*(c1o1-c2o1* oMdrho)- c1o27* oMdrho * oMdrho*(-c2o1* oMdrho)
+							+(    c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
 							+           (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa)) * c2o3*oMdrho) +c1o27*oMdrho;
 			////////////////////////////////////////////////////////////////////////////////////
 		}                                                                                                                    
@@ -1872,7 +1874,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
 							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
 
-			real rho = one+drho;
+			real rho = c1o1+drho;
 			////////////////////////////////////////////////////////////////////////////////////
 			real vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
@@ -1884,7 +1886,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
-			real oMdrho = one; // comp special
+			real oMdrho = c1o1; // comp special
 			////////////////////////////////////////////////////////////////////////////////////
 			real m0, m1, m2;	
 			real vx2;
@@ -1905,7 +1907,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfaaa = m0;
 			m0   += c1o36 * oMdrho;	
 			mfaab = m1 -		m0 * vvz;
-			mfaac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfaac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaba  + mfabc;
 			m1    = mfabc  - mfaba;
@@ -1913,7 +1915,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfaba = m0;
 			m0   += c1o9 * oMdrho;
 			mfabb = m1 -		m0 * vvz;
-			mfabc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfabc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaca  + mfacc;
 			m1    = mfacc  - mfaca;
@@ -1921,7 +1923,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfaca = m0;
 			m0   += c1o36 * oMdrho;
 			mfacb = m1 -		m0 * vvz;
-			mfacc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfacc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbaa	+ mfbac;
@@ -1930,7 +1932,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfbaa = m0;
 			m0   += c1o9 * oMdrho;
 			mfbab = m1 -		m0 * vvz;
-			mfbac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbba  + mfbbc;
 			m1    = mfbbc  - mfbba;
@@ -1938,7 +1940,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfbba = m0;
 			m0   += c4o9 * oMdrho;
 			mfbbb = m1 -		m0 * vvz;
-			mfbbc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbca  + mfbcc;
 			m1    = mfbcc  - mfbca;
@@ -1946,7 +1948,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfbca = m0;
 			m0   += c1o9 * oMdrho;
 			mfbcb = m1 -		m0 * vvz;
-			mfbcc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbcc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcaa	+ mfcac;
@@ -1955,7 +1957,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfcaa = m0;
 			m0   += c1o36 * oMdrho;
 			mfcab = m1 -		m0 * vvz;
-			mfcac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfcac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcba  + mfcbc;
 			m1    = mfcbc  - mfcba;
@@ -1963,7 +1965,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfcba = m0;
 			m0   += c1o9 * oMdrho;
 			mfcbb = m1 -		m0 * vvz;
-			mfcbc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfcbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcca  + mfccc;
 			m1    = mfccc  - mfcca;
@@ -1971,7 +1973,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfcca = m0;
 			m0   += c1o36 * oMdrho;
 			mfccb = m1 -		m0 * vvz;
-			mfccc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit  1/6, 0, 1/18, 2/3, 0, 2/9, 1/6, 0, 1/18 Konditionieren
@@ -1983,14 +1985,14 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfaaa = m0;
 			m0   += c1o6 * oMdrho;
 			mfaba = m1 -		m0 * vvy;
-			mfaca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfaca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaab  + mfacb;
 			m1    = mfacb  - mfaab;
 			m0    = m2		+ mfabb;
 			mfaab = m0;
 			mfabb = m1 -		m0 * vvy;
-			mfacb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfacb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaac  + mfacc;
 			m1    = mfacc  - mfaac;
@@ -1998,7 +2000,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfaac = m0;
 			m0   += c1o18 * oMdrho;
 			mfabc = m1 -		m0 * vvy;
-			mfacc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfacc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbaa	+ mfbca;
@@ -2007,14 +2009,14 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfbaa = m0;
 			m0   += c2o3 * oMdrho;
 			mfbba = m1 -		m0 * vvy;
-			mfbca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbab  + mfbcb;
 			m1    = mfbcb  - mfbab;
 			m0    = m2		+ mfbbb;
 			mfbab = m0;
 			mfbbb = m1 -		m0 * vvy;
-			mfbcb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbcb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbac  + mfbcc;
 			m1    = mfbcc  - mfbac;
@@ -2022,7 +2024,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfbac = m0;
 			m0   += c2o9 * oMdrho;
 			mfbbc = m1 -		m0 * vvy;
-			mfbcc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbcc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcaa	+ mfcca;
@@ -2031,14 +2033,14 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfcaa = m0;
 			m0   += c1o6 * oMdrho;
 			mfcba = m1 -		m0 * vvy;
-			mfcca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfcca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcab  + mfccb;
 			m1    = mfccb  - mfcab;
 			m0    = m2		+ mfcbb;
 			mfcab = m0;
 			mfcbb = m1 -		m0 * vvy;
-			mfccb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfccb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcac  + mfccc;
 			m1    = mfccc  - mfcac;
@@ -2046,7 +2048,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfcac = m0;
 			m0   += c1o18 * oMdrho;
 			mfcbc = m1 -		m0 * vvy;
-			mfccc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9		Konditionieren
@@ -2056,16 +2058,16 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			m1    = mfcaa	- mfaaa;
 			m0    = m2		+ mfbaa;
 			mfaaa = m0;
-			m0   += one* oMdrho;
+			m0   += c1o1* oMdrho;
 			mfbaa = m1 -		m0 * vvx;
-			mfcaa = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcaa = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaba  + mfcba;
 			m1    = mfcba  - mfaba;
 			m0    = m2		+ mfbba;
 			mfaba = m0;
 			mfbba = m1 -		m0 * vvx;
-			mfcba = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcba = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaca  + mfcca;
 			m1    = mfcca  - mfaca;
@@ -2073,7 +2075,7 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfaca = m0;
 			m0   += c1o3 * oMdrho;
 			mfbca = m1 -		m0 * vvx;
-			mfcca = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcca = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaab	+ mfcab;
@@ -2081,21 +2083,21 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			m0    = m2		+ mfbab;
 			mfaab = m0;
 			mfbab = m1 -		m0 * vvx;
-			mfcab = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcab = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfabb  + mfcbb;
 			m1    = mfcbb  - mfabb;
 			m0    = m2		+ mfbbb;
 			mfabb = m0;
 			mfbbb = m1 -		m0 * vvx;
-			mfcbb = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcbb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfacb  + mfccb;
 			m1    = mfccb  - mfacb;
 			m0    = m2		+ mfbcb;
 			mfacb = m0;
 			mfbcb = m1 -		m0 * vvx;
-			mfccb = m2 - two*	m1 * vvx + vx2 * m0;
+			mfccb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaac	+ mfcac;
@@ -2104,14 +2106,14 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfaac = m0;
 			m0   += c1o3 * oMdrho;
 			mfbac = m1 -		m0 * vvx;
-			mfcac = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcac = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfabc  + mfcbc;
 			m1    = mfcbc  - mfabc;
 			m0    = m2		+ mfbbc;
 			mfabc = m0;
 			mfbbc = m1 -		m0 * vvx;
-			mfcbc = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcbc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfacc  + mfccc;
 			m1    = mfccc  - mfacc;
@@ -2119,31 +2121,31 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			mfacc = m0;
 			m0   += c1o9 * oMdrho;
 			mfbcc = m1 -		m0 * vvx;
-			mfccc = m2 - two*	m1 * vvx + vx2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 
-			real OxxPyyPzz = one;
-			real omega = one / (three*0.001 + c1o2);
-			real B = (four * omega * OxxPyyPzz * (nine * omega - sixteen) - four * omega * omega - two * OxxPyyPzz * OxxPyyPzz * (two + nine * omega * (omega - two))) /
-				(three * (omega - OxxPyyPzz) * (OxxPyyPzz * (two + three * omega) - eight * omega));
+			real OxxPyyPzz = c1o1;
+			real omega = c1o1 / (c3o1*0.001 + c1o2);
+			real B = (c4o1 * omega * OxxPyyPzz * (c9o1 * omega - c16o1) - c4o1 * omega * omega - c2o1 * OxxPyyPzz * OxxPyyPzz * (c2o1 + c9o1 * omega * (omega - c2o1))) /
+				(c3o1 * (omega - OxxPyyPzz) * (OxxPyyPzz * (c2o1 + c3o1 * omega) - c8o1 * omega));
 
-			CUMbcc[k] = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)*(one + rho*six*B / (two + three * B))) / rho;
-			CUMcbc[k] = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)*(one + rho*six*B / (two + three * B))) / rho;
-			CUMccb[k] = mfccb - ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)*(one + rho*six*B / (two + three * B))) / rho;
+			CUMbcc[k] = mfbcc - ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)*(c1o1 + rho*c6o1*B / (c2o1 + c3o1 * B))) / rho;
+			CUMcbc[k] = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)*(c1o1 + rho*c6o1*B / (c2o1 + c3o1 * B))) / rho;
+			CUMccb[k] = mfccb - ((mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)*(c1o1 + rho*c6o1*B / (c2o1 + c3o1 * B))) / rho;
 
 			////////////////////////////////////////////////////////////////////////////////////
 			// Cumulants
 			////////////////////////////////////////////////////////////////////////////////////
 			//central moments to cumulants
 			//4.
-			CUMcbb[k]      = mfcbb - ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) / rho;	
-			CUMbcb[k]      = mfbcb - ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) / rho; 
-			CUMbbc[k]      = mfbbc - ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) / rho; 
+			CUMcbb[k]      = mfcbb - ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho;	
+			CUMbcb[k]      = mfbcb - ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho; 
+			CUMbbc[k]      = mfbbc - ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho; 
 			 		
-			CUMcca[k]      = mfcca - (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho  - c1o9*(drho/rho));
-			CUMcac[k]      = mfcac - (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho  - c1o9*(drho/rho));
-			CUMacc[k]      = mfacc - (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho  - c1o9*(drho/rho));
+			CUMcca[k]      = mfcca - (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho  - c1o9*(drho/rho));
+			CUMcac[k]      = mfcac - (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho  - c1o9*(drho/rho));
+			CUMacc[k]      = mfacc - (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho  - c1o9*(drho/rho));
 
 			//5.
 			//CUMbcc[k]      = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac) ) / rho ;
@@ -2151,16 +2153,16 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
 			//CUMccb[k]      = mfccb - ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab) ) / rho ;
 			
 			//6.
-			CUMccc[k]      = mfccc + ((-four *  mfbbb * mfbbb  
+			CUMccc[k]      = mfccc + ((-c4o1 *  mfbbb * mfbbb  
 							-           (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-							-    four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-							-     two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
-							+(   four * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-							+     two * (mfcaa * mfaca * mfaac)
-							+ sixteen *  mfbba * mfbab * mfabb) / (rho * rho)
+							-    c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+							-     c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
+							+(   c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+							+     c2o1 * (mfcaa * mfaca * mfaac)
+							+ c16o1 *  mfbba * mfbab * mfabb) / (rho * rho)
 							-    c1o3 * (mfacc + mfcac + mfcca) /rho 
 							-    c1o9 * (mfcaa + mfaca + mfaac) /rho 
-							+(    two * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba) 
+							+(    c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba) 
 							+           (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3 
 							+ c1o27*((drho * drho - drho)/(rho*rho)));
 			////////////////////////////////////////////////////////////////////////////////////

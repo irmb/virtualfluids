@@ -1,6 +1,7 @@
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "GPU/constant.h"
+#include "Core/RealConstants.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void PressSchlaff27(real* rhoBC,
@@ -155,9 +156,9 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
       f1_BSE  = (D.f[dirBSE ])[kbse ];
       f1_BNW  = (D.f[dirBNW ])[kbnw ];
       //////////////////////////////////////////////////////////////////////////
-      real cs       = one/sqrt(three);
-      real csp1     = cs + one;
-      real csp1Sq  = (one + cs)*(one + cs);
+      real cs       = c1o1/sqrt(c3o1);
+      real csp1     = cs + c1o1;
+      real csp1Sq  = (c1o1 + cs)*(c1o1 + cs);
       real relFac   = c21o20; // 0.9...1.0
       //////////////////////////////////////////////////////////////////////////
       // For adaption:
@@ -168,21 +169,21 @@ extern "C" __global__ void PressSchlaff27(real* rhoBC,
       //      2.0e-7  ~  60.1 dB   /Vel
       //      2.0e-5  ~ 100.1 dB   /press
       const double dPlimit  = Op0000002;
-      const double dRlimit  = dPlimit * three;// three = c1oCs2;
-      const double uSlimit  = dRlimit * one;// one = c1oRho0;
+      const double dRlimit  = dPlimit * c3o1;// three = c1oCs2;
+      const double uSlimit  = dRlimit * c1o1;// one = c1oRho0;
       //////////////////////////////////////////////////////////////////////////
       real VX = vx0[k];
       real VY = vy0[k];
       real VZ = vz0[k];
       //////////////////////////////////////////////////////////////////////////
 
-      real temp = two*(f1_TNE + f1_TSE + f1_TSW + f1_TNW) + two*(f1_TE + f1_TW + f1_TN + f1_TS) + f1_NE + f1_SW + f1_SE + f1_NW + two*f1_T + f1_E + f1_W + f1_N + f1_S + f1_ZERO;
+      real temp = c2o1*(f1_TNE + f1_TSE + f1_TSW + f1_TNW) + c2o1*(f1_TE + f1_TW + f1_TN + f1_TS) + f1_NE + f1_SW + f1_SE + f1_NW + c2o1*f1_T + f1_E + f1_W + f1_N + f1_S + f1_ZERO;
 
-      real vs_z = relFac * (VZ+cs) * ( csp1 - sqrt(csp1Sq + two*VZ - two*temp) );    //old =  relFac * cs * ( csp1 - sqrt(csp1Sq + two*VZ - two*temp) );
+      real vs_z = relFac * (VZ+cs) * ( csp1 - sqrt(csp1Sq + c2o1*VZ - c2o1*temp) );    //old =  relFac * cs * ( csp1 - sqrt(csp1Sq + two*VZ - two*temp) );
 
       // 3. Compute density of compensated velocity:		
       real tempDeltaV = deltaVz0[k];
-      real rholoc = temp - one * (VZ + tempDeltaV + vs_z);
+      real rholoc = temp - c1o1 * (VZ + tempDeltaV + vs_z);
 
       // 4. Compute density deviation:
       real drho = rholoc - rhoBC[k];
@@ -447,9 +448,9 @@ extern "C" __global__ void VelSchlaff27(  int t,
       //f1_TNW  = (D.f[dirBSE ])[kbse ];
       //f1_TSE  = (D.f[dirBNW ])[kbnw ];
       //////////////////////////////////////////////////////////////////////////
-      real cs       = one/sqrt(three);
-      real csp1     = cs + one;
-      real csp1Sq  = (one + cs)*(one + cs);
+      real cs       = c1o1/sqrt(c3o1);
+      real csp1     = cs + c1o1;
+      real csp1Sq  = (c1o1 + cs)*(c1o1 + cs);
       real relFac   = c19o20; // 0.9...1.0
       //////////////////////////////////////////////////////////////////////////
       // For adaption:
@@ -461,11 +462,11 @@ extern "C" __global__ void VelSchlaff27(  int t,
       //      2.0e-5  ~ 100.1 dB   /press
       real uSlimit  = Op0000002; 
       //////////////////////////////////////////////////////////////////////////
-      real VX = zero;
-      real VY = zero;
+      real VX = c0o1;
+      real VY = c0o1;
       real VZ = vz0[k];
       //////////////////////////////////////////////////////////////////////////
-      real temp = f1_ZERO + f1_E + f1_W + f1_N + f1_S + f1_NE + f1_SW + f1_SE + f1_NW + two*(f1_B + f1_BE + f1_BW + f1_BN + f1_BS + f1_BNE + f1_BSE + f1_BSW + f1_BNW);
+      real temp = f1_ZERO + f1_E + f1_W + f1_N + f1_S + f1_NE + f1_SW + f1_SE + f1_NW + c2o1*(f1_B + f1_BE + f1_BW + f1_BN + f1_BS + f1_BNE + f1_BSE + f1_BSW + f1_BNW);
       //real temp = f1_ZERO + f1_E + f1_W + f1_N + f1_S + f1_NE + f1_SW + f1_SE + f1_NW + two*(f1_T + f1_TE + f1_TW + f1_TN + f1_TS + f1_TNE + f1_TSE + f1_TSW + f1_TNW);
       ////real temp2= c1mcsSq + two*VZ - two*temp;
       real vs_z;
@@ -475,7 +476,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
       //}
       //else
       //{
-         vs_z = relFac * (cs-VZ) * ( sqrt(csp1Sq - two*VZ - two*temp) - csp1 );         //old = relFac * cs * ( sqrt(csp1Sq - two*VZ - two*temp) - csp1 ); 
+         vs_z = relFac * (cs-VZ) * ( sqrt(csp1Sq - c2o1*VZ - c2o1*temp) - csp1 );         //old = relFac * cs * ( sqrt(csp1Sq - two*VZ - two*temp) - csp1 ); 
       //}
       
       // 3. Adapt Speed:

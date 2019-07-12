@@ -173,14 +173,14 @@ __host__ __device__ inline void computeGradT( const DataBaseStruct& dataBase,
     }
     //////////////////////////////////////////////////////////////////////////
     {
-        gradN.rho  /= two * parameters.dx * facePrim.rho;
-        gradN.rhoU /= two * parameters.dx * facePrim.rho;
-        gradN.rhoV /= two * parameters.dx * facePrim.rho;
-        gradN.rhoW /= two * parameters.dx * facePrim.rho;
-        gradN.rhoE /= two * parameters.dx * facePrim.rho;
+        gradN.rho  /= c2o1 * parameters.dx * facePrim.rho;
+        gradN.rhoU /= c2o1 * parameters.dx * facePrim.rho;
+        gradN.rhoV /= c2o1 * parameters.dx * facePrim.rho;
+        gradN.rhoW /= c2o1 * parameters.dx * facePrim.rho;
+        gradN.rhoE /= c2o1 * parameters.dx * facePrim.rho;
     #ifdef USE_PASSIVE_SCALAR
-        gradN.rhoS_1 /= two * parameters.dx * facePrim.rho;
-        gradN.rhoS_2 /= two * parameters.dx * facePrim.rho;
+        gradN.rhoS_1 /= c2o1 * parameters.dx * facePrim.rho;
+        gradN.rhoS_2 /= c2o1 * parameters.dx * facePrim.rho;
     #endif // USE_PASSIVE_SCALAR
     }
     //////////////////////////////////////////////////////////////////////////

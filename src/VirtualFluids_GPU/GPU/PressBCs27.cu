@@ -1,6 +1,7 @@
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "GPU/constant.h"
+#include "Core/RealConstants.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
@@ -218,40 +219,40 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
       //////////////////////////////////////////////////////////////////////////
 	  //Schallgeschwindigkeit
-	  real cs = one / sqrtf(three);
+	  real cs = c1o1 / sqrtf(c3o1);
       //////////////////////////////////////////////////////////////////////////
-	  real rhoInterpol = drho1 * cs + (one - cs) * drho; 
+	  real rhoInterpol = drho1 * cs + (c1o1 - cs) * drho; 
 	  //real diffRho = (rhoBC[k] + one) / (rhoInterpol + one);
 	  real diffRhoToAdd = rhoBC[k] - rhoInterpol;
 	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //no velocity
 	  //////////////////////////////////////////
-      f_E    = f1_E   * cs + (one - cs) * f_E   ;
-      f_W    = f1_W   * cs + (one - cs) * f_W   ;
-      f_N    = f1_N   * cs + (one - cs) * f_N   ;
-      f_S    = f1_S   * cs + (one - cs) * f_S   ;
-      f_T    = f1_T   * cs + (one - cs) * f_T   ;
-      f_B    = f1_B   * cs + (one - cs) * f_B   ;
-      f_NE   = f1_NE  * cs + (one - cs) * f_NE  ;
-      f_SW   = f1_SW  * cs + (one - cs) * f_SW  ;
-      f_SE   = f1_SE  * cs + (one - cs) * f_SE  ;
-      f_NW   = f1_NW  * cs + (one - cs) * f_NW  ;
-      f_TE   = f1_TE  * cs + (one - cs) * f_TE  ;
-      f_BW   = f1_BW  * cs + (one - cs) * f_BW  ;
-      f_BE   = f1_BE  * cs + (one - cs) * f_BE  ;
-      f_TW   = f1_TW  * cs + (one - cs) * f_TW  ;
-      f_TN   = f1_TN  * cs + (one - cs) * f_TN  ;
-      f_BS   = f1_BS  * cs + (one - cs) * f_BS  ;
-      f_BN   = f1_BN  * cs + (one - cs) * f_BN  ;
-      f_TS   = f1_TS  * cs + (one - cs) * f_TS  ;
-      f_TNE  = f1_TNE * cs + (one - cs) * f_TNE ;
-      f_TSW  = f1_TSW * cs + (one - cs) * f_TSW ;
-      f_TSE  = f1_TSE * cs + (one - cs) * f_TSE ;
-      f_TNW  = f1_TNW * cs + (one - cs) * f_TNW ;
-      f_BNE  = f1_BNE * cs + (one - cs) * f_BNE ;
-      f_BSW  = f1_BSW * cs + (one - cs) * f_BSW ;
-      f_BSE  = f1_BSE * cs + (one - cs) * f_BSE ;
-      f_BNW  = f1_BNW * cs + (one - cs) * f_BNW ;
+      f_E    = f1_E   * cs + (c1o1 - cs) * f_E   ;
+      f_W    = f1_W   * cs + (c1o1 - cs) * f_W   ;
+      f_N    = f1_N   * cs + (c1o1 - cs) * f_N   ;
+      f_S    = f1_S   * cs + (c1o1 - cs) * f_S   ;
+      f_T    = f1_T   * cs + (c1o1 - cs) * f_T   ;
+      f_B    = f1_B   * cs + (c1o1 - cs) * f_B   ;
+      f_NE   = f1_NE  * cs + (c1o1 - cs) * f_NE  ;
+      f_SW   = f1_SW  * cs + (c1o1 - cs) * f_SW  ;
+      f_SE   = f1_SE  * cs + (c1o1 - cs) * f_SE  ;
+      f_NW   = f1_NW  * cs + (c1o1 - cs) * f_NW  ;
+      f_TE   = f1_TE  * cs + (c1o1 - cs) * f_TE  ;
+      f_BW   = f1_BW  * cs + (c1o1 - cs) * f_BW  ;
+      f_BE   = f1_BE  * cs + (c1o1 - cs) * f_BE  ;
+      f_TW   = f1_TW  * cs + (c1o1 - cs) * f_TW  ;
+      f_TN   = f1_TN  * cs + (c1o1 - cs) * f_TN  ;
+      f_BS   = f1_BS  * cs + (c1o1 - cs) * f_BS  ;
+      f_BN   = f1_BN  * cs + (c1o1 - cs) * f_BN  ;
+      f_TS   = f1_TS  * cs + (c1o1 - cs) * f_TS  ;
+      f_TNE  = f1_TNE * cs + (c1o1 - cs) * f_TNE ;
+      f_TSW  = f1_TSW * cs + (c1o1 - cs) * f_TSW ;
+      f_TSE  = f1_TSE * cs + (c1o1 - cs) * f_TSE ;
+      f_TNW  = f1_TNW * cs + (c1o1 - cs) * f_TNW ;
+      f_BNE  = f1_BNE * cs + (c1o1 - cs) * f_BNE ;
+      f_BSW  = f1_BSW * cs + (c1o1 - cs) * f_BSW ;
+      f_BSE  = f1_BSE * cs + (c1o1 - cs) * f_BSE ;
+      f_BNW  = f1_BNW * cs + (c1o1 - cs) * f_BNW ;
 	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //scale by press
 	  //////////////////////////////////////////
@@ -284,32 +285,32 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
 	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  // add press
 	  //////////////////////////////////////////
-	  f_E    = (f_E   + c2over27  * diffRhoToAdd);
-      f_W    = (f_W   + c2over27  * diffRhoToAdd);
-      f_N    = (f_N   + c2over27  * diffRhoToAdd);
-      f_S    = (f_S   + c2over27  * diffRhoToAdd);
-      f_T    = (f_T   + c2over27  * diffRhoToAdd);
-      f_B    = (f_B   + c2over27  * diffRhoToAdd);
-	  f_NE   = (f_NE  + c1over54  * diffRhoToAdd);
-      f_SW   = (f_SW  + c1over54  * diffRhoToAdd);
-      f_SE   = (f_SE  + c1over54  * diffRhoToAdd);
-      f_NW   = (f_NW  + c1over54  * diffRhoToAdd);
-      f_TE   = (f_TE  + c1over54  * diffRhoToAdd);
-      f_BW   = (f_BW  + c1over54  * diffRhoToAdd);
-      f_BE   = (f_BE  + c1over54  * diffRhoToAdd);
-      f_TW   = (f_TW  + c1over54  * diffRhoToAdd);
-      f_TN   = (f_TN  + c1over54  * diffRhoToAdd);
-      f_BS   = (f_BS  + c1over54  * diffRhoToAdd);
-      f_BN   = (f_BN  + c1over54  * diffRhoToAdd);
-      f_TS   = (f_TS  + c1over54  * diffRhoToAdd);
-      f_TNE  = (f_TNE + c1over216 * diffRhoToAdd);
-      f_TSW  = (f_TSW + c1over216 * diffRhoToAdd);
-      f_TSE  = (f_TSE + c1over216 * diffRhoToAdd);
-      f_TNW  = (f_TNW + c1over216 * diffRhoToAdd);
-      f_BNE  = (f_BNE + c1over216 * diffRhoToAdd);
-      f_BSW  = (f_BSW + c1over216 * diffRhoToAdd);
-      f_BSE  = (f_BSE + c1over216 * diffRhoToAdd);
-      f_BNW  = (f_BNW + c1over216 * diffRhoToAdd);
+	  f_E    = (f_E   + c2o27  * diffRhoToAdd);
+      f_W    = (f_W   + c2o27  * diffRhoToAdd);
+      f_N    = (f_N   + c2o27  * diffRhoToAdd);
+      f_S    = (f_S   + c2o27  * diffRhoToAdd);
+      f_T    = (f_T   + c2o27  * diffRhoToAdd);
+      f_B    = (f_B   + c2o27  * diffRhoToAdd);
+	  f_NE   = (f_NE  + c1o54  * diffRhoToAdd);
+      f_SW   = (f_SW  + c1o54  * diffRhoToAdd);
+      f_SE   = (f_SE  + c1o54  * diffRhoToAdd);
+      f_NW   = (f_NW  + c1o54  * diffRhoToAdd);
+      f_TE   = (f_TE  + c1o54  * diffRhoToAdd);
+      f_BW   = (f_BW  + c1o54  * diffRhoToAdd);
+      f_BE   = (f_BE  + c1o54  * diffRhoToAdd);
+      f_TW   = (f_TW  + c1o54  * diffRhoToAdd);
+      f_TN   = (f_TN  + c1o54  * diffRhoToAdd);
+      f_BS   = (f_BS  + c1o54  * diffRhoToAdd);
+      f_BN   = (f_BN  + c1o54  * diffRhoToAdd);
+      f_TS   = (f_TS  + c1o54  * diffRhoToAdd);
+      f_TNE  = (f_TNE + c1o216 * diffRhoToAdd);
+      f_TSW  = (f_TSW + c1o216 * diffRhoToAdd);
+      f_TSE  = (f_TSE + c1o216 * diffRhoToAdd);
+      f_TNW  = (f_TNW + c1o216 * diffRhoToAdd);
+      f_BNE  = (f_BNE + c1o216 * diffRhoToAdd);
+      f_BSW  = (f_BSW + c1o216 * diffRhoToAdd);
+      f_BSE  = (f_BSE + c1o216 * diffRhoToAdd);
+      f_BNW  = (f_BNW + c1o216 * diffRhoToAdd);
 	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  //////////////////////////////////////////////////////////////////////////
@@ -657,33 +658,33 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
 
       real cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-      f1_ZERO  -= c8over27*  (drho1-(drho1+one)*cusq);
-      f1_E     -= c2over27*  (drho1+(drho1+one)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
-      f1_W     -= c2over27*  (drho1+(drho1+one)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
-      f1_N     -= c2over27*  (drho1+(drho1+one)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
-      f1_S     -= c2over27*  (drho1+(drho1+one)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
-      f1_T     -= c2over27*  (drho1+(drho1+one)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
-      f1_B     -= c2over27*  (drho1+(drho1+one)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
-      f1_NE    -= c1over54*  (drho1+(drho1+one)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
-      f1_SW    -= c1over54*  (drho1+(drho1+one)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
-      f1_SE    -=  c1over54* (drho1+(drho1+one)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
-      f1_NW    -=  c1over54* (drho1+(drho1+one)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
-      f1_TE    -=  c1over54* (drho1+(drho1+one)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cusq));
-      f1_BW    -=  c1over54* (drho1+(drho1+one)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
-      f1_BE    -=  c1over54* (drho1+(drho1+one)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cusq));
-      f1_TW    -=  c1over54* (drho1+(drho1+one)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
-      f1_TN    -=  c1over54* (drho1+(drho1+one)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
-      f1_BS    -=  c1over54* (drho1+(drho1+one)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
-      f1_BN    -=  c1over54* (drho1+(drho1+one)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
-      f1_TS    -=  c1over54* (drho1+(drho1+one)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
-      f1_TNE   -=  c1over216*(drho1+(drho1+one)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
-      f1_BSW   -=  c1over216*(drho1+(drho1+one)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
-      f1_BNE   -=  c1over216*(drho1+(drho1+one)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
-      f1_TSW   -=  c1over216*(drho1+(drho1+one)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
-      f1_TSE   -=  c1over216*(drho1+(drho1+one)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
-      f1_BNW   -=  c1over216*(drho1+(drho1+one)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
-      f1_BSE   -=  c1over216*(drho1+(drho1+one)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
-      f1_TNW   -=  c1over216*(drho1+(drho1+one)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
+      f1_ZERO  -= c8o27*  (drho1-(drho1+c1o1)*cusq);
+      f1_E     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cusq));
+      f1_W     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cusq));
+      f1_N     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cusq));
+      f1_S     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cusq));
+      f1_T     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cusq));
+      f1_B     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cusq));
+      f1_NE    -= c1o54*  (drho1+(drho1+c1o1)*(c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cusq));
+      f1_SW    -= c1o54*  (drho1+(drho1+c1o1)*(c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
+      f1_SE    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cusq));
+      f1_NW    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
+      f1_TE    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cusq));
+      f1_BW    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
+      f1_BE    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cusq));
+      f1_TW    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
+      f1_TN    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cusq));
+      f1_BS    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
+      f1_BN    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cusq));
+      f1_TS    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
+      f1_TNE   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
+      f1_BSW   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
+      f1_BNE   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
+      f1_TSW   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
+      f1_TSE   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
+      f1_BNW   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
+      f1_BSE   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
+      f1_TNW   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
 	   
 	  drho1 = rhoBC[k];
 
@@ -694,33 +695,33 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
 		 // vx2 *= c1o10;//0.9;
 	  //}
 
-      f1_ZERO  += c8over27*  (drho1-(drho1+one)*cusq);
-      f1_E     += c2over27*  (drho1+(drho1+one)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
-      f1_W     += c2over27*  (drho1+(drho1+one)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
-      f1_N     += c2over27*  (drho1+(drho1+one)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
-      f1_S     += c2over27*  (drho1+(drho1+one)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
-      f1_T     += c2over27*  (drho1+(drho1+one)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
-      f1_B     += c2over27*  (drho1+(drho1+one)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
-      f1_NE    += c1over54*  (drho1+(drho1+one)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
-      f1_SW    += c1over54*  (drho1+(drho1+one)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
-      f1_SE    +=  c1over54* (drho1+(drho1+one)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
-      f1_NW    +=  c1over54* (drho1+(drho1+one)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
-      f1_TE    +=  c1over54* (drho1+(drho1+one)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cusq));
-      f1_BW    +=  c1over54* (drho1+(drho1+one)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
-      f1_BE    +=  c1over54* (drho1+(drho1+one)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cusq));
-      f1_TW    +=  c1over54* (drho1+(drho1+one)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
-      f1_TN    +=  c1over54* (drho1+(drho1+one)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
-      f1_BS    +=  c1over54* (drho1+(drho1+one)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
-      f1_BN    +=  c1over54* (drho1+(drho1+one)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
-      f1_TS    +=  c1over54* (drho1+(drho1+one)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
-      f1_TNE   +=  c1over216*(drho1+(drho1+one)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
-      f1_BSW   +=  c1over216*(drho1+(drho1+one)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
-      f1_BNE   +=  c1over216*(drho1+(drho1+one)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
-      f1_TSW   +=  c1over216*(drho1+(drho1+one)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
-      f1_TSE   +=  c1over216*(drho1+(drho1+one)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
-      f1_BNW   +=  c1over216*(drho1+(drho1+one)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
-      f1_BSE   +=  c1over216*(drho1+(drho1+one)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
-      f1_TNW   +=  c1over216*(drho1+(drho1+one)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
+      f1_ZERO  += c8o27*  (drho1-(drho1+c1o1)*cusq);
+      f1_E     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cusq));
+      f1_W     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cusq));
+      f1_N     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cusq));
+      f1_S     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cusq));
+      f1_T     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cusq));
+      f1_B     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cusq));
+      f1_NE    += c1o54*  (drho1+(drho1+c1o1)*(c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cusq));
+      f1_SW    += c1o54*  (drho1+(drho1+c1o1)*(c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
+      f1_SE    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cusq));
+      f1_NW    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
+      f1_TE    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cusq));
+      f1_BW    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
+      f1_BE    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cusq));
+      f1_TW    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
+      f1_TN    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cusq));
+      f1_BS    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
+      f1_BN    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cusq));
+      f1_TS    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
+      f1_TNE   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
+      f1_BSW   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
+      f1_BNE   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
+      f1_TSW   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
+      f1_TSE   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
+      f1_BNW   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
+      f1_BSE   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
+      f1_TNW   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
 
 	  //drho1 = (drho1 + rhoBC[k])/2.f;
 	  //drho1 = drho1 - rhoBC[k];
@@ -994,69 +995,69 @@ extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
 						 (-(f1_BN - f1_TS)  + (f1_TN - f1_BS))   + ((f1_TE - f1_BW)   - (f1_BE - f1_TW)) +
 						 (f1_T - f1_B); 
 
-	  vx1 /= (drho1+one);
-	  vx2 /= (drho1+one);
-	  vx3 /= (drho1+one);
+	  vx1 /= (drho1+c1o1);
+	  vx2 /= (drho1+c1o1);
+	  vx3 /= (drho1+c1o1);
 
       real cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-      f1_ZERO  -= c8over27*  (drho1-(drho1+one)*cusq);
-      f1_E     -= c2over27*  (drho1+(drho1+one)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
-      f1_W     -= c2over27*  (drho1+(drho1+one)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
-      f1_N     -= c2over27*  (drho1+(drho1+one)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
-      f1_S     -= c2over27*  (drho1+(drho1+one)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
-      f1_T     -= c2over27*  (drho1+(drho1+one)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
-      f1_B     -= c2over27*  (drho1+(drho1+one)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
-      f1_NE    -= c1over54*  (drho1+(drho1+one)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
-      f1_SW    -= c1over54*  (drho1+(drho1+one)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
-      f1_SE    -=  c1over54* (drho1+(drho1+one)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
-      f1_NW    -=  c1over54* (drho1+(drho1+one)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
-      f1_TE    -=  c1over54* (drho1+(drho1+one)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cusq));
-      f1_BW    -=  c1over54* (drho1+(drho1+one)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
-      f1_BE    -=  c1over54* (drho1+(drho1+one)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cusq));
-      f1_TW    -=  c1over54* (drho1+(drho1+one)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
-      f1_TN    -=  c1over54* (drho1+(drho1+one)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
-      f1_BS    -=  c1over54* (drho1+(drho1+one)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
-      f1_BN    -=  c1over54* (drho1+(drho1+one)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
-      f1_TS    -=  c1over54* (drho1+(drho1+one)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
-      f1_TNE   -=  c1over216*(drho1+(drho1+one)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
-      f1_BSW   -=  c1over216*(drho1+(drho1+one)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
-      f1_BNE   -=  c1over216*(drho1+(drho1+one)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
-      f1_TSW   -=  c1over216*(drho1+(drho1+one)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
-      f1_TSE   -=  c1over216*(drho1+(drho1+one)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
-      f1_BNW   -=  c1over216*(drho1+(drho1+one)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
-      f1_BSE   -=  c1over216*(drho1+(drho1+one)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
-      f1_TNW   -=  c1over216*(drho1+(drho1+one)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
+      f1_ZERO  -= c8o27*  (drho1-(drho1+c1o1)*cusq);
+      f1_E     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cusq));
+      f1_W     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cusq));
+      f1_N     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cusq));
+      f1_S     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cusq));
+      f1_T     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cusq));
+      f1_B     -= c2o27*  (drho1+(drho1+c1o1)*(c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cusq));
+      f1_NE    -= c1o54*  (drho1+(drho1+c1o1)*(c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cusq));
+      f1_SW    -= c1o54*  (drho1+(drho1+c1o1)*(c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
+      f1_SE    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cusq));
+      f1_NW    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
+      f1_TE    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cusq));
+      f1_BW    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
+      f1_BE    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cusq));
+      f1_TW    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
+      f1_TN    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cusq));
+      f1_BS    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
+      f1_BN    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cusq));
+      f1_TS    -=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
+      f1_TNE   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
+      f1_BSW   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
+      f1_BNE   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
+      f1_TSW   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
+      f1_TSE   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
+      f1_BNW   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
+      f1_BSE   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
+      f1_TNW   -=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
 	   
 	  drho1 = rhoBC[k];
 
-      f1_ZERO  += c8over27*  (drho1-(drho1+one)*cusq);
-      f1_E     += c2over27*  (drho1+(drho1+one)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
-      f1_W     += c2over27*  (drho1+(drho1+one)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
-      f1_N     += c2over27*  (drho1+(drho1+one)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
-      f1_S     += c2over27*  (drho1+(drho1+one)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
-      f1_T     += c2over27*  (drho1+(drho1+one)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
-      f1_B     += c2over27*  (drho1+(drho1+one)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
-      f1_NE    += c1over54*  (drho1+(drho1+one)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
-      f1_SW    += c1over54*  (drho1+(drho1+one)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
-      f1_SE    +=  c1over54* (drho1+(drho1+one)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
-      f1_NW    +=  c1over54* (drho1+(drho1+one)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
-      f1_TE    +=  c1over54* (drho1+(drho1+one)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cusq));
-      f1_BW    +=  c1over54* (drho1+(drho1+one)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
-      f1_BE    +=  c1over54* (drho1+(drho1+one)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cusq));
-      f1_TW    +=  c1over54* (drho1+(drho1+one)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
-      f1_TN    +=  c1over54* (drho1+(drho1+one)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
-      f1_BS    +=  c1over54* (drho1+(drho1+one)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
-      f1_BN    +=  c1over54* (drho1+(drho1+one)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
-      f1_TS    +=  c1over54* (drho1+(drho1+one)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
-      f1_TNE   +=  c1over216*(drho1+(drho1+one)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
-      f1_BSW   +=  c1over216*(drho1+(drho1+one)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
-      f1_BNE   +=  c1over216*(drho1+(drho1+one)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
-      f1_TSW   +=  c1over216*(drho1+(drho1+one)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
-      f1_TSE   +=  c1over216*(drho1+(drho1+one)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
-      f1_BNW   +=  c1over216*(drho1+(drho1+one)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
-      f1_BSE   +=  c1over216*(drho1+(drho1+one)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
-      f1_TNW   +=  c1over216*(drho1+(drho1+one)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
+      f1_ZERO  += c8o27*  (drho1-(drho1+c1o1)*cusq);
+      f1_E     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cusq));
+      f1_W     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cusq));
+      f1_N     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cusq));
+      f1_S     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cusq));
+      f1_T     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cusq));
+      f1_B     += c2o27*  (drho1+(drho1+c1o1)*(c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cusq));
+      f1_NE    += c1o54*  (drho1+(drho1+c1o1)*(c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cusq));
+      f1_SW    += c1o54*  (drho1+(drho1+c1o1)*(c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
+      f1_SE    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cusq));
+      f1_NW    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
+      f1_TE    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cusq));
+      f1_BW    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
+      f1_BE    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cusq));
+      f1_TW    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
+      f1_TN    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cusq));
+      f1_BS    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
+      f1_BN    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cusq));
+      f1_TS    +=  c1o54* (drho1+(drho1+c1o1)*(c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
+      f1_TNE   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
+      f1_BSW   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
+      f1_BNE   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
+      f1_TSW   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
+      f1_TSE   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
+      f1_BNW   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
+      f1_BSE   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
+      f1_TNW   +=  c1o216*(drho1+(drho1+c1o1)*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
 
 	  //drho1 = (drho1 + rhoBC[k])/2.f;
 	  //drho1 = drho1 - rhoBC[k];
@@ -1372,33 +1373,33 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
 
       __syncthreads();
 
-      (D.f[dirE   ])[ke   ] = f1_W   -c2over27*drho1;
-      (D.f[dirW   ])[kw   ] = f1_E   -c2over27*drho1;
-      (D.f[dirN   ])[kn   ] = f1_S   -c2over27*drho1;
-      (D.f[dirS   ])[ks   ] = f1_N   -c2over27*drho1;
-      (D.f[dirT   ])[kt   ] = f1_B   -c2over27*drho1;
-      (D.f[dirB   ])[kb   ] = f1_T   -c2over27*drho1;
-      (D.f[dirNE  ])[kne  ] = f1_SW  -c1over54*drho1;
-      (D.f[dirSW  ])[ksw  ] = f1_NE  -c1over54*drho1;
-      (D.f[dirSE  ])[kse  ] = f1_NW  -c1over54*drho1;
-      (D.f[dirNW  ])[knw  ] = f1_SE  -c1over54*drho1;
-      (D.f[dirTE  ])[kte  ] = f1_BW  -c1over54*drho1;
-      (D.f[dirBW  ])[kbw  ] = f1_TE  -c1over54*drho1;
-      (D.f[dirBE  ])[kbe  ] = f1_TW  -c1over54*drho1;
-      (D.f[dirTW  ])[ktw  ] = f1_BE  -c1over54*drho1;
-      (D.f[dirTN  ])[ktn  ] = f1_BS  -c1over54*drho1;
-      (D.f[dirBS  ])[kbs  ] = f1_TN  -c1over54*drho1;
-      (D.f[dirBN  ])[kbn  ] = f1_TS  -c1over54*drho1;
-      (D.f[dirTS  ])[kts  ] = f1_BN  -c1over54*drho1;
-      (D.f[dirZERO])[kzero] = f1_ZERO-c8over27*drho1;
-      (D.f[dirTNE ])[ktne ] = f1_BSW -c1over216*drho1;
-      (D.f[dirTSW ])[ktsw ] = f1_BNE -c1over216*drho1;
-      (D.f[dirTSE ])[ktse ] = f1_BNW -c1over216*drho1;
-      (D.f[dirTNW ])[ktnw ] = f1_BSE -c1over216*drho1;
-      (D.f[dirBNE ])[kbne ] = f1_TSW -c1over216*drho1;
-      (D.f[dirBSW ])[kbsw ] = f1_TNE -c1over216*drho1;
-      (D.f[dirBSE ])[kbse ] = f1_TNW -c1over216*drho1;
-      (D.f[dirBNW ])[kbnw ] = f1_TSE -c1over216*drho1;       
+      (D.f[dirE   ])[ke   ] = f1_W   -c2o27*drho1;
+      (D.f[dirW   ])[kw   ] = f1_E   -c2o27*drho1;
+      (D.f[dirN   ])[kn   ] = f1_S   -c2o27*drho1;
+      (D.f[dirS   ])[ks   ] = f1_N   -c2o27*drho1;
+      (D.f[dirT   ])[kt   ] = f1_B   -c2o27*drho1;
+      (D.f[dirB   ])[kb   ] = f1_T   -c2o27*drho1;
+      (D.f[dirNE  ])[kne  ] = f1_SW  -c1o54*drho1;
+      (D.f[dirSW  ])[ksw  ] = f1_NE  -c1o54*drho1;
+      (D.f[dirSE  ])[kse  ] = f1_NW  -c1o54*drho1;
+      (D.f[dirNW  ])[knw  ] = f1_SE  -c1o54*drho1;
+      (D.f[dirTE  ])[kte  ] = f1_BW  -c1o54*drho1;
+      (D.f[dirBW  ])[kbw  ] = f1_TE  -c1o54*drho1;
+      (D.f[dirBE  ])[kbe  ] = f1_TW  -c1o54*drho1;
+      (D.f[dirTW  ])[ktw  ] = f1_BE  -c1o54*drho1;
+      (D.f[dirTN  ])[ktn  ] = f1_BS  -c1o54*drho1;
+      (D.f[dirBS  ])[kbs  ] = f1_TN  -c1o54*drho1;
+      (D.f[dirBN  ])[kbn  ] = f1_TS  -c1o54*drho1;
+      (D.f[dirTS  ])[kts  ] = f1_BN  -c1o54*drho1;
+      (D.f[dirZERO])[kzero] = f1_ZERO-c8o27*drho1;
+      (D.f[dirTNE ])[ktne ] = f1_BSW -c1o216*drho1;
+      (D.f[dirTSW ])[ktsw ] = f1_BNE -c1o216*drho1;
+      (D.f[dirTSE ])[ktse ] = f1_BNW -c1o216*drho1;
+      (D.f[dirTNW ])[ktnw ] = f1_BSE -c1o216*drho1;
+      (D.f[dirBNE ])[kbne ] = f1_TSW -c1o216*drho1;
+      (D.f[dirBSW ])[kbsw ] = f1_TNE -c1o216*drho1;
+      (D.f[dirBSE ])[kbse ] = f1_TNW -c1o216*drho1;
+      (D.f[dirBNW ])[kbnw ] = f1_TSE -c1o216*drho1;       
    }
    __syncthreads();
 }          
@@ -1706,184 +1707,184 @@ extern "C" __global__ void QPressDevice27(int inx,
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       q = q_dirE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirW])[kw]=c2over27* (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq); 
+         (D.f[dirW])[kw]=c2o27* (drho+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq); 
          //(D.f[dirE])[ke]=c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq); 
       }
 
       q = q_dirW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirE])[ke]=c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq); 
+         (D.f[dirE])[ke]=c2o27* (drho+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq); 
          //(D.f[dirW])[kw]=c2over27* (drho+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq); 
       }
 
       q = q_dirN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirS])[ks]=c2over27* (drho+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq); 
+         (D.f[dirS])[ks]=c2o27* (drho+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq); 
          //(D.f[dirN])[kn]=c2over27* (drho+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq); 
       }
 
       q = q_dirS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirN])[kn]=c2over27* (drho+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq); 
+         (D.f[dirN])[kn]=c2o27* (drho+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq); 
          //(D.f[dirS])[ks]=c2over27* (drho+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq); 
       }
 
       q = q_dirT[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirB])[kb]=c2over27* (drho+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq); 
+         (D.f[dirB])[kb]=c2o27* (drho+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq); 
          //(D.f[dirT])[kt]=c2over27* (drho+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq); 
       }
 
       q = q_dirB[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirT])[kt]=c2over27* (drho+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq); 
+         (D.f[dirT])[kt]=c2o27* (drho+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq); 
          //(D.f[dirB])[kb]=c2over27* (drho+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq); 
       }
 
       q = q_dirNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirSW])[ksw]=c1over54* (drho+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); 
+         (D.f[dirSW])[ksw]=c1o54* (drho+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); 
          //(D.f[dirNE])[kne]=c1over54* (drho+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); 
       }
 
       q = q_dirSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirNE])[kne]=c1over54* (drho+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); 
+         (D.f[dirNE])[kne]=c1o54* (drho+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); 
          //(D.f[dirSW])[ksw]=c1over54* (drho+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); 
       }
 
       q = q_dirSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirNW])[knw]=c1over54* (drho+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); 
+         (D.f[dirNW])[knw]=c1o54* (drho+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); 
          //(D.f[dirSE])[kse]=c1over54* (drho+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); 
       }
 
       q = q_dirNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirSE])[kse]=c1over54* (drho+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); 
+         (D.f[dirSE])[kse]=c1o54* (drho+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); 
          //(D.f[dirNW])[knw]=c1over54* (drho+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); 
       }
 
       q = q_dirTE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBW])[kbw]=c1over54* (drho+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); 
+         (D.f[dirBW])[kbw]=c1o54* (drho+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); 
          //(D.f[dirTE])[kte]=c1over54* (drho+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); 
       }
 
       q = q_dirBW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTE])[kte]=c1over54* (drho+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); 
+         (D.f[dirTE])[kte]=c1o54* (drho+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); 
          //(D.f[dirBW])[kbw]=c1over54* (drho+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); 
       }
 
       q = q_dirBE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTW])[ktw]=c1over54* (drho+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); 
+         (D.f[dirTW])[ktw]=c1o54* (drho+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); 
          //(D.f[dirBE])[kbe]=c1over54* (drho+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); 
       }
 
       q = q_dirTW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBE])[kbe]=c1over54* (drho+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); 
+         (D.f[dirBE])[kbe]=c1o54* (drho+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); 
          //(D.f[dirTW])[ktw]=c1over54* (drho+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); 
       }
 
       q = q_dirTN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBS])[kbs]=c1over54* (drho+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); 
+         (D.f[dirBS])[kbs]=c1o54* (drho+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); 
          //(D.f[dirTN])[ktn]=c1over54* (drho+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); 
       }
 
       q = q_dirBS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTN])[ktn]=c1over54* (drho+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); 
+         (D.f[dirTN])[ktn]=c1o54* (drho+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); 
          //(D.f[dirBS])[kbs]=c1over54* (drho+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); 
       }
 
       q = q_dirBN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTS])[kts]=c1over54* (drho+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); 
+         (D.f[dirTS])[kts]=c1o54* (drho+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); 
          //(D.f[dirBN])[kbn]=c1over54* (drho+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); 
       }
 
       q = q_dirTS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBN])[kbn]=c1over54* (drho+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); 
+         (D.f[dirBN])[kbn]=c1o54* (drho+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); 
          //(D.f[dirTS])[kts]=c1over54* (drho+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); 
       }
 
       q = q_dirTNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBSW])[kbsw]=c1over216*(drho+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); 
+         (D.f[dirBSW])[kbsw]=c1o216*(drho+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); 
          //(D.f[dirTNE])[ktne]=c1over216*(drho+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); 
       }
 
       q = q_dirBSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTNE])[ktne]=c1over216*(drho+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); 
+         (D.f[dirTNE])[ktne]=c1o216*(drho+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); 
          //(D.f[dirBSW])[kbsw]=c1over216*(drho+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); 
       }
 
       q = q_dirBNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTSW])[ktsw]=c1over216*(drho+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); 
+         (D.f[dirTSW])[ktsw]=c1o216*(drho+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); 
          //(D.f[dirBNE])[kbne]=c1over216*(drho+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); 
       }
 
       q = q_dirTSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBNE])[kbne]=c1over216*(drho+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); 
+         (D.f[dirBNE])[kbne]=c1o216*(drho+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); 
          //(D.f[dirTSW])[ktsw]=c1over216*(drho+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); 
       }
 
       q = q_dirTSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBNW])[kbnw]=c1over216*(drho+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); 
+         (D.f[dirBNW])[kbnw]=c1o216*(drho+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); 
          //(D.f[dirTSE])[ktse]=c1over216*(drho+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); 
       }
 
       q = q_dirBNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTSE])[ktse]=c1over216*(drho+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); 
+         (D.f[dirTSE])[ktse]=c1o216*(drho+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); 
          //(D.f[dirBNW])[kbnw]=c1over216*(drho+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); 
       }
 
       q = q_dirBSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTNW])[ktnw]=c1over216*(drho+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); 
+         (D.f[dirTNW])[ktnw]=c1o216*(drho+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); 
          //(D.f[dirBSE])[kbse]=c1over216*(drho+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); 
       }
 
       q = q_dirTNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBSE])[kbse]=c1over216*(drho+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); 
+         (D.f[dirBSE])[kbse]=c1o216*(drho+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); 
          //(D.f[dirTNW])[ktnw]=c1over216*(drho+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); 
       }
    }
@@ -2197,159 +2198,159 @@ extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       q = q_dirE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirW])[kw]=f_W-c2over27*drho; 
+         (D.f[dirW])[kw]=f_W-c2o27*drho; 
       }
 
       q = q_dirW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirE])[ke]=f_E-c2over27*drho;
+         (D.f[dirE])[ke]=f_E-c2o27*drho;
       }
 
       q = q_dirN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirS])[ks]=f_S-c2over27*drho; 
+         (D.f[dirS])[ks]=f_S-c2o27*drho; 
       }
 
       q = q_dirS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirN])[kn]=f_N-c2over27*drho; 
+         (D.f[dirN])[kn]=f_N-c2o27*drho; 
       }
 
       q = q_dirT[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirB])[kb]=f_B-c2over27*drho; 
+         (D.f[dirB])[kb]=f_B-c2o27*drho; 
       }
 
       q = q_dirB[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirT])[kt]=f_T-c2over27*drho;
+         (D.f[dirT])[kt]=f_T-c2o27*drho;
       }
 
       q = q_dirNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirSW])[ksw]=f_SW-c1over54*drho;
+         (D.f[dirSW])[ksw]=f_SW-c1o54*drho;
       }
 
       q = q_dirSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirNE])[kne]=f_NE-c1over54*drho;
+         (D.f[dirNE])[kne]=f_NE-c1o54*drho;
       }
 
       q = q_dirSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirNW])[knw]=f_NW-c1over54*drho;
+         (D.f[dirNW])[knw]=f_NW-c1o54*drho;
       }
 
       q = q_dirNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirSE])[kse]=f_SE-c1over54*drho;
+         (D.f[dirSE])[kse]=f_SE-c1o54*drho;
       }
 
       q = q_dirTE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBW])[kbw]=f_BW-c1over54*drho; 
+         (D.f[dirBW])[kbw]=f_BW-c1o54*drho; 
       }
 
       q = q_dirBW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTE])[kte]=f_TE-c1over54*drho; 
+         (D.f[dirTE])[kte]=f_TE-c1o54*drho; 
       }
 
       q = q_dirBE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTW])[ktw]=f_TW-c1over54*drho;
+         (D.f[dirTW])[ktw]=f_TW-c1o54*drho;
       }
 
       q = q_dirTW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBE])[kbe]=f_BE-c1over54*drho;
+         (D.f[dirBE])[kbe]=f_BE-c1o54*drho;
       }
 
       q = q_dirTN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBS])[kbs]=f_BS-c1over54*drho;
+         (D.f[dirBS])[kbs]=f_BS-c1o54*drho;
       }
 
       q = q_dirBS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTN])[ktn]=f_TN-c1over54*drho;
+         (D.f[dirTN])[ktn]=f_TN-c1o54*drho;
       }
 
       q = q_dirBN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTS])[kts]=f_TS-c1over54*drho;
+         (D.f[dirTS])[kts]=f_TS-c1o54*drho;
       }
 
       q = q_dirTS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBN])[kbn]=f_BN-c1over54*drho;
+         (D.f[dirBN])[kbn]=f_BN-c1o54*drho;
       }
 
       q = q_dirTNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBSW])[kbsw]=f_BSW-c1over216*drho;
+         (D.f[dirBSW])[kbsw]=f_BSW-c1o216*drho;
       }
 
       q = q_dirBSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTNE])[ktne]=f_TNE-c1over216*drho;
+         (D.f[dirTNE])[ktne]=f_TNE-c1o216*drho;
       }
 
       q = q_dirBNE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTSW])[ktsw]=f_TSW-c1over216*drho;
+         (D.f[dirTSW])[ktsw]=f_TSW-c1o216*drho;
       }
 
       q = q_dirTSW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBNE])[kbne]=f_BNE-c1over216*drho;
+         (D.f[dirBNE])[kbne]=f_BNE-c1o216*drho;
       }
 
       q = q_dirTSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBNW])[kbnw]=f_BNW-c1over216*drho;
+         (D.f[dirBNW])[kbnw]=f_BNW-c1o216*drho;
       }
 
       q = q_dirBNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTSE])[ktse]=f_TSE-c1over216*drho;
+         (D.f[dirTSE])[ktse]=f_TSE-c1o216*drho;
       }
 
       q = q_dirBSE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirTNW])[ktnw]=f_TNW-c1over216*drho;
+         (D.f[dirTNW])[ktnw]=f_TNW-c1o216*drho;
       }
 
       q = q_dirTNW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
-         (D.f[dirBSE])[kbse]=f_BSE-c1over216*drho;
+         (D.f[dirBSE])[kbse]=f_BSE-c1o216*drho;
       }
    }
 }
@@ -2515,33 +2516,33 @@ extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         (D.f[dirW])[kw]       = c2over27  * deltaRho;
-         (D.f[dirE])[ke]       = c2over27  * deltaRho;
-         (D.f[dirS])[ks]       = c2over27  * deltaRho;
-         (D.f[dirN])[kn]       = c2over27  * deltaRho;
-         (D.f[dirB])[kb]       = c2over27  * deltaRho;
-         (D.f[dirT])[kt]       = c2over27  * deltaRho;
-         (D.f[dirSW])[ksw]     = c1over54  * deltaRho;
-         (D.f[dirNE])[kne]     = c1over54  * deltaRho;
-         (D.f[dirNW])[knw]     = c1over54  * deltaRho;
-         (D.f[dirSE])[kse]     = c1over54  * deltaRho;
-         (D.f[dirBW])[kbw]     = c1over54  * deltaRho;
-         (D.f[dirTE])[kte]     = c1over54  * deltaRho;
-         (D.f[dirTW])[ktw]     = c1over54  * deltaRho;
-         (D.f[dirBE])[kbe]     = c1over54  * deltaRho;
-         (D.f[dirBS])[kbs]     = c1over54  * deltaRho;
-         (D.f[dirTN])[ktn]     = c1over54  * deltaRho;
-         (D.f[dirTS])[kts]     = c1over54  * deltaRho;
-         (D.f[dirBN])[kbn]     = c1over54  * deltaRho;
-         (D.f[dirBSW])[kbsw]   = c1over216 * deltaRho;
-         (D.f[dirTNE])[ktne]   = c1over216 * deltaRho;
-         (D.f[dirTSW])[ktsw]   = c1over216 * deltaRho;
-         (D.f[dirBNE])[kbne]   = c1over216 * deltaRho;
-         (D.f[dirBNW])[kbnw]   = c1over216 * deltaRho;
-         (D.f[dirTSE])[ktse]   = c1over216 * deltaRho;
-         (D.f[dirTNW])[ktnw]   = c1over216 * deltaRho;
-         (D.f[dirBSE])[kbse]   = c1over216 * deltaRho;
-         (D.f[dirZERO])[kzero] = c8over27  * deltaRho;
+         (D.f[dirW])[kw]       = c2o27  * deltaRho;
+         (D.f[dirE])[ke]       = c2o27  * deltaRho;
+         (D.f[dirS])[ks]       = c2o27  * deltaRho;
+         (D.f[dirN])[kn]       = c2o27  * deltaRho;
+         (D.f[dirB])[kb]       = c2o27  * deltaRho;
+         (D.f[dirT])[kt]       = c2o27  * deltaRho;
+         (D.f[dirSW])[ksw]     = c1o54  * deltaRho;
+         (D.f[dirNE])[kne]     = c1o54  * deltaRho;
+         (D.f[dirNW])[knw]     = c1o54  * deltaRho;
+         (D.f[dirSE])[kse]     = c1o54  * deltaRho;
+         (D.f[dirBW])[kbw]     = c1o54  * deltaRho;
+         (D.f[dirTE])[kte]     = c1o54  * deltaRho;
+         (D.f[dirTW])[ktw]     = c1o54  * deltaRho;
+         (D.f[dirBE])[kbe]     = c1o54  * deltaRho;
+         (D.f[dirBS])[kbs]     = c1o54  * deltaRho;
+         (D.f[dirTN])[ktn]     = c1o54  * deltaRho;
+         (D.f[dirTS])[kts]     = c1o54  * deltaRho;
+         (D.f[dirBN])[kbn]     = c1o54  * deltaRho;
+         (D.f[dirBSW])[kbsw]   = c1o216 * deltaRho;
+         (D.f[dirTNE])[ktne]   = c1o216 * deltaRho;
+         (D.f[dirTSW])[ktsw]   = c1o216 * deltaRho;
+         (D.f[dirBNE])[kbne]   = c1o216 * deltaRho;
+         (D.f[dirBNW])[kbnw]   = c1o216 * deltaRho;
+         (D.f[dirTSE])[ktse]   = c1o216 * deltaRho;
+         (D.f[dirTNW])[ktnw]   = c1o216 * deltaRho;
+         (D.f[dirBSE])[kbse]   = c1o216 * deltaRho;
+         (D.f[dirZERO])[kzero] = c8o27  * deltaRho;
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2775,15 +2776,15 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
       //(D.f[dirTNW])[ktnw]  =  c1over216*(drho+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq);
       real drho   =    f_ZERO+f_E+f_W+f_N+f_S+f_T+f_NE+f_SW+f_SE+f_NW+f_TE+f_TW+f_TN+f_TS+f_TNE+f_TSW+f_TSE+f_TNW;
       real dTop   =    f_T+f_TE+f_TW+f_TN+f_TS+f_TNE+f_TSW+f_TSE+f_TNW;
-      (D.f[dirB])[kb]     = (f_T+c2over27)*(rho-drho+one/six)/(dTop+one/six)-c2over27;
-      (D.f[dirBW])[kbw]   = (f_TW+c1over54)*(rho-drho+one/six)/(dTop+one/six)-c1over54;
-      (D.f[dirBE])[kbe]   = (f_TE+c1over54)*(rho-drho+one/six)/(dTop+one/six)-c1over54;
-      (D.f[dirBS])[kbs]   = (f_TS+c1over54)*(rho-drho+one/six)/(dTop+one/six)-c1over54;
-      (D.f[dirBN])[kbn]   = (f_TN+c1over54)*(rho-drho+one/six)/(dTop+one/six)-c1over54;
-      (D.f[dirBSW])[kbsw] = (f_TSW+c1over216)*(rho-drho+one/six)/(dTop+one/six)-c1over216;
-      (D.f[dirBNE])[kbne] = (f_TNE+c1over216)*(rho-drho+one/six)/(dTop+one/six)-c1over216;
-      (D.f[dirBNW])[kbnw] = (f_TNW+c1over216)*(rho-drho+one/six)/(dTop+one/six)-c1over216;
-      (D.f[dirBSE])[kbse] = (f_TSE+c1over216)*(rho-drho+one/six)/(dTop+one/six)-c1over216;
+      (D.f[dirB])[kb]     = (f_T+c2o27)*(rho-drho+c1o1/c6o1)/(dTop+c1o1/c6o1)-c2o27;
+      (D.f[dirBW])[kbw]   = (f_TW+c1o54)*(rho-drho+c1o1/c6o1)/(dTop+c1o1/c6o1)-c1o54;
+      (D.f[dirBE])[kbe]   = (f_TE+c1o54)*(rho-drho+c1o1/c6o1)/(dTop+c1o1/c6o1)-c1o54;
+      (D.f[dirBS])[kbs]   = (f_TS+c1o54)*(rho-drho+c1o1/c6o1)/(dTop+c1o1/c6o1)-c1o54;
+      (D.f[dirBN])[kbn]   = (f_TN+c1o54)*(rho-drho+c1o1/c6o1)/(dTop+c1o1/c6o1)-c1o54;
+      (D.f[dirBSW])[kbsw] = (f_TSW+c1o216)*(rho-drho+c1o1/c6o1)/(dTop+c1o1/c6o1)-c1o216;
+      (D.f[dirBNE])[kbne] = (f_TNE+c1o216)*(rho-drho+c1o1/c6o1)/(dTop+c1o1/c6o1)-c1o216;
+      (D.f[dirBNW])[kbnw] = (f_TNW+c1o216)*(rho-drho+c1o1/c6o1)/(dTop+c1o1/c6o1)-c1o216;
+      (D.f[dirBSE])[kbse] = (f_TSE+c1o216)*(rho-drho+c1o1/c6o1)/(dTop+c1o1/c6o1)-c1o216;
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3097,36 +3098,36 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
    //   real fBSE  = c1over216* (drho1+(one + drho1)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
    //   real fTNW  = c1over216* (drho1+(one + drho1)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
 
-	  real cs = one / sqrtf(three);
+	  real cs = c1o1 / sqrtf(c3o1);
 	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //no velocity
 	  //////////////////////////////////////////
-      f_E    = f1_E   * cs + (one - cs) * f_E   ;
-      f_W    = f1_W   * cs + (one - cs) * f_W   ;
-      f_N    = f1_N   * cs + (one - cs) * f_N   ;
-      f_S    = f1_S   * cs + (one - cs) * f_S   ;
-      f_T    = f1_T   * cs + (one - cs) * f_T   ;
-      f_B    = f1_B   * cs + (one - cs) * f_B   ;
-      f_NE   = f1_NE  * cs + (one - cs) * f_NE  ;
-      f_SW   = f1_SW  * cs + (one - cs) * f_SW  ;
-      f_SE   = f1_SE  * cs + (one - cs) * f_SE  ;
-      f_NW   = f1_NW  * cs + (one - cs) * f_NW  ;
-      f_TE   = f1_TE  * cs + (one - cs) * f_TE  ;
-      f_BW   = f1_BW  * cs + (one - cs) * f_BW  ;
-      f_BE   = f1_BE  * cs + (one - cs) * f_BE  ;
-      f_TW   = f1_TW  * cs + (one - cs) * f_TW  ;
-      f_TN   = f1_TN  * cs + (one - cs) * f_TN  ;
-      f_BS   = f1_BS  * cs + (one - cs) * f_BS  ;
-      f_BN   = f1_BN  * cs + (one - cs) * f_BN  ;
-      f_TS   = f1_TS  * cs + (one - cs) * f_TS  ;
-      f_TNE  = f1_TNE * cs + (one - cs) * f_TNE ;
-      f_TSW  = f1_TSW * cs + (one - cs) * f_TSW ;
-      f_TSE  = f1_TSE * cs + (one - cs) * f_TSE ;
-      f_TNW  = f1_TNW * cs + (one - cs) * f_TNW ;
-      f_BNE  = f1_BNE * cs + (one - cs) * f_BNE ;
-      f_BSW  = f1_BSW * cs + (one - cs) * f_BSW ;
-      f_BSE  = f1_BSE * cs + (one - cs) * f_BSE ;
-      f_BNW  = f1_BNW * cs + (one - cs) * f_BNW ;
+      f_E    = f1_E   * cs + (c1o1 - cs) * f_E   ;
+      f_W    = f1_W   * cs + (c1o1 - cs) * f_W   ;
+      f_N    = f1_N   * cs + (c1o1 - cs) * f_N   ;
+      f_S    = f1_S   * cs + (c1o1 - cs) * f_S   ;
+      f_T    = f1_T   * cs + (c1o1 - cs) * f_T   ;
+      f_B    = f1_B   * cs + (c1o1 - cs) * f_B   ;
+      f_NE   = f1_NE  * cs + (c1o1 - cs) * f_NE  ;
+      f_SW   = f1_SW  * cs + (c1o1 - cs) * f_SW  ;
+      f_SE   = f1_SE  * cs + (c1o1 - cs) * f_SE  ;
+      f_NW   = f1_NW  * cs + (c1o1 - cs) * f_NW  ;
+      f_TE   = f1_TE  * cs + (c1o1 - cs) * f_TE  ;
+      f_BW   = f1_BW  * cs + (c1o1 - cs) * f_BW  ;
+      f_BE   = f1_BE  * cs + (c1o1 - cs) * f_BE  ;
+      f_TW   = f1_TW  * cs + (c1o1 - cs) * f_TW  ;
+      f_TN   = f1_TN  * cs + (c1o1 - cs) * f_TN  ;
+      f_BS   = f1_BS  * cs + (c1o1 - cs) * f_BS  ;
+      f_BN   = f1_BN  * cs + (c1o1 - cs) * f_BN  ;
+      f_TS   = f1_TS  * cs + (c1o1 - cs) * f_TS  ;
+      f_TNE  = f1_TNE * cs + (c1o1 - cs) * f_TNE ;
+      f_TSW  = f1_TSW * cs + (c1o1 - cs) * f_TSW ;
+      f_TSE  = f1_TSE * cs + (c1o1 - cs) * f_TSE ;
+      f_TNW  = f1_TNW * cs + (c1o1 - cs) * f_TNW ;
+      f_BNE  = f1_BNE * cs + (c1o1 - cs) * f_BNE ;
+      f_BSW  = f1_BSW * cs + (c1o1 - cs) * f_BSW ;
+      f_BSE  = f1_BSE * cs + (c1o1 - cs) * f_BSE ;
+      f_BNW  = f1_BNW * cs + (c1o1 - cs) * f_BNW ;
 	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3533,33 +3534,33 @@ extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
 
       __syncthreads();
 
-      (D.f[dirE   ])[ke   ] = f1_W   -c2over27*drho1;   //  c1o100;  // zero;  //
-      (D.f[dirW   ])[kw   ] = f1_E   -c2over27*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirN   ])[kn   ] = f1_S   -c2over27*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirS   ])[ks   ] = f1_N   -c2over27*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirT   ])[kt   ] = f1_B   -c2over27*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirB   ])[kb   ] = f1_T   -c2over27*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirNE  ])[kne  ] = f1_SW  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirSW  ])[ksw  ] = f1_NE  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirSE  ])[kse  ] = f1_NW  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirNW  ])[knw  ] = f1_SE  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTE  ])[kte  ] = f1_BW  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBW  ])[kbw  ] = f1_TE  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBE  ])[kbe  ] = f1_TW  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTW  ])[ktw  ] = f1_BE  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTN  ])[ktn  ] = f1_BS  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBS  ])[kbs  ] = f1_TN  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBN  ])[kbn  ] = f1_TS  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTS  ])[kts  ] = f1_BN  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirZERO])[kzero] = f1_ZERO-c8over27*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTNE ])[ktne ] = f1_BSW -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTSW ])[ktsw ] = f1_BNE -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTSE ])[ktse ] = f1_BNW -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTNW ])[ktnw ] = f1_BSE -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBNE ])[kbne ] = f1_TSW -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBSW ])[kbsw ] = f1_TNE -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBSE ])[kbse ] = f1_TNW -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBNW ])[kbnw ] = f1_TSE -c1over216*drho1;  //  c1o100;  // zero;  //      
+      (D.f[dirE   ])[ke   ] = f1_W   -c2o27*drho1;   //  c1o100;  // zero;  //
+      (D.f[dirW   ])[kw   ] = f1_E   -c2o27*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirN   ])[kn   ] = f1_S   -c2o27*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirS   ])[ks   ] = f1_N   -c2o27*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirT   ])[kt   ] = f1_B   -c2o27*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirB   ])[kb   ] = f1_T   -c2o27*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirNE  ])[kne  ] = f1_SW  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirSW  ])[ksw  ] = f1_NE  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirSE  ])[kse  ] = f1_NW  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirNW  ])[knw  ] = f1_SE  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTE  ])[kte  ] = f1_BW  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBW  ])[kbw  ] = f1_TE  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBE  ])[kbe  ] = f1_TW  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTW  ])[ktw  ] = f1_BE  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTN  ])[ktn  ] = f1_BS  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBS  ])[kbs  ] = f1_TN  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBN  ])[kbn  ] = f1_TS  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTS  ])[kts  ] = f1_BN  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirZERO])[kzero] = f1_ZERO-c8o27*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTNE ])[ktne ] = f1_BSW -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTSW ])[ktsw ] = f1_BNE -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTSE ])[ktse ] = f1_BNW -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTNW ])[ktnw ] = f1_BSE -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBNE ])[kbne ] = f1_TSW -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBSW ])[kbsw ] = f1_TNE -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBSE ])[kbse ] = f1_TNW -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBNW ])[kbnw ] = f1_TSE -c1o216*drho1;  //  c1o100;  // zero;  //      
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4033,7 +4034,7 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
 			////////////////////////////////////////////////////////////////////////////////////
 			real rho = rhoBC[k];
 			////////////////////////////////////////////////////////////////////////////////////
-			real OoRho = one / (rho * 1.5f);
+			real OoRho = c1o1 / (rho * 1.5f);
 			////////////////////////////////////////////////////////////////////////////////////
 			real vvx    = ((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
@@ -4126,43 +4127,43 @@ extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
 			//////////////////////////////////////////////////////////////////////////////////
 			//original
             real XXb    = -c2o3 + vx2;
-            real XXc    = -c1o2 * (XXb + one + vvx);
+            real XXc    = -c1o2 * (XXb + c1o1 + vvx);
             real XXa    = XXc + vvx;
             real YYb    = -c2o3 + vy2;
-            real YYc    = -c1o2 * (YYb + one + vvy);
+            real YYc    = -c1o2 * (YYb + c1o1 + vvy);
             real YYa    = YYc + vvy;
             real ZZb    = -c2o3 + vz2;
-            real ZZc    = -c1o2 * (ZZb + one + vvz);
+            real ZZc    = -c1o2 * (ZZb + c1o1 + vvz);
             real ZZa    = ZZc + vvz;
 			//////////////////////////////////////////////////////////////////////////////////
 			//unkonditioniert
-            mfcbb = -(rhoBC[k] + one) * XXc * YYb * ZZb - c2over27; 
-			mfabb = -(rhoBC[k] + one) * XXa * YYb * ZZb - c2over27;
-			mfbcb = -(rhoBC[k] + one) * XXb * YYc * ZZb - c2over27;
-			mfbab = -(rhoBC[k] + one) * XXb * YYa * ZZb - c2over27;
-			mfbbc = -(rhoBC[k] + one) * XXb * YYb * ZZc - c2over27;
-			mfbba = -(rhoBC[k] + one) * XXb * YYb * ZZa - c2over27;
-			mfccb = -(rhoBC[k] + one) * XXc * YYc * ZZb - c1over54;
-			mfaab = -(rhoBC[k] + one) * XXa * YYa * ZZb - c1over54;
-			mfcab = -(rhoBC[k] + one) * XXc * YYa * ZZb - c1over54;
-			mfacb = -(rhoBC[k] + one) * XXa * YYc * ZZb - c1over54;
-			mfcbc = -(rhoBC[k] + one) * XXc * YYb * ZZc - c1over54;
-			mfaba = -(rhoBC[k] + one) * XXa * YYb * ZZa - c1over54;
-			mfcba = -(rhoBC[k] + one) * XXc * YYb * ZZa - c1over54;
-			mfabc = -(rhoBC[k] + one) * XXa * YYb * ZZc - c1over54;
-			mfbcc = -(rhoBC[k] + one) * XXb * YYc * ZZc - c1over54;
-			mfbaa = -(rhoBC[k] + one) * XXb * YYa * ZZa - c1over54;
-			mfbca = -(rhoBC[k] + one) * XXb * YYc * ZZa - c1over54;
-			mfbac = -(rhoBC[k] + one) * XXb * YYa * ZZc - c1over54;
-			mfbbb = -(rhoBC[k] + one) * XXb * YYb * ZZb - c8over27;
-			mfccc = -(rhoBC[k] + one) * XXc * YYc * ZZc - c1over216;
-			mfaac = -(rhoBC[k] + one) * XXa * YYa * ZZc - c1over216;
-			mfcac = -(rhoBC[k] + one) * XXc * YYa * ZZc - c1over216;
-			mfacc = -(rhoBC[k] + one) * XXa * YYc * ZZc - c1over216;
-			mfcca = -(rhoBC[k] + one) * XXc * YYc * ZZa - c1over216;
-			mfaaa = -(rhoBC[k] + one) * XXa * YYa * ZZa - c1over216;
-			mfcaa = -(rhoBC[k] + one) * XXc * YYa * ZZa - c1over216;
-			mfaca = -(rhoBC[k] + one) * XXa * YYc * ZZa - c1over216;
+            mfcbb = -(rhoBC[k] + c1o1) * XXc * YYb * ZZb - c2o27; 
+			mfabb = -(rhoBC[k] + c1o1) * XXa * YYb * ZZb - c2o27;
+			mfbcb = -(rhoBC[k] + c1o1) * XXb * YYc * ZZb - c2o27;
+			mfbab = -(rhoBC[k] + c1o1) * XXb * YYa * ZZb - c2o27;
+			mfbbc = -(rhoBC[k] + c1o1) * XXb * YYb * ZZc - c2o27;
+			mfbba = -(rhoBC[k] + c1o1) * XXb * YYb * ZZa - c2o27;
+			mfccb = -(rhoBC[k] + c1o1) * XXc * YYc * ZZb - c1o54;
+			mfaab = -(rhoBC[k] + c1o1) * XXa * YYa * ZZb - c1o54;
+			mfcab = -(rhoBC[k] + c1o1) * XXc * YYa * ZZb - c1o54;
+			mfacb = -(rhoBC[k] + c1o1) * XXa * YYc * ZZb - c1o54;
+			mfcbc = -(rhoBC[k] + c1o1) * XXc * YYb * ZZc - c1o54;
+			mfaba = -(rhoBC[k] + c1o1) * XXa * YYb * ZZa - c1o54;
+			mfcba = -(rhoBC[k] + c1o1) * XXc * YYb * ZZa - c1o54;
+			mfabc = -(rhoBC[k] + c1o1) * XXa * YYb * ZZc - c1o54;
+			mfbcc = -(rhoBC[k] + c1o1) * XXb * YYc * ZZc - c1o54;
+			mfbaa = -(rhoBC[k] + c1o1) * XXb * YYa * ZZa - c1o54;
+			mfbca = -(rhoBC[k] + c1o1) * XXb * YYc * ZZa - c1o54;
+			mfbac = -(rhoBC[k] + c1o1) * XXb * YYa * ZZc - c1o54;
+			mfbbb = -(rhoBC[k] + c1o1) * XXb * YYb * ZZb - c8o27;
+			mfccc = -(rhoBC[k] + c1o1) * XXc * YYc * ZZc - c1o216;
+			mfaac = -(rhoBC[k] + c1o1) * XXa * YYa * ZZc - c1o216;
+			mfcac = -(rhoBC[k] + c1o1) * XXc * YYa * ZZc - c1o216;
+			mfacc = -(rhoBC[k] + c1o1) * XXa * YYc * ZZc - c1o216;
+			mfcca = -(rhoBC[k] + c1o1) * XXc * YYc * ZZa - c1o216;
+			mfaaa = -(rhoBC[k] + c1o1) * XXa * YYa * ZZa - c1o216;
+			mfcaa = -(rhoBC[k] + c1o1) * XXc * YYa * ZZa - c1o216;
+			mfaca = -(rhoBC[k] + c1o1) * XXa * YYc * ZZa - c1o216;
 			//////////////////////////////////////////////////////////
 			////konditioniert
 			//double OneOver216RhoPlusOne = c1over216*(rhoBC[k]+one);
@@ -4501,33 +4502,33 @@ extern "C" __global__ void QPressDeviceZero27(	 real* DD,
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //__syncthreads();
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      (D.f[dirE   ])[ke   ] =zero;
-      (D.f[dirW   ])[kw   ] =zero;
-      (D.f[dirN   ])[kn   ] =zero;
-      (D.f[dirS   ])[ks   ] =zero;
-      (D.f[dirT   ])[kt   ] =zero;
-      (D.f[dirB   ])[kb   ] =zero;
-      (D.f[dirNE  ])[kne  ] =zero;
-      (D.f[dirSW  ])[ksw  ] =zero;
-      (D.f[dirSE  ])[kse  ] =zero;
-      (D.f[dirNW  ])[knw  ] =zero;
-      (D.f[dirTE  ])[kte  ] =zero;
-      (D.f[dirBW  ])[kbw  ] =zero;
-      (D.f[dirBE  ])[kbe  ] =zero;
-      (D.f[dirTW  ])[ktw  ] =zero;
-      (D.f[dirTN  ])[ktn  ] =zero;
-      (D.f[dirBS  ])[kbs  ] =zero;
-      (D.f[dirBN  ])[kbn  ] =zero;
-      (D.f[dirTS  ])[kts  ] =zero;
-      (D.f[dirZERO])[kzero] =zero;
-      (D.f[dirTNE ])[ktne ] =zero;
-      (D.f[dirTSW ])[ktsw ] =zero;
-      (D.f[dirTSE ])[ktse ] =zero;
-      (D.f[dirTNW ])[ktnw ] =zero;
-      (D.f[dirBNE ])[kbne ] =zero;
-      (D.f[dirBSW ])[kbsw ] =zero;
-      (D.f[dirBSE ])[kbse ] =zero;
-      (D.f[dirBNW ])[kbnw ] =zero;
+      (D.f[dirE   ])[ke   ] =c0o1;
+      (D.f[dirW   ])[kw   ] =c0o1;
+      (D.f[dirN   ])[kn   ] =c0o1;
+      (D.f[dirS   ])[ks   ] =c0o1;
+      (D.f[dirT   ])[kt   ] =c0o1;
+      (D.f[dirB   ])[kb   ] =c0o1;
+      (D.f[dirNE  ])[kne  ] =c0o1;
+      (D.f[dirSW  ])[ksw  ] =c0o1;
+      (D.f[dirSE  ])[kse  ] =c0o1;
+      (D.f[dirNW  ])[knw  ] =c0o1;
+      (D.f[dirTE  ])[kte  ] =c0o1;
+      (D.f[dirBW  ])[kbw  ] =c0o1;
+      (D.f[dirBE  ])[kbe  ] =c0o1;
+      (D.f[dirTW  ])[ktw  ] =c0o1;
+      (D.f[dirTN  ])[ktn  ] =c0o1;
+      (D.f[dirBS  ])[kbs  ] =c0o1;
+      (D.f[dirBN  ])[kbn  ] =c0o1;
+      (D.f[dirTS  ])[kts  ] =c0o1;
+      (D.f[dirZERO])[kzero] =c0o1;
+      (D.f[dirTNE ])[ktne ] =c0o1;
+      (D.f[dirTSW ])[ktsw ] =c0o1;
+      (D.f[dirTSE ])[ktse ] =c0o1;
+      (D.f[dirTNW ])[ktnw ] =c0o1;
+      (D.f[dirBNE ])[kbne ] =c0o1;
+      (D.f[dirBSW ])[kbsw ] =c0o1;
+      (D.f[dirBSE ])[kbse ] =c0o1;
+      (D.f[dirBNW ])[kbnw ] =c0o1;
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4775,33 +4776,33 @@ extern "C" __global__ void QPressDeviceFake27(	 real* rhoBC,
 
       __syncthreads();
 
-      (D.f[dirE   ])[ke   ] = c2over27* (rhoBC[k]+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      (D.f[dirW   ])[kw   ] = c2over27* (rhoBC[k]+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      (D.f[dirN   ])[kn   ] = c2over27* (rhoBC[k]+three*(    -vx2    )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      (D.f[dirS   ])[ks   ] = c2over27* (rhoBC[k]+three*(     vx2    )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      (D.f[dirT   ])[kt   ] = c2over27* (rhoBC[k]+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      (D.f[dirB   ])[kb   ] = c2over27* (rhoBC[k]+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      (D.f[dirNE  ])[kne  ] = f1_SW  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirSW  ])[ksw  ] = f1_NE  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirSE  ])[kse  ] = f1_NW  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirNW  ])[knw  ] = f1_SE  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTE  ])[kte  ] = f1_BW  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBW  ])[kbw  ] = f1_TE  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBE  ])[kbe  ] = f1_TW  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTW  ])[ktw  ] = f1_BE  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTN  ])[ktn  ] = f1_BS  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBS  ])[kbs  ] = f1_TN  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBN  ])[kbn  ] = f1_TS  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTS  ])[kts  ] = f1_BN  -c1over54*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirZERO])[kzero] = f1_ZERO-c8over27*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTNE ])[ktne ] = f1_BSW -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTSW ])[ktsw ] = f1_BNE -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTSE ])[ktse ] = f1_BNW -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirTNW ])[ktnw ] = f1_BSE -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBNE ])[kbne ] = f1_TSW -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBSW ])[kbsw ] = f1_TNE -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBSE ])[kbse ] = f1_TNW -c1over216*drho1;	//  c1o100;  // zero;  //
-      (D.f[dirBNW ])[kbnw ] = f1_TSE -c1over216*drho1;  //  c1o100;  // zero;  //      
+      (D.f[dirE   ])[ke   ] = c2o27* (rhoBC[k]+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      (D.f[dirW   ])[kw   ] = c2o27* (rhoBC[k]+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      (D.f[dirN   ])[kn   ] = c2o27* (rhoBC[k]+c3o1*(    -vx2    )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      (D.f[dirS   ])[ks   ] = c2o27* (rhoBC[k]+c3o1*(     vx2    )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      (D.f[dirT   ])[kt   ] = c2o27* (rhoBC[k]+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      (D.f[dirB   ])[kb   ] = c2o27* (rhoBC[k]+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      (D.f[dirNE  ])[kne  ] = f1_SW  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirSW  ])[ksw  ] = f1_NE  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirSE  ])[kse  ] = f1_NW  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirNW  ])[knw  ] = f1_SE  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTE  ])[kte  ] = f1_BW  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBW  ])[kbw  ] = f1_TE  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBE  ])[kbe  ] = f1_TW  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTW  ])[ktw  ] = f1_BE  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTN  ])[ktn  ] = f1_BS  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBS  ])[kbs  ] = f1_TN  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBN  ])[kbn  ] = f1_TS  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTS  ])[kts  ] = f1_BN  -c1o54*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirZERO])[kzero] = f1_ZERO-c8o27*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTNE ])[ktne ] = f1_BSW -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTSW ])[ktsw ] = f1_BNE -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTSE ])[ktse ] = f1_BNW -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirTNW ])[ktnw ] = f1_BSE -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBNE ])[kbne ] = f1_TSW -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBSW ])[kbsw ] = f1_TNE -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBSE ])[kbse ] = f1_TNW -c1o216*drho1;	//  c1o100;  // zero;  //
+      (D.f[dirBNW ])[kbnw ] = f1_TSE -c1o216*drho1;  //  c1o100;  // zero;  //      
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5036,16 +5037,16 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 
 		vx1    = (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
 			((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
-			(f_E - f_W))/(one+drho); 
+			(f_E - f_W))/(c1o1+drho); 
 
 
 		vx2    =  ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
 			((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
-			(f_N - f_S))/(one+drho); 
+			(f_N - f_S))/(c1o1+drho); 
 
 		vx3    =  (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
 			(-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
-			(f_T - f_B))/(one+drho); 
+			(f_T - f_B))/(c1o1+drho); 
 
 		real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
@@ -5120,185 +5121,185 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		q = q_dirE[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c2over27* (drho+c9over2*( vx1        )*( vx1        )-cu_sq); 
-			(D.f[dirW])[kw]=(one-q)/(one+q)*(f_E-f_W+(f_E+f_W-two*feq*om1)/(one-om1))*c1o2+(q*(f_E+f_W)-c2over27*(rhoDiff + six*( VeloX     )))/(one+q);
+			feq=c2o27* (drho+c9o2*( vx1        )*( vx1        )-cu_sq); 
+			(D.f[dirW])[kw]=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W)-c2o27*(rhoDiff + c6o1*( VeloX     )))/(c1o1+q);
 		}
 
 		q = q_dirW[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c2over27* (drho+c9over2*(-vx1        )*(-vx1        )-cu_sq); 
-			(D.f[dirE])[ke]=(one-q)/(one+q)*(f_W-f_E+(f_W+f_E-two*feq*om1)/(one-om1))*c1o2+(q*(f_W+f_E)-c2over27*(rhoDiff + six*(-VeloX     )))/(one+q);
+			feq=c2o27* (drho+c9o2*(-vx1        )*(-vx1        )-cu_sq); 
+			(D.f[dirE])[ke]=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E)-c2o27*(rhoDiff + c6o1*(-VeloX     )))/(c1o1+q);
 		}
 
 		q = q_dirN[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c2over27* (drho+c9over2*(     vx2    )*(     vx2    )-cu_sq); 
-			(D.f[dirS])[ks]=(one-q)/(one+q)*(f_N-f_S+(f_N+f_S-two*feq*om1)/(one-om1))*c1o2+(q*(f_N+f_S)-c2over27*(rhoDiff + six*( VeloY     )))/(one+q);
+			feq=c2o27* (drho+c9o2*(     vx2    )*(     vx2    )-cu_sq); 
+			(D.f[dirS])[ks]=(c1o1-q)/(c1o1+q)*(f_N-f_S+(f_N+f_S-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_N+f_S)-c2o27*(rhoDiff + c6o1*( VeloY     )))/(c1o1+q);
 		}
 
 		q = q_dirS[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c2over27* (drho+c9over2*(    -vx2    )*(    -vx2    )-cu_sq); 
-			(D.f[dirN])[kn]=(one-q)/(one+q)*(f_S-f_N+(f_S+f_N-two*feq*om1)/(one-om1))*c1o2+(q*(f_S+f_N)-c2over27*(rhoDiff + six*(-VeloY     )))/(one+q);
+			feq=c2o27* (drho+c9o2*(    -vx2    )*(    -vx2    )-cu_sq); 
+			(D.f[dirN])[kn]=(c1o1-q)/(c1o1+q)*(f_S-f_N+(f_S+f_N-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_S+f_N)-c2o27*(rhoDiff + c6o1*(-VeloY     )))/(c1o1+q);
 		}
 
 		q = q_dirT[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c2over27* (drho+c9over2*(         vx3)*(         vx3)-cu_sq); 
-			(D.f[dirB])[kb]=(one-q)/(one+q)*(f_T-f_B+(f_T+f_B-two*feq*om1)/(one-om1))*c1o2+(q*(f_T+f_B)-c2over27*(rhoDiff + six*( VeloZ     )))/(one+q);
+			feq=c2o27* (drho+c9o2*(         vx3)*(         vx3)-cu_sq); 
+			(D.f[dirB])[kb]=(c1o1-q)/(c1o1+q)*(f_T-f_B+(f_T+f_B-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_T+f_B)-c2o27*(rhoDiff + c6o1*( VeloZ     )))/(c1o1+q);
 		}
 
 		q = q_dirB[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c2over27* (drho+c9over2*(        -vx3)*(        -vx3)-cu_sq); 
-			(D.f[dirT])[kt]=(one-q)/(one+q)*(f_B-f_T+(f_B+f_T-two*feq*om1)/(one-om1))*c1o2+(q*(f_B+f_T)-c2over27*(rhoDiff + six*(-VeloZ     )))/(one+q);
+			feq=c2o27* (drho+c9o2*(        -vx3)*(        -vx3)-cu_sq); 
+			(D.f[dirT])[kt]=(c1o1-q)/(c1o1+q)*(f_B-f_T+(f_B+f_T-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_B+f_T)-c2o27*(rhoDiff + c6o1*(-VeloZ     )))/(c1o1+q);
 		}
 
 		q = q_dirNE[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over54* (drho+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); 
-			(D.f[dirSW])[ksw]=(one-q)/(one+q)*(f_NE-f_SW+(f_NE+f_SW-two*feq*om1)/(one-om1))*c1o2+(q*(f_NE+f_SW)-c1over54*(rhoDiff + six*(VeloX+VeloY)))/(one+q);
+			feq=c1o54* (drho+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); 
+			(D.f[dirSW])[ksw]=(c1o1-q)/(c1o1+q)*(f_NE-f_SW+(f_NE+f_SW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NE+f_SW)-c1o54*(rhoDiff + c6o1*(VeloX+VeloY)))/(c1o1+q);
 		}
 
 		q = q_dirSW[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over54* (drho+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); 
-			(D.f[dirNE])[kne]=(one-q)/(one+q)*(f_SW-f_NE+(f_SW+f_NE-two*feq*om1)/(one-om1))*c1o2+(q*(f_SW+f_NE)-c1over54*(rhoDiff + six*(-VeloX-VeloY)))/(one+q);
+			feq=c1o54* (drho+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); 
+			(D.f[dirNE])[kne]=(c1o1-q)/(c1o1+q)*(f_SW-f_NE+(f_SW+f_NE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SW+f_NE)-c1o54*(rhoDiff + c6o1*(-VeloX-VeloY)))/(c1o1+q);
 		}
 
 		q = q_dirSE[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over54* (drho+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); 
-			(D.f[dirNW])[knw]=(one-q)/(one+q)*(f_SE-f_NW+(f_SE+f_NW-two*feq*om1)/(one-om1))*c1o2+(q*(f_SE+f_NW)-c1over54*(rhoDiff + six*( VeloX-VeloY)))/(one+q);
+			feq=c1o54* (drho+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); 
+			(D.f[dirNW])[knw]=(c1o1-q)/(c1o1+q)*(f_SE-f_NW+(f_SE+f_NW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SE+f_NW)-c1o54*(rhoDiff + c6o1*( VeloX-VeloY)))/(c1o1+q);
 		}
 
 		q = q_dirNW[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over54* (drho+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); 
-			(D.f[dirSE])[kse]=(one-q)/(one+q)*(f_NW-f_SE+(f_NW+f_SE-two*feq*om1)/(one-om1))*c1o2+(q*(f_NW+f_SE)-c1over54*(rhoDiff + six*(-VeloX+VeloY)))/(one+q);
+			feq=c1o54* (drho+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); 
+			(D.f[dirSE])[kse]=(c1o1-q)/(c1o1+q)*(f_NW-f_SE+(f_NW+f_SE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NW+f_SE)-c1o54*(rhoDiff + c6o1*(-VeloX+VeloY)))/(c1o1+q);
 		}
 
 		q = q_dirTE[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over54* (drho+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); 
-			(D.f[dirBW])[kbw]=(one-q)/(one+q)*(f_TE-f_BW+(f_TE+f_BW-two*feq*om1)/(one-om1))*c1o2+(q*(f_TE+f_BW)-c1over54*(rhoDiff + six*( VeloX+VeloZ)))/(one+q);
+			feq=c1o54* (drho+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); 
+			(D.f[dirBW])[kbw]=(c1o1-q)/(c1o1+q)*(f_TE-f_BW+(f_TE+f_BW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TE+f_BW)-c1o54*(rhoDiff + c6o1*( VeloX+VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirBW[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over54* (drho+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); 
-			(D.f[dirTE])[kte]=(one-q)/(one+q)*(f_BW-f_TE+(f_BW+f_TE-two*feq*om1)/(one-om1))*c1o2+(q*(f_BW+f_TE)-c1over54*(rhoDiff + six*(-VeloX-VeloZ)))/(one+q);
+			feq=c1o54* (drho+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); 
+			(D.f[dirTE])[kte]=(c1o1-q)/(c1o1+q)*(f_BW-f_TE+(f_BW+f_TE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BW+f_TE)-c1o54*(rhoDiff + c6o1*(-VeloX-VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirBE[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over54* (drho+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); 
-			(D.f[dirTW])[ktw]=(one-q)/(one+q)*(f_BE-f_TW+(f_BE+f_TW-two*feq*om1)/(one-om1))*c1o2+(q*(f_BE+f_TW)-c1over54*(rhoDiff + six*( VeloX-VeloZ)))/(one+q);
+			feq=c1o54* (drho+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); 
+			(D.f[dirTW])[ktw]=(c1o1-q)/(c1o1+q)*(f_BE-f_TW+(f_BE+f_TW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BE+f_TW)-c1o54*(rhoDiff + c6o1*( VeloX-VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirTW[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over54* (drho+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); 
-			(D.f[dirBE])[kbe]=(one-q)/(one+q)*(f_TW-f_BE+(f_TW+f_BE-two*feq*om1)/(one-om1))*c1o2+(q*(f_TW+f_BE)-c1over54*(rhoDiff + six*(-VeloX+VeloZ)))/(one+q);
+			feq=c1o54* (drho+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); 
+			(D.f[dirBE])[kbe]=(c1o1-q)/(c1o1+q)*(f_TW-f_BE+(f_TW+f_BE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TW+f_BE)-c1o54*(rhoDiff + c6o1*(-VeloX+VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirTN[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over54* (drho+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); 
-			(D.f[dirBS])[kbs]=(one-q)/(one+q)*(f_TN-f_BS+(f_TN+f_BS-two*feq*om1)/(one-om1))*c1o2+(q*(f_TN+f_BS)-c1over54*(rhoDiff + six*( VeloY+VeloZ)))/(one+q);
+			feq=c1o54* (drho+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); 
+			(D.f[dirBS])[kbs]=(c1o1-q)/(c1o1+q)*(f_TN-f_BS+(f_TN+f_BS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TN+f_BS)-c1o54*(rhoDiff + c6o1*( VeloY+VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirBS[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over54* (drho+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); 
-			(D.f[dirTN])[ktn]=(one-q)/(one+q)*(f_BS-f_TN+(f_BS+f_TN-two*feq*om1)/(one-om1))*c1o2+(q*(f_BS+f_TN)-c1over54*(rhoDiff + six*( -VeloY-VeloZ)))/(one+q);
+			feq=c1o54* (drho+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); 
+			(D.f[dirTN])[ktn]=(c1o1-q)/(c1o1+q)*(f_BS-f_TN+(f_BS+f_TN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BS+f_TN)-c1o54*(rhoDiff + c6o1*( -VeloY-VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirBN[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over54* (drho+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); 
-			(D.f[dirTS])[kts]=(one-q)/(one+q)*(f_BN-f_TS+(f_BN+f_TS-two*feq*om1)/(one-om1))*c1o2+(q*(f_BN+f_TS)-c1over54*(rhoDiff + six*( VeloY-VeloZ)))/(one+q);
+			feq=c1o54* (drho+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); 
+			(D.f[dirTS])[kts]=(c1o1-q)/(c1o1+q)*(f_BN-f_TS+(f_BN+f_TS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BN+f_TS)-c1o54*(rhoDiff + c6o1*( VeloY-VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirTS[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over54* (drho+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); 
-			(D.f[dirBN])[kbn]=(one-q)/(one+q)*(f_TS-f_BN+(f_TS+f_BN-two*feq*om1)/(one-om1))*c1o2+(q*(f_TS+f_BN)-c1over54*(rhoDiff + six*( -VeloY+VeloZ)))/(one+q);
+			feq=c1o54* (drho+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); 
+			(D.f[dirBN])[kbn]=(c1o1-q)/(c1o1+q)*(f_TS-f_BN+(f_TS+f_BN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TS+f_BN)-c1o54*(rhoDiff + c6o1*( -VeloY+VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirTNE[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over216*(drho+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); 
-			(D.f[dirBSW])[kbsw]=(one-q)/(one+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-two*feq*om1)/(one-om1))*c1o2+(q*(f_TNE+f_BSW)-c1over216*(rhoDiff + six*( VeloX+VeloY+VeloZ)))/(one+q);
+			feq=c1o216*(drho+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); 
+			(D.f[dirBSW])[kbsw]=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNE+f_BSW)-c1o216*(rhoDiff + c6o1*( VeloX+VeloY+VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirBSW[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over216*(drho+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); 
-			(D.f[dirTNE])[ktne]=(one-q)/(one+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-two*feq*om1)/(one-om1))*c1o2+(q*(f_BSW+f_TNE)-c1over216*(rhoDiff + six*(-VeloX-VeloY-VeloZ)))/(one+q);
+			feq=c1o216*(drho+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); 
+			(D.f[dirTNE])[ktne]=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSW+f_TNE)-c1o216*(rhoDiff + c6o1*(-VeloX-VeloY-VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirBNE[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over216*(drho+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); 
-			(D.f[dirTSW])[ktsw]=(one-q)/(one+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-two*feq*om1)/(one-om1))*c1o2+(q*(f_BNE+f_TSW)-c1over216*(rhoDiff + six*( VeloX+VeloY-VeloZ)))/(one+q);
+			feq=c1o216*(drho+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); 
+			(D.f[dirTSW])[ktsw]=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNE+f_TSW)-c1o216*(rhoDiff + c6o1*( VeloX+VeloY-VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirTSW[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over216*(drho+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); 
-			(D.f[dirBNE])[kbne]=(one-q)/(one+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-two*feq*om1)/(one-om1))*c1o2+(q*(f_TSW+f_BNE)-c1over216*(rhoDiff + six*(-VeloX-VeloY+VeloZ)))/(one+q);
+			feq=c1o216*(drho+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); 
+			(D.f[dirBNE])[kbne]=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSW+f_BNE)-c1o216*(rhoDiff + c6o1*(-VeloX-VeloY+VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirTSE[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over216*(drho+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); 
-			(D.f[dirBNW])[kbnw]=(one-q)/(one+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-two*feq*om1)/(one-om1))*c1o2+(q*(f_TSE+f_BNW)-c1over216*(rhoDiff + six*( VeloX-VeloY+VeloZ)))/(one+q);
+			feq=c1o216*(drho+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); 
+			(D.f[dirBNW])[kbnw]=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSE+f_BNW)-c1o216*(rhoDiff + c6o1*( VeloX-VeloY+VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirBNW[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over216*(drho+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); 
-			(D.f[dirTSE])[ktse]=(one-q)/(one+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-two*feq*om1)/(one-om1))*c1o2+(q*(f_BNW+f_TSE)-c1over216*(rhoDiff + six*(-VeloX+VeloY-VeloZ)))/(one+q);
+			feq=c1o216*(drho+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); 
+			(D.f[dirTSE])[ktse]=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNW+f_TSE)-c1o216*(rhoDiff + c6o1*(-VeloX+VeloY-VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirBSE[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over216*(drho+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); 
-			(D.f[dirTNW])[ktnw]=(one-q)/(one+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-two*feq*om1)/(one-om1))*c1o2+(q*(f_BSE+f_TNW)-c1over216*(rhoDiff + six*( VeloX-VeloY-VeloZ)))/(one+q);
+			feq=c1o216*(drho+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); 
+			(D.f[dirTNW])[ktnw]=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSE+f_TNW)-c1o216*(rhoDiff + c6o1*( VeloX-VeloY-VeloZ)))/(c1o1+q);
 		}
 
 		q = q_dirTNW[k];
-		if (q>=zero && q<=one)
+		if (q>=c0o1 && q<=c1o1)
 		{
-			feq=c1over216*(drho+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); 
-			(D.f[dirBSE])[kbse]=(one-q)/(one+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-two*feq*om1)/(one-om1))*c1o2+(q*(f_TNW+f_BSE)-c1over216*(rhoDiff + six*(-VeloX+VeloY+VeloZ)))/(one+q);
+			feq=c1o216*(drho+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); 
+			(D.f[dirBSE])[kbse]=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNW+f_BSE)-c1o216*(rhoDiff + c6o1*(-VeloX+VeloY+VeloZ)))/(c1o1+q);
 		}
 	}
 }

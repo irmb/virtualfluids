@@ -6,8 +6,9 @@
 //
 //////////////////////////////////////////////////////////////////////////
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "GPU/constant.h"
+#include "Core/RealConstants.h"
 
 //////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
@@ -166,7 +167,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   real eps_new = two;
+   real eps_new = c2o1;
    real omegaS = omFine;//-omFine;
    real o  = omCoarse;//-omCoarse;
    //real op = one;
@@ -258,16 +259,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
       fPMM = fPMMsource[k0MM];
 
       drhoMMM = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1MMM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoMMM);
-	  vx2MMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoMMM);
-	  vx3MMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoMMM);
+      vx1MMM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoMMM);
+	  vx2MMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoMMM);
+	  vx3MMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoMMM);
 
-	  kxyFromfcNEQMMM    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoMMM) - ((vx1MMM*vx2MMM)));
-	  kyzFromfcNEQMMM    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoMMM) - ((vx2MMM*vx3MMM)));
-	  kxzFromfcNEQMMM    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoMMM) - ((vx1MMM*vx3MMM)));
-	  kxxMyyFromfcNEQMMM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoMMM) - ((vx1MMM*vx1MMM - vx2MMM*vx2MMM)));
-	  kxxMzzFromfcNEQMMM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoMMM) - ((vx1MMM*vx1MMM - vx3MMM*vx3MMM)));
-	  kyyMzzFromfcNEQMMM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoMMM) - ((vx2MMM*vx2MMM - vx3MMM*vx3MMM)));
+	  kxyFromfcNEQMMM    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoMMM) - ((vx1MMM*vx2MMM)));
+	  kyzFromfcNEQMMM    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoMMM) - ((vx2MMM*vx3MMM)));
+	  kxzFromfcNEQMMM    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoMMM) - ((vx1MMM*vx3MMM)));
+	  kxxMyyFromfcNEQMMM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoMMM) - ((vx1MMM*vx1MMM - vx2MMM*vx2MMM)));
+	  kxxMzzFromfcNEQMMM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoMMM) - ((vx1MMM*vx1MMM - vx3MMM*vx3MMM)));
+	  kyyMzzFromfcNEQMMM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoMMM) - ((vx2MMM*vx2MMM - vx3MMM*vx3MMM)));
 
       //////////////////////////////////////////////////////////////////////////
       //SWT//
@@ -311,16 +312,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoMMP = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1MMP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoMMP);
-	  vx2MMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoMMP);
-	  vx3MMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoMMP);
+      vx1MMP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoMMP);
+	  vx2MMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoMMP);
+	  vx3MMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoMMP);
 
-	  kxyFromfcNEQMMP    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoMMP) - ((vx1MMP*vx2MMP)));
-	  kyzFromfcNEQMMP    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoMMP) - ((vx2MMP*vx3MMP)));
-	  kxzFromfcNEQMMP    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoMMP) - ((vx1MMP*vx3MMP)));
-	  kxxMyyFromfcNEQMMP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoMMP) - ((vx1MMP*vx1MMP - vx2MMP*vx2MMP)));
-	  kxxMzzFromfcNEQMMP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoMMP) - ((vx1MMP*vx1MMP - vx3MMP*vx3MMP)));
-	  kyyMzzFromfcNEQMMP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoMMP) - ((vx2MMP*vx2MMP - vx3MMP*vx3MMP)));
+	  kxyFromfcNEQMMP    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoMMP) - ((vx1MMP*vx2MMP)));
+	  kyzFromfcNEQMMP    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoMMP) - ((vx2MMP*vx3MMP)));
+	  kxzFromfcNEQMMP    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoMMP) - ((vx1MMP*vx3MMP)));
+	  kxxMyyFromfcNEQMMP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoMMP) - ((vx1MMP*vx1MMP - vx2MMP*vx2MMP)));
+	  kxxMzzFromfcNEQMMP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoMMP) - ((vx1MMP*vx1MMP - vx3MMP*vx3MMP)));
+	  kyyMzzFromfcNEQMMP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoMMP) - ((vx2MMP*vx2MMP - vx3MMP*vx3MMP)));
 
       //////////////////////////////////////////////////////////////////////////
       //SET//
@@ -364,16 +365,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoPMP = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1PMP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoPMP);
-	  vx2PMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoPMP);
-	  vx3PMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoPMP);
+      vx1PMP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoPMP);
+	  vx2PMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoPMP);
+	  vx3PMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoPMP);
 
-	  kxyFromfcNEQPMP    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoPMP) - ((vx1PMP*vx2PMP)));
-	  kyzFromfcNEQPMP    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoPMP) - ((vx2PMP*vx3PMP)));
-	  kxzFromfcNEQPMP    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoPMP) - ((vx1PMP*vx3PMP)));
-	  kxxMyyFromfcNEQPMP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoPMP) - ((vx1PMP*vx1PMP - vx2PMP*vx2PMP)));
-	  kxxMzzFromfcNEQPMP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoPMP) - ((vx1PMP*vx1PMP - vx3PMP*vx3PMP)));
-	  kyyMzzFromfcNEQPMP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoPMP) - ((vx2PMP*vx2PMP - vx3PMP*vx3PMP)));
+	  kxyFromfcNEQPMP    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoPMP) - ((vx1PMP*vx2PMP)));
+	  kyzFromfcNEQPMP    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoPMP) - ((vx2PMP*vx3PMP)));
+	  kxzFromfcNEQPMP    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoPMP) - ((vx1PMP*vx3PMP)));
+	  kxxMyyFromfcNEQPMP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoPMP) - ((vx1PMP*vx1PMP - vx2PMP*vx2PMP)));
+	  kxxMzzFromfcNEQPMP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoPMP) - ((vx1PMP*vx1PMP - vx3PMP*vx3PMP)));
+	  kyyMzzFromfcNEQPMP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoPMP) - ((vx2PMP*vx2PMP - vx3PMP*vx3PMP)));
 
       //////////////////////////////////////////////////////////////////////////
       //SEB//
@@ -417,16 +418,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoPMM = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1PMM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoPMM);
-	  vx2PMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoPMM);
-	  vx3PMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoPMM);
+      vx1PMM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoPMM);
+	  vx2PMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoPMM);
+	  vx3PMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoPMM);
 
-	  kxyFromfcNEQPMM    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoPMM) - ((vx1PMM*vx2PMM)));
-	  kyzFromfcNEQPMM    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoPMM) - ((vx2PMM*vx3PMM)));
-	  kxzFromfcNEQPMM    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoPMM) - ((vx1PMM*vx3PMM)));
-	  kxxMyyFromfcNEQPMM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoPMM) - ((vx1PMM*vx1PMM - vx2PMM*vx2PMM)));
-	  kxxMzzFromfcNEQPMM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoPMM) - ((vx1PMM*vx1PMM - vx3PMM*vx3PMM)));
-	  kyyMzzFromfcNEQPMM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoPMM) - ((vx2PMM*vx2PMM - vx3PMM*vx3PMM)));
+	  kxyFromfcNEQPMM    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoPMM) - ((vx1PMM*vx2PMM)));
+	  kyzFromfcNEQPMM    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoPMM) - ((vx2PMM*vx3PMM)));
+	  kxzFromfcNEQPMM    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoPMM) - ((vx1PMM*vx3PMM)));
+	  kxxMyyFromfcNEQPMM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoPMM) - ((vx1PMM*vx1PMM - vx2PMM*vx2PMM)));
+	  kxxMzzFromfcNEQPMM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoPMM) - ((vx1PMM*vx1PMM - vx3PMM*vx3PMM)));
+	  kyyMzzFromfcNEQPMM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoPMM) - ((vx2PMM*vx2PMM - vx3PMM*vx3PMM)));
 
       //////////////////////////////////////////////////////////////////////////
       //NWB//
@@ -480,16 +481,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoMPM = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1MPM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoMPM);
-	  vx2MPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoMPM);
-	  vx3MPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoMPM);
+      vx1MPM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoMPM);
+	  vx2MPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoMPM);
+	  vx3MPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoMPM);
 
-	  kxyFromfcNEQMPM    = -three*omegaS*   ((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoMPM) - ((vx1MPM*vx2MPM)));
-	  kyzFromfcNEQMPM    = -three*omegaS*   ((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoMPM) - ((vx2MPM*vx3MPM)));
-	  kxzFromfcNEQMPM    = -three*omegaS*   ((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoMPM) - ((vx1MPM*vx3MPM)));
-	  kxxMyyFromfcNEQMPM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoMPM) - ((vx1MPM*vx1MPM - vx2MPM*vx2MPM)));
-	  kxxMzzFromfcNEQMPM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoMPM) - ((vx1MPM*vx1MPM - vx3MPM*vx3MPM)));
-	  kyyMzzFromfcNEQMPM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoMPM) - ((vx2MPM*vx2MPM - vx3MPM*vx3MPM)));
+	  kxyFromfcNEQMPM    = -c3o1*omegaS*   ((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoMPM) - ((vx1MPM*vx2MPM)));
+	  kyzFromfcNEQMPM    = -c3o1*omegaS*   ((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoMPM) - ((vx2MPM*vx3MPM)));
+	  kxzFromfcNEQMPM    = -c3o1*omegaS*   ((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoMPM) - ((vx1MPM*vx3MPM)));
+	  kxxMyyFromfcNEQMPM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoMPM) - ((vx1MPM*vx1MPM - vx2MPM*vx2MPM)));
+	  kxxMzzFromfcNEQMPM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoMPM) - ((vx1MPM*vx1MPM - vx3MPM*vx3MPM)));
+	  kyyMzzFromfcNEQMPM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoMPM) - ((vx2MPM*vx2MPM - vx3MPM*vx3MPM)));
 
 	  //////////////////////////////////////////////////////////////////////////
       //NWT//
@@ -533,16 +534,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoMPP = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1MPP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoMPP);
-	  vx2MPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoMPP);
-	  vx3MPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoMPP);
+      vx1MPP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoMPP);
+	  vx2MPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoMPP);
+	  vx3MPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoMPP);
 
-	  kxyFromfcNEQMPP    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoMPP) - ((vx1MPP*vx2MPP)));
-	  kyzFromfcNEQMPP    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoMPP) - ((vx2MPP*vx3MPP)));
-	  kxzFromfcNEQMPP    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoMPP) - ((vx1MPP*vx3MPP)));
-	  kxxMyyFromfcNEQMPP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoMPP) - ((vx1MPP*vx1MPP - vx2MPP*vx2MPP)));
-	  kxxMzzFromfcNEQMPP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoMPP) - ((vx1MPP*vx1MPP - vx3MPP*vx3MPP)));
-	  kyyMzzFromfcNEQMPP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoMPP) - ((vx2MPP*vx2MPP - vx3MPP*vx3MPP)));
+	  kxyFromfcNEQMPP    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoMPP) - ((vx1MPP*vx2MPP)));
+	  kyzFromfcNEQMPP    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoMPP) - ((vx2MPP*vx3MPP)));
+	  kxzFromfcNEQMPP    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoMPP) - ((vx1MPP*vx3MPP)));
+	  kxxMyyFromfcNEQMPP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoMPP) - ((vx1MPP*vx1MPP - vx2MPP*vx2MPP)));
+	  kxxMzzFromfcNEQMPP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoMPP) - ((vx1MPP*vx1MPP - vx3MPP*vx3MPP)));
+	  kyyMzzFromfcNEQMPP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoMPP) - ((vx2MPP*vx2MPP - vx3MPP*vx3MPP)));
 
       //////////////////////////////////////////////////////////////////////////
       //NET//
@@ -586,16 +587,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoPPP = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1PPP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoPPP);
-	  vx2PPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoPPP);
-	  vx3PPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoPPP);
+      vx1PPP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoPPP);
+	  vx2PPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoPPP);
+	  vx3PPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoPPP);
 
-	  kxyFromfcNEQPPP    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoPPP) - ((vx1PPP*vx2PPP)));
-	  kyzFromfcNEQPPP    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoPPP) - ((vx2PPP*vx3PPP)));
-	  kxzFromfcNEQPPP    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoPPP) - ((vx1PPP*vx3PPP)));
-	  kxxMyyFromfcNEQPPP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoPPP) - ((vx1PPP*vx1PPP - vx2PPP*vx2PPP)));
-	  kxxMzzFromfcNEQPPP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoPPP) - ((vx1PPP*vx1PPP - vx3PPP*vx3PPP)));
-	  kyyMzzFromfcNEQPPP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoPPP) - ((vx2PPP*vx2PPP - vx3PPP*vx3PPP)));
+	  kxyFromfcNEQPPP    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoPPP) - ((vx1PPP*vx2PPP)));
+	  kyzFromfcNEQPPP    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoPPP) - ((vx2PPP*vx3PPP)));
+	  kxzFromfcNEQPPP    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoPPP) - ((vx1PPP*vx3PPP)));
+	  kxxMyyFromfcNEQPPP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoPPP) - ((vx1PPP*vx1PPP - vx2PPP*vx2PPP)));
+	  kxxMzzFromfcNEQPPP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoPPP) - ((vx1PPP*vx1PPP - vx3PPP*vx3PPP)));
+	  kyyMzzFromfcNEQPPP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoPPP) - ((vx2PPP*vx2PPP - vx3PPP*vx3PPP)));
 
       //////////////////////////////////////////////////////////////////////////
       //NEB//
@@ -639,16 +640,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoPPM = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1PPM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoPPM);
-	  vx2PPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoPPM);
-	  vx3PPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoPPM);
+      vx1PPM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoPPM);
+	  vx2PPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoPPM);
+	  vx3PPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoPPM);
 
-	  kxyFromfcNEQPPM    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoPPM) - ((vx1PPM*vx2PPM)));
-	  kyzFromfcNEQPPM    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoPPM) - ((vx2PPM*vx3PPM)));
-	  kxzFromfcNEQPPM    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoPPM) - ((vx1PPM*vx3PPM)));
-	  kxxMyyFromfcNEQPPM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoPPM) - ((vx1PPM*vx1PPM - vx2PPM*vx2PPM)));
-	  kxxMzzFromfcNEQPPM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoPPM) - ((vx1PPM*vx1PPM - vx3PPM*vx3PPM)));
-	  kyyMzzFromfcNEQPPM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoPPM) - ((vx2PPM*vx2PPM - vx3PPM*vx3PPM)));
+	  kxyFromfcNEQPPM    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoPPM) - ((vx1PPM*vx2PPM)));
+	  kyzFromfcNEQPPM    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoPPM) - ((vx2PPM*vx3PPM)));
+	  kxzFromfcNEQPPM    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoPPM) - ((vx1PPM*vx3PPM)));
+	  kxxMyyFromfcNEQPPM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoPPM) - ((vx1PPM*vx1PPM - vx2PPM*vx2PPM)));
+	  kxxMzzFromfcNEQPPM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoPPM) - ((vx1PPM*vx1PPM - vx3PPM*vx3PPM)));
+	  kyyMzzFromfcNEQPPM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoPPM) - ((vx2PPM*vx2PPM - vx3PPM*vx3PPM)));
 
       //////////////////////////////////////////////////////////////////////////
       //3
@@ -711,11 +712,11 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  c0 -= c1o4*(cxx + cyy + czz);
 
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real kxyAverage = zero;
-	  real kyzAverage = zero;
-	  real kxzAverage = zero;
-	  real kxxMyyAverage = zero;
-	  real kxxMzzAverage = zero;
+	  real kxyAverage = c0;
+	  real kyzAverage = c0;
+	  real kxzAverage = c0;
+	  real kxxMyyAverage = c0;
+	  real kxxMzzAverage = c0;
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  ////Press
 	  //d0   = ( pressPPM + pressPPP + pressMPM + pressMPP + pressPMM + pressPMP + pressMMM + pressMMP) * c1o8;
@@ -748,61 +749,61 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  //			off-vector
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       a0 = a0 + xoff * ax + yoff * ay + zoff * az + xoff_sq * axx + yoff_sq * ayy + zoff_sq * azz + xoff*yoff*axy + xoff*zoff*axz + yoff*zoff*ayz;
-      ax = ax + two * xoff * axx + yoff * axy + zoff * axz;
-      ay = ay + two * yoff * ayy + xoff * axy + zoff * ayz;
-      az = az + two * zoff * azz + xoff * axz + yoff * ayz;
+      ax = ax + c2o1 * xoff * axx + yoff * axy + zoff * axz;
+      ay = ay + c2o1 * yoff * ayy + xoff * axy + zoff * ayz;
+      az = az + c2o1 * zoff * azz + xoff * axz + yoff * ayz;
       b0 = b0 + xoff * bx + yoff * by + zoff * bz + xoff_sq * bxx + yoff_sq * byy + zoff_sq * bzz + xoff*yoff*bxy + xoff*zoff*bxz + yoff*zoff*byz;
-      bx = bx + two * xoff * bxx + yoff * bxy + zoff * bxz;
-      by = by + two * yoff * byy + xoff * bxy + zoff * byz;
-      bz = bz + two * zoff * bzz + xoff * bxz + yoff * byz;
+      bx = bx + c2o1 * xoff * bxx + yoff * bxy + zoff * bxz;
+      by = by + c2o1 * yoff * byy + xoff * bxy + zoff * byz;
+      bz = bz + c2o1 * zoff * bzz + xoff * bxz + yoff * byz;
       c0 = c0 + xoff * cx + yoff * cy + zoff * cz + xoff_sq * cxx + yoff_sq * cyy + zoff_sq * czz + xoff*yoff*cxy + xoff*zoff*cxz + yoff*zoff*cyz;
-      cx = cx + two * xoff * cxx + yoff * cxy + zoff * cxz;
-      cy = cy + two * yoff * cyy + xoff * cxy + zoff * cyz;
-      cz = cz + two * zoff * czz + xoff * cxz + yoff * cyz;
+      cx = cx + c2o1 * xoff * cxx + yoff * cxy + zoff * cxz;
+      cy = cy + c2o1 * yoff * cyy + xoff * cxy + zoff * cyz;
+      cz = cz + c2o1 * zoff * czz + xoff * cxz + yoff * cyz;
 	  d0 = d0 + xoff * dx + yoff * dy + zoff * dz + xoff*yoff*dxy + xoff*zoff*dxz + yoff*zoff*dyz;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real mfcbb = zero;
-	  real mfabb = zero;
-	  real mfbcb = zero;
-	  real mfbab = zero;
-	  real mfbbc = zero;
-	  real mfbba = zero;
-	  real mfccb = zero;
-	  real mfaab = zero;
-	  real mfcab = zero;
-	  real mfacb = zero;
-	  real mfcbc = zero;
-	  real mfaba = zero;
-	  real mfcba = zero;
-	  real mfabc = zero;
-	  real mfbcc = zero;
-	  real mfbaa = zero;
-	  real mfbca = zero;
-	  real mfbac = zero;
-	  real mfbbb = zero;
-	  real mfccc = zero;
-	  real mfaac = zero;
-	  real mfcac = zero;
-	  real mfacc = zero;
-	  real mfcca = zero;
-	  real mfaaa = zero;
-	  real mfcaa = zero;
-	  real mfaca = zero;
+	  real mfcbb = c0;
+	  real mfabb = c0;
+	  real mfbcb = c0;
+	  real mfbab = c0;
+	  real mfbbc = c0;
+	  real mfbba = c0;
+	  real mfccb = c0;
+	  real mfaab = c0;
+	  real mfcab = c0;
+	  real mfacb = c0;
+	  real mfcbc = c0;
+	  real mfaba = c0;
+	  real mfcba = c0;
+	  real mfabc = c0;
+	  real mfbcc = c0;
+	  real mfbaa = c0;
+	  real mfbca = c0;
+	  real mfbac = c0;
+	  real mfbbb = c0;
+	  real mfccc = c0;
+	  real mfaac = c0;
+	  real mfcac = c0;
+	  real mfacc = c0;
+	  real mfcca = c0;
+	  real mfaaa = c0;
+	  real mfcaa = c0;
+	  real mfaca = c0;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real mgcbb = zero;
-	  real mgabb = zero;
-	  real mgbcb = zero;
-	  real mgbab = zero;
-	  real mgbbc = zero;
-	  real mgbba = zero;
+	  real mgcbb = c0;
+	  real mgabb = c0;
+	  real mgbcb = c0;
+	  real mgbab = c0;
+	  real mgbbc = c0;
+	  real mgbba = c0;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real m0, m1, m2, oMdrho;
 	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
 	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
-	  real O3 = two - o;
+	  real O3 = c2o1 - o;
 	  real residu, residutmp;
-	  residutmp = zero;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
-	  real NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
+	  residutmp = c0;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
+	  real NeqOn = c1o1;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -846,76 +847,76 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  vx2 = vvx*vvx;
 	  vy2 = vvy*vvy;
 	  vz2 = vvz*vvz;
-	  oMdrho = one;
+	  oMdrho = c1o1;
 	  //oMdrho = one - mfaaa;
 
 	  //two
 	  // linear combinations
 	  real oP = o;// :(
-	  mxxPyyPzz = mfaaa    -c2o3*(ax+by+cz)*eps_new/oP*(one+press); 
+	  mxxPyyPzz = mfaaa    -c2o3*(ax+by+cz)*eps_new/oP*(c1o1+press); 
 	  //mxxMyy    = -c2o3*(ax - by)*eps_new/o;
 	  //mxxMzz    = -c2o3*(ax - cz)*eps_new/o;
 
 	  //mfabb     = -c1o3 * (bz + cy)*eps_new/o;
 	  //mfbab     = -c1o3 * (az + cx)*eps_new/o;
 	  //mfbba     = -c1o3 * (ay + bx)*eps_new/o;
-	  mxxMyy    = -c2o3*((ax - by)+kxxMyyAverage)*eps_new/o * (one + press);
-	  mxxMzz    = -c2o3*((ax - cz)+kxxMzzAverage)*eps_new/o * (one + press);
+	  mxxMyy    = -c2o3*((ax - by)+kxxMyyAverage)*eps_new/o * (c1o1 + press);
+	  mxxMzz    = -c2o3*((ax - cz)+kxxMzzAverage)*eps_new/o * (c1o1 + press);
 
-	  mfabb     = -c1o3 * ((bz + cy)+kyzAverage)*eps_new/o * (one + press);
-	  mfbab     = -c1o3 * ((az + cx)+kxzAverage)*eps_new/o * (one + press);
-	  mfbba     = -c1o3 * ((ay + bx)+kxyAverage)*eps_new/o * (one + press);
+	  mfabb     = -c1o3 * ((bz + cy)+kyzAverage)*eps_new/o * (c1o1 + press);
+	  mfbab     = -c1o3 * ((az + cx)+kxzAverage)*eps_new/o * (c1o1 + press);
+	  mfbba     = -c1o3 * ((ay + bx)+kxyAverage)*eps_new/o * (c1o1 + press);
 
 	  
 	  // linear combinations back
 	  mfcaa = c1o3 * (       mxxMyy +       mxxMzz + mxxPyyPzz) * NeqOn;
-	  mfaca = c1o3 * (-two * mxxMyy +       mxxMzz + mxxPyyPzz) * NeqOn;
-	  mfaac = c1o3 * (       mxxMyy - two * mxxMzz + mxxPyyPzz) * NeqOn;
+	  mfaca = c1o3 * (-c2o1 * mxxMyy +       mxxMzz + mxxPyyPzz) * NeqOn;
+	  mfaac = c1o3 * (       mxxMyy - c2o1 * mxxMzz + mxxPyyPzz) * NeqOn;
 
 	  //3.
 	  // linear combinations
 	  //residu = residutmp * (ayz + bxz + cxy );
 	  //mfbbb = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mfbbb = zero;
+	  mfbbb = c0;
 
 	  //residu = residutmp * (axy + two*bxx + two*bzz + cyz );
 	  //residu = -(c1o9*(axy - 2*bxx - 2*bzz + cyz ));
 	  //mxxyPyzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxyPyzz = zero;
+	  mxxyPyzz = c0;
 
 	  //residu = residutmp * (axy + two*bxx - two*bzz - cyz );
 	  //residu = c1o9*(axy - 2*bxx + 2*bzz - cyz );
 	  //mxxyMyzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxyMyzz = zero;
+	  mxxyMyzz = c0;
 
 	  //residu = residutmp * (axz + byz + two*cxx + two*cyy );
 	  //residu = -(c1o9*(axz + byz - 2*cxx - 2*cyy ));
 	  //mxxzPyyz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxzPyyz = zero;
+	  mxxzPyyz = c0;
 
 	  //residu = residutmp * (axz - byz + two*cxx - two*cyy );
 	  //residu = c1o9*(axz - byz - 2*cxx + 2*cyy );
 	  //mxxzMyyz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxzMyyz = zero;
+	  mxxzMyyz = c0;
 
 	  //residu = residutmp * (two*ayy + two*azz + bxy + cxz );
 	  //residu = c1o9*(2*ayy + 2*azz - bxy - cxz );
 	  //mxyyPxzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxyyPxzz = zero;
+	  mxyyPxzz = c0;
 
 	  //residu = residutmp * (two*ayy - two*azz + bxy - cxz );
 	  //residu = c1o9*(-2*ayy + 2*azz + bxy - cxz );
 	  //mxyyMxzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxyyMxzz = zero;
+	  mxyyMxzz = c0;
 
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  // D3Q27F 
-	  mgcbb =  (vvx * axx + ax * ax) * (eps_new * eps_new) * (one + press);
-	  mgabb = -(vvx * axx + ax * ax) * (eps_new * eps_new) * (one + press);
-	  mgbcb =  (vvy * byy + by * by) * (eps_new * eps_new) * (one + press);
-	  mgbab = -(vvy * byy + by * by) * (eps_new * eps_new) * (one + press);
-	  mgbbc =  (vvz * czz + cz * cz) * (eps_new * eps_new) * (one + press);
-	  mgbba = -(vvz * czz + cz * cz) * (eps_new * eps_new) * (one + press);
+	  mgcbb =  (vvx * axx + ax * ax) * (eps_new * eps_new) * (c1o1 + press);
+	  mgabb = -(vvx * axx + ax * ax) * (eps_new * eps_new) * (c1o1 + press);
+	  mgbcb =  (vvy * byy + by * by) * (eps_new * eps_new) * (c1o1 + press);
+	  mgbab = -(vvy * byy + by * by) * (eps_new * eps_new) * (c1o1 + press);
+	  mgbbc =  (vvz * czz + cz * cz) * (eps_new * eps_new) * (c1o1 + press);
+	  mgbba = -(vvz * czz + cz * cz) * (eps_new * eps_new) * (c1o1 + press);
 	  //mgcbb = zero;
 	  //mgabb = zero;
 	  //mgbcb = zero;
@@ -946,22 +947,22 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  //mit 1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9   Konditionieren
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  // Z - Dir
-	  m0 =  mfaac * c1o2 +      mfaab * (vvz - c1o2) + (mfaaa + one * oMdrho) * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfaac        - two * mfaab *  vvz         +  mfaaa                * (one - vz2)              - one * oMdrho * vz2; 
-	  m2 =  mfaac * c1o2 +      mfaab * (vvz + c1o2) + (mfaaa + one * oMdrho) * (     vz2 + vvz) * c1o2;
+	  m0 =  mfaac * c1o2 +      mfaab * (vvz - c1o2) + (mfaaa + c1o1 * oMdrho) * (     vz2 - vvz) * c1o2; 
+	  m1 = -mfaac        - c2o1 * mfaab *  vvz         +  mfaaa                * (c1o1 - vz2)              - c1o1 * oMdrho * vz2; 
+	  m2 =  mfaac * c1o2 +      mfaab * (vvz + c1o2) + (mfaaa + c1o1 * oMdrho) * (     vz2 + vvz) * c1o2;
 	  mfaaa = m0;
 	  mfaab = m1;
 	  mfaac = m2;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfabc * c1o2 +      mfabb * (vvz - c1o2) + mfaba * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfabc        - two * mfabb *  vvz         + mfaba * (one - vz2); 
+	  m1 = -mfabc        - c2o1 * mfabb *  vvz         + mfaba * (c1o1 - vz2); 
 	  m2 =  mfabc * c1o2 +      mfabb * (vvz + c1o2) + mfaba * (     vz2 + vvz) * c1o2;
 	  mfaba = m0;
 	  mfabb = m1;
 	  mfabc = m2;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfacc * c1o2 +      mfacb * (vvz - c1o2) + (mfaca + c1o3 * oMdrho) * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfacc        - two * mfacb *  vvz         +  mfaca                  * (one - vz2)              - c1o3 * oMdrho * vz2; 
+	  m1 = -mfacc        - c2o1 * mfacb *  vvz         +  mfaca                  * (c1o1 - vz2)              - c1o3 * oMdrho * vz2; 
 	  m2 =  mfacc * c1o2 +      mfacb * (vvz + c1o2) + (mfaca + c1o3 * oMdrho) * (     vz2 + vvz) * c1o2;
 	  mfaca = m0;
 	  mfacb = m1;
@@ -969,21 +970,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfbac * c1o2 +      mfbab * (vvz - c1o2) + mfbaa * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfbac        - two * mfbab *  vvz         + mfbaa * (one - vz2); 
+	  m1 = -mfbac        - c2o1 * mfbab *  vvz         + mfbaa * (c1o1 - vz2); 
 	  m2 =  mfbac * c1o2 +      mfbab * (vvz + c1o2) + mfbaa * (     vz2 + vvz) * c1o2;
 	  mfbaa = m0;
 	  mfbab = m1;
 	  mfbac = m2;
 	  /////////b//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfbbc * c1o2 +      mfbbb * (vvz - c1o2) + mfbba * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfbbc        - two * mfbbb *  vvz         + mfbba * (one - vz2); 
+	  m1 = -mfbbc        - c2o1 * mfbbb *  vvz         + mfbba * (c1o1 - vz2); 
 	  m2 =  mfbbc * c1o2 +      mfbbb * (vvz + c1o2) + mfbba * (     vz2 + vvz) * c1o2;
 	  mfbba = m0;
 	  mfbbb = m1;
 	  mfbbc = m2;
 	  /////////b//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfbcc * c1o2 +      mfbcb * (vvz - c1o2) + mfbca * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfbcc        - two * mfbcb *  vvz         + mfbca * (one - vz2); 
+	  m1 = -mfbcc        - c2o1 * mfbcb *  vvz         + mfbca * (c1o1 - vz2); 
 	  m2 =  mfbcc * c1o2 +      mfbcb * (vvz + c1o2) + mfbca * (     vz2 + vvz) * c1o2;
 	  mfbca = m0;
 	  mfbcb = m1;
@@ -991,21 +992,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcac * c1o2 +      mfcab * (vvz - c1o2) + (mfcaa + c1o3 * oMdrho) * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfcac        - two * mfcab *  vvz         +  mfcaa                  * (one - vz2)              - c1o3 * oMdrho * vz2; 
+	  m1 = -mfcac        - c2o1 * mfcab *  vvz         +  mfcaa                  * (c1o1 - vz2)              - c1o3 * oMdrho * vz2; 
 	  m2 =  mfcac * c1o2 +      mfcab * (vvz + c1o2) + (mfcaa + c1o3 * oMdrho) * (     vz2 + vvz) * c1o2;
 	  mfcaa = m0;
 	  mfcab = m1;
 	  mfcac = m2;
 	  /////////c//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcbc * c1o2 +      mfcbb * (vvz - c1o2) + mfcba * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfcbc        - two * mfcbb *  vvz         + mfcba * (one - vz2); 
+	  m1 = -mfcbc        - c2o1 * mfcbb *  vvz         + mfcba * (c1o1 - vz2); 
 	  m2 =  mfcbc * c1o2 +      mfcbb * (vvz + c1o2) + mfcba * (     vz2 + vvz) * c1o2;
 	  mfcba = m0;
 	  mfcbb = m1;
 	  mfcbc = m2;
 	  /////////c//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfccc * c1o2 +      mfccb * (vvz - c1o2) + (mfcca + c1o9 * oMdrho) * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfccc        - two * mfccb *  vvz         +  mfcca                  * (one - vz2)              - c1o9 * oMdrho * vz2; 
+	  m1 = -mfccc        - c2o1 * mfccb *  vvz         +  mfcca                  * (c1o1 - vz2)              - c1o9 * oMdrho * vz2; 
 	  m2 =  mfccc * c1o2 +      mfccb * (vvz + c1o2) + (mfcca + c1o9 * oMdrho) * (     vz2 + vvz) * c1o2;
 	  mfcca = m0;
 	  mfccb = m1;
@@ -1016,21 +1017,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  // Y - Dir
 	  m0 =  mfaca * c1o2 +      mfaba * (vvy - c1o2) + (mfaaa + c1o6 * oMdrho) * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfaca        - two * mfaba *  vvy         +  mfaaa                  * (one - vy2)              - c1o6 * oMdrho * vy2; 
+	  m1 = -mfaca        - c2o1 * mfaba *  vvy         +  mfaaa                  * (c1o1 - vy2)              - c1o6 * oMdrho * vy2; 
 	  m2 =  mfaca * c1o2 +      mfaba * (vvy + c1o2) + (mfaaa + c1o6 * oMdrho) * (     vy2 + vvy) * c1o2;
 	  mfaaa = m0;
 	  mfaba = m1;
 	  mfaca = m2;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfacb * c1o2 +      mfabb * (vvy - c1o2) + (mfaab + c2o3 * oMdrho) * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfacb        - two * mfabb *  vvy         +  mfaab                  * (one - vy2)              - c2o3 * oMdrho * vy2; 
+	  m1 = -mfacb        - c2o1 * mfabb *  vvy         +  mfaab                  * (c1o1 - vy2)              - c2o3 * oMdrho * vy2; 
 	  m2 =  mfacb * c1o2 +      mfabb * (vvy + c1o2) + (mfaab + c2o3 * oMdrho) * (     vy2 + vvy) * c1o2;
 	  mfaab = m0;
 	  mfabb = m1;
 	  mfacb = m2;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfacc * c1o2 +      mfabc * (vvy - c1o2) + (mfaac + c1o6 * oMdrho) * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfacc        - two * mfabc *  vvy         +  mfaac                  * (one - vy2)              - c1o6 * oMdrho * vy2; 
+	  m1 = -mfacc        - c2o1 * mfabc *  vvy         +  mfaac                  * (c1o1 - vy2)              - c1o6 * oMdrho * vy2; 
 	  m2 =  mfacc * c1o2 +      mfabc * (vvy + c1o2) + (mfaac + c1o6 * oMdrho) * (     vy2 + vvy) * c1o2;
 	  mfaac = m0;
 	  mfabc = m1;
@@ -1038,21 +1039,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfbca * c1o2 +      mfbba * (vvy - c1o2) + mfbaa * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfbca        - two * mfbba *  vvy         + mfbaa * (one - vy2); 
+	  m1 = -mfbca        - c2o1 * mfbba *  vvy         + mfbaa * (c1o1 - vy2); 
 	  m2 =  mfbca * c1o2 +      mfbba * (vvy + c1o2) + mfbaa * (     vy2 + vvy) * c1o2;
 	  mfbaa = m0;
 	  mfbba = m1;
 	  mfbca = m2;
 	  /////////b//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfbcb * c1o2 +      mfbbb * (vvy - c1o2) + mfbab * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfbcb        - two * mfbbb *  vvy         + mfbab * (one - vy2); 
+	  m1 = -mfbcb        - c2o1 * mfbbb *  vvy         + mfbab * (c1o1 - vy2); 
 	  m2 =  mfbcb * c1o2 +      mfbbb * (vvy + c1o2) + mfbab * (     vy2 + vvy) * c1o2;
 	  mfbab = m0;
 	  mfbbb = m1;
 	  mfbcb = m2;
 	  /////////b//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfbcc * c1o2 +      mfbbc * (vvy - c1o2) + mfbac * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfbcc        - two * mfbbc *  vvy         + mfbac * (one - vy2); 
+	  m1 = -mfbcc        - c2o1 * mfbbc *  vvy         + mfbac * (c1o1 - vy2); 
 	  m2 =  mfbcc * c1o2 +      mfbbc * (vvy + c1o2) + mfbac * (     vy2 + vvy) * c1o2;
 	  mfbac = m0;
 	  mfbbc = m1;
@@ -1060,21 +1061,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcca * c1o2 +      mfcba * (vvy - c1o2) + (mfcaa + c1o18 * oMdrho) * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfcca        - two * mfcba *  vvy         +  mfcaa                   * (one - vy2)              - c1o18 * oMdrho * vy2; 
+	  m1 = -mfcca        - c2o1 * mfcba *  vvy         +  mfcaa                   * (c1o1 - vy2)              - c1o18 * oMdrho * vy2; 
 	  m2 =  mfcca * c1o2 +      mfcba * (vvy + c1o2) + (mfcaa + c1o18 * oMdrho) * (     vy2 + vvy) * c1o2;
 	  mfcaa = m0;
 	  mfcba = m1;
 	  mfcca = m2;
 	  /////////c//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfccb * c1o2 +      mfcbb * (vvy - c1o2) + (mfcab + c2o9 * oMdrho) * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfccb        - two * mfcbb *  vvy         +  mfcab                  * (one - vy2)              - c2o9 * oMdrho * vy2; 
+	  m1 = -mfccb        - c2o1 * mfcbb *  vvy         +  mfcab                  * (c1o1 - vy2)              - c2o9 * oMdrho * vy2; 
 	  m2 =  mfccb * c1o2 +      mfcbb * (vvy + c1o2) + (mfcab + c2o9 * oMdrho) * (     vy2 + vvy) * c1o2;
 	  mfcab = m0;
 	  mfcbb = m1;
 	  mfccb = m2;
 	  /////////c//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfccc * c1o2 +      mfcbc * (vvy - c1o2) + (mfcac + c1o18 * oMdrho) * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfccc        - two * mfcbc *  vvy         +  mfcac                   * (one - vy2)              - c1o18 * oMdrho * vy2; 
+	  m1 = -mfccc        - c2o1 * mfcbc *  vvy         +  mfcac                   * (c1o1 - vy2)              - c1o18 * oMdrho * vy2; 
 	  m2 =  mfccc * c1o2 +      mfcbc * (vvy + c1o2) + (mfcac + c1o18 * oMdrho) * (     vy2 + vvy) * c1o2;
 	  mfcac = m0;
 	  mfcbc = m1;
@@ -1085,21 +1086,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  // X - Dir
 	  m0 =  mfcaa * c1o2 +      mfbaa * (vvx - c1o2) + (mfaaa + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcaa        - two * mfbaa *  vvx         +  mfaaa                   * (one - vx2)              - c1o36 * oMdrho * vx2; 
+	  m1 = -mfcaa        - c2o1 * mfbaa *  vvx         +  mfaaa                   * (c1o1 - vx2)              - c1o36 * oMdrho * vx2; 
 	  m2 =  mfcaa * c1o2 +      mfbaa * (vvx + c1o2) + (mfaaa + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfaaa = m0;
 	  mfbaa = m1;
 	  mfcaa = m2;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcba * c1o2 +      mfbba * (vvx - c1o2) + (mfaba + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcba        - two * mfbba *  vvx         +  mfaba                  * (one - vx2)              - c1o9 * oMdrho * vx2; 
+	  m1 = -mfcba        - c2o1 * mfbba *  vvx         +  mfaba                  * (c1o1 - vx2)              - c1o9 * oMdrho * vx2; 
 	  m2 =  mfcba * c1o2 +      mfbba * (vvx + c1o2) + (mfaba + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfaba = m0;
 	  mfbba = m1;
 	  mfcba = m2;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcca * c1o2 +      mfbca * (vvx - c1o2) + (mfaca + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcca        - two * mfbca *  vvx         +  mfaca                   * (one - vx2)              - c1o36 * oMdrho * vx2; 
+	  m1 = -mfcca        - c2o1 * mfbca *  vvx         +  mfaca                   * (c1o1 - vx2)              - c1o36 * oMdrho * vx2; 
 	  m2 =  mfcca * c1o2 +      mfbca * (vvx + c1o2) + (mfaca + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfaca = m0;
 	  mfbca = m1;
@@ -1107,21 +1108,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcab * c1o2 +      mfbab * (vvx - c1o2) + (mfaab + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcab        - two * mfbab *  vvx         +  mfaab                  * (one - vx2)              - c1o9 * oMdrho * vx2; 
+	  m1 = -mfcab        - c2o1 * mfbab *  vvx         +  mfaab                  * (c1o1 - vx2)              - c1o9 * oMdrho * vx2; 
 	  m2 =  mfcab * c1o2 +      mfbab * (vvx + c1o2) + (mfaab + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfaab = m0;
 	  mfbab = m1;
 	  mfcab = m2;
 	  ///////////b////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcbb * c1o2 +      mfbbb * (vvx - c1o2) + (mfabb + c4o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcbb        - two * mfbbb *  vvx         +  mfabb                  * (one - vx2)              - c4o9 * oMdrho * vx2; 
+	  m1 = -mfcbb        - c2o1 * mfbbb *  vvx         +  mfabb                  * (c1o1 - vx2)              - c4o9 * oMdrho * vx2; 
 	  m2 =  mfcbb * c1o2 +      mfbbb * (vvx + c1o2) + (mfabb + c4o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfabb = m0;
 	  mfbbb = m1;
 	  mfcbb = m2;
 	  ///////////b////////////////////////////////////////////////////////////////////////
 	  m0 =  mfccb * c1o2 +      mfbcb * (vvx - c1o2) + (mfacb + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfccb        - two * mfbcb *  vvx         +  mfacb                  * (one - vx2)              - c1o9 * oMdrho * vx2; 
+	  m1 = -mfccb        - c2o1 * mfbcb *  vvx         +  mfacb                  * (c1o1 - vx2)              - c1o9 * oMdrho * vx2; 
 	  m2 =  mfccb * c1o2 +      mfbcb * (vvx + c1o2) + (mfacb + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfacb = m0;
 	  mfbcb = m1;
@@ -1129,21 +1130,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3_2018(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcac * c1o2 +      mfbac * (vvx - c1o2) + (mfaac + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcac        - two * mfbac *  vvx         +  mfaac                   * (one - vx2)              - c1o36 * oMdrho * vx2; 
+	  m1 = -mfcac        - c2o1 * mfbac *  vvx         +  mfaac                   * (c1o1 - vx2)              - c1o36 * oMdrho * vx2; 
 	  m2 =  mfcac * c1o2 +      mfbac * (vvx + c1o2) + (mfaac + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfaac = m0;
 	  mfbac = m1;
 	  mfcac = m2;
 	  ///////////c////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcbc * c1o2 +      mfbbc * (vvx - c1o2) + (mfabc + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcbc        - two * mfbbc *  vvx         +  mfabc                  * (one - vx2)              - c1o9 * oMdrho * vx2; 
+	  m1 = -mfcbc        - c2o1 * mfbbc *  vvx         +  mfabc                  * (c1o1 - vx2)              - c1o9 * oMdrho * vx2; 
 	  m2 =  mfcbc * c1o2 +      mfbbc * (vvx + c1o2) + (mfabc + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfabc = m0;
 	  mfbbc = m1;
 	  mfcbc = m2;
 	  ///////////c////////////////////////////////////////////////////////////////////////
 	  m0 =  mfccc * c1o2 +      mfbcc * (vvx - c1o2) + (mfacc + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfccc        - two * mfbcc *  vvx         +  mfacc                   * (one - vx2)              - c1o36 * oMdrho * vx2; 
+	  m1 = -mfccc        - c2o1 * mfbcc *  vvx         +  mfacc                   * (c1o1 - vx2)              - c1o36 * oMdrho * vx2; 
 	  m2 =  mfccc * c1o2 +      mfbcc * (vvx + c1o2) + (mfacc + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfacc = m0;
 	  mfbcc = m1;
@@ -1412,7 +1413,7 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   real eps_new = two;
+   real eps_new = c2o1;
    real omegaS = omFine;//-omFine;
    real o  = omCoarse;//-omCoarse;
    //real op = one;
@@ -1504,16 +1505,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
       fPMM = fPMMsource[k0MM];
 
       drhoMMM = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1MMM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoMMM);
-	  vx2MMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoMMM);
-	  vx3MMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoMMM);
+      vx1MMM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoMMM);
+	  vx2MMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoMMM);
+	  vx3MMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoMMM);
 
-	  kxyFromfcNEQMMM    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoMMM) - ((vx1MMM*vx2MMM)));
-	  kyzFromfcNEQMMM    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoMMM) - ((vx2MMM*vx3MMM)));
-	  kxzFromfcNEQMMM    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoMMM) - ((vx1MMM*vx3MMM)));
-	  kxxMyyFromfcNEQMMM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoMMM) - ((vx1MMM*vx1MMM - vx2MMM*vx2MMM)));
-	  kxxMzzFromfcNEQMMM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoMMM) - ((vx1MMM*vx1MMM - vx3MMM*vx3MMM)));
-	  kyyMzzFromfcNEQMMM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoMMM) - ((vx2MMM*vx2MMM - vx3MMM*vx3MMM)));
+	  kxyFromfcNEQMMM    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoMMM) - ((vx1MMM*vx2MMM)));
+	  kyzFromfcNEQMMM    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoMMM) - ((vx2MMM*vx3MMM)));
+	  kxzFromfcNEQMMM    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoMMM) - ((vx1MMM*vx3MMM)));
+	  kxxMyyFromfcNEQMMM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoMMM) - ((vx1MMM*vx1MMM - vx2MMM*vx2MMM)));
+	  kxxMzzFromfcNEQMMM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoMMM) - ((vx1MMM*vx1MMM - vx3MMM*vx3MMM)));
+	  kyyMzzFromfcNEQMMM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoMMM) - ((vx2MMM*vx2MMM - vx3MMM*vx3MMM)));
 
       //////////////////////////////////////////////////////////////////////////
       //SWT//
@@ -1557,16 +1558,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoMMP = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1MMP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoMMP);
-	  vx2MMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoMMP);
-	  vx3MMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoMMP);
+      vx1MMP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoMMP);
+	  vx2MMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoMMP);
+	  vx3MMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoMMP);
 
-	  kxyFromfcNEQMMP    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoMMP) - ((vx1MMP*vx2MMP)));
-	  kyzFromfcNEQMMP    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoMMP) - ((vx2MMP*vx3MMP)));
-	  kxzFromfcNEQMMP    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoMMP) - ((vx1MMP*vx3MMP)));
-	  kxxMyyFromfcNEQMMP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoMMP) - ((vx1MMP*vx1MMP - vx2MMP*vx2MMP)));
-	  kxxMzzFromfcNEQMMP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoMMP) - ((vx1MMP*vx1MMP - vx3MMP*vx3MMP)));
-	  kyyMzzFromfcNEQMMP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoMMP) - ((vx2MMP*vx2MMP - vx3MMP*vx3MMP)));
+	  kxyFromfcNEQMMP    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoMMP) - ((vx1MMP*vx2MMP)));
+	  kyzFromfcNEQMMP    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoMMP) - ((vx2MMP*vx3MMP)));
+	  kxzFromfcNEQMMP    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoMMP) - ((vx1MMP*vx3MMP)));
+	  kxxMyyFromfcNEQMMP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoMMP) - ((vx1MMP*vx1MMP - vx2MMP*vx2MMP)));
+	  kxxMzzFromfcNEQMMP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoMMP) - ((vx1MMP*vx1MMP - vx3MMP*vx3MMP)));
+	  kyyMzzFromfcNEQMMP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoMMP) - ((vx2MMP*vx2MMP - vx3MMP*vx3MMP)));
 
       //////////////////////////////////////////////////////////////////////////
       //SET//
@@ -1610,16 +1611,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoPMP = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1PMP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoPMP);
-	  vx2PMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoPMP);
-	  vx3PMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoPMP);
+      vx1PMP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoPMP);
+	  vx2PMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoPMP);
+	  vx3PMP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoPMP);
 
-	  kxyFromfcNEQPMP    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoPMP) - ((vx1PMP*vx2PMP)));
-	  kyzFromfcNEQPMP    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoPMP) - ((vx2PMP*vx3PMP)));
-	  kxzFromfcNEQPMP    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoPMP) - ((vx1PMP*vx3PMP)));
-	  kxxMyyFromfcNEQPMP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoPMP) - ((vx1PMP*vx1PMP - vx2PMP*vx2PMP)));
-	  kxxMzzFromfcNEQPMP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoPMP) - ((vx1PMP*vx1PMP - vx3PMP*vx3PMP)));
-	  kyyMzzFromfcNEQPMP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoPMP) - ((vx2PMP*vx2PMP - vx3PMP*vx3PMP)));
+	  kxyFromfcNEQPMP    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoPMP) - ((vx1PMP*vx2PMP)));
+	  kyzFromfcNEQPMP    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoPMP) - ((vx2PMP*vx3PMP)));
+	  kxzFromfcNEQPMP    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoPMP) - ((vx1PMP*vx3PMP)));
+	  kxxMyyFromfcNEQPMP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoPMP) - ((vx1PMP*vx1PMP - vx2PMP*vx2PMP)));
+	  kxxMzzFromfcNEQPMP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoPMP) - ((vx1PMP*vx1PMP - vx3PMP*vx3PMP)));
+	  kyyMzzFromfcNEQPMP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoPMP) - ((vx2PMP*vx2PMP - vx3PMP*vx3PMP)));
 
       //////////////////////////////////////////////////////////////////////////
       //SEB//
@@ -1663,16 +1664,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoPMM = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1PMM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoPMM);
-	  vx2PMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoPMM);
-	  vx3PMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoPMM);
+      vx1PMM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoPMM);
+	  vx2PMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoPMM);
+	  vx3PMM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoPMM);
 
-	  kxyFromfcNEQPMM    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoPMM) - ((vx1PMM*vx2PMM)));
-	  kyzFromfcNEQPMM    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoPMM) - ((vx2PMM*vx3PMM)));
-	  kxzFromfcNEQPMM    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoPMM) - ((vx1PMM*vx3PMM)));
-	  kxxMyyFromfcNEQPMM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoPMM) - ((vx1PMM*vx1PMM - vx2PMM*vx2PMM)));
-	  kxxMzzFromfcNEQPMM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoPMM) - ((vx1PMM*vx1PMM - vx3PMM*vx3PMM)));
-	  kyyMzzFromfcNEQPMM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoPMM) - ((vx2PMM*vx2PMM - vx3PMM*vx3PMM)));
+	  kxyFromfcNEQPMM    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoPMM) - ((vx1PMM*vx2PMM)));
+	  kyzFromfcNEQPMM    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoPMM) - ((vx2PMM*vx3PMM)));
+	  kxzFromfcNEQPMM    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoPMM) - ((vx1PMM*vx3PMM)));
+	  kxxMyyFromfcNEQPMM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoPMM) - ((vx1PMM*vx1PMM - vx2PMM*vx2PMM)));
+	  kxxMzzFromfcNEQPMM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoPMM) - ((vx1PMM*vx1PMM - vx3PMM*vx3PMM)));
+	  kyyMzzFromfcNEQPMM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoPMM) - ((vx2PMM*vx2PMM - vx3PMM*vx3PMM)));
 
       //////////////////////////////////////////////////////////////////////////
       //NWB//
@@ -1726,16 +1727,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoMPM = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1MPM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoMPM);
-	  vx2MPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoMPM);
-	  vx3MPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoMPM);
+      vx1MPM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoMPM);
+	  vx2MPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoMPM);
+	  vx3MPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoMPM);
 
-	  kxyFromfcNEQMPM    = -three*omegaS*   ((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoMPM) - ((vx1MPM*vx2MPM)));
-	  kyzFromfcNEQMPM    = -three*omegaS*   ((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoMPM) - ((vx2MPM*vx3MPM)));
-	  kxzFromfcNEQMPM    = -three*omegaS*   ((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoMPM) - ((vx1MPM*vx3MPM)));
-	  kxxMyyFromfcNEQMPM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoMPM) - ((vx1MPM*vx1MPM - vx2MPM*vx2MPM)));
-	  kxxMzzFromfcNEQMPM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoMPM) - ((vx1MPM*vx1MPM - vx3MPM*vx3MPM)));
-	  kyyMzzFromfcNEQMPM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoMPM) - ((vx2MPM*vx2MPM - vx3MPM*vx3MPM)));
+	  kxyFromfcNEQMPM    = -c3o1*omegaS*   ((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoMPM) - ((vx1MPM*vx2MPM)));
+	  kyzFromfcNEQMPM    = -c3o1*omegaS*   ((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoMPM) - ((vx2MPM*vx3MPM)));
+	  kxzFromfcNEQMPM    = -c3o1*omegaS*   ((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoMPM) - ((vx1MPM*vx3MPM)));
+	  kxxMyyFromfcNEQMPM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoMPM) - ((vx1MPM*vx1MPM - vx2MPM*vx2MPM)));
+	  kxxMzzFromfcNEQMPM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoMPM) - ((vx1MPM*vx1MPM - vx3MPM*vx3MPM)));
+	  kyyMzzFromfcNEQMPM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoMPM) - ((vx2MPM*vx2MPM - vx3MPM*vx3MPM)));
 
 	  //////////////////////////////////////////////////////////////////////////
       //NWT//
@@ -1779,16 +1780,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoMPP = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1MPP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoMPP);
-	  vx2MPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoMPP);
-	  vx3MPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoMPP);
+      vx1MPP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoMPP);
+	  vx2MPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoMPP);
+	  vx3MPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoMPP);
 
-	  kxyFromfcNEQMPP    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoMPP) - ((vx1MPP*vx2MPP)));
-	  kyzFromfcNEQMPP    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoMPP) - ((vx2MPP*vx3MPP)));
-	  kxzFromfcNEQMPP    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoMPP) - ((vx1MPP*vx3MPP)));
-	  kxxMyyFromfcNEQMPP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoMPP) - ((vx1MPP*vx1MPP - vx2MPP*vx2MPP)));
-	  kxxMzzFromfcNEQMPP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoMPP) - ((vx1MPP*vx1MPP - vx3MPP*vx3MPP)));
-	  kyyMzzFromfcNEQMPP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoMPP) - ((vx2MPP*vx2MPP - vx3MPP*vx3MPP)));
+	  kxyFromfcNEQMPP    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoMPP) - ((vx1MPP*vx2MPP)));
+	  kyzFromfcNEQMPP    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoMPP) - ((vx2MPP*vx3MPP)));
+	  kxzFromfcNEQMPP    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoMPP) - ((vx1MPP*vx3MPP)));
+	  kxxMyyFromfcNEQMPP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoMPP) - ((vx1MPP*vx1MPP - vx2MPP*vx2MPP)));
+	  kxxMzzFromfcNEQMPP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoMPP) - ((vx1MPP*vx1MPP - vx3MPP*vx3MPP)));
+	  kyyMzzFromfcNEQMPP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoMPP) - ((vx2MPP*vx2MPP - vx3MPP*vx3MPP)));
 
       //////////////////////////////////////////////////////////////////////////
       //NET//
@@ -1832,16 +1833,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoPPP = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1PPP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoPPP);
-	  vx2PPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoPPP);
-	  vx3PPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoPPP);
+      vx1PPP  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoPPP);
+	  vx2PPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoPPP);
+	  vx3PPP  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoPPP);
 
-	  kxyFromfcNEQPPP    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoPPP) - ((vx1PPP*vx2PPP)));
-	  kyzFromfcNEQPPP    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoPPP) - ((vx2PPP*vx3PPP)));
-	  kxzFromfcNEQPPP    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoPPP) - ((vx1PPP*vx3PPP)));
-	  kxxMyyFromfcNEQPPP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoPPP) - ((vx1PPP*vx1PPP - vx2PPP*vx2PPP)));
-	  kxxMzzFromfcNEQPPP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoPPP) - ((vx1PPP*vx1PPP - vx3PPP*vx3PPP)));
-	  kyyMzzFromfcNEQPPP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoPPP) - ((vx2PPP*vx2PPP - vx3PPP*vx3PPP)));
+	  kxyFromfcNEQPPP    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoPPP) - ((vx1PPP*vx2PPP)));
+	  kyzFromfcNEQPPP    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoPPP) - ((vx2PPP*vx3PPP)));
+	  kxzFromfcNEQPPP    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoPPP) - ((vx1PPP*vx3PPP)));
+	  kxxMyyFromfcNEQPPP = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoPPP) - ((vx1PPP*vx1PPP - vx2PPP*vx2PPP)));
+	  kxxMzzFromfcNEQPPP = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoPPP) - ((vx1PPP*vx1PPP - vx3PPP*vx3PPP)));
+	  kyyMzzFromfcNEQPPP = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoPPP) - ((vx2PPP*vx2PPP - vx3PPP*vx3PPP)));
 
       //////////////////////////////////////////////////////////////////////////
       //NEB//
@@ -1885,16 +1886,16 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  fPMM = fPMMsource[k0MM];
 
       drhoPPM = fP00+fM00+f0P0+f0M0+f00P+f00M+fPP0+fMM0+fPM0+fMP0+fP0P+fM0M+fP0M+fM0P+f0PP+f0MM+f0PM+f0MP+f000+fPPP+fMMP+fPMP+fMPP+fPPM+fMMM+fPMM+fMPM;
-      vx1PPM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(one + drhoPPM);
-	  vx2PPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(one + drhoPPM);
-	  vx3PPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(one + drhoPPM);
+      vx1PPM  = (((fPPP-fMMM)+(fPMP-fMPM)+(fPPM-fMMP)+(fPMM-fMPP)) + (((fPP0-fMM0)+(fP0P-fM0M))+((fPM0-fMP0)+(fP0M-fM0P))) + (fP00-fM00))/(c1o1 + drhoPPM);
+	  vx2PPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPPM-fMMP)+(fMPM-fPMP)) + (((fPP0-fMM0)+(f0PP-f0MM))+((f0PM-f0MP)+(fMP0-fPM0))) + (f0P0-f0M0))/(c1o1 + drhoPPM);
+	  vx3PPM  = (((fPPP-fMMM)+(fMPP-fPMM)+(fPMP-fMPM)+(fMMP-fPPM)) + (((fP0P-fM0M)+(f0PP-f0MM))+((fM0P-fP0M)+(f0MP-f0PM))) + (f00P-f00M))/(c1o1 + drhoPPM);
 
-	  kxyFromfcNEQPPM    = -three*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (one + drhoPPM) - ((vx1PPM*vx2PPM)));
-	  kyzFromfcNEQPPM    = -three*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (one + drhoPPM) - ((vx2PPM*vx3PPM)));
-	  kxzFromfcNEQPPM    = -three*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (one + drhoPPM) - ((vx1PPM*vx3PPM)));
-	  kxxMyyFromfcNEQPPM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (one + drhoPPM) - ((vx1PPM*vx1PPM - vx2PPM*vx2PPM)));
-	  kxxMzzFromfcNEQPPM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (one + drhoPPM) - ((vx1PPM*vx1PPM - vx3PPM*vx3PPM)));
-	  kyyMzzFromfcNEQPPM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (one + drhoPPM) - ((vx2PPM*vx2PPM - vx3PPM*vx3PPM)));
+	  kxyFromfcNEQPPM    = -c3o1*omegaS*((((fMM0 - fPM0) + (fPP0 - fMP0)) + (((fMMM - fPMM) + (fPPM - fMPM)) + ((fMMP - fPMP) + (fPPP - fMPP)))) / (c1o1 + drhoPPM) - ((vx1PPM*vx2PPM)));
+	  kyzFromfcNEQPPM    = -c3o1*omegaS*((((f0MM - f0MP) + (f0PP - f0PM)) + (((fPMM - fPMP) + (fMMM - fMPM)) + ((fPPP - fPPM) + (fMPP - fMMP)))) / (c1o1 + drhoPPM) - ((vx2PPM*vx3PPM)));
+	  kxzFromfcNEQPPM    = -c3o1*omegaS*((((fM0M - fP0M) + (fP0P - fM0P)) + (((fMMM - fPMM) + (fMPM - fPPM)) + ((fPMP - fMMP) + (fPPP - fMPP)))) / (c1o1 + drhoPPM) - ((vx1PPM*vx3PPM)));
+	  kxxMyyFromfcNEQPPM = -c3o2*omegaS *(((((fM0M - f0MM) + (fM0P - f0MP)) + ((fP0M - f0PM) + (fP0P - f0PP))) + ((fM00 - f0M0) + (fP00 - f0P0))) / (c1o1 + drhoPPM) - ((vx1PPM*vx1PPM - vx2PPM*vx2PPM)));
+	  kxxMzzFromfcNEQPPM = -c3o2*omegaS *(((((fMM0 - f0MM) + (fMP0 - f0PM)) + ((fPM0 - f0MP) + (fPP0 - f0PP))) + ((fM00 - f00M) + (fP00 - f00P))) / (c1o1 + drhoPPM) - ((vx1PPM*vx1PPM - vx3PPM*vx3PPM)));
+	  kyyMzzFromfcNEQPPM = -c3o2*omegaS *(((((fPM0 - fP0M) + (fMM0 - fM0M)) + ((fPP0 - fP0P) + (fMP0 - fM0P))) + ((f0M0 - f00M) + (f0P0 - f00P))) / (c1o1 + drhoPPM) - ((vx2PPM*vx2PPM - vx3PPM*vx3PPM)));
 
       //////////////////////////////////////////////////////////////////////////
       //3
@@ -1957,11 +1958,11 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  c0 -= c1o4*(cxx + cyy + czz);
 
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real kxyAverage = zero;
-	  real kyzAverage = zero;
-	  real kxzAverage = zero;
-	  real kxxMyyAverage = zero;
-	  real kxxMzzAverage = zero;
+	  real kxyAverage = c0;
+	  real kyzAverage = c0;
+	  real kxzAverage = c0;
+	  real kxxMyyAverage = c0;
+	  real kxxMzzAverage = c0;
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  ////Press
 	  //d0   = ( pressPPM + pressPPP + pressMPM + pressMPP + pressPMM + pressPMP + pressMMM + pressMMP) * c1o8;
@@ -1994,61 +1995,61 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  //			off-vector
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       a0 = a0 + xoff * ax + yoff * ay + zoff * az + xoff_sq * axx + yoff_sq * ayy + zoff_sq * azz + xoff*yoff*axy + xoff*zoff*axz + yoff*zoff*ayz;
-      ax = ax + two * xoff * axx + yoff * axy + zoff * axz;
-      ay = ay + two * yoff * ayy + xoff * axy + zoff * ayz;
-      az = az + two * zoff * azz + xoff * axz + yoff * ayz;
+      ax = ax + c2o1 * xoff * axx + yoff * axy + zoff * axz;
+      ay = ay + c2o1 * yoff * ayy + xoff * axy + zoff * ayz;
+      az = az + c2o1 * zoff * azz + xoff * axz + yoff * ayz;
       b0 = b0 + xoff * bx + yoff * by + zoff * bz + xoff_sq * bxx + yoff_sq * byy + zoff_sq * bzz + xoff*yoff*bxy + xoff*zoff*bxz + yoff*zoff*byz;
-      bx = bx + two * xoff * bxx + yoff * bxy + zoff * bxz;
-      by = by + two * yoff * byy + xoff * bxy + zoff * byz;
-      bz = bz + two * zoff * bzz + xoff * bxz + yoff * byz;
+      bx = bx + c2o1 * xoff * bxx + yoff * bxy + zoff * bxz;
+      by = by + c2o1 * yoff * byy + xoff * bxy + zoff * byz;
+      bz = bz + c2o1 * zoff * bzz + xoff * bxz + yoff * byz;
       c0 = c0 + xoff * cx + yoff * cy + zoff * cz + xoff_sq * cxx + yoff_sq * cyy + zoff_sq * czz + xoff*yoff*cxy + xoff*zoff*cxz + yoff*zoff*cyz;
-      cx = cx + two * xoff * cxx + yoff * cxy + zoff * cxz;
-      cy = cy + two * yoff * cyy + xoff * cxy + zoff * cyz;
-      cz = cz + two * zoff * czz + xoff * cxz + yoff * cyz;
+      cx = cx + c2o1 * xoff * cxx + yoff * cxy + zoff * cxz;
+      cy = cy + c2o1 * yoff * cyy + xoff * cxy + zoff * cyz;
+      cz = cz + c2o1 * zoff * czz + xoff * cxz + yoff * cyz;
 	  d0 = d0 + xoff * dx + yoff * dy + zoff * dz + xoff*yoff*dxy + xoff*zoff*dxz + yoff*zoff*dyz;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real mfcbb = zero;
-	  real mfabb = zero;
-	  real mfbcb = zero;
-	  real mfbab = zero;
-	  real mfbbc = zero;
-	  real mfbba = zero;
-	  real mfccb = zero;
-	  real mfaab = zero;
-	  real mfcab = zero;
-	  real mfacb = zero;
-	  real mfcbc = zero;
-	  real mfaba = zero;
-	  real mfcba = zero;
-	  real mfabc = zero;
-	  real mfbcc = zero;
-	  real mfbaa = zero;
-	  real mfbca = zero;
-	  real mfbac = zero;
-	  real mfbbb = zero;
-	  real mfccc = zero;
-	  real mfaac = zero;
-	  real mfcac = zero;
-	  real mfacc = zero;
-	  real mfcca = zero;
-	  real mfaaa = zero;
-	  real mfcaa = zero;
-	  real mfaca = zero;
+	  real mfcbb = c0;
+	  real mfabb = c0;
+	  real mfbcb = c0;
+	  real mfbab = c0;
+	  real mfbbc = c0;
+	  real mfbba = c0;
+	  real mfccb = c0;
+	  real mfaab = c0;
+	  real mfcab = c0;
+	  real mfacb = c0;
+	  real mfcbc = c0;
+	  real mfaba = c0;
+	  real mfcba = c0;
+	  real mfabc = c0;
+	  real mfbcc = c0;
+	  real mfbaa = c0;
+	  real mfbca = c0;
+	  real mfbac = c0;
+	  real mfbbb = c0;
+	  real mfccc = c0;
+	  real mfaac = c0;
+	  real mfcac = c0;
+	  real mfacc = c0;
+	  real mfcca = c0;
+	  real mfaaa = c0;
+	  real mfcaa = c0;
+	  real mfaca = c0;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real mgcbb = zero;
-	  real mgabb = zero;
-	  real mgbcb = zero;
-	  real mgbab = zero;
-	  real mgbbc = zero;
-	  real mgbba = zero;
+	  real mgcbb = c0;
+	  real mgabb = c0;
+	  real mgbcb = c0;
+	  real mgbab = c0;
+	  real mgbbc = c0;
+	  real mgbba = c0;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real m0, m1, m2, oMdrho;
 	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
 	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
-	  real O3 = two - o;
+	  real O3 = c2o1 - o;
 	  real residu, residutmp;
-	  residutmp = zero;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
-	  real NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
+	  residutmp = c0;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
+	  real NeqOn = c1o1;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2092,76 +2093,76 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  vx2 = vvx*vvx;
 	  vy2 = vvy*vvy;
 	  vz2 = vvz*vvz;
-	  oMdrho = one;
+	  oMdrho = c1o1;
 	  //oMdrho = one - mfaaa;
 
 	  //two
 	  // linear combinations
 	  real oP = o;// :(
-	  mxxPyyPzz = mfaaa    -c2o3*(ax+by+cz)*eps_new/oP*(one+press); 
+	  mxxPyyPzz = mfaaa    -c2o3*(ax+by+cz)*eps_new/oP*(c1o1+press); 
 	  //mxxMyy    = -c2o3*(ax - by)*eps_new/o;
 	  //mxxMzz    = -c2o3*(ax - cz)*eps_new/o;
 
 	  //mfabb     = -c1o3 * (bz + cy)*eps_new/o;
 	  //mfbab     = -c1o3 * (az + cx)*eps_new/o;
 	  //mfbba     = -c1o3 * (ay + bx)*eps_new/o;
-	  mxxMyy    = -c2o3*((ax - by)+kxxMyyAverage)*eps_new/o * (one + press);
-	  mxxMzz    = -c2o3*((ax - cz)+kxxMzzAverage)*eps_new/o * (one + press);
+	  mxxMyy    = -c2o3*((ax - by)+kxxMyyAverage)*eps_new/o * (c1o1 + press);
+	  mxxMzz    = -c2o3*((ax - cz)+kxxMzzAverage)*eps_new/o * (c1o1 + press);
 
-	  mfabb     = -c1o3 * ((bz + cy)+kyzAverage)*eps_new/o * (one + press);
-	  mfbab     = -c1o3 * ((az + cx)+kxzAverage)*eps_new/o * (one + press);
-	  mfbba     = -c1o3 * ((ay + bx)+kxyAverage)*eps_new/o * (one + press);
+	  mfabb     = -c1o3 * ((bz + cy)+kyzAverage)*eps_new/o * (c1o1 + press);
+	  mfbab     = -c1o3 * ((az + cx)+kxzAverage)*eps_new/o * (c1o1 + press);
+	  mfbba     = -c1o3 * ((ay + bx)+kxyAverage)*eps_new/o * (c1o1 + press);
 
 	  
 	  // linear combinations back
 	  mfcaa = c1o3 * (       mxxMyy +       mxxMzz + mxxPyyPzz) * NeqOn;
-	  mfaca = c1o3 * (-two * mxxMyy +       mxxMzz + mxxPyyPzz) * NeqOn;
-	  mfaac = c1o3 * (       mxxMyy - two * mxxMzz + mxxPyyPzz) * NeqOn;
+	  mfaca = c1o3 * (-c2o1 * mxxMyy +       mxxMzz + mxxPyyPzz) * NeqOn;
+	  mfaac = c1o3 * (       mxxMyy - c2o1 * mxxMzz + mxxPyyPzz) * NeqOn;
 
 	  //3.
 	  // linear combinations
 	  //residu = residutmp * (ayz + bxz + cxy );
 	  //mfbbb = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mfbbb = zero;
+	  mfbbb = c0;
 
 	  //residu = residutmp * (axy + two*bxx + two*bzz + cyz );
 	  //residu = -(c1o9*(axy - 2*bxx - 2*bzz + cyz ));
 	  //mxxyPyzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxyPyzz = zero;
+	  mxxyPyzz = c0;
 
 	  //residu = residutmp * (axy + two*bxx - two*bzz - cyz );
 	  //residu = c1o9*(axy - 2*bxx + 2*bzz - cyz );
 	  //mxxyMyzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxyMyzz = zero;
+	  mxxyMyzz = c0;
 
 	  //residu = residutmp * (axz + byz + two*cxx + two*cyy );
 	  //residu = -(c1o9*(axz + byz - 2*cxx - 2*cyy ));
 	  //mxxzPyyz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxzPyyz = zero;
+	  mxxzPyyz = c0;
 
 	  //residu = residutmp * (axz - byz + two*cxx - two*cyy );
 	  //residu = c1o9*(axz - byz - 2*cxx + 2*cyy );
 	  //mxxzMyyz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxzMyyz = zero;
+	  mxxzMyyz = c0;
 
 	  //residu = residutmp * (two*ayy + two*azz + bxy + cxz );
 	  //residu = c1o9*(2*ayy + 2*azz - bxy - cxz );
 	  //mxyyPxzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxyyPxzz = zero;
+	  mxyyPxzz = c0;
 
 	  //residu = residutmp * (two*ayy - two*azz + bxy - cxz );
 	  //residu = c1o9*(-2*ayy + 2*azz + bxy - cxz );
 	  //mxyyMxzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxyyMxzz = zero;
+	  mxyyMxzz = c0;
 
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  // D3Q27F 
-	  mgcbb = (ax - four * axx) * eps_new;
-	  mgabb = (ax + four * axx) * eps_new;
-	  mgbcb = (by - four * byy) * eps_new;
-	  mgbab = (by + four * byy) * eps_new;
-	  mgbbc = (cz - four * czz) * eps_new;
-	  mgbba = (cz + four * czz) * eps_new;
+	  mgcbb = (ax - c4o1 * axx) * eps_new;
+	  mgabb = (ax + c4o1 * axx) * eps_new;
+	  mgbcb = (by - c4o1 * byy) * eps_new;
+	  mgbab = (by + c4o1 * byy) * eps_new;
+	  mgbbc = (cz - c4o1 * czz) * eps_new;
+	  mgbba = (cz + c4o1 * czz) * eps_new;
 	  ////////////////////////////////////////////////////////////////////////////////////
 
 	  // linear combinations back
@@ -2186,22 +2187,22 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  //mit 1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9   Konditionieren
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  // Z - Dir
-	  m0 =  mfaac * c1o2 +      mfaab * (vvz - c1o2) + (mfaaa + one * oMdrho) * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfaac        - two * mfaab *  vvz         +  mfaaa                * (one - vz2)              - one * oMdrho * vz2; 
-	  m2 =  mfaac * c1o2 +      mfaab * (vvz + c1o2) + (mfaaa + one * oMdrho) * (     vz2 + vvz) * c1o2;
+	  m0 =  mfaac * c1o2 +      mfaab * (vvz - c1o2) + (mfaaa + c1o1 * oMdrho) * (     vz2 - vvz) * c1o2; 
+	  m1 = -mfaac        - c2o1 * mfaab *  vvz         +  mfaaa                * (c1o1 - vz2)              - c1o1 * oMdrho * vz2; 
+	  m2 =  mfaac * c1o2 +      mfaab * (vvz + c1o2) + (mfaaa + c1o1 * oMdrho) * (     vz2 + vvz) * c1o2;
 	  mfaaa = m0;
 	  mfaab = m1;
 	  mfaac = m2;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfabc * c1o2 +      mfabb * (vvz - c1o2) + mfaba * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfabc        - two * mfabb *  vvz         + mfaba * (one - vz2); 
+	  m1 = -mfabc        - c2o1 * mfabb *  vvz         + mfaba * (c1o1 - vz2); 
 	  m2 =  mfabc * c1o2 +      mfabb * (vvz + c1o2) + mfaba * (     vz2 + vvz) * c1o2;
 	  mfaba = m0;
 	  mfabb = m1;
 	  mfabc = m2;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfacc * c1o2 +      mfacb * (vvz - c1o2) + (mfaca + c1o3 * oMdrho) * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfacc        - two * mfacb *  vvz         +  mfaca                  * (one - vz2)              - c1o3 * oMdrho * vz2; 
+	  m1 = -mfacc        - c2o1 * mfacb *  vvz         +  mfaca                  * (c1o1 - vz2)              - c1o3 * oMdrho * vz2; 
 	  m2 =  mfacc * c1o2 +      mfacb * (vvz + c1o2) + (mfaca + c1o3 * oMdrho) * (     vz2 + vvz) * c1o2;
 	  mfaca = m0;
 	  mfacb = m1;
@@ -2209,21 +2210,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfbac * c1o2 +      mfbab * (vvz - c1o2) + mfbaa * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfbac        - two * mfbab *  vvz         + mfbaa * (one - vz2); 
+	  m1 = -mfbac        - c2o1 * mfbab *  vvz         + mfbaa * (c1o1 - vz2); 
 	  m2 =  mfbac * c1o2 +      mfbab * (vvz + c1o2) + mfbaa * (     vz2 + vvz) * c1o2;
 	  mfbaa = m0;
 	  mfbab = m1;
 	  mfbac = m2;
 	  /////////b//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfbbc * c1o2 +      mfbbb * (vvz - c1o2) + mfbba * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfbbc        - two * mfbbb *  vvz         + mfbba * (one - vz2); 
+	  m1 = -mfbbc        - c2o1 * mfbbb *  vvz         + mfbba * (c1o1 - vz2); 
 	  m2 =  mfbbc * c1o2 +      mfbbb * (vvz + c1o2) + mfbba * (     vz2 + vvz) * c1o2;
 	  mfbba = m0;
 	  mfbbb = m1;
 	  mfbbc = m2;
 	  /////////b//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfbcc * c1o2 +      mfbcb * (vvz - c1o2) + mfbca * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfbcc        - two * mfbcb *  vvz         + mfbca * (one - vz2); 
+	  m1 = -mfbcc        - c2o1 * mfbcb *  vvz         + mfbca * (c1o1 - vz2); 
 	  m2 =  mfbcc * c1o2 +      mfbcb * (vvz + c1o2) + mfbca * (     vz2 + vvz) * c1o2;
 	  mfbca = m0;
 	  mfbcb = m1;
@@ -2231,21 +2232,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcac * c1o2 +      mfcab * (vvz - c1o2) + (mfcaa + c1o3 * oMdrho) * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfcac        - two * mfcab *  vvz         +  mfcaa                  * (one - vz2)              - c1o3 * oMdrho * vz2; 
+	  m1 = -mfcac        - c2o1 * mfcab *  vvz         +  mfcaa                  * (c1o1 - vz2)              - c1o3 * oMdrho * vz2; 
 	  m2 =  mfcac * c1o2 +      mfcab * (vvz + c1o2) + (mfcaa + c1o3 * oMdrho) * (     vz2 + vvz) * c1o2;
 	  mfcaa = m0;
 	  mfcab = m1;
 	  mfcac = m2;
 	  /////////c//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcbc * c1o2 +      mfcbb * (vvz - c1o2) + mfcba * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfcbc        - two * mfcbb *  vvz         + mfcba * (one - vz2); 
+	  m1 = -mfcbc        - c2o1 * mfcbb *  vvz         + mfcba * (c1o1 - vz2); 
 	  m2 =  mfcbc * c1o2 +      mfcbb * (vvz + c1o2) + mfcba * (     vz2 + vvz) * c1o2;
 	  mfcba = m0;
 	  mfcbb = m1;
 	  mfcbc = m2;
 	  /////////c//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfccc * c1o2 +      mfccb * (vvz - c1o2) + (mfcca + c1o9 * oMdrho) * (     vz2 - vvz) * c1o2; 
-	  m1 = -mfccc        - two * mfccb *  vvz         +  mfcca                  * (one - vz2)              - c1o9 * oMdrho * vz2; 
+	  m1 = -mfccc        - c2o1 * mfccb *  vvz         +  mfcca                  * (c1o1 - vz2)              - c1o9 * oMdrho * vz2; 
 	  m2 =  mfccc * c1o2 +      mfccb * (vvz + c1o2) + (mfcca + c1o9 * oMdrho) * (     vz2 + vvz) * c1o2;
 	  mfcca = m0;
 	  mfccb = m1;
@@ -2256,21 +2257,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  // Y - Dir
 	  m0 =  mfaca * c1o2 +      mfaba * (vvy - c1o2) + (mfaaa + c1o6 * oMdrho) * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfaca        - two * mfaba *  vvy         +  mfaaa                  * (one - vy2)              - c1o6 * oMdrho * vy2; 
+	  m1 = -mfaca        - c2o1 * mfaba *  vvy         +  mfaaa                  * (c1o1 - vy2)              - c1o6 * oMdrho * vy2; 
 	  m2 =  mfaca * c1o2 +      mfaba * (vvy + c1o2) + (mfaaa + c1o6 * oMdrho) * (     vy2 + vvy) * c1o2;
 	  mfaaa = m0;
 	  mfaba = m1;
 	  mfaca = m2;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfacb * c1o2 +      mfabb * (vvy - c1o2) + (mfaab + c2o3 * oMdrho) * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfacb        - two * mfabb *  vvy         +  mfaab                  * (one - vy2)              - c2o3 * oMdrho * vy2; 
+	  m1 = -mfacb        - c2o1 * mfabb *  vvy         +  mfaab                  * (c1o1 - vy2)              - c2o3 * oMdrho * vy2; 
 	  m2 =  mfacb * c1o2 +      mfabb * (vvy + c1o2) + (mfaab + c2o3 * oMdrho) * (     vy2 + vvy) * c1o2;
 	  mfaab = m0;
 	  mfabb = m1;
 	  mfacb = m2;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfacc * c1o2 +      mfabc * (vvy - c1o2) + (mfaac + c1o6 * oMdrho) * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfacc        - two * mfabc *  vvy         +  mfaac                  * (one - vy2)              - c1o6 * oMdrho * vy2; 
+	  m1 = -mfacc        - c2o1 * mfabc *  vvy         +  mfaac                  * (c1o1 - vy2)              - c1o6 * oMdrho * vy2; 
 	  m2 =  mfacc * c1o2 +      mfabc * (vvy + c1o2) + (mfaac + c1o6 * oMdrho) * (     vy2 + vvy) * c1o2;
 	  mfaac = m0;
 	  mfabc = m1;
@@ -2278,21 +2279,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfbca * c1o2 +      mfbba * (vvy - c1o2) + mfbaa * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfbca        - two * mfbba *  vvy         + mfbaa * (one - vy2); 
+	  m1 = -mfbca        - c2o1 * mfbba *  vvy         + mfbaa * (c1o1 - vy2); 
 	  m2 =  mfbca * c1o2 +      mfbba * (vvy + c1o2) + mfbaa * (     vy2 + vvy) * c1o2;
 	  mfbaa = m0;
 	  mfbba = m1;
 	  mfbca = m2;
 	  /////////b//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfbcb * c1o2 +      mfbbb * (vvy - c1o2) + mfbab * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfbcb        - two * mfbbb *  vvy         + mfbab * (one - vy2); 
+	  m1 = -mfbcb        - c2o1 * mfbbb *  vvy         + mfbab * (c1o1 - vy2); 
 	  m2 =  mfbcb * c1o2 +      mfbbb * (vvy + c1o2) + mfbab * (     vy2 + vvy) * c1o2;
 	  mfbab = m0;
 	  mfbbb = m1;
 	  mfbcb = m2;
 	  /////////b//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfbcc * c1o2 +      mfbbc * (vvy - c1o2) + mfbac * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfbcc        - two * mfbbc *  vvy         + mfbac * (one - vy2); 
+	  m1 = -mfbcc        - c2o1 * mfbbc *  vvy         + mfbac * (c1o1 - vy2); 
 	  m2 =  mfbcc * c1o2 +      mfbbc * (vvy + c1o2) + mfbac * (     vy2 + vvy) * c1o2;
 	  mfbac = m0;
 	  mfbbc = m1;
@@ -2300,21 +2301,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcca * c1o2 +      mfcba * (vvy - c1o2) + (mfcaa + c1o18 * oMdrho) * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfcca        - two * mfcba *  vvy         +  mfcaa                   * (one - vy2)              - c1o18 * oMdrho * vy2; 
+	  m1 = -mfcca        - c2o1 * mfcba *  vvy         +  mfcaa                   * (c1o1 - vy2)              - c1o18 * oMdrho * vy2; 
 	  m2 =  mfcca * c1o2 +      mfcba * (vvy + c1o2) + (mfcaa + c1o18 * oMdrho) * (     vy2 + vvy) * c1o2;
 	  mfcaa = m0;
 	  mfcba = m1;
 	  mfcca = m2;
 	  /////////c//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfccb * c1o2 +      mfcbb * (vvy - c1o2) + (mfcab + c2o9 * oMdrho) * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfccb        - two * mfcbb *  vvy         +  mfcab                  * (one - vy2)              - c2o9 * oMdrho * vy2; 
+	  m1 = -mfccb        - c2o1 * mfcbb *  vvy         +  mfcab                  * (c1o1 - vy2)              - c2o9 * oMdrho * vy2; 
 	  m2 =  mfccb * c1o2 +      mfcbb * (vvy + c1o2) + (mfcab + c2o9 * oMdrho) * (     vy2 + vvy) * c1o2;
 	  mfcab = m0;
 	  mfcbb = m1;
 	  mfccb = m2;
 	  /////////c//////////////////////////////////////////////////////////////////////////
 	  m0 =  mfccc * c1o2 +      mfcbc * (vvy - c1o2) + (mfcac + c1o18 * oMdrho) * (     vy2 - vvy) * c1o2; 
-	  m1 = -mfccc        - two * mfcbc *  vvy         +  mfcac                   * (one - vy2)              - c1o18 * oMdrho * vy2; 
+	  m1 = -mfccc        - c2o1 * mfcbc *  vvy         +  mfcac                   * (c1o1 - vy2)              - c1o18 * oMdrho * vy2; 
 	  m2 =  mfccc * c1o2 +      mfcbc * (vvy + c1o2) + (mfcac + c1o18 * oMdrho) * (     vy2 + vvy) * c1o2;
 	  mfcac = m0;
 	  mfcbc = m1;
@@ -2325,21 +2326,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  // X - Dir
 	  m0 =  mfcaa * c1o2 +      mfbaa * (vvx - c1o2) + (mfaaa + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcaa        - two * mfbaa *  vvx         +  mfaaa                   * (one - vx2)              - c1o36 * oMdrho * vx2; 
+	  m1 = -mfcaa        - c2o1 * mfbaa *  vvx         +  mfaaa                   * (c1o1 - vx2)              - c1o36 * oMdrho * vx2; 
 	  m2 =  mfcaa * c1o2 +      mfbaa * (vvx + c1o2) + (mfaaa + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfaaa = m0;
 	  mfbaa = m1;
 	  mfcaa = m2;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcba * c1o2 +      mfbba * (vvx - c1o2) + (mfaba + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcba        - two * mfbba *  vvx         +  mfaba                  * (one - vx2)              - c1o9 * oMdrho * vx2; 
+	  m1 = -mfcba        - c2o1 * mfbba *  vvx         +  mfaba                  * (c1o1 - vx2)              - c1o9 * oMdrho * vx2; 
 	  m2 =  mfcba * c1o2 +      mfbba * (vvx + c1o2) + (mfaba + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfaba = m0;
 	  mfbba = m1;
 	  mfcba = m2;
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcca * c1o2 +      mfbca * (vvx - c1o2) + (mfaca + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcca        - two * mfbca *  vvx         +  mfaca                   * (one - vx2)              - c1o36 * oMdrho * vx2; 
+	  m1 = -mfcca        - c2o1 * mfbca *  vvx         +  mfaca                   * (c1o1 - vx2)              - c1o36 * oMdrho * vx2; 
 	  m2 =  mfcca * c1o2 +      mfbca * (vvx + c1o2) + (mfaca + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfaca = m0;
 	  mfbca = m1;
@@ -2347,21 +2348,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcab * c1o2 +      mfbab * (vvx - c1o2) + (mfaab + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcab        - two * mfbab *  vvx         +  mfaab                  * (one - vx2)              - c1o9 * oMdrho * vx2; 
+	  m1 = -mfcab        - c2o1 * mfbab *  vvx         +  mfaab                  * (c1o1 - vx2)              - c1o9 * oMdrho * vx2; 
 	  m2 =  mfcab * c1o2 +      mfbab * (vvx + c1o2) + (mfaab + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfaab = m0;
 	  mfbab = m1;
 	  mfcab = m2;
 	  ///////////b////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcbb * c1o2 +      mfbbb * (vvx - c1o2) + (mfabb + c4o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcbb        - two * mfbbb *  vvx         +  mfabb                  * (one - vx2)              - c4o9 * oMdrho * vx2; 
+	  m1 = -mfcbb        - c2o1 * mfbbb *  vvx         +  mfabb                  * (c1o1 - vx2)              - c4o9 * oMdrho * vx2; 
 	  m2 =  mfcbb * c1o2 +      mfbbb * (vvx + c1o2) + (mfabb + c4o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfabb = m0;
 	  mfbbb = m1;
 	  mfcbb = m2;
 	  ///////////b////////////////////////////////////////////////////////////////////////
 	  m0 =  mfccb * c1o2 +      mfbcb * (vvx - c1o2) + (mfacb + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfccb        - two * mfbcb *  vvx         +  mfacb                  * (one - vx2)              - c1o9 * oMdrho * vx2; 
+	  m1 = -mfccb        - c2o1 * mfbcb *  vvx         +  mfacb                  * (c1o1 - vx2)              - c1o9 * oMdrho * vx2; 
 	  m2 =  mfccb * c1o2 +      mfbcb * (vvx + c1o2) + (mfacb + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfacb = m0;
 	  mfbcb = m1;
@@ -2369,21 +2370,21 @@ extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcac * c1o2 +      mfbac * (vvx - c1o2) + (mfaac + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcac        - two * mfbac *  vvx         +  mfaac                   * (one - vx2)              - c1o36 * oMdrho * vx2; 
+	  m1 = -mfcac        - c2o1 * mfbac *  vvx         +  mfaac                   * (c1o1 - vx2)              - c1o36 * oMdrho * vx2; 
 	  m2 =  mfcac * c1o2 +      mfbac * (vvx + c1o2) + (mfaac + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfaac = m0;
 	  mfbac = m1;
 	  mfcac = m2;
 	  ///////////c////////////////////////////////////////////////////////////////////////
 	  m0 =  mfcbc * c1o2 +      mfbbc * (vvx - c1o2) + (mfabc + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfcbc        - two * mfbbc *  vvx         +  mfabc                  * (one - vx2)              - c1o9 * oMdrho * vx2; 
+	  m1 = -mfcbc        - c2o1 * mfbbc *  vvx         +  mfabc                  * (c1o1 - vx2)              - c1o9 * oMdrho * vx2; 
 	  m2 =  mfcbc * c1o2 +      mfbbc * (vvx + c1o2) + (mfabc + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfabc = m0;
 	  mfbbc = m1;
 	  mfcbc = m2;
 	  ///////////c////////////////////////////////////////////////////////////////////////
 	  m0 =  mfccc * c1o2 +      mfbcc * (vvx - c1o2) + (mfacc + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2; 
-	  m1 = -mfccc        - two * mfbcc *  vvx         +  mfacc                   * (one - vx2)              - c1o36 * oMdrho * vx2; 
+	  m1 = -mfccc        - c2o1 * mfbcc *  vvx         +  mfacc                   * (c1o1 - vx2)              - c1o36 * oMdrho * vx2; 
 	  m2 =  mfccc * c1o2 +      mfbcc * (vvx + c1o2) + (mfacc + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
 	  mfacc = m0;
 	  mfbcc = m1;

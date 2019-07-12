@@ -111,7 +111,7 @@ INT X(rdft2_complex_n)(INT real_n, rdft_kind kind)
      }
 }
 
-static void zero(const problem *ego_)
+static void c0o1(const problem *ego_)
 {
      const problem_rdft2 *ego = (const problem_rdft2 *) ego_;
      if (R2HC_KINDP(ego->kind)) {
@@ -137,7 +137,7 @@ static const problem_adt padt =
 {
      PROBLEM_RDFT2,
      hash,
-     zero,
+     c0o1,
      print,
      destroy
 };

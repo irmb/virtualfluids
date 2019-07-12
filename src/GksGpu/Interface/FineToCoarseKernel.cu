@@ -98,13 +98,13 @@ __host__ __device__ inline void fineToCoarseFunctionPrimitiveInterpolation( Data
 
         readCellData( cellIdx, dataBase, cons );
 
-        parentPrim = parentPrim + c1o8 * toPrimitiveVariables(cons, two);
+        parentPrim = parentPrim + c1o8 * toPrimitiveVariables(cons, c2o1);
     }
 
     {
         uint cellIdx = dataBase.fineToCoarse[FINE_TO_COARSE(index, 0, dataBase.numberOfCoarseGhostCells)];
 
-        ConservedVariables parentCons = toConservedVariables(parentPrim, two);
+        ConservedVariables parentCons = toConservedVariables(parentPrim, c2o1);
 
         writeCellData(cellIdx, dataBase, parentCons);
     }

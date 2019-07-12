@@ -230,7 +230,7 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
 	} );
 
 	addScalarRealCellData( grid, dataBase->numberOfCells, "Y_A", [&] (uint cellIdx) {
-	    return one - dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ]
+	    return c1o1 - dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ]
                    / dataBase->dataHost[ RHO__  (cellIdx, dataBase->numberOfCells) ]
                    - dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ]
                    / dataBase->dataHost[ RHO__  (cellIdx, dataBase->numberOfCells) ]

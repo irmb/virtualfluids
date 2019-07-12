@@ -1,7 +1,8 @@
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
+#include "Core/RealConstants.h"
 #include "math.h"
-#include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
@@ -167,7 +168,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 				               (mfbbc-mfbba));
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
-			real oMdrho = one - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
+			real oMdrho = c1o1 - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
 								   mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +
 								   mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb);//fehlt mfbbb nicht mehr
 			////////////////////////////////////////////////////////////////////////////////////
@@ -193,7 +194,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfaaa = m0;
 			m0   += c1o36 * oMdrho;	
 			mfaab = m1 -		m0 * vvz;
-			mfaac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfaac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaba  + mfabc;
 			m1    = mfabc  - mfaba;
@@ -201,7 +202,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfaba = m0;
 			m0   += c1o9 * oMdrho;
 			mfabb = m1 -		m0 * vvz;
-			mfabc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfabc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaca  + mfacc;
 			m1    = mfacc  - mfaca;
@@ -209,7 +210,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfaca = m0;
 			m0   += c1o36 * oMdrho;
 			mfacb = m1 -		m0 * vvz;
-			mfacc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfacc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbaa	+ mfbac;
@@ -218,7 +219,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfbaa = m0;
 			m0   += c1o9 * oMdrho;
 			mfbab = m1 -		m0 * vvz;
-			mfbac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbba  + mfbbc;
 			m1    = mfbbc  - mfbba;
@@ -226,7 +227,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfbba = m0;
 			m0   += c4o9 * oMdrho;
 			mfbbb = m1 -		m0 * vvz;
-			mfbbc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbca  + mfbcc;
 			m1    = mfbcc  - mfbca;
@@ -234,7 +235,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfbca = m0;
 			m0   += c1o9 * oMdrho;
 			mfbcb = m1 -		m0 * vvz;
-			mfbcc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfbcc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcaa	+ mfcac;
@@ -243,7 +244,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfcaa = m0;
 			m0   += c1o36 * oMdrho;
 			mfcab = m1 -		m0 * vvz;
-			mfcac = m2 - two*	m1 * vvz + vz2 * m0;
+			mfcac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcba  + mfcbc;
 			m1    = mfcbc  - mfcba;
@@ -251,7 +252,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfcba = m0;
 			m0   += c1o9 * oMdrho;
 			mfcbb = m1 -		m0 * vvz;
-			mfcbc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfcbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcca  + mfccc;
 			m1    = mfccc  - mfcca;
@@ -259,7 +260,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfcca = m0;
 			m0   += c1o36 * oMdrho;
 			mfccb = m1 -		m0 * vvz;
-			mfccc = m2 - two*	m1 * vvz + vz2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit  1/6, 0, 1/18, 2/3, 0, 2/9, 1/6, 0, 1/18 Konditionieren
@@ -271,14 +272,14 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfaaa = m0;
 			m0   += c1o6 * oMdrho;
 			mfaba = m1 -		m0 * vvy;
-			mfaca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfaca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaab  + mfacb;
 			m1    = mfacb  - mfaab;
 			m0    = m2		+ mfabb;
 			mfaab = m0;
 			mfabb = m1 -		m0 * vvy;
-			mfacb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfacb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaac  + mfacc;
 			m1    = mfacc  - mfaac;
@@ -286,7 +287,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfaac = m0;
 			m0   += c1o18 * oMdrho;
 			mfabc = m1 -		m0 * vvy;
-			mfacc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfacc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbaa	+ mfbca;
@@ -295,14 +296,14 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfbaa = m0;
 			m0   += c2o3 * oMdrho;
 			mfbba = m1 -		m0 * vvy;
-			mfbca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbab  + mfbcb;
 			m1    = mfbcb  - mfbab;
 			m0    = m2		+ mfbbb;
 			mfbab = m0;
 			mfbbb = m1 -		m0 * vvy;
-			mfbcb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbcb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfbac  + mfbcc;
 			m1    = mfbcc  - mfbac;
@@ -310,7 +311,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfbac = m0;
 			m0   += c2o9 * oMdrho;
 			mfbbc = m1 -		m0 * vvy;
-			mfbcc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfbcc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcaa	+ mfcca;
@@ -319,14 +320,14 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfcaa = m0;
 			m0   += c1o6 * oMdrho;
 			mfcba = m1 -		m0 * vvy;
-			mfcca = m2 - two*	m1 * vvy + vy2 * m0;
+			mfcca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcab  + mfccb;
 			m1    = mfccb  - mfcab;
 			m0    = m2		+ mfcbb;
 			mfcab = m0;
 			mfcbb = m1 -		m0 * vvy;
-			mfccb = m2 - two*	m1 * vvy + vy2 * m0;
+			mfccb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfcac  + mfccc;
 			m1    = mfccc  - mfcac;
@@ -334,7 +335,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfcac = m0;
 			m0   += c1o18 * oMdrho;
 			mfcbc = m1 -		m0 * vvy;
-			mfccc = m2 - two*	m1 * vvy + vy2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			// mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9		Konditionieren
@@ -344,16 +345,16 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			m1    = mfcaa	- mfaaa;
 			m0    = m2		+ mfbaa;
 			mfaaa = m0;
-			m0   += one* oMdrho;
+			m0   += c1o1* oMdrho;
 			mfbaa = m1 -		m0 * vvx;
-			mfcaa = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcaa = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaba  + mfcba;
 			m1    = mfcba  - mfaba;
 			m0    = m2		+ mfbba;
 			mfaba = m0;
 			mfbba = m1 -		m0 * vvx;
-			mfcba = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcba = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaca  + mfcca;
 			m1    = mfcca  - mfaca;
@@ -361,7 +362,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfaca = m0;
 			m0   += c1o3 * oMdrho;
 			mfbca = m1 -		m0 * vvx;
-			mfcca = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcca = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaab	+ mfcab;
@@ -369,21 +370,21 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			m0    = m2		+ mfbab;
 			mfaab = m0;
 			mfbab = m1 -		m0 * vvx;
-			mfcab = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcab = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfabb  + mfcbb;
 			m1    = mfcbb  - mfabb;
 			m0    = m2		+ mfbbb;
 			mfabb = m0;
 			mfbbb = m1 -		m0 * vvx;
-			mfcbb = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcbb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfacb  + mfccb;
 			m1    = mfccb  - mfacb;
 			m0    = m2		+ mfbcb;
 			mfacb = m0;
 			mfbcb = m1 -		m0 * vvx;
-			mfccb = m2 - two*	m1 * vvx + vx2 * m0;
+			mfccb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfaac	+ mfcac;
@@ -392,14 +393,14 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfaac = m0;
 			m0   += c1o3 * oMdrho;
 			mfbac = m1 -		m0 * vvx;
-			mfcac = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcac = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfabc  + mfcbc;
 			m1    = mfcbc  - mfabc;
 			m0    = m2		+ mfbbc;
 			mfabc = m0;
 			mfbbc = m1 -		m0 * vvx;
-			mfcbc = m2 - two*	m1 * vvx + vx2 * m0;
+			mfcbc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			m2    = mfacc  + mfccc;
 			m1    = mfccc  - mfacc;
@@ -407,7 +408,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfacc = m0;
 			m0   += c1o9 * oMdrho;
 			mfbcc = m1 -		m0 * vvx;
-			mfccc = m2 - two*	m1 * vvx + vx2 * m0;
+			mfccc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 
@@ -418,11 +419,11 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			// Cascade
 			////////////////////////////////////////////////////////////////////////////////////
 			real OxxPyyPzz = omega;
-			real OxyyPxzz  = one;//two-omega;//eight*(two-omega)/(eight -omega);//one;//omega;//two-omega;//
-			real OxyyMxzz  = one;//omega;//one;//eight*(two-omega)/(eight -omega);//one;//two-omega;//one;// 
-			real O4        = one;
-			real O5        = one;
-			real O6        = one;
+			real OxyyPxzz  = c1o1;//two-omega;//eight*(two-omega)/(eight -omega);//one;//omega;//two-omega;//
+			real OxyyMxzz  = c1o1;//omega;//one;//eight*(two-omega)/(eight -omega);//one;//two-omega;//one;// 
+			real O4        = c1o1;
+			real O5        = c1o1;
+			real O6        = c1o1;
 
 			//2.
 			// linear combinations
@@ -438,9 +439,9 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 				real dzuz = dxux + omega * c3o2 * mxxMzz;
 
 				//relax
-				mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
-				mxxMyy    += omega * (-mxxMyy) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
-				mxxMzz    += omega * (-mxxMzz) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
+				mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+				mxxMyy    += omega * (-mxxMyy) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
+				mxxMzz    += omega * (-mxxMzz) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
 			}
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  
@@ -456,8 +457,8 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 
 			// linear combinations back
 			mfcaa = c1o3 * (       mxxMyy +      mxxMzz + mxxPyyPzz);
-			mfaca = c1o3 * (-two*  mxxMyy +      mxxMzz + mxxPyyPzz);
-			mfaac = c1o3 * (       mxxMyy - two* mxxMzz + mxxPyyPzz);
+			mfaca = c1o3 * (-c2o1*  mxxMyy +      mxxMzz + mxxPyyPzz);
+			mfaac = c1o3 * (       mxxMyy - c2o1* mxxMzz + mxxPyyPzz);
 
 			//3.
 			// linear combinations
@@ -472,19 +473,19 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			real mxyyMxzz = mfbca - mfbac;
 
 			//relax
-			wadjust    = OxyyMxzz+(one-OxyyMxzz)*abs(mfbbb)/(abs(mfbbb)+qudricLimit);
+			wadjust    = OxyyMxzz+(c1o1-OxyyMxzz)*abs(mfbbb)/(abs(mfbbb)+qudricLimit);
 			mfbbb     += wadjust * (-mfbbb);
-			wadjust    = OxyyPxzz+(one-OxyyPxzz)*abs(mxxyPyzz)/(abs(mxxyPyzz)+qudricLimit);
+			wadjust    = OxyyPxzz+(c1o1-OxyyPxzz)*abs(mxxyPyzz)/(abs(mxxyPyzz)+qudricLimit);
 			mxxyPyzz  += wadjust * (-mxxyPyzz);
-			wadjust    = OxyyMxzz+(one-OxyyMxzz)*abs(mxxyMyzz)/(abs(mxxyMyzz)+qudricLimit);
+			wadjust    = OxyyMxzz+(c1o1-OxyyMxzz)*abs(mxxyMyzz)/(abs(mxxyMyzz)+qudricLimit);
 			mxxyMyzz  += wadjust * (-mxxyMyzz);
-			wadjust    = OxyyPxzz+(one-OxyyPxzz)*abs(mxxzPyyz)/(abs(mxxzPyyz)+qudricLimit);
+			wadjust    = OxyyPxzz+(c1o1-OxyyPxzz)*abs(mxxzPyyz)/(abs(mxxzPyyz)+qudricLimit);
 			mxxzPyyz  += wadjust * (-mxxzPyyz);
-			wadjust    = OxyyMxzz+(one-OxyyMxzz)*abs(mxxzMyyz)/(abs(mxxzMyyz)+qudricLimit);
+			wadjust    = OxyyMxzz+(c1o1-OxyyMxzz)*abs(mxxzMyyz)/(abs(mxxzMyyz)+qudricLimit);
 			mxxzMyyz  += wadjust * (-mxxzMyyz);
-			wadjust    = OxyyPxzz+(one-OxyyPxzz)*abs(mxyyPxzz)/(abs(mxyyPxzz)+qudricLimit);
+			wadjust    = OxyyPxzz+(c1o1-OxyyPxzz)*abs(mxyyPxzz)/(abs(mxyyPxzz)+qudricLimit);
 			mxyyPxzz  += wadjust * (-mxyyPxzz);
-			wadjust    = OxyyMxzz+(one-OxyyMxzz)*abs(mxyyMxzz)/(abs(mxyyMxzz)+qudricLimit);
+			wadjust    = OxyyMxzz+(c1o1-OxyyMxzz)*abs(mxyyMxzz)/(abs(mxyyMxzz)+qudricLimit);
 			mxyyMxzz  += wadjust * (-mxyyMxzz);
 
 			// linear combinations back
@@ -496,9 +497,9 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfbac = (-mxyyMxzz + mxyyPxzz) * c1o2;
 
 			//4.
-			mfacc = mfaaa * c1o9 * O4 + (one - O4) * mfacc; 
-			mfcac = mfaaa * c1o9 * O4 + (one - O4) * mfcac; 
-			mfcca = mfaaa * c1o9 * O4 + (one - O4) * mfcca; 
+			mfacc = mfaaa * c1o9 * O4 + (c1o1 - O4) * mfacc; 
+			mfcac = mfaaa * c1o9 * O4 + (c1o1 - O4) * mfcac; 
+			mfcca = mfaaa * c1o9 * O4 + (c1o1 - O4) * mfcca; 
 			
 			mfbbc += O4 * (-mfbbc); 
 			mfbcb += O4 * (-mfbcb); 
@@ -510,7 +511,7 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			mfccb += O5 * (-mfccb);
 
 			//6.
-			mfccc = mfaaa * c1o27 * O6 + (one - O6) * mfccc;
+			mfccc = mfaaa * c1o27 * O6 + (c1o1 - O6) * mfccc;
 			////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -520,22 +521,22 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			//mit 1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9   Konditionieren
 			////////////////////////////////////////////////////////////////////////////////////
 			// Z - Dir
-			m0 =  mfaac * c1o2 +      mfaab * (vvz - c1o2) + (mfaaa + one* oMdrho) * (     vz2 - vvz) * c1o2; 
-			m1 = -mfaac        - two* mfaab *  vvz         +  mfaaa                * (one- vz2)              - one* oMdrho * vz2; 
-			m2 =  mfaac * c1o2 +      mfaab * (vvz + c1o2) + (mfaaa + one* oMdrho) * (     vz2 + vvz) * c1o2;
+			m0 =  mfaac * c1o2 +      mfaab * (vvz - c1o2) + (mfaaa + c1o1* oMdrho) * (     vz2 - vvz) * c1o2; 
+			m1 = -mfaac        - c2o1* mfaab *  vvz         +  mfaaa                * (c1o1- vz2)              - c1o1* oMdrho * vz2; 
+			m2 =  mfaac * c1o2 +      mfaab * (vvz + c1o2) + (mfaaa + c1o1* oMdrho) * (     vz2 + vvz) * c1o2;
 			mfaaa = m0;
 			mfaab = m1;
 			mfaac = m2;
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 =  mfabc * c1o2 +      mfabb * (vvz - c1o2) + mfaba * (     vz2 - vvz) * c1o2; 
-			m1 = -mfabc        - two* mfabb *  vvz         + mfaba * (one- vz2); 
+			m1 = -mfabc        - c2o1* mfabb *  vvz         + mfaba * (c1o1- vz2); 
 			m2 =  mfabc * c1o2 +      mfabb * (vvz + c1o2) + mfaba * (     vz2 + vvz) * c1o2;
 			mfaba = m0;
 			mfabb = m1;
 			mfabc = m2;
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 =  mfacc * c1o2 +      mfacb * (vvz - c1o2) + (mfaca + c1o3 * oMdrho) * (     vz2 - vvz) * c1o2; 
-			m1 = -mfacc        - two* mfacb *  vvz         +  mfaca                  * (one- vz2)              - c1o3 * oMdrho * vz2; 
+			m1 = -mfacc        - c2o1* mfacb *  vvz         +  mfaca                  * (c1o1- vz2)              - c1o3 * oMdrho * vz2; 
 			m2 =  mfacc * c1o2 +      mfacb * (vvz + c1o2) + (mfaca + c1o3 * oMdrho) * (     vz2 + vvz) * c1o2;
 			mfaca = m0;
 			mfacb = m1;
@@ -543,21 +544,21 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 =  mfbac * c1o2 +      mfbab * (vvz - c1o2) + mfbaa * (     vz2 - vvz) * c1o2; 
-			m1 = -mfbac        - two* mfbab *  vvz         + mfbaa * (one- vz2); 
+			m1 = -mfbac        - c2o1* mfbab *  vvz         + mfbaa * (c1o1- vz2); 
 			m2 =  mfbac * c1o2 +      mfbab * (vvz + c1o2) + mfbaa * (     vz2 + vvz) * c1o2;
 			mfbaa = m0;
 			mfbab = m1;
 			mfbac = m2;
 			/////////b//////////////////////////////////////////////////////////////////////////
 			m0 =  mfbbc * c1o2 +      mfbbb * (vvz - c1o2) + mfbba * (     vz2 - vvz) * c1o2; 
-			m1 = -mfbbc        - two* mfbbb *  vvz         + mfbba * (one- vz2); 
+			m1 = -mfbbc        - c2o1* mfbbb *  vvz         + mfbba * (c1o1- vz2); 
 			m2 =  mfbbc * c1o2 +      mfbbb * (vvz + c1o2) + mfbba * (     vz2 + vvz) * c1o2;
 			mfbba = m0;
 			mfbbb = m1;
 			mfbbc = m2;
 			/////////b//////////////////////////////////////////////////////////////////////////
 			m0 =  mfbcc * c1o2 +      mfbcb * (vvz - c1o2) + mfbca * (     vz2 - vvz) * c1o2; 
-			m1 = -mfbcc        - two* mfbcb *  vvz         + mfbca * (one- vz2); 
+			m1 = -mfbcc        - c2o1* mfbcb *  vvz         + mfbca * (c1o1- vz2); 
 			m2 =  mfbcc * c1o2 +      mfbcb * (vvz + c1o2) + mfbca * (     vz2 + vvz) * c1o2;
 			mfbca = m0;
 			mfbcb = m1;
@@ -565,21 +566,21 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 =  mfcac * c1o2 +      mfcab * (vvz - c1o2) + (mfcaa + c1o3 * oMdrho) * (     vz2 - vvz) * c1o2; 
-			m1 = -mfcac        - two* mfcab *  vvz         +  mfcaa                  * (one- vz2)              - c1o3 * oMdrho * vz2; 
+			m1 = -mfcac        - c2o1* mfcab *  vvz         +  mfcaa                  * (c1o1- vz2)              - c1o3 * oMdrho * vz2; 
 			m2 =  mfcac * c1o2 +      mfcab * (vvz + c1o2) + (mfcaa + c1o3 * oMdrho) * (     vz2 + vvz) * c1o2;
 			mfcaa = m0;
 			mfcab = m1;
 			mfcac = m2;
 			/////////c//////////////////////////////////////////////////////////////////////////
 			m0 =  mfcbc * c1o2 +      mfcbb * (vvz - c1o2) + mfcba * (     vz2 - vvz) * c1o2; 
-			m1 = -mfcbc        - two* mfcbb *  vvz         + mfcba * (one- vz2); 
+			m1 = -mfcbc        - c2o1* mfcbb *  vvz         + mfcba * (c1o1- vz2); 
 			m2 =  mfcbc * c1o2 +      mfcbb * (vvz + c1o2) + mfcba * (     vz2 + vvz) * c1o2;
 			mfcba = m0;
 			mfcbb = m1;
 			mfcbc = m2;
 			/////////c//////////////////////////////////////////////////////////////////////////
 			m0 =  mfccc * c1o2 +      mfccb * (vvz - c1o2) + (mfcca + c1o9 * oMdrho) * (     vz2 - vvz) * c1o2; 
-			m1 = -mfccc        - two* mfccb *  vvz         +  mfcca                  * (one- vz2)              - c1o9 * oMdrho * vz2; 
+			m1 = -mfccc        - c2o1* mfccb *  vvz         +  mfcca                  * (c1o1- vz2)              - c1o9 * oMdrho * vz2; 
 			m2 =  mfccc * c1o2 +      mfccb * (vvz + c1o2) + (mfcca + c1o9 * oMdrho) * (     vz2 + vvz) * c1o2;
 			mfcca = m0;
 			mfccb = m1;
@@ -590,21 +591,21 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			// Y - Dir
 			m0 =  mfaca * c1o2 +      mfaba * (vvy - c1o2) + (mfaaa + c1o6 * oMdrho) * (     vy2 - vvy) * c1o2; 
-			m1 = -mfaca        - two* mfaba *  vvy         +  mfaaa                  * (one- vy2)              - c1o6 * oMdrho * vy2; 
+			m1 = -mfaca        - c2o1* mfaba *  vvy         +  mfaaa                  * (c1o1- vy2)              - c1o6 * oMdrho * vy2; 
 			m2 =  mfaca * c1o2 +      mfaba * (vvy + c1o2) + (mfaaa + c1o6 * oMdrho) * (     vy2 + vvy) * c1o2;
 			mfaaa = m0;
 			mfaba = m1;
 			mfaca = m2;
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 =  mfacb * c1o2 +      mfabb * (vvy - c1o2) + (mfaab + c2o3 * oMdrho) * (     vy2 - vvy) * c1o2; 
-			m1 = -mfacb        - two* mfabb *  vvy         +  mfaab                  * (one- vy2)              - c2o3 * oMdrho * vy2; 
+			m1 = -mfacb        - c2o1* mfabb *  vvy         +  mfaab                  * (c1o1- vy2)              - c2o3 * oMdrho * vy2; 
 			m2 =  mfacb * c1o2 +      mfabb * (vvy + c1o2) + (mfaab + c2o3 * oMdrho) * (     vy2 + vvy) * c1o2;
 			mfaab = m0;
 			mfabb = m1;
 			mfacb = m2;
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 =  mfacc * c1o2 +      mfabc * (vvy - c1o2) + (mfaac + c1o6 * oMdrho) * (     vy2 - vvy) * c1o2; 
-			m1 = -mfacc        - two* mfabc *  vvy         +  mfaac                  * (one- vy2)              - c1o6 * oMdrho * vy2; 
+			m1 = -mfacc        - c2o1* mfabc *  vvy         +  mfaac                  * (c1o1- vy2)              - c1o6 * oMdrho * vy2; 
 			m2 =  mfacc * c1o2 +      mfabc * (vvy + c1o2) + (mfaac + c1o6 * oMdrho) * (     vy2 + vvy) * c1o2;
 			mfaac = m0;
 			mfabc = m1;
@@ -612,21 +613,21 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 =  mfbca * c1o2 +      mfbba * (vvy - c1o2) + mfbaa * (     vy2 - vvy) * c1o2; 
-			m1 = -mfbca        - two* mfbba *  vvy         + mfbaa * (one- vy2); 
+			m1 = -mfbca        - c2o1* mfbba *  vvy         + mfbaa * (c1o1- vy2); 
 			m2 =  mfbca * c1o2 +      mfbba * (vvy + c1o2) + mfbaa * (     vy2 + vvy) * c1o2;
 			mfbaa = m0;
 			mfbba = m1;
 			mfbca = m2;
 			/////////b//////////////////////////////////////////////////////////////////////////
 			m0 =  mfbcb * c1o2 +      mfbbb * (vvy - c1o2) + mfbab * (     vy2 - vvy) * c1o2; 
-			m1 = -mfbcb        - two* mfbbb *  vvy         + mfbab * (one- vy2); 
+			m1 = -mfbcb        - c2o1* mfbbb *  vvy         + mfbab * (c1o1- vy2); 
 			m2 =  mfbcb * c1o2 +      mfbbb * (vvy + c1o2) + mfbab * (     vy2 + vvy) * c1o2;
 			mfbab = m0;
 			mfbbb = m1;
 			mfbcb = m2;
 			/////////b//////////////////////////////////////////////////////////////////////////
 			m0 =  mfbcc * c1o2 +      mfbbc * (vvy - c1o2) + mfbac * (     vy2 - vvy) * c1o2; 
-			m1 = -mfbcc        - two* mfbbc *  vvy         + mfbac * (one- vy2); 
+			m1 = -mfbcc        - c2o1* mfbbc *  vvy         + mfbac * (c1o1- vy2); 
 			m2 =  mfbcc * c1o2 +      mfbbc * (vvy + c1o2) + mfbac * (     vy2 + vvy) * c1o2;
 			mfbac = m0;
 			mfbbc = m1;
@@ -634,21 +635,21 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 =  mfcca * c1o2 +      mfcba * (vvy - c1o2) + (mfcaa + c1o18 * oMdrho) * (     vy2 - vvy) * c1o2; 
-			m1 = -mfcca        - two* mfcba *  vvy         +  mfcaa                   * (one- vy2)              - c1o18 * oMdrho * vy2; 
+			m1 = -mfcca        - c2o1* mfcba *  vvy         +  mfcaa                   * (c1o1- vy2)              - c1o18 * oMdrho * vy2; 
 			m2 =  mfcca * c1o2 +      mfcba * (vvy + c1o2) + (mfcaa + c1o18 * oMdrho) * (     vy2 + vvy) * c1o2;
 			mfcaa = m0;
 			mfcba = m1;
 			mfcca = m2;
 			/////////c//////////////////////////////////////////////////////////////////////////
 			m0 =  mfccb * c1o2 +      mfcbb * (vvy - c1o2) + (mfcab + c2o9 * oMdrho) * (     vy2 - vvy) * c1o2; 
-			m1 = -mfccb        - two* mfcbb *  vvy         +  mfcab                  * (one- vy2)              - c2o9 * oMdrho * vy2; 
+			m1 = -mfccb        - c2o1* mfcbb *  vvy         +  mfcab                  * (c1o1- vy2)              - c2o9 * oMdrho * vy2; 
 			m2 =  mfccb * c1o2 +      mfcbb * (vvy + c1o2) + (mfcab + c2o9 * oMdrho) * (     vy2 + vvy) * c1o2;
 			mfcab = m0;
 			mfcbb = m1;
 			mfccb = m2;
 			/////////c//////////////////////////////////////////////////////////////////////////
 			m0 =  mfccc * c1o2 +      mfcbc * (vvy - c1o2) + (mfcac + c1o18 * oMdrho) * (     vy2 - vvy) * c1o2; 
-			m1 = -mfccc        - two* mfcbc *  vvy         +  mfcac                   * (one- vy2)              - c1o18 * oMdrho * vy2; 
+			m1 = -mfccc        - c2o1* mfcbc *  vvy         +  mfcac                   * (c1o1- vy2)              - c1o18 * oMdrho * vy2; 
 			m2 =  mfccc * c1o2 +      mfcbc * (vvy + c1o2) + (mfcac + c1o18 * oMdrho) * (     vy2 + vvy) * c1o2;
 			mfcac = m0;
 			mfcbc = m1;
@@ -659,21 +660,21 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			// X - Dir
 			m0 =  mfcaa * c1o2 +      mfbaa * (vvx - c1o2) + (mfaaa + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2; 
-			m1 = -mfcaa        - two* mfbaa *  vvx         +  mfaaa                   * (one- vx2)              - c1o36 * oMdrho * vx2; 
+			m1 = -mfcaa        - c2o1* mfbaa *  vvx         +  mfaaa                   * (c1o1- vx2)              - c1o36 * oMdrho * vx2; 
 			m2 =  mfcaa * c1o2 +      mfbaa * (vvx + c1o2) + (mfaaa + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
 			mfaaa = m0;
 			mfbaa = m1;
 			mfcaa = m2;
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 =  mfcba * c1o2 +      mfbba * (vvx - c1o2) + (mfaba + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-			m1 = -mfcba        - two* mfbba *  vvx         +  mfaba                  * (one- vx2)              - c1o9 * oMdrho * vx2; 
+			m1 = -mfcba        - c2o1* mfbba *  vvx         +  mfaba                  * (c1o1- vx2)              - c1o9 * oMdrho * vx2; 
 			m2 =  mfcba * c1o2 +      mfbba * (vvx + c1o2) + (mfaba + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 			mfaba = m0;
 			mfbba = m1;
 			mfcba = m2;
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 =  mfcca * c1o2 +      mfbca * (vvx - c1o2) + (mfaca + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2; 
-			m1 = -mfcca        - two* mfbca *  vvx         +  mfaca                   * (one- vx2)              - c1o36 * oMdrho * vx2; 
+			m1 = -mfcca        - c2o1* mfbca *  vvx         +  mfaca                   * (c1o1- vx2)              - c1o36 * oMdrho * vx2; 
 			m2 =  mfcca * c1o2 +      mfbca * (vvx + c1o2) + (mfaca + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
 			mfaca = m0;
 			mfbca = m1;
@@ -681,21 +682,21 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 =  mfcab * c1o2 +      mfbab * (vvx - c1o2) + (mfaab + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-			m1 = -mfcab        - two* mfbab *  vvx         +  mfaab                  * (one- vx2)              - c1o9 * oMdrho * vx2; 
+			m1 = -mfcab        - c2o1* mfbab *  vvx         +  mfaab                  * (c1o1- vx2)              - c1o9 * oMdrho * vx2; 
 			m2 =  mfcab * c1o2 +      mfbab * (vvx + c1o2) + (mfaab + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 			mfaab = m0;
 			mfbab = m1;
 			mfcab = m2;
 			///////////b////////////////////////////////////////////////////////////////////////
 			m0 =  mfcbb * c1o2 +      mfbbb * (vvx - c1o2) + (mfabb + c4o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-			m1 = -mfcbb        - two* mfbbb *  vvx         +  mfabb                  * (one- vx2)              - c4o9 * oMdrho * vx2; 
+			m1 = -mfcbb        - c2o1* mfbbb *  vvx         +  mfabb                  * (c1o1- vx2)              - c4o9 * oMdrho * vx2; 
 			m2 =  mfcbb * c1o2 +      mfbbb * (vvx + c1o2) + (mfabb + c4o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 			mfabb = m0;
 			mfbbb = m1;
 			mfcbb = m2;
 			///////////b////////////////////////////////////////////////////////////////////////
 			m0 =  mfccb * c1o2 +      mfbcb * (vvx - c1o2) + (mfacb + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-			m1 = -mfccb        - two* mfbcb *  vvx         +  mfacb                  * (one- vx2)              - c1o9 * oMdrho * vx2; 
+			m1 = -mfccb        - c2o1* mfbcb *  vvx         +  mfacb                  * (c1o1- vx2)              - c1o9 * oMdrho * vx2; 
 			m2 =  mfccb * c1o2 +      mfbcb * (vvx + c1o2) + (mfacb + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 			mfacb = m0;
 			mfbcb = m1;
@@ -703,21 +704,21 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 =  mfcac * c1o2 +      mfbac * (vvx - c1o2) + (mfaac + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2; 
-			m1 = -mfcac        - two* mfbac *  vvx         +  mfaac                   * (one- vx2)              - c1o36 * oMdrho * vx2; 
+			m1 = -mfcac        - c2o1* mfbac *  vvx         +  mfaac                   * (c1o1- vx2)              - c1o36 * oMdrho * vx2; 
 			m2 =  mfcac * c1o2 +      mfbac * (vvx + c1o2) + (mfaac + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
 			mfaac = m0;
 			mfbac = m1;
 			mfcac = m2;
 			///////////c////////////////////////////////////////////////////////////////////////
 			m0 =  mfcbc * c1o2 +      mfbbc * (vvx - c1o2) + (mfabc + c1o9 * oMdrho) * (     vx2 - vvx) * c1o2; 
-			m1 = -mfcbc        - two* mfbbc *  vvx         +  mfabc                  * (one- vx2)              - c1o9 * oMdrho * vx2; 
+			m1 = -mfcbc        - c2o1* mfbbc *  vvx         +  mfabc                  * (c1o1- vx2)              - c1o9 * oMdrho * vx2; 
 			m2 =  mfcbc * c1o2 +      mfbbc * (vvx + c1o2) + (mfabc + c1o9 * oMdrho) * (     vx2 + vvx) * c1o2;
 			mfabc = m0;
 			mfbbc = m1;
 			mfcbc = m2;
 			///////////c////////////////////////////////////////////////////////////////////////
 			m0 =  mfccc * c1o2 +      mfbcc * (vvx - c1o2) + (mfacc + c1o36 * oMdrho) * (     vx2 - vvx) * c1o2; 
-			m1 = -mfccc        - two* mfbcc *  vvx         +  mfacc                   * (one- vx2)              - c1o36 * oMdrho * vx2; 
+			m1 = -mfccc        - c2o1* mfbcc *  vvx         +  mfacc                   * (c1o1- vx2)              - c1o36 * oMdrho * vx2; 
 			m2 =  mfccc * c1o2 +      mfbcc * (vvx + c1o2) + (mfacc + c1o36 * oMdrho) * (     vx2 + vvx) * c1o2;
 			mfacc = m0;
 			mfbcc = m1;
@@ -979,7 +980,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
          real Seb   = (D.f[dirBSE ])[kbse ];// +  c1over216;
          real Nwb   = (D.f[dirBNW ])[kbnw ];// +  c1over216;
          ////////////////////////////////////////////////////////////////////////////////////
-		 real rho=Nw+W+Sw+S+Se+E+Ne+N+R+Nf+Nb+Sf+Sb+Ef+Eb+Wf+Wb+Nwf+Nwb+Nef+Neb+Swf+Swb+Sef+Seb+F+B+one;// ACHTUNG ne EINS !!!!!!!!
+		 real rho=Nw+W+Sw+S+Se+E+Ne+N+R+Nf+Nb+Sf+Sb+Ef+Eb+Wf+Wb+Nwf+Nwb+Nef+Neb+Swf+Swb+Sef+Seb+F+B+c1o1;// ACHTUNG ne EINS !!!!!!!!
 		 real pix=(Ne+E+Se+Ef+Eb-Nw-W-Sw-Wf-Wb+Nef+Neb+Sef+Seb-Nwf-Nwb-Swf-Swb);
 		 real piy=(Ne+N+Nw+Nf+Nb-Se-S-Sw-Sf-Sb+Nef+Neb+Nwf+Nwb-Sef-Seb-Swf-Swb);
 		 real piz=(Nf+Sf+Wf+Ef+F-Nb-Sb-Wb-Eb-B+Nef+Nwf+Sef+Swf-Neb-Nwb-Seb-Swb);
@@ -1030,7 +1031,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfaaa = m0;
 		 m0   += c1o36;	
 		 mfaab = m1 -		m0 * vvz;
-		 mfaac = m2 - two*	m1 * vvz + vz2 * m0;
+		 mfaac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfaba  + mfabc;
 		 m1    = mfabc  - mfaba;
@@ -1038,7 +1039,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfaba = m0;
 		 m0   += c1o9;
 		 mfabb = m1 -		m0 * vvz;
-		 mfabc = m2 - two*	m1 * vvz + vz2 * m0;
+		 mfabc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfaca  + mfacc;
 		 m1    = mfacc  - mfaca;
@@ -1046,7 +1047,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfaca = m0;
 		 m0   += c1o36;
 		 mfacb = m1 -		m0 * vvz;
-		 mfacc = m2 - two*	m1 * vvz + vz2 * m0;
+		 mfacc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfbaa	+ mfbac;
@@ -1055,7 +1056,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfbaa = m0;
 		 m0   += c1o9;
 		 mfbab = m1 -		m0 * vvz;
-		 mfbac = m2 - two*	m1 * vvz + vz2 * m0;
+		 mfbac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfbba  + mfbbc;
 		 m1    = mfbbc  - mfbba;
@@ -1063,7 +1064,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfbba = m0;
 		 m0   += c4o9;
 		 mfbbb = m1 -		m0 * vvz;
-		 mfbbc = m2 - two*	m1 * vvz + vz2 * m0;
+		 mfbbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfbca  + mfbcc;
 		 m1    = mfbcc  - mfbca;
@@ -1071,7 +1072,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfbca = m0;
 		 m0   += c1o9;
 		 mfbcb = m1 -		m0 * vvz;
-		 mfbcc = m2 - two*	m1 * vvz + vz2 * m0;
+		 mfbcc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfcaa	+ mfcac;
@@ -1080,7 +1081,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfcaa = m0;
 		 m0   += c1o36;
 		 mfcab = m1 -		m0 * vvz;
-		 mfcac = m2 - two*	m1 * vvz + vz2 * m0;
+		 mfcac = m2 - c2o1*	m1 * vvz + vz2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfcba  + mfcbc;
 		 m1    = mfcbc  - mfcba;
@@ -1088,7 +1089,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfcba = m0;
 		 m0   += c1o9;
 		 mfcbb = m1 -		m0 * vvz;
-		 mfcbc = m2 - two*	m1 * vvz + vz2 * m0;
+		 mfcbc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfcca  + mfccc;
 		 m1    = mfccc  - mfcca;
@@ -1096,7 +1097,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfcca = m0;
 		 m0   += c1o36;
 		 mfccb = m1 -		m0 * vvz;
-		 mfccc = m2 - two*	m1 * vvz + vz2 * m0;
+		 mfccc = m2 - c2o1*	m1 * vvz + vz2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 // mit  1/6, 0, 1/18, 2/3, 0, 2/9, 1/6, 0, 1/18 Konditionieren
@@ -1108,14 +1109,14 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfaaa = m0;
 		 m0   += c1o6;
 		 mfaba = m1 -		m0 * vvy;
-		 mfaca = m2 - two*	m1 * vvy + vy2 * m0;
+		 mfaca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfaab  + mfacb;
 		 m1    = mfacb  - mfaab;
 		 m0    = m2		+ mfabb;
 		 mfaab = m0;
 		 mfabb = m1 -		m0 * vvy;
-		 mfacb = m2 - two*	m1 * vvy + vy2 * m0;
+		 mfacb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfaac  + mfacc;
 		 m1    = mfacc  - mfaac;
@@ -1123,7 +1124,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfaac = m0;
 		 m0   += c1o18;
 		 mfabc = m1 -		m0 * vvy;
-		 mfacc = m2 - two*	m1 * vvy + vy2 * m0;
+		 mfacc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfbaa	+ mfbca;
@@ -1132,14 +1133,14 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfbaa = m0;
 		 m0   += c2o3;
 		 mfbba = m1 -		m0 * vvy;
-		 mfbca = m2 - two*	m1 * vvy + vy2 * m0;
+		 mfbca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfbab  + mfbcb;
 		 m1    = mfbcb  - mfbab;
 		 m0    = m2		+ mfbbb;
 		 mfbab = m0;
 		 mfbbb = m1 -		m0 * vvy;
-		 mfbcb = m2 - two*	m1 * vvy + vy2 * m0;
+		 mfbcb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfbac  + mfbcc;
 		 m1    = mfbcc  - mfbac;
@@ -1147,7 +1148,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfbac = m0;
 		 m0   += c2o9;
 		 mfbbc = m1 -		m0 * vvy;
-		 mfbcc = m2 - two*	m1 * vvy + vy2 * m0;
+		 mfbcc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfcaa	+ mfcca;
@@ -1156,14 +1157,14 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfcaa = m0;
 		 m0   += c1o6;
 		 mfcba = m1 -		m0 * vvy;
-		 mfcca = m2 - two*	m1 * vvy + vy2 * m0;
+		 mfcca = m2 - c2o1*	m1 * vvy + vy2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfcab  + mfccb;
 		 m1    = mfccb  - mfcab;
 		 m0    = m2		+ mfcbb;
 		 mfcab = m0;
 		 mfcbb = m1 -		m0 * vvy;
-		 mfccb = m2 - two*	m1 * vvy + vy2 * m0;
+		 mfccb = m2 - c2o1*	m1 * vvy + vy2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfcac  + mfccc;
 		 m1    = mfccc  - mfcac;
@@ -1171,7 +1172,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfcac = m0;
 		 m0   += c1o18;
 		 mfcbc = m1 -		m0 * vvy;
-		 mfccc = m2 - two*	m1 * vvy + vy2 * m0;
+		 mfccc = m2 - c2o1*	m1 * vvy + vy2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 // mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9		Konditionieren
@@ -1181,16 +1182,16 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 m1    = mfcaa	- mfaaa;
 		 m0    = m2		+ mfbaa;
 		 mfaaa = m0;
-		 m0   += one;
+		 m0   += c1o1;
 		 mfbaa = m1 -		m0 * vvx;
-		 mfcaa = m2 - two*	m1 * vvx + vx2 * m0;
+		 mfcaa = m2 - c2o1*	m1 * vvx + vx2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfaba  + mfcba;
 		 m1    = mfcba  - mfaba;
 		 m0    = m2		+ mfbba;
 		 mfaba = m0;
 		 mfbba = m1 -		m0 * vvx;
-		 mfcba = m2 - two*	m1 * vvx + vx2 * m0;
+		 mfcba = m2 - c2o1*	m1 * vvx + vx2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfaca  + mfcca;
 		 m1    = mfcca  - mfaca;
@@ -1198,7 +1199,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfaca = m0;
 		 m0   += c1o3;
 		 mfbca = m1 -		m0 * vvx;
-		 mfcca = m2 - two*	m1 * vvx + vx2 * m0;
+		 mfcca = m2 - c2o1*	m1 * vvx + vx2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfaab	+ mfcab;
@@ -1206,21 +1207,21 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 m0    = m2		+ mfbab;
 		 mfaab = m0;
 		 mfbab = m1 -		m0 * vvx;
-		 mfcab = m2 - two*	m1 * vvx + vx2 * m0;
+		 mfcab = m2 - c2o1*	m1 * vvx + vx2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfabb  + mfcbb;
 		 m1    = mfcbb  - mfabb;
 		 m0    = m2		+ mfbbb;
 		 mfabb = m0;
 		 mfbbb = m1 -		m0 * vvx;
-		 mfcbb = m2 - two*	m1 * vvx + vx2 * m0;
+		 mfcbb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfacb  + mfccb;
 		 m1    = mfccb  - mfacb;
 		 m0    = m2		+ mfbcb;
 		 mfacb = m0;
 		 mfbcb = m1 -		m0 * vvx;
-		 mfccb = m2 - two*	m1 * vvx + vx2 * m0;
+		 mfccb = m2 - c2o1*	m1 * vvx + vx2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfaac	+ mfcac;
@@ -1229,14 +1230,14 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfaac = m0;
 		 m0   += c1o3;
 		 mfbac = m1 -		m0 * vvx;
-		 mfcac = m2 - two*	m1 * vvx + vx2 * m0;
+		 mfcac = m2 - c2o1*	m1 * vvx + vx2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfabc  + mfcbc;
 		 m1    = mfcbc  - mfabc;
 		 m0    = m2		+ mfbbc;
 		 mfabc = m0;
 		 mfbbc = m1 -		m0 * vvx;
-		 mfcbc = m2 - two*	m1 * vvx + vx2 * m0;
+		 mfcbc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 m2    = mfacc  + mfccc;
 		 m1    = mfccc  - mfacc;
@@ -1244,7 +1245,7 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 mfacc = m0;
 		 m0   += c1o9;
 		 mfbcc = m1 -		m0 * vvx;
-		 mfccc = m2 - two*	m1 * vvx + vx2 * m0;
+		 mfccc = m2 - c2o1*	m1 * vvx + vx2 * m0;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 ////////////////////////////////////////////////////////////////////////////////////
 
@@ -1296,12 +1297,12 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 // Cascaded simple
 		 ////////////////////////////////////////////////////////////////////////////////////
-		 real OxxPyyPzz = one;
-		 real OxyyPxzz  = one;
-		 real OxyyMxzz  = one;
-		 real O4        = one;
-		 real O5        = one;
-		 real O6        = one;
+		 real OxxPyyPzz = c1o1;
+		 real OxyyPxzz  = c1o1;
+		 real OxyyMxzz  = c1o1;
+		 real O4        = c1o1;
+		 real O5        = c1o1;
+		 real O6        = c1o1;
 
 
 		 //2.
@@ -1320,8 +1321,8 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 
 		 // linear combinations back
 		 mfcaa = c1o3 * (       mxxMyy +      mxxMzz + mxxPyyPzz);
-		 mfaca = c1o3 * (-two*  mxxMyy +      mxxMzz + mxxPyyPzz);
-		 mfaac = c1o3 * (       mxxMyy - two* mxxMzz + mxxPyyPzz);
+		 mfaca = c1o3 * (-c2o1*  mxxMyy +      mxxMzz + mxxPyyPzz);
+		 mfaac = c1o3 * (       mxxMyy - c2o1* mxxMzz + mxxPyyPzz);
 
 		 ////Test
 		 //mfabb += -(-omega) * (-mfabb);
@@ -1401,21 +1402,21 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 // Z - Dir
 		 m0 =  mfaac * c1o2 +      mfaab * (vvz - c1o2) + (mfaaa + 1.) * (     vz2 - vvz) * c1o2; 
-		 m1 = -mfaac        - two* mfaab *  vvz         +  mfaaa       * (one- vz2)              - one* vz2; 
+		 m1 = -mfaac        - c2o1* mfaab *  vvz         +  mfaaa       * (c1o1- vz2)              - c1o1* vz2; 
 		 m2 =  mfaac * c1o2 +      mfaab * (vvz + c1o2) + (mfaaa + 1.) * (     vz2 + vvz) * c1o2;
 		       mfaaa = m0;
 		       mfaab = m1;
 		       mfaac = m2;
 		////////////////////////////////////////////////////////////////////////////////////
 		 m0 =  mfabc * c1o2 +      mfabb * (vvz - c1o2) + mfaba * (     vz2 - vvz) * c1o2; 
-		 m1 = -mfabc        - two* mfabb *  vvz         + mfaba * (one- vz2); 
+		 m1 = -mfabc        - c2o1* mfabb *  vvz         + mfaba * (c1o1- vz2); 
 		 m2 =  mfabc * c1o2 +      mfabb * (vvz + c1o2) + mfaba * (     vz2 + vvz) * c1o2;
 			   mfaba = m0;
 		       mfabb = m1;
 		       mfabc = m2;
 		////////////////////////////////////////////////////////////////////////////////////
 		 m0 =  mfacc * c1o2 +      mfacb * (vvz - c1o2) + (mfaca + c1o3) * (     vz2 - vvz) * c1o2; 
-		 m1 = -mfacc        - two* mfacb *  vvz         +  mfaca         * (one- vz2)              - c1o3 * vz2; 
+		 m1 = -mfacc        - c2o1* mfacb *  vvz         +  mfaca         * (c1o1- vz2)              - c1o3 * vz2; 
 		 m2 =  mfacc * c1o2 +      mfacb * (vvz + c1o2) + (mfaca + c1o3) * (     vz2 + vvz) * c1o2;
 			   mfaca = m0;
 			   mfacb = m1;
@@ -1423,21 +1424,21 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		////////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////////
 		 m0 =  mfbac * c1o2 +      mfbab * (vvz - c1o2) + mfbaa * (     vz2 - vvz) * c1o2; 
-		 m1 = -mfbac        - two* mfbab *  vvz         + mfbaa * (one- vz2); 
+		 m1 = -mfbac        - c2o1* mfbab *  vvz         + mfbaa * (c1o1- vz2); 
 		 m2 =  mfbac * c1o2 +      mfbab * (vvz + c1o2) + mfbaa * (     vz2 + vvz) * c1o2;
 		       mfbaa = m0;
 		       mfbab = m1;
 		       mfbac = m2;
 		/////////b//////////////////////////////////////////////////////////////////////////
 		 m0 =  mfbbc * c1o2 +      mfbbb * (vvz - c1o2) + mfbba * (     vz2 - vvz) * c1o2; 
-		 m1 = -mfbbc        - two* mfbbb *  vvz         + mfbba * (one- vz2); 
+		 m1 = -mfbbc        - c2o1* mfbbb *  vvz         + mfbba * (c1o1- vz2); 
 		 m2 =  mfbbc * c1o2 +      mfbbb * (vvz + c1o2) + mfbba * (     vz2 + vvz) * c1o2;
 			   mfbba = m0;
 		       mfbbb = m1;
 		       mfbbc = m2;
 		/////////b//////////////////////////////////////////////////////////////////////////
 		 m0 =  mfbcc * c1o2 +      mfbcb * (vvz - c1o2) + mfbca * (     vz2 - vvz) * c1o2; 
-		 m1 = -mfbcc        - two* mfbcb *  vvz         + mfbca * (one- vz2); 
+		 m1 = -mfbcc        - c2o1* mfbcb *  vvz         + mfbca * (c1o1- vz2); 
 		 m2 =  mfbcc * c1o2 +      mfbcb * (vvz + c1o2) + mfbca * (     vz2 + vvz) * c1o2;
 			   mfbca = m0;
 			   mfbcb = m1;
@@ -1445,21 +1446,21 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		////////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////////
 		 m0 =  mfcac * c1o2 +      mfcab * (vvz - c1o2) + (mfcaa + c1o3) * (     vz2 - vvz) * c1o2; 
-		 m1 = -mfcac        - two* mfcab *  vvz         +  mfcaa         * (one- vz2)              - c1o3 * vz2; 
+		 m1 = -mfcac        - c2o1* mfcab *  vvz         +  mfcaa         * (c1o1- vz2)              - c1o3 * vz2; 
 		 m2 =  mfcac * c1o2 +      mfcab * (vvz + c1o2) + (mfcaa + c1o3) * (     vz2 + vvz) * c1o2;
 		       mfcaa = m0;
 		       mfcab = m1;
 		       mfcac = m2;
 		/////////c//////////////////////////////////////////////////////////////////////////
 		 m0 =  mfcbc * c1o2 +      mfcbb * (vvz - c1o2) + mfcba * (     vz2 - vvz) * c1o2; 
-		 m1 = -mfcbc        - two* mfcbb *  vvz         + mfcba * (one- vz2); 
+		 m1 = -mfcbc        - c2o1* mfcbb *  vvz         + mfcba * (c1o1- vz2); 
 		 m2 =  mfcbc * c1o2 +      mfcbb * (vvz + c1o2) + mfcba * (     vz2 + vvz) * c1o2;
 			   mfcba = m0;
 		       mfcbb = m1;
 		       mfcbc = m2;
 		/////////c//////////////////////////////////////////////////////////////////////////
 		 m0 =  mfccc * c1o2 +      mfccb * (vvz - c1o2) + (mfcca + c1o9) * (     vz2 - vvz) * c1o2; 
-		 m1 = -mfccc        - two* mfccb *  vvz         +  mfcca         * (one- vz2)              - c1o9 * vz2; 
+		 m1 = -mfccc        - c2o1* mfccb *  vvz         +  mfcca         * (c1o1- vz2)              - c1o9 * vz2; 
 		 m2 =  mfccc * c1o2 +      mfccb * (vvz + c1o2) + (mfcca + c1o9) * (     vz2 + vvz) * c1o2;
 			   mfcca = m0;
 			   mfccb = m1;
@@ -1470,21 +1471,21 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		////////////////////////////////////////////////////////////////////////////////////
 		// Y - Dir
 		 m0 =  mfaca * c1o2 +      mfaba * (vvy - c1o2) + (mfaaa + c1o6) * (     vy2 - vvy) * c1o2; 
-		 m1 = -mfaca        - two* mfaba *  vvy         +  mfaaa         * (one- vy2)              - c1o6 * vy2; 
+		 m1 = -mfaca        - c2o1* mfaba *  vvy         +  mfaaa         * (c1o1- vy2)              - c1o6 * vy2; 
 		 m2 =  mfaca * c1o2 +      mfaba * (vvy + c1o2) + (mfaaa + c1o6) * (     vy2 + vvy) * c1o2;
 		       mfaaa = m0;
 		       mfaba = m1;
 		       mfaca = m2;
 		////////////////////////////////////////////////////////////////////////////////////
 		 m0 =  mfacb * c1o2 +      mfabb * (vvy - c1o2) + (mfaab + c2o3) * (     vy2 - vvy) * c1o2; 
-		 m1 = -mfacb        - two* mfabb *  vvy         +  mfaab         * (one- vy2)              - c2o3 * vy2; 
+		 m1 = -mfacb        - c2o1* mfabb *  vvy         +  mfaab         * (c1o1- vy2)              - c2o3 * vy2; 
 		 m2 =  mfacb * c1o2 +      mfabb * (vvy + c1o2) + (mfaab + c2o3) * (     vy2 + vvy) * c1o2;
 			   mfaab = m0;
 		       mfabb = m1;
 		       mfacb = m2;
 		////////////////////////////////////////////////////////////////////////////////////
 		 m0 =  mfacc * c1o2 +      mfabc * (vvy - c1o2) + (mfaac + c1o6) * (     vy2 - vvy) * c1o2; 
-		 m1 = -mfacc        - two* mfabc *  vvy         +  mfaac         * (one- vy2)              - c1o6 * vy2; 
+		 m1 = -mfacc        - c2o1* mfabc *  vvy         +  mfaac         * (c1o1- vy2)              - c1o6 * vy2; 
 		 m2 =  mfacc * c1o2 +      mfabc * (vvy + c1o2) + (mfaac + c1o6) * (     vy2 + vvy) * c1o2;
 			   mfaac = m0;
 			   mfabc = m1;
@@ -1492,21 +1493,21 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		////////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////////
 		 m0 =  mfbca * c1o2 +      mfbba * (vvy - c1o2) + mfbaa * (     vy2 - vvy) * c1o2; 
-		 m1 = -mfbca        - two* mfbba *  vvy         + mfbaa * (one- vy2); 
+		 m1 = -mfbca        - c2o1* mfbba *  vvy         + mfbaa * (c1o1- vy2); 
 		 m2 =  mfbca * c1o2 +      mfbba * (vvy + c1o2) + mfbaa * (     vy2 + vvy) * c1o2;
 		       mfbaa = m0;
 		       mfbba = m1;
 		       mfbca = m2;
 		/////////b//////////////////////////////////////////////////////////////////////////
 		 m0 =  mfbcb * c1o2 +      mfbbb * (vvy - c1o2) + mfbab * (     vy2 - vvy) * c1o2; 
-		 m1 = -mfbcb        - two* mfbbb *  vvy         + mfbab * (one- vy2); 
+		 m1 = -mfbcb        - c2o1* mfbbb *  vvy         + mfbab * (c1o1- vy2); 
 		 m2 =  mfbcb * c1o2 +      mfbbb * (vvy + c1o2) + mfbab * (     vy2 + vvy) * c1o2;
 			   mfbab = m0;
 		       mfbbb = m1;
 		       mfbcb = m2;
 		/////////b//////////////////////////////////////////////////////////////////////////
 		 m0 =  mfbcc * c1o2 +      mfbbc * (vvy - c1o2) + mfbac * (     vy2 - vvy) * c1o2; 
-		 m1 = -mfbcc        - two* mfbbc *  vvy         + mfbac * (one- vy2); 
+		 m1 = -mfbcc        - c2o1* mfbbc *  vvy         + mfbac * (c1o1- vy2); 
 		 m2 =  mfbcc * c1o2 +      mfbbc * (vvy + c1o2) + mfbac * (     vy2 + vvy) * c1o2;
 			   mfbac = m0;
 			   mfbbc = m1;
@@ -1514,21 +1515,21 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		////////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////////
 		 m0 =  mfcca * c1o2 +      mfcba * (vvy - c1o2) + (mfcaa + c1o18) * (     vy2 - vvy) * c1o2; 
-		 m1 = -mfcca        - two* mfcba *  vvy         +  mfcaa          * (one- vy2)              - c1o18 * vy2; 
+		 m1 = -mfcca        - c2o1* mfcba *  vvy         +  mfcaa          * (c1o1- vy2)              - c1o18 * vy2; 
 		 m2 =  mfcca * c1o2 +      mfcba * (vvy + c1o2) + (mfcaa + c1o18) * (     vy2 + vvy) * c1o2;
 		       mfcaa = m0;
 		       mfcba = m1;
 		       mfcca = m2;
 		/////////c//////////////////////////////////////////////////////////////////////////
 		 m0 =  mfccb * c1o2 +      mfcbb * (vvy - c1o2) + (mfcab + c2o9) * (     vy2 - vvy) * c1o2; 
-		 m1 = -mfccb        - two* mfcbb *  vvy         +  mfcab         * (one- vy2)              - c2o9 * vy2; 
+		 m1 = -mfccb        - c2o1* mfcbb *  vvy         +  mfcab         * (c1o1- vy2)              - c2o9 * vy2; 
 		 m2 =  mfccb * c1o2 +      mfcbb * (vvy + c1o2) + (mfcab + c2o9) * (     vy2 + vvy) * c1o2;
 			   mfcab = m0;
 		       mfcbb = m1;
 		       mfccb = m2;
 		/////////c//////////////////////////////////////////////////////////////////////////
 		 m0 =  mfccc * c1o2 +      mfcbc * (vvy - c1o2) + (mfcac + c1o18) * (     vy2 - vvy) * c1o2; 
-		 m1 = -mfccc        - two* mfcbc *  vvy         +  mfcac          * (one- vy2)              - c1o18 * vy2; 
+		 m1 = -mfccc        - c2o1* mfcbc *  vvy         +  mfcac          * (c1o1- vy2)              - c1o18 * vy2; 
 		 m2 =  mfccc * c1o2 +      mfcbc * (vvy + c1o2) + (mfcac + c1o18) * (     vy2 + vvy) * c1o2;
 			   mfcac = m0;
 			   mfcbc = m1;
@@ -1539,21 +1540,21 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 	    ////////////////////////////////////////////////////////////////////////////////////
 		// X - Dir
 		 m0 =  mfcaa * c1o2 +      mfbaa * (vvx - c1o2) + (mfaaa + c1o36) * (     vx2 - vvx) * c1o2; 
-		 m1 = -mfcaa        - two* mfbaa *  vvx         +  mfaaa          * (one- vx2)              - c1o36 * vx2; 
+		 m1 = -mfcaa        - c2o1* mfbaa *  vvx         +  mfaaa          * (c1o1- vx2)              - c1o36 * vx2; 
 		 m2 =  mfcaa * c1o2 +      mfbaa * (vvx + c1o2) + (mfaaa + c1o36) * (     vx2 + vvx) * c1o2;
 		       mfaaa = m0;
 		       mfbaa = m1;
 		       mfcaa = m2;
 		////////////////////////////////////////////////////////////////////////////////////
 		 m0 =  mfcba * c1o2 +      mfbba * (vvx - c1o2) + (mfaba + c1o9) * (     vx2 - vvx) * c1o2; 
-		 m1 = -mfcba        - two* mfbba *  vvx         +  mfaba         * (one- vx2)              - c1o9 * vx2; 
+		 m1 = -mfcba        - c2o1* mfbba *  vvx         +  mfaba         * (c1o1- vx2)              - c1o9 * vx2; 
 		 m2 =  mfcba * c1o2 +      mfbba * (vvx + c1o2) + (mfaba + c1o9) * (     vx2 + vvx) * c1o2;
 			   mfaba = m0;
 		       mfbba = m1;
 		       mfcba = m2;
 		////////////////////////////////////////////////////////////////////////////////////
 		 m0 =  mfcca * c1o2 +      mfbca * (vvx - c1o2) + (mfaca + c1o36) * (     vx2 - vvx) * c1o2; 
-		 m1 = -mfcca        - two* mfbca *  vvx         +  mfaca          * (one- vx2)              - c1o36 * vx2; 
+		 m1 = -mfcca        - c2o1* mfbca *  vvx         +  mfaca          * (c1o1- vx2)              - c1o36 * vx2; 
 		 m2 =  mfcca * c1o2 +      mfbca * (vvx + c1o2) + (mfaca + c1o36) * (     vx2 + vvx) * c1o2;
 			   mfaca = m0;
 			   mfbca = m1;
@@ -1561,21 +1562,21 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		////////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////////
 		 m0 =  mfcab * c1o2 +      mfbab * (vvx - c1o2) + (mfaab + c1o9) * (     vx2 - vvx) * c1o2; 
-		 m1 = -mfcab        - two* mfbab *  vvx         +  mfaab         * (one- vx2)              - c1o9 * vx2; 
+		 m1 = -mfcab        - c2o1* mfbab *  vvx         +  mfaab         * (c1o1- vx2)              - c1o9 * vx2; 
 		 m2 =  mfcab * c1o2 +      mfbab * (vvx + c1o2) + (mfaab + c1o9) * (     vx2 + vvx) * c1o2;
 		       mfaab = m0;
 		       mfbab = m1;
 		       mfcab = m2;
 		///////////b////////////////////////////////////////////////////////////////////////
 		 m0 =  mfcbb * c1o2 +      mfbbb * (vvx - c1o2) + (mfabb + c4o9) * (     vx2 - vvx) * c1o2; 
-		 m1 = -mfcbb        - two* mfbbb *  vvx         +  mfabb         * (one- vx2)              - c4o9 * vx2; 
+		 m1 = -mfcbb        - c2o1* mfbbb *  vvx         +  mfabb         * (c1o1- vx2)              - c4o9 * vx2; 
 		 m2 =  mfcbb * c1o2 +      mfbbb * (vvx + c1o2) + (mfabb + c4o9) * (     vx2 + vvx) * c1o2;
 			   mfabb = m0;
 		       mfbbb = m1;
 		       mfcbb = m2;
 		///////////b////////////////////////////////////////////////////////////////////////
 		 m0 =  mfccb * c1o2 +      mfbcb * (vvx - c1o2) + (mfacb + c1o9) * (     vx2 - vvx) * c1o2; 
-		 m1 = -mfccb        - two* mfbcb *  vvx         +  mfacb         * (one- vx2)              - c1o9 * vx2; 
+		 m1 = -mfccb        - c2o1* mfbcb *  vvx         +  mfacb         * (c1o1- vx2)              - c1o9 * vx2; 
 		 m2 =  mfccb * c1o2 +      mfbcb * (vvx + c1o2) + (mfacb + c1o9) * (     vx2 + vvx) * c1o2;
 			   mfacb = m0;
 			   mfbcb = m1;
@@ -1583,21 +1584,21 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 		////////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////////
 		 m0 =  mfcac * c1o2 +      mfbac * (vvx - c1o2) + (mfaac + c1o36) * (     vx2 - vvx) * c1o2; 
-		 m1 = -mfcac        - two* mfbac *  vvx         +  mfaac          * (one- vx2)              - c1o36 * vx2; 
+		 m1 = -mfcac        - c2o1* mfbac *  vvx         +  mfaac          * (c1o1- vx2)              - c1o36 * vx2; 
 		 m2 =  mfcac * c1o2 +      mfbac * (vvx + c1o2) + (mfaac + c1o36) * (     vx2 + vvx) * c1o2;
 		       mfaac = m0;
 		       mfbac = m1;
 		       mfcac = m2;
 		///////////c////////////////////////////////////////////////////////////////////////
 		 m0 =  mfcbc * c1o2 +      mfbbc * (vvx - c1o2) + (mfabc + c1o9) * (     vx2 - vvx) * c1o2; 
-		 m1 = -mfcbc        - two* mfbbc *  vvx         +  mfabc         * (one- vx2)              - c1o9 * vx2; 
+		 m1 = -mfcbc        - c2o1* mfbbc *  vvx         +  mfabc         * (c1o1- vx2)              - c1o9 * vx2; 
 		 m2 =  mfcbc * c1o2 +      mfbbc * (vvx + c1o2) + (mfabc + c1o9) * (     vx2 + vvx) * c1o2;
 			   mfabc = m0;
 		       mfbbc = m1;
 		       mfcbc = m2;
 		///////////c////////////////////////////////////////////////////////////////////////
 		 m0 =  mfccc * c1o2 +      mfbcc * (vvx - c1o2) + (mfacc + c1o36) * (     vx2 - vvx) * c1o2; 
-		 m1 = -mfccc        - two* mfbcc *  vvx         +  mfacc          * (one- vx2)              - c1o36 * vx2; 
+		 m1 = -mfccc        - c2o1* mfbcc *  vvx         +  mfacc          * (c1o1- vx2)              - c1o36 * vx2; 
 		 m2 =  mfccc * c1o2 +      mfbcc * (vvx + c1o2) + (mfacc + c1o36) * (     vx2 + vvx) * c1o2;
 			   mfacc = m0;
 			   mfbcc = m1;
@@ -1827,8 +1828,8 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          real fBNW   = (D.f[dirBNW ])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
          real rho0   =  (fTNE+fBSW)+(fTSW+fBNE)+(fTSE+fBNW)+(fTNW+fBSE)+(fNE+fSW)+(fNW+fSE)+(fTE+fBW)+(fBE+fTW)+(fTN+fBS)+(fBN+fTS)+(fE+fW)+(fN+fS)+(fT+fB)+fZERO;
-         real rho    =  rho0 + one;
-         real OORho  =  one/rho;
+         real rho    =  rho0 + c1o1;
+         real OORho  =  c1o1/rho;
          real vx     =  OORho*((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
          real vy     =  OORho*((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
          real vz     =  OORho*((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
@@ -2004,21 +2005,21 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
             real pimpmu002 = mu002 + c1o3 * OORho;
 
             //3.
-            MzXXY     =    two*vx2y - two*vx*mu110 - vy*pimpmu200 + mu210; 
-            MzXXZ     =    two*vx2z - two*vx*mu101 - vz*pimpmu200 + mu201; 
-            MzXYY     =    two*vxy2 - pimpmu020*vx - two*vy*mu110 + mu120; 
-            MzXYZ     =    two*vxyz - mu011*vx-vy*mu101 -vz*mu110 + mu111;
-            MzXZZ     =    two*vxz2 - pimpmu002*vx - two*vz*mu101 + mu102; 
-            MzYYZ     =    two*vy2z - two*vy*mu011 - vz*pimpmu020 + mu021; 
-            MzYZZ     =    two*vyz2 - pimpmu002*vy - two*vz*mu011 + mu012; 
+            MzXXY     =    c2o1*vx2y - c2o1*vx*mu110 - vy*pimpmu200 + mu210; 
+            MzXXZ     =    c2o1*vx2z - c2o1*vx*mu101 - vz*pimpmu200 + mu201; 
+            MzXYY     =    c2o1*vxy2 - pimpmu020*vx - c2o1*vy*mu110 + mu120; 
+            MzXYZ     =    c2o1*vxyz - mu011*vx-vy*mu101 -vz*mu110 + mu111;
+            MzXZZ     =    c2o1*vxz2 - pimpmu002*vx - c2o1*vz*mu101 + mu102; 
+            MzYYZ     =    c2o1*vy2z - c2o1*vy*mu011 - vz*pimpmu020 + mu021; 
+            MzYZZ     =    c2o1*vyz2 - pimpmu002*vy - c2o1*vz*mu011 + mu012; 
 
             //4.
-            MzXXYY    =   /*-three*vx2y2+*/pimpmu020*vx2/*+four*vxy*mu110*/-two*vx*mu120+vy2*pimpmu200-two*vy*mu210+mu220; 
+            MzXXYY    =   /*-three*vx2y2+*/pimpmu020*vx2/*+four*vxy*mu110*/-c2o1*vx*mu120+vy2*pimpmu200-c2o1*vy*mu210+mu220; 
             MzXXYZ    =   /*-three*vx2yz+mu011*vx2+two*vxy*mu101+two*vxz*mu110-two*vx*mu111*/+vyz*pimpmu200-vy*mu201-vz*mu210+mu211; 
-            MzXXZZ    =   /*-three*vx2z2+*/pimpmu002*vx2/*+four*vxz*mu101*/-two*vx*mu102+vz2*pimpmu200-two*vz*mu201+mu202; 
+            MzXXZZ    =   /*-three*vx2z2+*/pimpmu002*vx2/*+four*vxz*mu101*/-c2o1*vx*mu102+vz2*pimpmu200-c2o1*vz*mu201+mu202; 
             MzXYYZ    =   /*-three*vxy2z+two*vxy*mu011*/+vxz*pimpmu020-mu021*vx/*+vy2*mu101+two*vyz*mu110-two*vy*mu111*/-vz*mu120+mu121; 
             MzXYZZ    =   /*-three*vxyz2+*/pimpmu002*vxy/*+two*vxz*mu011*/-mu012*vx/*+two*vyz*mu101*/-vy*mu102/*+vz2*mu110-two*vz*mu111*/+mu112; 
-            MzYYZZ    =   /*-three*vy2z2+*/pimpmu002*vy2/*+four*vyz*mu011*/-two*vy*mu012+vz2*pimpmu020-two*vz*mu021+mu022; 
+            MzYYZZ    =   /*-three*vy2z2+*/pimpmu002*vy2/*+four*vyz*mu011*/-c2o1*vy*mu012+vz2*pimpmu020-c2o1*vz*mu021+mu022; 
 
             real pimpmu220 = mu220 + c1o9 * OORho;
             real pimpmu202 = mu202 + c1o9 * OORho;
@@ -2026,18 +2027,18 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
 
             //5.
             MzXXYYZ   =    /*four*(vx2y2z-vxyz*mu110+vxy*mu111)+*/ 
-                           two*(vxz*mu120/*-vxy2*mu101-vx2y*mu011*/+vyz*mu210-vy*mu211-vx*mu121)+
+                           c2o1*(vxz*mu120/*-vxy2*mu101-vx2y*mu011*/+vyz*mu210-vy*mu211-vx*mu121)+
                            vy2*mu201-vx2z*pimpmu020+mu021*vx2-vz*pimpmu220-vy2z*pimpmu200+mu221; 
             MzXXYZZ   =    /*four*(vx2yz2-vxyz*mu101+vxz*mu111)+*/
-                           two*(vxy*mu102/*-vxz2*mu110-vx2z*mu011*/-vx*mu112-vz*mu211+vyz*mu201)+
+                           c2o1*(vxy*mu102/*-vxz2*mu110-vx2z*mu011*/-vx*mu112-vz*mu211+vyz*mu201)+
                            vz2*mu210-vy*pimpmu202-pimpmu002*vx2y+mu012*vx2-vyz2*pimpmu200+mu212;
             MzXYYZZ   =    /*four*(vxy2z2-vxyz*mu011+vyz*mu111)+*/
-                           two*(vxy*mu012/*-vyz2*mu110*/-vy*mu112+vxz*mu021-vz*mu121/*-vy2z*mu101*/)+
+                           c2o1*(vxy*mu012/*-vyz2*mu110*/-vy*mu112+vxz*mu021-vz*mu121/*-vy2z*mu101*/)+
                            vy2*mu102+vz2*mu120-vxz2*pimpmu020-pimpmu022*vx-pimpmu002*vxy2+mu122;    
 
             //6.
-            MzXXYYZZ  =   mu222 + pimpmu022*vx2 - two*mu122*vx + pimpmu202*vy2 /*+ pimpmu002*vx2*vy2 - two*mu102*vx*vy2*/ - two*mu212*vy /*- two*mu012*vx2*vy + four*mu112*vx*vy*/ + pimpmu220*vz2 /*+ pimpmu020*vx2*vz2 - two*mu120*vx*vz2 + 
-                          pimpmu200*vy2*vz2 - five*vx2*vy2*vz2 - two*mu210*vy*vz2 + 4.*mu110*vx*vy*vz2*/ - two*mu221*vz /*- two*mu021*vx2*vz + four*mu121*vx*vz - two*mu201*vy2*vz + four*mu101*vx*vy2*vz + 
+            MzXXYYZZ  =   mu222 + pimpmu022*vx2 - c2o1*mu122*vx + pimpmu202*vy2 /*+ pimpmu002*vx2*vy2 - two*mu102*vx*vy2*/ - c2o1*mu212*vy /*- two*mu012*vx2*vy + four*mu112*vx*vy*/ + pimpmu220*vz2 /*+ pimpmu020*vx2*vz2 - two*mu120*vx*vz2 + 
+                          pimpmu200*vy2*vz2 - five*vx2*vy2*vz2 - two*mu210*vy*vz2 + 4.*mu110*vx*vy*vz2*/ - c2o1*mu221*vz /*- two*mu021*vx2*vz + four*mu121*vx*vz - two*mu201*vy2*vz + four*mu101*vx*vy2*vz + 
                           four*mu211*vy*vz + four*mu011*vx2*vy*vz - eight*mu111*vx*vy*vz*/;
 
             //MzXXYYZZ  =   /*-five*vx2y2z2-eight*vxyz*mu111+*/vy2*pimpmu202/*+pimpmu002*vx2y2+vy2z2*pimpmu200+vx2z2*pimpmu020*/+vz2*pimpmu220+mu222+pimpmu022*vx2//+
@@ -2049,15 +2050,15 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          {
             //coll faktoren:
             real w1 =   (-omega);
-            real w2 = -one;//(-omega);
-            real w3 = -(two+(-omega));//-one;
-            real w4 = -(two+(-omega));//-one;
-            real w5 = -(two+(-omega));//-one;
-            real w6 = -one;
-            real w7 = -one;
-            real w8 = -one;
-            real w9 = -one;
-            real w10= -one;
+            real w2 = -c1o1;//(-omega);
+            real w3 = -(c2o1+(-omega));//-one;
+            real w4 = -(c2o1+(-omega));//-one;
+            real w5 = -(c2o1+(-omega));//-one;
+            real w6 = -c1o1;
+            real w7 = -c1o1;
+            real w8 = -c1o1;
+            real w9 = -c1o1;
+            real w10= -c1o1;
 
 			real wadjust;
 			real qudricLimit = c1o100;
@@ -2075,40 +2076,40 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
             MXYYmMXZZ   =  MzXYY-MzXZZ;
 
             real MXXYYppp    = MzXXYY + MzXXZZ + MzYYZZ;
-            real MXXYYpm2p   = MzXXYY - two*MzXXZZ + MzYYZZ;
-            real MXXYYppm2   = MzXXYY + MzXXZZ - two*MzYYZZ;
+            real MXXYYpm2p   = MzXXYY - c2o1*MzXXZZ + MzYYZZ;
+            real MXXYYppm2   = MzXXYY + MzXXZZ - c2o1*MzYYZZ;
 
             //relaxation:
-            MXXpMYYpMZZ -= w2*(one-OORho-MXXpMYYpMZZ);
+            MXXpMYYpMZZ -= w2*(c1o1-OORho-MXXpMYYpMZZ);
 
-            MzXZ       *=  one+w1;
-            MzYZ       *=  one+w1;
-            MzXY       *=  one+w1;
+            MzXZ       *=  c1o1+w1;
+            MzYZ       *=  c1o1+w1;
+            MzXY       *=  c1o1+w1;
 
 			
-            MXXmMYY    *=  one+w1;
-            MXXmMZZ    *=  one+w1;
+            MXXmMYY    *=  c1o1+w1;
+            MXXmMZZ    *=  c1o1+w1;
 
-			wadjust     =  w5-(one+w5)*abs(MzXYZ)/(abs(MzXYZ)+qudricLimit);
-			MzXYZ      *=  one+wadjust;
+			wadjust     =  w5-(c1o1+w5)*abs(MzXYZ)/(abs(MzXYZ)+qudricLimit);
+			MzXYZ      *=  c1o1+wadjust;
 
-			wadjust     =  w3-(one+w3)*abs(MXXYpMYZZ)/(abs(MXXYpMYZZ)+qudricLimit);
-            MXXYpMYZZ  *=  one+wadjust;
-			wadjust     =  w3-(one+w3)*abs(MXXZpMYYZ)/(abs(MXXZpMYYZ)+qudricLimit);
-            MXXZpMYYZ  *=  one+wadjust;
-			wadjust     =  w3-(one+w3)*abs(MXYYpMXZZ)/(abs(MXYYpMXZZ)+qudricLimit);
-            MXYYpMXZZ  *=  one+wadjust;
-			wadjust     =  w4-(one+w4)*abs(MXXYmMYZZ)/(abs(MXXYmMYZZ)+qudricLimit);
-            MXXYmMYZZ  *=  one+wadjust;
-			wadjust     =  w4-(one+w4)*abs(MXXZmMYYZ)/(abs(MXXZmMYYZ)+qudricLimit);
-            MXXZmMYYZ  *=  one+wadjust;
-			wadjust     =  w4-(one+w4)*abs(MXYYmMXZZ)/(abs(MXYYmMXZZ)+qudricLimit);
-            MXYYmMXZZ  *=  one+wadjust;
+			wadjust     =  w3-(c1o1+w3)*abs(MXXYpMYZZ)/(abs(MXXYpMYZZ)+qudricLimit);
+            MXXYpMYZZ  *=  c1o1+wadjust;
+			wadjust     =  w3-(c1o1+w3)*abs(MXXZpMYYZ)/(abs(MXXZpMYYZ)+qudricLimit);
+            MXXZpMYYZ  *=  c1o1+wadjust;
+			wadjust     =  w3-(c1o1+w3)*abs(MXYYpMXZZ)/(abs(MXYYpMXZZ)+qudricLimit);
+            MXYYpMXZZ  *=  c1o1+wadjust;
+			wadjust     =  w4-(c1o1+w4)*abs(MXXYmMYZZ)/(abs(MXXYmMYZZ)+qudricLimit);
+            MXXYmMYZZ  *=  c1o1+wadjust;
+			wadjust     =  w4-(c1o1+w4)*abs(MXXZmMYYZ)/(abs(MXXZmMYYZ)+qudricLimit);
+            MXXZmMYYZ  *=  c1o1+wadjust;
+			wadjust     =  w4-(c1o1+w4)*abs(MXYYmMXZZ)/(abs(MXYYmMXZZ)+qudricLimit);
+            MXYYmMXZZ  *=  c1o1+wadjust;
 
             ////////von Lin Kombis zurueck:
             MzXX  =  c1o3 * (       MXXmMYY +       MXXmMZZ + MXXpMYYpMZZ + OORho);
-            MzYY  =  c1o3 * (-two * MXXmMYY +       MXXmMZZ + MXXpMYYpMZZ + OORho);
-            MzZZ  =  c1o3 * (       MXXmMYY - two * MXXmMZZ + MXXpMYYpMZZ + OORho);
+            MzYY  =  c1o3 * (-c2o1 * MXXmMYY +       MXXmMZZ + MXXpMYYpMZZ + OORho);
+            MzZZ  =  c1o3 * (       MXXmMYY - c2o1 * MXXmMZZ + MXXpMYYpMZZ + OORho);
 
             MzXXY = (MXXYmMYZZ + MXXYpMYZZ)*c1o2;
             MzYZZ = (MXXYpMYZZ - MXXYmMYZZ)*c1o2;
@@ -2119,16 +2120,16 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
 
             //faktorisierte atraktoren:
             MXXYYppp  -=  w7*MzXX*MzYY + w7*MzXX*MzZZ     + w7*    MzZZ*MzYY - w7*MXXYYppp - w7*c1o3*OORho;
-            MXXYYpm2p -=  w6*MzXX*MzYY - w6*two*MzXX*MzZZ + w6*    MzZZ*MzYY - w6*MXXYYpm2p;
-            MXXYYppm2 -=  w6*MzXX*MzYY + w6*    MzXX*MzZZ - w6*two*MzZZ*MzYY - w6*MXXYYppm2;
+            MXXYYpm2p -=  w6*MzXX*MzYY - w6*c2o1*MzXX*MzZZ + w6*    MzZZ*MzYY - w6*MXXYYpm2p;
+            MXXYYppm2 -=  w6*MzXX*MzYY + w6*    MzXX*MzZZ - w6*c2o1*MzZZ*MzYY - w6*MXXYYppm2;
             MzXXYYZZ  -= w10*MzXX*MzYY*MzZZ - w10*c1o27 - w10*MzXXYYZZ;
             MzXYYZ    -=  w8*MzYY*MzXZ - w8*MzXYYZ;
             MzXYZZ    -=  w8*MzZZ*MzXY - w8*MzXYZZ;
             MzXXYZ    -=  w8*MzXX*MzYZ - w8*MzXXYZ;
 
-            MzXXYYZ *= one+w9;
-            MzXXYZZ *= one+w9;
-            MzXYYZZ *= one+w9;
+            MzXXYYZ *= c1o1+w9;
+            MzXXYZZ *= c1o1+w9;
+            MzXYYZZ *= c1o1+w9;
 
             MzXXYY =  c1o3 * (MXXYYpm2p + MXXYYppm2 + MXXYYppp);
             MzXXZZ =  c1o3 * (MXXYYppp - MXXYYpm2p);
@@ -2137,28 +2138,28 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
 
          //2.
          mu200 = vx2 + c1o3 * (MXXmMYY + MXXmMZZ + MXXpMYYpMZZ);
-         mu020 = vy2 + c1o3 * (MXXmMZZ +  MXXpMYYpMZZ - two * MXXmMYY);
-         mu002 = vz2 + c1o3 * (MXXmMYY - two * MXXmMZZ + MXXpMYYpMZZ);
+         mu020 = vy2 + c1o3 * (MXXmMZZ +  MXXpMYYpMZZ - c2o1 * MXXmMYY);
+         mu002 = vz2 + c1o3 * (MXXmMYY - c2o1 * MXXmMZZ + MXXpMYYpMZZ);
          mu110 = vxy + MzXY;
          mu101 = vxz + MzXZ;
          mu011 = vyz + MzYZ;
 
          //3.
          mu111 = vxyz +     vx*MzYZ +     vy*MzXZ + vz*MzXY + MzXYZ;
-         mu210 = vx2y + two*vx*MzXY +     vy*MzXX + MzXXY;
-         mu120 = vxy2 +     vx*MzYY + two*vy*MzXY + MzXYY;
-         mu102 = vxz2 +     vx*MzZZ + two*vz*MzXZ + MzXZZ;
-         mu201 = vx2z + two*vx*MzXZ +     vz*MzXX + MzXXZ;
-         mu021 = vy2z + two*vy*MzYZ +     vz*MzYY + MzYYZ;
-         mu012 = vyz2 +     vy*MzZZ + two*vz*MzYZ + MzYZZ;
+         mu210 = vx2y + c2o1*vx*MzXY +     vy*MzXX + MzXXY;
+         mu120 = vxy2 +     vx*MzYY + c2o1*vy*MzXY + MzXYY;
+         mu102 = vxz2 +     vx*MzZZ + c2o1*vz*MzXZ + MzXZZ;
+         mu201 = vx2z + c2o1*vx*MzXZ +     vz*MzXX + MzXXZ;
+         mu021 = vy2z + c2o1*vy*MzYZ +     vz*MzYY + MzYYZ;
+         mu012 = vyz2 +     vy*MzZZ + c2o1*vz*MzYZ + MzYZZ;
 
          //4.
          mu211 = /*vx2yz +     vx2*MzYZ + two*vxy*MzXZ + two*vxz*MzXY + two*vx*MzXYZ +*/     vyz*MzXX +     vy*MzXXZ +     vz*MzXXY + MzXXYZ;
          mu121 = /*vxy2z + two*vxy*MzYZ +*/     vxz*MzYY +     vx*MzYYZ /*+     vy2*MzXZ + two*vyz*MzXY + two*vy*MzXYZ*/ +     vz*MzXYY + MzXYYZ;
          mu112 = /*vxyz2 +*/     vxy*MzZZ /*+ two*vxz*MzYZ*/ +     vx*MzYZZ /*+ two*vyz*MzXZ*/ +     vy*MzXZZ /*+     vz2*MzXY + two*vz*MzXYZ*/ + MzXYZZ;
-         mu220 = /*vx2y2 +*/     vx2*MzYY /*+ 4.f*vxy*MzXY*/ + two*vx*MzXYY +     vy2*MzXX + two*vy*MzXXY + MzXXYY ;
-         mu202 = /*vx2z2 +*/     vx2*MzZZ /*+ 4.f*vxz*MzXZ*/ + two*vx*MzXZZ +     vz2*MzXX + two*vz*MzXXZ + MzXXZZ;
-         mu022 = /*vy2z2 +*/     vy2*MzZZ /*+ 4.f*vyz*MzYZ*/ + two*vy*MzYZZ +     vz2*MzYY + two*vz*MzYYZ + MzYYZZ;
+         mu220 = /*vx2y2 +*/     vx2*MzYY /*+ 4.f*vxy*MzXY*/ + c2o1*vx*MzXYY +     vy2*MzXX + c2o1*vy*MzXXY + MzXXYY ;
+         mu202 = /*vx2z2 +*/     vx2*MzZZ /*+ 4.f*vxz*MzXZ*/ + c2o1*vx*MzXZZ +     vz2*MzXX + c2o1*vz*MzXXZ + MzXXZZ;
+         mu022 = /*vy2z2 +*/     vy2*MzZZ /*+ 4.f*vyz*MzYZ*/ + c2o1*vy*MzYZZ +     vz2*MzYY + c2o1*vz*MzYYZ + MzYYZZ;
 
          MzXXYY += c1o9 * OORho;
          MzXXZZ += c1o9 * OORho;
@@ -2167,17 +2168,17 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
          //5.
          mu221 = /*vx2y2z+*/vx2z*MzYY+vx2*MzYYZ+vy2z*MzXX+vy2*MzXXZ+vz*MzXXYY+MzXXYYZ+
                   /*four*(vxyz*MzXY+vxy*MzXYZ)+*/
-                  two*(vxz*MzXYY+vx*MzXYYZ/*+vx2y*MzYZ*/+vyz*MzXXY+vy*MzXXYZ/*+vxy2*MzXZ*/);
+                  c2o1*(vxz*MzXYY+vx*MzXYYZ/*+vx2y*MzYZ*/+vyz*MzXXY+vy*MzXXYZ/*+vxy2*MzXZ*/);
          mu212 = /*vx2yz2 +*/ vx2y*MzZZ + vx2*MzYZZ + vy*MzXXZZ + vz2*MzXXY + vyz2*MzXX+MzXXYZZ+
                   /*four*(vxyz*MzXZ + vxz*MzXYZ)+*/
-                  two*(vxy*MzXZZ /*+ vxz2*MzXY*/ + vx*MzXYZZ + vyz*MzXXZ /*+ vx2z*MzYZ*/ + vz*MzXXYZ);
+                  c2o1*(vxy*MzXZZ /*+ vxz2*MzXY*/ + vx*MzXYZZ + vyz*MzXXZ /*+ vx2z*MzYZ*/ + vz*MzXXYZ);
          mu122 = /*vxy2z2*/ + vxy2*MzZZ + MzXYYZZ + vz2*MzXYY + vy2*MzXZZ + vx*MzYYZZ + vxz2*MzYY+
                   /*four*(vxyz*MzYZ + vyz*MzXYZ)+*/
-                  two*(vxy*MzYZZ + vxz*MzYYZ/* + vy2z*MzXZ + vyz2*MzXY*/ + vy*MzXYZZ + vz*MzXYYZ);
+                  c2o1*(vxy*MzYZZ + vxz*MzYYZ/* + vy2z*MzXZ + vyz2*MzXY*/ + vy*MzXYZZ + vz*MzXYYZ);
 
          //6.
          mu222 = /*vx2y2z2 + vx2y2*MzZZ + vx2z2*MzYY */+ vx2*MzYYZZ /*+ vy2z2*MzXX*/ + vy2*MzXXZZ + vz2*MzXXYY + MzXXYYZZ /*+ eight*vxyz*MzXYZ*/ +
-            two*(/*vx2y*MzYZZ +*/  vx*MzXYYZZ + vz*MzXXYYZ /*+ vyz2*MzXXY + vx2z*MzYYZ + vxy2*MzXZZ + vxz2*MzXYY*/ + vy*MzXXYZZ/* + vy2z*MzXXZ*/);//+ 
+            c2o1*(/*vx2y*MzYZZ +*/  vx*MzXYYZZ + vz*MzXXYYZ /*+ vyz2*MzXXY + vx2z*MzYYZ + vxy2*MzXZZ + vxz2*MzXYY*/ + vy*MzXXYZZ/* + vy2z*MzXXZ*/);//+ 
             //four*(/*vxy2z*MzXZ + vx2yz*MzYZ + vxyz2*MzXY +*/ vxy*MzXYZZ + vxz*MzXYYZ + vyz*MzXXYZ);
 
          //(D.f[ dirE   ])[k   ] =   c1o2*rho*( mu200  - mu220 + mu222 - mu202 +  mu120 - mu122 + mu102 - vx   );   //ke
@@ -2459,8 +2460,8 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
          real fBNW   = (D.f[dirBNW ])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
          real rho0   =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
-         real rho    =  rho0 + one;
-         real OORho  =  one/rho;
+         real rho    =  rho0 + c1o1;
+         real OORho  =  c1o1/rho;
          real vx     =  (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW) * OORho;
          real vy     =  (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW) * OORho;
          real vz     =  (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW) * OORho;
@@ -2568,41 +2569,41 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
             real pimpmu002 = mu002 + c1o3 * OORho;
 
             //3.
-            MzXXY     =    two*vx2y - two*vx*mu110 - vy*pimpmu200 + mu210; 
-            MzXXZ     =    two*vx2z - two*vx*mu101 - vz*pimpmu200 + mu201; 
-            MzXYY     =    two*vxy2 - pimpmu020*vx - two*vy*mu110 + mu120; 
-            MzXYZ     =    two*vxyz - mu011*vx-vy*mu101 -vz*mu110 + mu111;
-            MzXZZ     =    two*vxz2 - pimpmu002*vx - two*vz*mu101 + mu102; 
-            MzYYZ     =    two*vy2z - two*vy*mu011 - vz*pimpmu020 + mu021; 
-            MzYZZ     =    two*vyz2 - pimpmu002*vy - two*vz*mu011 + mu012; 
+            MzXXY     =    c2o1*vx2y - c2o1*vx*mu110 - vy*pimpmu200 + mu210; 
+            MzXXZ     =    c2o1*vx2z - c2o1*vx*mu101 - vz*pimpmu200 + mu201; 
+            MzXYY     =    c2o1*vxy2 - pimpmu020*vx - c2o1*vy*mu110 + mu120; 
+            MzXYZ     =    c2o1*vxyz - mu011*vx-vy*mu101 -vz*mu110 + mu111;
+            MzXZZ     =    c2o1*vxz2 - pimpmu002*vx - c2o1*vz*mu101 + mu102; 
+            MzYYZ     =    c2o1*vy2z - c2o1*vy*mu011 - vz*pimpmu020 + mu021; 
+            MzYZZ     =    c2o1*vyz2 - pimpmu002*vy - c2o1*vz*mu011 + mu012; 
 
             //4.
-            MzXXYY    =   -three*vx2y2+pimpmu020*vx2+four*vxy*mu110-two*vx*mu120+vy2*pimpmu200-two*vy*mu210+mu220; 
-            MzXXYZ    =   -three*vx2yz+mu011*vx2+two*vxy*mu101+two*vxz*mu110-two*vx*mu111+vyz*pimpmu200-vy*mu201-vz*mu210+mu211; 
-            MzXXZZ    =   -three*vx2z2+pimpmu002*vx2+four*vxz*mu101-two*vx*mu102+vz2*pimpmu200-two*vz*mu201+mu202; 
-            MzXYYZ    =   -three*vxy2z+two*vxy*mu011+vxz*pimpmu020-mu021*vx+vy2*mu101+two*vyz*mu110-two*vy*mu111-vz*mu120+mu121; 
-            MzXYZZ    =   -three*vxyz2+pimpmu002*vxy+two*vxz*mu011-mu012*vx+two*vyz*mu101-vy*mu102+vz2*mu110-two*vz*mu111+mu112; 
-            MzYYZZ    =   -three*vy2z2+pimpmu002*vy2+four*vyz*mu011-two*vy*mu012+vz2*pimpmu020-two*vz*mu021+mu022; 
+            MzXXYY    =   -c3o1*vx2y2+pimpmu020*vx2+c4o1*vxy*mu110-c2o1*vx*mu120+vy2*pimpmu200-c2o1*vy*mu210+mu220; 
+            MzXXYZ    =   -c3o1*vx2yz+mu011*vx2+c2o1*vxy*mu101+c2o1*vxz*mu110-c2o1*vx*mu111+vyz*pimpmu200-vy*mu201-vz*mu210+mu211; 
+            MzXXZZ    =   -c3o1*vx2z2+pimpmu002*vx2+c4o1*vxz*mu101-c2o1*vx*mu102+vz2*pimpmu200-c2o1*vz*mu201+mu202; 
+            MzXYYZ    =   -c3o1*vxy2z+c2o1*vxy*mu011+vxz*pimpmu020-mu021*vx+vy2*mu101+c2o1*vyz*mu110-c2o1*vy*mu111-vz*mu120+mu121; 
+            MzXYZZ    =   -c3o1*vxyz2+pimpmu002*vxy+c2o1*vxz*mu011-mu012*vx+c2o1*vyz*mu101-vy*mu102+vz2*mu110-c2o1*vz*mu111+mu112; 
+            MzYYZZ    =   -c3o1*vy2z2+pimpmu002*vy2+c4o1*vyz*mu011-c2o1*vy*mu012+vz2*pimpmu020-c2o1*vz*mu021+mu022; 
                              
             real pimpmu220 = mu220 + c1o9 * OORho;
             real pimpmu202 = mu202 + c1o9 * OORho;
             real pimpmu022 = mu022 + c1o9 * OORho;
 
             //5.
-            MzXXYYZ   =    four*vx2y2z-four*vxyz*mu110+four*vxy*mu111+ 
-                           two*(vxz*mu120-vxy2*mu101-vx2y*mu011+vyz*mu210-vy*mu211-vx*mu121)+
+            MzXXYYZ   =    c4o1*vx2y2z-c4o1*vxyz*mu110+c4o1*vxy*mu111+ 
+                           c2o1*(vxz*mu120-vxy2*mu101-vx2y*mu011+vyz*mu210-vy*mu211-vx*mu121)+
                            vy2*mu201-vx2z*pimpmu020+mu021*vx2-vz*pimpmu220-vy2z*pimpmu200+mu221; 
-            MzXXYZZ   =    four*(vx2yz2-vxyz*mu101+vxz*mu111)+
-                           two*(vxy*mu102-vxz2*mu110-vx2z*mu011-vx*mu112-vz*mu211+vyz*mu201)+
+            MzXXYZZ   =    c4o1*(vx2yz2-vxyz*mu101+vxz*mu111)+
+                           c2o1*(vxy*mu102-vxz2*mu110-vx2z*mu011-vx*mu112-vz*mu211+vyz*mu201)+
                            vz2*mu210-vy*pimpmu202-pimpmu002*vx2y+mu012*vx2-vyz2*pimpmu200+mu212;
-            MzXYYZZ   =    four*(vxy2z2-vxyz*mu011+vyz*mu111)+
-                           two*(vxy*mu012-vyz2*mu110-vy*mu112+vxz*mu021-vz*mu121-vy2z*mu101)+
+            MzXYYZZ   =    c4o1*(vxy2z2-vxyz*mu011+vyz*mu111)+
+                           c2o1*(vxy*mu012-vyz2*mu110-vy*mu112+vxz*mu021-vz*mu121-vy2z*mu101)+
                            vy2*mu102+vz2*mu120-vxz2*pimpmu020-pimpmu022*vx-pimpmu002*vxy2+mu122;    
 
             //6.
-            MzXXYYZZ  =   mu222 + pimpmu022*vx2 - two*mu122*vx + pimpmu202*vy2 + pimpmu002*vx2*vy2 - two*mu102*vx*vy2 - two*mu212*vy - two*mu012*vx2*vy + four*mu112*vx*vy + pimpmu220*vz2 + pimpmu020*vx2*vz2 - two*mu120*vx*vz2 + 
-                          pimpmu200*vy2*vz2 - five*vx2*vy2*vz2 - two*mu210*vy*vz2 + four*mu110*vx*vy*vz2 - two*mu221*vz - two*mu021*vx2*vz + four*mu121*vx*vz - two*mu201*vy2*vz + four*mu101*vx*vy2*vz + 
-                          four*mu211*vy*vz + four*mu011*vx2*vy*vz - eight*mu111*vx*vy*vz;
+            MzXXYYZZ  =   mu222 + pimpmu022*vx2 - c2o1*mu122*vx + pimpmu202*vy2 + pimpmu002*vx2*vy2 - c2o1*mu102*vx*vy2 - c2o1*mu212*vy - c2o1*mu012*vx2*vy + c4o1*mu112*vx*vy + pimpmu220*vz2 + pimpmu020*vx2*vz2 - c2o1*mu120*vx*vz2 + 
+                          pimpmu200*vy2*vz2 - c5o1*vx2*vy2*vz2 - c2o1*mu210*vy*vz2 + c4o1*mu110*vx*vy*vz2 - c2o1*mu221*vz - c2o1*mu021*vx2*vz + c4o1*mu121*vx*vz - c2o1*mu201*vy2*vz + c4o1*mu101*vx*vy2*vz + 
+                          c4o1*mu211*vy*vz + c4o1*mu011*vx2*vy*vz - c8o1*mu111*vx*vy*vz;
             //MzXXYYZZ  =   -five*vx2y2z2-eight*vxyz*mu111+vy2*pimpmu202+pimpmu002*vx2y2+vy2z2*pimpmu200+vx2z2*pimpmu020+vz2*pimpmu220+mu222+pimpmu022*vx2+
             //               four*(vx2yz*mu011+vxy2z*mu101+vxyz2*mu110+vxy*mu112+vxz*mu121+vyz*mu211)- 
             //               two*(vy*mu212-vy2z*mu201-vxz2*mu120-vyz2*mu210-vxy2*mu102-vx2z*mu021-vx2y*mu012-vx*mu122-vz*mu221); 
@@ -2612,15 +2613,15 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
          {
             //coll faktoren:
             real w1 =  -omega;
-            real w2 = -one;//-omega;
-            real w3 = -one;
-            real w4 = -one;
-            real w5 = -one;
-            real w6 = -one;
-            real w7 = -one;
-            real w8 = -one;
-            real w9 = -one;
-            real w10= -one;
+            real w2 = -c1o1;//-omega;
+            real w3 = -c1o1;
+            real w4 = -c1o1;
+            real w5 = -c1o1;
+            real w6 = -c1o1;
+            real w7 = -c1o1;
+            real w8 = -c1o1;
+            real w9 = -c1o1;
+            real w10= -c1o1;
 
             ////////lin kombi bilden:
             MXXpMYYpMZZ = MzXX + MzYY + MzZZ;
@@ -2635,32 +2636,32 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
             MXYYmMXZZ   =  MzXYY-MzXZZ;
 
             real MXXYYppp    = MzXXYY + MzXXZZ + MzYYZZ;
-            real MXXYYpm2p   = MzXXYY - two*MzXXZZ + MzYYZZ;
-            real MXXYYppm2   = MzXXYY + MzXXZZ - two*MzYYZZ;
+            real MXXYYpm2p   = MzXXYY - c2o1*MzXXZZ + MzYYZZ;
+            real MXXYYppm2   = MzXXYY + MzXXZZ - c2o1*MzYYZZ;
 
             //relaxation:
-            MXXpMYYpMZZ -= w2*(one-OORho-MXXpMYYpMZZ);
+            MXXpMYYpMZZ -= w2*(c1o1-OORho-MXXpMYYpMZZ);
 
-            MzXZ       *=  one+w1;
-            MzYZ       *=  one+w1;
-            MzXY       *=  one+w1;
+            MzXZ       *=  c1o1+w1;
+            MzYZ       *=  c1o1+w1;
+            MzXY       *=  c1o1+w1;
 
-            MzXYZ      *=  one+w5;
+            MzXYZ      *=  c1o1+w5;
 
-            MXXmMYY    *=  one+w1;
-            MXXmMZZ    *=  one+w1;
+            MXXmMYY    *=  c1o1+w1;
+            MXXmMZZ    *=  c1o1+w1;
                                        
-            MXXYpMYZZ  *=  one+w3;
-            MXXYmMYZZ  *=  one+w4;
-            MXXZpMYYZ  *=  one+w3;
-            MXXZmMYYZ  *=  one+w4;
-            MXYYpMXZZ  *=  one+w3;
-            MXYYmMXZZ  *=  one+w4;
+            MXXYpMYZZ  *=  c1o1+w3;
+            MXXYmMYZZ  *=  c1o1+w4;
+            MXXZpMYYZ  *=  c1o1+w3;
+            MXXZmMYYZ  *=  c1o1+w4;
+            MXYYpMXZZ  *=  c1o1+w3;
+            MXYYmMXZZ  *=  c1o1+w4;
 
             ////////von Lin Kombis zurueck:
             MzXX  =  c1o3 * (       MXXmMYY +       MXXmMZZ + MXXpMYYpMZZ + OORho);
-            MzYY  =  c1o3 * (-two * MXXmMYY +       MXXmMZZ + MXXpMYYpMZZ + OORho);
-            MzZZ  =  c1o3 * (       MXXmMYY - two * MXXmMZZ + MXXpMYYpMZZ + OORho);
+            MzYY  =  c1o3 * (-c2o1 * MXXmMYY +       MXXmMZZ + MXXpMYYpMZZ + OORho);
+            MzZZ  =  c1o3 * (       MXXmMYY - c2o1 * MXXmMZZ + MXXpMYYpMZZ + OORho);
 
             MzXXY = (MXXYmMYZZ + MXXYpMYZZ)*c1o2;
             MzYZZ = (MXXYpMYZZ - MXXYmMYZZ)*c1o2;
@@ -2671,16 +2672,16 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
 
             //faktorisierte atraktoren:
             MXXYYppp  -=  w7*MzXX*MzYY + w7*MzXX*MzZZ     + w7*    MzZZ*MzYY - w7*MXXYYppp - w7*c1o3*OORho;
-            MXXYYpm2p -=  w6*MzXX*MzYY - w6*two*MzXX*MzZZ + w6*    MzZZ*MzYY - w6*MXXYYpm2p;
-            MXXYYppm2 -=  w6*MzXX*MzYY + w6*    MzXX*MzZZ - w6*two*MzZZ*MzYY - w6*MXXYYppm2;
+            MXXYYpm2p -=  w6*MzXX*MzYY - w6*c2o1*MzXX*MzZZ + w6*    MzZZ*MzYY - w6*MXXYYpm2p;
+            MXXYYppm2 -=  w6*MzXX*MzYY + w6*    MzXX*MzZZ - w6*c2o1*MzZZ*MzYY - w6*MXXYYppm2;
             MzXXYYZZ  -= w10*MzXX*MzYY*MzZZ - w10*c1o27 - w10*MzXXYYZZ;
             MzXYYZ    -=  w8*MzYY*MzXZ - w8*MzXYYZ;
             MzXYZZ    -=  w8*MzZZ*MzXY - w8*MzXYZZ;
             MzXXYZ    -=  w8*MzXX*MzYZ - w8*MzXXYZ;
 
-            MzXXYYZ *= one+w9;
-            MzXXYZZ *= one+w9;
-            MzXYYZZ *= one+w9;
+            MzXXYYZ *= c1o1+w9;
+            MzXXYZZ *= c1o1+w9;
+            MzXYYZZ *= c1o1+w9;
 
             MzXXYY =  c1o3 * (MXXYYpm2p + MXXYYppm2 + MXXYYppp);
             MzXXZZ =  c1o3 * (MXXYYppp - MXXYYpm2p);
@@ -2689,28 +2690,28 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
 
          //2.
          mu200 = vx2 + c1o3 * (MXXmMYY + MXXmMZZ + MXXpMYYpMZZ);
-         mu020 = vy2 + c1o3 * (MXXmMZZ +  MXXpMYYpMZZ - two * MXXmMYY);
-         mu002 = vz2 + c1o3 * (MXXmMYY - two * MXXmMZZ + MXXpMYYpMZZ);
+         mu020 = vy2 + c1o3 * (MXXmMZZ +  MXXpMYYpMZZ - c2o1 * MXXmMYY);
+         mu002 = vz2 + c1o3 * (MXXmMYY - c2o1 * MXXmMZZ + MXXpMYYpMZZ);
          mu110 = vxy + MzXY;
          mu101 = vxz + MzXZ;
          mu011 = vyz + MzYZ;
 
          //3.
          mu111 = vxyz +     vx*MzYZ +     vy*MzXZ + vz*MzXY + MzXYZ;
-         mu210 = vx2y + two*vx*MzXY +     vy*MzXX + MzXXY;
-         mu120 = vxy2 +     vx*MzYY + two*vy*MzXY + MzXYY;
-         mu102 = vxz2 +     vx*MzZZ + two*vz*MzXZ + MzXZZ;
-         mu201 = vx2z + two*vx*MzXZ +     vz*MzXX + MzXXZ;
-         mu021 = vy2z + two*vy*MzYZ +     vz*MzYY + MzYYZ;
-         mu012 = vyz2 +     vy*MzZZ + two*vz*MzYZ + MzYZZ;
+         mu210 = vx2y + c2o1*vx*MzXY +     vy*MzXX + MzXXY;
+         mu120 = vxy2 +     vx*MzYY + c2o1*vy*MzXY + MzXYY;
+         mu102 = vxz2 +     vx*MzZZ + c2o1*vz*MzXZ + MzXZZ;
+         mu201 = vx2z + c2o1*vx*MzXZ +     vz*MzXX + MzXXZ;
+         mu021 = vy2z + c2o1*vy*MzYZ +     vz*MzYY + MzYYZ;
+         mu012 = vyz2 +     vy*MzZZ + c2o1*vz*MzYZ + MzYZZ;
 
          //4.
-         mu211 = vx2yz +     vx2*MzYZ + two*vxy*MzXZ + two*vxz*MzXY + two*vx*MzXYZ +     vyz*MzXX +     vy*MzXXZ +     vz*MzXXY + MzXXYZ;
-         mu121 = vxy2z + two*vxy*MzYZ +     vxz*MzYY +     vx*MzYYZ +     vy2*MzXZ + two*vyz*MzXY + two*vy*MzXYZ +     vz*MzXYY + MzXYYZ;
-         mu112 = vxyz2 +     vxy*MzZZ + two*vxz*MzYZ +     vx*MzYZZ + two*vyz*MzXZ +     vy*MzXZZ +     vz2*MzXY + two*vz*MzXYZ + MzXYZZ;
-         mu220 = vx2y2 +     vx2*MzYY + four*vxy*MzXY + two*vx*MzXYY +     vy2*MzXX + two*vy*MzXXY + MzXXYY ;
-         mu202 = vx2z2 +     vx2*MzZZ + four*vxz*MzXZ + two*vx*MzXZZ +     vz2*MzXX + two*vz*MzXXZ + MzXXZZ;
-         mu022 = vy2z2 +     vy2*MzZZ + four*vyz*MzYZ + two*vy*MzYZZ +     vz2*MzYY + two*vz*MzYYZ + MzYYZZ;
+         mu211 = vx2yz +     vx2*MzYZ + c2o1*vxy*MzXZ + c2o1*vxz*MzXY + c2o1*vx*MzXYZ +     vyz*MzXX +     vy*MzXXZ +     vz*MzXXY + MzXXYZ;
+         mu121 = vxy2z + c2o1*vxy*MzYZ +     vxz*MzYY +     vx*MzYYZ +     vy2*MzXZ + c2o1*vyz*MzXY + c2o1*vy*MzXYZ +     vz*MzXYY + MzXYYZ;
+         mu112 = vxyz2 +     vxy*MzZZ + c2o1*vxz*MzYZ +     vx*MzYZZ + c2o1*vyz*MzXZ +     vy*MzXZZ +     vz2*MzXY + c2o1*vz*MzXYZ + MzXYZZ;
+         mu220 = vx2y2 +     vx2*MzYY + c4o1*vxy*MzXY + c2o1*vx*MzXYY +     vy2*MzXX + c2o1*vy*MzXXY + MzXXYY ;
+         mu202 = vx2z2 +     vx2*MzZZ + c4o1*vxz*MzXZ + c2o1*vx*MzXZZ +     vz2*MzXX + c2o1*vz*MzXXZ + MzXXZZ;
+         mu022 = vy2z2 +     vy2*MzZZ + c4o1*vyz*MzYZ + c2o1*vy*MzYZZ +     vz2*MzYY + c2o1*vz*MzYYZ + MzYYZZ;
 
          MzXXYY += c1o9 * OORho;
          MzXXZZ += c1o9 * OORho;
@@ -2718,19 +2719,19 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
 
          //5.
          mu221 = vx2y2z+vx2z*MzYY+vx2*MzYYZ+vy2z*MzXX+vy2*MzXXZ+vz*MzXXYY+MzXXYYZ+
-                  four*(vxyz*MzXY+vxy*MzXYZ)+
-                  two*(vxz*MzXYY+vx*MzXYYZ+vx2y*MzYZ+vyz*MzXXY+vy*MzXXYZ+vxy2*MzXZ);
+                  c4o1*(vxyz*MzXY+vxy*MzXYZ)+
+                  c2o1*(vxz*MzXYY+vx*MzXYYZ+vx2y*MzYZ+vyz*MzXXY+vy*MzXXYZ+vxy2*MzXZ);
          mu212 = vx2yz2 + vx2y*MzZZ + vx2*MzYZZ + vy*MzXXZZ + vz2*MzXXY + vyz2*MzXX+MzXXYZZ+
-                  four*(vxyz*MzXZ + vxz*MzXYZ)+
-                  two*(vxy*MzXZZ + vxz2*MzXY + vx*MzXYZZ + vyz*MzXXZ + vx2z*MzYZ + vz*MzXXYZ);
+                  c4o1*(vxyz*MzXZ + vxz*MzXYZ)+
+                  c2o1*(vxy*MzXZZ + vxz2*MzXY + vx*MzXYZZ + vyz*MzXXZ + vx2z*MzYZ + vz*MzXXYZ);
          mu122 = vxy2z2 + vxy2*MzZZ + MzXYYZZ + vz2*MzXYY + vy2*MzXZZ + vx*MzYYZZ + vxz2*MzYY+
-                  four*(vxyz*MzYZ + vyz*MzXYZ)+
-                  two*(vxy*MzYZZ + vxz*MzYYZ + vy2z*MzXZ + vyz2*MzXY + vy*MzXYZZ + vz*MzXYYZ);
+                  c4o1*(vxyz*MzYZ + vyz*MzXYZ)+
+                  c2o1*(vxy*MzYZZ + vxz*MzYYZ + vy2z*MzXZ + vyz2*MzXY + vy*MzXYZZ + vz*MzXYYZ);
 
          //6.
-         mu222 = vx2y2z2 + vx2y2*MzZZ + vx2z2*MzYY + vx2*MzYYZZ + vy2z2*MzXX + vy2*MzXXZZ + vz2*MzXXYY + MzXXYYZZ + eight*vxyz*MzXYZ +
-                  two*(vx2y*MzYZZ +  vx*MzXYYZZ + vz*MzXXYYZ + vyz2*MzXXY + vx2z*MzYYZ + vxy2*MzXZZ + vxz2*MzXYY + vy*MzXXYZZ + vy2z*MzXXZ)+ 
-                  four*(vxy2z*MzXZ + vx2yz*MzYZ + vxyz2*MzXY + vxy*MzXYZZ + vxz*MzXYYZ + vyz*MzXXYZ);
+         mu222 = vx2y2z2 + vx2y2*MzZZ + vx2z2*MzYY + vx2*MzYYZZ + vy2z2*MzXX + vy2*MzXXZZ + vz2*MzXXYY + MzXXYYZZ + c8o1*vxyz*MzXYZ +
+                  c2o1*(vx2y*MzYZZ +  vx*MzXYYZZ + vz*MzXXYYZ + vyz2*MzXXY + vx2z*MzYYZ + vxy2*MzXZZ + vxz2*MzXYY + vy*MzXXYZZ + vy2z*MzXXZ)+ 
+                  c4o1*(vxy2z*MzXZ + vx2yz*MzYZ + vxyz2*MzXY + vxy*MzXYZZ + vxz*MzXYYZ + vyz*MzXXYZ);
 
          (D.f[ dirE   ])[k   ] =   c1o2*rho*( mu200  - mu220 + mu222 - mu202 +  mu120 - mu122 + mu102 - vx   );   //ke
          (D.f[ dirW   ])[kw  ] =   c1o2*rho*( mu200  - mu220 + mu222 - mu202 -  mu120 + mu122 - mu102 + vx   );   
@@ -2984,8 +2985,8 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
          real fBNW   = (D.f[dirBNW ])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
          real rho0   =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
-         real rho    =  rho0 + one;
-         real OORho  =  one/rho;
+         real rho    =  rho0 + c1o1;
+         real OORho  =  c1o1/rho;
          real vx     =  (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW) * OORho;
          real vy     =  (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW) * OORho;
          real vz     =  (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW) * OORho;
@@ -3093,56 +3094,56 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
             real pimpmu002 = mu002 + c1o3 * OORho;
 
             //3.
-            MzXXY     =    two*vx2y - two*vx*mu110 - vy*pimpmu200 + mu210; 
-            MzXXZ     =    two*vx2z - two*vx*mu101 - vz*pimpmu200 + mu201; 
-            MzXYY     =    two*vxy2 - pimpmu020*vx - two*vy*mu110 + mu120; 
-            MzXYZ     =    two*vxyz - mu011*vx-vy*mu101 -vz*mu110 + mu111;
-            MzXZZ     =    two*vxz2 - pimpmu002*vx - two*vz*mu101 + mu102; 
-            MzYYZ     =    two*vy2z - two*vy*mu011 - vz*pimpmu020 + mu021; 
-            MzYZZ     =    two*vyz2 - pimpmu002*vy - two*vz*mu011 + mu012; 
+            MzXXY     =    c2o1*vx2y - c2o1*vx*mu110 - vy*pimpmu200 + mu210; 
+            MzXXZ     =    c2o1*vx2z - c2o1*vx*mu101 - vz*pimpmu200 + mu201; 
+            MzXYY     =    c2o1*vxy2 - pimpmu020*vx - c2o1*vy*mu110 + mu120; 
+            MzXYZ     =    c2o1*vxyz - mu011*vx-vy*mu101 -vz*mu110 + mu111;
+            MzXZZ     =    c2o1*vxz2 - pimpmu002*vx - c2o1*vz*mu101 + mu102; 
+            MzYYZ     =    c2o1*vy2z - c2o1*vy*mu011 - vz*pimpmu020 + mu021; 
+            MzYZZ     =    c2o1*vyz2 - pimpmu002*vy - c2o1*vz*mu011 + mu012; 
 
             //4.
-            MzXXYY    =   -three*vx2y2+pimpmu020*vx2+four*vxy*mu110-two*vx*mu120+vy2*pimpmu200-two*vy*mu210+mu220; 
-            MzXXYZ    =   -three*vx2yz+mu011*vx2+two*vxy*mu101+two*vxz*mu110-two*vx*mu111+vyz*pimpmu200-vy*mu201-vz*mu210+mu211; 
-            MzXXZZ    =   -three*vx2z2+pimpmu002*vx2+four*vxz*mu101-two*vx*mu102+vz2*pimpmu200-two*vz*mu201+mu202; 
-            MzXYYZ    =   -three*vxy2z+two*vxy*mu011+vxz*pimpmu020-mu021*vx+vy2*mu101+two*vyz*mu110-two*vy*mu111-vz*mu120+mu121; 
-            MzXYZZ    =   -three*vxyz2+pimpmu002*vxy+two*vxz*mu011-mu012*vx+two*vyz*mu101-vy*mu102+vz2*mu110-two*vz*mu111+mu112; 
-            MzYYZZ    =   -three*vy2z2+pimpmu002*vy2+four*vyz*mu011-two*vy*mu012+vz2*pimpmu020-two*vz*mu021+mu022; 
+            MzXXYY    =   -c3o1*vx2y2+pimpmu020*vx2+c4o1*vxy*mu110-c2o1*vx*mu120+vy2*pimpmu200-c2o1*vy*mu210+mu220; 
+            MzXXYZ    =   -c3o1*vx2yz+mu011*vx2+c2o1*vxy*mu101+c2o1*vxz*mu110-c2o1*vx*mu111+vyz*pimpmu200-vy*mu201-vz*mu210+mu211; 
+            MzXXZZ    =   -c3o1*vx2z2+pimpmu002*vx2+c4o1*vxz*mu101-c2o1*vx*mu102+vz2*pimpmu200-c2o1*vz*mu201+mu202; 
+            MzXYYZ    =   -c3o1*vxy2z+c2o1*vxy*mu011+vxz*pimpmu020-mu021*vx+vy2*mu101+c2o1*vyz*mu110-c2o1*vy*mu111-vz*mu120+mu121; 
+            MzXYZZ    =   -c3o1*vxyz2+pimpmu002*vxy+c2o1*vxz*mu011-mu012*vx+c2o1*vyz*mu101-vy*mu102+vz2*mu110-c2o1*vz*mu111+mu112; 
+            MzYYZZ    =   -c3o1*vy2z2+pimpmu002*vy2+c4o1*vyz*mu011-c2o1*vy*mu012+vz2*pimpmu020-c2o1*vz*mu021+mu022; 
 
             real pimpmu220 = mu220 + c1o9 * OORho;
             real pimpmu202 = mu202 + c1o9 * OORho;
             real pimpmu022 = mu022 + c1o9 * OORho;
 
             //5.
-            MzXXYYZ   =    four*vx2y2z-four*vxyz*mu110+four*vxy*mu111+ 
-               two*(vxz*mu120-vxy2*mu101-vx2y*mu011+vyz*mu210-vy*mu211-vx*mu121)+
+            MzXXYYZ   =    c4o1*vx2y2z-c4o1*vxyz*mu110+c4o1*vxy*mu111+ 
+               c2o1*(vxz*mu120-vxy2*mu101-vx2y*mu011+vyz*mu210-vy*mu211-vx*mu121)+
                vy2*mu201-vx2z*pimpmu020+mu021*vx2-vz*pimpmu220-vy2z*pimpmu200+mu221; 
-            MzXXYZZ   =    four*(vx2yz2-vxyz*mu101+vxz*mu111)+
-               two*(vxy*mu102-vxz2*mu110-vx2z*mu011-vx*mu112-vz*mu211+vyz*mu201)+
+            MzXXYZZ   =    c4o1*(vx2yz2-vxyz*mu101+vxz*mu111)+
+               c2o1*(vxy*mu102-vxz2*mu110-vx2z*mu011-vx*mu112-vz*mu211+vyz*mu201)+
                vz2*mu210-vy*pimpmu202-pimpmu002*vx2y+mu012*vx2-vyz2*pimpmu200+mu212;
-            MzXYYZZ   =    four*(vxy2z2-vxyz*mu011+vyz*mu111)+
-               two*(vxy*mu012-vyz2*mu110-vy*mu112+vxz*mu021-vz*mu121-vy2z*mu101)+
+            MzXYYZZ   =    c4o1*(vxy2z2-vxyz*mu011+vyz*mu111)+
+               c2o1*(vxy*mu012-vyz2*mu110-vy*mu112+vxz*mu021-vz*mu121-vy2z*mu101)+
                vy2*mu102+vz2*mu120-vxz2*pimpmu020-pimpmu022*vx-pimpmu002*vxy2+mu122;    
 
             //6.
-            MzXXYYZZ  =   -five*vx2y2z2-eight*vxyz*mu111+vy2*pimpmu202+pimpmu002*vx2y2+vy2z2*pimpmu200+vx2z2*pimpmu020+vz2*pimpmu220+mu222+pimpmu022*vx2+
-               four*(vx2yz*mu011+vxy2z*mu101+vxyz2*mu110+vxy*mu112+vxz*mu121+vyz*mu211)- 
-               two*(vy*mu212-vy2z*mu201-vxz2*mu120-vyz2*mu210-vxy2*mu102-vx2z*mu021-vx2y*mu012-vx*mu122-vz*mu221); 
+            MzXXYYZZ  =   -c5o1*vx2y2z2-c8o1*vxyz*mu111+vy2*pimpmu202+pimpmu002*vx2y2+vy2z2*pimpmu200+vx2z2*pimpmu020+vz2*pimpmu220+mu222+pimpmu022*vx2+
+               c4o1*(vx2yz*mu011+vxy2z*mu101+vxyz2*mu110+vxy*mu112+vxz*mu121+vyz*mu211)- 
+               c2o1*(vy*mu212-vy2z*mu201-vxz2*mu120-vyz2*mu210-vxy2*mu102-vx2z*mu021-vx2y*mu012-vx*mu122-vz*mu221); 
          }
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
          real MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ;
          {
             //coll faktoren:
             real w1 =  -omega;
-            real w2 = -one;//-omega;
-            real w3 = -one;
-            real w4 = -one;
-            real w5 = -one;
-            real w6 = -one;
-            real w7 = -one;
-            real w8 = -one;
-            real w9 = -one;
-            real w10= -one;
+            real w2 = -c1o1;//-omega;
+            real w3 = -c1o1;
+            real w4 = -c1o1;
+            real w5 = -c1o1;
+            real w6 = -c1o1;
+            real w7 = -c1o1;
+            real w8 = -c1o1;
+            real w9 = -c1o1;
+            real w10= -c1o1;
 
             ////////lin kombi bilden:
             MXXpMYYpMZZ = MzXX + MzYY + MzZZ;
@@ -3157,32 +3158,32 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
             MXYYmMXZZ   =  MzXYY-MzXZZ;
 
             real MXXYYppp    = MzXXYY + MzXXZZ + MzYYZZ;
-            real MXXYYpm2p   = MzXXYY - two*MzXXZZ + MzYYZZ;
-            real MXXYYppm2   = MzXXYY + MzXXZZ - two*MzYYZZ;
+            real MXXYYpm2p   = MzXXYY - c2o1*MzXXZZ + MzYYZZ;
+            real MXXYYppm2   = MzXXYY + MzXXZZ - c2o1*MzYYZZ;
 
             //relaxation:
-            MXXpMYYpMZZ -= w2*(one-OORho-MXXpMYYpMZZ);
+            MXXpMYYpMZZ -= w2*(c1o1-OORho-MXXpMYYpMZZ);
 
-            MzXZ       *=  one+w1;
-            MzYZ       *=  one+w1;
-            MzXY       *=  one+w1;
+            MzXZ       *=  c1o1+w1;
+            MzYZ       *=  c1o1+w1;
+            MzXY       *=  c1o1+w1;
 
-            MzXYZ      *=  one+w5;
+            MzXYZ      *=  c1o1+w5;
 
-            MXXmMYY    *=  one+w1;
-            MXXmMZZ    *=  one+w1;
+            MXXmMYY    *=  c1o1+w1;
+            MXXmMZZ    *=  c1o1+w1;
 
-            MXXYpMYZZ  *=  one+w3;
-            MXXYmMYZZ  *=  one+w4;
-            MXXZpMYYZ  *=  one+w3;
-            MXXZmMYYZ  *=  one+w4;
-            MXYYpMXZZ  *=  one+w3;
-            MXYYmMXZZ  *=  one+w4;
+            MXXYpMYZZ  *=  c1o1+w3;
+            MXXYmMYZZ  *=  c1o1+w4;
+            MXXZpMYYZ  *=  c1o1+w3;
+            MXXZmMYYZ  *=  c1o1+w4;
+            MXYYpMXZZ  *=  c1o1+w3;
+            MXYYmMXZZ  *=  c1o1+w4;
 
             ////////von Lin Kombis zurueck:
             MzXX  =  c1o3 * (       MXXmMYY +       MXXmMZZ + MXXpMYYpMZZ + OORho);
-            MzYY  =  c1o3 * (-two * MXXmMYY +       MXXmMZZ + MXXpMYYpMZZ + OORho);
-            MzZZ  =  c1o3 * (       MXXmMYY - two * MXXmMZZ + MXXpMYYpMZZ + OORho);
+            MzYY  =  c1o3 * (-c2o1 * MXXmMYY +       MXXmMZZ + MXXpMYYpMZZ + OORho);
+            MzZZ  =  c1o3 * (       MXXmMYY - c2o1 * MXXmMZZ + MXXpMYYpMZZ + OORho);
 
             MzXXY = (MXXYmMYZZ + MXXYpMYZZ)*c1o2;
             MzYZZ = (MXXYpMYZZ - MXXYmMYZZ)*c1o2;
@@ -3193,16 +3194,16 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
 
             //faktorisierte atraktoren:
             MXXYYppp  -=  w7*MzXX*MzYY + w7*MzXX*MzZZ     + w7*    MzZZ*MzYY - w7*MXXYYppp - w7*c1o3;
-            MXXYYpm2p -=  w6*MzXX*MzYY - w6*two*MzXX*MzZZ + w6*    MzZZ*MzYY - w6*MXXYYpm2p;
-            MXXYYppm2 -=  w6*MzXX*MzYY + w6*    MzXX*MzZZ - w6*two*MzZZ*MzYY - w6*MXXYYppm2;
+            MXXYYpm2p -=  w6*MzXX*MzYY - w6*c2o1*MzXX*MzZZ + w6*    MzZZ*MzYY - w6*MXXYYpm2p;
+            MXXYYppm2 -=  w6*MzXX*MzYY + w6*    MzXX*MzZZ - w6*c2o1*MzZZ*MzYY - w6*MXXYYppm2;
             MzXXYYZZ  -= w10*MzXX*MzYY*MzZZ - w10*c1o27 - w10*MzXXYYZZ;
             MzXYYZ    -=  w8*MzYY*MzXZ - w8*MzXYYZ;
             MzXYZZ    -=  w8*MzZZ*MzXY - w8*MzXYZZ;
             MzXXYZ    -=  w8*MzXX*MzYZ - w8*MzXXYZ;
 
-            MzXXYYZ *= one+w9;
-            MzXXYZZ *= one+w9;
-            MzXYYZZ *= one+w9;
+            MzXXYYZ *= c1o1+w9;
+            MzXXYZZ *= c1o1+w9;
+            MzXYYZZ *= c1o1+w9;
 
             MzXXYY =  c1o3 * (MXXYYpm2p + MXXYYppm2 + MXXYYppp);
             MzXXZZ =  c1o3 * (MXXYYppp - MXXYYpm2p);
@@ -3211,28 +3212,28 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
 
          //2.
          mu200 -= vx2 + c1o3 * (MXXmMYY + MXXmMZZ + MXXpMYYpMZZ);
-         mu020 -= vy2 + c1o3 * (MXXmMZZ +  MXXpMYYpMZZ - two * MXXmMYY);
-         mu002 -= vz2 + c1o3 * (MXXmMYY - two * MXXmMZZ + MXXpMYYpMZZ);
+         mu020 -= vy2 + c1o3 * (MXXmMZZ +  MXXpMYYpMZZ - c2o1 * MXXmMYY);
+         mu002 -= vz2 + c1o3 * (MXXmMYY - c2o1 * MXXmMZZ + MXXpMYYpMZZ);
          mu110 -= vxy + MzXY;
          mu101 -= vxz + MzXZ;
          mu011 -= vyz + MzYZ;
 
          //3.
          mu111 -= vxyz +     vx*MzYZ +     vy*MzXZ + vz*MzXY + MzXYZ;
-         mu210 -= vx2y + two*vx*MzXY +     vy*MzXX + MzXXY;
-         mu120 -= vxy2 +     vx*MzYY + two*vy*MzXY + MzXYY;
-         mu102 -= vxz2 +     vx*MzZZ + two*vz*MzXZ + MzXZZ;
-         mu201 -= vx2z + two*vx*MzXZ +     vz*MzXX + MzXXZ;
-         mu021 -= vy2z + two*vy*MzYZ +     vz*MzYY + MzYYZ;
-         mu012 -= vyz2 +     vy*MzZZ + two*vz*MzYZ + MzYZZ;
+         mu210 -= vx2y + c2o1*vx*MzXY +     vy*MzXX + MzXXY;
+         mu120 -= vxy2 +     vx*MzYY + c2o1*vy*MzXY + MzXYY;
+         mu102 -= vxz2 +     vx*MzZZ + c2o1*vz*MzXZ + MzXZZ;
+         mu201 -= vx2z + c2o1*vx*MzXZ +     vz*MzXX + MzXXZ;
+         mu021 -= vy2z + c2o1*vy*MzYZ +     vz*MzYY + MzYYZ;
+         mu012 -= vyz2 +     vy*MzZZ + c2o1*vz*MzYZ + MzYZZ;
 
          //4.
-         mu211 -= vx2yz +     vx2*MzYZ + two*vxy*MzXZ + two*vxz*MzXY + two*vx*MzXYZ +     vyz*MzXX +     vy*MzXXZ +     vz*MzXXY + MzXXYZ;
-         mu121 -= vxy2z + two*vxy*MzYZ +     vxz*MzYY +     vx*MzYYZ +     vy2*MzXZ + two*vyz*MzXY + two*vy*MzXYZ +     vz*MzXYY + MzXYYZ;
-         mu112 -= vxyz2 +     vxy*MzZZ + two*vxz*MzYZ +     vx*MzYZZ + two*vyz*MzXZ +     vy*MzXZZ +     vz2*MzXY + two*vz*MzXYZ + MzXYZZ;
-         mu220 -= vx2y2 +     vx2*MzYY + four*vxy*MzXY + two*vx*MzXYY +     vy2*MzXX + two*vy*MzXXY + MzXXYY ;
-         mu202 -= vx2z2 +     vx2*MzZZ + four*vxz*MzXZ + two*vx*MzXZZ +     vz2*MzXX + two*vz*MzXXZ + MzXXZZ;
-         mu022 -= vy2z2 +     vy2*MzZZ + four*vyz*MzYZ + two*vy*MzYZZ +     vz2*MzYY + two*vz*MzYYZ + MzYYZZ;
+         mu211 -= vx2yz +     vx2*MzYZ + c2o1*vxy*MzXZ + c2o1*vxz*MzXY + c2o1*vx*MzXYZ +     vyz*MzXX +     vy*MzXXZ +     vz*MzXXY + MzXXYZ;
+         mu121 -= vxy2z + c2o1*vxy*MzYZ +     vxz*MzYY +     vx*MzYYZ +     vy2*MzXZ + c2o1*vyz*MzXY + c2o1*vy*MzXYZ +     vz*MzXYY + MzXYYZ;
+         mu112 -= vxyz2 +     vxy*MzZZ + c2o1*vxz*MzYZ +     vx*MzYZZ + c2o1*vyz*MzXZ +     vy*MzXZZ +     vz2*MzXY + c2o1*vz*MzXYZ + MzXYZZ;
+         mu220 -= vx2y2 +     vx2*MzYY + c4o1*vxy*MzXY + c2o1*vx*MzXYY +     vy2*MzXX + c2o1*vy*MzXXY + MzXXYY ;
+         mu202 -= vx2z2 +     vx2*MzZZ + c4o1*vxz*MzXZ + c2o1*vx*MzXZZ +     vz2*MzXX + c2o1*vz*MzXXZ + MzXXZZ;
+         mu022 -= vy2z2 +     vy2*MzZZ + c4o1*vyz*MzYZ + c2o1*vy*MzYZZ +     vz2*MzYY + c2o1*vz*MzYYZ + MzYYZZ;
 
          MzXXYY += c1o9 * OORho;
          MzXXZZ += c1o9 * OORho;
@@ -3240,19 +3241,19 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
 
          //5.
          mu221 -= vx2y2z+vx2z*MzYY+vx2*MzYYZ+vy2z*MzXX+vy2*MzXXZ+vz*MzXXYY+MzXXYYZ+
-            four*(vxyz*MzXY+vxy*MzXYZ)+
-            two*(vxz*MzXYY+vx*MzXYYZ+vx2y*MzYZ+vyz*MzXXY+vy*MzXXYZ+vxy2*MzXZ);
+            c4o1*(vxyz*MzXY+vxy*MzXYZ)+
+            c2o1*(vxz*MzXYY+vx*MzXYYZ+vx2y*MzYZ+vyz*MzXXY+vy*MzXXYZ+vxy2*MzXZ);
          mu212 -= vx2yz2 + vx2y*MzZZ + vx2*MzYZZ + vy*MzXXZZ + vz2*MzXXY + vyz2*MzXX+MzXXYZZ+
-            four*(vxyz*MzXZ + vxz*MzXYZ)+
-            two*(vxy*MzXZZ + vxz2*MzXY + vx*MzXYZZ + vyz*MzXXZ + vx2z*MzYZ + vz*MzXXYZ);
+            c4o1*(vxyz*MzXZ + vxz*MzXYZ)+
+            c2o1*(vxy*MzXZZ + vxz2*MzXY + vx*MzXYZZ + vyz*MzXXZ + vx2z*MzYZ + vz*MzXXYZ);
          mu122 -= vxy2z2 + vxy2*MzZZ + MzXYYZZ + vz2*MzXYY + vy2*MzXZZ + vx*MzYYZZ + vxz2*MzYY+
-            four*(vxyz*MzYZ + vyz*MzXYZ)+
-            two*(vxy*MzYZZ + vxz*MzYYZ + vy2z*MzXZ + vyz2*MzXY + vy*MzXYZZ + vz*MzXYYZ);
+            c4o1*(vxyz*MzYZ + vyz*MzXYZ)+
+            c2o1*(vxy*MzYZZ + vxz*MzYYZ + vy2z*MzXZ + vyz2*MzXY + vy*MzXYZZ + vz*MzXYYZ);
 
          //6.
-         mu222 -= vx2y2z2 + vx2y2*MzZZ + vx2z2*MzYY + vx2*MzYYZZ + vy2z2*MzXX + vy2*MzXXZZ + vz2*MzXXYY + MzXXYYZZ + eight*vxyz*MzXYZ +
-            two*(vx2y*MzYZZ +  vx*MzXYYZZ + vz*MzXXYYZ + vyz2*MzXXY + vx2z*MzYYZ + vxy2*MzXZZ + vxz2*MzXYY + vy*MzXXYZZ + vy2z*MzXXZ)+ 
-            four*(vxy2z*MzXZ + vx2yz*MzYZ + vxyz2*MzXY + vxy*MzXYZZ + vxz*MzXYYZ + vyz*MzXXYZ);
+         mu222 -= vx2y2z2 + vx2y2*MzZZ + vx2z2*MzYY + vx2*MzYYZZ + vy2z2*MzXX + vy2*MzXXZZ + vz2*MzXXYY + MzXXYYZZ + c8o1*vxyz*MzXYZ +
+            c2o1*(vx2y*MzYZZ +  vx*MzXYYZZ + vz*MzXXYYZ + vyz2*MzXXY + vx2z*MzYYZ + vxy2*MzXZZ + vxz2*MzXYY + vy*MzXXYZZ + vy2z*MzXXZ)+ 
+            c4o1*(vxy2z*MzXZ + vx2yz*MzYZ + vxyz2*MzXY + vxy*MzXYZZ + vxz*MzXYYZ + vyz*MzXXYZ);
 
          (D.f[ dirE   ])[k   ] = fW    -   c1o2*rho*( mu200  - mu220 + mu222 - mu202 +  mu120 - mu122 + mu102        );   //ke
          (D.f[ dirW   ])[kw  ] = fE    -   c1o2*rho*( mu200  - mu220 + mu222 - mu202 -  mu120 + mu122 - mu102        );   
@@ -3507,33 +3508,33 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  real omega,
        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
        real f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO, f_TNE,f_TNW,f_TSE,f_TSW, f_BNE,f_BNW,f_BSE,f_BSW;
        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       f_E    =  (D.f[dirE   ])[ke]+c2over27;
-       f_W    =  (D.f[dirW   ])[kw]+c2over27;
-       f_N    =  (D.f[dirN   ])[kn]+c2over27;
-       f_S    =  (D.f[dirS   ])[ks]+c2over27;
-       f_T    =  (D.f[dirT   ])[kt]+c2over27;
-       f_B    =  (D.f[dirB   ])[kb]+c2over27;
-       f_NE   =  (D.f[dirNE  ])[kne]+c1over54;
-       f_SW   =  (D.f[dirSW  ])[ksw]+c1over54;
-       f_SE   =  (D.f[dirSE  ])[kse]+c1over54;
-       f_NW   =  (D.f[dirNW  ])[knw]+c1over54;
-       f_TE   =  (D.f[dirTE  ])[kte]+c1over54;
-       f_BW   =  (D.f[dirBW  ])[kbw]+c1over54;
-       f_BE   =  (D.f[dirBE  ])[kbe]+c1over54;
-       f_TW   =  (D.f[dirTW  ])[ktw]+c1over54;
-       f_TN   =  (D.f[dirTN  ])[ktn]+c1over54;
-       f_BS   =  (D.f[dirBS  ])[kbs]+c1over54;
-       f_BN   =  (D.f[dirBN  ])[kbn]+c1over54;
-       f_TS   =  (D.f[dirTS  ])[kts]+c1over54;
-       f_ZERO =  (D.f[dirZERO])[kzero]+c8over27;
-       f_TNE   = (D.f[dirTNE ])[ktne]+c1over216;
-       f_TSW   = (D.f[dirTSW ])[ktsw]+c1over216;
-       f_TSE   = (D.f[dirTSE ])[ktse]+c1over216;
-       f_TNW   = (D.f[dirTNW ])[ktnw]+c1over216;
-       f_BNE   = (D.f[dirBNE ])[kbne]+c1over216;
-       f_BSW   = (D.f[dirBSW ])[kbsw]+c1over216;
-       f_BSE   = (D.f[dirBSE ])[kbse]+c1over216;
-       f_BNW   = (D.f[dirBNW ])[kbnw]+c1over216;
+       f_E    =  (D.f[dirE   ])[ke]+c2o27;
+       f_W    =  (D.f[dirW   ])[kw]+c2o27;
+       f_N    =  (D.f[dirN   ])[kn]+c2o27;
+       f_S    =  (D.f[dirS   ])[ks]+c2o27;
+       f_T    =  (D.f[dirT   ])[kt]+c2o27;
+       f_B    =  (D.f[dirB   ])[kb]+c2o27;
+       f_NE   =  (D.f[dirNE  ])[kne]+c1o54;
+       f_SW   =  (D.f[dirSW  ])[ksw]+c1o54;
+       f_SE   =  (D.f[dirSE  ])[kse]+c1o54;
+       f_NW   =  (D.f[dirNW  ])[knw]+c1o54;
+       f_TE   =  (D.f[dirTE  ])[kte]+c1o54;
+       f_BW   =  (D.f[dirBW  ])[kbw]+c1o54;
+       f_BE   =  (D.f[dirBE  ])[kbe]+c1o54;
+       f_TW   =  (D.f[dirTW  ])[ktw]+c1o54;
+       f_TN   =  (D.f[dirTN  ])[ktn]+c1o54;
+       f_BS   =  (D.f[dirBS  ])[kbs]+c1o54;
+       f_BN   =  (D.f[dirBN  ])[kbn]+c1o54;
+       f_TS   =  (D.f[dirTS  ])[kts]+c1o54;
+       f_ZERO =  (D.f[dirZERO])[kzero]+c8o27;
+       f_TNE   = (D.f[dirTNE ])[ktne]+c1o216;
+       f_TSW   = (D.f[dirTSW ])[ktsw]+c1o216;
+       f_TSE   = (D.f[dirTSE ])[ktse]+c1o216;
+       f_TNW   = (D.f[dirTNW ])[ktnw]+c1o216;
+       f_BNE   = (D.f[dirBNE ])[kbne]+c1o216;
+       f_BSW   = (D.f[dirBSW ])[kbsw]+c1o216;
+       f_BSE   = (D.f[dirBSE ])[kbse]+c1o216;
+       f_BNW   = (D.f[dirBNW ])[kbnw]+c1o216;
        ////////////////////////////////////////////////////////////////////////////////
 
        if( BC == GEO_FLUID || BC == GEO_VELO)
@@ -3613,138 +3614,138 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  real omega,
             mu[1][2][2]=(f_TNE-f_TNW+f_BNE-f_BNW+f_TSE-f_TSW+f_BSE-f_BSW)/(rho);
             mu[2][1][2]=(f_TNE+f_BNE-f_TSE-f_BSE+f_TNW+f_BNW-f_TSW-f_BSW)/(rho);
             mu[2][2][2]=(f_TNE+f_BNE+f_TSE+f_BSE+f_TNW+f_BNW+f_TSW+f_BSW)/(rho);//+(c1o27);
-            mu[0][0][0]=one;
+            mu[0][0][0]=c1o1;
             mu[1][0][0]=vx;
             mu[0][1][0]=vy;
             mu[0][0][1]=vz;
 
-            real M_zXX=zero;      real M_zYY=zero;      real M_zZZ=zero;      real M_zXY=zero;     real M_zXZ=zero;   real M_zYZ=zero;
-            real M_zXXY=zero;     real M_zXYY=zero;     real M_zXXZ=zero;     real M_zXZZ=zero;    real M_zYYZ=zero;  real M_zYZZ=zero;  real M_zXYZ=zero;
-            real M_zXXYY=zero;    real M_zXXZZ=zero;    real M_zYYZZ=zero;    real M_zXXYZ=zero;   real M_zXYYZ=zero; real M_zXYZZ=zero;
-            real M_zXXYYZ=zero;   real M_zXXYZZ=zero;   real M_zXYYZZ=zero;   real M_zXXYYZZ=zero;
-            real M_zXYeq=zero;    real M_zXZeq=zero;    real M_zYZeq=zero;    real M_zXYZeq=zero;
-            real M_zXXYZeq=zero;  real M_zXYYZeq=zero;  real M_zXYZZeq=zero;
-            real M_zXXYYZeq=zero; real M_zXXYZZeq=zero; real M_zXYYZZeq=zero; real M_zXXYYZZeq=zero;
+            real M_zXX=c0o1;      real M_zYY=c0o1;      real M_zZZ=c0o1;      real M_zXY=c0o1;     real M_zXZ=c0o1;   real M_zYZ=c0o1;
+            real M_zXXY=c0o1;     real M_zXYY=c0o1;     real M_zXXZ=c0o1;     real M_zXZZ=c0o1;    real M_zYYZ=c0o1;  real M_zYZZ=c0o1;  real M_zXYZ=c0o1;
+            real M_zXXYY=c0o1;    real M_zXXZZ=c0o1;    real M_zYYZZ=c0o1;    real M_zXXYZ=c0o1;   real M_zXYYZ=c0o1; real M_zXYZZ=c0o1;
+            real M_zXXYYZ=c0o1;   real M_zXXYZZ=c0o1;   real M_zXYYZZ=c0o1;   real M_zXXYYZZ=c0o1;
+            real M_zXYeq=c0o1;    real M_zXZeq=c0o1;    real M_zYZeq=c0o1;    real M_zXYZeq=c0o1;
+            real M_zXXYZeq=c0o1;  real M_zXYYZeq=c0o1;  real M_zXYZZeq=c0o1;
+            real M_zXXYYZeq=c0o1; real M_zXXYZZeq=c0o1; real M_zXYYZZeq=c0o1; real M_zXXYYZZeq=c0o1;
 
-            M_zXXYYZZ= -five*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] * 
+            M_zXXYYZZ= -c5o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] * 
                              mu[1][0][0] +     mu[0][0][2] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] * 
-                             mu[1][0][0] + four*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][1] *     mu[1][0][0] * 
-                             mu[1][0][0] - two*mu[0][1][0] *     mu[0][1][2] *     mu[1][0][0] *     mu[1][0][0] + 
+                             mu[1][0][0] + c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][1] *     mu[1][0][0] * 
+                             mu[1][0][0] - c2o1*mu[0][1][0] *     mu[0][1][2] *     mu[1][0][0] *     mu[1][0][0] + 
                              mu[0][0][1] *     mu[0][0][1] *     mu[0][2][0] *     mu[1][0][0] *     mu[1][0][0] -
-                         two*mu[0][0][1] *     mu[0][2][1] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][2][2] *
-                             mu[1][0][0] *     mu[1][0][0] + four*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *
-                             mu[1][0][0] *     mu[1][0][1] - two*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *
-                             mu[1][0][2] + four*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *
-                             mu[1][1][0] - eight*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][1][1] +
-                        four*mu[0][1][0] *     mu[1][0][0] *     mu[1][1][2] - two*mu[0][0][1] *     mu[0][0][1] *
-                             mu[1][0][0] *     mu[1][2][0] + four*mu[0][0][1] *     mu[1][0][0] *     mu[1][2][1] -
-                         two*mu[1][0][0] *     mu[1][2][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *
-                             mu[0][1][0] *     mu[2][0][0] - two*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *
-                             mu[2][0][1] +     mu[0][1][0] *     mu[0][1][0] *     mu[2][0][2] - two*mu[0][0][1] *
-                             mu[0][0][1] *     mu[0][1][0] *     mu[2][1][0] + four*mu[0][0][1] *     mu[0][1][0] *
-                             mu[2][1][1] - two*mu[0][1][0] *     mu[2][1][2] +     mu[0][0][1] *     mu[0][0][1] *
-                             mu[2][2][0] - two*mu[0][0][1] *     mu[2][2][1] +     mu[2][2][2];  //5
-            M_zXXYYZ=   four*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] - 
-                         two*mu[0][1][0] *     mu[0][1][1] *     mu[1][0][0] *     mu[1][0][0] -     mu[0][0][1] *
+                         c2o1*mu[0][0][1] *     mu[0][2][1] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][2][2] *
+                             mu[1][0][0] *     mu[1][0][0] + c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *
+                             mu[1][0][0] *     mu[1][0][1] - c2o1*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *
+                             mu[1][0][2] + c4o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *
+                             mu[1][1][0] - c8o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][1][1] +
+                        c4o1*mu[0][1][0] *     mu[1][0][0] *     mu[1][1][2] - c2o1*mu[0][0][1] *     mu[0][0][1] *
+                             mu[1][0][0] *     mu[1][2][0] + c4o1*mu[0][0][1] *     mu[1][0][0] *     mu[1][2][1] -
+                         c2o1*mu[1][0][0] *     mu[1][2][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *
+                             mu[0][1][0] *     mu[2][0][0] - c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *
+                             mu[2][0][1] +     mu[0][1][0] *     mu[0][1][0] *     mu[2][0][2] - c2o1*mu[0][0][1] *
+                             mu[0][0][1] *     mu[0][1][0] *     mu[2][1][0] + c4o1*mu[0][0][1] *     mu[0][1][0] *
+                             mu[2][1][1] - c2o1*mu[0][1][0] *     mu[2][1][2] +     mu[0][0][1] *     mu[0][0][1] *
+                             mu[2][2][0] - c2o1*mu[0][0][1] *     mu[2][2][1] +     mu[2][2][2];  //5
+            M_zXXYYZ=   c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] - 
+                         c2o1*mu[0][1][0] *     mu[0][1][1] *     mu[1][0][0] *     mu[1][0][0] -     mu[0][0][1] *
                              mu[0][2][0] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][2][1] *     mu[1][0][0] *
-                             mu[1][0][0] - two*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][1] -
-                        four*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][1][0] + four*mu[0][1][0] *
-                             mu[1][0][0] *     mu[1][1][1] + two*mu[0][0][1] *     mu[1][0][0] *     mu[1][2][0] - 
-                         two*mu[1][0][0] *     mu[1][2][1] -     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *
-                             mu[2][0][0] +     mu[0][1][0] *     mu[0][1][0] *     mu[2][0][1] + two*mu[0][0][1] *
-                             mu[0][1][0] *     mu[2][1][0] - two*mu[0][1][0] *     mu[2][1][1] -     mu[0][0][1] *
+                             mu[1][0][0] - c2o1*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][1] -
+                        c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][1][0] + c4o1*mu[0][1][0] *
+                             mu[1][0][0] *     mu[1][1][1] + c2o1*mu[0][0][1] *     mu[1][0][0] *     mu[1][2][0] - 
+                         c2o1*mu[1][0][0] *     mu[1][2][1] -     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *
+                             mu[2][0][0] +     mu[0][1][0] *     mu[0][1][0] *     mu[2][0][1] + c2o1*mu[0][0][1] *
+                             mu[0][1][0] *     mu[2][1][0] - c2o1*mu[0][1][0] *     mu[2][1][1] -     mu[0][0][1] *
                              mu[2][2][0] +     mu[2][2][1]; //6
-            M_zXXYY=  -three*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][2][0] *
-                             mu[1][0][0] *     mu[1][0][0] + four*mu[0][1][0] *     mu[1][0][0] *     mu[1][1][0] -
-                         two*mu[1][0][0] *     mu[1][2][0] +     mu[0][1][0] *     mu[0][1][0] *     mu[2][0][0] -
-                         two*mu[0][1][0] *     mu[2][1][0] +     mu[2][2][0]; //7
-            M_zXXYZZ=   four*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] -
-                             mu[0][0][2] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] - two*mu[0][0][1] *
+            M_zXXYY=  -c3o1*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][2][0] *
+                             mu[1][0][0] *     mu[1][0][0] + c4o1*mu[0][1][0] *     mu[1][0][0] *     mu[1][1][0] -
+                         c2o1*mu[1][0][0] *     mu[1][2][0] +     mu[0][1][0] *     mu[0][1][0] *     mu[2][0][0] -
+                         c2o1*mu[0][1][0] *     mu[2][1][0] +     mu[2][2][0]; //7
+            M_zXXYZZ=   c4o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] -
+                             mu[0][0][2] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] - c2o1*mu[0][0][1] *
                              mu[0][1][1] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][1][2] *     mu[1][0][0] *
-                             mu[1][0][0] - four*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][1] +
-                         two*mu[0][1][0] *     mu[1][0][0] *     mu[1][0][2] - two*mu[0][0][1] *     mu[0][0][1] *
-                             mu[1][0][0] *     mu[1][1][0] + four*mu[0][0][1] *     mu[1][0][0] *     mu[1][1][1] -
-                         two*mu[1][0][0] *     mu[1][1][2] -     mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *
-                             mu[2][0][0] + two*mu[0][0][1] *     mu[0][1][0] *     mu[2][0][1] -     mu[0][1][0] *
-                             mu[2][0][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[2][1][0] - two*mu[0][0][1] *
+                             mu[1][0][0] - c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][1] +
+                         c2o1*mu[0][1][0] *     mu[1][0][0] *     mu[1][0][2] - c2o1*mu[0][0][1] *     mu[0][0][1] *
+                             mu[1][0][0] *     mu[1][1][0] + c4o1*mu[0][0][1] *     mu[1][0][0] *     mu[1][1][1] -
+                         c2o1*mu[1][0][0] *     mu[1][1][2] -     mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *
+                             mu[2][0][0] + c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[2][0][1] -     mu[0][1][0] *
+                             mu[2][0][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[2][1][0] - c2o1*mu[0][0][1] *
                              mu[2][1][1] +     mu[2][1][2]; //8
-            M_zXXYZ=  -three*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][1][1] *
-                             mu[1][0][0] *     mu[1][0][0] + two*mu[0][1][0] *     mu[1][0][0] *     mu[1][0][1] +
-                         two*mu[0][0][1] *     mu[1][0][0] *     mu[1][1][0] - two*mu[1][0][0] *     mu[1][1][1] +
+            M_zXXYZ=  -c3o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][1][1] *
+                             mu[1][0][0] *     mu[1][0][0] + c2o1*mu[0][1][0] *     mu[1][0][0] *     mu[1][0][1] +
+                         c2o1*mu[0][0][1] *     mu[1][0][0] *     mu[1][1][0] - c2o1*mu[1][0][0] *     mu[1][1][1] +
                              mu[0][0][1] *     mu[0][1][0] *     mu[2][0][0] -     mu[0][1][0] *     mu[2][0][1] - 
                              mu[0][0][1] *     mu[2][1][0] +     mu[2][1][1]; //9
-            M_zXXY=      two*mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] - two*mu[1][0][0] *     mu[1][1][0] -
+            M_zXXY=      c2o1*mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] - c2o1*mu[1][0][0] *     mu[1][1][0] -
                              mu[0][1][0] *     mu[2][0][0] +     mu[2][1][0]; //10
-            M_zXXZZ=  -three*mu[0][0][1] *     mu[0][0][1] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][0][2] *
-                             mu[1][0][0] *     mu[1][0][0] + four*mu[0][0][1] *     mu[1][0][0] *     mu[1][0][1] -
-                         two*mu[1][0][0] *     mu[1][0][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[2][0][0] -
-                         two*mu[0][0][1] *     mu[2][0][1] +     mu[2][0][2]; //11
-            M_zXXZ=      two*mu[0][0][1] *     mu[1][0][0] *     mu[1][0][0] - two*mu[1][0][0] *     mu[1][0][1] -
+            M_zXXZZ=  -c3o1*mu[0][0][1] *     mu[0][0][1] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][0][2] *
+                             mu[1][0][0] *     mu[1][0][0] + c4o1*mu[0][0][1] *     mu[1][0][0] *     mu[1][0][1] -
+                         c2o1*mu[1][0][0] *     mu[1][0][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[2][0][0] -
+                         c2o1*mu[0][0][1] *     mu[2][0][1] +     mu[2][0][2]; //11
+            M_zXXZ=      c2o1*mu[0][0][1] *     mu[1][0][0] *     mu[1][0][0] - c2o1*mu[1][0][0] *     mu[1][0][1] -
                              mu[0][0][1] *     mu[2][0][0] +     mu[2][0][1]; //12
             M_zXX=-          mu[1][0][0] *     mu[1][0][0] +     mu[2][0][0]; //13
-            M_zXYYZZ=   four*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] -
-                             mu[0][0][2] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] - four*mu[0][0][1] * 
-                             mu[0][1][0] *     mu[0][1][1] *     mu[1][0][0] + two*mu[0][1][0] *     mu[0][1][2] *
+            M_zXYYZZ=   c4o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] -
+                             mu[0][0][2] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] - c4o1*mu[0][0][1] * 
+                             mu[0][1][0] *     mu[0][1][1] *     mu[1][0][0] + c2o1*mu[0][1][0] *     mu[0][1][2] *
                              mu[1][0][0] -     mu[0][0][1] *     mu[0][0][1] *     mu[0][2][0] *     mu[1][0][0] +
-                         two*mu[0][0][1] *     mu[0][2][1] *     mu[1][0][0] -     mu[0][2][2] *     mu[1][0][0] -
-                         two*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][1] +     mu[0][1][0] *
-                             mu[0][1][0] *     mu[1][0][2] - two*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *
-                             mu[1][1][0] + four*mu[0][0][1] *     mu[0][1][0] *     mu[1][1][1] - two*mu[0][1][0] *
-                             mu[1][1][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[1][2][0] - two*mu[0][0][1] *
+                         c2o1*mu[0][0][1] *     mu[0][2][1] *     mu[1][0][0] -     mu[0][2][2] *     mu[1][0][0] -
+                         c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][1] +     mu[0][1][0] *
+                             mu[0][1][0] *     mu[1][0][2] - c2o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *
+                             mu[1][1][0] + c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][1][1] - c2o1*mu[0][1][0] *
+                             mu[1][1][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[1][2][0] - c2o1*mu[0][0][1] *
                              mu[1][2][1] +     mu[1][2][2];    //14
-            M_zXYYZ=  -three*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] + two*mu[0][1][0] *
+            M_zXYYZ=  -c3o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] + c2o1*mu[0][1][0] *
                              mu[0][1][1] *     mu[1][0][0] +     mu[0][0][1] *     mu[0][2][0] *     mu[1][0][0] - 
                              mu[0][2][1] *     mu[1][0][0] +     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][1] + 
-                         two*mu[0][0][1] *     mu[0][1][0] *     mu[1][1][0] - two*mu[0][1][0] *     mu[1][1][1] - 
+                         c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][1][0] - c2o1*mu[0][1][0] *     mu[1][1][1] - 
                              mu[0][0][1] *     mu[1][2][0] +     mu[1][2][1]; //15
-            M_zXYY=      two*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] -     mu[0][2][0] *     mu[1][0][0] -
-                         two*mu[0][1][0] *     mu[1][1][0] +     mu[1][2][0]; //16
-            M_zXYZZ=  -three*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] +     mu[0][0][2] *
-                             mu[0][1][0] *     mu[1][0][0] + two*mu[0][0][1] *     mu[0][1][1] *     mu[1][0][0] -     
-                             mu[0][1][2] *     mu[1][0][0] + two*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][1] -     
+            M_zXYY=      c2o1*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] -     mu[0][2][0] *     mu[1][0][0] -
+                         c2o1*mu[0][1][0] *     mu[1][1][0] +     mu[1][2][0]; //16
+            M_zXYZZ=  -c3o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] +     mu[0][0][2] *
+                             mu[0][1][0] *     mu[1][0][0] + c2o1*mu[0][0][1] *     mu[0][1][1] *     mu[1][0][0] -     
+                             mu[0][1][2] *     mu[1][0][0] + c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][1] -     
                              mu[0][1][0] *     mu[1][0][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[1][1][0] - 
-                         two*mu[0][0][1] *     mu[1][1][1] +     mu[1][1][2]; //17
-            M_zXYZ=      two*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] -     mu[0][1][1] *     mu[1][0][0] -
+                         c2o1*mu[0][0][1] *     mu[1][1][1] +     mu[1][1][2]; //17
+            M_zXYZ=      c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] -     mu[0][1][1] *     mu[1][0][0] -
                              mu[0][1][0] *     mu[1][0][1] -     mu[0][0][1] *     mu[1][1][0] +     mu[1][ 1][ 1]; //18
             M_zXY =         -mu[0][1][0] *     mu[1][0][0] +     mu[1][1][0]; //19
-            M_zXZZ=      two*mu[0][0][1] *     mu[0][0][1] *     mu[1][0][0] -     mu[0][0][2] *     mu[1][0][0] -
-                         two*mu[0][0][1] *     mu[1][0][1] +     mu[1][0][2]; //20
+            M_zXZZ=      c2o1*mu[0][0][1] *     mu[0][0][1] *     mu[1][0][0] -     mu[0][0][2] *     mu[1][0][0] -
+                         c2o1*mu[0][0][1] *     mu[1][0][1] +     mu[1][0][2]; //20
             M_zXZ =         -mu[0][0][1] *     mu[1][0][0] +     mu[1][0][1]; //21
-            M_zYYZZ=  -three*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] +     mu[0][0][2] *
-                             mu[0][1][0] *     mu[0][1][0] + four*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][1] -
-                         two*mu[0][1][0] *     mu[0][1][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[0][2][0] -
-                         two*mu[0][0][1] *     mu[0][2][1] +     mu[0][2][2]; //22
-            M_zYYZ=      two*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] - two*mu[0][1][0] *     mu[0][1][1] -
+            M_zYYZZ=  -c3o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] +     mu[0][0][2] *
+                             mu[0][1][0] *     mu[0][1][0] + c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][1] -
+                         c2o1*mu[0][1][0] *     mu[0][1][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[0][2][0] -
+                         c2o1*mu[0][0][1] *     mu[0][2][1] +     mu[0][2][2]; //22
+            M_zYYZ=      c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] - c2o1*mu[0][1][0] *     mu[0][1][1] -
                              mu[0][0][1] *     mu[0][2][0] +     mu[0][2][1]; //23
             M_zYY  =        -mu[0][1][0] *     mu[0][1][0] +     mu[0][2][0]; //24
-            M_zYZZ =     two*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] -     mu[0][0][2] *     mu[0][1][0] -  
-                         two*mu[0][0][1] *     mu[0][1][1] +     mu[0][1][2]; //25
+            M_zYZZ =     c2o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] -     mu[0][0][2] *     mu[0][1][0] -  
+                         c2o1*mu[0][0][1] *     mu[0][1][1] +     mu[0][1][2]; //25
             M_zYZ  =        -mu[0][0][1] *     mu[0][1][0] +     mu[0][1][1]; //26
             M_zZZ  =        -mu[0][0][1] *     mu[0][0][1] +     mu[0][0][2]; //27
 
             M_zXXYYZZeq=c1o27;
-            M_zXXYYZeq=zero;
-            M_zXXYZZeq=zero;
-            M_zXXYZeq=zero;
-            M_zXYYZZeq=zero;
-            M_zXYYZeq=zero;
-            M_zXYZZeq=zero;
+            M_zXXYYZeq=c0o1;
+            M_zXXYZZeq=c0o1;
+            M_zXXYZeq=c0o1;
+            M_zXYYZZeq=c0o1;
+            M_zXYYZeq=c0o1;
+            M_zXYZZeq=c0o1;
 
             real MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ, MXXYYppp,MXXYYpm2p, MXXYYppm2;
             real MXXpMYYpMZZeq,MXXmMYYeq, MXXmMZZeq, MXXYpMYZZeq,MXXZpMYYZeq,MXYYpMXZZeq, MXXYmMYZZeq,MXXZmMYYZeq,MXYYmMXZZeq, MXXYYpppeq,MXXYYpm2peq, MXXYYppm2eq;
 
             //coll faktoren:
             real w1,w2,w3,w4,w5,w6,w7,w8,w9,w10;
-            w2=-one;//-omega;
-            w7=-one;
-            w9=-one;
-            w10=-one;
+            w2=-c1o1;//-omega;
+            w7=-c1o1;
+            w9=-c1o1;
+            w10=-c1o1;
             w1=-omega;
-            w3=-one;
-            w4=-one;
-            w5=-one;
-            w6=-one;
-            w8=-one;
+            w3=-c1o1;
+            w4=-c1o1;
+            w5=-c1o1;
+            w6=-c1o1;
+            w8=-c1o1;
             ////////lin kombi bilden:
             MXXpMYYpMZZ = M_zXX + M_zYY + M_zZZ;
             MXXmMYY = M_zXX - M_zYY;
@@ -3764,20 +3765,20 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  real omega,
             bool factorCasc=true;
             if(casc)
             {
-              MXXpMYYpMZZeq = one;
-              MXXmMYYeq     = zero;
-              MXXmMZZeq     = zero;
+              MXXpMYYpMZZeq = c1o1;
+              MXXmMYYeq     = c0o1;
+              MXXmMZZeq     = c0o1;
 
-              MXXYpMYZZeq  =  zero;
-              MXXYmMYZZeq  =  zero;
-              MXXZpMYYZeq  =  zero;
-              MXXZmMYYZeq  =  zero;
-              MXYYpMXZZeq  =  zero;
-              MXYYmMXZZeq  =  zero;
+              MXXYpMYZZeq  =  c0o1;
+              MXXYmMYZZeq  =  c0o1;
+              MXXZpMYYZeq  =  c0o1;
+              MXXZmMYYZeq  =  c0o1;
+              MXYYpMXZZeq  =  c0o1;
+              MXYYmMXZZeq  =  c0o1;
 
               MXXYYpppeq  = c1o3;
-              MXXYYpm2peq = zero;
-              MXXYYppm2eq = zero;
+              MXXYYpm2peq = c0o1;
+              MXXYYppm2eq = c0o1;
 
               //relaxation:
               MXXpMYYpMZZ -= w2*(MXXpMYYpMZZeq-MXXpMYYpMZZ);
@@ -3828,20 +3829,20 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  real omega,
             }
             else if (factorCasc)
             {
-              MXXpMYYpMZZeq = one;
-              MXXmMYYeq     = zero;
-              MXXmMZZeq     = zero;
+              MXXpMYYpMZZeq = c1o1;
+              MXXmMYYeq     = c0o1;
+              MXXmMZZeq     = c0o1;
 
-              MXXYpMYZZeq  =  zero;
-              MXXYmMYZZeq  =  zero;
-              MXXZpMYYZeq  =  zero;
-              MXXZmMYYZeq  =  zero;
-              MXYYpMXZZeq  =  zero;
-              MXYYmMXZZeq  =  zero;
+              MXXYpMYZZeq  =  c0o1;
+              MXXYmMYZZeq  =  c0o1;
+              MXXZpMYYZeq  =  c0o1;
+              MXXZmMYYZeq  =  c0o1;
+              MXYYpMXZZeq  =  c0o1;
+              MXYYmMXZZeq  =  c0o1;
 
               MXXYYpppeq  = c1o3;
-              MXXYYpm2peq = zero;
-              MXXYYppm2eq = zero;
+              MXXYYpm2peq = c0o1;
+              MXXYYppm2eq = c0o1;
 
               //relaxation:
               MXXpMYYpMZZ -= w2*(MXXpMYYpMZZeq-MXXpMYYpMZZ);
@@ -3874,15 +3875,15 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  real omega,
 
               //faktorisierte atraktoren:
               MXXYYpppeq=M_zXX*M_zYY+M_zXX*M_zZZ+M_zZZ*M_zYY;    
-              MXXYYpm2peq=M_zXX*M_zYY-two*M_zXX*M_zZZ+M_zZZ*M_zYY; 
-              MXXYYppm2eq=M_zXX*M_zYY+M_zXX*M_zZZ-two*M_zZZ*M_zYY; 
+              MXXYYpm2peq=M_zXX*M_zYY-c2o1*M_zXX*M_zZZ+M_zZZ*M_zYY; 
+              MXXYYppm2eq=M_zXX*M_zYY+M_zXX*M_zZZ-c2o1*M_zZZ*M_zYY; 
               M_zXYYZeq=M_zYY*M_zXZ;
               M_zXYZZeq=M_zZZ*M_zXY;
               M_zXXYZeq=M_zXX*M_zYZ;
 
-              M_zXXYYZeq=zero;
-              M_zXXYZZeq=zero;
-              M_zXYYZZeq=zero;
+              M_zXXYYZeq=c0o1;
+              M_zXXYZZeq=c0o1;
+              M_zXYYZZeq=c0o1;
 
               M_zXXYYZZeq=M_zXX*M_zYY*M_zZZ;
 
@@ -3906,36 +3907,36 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  real omega,
 
             //mu[1][0][0]+=forcingX1;
 
-            mu[2][ 2][ 2]= vx*vx*vy*vy*vz*vz + vx*vx*vy*vy*M_zZZ + four*vx*vx*vy*vz*M_zYZ + two* vx*vx*vy*M_zYZZ +
-                           vx*vx*vz*vz*M_zYY + two* vx*vx*vz*M_zYYZ +vx*vx*M_zYYZZ + four*vx*vy*vy*vz*M_zXZ   +
-                           two* vx*vy*vy*M_zXZZ + four* vx*vy*vz*vz*M_zXY+   eight* vx*vy*vz*M_zXYZ + four* vx*vy*M_zXYZZ +
-                           two* vx*vz*vz*M_zXYY + four* vx*vz*M_zXYYZ + two*vx*M_zXYYZZ +   vy*vy*vz*vz*M_zXX + two* vy*vy*vz*M_zXXZ  +
-                           vy*vy*M_zXXZZ     + two* vy*vz*vz*M_zXXY  + four*vy*vz*M_zXXYZ +  two* vy*M_zXXYZZ + vz*vz*M_zXXYY +two* vz*M_zXXYYZ + M_zXXYYZZ;//-(c1o27);
-            mu[2][ 2][ 1]= vx*vx*vy*vy*vz + two*vx*vx*vy*M_zYZ + vx*vx*vz*M_zYY +  vx*vx*M_zYYZ + two*vx*vy*vy*M_zXZ +four*vx*vy*vz*M_zXY +four*vx*vy*M_zXYZ+
-                           two*vx*vz*M_zXYY + two*vx*M_zXYYZ + vy*vy*vz*M_zXX +  vy*vy*M_zXXZ + two* vy*vz*M_zXXY + two*vy*M_zXXYZ +  vz*M_zXXYY + M_zXXYYZ;
-            mu[2][ 2][ 0]= vx*vx*vy*vy + vx*vx*M_zYY + four*vx*vy*M_zXY +   two*vx*M_zXYY + vy*vy*M_zXX + two*vy*M_zXXY +  M_zXXYY ;//-(c1o9);
-            mu[2][ 1][ 2]= vx*vx*vy*vz*vz + vx*vx*vy*M_zZZ + two*vx*vx*vz*M_zYZ +   vx*vx*M_zYZZ + four*vx*vy*vz*M_zXZ+ //vy->vz
-                           two*vx*vy*M_zXZZ + two*vx*vz*vz*M_zXY +   four*vx*vz*M_zXYZ + two*vx*M_zXYZZ + vy*vz*vz*M_zXX +
-                           two*vy*vz*M_zXXZ + vy*M_zXXZZ + vz*vz*M_zXXY +  two*vz*M_zXXYZ + M_zXXYZZ;
-            mu[2][ 1][ 1]= vx*vx*vy*vz + vx*vx*M_zYZ + two*vx*vy*M_zXZ + two*vx*vz*M_zXY + two*vx*M_zXYZ + vy*vz*M_zXX+  vy*M_zXXZ + vz*M_zXXY + M_zXXYZ;
-            mu[2][ 1][ 0]= vx*vx*vy + two*vx*M_zXY + vy*M_zXX + M_zXXY;
-            mu[2][ 0][ 2]= vx*vx*vz*vz + vx*vx*M_zZZ + four*vx*vz*M_zXZ+ two*vx*M_zXZZ + vz*vz*M_zXX+ two*vz*M_zXXZ + M_zXXZZ;//-(c1o9);
-            mu[2][ 0][ 1]= vx*vx*vz + two*vx*M_zXZ + vz*M_zXX + M_zXXZ;
+            mu[2][ 2][ 2]= vx*vx*vy*vy*vz*vz + vx*vx*vy*vy*M_zZZ + c4o1*vx*vx*vy*vz*M_zYZ + c2o1* vx*vx*vy*M_zYZZ +
+                           vx*vx*vz*vz*M_zYY + c2o1* vx*vx*vz*M_zYYZ +vx*vx*M_zYYZZ + c4o1*vx*vy*vy*vz*M_zXZ   +
+                           c2o1* vx*vy*vy*M_zXZZ + c4o1* vx*vy*vz*vz*M_zXY+   c8o1* vx*vy*vz*M_zXYZ + c4o1* vx*vy*M_zXYZZ +
+                           c2o1* vx*vz*vz*M_zXYY + c4o1* vx*vz*M_zXYYZ + c2o1*vx*M_zXYYZZ +   vy*vy*vz*vz*M_zXX + c2o1* vy*vy*vz*M_zXXZ  +
+                           vy*vy*M_zXXZZ     + c2o1* vy*vz*vz*M_zXXY  + c4o1*vy*vz*M_zXXYZ +  c2o1* vy*M_zXXYZZ + vz*vz*M_zXXYY +c2o1* vz*M_zXXYYZ + M_zXXYYZZ;//-(c1o27);
+            mu[2][ 2][ 1]= vx*vx*vy*vy*vz + c2o1*vx*vx*vy*M_zYZ + vx*vx*vz*M_zYY +  vx*vx*M_zYYZ + c2o1*vx*vy*vy*M_zXZ +c4o1*vx*vy*vz*M_zXY +c4o1*vx*vy*M_zXYZ+
+                           c2o1*vx*vz*M_zXYY + c2o1*vx*M_zXYYZ + vy*vy*vz*M_zXX +  vy*vy*M_zXXZ + c2o1* vy*vz*M_zXXY + c2o1*vy*M_zXXYZ +  vz*M_zXXYY + M_zXXYYZ;
+            mu[2][ 2][ 0]= vx*vx*vy*vy + vx*vx*M_zYY + c4o1*vx*vy*M_zXY +   c2o1*vx*M_zXYY + vy*vy*M_zXX + c2o1*vy*M_zXXY +  M_zXXYY ;//-(c1o9);
+            mu[2][ 1][ 2]= vx*vx*vy*vz*vz + vx*vx*vy*M_zZZ + c2o1*vx*vx*vz*M_zYZ +   vx*vx*M_zYZZ + c4o1*vx*vy*vz*M_zXZ+ //vy->vz
+                           c2o1*vx*vy*M_zXZZ + c2o1*vx*vz*vz*M_zXY +   c4o1*vx*vz*M_zXYZ + c2o1*vx*M_zXYZZ + vy*vz*vz*M_zXX +
+                           c2o1*vy*vz*M_zXXZ + vy*M_zXXZZ + vz*vz*M_zXXY +  c2o1*vz*M_zXXYZ + M_zXXYZZ;
+            mu[2][ 1][ 1]= vx*vx*vy*vz + vx*vx*M_zYZ + c2o1*vx*vy*M_zXZ + c2o1*vx*vz*M_zXY + c2o1*vx*M_zXYZ + vy*vz*M_zXX+  vy*M_zXXZ + vz*M_zXXY + M_zXXYZ;
+            mu[2][ 1][ 0]= vx*vx*vy + c2o1*vx*M_zXY + vy*M_zXX + M_zXXY;
+            mu[2][ 0][ 2]= vx*vx*vz*vz + vx*vx*M_zZZ + c4o1*vx*vz*M_zXZ+ c2o1*vx*M_zXZZ + vz*vz*M_zXX+ c2o1*vz*M_zXXZ + M_zXXZZ;//-(c1o9);
+            mu[2][ 0][ 1]= vx*vx*vz + c2o1*vx*M_zXZ + vz*M_zXX + M_zXXZ;
             mu[2][ 0][ 0]= vx*vx + M_zXX ;//-(c1o3);
-            mu[1][ 2][ 2]= vx*vy*vy*vz*vz + vx*vy*vy*M_zZZ + four*vx*vy*vz*M_zYZ +   two*vx*vy*M_zYZZ + vx*vz*vz*M_zYY + two*vx*vz*M_zYYZ +vx*M_zYYZZ + two*vy*vy*vz*M_zXZ + vy*vy*M_zXZZ +
-                           two*vy*vz*vz*M_zXY + four*vy*vz*M_zXYZ + two*vy*M_zXYZZ +vz*vz*M_zXYY + two*vz*M_zXYYZ + M_zXYYZZ;
-            mu[1][ 2][ 1]= vx*vy*vy*vz + two*vx*vy*M_zYZ + vx*vz*M_zYY +   vx*M_zYYZ + vy*vy*M_zXZ + two*vy*vz*M_zXY +   two*vy*M_zXYZ + vz*M_zXYY + M_zXYYZ;
-            mu[1][ 2][ 0]= vx*vy*vy + vx*M_zYY + two*vy*M_zXY + M_zXYY;
-            mu[1][ 1][ 2]= vx*vy*vz*vz+vx*vy*M_zZZ+two*vx*vz*M_zYZ+vx*M_zYZZ+two*vy*vz*M_zXZ+vy*M_zXZZ+vz*vz*M_zXY+two*vz*M_zXYZ+M_zXYZZ;
+            mu[1][ 2][ 2]= vx*vy*vy*vz*vz + vx*vy*vy*M_zZZ + c4o1*vx*vy*vz*M_zYZ +   c2o1*vx*vy*M_zYZZ + vx*vz*vz*M_zYY + c2o1*vx*vz*M_zYYZ +vx*M_zYYZZ + c2o1*vy*vy*vz*M_zXZ + vy*vy*M_zXZZ +
+                           c2o1*vy*vz*vz*M_zXY + c4o1*vy*vz*M_zXYZ + c2o1*vy*M_zXYZZ +vz*vz*M_zXYY + c2o1*vz*M_zXYYZ + M_zXYYZZ;
+            mu[1][ 2][ 1]= vx*vy*vy*vz + c2o1*vx*vy*M_zYZ + vx*vz*M_zYY +   vx*M_zYYZ + vy*vy*M_zXZ + c2o1*vy*vz*M_zXY +   c2o1*vy*M_zXYZ + vz*M_zXYY + M_zXYYZ;
+            mu[1][ 2][ 0]= vx*vy*vy + vx*M_zYY + c2o1*vy*M_zXY + M_zXYY;
+            mu[1][ 1][ 2]= vx*vy*vz*vz+vx*vy*M_zZZ+c2o1*vx*vz*M_zYZ+vx*M_zYZZ+c2o1*vy*vz*M_zXZ+vy*M_zXZZ+vz*vz*M_zXY+c2o1*vz*M_zXYZ+M_zXYZZ;
             mu[1][ 1][ 1]= vx*vy*vz + vx*M_zYZ + vy*M_zXZ + vz*M_zXY+M_zXYZ;
             mu[1][ 1][ 0]= vx*vy+ M_zXY;
-            mu[1][ 0][ 2]= vx*vz*vz + vx*M_zZZ + two*vz*M_zXZ + M_zXZZ;
+            mu[1][ 0][ 2]= vx*vz*vz + vx*M_zZZ + c2o1*vz*M_zXZ + M_zXZZ;
             mu[1][ 0][ 1]= vx*vz + M_zXZ;
             //mu[1][ 0][ 0]= vx;
-            mu[0][ 2][ 2]= vy*vy*vz*vz + vy*vy*M_zZZ + four*vy*vz*M_zYZ +two*vy*M_zYZZ + vz*vz*M_zYY + two*vz*M_zYYZ +  M_zYYZZ;//-(c1o9);
-            mu[0][ 2][ 1]= vy*vy*vz + two*vy*M_zYZ + vz*M_zYY + M_zYYZ;
+            mu[0][ 2][ 2]= vy*vy*vz*vz + vy*vy*M_zZZ + c4o1*vy*vz*M_zYZ +c2o1*vy*M_zYZZ + vz*vz*M_zYY + c2o1*vz*M_zYYZ +  M_zYYZZ;//-(c1o9);
+            mu[0][ 2][ 1]= vy*vy*vz + c2o1*vy*M_zYZ + vz*M_zYY + M_zYYZ;
             mu[0][ 2][ 0]= vy*vy + M_zYY ;//-(c1o3);
-            mu[0][ 1][ 2]= vy*vz*vz+ vy*M_zZZ + two*vz*M_zYZ + M_zYZZ;
+            mu[0][ 1][ 2]= vy*vz*vz+ vy*M_zZZ + c2o1*vz*M_zYZ + M_zYZZ;
             mu[0][ 1][ 1]= vy*vz + M_zYZ;
             //mu[0][ 1][ 0]= vy ;                     //richtig?
             mu[0][ 0][ 2]= vz*vz + M_zZZ;// -(c1o3);
@@ -3972,38 +3973,38 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  real omega,
           }
         }
 
-       (D.f[ dirE  ])[ke ] = f_W-c2over27;
-       (D.f[ dirW  ])[kw ] = f_E-c2over27;
+       (D.f[ dirE  ])[ke ] = f_W-c2o27;
+       (D.f[ dirW  ])[kw ] = f_E-c2o27;
 
-       (D.f[ dirN  ])[kn ] = f_S-c2over27;
-       (D.f[ dirS  ])[ks ] = f_N-c2over27;
-       (D.f[ dirT  ])[kt ] = f_B-c2over27;
-       (D.f[ dirB  ])[kb ] = f_T-c2over27;
+       (D.f[ dirN  ])[kn ] = f_S-c2o27;
+       (D.f[ dirS  ])[ks ] = f_N-c2o27;
+       (D.f[ dirT  ])[kt ] = f_B-c2o27;
+       (D.f[ dirB  ])[kb ] = f_T-c2o27;
 
-       (D.f[ dirNE ])[kne] = f_SW-c1over54;
-       (D.f[ dirSW ])[ksw] = f_NE-c1over54;
-       (D.f[ dirSE ])[kse] = f_NW-c1over54;
-       (D.f[ dirNW ])[knw] = f_SE-c1over54;
-       (D.f[ dirTE ])[kte] = f_BW-c1over54;
-       (D.f[ dirBW ])[kbw] = f_TE-c1over54;
-       (D.f[ dirBE ])[kbe] = f_TW-c1over54;
-       (D.f[ dirTW ])[ktw] = f_BE-c1over54;
+       (D.f[ dirNE ])[kne] = f_SW-c1o54;
+       (D.f[ dirSW ])[ksw] = f_NE-c1o54;
+       (D.f[ dirSE ])[kse] = f_NW-c1o54;
+       (D.f[ dirNW ])[knw] = f_SE-c1o54;
+       (D.f[ dirTE ])[kte] = f_BW-c1o54;
+       (D.f[ dirBW ])[kbw] = f_TE-c1o54;
+       (D.f[ dirBE ])[kbe] = f_TW-c1o54;
+       (D.f[ dirTW ])[ktw] = f_BE-c1o54;
 
-       (D.f[ dirTN ])[ktn] = f_BS-c1over54;
-       (D.f[ dirBS ])[kbs] = f_TN-c1over54;
-       (D.f[ dirBN ])[kbn] = f_TS-c1over54;
-       (D.f[ dirTS ])[kts] = f_BN-c1over54;
+       (D.f[ dirTN ])[ktn] = f_BS-c1o54;
+       (D.f[ dirBS ])[kbs] = f_TN-c1o54;
+       (D.f[ dirBN ])[kbn] = f_TS-c1o54;
+       (D.f[ dirTS ])[kts] = f_BN-c1o54;
 
-       (D.f[ dirZERO])[k] = f_ZERO-c8over27;
+       (D.f[ dirZERO])[k] = f_ZERO-c8o27;
 
-       (D.f[ dirTNE ])[ktne] = f_BSW-c1over216;
-       (D.f[ dirTSE ])[ktse] = f_BNW-c1over216;
-       (D.f[ dirBNE ])[kbne] = f_TSW-c1over216;
-       (D.f[ dirBSE ])[kbse] = f_TNW-c1over216;
-       (D.f[ dirTNW ])[ktnw] = f_BSE-c1over216;
-       (D.f[ dirTSW ])[ktsw] = f_BNE-c1over216;
-       (D.f[ dirBNW ])[kbnw] = f_TSE-c1over216;
-       (D.f[ dirBSW ])[kbsw] = f_TNE-c1over216;
+       (D.f[ dirTNE ])[ktne] = f_BSW-c1o216;
+       (D.f[ dirTSE ])[ktse] = f_BNW-c1o216;
+       (D.f[ dirBNE ])[kbne] = f_TSW-c1o216;
+       (D.f[ dirBSE ])[kbse] = f_TNW-c1o216;
+       (D.f[ dirTNW ])[ktnw] = f_BSE-c1o216;
+       (D.f[ dirTSW ])[ktsw] = f_BNE-c1o216;
+       (D.f[ dirBNW ])[kbnw] = f_TSE-c1o216;
+       (D.f[ dirBSW ])[kbsw] = f_TNE-c1o216;
       }
      __syncthreads();
      }
@@ -4203,33 +4204,33 @@ extern "C" __global__ void LB_Kernel_Casc27(real omega,
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO, f_TNE,f_TNW,f_TSE,f_TSW, f_BNE,f_BNW,f_BSE,f_BSW;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      f_E    =  (D.f[dirE   ])[ke]+c2over27;
-      f_W    =  (D.f[dirW   ])[kw]+c2over27;
-      f_N    =  (D.f[dirN   ])[kn]+c2over27;
-      f_S    =  (D.f[dirS   ])[ks]+c2over27;
-      f_T    =  (D.f[dirT   ])[kt]+c2over27;
-      f_B    =  (D.f[dirB   ])[kb]+c2over27;
-      f_NE   =  (D.f[dirNE  ])[kne]+c1over54;
-      f_SW   =  (D.f[dirSW  ])[ksw]+c1over54;
-      f_SE   =  (D.f[dirSE  ])[kse]+c1over54;
-      f_NW   =  (D.f[dirNW  ])[knw]+c1over54;
-      f_TE   =  (D.f[dirTE  ])[kte]+c1over54;
-      f_BW   =  (D.f[dirBW  ])[kbw]+c1over54;
-      f_BE   =  (D.f[dirBE  ])[kbe]+c1over54;
-      f_TW   =  (D.f[dirTW  ])[ktw]+c1over54;
-      f_TN   =  (D.f[dirTN  ])[ktn]+c1over54;
-      f_BS   =  (D.f[dirBS  ])[kbs]+c1over54;
-      f_BN   =  (D.f[dirBN  ])[kbn]+c1over54;
-      f_TS   =  (D.f[dirTS  ])[kts]+c1over54;
-      f_ZERO =  (D.f[dirZERO])[kzero]+c8over27;
-      f_TNE   = (D.f[dirTNE ])[ktne]+c1over216;
-      f_TSW   = (D.f[dirTSW ])[ktsw]+c1over216;
-      f_TSE   = (D.f[dirTSE ])[ktse]+c1over216;
-      f_TNW   = (D.f[dirTNW ])[ktnw]+c1over216;
-      f_BNE   = (D.f[dirBNE ])[kbne]+c1over216;
-      f_BSW   = (D.f[dirBSW ])[kbsw]+c1over216;
-      f_BSE   = (D.f[dirBSE ])[kbse]+c1over216;
-      f_BNW   = (D.f[dirBNW ])[kbnw]+c1over216;
+      f_E    =  (D.f[dirE   ])[ke]+c2o27;
+      f_W    =  (D.f[dirW   ])[kw]+c2o27;
+      f_N    =  (D.f[dirN   ])[kn]+c2o27;
+      f_S    =  (D.f[dirS   ])[ks]+c2o27;
+      f_T    =  (D.f[dirT   ])[kt]+c2o27;
+      f_B    =  (D.f[dirB   ])[kb]+c2o27;
+      f_NE   =  (D.f[dirNE  ])[kne]+c1o54;
+      f_SW   =  (D.f[dirSW  ])[ksw]+c1o54;
+      f_SE   =  (D.f[dirSE  ])[kse]+c1o54;
+      f_NW   =  (D.f[dirNW  ])[knw]+c1o54;
+      f_TE   =  (D.f[dirTE  ])[kte]+c1o54;
+      f_BW   =  (D.f[dirBW  ])[kbw]+c1o54;
+      f_BE   =  (D.f[dirBE  ])[kbe]+c1o54;
+      f_TW   =  (D.f[dirTW  ])[ktw]+c1o54;
+      f_TN   =  (D.f[dirTN  ])[ktn]+c1o54;
+      f_BS   =  (D.f[dirBS  ])[kbs]+c1o54;
+      f_BN   =  (D.f[dirBN  ])[kbn]+c1o54;
+      f_TS   =  (D.f[dirTS  ])[kts]+c1o54;
+      f_ZERO =  (D.f[dirZERO])[kzero]+c8o27;
+      f_TNE   = (D.f[dirTNE ])[ktne]+c1o216;
+      f_TSW   = (D.f[dirTSW ])[ktsw]+c1o216;
+      f_TSE   = (D.f[dirTSE ])[ktse]+c1o216;
+      f_TNW   = (D.f[dirTNW ])[ktnw]+c1o216;
+      f_BNE   = (D.f[dirBNE ])[kbne]+c1o216;
+      f_BSW   = (D.f[dirBSW ])[kbsw]+c1o216;
+      f_BSE   = (D.f[dirBSE ])[kbse]+c1o216;
+      f_BNW   = (D.f[dirBNW ])[kbnw]+c1o216;
       ////////////////////////////////////////////////////////////////////////////////
 
       if( BC == GEO_FLUID || BC == GEO_VELO)
@@ -4309,138 +4310,138 @@ extern "C" __global__ void LB_Kernel_Casc27(real omega,
             mu[1][2][2]=(f_TNE-f_TNW+f_BNE-f_BNW+f_TSE-f_TSW+f_BSE-f_BSW)/(rho);
             mu[2][1][2]=(f_TNE+f_BNE-f_TSE-f_BSE+f_TNW+f_BNW-f_TSW-f_BSW)/(rho);
             mu[2][2][2]=(f_TNE+f_BNE+f_TSE+f_BSE+f_TNW+f_BNW+f_TSW+f_BSW)/(rho);//+(c1o27);
-            mu[0][0][0]=one;
+            mu[0][0][0]=c1o1;
             mu[1][0][0]=vx;
             mu[0][1][0]=vy;
             mu[0][0][1]=vz;
 
-            real M_zXX=zero;      real M_zYY=zero;      real M_zZZ=zero;      real M_zXY=zero;     real M_zXZ=zero;   real M_zYZ=zero;
-            real M_zXXY=zero;     real M_zXYY=zero;     real M_zXXZ=zero;     real M_zXZZ=zero;    real M_zYYZ=zero;  real M_zYZZ=zero;  real M_zXYZ=zero;
-            real M_zXXYY=zero;    real M_zXXZZ=zero;    real M_zYYZZ=zero;    real M_zXXYZ=zero;   real M_zXYYZ=zero; real M_zXYZZ=zero;
-            real M_zXXYYZ=zero;   real M_zXXYZZ=zero;   real M_zXYYZZ=zero;   real M_zXXYYZZ=zero;
-            real M_zXYeq=zero;    real M_zXZeq=zero;    real M_zYZeq=zero;    real M_zXYZeq=zero;
-            real M_zXXYZeq=zero;  real M_zXYYZeq=zero;  real M_zXYZZeq=zero;
-            real M_zXXYYZeq=zero; real M_zXXYZZeq=zero; real M_zXYYZZeq=zero; real M_zXXYYZZeq=zero;
+            real M_zXX=c0o1;      real M_zYY=c0o1;      real M_zZZ=c0o1;      real M_zXY=c0o1;     real M_zXZ=c0o1;   real M_zYZ=c0o1;
+            real M_zXXY=c0o1;     real M_zXYY=c0o1;     real M_zXXZ=c0o1;     real M_zXZZ=c0o1;    real M_zYYZ=c0o1;  real M_zYZZ=c0o1;  real M_zXYZ=c0o1;
+            real M_zXXYY=c0o1;    real M_zXXZZ=c0o1;    real M_zYYZZ=c0o1;    real M_zXXYZ=c0o1;   real M_zXYYZ=c0o1; real M_zXYZZ=c0o1;
+            real M_zXXYYZ=c0o1;   real M_zXXYZZ=c0o1;   real M_zXYYZZ=c0o1;   real M_zXXYYZZ=c0o1;
+            real M_zXYeq=c0o1;    real M_zXZeq=c0o1;    real M_zYZeq=c0o1;    real M_zXYZeq=c0o1;
+            real M_zXXYZeq=c0o1;  real M_zXYYZeq=c0o1;  real M_zXYZZeq=c0o1;
+            real M_zXXYYZeq=c0o1; real M_zXXYZZeq=c0o1; real M_zXYYZZeq=c0o1; real M_zXXYYZZeq=c0o1;
 
-            M_zXXYYZZ=  -five*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] * 
+            M_zXXYYZZ=  -c5o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] * 
                mu[1][0][0] +     mu[0][0][2] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] * 
-               mu[1][0][0] + four*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][1] *     mu[1][0][0] * 
-               mu[1][0][0] - two*mu[0][1][0] *     mu[0][1][2] *     mu[1][0][0] *     mu[1][0][0] + 
+               mu[1][0][0] + c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][1] *     mu[1][0][0] * 
+               mu[1][0][0] - c2o1*mu[0][1][0] *     mu[0][1][2] *     mu[1][0][0] *     mu[1][0][0] + 
                mu[0][0][1] *     mu[0][0][1] *     mu[0][2][0] *     mu[1][0][0] *     mu[1][0][0] -
-               two*mu[0][0][1] *     mu[0][2][1] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][2][2] *
-               mu[1][0][0] *     mu[1][0][0] + four*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *
-               mu[1][0][0] *     mu[1][0][1] - two*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *
-               mu[1][0][2] + four*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *
-               mu[1][1][0] - eight*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][1][1] +
-               four*mu[0][1][0] *     mu[1][0][0] *     mu[1][1][2] - two*mu[0][0][1] *     mu[0][0][1] *
-               mu[1][0][0] *     mu[1][2][0] + four*mu[0][0][1] *     mu[1][0][0] *     mu[1][2][1] -
-               two*mu[1][0][0] *     mu[1][2][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *
-               mu[0][1][0] *     mu[2][0][0] - two*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *
-               mu[2][0][1] +     mu[0][1][0] *     mu[0][1][0] *     mu[2][0][2] - two*mu[0][0][1] *
-               mu[0][0][1] *     mu[0][1][0] *     mu[2][1][0] + four*mu[0][0][1] *     mu[0][1][0] *
-               mu[2][1][1] - two*mu[0][1][0] *     mu[2][1][2] +     mu[0][0][1] *     mu[0][0][1] *
-               mu[2][2][0] - two*mu[0][0][1] *     mu[2][2][1] +     mu[2][2][2];  //5
-            M_zXXYYZ=    four*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] - 
-               two*mu[0][1][0] *     mu[0][1][1] *     mu[1][0][0] *     mu[1][0][0] -     mu[0][0][1] *
+               c2o1*mu[0][0][1] *     mu[0][2][1] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][2][2] *
+               mu[1][0][0] *     mu[1][0][0] + c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *
+               mu[1][0][0] *     mu[1][0][1] - c2o1*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *
+               mu[1][0][2] + c4o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *
+               mu[1][1][0] - c8o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][1][1] +
+               c4o1*mu[0][1][0] *     mu[1][0][0] *     mu[1][1][2] - c2o1*mu[0][0][1] *     mu[0][0][1] *
+               mu[1][0][0] *     mu[1][2][0] + c4o1*mu[0][0][1] *     mu[1][0][0] *     mu[1][2][1] -
+               c2o1*mu[1][0][0] *     mu[1][2][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *
+               mu[0][1][0] *     mu[2][0][0] - c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *
+               mu[2][0][1] +     mu[0][1][0] *     mu[0][1][0] *     mu[2][0][2] - c2o1*mu[0][0][1] *
+               mu[0][0][1] *     mu[0][1][0] *     mu[2][1][0] + c4o1*mu[0][0][1] *     mu[0][1][0] *
+               mu[2][1][1] - c2o1*mu[0][1][0] *     mu[2][1][2] +     mu[0][0][1] *     mu[0][0][1] *
+               mu[2][2][0] - c2o1*mu[0][0][1] *     mu[2][2][1] +     mu[2][2][2];  //5
+            M_zXXYYZ=    c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] - 
+               c2o1*mu[0][1][0] *     mu[0][1][1] *     mu[1][0][0] *     mu[1][0][0] -     mu[0][0][1] *
                mu[0][2][0] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][2][1] *     mu[1][0][0] *
-               mu[1][0][0] - two*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][1] -
-               four*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][1][0] + four*mu[0][1][0] *
-               mu[1][0][0] *     mu[1][1][1] + two*mu[0][0][1] *     mu[1][0][0] *     mu[1][2][0] - 
-               two*mu[1][0][0] *     mu[1][2][1] -     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *
-               mu[2][0][0] +     mu[0][1][0] *     mu[0][1][0] *     mu[2][0][1] + two*mu[0][0][1] *
-               mu[0][1][0] *     mu[2][1][0] - two*mu[0][1][0] *     mu[2][1][1] -     mu[0][0][1] *
+               mu[1][0][0] - c2o1*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][1] -
+               c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][1][0] + c4o1*mu[0][1][0] *
+               mu[1][0][0] *     mu[1][1][1] + c2o1*mu[0][0][1] *     mu[1][0][0] *     mu[1][2][0] - 
+               c2o1*mu[1][0][0] *     mu[1][2][1] -     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *
+               mu[2][0][0] +     mu[0][1][0] *     mu[0][1][0] *     mu[2][0][1] + c2o1*mu[0][0][1] *
+               mu[0][1][0] *     mu[2][1][0] - c2o1*mu[0][1][0] *     mu[2][1][1] -     mu[0][0][1] *
                mu[2][2][0] +     mu[2][2][1]; //6
-            M_zXXYY=    -three*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][2][0] *
-               mu[1][0][0] *     mu[1][0][0] + four*mu[0][1][0] *     mu[1][0][0] *     mu[1][1][0] -
-               two*mu[1][0][0] *     mu[1][2][0] +     mu[0][1][0] *     mu[0][1][0] *     mu[2][0][0] -
-               two*mu[0][1][0] *     mu[2][1][0] +     mu[2][2][0]; //7
-            M_zXXYZZ=    four*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] -
-               mu[0][0][2] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] - two*mu[0][0][1] *
+            M_zXXYY=    -c3o1*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][2][0] *
+               mu[1][0][0] *     mu[1][0][0] + c4o1*mu[0][1][0] *     mu[1][0][0] *     mu[1][1][0] -
+               c2o1*mu[1][0][0] *     mu[1][2][0] +     mu[0][1][0] *     mu[0][1][0] *     mu[2][0][0] -
+               c2o1*mu[0][1][0] *     mu[2][1][0] +     mu[2][2][0]; //7
+            M_zXXYZZ=    c4o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] -
+               mu[0][0][2] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] - c2o1*mu[0][0][1] *
                mu[0][1][1] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][1][2] *     mu[1][0][0] *
-               mu[1][0][0] - four*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][1] +
-               two*mu[0][1][0] *     mu[1][0][0] *     mu[1][0][2] - two*mu[0][0][1] *     mu[0][0][1] *
-               mu[1][0][0] *     mu[1][1][0] + four*mu[0][0][1] *     mu[1][0][0] *     mu[1][1][1] -
-               two*mu[1][0][0] *     mu[1][1][2] -     mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *
-               mu[2][0][0] + two*mu[0][0][1] *     mu[0][1][0] *     mu[2][0][1] -     mu[0][1][0] *
-               mu[2][0][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[2][1][0] - two*mu[0][0][1] *
+               mu[1][0][0] - c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][1] +
+               c2o1*mu[0][1][0] *     mu[1][0][0] *     mu[1][0][2] - c2o1*mu[0][0][1] *     mu[0][0][1] *
+               mu[1][0][0] *     mu[1][1][0] + c4o1*mu[0][0][1] *     mu[1][0][0] *     mu[1][1][1] -
+               c2o1*mu[1][0][0] *     mu[1][1][2] -     mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *
+               mu[2][0][0] + c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[2][0][1] -     mu[0][1][0] *
+               mu[2][0][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[2][1][0] - c2o1*mu[0][0][1] *
                mu[2][1][1] +     mu[2][1][2]; //8
-            M_zXXYZ=    -three*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][1][1] *
-               mu[1][0][0] *     mu[1][0][0] + two*mu[0][1][0] *     mu[1][0][0] *     mu[1][0][1] +
-               two*mu[0][0][1] *     mu[1][0][0] *     mu[1][1][0] - two*mu[1][0][0] *     mu[1][1][1] +
+            M_zXXYZ=    -c3o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][1][1] *
+               mu[1][0][0] *     mu[1][0][0] + c2o1*mu[0][1][0] *     mu[1][0][0] *     mu[1][0][1] +
+               c2o1*mu[0][0][1] *     mu[1][0][0] *     mu[1][1][0] - c2o1*mu[1][0][0] *     mu[1][1][1] +
                mu[0][0][1] *     mu[0][1][0] *     mu[2][0][0] -     mu[0][1][0] *     mu[2][0][1] - 
                mu[0][0][1] *     mu[2][1][0] +     mu[2][1][1]; //9
-            M_zXXY=      two*mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] - two*mu[1][0][0] *     mu[1][1][0] -
+            M_zXXY=      c2o1*mu[0][1][0] *     mu[1][0][0] *     mu[1][0][0] - c2o1*mu[1][0][0] *     mu[1][1][0] -
                mu[0][1][0] *     mu[2][0][0] +     mu[2][1][0]; //10
-            M_zXXZZ=    -three*mu[0][0][1] *     mu[0][0][1] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][0][2] *
-               mu[1][0][0] *     mu[1][0][0] + four*mu[0][0][1] *     mu[1][0][0] *     mu[1][0][1] -
-               two*mu[1][0][0] *     mu[1][0][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[2][0][0] -
-               two*mu[0][0][1] *     mu[2][0][1] +     mu[2][0][2]; //11
-            M_zXXZ=      two*mu[0][0][1] *     mu[1][0][0] *     mu[1][0][0] - two*mu[1][0][0] *     mu[1][0][1] -
+            M_zXXZZ=    -c3o1*mu[0][0][1] *     mu[0][0][1] *     mu[1][0][0] *     mu[1][0][0] +     mu[0][0][2] *
+               mu[1][0][0] *     mu[1][0][0] + c4o1*mu[0][0][1] *     mu[1][0][0] *     mu[1][0][1] -
+               c2o1*mu[1][0][0] *     mu[1][0][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[2][0][0] -
+               c2o1*mu[0][0][1] *     mu[2][0][1] +     mu[2][0][2]; //11
+            M_zXXZ=      c2o1*mu[0][0][1] *     mu[1][0][0] *     mu[1][0][0] - c2o1*mu[1][0][0] *     mu[1][0][1] -
                mu[0][0][1] *     mu[2][0][0] +     mu[2][0][1]; //12
             M_zXX=-          mu[1][0][0] *     mu[1][0][0] +     mu[2][0][0]; //13
-            M_zXYYZZ=    four*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] -
-               mu[0][0][2] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] - four*mu[0][0][1] * 
-               mu[0][1][0] *     mu[0][1][1] *     mu[1][0][0] + two*mu[0][1][0] *     mu[0][1][2] *
+            M_zXYYZZ=    c4o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] -
+               mu[0][0][2] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] - c4o1*mu[0][0][1] * 
+               mu[0][1][0] *     mu[0][1][1] *     mu[1][0][0] + c2o1*mu[0][1][0] *     mu[0][1][2] *
                mu[1][0][0] -     mu[0][0][1] *     mu[0][0][1] *     mu[0][2][0] *     mu[1][0][0] +
-               two*mu[0][0][1] *     mu[0][2][1] *     mu[1][0][0] -     mu[0][2][2] *     mu[1][0][0] -
-               two*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][1] +     mu[0][1][0] *
-               mu[0][1][0] *     mu[1][0][2] - two*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *
-               mu[1][1][0] + four*mu[0][0][1] *     mu[0][1][0] *     mu[1][1][1] - two*mu[0][1][0] *
-               mu[1][1][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[1][2][0] - two*mu[0][0][1] *
+               c2o1*mu[0][0][1] *     mu[0][2][1] *     mu[1][0][0] -     mu[0][2][2] *     mu[1][0][0] -
+               c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][1] +     mu[0][1][0] *
+               mu[0][1][0] *     mu[1][0][2] - c2o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *
+               mu[1][1][0] + c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][1][1] - c2o1*mu[0][1][0] *
+               mu[1][1][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[1][2][0] - c2o1*mu[0][0][1] *
                mu[1][2][1] +     mu[1][2][2];    //14
-            M_zXYYZ=    -three*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] + two*mu[0][1][0] *
+            M_zXYYZ=    -c3o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] + c2o1*mu[0][1][0] *
                mu[0][1][1] *     mu[1][0][0] +     mu[0][0][1] *     mu[0][2][0] *     mu[1][0][0] - 
                mu[0][2][1] *     mu[1][0][0] +     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][1] + 
-               two*mu[0][0][1] *     mu[0][1][0] *     mu[1][1][0] - two*mu[0][1][0] *     mu[1][1][1] - 
+               c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][1][0] - c2o1*mu[0][1][0] *     mu[1][1][1] - 
                mu[0][0][1] *     mu[1][2][0] +     mu[1][2][1]; //15
-            M_zXYY=      two*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] -     mu[0][2][0] *     mu[1][0][0] -
-               two*mu[0][1][0] *     mu[1][1][0] +     mu[1][2][0]; //16
-            M_zXYZZ=    -three*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] +     mu[0][0][2] *
-               mu[0][1][0] *     mu[1][0][0] + two*mu[0][0][1] *     mu[0][1][1] *     mu[1][0][0] -     
-               mu[0][1][2] *     mu[1][0][0] + two*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][1] -     
+            M_zXYY=      c2o1*mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] -     mu[0][2][0] *     mu[1][0][0] -
+               c2o1*mu[0][1][0] *     mu[1][1][0] +     mu[1][2][0]; //16
+            M_zXYZZ=    -c3o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] +     mu[0][0][2] *
+               mu[0][1][0] *     mu[1][0][0] + c2o1*mu[0][0][1] *     mu[0][1][1] *     mu[1][0][0] -     
+               mu[0][1][2] *     mu[1][0][0] + c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][1] -     
                mu[0][1][0] *     mu[1][0][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[1][1][0] - 
-               two*mu[0][0][1] *     mu[1][1][1] +     mu[1][1][2]; //17
-            M_zXYZ=      two*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] -     mu[0][1][1] *     mu[1][0][0] -
+               c2o1*mu[0][0][1] *     mu[1][1][1] +     mu[1][1][2]; //17
+            M_zXYZ=      c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[1][0][0] -     mu[0][1][1] *     mu[1][0][0] -
                mu[0][1][0] *     mu[1][0][1] -     mu[0][0][1] *     mu[1][1][0] +     mu[1][ 1][ 1]; //18
             M_zXY =         -mu[0][1][0] *     mu[1][0][0] +     mu[1][1][0]; //19
-            M_zXZZ=      two*mu[0][0][1] *     mu[0][0][1] *     mu[1][0][0] -     mu[0][0][2] *     mu[1][0][0] -
-               two*mu[0][0][1] *     mu[1][0][1] +     mu[1][0][2]; //20
+            M_zXZZ=      c2o1*mu[0][0][1] *     mu[0][0][1] *     mu[1][0][0] -     mu[0][0][2] *     mu[1][0][0] -
+               c2o1*mu[0][0][1] *     mu[1][0][1] +     mu[1][0][2]; //20
             M_zXZ =         -mu[0][0][1] *     mu[1][0][0] +     mu[1][0][1]; //21
-            M_zYYZZ=    -three*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] +     mu[0][0][2] *
-               mu[0][1][0] *     mu[0][1][0] + four*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][1] -
-               two*mu[0][1][0] *     mu[0][1][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[0][2][0] -
-               two*mu[0][0][1] *     mu[0][2][1] +     mu[0][2][2]; //22
-            M_zYYZ=      two*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] - two*mu[0][1][0] *     mu[0][1][1] -
+            M_zYYZZ=    -c3o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] +     mu[0][0][2] *
+               mu[0][1][0] *     mu[0][1][0] + c4o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][1] -
+               c2o1*mu[0][1][0] *     mu[0][1][2] +     mu[0][0][1] *     mu[0][0][1] *     mu[0][2][0] -
+               c2o1*mu[0][0][1] *     mu[0][2][1] +     mu[0][2][2]; //22
+            M_zYYZ=      c2o1*mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] - c2o1*mu[0][1][0] *     mu[0][1][1] -
                mu[0][0][1] *     mu[0][2][0] +     mu[0][2][1]; //23
             M_zYY  =        -mu[0][1][0] *     mu[0][1][0] +     mu[0][2][0]; //24
-            M_zYZZ =     two*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] -     mu[0][0][2] *     mu[0][1][0] -  
-               two*mu[0][0][1] *     mu[0][1][1] +     mu[0][1][2]; //25
+            M_zYZZ =     c2o1*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] -     mu[0][0][2] *     mu[0][1][0] -  
+               c2o1*mu[0][0][1] *     mu[0][1][1] +     mu[0][1][2]; //25
             M_zYZ  =        -mu[0][0][1] *     mu[0][1][0] +     mu[0][1][1]; //26
             M_zZZ  =        -mu[0][0][1] *     mu[0][0][1] +     mu[0][0][2]; //27
 
             M_zXXYYZZeq=c1o27;
-            M_zXXYYZeq=zero;
-            M_zXXYZZeq=zero;
-            M_zXXYZeq=zero;
-            M_zXYYZZeq=zero;
-            M_zXYYZeq=zero;
-            M_zXYZZeq=zero;
+            M_zXXYYZeq=c0o1;
+            M_zXXYZZeq=c0o1;
+            M_zXXYZeq=c0o1;
+            M_zXYYZZeq=c0o1;
+            M_zXYYZeq=c0o1;
+            M_zXYZZeq=c0o1;
 
             real MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ, MXXYYppp,MXXYYpm2p, MXXYYppm2;
             real MXXpMYYpMZZeq,MXXmMYYeq, MXXmMZZeq, MXXYpMYZZeq,MXXZpMYYZeq,MXYYpMXZZeq, MXXYmMYZZeq,MXXZmMYYZeq,MXYYmMXZZeq, MXXYYpppeq,MXXYYpm2peq, MXXYYppm2eq;
 
             //coll faktoren:
             real w1,w2,w3,w4,w5,w6,w7,w8,w9,w10;
-            w2=-one;//-omega;
-            w7=-one;
-            w9=-one;
-            w10=-one;
+            w2=-c1o1;//-omega;
+            w7=-c1o1;
+            w9=-c1o1;
+            w10=-c1o1;
             w1=-omega;
-            w3=-one;
-            w4=-one;
-            w5=-one;
-            w6=-one;
-            w8=-one;
+            w3=-c1o1;
+            w4=-c1o1;
+            w5=-c1o1;
+            w6=-c1o1;
+            w8=-c1o1;
             ////////lin kombi bilden:
             MXXpMYYpMZZ = M_zXX + M_zYY + M_zZZ;
             MXXmMYY = M_zXX - M_zYY;
@@ -4460,20 +4461,20 @@ extern "C" __global__ void LB_Kernel_Casc27(real omega,
             bool factorCasc=true;
             if(casc)
             {
-               MXXpMYYpMZZeq = one;
-               MXXmMYYeq     = two;
-               MXXmMZZeq     = two;
+               MXXpMYYpMZZeq = c1o1;
+               MXXmMYYeq     = c2o1;
+               MXXmMZZeq     = c2o1;
 
-               MXXYpMYZZeq  =  two;
-               MXXYmMYZZeq  =  two;
-               MXXZpMYYZeq  =  two;
-               MXXZmMYYZeq  =  two;
-               MXYYpMXZZeq  =  two;
-               MXYYmMXZZeq  =  two;
+               MXXYpMYZZeq  =  c2o1;
+               MXXYmMYZZeq  =  c2o1;
+               MXXZpMYYZeq  =  c2o1;
+               MXXZmMYYZeq  =  c2o1;
+               MXYYpMXZZeq  =  c2o1;
+               MXYYmMXZZeq  =  c2o1;
 
                MXXYYpppeq  = c1o3;
-               MXXYYpm2peq = two;
-               MXXYYppm2eq = two;
+               MXXYYpm2peq = c2o1;
+               MXXYYppm2eq = c2o1;
 
                //relaxation:
                MXXpMYYpMZZ -= w2*(MXXpMYYpMZZeq-MXXpMYYpMZZ);
@@ -4524,20 +4525,20 @@ extern "C" __global__ void LB_Kernel_Casc27(real omega,
             }
             else if (factorCasc)
             {
-               MXXpMYYpMZZeq = one;
-               MXXmMYYeq     = two;
-               MXXmMZZeq     = two;
+               MXXpMYYpMZZeq = c1o1;
+               MXXmMYYeq     = c2o1;
+               MXXmMZZeq     = c2o1;
 
-               MXXYpMYZZeq  =  two;
-               MXXYmMYZZeq  =  two;
-               MXXZpMYYZeq  =  two;
-               MXXZmMYYZeq  =  two;
-               MXYYpMXZZeq  =  two;
-               MXYYmMXZZeq  =  two;
+               MXXYpMYZZeq  =  c2o1;
+               MXXYmMYZZeq  =  c2o1;
+               MXXZpMYYZeq  =  c2o1;
+               MXXZmMYYZeq  =  c2o1;
+               MXYYpMXZZeq  =  c2o1;
+               MXYYmMXZZeq  =  c2o1;
 
                MXXYYpppeq  =c1o3;
-               MXXYYpm2peq = two;
-               MXXYYppm2eq = two;
+               MXXYYpm2peq = c2o1;
+               MXXYYppm2eq = c2o1;
 
                //relaxation:
                MXXpMYYpMZZ -= w2*(MXXpMYYpMZZeq-MXXpMYYpMZZ);
@@ -4576,9 +4577,9 @@ extern "C" __global__ void LB_Kernel_Casc27(real omega,
                M_zXYZZeq=M_zZZ*M_zXY;
                M_zXXYZeq=M_zXX*M_zYZ;
 
-               M_zXXYYZeq=zero;
-               M_zXXYZZeq=zero;
-               M_zXYYZZeq=zero;
+               M_zXXYYZeq=c0o1;
+               M_zXXYZZeq=c0o1;
+               M_zXYYZZeq=c0o1;
 
                M_zXXYYZZeq=M_zXX*M_zYY*M_zZZ;
 
@@ -4602,36 +4603,36 @@ extern "C" __global__ void LB_Kernel_Casc27(real omega,
 
             //mu[1][0][0]+=forcingX1;
 
-            mu[2][ 2][ 2]= vx*vx*vy*vy*vz*vz + vx*vx*vy*vy*M_zZZ + four*vx*vx*vy*vz*M_zYZ + two* vx*vx*vy*M_zYZZ +
-               vx*vx*vz*vz*M_zYY + two* vx*vx*vz*M_zYYZ +vx*vx*M_zYYZZ + four*vx*vy*vy*vz*M_zXZ   +
-               two* vx*vy*vy*M_zXZZ + four* vx*vy*vz*vz*M_zXY+   eight* vx*vy*vz*M_zXYZ + four* vx*vy*M_zXYZZ +
-               two* vx*vz*vz*M_zXYY + four* vx*vz*M_zXYYZ + two*vx*M_zXYYZZ +   vy*vy*vz*vz*M_zXX + two* vy*vy*vz*M_zXXZ  +
-               vy*vy*M_zXXZZ     + two* vy*vz*vz*M_zXXY  + four*vy*vz*M_zXXYZ +  two* vy*M_zXXYZZ + vz*vz*M_zXXYY +two* vz*M_zXXYYZ + M_zXXYYZZ;//-(c1o27);
-            mu[2][ 2][ 1]= vx*vx*vy*vy*vz + two*vx*vx*vy*M_zYZ + vx*vx*vz*M_zYY +  vx*vx*M_zYYZ + two*vx*vy*vy*M_zXZ +four*vx*vy*vz*M_zXY +four*vx*vy*M_zXYZ+
-               two*vx*vz*M_zXYY + two*vx*M_zXYYZ + vy*vy*vz*M_zXX +  vy*vy*M_zXXZ + two* vy*vz*M_zXXY + two*vy*M_zXXYZ +  vz*M_zXXYY + M_zXXYYZ;
-            mu[2][ 2][ 0]= vx*vx*vy*vy + vx*vx*M_zYY + four*vx*vy*M_zXY +   two*vx*M_zXYY + vy*vy*M_zXX + two*vy*M_zXXY +  M_zXXYY ;//-(c1o9);
-            mu[2][ 1][ 2]= vx*vx*vy*vz*vz + vx*vx*vy*M_zZZ + two*vx*vx*vz*M_zYZ +   vx*vx*M_zYZZ + four*vx*vy*vz*M_zXZ+ //vy->vz
-               two*vx*vy*M_zXZZ + two*vx*vz*vz*M_zXY +   four*vx*vz*M_zXYZ + two*vx*M_zXYZZ + vy*vz*vz*M_zXX +
-               two*vy*vz*M_zXXZ + vy*M_zXXZZ + vz*vz*M_zXXY +  two*vz*M_zXXYZ + M_zXXYZZ;
-            mu[2][ 1][ 1]= vx*vx*vy*vz + vx*vx*M_zYZ + two*vx*vy*M_zXZ + two*vx*vz*M_zXY + two*vx*M_zXYZ + vy*vz*M_zXX+  vy*M_zXXZ + vz*M_zXXY + M_zXXYZ;
-            mu[2][ 1][ 0]= vx*vx*vy + two*vx*M_zXY + vy*M_zXX + M_zXXY;
-            mu[2][ 0][ 2]= vx*vx*vz*vz + vx*vx*M_zZZ + four*vx*vz*M_zXZ+ two*vx*M_zXZZ + vz*vz*M_zXX+ two*vz*M_zXXZ + M_zXXZZ;//-(c1o9);
-            mu[2][ 0][ 1]= vx*vx*vz + two*vx*M_zXZ + vz*M_zXX + M_zXXZ;
+            mu[2][ 2][ 2]= vx*vx*vy*vy*vz*vz + vx*vx*vy*vy*M_zZZ + c4o1*vx*vx*vy*vz*M_zYZ + c2o1* vx*vx*vy*M_zYZZ +
+               vx*vx*vz*vz*M_zYY + c2o1* vx*vx*vz*M_zYYZ +vx*vx*M_zYYZZ + c4o1*vx*vy*vy*vz*M_zXZ   +
+               c2o1* vx*vy*vy*M_zXZZ + c4o1* vx*vy*vz*vz*M_zXY+   c8o1* vx*vy*vz*M_zXYZ + c4o1* vx*vy*M_zXYZZ +
+               c2o1* vx*vz*vz*M_zXYY + c4o1* vx*vz*M_zXYYZ + c2o1*vx*M_zXYYZZ +   vy*vy*vz*vz*M_zXX + c2o1* vy*vy*vz*M_zXXZ  +
+               vy*vy*M_zXXZZ     + c2o1* vy*vz*vz*M_zXXY  + c4o1*vy*vz*M_zXXYZ +  c2o1* vy*M_zXXYZZ + vz*vz*M_zXXYY +c2o1* vz*M_zXXYYZ + M_zXXYYZZ;//-(c1o27);
+            mu[2][ 2][ 1]= vx*vx*vy*vy*vz + c2o1*vx*vx*vy*M_zYZ + vx*vx*vz*M_zYY +  vx*vx*M_zYYZ + c2o1*vx*vy*vy*M_zXZ +c4o1*vx*vy*vz*M_zXY +c4o1*vx*vy*M_zXYZ+
+               c2o1*vx*vz*M_zXYY + c2o1*vx*M_zXYYZ + vy*vy*vz*M_zXX +  vy*vy*M_zXXZ + c2o1* vy*vz*M_zXXY + c2o1*vy*M_zXXYZ +  vz*M_zXXYY + M_zXXYYZ;
+            mu[2][ 2][ 0]= vx*vx*vy*vy + vx*vx*M_zYY + c4o1*vx*vy*M_zXY +   c2o1*vx*M_zXYY + vy*vy*M_zXX + c2o1*vy*M_zXXY +  M_zXXYY ;//-(c1o9);
+            mu[2][ 1][ 2]= vx*vx*vy*vz*vz + vx*vx*vy*M_zZZ + c2o1*vx*vx*vz*M_zYZ +   vx*vx*M_zYZZ + c4o1*vx*vy*vz*M_zXZ+ //vy->vz
+               c2o1*vx*vy*M_zXZZ + c2o1*vx*vz*vz*M_zXY +   c4o1*vx*vz*M_zXYZ + c2o1*vx*M_zXYZZ + vy*vz*vz*M_zXX +
+               c2o1*vy*vz*M_zXXZ + vy*M_zXXZZ + vz*vz*M_zXXY +  c2o1*vz*M_zXXYZ + M_zXXYZZ;
+            mu[2][ 1][ 1]= vx*vx*vy*vz + vx*vx*M_zYZ + c2o1*vx*vy*M_zXZ + c2o1*vx*vz*M_zXY + c2o1*vx*M_zXYZ + vy*vz*M_zXX+  vy*M_zXXZ + vz*M_zXXY + M_zXXYZ;
+            mu[2][ 1][ 0]= vx*vx*vy + c2o1*vx*M_zXY + vy*M_zXX + M_zXXY;
+            mu[2][ 0][ 2]= vx*vx*vz*vz + vx*vx*M_zZZ + c4o1*vx*vz*M_zXZ+ c2o1*vx*M_zXZZ + vz*vz*M_zXX+ c2o1*vz*M_zXXZ + M_zXXZZ;//-(c1o9);
+            mu[2][ 0][ 1]= vx*vx*vz + c2o1*vx*M_zXZ + vz*M_zXX + M_zXXZ;
             mu[2][ 0][ 0]= vx*vx + M_zXX ;//-(c1o3);
-            mu[1][ 2][ 2]= vx*vy*vy*vz*vz + vx*vy*vy*M_zZZ + four*vx*vy*vz*M_zYZ +   two*vx*vy*M_zYZZ + vx*vz*vz*M_zYY + two*vx*vz*M_zYYZ +vx*M_zYYZZ + two*vy*vy*vz*M_zXZ + vy*vy*M_zXZZ +
-               two*vy*vz*vz*M_zXY + four*vy*vz*M_zXYZ + two*vy*M_zXYZZ +vz*vz*M_zXYY + two*vz*M_zXYYZ + M_zXYYZZ;
-            mu[1][ 2][ 1]= vx*vy*vy*vz + two*vx*vy*M_zYZ + vx*vz*M_zYY +   vx*M_zYYZ + vy*vy*M_zXZ + two*vy*vz*M_zXY +   two*vy*M_zXYZ + vz*M_zXYY + M_zXYYZ;
-            mu[1][ 2][ 0]= vx*vy*vy + vx*M_zYY + two*vy*M_zXY + M_zXYY;
-            mu[1][ 1][ 2]= vx*vy*vz*vz+vx*vy*M_zZZ+two*vx*vz*M_zYZ+vx*M_zYZZ+two*vy*vz*M_zXZ+vy*M_zXZZ+vz*vz*M_zXY+two*vz*M_zXYZ+M_zXYZZ;
+            mu[1][ 2][ 2]= vx*vy*vy*vz*vz + vx*vy*vy*M_zZZ + c4o1*vx*vy*vz*M_zYZ +   c2o1*vx*vy*M_zYZZ + vx*vz*vz*M_zYY + c2o1*vx*vz*M_zYYZ +vx*M_zYYZZ + c2o1*vy*vy*vz*M_zXZ + vy*vy*M_zXZZ +
+               c2o1*vy*vz*vz*M_zXY + c4o1*vy*vz*M_zXYZ + c2o1*vy*M_zXYZZ +vz*vz*M_zXYY + c2o1*vz*M_zXYYZ + M_zXYYZZ;
+            mu[1][ 2][ 1]= vx*vy*vy*vz + c2o1*vx*vy*M_zYZ + vx*vz*M_zYY +   vx*M_zYYZ + vy*vy*M_zXZ + c2o1*vy*vz*M_zXY +   c2o1*vy*M_zXYZ + vz*M_zXYY + M_zXYYZ;
+            mu[1][ 2][ 0]= vx*vy*vy + vx*M_zYY + c2o1*vy*M_zXY + M_zXYY;
+            mu[1][ 1][ 2]= vx*vy*vz*vz+vx*vy*M_zZZ+c2o1*vx*vz*M_zYZ+vx*M_zYZZ+c2o1*vy*vz*M_zXZ+vy*M_zXZZ+vz*vz*M_zXY+c2o1*vz*M_zXYZ+M_zXYZZ;
             mu[1][ 1][ 1]= vx*vy*vz + vx*M_zYZ + vy*M_zXZ + vz*M_zXY+M_zXYZ;
             mu[1][ 1][ 0]= vx*vy+ M_zXY;
-            mu[1][ 0][ 2]= vx*vz*vz + vx*M_zZZ + two*vz*M_zXZ + M_zXZZ;
+            mu[1][ 0][ 2]= vx*vz*vz + vx*M_zZZ + c2o1*vz*M_zXZ + M_zXZZ;
             mu[1][ 0][ 1]= vx*vz + M_zXZ;
             //mu[1][ 0][ 0]= vx;
-            mu[0][ 2][ 2]= vy*vy*vz*vz + vy*vy*M_zZZ + four*vy*vz*M_zYZ +two*vy*M_zYZZ + vz*vz*M_zYY + two*vz*M_zYYZ +  M_zYYZZ;//-(c1o9);
-            mu[0][ 2][ 1]= vy*vy*vz + two*vy*M_zYZ + vz*M_zYY + M_zYYZ;
+            mu[0][ 2][ 2]= vy*vy*vz*vz + vy*vy*M_zZZ + c4o1*vy*vz*M_zYZ +c2o1*vy*M_zYZZ + vz*vz*M_zYY + c2o1*vz*M_zYYZ +  M_zYYZZ;//-(c1o9);
+            mu[0][ 2][ 1]= vy*vy*vz + c2o1*vy*M_zYZ + vz*M_zYY + M_zYYZ;
             mu[0][ 2][ 0]= vy*vy + M_zYY ;//-(c1o3);
-            mu[0][ 1][ 2]= vy*vz*vz+ vy*M_zZZ + two*vz*M_zYZ + M_zYZZ;
+            mu[0][ 1][ 2]= vy*vz*vz+ vy*M_zZZ + c2o1*vz*M_zYZ + M_zYZZ;
             mu[0][ 1][ 1]= vy*vz + M_zYZ;
             //mu[0][ 1][ 0]= vy ;                     //richtig?
             mu[0][ 0][ 2]= vz*vz + M_zZZ;// -(c1o3);
@@ -4668,38 +4669,38 @@ extern "C" __global__ void LB_Kernel_Casc27(real omega,
          }
       }
 
-      (D.f[ dirE  ])[ke ] = f_W-c2over27;
-      (D.f[ dirW  ])[kw ] = f_E-c2over27;
+      (D.f[ dirE  ])[ke ] = f_W-c2o27;
+      (D.f[ dirW  ])[kw ] = f_E-c2o27;
 
-      (D.f[ dirN  ])[kn ] = f_S-c2over27;
-      (D.f[ dirS  ])[ks ] = f_N-c2over27;
-      (D.f[ dirT  ])[kt ] = f_B-c2over27;
-      (D.f[ dirB  ])[kb ] = f_T-c2over27;
+      (D.f[ dirN  ])[kn ] = f_S-c2o27;
+      (D.f[ dirS  ])[ks ] = f_N-c2o27;
+      (D.f[ dirT  ])[kt ] = f_B-c2o27;
+      (D.f[ dirB  ])[kb ] = f_T-c2o27;
 
-      (D.f[ dirNE ])[kne] = f_SW-c1over54;
-      (D.f[ dirSW ])[ksw] = f_NE-c1over54;
-      (D.f[ dirSE ])[kse] = f_NW-c1over54;
-      (D.f[ dirNW ])[knw] = f_SE-c1over54;
-      (D.f[ dirTE ])[kte] = f_BW-c1over54;
-      (D.f[ dirBW ])[kbw] = f_TE-c1over54;
-      (D.f[ dirBE ])[kbe] = f_TW-c1over54;
-      (D.f[ dirTW ])[ktw] = f_BE-c1over54;
+      (D.f[ dirNE ])[kne] = f_SW-c1o54;
+      (D.f[ dirSW ])[ksw] = f_NE-c1o54;
+      (D.f[ dirSE ])[kse] = f_NW-c1o54;
+      (D.f[ dirNW ])[knw] = f_SE-c1o54;
+      (D.f[ dirTE ])[kte] = f_BW-c1o54;
+      (D.f[ dirBW ])[kbw] = f_TE-c1o54;
+      (D.f[ dirBE ])[kbe] = f_TW-c1o54;
+      (D.f[ dirTW ])[ktw] = f_BE-c1o54;
 
-      (D.f[ dirTN ])[ktn] = f_BS-c1over54;
-      (D.f[ dirBS ])[kbs] = f_TN-c1over54;
-      (D.f[ dirBN ])[kbn] = f_TS-c1over54;
-      (D.f[ dirTS ])[kts] = f_BN-c1over54;
+      (D.f[ dirTN ])[ktn] = f_BS-c1o54;
+      (D.f[ dirBS ])[kbs] = f_TN-c1o54;
+      (D.f[ dirBN ])[kbn] = f_TS-c1o54;
+      (D.f[ dirTS ])[kts] = f_BN-c1o54;
 
-      (D.f[ dirZERO])[k] = f_ZERO-c8over27;
+      (D.f[ dirZERO])[k] = f_ZERO-c8o27;
 
-      (D.f[ dirTNE ])[ktne] = f_BSW-c1over216;
-      (D.f[ dirTSE ])[ktse] = f_BNW-c1over216;
-      (D.f[ dirBNE ])[kbne] = f_TSW-c1over216;
-      (D.f[ dirBSE ])[kbse] = f_TNW-c1over216;
-      (D.f[ dirTNW ])[ktnw] = f_BSE-c1over216;
-      (D.f[ dirTSW ])[ktsw] = f_BNE-c1over216;
-      (D.f[ dirBNW ])[kbnw] = f_TSE-c1over216;
-      (D.f[ dirBSW ])[kbsw] = f_TNE-c1over216;
+      (D.f[ dirTNE ])[ktne] = f_BSW-c1o216;
+      (D.f[ dirTSE ])[ktse] = f_BNW-c1o216;
+      (D.f[ dirBNE ])[kbne] = f_TSW-c1o216;
+      (D.f[ dirBSE ])[kbse] = f_TNW-c1o216;
+      (D.f[ dirTNW ])[ktnw] = f_BSE-c1o216;
+      (D.f[ dirTSW ])[ktsw] = f_BNE-c1o216;
+      (D.f[ dirBNW ])[kbnw] = f_TSE-c1o216;
+      (D.f[ dirBSW ])[kbsw] = f_TNE-c1o216;
    }
    __syncthreads();
 }

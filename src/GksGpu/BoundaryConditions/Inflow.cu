@@ -97,7 +97,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
             domainCellPrim = toPrimitiveVariables( domainCellData, parameters.K );
         }
 
-        real factor = one;
+        real factor = c1o1;
         //if( fabs(boundaryCondition.a1) > real(1.0e-6) )
         {
             real y = dataBase.cellCenter[ VEC_Y(ghostCellIdx, dataBase.numberOfCells) ];
@@ -117,17 +117,17 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         }
 
         //ghostCellPrim.rho    = two *          boundaryCondition.rho        - domainCellPrim.rho;
-        ghostCellPrim.U      = two * factor * boundaryCondition.velocity.x - domainCellPrim.U;
-        ghostCellPrim.V      = two * factor * boundaryCondition.velocity.y - domainCellPrim.V;
-        ghostCellPrim.W      = two * factor * boundaryCondition.velocity.z - domainCellPrim.W;
-        ghostCellPrim.lambda = two *          boundaryCondition.lambda     - domainCellPrim.lambda;
+        ghostCellPrim.U      = c2o1 * factor * boundaryCondition.velocity.x - domainCellPrim.U;
+        ghostCellPrim.V      = c2o1 * factor * boundaryCondition.velocity.y - domainCellPrim.V;
+        ghostCellPrim.W      = c2o1 * factor * boundaryCondition.velocity.z - domainCellPrim.W;
+        ghostCellPrim.lambda = c2o1 *          boundaryCondition.lambda     - domainCellPrim.lambda;
     #ifdef USE_PASSIVE_SCALAR
-        ghostCellPrim.S_1    = two *          boundaryCondition.S_1        - domainCellPrim.S_1;
-        ghostCellPrim.S_2    = two *          boundaryCondition.S_2        - domainCellPrim.S_2;
+        ghostCellPrim.S_1    = c2o1 *          boundaryCondition.S_1        - domainCellPrim.S_1;
+        ghostCellPrim.S_2    = c2o1 *          boundaryCondition.S_2        - domainCellPrim.S_2;
     #endif // USE_PASSIVE_SCALAR
         
         real p = c1o2 * domainCellPrim.rho / domainCellPrim.lambda;
-        ghostCellPrim.rho = two * p * ghostCellPrim.lambda;
+        ghostCellPrim.rho = c2o1 * p * ghostCellPrim.lambda;
     }
 
     {

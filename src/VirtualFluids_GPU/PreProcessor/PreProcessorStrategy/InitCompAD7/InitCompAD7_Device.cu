@@ -1,6 +1,7 @@
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
+#include "Core/RealConstants.h"
 #include "math.h"
-#include "GPU/constant.h"
 
 extern "C" __global__ void LB_Init_Comp_AD_7(unsigned int* neighborX,
 	unsigned int* neighborY,
@@ -59,11 +60,11 @@ extern "C" __global__ void LB_Init_Comp_AD_7(unsigned int* neighborX,
 			real   vx1 = ux[k];
 			real   vx2 = uy[k];
 			real   vx3 = uz[k];
-			real lambdaD = -three + sqrt(three);
+			real lambdaD = -c3o1 + sqrt(c3o1);
 			real Diffusivity = c1o20;
-			real Lam = -(c1o2 + one / lambdaD);
-			real nue_d = Lam / three;
-			real ae = Diffusivity / nue_d - one;
+			real Lam = -(c1o2 + c1o1 / lambdaD);
+			real nue_d = Lam / c3o1;
+			real ae = Diffusivity / nue_d - c1o1;
 			real ux_sq = vx1 * vx1;
 			real uy_sq = vx2 * vx2;
 			real uz_sq = vx3 * vx3;
@@ -79,13 +80,13 @@ extern "C" __global__ void LB_Init_Comp_AD_7(unsigned int* neighborX,
 			unsigned int kb = neighborZ[k];
 			//////////////////////////////////////////////////////////////////////////
 
-			(D7.f[0])[kzero] = ConcD*(c1o3*(ae*(-three)) - (ux_sq + uy_sq + uz_sq));
-			(D7.f[1])[ke] = ConcD*(c1o6*(ae + one) + c1o2*(ux_sq)+vx1*c1o2);
-			(D7.f[2])[kw] = ConcD*(c1o6*(ae + one) + c1o2*(ux_sq)-vx1*c1o2);
-			(D7.f[3])[kn] = ConcD*(c1o6*(ae + one) + c1o2*(uy_sq)+vx2*c1o2);
-			(D7.f[4])[ks] = ConcD*(c1o6*(ae + one) + c1o2*(uy_sq)-vx2*c1o2);
-			(D7.f[5])[kt] = ConcD*(c1o6*(ae + one) + c1o2*(uz_sq)+vx3*c1o2);
-			(D7.f[6])[kb] = ConcD*(c1o6*(ae + one) + c1o2*(uz_sq)-vx3*c1o2);
+			(D7.f[0])[kzero] = ConcD*(c1o3*(ae*(-c3o1)) - (ux_sq + uy_sq + uz_sq));
+			(D7.f[1])[ke] = ConcD*(c1o6*(ae + c1o1) + c1o2*(ux_sq)+vx1*c1o2);
+			(D7.f[2])[kw] = ConcD*(c1o6*(ae + c1o1) + c1o2*(ux_sq)-vx1*c1o2);
+			(D7.f[3])[kn] = ConcD*(c1o6*(ae + c1o1) + c1o2*(uy_sq)+vx2*c1o2);
+			(D7.f[4])[ks] = ConcD*(c1o6*(ae + c1o1) + c1o2*(uy_sq)-vx2*c1o2);
+			(D7.f[5])[kt] = ConcD*(c1o6*(ae + c1o1) + c1o2*(uz_sq)+vx3*c1o2);
+			(D7.f[6])[kb] = ConcD*(c1o6*(ae + c1o1) + c1o2*(uz_sq)-vx3*c1o2);
 		}
 	}
 }

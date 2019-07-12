@@ -96,7 +96,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         //}
         //////////////////////////////////////////////////////////////////////////
 
-        cons = cons + (one / cellVolume) * update;
+        cons = cons + (c1o1 / cellVolume) * update;
         
         //////////////////////////////////////////////////////////////////////////
         // dirty fix to exclude viscous heating: Part 2
@@ -123,13 +123,13 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         cons.rhoU += parameters.force.x * parameters.dt * cons.rho;
         cons.rhoV += parameters.force.y * parameters.dt * cons.rho;
         cons.rhoW += parameters.force.z * parameters.dt * cons.rho;
-        cons.rhoE += parameters.force.x * dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] / (six * parameters.dx * parameters.dx)
-                   + parameters.force.y * dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] / (six * parameters.dx * parameters.dx)
-                   + parameters.force.z * dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] / (six * parameters.dx * parameters.dx);
+        cons.rhoE += parameters.force.x * dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] / (c6o1 * parameters.dx * parameters.dx)
+                   + parameters.force.y * dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] / (c6o1 * parameters.dx * parameters.dx)
+                   + parameters.force.z * dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] / (c6o1 * parameters.dx * parameters.dx);
 
-        dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] = zero;
-        dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] = zero;
-        dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = zero;
+        dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] = c0o1;
+        dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] = c0o1;
+        dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = c0o1;
     }
 
     if(parameters.forcingSchemeIdx == 1)
@@ -138,13 +138,13 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         cons.rhoU += parameters.force.x * parameters.dt * ( cons.rho - parameters.rhoRef );
         cons.rhoV += parameters.force.y * parameters.dt * ( cons.rho - parameters.rhoRef );
         cons.rhoW += parameters.force.z * parameters.dt * ( cons.rho - parameters.rhoRef );
-        cons.rhoE += parameters.force.x * dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] / (six * parameters.dx * parameters.dx)
-                   + parameters.force.y * dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] / (six * parameters.dx * parameters.dx)
-                   + parameters.force.z * dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] / (six * parameters.dx * parameters.dx);
+        cons.rhoE += parameters.force.x * dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] / (c6o1 * parameters.dx * parameters.dx)
+                   + parameters.force.y * dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] / (c6o1 * parameters.dx * parameters.dx)
+                   + parameters.force.z * dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] / (c6o1 * parameters.dx * parameters.dx);
 
-        dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] = zero;
-        dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] = zero;
-        dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = zero;
+        dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] = c0o1;
+        dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] = c0o1;
+        dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = c0o1;
     }
 
     if(parameters.forcingSchemeIdx == 2)

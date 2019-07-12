@@ -1,6 +1,7 @@
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
+#include "Core/RealConstants.h"
 #include "math.h"
-#include "GPU/constant.h"
 
 
 extern "C" __global__ void LB_Init_F3(unsigned int* neighborX,

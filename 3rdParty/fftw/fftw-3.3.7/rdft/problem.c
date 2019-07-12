@@ -105,7 +105,7 @@ static void print(const problem *ego_, printer *p)
      p->print(p, ")");
 }
 
-static void zero(const problem *ego_)
+static void c0o1(const problem *ego_)
 {
      const problem_rdft *ego = (const problem_rdft *) ego_;
      tensor *sz = X(tensor_append)(ego->vecsz, ego->sz);
@@ -117,7 +117,7 @@ static const problem_adt padt =
 {
      PROBLEM_RDFT,
      hash,
-     zero,
+     c0o1,
      print,
      destroy
 };

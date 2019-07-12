@@ -207,9 +207,9 @@ Vec3 DataBase::getCellCenter(uint cellIdx)
         cellCenter = cellCenter + this->nodeCoordinates[ this->cellToNode[ cellIdx ][ node ] ];
     }
 
-    cellCenter.x /= eight;
-    cellCenter.y /= eight;
-    cellCenter.z /= eight;
+    cellCenter.x /= c8o1;
+    cellCenter.y /= c8o1;
+    cellCenter.z /= c8o1;
 
     return cellCenter;
 }

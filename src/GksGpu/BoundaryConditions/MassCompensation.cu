@@ -112,10 +112,10 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     {
         ConservedVariables flux;
 
-        flux.rho = two * p0 * domainCellPrim.lambda - domainCellPrim.rho;
+        flux.rho = c2o1 * p0 * domainCellPrim.lambda - domainCellPrim.rho;
 
         //flux.rhoE = ( parameters.K + three ) / ( four * boundaryCondition.lambda ) * flux.rho;
-        flux.rhoE = (parameters.K + three) / (four * domainCellPrim.lambda) * flux.rho;
+        flux.rhoE = (parameters.K + c3o1) / (c4o1 * domainCellPrim.lambda) * flux.rho;
 
         flux = (parameters.dt * parameters.dx * parameters.dx) * flux;
 

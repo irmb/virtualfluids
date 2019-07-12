@@ -1,6 +1,7 @@
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "GPU/constant.h"
+#include "Core/RealConstants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void DragLiftPost27(  real* DD, 
@@ -184,40 +185,40 @@ extern "C" __global__ void DragLiftPost27(  real* DD,
 		f_TNW  = (D.f[dirBSE ])[kbse ];
 		f_TSE  = (D.f[dirBNW ])[kbnw ];
 		////////////////////////////////////////////////////////////////////////////////
-		double	OnE   = zero, OnW   = zero, OnN   = zero, OnS   = zero, OnT = zero, OnB = zero, 
-				OnNE  = zero, OnSW  = zero, OnSE  = zero, OnNW  = zero, 
-				OnTE  = zero, OnBW  = zero, OnBE  = zero, OnTW  = zero,
-				OnTN  = zero, OnBS  = zero, OnBN  = zero, OnTS  = zero, 
-				OnTNE = zero, OnTSW = zero, OnTSE = zero, OnTNW = zero, 
-				OnBNE = zero, OnBSW = zero, OnBSE = zero, OnBNW = zero;
+		double	OnE   = c0o1, OnW   = c0o1, OnN   = c0o1, OnS   = c0o1, OnT = c0o1, OnB = c0o1, 
+				OnNE  = c0o1, OnSW  = c0o1, OnSE  = c0o1, OnNW  = c0o1, 
+				OnTE  = c0o1, OnBW  = c0o1, OnBE  = c0o1, OnTW  = c0o1,
+				OnTN  = c0o1, OnBS  = c0o1, OnBN  = c0o1, OnTS  = c0o1, 
+				OnTNE = c0o1, OnTSW = c0o1, OnTSE = c0o1, OnTNW = c0o1, 
+				OnBNE = c0o1, OnBSW = c0o1, OnBSE = c0o1, OnBNW = c0o1;
 		////////////////////////////////////////////////////////////////////////////////
 		real q;
-		q = q_dirE[k];		if (q>=zero && q<=one) OnE   = one;
-		q = q_dirW[k];		if (q>=zero && q<=one) OnW   = one;
-		q = q_dirN[k];		if (q>=zero && q<=one) OnN   = one;
-		q = q_dirS[k];		if (q>=zero && q<=one) OnS   = one;
-		q = q_dirT[k];		if (q>=zero && q<=one) OnT   = one;
-		q = q_dirB[k];		if (q>=zero && q<=one) OnB   = one;
-		q = q_dirNE[k];		if (q>=zero && q<=one) OnNE  = one;
-		q = q_dirSW[k];		if (q>=zero && q<=one) OnSW  = one;
-		q = q_dirSE[k];		if (q>=zero && q<=one) OnSE  = one;
-		q = q_dirNW[k];		if (q>=zero && q<=one) OnNW  = one;
-		q = q_dirTE[k];		if (q>=zero && q<=one) OnTE  = one;
-		q = q_dirBW[k];		if (q>=zero && q<=one) OnBW  = one;
-		q = q_dirBE[k];		if (q>=zero && q<=one) OnBE  = one;
-		q = q_dirTW[k];		if (q>=zero && q<=one) OnTW  = one;
-		q = q_dirTN[k];		if (q>=zero && q<=one) OnTN  = one;
-		q = q_dirBS[k];		if (q>=zero && q<=one) OnBS  = one;
-		q = q_dirBN[k];		if (q>=zero && q<=one) OnBN  = one;
-		q = q_dirTS[k];		if (q>=zero && q<=one) OnTS  = one;
-		q = q_dirTNE[k];	if (q>=zero && q<=one) OnTNE = one;
-		q = q_dirBSW[k];	if (q>=zero && q<=one) OnBSW = one;
-		q = q_dirBNE[k];	if (q>=zero && q<=one) OnBNE = one;
-		q = q_dirTSW[k];	if (q>=zero && q<=one) OnTSW = one;
-		q = q_dirTSE[k];	if (q>=zero && q<=one) OnTSE = one;
-		q = q_dirBNW[k];	if (q>=zero && q<=one) OnBNW = one;
-		q = q_dirBSE[k];	if (q>=zero && q<=one) OnBSE = one;
-		q = q_dirTNW[k];	if (q>=zero && q<=one) OnTNW = one;
+		q = q_dirE[k];		if (q>=c0o1 && q<=c1o1) OnE   = c1o1;
+		q = q_dirW[k];		if (q>=c0o1 && q<=c1o1) OnW   = c1o1;
+		q = q_dirN[k];		if (q>=c0o1 && q<=c1o1) OnN   = c1o1;
+		q = q_dirS[k];		if (q>=c0o1 && q<=c1o1) OnS   = c1o1;
+		q = q_dirT[k];		if (q>=c0o1 && q<=c1o1) OnT   = c1o1;
+		q = q_dirB[k];		if (q>=c0o1 && q<=c1o1) OnB   = c1o1;
+		q = q_dirNE[k];		if (q>=c0o1 && q<=c1o1) OnNE  = c1o1;
+		q = q_dirSW[k];		if (q>=c0o1 && q<=c1o1) OnSW  = c1o1;
+		q = q_dirSE[k];		if (q>=c0o1 && q<=c1o1) OnSE  = c1o1;
+		q = q_dirNW[k];		if (q>=c0o1 && q<=c1o1) OnNW  = c1o1;
+		q = q_dirTE[k];		if (q>=c0o1 && q<=c1o1) OnTE  = c1o1;
+		q = q_dirBW[k];		if (q>=c0o1 && q<=c1o1) OnBW  = c1o1;
+		q = q_dirBE[k];		if (q>=c0o1 && q<=c1o1) OnBE  = c1o1;
+		q = q_dirTW[k];		if (q>=c0o1 && q<=c1o1) OnTW  = c1o1;
+		q = q_dirTN[k];		if (q>=c0o1 && q<=c1o1) OnTN  = c1o1;
+		q = q_dirBS[k];		if (q>=c0o1 && q<=c1o1) OnBS  = c1o1;
+		q = q_dirBN[k];		if (q>=c0o1 && q<=c1o1) OnBN  = c1o1;
+		q = q_dirTS[k];		if (q>=c0o1 && q<=c1o1) OnTS  = c1o1;
+		q = q_dirTNE[k];	if (q>=c0o1 && q<=c1o1) OnTNE = c1o1;
+		q = q_dirBSW[k];	if (q>=c0o1 && q<=c1o1) OnBSW = c1o1;
+		q = q_dirBNE[k];	if (q>=c0o1 && q<=c1o1) OnBNE = c1o1;
+		q = q_dirTSW[k];	if (q>=c0o1 && q<=c1o1) OnTSW = c1o1;
+		q = q_dirTSE[k];	if (q>=c0o1 && q<=c1o1) OnTSE = c1o1;
+		q = q_dirBNW[k];	if (q>=c0o1 && q<=c1o1) OnBNW = c1o1;
+		q = q_dirBSE[k];	if (q>=c0o1 && q<=c1o1) OnBSE = c1o1;
+		q = q_dirTNW[k];	if (q>=c0o1 && q<=c1o1) OnTNW = c1o1;
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		double dragX, dragY, dragZ;
 
@@ -450,40 +451,40 @@ extern "C" __global__ void DragLiftPre27(   real* DD,
 		f_BSE = (D.f[dirBSE ])[kbse ];
 		f_BNW = (D.f[dirBNW ])[kbnw ];
 		 ////////////////////////////////////////////////////////////////////////////////
-		double	OnE   = zero, OnW   = zero, OnN   = zero, OnS   = zero, OnT = zero, OnB = zero, 
-				OnNE  = zero, OnSW  = zero, OnSE  = zero, OnNW  = zero, 
-				OnTE  = zero, OnBW  = zero, OnBE  = zero, OnTW  = zero,
-				OnTN  = zero, OnBS  = zero, OnBN  = zero, OnTS  = zero, 
-				OnTNE = zero, OnTSW = zero, OnTSE = zero, OnTNW = zero, 
-				OnBNE = zero, OnBSW = zero, OnBSE = zero, OnBNW = zero;
+		double	OnE   = c0o1, OnW   = c0o1, OnN   = c0o1, OnS   = c0o1, OnT = c0o1, OnB = c0o1, 
+				OnNE  = c0o1, OnSW  = c0o1, OnSE  = c0o1, OnNW  = c0o1, 
+				OnTE  = c0o1, OnBW  = c0o1, OnBE  = c0o1, OnTW  = c0o1,
+				OnTN  = c0o1, OnBS  = c0o1, OnBN  = c0o1, OnTS  = c0o1, 
+				OnTNE = c0o1, OnTSW = c0o1, OnTSE = c0o1, OnTNW = c0o1, 
+				OnBNE = c0o1, OnBSW = c0o1, OnBSE = c0o1, OnBNW = c0o1;
 		////////////////////////////////////////////////////////////////////////////////
 		real q;
-		q = q_dirE[k];		if (q>=zero && q<=one) OnW   = one;
-		q = q_dirW[k];		if (q>=zero && q<=one) OnE   = one;
-		q = q_dirN[k];		if (q>=zero && q<=one) OnS   = one;
-		q = q_dirS[k];		if (q>=zero && q<=one) OnN   = one;
-		q = q_dirT[k];		if (q>=zero && q<=one) OnB   = one;
-		q = q_dirB[k];		if (q>=zero && q<=one) OnT   = one;
-		q = q_dirNE[k];		if (q>=zero && q<=one) OnSW  = one;
-		q = q_dirSW[k];		if (q>=zero && q<=one) OnNE  = one;
-		q = q_dirSE[k];		if (q>=zero && q<=one) OnNW  = one;
-		q = q_dirNW[k];		if (q>=zero && q<=one) OnSE  = one;
-		q = q_dirTE[k];		if (q>=zero && q<=one) OnBW  = one;
-		q = q_dirBW[k];		if (q>=zero && q<=one) OnTE  = one;
-		q = q_dirBE[k];		if (q>=zero && q<=one) OnTW  = one;
-		q = q_dirTW[k];		if (q>=zero && q<=one) OnBE  = one;
-		q = q_dirTN[k];		if (q>=zero && q<=one) OnBS  = one;
-		q = q_dirBS[k];		if (q>=zero && q<=one) OnTN  = one;
-		q = q_dirBN[k];		if (q>=zero && q<=one) OnTS  = one;
-		q = q_dirTS[k];		if (q>=zero && q<=one) OnBN  = one;
-		q = q_dirTNE[k];	if (q>=zero && q<=one) OnBSW = one;
-		q = q_dirBSW[k];	if (q>=zero && q<=one) OnTNE = one;
-		q = q_dirBNE[k];	if (q>=zero && q<=one) OnTSW = one;
-		q = q_dirTSW[k];	if (q>=zero && q<=one) OnBNE = one;
-		q = q_dirTSE[k];	if (q>=zero && q<=one) OnBNW = one;
-		q = q_dirBNW[k];	if (q>=zero && q<=one) OnTSE = one;
-		q = q_dirBSE[k];	if (q>=zero && q<=one) OnTNW = one;
-		q = q_dirTNW[k];	if (q>=zero && q<=one) OnBSE = one;
+		q = q_dirE[k];		if (q>=c0o1 && q<=c1o1) OnW   = c1o1;
+		q = q_dirW[k];		if (q>=c0o1 && q<=c1o1) OnE   = c1o1;
+		q = q_dirN[k];		if (q>=c0o1 && q<=c1o1) OnS   = c1o1;
+		q = q_dirS[k];		if (q>=c0o1 && q<=c1o1) OnN   = c1o1;
+		q = q_dirT[k];		if (q>=c0o1 && q<=c1o1) OnB   = c1o1;
+		q = q_dirB[k];		if (q>=c0o1 && q<=c1o1) OnT   = c1o1;
+		q = q_dirNE[k];		if (q>=c0o1 && q<=c1o1) OnSW  = c1o1;
+		q = q_dirSW[k];		if (q>=c0o1 && q<=c1o1) OnNE  = c1o1;
+		q = q_dirSE[k];		if (q>=c0o1 && q<=c1o1) OnNW  = c1o1;
+		q = q_dirNW[k];		if (q>=c0o1 && q<=c1o1) OnSE  = c1o1;
+		q = q_dirTE[k];		if (q>=c0o1 && q<=c1o1) OnBW  = c1o1;
+		q = q_dirBW[k];		if (q>=c0o1 && q<=c1o1) OnTE  = c1o1;
+		q = q_dirBE[k];		if (q>=c0o1 && q<=c1o1) OnTW  = c1o1;
+		q = q_dirTW[k];		if (q>=c0o1 && q<=c1o1) OnBE  = c1o1;
+		q = q_dirTN[k];		if (q>=c0o1 && q<=c1o1) OnBS  = c1o1;
+		q = q_dirBS[k];		if (q>=c0o1 && q<=c1o1) OnTN  = c1o1;
+		q = q_dirBN[k];		if (q>=c0o1 && q<=c1o1) OnTS  = c1o1;
+		q = q_dirTS[k];		if (q>=c0o1 && q<=c1o1) OnBN  = c1o1;
+		q = q_dirTNE[k];	if (q>=c0o1 && q<=c1o1) OnBSW = c1o1;
+		q = q_dirBSW[k];	if (q>=c0o1 && q<=c1o1) OnTNE = c1o1;
+		q = q_dirBNE[k];	if (q>=c0o1 && q<=c1o1) OnTSW = c1o1;
+		q = q_dirTSW[k];	if (q>=c0o1 && q<=c1o1) OnBNE = c1o1;
+		q = q_dirTSE[k];	if (q>=c0o1 && q<=c1o1) OnBNW = c1o1;
+		q = q_dirBNW[k];	if (q>=c0o1 && q<=c1o1) OnTSE = c1o1;
+		q = q_dirBSE[k];	if (q>=c0o1 && q<=c1o1) OnTNW = c1o1;
+		q = q_dirTNW[k];	if (q>=c0o1 && q<=c1o1) OnBSE = c1o1;
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		double dragX, dragY, dragZ;
 

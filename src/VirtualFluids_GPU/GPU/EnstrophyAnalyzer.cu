@@ -18,7 +18,7 @@
 #include "Parameter/Parameter.h"
 // includes, kernels
 #include "GPU/GPU_Kernels.cuh"
-#include "GPU/constant.h"
+#include "Core/RealConstants.h"
 
 __global__                 void enstrophyKernel  ( real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint* isFluid, uint size_Mat );
 
@@ -33,7 +33,7 @@ bool EnstrophyAnalyzer::run(uint iter)
 	int lev = 0;
 	int size_Mat = this->para->getParD(lev)->size_Mat_SP;
 	
-	thrust::device_vector<real> enstrophy( size_Mat, zero );
+	thrust::device_vector<real> enstrophy( size_Mat, c0o1 );
     thrust::device_vector<uint> isFluid  ( size_Mat, 0);
 
 	unsigned int numberOfThreads = 128;
@@ -82,7 +82,7 @@ bool EnstrophyAnalyzer::run(uint iter)
 	cudaDeviceSynchronize(); 
 	getLastCudaError("enstrophyKernel execution failed");
 
-	real EnstrophyTmp       = thrust::reduce(enstrophy.begin(), enstrophy.end(), zero, thrust::plus<real>());
+	real EnstrophyTmp       = thrust::reduce(enstrophy.begin(), enstrophy.end(), c0o1, thrust::plus<real>());
     uint numberOfFluidNodes = thrust::reduce(isFluid.begin(),   isFluid.end(),   0,    thrust::plus<uint>());
 
 	this->enstrophyTimeSeries.push_back( EnstrophyTmp / real(numberOfFluidNodes) );
@@ -244,15 +244,15 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 	real veloZNeighborPz4 = veloZ[kPz4];
 	real veloZNeighborMz4 = veloZ[kMz4];
 	//////////////////////////////////////////////////////////////////////////////
-	real dxvx = zero;
-	real dyvx = zero;
-	real dzvx = zero;
-	real dxvy = zero;
-	real dyvy = zero;
-	real dzvy = zero;
-	real dxvz = zero;
-	real dyvz = zero;
-	real dzvz = zero;
+	real dxvx = c0o1;
+	real dyvx = c0o1;
+	real dzvx = c0o1;
+	real dxvy = c0o1;
+	real dyvy = c0o1;
+	real dzvy = c0o1;
+	real dxvz = c0o1;
+	real dyvz = c0o1;
+	real dzvz = c0o1;
     //////////////////////////////////////////////////////////////////////////
 
 	//dxvy = (veloYNeighborPx - veloYNeighborMx) / two;
@@ -288,14 +288,14 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 
     //////////////////////////////////////////////////////////////////////////
 
-	dxvy = ( (twentyeight * eight) * ( veloYNeighborPx - veloYNeighborMx ) - (seven * eight) * ( veloYNeighborPx2 - veloYNeighborMx2) + (eight * four * c1o3) * ( veloYNeighborPx3 - veloYNeighborMx3) - ( veloYNeighborPx4 - veloYNeighborMx4) ) / (seven * ten * four);
-	dxvz = ( (twentyeight * eight) * ( veloZNeighborPx - veloZNeighborMx ) - (seven * eight) * ( veloZNeighborPx2 - veloZNeighborMx2) + (eight * four * c1o3) * ( veloZNeighborPx3 - veloZNeighborMx3) - ( veloZNeighborPx4 - veloZNeighborMx4) ) / (seven * ten * four);
+	dxvy = ( (c28o1 * c8o1) * ( veloYNeighborPx - veloYNeighborMx ) - (c7o1 * c8o1) * ( veloYNeighborPx2 - veloYNeighborMx2) + (c8o1 * c4o1 * c1o3) * ( veloYNeighborPx3 - veloYNeighborMx3) - ( veloYNeighborPx4 - veloYNeighborMx4) ) / (c7o1 * c10o1 * c4o1);
+	dxvz = ( (c28o1 * c8o1) * ( veloZNeighborPx - veloZNeighborMx ) - (c7o1 * c8o1) * ( veloZNeighborPx2 - veloZNeighborMx2) + (c8o1 * c4o1 * c1o3) * ( veloZNeighborPx3 - veloZNeighborMx3) - ( veloZNeighborPx4 - veloZNeighborMx4) ) / (c7o1 * c10o1 * c4o1);
 
-	dyvx = ( (twentyeight * eight) * ( veloXNeighborPy - veloXNeighborMy ) - (seven * eight) * ( veloXNeighborPy2 - veloXNeighborMy2) + (eight * four * c1o3) * ( veloXNeighborPy3 - veloXNeighborMy3) - ( veloXNeighborPy4 - veloXNeighborMy4) ) / (seven * ten * four);
-	dyvz = ( (twentyeight * eight) * ( veloZNeighborPy - veloZNeighborMy ) - (seven * eight) * ( veloZNeighborPy2 - veloZNeighborMy2) + (eight * four * c1o3) * ( veloZNeighborPy3 - veloZNeighborMy3) - ( veloZNeighborPy4 - veloZNeighborMy4) ) / (seven * ten * four);
+	dyvx = ( (c28o1 * c8o1) * ( veloXNeighborPy - veloXNeighborMy ) - (c7o1 * c8o1) * ( veloXNeighborPy2 - veloXNeighborMy2) + (c8o1 * c4o1 * c1o3) * ( veloXNeighborPy3 - veloXNeighborMy3) - ( veloXNeighborPy4 - veloXNeighborMy4) ) / (c7o1 * c10o1 * c4o1);
+	dyvz = ( (c28o1 * c8o1) * ( veloZNeighborPy - veloZNeighborMy ) - (c7o1 * c8o1) * ( veloZNeighborPy2 - veloZNeighborMy2) + (c8o1 * c4o1 * c1o3) * ( veloZNeighborPy3 - veloZNeighborMy3) - ( veloZNeighborPy4 - veloZNeighborMy4) ) / (c7o1 * c10o1 * c4o1);
 
-	dzvx = ( (twentyeight * eight) * ( veloXNeighborPz - veloXNeighborMz ) - (seven * eight) * ( veloXNeighborPz2 - veloXNeighborMz2) + (eight * four * c1o3) * ( veloXNeighborPz3 - veloXNeighborMz3) - ( veloXNeighborPz4 - veloXNeighborMz4) ) / (seven * ten * four);
-	dzvy = ( (twentyeight * eight) * ( veloYNeighborPz - veloYNeighborMz ) - (seven * eight) * ( veloYNeighborPz2 - veloYNeighborMz2) + (eight * four * c1o3) * ( veloYNeighborPz3 - veloYNeighborMz3) - ( veloYNeighborPz4 - veloYNeighborMz4) ) / (seven * ten * four);
+	dzvx = ( (c28o1 * c8o1) * ( veloXNeighborPz - veloXNeighborMz ) - (c7o1 * c8o1) * ( veloXNeighborPz2 - veloXNeighborMz2) + (c8o1 * c4o1 * c1o3) * ( veloXNeighborPz3 - veloXNeighborMz3) - ( veloXNeighborPz4 - veloXNeighborMz4) ) / (c7o1 * c10o1 * c4o1);
+	dzvy = ( (c28o1 * c8o1) * ( veloYNeighborPz - veloYNeighborMz ) - (c7o1 * c8o1) * ( veloYNeighborPz2 - veloYNeighborMz2) + (c8o1 * c4o1 * c1o3) * ( veloYNeighborPz3 - veloYNeighborMz3) - ( veloYNeighborPz4 - veloYNeighborMz4) ) / (c7o1 * c10o1 * c4o1);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -306,7 +306,7 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 
     isFluid[ index ] = 1;
 
-    enstrophy[ index ] = c1o2 * (rho[index] + one) * ( tmpX*tmpX + tmpY*tmpY + tmpZ*tmpZ );
+    enstrophy[ index ] = c1o2 * (rho[index] + c1o1) * ( tmpX*tmpX + tmpY*tmpY + tmpZ*tmpZ );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

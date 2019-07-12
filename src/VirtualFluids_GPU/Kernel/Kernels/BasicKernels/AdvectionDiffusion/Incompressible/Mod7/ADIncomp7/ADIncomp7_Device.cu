@@ -1,6 +1,7 @@
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
+#include "Core/RealConstants.h"
 #include "math.h"
-#include "GPU/constant.h"
 
 extern "C" __global__ void LB_Kernel_AD_Incomp_7(real diffusivity,
 	unsigned int* bcMatD,
@@ -219,9 +220,9 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_7(real diffusivity,
 			////////////////////////////////////////////////////////////////////////////////
 			//TRT  Yoshida Kernel - based on Ying
 			real cs2 = c1o4;
-			real Lam = diffusivity*four;//diffusivity/(one)/cs2;
-			real omegaD = -one / (Lam + c1o2);
-			real ae = zero;
+			real Lam = diffusivity*c4o1;//diffusivity/(one)/cs2;
+			real omegaD = -c1o1 / (Lam + c1o2);
+			real ae = c0o1;
 			////////////////////////////////////////////////////////////////////////////////
 			real ConcD = f7ZERO + f7E + f7W + f7N + f7S + f7T + f7B;
 
@@ -229,8 +230,8 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_7(real diffusivity,
 			real Mom100 = f7E - f7W;
 			real Mom010 = f7N - f7S;
 			real Mom001 = f7T - f7B;
-			real Mom222 = six*f7ZERO - f7W - f7E - f7N - f7S - f7T - f7B;
-			real Mom200 = two*f7W + two*f7E - f7N - f7S - f7T - f7B;
+			real Mom222 = c6o1*f7ZERO - f7W - f7E - f7N - f7S - f7T - f7B;
+			real Mom200 = c2o1*f7W + c2o1*f7E - f7N - f7S - f7T - f7B;
 			real Mom022 = f7N + f7S - f7T - f7B;
 
 			real Meq000 = ConcD;
@@ -238,8 +239,8 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_7(real diffusivity,
 			real Meq010 = ConcD*vy;
 			real Meq001 = ConcD*vz;
 			real Meq222 = c3o4*ConcD;
-			real Meq200 = zero;
-			real Meq022 = zero;
+			real Meq200 = c0o1;
+			real Meq022 = c0o1;
 
 			// relaxation TRT Yoshida
 
@@ -249,10 +250,10 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_7(real diffusivity,
 			Mom001 = omegaD * (Mom001 - Meq001);
 
 			// even
-			Mom000 = -one*(Mom000 - Meq000);
-			Mom222 = -one*(Mom222 - Meq222);
-			Mom200 = -one*(Mom200 - Meq200);
-			Mom022 = -one*(Mom022 - Meq022);
+			Mom000 = -c1o1*(Mom000 - Meq000);
+			Mom222 = -c1o1*(Mom222 - Meq222);
+			Mom200 = -c1o1*(Mom200 - Meq200);
+			Mom022 = -c1o1*(Mom022 - Meq022);
 
 			//Back transformation to distributions
 			f7ZERO = f7ZERO + c1o7*Mom000 + c1o7*Mom222;                                                  //1

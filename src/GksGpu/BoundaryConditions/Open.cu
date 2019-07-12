@@ -126,9 +126,9 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         //ghostCellData = two * domainCellData + ( - one ) * secondCellData;
 
         
-        ghostCellData.rhoU = zero;
-        ghostCellData.rhoV = zero;
-        ghostCellData.rhoW = zero;
+        ghostCellData.rhoU = c0o1;
+        ghostCellData.rhoV = c0o1;
+        ghostCellData.rhoW = c0o1;
     }
     else
     {

@@ -47,19 +47,19 @@ __global__ void initializeDataUpdateKernel(DataBaseStruct dataBase, uint numberO
 
 __host__ __device__ inline void initializeDataUpdateFunction(DataBaseStruct dataBase, uint index)
 {
-    dataBase.dataUpdate[ RHO__(index, dataBase.numberOfCells) ] = zero;
-    dataBase.dataUpdate[ RHO_U(index, dataBase.numberOfCells) ] = zero;
-    dataBase.dataUpdate[ RHO_V(index, dataBase.numberOfCells) ] = zero;
-    dataBase.dataUpdate[ RHO_W(index, dataBase.numberOfCells) ] = zero;
-    dataBase.dataUpdate[ RHO_E(index, dataBase.numberOfCells) ] = zero;
+    dataBase.dataUpdate[ RHO__(index, dataBase.numberOfCells) ] = c0o1;
+    dataBase.dataUpdate[ RHO_U(index, dataBase.numberOfCells) ] = c0o1;
+    dataBase.dataUpdate[ RHO_V(index, dataBase.numberOfCells) ] = c0o1;
+    dataBase.dataUpdate[ RHO_W(index, dataBase.numberOfCells) ] = c0o1;
+    dataBase.dataUpdate[ RHO_E(index, dataBase.numberOfCells) ] = c0o1;
 #ifdef USE_PASSIVE_SCALAR
-	dataBase.dataUpdate[ RHO_S_1(index, dataBase.numberOfCells) ] = zero;
-	dataBase.dataUpdate[ RHO_S_2(index, dataBase.numberOfCells) ] = zero;
+	dataBase.dataUpdate[ RHO_S_1(index, dataBase.numberOfCells) ] = c0o1;
+	dataBase.dataUpdate[ RHO_S_2(index, dataBase.numberOfCells) ] = c0o1;
 #endif // USE_PASSIVE_SCALAR
 
-    dataBase.massFlux[ VEC_X(index, dataBase.numberOfCells) ]   = zero;
-    dataBase.massFlux[ VEC_Y(index, dataBase.numberOfCells) ]   = zero;
-    dataBase.massFlux[ VEC_Z(index, dataBase.numberOfCells) ]   = zero;
+    dataBase.massFlux[ VEC_X(index, dataBase.numberOfCells) ]   = c0o1;
+    dataBase.massFlux[ VEC_Y(index, dataBase.numberOfCells) ]   = c0o1;
+    dataBase.massFlux[ VEC_Z(index, dataBase.numberOfCells) ]   = c0o1;
 
-    dataBase.diffusivity[ index ] = one;
+    dataBase.diffusivity[ index ] = c1o1;
 }

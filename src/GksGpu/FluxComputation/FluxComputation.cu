@@ -132,7 +132,7 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
             if (fabsf(z) > zStart)
             {
-                muNew += (fabs(z) - zStart) * ten * ten * ten * parameters.mu;
+                muNew += (fabs(z) - zStart) * c10o1 * c10o1 * c10o1 * parameters.mu;
             }
 
             parameters.mu = muNew;
@@ -148,7 +148,7 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
             if (fabsf(z) > zStart)
             {
-                muNew += (fabs(z) - zStart) * ten * ten * ten * parameters.mu;
+                muNew += (fabs(z) - zStart) * c10o1 * c10o1 * c10o1 * parameters.mu;
             }
 
             parameters.mu = muNew;
@@ -169,10 +169,10 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 #pragma unroll
     for( uint i = 0; i < LENGTH_CELL_DATA; i++ )
     { 
-        ax[i] = zero; 
-        ay[i] = zero; 
-        az[i] = zero; 
-        at[i] = zero;
+        ax[i] = c0o1; 
+        ay[i] = c0o1; 
+        az[i] = c0o1; 
+        at[i] = c0o1;
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -239,9 +239,9 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             real dEdx2 = ( gradT1.rhoE - facePrim.W * gradT1.rho );
             real dEdx3 = ( gradT2.rhoE - facePrim.W * gradT2.rho );
 
-            real dTdx1 = dEdx1 - two * facePrim.U * dUdx1 - two * facePrim.V * dVdx1 - two * facePrim.W * dWdx1;
-            real dTdx2 = dEdx2 - two * facePrim.U * dUdx2 - two * facePrim.V * dVdx2 - two * facePrim.W * dWdx2;
-            real dTdx3 = dEdx3 - two * facePrim.U * dUdx3 - two * facePrim.V * dVdx3 - two * facePrim.W * dWdx3;
+            real dTdx1 = dEdx1 - c2o1 * facePrim.U * dUdx1 - c2o1 * facePrim.V * dVdx1 - c2o1 * facePrim.W * dWdx1;
+            real dTdx2 = dEdx2 - c2o1 * facePrim.U * dUdx2 - c2o1 * facePrim.V * dVdx2 - c2o1 * facePrim.W * dWdx2;
+            real dTdx3 = dEdx3 - c2o1 * facePrim.U * dUdx3 - c2o1 * facePrim.V * dVdx3 - c2o1 * facePrim.W * dWdx3;
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // this one works for some time
@@ -279,13 +279,13 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
     if(parameters.usePassiveScalarLimiter){
     #ifdef USE_PASSIVE_SCALAR
 
-        if( facePrim.S_1 < zero ) parameters.D1 += - parameters.passiveScalarLimiter *   facePrim.S_1;
-        if( facePrim.S_1 > one  ) parameters.D1 +=   parameters.passiveScalarLimiter * ( facePrim.S_1 - one );
+        if( facePrim.S_1 < c0o1 ) parameters.D1 += - parameters.passiveScalarLimiter *   facePrim.S_1;
+        if( facePrim.S_1 > c1o1  ) parameters.D1 +=   parameters.passiveScalarLimiter * ( facePrim.S_1 - c1o1 );
         
         parameters.D2 = parameters.D1;
 
-        if( facePrim.S_2 < zero ) parameters.D2 += - real(0.1)*parameters.passiveScalarLimiter *   facePrim.S_2;
-        if( facePrim.S_2 > one  ) parameters.D2 +=   real(0.1)*parameters.passiveScalarLimiter * ( facePrim.S_2 - one );
+        if( facePrim.S_2 < c0o1 ) parameters.D2 += - real(0.1)*parameters.passiveScalarLimiter *   facePrim.S_2;
+        if( facePrim.S_2 > c1o1  ) parameters.D2 +=   real(0.1)*parameters.passiveScalarLimiter * ( facePrim.S_2 - c1o1 );
     #endif // USE_PASSIVE_SCALAR
     }
 
@@ -374,17 +374,17 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             if( isCellProperties( negCellProperties, CELL_PROPERTIES_WALL ) || 
                 isCellProperties( posCellProperties, CELL_PROPERTIES_WALL ) )
             {
-                flux.rho    = zero;
+                flux.rho    = c0o1;
             #ifdef USE_PASSIVE_SCALAR
-                flux.rhoS_1 = zero;
-                flux.rhoS_2 = zero;
+                flux.rhoS_1 = c0o1;
+                flux.rhoS_2 = c0o1;
             #endif //USE_PASSIVE_SCALAR
             }
 
             if( isCellProperties( negCellProperties, CELL_PROPERTIES_IS_INSULATED ) || 
                 isCellProperties( posCellProperties, CELL_PROPERTIES_IS_INSULATED ) )
             {
-                flux.rhoE   = zero;
+                flux.rhoE   = c0o1;
             }
 
             uint negCellParentIdx = dataBase.parentCell[ negCellIdx ];

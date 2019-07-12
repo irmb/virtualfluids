@@ -44,7 +44,7 @@ bool KineticEnergyAnalyzer::run(uint iter)
 
     getLastCudaError("KineticEnergyAnalyzer::run(uint iter)");
 
-    real EKin = thrust::reduce( kineticEnergy.begin(), kineticEnergy.end(), zero, thrust::plus<real>() )
+    real EKin = thrust::reduce( kineticEnergy.begin(), kineticEnergy.end(), c0o1, thrust::plus<real>() )
               / real(dataBase->perLevelCount[ 0 ].numberOfBulkCells);
 
     this->kineticEnergyTimeSeries.push_back( EKin );

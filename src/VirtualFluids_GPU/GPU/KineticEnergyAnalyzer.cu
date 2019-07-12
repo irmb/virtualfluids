@@ -19,7 +19,7 @@
 #include "Parameter/Parameter.h"
 // includes, kernels
 #include "GPU/GPU_Kernels.cuh"
-#include "GPU/constant.h"
+#include "Core/RealConstants.h"
 
 __global__                 void kineticEnergyKernel  (real* vx, real* vy, real* vz, real* rho, uint* geo, real* kineticEnergy, uint* isFluid, uint size_Mat);
 
@@ -34,7 +34,7 @@ bool KineticEnergyAnalyzer::run(uint iter)
 	int lev = 0;
 	int size_Mat = this->para->getParD(lev)->size_Mat_SP;
 
-    thrust::device_vector<real> kineticEnergy(size_Mat, zero);
+    thrust::device_vector<real> kineticEnergy(size_Mat, c0o1);
     thrust::device_vector<uint> isFluid      (size_Mat, 0);
 
 	unsigned int numberOfThreads = 128;
@@ -79,7 +79,7 @@ bool KineticEnergyAnalyzer::run(uint iter)
 
 	 getLastCudaError("kineticEnergyKernel execution failed");
 
-	 real EKin               = thrust::reduce(kineticEnergy.begin(), kineticEnergy.end(), zero, thrust::plus<real>());
+	 real EKin               = thrust::reduce(kineticEnergy.begin(), kineticEnergy.end(), c0o1, thrust::plus<real>());
      uint numberOfFluidNodes = thrust::reduce(isFluid.begin(),       isFluid.end(),       0,    thrust::plus<uint>());
 
     this->kineticEnergyTimeSeries.push_back( EKin / real(numberOfFluidNodes) );
@@ -114,7 +114,7 @@ __host__ __device__ void kineticEnergyFunction(real* vx, real* vy, real* vz, rea
 {
     isFluid[ index ] = 1;
 
-    kineticEnergy[ index ] = c1o2 * ( vx[index] * vx[index] + vy[index] * vy[index] + vz[index] * vz[index] ) * (rho[index] + one);
+    kineticEnergy[ index ] = c1o2 * ( vx[index] * vx[index] + vy[index] * vy[index] + vz[index] * vz[index] ) * (rho[index] + c1o1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

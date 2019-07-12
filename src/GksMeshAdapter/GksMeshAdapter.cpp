@@ -375,9 +375,9 @@ void GksMeshAdapter::computeCellGeometry()
             cellCenter = cellCenter + this->nodes[ cell.cellToNode[node] ];
         }
 
-        cell.cellCenter.x = cellCenter.x / eight;
-        cell.cellCenter.y = cellCenter.y / eight;
-        cell.cellCenter.z = cellCenter.z / eight;
+        cell.cellCenter.x = cellCenter.x / c8o1;
+        cell.cellCenter.y = cellCenter.y / c8o1;
+        cell.cellCenter.z = cellCenter.z / c8o1;
     }
 }
 
@@ -471,9 +471,9 @@ void GksMeshAdapter::generateFaces()
                 faceCenter = faceCenter + this->nodes[ newFace.faceToNode[node] ];
             }
 
-            newFace.faceCenter.x = faceCenter.x / four;
-            newFace.faceCenter.y = faceCenter.y / four;
-            newFace.faceCenter.z = faceCenter.z / four;
+            newFace.faceCenter.x = faceCenter.x / c4o1;
+            newFace.faceCenter.y = faceCenter.y / c4o1;
+            newFace.faceCenter.z = faceCenter.z / c4o1;
 
             this->faces.push_back( newFace );
         }

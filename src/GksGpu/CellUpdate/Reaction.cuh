@@ -39,9 +39,9 @@ __host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Par
             real Y_F = prim.S_1;
             real Y_P = prim.S_2;
 
-            real Y_A = one - Y_F - Y_P;
+            real Y_A = c1o1 - Y_F - Y_P;
 
-            real M = one / ( Y_A / M_A
+            real M = c1o1 / ( Y_A / M_A
                            + Y_F / M_F
                            + Y_P / M_P );
 
@@ -79,7 +79,7 @@ __host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Par
 
                 //////////////////////////////////////////////////////////////////////////
 
-                if( dX_F < zero ) dX_F = zero;
+                if( dX_F < c0o1 ) dX_F = c0o1;
 
                 //////////////////////////////////////////////////////////////////////////
 
@@ -99,10 +99,10 @@ __host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Par
                 //real X_F_new = X_F - dX_F;
                 //real X_P_new = X_P + dX_F;
 
-                real X_A_new = X_A - two * dX_F / real(0.21);
+                real X_A_new = X_A - c2o1 * dX_F / real(0.21);
                 real X_F_new = X_F - dX_F;
 
-                real X_P_new = one - X_A_new - X_F_new;
+                real X_P_new = c1o1 - X_A_new - X_F_new;
 
                 real Z1 = X_F_new * M_F / M;
                 real Z2 = X_P_new * M_P / M;
@@ -178,8 +178,8 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
         //////////////////////////////////////////////////////////////////////////
 
-        real diffusivity = dataBase.diffusivity[ cellIndex ] / ( six * parameters.dx * parameters.dx * parameters.dt );
-        dataBase.diffusivity[ cellIndex ] = zero;
+        real diffusivity = dataBase.diffusivity[ cellIndex ] / ( c6o1 * parameters.dx * parameters.dx * parameters.dt );
+        dataBase.diffusivity[ cellIndex ] = c0o1;
 
         //////////////////////////////////////////////////////////////////////////
 
@@ -195,7 +195,7 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
         real Y_F = prim.S_1;
         real Y_P = prim.S_2;
 
-        real Y_A = one - Y_F - Y_P;
+        real Y_A = c1o1 - Y_F - Y_P;
 
         ///////////////////////////////////////////////////////////////////////////////
 
@@ -203,14 +203,14 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
         ///////////////////////////////////////////////////////////////////////////////
 
-        real s = M_F / ( two * 0.032 );
+        real s = M_F / ( c2o1 * 0.032 );
 
         real heatReleaseRate = cons.rho * fminf(Y_F, s * Y_O2) / mixingTimeScale * ( parameters.heatOfReaction / M_F );
 
         //////////////////////////////////////////////////////////////////////////
 
-        if( heatReleaseRate < zero )
-            heatReleaseRate = zero;
+        if( heatReleaseRate < c0o1 )
+            heatReleaseRate = c0o1;
 
         //////////////////////////////////////////////////////////////////////////
 
@@ -222,7 +222,7 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
         real drhoY_F = heatReleaseRate * parameters.dt / ( parameters.heatOfReaction / M_F );
 
-        real r = one + one / ( two * real(0.21) ) * M_A / M_F;
+        real r = c1o1 + c1o1 / ( c2o1 * real(0.21) ) * M_A / M_F;
 
         cons.rhoS_1 -=     drhoY_F;
         cons.rhoS_2 += r * drhoY_F;

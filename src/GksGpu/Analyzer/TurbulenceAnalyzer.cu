@@ -91,10 +91,10 @@ __host__ __device__ void turbulenceFunction(DataBaseStruct dataBase, TurbulenceA
 #ifdef USE_PASSIVE_SCALAR
     if( turbulenceAnalyzer.T  ) turbulenceAnalyzer.T [ cellIndex ] += getT(prim);
 #else
-    if( turbulenceAnalyzer.T  ) turbulenceAnalyzer.T [ cellIndex ] +=   one / prim.lambda;
+    if( turbulenceAnalyzer.T  ) turbulenceAnalyzer.T [ cellIndex ] +=   c1o1 / prim.lambda;
 #endif
 
-    if( turbulenceAnalyzer.TT ) turbulenceAnalyzer.TT[ cellIndex ] += ( one / prim.lambda ) * ( one / prim.lambda );
+    if( turbulenceAnalyzer.TT ) turbulenceAnalyzer.TT[ cellIndex ] += ( c1o1 / prim.lambda ) * ( c1o1 / prim.lambda );
     if( turbulenceAnalyzer.p  ) turbulenceAnalyzer.p [ cellIndex ] += c1o2 * prim.rho / prim.lambda;
 
     //////////////////////////////////////////////////////////////////////////

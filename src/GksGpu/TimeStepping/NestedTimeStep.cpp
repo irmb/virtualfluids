@@ -17,8 +17,8 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
 {
     //////////////////////////////////////////////////////////////////////////
 
-    if( level != 0 ) parameters.dt /= two;
-    if( level != 0 ) parameters.dx /= two;
+    if( level != 0 ) parameters.dt /= c2o1;
+    if( level != 0 ) parameters.dx /= c2o1;
 
     //////////////////////////////////////////////////////////////////////////
 

@@ -101,7 +101,7 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
     //real CFL = 0.06125;
     real CFL = 0.125;
 
-    real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+    real dt  = CFL * ( dx / ( ( U + cs ) * ( c1o1 + ( c2o1 * mu ) / ( U * dx * rho ) ) ) );
 
     real dh = 8000.0; // kJ / kmol  / T_FAKTOR
 
@@ -381,7 +381,7 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint iterPerSecond = uint( one / parameters.dt ) + 1;
+    uint iterPerSecond = uint( c1o1 / parameters.dt ) + 1;
 
     *logging::out << logging::Logger::INFO_HIGH << "iterPerSecond = " << iterPerSecond << "\n";
 

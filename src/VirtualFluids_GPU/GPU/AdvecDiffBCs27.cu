@@ -1,6 +1,7 @@
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "GPU/constant.h"
+#include "Core/RealConstants.h"
 
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QADPress7(  int inx,
@@ -239,8 +240,8 @@ extern "C" __global__ void QADPress7(  int inx,
       //               (f_T - f_B); 
 
       real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirZERO])[kzero]);
-      real rho    =  rho0 + one;
-      real OORho  =  one/rho;
+      real rho    =  rho0 + c1o1;
+      real OORho  =  c1o1/rho;
       real vx1    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       real vx2    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       real vx3    =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
@@ -249,11 +250,11 @@ extern "C" __global__ void QADPress7(  int inx,
       real ux_sq       = vx1 * vx1;
       real uy_sq       = vx2 * vx2;
       real uz_sq       = vx3 * vx3;
-      real omegaD     = three - sqrt(three);
-      real Lam         = -(c1o2-one/omegaD);
-      real nue_d       = Lam/three;
+      real omegaD     = c3o1 - sqrt(c3o1);
+      real Lam         = -(c1o2-c1o1/omegaD);
+      real nue_d       = Lam/c3o1;
       //real ae          = zero;
-      real ae          = diffusivity/nue_d - one;
+      real ae          = diffusivity/nue_d - c1o1;
 
       real f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
       real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
@@ -272,12 +273,12 @@ extern "C" __global__ void QADPress7(  int inx,
       real ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
 
       //feq7_ZERO = ConcD*(c1o3*(ae*(-3.0))-(ux_sq+uy_sq+uz_sq));
-      feq7_E    = ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)+vx1*c1o2);
-      feq7_W    = ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)-vx1*c1o2);
-      feq7_N    = ConcD*(c1o6*(ae+one)+c1o2*(uy_sq)+vx2*c1o2);
-      feq7_S    = ConcD*(c1o6*(ae+one)+c1o2*(uy_sq)-vx2*c1o2);
-      feq7_T    = ConcD*(c1o6*(ae+one)+c1o2*(uz_sq)+vx3*c1o2);
-      feq7_B    = ConcD*(c1o6*(ae+one)+c1o2*(uz_sq)-vx3*c1o2);
+      feq7_E    = ConcD*(c1o6*(ae+c1o1)+c1o2*(ux_sq)+vx1*c1o2);
+      feq7_W    = ConcD*(c1o6*(ae+c1o1)+c1o2*(ux_sq)-vx1*c1o2);
+      feq7_N    = ConcD*(c1o6*(ae+c1o1)+c1o2*(uy_sq)+vx2*c1o2);
+      feq7_S    = ConcD*(c1o6*(ae+c1o1)+c1o2*(uy_sq)-vx2*c1o2);
+      feq7_T    = ConcD*(c1o6*(ae+c1o1)+c1o2*(uz_sq)+vx3*c1o2);
+      feq7_B    = ConcD*(c1o6*(ae+c1o1)+c1o2*(uz_sq)-vx3*c1o2);
 
       //feq7_ZERO = TempD*(c1o3*(ae*(-3.0f))-(ux_sq+uy_sq+uz_sq));
       feqW7_E    = feq7_E;// TempD*(c1o6*(ae+one)+c1o2*(ux_sq_Inflow)+vx1_Inflow*c1o2);
@@ -325,45 +326,45 @@ extern "C" __global__ void QADPress7(  int inx,
       //mit Q's
       real /*feq,*/ q;
       q = q_dirE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          //q=0.;
-         (D7.f[2])[kw]=(two*feqW7_W-(f7_E*(q*omegaD-one)-omegaD*feq7_E*(q-one))/(omegaD-one)+f7_W*q)/(q+one);//f7_W - feq7_W + feqW7_E;
+         (D7.f[2])[kw]=(c2o1*feqW7_W-(f7_E*(q*omegaD-c1o1)-omegaD*feq7_E*(q-c1o1))/(omegaD-c1o1)+f7_W*q)/(q+c1o1);//f7_W - feq7_W + feqW7_E;
       }
 
       q = q_dirW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          //q=0.;
-         (D7.f[1])[ke]=(two*feqW7_E-(f7_W*(q*omegaD-one)-omegaD*feq7_W*(q-one))/(omegaD-one)+f7_E*q)/(q+one);//f7_E - feq7_E + feqW7_W;
+         (D7.f[1])[ke]=(c2o1*feqW7_E-(f7_W*(q*omegaD-c1o1)-omegaD*feq7_W*(q-c1o1))/(omegaD-c1o1)+f7_E*q)/(q+c1o1);//f7_E - feq7_E + feqW7_W;
       }
 
       q = q_dirN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          //q=0.;
-         (D7.f[4])[ks]=(two*feqW7_S-(f7_N*(q*omegaD-1.)-omegaD*feq7_N*(q-one))/(omegaD-one)+f7_S*q)/(q+one);//f7_S - feq7_S + feqW7_N;
+         (D7.f[4])[ks]=(c2o1*feqW7_S-(f7_N*(q*omegaD-1.)-omegaD*feq7_N*(q-c1o1))/(omegaD-c1o1)+f7_S*q)/(q+c1o1);//f7_S - feq7_S + feqW7_N;
       }
 
       q = q_dirS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          //q=0.;
-         (D7.f[3])[kn]=(two*feqW7_N-(f7_S*(q*omegaD-one)-omegaD*feq7_S*(q-one))/(omegaD-one)+f7_N*q)/(q+one);//f7_N - feq7_N + feqW7_S;
+         (D7.f[3])[kn]=(c2o1*feqW7_N-(f7_S*(q*omegaD-c1o1)-omegaD*feq7_S*(q-c1o1))/(omegaD-c1o1)+f7_N*q)/(q+c1o1);//f7_N - feq7_N + feqW7_S;
       }
 
       q = q_dirT[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          //q=0.;
-         (D7.f[6])[kb]=(two*feqW7_B-(f7_T*(q*omegaD-1.)-omegaD*feq7_T*(q-one))/(omegaD-one)+f7_B*q)/(q+one);//f7_B - feq7_B + feqW7_T;
+         (D7.f[6])[kb]=(c2o1*feqW7_B-(f7_T*(q*omegaD-1.)-omegaD*feq7_T*(q-c1o1))/(omegaD-c1o1)+f7_B*q)/(q+c1o1);//f7_B - feq7_B + feqW7_T;
       }
 
       q = q_dirB[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          //q=0.;
-         (D7.f[5])[kt]=(two*feqW7_T-(f7_B*(q*omegaD-one)-omegaD*feq7_B*(q-one))/(omegaD-one)+f7_T*q)/(q+one);//f7_T - feq7_T + feqW7_B;
+         (D7.f[5])[kt]=(c2o1*feqW7_T-(f7_B*(q*omegaD-c1o1)-omegaD*feq7_B*(q-c1o1))/(omegaD-c1o1)+f7_T*q)/(q+c1o1);//f7_T - feq7_T + feqW7_B;
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -710,8 +711,8 @@ extern "C" __global__ void QADPress27( int inx,
       //         (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //         (f_T - f_B); 
       real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ f_ZERO;
-      real rho    =  rho0 + one;
-      real OORho  =  one/rho;
+      real rho    =  rho0 + c1o1;
+      real OORho  =  c1o1/rho;
       vx1            =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       vx2            =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       vx3            =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
@@ -778,32 +779,32 @@ extern "C" __global__ void QADPress27( int inx,
       //real feq27_BSE  =   c1over216*(ConcD+(one+ConcD)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
       //real feq27_TNW  =   c1over216*(ConcD+(one+ConcD)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
       //
-      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feq27_E    =   c2o27* ConcD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2o27* ConcD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2o27* ConcD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2o27* ConcD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2o27* ConcD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2o27* ConcD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1o54* ConcD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1o54* ConcD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //real TempD = temp[k];
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -840,7 +841,7 @@ extern "C" __global__ void QADPress27( int inx,
       real feqW27_BSE  =  feq27_BSE;// c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
       real feqW27_TNW  =  feq27_TNW;// c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real omegaD     = three - sqrt(three);
+      real omegaD     = c3o1 - sqrt(c3o1);
       //real Lam        = -(c1o2-one/omegaD);
       //real nue_d      = Lam/three;
       //real ae         = zero;
@@ -912,32 +913,32 @@ extern "C" __global__ void QADPress27( int inx,
       //Test
       //(D.f[dirZERO])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]=(two*feqW27_W  -(f27_E  *(q*omegaD-one)-omegaD*feq27_E  *(q-one))/(omegaD-one)+f27_W  *q)/(q+one);
-      q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]=(two*feqW27_E  -(f27_W  *(q*omegaD-one)-omegaD*feq27_W  *(q-one))/(omegaD-one)+f27_E  *q)/(q+one);
-      q = q_dirN[k];   if (q>=zero && q<=one) (D27.f[dirS  ])[ks  ]=(two*feqW27_S  -(f27_N  *(q*omegaD-one)-omegaD*feq27_N  *(q-one))/(omegaD-one)+f27_S  *q)/(q+one);
-      q = q_dirS[k];   if (q>=zero && q<=one) (D27.f[dirN  ])[kn  ]=(two*feqW27_N  -(f27_S  *(q*omegaD-one)-omegaD*feq27_S  *(q-one))/(omegaD-one)+f27_N  *q)/(q+one);
-      q = q_dirT[k];   if (q>=zero && q<=one) (D27.f[dirB  ])[kb  ]=(two*feqW27_B  -(f27_T  *(q*omegaD-one)-omegaD*feq27_T  *(q-one))/(omegaD-one)+f27_B  *q)/(q+one);
-      q = q_dirB[k];   if (q>=zero && q<=one) (D27.f[dirT  ])[kt  ]=(two*feqW27_T  -(f27_B  *(q*omegaD-one)-omegaD*feq27_B  *(q-one))/(omegaD-one)+f27_T  *q)/(q+one);
-      q = q_dirNE[k];  if (q>=zero && q<=one) (D27.f[dirSW ])[ksw ]=(two*feqW27_SW -(f27_NE *(q*omegaD-one)-omegaD*feq27_NE *(q-one))/(omegaD-one)+f27_SW *q)/(q+one);
-      q = q_dirSW[k];  if (q>=zero && q<=one) (D27.f[dirNE ])[kne ]=(two*feqW27_NE -(f27_SW *(q*omegaD-one)-omegaD*feq27_SW *(q-one))/(omegaD-one)+f27_NE *q)/(q+one);
-      q = q_dirSE[k];  if (q>=zero && q<=one) (D27.f[dirNW ])[knw ]=(two*feqW27_NW -(f27_SE *(q*omegaD-one)-omegaD*feq27_SE *(q-one))/(omegaD-one)+f27_NW *q)/(q+one);
-      q = q_dirNW[k];  if (q>=zero && q<=one) (D27.f[dirSE ])[kse ]=(two*feqW27_SE -(f27_NW *(q*omegaD-one)-omegaD*feq27_NW *(q-one))/(omegaD-one)+f27_SE *q)/(q+one);
-      q = q_dirTE[k];  if (q>=zero && q<=one) (D27.f[dirBW ])[kbw ]=(two*feqW27_BW -(f27_TE *(q*omegaD-one)-omegaD*feq27_TE *(q-one))/(omegaD-one)+f27_BW *q)/(q+one);
-      q = q_dirBW[k];  if (q>=zero && q<=one) (D27.f[dirTE ])[kte ]=(two*feqW27_TE -(f27_BW *(q*omegaD-one)-omegaD*feq27_BW *(q-one))/(omegaD-one)+f27_TE *q)/(q+one);
-      q = q_dirBE[k];  if (q>=zero && q<=one) (D27.f[dirTW ])[ktw ]=(two*feqW27_TW -(f27_BE *(q*omegaD-one)-omegaD*feq27_BE *(q-one))/(omegaD-one)+f27_TW *q)/(q+one);
-      q = q_dirTW[k];  if (q>=zero && q<=one) (D27.f[dirBE ])[kbe ]=(two*feqW27_BE -(f27_TW *(q*omegaD-one)-omegaD*feq27_TW *(q-one))/(omegaD-one)+f27_BE *q)/(q+one);
-      q = q_dirTN[k];  if (q>=zero && q<=one) (D27.f[dirBS ])[kbs ]=(two*feqW27_BS -(f27_TN *(q*omegaD-one)-omegaD*feq27_TN *(q-one))/(omegaD-one)+f27_BS *q)/(q+one);
-      q = q_dirBS[k];  if (q>=zero && q<=one) (D27.f[dirTN ])[ktn ]=(two*feqW27_TN -(f27_BS *(q*omegaD-one)-omegaD*feq27_BS *(q-one))/(omegaD-one)+f27_TN *q)/(q+one);
-      q = q_dirBN[k];  if (q>=zero && q<=one) (D27.f[dirTS ])[kts ]=(two*feqW27_TS -(f27_BN *(q*omegaD-one)-omegaD*feq27_BN *(q-one))/(omegaD-one)+f27_TS *q)/(q+one);
-      q = q_dirTS[k];  if (q>=zero && q<=one) (D27.f[dirBN ])[kbn ]=(two*feqW27_BN -(f27_TS *(q*omegaD-one)-omegaD*feq27_TS *(q-one))/(omegaD-one)+f27_BN *q)/(q+one);
-      q = q_dirTNE[k]; if (q>=zero && q<=one) (D27.f[dirBSW])[kbsw]=(two*feqW27_BSW-(f27_TNE*(q*omegaD-one)-omegaD*feq27_TNE*(q-one))/(omegaD-one)+f27_BSW*q)/(q+one);
-      q = q_dirBSW[k]; if (q>=zero && q<=one) (D27.f[dirTNE])[ktne]=(two*feqW27_TNE-(f27_BSW*(q*omegaD-one)-omegaD*feq27_BSW*(q-one))/(omegaD-one)+f27_TNE*q)/(q+one);
-      q = q_dirBNE[k]; if (q>=zero && q<=one) (D27.f[dirTSW])[ktsw]=(two*feqW27_TSW-(f27_BNE*(q*omegaD-one)-omegaD*feq27_BNE*(q-one))/(omegaD-one)+f27_TSW*q)/(q+one);
-      q = q_dirTSW[k]; if (q>=zero && q<=one) (D27.f[dirBNE])[kbne]=(two*feqW27_BNE-(f27_TSW*(q*omegaD-one)-omegaD*feq27_TSW*(q-one))/(omegaD-one)+f27_BNE*q)/(q+one);
-      q = q_dirTSE[k]; if (q>=zero && q<=one) (D27.f[dirBNW])[kbnw]=(two*feqW27_BNW-(f27_TSE*(q*omegaD-one)-omegaD*feq27_TSE*(q-one))/(omegaD-one)+f27_BNW*q)/(q+one);
-      q = q_dirBNW[k]; if (q>=zero && q<=one) (D27.f[dirTSE])[ktse]=(two*feqW27_TSE-(f27_BNW*(q*omegaD-one)-omegaD*feq27_BNW*(q-one))/(omegaD-one)+f27_TSE*q)/(q+one);
-      q = q_dirBSE[k]; if (q>=zero && q<=one) (D27.f[dirTNW])[ktnw]=(two*feqW27_TNW-(f27_BSE*(q*omegaD-one)-omegaD*feq27_BSE*(q-one))/(omegaD-one)+f27_TNW*q)/(q+one);
-      q = q_dirTNW[k]; if (q>=zero && q<=one) (D27.f[dirBSE])[kbse]=(two*feqW27_BSE-(f27_TNW*(q*omegaD-one)-omegaD*feq27_TNW*(q-one))/(omegaD-one)+f27_BSE*q)/(q+one);
+      q = q_dirE[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirW  ])[kw  ]=(c2o1*feqW27_W  -(f27_E  *(q*omegaD-c1o1)-omegaD*feq27_E  *(q-c1o1))/(omegaD-c1o1)+f27_W  *q)/(q+c1o1);
+      q = q_dirW[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirE  ])[ke  ]=(c2o1*feqW27_E  -(f27_W  *(q*omegaD-c1o1)-omegaD*feq27_W  *(q-c1o1))/(omegaD-c1o1)+f27_E  *q)/(q+c1o1);
+      q = q_dirN[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirS  ])[ks  ]=(c2o1*feqW27_S  -(f27_N  *(q*omegaD-c1o1)-omegaD*feq27_N  *(q-c1o1))/(omegaD-c1o1)+f27_S  *q)/(q+c1o1);
+      q = q_dirS[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirN  ])[kn  ]=(c2o1*feqW27_N  -(f27_S  *(q*omegaD-c1o1)-omegaD*feq27_S  *(q-c1o1))/(omegaD-c1o1)+f27_N  *q)/(q+c1o1);
+      q = q_dirT[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirB  ])[kb  ]=(c2o1*feqW27_B  -(f27_T  *(q*omegaD-c1o1)-omegaD*feq27_T  *(q-c1o1))/(omegaD-c1o1)+f27_B  *q)/(q+c1o1);
+      q = q_dirB[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirT  ])[kt  ]=(c2o1*feqW27_T  -(f27_B  *(q*omegaD-c1o1)-omegaD*feq27_B  *(q-c1o1))/(omegaD-c1o1)+f27_T  *q)/(q+c1o1);
+      q = q_dirNE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirSW ])[ksw ]=(c2o1*feqW27_SW -(f27_NE *(q*omegaD-c1o1)-omegaD*feq27_NE *(q-c1o1))/(omegaD-c1o1)+f27_SW *q)/(q+c1o1);
+      q = q_dirSW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirNE ])[kne ]=(c2o1*feqW27_NE -(f27_SW *(q*omegaD-c1o1)-omegaD*feq27_SW *(q-c1o1))/(omegaD-c1o1)+f27_NE *q)/(q+c1o1);
+      q = q_dirSE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirNW ])[knw ]=(c2o1*feqW27_NW -(f27_SE *(q*omegaD-c1o1)-omegaD*feq27_SE *(q-c1o1))/(omegaD-c1o1)+f27_NW *q)/(q+c1o1);
+      q = q_dirNW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirSE ])[kse ]=(c2o1*feqW27_SE -(f27_NW *(q*omegaD-c1o1)-omegaD*feq27_NW *(q-c1o1))/(omegaD-c1o1)+f27_SE *q)/(q+c1o1);
+      q = q_dirTE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBW ])[kbw ]=(c2o1*feqW27_BW -(f27_TE *(q*omegaD-c1o1)-omegaD*feq27_TE *(q-c1o1))/(omegaD-c1o1)+f27_BW *q)/(q+c1o1);
+      q = q_dirBW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTE ])[kte ]=(c2o1*feqW27_TE -(f27_BW *(q*omegaD-c1o1)-omegaD*feq27_BW *(q-c1o1))/(omegaD-c1o1)+f27_TE *q)/(q+c1o1);
+      q = q_dirBE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTW ])[ktw ]=(c2o1*feqW27_TW -(f27_BE *(q*omegaD-c1o1)-omegaD*feq27_BE *(q-c1o1))/(omegaD-c1o1)+f27_TW *q)/(q+c1o1);
+      q = q_dirTW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBE ])[kbe ]=(c2o1*feqW27_BE -(f27_TW *(q*omegaD-c1o1)-omegaD*feq27_TW *(q-c1o1))/(omegaD-c1o1)+f27_BE *q)/(q+c1o1);
+      q = q_dirTN[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBS ])[kbs ]=(c2o1*feqW27_BS -(f27_TN *(q*omegaD-c1o1)-omegaD*feq27_TN *(q-c1o1))/(omegaD-c1o1)+f27_BS *q)/(q+c1o1);
+      q = q_dirBS[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTN ])[ktn ]=(c2o1*feqW27_TN -(f27_BS *(q*omegaD-c1o1)-omegaD*feq27_BS *(q-c1o1))/(omegaD-c1o1)+f27_TN *q)/(q+c1o1);
+      q = q_dirBN[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTS ])[kts ]=(c2o1*feqW27_TS -(f27_BN *(q*omegaD-c1o1)-omegaD*feq27_BN *(q-c1o1))/(omegaD-c1o1)+f27_TS *q)/(q+c1o1);
+      q = q_dirTS[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBN ])[kbn ]=(c2o1*feqW27_BN -(f27_TS *(q*omegaD-c1o1)-omegaD*feq27_TS *(q-c1o1))/(omegaD-c1o1)+f27_BN *q)/(q+c1o1);
+      q = q_dirTNE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSW])[kbsw]=(c2o1*feqW27_BSW-(f27_TNE*(q*omegaD-c1o1)-omegaD*feq27_TNE*(q-c1o1))/(omegaD-c1o1)+f27_BSW*q)/(q+c1o1);
+      q = q_dirBSW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNE])[ktne]=(c2o1*feqW27_TNE-(f27_BSW*(q*omegaD-c1o1)-omegaD*feq27_BSW*(q-c1o1))/(omegaD-c1o1)+f27_TNE*q)/(q+c1o1);
+      q = q_dirBNE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSW])[ktsw]=(c2o1*feqW27_TSW-(f27_BNE*(q*omegaD-c1o1)-omegaD*feq27_BNE*(q-c1o1))/(omegaD-c1o1)+f27_TSW*q)/(q+c1o1);
+      q = q_dirTSW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNE])[kbne]=(c2o1*feqW27_BNE-(f27_TSW*(q*omegaD-c1o1)-omegaD*feq27_TSW*(q-c1o1))/(omegaD-c1o1)+f27_BNE*q)/(q+c1o1);
+      q = q_dirTSE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNW])[kbnw]=(c2o1*feqW27_BNW-(f27_TSE*(q*omegaD-c1o1)-omegaD*feq27_TSE*(q-c1o1))/(omegaD-c1o1)+f27_BNW*q)/(q+c1o1);
+      q = q_dirBNW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSE])[ktse]=(c2o1*feqW27_TSE-(f27_BNW*(q*omegaD-c1o1)-omegaD*feq27_BNW*(q-c1o1))/(omegaD-c1o1)+f27_TSE*q)/(q+c1o1);
+      q = q_dirBSE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNW])[ktnw]=(c2o1*feqW27_TNW-(f27_BSE*(q*omegaD-c1o1)-omegaD*feq27_BSE*(q-c1o1))/(omegaD-c1o1)+f27_TNW*q)/(q+c1o1);
+      q = q_dirTNW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSE])[kbse]=(c2o1*feqW27_BSE-(f27_TNW*(q*omegaD-c1o1)-omegaD*feq27_TNW*(q-c1o1))/(omegaD-c1o1)+f27_BSE*q)/(q+c1o1);
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1198,8 +1199,8 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 			(f_NE  + f_SW ) + (f_NW  + f_SE ) + (f_TE  + f_BW ) + (f_BE  + f_TW ) + 
 			(f_TN  + f_BS ) + (f_BN  + f_TS ) + 
 			(f_E   + f_W  ) + (f_N   + f_S  ) + (f_T   + f_B  ) +  f_ZERO;
-		real rho = rho0 + one;
-		real OORho = one / rho;
+		real rho = rho0 + c1o1;
+		real OORho = c1o1 / rho;
 
 		real vx1 = 
 			OORho*((f_TNE - f_BSW) + (f_BNE - f_TSW) + (f_TSE - f_BNW) + (f_BSE - f_TNW) + 
@@ -1252,64 +1253,64 @@ extern "C" __global__ void QADPressNEQNeighbor27(
 			(f27_E   + f27_W  ) + (f27_N   + f27_S  ) + (f27_T   + f27_B  ) +  f27_ZERO;
 		////////////////////////////////////////////////////////////////////////////////
 		//calculate non-equilibrium
-		f27_ZERO  -=  c8over27* (ConcD-(ConcD+one)*cusq);
-		f27_E     -=  c2over27* (ConcD+(ConcD+one)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
-		f27_W     -=  c2over27* (ConcD+(ConcD+one)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
-		f27_N     -=  c2over27* (ConcD+(ConcD+one)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
-		f27_S     -=  c2over27* (ConcD+(ConcD+one)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
-		f27_T     -=  c2over27* (ConcD+(ConcD+one)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
-		f27_B     -=  c2over27* (ConcD+(ConcD+one)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
-		f27_NE    -=  c1over54* (ConcD+(ConcD+one)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
-		f27_SW    -=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
-		f27_SE    -=  c1over54* (ConcD+(ConcD+one)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
-		f27_NW    -=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
-		f27_TE    -=  c1over54* (ConcD+(ConcD+one)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cusq));
-		f27_BW    -=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
-		f27_BE    -=  c1over54* (ConcD+(ConcD+one)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cusq));
-		f27_TW    -=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
-		f27_TN    -=  c1over54* (ConcD+(ConcD+one)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
-		f27_BS    -=  c1over54* (ConcD+(ConcD+one)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
-		f27_BN    -=  c1over54* (ConcD+(ConcD+one)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
-		f27_TS    -=  c1over54* (ConcD+(ConcD+one)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
-		f27_TNE   -=  c1over216*(ConcD+(ConcD+one)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
-		f27_BSW   -=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
-		f27_BNE   -=  c1over216*(ConcD+(ConcD+one)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
-		f27_TSW   -=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
-		f27_TSE   -=  c1over216*(ConcD+(ConcD+one)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
-		f27_BNW   -=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
-		f27_BSE   -=  c1over216*(ConcD+(ConcD+one)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
-		f27_TNW   -=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
+		f27_ZERO  -=  c8o27* (ConcD-(ConcD+c1o1)*cusq);
+		f27_E     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cusq));
+		f27_W     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cusq));
+		f27_N     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cusq));
+		f27_S     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cusq));
+		f27_T     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cusq));
+		f27_B     -=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cusq));
+		f27_NE    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cusq));
+		f27_SW    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
+		f27_SE    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cusq));
+		f27_NW    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
+		f27_TE    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cusq));
+		f27_BW    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
+		f27_BE    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cusq));
+		f27_TW    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
+		f27_TN    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cusq));
+		f27_BS    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
+		f27_BN    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cusq));
+		f27_TS    -=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
+		f27_TNE   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
+		f27_BSW   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
+		f27_BNE   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
+		f27_TSW   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
+		f27_TSE   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
+		f27_BNW   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
+		f27_BSE   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
+		f27_TNW   -=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
 		////////////////////////////////////////////////////////////////////////////////
-		ConcD = zero;
+		ConcD = c0o1;
 		////////////////////////////////////////////////////////////////////////////////
 		//add BC equilibrium
-		f27_ZERO  +=  c8over27* (ConcD-(ConcD+one)*cusq);
-		f27_E     +=  c2over27* (ConcD+(ConcD+one)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
-		f27_W     +=  c2over27* (ConcD+(ConcD+one)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
-		f27_N     +=  c2over27* (ConcD+(ConcD+one)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
-		f27_S     +=  c2over27* (ConcD+(ConcD+one)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
-		f27_T     +=  c2over27* (ConcD+(ConcD+one)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
-		f27_B     +=  c2over27* (ConcD+(ConcD+one)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
-		f27_NE    +=  c1over54* (ConcD+(ConcD+one)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
-		f27_SW    +=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
-		f27_SE    +=  c1over54* (ConcD+(ConcD+one)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
-		f27_NW    +=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
-		f27_TE    +=  c1over54* (ConcD+(ConcD+one)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cusq));
-		f27_BW    +=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
-		f27_BE    +=  c1over54* (ConcD+(ConcD+one)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cusq));
-		f27_TW    +=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
-		f27_TN    +=  c1over54* (ConcD+(ConcD+one)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
-		f27_BS    +=  c1over54* (ConcD+(ConcD+one)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
-		f27_BN    +=  c1over54* (ConcD+(ConcD+one)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
-		f27_TS    +=  c1over54* (ConcD+(ConcD+one)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
-		f27_TNE   +=  c1over216*(ConcD+(ConcD+one)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
-		f27_BSW   +=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
-		f27_BNE   +=  c1over216*(ConcD+(ConcD+one)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
-		f27_TSW   +=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
-		f27_TSE   +=  c1over216*(ConcD+(ConcD+one)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
-		f27_BNW   +=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
-		f27_BSE   +=  c1over216*(ConcD+(ConcD+one)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
-		f27_TNW   +=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
+		f27_ZERO  +=  c8o27* (ConcD-(ConcD+c1o1)*cusq);
+		f27_E     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cusq));
+		f27_W     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cusq));
+		f27_N     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cusq));
+		f27_S     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cusq));
+		f27_T     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cusq));
+		f27_B     +=  c2o27* (ConcD+(ConcD+c1o1)*(c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cusq));
+		f27_NE    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cusq));
+		f27_SW    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
+		f27_SE    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cusq));
+		f27_NW    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
+		f27_TE    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cusq));
+		f27_BW    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
+		f27_BE    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cusq));
+		f27_TW    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
+		f27_TN    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cusq));
+		f27_BS    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
+		f27_BN    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cusq));
+		f27_TS    +=  c1o54* (ConcD+(ConcD+c1o1)*(c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
+		f27_TNE   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
+		f27_BSW   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
+		f27_BNE   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
+		f27_TSW   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
+		f27_TSE   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
+		f27_BNW   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
+		f27_BSE   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
+		f27_TNW   +=  c1o216*(ConcD+(ConcD+c1o1)*(c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         __syncthreads();
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1627,8 +1628,8 @@ extern "C" __global__ void QADVel7( int inx,
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
       /*real drho*/;
-      real vx1_Inflow   = zero;
-      real vx2_Inflow   = zero;
+      real vx1_Inflow   = c0o1;
+      real vx2_Inflow   = c0o1;
       real vx3_Inflow   = velo[k];
       real ux_sq_Inflow = vx1_Inflow * vx1_Inflow;
       real uy_sq_Inflow = vx2_Inflow * vx2_Inflow;
@@ -1652,8 +1653,8 @@ extern "C" __global__ void QADVel7( int inx,
       //               (f_T - f_B); 
 
       real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirZERO])[kzero]);
-      real rho    =  rho0 + one;
-      real OORho  =  one/rho;
+      real rho    =  rho0 + c1o1;
+      real OORho  =  c1o1/rho;
       real vx1    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       real vx2    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       real vx3    =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
@@ -1662,11 +1663,11 @@ extern "C" __global__ void QADVel7( int inx,
       real ux_sq       = vx1 * vx1;
       real uy_sq       = vx2 * vx2;
       real uz_sq       = vx3 * vx3;
-      real omegaD     = three - sqrt(three);
-      real Lam         = -(c1o2-one/omegaD);
-      real nue_d       = Lam/three;
+      real omegaD     = c3o1 - sqrt(c3o1);
+      real Lam         = -(c1o2-c1o1/omegaD);
+      real nue_d       = Lam/c3o1;
       //real ae          = zero;
-      real ae          = diffusivity/nue_d - one;
+      real ae          = diffusivity/nue_d - c1o1;
 
       real f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
       real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
@@ -1685,20 +1686,20 @@ extern "C" __global__ void QADVel7( int inx,
       real ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
 
       //feq7_ZERO = ConcD*(c1o3*(ae*(-three))-(ux_sq+uy_sq+uz_sq));
-      feq7_E    = ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)+vx1*c1o2);
-      feq7_W    = ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)-vx1*c1o2);
-      feq7_N    = ConcD*(c1o6*(ae+one)+c1o2*(uy_sq)+vx2*c1o2);
-      feq7_S    = ConcD*(c1o6*(ae+one)+c1o2*(uy_sq)-vx2*c1o2);
-      feq7_T    = ConcD*(c1o6*(ae+one)+c1o2*(uz_sq)+vx3*c1o2);
-      feq7_B    = ConcD*(c1o6*(ae+one)+c1o2*(uz_sq)-vx3*c1o2);
+      feq7_E    = ConcD*(c1o6*(ae+c1o1)+c1o2*(ux_sq)+vx1*c1o2);
+      feq7_W    = ConcD*(c1o6*(ae+c1o1)+c1o2*(ux_sq)-vx1*c1o2);
+      feq7_N    = ConcD*(c1o6*(ae+c1o1)+c1o2*(uy_sq)+vx2*c1o2);
+      feq7_S    = ConcD*(c1o6*(ae+c1o1)+c1o2*(uy_sq)-vx2*c1o2);
+      feq7_T    = ConcD*(c1o6*(ae+c1o1)+c1o2*(uz_sq)+vx3*c1o2);
+      feq7_B    = ConcD*(c1o6*(ae+c1o1)+c1o2*(uz_sq)-vx3*c1o2);
 
       //feq7_ZERO = TempD*(c1o3*(ae*(-three))-(ux_sq+uy_sq+uz_sq));
-      feqW7_E    = TempD*(c1o6*(ae+one)+c1o2*(ux_sq_Inflow)+vx1_Inflow*c1o2);
-      feqW7_W    = TempD*(c1o6*(ae+one)+c1o2*(ux_sq_Inflow)-vx1_Inflow*c1o2);
-      feqW7_N    = TempD*(c1o6*(ae+one)+c1o2*(uy_sq_Inflow)+vx2_Inflow*c1o2);
-      feqW7_S    = TempD*(c1o6*(ae+one)+c1o2*(uy_sq_Inflow)-vx2_Inflow*c1o2);
-      feqW7_T    = TempD*(c1o6*(ae+one)+c1o2*(uz_sq_Inflow)+vx3_Inflow*c1o2);
-      feqW7_B    = TempD*(c1o6*(ae+one)+c1o2*(uz_sq_Inflow)-vx3_Inflow*c1o2);
+      feqW7_E    = TempD*(c1o6*(ae+c1o1)+c1o2*(ux_sq_Inflow)+vx1_Inflow*c1o2);
+      feqW7_W    = TempD*(c1o6*(ae+c1o1)+c1o2*(ux_sq_Inflow)-vx1_Inflow*c1o2);
+      feqW7_N    = TempD*(c1o6*(ae+c1o1)+c1o2*(uy_sq_Inflow)+vx2_Inflow*c1o2);
+      feqW7_S    = TempD*(c1o6*(ae+c1o1)+c1o2*(uy_sq_Inflow)-vx2_Inflow*c1o2);
+      feqW7_T    = TempD*(c1o6*(ae+c1o1)+c1o2*(uz_sq_Inflow)+vx3_Inflow*c1o2);
+      feqW7_B    = TempD*(c1o6*(ae+c1o1)+c1o2*(uz_sq_Inflow)-vx3_Inflow*c1o2);
 
       //////////////////////////////////////////////////////////////////////////
       //pointertausch
@@ -1738,45 +1739,45 @@ extern "C" __global__ void QADVel7( int inx,
       //mit Q's
       real /*feq,*/ q;
       q = q_dirE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          //q=0.;
-         (D7.f[2])[kw]=(two*feqW7_W-(f7_E*(q*omegaD-one)-omegaD*feq7_E*(q-one))/(omegaD-one)+f7_W*q)/(q+one);//f7_W - feq7_W + feqW7_E;
+         (D7.f[2])[kw]=(c2o1*feqW7_W-(f7_E*(q*omegaD-c1o1)-omegaD*feq7_E*(q-c1o1))/(omegaD-c1o1)+f7_W*q)/(q+c1o1);//f7_W - feq7_W + feqW7_E;
       }
 
       q = q_dirW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          //q=0.;
-         (D7.f[1])[ke]=(two*feqW7_E-(f7_W*(q*omegaD-one)-omegaD*feq7_W*(q-one))/(omegaD-one)+f7_E*q)/(q+one);//f7_E - feq7_E + feqW7_W;
+         (D7.f[1])[ke]=(c2o1*feqW7_E-(f7_W*(q*omegaD-c1o1)-omegaD*feq7_W*(q-c1o1))/(omegaD-c1o1)+f7_E*q)/(q+c1o1);//f7_E - feq7_E + feqW7_W;
       }
 
       q = q_dirN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          //q=0.;
-         (D7.f[4])[ks]=(two*feqW7_S-(f7_N*(q*omegaD-one)-omegaD*feq7_N*(q-one))/(omegaD-one)+f7_S*q)/(q+one);//f7_S - feq7_S + feqW7_N;
+         (D7.f[4])[ks]=(c2o1*feqW7_S-(f7_N*(q*omegaD-c1o1)-omegaD*feq7_N*(q-c1o1))/(omegaD-c1o1)+f7_S*q)/(q+c1o1);//f7_S - feq7_S + feqW7_N;
       }
 
       q = q_dirS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          //q=0.;
-         (D7.f[3])[kn]=(two*feqW7_N-(f7_S*(q*omegaD-one)-omegaD*feq7_S*(q-one))/(omegaD-one)+f7_N*q)/(q+one);//f7_N - feq7_N + feqW7_S;
+         (D7.f[3])[kn]=(c2o1*feqW7_N-(f7_S*(q*omegaD-c1o1)-omegaD*feq7_S*(q-c1o1))/(omegaD-c1o1)+f7_N*q)/(q+c1o1);//f7_N - feq7_N + feqW7_S;
       }
 
       q = q_dirT[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          //q=0.;
-         (D7.f[6])[kb]=(two*feqW7_B-(f7_T*(q*omegaD-one)-omegaD*feq7_T*(q-one))/(omegaD-one)+f7_B*q)/(q+one);//f7_B - feq7_B + feqW7_T;
+         (D7.f[6])[kb]=(c2o1*feqW7_B-(f7_T*(q*omegaD-c1o1)-omegaD*feq7_T*(q-c1o1))/(omegaD-c1o1)+f7_B*q)/(q+c1o1);//f7_B - feq7_B + feqW7_T;
       }
 
       q = q_dirB[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          //q=0.;
-         (D7.f[5])[kt]=(two*feqW7_T-(f7_B*(q*omegaD-one)-omegaD*feq7_B*(q-one))/(omegaD-one)+f7_T*q)/(q+one);//f7_T - feq7_T + feqW7_B;
+         (D7.f[5])[kt]=(c2o1*feqW7_T-(f7_B*(q*omegaD-c1o1)-omegaD*feq7_B*(q-c1o1))/(omegaD-c1o1)+f7_T*q)/(q+c1o1);//f7_T - feq7_T + feqW7_B;
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -2123,8 +2124,8 @@ extern "C" __global__ void QADVel27(int inx,
       //         (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //         (f_T - f_B); 
       real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ f_ZERO;
-      real rho    =  rho0 + one;
-      real OORho  =  one/rho;
+      real rho    =  rho0 + c1o1;
+      real OORho  =  c1o1/rho;
       vx1     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       vx2     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       vx3     =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
@@ -2164,32 +2165,32 @@ extern "C" __global__ void QADVel27(int inx,
                         f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
       //real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feq27_E    =   c2o27* ConcD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2o27* ConcD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2o27* ConcD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2o27* ConcD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2o27* ConcD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2o27* ConcD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1o54* ConcD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1o54* ConcD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real TempD = temp[k];
       //real TempD = four;
@@ -2227,34 +2228,34 @@ extern "C" __global__ void QADVel27(int inx,
       //real feqW27_BSE  =   c1over216*(TempD+(one+TempD)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
       //real feqW27_TNW  =   c1over216*(TempD+(one+TempD)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
       //
-      real feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      real feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      real feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      real feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      real feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      real feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      real feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      real feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      real feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      real feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      real feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      real feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      real feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      real feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      real feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      real feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      real feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      real feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      real feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      real feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      real feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      real feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      real feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      real feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      real feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      real feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feqW27_E    =   c2o27* TempD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      real feqW27_W    =   c2o27* TempD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      real feqW27_N    =   c2o27* TempD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      real feqW27_S    =   c2o27* TempD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feqW27_T    =   c2o27* TempD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      real feqW27_B    =   c2o27* TempD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      real feqW27_NE   =   c1o54* TempD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feqW27_SW   =   c1o54* TempD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feqW27_SE   =   c1o54* TempD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feqW27_NW   =   c1o54* TempD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feqW27_TE   =   c1o54* TempD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feqW27_BW   =   c1o54* TempD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feqW27_BE   =   c1o54* TempD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feqW27_TW   =   c1o54* TempD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feqW27_TN   =   c1o54* TempD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feqW27_BS   =   c1o54* TempD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feqW27_BN   =   c1o54* TempD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feqW27_TS   =   c1o54* TempD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feqW27_TNE  =   c1o216*TempD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feqW27_BSW  =   c1o216*TempD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feqW27_BNE  =   c1o216*TempD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feqW27_TSW  =   c1o216*TempD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feqW27_TSE  =   c1o216*TempD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feqW27_BNW  =   c1o216*TempD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feqW27_BSE  =   c1o216*TempD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feqW27_TNW  =   c1o216*TempD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real omegaD     = three - sqrt(three);
+      real omegaD     = c3o1 - sqrt(c3o1);
       //real Lam        = -(c1o2-one/omegaD);
       //real nue_d      = Lam/three;
       //real ae         = zero;
@@ -2356,32 +2357,32 @@ extern "C" __global__ void QADVel27(int inx,
       //(D27.f[dirTSE])[ktse]= four;
       //(D27.f[dirTNW])[ktnw]= four;
       //(D27.f[dirBSE])[kbse]= four;
-      q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]= -feqW27_W  + two * c2over27  * TempD;
-      q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]= -feqW27_E  + two * c2over27  * TempD;
-      q = q_dirN[k];   if (q>=zero && q<=one) (D27.f[dirS  ])[ks  ]= -feqW27_S  + two * c2over27  * TempD;
-      q = q_dirS[k];   if (q>=zero && q<=one) (D27.f[dirN  ])[kn  ]= -feqW27_N  + two * c2over27  * TempD;
-      q = q_dirT[k];   if (q>=zero && q<=one) (D27.f[dirB  ])[kb  ]= -feqW27_B  + two * c2over27  * TempD;
-      q = q_dirB[k];   if (q>=zero && q<=one) (D27.f[dirT  ])[kt  ]= -feqW27_T  + two * c2over27  * TempD;
-      q = q_dirNE[k];  if (q>=zero && q<=one) (D27.f[dirSW ])[ksw ]= -feqW27_SW + two * c1over54  * TempD;
-      q = q_dirSW[k];  if (q>=zero && q<=one) (D27.f[dirNE ])[kne ]= -feqW27_NE + two * c1over54  * TempD;
-      q = q_dirSE[k];  if (q>=zero && q<=one) (D27.f[dirNW ])[knw ]= -feqW27_NW + two * c1over54  * TempD;
-      q = q_dirNW[k];  if (q>=zero && q<=one) (D27.f[dirSE ])[kse ]= -feqW27_SE + two * c1over54  * TempD;
-      q = q_dirTE[k];  if (q>=zero && q<=one) (D27.f[dirBW ])[kbw ]= -feqW27_BW + two * c1over54  * TempD;
-      q = q_dirBW[k];  if (q>=zero && q<=one) (D27.f[dirTE ])[kte ]= -feqW27_TE + two * c1over54  * TempD;
-      q = q_dirBE[k];  if (q>=zero && q<=one) (D27.f[dirTW ])[ktw ]= -feqW27_TW + two * c1over54  * TempD;
-      q = q_dirTW[k];  if (q>=zero && q<=one) (D27.f[dirBE ])[kbe ]= -feqW27_BE + two * c1over54  * TempD;
-      q = q_dirTN[k];  if (q>=zero && q<=one) (D27.f[dirBS ])[kbs ]= -feqW27_BS + two * c1over54  * TempD;
-      q = q_dirBS[k];  if (q>=zero && q<=one) (D27.f[dirTN ])[ktn ]= -feqW27_TN + two * c1over54  * TempD;
-      q = q_dirBN[k];  if (q>=zero && q<=one) (D27.f[dirTS ])[kts ]= -feqW27_TS + two * c1over54  * TempD;
-      q = q_dirTS[k];  if (q>=zero && q<=one) (D27.f[dirBN ])[kbn ]= -feqW27_BN + two * c1over54  * TempD;
-      q = q_dirTNE[k]; if (q>=zero && q<=one) (D27.f[dirBSW])[kbsw]= -feqW27_BSW+ two * c1over216 * TempD;
-      q = q_dirBSW[k]; if (q>=zero && q<=one) (D27.f[dirTNE])[ktne]= -feqW27_TNE+ two * c1over216 * TempD;
-      q = q_dirBNE[k]; if (q>=zero && q<=one) (D27.f[dirTSW])[ktsw]= -feqW27_TSW+ two * c1over216 * TempD;
-      q = q_dirTSW[k]; if (q>=zero && q<=one) (D27.f[dirBNE])[kbne]= -feqW27_BNE+ two * c1over216 * TempD;
-      q = q_dirTSE[k]; if (q>=zero && q<=one) (D27.f[dirBNW])[kbnw]= -feqW27_BNW+ two * c1over216 * TempD;
-      q = q_dirBNW[k]; if (q>=zero && q<=one) (D27.f[dirTSE])[ktse]= -feqW27_TSE+ two * c1over216 * TempD;
-      q = q_dirBSE[k]; if (q>=zero && q<=one) (D27.f[dirTNW])[ktnw]= -feqW27_TNW+ two * c1over216 * TempD;
-      q = q_dirTNW[k]; if (q>=zero && q<=one) (D27.f[dirBSE])[kbse]= -feqW27_BSE+ two * c1over216 * TempD;
+      q = q_dirE[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirW  ])[kw  ]= -feqW27_W  + c2o1 * c2o27  * TempD;
+      q = q_dirW[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirE  ])[ke  ]= -feqW27_E  + c2o1 * c2o27  * TempD;
+      q = q_dirN[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirS  ])[ks  ]= -feqW27_S  + c2o1 * c2o27  * TempD;
+      q = q_dirS[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirN  ])[kn  ]= -feqW27_N  + c2o1 * c2o27  * TempD;
+      q = q_dirT[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirB  ])[kb  ]= -feqW27_B  + c2o1 * c2o27  * TempD;
+      q = q_dirB[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirT  ])[kt  ]= -feqW27_T  + c2o1 * c2o27  * TempD;
+      q = q_dirNE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirSW ])[ksw ]= -feqW27_SW + c2o1 * c1o54  * TempD;
+      q = q_dirSW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirNE ])[kne ]= -feqW27_NE + c2o1 * c1o54  * TempD;
+      q = q_dirSE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirNW ])[knw ]= -feqW27_NW + c2o1 * c1o54  * TempD;
+      q = q_dirNW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirSE ])[kse ]= -feqW27_SE + c2o1 * c1o54  * TempD;
+      q = q_dirTE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBW ])[kbw ]= -feqW27_BW + c2o1 * c1o54  * TempD;
+      q = q_dirBW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTE ])[kte ]= -feqW27_TE + c2o1 * c1o54  * TempD;
+      q = q_dirBE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTW ])[ktw ]= -feqW27_TW + c2o1 * c1o54  * TempD;
+      q = q_dirTW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBE ])[kbe ]= -feqW27_BE + c2o1 * c1o54  * TempD;
+      q = q_dirTN[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBS ])[kbs ]= -feqW27_BS + c2o1 * c1o54  * TempD;
+      q = q_dirBS[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTN ])[ktn ]= -feqW27_TN + c2o1 * c1o54  * TempD;
+      q = q_dirBN[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTS ])[kts ]= -feqW27_TS + c2o1 * c1o54  * TempD;
+      q = q_dirTS[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBN ])[kbn ]= -feqW27_BN + c2o1 * c1o54  * TempD;
+      q = q_dirTNE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSW])[kbsw]= -feqW27_BSW+ c2o1 * c1o216 * TempD;
+      q = q_dirBSW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNE])[ktne]= -feqW27_TNE+ c2o1 * c1o216 * TempD;
+      q = q_dirBNE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSW])[ktsw]= -feqW27_TSW+ c2o1 * c1o216 * TempD;
+      q = q_dirTSW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNE])[kbne]= -feqW27_BNE+ c2o1 * c1o216 * TempD;
+      q = q_dirTSE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNW])[kbnw]= -feqW27_BNW+ c2o1 * c1o216 * TempD;
+      q = q_dirBNW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSE])[ktse]= -feqW27_TSE+ c2o1 * c1o216 * TempD;
+      q = q_dirBSE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNW])[ktnw]= -feqW27_TNW+ c2o1 * c1o216 * TempD;
+      q = q_dirTNW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSE])[kbse]= -feqW27_BSE+ c2o1 * c1o216 * TempD;
       //q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]=(two*feqW27_W  -(f27_E  *(q*omegaD-one)-omegaD*feq27_E  *(q-one))/(omegaD-one)+f27_W  *q)/(q+one);
       //q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]=(two*feqW27_E  -(f27_W  *(q*omegaD-one)-omegaD*feq27_W  *(q-one))/(omegaD-one)+f27_E  *q)/(q+one);
       //q = q_dirN[k];   if (q>=zero && q<=one) (D27.f[dirS  ])[ks  ]=(two*feqW27_S  -(f27_N  *(q*omegaD-one)-omegaD*feq27_N  *(q-one))/(omegaD-one)+f27_S  *q)/(q+one);
@@ -2678,8 +2679,8 @@ extern "C" __global__ void QAD7( int inx,
       //         (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //         (f_T - f_B); 
       real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirZERO])[kzero]);
-      real rho    =  rho0 + one;
-      real OORho  =  one/rho;
+      real rho    =  rho0 + c1o1;
+      real OORho  =  c1o1/rho;
       vx1     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       vx2     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       vx3     =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
@@ -2688,11 +2689,11 @@ extern "C" __global__ void QAD7( int inx,
       real ux_sq       = vx1 * vx1;
       real uy_sq       = vx2 * vx2;
       real uz_sq       = vx3 * vx3;
-      real omegaD     = three - sqrt(three);
-      real Lam         = -(c1o2-one/omegaD);
-      real nue_d       = Lam/three;
+      real omegaD     = c3o1 - sqrt(c3o1);
+      real Lam         = -(c1o2-c1o1/omegaD);
+      real nue_d       = Lam/c3o1;
       //real ae          = zero;
-      real ae          = diffusivity/nue_d - one;
+      real ae          = diffusivity/nue_d - c1o1;
 
       real f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
       real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
@@ -2711,20 +2712,20 @@ extern "C" __global__ void QAD7( int inx,
       real ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
 
       //feq7_ZERO = ConcD*(c1o3*(ae*(-three))-(ux_sq+uy_sq+uz_sq));
-      feq7_E    = ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)+vx1*c1o2);
-      feq7_W    = ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)-vx1*c1o2);
-      feq7_N    = ConcD*(c1o6*(ae+one)+c1o2*(uy_sq)+vx2*c1o2);
-      feq7_S    = ConcD*(c1o6*(ae+one)+c1o2*(uy_sq)-vx2*c1o2);
-      feq7_T    = ConcD*(c1o6*(ae+one)+c1o2*(uz_sq)+vx3*c1o2);
-      feq7_B    = ConcD*(c1o6*(ae+one)+c1o2*(uz_sq)-vx3*c1o2);
+      feq7_E    = ConcD*(c1o6*(ae+c1o1)+c1o2*(ux_sq)+vx1*c1o2);
+      feq7_W    = ConcD*(c1o6*(ae+c1o1)+c1o2*(ux_sq)-vx1*c1o2);
+      feq7_N    = ConcD*(c1o6*(ae+c1o1)+c1o2*(uy_sq)+vx2*c1o2);
+      feq7_S    = ConcD*(c1o6*(ae+c1o1)+c1o2*(uy_sq)-vx2*c1o2);
+      feq7_T    = ConcD*(c1o6*(ae+c1o1)+c1o2*(uz_sq)+vx3*c1o2);
+      feq7_B    = ConcD*(c1o6*(ae+c1o1)+c1o2*(uz_sq)-vx3*c1o2);
 
       //feq7_ZERO = TempD*(c1o3*(ae*(-three))-(ux_sq+uy_sq+uz_sq));
-      feqW7_E    = TempD*(c1o6*(ae+one));//+c1o2*(ux_sq)+vx1*c1o2);
-      feqW7_W    = TempD*(c1o6*(ae+one));//+c1o2*(ux_sq)-vx1*c1o2);
-      feqW7_N    = TempD*(c1o6*(ae+one));//+c1o2*(uy_sq)+vx2*c1o2);
-      feqW7_S    = TempD*(c1o6*(ae+one));//+c1o2*(uy_sq)-vx2*c1o2);
-      feqW7_T    = TempD*(c1o6*(ae+one));//+c1o2*(uz_sq)+vx3*c1o2);
-      feqW7_B    = TempD*(c1o6*(ae+one));//+c1o2*(uz_sq)-vx3*c1o2);
+      feqW7_E    = TempD*(c1o6*(ae+c1o1));//+c1o2*(ux_sq)+vx1*c1o2);
+      feqW7_W    = TempD*(c1o6*(ae+c1o1));//+c1o2*(ux_sq)-vx1*c1o2);
+      feqW7_N    = TempD*(c1o6*(ae+c1o1));//+c1o2*(uy_sq)+vx2*c1o2);
+      feqW7_S    = TempD*(c1o6*(ae+c1o1));//+c1o2*(uy_sq)-vx2*c1o2);
+      feqW7_T    = TempD*(c1o6*(ae+c1o1));//+c1o2*(uz_sq)+vx3*c1o2);
+      feqW7_B    = TempD*(c1o6*(ae+c1o1));//+c1o2*(uz_sq)-vx3*c1o2);
 
       //////////////////////////////////////////////////////////////////////////
       //pointertausch
@@ -2809,37 +2810,37 @@ extern "C" __global__ void QAD7( int inx,
       //ohne Q's
       real /*feq,*/ q;
       q = q_dirE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[2])[kw]=f7_W - feq7_W + feqW7_E;
       }
 
       q = q_dirW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[1])[ke]=f7_E - feq7_E + feqW7_W;
       }
 
       q = q_dirN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[4])[ks]=f7_S - feq7_S + feqW7_N;
       }
 
       q = q_dirS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[3])[kn]=f7_N - feq7_N + feqW7_S;
       }
 
       q = q_dirT[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[6])[kb]=f7_B - feq7_B + feqW7_T;
       }
 
       q = q_dirB[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[5])[kt]=f7_T - feq7_T + feqW7_B;
       }
@@ -3148,8 +3149,8 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
       //         (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //         (f_T - f_B); 
       real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+f_ZERO;
-      real rho    =  rho0 + one;
-      real OORho  =  one/rho;
+      real rho    =  rho0 + c1o1;
+      real OORho  =  c1o1/rho;
       vx1     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       vx2     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       vx3     =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
@@ -3189,64 +3190,64 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
          f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
       //real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feq27_E    =   c2o27* ConcD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2o27* ConcD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2o27* ConcD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2o27* ConcD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2o27* ConcD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2o27* ConcD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1o54* ConcD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1o54* ConcD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real TempD = temp[k];//one;//temp[k];
 
       //real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
-      real feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      real feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      real feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      real feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      real feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      real feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      real feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      real feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      real feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      real feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      real feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      real feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      real feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      real feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      real feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      real feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      real feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      real feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      real feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      real feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      real feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      real feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      real feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      real feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      real feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      real feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feqW27_E    =   c2o27* TempD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      real feqW27_W    =   c2o27* TempD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      real feqW27_N    =   c2o27* TempD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      real feqW27_S    =   c2o27* TempD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feqW27_T    =   c2o27* TempD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      real feqW27_B    =   c2o27* TempD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      real feqW27_NE   =   c1o54* TempD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feqW27_SW   =   c1o54* TempD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feqW27_SE   =   c1o54* TempD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feqW27_NW   =   c1o54* TempD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feqW27_TE   =   c1o54* TempD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feqW27_BW   =   c1o54* TempD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feqW27_BE   =   c1o54* TempD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feqW27_TW   =   c1o54* TempD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feqW27_TN   =   c1o54* TempD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feqW27_BS   =   c1o54* TempD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feqW27_BN   =   c1o54* TempD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feqW27_TS   =   c1o54* TempD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feqW27_TNE  =   c1o216*TempD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feqW27_BSW  =   c1o216*TempD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feqW27_BNE  =   c1o216*TempD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feqW27_TSW  =   c1o216*TempD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feqW27_TSE  =   c1o216*TempD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feqW27_BNW  =   c1o216*TempD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feqW27_BSE  =   c1o216*TempD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feqW27_TNW  =   c1o216*TempD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real omegaD     = three - sqrt(three);
+      real omegaD     = c3o1 - sqrt(c3o1);
       //real Lam        = -(c1o2-one/omegaD);
       //real nue_d      = Lam/three;
       //real ae         = zero;
@@ -3318,32 +3319,32 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
       //Test
       //(D.f[dirZERO])[k]=0.1f;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      q = q_dirE[  ke   ]; if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]=(two*feqW27_W  -(f27_E  *(q*omegaD-one)-omegaD*feq27_E  *(q-one))/(omegaD-one)+f27_W  *q)/(q+one);
-      q = q_dirW[  kw   ]; if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]=(two*feqW27_E  -(f27_W  *(q*omegaD-one)-omegaD*feq27_W  *(q-one))/(omegaD-one)+f27_E  *q)/(q+one);
-      q = q_dirN[  kn   ]; if (q>=zero && q<=one) (D27.f[dirS  ])[ks  ]=(two*feqW27_S  -(f27_N  *(q*omegaD-one)-omegaD*feq27_N  *(q-one))/(omegaD-one)+f27_S  *q)/(q+one);
-      q = q_dirS[  ks   ]; if (q>=zero && q<=one) (D27.f[dirN  ])[kn  ]=(two*feqW27_N  -(f27_S  *(q*omegaD-one)-omegaD*feq27_S  *(q-one))/(omegaD-one)+f27_N  *q)/(q+one);
-      q = q_dirT[  kt   ]; if (q>=zero && q<=one) (D27.f[dirB  ])[kb  ]=(two*feqW27_B  -(f27_T  *(q*omegaD-one)-omegaD*feq27_T  *(q-one))/(omegaD-one)+f27_B  *q)/(q+one);
-      q = q_dirB[  kb   ]; if (q>=zero && q<=one) (D27.f[dirT  ])[kt  ]=(two*feqW27_T  -(f27_B  *(q*omegaD-one)-omegaD*feq27_B  *(q-one))/(omegaD-one)+f27_T  *q)/(q+one);
-      q = q_dirNE[ kne  ]; if (q>=zero && q<=one) (D27.f[dirSW ])[ksw ]=(two*feqW27_SW -(f27_NE *(q*omegaD-one)-omegaD*feq27_NE *(q-one))/(omegaD-one)+f27_SW *q)/(q+one);
-      q = q_dirSW[ ksw  ]; if (q>=zero && q<=one) (D27.f[dirNE ])[kne ]=(two*feqW27_NE -(f27_SW *(q*omegaD-one)-omegaD*feq27_SW *(q-one))/(omegaD-one)+f27_NE *q)/(q+one);
-      q = q_dirSE[ kse  ]; if (q>=zero && q<=one) (D27.f[dirNW ])[knw ]=(two*feqW27_NW -(f27_SE *(q*omegaD-one)-omegaD*feq27_SE *(q-one))/(omegaD-one)+f27_NW *q)/(q+one);
-      q = q_dirNW[ knw  ]; if (q>=zero && q<=one) (D27.f[dirSE ])[kse ]=(two*feqW27_SE -(f27_NW *(q*omegaD-one)-omegaD*feq27_NW *(q-one))/(omegaD-one)+f27_SE *q)/(q+one);
-      q = q_dirTE[ kte  ]; if (q>=zero && q<=one) (D27.f[dirBW ])[kbw ]=(two*feqW27_BW -(f27_TE *(q*omegaD-one)-omegaD*feq27_TE *(q-one))/(omegaD-one)+f27_BW *q)/(q+one);
-      q = q_dirBW[ kbw  ]; if (q>=zero && q<=one) (D27.f[dirTE ])[kte ]=(two*feqW27_TE -(f27_BW *(q*omegaD-one)-omegaD*feq27_BW *(q-one))/(omegaD-one)+f27_TE *q)/(q+one);
-      q = q_dirBE[ kbe  ]; if (q>=zero && q<=one) (D27.f[dirTW ])[ktw ]=(two*feqW27_TW -(f27_BE *(q*omegaD-one)-omegaD*feq27_BE *(q-one))/(omegaD-one)+f27_TW *q)/(q+one);
-      q = q_dirTW[ ktw  ]; if (q>=zero && q<=one) (D27.f[dirBE ])[kbe ]=(two*feqW27_BE -(f27_TW *(q*omegaD-one)-omegaD*feq27_TW *(q-one))/(omegaD-one)+f27_BE *q)/(q+one);
-      q = q_dirTN[ ktn  ]; if (q>=zero && q<=one) (D27.f[dirBS ])[kbs ]=(two*feqW27_BS -(f27_TN *(q*omegaD-one)-omegaD*feq27_TN *(q-one))/(omegaD-one)+f27_BS *q)/(q+one);
-      q = q_dirBS[ kbs  ]; if (q>=zero && q<=one) (D27.f[dirTN ])[ktn ]=(two*feqW27_TN -(f27_BS *(q*omegaD-one)-omegaD*feq27_BS *(q-one))/(omegaD-one)+f27_TN *q)/(q+one);
-      q = q_dirBN[ kbn  ]; if (q>=zero && q<=one) (D27.f[dirTS ])[kts ]=(two*feqW27_TS -(f27_BN *(q*omegaD-one)-omegaD*feq27_BN *(q-one))/(omegaD-one)+f27_TS *q)/(q+one);
-      q = q_dirTS[ kts  ]; if (q>=zero && q<=one) (D27.f[dirBN ])[kbn ]=(two*feqW27_BN -(f27_TS *(q*omegaD-one)-omegaD*feq27_TS *(q-one))/(omegaD-one)+f27_BN *q)/(q+one);
-      q = q_dirTNE[ktne ]; if (q>=zero && q<=one) (D27.f[dirBSW])[kbsw]=(two*feqW27_BSW-(f27_TNE*(q*omegaD-one)-omegaD*feq27_TNE*(q-one))/(omegaD-one)+f27_BSW*q)/(q+one);
-      q = q_dirBSW[kbsw ]; if (q>=zero && q<=one) (D27.f[dirTNE])[ktne]=(two*feqW27_TNE-(f27_BSW*(q*omegaD-one)-omegaD*feq27_BSW*(q-one))/(omegaD-one)+f27_TNE*q)/(q+one);
-      q = q_dirBNE[kbne ]; if (q>=zero && q<=one) (D27.f[dirTSW])[ktsw]=(two*feqW27_TSW-(f27_BNE*(q*omegaD-one)-omegaD*feq27_BNE*(q-one))/(omegaD-one)+f27_TSW*q)/(q+one);
-      q = q_dirTSW[ktsw ]; if (q>=zero && q<=one) (D27.f[dirBNE])[kbne]=(two*feqW27_BNE-(f27_TSW*(q*omegaD-one)-omegaD*feq27_TSW*(q-one))/(omegaD-one)+f27_BNE*q)/(q+one);
-      q = q_dirTSE[ktse ]; if (q>=zero && q<=one) (D27.f[dirBNW])[kbnw]=(two*feqW27_BNW-(f27_TSE*(q*omegaD-one)-omegaD*feq27_TSE*(q-one))/(omegaD-one)+f27_BNW*q)/(q+one);
-      q = q_dirBNW[kbnw ]; if (q>=zero && q<=one) (D27.f[dirTSE])[ktse]=(two*feqW27_TSE-(f27_BNW*(q*omegaD-one)-omegaD*feq27_BNW*(q-one))/(omegaD-one)+f27_TSE*q)/(q+one);
-      q = q_dirBSE[kbse ]; if (q>=zero && q<=one) (D27.f[dirTNW])[ktnw]=(two*feqW27_TNW-(f27_BSE*(q*omegaD-one)-omegaD*feq27_BSE*(q-one))/(omegaD-one)+f27_TNW*q)/(q+one);
-      q = q_dirTNW[ktnw ]; if (q>=zero && q<=one) (D27.f[dirBSE])[kbse]=(two*feqW27_BSE-(f27_TNW*(q*omegaD-one)-omegaD*feq27_TNW*(q-one))/(omegaD-one)+f27_BSE*q)/(q+one);
+      q = q_dirE[  ke   ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirW  ])[kw  ]=(c2o1*feqW27_W  -(f27_E  *(q*omegaD-c1o1)-omegaD*feq27_E  *(q-c1o1))/(omegaD-c1o1)+f27_W  *q)/(q+c1o1);
+      q = q_dirW[  kw   ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirE  ])[ke  ]=(c2o1*feqW27_E  -(f27_W  *(q*omegaD-c1o1)-omegaD*feq27_W  *(q-c1o1))/(omegaD-c1o1)+f27_E  *q)/(q+c1o1);
+      q = q_dirN[  kn   ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirS  ])[ks  ]=(c2o1*feqW27_S  -(f27_N  *(q*omegaD-c1o1)-omegaD*feq27_N  *(q-c1o1))/(omegaD-c1o1)+f27_S  *q)/(q+c1o1);
+      q = q_dirS[  ks   ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirN  ])[kn  ]=(c2o1*feqW27_N  -(f27_S  *(q*omegaD-c1o1)-omegaD*feq27_S  *(q-c1o1))/(omegaD-c1o1)+f27_N  *q)/(q+c1o1);
+      q = q_dirT[  kt   ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirB  ])[kb  ]=(c2o1*feqW27_B  -(f27_T  *(q*omegaD-c1o1)-omegaD*feq27_T  *(q-c1o1))/(omegaD-c1o1)+f27_B  *q)/(q+c1o1);
+      q = q_dirB[  kb   ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirT  ])[kt  ]=(c2o1*feqW27_T  -(f27_B  *(q*omegaD-c1o1)-omegaD*feq27_B  *(q-c1o1))/(omegaD-c1o1)+f27_T  *q)/(q+c1o1);
+      q = q_dirNE[ kne  ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirSW ])[ksw ]=(c2o1*feqW27_SW -(f27_NE *(q*omegaD-c1o1)-omegaD*feq27_NE *(q-c1o1))/(omegaD-c1o1)+f27_SW *q)/(q+c1o1);
+      q = q_dirSW[ ksw  ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirNE ])[kne ]=(c2o1*feqW27_NE -(f27_SW *(q*omegaD-c1o1)-omegaD*feq27_SW *(q-c1o1))/(omegaD-c1o1)+f27_NE *q)/(q+c1o1);
+      q = q_dirSE[ kse  ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirNW ])[knw ]=(c2o1*feqW27_NW -(f27_SE *(q*omegaD-c1o1)-omegaD*feq27_SE *(q-c1o1))/(omegaD-c1o1)+f27_NW *q)/(q+c1o1);
+      q = q_dirNW[ knw  ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirSE ])[kse ]=(c2o1*feqW27_SE -(f27_NW *(q*omegaD-c1o1)-omegaD*feq27_NW *(q-c1o1))/(omegaD-c1o1)+f27_SE *q)/(q+c1o1);
+      q = q_dirTE[ kte  ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBW ])[kbw ]=(c2o1*feqW27_BW -(f27_TE *(q*omegaD-c1o1)-omegaD*feq27_TE *(q-c1o1))/(omegaD-c1o1)+f27_BW *q)/(q+c1o1);
+      q = q_dirBW[ kbw  ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTE ])[kte ]=(c2o1*feqW27_TE -(f27_BW *(q*omegaD-c1o1)-omegaD*feq27_BW *(q-c1o1))/(omegaD-c1o1)+f27_TE *q)/(q+c1o1);
+      q = q_dirBE[ kbe  ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTW ])[ktw ]=(c2o1*feqW27_TW -(f27_BE *(q*omegaD-c1o1)-omegaD*feq27_BE *(q-c1o1))/(omegaD-c1o1)+f27_TW *q)/(q+c1o1);
+      q = q_dirTW[ ktw  ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBE ])[kbe ]=(c2o1*feqW27_BE -(f27_TW *(q*omegaD-c1o1)-omegaD*feq27_TW *(q-c1o1))/(omegaD-c1o1)+f27_BE *q)/(q+c1o1);
+      q = q_dirTN[ ktn  ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBS ])[kbs ]=(c2o1*feqW27_BS -(f27_TN *(q*omegaD-c1o1)-omegaD*feq27_TN *(q-c1o1))/(omegaD-c1o1)+f27_BS *q)/(q+c1o1);
+      q = q_dirBS[ kbs  ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTN ])[ktn ]=(c2o1*feqW27_TN -(f27_BS *(q*omegaD-c1o1)-omegaD*feq27_BS *(q-c1o1))/(omegaD-c1o1)+f27_TN *q)/(q+c1o1);
+      q = q_dirBN[ kbn  ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTS ])[kts ]=(c2o1*feqW27_TS -(f27_BN *(q*omegaD-c1o1)-omegaD*feq27_BN *(q-c1o1))/(omegaD-c1o1)+f27_TS *q)/(q+c1o1);
+      q = q_dirTS[ kts  ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBN ])[kbn ]=(c2o1*feqW27_BN -(f27_TS *(q*omegaD-c1o1)-omegaD*feq27_TS *(q-c1o1))/(omegaD-c1o1)+f27_BN *q)/(q+c1o1);
+      q = q_dirTNE[ktne ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSW])[kbsw]=(c2o1*feqW27_BSW-(f27_TNE*(q*omegaD-c1o1)-omegaD*feq27_TNE*(q-c1o1))/(omegaD-c1o1)+f27_BSW*q)/(q+c1o1);
+      q = q_dirBSW[kbsw ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNE])[ktne]=(c2o1*feqW27_TNE-(f27_BSW*(q*omegaD-c1o1)-omegaD*feq27_BSW*(q-c1o1))/(omegaD-c1o1)+f27_TNE*q)/(q+c1o1);
+      q = q_dirBNE[kbne ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSW])[ktsw]=(c2o1*feqW27_TSW-(f27_BNE*(q*omegaD-c1o1)-omegaD*feq27_BNE*(q-c1o1))/(omegaD-c1o1)+f27_TSW*q)/(q+c1o1);
+      q = q_dirTSW[ktsw ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNE])[kbne]=(c2o1*feqW27_BNE-(f27_TSW*(q*omegaD-c1o1)-omegaD*feq27_TSW*(q-c1o1))/(omegaD-c1o1)+f27_BNE*q)/(q+c1o1);
+      q = q_dirTSE[ktse ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNW])[kbnw]=(c2o1*feqW27_BNW-(f27_TSE*(q*omegaD-c1o1)-omegaD*feq27_TSE*(q-c1o1))/(omegaD-c1o1)+f27_BNW*q)/(q+c1o1);
+      q = q_dirBNW[kbnw ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSE])[ktse]=(c2o1*feqW27_TSE-(f27_BNW*(q*omegaD-c1o1)-omegaD*feq27_BNW*(q-c1o1))/(omegaD-c1o1)+f27_TSE*q)/(q+c1o1);
+      q = q_dirBSE[kbse ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNW])[ktnw]=(c2o1*feqW27_TNW-(f27_BSE*(q*omegaD-c1o1)-omegaD*feq27_BSE*(q-c1o1))/(omegaD-c1o1)+f27_TNW*q)/(q+c1o1);
+      q = q_dirTNW[ktnw ]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSE])[kbse]=(c2o1*feqW27_BSE-(f27_TNW*(q*omegaD-c1o1)-omegaD*feq27_TNW*(q-c1o1))/(omegaD-c1o1)+f27_BSE*q)/(q+c1o1);
       //q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]=(two*feqW27_W  -(f27_E  *(q*omegaD-one)-omegaD*feq27_E  *(q-one))/(omegaD-one)+f27_W  *q)/(q+one);
       //q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]=(two*feqW27_E  -(f27_W  *(q*omegaD-one)-omegaD*feq27_W  *(q-one))/(omegaD-one)+f27_E  *q)/(q+one);
       //q = q_dirN[k];   if (q>=zero && q<=one) (D27.f[dirS  ])[ks  ]=(two*feqW27_S  -(f27_N  *(q*omegaD-one)-omegaD*feq27_N  *(q-one))/(omegaD-one)+f27_S  *q)/(q+one);
@@ -3676,8 +3677,8 @@ extern "C" __global__ void QADBB27(int inx,
       //         (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //         (f_T - f_B); 
       real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+f_ZERO;
-      real rho    =  rho0 + one;
-      real OORho  =  one/rho;
+      real rho    =  rho0 + c1o1;
+      real OORho  =  c1o1/rho;
       vx1     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       vx2     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       vx3     =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
@@ -3717,64 +3718,64 @@ extern "C" __global__ void QADBB27(int inx,
          f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
       //real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feq27_E    =   c2o27* ConcD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2o27* ConcD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2o27* ConcD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2o27* ConcD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2o27* ConcD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2o27* ConcD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1o54* ConcD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1o54* ConcD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real TempD = temp[k];
 
       //real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
-      real feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      real feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      real feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      real feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      real feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      real feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      real feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      real feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      real feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      real feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      real feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      real feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      real feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      real feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      real feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      real feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      real feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      real feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      real feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      real feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      real feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      real feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      real feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      real feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      real feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      real feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feqW27_E    =   c2o27* TempD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      real feqW27_W    =   c2o27* TempD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      real feqW27_N    =   c2o27* TempD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      real feqW27_S    =   c2o27* TempD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feqW27_T    =   c2o27* TempD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      real feqW27_B    =   c2o27* TempD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      real feqW27_NE   =   c1o54* TempD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feqW27_SW   =   c1o54* TempD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feqW27_SE   =   c1o54* TempD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feqW27_NW   =   c1o54* TempD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feqW27_TE   =   c1o54* TempD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feqW27_BW   =   c1o54* TempD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feqW27_BE   =   c1o54* TempD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feqW27_TW   =   c1o54* TempD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feqW27_TN   =   c1o54* TempD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feqW27_BS   =   c1o54* TempD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feqW27_BN   =   c1o54* TempD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feqW27_TS   =   c1o54* TempD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feqW27_TNE  =   c1o216*TempD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feqW27_BSW  =   c1o216*TempD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feqW27_BNE  =   c1o216*TempD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feqW27_TSW  =   c1o216*TempD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feqW27_TSE  =   c1o216*TempD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feqW27_BNW  =   c1o216*TempD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feqW27_BSE  =   c1o216*TempD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feqW27_TNW  =   c1o216*TempD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real omegaD     = three - sqrt(three);
+      real omegaD     = c3o1 - sqrt(c3o1);
       //real Lam        = -(c1o2-one/omegaD);
       //real nue_d      = Lam/three;
       //real ae         = zero;
@@ -3846,32 +3847,32 @@ extern "C" __global__ void QADBB27(int inx,
       //Test
       //(D.f[dirZERO])[k]=0.1f;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]=f27_E  ;
-      q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]=f27_W  ;
-      q = q_dirN[k];   if (q>=zero && q<=one) (D27.f[dirS  ])[ks  ]=f27_N  ;
-      q = q_dirS[k];   if (q>=zero && q<=one) (D27.f[dirN  ])[kn  ]=f27_S  ;
-      q = q_dirT[k];   if (q>=zero && q<=one) (D27.f[dirB  ])[kb  ]=f27_T  ;
-      q = q_dirB[k];   if (q>=zero && q<=one) (D27.f[dirT  ])[kt  ]=f27_B  ;
-      q = q_dirNE[k];  if (q>=zero && q<=one) (D27.f[dirSW ])[ksw ]=f27_NE ;
-      q = q_dirSW[k];  if (q>=zero && q<=one) (D27.f[dirNE ])[kne ]=f27_SW ;
-      q = q_dirSE[k];  if (q>=zero && q<=one) (D27.f[dirNW ])[knw ]=f27_SE ;
-      q = q_dirNW[k];  if (q>=zero && q<=one) (D27.f[dirSE ])[kse ]=f27_NW ;
-      q = q_dirTE[k];  if (q>=zero && q<=one) (D27.f[dirBW ])[kbw ]=f27_TE ;
-      q = q_dirBW[k];  if (q>=zero && q<=one) (D27.f[dirTE ])[kte ]=f27_BW ;
-      q = q_dirBE[k];  if (q>=zero && q<=one) (D27.f[dirTW ])[ktw ]=f27_BE ;
-      q = q_dirTW[k];  if (q>=zero && q<=one) (D27.f[dirBE ])[kbe ]=f27_TW ;
-      q = q_dirTN[k];  if (q>=zero && q<=one) (D27.f[dirBS ])[kbs ]=f27_TN ;
-      q = q_dirBS[k];  if (q>=zero && q<=one) (D27.f[dirTN ])[ktn ]=f27_BS ;
-      q = q_dirBN[k];  if (q>=zero && q<=one) (D27.f[dirTS ])[kts ]=f27_BN ;
-      q = q_dirTS[k];  if (q>=zero && q<=one) (D27.f[dirBN ])[kbn ]=f27_TS ;
-      q = q_dirTNE[k]; if (q>=zero && q<=one) (D27.f[dirBSW])[kbsw]=f27_TNE;
-      q = q_dirBSW[k]; if (q>=zero && q<=one) (D27.f[dirTNE])[ktne]=f27_BSW;
-      q = q_dirBNE[k]; if (q>=zero && q<=one) (D27.f[dirTSW])[ktsw]=f27_BNE;
-      q = q_dirTSW[k]; if (q>=zero && q<=one) (D27.f[dirBNE])[kbne]=f27_TSW;
-      q = q_dirTSE[k]; if (q>=zero && q<=one) (D27.f[dirBNW])[kbnw]=f27_TSE;
-      q = q_dirBNW[k]; if (q>=zero && q<=one) (D27.f[dirTSE])[ktse]=f27_BNW;
-      q = q_dirBSE[k]; if (q>=zero && q<=one) (D27.f[dirTNW])[ktnw]=f27_BSE;
-      q = q_dirTNW[k]; if (q>=zero && q<=one) (D27.f[dirBSE])[kbse]=f27_TNW;
+      q = q_dirE[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirW  ])[kw  ]=f27_E  ;
+      q = q_dirW[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirE  ])[ke  ]=f27_W  ;
+      q = q_dirN[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirS  ])[ks  ]=f27_N  ;
+      q = q_dirS[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirN  ])[kn  ]=f27_S  ;
+      q = q_dirT[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirB  ])[kb  ]=f27_T  ;
+      q = q_dirB[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirT  ])[kt  ]=f27_B  ;
+      q = q_dirNE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirSW ])[ksw ]=f27_NE ;
+      q = q_dirSW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirNE ])[kne ]=f27_SW ;
+      q = q_dirSE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirNW ])[knw ]=f27_SE ;
+      q = q_dirNW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirSE ])[kse ]=f27_NW ;
+      q = q_dirTE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBW ])[kbw ]=f27_TE ;
+      q = q_dirBW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTE ])[kte ]=f27_BW ;
+      q = q_dirBE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTW ])[ktw ]=f27_BE ;
+      q = q_dirTW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBE ])[kbe ]=f27_TW ;
+      q = q_dirTN[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBS ])[kbs ]=f27_TN ;
+      q = q_dirBS[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTN ])[ktn ]=f27_BS ;
+      q = q_dirBN[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTS ])[kts ]=f27_BN ;
+      q = q_dirTS[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBN ])[kbn ]=f27_TS ;
+      q = q_dirTNE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSW])[kbsw]=f27_TNE;
+      q = q_dirBSW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNE])[ktne]=f27_BSW;
+      q = q_dirBNE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSW])[ktsw]=f27_BNE;
+      q = q_dirTSW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNE])[kbne]=f27_TSW;
+      q = q_dirTSE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNW])[kbnw]=f27_TSE;
+      q = q_dirBNW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSE])[ktse]=f27_BNW;
+      q = q_dirBSE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNW])[ktnw]=f27_BSE;
+      q = q_dirTNW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSE])[kbse]=f27_TNW;
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4279,37 +4280,37 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
       //ohne Q's aber mit TRT
       real /*feq,*/ q;
       q = q_dirE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[2])[kw]= -f7_W + cs2 * TempD;
       }
 
       q = q_dirW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[1])[ke]= -f7_E + cs2 * TempD;
       }
 
       q = q_dirN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[4])[ks]= -f7_S + cs2 * TempD;
       }
 
       q = q_dirS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[3])[kn]= -f7_N + cs2 * TempD;
       }
 
       q = q_dirT[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[6])[kb]= -f7_B + cs2 * TempD;
       }
 
       q = q_dirB[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[5])[kt]= -f7_T + cs2 * TempD;
       }
@@ -4640,64 +4641,64 @@ extern "C" __global__ void QNoSlipADincomp27(int inx,
          f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
       //real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feq27_E    =   c2o27* ConcD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2o27* ConcD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2o27* ConcD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2o27* ConcD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2o27* ConcD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2o27* ConcD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1o54* ConcD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1o54* ConcD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real TempD = temp[k];
 
       //real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
-      real feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      real feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      real feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      real feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      real feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      real feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      real feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      real feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      real feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      real feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      real feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      real feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      real feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      real feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      real feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      real feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      real feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      real feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      real feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      real feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      real feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      real feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      real feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      real feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      real feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      real feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feqW27_E    =   c2o27* TempD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      real feqW27_W    =   c2o27* TempD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      real feqW27_N    =   c2o27* TempD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      real feqW27_S    =   c2o27* TempD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feqW27_T    =   c2o27* TempD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      real feqW27_B    =   c2o27* TempD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      real feqW27_NE   =   c1o54* TempD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feqW27_SW   =   c1o54* TempD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feqW27_SE   =   c1o54* TempD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feqW27_NW   =   c1o54* TempD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feqW27_TE   =   c1o54* TempD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feqW27_BW   =   c1o54* TempD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feqW27_BE   =   c1o54* TempD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feqW27_TW   =   c1o54* TempD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feqW27_TN   =   c1o54* TempD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feqW27_BS   =   c1o54* TempD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feqW27_BN   =   c1o54* TempD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feqW27_TS   =   c1o54* TempD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feqW27_TNE  =   c1o216*TempD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feqW27_BSW  =   c1o216*TempD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feqW27_BNE  =   c1o216*TempD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feqW27_TSW  =   c1o216*TempD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feqW27_TSE  =   c1o216*TempD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feqW27_BNW  =   c1o216*TempD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feqW27_BSE  =   c1o216*TempD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feqW27_TNW  =   c1o216*TempD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real omegaD     = three - sqrt(three);
+      real omegaD     = c3o1 - sqrt(c3o1);
       //real Lam        = -(c1o2-one/omegaD);
       //real nue_d      = Lam/three;
       //real ae         = zero;
@@ -4771,32 +4772,32 @@ extern "C" __global__ void QNoSlipADincomp27(int inx,
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real q;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]=(two*feqW27_W  -(f27_E  *(q*omegaD-one)-omegaD*feq27_E  *(q-one))/(omegaD-one)+f27_W  *q)/(q+one);
-      q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]=(two*feqW27_E  -(f27_W  *(q*omegaD-one)-omegaD*feq27_W  *(q-one))/(omegaD-one)+f27_E  *q)/(q+one);
-      q = q_dirN[k];   if (q>=zero && q<=one) (D27.f[dirS  ])[ks  ]=(two*feqW27_S  -(f27_N  *(q*omegaD-one)-omegaD*feq27_N  *(q-one))/(omegaD-one)+f27_S  *q)/(q+one);
-      q = q_dirS[k];   if (q>=zero && q<=one) (D27.f[dirN  ])[kn  ]=(two*feqW27_N  -(f27_S  *(q*omegaD-one)-omegaD*feq27_S  *(q-one))/(omegaD-one)+f27_N  *q)/(q+one);
-      q = q_dirT[k];   if (q>=zero && q<=one) (D27.f[dirB  ])[kb  ]=(two*feqW27_B  -(f27_T  *(q*omegaD-one)-omegaD*feq27_T  *(q-one))/(omegaD-one)+f27_B  *q)/(q+one);
-      q = q_dirB[k];   if (q>=zero && q<=one) (D27.f[dirT  ])[kt  ]=(two*feqW27_T  -(f27_B  *(q*omegaD-one)-omegaD*feq27_B  *(q-one))/(omegaD-one)+f27_T  *q)/(q+one);
-      q = q_dirNE[k];  if (q>=zero && q<=one) (D27.f[dirSW ])[ksw ]=(two*feqW27_SW -(f27_NE *(q*omegaD-one)-omegaD*feq27_NE *(q-one))/(omegaD-one)+f27_SW *q)/(q+one);
-      q = q_dirSW[k];  if (q>=zero && q<=one) (D27.f[dirNE ])[kne ]=(two*feqW27_NE -(f27_SW *(q*omegaD-one)-omegaD*feq27_SW *(q-one))/(omegaD-one)+f27_NE *q)/(q+one);
-      q = q_dirSE[k];  if (q>=zero && q<=one) (D27.f[dirNW ])[knw ]=(two*feqW27_NW -(f27_SE *(q*omegaD-one)-omegaD*feq27_SE *(q-one))/(omegaD-one)+f27_NW *q)/(q+one);
-      q = q_dirNW[k];  if (q>=zero && q<=one) (D27.f[dirSE ])[kse ]=(two*feqW27_SE -(f27_NW *(q*omegaD-one)-omegaD*feq27_NW *(q-one))/(omegaD-one)+f27_SE *q)/(q+one);
-      q = q_dirTE[k];  if (q>=zero && q<=one) (D27.f[dirBW ])[kbw ]=(two*feqW27_BW -(f27_TE *(q*omegaD-one)-omegaD*feq27_TE *(q-one))/(omegaD-one)+f27_BW *q)/(q+one);
-      q = q_dirBW[k];  if (q>=zero && q<=one) (D27.f[dirTE ])[kte ]=(two*feqW27_TE -(f27_BW *(q*omegaD-one)-omegaD*feq27_BW *(q-one))/(omegaD-one)+f27_TE *q)/(q+one);
-      q = q_dirBE[k];  if (q>=zero && q<=one) (D27.f[dirTW ])[ktw ]=(two*feqW27_TW -(f27_BE *(q*omegaD-one)-omegaD*feq27_BE *(q-one))/(omegaD-one)+f27_TW *q)/(q+one);
-      q = q_dirTW[k];  if (q>=zero && q<=one) (D27.f[dirBE ])[kbe ]=(two*feqW27_BE -(f27_TW *(q*omegaD-one)-omegaD*feq27_TW *(q-one))/(omegaD-one)+f27_BE *q)/(q+one);
-      q = q_dirTN[k];  if (q>=zero && q<=one) (D27.f[dirBS ])[kbs ]=(two*feqW27_BS -(f27_TN *(q*omegaD-one)-omegaD*feq27_TN *(q-one))/(omegaD-one)+f27_BS *q)/(q+one);
-      q = q_dirBS[k];  if (q>=zero && q<=one) (D27.f[dirTN ])[ktn ]=(two*feqW27_TN -(f27_BS *(q*omegaD-one)-omegaD*feq27_BS *(q-one))/(omegaD-one)+f27_TN *q)/(q+one);
-      q = q_dirBN[k];  if (q>=zero && q<=one) (D27.f[dirTS ])[kts ]=(two*feqW27_TS -(f27_BN *(q*omegaD-one)-omegaD*feq27_BN *(q-one))/(omegaD-one)+f27_TS *q)/(q+one);
-      q = q_dirTS[k];  if (q>=zero && q<=one) (D27.f[dirBN ])[kbn ]=(two*feqW27_BN -(f27_TS *(q*omegaD-one)-omegaD*feq27_TS *(q-one))/(omegaD-one)+f27_BN *q)/(q+one);
-      q = q_dirTNE[k]; if (q>=zero && q<=one) (D27.f[dirBSW])[kbsw]=(two*feqW27_BSW-(f27_TNE*(q*omegaD-one)-omegaD*feq27_TNE*(q-one))/(omegaD-one)+f27_BSW*q)/(q+one);
-      q = q_dirBSW[k]; if (q>=zero && q<=one) (D27.f[dirTNE])[ktne]=(two*feqW27_TNE-(f27_BSW*(q*omegaD-one)-omegaD*feq27_BSW*(q-one))/(omegaD-one)+f27_TNE*q)/(q+one);
-      q = q_dirBNE[k]; if (q>=zero && q<=one) (D27.f[dirTSW])[ktsw]=(two*feqW27_TSW-(f27_BNE*(q*omegaD-one)-omegaD*feq27_BNE*(q-one))/(omegaD-one)+f27_TSW*q)/(q+one);
-      q = q_dirTSW[k]; if (q>=zero && q<=one) (D27.f[dirBNE])[kbne]=(two*feqW27_BNE-(f27_TSW*(q*omegaD-one)-omegaD*feq27_TSW*(q-one))/(omegaD-one)+f27_BNE*q)/(q+one);
-      q = q_dirTSE[k]; if (q>=zero && q<=one) (D27.f[dirBNW])[kbnw]=(two*feqW27_BNW-(f27_TSE*(q*omegaD-one)-omegaD*feq27_TSE*(q-one))/(omegaD-one)+f27_BNW*q)/(q+one);
-      q = q_dirBNW[k]; if (q>=zero && q<=one) (D27.f[dirTSE])[ktse]=(two*feqW27_TSE-(f27_BNW*(q*omegaD-one)-omegaD*feq27_BNW*(q-one))/(omegaD-one)+f27_TSE*q)/(q+one);
-      q = q_dirBSE[k]; if (q>=zero && q<=one) (D27.f[dirTNW])[ktnw]=(two*feqW27_TNW-(f27_BSE*(q*omegaD-one)-omegaD*feq27_BSE*(q-one))/(omegaD-one)+f27_TNW*q)/(q+one);
-      q = q_dirTNW[k]; if (q>=zero && q<=one) (D27.f[dirBSE])[kbse]=(two*feqW27_BSE-(f27_TNW*(q*omegaD-one)-omegaD*feq27_TNW*(q-one))/(omegaD-one)+f27_BSE*q)/(q+one);
+      q = q_dirE[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirW  ])[kw  ]=(c2o1*feqW27_W  -(f27_E  *(q*omegaD-c1o1)-omegaD*feq27_E  *(q-c1o1))/(omegaD-c1o1)+f27_W  *q)/(q+c1o1);
+      q = q_dirW[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirE  ])[ke  ]=(c2o1*feqW27_E  -(f27_W  *(q*omegaD-c1o1)-omegaD*feq27_W  *(q-c1o1))/(omegaD-c1o1)+f27_E  *q)/(q+c1o1);
+      q = q_dirN[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirS  ])[ks  ]=(c2o1*feqW27_S  -(f27_N  *(q*omegaD-c1o1)-omegaD*feq27_N  *(q-c1o1))/(omegaD-c1o1)+f27_S  *q)/(q+c1o1);
+      q = q_dirS[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirN  ])[kn  ]=(c2o1*feqW27_N  -(f27_S  *(q*omegaD-c1o1)-omegaD*feq27_S  *(q-c1o1))/(omegaD-c1o1)+f27_N  *q)/(q+c1o1);
+      q = q_dirT[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirB  ])[kb  ]=(c2o1*feqW27_B  -(f27_T  *(q*omegaD-c1o1)-omegaD*feq27_T  *(q-c1o1))/(omegaD-c1o1)+f27_B  *q)/(q+c1o1);
+      q = q_dirB[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirT  ])[kt  ]=(c2o1*feqW27_T  -(f27_B  *(q*omegaD-c1o1)-omegaD*feq27_B  *(q-c1o1))/(omegaD-c1o1)+f27_T  *q)/(q+c1o1);
+      q = q_dirNE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirSW ])[ksw ]=(c2o1*feqW27_SW -(f27_NE *(q*omegaD-c1o1)-omegaD*feq27_NE *(q-c1o1))/(omegaD-c1o1)+f27_SW *q)/(q+c1o1);
+      q = q_dirSW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirNE ])[kne ]=(c2o1*feqW27_NE -(f27_SW *(q*omegaD-c1o1)-omegaD*feq27_SW *(q-c1o1))/(omegaD-c1o1)+f27_NE *q)/(q+c1o1);
+      q = q_dirSE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirNW ])[knw ]=(c2o1*feqW27_NW -(f27_SE *(q*omegaD-c1o1)-omegaD*feq27_SE *(q-c1o1))/(omegaD-c1o1)+f27_NW *q)/(q+c1o1);
+      q = q_dirNW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirSE ])[kse ]=(c2o1*feqW27_SE -(f27_NW *(q*omegaD-c1o1)-omegaD*feq27_NW *(q-c1o1))/(omegaD-c1o1)+f27_SE *q)/(q+c1o1);
+      q = q_dirTE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBW ])[kbw ]=(c2o1*feqW27_BW -(f27_TE *(q*omegaD-c1o1)-omegaD*feq27_TE *(q-c1o1))/(omegaD-c1o1)+f27_BW *q)/(q+c1o1);
+      q = q_dirBW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTE ])[kte ]=(c2o1*feqW27_TE -(f27_BW *(q*omegaD-c1o1)-omegaD*feq27_BW *(q-c1o1))/(omegaD-c1o1)+f27_TE *q)/(q+c1o1);
+      q = q_dirBE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTW ])[ktw ]=(c2o1*feqW27_TW -(f27_BE *(q*omegaD-c1o1)-omegaD*feq27_BE *(q-c1o1))/(omegaD-c1o1)+f27_TW *q)/(q+c1o1);
+      q = q_dirTW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBE ])[kbe ]=(c2o1*feqW27_BE -(f27_TW *(q*omegaD-c1o1)-omegaD*feq27_TW *(q-c1o1))/(omegaD-c1o1)+f27_BE *q)/(q+c1o1);
+      q = q_dirTN[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBS ])[kbs ]=(c2o1*feqW27_BS -(f27_TN *(q*omegaD-c1o1)-omegaD*feq27_TN *(q-c1o1))/(omegaD-c1o1)+f27_BS *q)/(q+c1o1);
+      q = q_dirBS[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTN ])[ktn ]=(c2o1*feqW27_TN -(f27_BS *(q*omegaD-c1o1)-omegaD*feq27_BS *(q-c1o1))/(omegaD-c1o1)+f27_TN *q)/(q+c1o1);
+      q = q_dirBN[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTS ])[kts ]=(c2o1*feqW27_TS -(f27_BN *(q*omegaD-c1o1)-omegaD*feq27_BN *(q-c1o1))/(omegaD-c1o1)+f27_TS *q)/(q+c1o1);
+      q = q_dirTS[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBN ])[kbn ]=(c2o1*feqW27_BN -(f27_TS *(q*omegaD-c1o1)-omegaD*feq27_TS *(q-c1o1))/(omegaD-c1o1)+f27_BN *q)/(q+c1o1);
+      q = q_dirTNE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSW])[kbsw]=(c2o1*feqW27_BSW-(f27_TNE*(q*omegaD-c1o1)-omegaD*feq27_TNE*(q-c1o1))/(omegaD-c1o1)+f27_BSW*q)/(q+c1o1);
+      q = q_dirBSW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNE])[ktne]=(c2o1*feqW27_TNE-(f27_BSW*(q*omegaD-c1o1)-omegaD*feq27_BSW*(q-c1o1))/(omegaD-c1o1)+f27_TNE*q)/(q+c1o1);
+      q = q_dirBNE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSW])[ktsw]=(c2o1*feqW27_TSW-(f27_BNE*(q*omegaD-c1o1)-omegaD*feq27_BNE*(q-c1o1))/(omegaD-c1o1)+f27_TSW*q)/(q+c1o1);
+      q = q_dirTSW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNE])[kbne]=(c2o1*feqW27_BNE-(f27_TSW*(q*omegaD-c1o1)-omegaD*feq27_TSW*(q-c1o1))/(omegaD-c1o1)+f27_BNE*q)/(q+c1o1);
+      q = q_dirTSE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNW])[kbnw]=(c2o1*feqW27_BNW-(f27_TSE*(q*omegaD-c1o1)-omegaD*feq27_TSE*(q-c1o1))/(omegaD-c1o1)+f27_BNW*q)/(q+c1o1);
+      q = q_dirBNW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSE])[ktse]=(c2o1*feqW27_TSE-(f27_BNW*(q*omegaD-c1o1)-omegaD*feq27_BNW*(q-c1o1))/(omegaD-c1o1)+f27_TSE*q)/(q+c1o1);
+      q = q_dirBSE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNW])[ktnw]=(c2o1*feqW27_TNW-(f27_BSE*(q*omegaD-c1o1)-omegaD*feq27_BSE*(q-c1o1))/(omegaD-c1o1)+f27_TNW*q)/(q+c1o1);
+      q = q_dirTNW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSE])[kbse]=(c2o1*feqW27_BSE-(f27_TNW*(q*omegaD-c1o1)-omegaD*feq27_TNW*(q-c1o1))/(omegaD-c1o1)+f27_BSE*q)/(q+c1o1);
    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5023,9 +5024,9 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
       real f_TNW  = (D.f[dirBSE ])[kbse ];
       real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      real vx1_Inflow   = zero;
+      real vx1_Inflow   = c0o1;
       real vx2_Inflow   = velo[k];
-      real vx3_Inflow   = zero;
+      real vx3_Inflow   = c0o1;
       real ux_sq_Inflow = vx1_Inflow * vx1_Inflow;
       real uy_sq_Inflow = vx2_Inflow * vx2_Inflow;
       real uz_sq_Inflow = vx3_Inflow * vx3_Inflow;
@@ -5242,37 +5243,37 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
       //ohne Q's aber mit TRT
       real /*feq,*/ q;
       q = q_dirE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[2])[kw]= -f7_W + cs2 * TempD;
       }
 
       q = q_dirW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[1])[ke]= -f7_E + cs2 * TempD;
       }
 
       q = q_dirN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[4])[ks]= -f7_S + cs2 * TempD;
       }
 
       q = q_dirS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[3])[kn]= -f7_N + cs2 * TempD;
       }
 
       q = q_dirT[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[6])[kb]= -f7_B + cs2 * TempD;
       }
 
       q = q_dirB[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[5])[kt]= -f7_T + cs2 * TempD;
       }
@@ -5604,69 +5605,69 @@ extern "C" __global__ void QADVeloIncomp27( int inx,
                         f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
       //real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feq27_E    =   c2o27* ConcD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2o27* ConcD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2o27* ConcD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2o27* ConcD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2o27* ConcD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2o27* ConcD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1o54* ConcD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1o54* ConcD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real TempD = temp[k];
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // velocity inflow
       vx1   = velo[k];//zero;
-      vx2   = zero;//velo[k];
-      vx3   = zero;
+      vx2   = c0o1;//velo[k];
+      vx3   = c0o1;
 
       //real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
-      real feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      real feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      real feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      real feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      real feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      real feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      real feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      real feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      real feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      real feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      real feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      real feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      real feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      real feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      real feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      real feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      real feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      real feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      real feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      real feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      real feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      real feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      real feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      real feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      real feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      real feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feqW27_E    =   c2o27* TempD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      real feqW27_W    =   c2o27* TempD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      real feqW27_N    =   c2o27* TempD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      real feqW27_S    =   c2o27* TempD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feqW27_T    =   c2o27* TempD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      real feqW27_B    =   c2o27* TempD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      real feqW27_NE   =   c1o54* TempD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feqW27_SW   =   c1o54* TempD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feqW27_SE   =   c1o54* TempD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feqW27_NW   =   c1o54* TempD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feqW27_TE   =   c1o54* TempD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feqW27_BW   =   c1o54* TempD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feqW27_BE   =   c1o54* TempD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feqW27_TW   =   c1o54* TempD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feqW27_TN   =   c1o54* TempD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feqW27_BS   =   c1o54* TempD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feqW27_BN   =   c1o54* TempD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feqW27_TS   =   c1o54* TempD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feqW27_TNE  =   c1o216*TempD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feqW27_BSW  =   c1o216*TempD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feqW27_BNE  =   c1o216*TempD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feqW27_TSW  =   c1o216*TempD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feqW27_TSE  =   c1o216*TempD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feqW27_BNW  =   c1o216*TempD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feqW27_BSE  =   c1o216*TempD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feqW27_TNW  =   c1o216*TempD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real omegaD     = three - sqrt(three);
+      real omegaD     = c3o1 - sqrt(c3o1);
       //real Lam        = -(c1o2-one/omegaD);
       //real nue_d      = Lam/three;
       //real ae         = zero;
@@ -5740,32 +5741,32 @@ extern "C" __global__ void QADVeloIncomp27( int inx,
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real q;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]= -feqW27_W  + two * c2over27  * TempD;
-      q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]= -feqW27_E  + two * c2over27  * TempD;
-      q = q_dirN[k];   if (q>=zero && q<=one) (D27.f[dirS  ])[ks  ]= -feqW27_S  + two * c2over27  * TempD;
-      q = q_dirS[k];   if (q>=zero && q<=one) (D27.f[dirN  ])[kn  ]= -feqW27_N  + two * c2over27  * TempD;
-      q = q_dirT[k];   if (q>=zero && q<=one) (D27.f[dirB  ])[kb  ]= -feqW27_B  + two * c2over27  * TempD;
-      q = q_dirB[k];   if (q>=zero && q<=one) (D27.f[dirT  ])[kt  ]= -feqW27_T  + two * c2over27  * TempD;
-      q = q_dirNE[k];  if (q>=zero && q<=one) (D27.f[dirSW ])[ksw ]= -feqW27_SW + two * c1over54  * TempD;
-      q = q_dirSW[k];  if (q>=zero && q<=one) (D27.f[dirNE ])[kne ]= -feqW27_NE + two * c1over54  * TempD;
-      q = q_dirSE[k];  if (q>=zero && q<=one) (D27.f[dirNW ])[knw ]= -feqW27_NW + two * c1over54  * TempD;
-      q = q_dirNW[k];  if (q>=zero && q<=one) (D27.f[dirSE ])[kse ]= -feqW27_SE + two * c1over54  * TempD;
-      q = q_dirTE[k];  if (q>=zero && q<=one) (D27.f[dirBW ])[kbw ]= -feqW27_BW + two * c1over54  * TempD;
-      q = q_dirBW[k];  if (q>=zero && q<=one) (D27.f[dirTE ])[kte ]= -feqW27_TE + two * c1over54  * TempD;
-      q = q_dirBE[k];  if (q>=zero && q<=one) (D27.f[dirTW ])[ktw ]= -feqW27_TW + two * c1over54  * TempD;
-      q = q_dirTW[k];  if (q>=zero && q<=one) (D27.f[dirBE ])[kbe ]= -feqW27_BE + two * c1over54  * TempD;
-      q = q_dirTN[k];  if (q>=zero && q<=one) (D27.f[dirBS ])[kbs ]= -feqW27_BS + two * c1over54  * TempD;
-      q = q_dirBS[k];  if (q>=zero && q<=one) (D27.f[dirTN ])[ktn ]= -feqW27_TN + two * c1over54  * TempD;
-      q = q_dirBN[k];  if (q>=zero && q<=one) (D27.f[dirTS ])[kts ]= -feqW27_TS + two * c1over54  * TempD;
-      q = q_dirTS[k];  if (q>=zero && q<=one) (D27.f[dirBN ])[kbn ]= -feqW27_BN + two * c1over54  * TempD;
-      q = q_dirTNE[k]; if (q>=zero && q<=one) (D27.f[dirBSW])[kbsw]= -feqW27_BSW+ two * c1over216 * TempD;
-      q = q_dirBSW[k]; if (q>=zero && q<=one) (D27.f[dirTNE])[ktne]= -feqW27_TNE+ two * c1over216 * TempD;
-      q = q_dirBNE[k]; if (q>=zero && q<=one) (D27.f[dirTSW])[ktsw]= -feqW27_TSW+ two * c1over216 * TempD;
-      q = q_dirTSW[k]; if (q>=zero && q<=one) (D27.f[dirBNE])[kbne]= -feqW27_BNE+ two * c1over216 * TempD;
-      q = q_dirTSE[k]; if (q>=zero && q<=one) (D27.f[dirBNW])[kbnw]= -feqW27_BNW+ two * c1over216 * TempD;
-      q = q_dirBNW[k]; if (q>=zero && q<=one) (D27.f[dirTSE])[ktse]= -feqW27_TSE+ two * c1over216 * TempD;
-      q = q_dirBSE[k]; if (q>=zero && q<=one) (D27.f[dirTNW])[ktnw]= -feqW27_TNW+ two * c1over216 * TempD;
-      q = q_dirTNW[k]; if (q>=zero && q<=one) (D27.f[dirBSE])[kbse]= -feqW27_BSE+ two * c1over216 * TempD;
+      q = q_dirE[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirW  ])[kw  ]= -feqW27_W  + c2o1 * c2o27  * TempD;
+      q = q_dirW[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirE  ])[ke  ]= -feqW27_E  + c2o1 * c2o27  * TempD;
+      q = q_dirN[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirS  ])[ks  ]= -feqW27_S  + c2o1 * c2o27  * TempD;
+      q = q_dirS[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirN  ])[kn  ]= -feqW27_N  + c2o1 * c2o27  * TempD;
+      q = q_dirT[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirB  ])[kb  ]= -feqW27_B  + c2o1 * c2o27  * TempD;
+      q = q_dirB[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirT  ])[kt  ]= -feqW27_T  + c2o1 * c2o27  * TempD;
+      q = q_dirNE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirSW ])[ksw ]= -feqW27_SW + c2o1 * c1o54  * TempD;
+      q = q_dirSW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirNE ])[kne ]= -feqW27_NE + c2o1 * c1o54  * TempD;
+      q = q_dirSE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirNW ])[knw ]= -feqW27_NW + c2o1 * c1o54  * TempD;
+      q = q_dirNW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirSE ])[kse ]= -feqW27_SE + c2o1 * c1o54  * TempD;
+      q = q_dirTE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBW ])[kbw ]= -feqW27_BW + c2o1 * c1o54  * TempD;
+      q = q_dirBW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTE ])[kte ]= -feqW27_TE + c2o1 * c1o54  * TempD;
+      q = q_dirBE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTW ])[ktw ]= -feqW27_TW + c2o1 * c1o54  * TempD;
+      q = q_dirTW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBE ])[kbe ]= -feqW27_BE + c2o1 * c1o54  * TempD;
+      q = q_dirTN[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBS ])[kbs ]= -feqW27_BS + c2o1 * c1o54  * TempD;
+      q = q_dirBS[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTN ])[ktn ]= -feqW27_TN + c2o1 * c1o54  * TempD;
+      q = q_dirBN[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTS ])[kts ]= -feqW27_TS + c2o1 * c1o54  * TempD;
+      q = q_dirTS[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBN ])[kbn ]= -feqW27_BN + c2o1 * c1o54  * TempD;
+      q = q_dirTNE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSW])[kbsw]= -feqW27_BSW+ c2o1 * c1o216 * TempD;
+      q = q_dirBSW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNE])[ktne]= -feqW27_TNE+ c2o1 * c1o216 * TempD;
+      q = q_dirBNE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSW])[ktsw]= -feqW27_TSW+ c2o1 * c1o216 * TempD;
+      q = q_dirTSW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNE])[kbne]= -feqW27_BNE+ c2o1 * c1o216 * TempD;
+      q = q_dirTSE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNW])[kbnw]= -feqW27_BNW+ c2o1 * c1o216 * TempD;
+      q = q_dirBNW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSE])[ktse]= -feqW27_TSE+ c2o1 * c1o216 * TempD;
+      q = q_dirBSE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNW])[ktnw]= -feqW27_TNW+ c2o1 * c1o216 * TempD;
+      q = q_dirTNW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSE])[kbse]= -feqW27_BSE+ c2o1 * c1o216 * TempD;
       //q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]=(two*feqW27_W  -(f27_E  *(q*omegaD-one)-omegaD*feq27_E  *(q-one))/(omegaD-one)+f27_W  *q)/(q+one);
       //q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]=(two*feqW27_E  -(f27_W  *(q*omegaD-one)-omegaD*feq27_W  *(q-one))/(omegaD-one)+f27_E  *q)/(q+one);
       //q = q_dirN[k];   if (q>=zero && q<=one) (D27.f[dirS  ])[ks  ]=(two*feqW27_S  -(f27_N  *(q*omegaD-one)-omegaD*feq27_N  *(q-one))/(omegaD-one)+f27_S  *q)/(q+one);
@@ -6076,9 +6077,9 @@ extern "C" __global__ void QADPressIncomp7(int inx,
       //////////////////////////////////////////////////////////////////////////
 	  //TRT  Yoshida Kernel - based on Ying
       real cs2         = c1o4;
-      real Lam         = diffusivity/(one)/cs2;
-      real omegaD      = - one / (Lam + c1o2);
-      real nue_d       = Lam/three;
+      real Lam         = diffusivity/(c1o1)/cs2;
+      real omegaD      = - c1o1 / (Lam + c1o2);
+      real nue_d       = Lam/c3o1;
 
       //////////////////////////////////////////////////////////////////////////
       //pointertausch
@@ -6198,37 +6199,37 @@ extern "C" __global__ void QADPressIncomp7(int inx,
       //ohne Q's aber mit TRT
       real /*feq,*/ q;
       q = q_dirE[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[2])[kw]= f7_W + nue_d * ConcD;
       }
 
       q = q_dirW[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[1])[ke]= f7_E + nue_d * ConcD;
       }
 
       q = q_dirN[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[4])[ks]= f7_S + nue_d * ConcD;
       }
 
       q = q_dirS[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[3])[kn]= f7_N + nue_d * ConcD;
       }
 
       q = q_dirT[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[6])[kb]= f7_B + nue_d * ConcD;
       }
 
       q = q_dirB[k];
-      if (q>=zero && q<=one)
+      if (q>=c0o1 && q<=c1o1)
       {
          (D7.f[5])[kt]= f7_T + nue_d * ConcD;
       }
@@ -6560,32 +6561,32 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
                         f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
       //real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feq27_E    =   c2o27* ConcD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2o27* ConcD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2o27* ConcD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2o27* ConcD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2o27* ConcD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2o27* ConcD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1o54* ConcD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1o54* ConcD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1o54* ConcD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1o54* ConcD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1o54* ConcD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1o54* ConcD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1o216*ConcD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1o216*ConcD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1o216*ConcD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real TempD = temp[k];
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6595,34 +6596,34 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
       //vx3   = velo[k];
 
       //real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
-      real feqW27_E    =  c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq); //feq27_E  ;// 
-      real feqW27_W    =  c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq); //feq27_W  ;// 
-      real feqW27_N    =  c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq); //feq27_N  ;// 
-      real feqW27_S    =  c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq); //feq27_S  ;// 
-      real feqW27_T    =  c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq); //feq27_T  ;// 
-      real feqW27_B    =  c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq); //feq27_B  ;// 
-      real feqW27_NE   =  c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); //feq27_NE ;// 
-      real feqW27_SW   =  c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); //feq27_SW ;// 
-      real feqW27_SE   =  c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); //feq27_SE ;// 
-      real feqW27_NW   =  c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); //feq27_NW ;// 
-      real feqW27_TE   =  c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); //feq27_TE ;// 
-      real feqW27_BW   =  c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); //feq27_BW ;// 
-      real feqW27_BE   =  c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); //feq27_BE ;// 
-      real feqW27_TW   =  c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); //feq27_TW ;// 
-      real feqW27_TN   =  c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); //feq27_TN ;// 
-      real feqW27_BS   =  c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); //feq27_BS ;// 
-      real feqW27_BN   =  c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); //feq27_BN ;// 
-      real feqW27_TS   =  c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); //feq27_TS ;// 
-      real feqW27_TNE  =  c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); //feq27_TNE;// 
-      real feqW27_BSW  =  c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); //feq27_BSW;// 
-      real feqW27_BNE  =  c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); //feq27_BNE;// 
-      real feqW27_TSW  =  c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); //feq27_TSW;// 
-      real feqW27_TSE  =  c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); //feq27_TSE;// 
-      real feqW27_BNW  =  c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); //feq27_BNW;// 
-      real feqW27_BSE  =  c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); //feq27_BSE;// 
-      real feqW27_TNW  =  c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); //feq27_TNW;// 
+      real feqW27_E    =  c2o27* TempD*(c1o1+c3o1*( vx1        )+c9o2*( vx1        )*( vx1        )-cu_sq); //feq27_E  ;// 
+      real feqW27_W    =  c2o27* TempD*(c1o1+c3o1*(-vx1        )+c9o2*(-vx1        )*(-vx1        )-cu_sq); //feq27_W  ;// 
+      real feqW27_N    =  c2o27* TempD*(c1o1+c3o1*(    vx2     )+c9o2*(     vx2    )*(     vx2    )-cu_sq); //feq27_N  ;// 
+      real feqW27_S    =  c2o27* TempD*(c1o1+c3o1*(   -vx2     )+c9o2*(    -vx2    )*(    -vx2    )-cu_sq); //feq27_S  ;// 
+      real feqW27_T    =  c2o27* TempD*(c1o1+c3o1*(         vx3)+c9o2*(         vx3)*(         vx3)-cu_sq); //feq27_T  ;// 
+      real feqW27_B    =  c2o27* TempD*(c1o1+c3o1*(        -vx3)+c9o2*(        -vx3)*(        -vx3)-cu_sq); //feq27_B  ;// 
+      real feqW27_NE   =  c1o54* TempD*(c1o1+c3o1*( vx1+vx2    )+c9o2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); //feq27_NE ;// 
+      real feqW27_SW   =  c1o54* TempD*(c1o1+c3o1*(-vx1-vx2    )+c9o2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); //feq27_SW ;// 
+      real feqW27_SE   =  c1o54* TempD*(c1o1+c3o1*( vx1-vx2    )+c9o2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); //feq27_SE ;// 
+      real feqW27_NW   =  c1o54* TempD*(c1o1+c3o1*(-vx1+vx2    )+c9o2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); //feq27_NW ;// 
+      real feqW27_TE   =  c1o54* TempD*(c1o1+c3o1*( vx1    +vx3)+c9o2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); //feq27_TE ;// 
+      real feqW27_BW   =  c1o54* TempD*(c1o1+c3o1*(-vx1    -vx3)+c9o2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); //feq27_BW ;// 
+      real feqW27_BE   =  c1o54* TempD*(c1o1+c3o1*( vx1    -vx3)+c9o2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); //feq27_BE ;// 
+      real feqW27_TW   =  c1o54* TempD*(c1o1+c3o1*(-vx1    +vx3)+c9o2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); //feq27_TW ;// 
+      real feqW27_TN   =  c1o54* TempD*(c1o1+c3o1*(     vx2+vx3)+c9o2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); //feq27_TN ;// 
+      real feqW27_BS   =  c1o54* TempD*(c1o1+c3o1*(    -vx2-vx3)+c9o2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); //feq27_BS ;// 
+      real feqW27_BN   =  c1o54* TempD*(c1o1+c3o1*(     vx2-vx3)+c9o2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); //feq27_BN ;// 
+      real feqW27_TS   =  c1o54* TempD*(c1o1+c3o1*(    -vx2+vx3)+c9o2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); //feq27_TS ;// 
+      real feqW27_TNE  =  c1o216*TempD*(c1o1+c3o1*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); //feq27_TNE;// 
+      real feqW27_BSW  =  c1o216*TempD*(c1o1+c3o1*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); //feq27_BSW;// 
+      real feqW27_BNE  =  c1o216*TempD*(c1o1+c3o1*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); //feq27_BNE;// 
+      real feqW27_TSW  =  c1o216*TempD*(c1o1+c3o1*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); //feq27_TSW;// 
+      real feqW27_TSE  =  c1o216*TempD*(c1o1+c3o1*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); //feq27_TSE;// 
+      real feqW27_BNW  =  c1o216*TempD*(c1o1+c3o1*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); //feq27_BNW;// 
+      real feqW27_BSE  =  c1o216*TempD*(c1o1+c3o1*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); //feq27_BSE;// 
+      real feqW27_TNW  =  c1o216*TempD*(c1o1+c3o1*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); //feq27_TNW;// 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real omegaD     = three - sqrt(three);
+      real omegaD     = c3o1 - sqrt(c3o1);
       //real Lam        = -(c1o2-one/omegaD);
       //real nue_d      = Lam/three;
       //real ae         = zero;
@@ -6696,32 +6697,32 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real q;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]= -feqW27_W  + two * c2over27  * TempD;
-      q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]= -feqW27_E  + two * c2over27  * TempD;
-      q = q_dirN[k];   if (q>=zero && q<=one) (D27.f[dirS  ])[ks  ]= -feqW27_S  + two * c2over27  * TempD;
-      q = q_dirS[k];   if (q>=zero && q<=one) (D27.f[dirN  ])[kn  ]= -feqW27_N  + two * c2over27  * TempD;
-      q = q_dirT[k];   if (q>=zero && q<=one) (D27.f[dirB  ])[kb  ]= -feqW27_B  + two * c2over27  * TempD;
-      q = q_dirB[k];   if (q>=zero && q<=one) (D27.f[dirT  ])[kt  ]= -feqW27_T  + two * c2over27  * TempD;
-      q = q_dirNE[k];  if (q>=zero && q<=one) (D27.f[dirSW ])[ksw ]= -feqW27_SW + two * c1over54  * TempD;
-      q = q_dirSW[k];  if (q>=zero && q<=one) (D27.f[dirNE ])[kne ]= -feqW27_NE + two * c1over54  * TempD;
-      q = q_dirSE[k];  if (q>=zero && q<=one) (D27.f[dirNW ])[knw ]= -feqW27_NW + two * c1over54  * TempD;
-      q = q_dirNW[k];  if (q>=zero && q<=one) (D27.f[dirSE ])[kse ]= -feqW27_SE + two * c1over54  * TempD;
-      q = q_dirTE[k];  if (q>=zero && q<=one) (D27.f[dirBW ])[kbw ]= -feqW27_BW + two * c1over54  * TempD;
-      q = q_dirBW[k];  if (q>=zero && q<=one) (D27.f[dirTE ])[kte ]= -feqW27_TE + two * c1over54  * TempD;
-      q = q_dirBE[k];  if (q>=zero && q<=one) (D27.f[dirTW ])[ktw ]= -feqW27_TW + two * c1over54  * TempD;
-      q = q_dirTW[k];  if (q>=zero && q<=one) (D27.f[dirBE ])[kbe ]= -feqW27_BE + two * c1over54  * TempD;
-      q = q_dirTN[k];  if (q>=zero && q<=one) (D27.f[dirBS ])[kbs ]= -feqW27_BS + two * c1over54  * TempD;
-      q = q_dirBS[k];  if (q>=zero && q<=one) (D27.f[dirTN ])[ktn ]= -feqW27_TN + two * c1over54  * TempD;
-      q = q_dirBN[k];  if (q>=zero && q<=one) (D27.f[dirTS ])[kts ]= -feqW27_TS + two * c1over54  * TempD;
-      q = q_dirTS[k];  if (q>=zero && q<=one) (D27.f[dirBN ])[kbn ]= -feqW27_BN + two * c1over54  * TempD;
-      q = q_dirTNE[k]; if (q>=zero && q<=one) (D27.f[dirBSW])[kbsw]= -feqW27_BSW+ two * c1over216 * TempD;
-      q = q_dirBSW[k]; if (q>=zero && q<=one) (D27.f[dirTNE])[ktne]= -feqW27_TNE+ two * c1over216 * TempD;
-      q = q_dirBNE[k]; if (q>=zero && q<=one) (D27.f[dirTSW])[ktsw]= -feqW27_TSW+ two * c1over216 * TempD;
-      q = q_dirTSW[k]; if (q>=zero && q<=one) (D27.f[dirBNE])[kbne]= -feqW27_BNE+ two * c1over216 * TempD;
-      q = q_dirTSE[k]; if (q>=zero && q<=one) (D27.f[dirBNW])[kbnw]= -feqW27_BNW+ two * c1over216 * TempD;
-      q = q_dirBNW[k]; if (q>=zero && q<=one) (D27.f[dirTSE])[ktse]= -feqW27_TSE+ two * c1over216 * TempD;
-      q = q_dirBSE[k]; if (q>=zero && q<=one) (D27.f[dirTNW])[ktnw]= -feqW27_TNW+ two * c1over216 * TempD;
-      q = q_dirTNW[k]; if (q>=zero && q<=one) (D27.f[dirBSE])[kbse]= -feqW27_BSE+ two * c1over216 * TempD;
+      q = q_dirE[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirW  ])[kw  ]= -feqW27_W  + c2o1 * c2o27  * TempD;
+      q = q_dirW[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirE  ])[ke  ]= -feqW27_E  + c2o1 * c2o27  * TempD;
+      q = q_dirN[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirS  ])[ks  ]= -feqW27_S  + c2o1 * c2o27  * TempD;
+      q = q_dirS[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirN  ])[kn  ]= -feqW27_N  + c2o1 * c2o27  * TempD;
+      q = q_dirT[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirB  ])[kb  ]= -feqW27_B  + c2o1 * c2o27  * TempD;
+      q = q_dirB[k];   if (q>=c0o1 && q<=c1o1) (D27.f[dirT  ])[kt  ]= -feqW27_T  + c2o1 * c2o27  * TempD;
+      q = q_dirNE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirSW ])[ksw ]= -feqW27_SW + c2o1 * c1o54  * TempD;
+      q = q_dirSW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirNE ])[kne ]= -feqW27_NE + c2o1 * c1o54  * TempD;
+      q = q_dirSE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirNW ])[knw ]= -feqW27_NW + c2o1 * c1o54  * TempD;
+      q = q_dirNW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirSE ])[kse ]= -feqW27_SE + c2o1 * c1o54  * TempD;
+      q = q_dirTE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBW ])[kbw ]= -feqW27_BW + c2o1 * c1o54  * TempD;
+      q = q_dirBW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTE ])[kte ]= -feqW27_TE + c2o1 * c1o54  * TempD;
+      q = q_dirBE[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTW ])[ktw ]= -feqW27_TW + c2o1 * c1o54  * TempD;
+      q = q_dirTW[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBE ])[kbe ]= -feqW27_BE + c2o1 * c1o54  * TempD;
+      q = q_dirTN[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBS ])[kbs ]= -feqW27_BS + c2o1 * c1o54  * TempD;
+      q = q_dirBS[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTN ])[ktn ]= -feqW27_TN + c2o1 * c1o54  * TempD;
+      q = q_dirBN[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirTS ])[kts ]= -feqW27_TS + c2o1 * c1o54  * TempD;
+      q = q_dirTS[k];  if (q>=c0o1 && q<=c1o1) (D27.f[dirBN ])[kbn ]= -feqW27_BN + c2o1 * c1o54  * TempD;
+      q = q_dirTNE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSW])[kbsw]= -feqW27_BSW+ c2o1 * c1o216 * TempD;
+      q = q_dirBSW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNE])[ktne]= -feqW27_TNE+ c2o1 * c1o216 * TempD;
+      q = q_dirBNE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSW])[ktsw]= -feqW27_TSW+ c2o1 * c1o216 * TempD;
+      q = q_dirTSW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNE])[kbne]= -feqW27_BNE+ c2o1 * c1o216 * TempD;
+      q = q_dirTSE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBNW])[kbnw]= -feqW27_BNW+ c2o1 * c1o216 * TempD;
+      q = q_dirBNW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTSE])[ktse]= -feqW27_TSE+ c2o1 * c1o216 * TempD;
+      q = q_dirBSE[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirTNW])[ktnw]= -feqW27_TNW+ c2o1 * c1o216 * TempD;
+      q = q_dirTNW[k]; if (q>=c0o1 && q<=c1o1) (D27.f[dirBSE])[kbse]= -feqW27_BSE+ c2o1 * c1o216 * TempD;
       //q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]=(two*feqW27_W  -(f27_E  *(q*omegaD-one)-omegaD*feq27_E  *(q-one))/(omegaD-one)+f27_W  *q)/(q+one);
       //q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]=(two*feqW27_E  -(f27_W  *(q*omegaD-one)-omegaD*feq27_W  *(q-one))/(omegaD-one)+f27_E  *q)/(q+one);
       //q = q_dirN[k];   if (q>=zero && q<=one) (D27.f[dirS  ])[ks  ]=(two*feqW27_S  -(f27_N  *(q*omegaD-one)-omegaD*feq27_N  *(q-one))/(omegaD-one)+f27_S  *q)/(q+one);

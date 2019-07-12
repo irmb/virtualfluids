@@ -6,9 +6,10 @@
 //
 //////////////////////////////////////////////////////////////////////////
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
+#include "Core/RealConstants.h"
 #include "math.h"
-#include "GPU/constant.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,15 +19,15 @@ inline __device__ void forwardInverseChimeraWithK(real &mfa, real &mfb, real &mf
 	real m0 = m2 + mfb;
 	mfa = m0;
 	m0 *= Kinverse;
-	m0 += one;
+	m0 += c1o1;
 	mfb = (m1*Kinverse - m0 * vv) * K;
-	mfc = ((m2 - two*	m1 * vv)*Kinverse + v2 * m0) * K;
+	mfc = ((m2 - c2o1*	m1 * vv)*Kinverse + v2 * m0) * K;
 }
 
 inline __device__ void backwardInverseChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real Kinverse, real K) {
-	real m0 = (((mfc - mfb) * c1o2 + mfb *  vv)*Kinverse + (mfa*Kinverse + one) * (v2 - vv) * c1o2) * K;
-	real m1 = (((mfa - mfc) -  two * mfb *  vv)*Kinverse + (mfa*Kinverse + one) * (           -v2)) * K;
-	mfc     = (((mfc + mfb) * c1o2 + mfb *  vv)*Kinverse + (mfa*Kinverse + one) * (v2 + vv) * c1o2) * K;
+	real m0 = (((mfc - mfb) * c1o2 + mfb *  vv)*Kinverse + (mfa*Kinverse + c1o1) * (v2 - vv) * c1o2) * K;
+	real m1 = (((mfa - mfc) -  c2o1 * mfb *  vv)*Kinverse + (mfa*Kinverse + c1o1) * (           -v2)) * K;
+	mfc     = (((mfc + mfb) * c1o2 + mfb *  vv)*Kinverse + (mfa*Kinverse + c1o1) * (v2 + vv) * c1o2) * K;
 	mfa = m0;
 	mfb = m1;
 }
@@ -44,7 +45,7 @@ inline __device__ void forwardChimeraWithK(real &mfa, real &mfb, real &mfc, real
 	mfa = m0;
 	//m0     += K;
 	mfb = (m1 - K*vv) - m0 * vv;
-	mfc = ((m2 - two*	m1 * vv) + v2*K) + v2 * m0;
+	mfc = ((m2 - c2o1*	m1 * vv) + v2*K) + v2 * m0;
 	//m0 += K;
 	//mfb = m1 - m0 * vv;
 	//mfc = m2 - two*	m1 * vv + v2 * m0;
@@ -53,7 +54,7 @@ inline __device__ void forwardChimeraWithK(real &mfa, real &mfb, real &mfc, real
 inline __device__ void forwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2) {
 	real m1 = (mfa + mfc) + mfb;
 	real m2 = mfc - mfa;
-	mfc = (mfc + mfa) + (v2*m1 - two*vv*m2);
+	mfc = (mfc + mfa) + (v2*m1 - c2o1*vv*m2);
 	mfb = m2 - vv*m1;
 	mfa = m1;
 }
@@ -61,7 +62,7 @@ inline __device__ void forwardChimera(real &mfa, real &mfb, real &mfc, real vv, 
 
 inline __device__ void backwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2) {
 	real ma = (mfc + mfa*(v2 - vv))*c1o2 + mfb*(vv - c1o2);
-	real mb = ((mfa - mfc) - mfa*v2) - two*mfb*vv;
+	real mb = ((mfa - mfc) - mfa*v2) - c2o1*mfb*vv;
 	mfc = (mfc + mfa*(v2 + vv))*c1o2 + mfb*(vv + c1o2);
 	mfb = mb;
 	mfa = ma;
@@ -70,7 +71,7 @@ inline __device__ void backwardChimera(real &mfa, real &mfb, real &mfc, real vv,
 
 inline __device__ void backwardChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real K) {
 	real  m0 = (mfc - mfb)* c1o2 + mfb * (vv)+(mfa + K) * (v2 - vv) * c1o2;
-	real m1 = (mfa - mfc) - two* mfb * vv + (mfa + K) * (-v2);
+	real m1 = (mfa - mfc) - c2o1* mfb * vv + (mfa + K) * (-v2);
 	mfc = (mfc + mfb)* c1o2 + mfb * (vv)+(mfa + K) * (v2 + vv) * c1o2;
 	mfa = m0;
 	mfb = m1;
@@ -241,7 +242,7 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 				(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 				((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 
-			real rho = one + drho;
+			real rho = c1o1 + drho;
 			////////////////////////////////////////////////////////////////////////////////////
 			real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 				(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
@@ -254,9 +255,9 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 				(mfbbc - mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
-			real fx = forces[0] / (pow(two, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
-			real fy = forces[1] / (pow(two, level)); //zero;
-			real fz = forces[2] / (pow(two, level)); //zero;
+			real fx = forces[0] / (pow(c2o1, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
+			real fy = forces[1] / (pow(c2o1, level)); //zero;
+			real fz = forces[2] / (pow(c2o1, level)); //zero;
 			vvx += fx*c1o2;
 			vvy += fy*c1o2;
 			vvz += fz*c1o2;
@@ -264,7 +265,7 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 			//real omega = omega_in;
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
-			real oMdrho = one; // comp special
+			real oMdrho = c1o1; // comp special
 			real m0, m1, m2;
 			real vx2;
 			real vy2;
@@ -283,25 +284,25 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real EQcbb = zero;
-			real EQabb = zero;
-			real EQbcb = zero;
-			real EQbab = zero;
-			real EQbbc = zero;
-			real EQbba = zero;
-			real EQccb = zero;
-			real EQaab = zero;
-			real EQcab = zero;
-			real EQacb = zero;
-			real EQcbc = zero;
-			real EQaba = zero;
-			real EQcba = zero;
-			real EQabc = zero;
-			real EQbcc = zero;
-			real EQbaa = zero;
-			real EQbca = zero;
-			real EQbac = zero;
-			real EQbbb = zero;
+			real EQcbb = c0o1;
+			real EQabb = c0o1;
+			real EQbcb = c0o1;
+			real EQbab = c0o1;
+			real EQbbc = c0o1;
+			real EQbba = c0o1;
+			real EQccb = c0o1;
+			real EQaab = c0o1;
+			real EQcab = c0o1;
+			real EQacb = c0o1;
+			real EQcbc = c0o1;
+			real EQaba = c0o1;
+			real EQcba = c0o1;
+			real EQabc = c0o1;
+			real EQbcc = c0o1;
+			real EQbaa = c0o1;
+			real EQbca = c0o1;
+			real EQbac = c0o1;
+			real EQbbb = c0o1;
 			real EQccc = drho * c1o27;
 			real EQaac = drho * c1o3;
 			real EQcac = drho * c1o9;
@@ -311,7 +312,7 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 			real EQcaa = drho * c1o3;
 			real EQaca = drho * c1o3;
 			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(EQaaa, EQaab, EQaac, vvz, vz2, one);
+			backwardChimeraWithK(EQaaa, EQaab, EQaac, vvz, vz2, c1o1);
 			backwardChimeraWithK(EQaca, EQacb, EQacc, vvz, vz2, c1o3);
 			///////////////////////////////////////////////////////////
 			EQcaa = EQaca; EQcab = EQacb; EQcac = EQacc;
@@ -478,56 +479,56 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 			////////////////////////////////////////////////////////////////////////////////////
 			// Cumulants
 			////////////////////////////////////////////////////////////////////////////////////
-			real OxxPyyPzz = one; //omega; // one;	//set the bulk viscosity one is high / two is very low and zero is (too) high
+			real OxxPyyPzz = c1o1; //omega; // one;	//set the bulk viscosity one is high / two is very low and zero is (too) high
 
 			////////////////////////////////////////////////////////////
 			//3.
 			//////////////////////////////
-			real OxyyPxzz = one;
-			real OxyyMxzz = one;
-			real Oxyz = one;
+			real OxyyPxzz = c1o1;
+			real OxyyMxzz = c1o1;
+			real Oxyz = c1o1;
 			////////////////////////////////////////////////////////////
 			//4.
 			//////////////////////////////
-			real O4 = one;
+			real O4 = c1o1;
 			////////////////////////////////////////////////////////////
 			//5.
 			//////////////////////////////
-			real O5 = one;
+			real O5 = c1o1;
 			////////////////////////////////////////////////////////////
 			//6.
 			//////////////////////////////
-			real O6 = one;
+			real O6 = c1o1;
 			////////////////////////////////////////////////////////////
 
 
 			//central moments to cumulants
 			//4.
-			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) / rho;
-			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) / rho;
-			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) / rho;
+			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho;
+			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho;
+			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho;
 
-			real CUMcca = mfcca - (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
-			real CUMcac = mfcac - (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
-			real CUMacc = mfacc - (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
+			real CUMcca = mfcca - (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
+			real CUMcac = mfcac - (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
+			real CUMacc = mfacc - (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
 
 			//5.
-			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
-			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
-			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
+			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
+			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
+			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
 
 			//6.
 
-			real CUMccc = mfccc + ((-four *  mfbbb * mfbbb
+			real CUMccc = mfccc + ((-c4o1 *  mfbbb * mfbbb
 				- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-				- four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-				- two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
-				+ (four * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-					+ two * (mfcaa * mfaca * mfaac)
-					+ sixteen *  mfbba * mfbab * mfabb) / (rho * rho)
+				- c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+				- c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
+				+ (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+					+ c2o1 * (mfcaa * mfaca * mfaac)
+					+ c16o1 *  mfbba * mfbab * mfabb) / (rho * rho)
 				- c1o3 * (mfacc + mfcac + mfcca) / rho
 				- c1o9 * (mfcaa + mfaca + mfaac) / rho
-				+ (two * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+				+ (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
 					+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3
 				+ c1o27*((drho * drho - drho) / (rho*rho)));
 
@@ -548,9 +549,9 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 				real dzuz = dxux + omega * c3o2 * mxxMzz;
 
 				//relax
-				mxxPyyPzz += OxxPyyPzz*(mfaaa - mxxPyyPzz) - three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);//-magicBulk*OxxPyyPzz;
-				mxxMyy += omega * (-mxxMyy) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
-				mxxMzz += omega * (-mxxMzz) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
+				mxxPyyPzz += OxxPyyPzz*(mfaaa - mxxPyyPzz) - c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);//-magicBulk*OxxPyyPzz;
+				mxxMyy += omega * (-mxxMyy) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
+				mxxMzz += omega * (-mxxMzz) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
 
 			}
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -569,8 +570,8 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 
 			// linear combinations back
 			mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
-			mfaca = c1o3 * (-two*  mxxMyy + mxxMzz + mxxPyyPzz);
-			mfaac = c1o3 * (mxxMyy - two* mxxMzz + mxxPyyPzz);
+			mfaca = c1o3 * (-c2o1*  mxxMyy + mxxMzz + mxxPyyPzz);
+			mfaac = c1o3 * (mxxMyy - c2o1* mxxMzz + mxxPyyPzz);
 
 			//3.
 			// linear combinations
@@ -626,30 +627,30 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 
 			//back cumulants to central moments
 			//4.
-			mfcbb = CUMcbb + ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) / rho;
-			mfbcb = CUMbcb + ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) / rho;
-			mfbbc = CUMbbc + ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) / rho;
+			mfcbb = CUMcbb + ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho;
+			mfbcb = CUMbcb + ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho;
+			mfbbc = CUMbbc + ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho;
 
-			mfcca = CUMcca + (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
-			mfcac = CUMcac + (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
-			mfacc = CUMacc + (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
+			mfcca = CUMcca + (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
+			mfcac = CUMcac + (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
+			mfacc = CUMacc + (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
 
 			//5.
-			mfbcc = CUMbcc + ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
-			mfcbc = CUMcbc + ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
-			mfccb = CUMccb + ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
+			mfbcc = CUMbcc + ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
+			mfcbc = CUMcbc + ((mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
+			mfccb = CUMccb + ((mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
 
 			//6.
-			mfccc = CUMccc - ((-four *  mfbbb * mfbbb
+			mfccc = CUMccc - ((-c4o1 *  mfbbb * mfbbb
 				- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-				- four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-				- two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
-				+ (four * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-					+ two * (mfcaa * mfaca * mfaac)
-					+ sixteen *  mfbba * mfbab * mfabb) / (rho * rho)
+				- c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+				- c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
+				+ (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+					+ c2o1 * (mfcaa * mfaca * mfaac)
+					+ c16o1 *  mfbba * mfbab * mfabb) / (rho * rho)
 				- c1o3 * (mfacc + mfcac + mfcca) / rho
 				- c1o9 * (mfcaa + mfaca + mfaac) / rho
-				+ (two * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+				+ (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
 					+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3
 				+ c1o27*((drho * drho - drho) / (rho*rho)));
 
@@ -1156,7 +1157,7 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 				(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 				((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 
-			real rho = one + drho;
+			real rho = c1o1 + drho;
 			////////////////////////////////////////////////////////////////////////////////////
 			real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 				(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
@@ -1169,9 +1170,9 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 				(mfbbc - mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
-			real fx = forces[0] / (pow(two, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
-			real fy = forces[1] / (pow(two, level)); //zero;
-			real fz = forces[2] / (pow(two, level)); //zero;
+			real fx = forces[0] / (pow(c2o1, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
+			real fy = forces[1] / (pow(c2o1, level)); //zero;
+			real fz = forces[2] / (pow(c2o1, level)); //zero;
 			vvx += fx*c1o2;
 			vvy += fy*c1o2;
 			vvz += fz*c1o2;
@@ -1179,7 +1180,7 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 			//real omega = omega_in;
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
-			real oMdrho = one; // comp special
+			real oMdrho = c1o1; // comp special
 			real m0, m1, m2;
 			real vx2;
 			real vy2;
@@ -1198,25 +1199,25 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real EQcbb = zero;
-			real EQabb = zero;
-			real EQbcb = zero;
-			real EQbab = zero;
-			real EQbbc = zero;
-			real EQbba = zero;
-			real EQccb = zero;
-			real EQaab = zero;
-			real EQcab = zero;
-			real EQacb = zero;
-			real EQcbc = zero;
-			real EQaba = zero;
-			real EQcba = zero;
-			real EQabc = zero;
-			real EQbcc = zero;
-			real EQbaa = zero;
-			real EQbca = zero;
-			real EQbac = zero;
-			real EQbbb = zero;
+			real EQcbb = c0o1;
+			real EQabb = c0o1;
+			real EQbcb = c0o1;
+			real EQbab = c0o1;
+			real EQbbc = c0o1;
+			real EQbba = c0o1;
+			real EQccb = c0o1;
+			real EQaab = c0o1;
+			real EQcab = c0o1;
+			real EQacb = c0o1;
+			real EQcbc = c0o1;
+			real EQaba = c0o1;
+			real EQcba = c0o1;
+			real EQabc = c0o1;
+			real EQbcc = c0o1;
+			real EQbaa = c0o1;
+			real EQbca = c0o1;
+			real EQbac = c0o1;
+			real EQbbb = c0o1;
 			real EQccc = drho * c1o27;
 			real EQaac = drho * c1o3;
 			real EQcac = drho * c1o9;
@@ -1226,7 +1227,7 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 			real EQcaa = drho * c1o3;
 			real EQaca = drho * c1o3;
 			////////////////////////////////////////////////////////////////////////////////////
-			backwardChimeraWithK(EQaaa, EQaab, EQaac, vvz, vz2, one);
+			backwardChimeraWithK(EQaaa, EQaab, EQaac, vvz, vz2, c1o1);
 			backwardChimeraWithK(EQaca, EQacb, EQacc, vvz, vz2, c1o3);
 			///////////////////////////////////////////////////////////
 			EQcaa = EQaca; EQcab = EQacb; EQcac = EQacc;
@@ -1393,56 +1394,56 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 			////////////////////////////////////////////////////////////////////////////////////
 			// Cumulants
 			////////////////////////////////////////////////////////////////////////////////////
-			real OxxPyyPzz = one; //omega; // one;	//set the bulk viscosity one is high / two is very low and zero is (too) high
+			real OxxPyyPzz = c1o1; //omega; // one;	//set the bulk viscosity one is high / two is very low and zero is (too) high
 
 			////////////////////////////////////////////////////////////
 			//3.
 			//////////////////////////////
-			real OxyyPxzz = one;
-			real OxyyMxzz = one;
-			real Oxyz = one;
+			real OxyyPxzz = c1o1;
+			real OxyyMxzz = c1o1;
+			real Oxyz = c1o1;
 			////////////////////////////////////////////////////////////
 			//4.
 			//////////////////////////////
-			real O4 = one;
+			real O4 = c1o1;
 			////////////////////////////////////////////////////////////
 			//5.
 			//////////////////////////////
-			real O5 = one;
+			real O5 = c1o1;
 			////////////////////////////////////////////////////////////
 			//6.
 			//////////////////////////////
-			real O6 = one;
+			real O6 = c1o1;
 			////////////////////////////////////////////////////////////
 
 
 			//central moments to cumulants
 			//4.
-			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) / rho;
-			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) / rho;
-			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) / rho;
+			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho;
+			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho;
+			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho;
 
-			real CUMcca = mfcca - (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
-			real CUMcac = mfcac - (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
-			real CUMacc = mfacc - (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
+			real CUMcca = mfcca - (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
+			real CUMcac = mfcac - (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
+			real CUMacc = mfacc - (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
 
 			//5.
-			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
-			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
-			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
+			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
+			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
+			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
 
 			//6.
 
-			real CUMccc = mfccc + ((-four *  mfbbb * mfbbb
+			real CUMccc = mfccc + ((-c4o1 *  mfbbb * mfbbb
 				- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-				- four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-				- two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
-				+ (four * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-					+ two * (mfcaa * mfaca * mfaac)
-					+ sixteen *  mfbba * mfbab * mfabb) / (rho * rho)
+				- c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+				- c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
+				+ (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+					+ c2o1 * (mfcaa * mfaca * mfaac)
+					+ c16o1 *  mfbba * mfbab * mfabb) / (rho * rho)
 				- c1o3 * (mfacc + mfcac + mfcca) / rho
 				- c1o9 * (mfcaa + mfaca + mfaac) / rho
-				+ (two * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+				+ (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
 					+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3
 				+ c1o27*((drho * drho - drho) / (rho*rho)));
 
@@ -1463,9 +1464,9 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 				real dzuz = dxux + omega * c3o2 * mxxMzz;
 
 				//relax
-				mxxPyyPzz += OxxPyyPzz*(mfaaa - mxxPyyPzz) - three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);//-magicBulk*OxxPyyPzz;
-				mxxMyy += omega * (-mxxMyy) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
-				mxxMzz += omega * (-mxxMzz) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
+				mxxPyyPzz += OxxPyyPzz*(mfaaa - mxxPyyPzz) - c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);//-magicBulk*OxxPyyPzz;
+				mxxMyy += omega * (-mxxMyy) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
+				mxxMzz += omega * (-mxxMzz) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
 
 			}
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1484,8 +1485,8 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 
 			// linear combinations back
 			mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
-			mfaca = c1o3 * (-two*  mxxMyy + mxxMzz + mxxPyyPzz);
-			mfaac = c1o3 * (mxxMyy - two* mxxMzz + mxxPyyPzz);
+			mfaca = c1o3 * (-c2o1*  mxxMyy + mxxMzz + mxxPyyPzz);
+			mfaac = c1o3 * (mxxMyy - c2o1* mxxMzz + mxxPyyPzz);
 
 			//3.
 			// linear combinations
@@ -1541,30 +1542,30 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 
 			//back cumulants to central moments
 			//4.
-			mfcbb = CUMcbb + ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) / rho;
-			mfbcb = CUMbcb + ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) / rho;
-			mfbbc = CUMbbc + ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) / rho;
+			mfcbb = CUMcbb + ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho;
+			mfbcb = CUMbcb + ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho;
+			mfbbc = CUMbbc + ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho;
 
-			mfcca = CUMcca + (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
-			mfcac = CUMcac + (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
-			mfacc = CUMacc + (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
+			mfcca = CUMcca + (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
+			mfcac = CUMcac + (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
+			mfacc = CUMacc + (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
 
 			//5.
-			mfbcc = CUMbcc + ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
-			mfcbc = CUMcbc + ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
-			mfccb = CUMccb + ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
+			mfbcc = CUMbcc + ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
+			mfcbc = CUMcbc + ((mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
+			mfccb = CUMccb + ((mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
 
 			//6.
-			mfccc = CUMccc - ((-four *  mfbbb * mfbbb
+			mfccc = CUMccc - ((-c4o1 *  mfbbb * mfbbb
 				- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-				- four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-				- two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
-				+ (four * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-					+ two * (mfcaa * mfaca * mfaac)
-					+ sixteen *  mfbba * mfbab * mfabb) / (rho * rho)
+				- c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+				- c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
+				+ (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+					+ c2o1 * (mfcaa * mfaca * mfaac)
+					+ c16o1 *  mfbba * mfbab * mfabb) / (rho * rho)
 				- c1o3 * (mfacc + mfcac + mfcca) / rho
 				- c1o9 * (mfcaa + mfaca + mfaac) / rho
-				+ (two * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+				+ (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
 					+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3
 				+ c1o27*((drho * drho - drho) / (rho*rho)));
 
@@ -1928,8 +1929,8 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 				(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 				((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 
-			real rho = one + drho;
-			real OOrho = one / rho;
+			real rho = c1o1 + drho;
+			real OOrho = c1o1 / rho;
 			////////////////////////////////////////////////////////////////////////////////////
 			real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 				(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
@@ -1942,9 +1943,9 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 				(mfbbc - mfbba)) * OOrho;
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
-			real fx = forces[0] / (pow(two, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
-			real fy = forces[1] / (pow(two, level)); //zero;
-			real fz = forces[2] / (pow(two, level)); //zero;
+			real fx = forces[0] / (pow(c2o1, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
+			real fy = forces[1] / (pow(c2o1, level)); //zero;
+			real fz = forces[2] / (pow(c2o1, level)); //zero;
 			vvx += fx*c1o2;
 			vvy += fy*c1o2;
 			vvz += fz*c1o2;
@@ -1952,7 +1953,7 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 			//real omega = omega_in;
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
-			real oMdrho = one; // comp special
+			real oMdrho = c1o1; // comp special
 			real m0, m1, m2;
 			real vx2;
 			real vy2;
@@ -1999,7 +2000,7 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 			// mit     1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9		Konditionieren
 			////////////////////////////////////////////////////////////////////////////////////
 			// X - Dir
-			forwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, one, one);
+			forwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1o1, c1o1);
 			forwardChimera(     mfaba, mfbba, mfcba, vvx, vx2);
 			forwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, 3.0f, c1o3);
 			forwardChimera(     mfaab, mfbab, mfcab, vvx, vx2);
@@ -2012,54 +2013,54 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 			////////////////////////////////////////////////////////////////////////////////////
 			// Cumulants
 			////////////////////////////////////////////////////////////////////////////////////
-			real OxxPyyPzz = one;
+			real OxxPyyPzz = c1o1;
 			////////////////////////////////////////////////////////////
 			//3.
 			//////////////////////////////
-			real OxyyPxzz = one;
-			real OxyyMxzz = one;
-			real Oxyz = one;
+			real OxyyPxzz = c1o1;
+			real OxyyMxzz = c1o1;
+			real Oxyz = c1o1;
 			////////////////////////////////////////////////////////////
 			//4.
 			//////////////////////////////
-			real O4 = one;
+			real O4 = c1o1;
 			////////////////////////////////////////////////////////////
 			//5.
 			//////////////////////////////
-			real O5 = one;
+			real O5 = c1o1;
 			////////////////////////////////////////////////////////////
 			//6.
 			//////////////////////////////
-			real O6 = one;
+			real O6 = c1o1;
 			////////////////////////////////////////////////////////////
 
 
 			//central moments to cumulants
 			//4.
-			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) * OOrho;
-			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) * OOrho;
-			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) * OOrho;
+			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) * OOrho;
+			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) * OOrho;
+			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) * OOrho;
 
-			real CUMcca = mfcca - (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) * OOrho - c1o9*(drho * OOrho));
-			real CUMcac = mfcac - (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) * OOrho - c1o9*(drho * OOrho));
-			real CUMacc = mfacc - (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) * OOrho - c1o9*(drho * OOrho));
+			real CUMcca = mfcca - (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) * OOrho - c1o9*(drho * OOrho));
+			real CUMcac = mfcac - (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) * OOrho - c1o9*(drho * OOrho));
+			real CUMacc = mfacc - (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) * OOrho - c1o9*(drho * OOrho));
 
 			//5.
-			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) * OOrho;
-			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) * OOrho;
-			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) * OOrho;
+			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) * OOrho;
+			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) * OOrho;
+			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) * OOrho;
 
 			//6.
-			real CUMccc = mfccc + ((-four *  mfbbb * mfbbb
+			real CUMccc = mfccc + ((-c4o1 *  mfbbb * mfbbb
 				- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-				- four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-				- two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
-				+ (four * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-				+ two * (mfcaa * mfaca * mfaac)
-				+ sixteen *  mfbba * mfbab * mfabb) * OOrho * OOrho
+				- c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+				- c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
+				+ (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+				+ c2o1 * (mfcaa * mfaca * mfaac)
+				+ c16o1 *  mfbba * mfbab * mfabb) * OOrho * OOrho
 				- c1o3 * (mfacc + mfcac + mfcca) * OOrho
 				- c1o9 * (mfcaa + mfaca + mfaac) * OOrho
-				+ (two * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+				+ (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
 				+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) * OOrho * OOrho  * c2o3
 				+ c1o27*((drho * drho - drho) * OOrho * OOrho ));
 
@@ -2078,9 +2079,9 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 				real dzuz = dxux + omega * c3o2 * mxxMzz;
 
 				//relax
-				mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);//-magicBulk*OxxPyyPzz;
-				mxxMyy    += omega * (-mxxMyy) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
-				mxxMzz    += omega * (-mxxMzz) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
+				mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);//-magicBulk*OxxPyyPzz;
+				mxxMyy    += omega * (-mxxMyy) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
+				mxxMzz    += omega * (-mxxMzz) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
 
 			}
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2099,8 +2100,8 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 
 			// linear combinations back
 			mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
-			mfaca = c1o3 * (-two*  mxxMyy + mxxMzz + mxxPyyPzz);
-			mfaac = c1o3 * (mxxMyy - two* mxxMzz + mxxPyyPzz);
+			mfaca = c1o3 * (-c2o1*  mxxMyy + mxxMzz + mxxPyyPzz);
+			mfaac = c1o3 * (mxxMyy - c2o1* mxxMzz + mxxPyyPzz);
 
 			//3.
 			// linear combinations
@@ -2156,31 +2157,31 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 
 			//back cumulants to central moments
 			//4.
-			mfcbb = CUMcbb + c1o3*((three*mfcaa + one) * mfabb + six * mfbba * mfbab) * OOrho; 
-			mfbcb = CUMbcb + c1o3*((three*mfaca + one) * mfbab + six * mfbba * mfabb) * OOrho;
-			mfbbc = CUMbbc + c1o3*((three*mfaac + one) * mfbba + six * mfbab * mfabb) * OOrho;
+			mfcbb = CUMcbb + c1o3*((c3o1*mfcaa + c1o1) * mfabb + c6o1 * mfbba * mfbab) * OOrho; 
+			mfbcb = CUMbcb + c1o3*((c3o1*mfaca + c1o1) * mfbab + c6o1 * mfbba * mfabb) * OOrho;
+			mfbbc = CUMbbc + c1o3*((c3o1*mfaac + c1o1) * mfbba + c6o1 * mfbab * mfabb) * OOrho;
 
-			mfcca = CUMcca + (((mfcaa * mfaca + two * mfbba * mfbba)*nine + three * (mfcaa + mfaca)) * OOrho - (drho * OOrho))*c1o9;
-			mfcac = CUMcac + (((mfcaa * mfaac + two * mfbab * mfbab)*nine + three * (mfcaa + mfaac)) * OOrho - (drho * OOrho))*c1o9;
-			mfacc = CUMacc + (((mfaac * mfaca + two * mfabb * mfabb)*nine + three * (mfaac + mfaca)) * OOrho - (drho * OOrho))*c1o9;
+			mfcca = CUMcca + (((mfcaa * mfaca + c2o1 * mfbba * mfbba)*c9o1 + c3o1 * (mfcaa + mfaca)) * OOrho - (drho * OOrho))*c1o9;
+			mfcac = CUMcac + (((mfcaa * mfaac + c2o1 * mfbab * mfbab)*c9o1 + c3o1 * (mfcaa + mfaac)) * OOrho - (drho * OOrho))*c1o9;
+			mfacc = CUMacc + (((mfaac * mfaca + c2o1 * mfabb * mfabb)*c9o1 + c3o1 * (mfaac + mfaca)) * OOrho - (drho * OOrho))*c1o9;
 
 			//5.
-			mfbcc = CUMbcc + c1o3 *(three*(mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + (mfbca + mfbac)) * OOrho;
-			mfcbc = CUMcbc + c1o3 *(three*(mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + (mfcba + mfabc)) * OOrho;
-			mfccb = CUMccb + c1o3 *(three*(mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) +  (mfacb + mfcab)) * OOrho;
+			mfbcc = CUMbcc + c1o3 *(c3o1*(mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + (mfbca + mfbac)) * OOrho;
+			mfcbc = CUMcbc + c1o3 *(c3o1*(mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + (mfcba + mfabc)) * OOrho;
+			mfccb = CUMccb + c1o3 *(c3o1*(mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) +  (mfacb + mfcab)) * OOrho;
 
 			//6.
 			mfccc = 
-				CUMccc - ((-four *  mfbbb * mfbbb
+				CUMccc - ((-c4o1 *  mfbbb * mfbbb
 				- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-				- four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-				- two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
-				+ (four * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-				+ two * (mfcaa * mfaca * mfaac)
-				+ sixteen *  mfbba * mfbab * mfabb) * OOrho * OOrho
+				- c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+				- c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
+				+ (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+				+ c2o1 * (mfcaa * mfaca * mfaac)
+				+ c16o1 *  mfbba * mfbab * mfabb) * OOrho * OOrho
 				- c1o3 * (mfacc + mfcac + mfcca) * OOrho
 				- c1o9 * (mfcaa + mfaca + mfaac) * OOrho
-				+ (two * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+				+ (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
 				+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) * OOrho * OOrho * c2o3
 				+ c1o27*((drho * drho - drho) * OOrho * OOrho ));
 
@@ -2198,7 +2199,7 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 			//mit 1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9   Konditionieren
 			////////////////////////////////////////////////////////////////////////////////////
 			// X - Dir
-			backwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, one, one);
+			backwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1o1, c1o1);
 			backwardChimera(			mfaba, mfbba, mfcba, vvx, vx2);
 			backwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, 3.0f, c1o3);
 			backwardChimera(			mfaab, mfbab, mfcab, vvx, vx2);

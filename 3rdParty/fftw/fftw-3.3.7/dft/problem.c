@@ -57,7 +57,7 @@ static void print(const problem *ego_, printer *p)
 	      ego->vecsz);
 }
 
-static void zero(const problem *ego_)
+static void c0o1(const problem *ego_)
 {
      const problem_dft *ego = (const problem_dft *) ego_;
      tensor *sz = X(tensor_append)(ego->vecsz, ego->sz);
@@ -69,7 +69,7 @@ static const problem_adt padt =
 {
      PROBLEM_DFT,
      hash,
-     zero,
+     c0o1,
      print,
      destroy
 };

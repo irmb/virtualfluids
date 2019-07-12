@@ -1,6 +1,7 @@
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
+#include "Core/RealConstants.h"
 #include "math.h"
-#include "GPU/constant.h"
 
 
 extern "C" __global__ void LB_Kernel_BGK_Comp_SP_27(	real omega,
@@ -152,8 +153,8 @@ extern "C" __global__ void LB_Kernel_BGK_Comp_SP_27(	real omega,
 			real fBNW = (D.f[dirBNW])[kbw];//kbnw
 										   ////////////////////////////////////////////////////////////////////////////////
 			real drho = (fTNE + fBSW) + (fTSW + fBNE) + (fTSE + fBNW) + (fTNW + fBSE) + (fNE + fSW) + (fNW + fSE) + (fTE + fBW) + (fBE + fTW) + (fTN + fBS) + (fBN + fTS) + (fE + fW) + (fN + fS) + (fT + fB) + fZERO;
-			real rho = drho + one;
-			real OORho = one / rho;
+			real rho = drho + c1o1;
+			real OORho = c1o1 / rho;
 			real vx1 = OORho*((fTNE - fBSW) + (fBNE - fTSW) + (fTSE - fBNW) + (fBSE - fTNW) + (fNE - fSW) + (fSE - fNW) + (fTE - fBW) + (fBE - fTW) + (fE - fW));
 			real vx2 = OORho*((fTNE - fBSW) + (fBNE - fTSW) + (fBNW - fTSE) + (fTNW - fBSE) + (fNE - fSW) + (fNW - fSE) + (fTN - fBS) + (fBN - fTS) + (fN - fS));
 			real vx3 = OORho*((fTNE - fBSW) + (fTSW - fBNE) + (fTSE - fBNW) + (fTNW - fBSE) + (fTE - fBW) + (fTW - fBE) + (fTN - fBS) + (fTS - fBN) + (fT - fB));
@@ -170,33 +171,33 @@ extern "C" __global__ void LB_Kernel_BGK_Comp_SP_27(	real omega,
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			real cusq = c3o2*(vx1*vx1 + vx2*vx2 + vx3*vx3);
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			fZERO = fZERO *(one + (-omega)) - (-omega)*   c8over27*  (drho - rho * cusq);
-			fE = fE    *(one + (-omega)) - (-omega)*   c2over27*  (drho + rho * (three*(vx1)+c9over2*(vx1)*(vx1)-cusq));
-			fW = fW    *(one + (-omega)) - (-omega)*   c2over27*  (drho + rho * (three*(-vx1) + c9over2*(-vx1)*(-vx1) - cusq));
-			fN = fN    *(one + (-omega)) - (-omega)*   c2over27*  (drho + rho * (three*(vx2)+c9over2*(vx2)*(vx2)-cusq));
-			fS = fS    *(one + (-omega)) - (-omega)*   c2over27*  (drho + rho * (three*(-vx2) + c9over2*(-vx2)*(-vx2) - cusq));
-			fT = fT    *(one + (-omega)) - (-omega)*   c2over27*  (drho + rho * (three*(vx3)+c9over2*(vx3)*(vx3)-cusq));
-			fB = fB    *(one + (-omega)) - (-omega)*   c2over27*  (drho + rho * (three*(-vx3) + c9over2*(-vx3)*(-vx3) - cusq));
-			fNE = fNE   *(one + (-omega)) - (-omega)*   c1over54*  (drho + rho * (three*(vx1 + vx2) + c9over2*(vx1 + vx2)*(vx1 + vx2) - cusq));
-			fSW = fSW   *(one + (-omega)) - (-omega)*   c1over54*  (drho + rho * (three*(-vx1 - vx2) + c9over2*(-vx1 - vx2)*(-vx1 - vx2) - cusq));
-			fSE = fSE   *(one + (-omega)) - (-omega)*    c1over54* (drho + rho * (three*(vx1 - vx2) + c9over2*(vx1 - vx2)*(vx1 - vx2) - cusq));
-			fNW = fNW   *(one + (-omega)) - (-omega)*    c1over54* (drho + rho * (three*(-vx1 + vx2) + c9over2*(-vx1 + vx2)*(-vx1 + vx2) - cusq));
-			fTE = fTE   *(one + (-omega)) - (-omega)*    c1over54* (drho + rho * (three*(vx1 + vx3) + c9over2*(vx1 + vx3)*(vx1 + vx3) - cusq));
-			fBW = fBW   *(one + (-omega)) - (-omega)*    c1over54* (drho + rho * (three*(-vx1 - vx3) + c9over2*(-vx1 - vx3)*(-vx1 - vx3) - cusq));
-			fBE = fBE   *(one + (-omega)) - (-omega)*    c1over54* (drho + rho * (three*(vx1 - vx3) + c9over2*(vx1 - vx3)*(vx1 - vx3) - cusq));
-			fTW = fTW   *(one + (-omega)) - (-omega)*    c1over54* (drho + rho * (three*(-vx1 + vx3) + c9over2*(-vx1 + vx3)*(-vx1 + vx3) - cusq));
-			fTN = fTN   *(one + (-omega)) - (-omega)*    c1over54* (drho + rho * (three*(vx2 + vx3) + c9over2*(vx2 + vx3)*(vx2 + vx3) - cusq));
-			fBS = fBS   *(one + (-omega)) - (-omega)*    c1over54* (drho + rho * (three*(-vx2 - vx3) + c9over2*(-vx2 - vx3)*(-vx2 - vx3) - cusq));
-			fBN = fBN   *(one + (-omega)) - (-omega)*    c1over54* (drho + rho * (three*(vx2 - vx3) + c9over2*(vx2 - vx3)*(vx2 - vx3) - cusq));
-			fTS = fTS   *(one + (-omega)) - (-omega)*    c1over54* (drho + rho * (three*(-vx2 + vx3) + c9over2*(-vx2 + vx3)*(-vx2 + vx3) - cusq));
-			fTNE = fTNE  *(one + (-omega)) - (-omega)*    c1over216*(drho + rho * (three*(vx1 + vx2 + vx3) + c9over2*(vx1 + vx2 + vx3)*(vx1 + vx2 + vx3) - cusq));
-			fBSW = fBSW  *(one + (-omega)) - (-omega)*    c1over216*(drho + rho * (three*(-vx1 - vx2 - vx3) + c9over2*(-vx1 - vx2 - vx3)*(-vx1 - vx2 - vx3) - cusq));
-			fBNE = fBNE  *(one + (-omega)) - (-omega)*    c1over216*(drho + rho * (three*(vx1 + vx2 - vx3) + c9over2*(vx1 + vx2 - vx3)*(vx1 + vx2 - vx3) - cusq));
-			fTSW = fTSW  *(one + (-omega)) - (-omega)*    c1over216*(drho + rho * (three*(-vx1 - vx2 + vx3) + c9over2*(-vx1 - vx2 + vx3)*(-vx1 - vx2 + vx3) - cusq));
-			fTSE = fTSE  *(one + (-omega)) - (-omega)*    c1over216*(drho + rho * (three*(vx1 - vx2 + vx3) + c9over2*(vx1 - vx2 + vx3)*(vx1 - vx2 + vx3) - cusq));
-			fBNW = fBNW  *(one + (-omega)) - (-omega)*    c1over216*(drho + rho * (three*(-vx1 + vx2 - vx3) + c9over2*(-vx1 + vx2 - vx3)*(-vx1 + vx2 - vx3) - cusq));
-			fBSE = fBSE  *(one + (-omega)) - (-omega)*    c1over216*(drho + rho * (three*(vx1 - vx2 - vx3) + c9over2*(vx1 - vx2 - vx3)*(vx1 - vx2 - vx3) - cusq));
-			fTNW = fTNW  *(one + (-omega)) - (-omega)*    c1over216*(drho + rho * (three*(-vx1 + vx2 + vx3) + c9over2*(-vx1 + vx2 + vx3)*(-vx1 + vx2 + vx3) - cusq));
+			fZERO = fZERO *(c1o1 + (-omega)) - (-omega)*   c8o27*  (drho - rho * cusq);
+			fE = fE    *(c1o1 + (-omega)) - (-omega)*   c2o27*  (drho + rho * (c3o1*(vx1)+c9o2*(vx1)*(vx1)-cusq));
+			fW = fW    *(c1o1 + (-omega)) - (-omega)*   c2o27*  (drho + rho * (c3o1*(-vx1) + c9o2*(-vx1)*(-vx1) - cusq));
+			fN = fN    *(c1o1 + (-omega)) - (-omega)*   c2o27*  (drho + rho * (c3o1*(vx2)+c9o2*(vx2)*(vx2)-cusq));
+			fS = fS    *(c1o1 + (-omega)) - (-omega)*   c2o27*  (drho + rho * (c3o1*(-vx2) + c9o2*(-vx2)*(-vx2) - cusq));
+			fT = fT    *(c1o1 + (-omega)) - (-omega)*   c2o27*  (drho + rho * (c3o1*(vx3)+c9o2*(vx3)*(vx3)-cusq));
+			fB = fB    *(c1o1 + (-omega)) - (-omega)*   c2o27*  (drho + rho * (c3o1*(-vx3) + c9o2*(-vx3)*(-vx3) - cusq));
+			fNE = fNE   *(c1o1 + (-omega)) - (-omega)*   c1o54*  (drho + rho * (c3o1*(vx1 + vx2) + c9o2*(vx1 + vx2)*(vx1 + vx2) - cusq));
+			fSW = fSW   *(c1o1 + (-omega)) - (-omega)*   c1o54*  (drho + rho * (c3o1*(-vx1 - vx2) + c9o2*(-vx1 - vx2)*(-vx1 - vx2) - cusq));
+			fSE = fSE   *(c1o1 + (-omega)) - (-omega)*    c1o54* (drho + rho * (c3o1*(vx1 - vx2) + c9o2*(vx1 - vx2)*(vx1 - vx2) - cusq));
+			fNW = fNW   *(c1o1 + (-omega)) - (-omega)*    c1o54* (drho + rho * (c3o1*(-vx1 + vx2) + c9o2*(-vx1 + vx2)*(-vx1 + vx2) - cusq));
+			fTE = fTE   *(c1o1 + (-omega)) - (-omega)*    c1o54* (drho + rho * (c3o1*(vx1 + vx3) + c9o2*(vx1 + vx3)*(vx1 + vx3) - cusq));
+			fBW = fBW   *(c1o1 + (-omega)) - (-omega)*    c1o54* (drho + rho * (c3o1*(-vx1 - vx3) + c9o2*(-vx1 - vx3)*(-vx1 - vx3) - cusq));
+			fBE = fBE   *(c1o1 + (-omega)) - (-omega)*    c1o54* (drho + rho * (c3o1*(vx1 - vx3) + c9o2*(vx1 - vx3)*(vx1 - vx3) - cusq));
+			fTW = fTW   *(c1o1 + (-omega)) - (-omega)*    c1o54* (drho + rho * (c3o1*(-vx1 + vx3) + c9o2*(-vx1 + vx3)*(-vx1 + vx3) - cusq));
+			fTN = fTN   *(c1o1 + (-omega)) - (-omega)*    c1o54* (drho + rho * (c3o1*(vx2 + vx3) + c9o2*(vx2 + vx3)*(vx2 + vx3) - cusq));
+			fBS = fBS   *(c1o1 + (-omega)) - (-omega)*    c1o54* (drho + rho * (c3o1*(-vx2 - vx3) + c9o2*(-vx2 - vx3)*(-vx2 - vx3) - cusq));
+			fBN = fBN   *(c1o1 + (-omega)) - (-omega)*    c1o54* (drho + rho * (c3o1*(vx2 - vx3) + c9o2*(vx2 - vx3)*(vx2 - vx3) - cusq));
+			fTS = fTS   *(c1o1 + (-omega)) - (-omega)*    c1o54* (drho + rho * (c3o1*(-vx2 + vx3) + c9o2*(-vx2 + vx3)*(-vx2 + vx3) - cusq));
+			fTNE = fTNE  *(c1o1 + (-omega)) - (-omega)*    c1o216*(drho + rho * (c3o1*(vx1 + vx2 + vx3) + c9o2*(vx1 + vx2 + vx3)*(vx1 + vx2 + vx3) - cusq));
+			fBSW = fBSW  *(c1o1 + (-omega)) - (-omega)*    c1o216*(drho + rho * (c3o1*(-vx1 - vx2 - vx3) + c9o2*(-vx1 - vx2 - vx3)*(-vx1 - vx2 - vx3) - cusq));
+			fBNE = fBNE  *(c1o1 + (-omega)) - (-omega)*    c1o216*(drho + rho * (c3o1*(vx1 + vx2 - vx3) + c9o2*(vx1 + vx2 - vx3)*(vx1 + vx2 - vx3) - cusq));
+			fTSW = fTSW  *(c1o1 + (-omega)) - (-omega)*    c1o216*(drho + rho * (c3o1*(-vx1 - vx2 + vx3) + c9o2*(-vx1 - vx2 + vx3)*(-vx1 - vx2 + vx3) - cusq));
+			fTSE = fTSE  *(c1o1 + (-omega)) - (-omega)*    c1o216*(drho + rho * (c3o1*(vx1 - vx2 + vx3) + c9o2*(vx1 - vx2 + vx3)*(vx1 - vx2 + vx3) - cusq));
+			fBNW = fBNW  *(c1o1 + (-omega)) - (-omega)*    c1o216*(drho + rho * (c3o1*(-vx1 + vx2 - vx3) + c9o2*(-vx1 + vx2 - vx3)*(-vx1 + vx2 - vx3) - cusq));
+			fBSE = fBSE  *(c1o1 + (-omega)) - (-omega)*    c1o216*(drho + rho * (c3o1*(vx1 - vx2 - vx3) + c9o2*(vx1 - vx2 - vx3)*(vx1 - vx2 - vx3) - cusq));
+			fTNW = fTNW  *(c1o1 + (-omega)) - (-omega)*    c1o216*(drho + rho * (c3o1*(-vx1 + vx2 + vx3) + c9o2*(-vx1 + vx2 + vx3)*(-vx1 + vx2 + vx3) - cusq));
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

@@ -1,6 +1,7 @@
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
+#include "Core/RealConstants.h"
 #include "math.h"
-#include "GPU/constant.h"
 
 extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 	unsigned int* bcMatD,
@@ -165,7 +166,7 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 				(mfbbc - mfbba));
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
-			real oMdrho = one - (mfccc + mfaaa + mfaca + mfcac + mfacc + mfcaa + mfaac + mfcca +
+			real oMdrho = c1o1 - (mfccc + mfaaa + mfaca + mfcac + mfacc + mfcaa + mfaac + mfcca +
 				mfbac + mfbca + mfbaa + mfbcc + mfabc + mfcba + mfaba + mfcbc + mfacb + mfcab + mfaab + mfccb +
 				mfabb + mfcbb + mfbab + mfbcb + mfbba + mfbbc + mfbbb);//fehlt mfbbb nicht mehr
 																	   //real vvx    =mfccc-mfaaa + mfcac-mfaca + mfcaa-mfacc + mfcca-mfaac + 
@@ -351,7 +352,7 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			m1 = mfcaa - mfaaa;
 			m0 = m2 + mfbaa;
 			mfaaa = m0;
-			m0 += one* oMdrho;
+			m0 += c1o1* oMdrho;
 			mfbaa = m1;
 			mfcaa = m2;
 			////////////////////////////////////////////////////////////////////////////////////
@@ -422,11 +423,11 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			// MRT
 			////////////////////////////////////////////////////////////////////////////////////
 			real OxxPyyPzz = omega;
-			real OxyyPxzz = one;//two-omega;//eight*(two-omega)/(eight -omega);//one;//omega;//two-omega;//
-			real OxyyMxzz = one;//omega;//one;//eight*(two-omega)/(eight -omega);//one;//two-omega;//one;// 
-			real O4 = one;
-			real O5 = one;
-			real O6 = one;
+			real OxyyPxzz = c1o1;//two-omega;//eight*(two-omega)/(eight -omega);//one;//omega;//two-omega;//
+			real OxyyMxzz = c1o1;//omega;//one;//eight*(two-omega)/(eight -omega);//one;//two-omega;//one;// 
+			real O4 = c1o1;
+			real O5 = c1o1;
+			real O6 = c1o1;
 
 			real mxxPyyPzz = mfcaa + mfaca + mfaac;
 			real mxxMyy = mfcaa - mfaca;
@@ -435,14 +436,14 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//incl. correction
 			{
-				real dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz - two*vx2 + vy2 + vz2) + c1o2 * OxxPyyPzz * (mfaaa + vx2 + vy2 + vz2 - mxxPyyPzz);
+				real dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz - c2o1*vx2 + vy2 + vz2) + c1o2 * OxxPyyPzz * (mfaaa + vx2 + vy2 + vz2 - mxxPyyPzz);
 				real dyuy = dxux + omega * c3o2 * (mxxMyy - vx2 + vy2);
 				real dzuz = dxux + omega * c3o2 * (mxxMzz - vx2 + vz2);
 
 				//relax
-				mxxPyyPzz += OxxPyyPzz*(mfaaa + vx2 + vy2 + vz2 - mxxPyyPzz) - three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
-				mxxMyy += omega * (vx2 - vy2 - mxxMyy) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
-				mxxMzz += omega * (vx2 - vz2 - mxxMzz) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
+				mxxPyyPzz += OxxPyyPzz*(mfaaa + vx2 + vy2 + vz2 - mxxPyyPzz) - c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+				mxxMyy += omega * (vx2 - vy2 - mxxMyy) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
+				mxxMzz += omega * (vx2 - vz2 - mxxMzz) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
 			}
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -458,8 +459,8 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 
 			// linear combinations back
 			mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
-			mfaca = c1o3 * (-two*  mxxMyy + mxxMzz + mxxPyyPzz);
-			mfaac = c1o3 * (mxxMyy - two* mxxMzz + mxxPyyPzz);
+			mfaca = c1o3 * (-c2o1*  mxxMyy + mxxMzz + mxxPyyPzz);
+			mfaac = c1o3 * (mxxMyy - c2o1* mxxMzz + mxxPyyPzz);
 
 			//3.
 			// linear combinations
@@ -491,9 +492,9 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			mfbac = (-mxyyMxzz + mxyyPxzz) * c1o2;
 
 			//4.
-			mfacc += O4*((c1o3 + vy2)*(c1o3 + vz2) + c1o9*(mfaaa - one) - mfacc);
-			mfcac += O4*((c1o3 + vx2)*(c1o3 + vz2) + c1o9*(mfaaa - one) - mfcac);
-			mfcca += O4*((c1o3 + vx2)*(c1o3 + vy2) + c1o9*(mfaaa - one) - mfcca);
+			mfacc += O4*((c1o3 + vy2)*(c1o3 + vz2) + c1o9*(mfaaa - c1o1) - mfacc);
+			mfcac += O4*((c1o3 + vx2)*(c1o3 + vz2) + c1o9*(mfaaa - c1o1) - mfcac);
+			mfcca += O4*((c1o3 + vx2)*(c1o3 + vy2) + c1o9*(mfaaa - c1o1) - mfcca);
 
 			mfcbb += O4*((c1o3 + vx2)*vvy*vvz - mfcbb);
 			mfbcb += O4*((c1o3 + vy2)*vvx*vvz - mfbcb);
@@ -505,38 +506,38 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			mfccb += O5*((c1o3 + vx2)*(c1o3 + vy2)*vvz - mfccb);
 
 			//6.
-			mfccc += O6*((c1o3 + vx2)*(c1o3 + vy2)*(c1o3 + vz2) + c1o27*(mfaaa - one) - mfccc);
+			mfccc += O6*((c1o3 + vx2)*(c1o3 + vy2)*(c1o3 + vz2) + c1o27*(mfaaa - c1o1) - mfccc);
 
 
 			//bad fix
-			vvx = zero;
-			vvy = zero;
-			vvz = zero;
-			vx2 = zero;
-			vy2 = zero;
-			vz2 = zero;
+			vvx = c0o1;
+			vvy = c0o1;
+			vvz = c0o1;
+			vx2 = c0o1;
+			vy2 = c0o1;
+			vz2 = c0o1;
 			////////////////////////////////////////////////////////////////////////////////////
 			//back
 			////////////////////////////////////////////////////////////////////////////////////
 			//mit 1, 0, 1/3, 0, 0, 0, 1/3, 0, 1/9   Konditionieren
 			////////////////////////////////////////////////////////////////////////////////////
 			// Z - Dir
-			m0 = mfaac * c1o2 + mfaab * (vvz - c1o2) + (mfaaa + one* oMdrho) * (vz2 - vvz) * c1o2;
-			m1 = -mfaac - two* mfaab *  vvz + mfaaa                * (one - vz2) - one* oMdrho * vz2;
-			m2 = mfaac * c1o2 + mfaab * (vvz + c1o2) + (mfaaa + one* oMdrho) * (vz2 + vvz) * c1o2;
+			m0 = mfaac * c1o2 + mfaab * (vvz - c1o2) + (mfaaa + c1o1* oMdrho) * (vz2 - vvz) * c1o2;
+			m1 = -mfaac - c2o1* mfaab *  vvz + mfaaa                * (c1o1 - vz2) - c1o1* oMdrho * vz2;
+			m2 = mfaac * c1o2 + mfaab * (vvz + c1o2) + (mfaaa + c1o1* oMdrho) * (vz2 + vvz) * c1o2;
 			mfaaa = m0;
 			mfaab = m1;
 			mfaac = m2;
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 = mfabc * c1o2 + mfabb * (vvz - c1o2) + mfaba * (vz2 - vvz) * c1o2;
-			m1 = -mfabc - two* mfabb *  vvz + mfaba * (one - vz2);
+			m1 = -mfabc - c2o1* mfabb *  vvz + mfaba * (c1o1 - vz2);
 			m2 = mfabc * c1o2 + mfabb * (vvz + c1o2) + mfaba * (vz2 + vvz) * c1o2;
 			mfaba = m0;
 			mfabb = m1;
 			mfabc = m2;
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 = mfacc * c1o2 + mfacb * (vvz - c1o2) + (mfaca + c1o3 * oMdrho) * (vz2 - vvz) * c1o2;
-			m1 = -mfacc - two* mfacb *  vvz + mfaca                  * (one - vz2) - c1o3 * oMdrho * vz2;
+			m1 = -mfacc - c2o1* mfacb *  vvz + mfaca                  * (c1o1 - vz2) - c1o3 * oMdrho * vz2;
 			m2 = mfacc * c1o2 + mfacb * (vvz + c1o2) + (mfaca + c1o3 * oMdrho) * (vz2 + vvz) * c1o2;
 			mfaca = m0;
 			mfacb = m1;
@@ -544,21 +545,21 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 = mfbac * c1o2 + mfbab * (vvz - c1o2) + mfbaa * (vz2 - vvz) * c1o2;
-			m1 = -mfbac - two* mfbab *  vvz + mfbaa * (one - vz2);
+			m1 = -mfbac - c2o1* mfbab *  vvz + mfbaa * (c1o1 - vz2);
 			m2 = mfbac * c1o2 + mfbab * (vvz + c1o2) + mfbaa * (vz2 + vvz) * c1o2;
 			mfbaa = m0;
 			mfbab = m1;
 			mfbac = m2;
 			/////////b//////////////////////////////////////////////////////////////////////////
 			m0 = mfbbc * c1o2 + mfbbb * (vvz - c1o2) + mfbba * (vz2 - vvz) * c1o2;
-			m1 = -mfbbc - two* mfbbb *  vvz + mfbba * (one - vz2);
+			m1 = -mfbbc - c2o1* mfbbb *  vvz + mfbba * (c1o1 - vz2);
 			m2 = mfbbc * c1o2 + mfbbb * (vvz + c1o2) + mfbba * (vz2 + vvz) * c1o2;
 			mfbba = m0;
 			mfbbb = m1;
 			mfbbc = m2;
 			/////////b//////////////////////////////////////////////////////////////////////////
 			m0 = mfbcc * c1o2 + mfbcb * (vvz - c1o2) + mfbca * (vz2 - vvz) * c1o2;
-			m1 = -mfbcc - two* mfbcb *  vvz + mfbca * (one - vz2);
+			m1 = -mfbcc - c2o1* mfbcb *  vvz + mfbca * (c1o1 - vz2);
 			m2 = mfbcc * c1o2 + mfbcb * (vvz + c1o2) + mfbca * (vz2 + vvz) * c1o2;
 			mfbca = m0;
 			mfbcb = m1;
@@ -566,21 +567,21 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 = mfcac * c1o2 + mfcab * (vvz - c1o2) + (mfcaa + c1o3 * oMdrho) * (vz2 - vvz) * c1o2;
-			m1 = -mfcac - two* mfcab *  vvz + mfcaa                  * (one - vz2) - c1o3 * oMdrho * vz2;
+			m1 = -mfcac - c2o1* mfcab *  vvz + mfcaa                  * (c1o1 - vz2) - c1o3 * oMdrho * vz2;
 			m2 = mfcac * c1o2 + mfcab * (vvz + c1o2) + (mfcaa + c1o3 * oMdrho) * (vz2 + vvz) * c1o2;
 			mfcaa = m0;
 			mfcab = m1;
 			mfcac = m2;
 			/////////c//////////////////////////////////////////////////////////////////////////
 			m0 = mfcbc * c1o2 + mfcbb * (vvz - c1o2) + mfcba * (vz2 - vvz) * c1o2;
-			m1 = -mfcbc - two* mfcbb *  vvz + mfcba * (one - vz2);
+			m1 = -mfcbc - c2o1* mfcbb *  vvz + mfcba * (c1o1 - vz2);
 			m2 = mfcbc * c1o2 + mfcbb * (vvz + c1o2) + mfcba * (vz2 + vvz) * c1o2;
 			mfcba = m0;
 			mfcbb = m1;
 			mfcbc = m2;
 			/////////c//////////////////////////////////////////////////////////////////////////
 			m0 = mfccc * c1o2 + mfccb * (vvz - c1o2) + (mfcca + c1o9 * oMdrho) * (vz2 - vvz) * c1o2;
-			m1 = -mfccc - two* mfccb *  vvz + mfcca                  * (one - vz2) - c1o9 * oMdrho * vz2;
+			m1 = -mfccc - c2o1* mfccb *  vvz + mfcca                  * (c1o1 - vz2) - c1o9 * oMdrho * vz2;
 			m2 = mfccc * c1o2 + mfccb * (vvz + c1o2) + (mfcca + c1o9 * oMdrho) * (vz2 + vvz) * c1o2;
 			mfcca = m0;
 			mfccb = m1;
@@ -591,21 +592,21 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			// Y - Dir
 			m0 = mfaca * c1o2 + mfaba * (vvy - c1o2) + (mfaaa + c1o6 * oMdrho) * (vy2 - vvy) * c1o2;
-			m1 = -mfaca - two* mfaba *  vvy + mfaaa                  * (one - vy2) - c1o6 * oMdrho * vy2;
+			m1 = -mfaca - c2o1* mfaba *  vvy + mfaaa                  * (c1o1 - vy2) - c1o6 * oMdrho * vy2;
 			m2 = mfaca * c1o2 + mfaba * (vvy + c1o2) + (mfaaa + c1o6 * oMdrho) * (vy2 + vvy) * c1o2;
 			mfaaa = m0;
 			mfaba = m1;
 			mfaca = m2;
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 = mfacb * c1o2 + mfabb * (vvy - c1o2) + (mfaab + c2o3 * oMdrho) * (vy2 - vvy) * c1o2;
-			m1 = -mfacb - two* mfabb *  vvy + mfaab                  * (one - vy2) - c2o3 * oMdrho * vy2;
+			m1 = -mfacb - c2o1* mfabb *  vvy + mfaab                  * (c1o1 - vy2) - c2o3 * oMdrho * vy2;
 			m2 = mfacb * c1o2 + mfabb * (vvy + c1o2) + (mfaab + c2o3 * oMdrho) * (vy2 + vvy) * c1o2;
 			mfaab = m0;
 			mfabb = m1;
 			mfacb = m2;
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 = mfacc * c1o2 + mfabc * (vvy - c1o2) + (mfaac + c1o6 * oMdrho) * (vy2 - vvy) * c1o2;
-			m1 = -mfacc - two* mfabc *  vvy + mfaac                  * (one - vy2) - c1o6 * oMdrho * vy2;
+			m1 = -mfacc - c2o1* mfabc *  vvy + mfaac                  * (c1o1 - vy2) - c1o6 * oMdrho * vy2;
 			m2 = mfacc * c1o2 + mfabc * (vvy + c1o2) + (mfaac + c1o6 * oMdrho) * (vy2 + vvy) * c1o2;
 			mfaac = m0;
 			mfabc = m1;
@@ -613,21 +614,21 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 = mfbca * c1o2 + mfbba * (vvy - c1o2) + mfbaa * (vy2 - vvy) * c1o2;
-			m1 = -mfbca - two* mfbba *  vvy + mfbaa * (one - vy2);
+			m1 = -mfbca - c2o1* mfbba *  vvy + mfbaa * (c1o1 - vy2);
 			m2 = mfbca * c1o2 + mfbba * (vvy + c1o2) + mfbaa * (vy2 + vvy) * c1o2;
 			mfbaa = m0;
 			mfbba = m1;
 			mfbca = m2;
 			/////////b//////////////////////////////////////////////////////////////////////////
 			m0 = mfbcb * c1o2 + mfbbb * (vvy - c1o2) + mfbab * (vy2 - vvy) * c1o2;
-			m1 = -mfbcb - two* mfbbb *  vvy + mfbab * (one - vy2);
+			m1 = -mfbcb - c2o1* mfbbb *  vvy + mfbab * (c1o1 - vy2);
 			m2 = mfbcb * c1o2 + mfbbb * (vvy + c1o2) + mfbab * (vy2 + vvy) * c1o2;
 			mfbab = m0;
 			mfbbb = m1;
 			mfbcb = m2;
 			/////////b//////////////////////////////////////////////////////////////////////////
 			m0 = mfbcc * c1o2 + mfbbc * (vvy - c1o2) + mfbac * (vy2 - vvy) * c1o2;
-			m1 = -mfbcc - two* mfbbc *  vvy + mfbac * (one - vy2);
+			m1 = -mfbcc - c2o1* mfbbc *  vvy + mfbac * (c1o1 - vy2);
 			m2 = mfbcc * c1o2 + mfbbc * (vvy + c1o2) + mfbac * (vy2 + vvy) * c1o2;
 			mfbac = m0;
 			mfbbc = m1;
@@ -635,21 +636,21 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 = mfcca * c1o2 + mfcba * (vvy - c1o2) + (mfcaa + c1o18 * oMdrho) * (vy2 - vvy) * c1o2;
-			m1 = -mfcca - two* mfcba *  vvy + mfcaa                   * (one - vy2) - c1o18 * oMdrho * vy2;
+			m1 = -mfcca - c2o1* mfcba *  vvy + mfcaa                   * (c1o1 - vy2) - c1o18 * oMdrho * vy2;
 			m2 = mfcca * c1o2 + mfcba * (vvy + c1o2) + (mfcaa + c1o18 * oMdrho) * (vy2 + vvy) * c1o2;
 			mfcaa = m0;
 			mfcba = m1;
 			mfcca = m2;
 			/////////c//////////////////////////////////////////////////////////////////////////
 			m0 = mfccb * c1o2 + mfcbb * (vvy - c1o2) + (mfcab + c2o9 * oMdrho) * (vy2 - vvy) * c1o2;
-			m1 = -mfccb - two* mfcbb *  vvy + mfcab                  * (one - vy2) - c2o9 * oMdrho * vy2;
+			m1 = -mfccb - c2o1* mfcbb *  vvy + mfcab                  * (c1o1 - vy2) - c2o9 * oMdrho * vy2;
 			m2 = mfccb * c1o2 + mfcbb * (vvy + c1o2) + (mfcab + c2o9 * oMdrho) * (vy2 + vvy) * c1o2;
 			mfcab = m0;
 			mfcbb = m1;
 			mfccb = m2;
 			/////////c//////////////////////////////////////////////////////////////////////////
 			m0 = mfccc * c1o2 + mfcbc * (vvy - c1o2) + (mfcac + c1o18 * oMdrho) * (vy2 - vvy) * c1o2;
-			m1 = -mfccc - two* mfcbc *  vvy + mfcac                   * (one - vy2) - c1o18 * oMdrho * vy2;
+			m1 = -mfccc - c2o1* mfcbc *  vvy + mfcac                   * (c1o1 - vy2) - c1o18 * oMdrho * vy2;
 			m2 = mfccc * c1o2 + mfcbc * (vvy + c1o2) + (mfcac + c1o18 * oMdrho) * (vy2 + vvy) * c1o2;
 			mfcac = m0;
 			mfcbc = m1;
@@ -660,21 +661,21 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			// X - Dir
 			m0 = mfcaa * c1o2 + mfbaa * (vvx - c1o2) + (mfaaa + c1o36 * oMdrho) * (vx2 - vvx) * c1o2;
-			m1 = -mfcaa - two* mfbaa *  vvx + mfaaa                   * (one - vx2) - c1o36 * oMdrho * vx2;
+			m1 = -mfcaa - c2o1* mfbaa *  vvx + mfaaa                   * (c1o1 - vx2) - c1o36 * oMdrho * vx2;
 			m2 = mfcaa * c1o2 + mfbaa * (vvx + c1o2) + (mfaaa + c1o36 * oMdrho) * (vx2 + vvx) * c1o2;
 			mfaaa = m0;
 			mfbaa = m1;
 			mfcaa = m2;
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 = mfcba * c1o2 + mfbba * (vvx - c1o2) + (mfaba + c1o9 * oMdrho) * (vx2 - vvx) * c1o2;
-			m1 = -mfcba - two* mfbba *  vvx + mfaba                  * (one - vx2) - c1o9 * oMdrho * vx2;
+			m1 = -mfcba - c2o1* mfbba *  vvx + mfaba                  * (c1o1 - vx2) - c1o9 * oMdrho * vx2;
 			m2 = mfcba * c1o2 + mfbba * (vvx + c1o2) + (mfaba + c1o9 * oMdrho) * (vx2 + vvx) * c1o2;
 			mfaba = m0;
 			mfbba = m1;
 			mfcba = m2;
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 = mfcca * c1o2 + mfbca * (vvx - c1o2) + (mfaca + c1o36 * oMdrho) * (vx2 - vvx) * c1o2;
-			m1 = -mfcca - two* mfbca *  vvx + mfaca                   * (one - vx2) - c1o36 * oMdrho * vx2;
+			m1 = -mfcca - c2o1* mfbca *  vvx + mfaca                   * (c1o1 - vx2) - c1o36 * oMdrho * vx2;
 			m2 = mfcca * c1o2 + mfbca * (vvx + c1o2) + (mfaca + c1o36 * oMdrho) * (vx2 + vvx) * c1o2;
 			mfaca = m0;
 			mfbca = m1;
@@ -682,21 +683,21 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 = mfcab * c1o2 + mfbab * (vvx - c1o2) + (mfaab + c1o9 * oMdrho) * (vx2 - vvx) * c1o2;
-			m1 = -mfcab - two* mfbab *  vvx + mfaab                  * (one - vx2) - c1o9 * oMdrho * vx2;
+			m1 = -mfcab - c2o1* mfbab *  vvx + mfaab                  * (c1o1 - vx2) - c1o9 * oMdrho * vx2;
 			m2 = mfcab * c1o2 + mfbab * (vvx + c1o2) + (mfaab + c1o9 * oMdrho) * (vx2 + vvx) * c1o2;
 			mfaab = m0;
 			mfbab = m1;
 			mfcab = m2;
 			///////////b////////////////////////////////////////////////////////////////////////
 			m0 = mfcbb * c1o2 + mfbbb * (vvx - c1o2) + (mfabb + c4o9 * oMdrho) * (vx2 - vvx) * c1o2;
-			m1 = -mfcbb - two* mfbbb *  vvx + mfabb                  * (one - vx2) - c4o9 * oMdrho * vx2;
+			m1 = -mfcbb - c2o1* mfbbb *  vvx + mfabb                  * (c1o1 - vx2) - c4o9 * oMdrho * vx2;
 			m2 = mfcbb * c1o2 + mfbbb * (vvx + c1o2) + (mfabb + c4o9 * oMdrho) * (vx2 + vvx) * c1o2;
 			mfabb = m0;
 			mfbbb = m1;
 			mfcbb = m2;
 			///////////b////////////////////////////////////////////////////////////////////////
 			m0 = mfccb * c1o2 + mfbcb * (vvx - c1o2) + (mfacb + c1o9 * oMdrho) * (vx2 - vvx) * c1o2;
-			m1 = -mfccb - two* mfbcb *  vvx + mfacb                  * (one - vx2) - c1o9 * oMdrho * vx2;
+			m1 = -mfccb - c2o1* mfbcb *  vvx + mfacb                  * (c1o1 - vx2) - c1o9 * oMdrho * vx2;
 			m2 = mfccb * c1o2 + mfbcb * (vvx + c1o2) + (mfacb + c1o9 * oMdrho) * (vx2 + vvx) * c1o2;
 			mfacb = m0;
 			mfbcb = m1;
@@ -704,21 +705,21 @@ extern "C" __global__ void LB_Kernel_MRT_Incomp_SP_27(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 			m0 = mfcac * c1o2 + mfbac * (vvx - c1o2) + (mfaac + c1o36 * oMdrho) * (vx2 - vvx) * c1o2;
-			m1 = -mfcac - two* mfbac *  vvx + mfaac                   * (one - vx2) - c1o36 * oMdrho * vx2;
+			m1 = -mfcac - c2o1* mfbac *  vvx + mfaac                   * (c1o1 - vx2) - c1o36 * oMdrho * vx2;
 			m2 = mfcac * c1o2 + mfbac * (vvx + c1o2) + (mfaac + c1o36 * oMdrho) * (vx2 + vvx) * c1o2;
 			mfaac = m0;
 			mfbac = m1;
 			mfcac = m2;
 			///////////c////////////////////////////////////////////////////////////////////////
 			m0 = mfcbc * c1o2 + mfbbc * (vvx - c1o2) + (mfabc + c1o9 * oMdrho) * (vx2 - vvx) * c1o2;
-			m1 = -mfcbc - two* mfbbc *  vvx + mfabc                  * (one - vx2) - c1o9 * oMdrho * vx2;
+			m1 = -mfcbc - c2o1* mfbbc *  vvx + mfabc                  * (c1o1 - vx2) - c1o9 * oMdrho * vx2;
 			m2 = mfcbc * c1o2 + mfbbc * (vvx + c1o2) + (mfabc + c1o9 * oMdrho) * (vx2 + vvx) * c1o2;
 			mfabc = m0;
 			mfbbc = m1;
 			mfcbc = m2;
 			///////////c////////////////////////////////////////////////////////////////////////
 			m0 = mfccc * c1o2 + mfbcc * (vvx - c1o2) + (mfacc + c1o36 * oMdrho) * (vx2 - vvx) * c1o2;
-			m1 = -mfccc - two* mfbcc *  vvx + mfacc                   * (one - vx2) - c1o36 * oMdrho * vx2;
+			m1 = -mfccc - c2o1* mfbcc *  vvx + mfacc                   * (c1o1 - vx2) - c1o36 * oMdrho * vx2;
 			m2 = mfccc * c1o2 + mfbcc * (vvx + c1o2) + (mfacc + c1o36 * oMdrho) * (vx2 + vvx) * c1o2;
 			mfacc = m0;
 			mfbcc = m1;

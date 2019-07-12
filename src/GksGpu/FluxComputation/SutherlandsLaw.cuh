@@ -21,7 +21,7 @@ inline __host__ __device__ real sutherlandsLaw(const Parameters & parameters, co
 
     real C = S / T0;
 
-    return parameters.mu * sqrt( r * r * r ) * ( C  + one ) / ( r  + C );
+    return parameters.mu * sqrt( r * r * r ) * ( C  + c1o1 ) / ( r  + C );
 }
 
 #endif

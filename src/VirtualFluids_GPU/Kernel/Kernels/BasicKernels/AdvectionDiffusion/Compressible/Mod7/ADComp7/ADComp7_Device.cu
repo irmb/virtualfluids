@@ -1,6 +1,7 @@
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
+#include "Core/RealConstants.h"
 #include "math.h"
-#include "GPU/constant.h"
 
 extern "C" __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 	unsigned int* bcMatD,
@@ -189,29 +190,29 @@ extern "C" __global__ void LB_Kernel_AD_Comp_7(real diffusivity,
 			real f7B = (D7.f[6])[kb];
 			////////////////////////////////////////////////////////////////////////////////
 			real rho0 = (fTNE + fBSW) + (fTSW + fBNE) + (fTSE + fBNW) + (fTNW + fBSE) + (fNE + fSW) + (fNW + fSE) + (fTE + fBW) + (fBE + fTW) + (fTN + fBS) + (fBN + fTS) + (fE + fW) + (fN + fS) + (fT + fB) + fZERO;
-			real rho = rho0 + one;
-			real OORho = one / rho;
+			real rho = rho0 + c1o1;
+			real OORho = c1o1 / rho;
 			real vx = OORho*((fTNE - fBSW) + (fBNE - fTSW) + (fTSE - fBNW) + (fBSE - fTNW) + (fNE - fSW) + (fSE - fNW) + (fTE - fBW) + (fBE - fTW) + (fE - fW));
 			real vy = OORho*((fTNE - fBSW) + (fBNE - fTSW) + (fBNW - fTSE) + (fTNW - fBSE) + (fNE - fSW) + (fNW - fSE) + (fTN - fBS) + (fBN - fTS) + (fN - fS));
 			real vz = OORho*((fTNE - fBSW) + (fTSW - fBNE) + (fTSE - fBNW) + (fTNW - fBSE) + (fTE - fBW) + (fTW - fBE) + (fTN - fBS) + (fTS - fBN) + (fT - fB));
 			////////////////////////////////////////////////////////////////////////////////
-			real omegaD = -three + sqrt(three);
-			real Lam = -(c1o2 + one / omegaD);
-			real nue_d = Lam / three;
-			real ae = diffusivity / nue_d - one;
+			real omegaD = -c3o1 + sqrt(c3o1);
+			real Lam = -(c1o2 + c1o1 / omegaD);
+			real nue_d = Lam / c3o1;
+			real ae = diffusivity / nue_d - c1o1;
 			real ux_sq = vx * vx;
 			real uy_sq = vy * vy;
 			real uz_sq = vz * vz;
 
 			real ConcD = f7ZERO + f7E + f7W + f7N + f7S + f7T + f7B;
 
-			(D7.f[0])[k] = f7ZERO*(one + omegaD) - omegaD*ConcD*(c1o3*(ae*(-three)) - (ux_sq + uy_sq + uz_sq));
-			(D7.f[2])[kw] = f7E   *(one + omegaD) - omegaD*ConcD*(c1o6*(ae + one) + c1o2*(ux_sq)+vx*c1o2);
-			(D7.f[1])[k] = f7W   *(one + omegaD) - omegaD*ConcD*(c1o6*(ae + one) + c1o2*(ux_sq)-vx*c1o2);
-			(D7.f[4])[ks] = f7N   *(one + omegaD) - omegaD*ConcD*(c1o6*(ae + one) + c1o2*(uy_sq)+vy*c1o2);
-			(D7.f[3])[k] = f7S   *(one + omegaD) - omegaD*ConcD*(c1o6*(ae + one) + c1o2*(uy_sq)-vy*c1o2);
-			(D7.f[6])[kb] = f7T   *(one + omegaD) - omegaD*ConcD*(c1o6*(ae + one) + c1o2*(uz_sq)+vz*c1o2);
-			(D7.f[5])[k] = f7B   *(one + omegaD) - omegaD*ConcD*(c1o6*(ae + one) + c1o2*(uz_sq)-vz*c1o2);
+			(D7.f[0])[k] = f7ZERO*(c1o1 + omegaD) - omegaD*ConcD*(c1o3*(ae*(-c3o1)) - (ux_sq + uy_sq + uz_sq));
+			(D7.f[2])[kw] = f7E   *(c1o1 + omegaD) - omegaD*ConcD*(c1o6*(ae + c1o1) + c1o2*(ux_sq)+vx*c1o2);
+			(D7.f[1])[k] = f7W   *(c1o1 + omegaD) - omegaD*ConcD*(c1o6*(ae + c1o1) + c1o2*(ux_sq)-vx*c1o2);
+			(D7.f[4])[ks] = f7N   *(c1o1 + omegaD) - omegaD*ConcD*(c1o6*(ae + c1o1) + c1o2*(uy_sq)+vy*c1o2);
+			(D7.f[3])[k] = f7S   *(c1o1 + omegaD) - omegaD*ConcD*(c1o6*(ae + c1o1) + c1o2*(uy_sq)-vy*c1o2);
+			(D7.f[6])[kb] = f7T   *(c1o1 + omegaD) - omegaD*ConcD*(c1o6*(ae + c1o1) + c1o2*(uz_sq)+vz*c1o2);
+			(D7.f[5])[k] = f7B   *(c1o1 + omegaD) - omegaD*ConcD*(c1o6*(ae + c1o1) + c1o2*(uz_sq)-vz*c1o2);
 		}
 	}
 }

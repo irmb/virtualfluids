@@ -32,14 +32,14 @@ struct PrimitiveVariables
     //////////////////////////////////////////////////////////////////////////
 
     __host__ __device__ PrimitiveVariables()
-		: rho   (zero)
-         ,U     (zero)
-         ,V     (zero)
-         ,W     (zero)
-         ,lambda(zero)
+		: rho   (c0o1)
+         ,U     (c0o1)
+         ,V     (c0o1)
+         ,W     (c0o1)
+         ,lambda(c0o1)
     #ifdef USE_PASSIVE_SCALAR
-         ,S_1   (zero)
-         ,S_2   (zero)
+         ,S_1   (c0o1)
+         ,S_2   (c0o1)
     #endif
     {}
 
@@ -51,8 +51,8 @@ struct PrimitiveVariables
                                           ,real W
                                           ,real lambda
     #ifdef USE_PASSIVE_SCALAR
-                                          ,real S_1 = zero
-                                          ,real S_2 = zero
+                                          ,real S_1 = c0o1
+                                          ,real S_2 = c0o1
     #endif
     )
         : rho   (rho   )
@@ -88,14 +88,14 @@ struct ConservedVariables
     //////////////////////////////////////////////////////////////////////////
 
     __host__ __device__ ConservedVariables()
-        : rho (zero)
-         ,rhoU(zero)
-         ,rhoV(zero)
-         ,rhoW(zero)
-         ,rhoE(zero)
+        : rho (c0o1)
+         ,rhoU(c0o1)
+         ,rhoV(c0o1)
+         ,rhoW(c0o1)
+         ,rhoE(c0o1)
     #ifdef USE_PASSIVE_SCALAR
-         ,rhoS_1(zero)
-         ,rhoS_2(zero)
+         ,rhoS_1(c0o1)
+         ,rhoS_2(c0o1)
     #endif
     {}
 
@@ -107,8 +107,8 @@ struct ConservedVariables
                                           ,real rhoW
                                           ,real rhoE
     #ifdef USE_PASSIVE_SCALAR
-                                          ,real rhoS_1 = zero
-                                          ,real rhoS_2 = zero
+                                          ,real rhoS_1 = c0o1
+                                          ,real rhoS_2 = c0o1
     #endif
     )
         : rho (rho )

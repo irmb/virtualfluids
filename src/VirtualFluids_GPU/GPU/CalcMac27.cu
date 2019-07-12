@@ -6,9 +6,9 @@
 //
 //////////////////////////////////////////////////////////////////////////
 /* Device code */
+#include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-//#include "LBM/LB.h"
-#include "GPU/constant.h"
+#include "Core/RealConstants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void LBCalcMac27( real* vxD,
@@ -158,10 +158,10 @@ extern "C" __global__ void LBCalcMac27( real* vxD,
    //unsigned int ktne = k;
    //unsigned int kbsw = k + nxny + nx + 1;
    //////////////////////////////////////////////////////////////////////////
-   rhoD[k] = zero;
-   vxD[k]  = zero;
-   vyD[k]  = zero;
-   vzD[k]  = zero;
+   rhoD[k] = c0o1;
+   vxD[k]  = c0o1;
+   vyD[k]  = c0o1;
+   vzD[k]  = c0o1;
 
    if(geoD[k] == GEO_FLUID)
    {
@@ -334,11 +334,11 @@ extern "C" __global__ void LBCalcMacSP27( real* vxD,
       unsigned int ktne = k;
       unsigned int kbsw = neighborZ[ksw];
       //////////////////////////////////////////////////////////////////////////
-      pressD[k] = zero;
-	  rhoD[k]   = zero;
-	  vxD[k]    = zero;
-	  vyD[k]    = zero;
-	  vzD[k]    = zero;
+      pressD[k] = c0o1;
+	  rhoD[k]   = c0o1;
+	  vxD[k]    = c0o1;
+	  vyD[k]    = c0o1;
+	  vzD[k]    = c0o1;
 
       if(geoD[k] == GEO_FLUID)
       {
@@ -402,7 +402,7 @@ extern "C" __global__ void LBCalcMacSP27( real* vxD,
                         (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
                         (D.f[dirBNE ])[kbne]+ (D.f[dirBSW ])[kbsw]+ 
                         (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw])-
-                        rhoD[k]-(vxD[k] * vxD[k] + vyD[k] * vyD[k] + vzD[k] * vzD[k]) * (one+zero*rhoD[k])) * c1o2+rhoD[k]; // times zero for incompressible case   
+                        rhoD[k]-(vxD[k] * vxD[k] + vyD[k] * vyD[k] + vzD[k] * vzD[k]) * (c1o1+c0o1*rhoD[k])) * c1o2+rhoD[k]; // times zero for incompressible case   
          //achtung op hart gesetzt Annahme op = 1 ;                                                    ^^^^(1.0/op-0.5)=0.5
 
       }
@@ -554,11 +554,11 @@ extern "C" __global__ void LBCalcMacCompSP27( real* vxD,
       unsigned int ktne = k;
       unsigned int kbsw = neighborZ[ksw];
       //////////////////////////////////////////////////////////////////////////
-      pressD[k] = zero;
-	  rhoD[k]   = zero;
-	  vxD[k]    = zero;
-	  vyD[k]    = zero;
-	  vzD[k]    = zero;
+      pressD[k] = c0o1;
+	  rhoD[k]   = c0o1;
+	  vxD[k]    = c0o1;
+	  vyD[k]    = c0o1;
+	  vzD[k]    = c0o1;
 
       if(geoD[k] == GEO_FLUID || geoD[k] == GEO_PM_0 || geoD[k] == GEO_PM_1 || geoD[k] == GEO_PM_2)
       {
@@ -585,7 +585,7 @@ extern "C" __global__ void LBCalcMacCompSP27( real* vxD,
                         (D.f[dirTNE ])[ktne]- (D.f[dirTSW ])[ktsw]+ 
                         (D.f[dirTSE ])[ktse]- (D.f[dirTNW ])[ktnw]+ 
                         (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]+ 
-						(D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw]) / (one + rhoD[k]);
+						(D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw]) / (c1o1 + rhoD[k]);
 
          vyD[k]     =  ((D.f[dirN   ])[kn  ]- (D.f[dirS   ])[ks  ]+
                         (D.f[dirNE  ])[kne ]- (D.f[dirSW  ])[ksw ]-
@@ -595,7 +595,7 @@ extern "C" __global__ void LBCalcMacCompSP27( real* vxD,
                         (D.f[dirTNE ])[ktne]- (D.f[dirTSW ])[ktsw]- 
                         (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
                         (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]- 
-                        (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw]) / (one + rhoD[k]);
+                        (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw]) / (c1o1 + rhoD[k]);
 
          vzD[k]     =  ((D.f[dirT   ])[kt  ]- (D.f[dirB   ])[kb  ]+
                         (D.f[dirTE  ])[kte ]- (D.f[dirBW  ])[kbw ]-
@@ -605,24 +605,24 @@ extern "C" __global__ void LBCalcMacCompSP27( real* vxD,
                         (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
                         (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]- 
                         (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]- 
-                        (D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw]) / (one + rhoD[k]);
+                        (D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw]) / (c1o1 + rhoD[k]);
 
          pressD[k]  =  ((D.f[dirE   ])[ke  ]+ (D.f[dirW   ])[kw  ]+ 
                         (D.f[dirN   ])[kn  ]+ (D.f[dirS   ])[ks  ]+
                         (D.f[dirT   ])[kt  ]+ (D.f[dirB   ])[kb  ]+
-                        two*(
+                        c2o1*(
                         (D.f[dirNE  ])[kne ]+ (D.f[dirSW  ])[ksw ]+
                         (D.f[dirSE  ])[kse ]+ (D.f[dirNW  ])[knw ]+
                         (D.f[dirTE  ])[kte ]+ (D.f[dirBW  ])[kbw ]+
                         (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
                         (D.f[dirTN  ])[ktn ]+ (D.f[dirBS  ])[kbs ]+
                         (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ])+
-                        three*(
+                        c3o1*(
                         (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
                         (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
                         (D.f[dirBNE ])[kbne]+ (D.f[dirBSW ])[kbsw]+ 
                         (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw])-
-                        rhoD[k]-(vxD[k] * vxD[k] + vyD[k] * vyD[k] + vzD[k] * vzD[k]) * (one+rhoD[k])) * c1o2+rhoD[k]; // times zero for incompressible case   
+                        rhoD[k]-(vxD[k] * vxD[k] + vyD[k] * vyD[k] + vzD[k] * vzD[k]) * (c1o1+rhoD[k])) * c1o2+rhoD[k]; // times zero for incompressible case   
          //achtung op hart gesetzt Annahme op = 1 ;                                                      ^^^^(1.0/op-0.5)=0.5
 
       }
@@ -709,7 +709,7 @@ extern "C" __global__ void LBCalcMacThS7( real* Conc,
       unsigned int kt   = k;
       unsigned int kb   = neighborZ[k];
       //////////////////////////////////////////////////////////////////////////
-      Conc[k] = zero;
+      Conc[k] = c0o1;
 
       if(geoD[k] == GEO_FLUID)
       {
@@ -805,7 +805,7 @@ extern "C" __global__ void GetPlaneConcThS7(real* Conc,
       unsigned int kt   = kzero;
       unsigned int kb   = neighborZ[kzero];
       //////////////////////////////////////////////////////////////////////////
-      Conc[k] = zero;
+      Conc[k] = c0o1;
 
       if(geoD[k] == GEO_FLUID)
       {
@@ -968,7 +968,7 @@ extern "C" __global__ void GetPlaneConcThS27(real* Conc,
       unsigned int ktne = kzero;
       unsigned int kbsw = neighborZ[ksw];
       //////////////////////////////////////////////////////////////////////////
-      Conc[k] = zero;
+      Conc[k] = c0o1;
 
       if(geoD[k] == GEO_FLUID)
       {
@@ -1139,7 +1139,7 @@ extern "C" __global__ void LBCalcMacThS27(real* Conc,
       unsigned int ktne = k;
       unsigned int kbsw = neighborZ[ksw];
       //////////////////////////////////////////////////////////////////////////
-      Conc[k] = zero;
+      Conc[k] = c0o1;
 
       if(geoD[k] == GEO_FLUID)
       {
@@ -1304,11 +1304,11 @@ extern "C" __global__ void LBCalcMedSP27( real* vxD,
       real VY    = vyD[k];
       real VZ    = vzD[k];
       //////////////////////////////////////////////////////////////////////////
-      pressD[k] = zero;
-	  rhoD[k]   = zero;
-	  vxD[k]    = zero;
-	  vyD[k]    = zero;
-	  vzD[k]    = zero;
+      pressD[k] = c0o1;
+	  rhoD[k]   = c0o1;
+	  vxD[k]    = c0o1;
+	  vyD[k]    = c0o1;
+	  vzD[k]    = c0o1;
 
       if(geoD[k] == GEO_FLUID)
       {
@@ -1364,19 +1364,19 @@ extern "C" __global__ void LBCalcMedSP27( real* vxD,
          pressD[k]  =   ((D.f[dirE   ])[ke  ]+ (D.f[dirW   ])[kw  ]+ 
                         (D.f[dirN   ])[kn  ]+ (D.f[dirS   ])[ks  ]+
                         (D.f[dirT   ])[kt  ]+ (D.f[dirB   ])[kb  ]+
-                        two*(
+                        c2o1*(
                         (D.f[dirNE  ])[kne ]+ (D.f[dirSW  ])[ksw ]+
                         (D.f[dirSE  ])[kse ]+ (D.f[dirNW  ])[knw ]+
                         (D.f[dirTE  ])[kte ]+ (D.f[dirBW  ])[kbw ]+
                         (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
                         (D.f[dirTN  ])[ktn ]+ (D.f[dirBS  ])[kbs ]+
                         (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ])+
-                        three*(
+                        c3o1*(
                         (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
                         (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
                         (D.f[dirBNE ])[kbne]+ (D.f[dirBSW ])[kbsw]+ 
                         (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw])-
-                        rhoD[k]-(vxD[k] * vxD[k] + vyD[k] * vyD[k] + vzD[k] * vzD[k]) * (one+rhoD[k])) * c1o2+rhoD[k]+
+                        rhoD[k]-(vxD[k] * vxD[k] + vyD[k] * vyD[k] + vzD[k] * vzD[k]) * (c1o1+rhoD[k])) * c1o2+rhoD[k]+
                         PRESS;    
          //achtung op hart gesetzt Annahme op = 1 ;                                                    ^^^^(1.0/op-0.5)=0.5
       }
@@ -1528,11 +1528,11 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
       real VY    = vyD[k];
       real VZ    = vzD[k];
       //////////////////////////////////////////////////////////////////////////
-      pressD[k] = zero;
-	  rhoD[k]   = zero;
-	  vxD[k]    = zero;
-	  vyD[k]    = zero;
-	  vzD[k]    = zero;
+      pressD[k] = c0o1;
+	  rhoD[k]   = c0o1;
+	  vxD[k]    = c0o1;
+	  vyD[k]    = c0o1;
+	  vzD[k]    = c0o1;
 
       if(geoD[k] == GEO_FLUID)
       {
@@ -1569,7 +1569,7 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
 			  (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 			  ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 
-		  real rho = one + drho;
+		  real rho = c1o1 + drho;
 		  
 		  rhoD[k] = drho + RHO;
 
@@ -1641,19 +1641,19 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
          pressD[k]  =  ((D.f[dirE   ])[ke  ]+ (D.f[dirW   ])[kw  ]+ 
                         (D.f[dirN   ])[kn  ]+ (D.f[dirS   ])[ks  ]+
                         (D.f[dirT   ])[kt  ]+ (D.f[dirB   ])[kb  ]+
-                        two*(
+                        c2o1*(
                         (D.f[dirNE  ])[kne ]+ (D.f[dirSW  ])[ksw ]+
                         (D.f[dirSE  ])[kse ]+ (D.f[dirNW  ])[knw ]+
                         (D.f[dirTE  ])[kte ]+ (D.f[dirBW  ])[kbw ]+
                         (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
                         (D.f[dirTN  ])[ktn ]+ (D.f[dirBS  ])[kbs ]+
                         (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ])+
-                        three*(
+                        c3o1*(
                         (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
                         (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
                         (D.f[dirBNE ])[kbne]+ (D.f[dirBSW ])[kbsw]+ 
                         (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw])-
-                        rhoD[k]-(vxD[k] * vxD[k] + vyD[k] * vyD[k] + vzD[k] * vzD[k]) * (one+rhoD[k])) * c1o2+rhoD[k]+
+                        rhoD[k]-(vxD[k] * vxD[k] + vyD[k] * vyD[k] + vzD[k] * vzD[k]) * (c1o1+rhoD[k])) * c1o2+rhoD[k]+
                         PRESS;    
          //achtung op hart gesetzt Annahme op = 1 ;                                                    ^^^^(1.0/op-0.5)=0.5
       }
@@ -1871,12 +1871,12 @@ extern "C" __global__ void LBCalcMedCompAD27(
 		real VY    = vyD[k];
 		real VZ    = vzD[k];
 		//////////////////////////////////////////////////////////////////////////
-		concD[k] = zero;
-		pressD[k] = zero;
-		rhoD[k] = zero;
-		vxD[k] = zero;
-		vyD[k] = zero;
-		vzD[k] = zero;
+		concD[k] = c0o1;
+		pressD[k] = c0o1;
+		rhoD[k] = c0o1;
+		vxD[k] = c0o1;
+		vyD[k] = c0o1;
+		vzD[k] = c0o1;
 
 		if (geoD[k] == GEO_FLUID)
 		{
@@ -1912,7 +1912,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 				((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
 				 (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 				  ((mfabb + mfcbb) + (mfbab + mfbcb)  +  (mfbba + mfbbc))) + mfbbb;
-			real rho = one + drho;
+			real rho = c1o1 + drho;
 			////////////////////////////////////////////////////////////////////////////////////
 
 			rhoD[k] = drho + RHO;
@@ -1936,19 +1936,19 @@ extern "C" __global__ void LBCalcMedCompAD27(
 				((D.f[dirE])[ke] + (D.f[dirW])[kw] +
 				 (D.f[dirN])[kn] + (D.f[dirS])[ks] +
 				 (D.f[dirT])[kt] + (D.f[dirB])[kb] +
-				 two*(
+				 c2o1*(
 				 (D.f[dirNE])[kne] + (D.f[dirSW])[ksw] +
 				 (D.f[dirSE])[kse] + (D.f[dirNW])[knw] +
 				 (D.f[dirTE])[kte] + (D.f[dirBW])[kbw] +
 				 (D.f[dirBE])[kbe] + (D.f[dirTW])[ktw] +
 				 (D.f[dirTN])[ktn] + (D.f[dirBS])[kbs] +
 				 (D.f[dirBN])[kbn] + (D.f[dirTS])[kts]) +
-				 three*(
+				 c3o1*(
 				 (D.f[dirTNE])[ktne] + (D.f[dirTSW])[ktsw] +
 				 (D.f[dirTSE])[ktse] + (D.f[dirTNW])[ktnw] +
 				 (D.f[dirBNE])[kbne] + (D.f[dirBSW])[kbsw] +
 				 (D.f[dirBSE])[kbse] + (D.f[dirBNW])[kbnw]) -
-				 rhoD[k] - (vxD[k] * vxD[k] + vyD[k] * vyD[k] + vzD[k] * vzD[k]) * (one + rhoD[k])) * c1o2 + rhoD[k] +
+				 rhoD[k] - (vxD[k] * vxD[k] + vyD[k] * vyD[k] + vzD[k] * vzD[k]) * (c1o1 + rhoD[k])) * c1o2 + rhoD[k] +
 				 PRESS;
 				 //achtung op hart gesetzt Annahme op = 1 ;                                                    ^^^^(1.0/op-0.5)=0.5
 			//////////////////////////////////////////////////////////////////////////
@@ -2043,11 +2043,11 @@ extern "C" __global__ void LBCalcMacMedSP27( real* vxD,
       real VY    = vyD[k];
       real VZ    = vzD[k];
       //////////////////////////////////////////////////////////////////////////
-      pressD[k] = zero;
-      rhoD[k]   = zero;
-      vxD[k]    = zero;
-      vyD[k]    = zero;
-      vzD[k]    = zero;
+      pressD[k] = c0o1;
+      rhoD[k]   = c0o1;
+      vxD[k]    = c0o1;
+      vyD[k]    = c0o1;
+      vzD[k]    = c0o1;
 
       if(geoD[k] == GEO_FLUID)
       {
@@ -2105,11 +2105,11 @@ extern "C" __global__ void LBResetMedianValuesSP27(
 	if (k<size_Mat)
 	{
 		//////////////////////////////////////////////////////////////////////////
-		pressD[k] = zero;
-		rhoD[k] = zero;
-		vxD[k] = zero;
-		vyD[k] = zero;
-		vzD[k] = zero;
+		pressD[k] = c0o1;
+		rhoD[k] = c0o1;
+		vxD[k] = c0o1;
+		vyD[k] = c0o1;
+		vzD[k] = c0o1;
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -2159,12 +2159,12 @@ extern "C" __global__ void LBResetMedianValuesAD27(
 	if (k < size_Mat)
 	{
 		//////////////////////////////////////////////////////////////////////////
-		concD[k]  = zero;
-		pressD[k] = zero;
-		rhoD[k]   = zero;
-		vxD[k]    = zero;
-		vyD[k]    = zero;
-		vzD[k]    = zero;
+		concD[k]  = c0o1;
+		pressD[k] = c0o1;
+		rhoD[k]   = c0o1;
+		vxD[k]    = c0o1;
+		vyD[k]    = c0o1;
+		vzD[k]    = c0o1;
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
