@@ -153,7 +153,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     //TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/RoomExtended3.stl");
 #else
     //TriangularMesh* stl = TriangularMesh::make("inp/Unterzug.stl");
-    TriangularMesh* stl = TriangularMesh::make("inp/RoomExtended.stl");
+    TriangularMesh* stl = TriangularMesh::make("inp/RoomExtended2.stl");
 #endif
 
     gridBuilder->addGeometry(stl);
@@ -179,7 +179,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     gridBuilder->setNumberOfLayers(0,22);
 
-    gridBuilder->addGrid( &refRegion1, 2 );
+    gridBuilder->addGrid( &refRegion1, 3 );
 
     uint maxLevel = gridBuilder->getNumberOfGridLevels() - 1;
 
