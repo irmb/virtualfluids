@@ -163,7 +163,7 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
             if (fabsf(y) > yStart)
             {
-                muNew += (fabs(y) - yStart) * ten * ten * parameters.mu;
+                muNew += (fabs(y) - yStart) * c10o1 * c10o1 * parameters.mu;
             }
 
             parameters.mu = muNew;
