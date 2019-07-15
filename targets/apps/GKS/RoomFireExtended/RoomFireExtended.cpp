@@ -69,7 +69,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real HBurner = 0.5;
 
     real Pr  = 0.71;
-    real K   = 5.0;
+    real K   = 2.0;
     
     real g   = 9.81;
     real rho = 1.2;
@@ -80,8 +80,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
     real mu      = 1.8e-5;
-    real U       = 0.01;
-    //real U       = 0.005;
+    real U       = 0.015;       // 900 kW on top
+    //real U       = 0.005;       // 900 kW all around
     real rhoFuel = 0.5405;
 
     real CFL = 0.125;
@@ -125,7 +125,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     parameters.useSmagorinsky            = true;
 
     parameters.reactionLimiter    = 1.0005;
-    parameters.temperatureLimiter = 1.0e-7;
+    parameters.temperatureLimiter = 1.0e-6;
 
     parameters.useSpongeLayer = true;
     parameters.spongeLayerIdx = 2;
@@ -179,7 +179,9 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     gridBuilder->setNumberOfLayers(0,22);
 
-    gridBuilder->addGrid( &refRegion1, 3 );
+    gridBuilder->addGrid( &refRegion1, 2 );
+
+    uint maxLevel = gridBuilder->getNumberOfGridLevels() - 1;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -240,8 +242,10 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     bcBurner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
-        return center.z < HBurner && std::sqrt(center.x*center.x) < 0.5 * LBurner - dx && std::sqrt(center.y*center.y) < 0.5 * LBurner - dx;
-        //return center.z < 0.0 && std::sqrt(center.x*center.x) < 1.5 * LBurner - dx && std::sqrt(center.y*center.y) < 1.5 * LBurner - dx;
+        return center.z < HBurner && 
+            std::sqrt(center.x*center.x) < 0.5 * LBurner - dx * std::pow(0.5, maxLevel) && 
+            std::sqrt(center.y*center.y) < 0.5 * LBurner - dx * std::pow(0.5, maxLevel);
+        //return center.z < HBurner && std::sqrt(center.x*center.x) < 0.5 * LBurner && std::sqrt(center.y*center.y) < 0.5 * LBurner;
     } );
 
     //////////////////////////////////////////////////////////////////////////
