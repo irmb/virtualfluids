@@ -19,8 +19,15 @@ public:
 
         uint numberOfEntities;
 
-        CudaGrid( uint numberOfEntities, uint threadsPerBlock );
+        cudaStream_t stream;
+
+        CudaGrid( uint numberOfEntities, uint threadsPerBlock, cudaStream_t stream = 0 );
     };
+
+    static cudaStream_t computeStream;
+    static cudaStream_t communicationStream;
+    static cudaStream_t copyDeviceToHostStream;
+    static cudaStream_t copyHostToDeviceStream;
 
     static void printCudaMemoryUsage();
 
@@ -29,6 +36,10 @@ public:
     static void setCudaDevice( int device );
 
     static int getCudaDevice(  );
+
+    static void synchronizeCudaDevice();
+
+    static void synchronizeCudaStream( cudaStream_t stream );
 };
 
 #endif

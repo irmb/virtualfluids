@@ -138,6 +138,16 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
         gridBuilder->findCommunicationIndices( CommunicationDirections::MX, GKS );
         gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, (rank - 1 + mpiWorldSize) % mpiWorldSize );
     }
+    //if( decompositionDimension == 1 && mpiWorldSize > 1 && rank == 0 )
+    //{
+    //    gridBuilder->findCommunicationIndices( CommunicationDirections::PX, GKS );
+    //    gridBuilder->setCommunicationProcess ( CommunicationDirections::PX, (rank + 1 + mpiWorldSize) % mpiWorldSize );
+    //}
+    //else
+    //{
+    //    gridBuilder->findCommunicationIndices( CommunicationDirections::MX, GKS );
+    //    gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, (rank - 1 + mpiWorldSize) % mpiWorldSize );
+    //}
 
     //gridBuilder->writeGridsToVtk(path + "/Grid_rank_" + std::to_string(rank) + "_lev_");
 
@@ -147,9 +157,9 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     meshAdapter.inputGrid();
 
-    meshAdapter.getCommunicationIndices();
-
     meshAdapter.findPeriodicBoundaryNeighbors();
+
+    //meshAdapter.writeMeshFaceVTK(path + "/Faces_rank_" + std::to_string(rank) + ".vtk");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -251,39 +261,54 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
+    const uint numberOfIterations = 10;
 
-    //////////////////////////////////////////////////////////////////////////
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, true, numberOfIterations );
+
+    MPI_Barrier(MPI_COMM_WORLD);
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 10000; iter++ )
+    for( uint iter = 1; iter <= numberOfIterations; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
-
-        cupsAnalyzer.run( iter );
-
-        if( iter % 10000 == 0 )
-        {
-            dataBase->copyDataDeviceToHost();
-
-            if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( iter ), mpiWorldSize );
-
-            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
-        }
     }
+
+    cupsAnalyzer.run( numberOfIterations, parameters.dt );
 
     //////////////////////////////////////////////////////////////////////////
 
     dataBase->copyDataDeviceToHost();
+
+    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_final_rank_" + std::to_string(rank) );
+    
+    //////////////////////////////////////////////////////////////////////////
+
+    int crashCellIndex = dataBase->getCrashCellIndex();
+    if( crashCellIndex >= 0 )
+    {
+        *logging::out << logging::Logger::LOGGER_ERROR << "=================================================\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "=================================================\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "============= Simulation Crashed!!! =============\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "=================================================\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "=================================================\n";
+    }
 }
 
 int main( int argc, char* argv[])
 {
     //////////////////////////////////////////////////////////////////////////
 
+    int rank = 0;
+    int mpiWorldSize = 1;
+#ifdef USE_CUDA_AWARE_MPI
     int rank         = MpiUtility::getMpiRankBeforeInit();
     int mpiWorldSize = MpiUtility::getMpiWorldSizeBeforeInit();
+#else
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
+#endif
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -299,7 +324,7 @@ int main( int argc, char* argv[])
     //////////////////////////////////////////////////////////////////////////
 
     bool strongScaling = false;
-    uint nx = 256;
+    uint nx = 64;
 
     if( argc > 1 ) path += argv[1]; path += "/";
     if( argc > 2 ) nx = atoi( argv[2] );
@@ -331,7 +356,9 @@ int main( int argc, char* argv[])
 
     //////////////////////////////////////////////////////////////////////////
 
+#ifdef USE_CUDA_AWARE_MPI
     MPI_Init(&argc, &argv);
+#endif
     
     //////////////////////////////////////////////////////////////////////////
 
@@ -350,15 +377,15 @@ int main( int argc, char* argv[])
     }
     catch (const std::exception& e)
     {     
-        *logging::out << logging::Logger::ERROR << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
     }
     catch (const std::bad_alloc& e)
     {  
-        *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
     }
     catch (...)
     {
-        *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
     }
 
     //////////////////////////////////////////////////////////////////////////

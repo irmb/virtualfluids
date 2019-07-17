@@ -154,6 +154,8 @@ struct VF_PUBLIC PerLevelCounts
 
     uint numberOfFaces;
 
+    uint numberOfInnerFaces;
+
     uint numberOfFacesX;
     uint startOfFacesX;
 

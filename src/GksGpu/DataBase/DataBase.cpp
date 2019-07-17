@@ -73,6 +73,8 @@ void DataBase::setMesh(GksMeshAdapter & adapter)
                                              + perLevelCount[ level ].numberOfFacesY
                                              + perLevelCount[ level ].numberOfFacesZ;
 
+        perLevelCount[ level ].numberOfInnerFaces = adapter.numberOfInnerFacesPerLevel[ level ];
+
         perLevelCount[ level ].numberOfFineToCoarse = adapter.numberOfFineToCoarsePerLevel[ level ];
         perLevelCount[ level ].numberOfCoarseToFine = adapter.numberOfCoarseToFinePerLevel[ level ];
 

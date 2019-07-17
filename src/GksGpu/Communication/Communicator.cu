@@ -60,7 +60,7 @@ __host__ __device__ inline void recvBufferFunction( const DataBaseStruct dataBas
 
 void Communicator::copyFromMeshToSendBuffer(const SPtr<DataBase> dataBase)
 {    
-    CudaUtility::CudaGrid grid( this->numberOfSendNodes, 32 );
+    CudaUtility::CudaGrid grid( this->numberOfSendNodes, 32, CudaUtility::communicationStream );
 
     runKernel( sendBufferKernel,
                sendBufferFunction,
@@ -71,14 +71,12 @@ void Communicator::copyFromMeshToSendBuffer(const SPtr<DataBase> dataBase)
                this->sendBuffer,
                0 );
 
-    cudaDeviceSynchronize();
-
-    getLastCudaError("Communicator::copyFromMeshToSendBuffer(const SPtr<DataBase> dataBase)");
+    //CudaUtility::synchronizeCudaStream( CudaUtility::communicationStream );
 }
 
 void Communicator::copyFromRecvBufferToMesh(const SPtr<DataBase> dataBase)
 {    
-    CudaUtility::CudaGrid grid( this->numberOfRecvNodes, 32 );
+    CudaUtility::CudaGrid grid( this->numberOfRecvNodes, 32, CudaUtility::communicationStream );
 
     runKernel( recvBufferKernel,
                recvBufferFunction,
@@ -89,9 +87,7 @@ void Communicator::copyFromRecvBufferToMesh(const SPtr<DataBase> dataBase)
                this->recvBuffer,
                0 );
 
-    cudaDeviceSynchronize();
-
-    getLastCudaError("Communicator::copyFromRecvBufferToMesh(const SPtr<DataBase> dataBase)");
+    //CudaUtility::synchronizeCudaStream( CudaUtility::communicationStream );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

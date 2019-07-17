@@ -217,15 +217,21 @@ void DataBaseAllocatorCPU::freeMemory(Communicator & communicator)
     
     delete [] communicator.sendBuffer;
     delete [] communicator.recvBuffer;
+    
+    delete [] communicator.sendBufferHost;
+    delete [] communicator.recvBufferHost;
 }
 
 void DataBaseAllocatorCPU::allocateMemory(Communicator & communicator, std::vector<uint>& sendIndices, std::vector<uint>& recvIndices)
 {
-    communicator.sendIndices = new uint[communicator.numberOfSendNodes];
-    communicator.recvIndices = new uint[communicator.numberOfRecvNodes];
+    communicator.sendIndices     = new uint[communicator.numberOfSendNodes];
+    communicator.recvIndices     = new uint[communicator.numberOfRecvNodes];
 
-    communicator.sendBuffer  = new real[LENGTH_CELL_DATA * communicator.numberOfSendNodes];
-    communicator.recvBuffer  = new real[LENGTH_CELL_DATA * communicator.numberOfRecvNodes];
+    communicator.sendBuffer      = new real[LENGTH_CELL_DATA * communicator.numberOfSendNodes];
+    communicator.recvBuffer      = new real[LENGTH_CELL_DATA * communicator.numberOfRecvNodes];
+
+    communicator.sendBufferHost  = new real[LENGTH_CELL_DATA * communicator.numberOfSendNodes];
+    communicator.recvBufferHost  = new real[LENGTH_CELL_DATA * communicator.numberOfRecvNodes];
 
     memcpy ( communicator.sendIndices , sendIndices.data() , sizeof(uint) * communicator.numberOfSendNodes );
     memcpy ( communicator.recvIndices , recvIndices.data() , sizeof(uint) * communicator.numberOfRecvNodes );
@@ -238,12 +244,12 @@ void DataBaseAllocatorCPU::copyDataDeviceToDevice(SPtr<Communicator> dst, SPtr<C
 
 void DataBaseAllocatorCPU::copyBuffersDeviceToHost(SPtr<Communicator> communicator)
 {
-    memcpy( communicator->sendBufferHost.data(), communicator->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes );
+    memcpy( communicator->sendBufferHost, communicator->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes );
 }
 
 void DataBaseAllocatorCPU::copyBuffersHostToDevice(SPtr<Communicator> communicator)
 {
-    memcpy( communicator->recvBuffer, communicator->recvBufferHost.data(), LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes );
+    memcpy( communicator->recvBuffer, communicator->recvBufferHost, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes );
 }
 
 std::string DataBaseAllocatorCPU::getDeviceType()

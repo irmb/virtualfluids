@@ -64,6 +64,8 @@ struct VF_PUBLIC MeshCell{
 
     bool isInsulated;
 
+    bool isRecvCell;
+
     char type;
 
     MeshCell();

@@ -29,8 +29,8 @@ struct VF_PUBLIC Communicator : public std::enable_shared_from_this<Communicator
     real* sendBuffer; // device
     real* recvBuffer; // device
 
-    std::vector<real> sendBufferHost;
-    std::vector<real> recvBufferHost;
+    real* sendBufferHost;
+    real* recvBufferHost;
 
     uint rank;
     uint opposingRank;

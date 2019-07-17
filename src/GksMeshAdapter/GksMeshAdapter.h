@@ -57,7 +57,7 @@ public:
     std::vector<uint> numberOfFacesPerLevelXYZ;
     std::vector<uint> startOfFacesPerLevelXYZ;
 
-    //std::vector<uint> solidFaces;
+    std::vector<uint> numberOfInnerFacesPerLevel;
 
     //////////////////////////////////////////////////////////////////////////
     //
@@ -132,6 +132,8 @@ public:
     void sortFaces();
 
     void countFaces();
+
+    void countInnerFaces();
 
     void generateInterfaceConnectivity();
 

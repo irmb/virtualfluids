@@ -20,6 +20,8 @@
 
 #include "Definitions/MemoryAccessPattern.h"
 
+#include "CudaUtility/CudaUtility.h"
+
 void DataBaseAllocatorGPU::freeMemory( DataBase& dataBase )
 {
     dataBase.cellToNode.clear();
@@ -251,23 +253,29 @@ void DataBaseAllocatorGPU::allocateMemory(SPtr<BoundaryCondition> boundaryCondit
 
 void DataBaseAllocatorGPU::freeMemory(Communicator & communicator)
 {
-    checkCudaErrors( cudaFree ( communicator.sendIndices ) );
-    checkCudaErrors( cudaFree ( communicator.recvIndices ) );
+    checkCudaErrors( cudaFree     ( communicator.sendIndices     ) );
+    checkCudaErrors( cudaFree     ( communicator.recvIndices     ) );
 
-    checkCudaErrors( cudaFree ( communicator.sendBuffer  ) );
-    checkCudaErrors( cudaFree ( communicator.recvBuffer  ) );
+    checkCudaErrors( cudaFree     ( communicator.sendBuffer      ) );
+    checkCudaErrors( cudaFree     ( communicator.recvBuffer      ) );
+
+    checkCudaErrors( cudaFreeHost ( communicator.sendBufferHost  ) );
+    checkCudaErrors( cudaFreeHost ( communicator.recvBufferHost  ) );
 }
 
 void DataBaseAllocatorGPU::allocateMemory(Communicator & communicator, std::vector<uint>& sendIndices, std::vector<uint>& recvIndices)
 {
-    checkCudaErrors( cudaMalloc ( &communicator.sendIndices , sizeof(uint) * communicator.numberOfSendNodes ) );
-    checkCudaErrors( cudaMalloc ( &communicator.recvIndices , sizeof(uint) * communicator.numberOfRecvNodes ) );
+    checkCudaErrors( cudaMalloc     ( &communicator.sendIndices    , sizeof(uint) * communicator.numberOfSendNodes ) );
+    checkCudaErrors( cudaMalloc     ( &communicator.recvIndices    , sizeof(uint) * communicator.numberOfRecvNodes ) );
     
-    checkCudaErrors( cudaMalloc ( &communicator.sendBuffer , LENGTH_CELL_DATA * sizeof(real) * communicator.numberOfSendNodes ) );
-    checkCudaErrors( cudaMalloc ( &communicator.recvBuffer , LENGTH_CELL_DATA * sizeof(real) * communicator.numberOfRecvNodes ) );
+    checkCudaErrors( cudaMalloc     ( &communicator.sendBuffer     , LENGTH_CELL_DATA * sizeof(real) * communicator.numberOfSendNodes ) );
+    checkCudaErrors( cudaMalloc     ( &communicator.recvBuffer     , LENGTH_CELL_DATA * sizeof(real) * communicator.numberOfRecvNodes ) );
+    
+    checkCudaErrors( cudaMallocHost ( &communicator.sendBufferHost , LENGTH_CELL_DATA * sizeof(real) * communicator.numberOfSendNodes ) );
+    checkCudaErrors( cudaMallocHost ( &communicator.recvBufferHost , LENGTH_CELL_DATA * sizeof(real) * communicator.numberOfRecvNodes ) );
 
-    checkCudaErrors( cudaMemcpy ( communicator.sendIndices , sendIndices.data() , sizeof(uint) * communicator.numberOfSendNodes, cudaMemcpyHostToDevice ) );
-    checkCudaErrors( cudaMemcpy ( communicator.recvIndices , recvIndices.data() , sizeof(uint) * communicator.numberOfRecvNodes, cudaMemcpyHostToDevice ) );
+    checkCudaErrors( cudaMemcpy     ( communicator.sendIndices , sendIndices.data() , sizeof(uint) * communicator.numberOfSendNodes, cudaMemcpyHostToDevice ) );
+    checkCudaErrors( cudaMemcpy     ( communicator.recvIndices , recvIndices.data() , sizeof(uint) * communicator.numberOfRecvNodes, cudaMemcpyHostToDevice ) );
 }
 
 void DataBaseAllocatorGPU::copyDataDeviceToDevice(SPtr<Communicator> dst, SPtr<Communicator> src)
@@ -277,12 +285,18 @@ void DataBaseAllocatorGPU::copyDataDeviceToDevice(SPtr<Communicator> dst, SPtr<C
 
 void DataBaseAllocatorGPU::copyBuffersDeviceToHost(SPtr<Communicator> communicator)
 {
-    checkCudaErrors( cudaMemcpy ( communicator->sendBufferHost.data(), communicator->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes, cudaMemcpyDeviceToHost ) );
+    //checkCudaErrors( cudaMemcpyAsync ( communicator->sendBufferHost, communicator->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes, cudaMemcpyDeviceToHost, CudaUtility::copyDeviceToHostStream ) );
+    checkCudaErrors( cudaMemcpyAsync ( communicator->sendBufferHost, communicator->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes, cudaMemcpyDeviceToHost, CudaUtility::communicationStream ) );
+
+    //CudaUtility::synchronizeCudaStream( CudaUtility::copyDeviceToHostStream );
 }
 
 void DataBaseAllocatorGPU::copyBuffersHostToDevice(SPtr<Communicator> communicator)
 {
-    checkCudaErrors( cudaMemcpy ( communicator->recvBuffer, communicator->recvBufferHost.data(), LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes, cudaMemcpyHostToDevice ) );
+    //checkCudaErrors( cudaMemcpyAsync ( communicator->recvBuffer, communicator->recvBufferHost, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes, cudaMemcpyHostToDevice, CudaUtility::copyHostToDeviceStream ) );
+    checkCudaErrors( cudaMemcpyAsync ( communicator->recvBuffer, communicator->recvBufferHost, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes, cudaMemcpyHostToDevice, CudaUtility::communicationStream ) );
+
+    //CudaUtility::synchronizeCudaStream( CudaUtility::copyHostToDeviceStream );
 }
 
 std::string DataBaseAllocatorGPU::getDeviceType()

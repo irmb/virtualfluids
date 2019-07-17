@@ -1,9 +1,5 @@
 #include "Communicator.h"
 
-#ifdef zero
-#undef zero
-#endif
-
 #ifdef VF_DOUBLE_ACCURACY
 #define MPI_TYPE_GPU  MPI_DOUBLE
 #else
@@ -24,16 +20,20 @@
 #include "Definitions/MemoryAccessPattern.h"
 #include "Definitions/CudaAwareMpi.h"
 
+#include "CudaUtility/CudaUtility.h"
+
 Communicator::Communicator( SPtr<DataBase> dataBase )
     : myAllocator ( dataBase->myAllocator )
 {
     this->numberOfSendNodes = INVALID_INDEX;
     this->numberOfRecvNodes = INVALID_INDEX;
 
-    this->sendIndices = nullptr;
-    this->recvIndices = nullptr;
-    this->sendBuffer  = nullptr;
-    this->recvBuffer  = nullptr;
+    this->sendIndices    = nullptr;
+    this->recvIndices    = nullptr;
+    this->sendBuffer     = nullptr;
+    this->recvBuffer     = nullptr;
+    this->sendBufferHost = nullptr;
+    this->recvBufferHost = nullptr;
 
     this->sendBufferIsReady = MPI_REQUEST_NULL;
 }
@@ -47,9 +47,6 @@ void Communicator::initialize(GksMeshAdapter & adapter, uint level, uint directi
 
     this->myAllocator->allocateMemory( *this, adapter.communicationIndices[level].sendIndices[direction], 
                                               adapter.communicationIndices[level].recvIndices[direction] );
-
-    this->sendBufferHost.resize(this->numberOfSendNodes * LENGTH_CELL_DATA);
-    this->recvBufferHost.resize(this->numberOfRecvNodes * LENGTH_CELL_DATA);
 
     this->opposingRank = adapter.communicationProcesses[direction];
 }
@@ -77,9 +74,9 @@ void Communicator::exchangeData( SPtr<DataBase> dataBase )
     
     this->myAllocator->copyBuffersDeviceToHost( shared_from_this() );
     
-    MPI_Isend( this->sendBufferHost.data(), this->numberOfSendNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, &this->sendBufferIsReady );
+    MPI_Isend( this->sendBufferHost, this->numberOfSendNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, &this->sendBufferIsReady );
     
-    MPI_Recv ( this->recvBufferHost.data(), this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
+    MPI_Recv ( this->recvBufferHost, this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
     
     this->myAllocator->copyBuffersHostToDevice( shared_from_this() );
     
@@ -90,11 +87,6 @@ void Communicator::exchangeData( SPtr<DataBase> dataBase )
 
 void Communicator::sendData( SPtr<DataBase> dataBase )
 {
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    MPI_Wait( &this->sendBufferIsReady, MPI_STATUSES_IGNORE );
-
 #ifdef USE_CUDA_AWARE_MPI
 
     this->copyFromMeshToSendBuffer( dataBase );
@@ -105,18 +97,21 @@ void Communicator::sendData( SPtr<DataBase> dataBase )
 
     this->copyFromMeshToSendBuffer( dataBase );
     
+    //CudaUtility::synchronizeCudaStream( CudaUtility::communicationStream );
+
     this->myAllocator->copyBuffersDeviceToHost( shared_from_this() );
+
+    //CudaUtility::synchronizeCudaStream( CudaUtility::copyDeviceToHostStream );
     
-    MPI_Isend( this->sendBufferHost.data(), this->numberOfSendNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, &this->sendBufferIsReady );
+    CudaUtility::synchronizeCudaStream( CudaUtility::communicationStream );
+
+    MPI_Isend( this->sendBufferHost, this->numberOfSendNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, &this->sendBufferIsReady );
 
 #endif // USE_CUDA_AWARE_MPI
 }
 
 void Communicator::recvData( SPtr<DataBase> dataBase )
 {
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
 #ifdef USE_CUDA_AWARE_MPI
     
     MPI_Recv ( this->recvBuffer, this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
@@ -125,11 +120,15 @@ void Communicator::recvData( SPtr<DataBase> dataBase )
 
 #else // USE_CUDA_AWARE_MPI
     
-    MPI_Recv ( this->recvBufferHost.data(), this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
+    MPI_Recv ( this->recvBufferHost, this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
     
     this->myAllocator->copyBuffersHostToDevice( shared_from_this() );
     
+    //CudaUtility::synchronizeCudaStream( CudaUtility::copyHostToDeviceStream );
+
     this->copyFromRecvBufferToMesh( dataBase );
+    
+    //CudaUtility::synchronizeCudaStream( CudaUtility::communicationStream );
 
 #endif // USE_CUDA_AWARE_MPI
 }

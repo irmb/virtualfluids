@@ -23,6 +23,10 @@ MeshCell::MeshCell(){
     isWall = false;
 
     isFluxBC = false;
+
+    isInsulated = false;
+
+    isRecvCell = false;
 }
 
 bool MeshCell::isCoarseGhostCell()

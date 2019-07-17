@@ -103,6 +103,9 @@ void GksMeshAdapter::inputGrid()
     this->partitionCells();
     this->generateNodes();
     this->computeCellGeometry();
+
+    this->getCommunicationIndices();
+
     this->generateFaces();
     this->sortFaces();
     this->countFaces();
@@ -485,6 +488,10 @@ void GksMeshAdapter::generateFaces()
 
 void GksMeshAdapter::sortFaces()
 {
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // sort by level and orientation
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "sortFaces()" << "\n";
 
     std::stable_sort(this->faces.begin(), this->faces.end(),
@@ -503,7 +510,11 @@ void GksMeshAdapter::sortFaces()
             }
     );
 
-    countFaces();
+    this->countFaces();
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // sort into blocks
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     std::array<char, 3> orientations = {'x', 'y', 'z'};
 
@@ -568,6 +579,58 @@ void GksMeshAdapter::sortFaces()
             );
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // partition by inner and out for communication hiding
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    this->numberOfInnerFacesPerLevel.resize( this->numberOfLevels );
+
+    for( uint level = 0; level < this->gridBuilder->getNumberOfLevels(); level++ )
+    {
+        auto bound =
+        std::stable_partition(  this->faces.begin() + this->startOfFacesPerLevelXYZ [3 * level], 
+                                this->faces.begin() + this->startOfFacesPerLevelXYZ [3 * level] 
+                                                    + this->numberOfFacesPerLevelXYZ[3 * level + 0] 
+                                                    + this->numberOfFacesPerLevelXYZ[3 * level + 1] 
+                                                    + this->numberOfFacesPerLevelXYZ[3 * level + 2], 
+                                    [this](MeshFace& lhs)
+                                    {
+                                        for( uint neighborIndex = 0; neighborIndex < 6; neighborIndex++ )
+                                        {
+                                            uint neighborCellIndex = this->cells[ lhs.posCell ].cellToCell[ neighborIndex ];
+                                            if( neighborCellIndex != INVALID_INDEX && this->cells[ neighborCellIndex ].isRecvCell )
+                                            {
+                                                return false;
+                                            }
+                                        }
+                                        for( uint neighborIndex = 0; neighborIndex < 6; neighborIndex++ )
+                                        {
+                                            uint neighborCellIndex = this->cells[ lhs.negCell ].cellToCell[ neighborIndex ];
+                                            if( neighborCellIndex != INVALID_INDEX && this->cells[ neighborCellIndex ].isRecvCell )
+                                            {
+                                                return false;
+                                            }
+                                        }
+
+                                        return true;
+                                    }
+                                 );
+
+        this->numberOfInnerFacesPerLevel[ level ] = 0;
+        for( auto it = this->faces.begin() + this->startOfFacesPerLevelXYZ [3 * level]; it != bound; it++ )
+        {
+            this->numberOfInnerFacesPerLevel[ level ]++;
+        }
+
+        *logging::out << logging::Logger::INFO_LOW << "    Level " << level << ": " << this->numberOfFacesPerLevelXYZ[ 3 * level + 0 ]
+                                                                                     + this->numberOfFacesPerLevelXYZ[ 3 * level + 1 ]
+                                                                                     + this->numberOfFacesPerLevelXYZ[ 3 * level + 2 ]
+                                                                                    << " faces" << "\n";
+        *logging::out << logging::Logger::INFO_LOW << "    Level " << level << ": " << this->numberOfInnerFacesPerLevel[ level ] << " inner faces" << "\n";
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 #else
@@ -869,12 +932,15 @@ void GksMeshAdapter::getCommunicationIndices()
         {
             for (uint index = 0; index < grid->getNumberOfSendNodes(direction); index++)
             {
-                this->communicationIndices[level].sendIndices[direction].push_back(this->gridToMesh[level][grid->getSendIndex(direction, index)]);
+                uint cellIndex = this->gridToMesh[level][grid->getSendIndex(direction, index)];
+                this->communicationIndices[level].sendIndices[direction].push_back(cellIndex);
             }
 
             for (uint index = 0; index < grid->getNumberOfReceiveNodes(direction); index++)
             {
-                this->communicationIndices[level].recvIndices[direction].push_back(this->gridToMesh[level][grid->getReceiveIndex(direction, index)]);
+                uint cellIndex = this->gridToMesh[level][grid->getReceiveIndex(direction, index)];
+                this->communicationIndices[level].recvIndices[direction].push_back(cellIndex);
+                this->cells[ cellIndex ].isRecvCell = true;
             }
 
             std::stringstream msg;

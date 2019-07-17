@@ -8,11 +8,18 @@
 #include "Core/DataTypes.h"
 #include "Core/Logger/Logger.h"
 
-CudaUtility::CudaGrid::CudaGrid( uint numberOfEntities, uint threadsPerBlock )
+cudaStream_t CudaUtility::computeStream = nullptr;
+cudaStream_t CudaUtility::communicationStream = nullptr;
+cudaStream_t CudaUtility::copyDeviceToHostStream = nullptr;
+cudaStream_t CudaUtility::copyHostToDeviceStream = nullptr;
+
+CudaUtility::CudaGrid::CudaGrid( uint numberOfEntities, uint threadsPerBlock, cudaStream_t stream )
 {
     this->numberOfEntities = numberOfEntities;
     this->threads.x = threadsPerBlock;
     this->blocks.x  = ( numberOfEntities + threadsPerBlock - 1 ) / threadsPerBlock;
+
+    this->stream = stream;
 }
 
 void CudaUtility::printCudaMemoryUsage()
@@ -48,6 +55,18 @@ void CudaUtility::setCudaDevice(int device)
     cudaGetDeviceProperties(&prop, device);
 
     *logging::out << logging::Logger::INFO_HIGH << "Set device " << device << ": " << prop.name << "\n";
+
+    // set communication stream on high priority, such that it can interleave the compute stream
+    // the non blocking flag disable implicit synchronization with the default thread '0'
+    // based on https://fenix.tecnico.ulisboa.pt/downloadFile/563568428758047/CUDA_StreamsEvents.pdf
+    // slide 5
+    int priority_high, priority_low;
+    cudaDeviceGetStreamPriorityRange(&priority_low , &priority_high ) ;
+    cudaStreamCreateWithPriority (&communicationStream, cudaStreamNonBlocking, priority_high );
+    cudaStreamCreateWithPriority (&computeStream      , cudaStreamNonBlocking, priority_low  );
+
+    cudaStreamCreate(&copyDeviceToHostStream);
+    cudaStreamCreate(&copyHostToDeviceStream);
 }
 
 int CudaUtility::getCudaDevice()
@@ -61,4 +80,14 @@ int CudaUtility::getCudaDevice()
     *logging::out << logging::Logger::INFO_HIGH << "The current device " << device << ": " << prop.name << "\n";
 
     return device;
+}
+
+void CudaUtility::synchronizeCudaDevice()
+{
+    checkCudaErrors( cudaDeviceSynchronize() );
+}
+
+void CudaUtility::synchronizeCudaStream(cudaStream_t stream)
+{
+    checkCudaErrors( cudaStreamSynchronize(stream) );
 }

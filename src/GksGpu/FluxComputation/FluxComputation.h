@@ -15,7 +15,8 @@ public:
 
     static void run( SPtr<DataBase> dataBase, 
                      Parameters parameters, 
-                     uint level );
+                     uint level,
+                     bool evaluateCommFaces = false);
 };
 
 #endif

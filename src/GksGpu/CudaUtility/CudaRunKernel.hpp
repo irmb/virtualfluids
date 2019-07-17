@@ -13,7 +13,7 @@ void runKernel(KernelFunctor kernel, FunctionFunctor function, std::string devic
 
     if( deviceType == "GPU" )
     {
-        kernel<<< grid.blocks, grid.threads >>>( args..., grid.numberOfEntities );
+        kernel<<< grid.blocks, grid.threads, 0, grid.stream >>>( args..., grid.numberOfEntities );
     }
     else
     {

@@ -30,7 +30,7 @@ __host__ __device__ inline void fluxFunction( DataBaseStruct dataBase, Parameter
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, uint level )
+void FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, uint level, bool evaluateCommFaces )
 {
     //{
     //    CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFacesX, 128);
@@ -78,8 +78,39 @@ void FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, uint 
     //    getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'z', uint level )");
     //}
     //////////////////////////////////////////////////////////////////////////
+    //{
+    //    CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFaces, 64);
+
+    //    runKernel(fluxKernel,
+    //              fluxFunction,
+    //              dataBase->getDeviceType(), grid,
+    //              dataBase->toStruct(),
+    //              parameters,
+    //              'x',
+    //              dataBase->perLevelCount[level].startOfFacesX);
+
+    //    cudaDeviceSynchronize();
+
+    //    getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'x', uint level )");
+    //}
+    //////////////////////////////////////////////////////////////////////////
+    if( evaluateCommFaces )
     {
-        CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFaces, 64);
+        CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFaces - dataBase->perLevelCount[level].numberOfInnerFaces, 64, CudaUtility::communicationStream);
+
+        if( grid.numberOfEntities <= 0 ) return;
+
+        runKernel(fluxKernel,
+                  fluxFunction,
+                  dataBase->getDeviceType(), grid,
+                  dataBase->toStruct(),
+                  parameters,
+                  'x',
+                  dataBase->perLevelCount[level].startOfFacesX + dataBase->perLevelCount[level].numberOfInnerFaces);
+    }
+    else
+    {
+        CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfInnerFaces, 64, CudaUtility::computeStream);
 
         runKernel(fluxKernel,
                   fluxFunction,
@@ -88,10 +119,6 @@ void FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, uint 
                   parameters,
                   'x',
                   dataBase->perLevelCount[level].startOfFacesX);
-
-        cudaDeviceSynchronize();
-
-        getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'x', uint level )");
     }
 }
 
