@@ -420,7 +420,14 @@ int main( int argc, char* argv[])
 
     //////////////////////////////////////////////////////////////////////////
 
-    std::string simulationName ( "MultiGPU_np_" + std::to_string(mpiWorldSize) );
+    std::string simulationName ( "MultiGPU" );
+
+    if( strongScaling ) simulationName += "_strongScaling";
+    else                simulationName += "_weakScaling";
+
+    simulationName += "_D_" + std::to_string(decompositionDimension);
+
+    simulationName += "_np_" + std::to_string(mpiWorldSize);
 
     //////////////////////////////////////////////////////////////////////////
 
