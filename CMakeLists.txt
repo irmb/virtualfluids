@@ -180,7 +180,7 @@ IF (HULC.BUILD_VF_GKS)
     #add_subdirectory(targets/apps/GKS/Candle)
     
     add_subdirectory(targets/apps/GKS/MultiGPU)
-    add_subdirectory(targets/apps/GKS/MultiGPU_2D)
+    add_subdirectory(targets/apps/GKS/MultiGPU_nD)
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids GKS." )
 ENDIF()
