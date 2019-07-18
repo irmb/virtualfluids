@@ -29,13 +29,16 @@ struct VF_PUBLIC Communicator : public std::enable_shared_from_this<Communicator
     real* sendBuffer; // device
     real* recvBuffer; // device
 
-    real* sendBufferHost;
-    real* recvBufferHost;
+    real* sendBufferHost; // pinned memory
+    real* recvBufferHost; // pinned memory
 
     uint rank;
     uint opposingRank;
 
     MPI_Request sendBufferIsReady;
+
+    static int tagSendPositive;
+    static int tagSendNegative;
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -43,14 +46,12 @@ struct VF_PUBLIC Communicator : public std::enable_shared_from_this<Communicator
 
     void initialize( GksMeshAdapter& adapter, uint level, uint direction );
 
-    void exchangeData( SPtr<DataBase> dataBase );
-
     void copyFromMeshToSendBuffer( SPtr<DataBase> dataBase );
 
     void copyFromRecvBufferToMesh( SPtr<DataBase> dataBase );
 
-    void sendData( SPtr<DataBase> dataBase );
-    void recvData( SPtr<DataBase> dataBase );
+    void sendData( SPtr<DataBase> dataBase, int tag );
+    void recvData( SPtr<DataBase> dataBase, int tag );
 };
 
 #endif

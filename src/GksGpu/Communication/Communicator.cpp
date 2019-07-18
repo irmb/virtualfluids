@@ -22,6 +22,9 @@
 
 #include "CudaUtility/CudaUtility.h"
 
+int Communicator::tagSendPositive = 0;
+int Communicator::tagSendNegative = 1;
+
 Communicator::Communicator( SPtr<DataBase> dataBase )
     : myAllocator ( dataBase->myAllocator )
 {
@@ -51,84 +54,42 @@ void Communicator::initialize(GksMeshAdapter & adapter, uint level, uint directi
     this->opposingRank = adapter.communicationProcesses[direction];
 }
 
-void Communicator::exchangeData( SPtr<DataBase> dataBase )
-{
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    MPI_Wait( &this->sendBufferIsReady, MPI_STATUSES_IGNORE );
-
-#ifdef USE_CUDA_AWARE_MPI
-
-    this->copyFromMeshToSendBuffer( dataBase );
-    
-    MPI_Isend( this->sendBuffer, this->numberOfSendNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, &this->sendBufferIsReady );
-    
-    MPI_Recv ( this->recvBuffer, this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
-    
-    this->copyFromRecvBufferToMesh( dataBase );
-
-#else // USE_CUDA_AWARE_MPI
-
-    this->copyFromMeshToSendBuffer( dataBase );
-    
-    this->myAllocator->copyBuffersDeviceToHost( shared_from_this() );
-    
-    MPI_Isend( this->sendBufferHost, this->numberOfSendNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, &this->sendBufferIsReady );
-    
-    MPI_Recv ( this->recvBufferHost, this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
-    
-    this->myAllocator->copyBuffersHostToDevice( shared_from_this() );
-    
-    this->copyFromRecvBufferToMesh( dataBase );
-
-#endif // USE_CUDA_AWARE_MPI
-}
-
-void Communicator::sendData( SPtr<DataBase> dataBase )
+void Communicator::sendData( SPtr<DataBase> dataBase, int tag )
 {
 #ifdef USE_CUDA_AWARE_MPI
 
     this->copyFromMeshToSendBuffer( dataBase );
     
-    MPI_Isend( this->sendBuffer, this->numberOfSendNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, &this->sendBufferIsReady );
+    MPI_Isend( this->sendBuffer, this->numberOfSendNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, tag, MPI_COMM_WORLD, &this->sendBufferIsReady );
 
 #else // USE_CUDA_AWARE_MPI
 
     this->copyFromMeshToSendBuffer( dataBase );
-    
-    //CudaUtility::synchronizeCudaStream( CudaUtility::communicationStream );
 
     this->myAllocator->copyBuffersDeviceToHost( shared_from_this() );
-
-    //CudaUtility::synchronizeCudaStream( CudaUtility::copyDeviceToHostStream );
     
     CudaUtility::synchronizeCudaStream( CudaUtility::communicationStream );
 
-    MPI_Isend( this->sendBufferHost, this->numberOfSendNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, &this->sendBufferIsReady );
+    MPI_Isend( this->sendBufferHost, this->numberOfSendNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, tag, MPI_COMM_WORLD, &this->sendBufferIsReady );
 
 #endif // USE_CUDA_AWARE_MPI
 }
 
-void Communicator::recvData( SPtr<DataBase> dataBase )
+void Communicator::recvData( SPtr<DataBase> dataBase, int tag )
 {
 #ifdef USE_CUDA_AWARE_MPI
     
-    MPI_Recv ( this->recvBuffer, this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
+    MPI_Recv ( this->recvBuffer, this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, tag, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
     
     this->copyFromRecvBufferToMesh( dataBase );
 
 #else // USE_CUDA_AWARE_MPI
     
-    MPI_Recv ( this->recvBufferHost, this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
+    MPI_Recv ( this->recvBufferHost, this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, tag, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
     
     this->myAllocator->copyBuffersHostToDevice( shared_from_this() );
-    
-    //CudaUtility::synchronizeCudaStream( CudaUtility::copyHostToDeviceStream );
 
     this->copyFromRecvBufferToMesh( dataBase );
-    
-    //CudaUtility::synchronizeCudaStream( CudaUtility::communicationStream );
 
 #endif // USE_CUDA_AWARE_MPI
 }

@@ -23,11 +23,6 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
 
     //////////////////////////////////////////////////////////////////////////
 
-    //set different viscosity on specific levels
-    //if( level >= 3 ) parameters.mu = 1.0e-3;
-
-    //////////////////////////////////////////////////////////////////////////
-
     if( level != dataBase->numberOfLevels - 1 )
     {
         Interface::runFineToCoarse( dataBase, level );
@@ -39,6 +34,10 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
     {
         bc->runBoundaryConditionKernel( dataBase, parameters, level );
     }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    CudaUtility::synchronizeCudaDevice();
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -55,52 +54,31 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
         //
         //////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////
-        //for( uint direction = 0; direction < 6; direction++ )
-        //{
-        //    if( dataBase->communicators[level][direction] != nullptr )
-        //    {
-        //        dataBase->communicators[level][direction]->exchangeData(dataBase);
-        //    }
-        //}
-        //////////////////////////////////////////////////////////////////////////
-        //for( uint direction = 0; direction < 6; direction++ )
-        //{
-        //    if( dataBase->communicators[level][direction] != nullptr )
-        //    {
-        //        dataBase->communicators[level][direction]->sendData(dataBase);
-        //    }
-        //}
-        //for( uint direction = 0; direction < 6; direction++ )
-        //{
-        //    if( dataBase->communicators[level][direction] != nullptr )
-        //    {
-        //        dataBase->communicators[level][direction]->recvData(dataBase);
-        //    }
-        //}
+
         //////////////////////////////////////////////////////////////////////////
         // X
         //////////////////////////////////////////////////////////////////////////
-        if( dataBase->communicators[level][0] != nullptr ) dataBase->communicators[level][0]->sendData(dataBase);
-        if( dataBase->communicators[level][1] != nullptr ) dataBase->communicators[level][1]->sendData(dataBase);
+        if( dataBase->communicators[level][0] != nullptr ) dataBase->communicators[level][0]->sendData(dataBase, Communicator::tagSendNegative);
+        if( dataBase->communicators[level][1] != nullptr ) dataBase->communicators[level][1]->sendData(dataBase, Communicator::tagSendPositive);
 
-        if( dataBase->communicators[level][0] != nullptr ) dataBase->communicators[level][0]->recvData(dataBase);
-        if( dataBase->communicators[level][1] != nullptr ) dataBase->communicators[level][1]->recvData(dataBase);
+        if( dataBase->communicators[level][0] != nullptr ) dataBase->communicators[level][0]->recvData(dataBase, Communicator::tagSendPositive);
+        if( dataBase->communicators[level][1] != nullptr ) dataBase->communicators[level][1]->recvData(dataBase, Communicator::tagSendNegative);
         //////////////////////////////////////////////////////////////////////////
         // Y
         //////////////////////////////////////////////////////////////////////////
-        if( dataBase->communicators[level][2] != nullptr ) dataBase->communicators[level][2]->sendData(dataBase);
-        if( dataBase->communicators[level][3] != nullptr ) dataBase->communicators[level][3]->sendData(dataBase);
+        if( dataBase->communicators[level][2] != nullptr ) dataBase->communicators[level][2]->sendData(dataBase, Communicator::tagSendNegative);
+        if( dataBase->communicators[level][3] != nullptr ) dataBase->communicators[level][3]->sendData(dataBase, Communicator::tagSendPositive);
         
-        if( dataBase->communicators[level][2] != nullptr ) dataBase->communicators[level][2]->recvData(dataBase);
-        if( dataBase->communicators[level][3] != nullptr ) dataBase->communicators[level][3]->recvData(dataBase);
+        if( dataBase->communicators[level][2] != nullptr ) dataBase->communicators[level][2]->recvData(dataBase, Communicator::tagSendPositive);
+        if( dataBase->communicators[level][3] != nullptr ) dataBase->communicators[level][3]->recvData(dataBase, Communicator::tagSendNegative);
         //////////////////////////////////////////////////////////////////////////
         // Z
         //////////////////////////////////////////////////////////////////////////
-        if( dataBase->communicators[level][4] != nullptr ) dataBase->communicators[level][4]->sendData(dataBase);
-        if( dataBase->communicators[level][5] != nullptr ) dataBase->communicators[level][5]->sendData(dataBase);
+        if( dataBase->communicators[level][4] != nullptr ) dataBase->communicators[level][4]->sendData(dataBase, Communicator::tagSendNegative);
+        if( dataBase->communicators[level][5] != nullptr ) dataBase->communicators[level][5]->sendData(dataBase, Communicator::tagSendPositive);
         
-        if( dataBase->communicators[level][4] != nullptr ) dataBase->communicators[level][4]->recvData(dataBase);
-        if( dataBase->communicators[level][5] != nullptr ) dataBase->communicators[level][5]->recvData(dataBase);
+        if( dataBase->communicators[level][4] != nullptr ) dataBase->communicators[level][4]->recvData(dataBase, Communicator::tagSendPositive);
+        if( dataBase->communicators[level][5] != nullptr ) dataBase->communicators[level][5]->recvData(dataBase, Communicator::tagSendNegative);
     }
 
     //////////////////////////////////////////////////////////////////////////

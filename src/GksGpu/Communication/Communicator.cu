@@ -70,8 +70,6 @@ void Communicator::copyFromMeshToSendBuffer(const SPtr<DataBase> dataBase)
                this->sendIndices,
                this->sendBuffer,
                0 );
-
-    //CudaUtility::synchronizeCudaStream( CudaUtility::communicationStream );
 }
 
 void Communicator::copyFromRecvBufferToMesh(const SPtr<DataBase> dataBase)
@@ -86,8 +84,6 @@ void Communicator::copyFromRecvBufferToMesh(const SPtr<DataBase> dataBase)
                this->recvIndices,
                this->recvBuffer,
                0 );
-
-    //CudaUtility::synchronizeCudaStream( CudaUtility::communicationStream );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

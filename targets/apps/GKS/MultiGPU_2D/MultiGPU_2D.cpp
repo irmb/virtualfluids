@@ -70,29 +70,50 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    int sideLength, rankX, rankY, rankZ;
+    int sideLengthX, sideLengthY, sideLengthZ, rankX, rankY, rankZ;
 
-    if( decompositionDimension == 2 )
+    if( decompositionDimension == 1 )
     {
-        if      (mpiWorldSize == 1)  sideLength = 1;
-        else if (mpiWorldSize == 4)  sideLength = 2;
-        else if (mpiWorldSize == 16) sideLength = 4;
+        if      (mpiWorldSize == 1 ) { sideLengthX = 1 ; sideLengthY = 1; sideLengthZ = 1; }
+        else if (mpiWorldSize == 2 ) { sideLengthX = 2 ; sideLengthY = 1; sideLengthZ = 1; }
+        else if (mpiWorldSize == 4 ) { sideLengthX = 4 ; sideLengthY = 1; sideLengthZ = 1; }
+        else if (mpiWorldSize == 8 ) { sideLengthX = 8 ; sideLengthY = 1; sideLengthZ = 1; }
+        else if (mpiWorldSize == 16) { sideLengthX = 16; sideLengthY = 1; sideLengthZ = 1; }
+        else if (mpiWorldSize == 32) { sideLengthX = 32; sideLengthY = 1; sideLengthZ = 1; }
 
-        rankX = rank % sideLength;
-        rankY = rank / sideLength;
+        rankX = rank;
+        rankY = 0;
+        rankZ = 0;
+    }
+    else if( decompositionDimension == 2 )
+    {
+        if      (mpiWorldSize == 1 ) { sideLengthX = 1; sideLengthY = 1; sideLengthZ = 1; }
+        else if (mpiWorldSize == 2 ) { sideLengthX = 2; sideLengthY = 1; sideLengthZ = 1; }
+        else if (mpiWorldSize == 4 ) { sideLengthX = 2; sideLengthY = 2; sideLengthZ = 1; }
+        else if (mpiWorldSize == 8 ) { sideLengthX = 4; sideLengthY = 2; sideLengthZ = 1; }
+        else if (mpiWorldSize == 16) { sideLengthX = 4; sideLengthY = 4; sideLengthZ = 1; }
+        else if (mpiWorldSize == 32) { sideLengthX = 8; sideLengthY = 4; sideLengthZ = 1; }
+
+        rankX = rank % sideLengthX;
+        rankY = rank / sideLengthX;
         rankZ = 0;
     }
     else if( decompositionDimension == 3 )
     {
-        if      (mpiWorldSize == 1)  sideLength = 1;
-        else if (mpiWorldSize == 8)  sideLength = 2;
+        if      (mpiWorldSize == 1 ) { sideLengthX = 1; sideLengthY = 1; sideLengthZ = 1; }
+        else if (mpiWorldSize == 2 ) { sideLengthX = 2; sideLengthY = 1; sideLengthZ = 1; }
+        else if (mpiWorldSize == 4 ) { sideLengthX = 2; sideLengthY = 2; sideLengthZ = 1; }
+        else if (mpiWorldSize == 8 ) { sideLengthX = 2; sideLengthY = 2; sideLengthZ = 2; }
+        else if (mpiWorldSize == 16) { sideLengthX = 4; sideLengthY = 2; sideLengthZ = 2; }
+        else if (mpiWorldSize == 32) { sideLengthX = 4; sideLengthY = 4; sideLengthZ = 2; }
 
-        rankX =   rank % sideLength;
-        rankY = ( rank % ( sideLength * sideLength ) ) / sideLength;
-        rankZ =   rank                                 / ( sideLength * sideLength );
+        rankX =   rank %   sideLengthX;
+        rankY = ( rank % ( sideLengthX * sideLengthY ) ) /   sideLengthX;
+        rankZ =   rank                                   / ( sideLengthY * sideLengthX );
     }
 
-    *logging::out << logging::Logger::INFO_HIGH << sideLength << " " << rankX << " " << rankY << " " << rankZ << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "SideLength = " << sideLengthX << " " << sideLengthY << " " << sideLengthZ << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "rank       = " << rankX << " " << rankY << " " << rankZ << "\n";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -106,16 +127,20 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     if( strongScaling )
     {
-        if( decompositionDimension == 2 )
+        if( decompositionDimension == 1 )
         {
-            LX /= double(sideLength);
-            LY /= double(sideLength);
+            LX /= double(sideLengthX);
+        }
+        else if( decompositionDimension == 2 )
+        {
+            LX /= double(sideLengthX);
+            LY /= double(sideLengthY);
         }
         else if( decompositionDimension == 3 )
         {
-            LX /= double(sideLength);
-            LY /= double(sideLength);
-            LZ /= double(sideLength);
+            LX /= double(sideLengthX);
+            LY /= double(sideLengthY);
+            LZ /= double(sideLengthZ);
         }
     }
 
@@ -127,7 +152,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     parameters.Pr = 1;
     parameters.mu = 0.01;
 
-    parameters.force.x = 0.1;
+    parameters.force.x = 0;
     parameters.force.y = 0;
     parameters.force.z = 0;
 
@@ -146,33 +171,22 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if( mpiWorldSize > 1 )
-    {
-        //if( decompositionDimension == 2 )
-        //{
-            gridBuilder->addCoarseGrid(  rankX*LX    - 0.5*L - 5.0*dx,      rankY*LY    - 0.5*L - 5.0*dx,      rankZ*LZ    - 0.5*L - 5.0*dx,
-                                        (rankX*LX+1) - 0.5*L + 5.0*dx,     (rankY*LY+1) - 0.5*L + 5.0*dx,     (rankZ*LZ+1) - 0.5*L + 5.0*dx, dx);
-        //}
+    real xOverlap = ( sideLengthX == 1 ) ? 0.0 : 5.0*dx;
+    real yOverlap = ( sideLengthY == 1 ) ? 0.0 : 5.0*dx;
+    real zOverlap = ( sideLengthZ == 1 ) ? 0.0 : 5.0*dx;
 
-        //if( decompositionDimension == 3 )
-        //{
-        //    gridBuilder->addCoarseGrid( rankX*LX - 0.5*L - 5.0*dx,     rankY*LY - 0.5*L - 5.0*dx,     rankZ*LZ - 0.5*L - 5.0*dx,  
-        //                                rankX*LX + 0.5*L + 5.0*dx,     rankY*LY + 0.5*L + 5.0*dx,     rankZ*LZ + 0.5*L + 5.0*dx, dx);
-        //}
+    gridBuilder->addCoarseGrid(  rankX*LX    - 0.5*L - xOverlap,      rankY*LY    - 0.5*L - yOverlap,      rankZ*LZ    - 0.5*L - zOverlap,
+                                (rankX*LX+1) - 0.5*L + xOverlap,     (rankY*LY+1) - 0.5*L + yOverlap,     (rankZ*LZ+1) - 0.5*L + zOverlap, dx);
 
-        gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( rankX*LX - 0.5*L, (rankX+1)*LX - 0.5*L, 
-                                                                     rankY*LY - 0.5*L, (rankY+1)*LY - 0.5*L,
-                                                                     rankZ*LZ - 0.5*L, (rankZ+1)*LZ - 0.5*L  ) );
-    }
-    else
-    {
-        gridBuilder->addCoarseGrid( -0.5*L, -0.5*L, -0.5*L,  
-                                     0.5*L,  0.5*L,  0.5*L, dx);
-    }
+    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( rankX*LX - 0.5*L, (rankX+1)*LX - 0.5*L, 
+                                                                 rankY*LY - 0.5*L, (rankY+1)*LY - 0.5*L,
+                                                                 rankZ*LZ - 0.5*L, (rankZ+1)*LZ - 0.5*L  ) );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+    gridBuilder->setPeriodicBoundaryCondition(sideLengthX == 1, sideLengthY == 1, sideLengthZ == 1);
+
+    *logging::out << logging::Logger::INFO_HIGH << "periodicity = " << (sideLengthX == 1) << " " << (sideLengthY == 1) << " " << (sideLengthZ == 1) << "\n";
 
     gridBuilder->buildGrids(GKS, false);
 
@@ -180,64 +194,37 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if( decompositionDimension == 1 && mpiWorldSize > 1 )
+    if( mpiWorldSize > 1 )
     {
-        gridBuilder->findCommunicationIndices( CommunicationDirections::PX, GKS );
-        gridBuilder->setCommunicationProcess ( CommunicationDirections::PX, (rank + 1 + mpiWorldSize) % mpiWorldSize );
+        int rankPX = ( (rankX + 1 + sideLengthX) % sideLengthX ) +    rankY                                    * sideLengthX +    rankZ                                    * sideLengthX * sideLengthY;
+        int rankMX = ( (rankX - 1 + sideLengthX) % sideLengthX ) +    rankY                                    * sideLengthX +    rankZ                                    * sideLengthX * sideLengthY;
+        int rankPY =    rankX                                    + ( (rankY + 1 + sideLengthY) % sideLengthY ) * sideLengthX +    rankZ                                    * sideLengthX * sideLengthY;
+        int rankMY =    rankX                                    + ( (rankY - 1 + sideLengthY) % sideLengthY ) * sideLengthX +    rankZ                                    * sideLengthX * sideLengthY;
+        int rankPZ =    rankX                                    +    rankY                                    * sideLengthX + ( (rankZ + 1 + sideLengthZ) % sideLengthZ ) * sideLengthX * sideLengthY;
+        int rankMZ =    rankX                                    +    rankY                                    * sideLengthX + ( (rankZ - 1 + sideLengthZ) % sideLengthZ ) * sideLengthX * sideLengthY;
 
-        gridBuilder->findCommunicationIndices( CommunicationDirections::MX, GKS );
-        gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, (rank - 1 + mpiWorldSize) % mpiWorldSize );
-    }
-    else if ( decompositionDimension == 2 && mpiWorldSize > 1 )
-    {
-        int rankPX = ( (rankX + 1 + sideLength) % sideLength ) +    rankY                                  * sideLength;
-        int rankMX = ( (rankX - 1 + sideLength) % sideLength ) +    rankY                                  * sideLength;
-        int rankPY =    rankX                                  + ( (rankY + 1 + sideLength) % sideLength ) * sideLength;
-        int rankMY =    rankX                                  + ( (rankY - 1 + sideLength) % sideLength ) * sideLength;
+        if( sideLengthX > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PX, GKS );
+        if( sideLengthX > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PX, rankPX);
 
-        gridBuilder->findCommunicationIndices( CommunicationDirections::PX, GKS );
-        gridBuilder->setCommunicationProcess ( CommunicationDirections::PX, rankPX);
+        if( sideLengthX > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MX, GKS );
+        if( sideLengthX > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, rankMX);
 
-        gridBuilder->findCommunicationIndices( CommunicationDirections::MX, GKS );
-        gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, rankMX);
+        if( sideLengthY > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PY, GKS );
+        if( sideLengthY > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PY, rankPY);
 
-        gridBuilder->findCommunicationIndices( CommunicationDirections::PY, GKS );
-        gridBuilder->setCommunicationProcess ( CommunicationDirections::PY, rankPY);
+        if( sideLengthY > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MY, GKS );
+        if( sideLengthY > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MY, rankMY);
 
-        gridBuilder->findCommunicationIndices( CommunicationDirections::MY, GKS );
-        gridBuilder->setCommunicationProcess ( CommunicationDirections::MY, rankMY);
-    }
-    else if ( decompositionDimension == 3 && mpiWorldSize > 1 )
-    {
-        int rankPX = ( (rankX + 1 + sideLength) % sideLength ) +    rankY                                  * sideLength +    rankZ                                  * sideLength * sideLength;
-        int rankMX = ( (rankX - 1 + sideLength) % sideLength ) +    rankY                                  * sideLength +    rankZ                                  * sideLength * sideLength;
-        int rankPY =    rankX                                  + ( (rankY + 1 + sideLength) % sideLength ) * sideLength +    rankZ                                  * sideLength * sideLength;
-        int rankMY =    rankX                                  + ( (rankY - 1 + sideLength) % sideLength ) * sideLength +    rankZ                                  * sideLength * sideLength;
-        int rankPZ =    rankX                                  +    rankY                                  * sideLength + ( (rankZ + 1 + sideLength) % sideLength ) * sideLength * sideLength;
-        int rankMZ =    rankX                                  +    rankY                                  * sideLength + ( (rankZ - 1 + sideLength) % sideLength ) * sideLength * sideLength;
+        if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PZ, GKS );
+        if( sideLengthZ > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PZ, rankPZ);
 
-        gridBuilder->findCommunicationIndices( CommunicationDirections::PX, GKS );
-        gridBuilder->setCommunicationProcess ( CommunicationDirections::PX, rankPX);
+        if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MZ, GKS );
+        if( sideLengthZ > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MZ, rankMZ);
 
-        gridBuilder->findCommunicationIndices( CommunicationDirections::MX, GKS );
-        gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, rankMX);
-
-        gridBuilder->findCommunicationIndices( CommunicationDirections::PY, GKS );
-        gridBuilder->setCommunicationProcess ( CommunicationDirections::PY, rankPY);
-
-        gridBuilder->findCommunicationIndices( CommunicationDirections::MY, GKS );
-        gridBuilder->setCommunicationProcess ( CommunicationDirections::MY, rankMY);
-
-        gridBuilder->findCommunicationIndices( CommunicationDirections::PZ, GKS );
-        gridBuilder->setCommunicationProcess ( CommunicationDirections::PZ, rankPZ);
-
-        gridBuilder->findCommunicationIndices( CommunicationDirections::MZ, GKS );
-        gridBuilder->setCommunicationProcess ( CommunicationDirections::MZ, rankMZ);
-
-        *logging::out << logging::Logger::INFO_HIGH << rankPX << " " << rankMX << " " << rankPY << " " << rankMY << "\n";
+        *logging::out << logging::Logger::INFO_HIGH << "neighborRanks = " << rankPX << " " << rankMX << " " << rankPY << " " << rankMY << " " << rankPY << " " << rankMY << "\n";
     }
 
-    gridBuilder->writeGridsToVtk(path + "/Grid_rank_" + std::to_string(rank) + "_lev_");
+    //gridBuilder->writeGridsToVtk(path + "/Grid_rank_" + std::to_string(rank) + "_lev_");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -245,9 +232,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     meshAdapter.inputGrid();
 
-    meshAdapter.getCommunicationIndices();
-
-    meshAdapter.findPeriodicBoundaryNeighbors();
+    if( sideLengthX == 1 || sideLengthY == 1 || sideLengthZ == 1 ) meshAdapter.findPeriodicBoundaryNeighbors();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -260,58 +245,49 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
     SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>( dataBase );
-    //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    //SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.1, 0.0), false );
 
-    bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5*L; } );
-    bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x >  0.5*L; } );
+    if( sideLengthX == 1 ) bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5*L; } );
+    if( sideLengthX == 1 ) bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
 
-    //SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
-    //SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
     SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
     SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
 
-    bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*L; } );
-    bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*L; } );
+    if( sideLengthY == 1 ) bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*L; } );
+    if( sideLengthY == 1 ) bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
-    //SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
     SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
     SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
     
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*L; } );
-    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*L; } );
+    if( sideLengthZ == 1 ) bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*L; } );
+    if( sideLengthZ == 1 ) bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
 
-    if( mpiWorldSize == 1 )
-    {
-        dataBase->boundaryConditions.push_back( bcMX );
-        dataBase->boundaryConditions.push_back( bcPX );
+    if( sideLengthX == 1 ) dataBase->boundaryConditions.push_back( bcMX );
+    if( sideLengthX == 1 ) dataBase->boundaryConditions.push_back( bcPX );
     
-        dataBase->boundaryConditions.push_back( bcMY );
-        dataBase->boundaryConditions.push_back( bcPY );
-    }
-    if( decompositionDimension == 2 || mpiWorldSize == 1 )
-    {
-        dataBase->boundaryConditions.push_back( bcMZ );
-        dataBase->boundaryConditions.push_back( bcPZ );
-    }
+    if( sideLengthY == 1 ) dataBase->boundaryConditions.push_back( bcMY );
+    if( sideLengthY == 1 ) dataBase->boundaryConditions.push_back( bcPY );
+
+    if( sideLengthZ == 1 ) dataBase->boundaryConditions.push_back( bcMZ );
+    if( sideLengthZ == 1 ) dataBase->boundaryConditions.push_back( bcPZ );
 
     //////////////////////////////////////////////////////////////////////////
 
-    *logging::out << logging::Logger::INFO_HIGH << "bcMX ==> " << bcMX->numberOfCellsPerLevel[0] << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "bcPX ==> " << bcPX->numberOfCellsPerLevel[0] << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "NumberOfBoundaryConditions = " << (int)dataBase->boundaryConditions.size() << "\n";
 
-    *logging::out << logging::Logger::INFO_HIGH << "bcMY ==> " << bcMY->numberOfCellsPerLevel[0] << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "bcPY ==> " << bcPY->numberOfCellsPerLevel[0] << "\n";
+    if( sideLengthX == 1 ) *logging::out << logging::Logger::INFO_HIGH << "bcMX ==> " << bcMX->numberOfCellsPerLevel[0] << "\n";
+    if( sideLengthX == 1 ) *logging::out << logging::Logger::INFO_HIGH << "bcPX ==> " << bcPX->numberOfCellsPerLevel[0] << "\n";
 
-    *logging::out << logging::Logger::INFO_HIGH << "bcMZ ==> " << bcMZ->numberOfCellsPerLevel[0] << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "bcPZ ==> " << bcPZ->numberOfCellsPerLevel[0] << "\n";
+    if( sideLengthY == 1 ) *logging::out << logging::Logger::INFO_HIGH << "bcMY ==> " << bcMY->numberOfCellsPerLevel[0] << "\n";
+    if( sideLengthY == 1 ) *logging::out << logging::Logger::INFO_HIGH << "bcPY ==> " << bcPY->numberOfCellsPerLevel[0] << "\n";
+
+    if( sideLengthZ == 1 ) *logging::out << logging::Logger::INFO_HIGH << "bcMZ ==> " << bcMZ->numberOfCellsPerLevel[0] << "\n";
+    if( sideLengthZ == 1 ) *logging::out << logging::Logger::INFO_HIGH << "bcPZ ==> " << bcPZ->numberOfCellsPerLevel[0] << "\n";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -321,17 +297,37 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     dataBase->setMesh( meshAdapter );
 
     dataBase->setCommunicators( meshAdapter );
-    
-    //*logging::out << logging::Logger::WARNING << int(dataBase->communicators[0].size()) << "\n";
-    //*logging::out << logging::Logger::WARNING << int(dataBase->communicators[0][0].get()) << "\n";
-    //*logging::out << logging::Logger::WARNING << int(dataBase->communicators[0][1].get()) << "\n";
 
     CudaUtility::printCudaMemoryUsage();
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables
     {
-        return toConservedVariables( PrimitiveVariables( 1.0, 1.0, 0.0, 0.0, parameters.lambdaRef ), parameters.K );
+        real U = 0.1;
+
+        real ULocal =   /*0.1*/ + U * sin( 2.0 * M_PI * cellCenter.x ) * cos( 2.0 * M_PI * cellCenter.y ) * cos( 2.0 * M_PI * cellCenter.z );
+        real VLocal =   /*0.1*/ - U * cos( 2.0 * M_PI * cellCenter.x ) * sin( 2.0 * M_PI * cellCenter.y ) * cos( 2.0 * M_PI * cellCenter.z );
+        real WLocal =   0.1;
+
+        real rho = 1.0;
+
+        real p0 = 0.5 * rho / parameters.lambdaRef;
+
+        real pLocal = p0 + rho * U * U / 16.0 * ( cos( 2.0 * M_PI * 2.0 * cellCenter.x ) + cos( 2.0 * M_PI * 2.0 * cellCenter.y ) ) * ( 2.0 + cos( 2.0 * M_PI * 2.0 * cellCenter.z ) );
+
+        real rhoLocal = 2.0 * pLocal * parameters.lambdaRef;
+
+        //ULocal = cellCenter.x;
+        //VLocal = cellCenter.y;
+        //WLocal = cellCenter.z;
+
+        //rhoLocal = rank + 1;
+
+        return toConservedVariables( PrimitiveVariables( rhoLocal, ULocal, VLocal, WLocal, parameters.lambdaRef ), parameters.K );
     });
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     dataBase->copyDataHostToDevice();
 
@@ -346,45 +342,62 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_0", mpiWorldSize );
 
     writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank) );
-
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
+    const uint numberOfIterations = 1000;
 
-    //////////////////////////////////////////////////////////////////////////
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, true, numberOfIterations );
+
+    MPI_Barrier(MPI_COMM_WORLD);
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 10000; iter++ )
+    for( uint iter = 1; iter <= numberOfIterations; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
-
-        cupsAnalyzer.run( iter );
-
-        if( iter % 10000 == 0 )
-        {
-            dataBase->copyDataDeviceToHost();
-
-            if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( iter ), mpiWorldSize );
-
-            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
-        }
     }
+
+    cupsAnalyzer.run( numberOfIterations, parameters.dt );
 
     //////////////////////////////////////////////////////////////////////////
 
     dataBase->copyDataDeviceToHost();
+
+    if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_final", mpiWorldSize );
+
+    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_final_rank_" + std::to_string(rank) );
+    
+    //////////////////////////////////////////////////////////////////////////
+
+    int crashCellIndex = dataBase->getCrashCellIndex();
+    if( crashCellIndex >= 0 )
+    {
+        *logging::out << logging::Logger::LOGGER_ERROR << "=================================================\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "=================================================\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "============= Simulation Crashed!!! =============\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "=================================================\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "=================================================\n";
+    }
 }
 
 int main( int argc, char* argv[])
 {
     //////////////////////////////////////////////////////////////////////////
-
+    
+    int rank = 0;
+    int mpiWorldSize = 1;
+#ifdef USE_CUDA_AWARE_MPI
     int rank         = MpiUtility::getMpiRankBeforeInit();
     int mpiWorldSize = MpiUtility::getMpiWorldSizeBeforeInit();
+#else
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
+#endif
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -395,18 +408,19 @@ int main( int argc, char* argv[])
     std::string path( "out/" );
 #endif
 
-    std::string simulationName ( "MultiGPU_np_" + std::to_string(mpiWorldSize) );
+    //////////////////////////////////////////////////////////////////////////
+
+    bool strongScaling = true;
+    uint nx = 64;
+    uint decompositionDimension = 3;
+
+    if( argc > 1 ) nx = atoi( argv[1] );
+    if( argc > 2 ) decompositionDimension = atoi( argv[2] );
+    if( argc > 3 ) strongScaling = true;
 
     //////////////////////////////////////////////////////////////////////////
 
-    bool strongScaling = false;
-    uint nx = 64;
-
-    uint decompositionDimension = 2;
-
-    if( argc > 1 ) path += argv[1]; path += "/";
-    if( argc > 2 ) nx = atoi( argv[2] );
-    if( argc > 3 ) strongScaling = true;
+    std::string simulationName ( "MultiGPU_np_" + std::to_string(mpiWorldSize) );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -434,7 +448,9 @@ int main( int argc, char* argv[])
 
     //////////////////////////////////////////////////////////////////////////
 
+#ifdef USE_CUDA_AWARE_MPI
     MPI_Init(&argc, &argv);
+#endif
     
     //////////////////////////////////////////////////////////////////////////
 
@@ -453,15 +469,15 @@ int main( int argc, char* argv[])
     }
     catch (const std::exception& e)
     {     
-        *logging::out << logging::Logger::ERROR << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
     }
     catch (const std::bad_alloc& e)
     {  
-        *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
     }
     catch (...)
     {
-        *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
     }
 
     //////////////////////////////////////////////////////////////////////////

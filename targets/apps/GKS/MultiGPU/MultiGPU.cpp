@@ -261,7 +261,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const uint numberOfIterations = 10;
+    const uint numberOfIterations = 1000;
 
     CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, true, numberOfIterations );
 
@@ -324,7 +324,7 @@ int main( int argc, char* argv[])
     //////////////////////////////////////////////////////////////////////////
 
     bool strongScaling = false;
-    uint nx = 64;
+    uint nx = 128;
 
     if( argc > 1 ) path += argv[1]; path += "/";
     if( argc > 2 ) nx = atoi( argv[2] );
@@ -363,7 +363,7 @@ int main( int argc, char* argv[])
     //////////////////////////////////////////////////////////////////////////
 
     if( sizeof(real) == 4 )
-        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precison\n";
+        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precision\n";
     else
         *logging::out << logging::Logger::INFO_HIGH << "Using Double Precision\n";
 

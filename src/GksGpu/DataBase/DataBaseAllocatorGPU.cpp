@@ -285,18 +285,14 @@ void DataBaseAllocatorGPU::copyDataDeviceToDevice(SPtr<Communicator> dst, SPtr<C
 
 void DataBaseAllocatorGPU::copyBuffersDeviceToHost(SPtr<Communicator> communicator)
 {
-    //checkCudaErrors( cudaMemcpyAsync ( communicator->sendBufferHost, communicator->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes, cudaMemcpyDeviceToHost, CudaUtility::copyDeviceToHostStream ) );
-    checkCudaErrors( cudaMemcpyAsync ( communicator->sendBufferHost, communicator->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes, cudaMemcpyDeviceToHost, CudaUtility::communicationStream ) );
-
-    //CudaUtility::synchronizeCudaStream( CudaUtility::copyDeviceToHostStream );
+    size_t size = LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes;
+    cudaMemcpyAsync ( communicator->sendBufferHost, communicator->sendBuffer, size, cudaMemcpyDeviceToHost, CudaUtility::communicationStream );
 }
 
 void DataBaseAllocatorGPU::copyBuffersHostToDevice(SPtr<Communicator> communicator)
 {
-    //checkCudaErrors( cudaMemcpyAsync ( communicator->recvBuffer, communicator->recvBufferHost, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes, cudaMemcpyHostToDevice, CudaUtility::copyHostToDeviceStream ) );
-    checkCudaErrors( cudaMemcpyAsync ( communicator->recvBuffer, communicator->recvBufferHost, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes, cudaMemcpyHostToDevice, CudaUtility::communicationStream ) );
-
-    //CudaUtility::synchronizeCudaStream( CudaUtility::copyHostToDeviceStream );
+    size_t size = LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes;
+    cudaMemcpyAsync ( communicator->recvBuffer, communicator->recvBufferHost, size, cudaMemcpyHostToDevice, CudaUtility::communicationStream );
 }
 
 std::string DataBaseAllocatorGPU::getDeviceType()

@@ -54,7 +54,7 @@ void AdiabaticWall::runBoundaryConditionKernel(const SPtr<DataBase> dataBase,
                parameters,
                this->startOfCellsPerLevel[ level ] );
 
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
 
     getLastCudaError("AdiabaticWall::runBoundaryConditionKernel( const SPtr<DataBase> dataBase, const Parameters parameters, const uint level )");
 }

@@ -26,8 +26,6 @@ public:
 
     static cudaStream_t computeStream;
     static cudaStream_t communicationStream;
-    static cudaStream_t copyDeviceToHostStream;
-    static cudaStream_t copyHostToDeviceStream;
 
     static void printCudaMemoryUsage();
 

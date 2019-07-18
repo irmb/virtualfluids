@@ -10,8 +10,6 @@
 
 cudaStream_t CudaUtility::computeStream = nullptr;
 cudaStream_t CudaUtility::communicationStream = nullptr;
-cudaStream_t CudaUtility::copyDeviceToHostStream = nullptr;
-cudaStream_t CudaUtility::copyHostToDeviceStream = nullptr;
 
 CudaUtility::CudaGrid::CudaGrid( uint numberOfEntities, uint threadsPerBlock, cudaStream_t stream )
 {
@@ -62,11 +60,12 @@ void CudaUtility::setCudaDevice(int device)
     // slide 5
     int priority_high, priority_low;
     cudaDeviceGetStreamPriorityRange(&priority_low , &priority_high ) ;
+
+    // the flag needs to be cudaStreamDefault to ensure synchronization with default stream
+    //cudaStreamCreateWithPriority (&communicationStream, cudaStreamDefault, priority_high );
+    //cudaStreamCreateWithPriority (&computeStream      , cudaStreamDefault, priority_low  );
     cudaStreamCreateWithPriority (&communicationStream, cudaStreamNonBlocking, priority_high );
     cudaStreamCreateWithPriority (&computeStream      , cudaStreamNonBlocking, priority_low  );
-
-    cudaStreamCreate(&copyDeviceToHostStream);
-    cudaStreamCreate(&copyHostToDeviceStream);
 }
 
 int CudaUtility::getCudaDevice()
