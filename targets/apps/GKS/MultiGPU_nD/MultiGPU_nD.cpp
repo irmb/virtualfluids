@@ -337,11 +337,11 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     Initializer::initializeDataUpdate(dataBase);
 
-    dataBase->copyDataDeviceToHost();
+    //dataBase->copyDataDeviceToHost();
 
-    if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_0", mpiWorldSize );
+    //if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_0", mpiWorldSize );
 
-    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank) );
+    //writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank) );
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -365,11 +365,11 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     //////////////////////////////////////////////////////////////////////////
 
-    dataBase->copyDataDeviceToHost();
+    //dataBase->copyDataDeviceToHost();
 
-    if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_final", mpiWorldSize );
+    //if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_final", mpiWorldSize );
 
-    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_final_rank_" + std::to_string(rank) );
+    //writeVtkXML( dataBase, parameters, 0, path + simulationName + "_final_rank_" + std::to_string(rank) );
     
     //////////////////////////////////////////////////////////////////////////
 

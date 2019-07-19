@@ -596,6 +596,8 @@ void GksMeshAdapter::sortFaces()
                                                     + this->numberOfFacesPerLevelXYZ[3 * level + 2], 
                                     [this](MeshFace& lhs)
                                     {
+                                        //return true; // comment this in to disable sorting for Comm hiding                            
+
                                         for( uint neighborIndex = 0; neighborIndex < 6; neighborIndex++ )
                                         {
                                             uint neighborCellIndex = this->cells[ lhs.posCell ].cellToCell[ neighborIndex ];
