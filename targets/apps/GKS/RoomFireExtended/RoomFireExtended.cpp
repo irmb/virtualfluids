@@ -64,8 +64,10 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real LBurner = 1.0;
+    real L = 4.0;
+    real B = 3.0;
 
+    real LBurner = 1.0;
     real HBurner = 0.5;
 
     real Pr  = 0.71;
@@ -80,7 +82,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
     real mu      = 1.8e-5;
-    real U       = 0.015;       // 900 kW on top
+    real U       = 0.0125;       // 900 kW on top
+    //real U       = 0.015;       // 900 kW on top
     //real U       = 0.005;       // 900 kW all around
     real rhoFuel = 0.5405;
 
@@ -142,32 +145,32 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->addCoarseGrid(-2.1, -6.0, -0.1,  
-                                2.1,  6.0,  3.1, dx);
+    gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
+                                2.1,  6.0,  3.0, dx);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
     //TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/Unterzug.stl");
-    TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/RoomExtended2.stl");
+    TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/RoomExtended4.stl");
     //TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/RoomExtended3.stl");
 #else
     //TriangularMesh* stl = TriangularMesh::make("inp/Unterzug.stl");
-    TriangularMesh* stl = TriangularMesh::make("inp/RoomExtended2.stl");
+    TriangularMesh* stl = TriangularMesh::make("inp/RoomExtended4.stl");
 #endif
 
     gridBuilder->addGeometry(stl);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Cuboid boxCoarse ( -3.0, -3.0, -0.5, 
+    Cuboid boxCoarse ( -2.0, -3.0, -0.5, 
                         3.0,  3.0,  3.5 );
 
     gridBuilder->addGrid( &boxCoarse, 1 );
 
     Cuboid boxRef ( -0.6 * LBurner, -0.6 * LBurner, -1.0, 
-                     0.6 * LBurner,  0.6 * LBurner,  2.0 );
-    Cuboid beamRef( -10.0, -0.15, 2.6, 10.0, 0.15, 10.0 );
+                     0.6 * LBurner,  0.6 * LBurner, 10.0 );
+    Cuboid beamRef( -10.0, -0.25, 2.4, 10.0, 0.25, 10.0 );
 
     //boxRef.scale (0.5);
     //beamRef.scale(0.5);
@@ -175,11 +178,11 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     Conglomerate refRegion1;
 
     refRegion1.add( &boxRef );
-    //refRegion1.add( &beamRef );
+    refRegion1.add( &beamRef );
 
     gridBuilder->setNumberOfLayers(0,22);
 
-    gridBuilder->addGrid( &refRegion1, 3 );
+    gridBuilder->addGrid( &refRegion1, 2 );
 
     uint maxLevel = gridBuilder->getNumberOfGridLevels() - 1;
 
@@ -220,21 +223,21 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcTop = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
+    //SPtr<BoundaryCondition> bcTop = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
 
-    bcTop->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > 3.0 || center.z < 0.0; } );
+    //bcTop->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > 3.0 || center.z < 0.0; } );
 
     ////////////////////////////////////////////////////////////////////////////
 
     SPtr<BoundaryCondition> bcOpen = std::make_shared<Open>( dataBase, prim, 1.0 );
 
-    bcOpen->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -6.0 || center.y > 2.2; } );
+    bcOpen->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -6.0 || center.y > 1.7; } );
 
     ////////////////////////////////////////////////////////////////////////////
     
     SPtr<BoundaryCondition> bcPressure = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
 
-    bcPressure->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y > 2.2 && center.z > 3.0; } );
+    bcPressure->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y > 1.7 && center.z > 3.0; } );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -254,7 +257,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     dataBase->boundaryConditions.push_back( bcWall );
 
-    dataBase->boundaryConditions.push_back( bcTop );
+    //dataBase->boundaryConditions.push_back( bcTop );
 
     dataBase->boundaryConditions.push_back( bcOpen );
 
