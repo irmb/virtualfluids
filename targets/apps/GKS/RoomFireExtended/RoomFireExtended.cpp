@@ -146,7 +146,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
-                                2.1,  6.0,  3.0, dx);
+                                2.1,  6.0,  5.0, dx);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -237,7 +237,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     
     SPtr<BoundaryCondition> bcPressure = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
 
-    bcPressure->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y > 1.7 && center.z > 3.0; } );
+    bcPressure->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y > 1.7 && center.z > 5.0; } );
 
     //////////////////////////////////////////////////////////////////////////
 

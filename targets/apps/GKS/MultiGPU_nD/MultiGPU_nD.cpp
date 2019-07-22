@@ -427,6 +427,8 @@ int main( int argc, char* argv[])
 
     simulationName += "_D_" + std::to_string(decompositionDimension);
 
+    simulationName += "_nx_" + std::to_string(nx);
+
     simulationName += "_np_" + std::to_string(mpiWorldSize);
 
     //////////////////////////////////////////////////////////////////////////
