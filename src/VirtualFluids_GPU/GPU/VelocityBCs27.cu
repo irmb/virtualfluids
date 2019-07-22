@@ -3765,32 +3765,32 @@ extern "C" __global__ void QVelDevPlainBB27(real* vx,
       }
 	  ////////////////////////////////////////////////////////////////////////////////
 	  real q;
-      q = q_dirE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirW  ])[kw  ]=f_E   - c2o27  * VeloX;	
-      q = q_dirW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirE  ])[ke  ]=f_W   + c2o27  * VeloX;	
-      q = q_dirN[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirS  ])[ks  ]=f_N   - c2o27  * VeloY;	
-      q = q_dirS[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirN  ])[kn  ]=f_S   + c2o27  * VeloY;	
-      q = q_dirT[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirB  ])[kb  ]=f_T   - c2o27  * VeloZ;
-      q = q_dirB[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirT  ])[kt  ]=f_B   + c2o27  * VeloZ;
-      q = q_dirNE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirSW ])[ksw ]=f_NE  - c1o54  * VeloX - c1o54  * VeloY;
-	  q = q_dirSW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirNE ])[kne ]=f_SW  + c1o54  * VeloX + c1o54  * VeloY;
-	  q = q_dirSE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirNW ])[knw ]=f_SE  - c1o54  * VeloX + c1o54  * VeloY;
-	  q = q_dirNW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirSE ])[kse ]=f_NW  + c1o54  * VeloX - c1o54  * VeloY;
-	  q = q_dirTE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBW ])[kbw ]=f_TE  - c1o54  * VeloX - c1o54  * VeloZ;
-	  q = q_dirBW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTE ])[kte ]=f_BW  + c1o54  * VeloX + c1o54  * VeloZ;
-	  q = q_dirBE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTW ])[ktw ]=f_BE  - c1o54  * VeloX + c1o54  * VeloZ;
-	  q = q_dirTW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBE ])[kbe ]=f_TW  + c1o54  * VeloX - c1o54  * VeloZ;
-	  q = q_dirTN[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBS ])[kbs ]=f_TN  - c1o54  * VeloY - c1o54  * VeloZ;
-	  q = q_dirBS[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTN ])[ktn ]=f_BS  + c1o54  * VeloY + c1o54  * VeloZ;
-	  q = q_dirBN[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTS ])[kts ]=f_BN  - c1o54  * VeloY + c1o54  * VeloZ;
-	  q = q_dirTS[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBN ])[kbn ]=f_TS  + c1o54  * VeloY - c1o54  * VeloZ;
-      q = q_dirTNE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBSW])[kbsw]=f_TNE - c1o216 * VeloX - c1o216 * VeloY - c1o216 * VeloZ;
-      q = q_dirBSW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTNE])[ktne]=f_BSW + c1o216 * VeloX + c1o216 * VeloY + c1o216 * VeloZ;
-      q = q_dirBNE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTSW])[ktsw]=f_BNE - c1o216 * VeloX - c1o216 * VeloY + c1o216 * VeloZ;
-      q = q_dirTSW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBNE])[kbne]=f_TSW + c1o216 * VeloX + c1o216 * VeloY - c1o216 * VeloZ;
-      q = q_dirTSE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBNW])[kbnw]=f_TSE - c1o216 * VeloX + c1o216 * VeloY - c1o216 * VeloZ;
-      q = q_dirBNW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTSE])[ktse]=f_BNW + c1o216 * VeloX - c1o216 * VeloY + c1o216 * VeloZ;
-      q = q_dirBSE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTNW])[ktnw]=f_BSE - c1o216 * VeloX + c1o216 * VeloY + c1o216 * VeloZ;
-      q = q_dirTNW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBSE])[kbse]=f_TNW + c1o216 * VeloX - c1o216 * VeloY - c1o216 * VeloZ;
+      q = q_dirE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirW  ])[kw  ]=f_E   - c6o1 * c2o27  * VeloX;	
+      q = q_dirW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirE  ])[ke  ]=f_W   + c6o1 * c2o27  * VeloX;	
+      q = q_dirN[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirS  ])[ks  ]=f_N   - c6o1 * c2o27  * VeloY;	
+      q = q_dirS[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirN  ])[kn  ]=f_S   + c6o1 * c2o27  * VeloY;	
+      q = q_dirT[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirB  ])[kb  ]=f_T   - c6o1 * c2o27  * VeloZ;
+      q = q_dirB[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirT  ])[kt  ]=f_B   + c6o1 * c2o27  * VeloZ;
+      q = q_dirNE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirSW ])[ksw ]=f_NE  - c6o1 * c1o54  * VeloX - c1o54  * VeloY;
+	  q = q_dirSW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirNE ])[kne ]=f_SW  + c6o1 * c1o54  * VeloX + c1o54  * VeloY;
+	  q = q_dirSE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirNW ])[knw ]=f_SE  - c6o1 * c1o54  * VeloX + c1o54  * VeloY;
+	  q = q_dirNW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirSE ])[kse ]=f_NW  + c6o1 * c1o54  * VeloX - c1o54  * VeloY;
+	  q = q_dirTE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBW ])[kbw ]=f_TE  - c6o1 * c1o54  * VeloX - c1o54  * VeloZ;
+	  q = q_dirBW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTE ])[kte ]=f_BW  + c6o1 * c1o54  * VeloX + c1o54  * VeloZ;
+	  q = q_dirBE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTW ])[ktw ]=f_BE  - c6o1 * c1o54  * VeloX + c1o54  * VeloZ;
+	  q = q_dirTW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBE ])[kbe ]=f_TW  + c6o1 * c1o54  * VeloX - c1o54  * VeloZ;
+	  q = q_dirTN[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBS ])[kbs ]=f_TN  - c6o1 * c1o54  * VeloY - c1o54  * VeloZ;
+	  q = q_dirBS[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTN ])[ktn ]=f_BS  + c6o1 * c1o54  * VeloY + c1o54  * VeloZ;
+	  q = q_dirBN[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTS ])[kts ]=f_BN  - c6o1 * c1o54  * VeloY + c1o54  * VeloZ;
+	  q = q_dirTS[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBN ])[kbn ]=f_TS  + c6o1 * c1o54  * VeloY - c1o54  * VeloZ;
+      q = q_dirTNE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBSW])[kbsw]=f_TNE - c6o1 * c1o216 * VeloX - c1o216 * VeloY - c1o216 * VeloZ;
+      q = q_dirBSW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTNE])[ktne]=f_BSW + c6o1 * c1o216 * VeloX + c1o216 * VeloY + c1o216 * VeloZ;
+      q = q_dirBNE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTSW])[ktsw]=f_BNE - c6o1 * c1o216 * VeloX - c1o216 * VeloY + c1o216 * VeloZ;
+      q = q_dirTSW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBNE])[kbne]=f_TSW + c6o1 * c1o216 * VeloX + c1o216 * VeloY - c1o216 * VeloZ;
+      q = q_dirTSE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBNW])[kbnw]=f_TSE - c6o1 * c1o216 * VeloX + c1o216 * VeloY - c1o216 * VeloZ;
+      q = q_dirBNW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTSE])[ktse]=f_BNW + c6o1 * c1o216 * VeloX - c1o216 * VeloY + c1o216 * VeloZ;
+      q = q_dirBSE[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirTNW])[ktnw]=f_BSE - c6o1 * c1o216 * VeloX + c1o216 * VeloY + c1o216 * VeloZ;
+      q = q_dirTNW[k];	if (q>=c0o1 && q<=c1o1)	(D.f[dirBSE])[kbse]=f_TNW + c6o1 * c1o216 * VeloX - c1o216 * VeloY - c1o216 * VeloZ;
 	  ////////////////////////////////////////////////////////////////////////////////
    }
 }

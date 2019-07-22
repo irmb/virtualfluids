@@ -86,7 +86,7 @@ LbmOrGks lbmOrGks = LBM;
 
 const real L  = 1.0;
 
-const real Re = 1000.0;
+const real Re = 100.0;
 
 const real velocity  = 1.0;
 
@@ -94,13 +94,13 @@ const real dt = 0.5e-3;
 
 const uint nx = 64;
 
-//std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
-std::string path("E:/DrivenCavity/results/"); //TESLA03
+std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
+//std::string path("E:/DrivenCavity/results/"); //TESLA03
 
 std::string simulationName("DrivenCavity");
 
 const uint timeStepOut = 10000;
-const uint timeStepEnd = 1000000;
+const uint timeStepEnd = 50000;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -162,7 +162,7 @@ void multipleLevel(const std::string& configPath)
         const real viscosityLB = nx * velocityLB / Re; // LB units
 
         *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
-        *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx/dt] = " << viscosityLB << "\n";
+        *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -178,7 +178,7 @@ void multipleLevel(const std::string& configPath)
         para->setVelocity(velocityLB);
         para->setViscosity(viscosityLB);
 
-        para->setVelocityRatio(1.0 / velocityLB);
+        para->setVelocityRatio(velocity / velocityLB);
 
         para->setTOut( timeStepOut );
         para->setTEnd( timeStepEnd );
