@@ -9,13 +9,11 @@
 
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
-
-#include "GksMeshAdapter/GksMeshAdapter.h"
-
-#include "FlowStateData/FlowStateData.cuh"
+#include "Core/VectorTypes.h"
 
 struct DataBase;
 struct Parameters;
+class  GksMeshAdapter;
 
 struct PointTimeSeriesAnalyzerStruct
 {
@@ -46,19 +44,21 @@ public:
 
     std::vector<real> hostSeries;
 
+    Vec3 coordinates;
+
 public:
 
     ~PointTimeSeriesAnalyzer();
 
-    PointTimeSeriesAnalyzer( SPtr<DataBase> dataBase, GksMeshAdapter & adapter, Vec3 coordinate, char quantity, uint outputIter = 10000 );
+    PointTimeSeriesAnalyzer( SPtr<DataBase> dataBase, GksMeshAdapter & adapter, Vec3 coordinates, char quantity, uint outputIter = 10000 );
 
     void free();
 
     void allocate();
 
-    void findCellIndex( GksMeshAdapter & adapter, Vec3 coordinate );
+    void findCellIndex( GksMeshAdapter & adapter, Vec3 coordinates );
 
-    bool run( uint iter, Parameters parameters );
+    void run( uint iter, Parameters parameters );
 
     void writeToFile( std::string filename );
 

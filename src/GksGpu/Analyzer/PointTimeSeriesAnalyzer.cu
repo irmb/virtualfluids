@@ -16,6 +16,8 @@
 
 #include "Core/Logger/Logger.h"
 
+#include "GksMeshAdapter/GksMeshAdapter.h"
+
 #include "DataBase/DataBase.h"
 
 #include "Parameters/Parameters.h"
@@ -32,7 +34,7 @@ __host__ __device__ inline void pointTimeSeriesFunction( DataBaseStruct dataBase
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool PointTimeSeriesAnalyzer::run(uint iter, Parameters parameters)
+void PointTimeSeriesAnalyzer::run(uint iter, Parameters parameters)
 {
 
     CudaUtility::CudaGrid grid( 1, 1 );
@@ -99,7 +101,7 @@ PointTimeSeriesAnalyzer::~PointTimeSeriesAnalyzer()
     this->free();
 }
 
-PointTimeSeriesAnalyzer::PointTimeSeriesAnalyzer(SPtr<DataBase> dataBase, GksMeshAdapter & adapter, Vec3 coordinate, char quantity, uint outputIter)
+PointTimeSeriesAnalyzer::PointTimeSeriesAnalyzer(SPtr<DataBase> dataBase, GksMeshAdapter & adapter, Vec3 coordinates, char quantity, uint outputIter)
     : dataBase(dataBase),
       deviceSeries(nullptr),
       counter(0),
@@ -108,7 +110,7 @@ PointTimeSeriesAnalyzer::PointTimeSeriesAnalyzer(SPtr<DataBase> dataBase, GksMes
 {
     this->allocate();
 
-    this->findCellIndex( adapter, coordinate );
+    this->findCellIndex( adapter, coordinates );
 }
 
 void PointTimeSeriesAnalyzer::free()
@@ -123,7 +125,7 @@ void PointTimeSeriesAnalyzer::allocate()
     checkCudaErrors( cudaMalloc ( &this->deviceSeries , sizeof(real) * this->outputIter ) );
 }
 
-void PointTimeSeriesAnalyzer::findCellIndex(GksMeshAdapter & adapter, Vec3 coordinate)
+void PointTimeSeriesAnalyzer::findCellIndex(GksMeshAdapter & adapter, Vec3 coordinates)
 {
     real minDistance = 1.0e99;
 
@@ -131,7 +133,7 @@ void PointTimeSeriesAnalyzer::findCellIndex(GksMeshAdapter & adapter, Vec3 coord
     {
         MeshCell& cell = adapter.cells[ cellIdx ];
 
-        Vec3 vec = cell.cellCenter - coordinate;
+        Vec3 vec = cell.cellCenter - coordinates;
 
         real distance = sqrt( vec.x*vec.x + vec.y*vec.y + vec.z*vec.z );
 
@@ -141,6 +143,8 @@ void PointTimeSeriesAnalyzer::findCellIndex(GksMeshAdapter & adapter, Vec3 coord
             minDistance = distance;
         }
     }
+
+    this->coordinates = adapter.cells[ this->cellIndex ].cellCenter;
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "PointTimeSeriesAnalyzer::cellIndex = " << this->cellIndex << "\n";
 }
