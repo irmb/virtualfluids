@@ -300,10 +300,11 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             //k += real(0.00001) * real(0.0025) * S * S;
             
             //real kMax = real(0.01) * c1o2 * parameters.dx * parameters.dx / parameters.dt;
-            real kMax = real(0.01);
+            //real kMax = real(0.01);
 
             real S = parameters.dx * parameters.dx * ( dTdx1 * dTdx1 + dTdx2 * dTdx2 + dTdx3 * dTdx3 );
-            k += fminf(kMax, parameters.temperatureLimiter * S);
+
+            k += fminf(parameters.temperatureLimiterUpperLimit, parameters.temperatureLimiter * S);
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // this one works for some time

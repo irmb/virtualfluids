@@ -61,26 +61,25 @@ void thermalCavity( std::string path, std::string simulationName )
 
     real dx = L / real(nx);
 
-    real U = 0.025;
+    real U = 0.1;
 
-    real eps = 2.0;
     real Pr  = 0.71;
-    real K   = 5.0;
+    real K   = 2.0;
     
     real g   = 9.81;
     real rho = 1.2;
     
-    real mu = 5.0e-1;
+    real mu = 5.0e-3;
 
-    PrimitiveVariables prim( rho, 0.0, 0.0, 10.0, -1.0 );
+    PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
-    setLambdaFromT( prim, 3.0 / T_FAKTOR );
+    setLambdaFromT( prim, 3.0 );
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
-    real CFL = 0.25;
+    real CFL = 0.5;
 
-    real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+    double dt  = CFL * ( dx / ( ( U + cs ) * ( c1o1 + ( c2o1 * mu ) / ( U * dx * rho ) ) ) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
     *logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
@@ -108,6 +107,19 @@ void thermalCavity( std::string path, std::string simulationName )
     parameters.viscosityModel = ViscosityModel::constant;
 
     parameters.enableReaction = true;
+
+    parameters.useHeatReleaseRateLimiter = true;
+    parameters.useTemperatureLimiter     = true;
+    parameters.usePassiveScalarLimiter   = true;
+    parameters.useSmagorinsky            = true;
+
+    parameters.reactionLimiter    = 1.0005;
+    parameters.temperatureLimiter = 1.0e-6;
+
+    parameters.useSpongeLayer = true;
+    parameters.spongeLayerIdx = 2;
+
+    parameters.forcingSchemeIdx = 2;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -255,13 +267,8 @@ void thermalCavity( std::string path, std::string simulationName )
 
         if( nx == 1 )
         {
-            double X_F = 0.21 / 2.21;
-            double X_A = 1.0 - X_F;
-
-            double M = X_F * M_F + X_A * M_A;
-
-            double Y_F = X_F * M_F / M;
-            double Y_A = X_A * M_A / M;
+            // for stoichiometric mixture
+            double Y_F = ( rX * M_F ) / ( rX * M_F + 2.0 * M_A );
 
             prim.S_1 = Y_F;
 
@@ -272,16 +279,13 @@ void thermalCavity( std::string path, std::string simulationName )
 
         if( nx > 1 )
         {
-            double X_F = 0.21 / 2.21;
-            double X_A = 1.0 - X_F;
+            // for stoichiometric mixture
+            double Y_F = ( rX * M_F ) / ( rX * M_F + 2.0 * M_A );
 
-            double M = X_F * M_F + X_A * M_A;
+            prim.S_1 = Y_F;
 
-            double Y_F = X_F * M_F / M;
-            double Y_A = X_A * M_A / M;
-
-            if (cellCenter.x < 0) prim.S_1 = 0.0;
-            else                  prim.S_1 = 2.0 * Y_F;
+            //if (cellCenter.x < 0) prim.S_1 = 0.0;
+            //else                  prim.S_1 = 2.0 * Y_F;
 
             return toConservedVariables(prim, parameters.K);
         }
@@ -337,7 +341,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 10000; iter++ )
+    for( uint iter = 1; iter <= 100000; iter++ )
     {
         //if( iter < 100000 )
         //{
@@ -349,7 +353,7 @@ void thermalCavity( std::string path, std::string simulationName )
         //    dataBase->boundaryConditions[4] = bcMX_2;
         //}
 
-        cupsAnalyzer.run( iter );
+        cupsAnalyzer.run( iter, parameters.dt );
 
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
@@ -361,7 +365,7 @@ void thermalCavity( std::string path, std::string simulationName )
             //( iter < 1000000   && iter % 10000  == 0 )
             //( iter < 10000000 && iter % 100000 == 0 )
             //( iter <= 400000 && iter % 100 == 0 )
-            ( iter % 100 == 0 )
+            ( iter % 10000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
@@ -411,15 +415,15 @@ int main( int argc, char* argv[])
     }
     catch (const std::exception& e)
     {     
-        *logging::out << logging::Logger::ERROR << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
     }
     catch (const std::bad_alloc& e)
     {  
-        *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
     }
     catch (...)
     {
-        *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
     }
 
    return 0;
