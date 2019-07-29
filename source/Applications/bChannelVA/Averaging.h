@@ -65,6 +65,7 @@ public:
    void planarAveraging();
  
    void writeToCSV(std::string path, double origin, double deltax);
+   void writeToCSV2(std::string path, double origin, double deltax);
 
    std::array<int, 3> getDimensions() const { return dimensions; }
    void setDimensions(std::array<int, 3> val) { dimensions = val; }
@@ -103,7 +104,11 @@ public:
    void writeVolumeAveragedValuesToBinaryFiles(std::string fname);
    void readVolumeAveragedValuesFromBinaryFiles(std::string fname);
 
-   //
+   //////////////////////////////////////////////////////////////////
+   //compute volume average of time averaged data
+   void readTimeAveragedDataFromVtkFile(std::string dataNameMQ);
+   void volumeAveragingOfTimeAveragedDataWithMPI(double l_real);
+   void planarAveragingOfVaTaData();
 
 protected:
    void getNodeIndexes(std::array<double, 3> x, std::array<int, 3>& ix);
@@ -142,10 +147,10 @@ private:
    CbArray3D<double> sumVaVzMatrix;
    CbArray3D<double> sumVaPrMatrix;
 
-   CbArray3D<double> meanVaVxMatrix;
-   CbArray3D<double> meanVaVyMatrix;
-   CbArray3D<double> meanVaVzMatrix;
-   CbArray3D<double> meanVaPrMatrix;
+   CbArray3D<double> vaMeanVxMatrix;
+   CbArray3D<double> vaMeanVyMatrix;
+   CbArray3D<double> vaMeanVzMatrix;
+   CbArray3D<double> vaMeanPrMatrix;
 //----------------------------------------
    CbArray3D<double> flucVxMatrix;
    CbArray3D<double> flucVyMatrix;
@@ -181,12 +186,12 @@ private:
    CbArray3D<double> vaStressXZ;
    CbArray3D<double> vaStressYZ;
 
-   CbArray3D<double> SumVaStressXX;
-   CbArray3D<double> SumVaStressYY;
-   CbArray3D<double> SumVaStressZZ;
-   CbArray3D<double> SumVaStressXY;
-   CbArray3D<double> SumVaStressXZ;
-   CbArray3D<double> SumVaStressYZ;
+   CbArray3D<double> sumVaStressXX;
+   CbArray3D<double> sumVaStressYY;
+   CbArray3D<double> sumVaStressZZ;
+   CbArray3D<double> sumVaStressXY;
+   CbArray3D<double> sumVaStressXZ;
+   CbArray3D<double> sumVaStressYZ;
 
    CbArray3D<double> meanVaStressXX;
    CbArray3D<double> meanVaStressYY;

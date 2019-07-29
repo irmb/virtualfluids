@@ -12,6 +12,7 @@ int main(int argc, char* argv[])
 {
    try
    {
+      //Sleep(20000);
       SPtr<Communicator> comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
@@ -60,57 +61,73 @@ int main(int argc, char* argv[])
       av.setDeltaX(deltaX);
 
       //read geo matrix
-      av.createGeoMatrix(pathIn + "/bc/bc0.pvtu");
-      if (myid == 0) av.writeGeoMatrixToBinaryFiles(pathOut + "/va/geo/geomatrix.bin");
-      av.readGeoMatrixFromBinaryFiles(pathOut + "/va/geo/geomatrix.bin");
+      //av.createGeoMatrix(pathIn + "/bc/bc0.pvtu");
+      //if (myid == 0) av.writeGeoMatrixToBinaryFiles(pathOut + "/va/geo/geomatrix.bin");
+      //av.readGeoMatrixFromBinaryFiles(pathOut + "/va/geo/geomatrix.bin");
 
-      //read mq matrix
-      for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
-      {
-         av.createMQMatrix(pathIn + "/mq/mq" + UbSystem::toString(t) + ".pvtu");
-         av.writeMqMatrixToBinaryFiles(pathOut + "/va/mq/mq", t);
-      }
+      ////read mq matrix
+      //for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
+      //{
+      //   av.createMQMatrix(pathIn + "/mq/mq" + UbSystem::toString(t) + ".pvtu");
+      //   av.writeMqMatrixToBinaryFiles(pathOut + "/va/mq/mq", t);
+      //}
 
-      //compute mq values
-      av.initMeanMqValues();
-      for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
-      {
-         av.readMqMatrixFromBinaryFiles(pathOut + "/va/mq/mq", t);
-         av.sumMqValues();
-      }
-      av.computeMeanMqValues(numberOfSamples);
-      av.writeMeanMqValuesToBinaryFiles(pathOut + "/va/mean/mean");
+      ////compute mq values
+      //av.initMeanMqValues();
+      //for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
+      //{
+      //   av.readMqMatrixFromBinaryFiles(pathOut + "/va/mq/mq", t);
+      //   av.sumMqValues();
+      //}
+      //av.computeMeanMqValues(numberOfSamples);
+      //av.writeMeanMqValuesToBinaryFiles(pathOut + "/va/mean/mean");
 
       //compute volume averaging of Reynolds averaged MQ values
-      av.volumeAveragingOfMeanMqValuesWithMPI(l);
-      av.writeVaMeanMqValuesToBinaryFiles(pathOut + "/va/vaMean/vaMean");
+      //av.readMeanMqValuesFromBinaryFiles(pathOut + "/va/mean/mean");
+      //av.volumeAveragingOfMeanMqValuesWithMPI(l);
+      //av.writeVaMeanMqValuesToBinaryFiles(pathOut + "/va/vaMean/vaMean");
 
-      //compute fluctuations
-      av.readMeanMqValuesFromBinaryFiles(pathOut + "/va/mean/mean");
-      av.initFluctuationsOfMqValues();
-      for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
-      {
-         av.readMqMatrixFromBinaryFiles(pathOut + "/va/mq/mq", t);
-         av.computeFluctuationsOfMqValues();
-         av.writeFluctuationsOfMqValuesToBinaryFiles(pathOut + "/va/fluc/fluc", t);
-      }
+      ////compute fluctuations
+      //av.readMeanMqValuesFromBinaryFiles(pathOut + "/va/mean/mean");
+      //av.initFluctuationsOfMqValues();
+      //for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
+      //{
+      //   av.readMqMatrixFromBinaryFiles(pathOut + "/va/mq/mq", t);
+      //   av.computeFluctuationsOfMqValues();
+      //   av.writeFluctuationsOfMqValuesToBinaryFiles(pathOut + "/va/fluc/fluc", t);
+      //}
 
-      //compute volume averaged fluctuations
-      av.initMeanOfVolumeAveragedValues();
-      for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
-      {
-         av.readFluctuationsOfMqValuesFromBinaryFiles(pathOut + "/va/fluc/fluc", t);
-         av.volumeAveragingOfFluctuationsWithMPI(l);
-         av.writeVaFluctuationsToBinaryFiles(pathOut + "/va/vaFluc/vaFluc", t);
-         av.sumVolumeAveragedValues();
-      }
-      av.computeVolumeAveragedValues(numberOfSamples);
-      av.writeVolumeAveragedValuesToBinaryFiles(pathOut + "/va/values/val");
+      ////compute volume averaged fluctuations
+      //av.initMeanOfVolumeAveragedValues();
+      //for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
+      //{
+      //   av.readFluctuationsOfMqValuesFromBinaryFiles(pathOut + "/va/fluc/fluc", t);
+      //   av.volumeAveragingOfFluctuationsWithMPI(l);
+      //   av.writeVaFluctuationsToBinaryFiles(pathOut + "/va/vaFluc/vaFluc", t);
+         //av.sumVolumeAveragedValues();
+      //}
+      //av.computeVolumeAveragedValues(numberOfSamples);
+      //av.writeVolumeAveragedValuesToBinaryFiles(pathOut + "/va/values/val");
 
       //planar averaging
-      av.initPlanarAveraging();
-      av.planarAveraging();
-      av.writeToCSV(pathOut + "/va/planar/planar", geo_origin[2], deltaX);
+      //av.initPlanarAveraging();
+      //av.planarAveraging();
+      //av.writeToCSV(pathOut + "/va/planar/planar", geo_origin[2], deltaX);
+
+      //read geo matrix
+      av.readGeoMatrixFromBinaryFiles(pathOut + "/va/geo/geomatrix.bin");
+
+      av.initMeanOfVolumeAveragedValues();
+
+      av.readTimeAveragedDataFromVtkFile(pathIn + "/tav/tav200000.pvtu");
+
+      av.volumeAveragingOfTimeAveragedDataWithMPI(l);
+
+      if (myid == 0) av.initPlanarAveraging();
+
+      if (myid == 0) av.planarAveragingOfVaTaData();
+
+      if (myid == 0) av.writeToCSV2(pathOut + "/va/planar/planar12", geo_origin[2], deltaX);
    }
    catch (const std::exception& e)
    {
