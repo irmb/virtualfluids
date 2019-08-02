@@ -160,7 +160,8 @@ void run(string configname)
          }
 
          SPtr<LBMKernel> kernel;
-         kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+         //kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+         kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
          SPtr<BCProcessor> bcProc(new BCProcessor());
          kernel->setBCProcessor(bcProc);
          kernel->setForcingX1(0.1);
@@ -307,8 +308,8 @@ int main(int argc, char* argv[])
    //{
    //   if (argv[1] != NULL)
    //   {
-         //run(string(argv[1]));
-         createPoints();
+         run(string(argv[1]));
+         //createPoints();
       //}
       //else
       //{

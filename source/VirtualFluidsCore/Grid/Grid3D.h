@@ -42,6 +42,7 @@ public:
    void addBlock(SPtr<Block3D> block);
    bool deleteBlock(SPtr<Block3D> block);
    bool deleteBlock(int ix1, int ix2, int ix3, int level);
+   void deleteBlocks();
    void deleteBlocks(const std::vector<int>& ids);
    void replaceBlock(SPtr<Block3D> block);
    SPtr<Block3D> getBlock(int ix1, int ix2, int ix3, int level) const;

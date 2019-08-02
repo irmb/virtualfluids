@@ -296,7 +296,7 @@ void run(string configname)
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       SPtr<CoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm));
 
-      SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
+      SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100, 100000000));
       SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
       omp_set_num_threads(numOfThreads);

@@ -1398,22 +1398,7 @@ void MPIIOMigrationBECoProcessor::readBlocks(int step)
    }
 
    // clear the grid
-   //int bcou = this->grid->getNumberOfBlocks();
-   //std::cout << "readBlocks1   getNumberOfBlocks= " <<bcou << std::endl;
-   if(this->grid->getNumberOfBlocks() > 0)
-   {
-	   std::vector<SPtr<Block3D>> blocksVector[25];
-	   int minInitLevel = this->grid->getCoarsestInitializedLevel();
-	   int maxInitLevel = this->grid->getFinestInitializedLevel();
-	   for (int level = minInitLevel; level <= maxInitLevel; level++)
-	   {
-		  grid->getBlocks(level, blocksVector[level]);
-		  for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
-			 grid->deleteBlock(block);
-	   }
-   }
-   //bcou = this->grid->getNumberOfBlocks();
-   //std::cout << "readBlocks2   getNumberOfBlocks= " <<bcou << std::endl;
+   grid->deleteBlocks();
 
    // restore the grid
    SPtr<CoordinateTransformation3D> trafo(new CoordinateTransformation3D());

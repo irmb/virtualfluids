@@ -1733,15 +1733,7 @@ void MPIIORestartCoProcessor::readBlocks(int step)
    }
 
    // clear the grid
-   std::vector<SPtr<Block3D>> blocksVector[25];
-   int minInitLevel = this->grid->getCoarsestInitializedLevel();
-   int maxInitLevel = this->grid->getFinestInitializedLevel();
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      grid->getBlocks(level, blocksVector[level]);
-      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
-         grid->deleteBlock(block);
-   }
+   grid->deleteBlocks();
 
    // restore the grid
    SPtr<CoordinateTransformation3D> trafo(new CoordinateTransformation3D());

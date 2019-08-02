@@ -78,7 +78,8 @@ namespace Grid3DSystem
 
    extern const int INVDIR[ENDDIR+1];
 
-   static const int MAXLEVEL  = 25;
+   static const int MINLEVEL = 0;
+   static const int MAXLEVEL = 25;
 
    extern const int EX1[ENDDIR+1];
    extern const int EX2[ENDDIR+1];
