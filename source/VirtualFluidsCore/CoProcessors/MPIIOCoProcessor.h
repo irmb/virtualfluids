@@ -21,6 +21,9 @@ public:
    //! Each timestep writes the grid into the files
    virtual void process(double step) = 0;
 
+   //! Writes the blocks of the grid into the file cpBlocks.bin
+   void writeBlocks(int step);
+
    //! Reads the blocks of the grid from the file cpBlocks.bin
    void readBlocks(int step);
 

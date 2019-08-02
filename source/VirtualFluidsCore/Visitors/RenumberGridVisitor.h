@@ -13,7 +13,7 @@
 
 class Grid3D;
 
-//! \brief  Visitor class which renumber blocks.
+//! \brief  Visitor class which renumber blocks in order: rank->level.
 //! \details Visitor class which renumber blocks.            
 //! \author  Konstantin Kutscher 
 class RenumberGridVisitor : public Grid3DVisitor

@@ -1,4 +1,4 @@
-#include "MPIIOCoProcessors.h"
+#include "MPIIOCoProcessor.h"
 #include "Block3D.h"
 #include "CoordinateTransformation3D.h"
 #include "Grid3D.h"
@@ -7,6 +7,8 @@
 #include "MPIIODataStructures.h"
 #include "UbLogger.h"
 #include "MemoryUtil.h"
+
+using namespace MPIIODataStructures;
 
 MPIIOCoProcessor::MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm) :
    CoProcessor(grid, s),
@@ -51,14 +53,161 @@ MPIIOCoProcessor::~MPIIOCoProcessor()
    MPI_Type_free(&block3dType);
 }
 
-void MPIIOCoProcessor::readBlocks(int step)
+void MPIIOCoProcessor::writeBlocks(int step)
 {
-   using namespace MPIIODataStructures;
-
    int rank, size;
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
    //MPI_Comm_size(MPI_COMM_WORLD, &size);
    size = 1;
+
+   if (comm->isRoot())
+   {
+      UBLOG(logINFO, "MPIIOCoProcessor::writeBlocks start collect data rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
+
+   int blocksCount = 0; // quantity of all the blocks in the grid, max 2147483648 blocks!
+   int minInitLevel = this->grid->getCoarsestInitializedLevel();
+   int maxInitLevel = this->grid->getFinestInitializedLevel();
+
+   std::vector<SPtr<Block3D>> blocksVector[25]; // max 25 levels
+   for (int level = minInitLevel; level <= maxInitLevel; level++)
+   {
+      //grid->getBlocks(level, rank, blockVector[level]);
+      grid->getBlocks(level, blocksVector[level]);
+      blocksCount += static_cast<int>(blocksVector[level].size());
+   }
+
+   GridParam* gridParameters = new GridParam;
+   gridParameters->trafoParams[0] = grid->getCoordinateTransformator()->Tx1;
+   gridParameters->trafoParams[1] = grid->getCoordinateTransformator()->Tx2;
+   gridParameters->trafoParams[2] = grid->getCoordinateTransformator()->Tx3;
+   gridParameters->trafoParams[3] = grid->getCoordinateTransformator()->Sx1;
+   gridParameters->trafoParams[4] = grid->getCoordinateTransformator()->Sx2;
+   gridParameters->trafoParams[5] = grid->getCoordinateTransformator()->Sx3;
+   gridParameters->trafoParams[6] = grid->getCoordinateTransformator()->alpha;
+   gridParameters->trafoParams[7] = grid->getCoordinateTransformator()->beta;
+   gridParameters->trafoParams[8] = grid->getCoordinateTransformator()->gamma;
+
+   gridParameters->trafoParams[9] = grid->getCoordinateTransformator()->toX1factorX1;
+   gridParameters->trafoParams[10] = grid->getCoordinateTransformator()->toX1factorX2;
+   gridParameters->trafoParams[11] = grid->getCoordinateTransformator()->toX1factorX3;
+   gridParameters->trafoParams[12] = grid->getCoordinateTransformator()->toX1delta;
+   gridParameters->trafoParams[13] = grid->getCoordinateTransformator()->toX2factorX1;
+   gridParameters->trafoParams[14] = grid->getCoordinateTransformator()->toX2factorX2;
+   gridParameters->trafoParams[15] = grid->getCoordinateTransformator()->toX2factorX3;
+   gridParameters->trafoParams[16] = grid->getCoordinateTransformator()->toX2delta;
+   gridParameters->trafoParams[17] = grid->getCoordinateTransformator()->toX3factorX1;
+   gridParameters->trafoParams[18] = grid->getCoordinateTransformator()->toX3factorX2;
+   gridParameters->trafoParams[19] = grid->getCoordinateTransformator()->toX3factorX3;
+   gridParameters->trafoParams[20] = grid->getCoordinateTransformator()->toX3delta;
+
+   gridParameters->trafoParams[21] = grid->getCoordinateTransformator()->fromX1factorX1;
+   gridParameters->trafoParams[22] = grid->getCoordinateTransformator()->fromX1factorX2;
+   gridParameters->trafoParams[23] = grid->getCoordinateTransformator()->fromX1factorX3;
+   gridParameters->trafoParams[24] = grid->getCoordinateTransformator()->fromX1delta;
+   gridParameters->trafoParams[25] = grid->getCoordinateTransformator()->fromX2factorX1;
+   gridParameters->trafoParams[26] = grid->getCoordinateTransformator()->fromX2factorX2;
+   gridParameters->trafoParams[27] = grid->getCoordinateTransformator()->fromX2factorX3;
+   gridParameters->trafoParams[28] = grid->getCoordinateTransformator()->fromX2delta;
+   gridParameters->trafoParams[29] = grid->getCoordinateTransformator()->fromX3factorX1;
+   gridParameters->trafoParams[30] = grid->getCoordinateTransformator()->fromX3factorX2;
+   gridParameters->trafoParams[31] = grid->getCoordinateTransformator()->fromX3factorX3;
+   gridParameters->trafoParams[32] = grid->getCoordinateTransformator()->fromX3delta;
+
+   gridParameters->active = grid->getCoordinateTransformator()->active;
+   gridParameters->transformation = grid->getCoordinateTransformator()->transformation;
+
+   gridParameters->deltaX = grid->getDeltaX(minInitLevel);
+   UbTupleInt3 blocknx = grid->getBlockNX();
+   gridParameters->blockNx1 = val<1>(blocknx);
+   gridParameters->blockNx2 = val<2>(blocknx);
+   gridParameters->blockNx3 = val<3>(blocknx);
+   gridParameters->nx1 = grid->getNX1();
+   gridParameters->nx2 = grid->getNX2();
+   gridParameters->nx3 = grid->getNX3();
+   gridParameters->periodicX1 = grid->isPeriodicX1();
+   gridParameters->periodicX2 = grid->isPeriodicX2();
+   gridParameters->periodicX3 = grid->isPeriodicX3();
+
+   //----------------------------------------------------------------------
+
+   Block3d* block3dArray = new Block3d[blocksCount];
+   int ic = 0;
+   for (int level = minInitLevel; level <= maxInitLevel; level++)
+   {
+      for (SPtr<Block3D> block : blocksVector[level])  //	all the blocks of the current level
+      {
+         // save data describing the block
+         block3dArray[ic].x1 = block->getX1();
+         block3dArray[ic].x2 = block->getX2();
+         block3dArray[ic].x3 = block->getX3();
+         block3dArray[ic].bundle = block->getBundle();
+         block3dArray[ic].rank = block->getRank();
+         block3dArray[ic].lrank = block->getLocalRank();
+         block3dArray[ic].part = block->getPart();
+         block3dArray[ic].globalID = block->getGlobalID();
+         block3dArray[ic].localID = block->getLocalID();
+         block3dArray[ic].level = block->getLevel();
+         block3dArray[ic].interpolationFlagCF = block->getCollectionOfInterpolationFlagCF();
+         block3dArray[ic].interpolationFlagFC = block->getCollectionOfInterpolationFlagFC();
+         block3dArray[ic].counter = block->getMaxGlobalID();
+         block3dArray[ic].active = block->isActive();
+
+         ic++;
+      }
+   }
+
+   if (comm->isRoot())
+   {
+      UBLOG(logINFO, "MPIIOCoProcessor::writeBlocks start MPI IO rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
+
+   // write to the file
+   MPI_File file_handler;
+   MPI_Info info = MPI_INFO_NULL;
+
+   UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
+   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &file_handler);
+   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
+
+   double start, finish;
+   MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
+
+   if (comm->isRoot())
+   {
+      start = MPI_Wtime();
+
+      // each process writes the quantity of it's blocks
+      MPI_File_write_at(file_handler, 0/*rank*sizeof(int)*/, &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
+      // each process writes parameters of the grid
+      MPI_File_write_at(file_handler, write_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
+      // each process writes it's blocks
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(GridParam)), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
+      //MPI_File_sync(file_handler);
+   }
+   MPI_File_close(&file_handler);
+
+   if (comm->isRoot())
+   {
+      finish = MPI_Wtime();
+      UBLOG(logINFO, "MPIIOCoProcessor::writeBlocks time: " << finish - start << " s");
+   }
+
+   delete[] block3dArray;
+   delete gridParameters;
+}
+
+void MPIIOCoProcessor::readBlocks(int step)
+{
+   int rank, size;
+   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+   size = 1;
+
+   if (comm->isRoot()) UBLOG(logINFO, "MPIIOCoProcessor restart step: " << step);
+   if (comm->isRoot()) UBLOG(logINFO, "Load check point - start");
 
    double start, finish;
    if (comm->isRoot()) start = MPI_Wtime();
@@ -76,7 +225,6 @@ void MPIIOCoProcessor::readBlocks(int step)
    GridParam* gridParameters = new GridParam;
 
    // calculate the read offset
-   //MPI_Offset read_offset = (MPI_Offset)(size * sizeof(int));
    MPI_Offset read_offset = (MPI_Offset)(sizeof(int));
 
    // read parameters of the grid
@@ -92,8 +240,8 @@ void MPIIOCoProcessor::readBlocks(int step)
    if (comm->isRoot())
    {
       finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readBlocks time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readBlocks start of restore of data, rank = " << rank);
+      UBLOG(logINFO, "MPIIOCoProcessor::readBlocks time: " << finish - start << " s");
+      UBLOG(logINFO, "MPIIOCoProcessor::readBlocks start of restore of data, rank = " << rank);
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }
 
@@ -173,6 +321,11 @@ void MPIIOCoProcessor::readBlocks(int step)
    delete gridParameters;
    delete[] block3dArray;
 
+   if (comm->isRoot())
+   {
+      UBLOG(logINFO, "MPIIOCoProcessor::readBlocks end of restore of data, rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
 }
 
 void MPIIOCoProcessor::clearAllFiles(int step)
