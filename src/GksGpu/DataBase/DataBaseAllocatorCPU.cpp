@@ -80,7 +80,7 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<DataBase> dataBase)
 
     dataBase->massFlux   = new real [ LENGTH_VECTOR    * dataBase->numberOfCells ];
 
-    dataBase->diffusivity  = new real [ dataBase->numberOfCells ];
+    dataBase->diffusivity  = new realAccumulator [ dataBase->numberOfCells ];
 
     dataBase->crashCellIndex = new int;
 

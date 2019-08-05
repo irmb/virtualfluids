@@ -96,7 +96,7 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
 
     real* massFlux;
 
-    real* diffusivity;
+    realAccumulator* diffusivity;
 
     int* crashCellIndex;
 

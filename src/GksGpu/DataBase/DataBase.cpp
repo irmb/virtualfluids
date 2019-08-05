@@ -173,7 +173,7 @@ DataBaseStruct DataBase::toStruct()
 
     dataBase.massFlux                 = this->massFlux;
 
-    dataBase.diffusivity                = this->diffusivity;
+    dataBase.diffusivity              = this->diffusivity;
 
     dataBase.crashCellIndex           = this->crashCellIndex;
 
