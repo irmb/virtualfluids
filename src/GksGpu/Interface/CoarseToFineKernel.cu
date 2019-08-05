@@ -290,15 +290,65 @@ __host__ __device__ inline void coarseToFineFunction( DataBaseStruct dataBase, u
     ConservedVariables childCons [8];
     ConservedVariables zeroCons;
 
-    //                                                     PX           PY           PZ               MX           MY           MZ
-        childCons[0]    = cons[6]    + c1o8 * ( zeroCons + cons[0]    + cons[2]    + cons[4]        - cons[1]    - cons[3]    - cons[5]    ); // PX PY PZ
-        childCons[1]    = cons[6]    + c1o8 * ( zeroCons + cons[0]    + cons[2]    - cons[4]        - cons[1]    - cons[3]    + cons[5]    ); // PX PY MZ
-        childCons[2]    = cons[6]    + c1o8 * ( zeroCons + cons[0]    - cons[2]    + cons[4]        - cons[1]    + cons[3]    - cons[5]    ); // PX MY PZ
-        childCons[3]    = cons[6]    + c1o8 * ( zeroCons + cons[0]    - cons[2]    - cons[4]        - cons[1]    + cons[3]    + cons[5]    ); // PX MY MZ
-        childCons[4]    = cons[6]    + c1o8 * ( zeroCons - cons[0]    + cons[2]    + cons[4]        + cons[1]    - cons[3]    - cons[5]    ); // MX PY PZ
-        childCons[5]    = cons[6]    + c1o8 * ( zeroCons - cons[0]    + cons[2]    - cons[4]        + cons[1]    - cons[3]    + cons[5]    ); // MX PY MZ
-        childCons[6]    = cons[6]    + c1o8 * ( zeroCons - cons[0]    - cons[2]    + cons[4]        + cons[1]    + cons[3]    - cons[5]    ); // MX MY PZ
-        childCons[7]    = cons[6]    + c1o8 * ( zeroCons - cons[0]    - cons[2]    - cons[4]        + cons[1]    + cons[3]    + cons[5]    ); // MX MY MZ
+    //                                                 PX           PY           PZ               MX           MY           MZ
+    childCons[0]    = cons[6]    + c1o8 * ( zeroCons + cons[0]    + cons[2]    + cons[4]        - cons[1]    - cons[3]    - cons[5]    ); // PX PY PZ
+    childCons[1]    = cons[6]    + c1o8 * ( zeroCons + cons[0]    + cons[2]    - cons[4]        - cons[1]    - cons[3]    + cons[5]    ); // PX PY MZ
+    childCons[2]    = cons[6]    + c1o8 * ( zeroCons + cons[0]    - cons[2]    + cons[4]        - cons[1]    + cons[3]    - cons[5]    ); // PX MY PZ
+    childCons[3]    = cons[6]    + c1o8 * ( zeroCons + cons[0]    - cons[2]    - cons[4]        - cons[1]    + cons[3]    + cons[5]    ); // PX MY MZ
+    childCons[4]    = cons[6]    + c1o8 * ( zeroCons - cons[0]    + cons[2]    + cons[4]        + cons[1]    - cons[3]    - cons[5]    ); // MX PY PZ
+    childCons[5]    = cons[6]    + c1o8 * ( zeroCons - cons[0]    + cons[2]    - cons[4]        + cons[1]    - cons[3]    + cons[5]    ); // MX PY MZ
+    childCons[6]    = cons[6]    + c1o8 * ( zeroCons - cons[0]    - cons[2]    + cons[4]        + cons[1]    + cons[3]    - cons[5]    ); // MX MY PZ
+    childCons[7]    = cons[6]    + c1o8 * ( zeroCons - cons[0]    - cons[2]    - cons[4]        + cons[1]    + cons[3]    + cons[5]    ); // MX MY MZ
+
+    ConservedVariables min(  1.0e99,  1.0e99,  1.0e99,  1.0e99,  1.0e99,  1.0e99,  1.0e99 );
+    ConservedVariables max( -1.0e99, -1.0e99, -1.0e99, -1.0e99, -1.0e99, -1.0e99, -1.0e99 );
+
+    for( uint index = 0; index < 7; index++ )
+    {
+        if( cons[ index ].rho    < min.rho    ) min.rho    = cons[ index ].rho   ;
+        if( cons[ index ].rhoU   < min.rhoU   ) min.rhoU   = cons[ index ].rhoU  ;
+        if( cons[ index ].rhoV   < min.rhoV   ) min.rhoV   = cons[ index ].rhoV  ;
+        if( cons[ index ].rhoW   < min.rhoW   ) min.rhoW   = cons[ index ].rhoW  ;
+        if( cons[ index ].rhoE   < min.rhoE   ) min.rhoE   = cons[ index ].rhoE  ;
+    #ifdef USE_PASSIVE_SCALAR
+        if( cons[ index ].rhoS_1 < min.rhoS_1 ) min.rhoS_1 = cons[ index ].rhoS_1;
+        if( cons[ index ].rhoS_2 < min.rhoS_2 ) min.rhoS_2 = cons[ index ].rhoS_2;
+    #endif
+
+        if( cons[ index ].rho    > max.rho    ) max.rho    = cons[ index ].rho   ;
+        if( cons[ index ].rhoU   > max.rhoU   ) max.rhoU   = cons[ index ].rhoU  ;
+        if( cons[ index ].rhoV   > max.rhoV   ) max.rhoV   = cons[ index ].rhoV  ;
+        if( cons[ index ].rhoW   > max.rhoW   ) max.rhoW   = cons[ index ].rhoW  ;
+        if( cons[ index ].rhoE   > max.rhoE   ) max.rhoE   = cons[ index ].rhoE  ;
+    #ifdef USE_PASSIVE_SCALAR
+        if( cons[ index ].rhoS_1 > max.rhoS_1 ) max.rhoS_1 = cons[ index ].rhoS_1;
+        if( cons[ index ].rhoS_2 > max.rhoS_2 ) max.rhoS_2 = cons[ index ].rhoS_2;
+    #endif
+    }
+
+#pragma unroll
+    for( uint index = 0; index < 8; index++ )
+    {
+        if( childCons[ index ].rho    < min.rho    ) childCons[ index ].rho    = min.rho    ;
+        if( childCons[ index ].rhoU   < min.rhoU   ) childCons[ index ].rhoU   = min.rhoU   ;
+        if( childCons[ index ].rhoV   < min.rhoV   ) childCons[ index ].rhoV   = min.rhoV   ;
+        if( childCons[ index ].rhoW   < min.rhoW   ) childCons[ index ].rhoW   = min.rhoW   ;
+        if( childCons[ index ].rhoE   < min.rhoE   ) childCons[ index ].rhoE   = min.rhoE   ;
+    #ifdef USE_PASSIVE_SCALAR
+        if( childCons[ index ].rhoS_1 < min.rhoS_1 ) childCons[ index ].rhoS_1 = min.rhoS_1 ;
+        if( childCons[ index ].rhoS_2 < min.rhoS_2 ) childCons[ index ].rhoS_2 = min.rhoS_2 ;
+    #endif
+        
+        if( childCons[ index ].rho    > max.rho    ) childCons[ index ].rho    = max.rho    ;
+        if( childCons[ index ].rhoU   > max.rhoU   ) childCons[ index ].rhoU   = max.rhoU   ;
+        if( childCons[ index ].rhoV   > max.rhoV   ) childCons[ index ].rhoV   = max.rhoV   ;
+        if( childCons[ index ].rhoW   > max.rhoW   ) childCons[ index ].rhoW   = max.rhoW   ;
+        if( childCons[ index ].rhoE   > max.rhoE   ) childCons[ index ].rhoE   = max.rhoE   ;
+    #ifdef USE_PASSIVE_SCALAR
+        if( childCons[ index ].rhoS_1 > max.rhoS_1 ) childCons[ index ].rhoS_1 = max.rhoS_1 ;
+        if( childCons[ index ].rhoS_2 > max.rhoS_2 ) childCons[ index ].rhoS_2 = max.rhoS_2 ;
+    #endif
+    }
 
 #pragma unroll
     for( uint childIndex = 0; childIndex < 8; childIndex++ ){

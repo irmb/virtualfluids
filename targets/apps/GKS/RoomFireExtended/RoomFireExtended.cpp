@@ -56,6 +56,8 @@
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
+real getHRR( real t );
+
 void thermalCavity( std::string path, std::string simulationName, uint restartIter )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,10 +94,13 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real specificHeatOfReaction = heatOfReaction / 0.016;
 
     real HRR = 750.0; // kW
+    //real HRR = 500.0; // kW
 
     real U = HRR * 1000.0 / ( rhoFuel * LBurner * LBurner * (specificHeatOfReaction * 100.0) );
 
+    //real CFL = 0.25;
     real CFL = 0.125;
+    //real CFL = 0.0625;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( c1o1 + ( c2o1 * mu ) / ( U * dx * rho ) ) ) );
 
@@ -138,7 +143,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     parameters.useSmagorinsky            = true;
 
     parameters.reactionLimiter    = 1.0005;
-    parameters.temperatureLimiter = 1.0e-6;
+    parameters.temperatureLimiter = 1.0e-3;
 
     parameters.useSpongeLayer = true;
     parameters.spongeLayerIdx = 2;
@@ -155,24 +160,41 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
-    //                            2.1,  6.0,  5.0, dx);
+    gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
+                                2.1,  6.0,  5.0, dx);
 
-    gridBuilder->addCoarseGrid(-2.1, -0.6, -0.1,  
-                                2.1,  0.6,  5.0, dx);
+    //gridBuilder->addCoarseGrid(-2.1, -0.6, -0.1,  
+    //                            2.1,  0.6,  5.0, dx);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
-    //TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/Unterzug.stl");
-    TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/RoomExtended4.stl");
-    //TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/RoomExtended3.stl");
-#else
-    //TriangularMesh* stl = TriangularMesh::make("inp/Unterzug.stl");
-    TriangularMesh* stl = TriangularMesh::make("inp/RoomExtended4.stl");
-#endif
+//#ifdef _WIN32
+//    TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/RoomExtended7.stl");
+//#else
+//    //TriangularMesh* stl = TriangularMesh::make("inp/Unterzug.stl");
+//    TriangularMesh* stl = TriangularMesh::make("inp/RoomExtended4.stl");
+//#endif
+//
+//    gridBuilder->addGeometry(stl);
 
-    gridBuilder->addGeometry(stl);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Conglomerate flowDomain;
+
+    flowDomain.add( new Cuboid( -2.0, -1.5, 0.0, 2.0,  1.5, 3.0 ) );      // Room 
+    flowDomain.add( new Cuboid( -1.0,  1.0, 1.0, 1.0,  3.0, 2.4 ) );      // Window
+    flowDomain.add( new Cuboid( -2.0,  1.8, 0.0, 2.0,  5.0, 5.0 ) );      // Outside
+    flowDomain.add( new Cuboid( -0.5, -1.8, 0.0, 0.5, -1.0, 2.0 ) );      // Door
+    flowDomain.subtract( new Cuboid( -0.5, -0.5, -1.0, 0.5, 0.5, 0.5 ) ); // Fire
+    flowDomain.subtract( new Cuboid( -3.0, -0.1,  2.6, 3.0, 0.1, 4.0 ) ); // Beam
+
+    Conglomerate solidDomain;
+
+    solidDomain.add( new Cuboid(-2.2, -1.7, -0.2, 2.2,  6.1,  5.1) );
+    solidDomain.subtract( &flowDomain );
+
+    gridBuilder->addGeometry( &solidDomain );
+    //gridBuilder->addGeometry( &flowDomain );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -357,6 +379,13 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     for( uint iter = startIter + 1; iter <= 100000000; iter++ )
     {
+        real currentHRR = getHRR( iter * parameters.dt );
+
+        //*logging::out << logging::Logger::LOGGER_ERROR << "HRR(t=" << iter * parameters.dt << ") = " << currentHRR << "\n";
+
+        std::dynamic_pointer_cast<CreepingMassFlux>(bcBurner)->velocity = currentHRR * 1000.0 / ( rhoFuel * LBurner * LBurner * (specificHeatOfReaction * 100.0) );
+
+
         cupsAnalyzer.run( iter, parameters.dt );
 
         convergenceAnalyzer.run( iter );
@@ -375,7 +404,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
             break;
         }
 
-        if( iter % 10000 == 0 )
+        if( iter % 10000 == 0
+            /*|| ( iter >= 145210 )*/ )
         {
             dataBase->copyDataDeviceToHost();
 
@@ -387,7 +417,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
             Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ), iter );
         }
 
-        if( iter % 10000 == 0 )
+        if( iter % 100000 == 0 )
         {
             pointTimeSeriesCollector->writeToFile(path + simulationName + "_TimeSeries_" + std::to_string( iter ));
         }
@@ -433,7 +463,7 @@ int main( int argc, char* argv[])
     try
     {
         uint restartIter = INVALID_INDEX;
-        //uint restartIter = 35000;
+        //uint restartIter = 140000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
@@ -455,4 +485,60 @@ int main( int argc, char* argv[])
     logFile.close();
 
     return 0;
+}
+
+
+
+
+
+
+real getHRR( real t )
+{
+    // data from 
+    real tInMin_table [] = 
+    { 0.0, 
+      1.2998404845645375,     
+      1.8225528293767326,     
+      2.3411883091040355,     
+      3.690242379336123,      
+      5.8053588126615825,     
+      8.481044195158887,      
+      9.683816463416616,      
+      10.268361262016242,     
+      11.2607867055371,       
+      13.013838692038146,     
+      14.302516331727396,     
+      17.240382966469404,     
+      20.679801074868717,     
+      22.9733288897661 };
+
+
+    real HRR_table [] = 
+    { 0.0,
+      658.3729425582654,
+      590.0388596425946,
+      480.1207528610856,
+      440.4722692284047,
+      414.659889148097,
+      406.6507906206217,
+      374.9279268493922,
+      337.28487256561004,
+      260.02439647836513,
+      141.15465878904172,
+      85.66658361941495,
+      51.906257987905406,
+      33.97096366089556,
+      27.954675614199346 };
+
+    uint upper = 0;
+
+    if( t / 60.0 > tInMin_table[14] ) return HRR_table[14];
+
+    while( tInMin_table[upper] < t / 60.0 ) upper++;
+
+    uint lower = upper - 1;
+
+    real HRR = HRR_table[lower] + ( ( t / 60.0 - tInMin_table[lower] )/( tInMin_table[upper] - tInMin_table[lower] ) ) * ( HRR_table[upper] - HRR_table[lower] );
+
+    return HRR;
 }
