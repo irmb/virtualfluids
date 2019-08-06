@@ -221,7 +221,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
         if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MZ, GKS );
         if( sideLengthZ > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MZ, rankMZ);
 
-        *logging::out << logging::Logger::INFO_HIGH << "neighborRanks = " << rankPX << " " << rankMX << " " << rankPY << " " << rankMY << " " << rankPY << " " << rankMY << "\n";
+        *logging::out << logging::Logger::INFO_HIGH << "neighborRanks = " << rankPX << " " << rankMX << " " << rankPY << " " << rankMY << " " << rankPZ << " " << rankMZ << "\n";
     }
 
     //gridBuilder->writeGridsToVtk(path + "/Grid_rank_" + std::to_string(rank) + "_lev_");
