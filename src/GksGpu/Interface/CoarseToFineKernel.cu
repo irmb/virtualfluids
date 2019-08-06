@@ -299,9 +299,14 @@ __host__ __device__ inline void coarseToFineFunction( DataBaseStruct dataBase, u
     childCons[5]    = cons[6]    + c1o8 * ( zeroCons - cons[0]    + cons[2]    - cons[4]        + cons[1]    - cons[3]    + cons[5]    ); // MX PY MZ
     childCons[6]    = cons[6]    + c1o8 * ( zeroCons - cons[0]    - cons[2]    + cons[4]        + cons[1]    + cons[3]    - cons[5]    ); // MX MY PZ
     childCons[7]    = cons[6]    + c1o8 * ( zeroCons - cons[0]    - cons[2]    - cons[4]        + cons[1]    + cons[3]    + cons[5]    ); // MX MY MZ
-
+    
+#ifdef USE_PASSIVE_SCALAR
     ConservedVariables min(  1.0e99,  1.0e99,  1.0e99,  1.0e99,  1.0e99,  1.0e99,  1.0e99 );
     ConservedVariables max( -1.0e99, -1.0e99, -1.0e99, -1.0e99, -1.0e99, -1.0e99, -1.0e99 );
+#else
+    ConservedVariables min(  1.0e99,  1.0e99,  1.0e99,  1.0e99,  1.0e99 );
+    ConservedVariables max( -1.0e99, -1.0e99, -1.0e99, -1.0e99, -1.0e99 );
+#endif
 
     for( uint index = 0; index < 7; index++ )
     {
