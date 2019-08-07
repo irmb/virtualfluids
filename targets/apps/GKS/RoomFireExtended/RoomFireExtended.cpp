@@ -58,7 +58,7 @@
 
 real getHRR( real t );
 
-void thermalCavity( std::string path, std::string simulationName, uint restartIter )
+void thermalCavity( std::string path, std::string simulationName, uint windowIndex, uint restartIter )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -182,11 +182,15 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     Conglomerate flowDomain;
 
     flowDomain.add( new Cuboid( -2.0, -1.5, 0.0, 2.0,  1.5, 3.0 ) );      // Room 
-    flowDomain.add( new Cuboid( -1.0,  1.0, 1.0, 1.0,  3.0, 2.4 ) );      // Window
     flowDomain.add( new Cuboid( -2.0,  1.8, 0.0, 2.0,  5.0, 5.0 ) );      // Outside
     flowDomain.add( new Cuboid( -0.5, -1.8, 0.0, 0.5, -1.0, 2.0 ) );      // Door
     flowDomain.subtract( new Cuboid( -0.5, -0.5, -1.0, 0.5, 0.5, 0.5 ) ); // Fire
     flowDomain.subtract( new Cuboid( -3.0, -0.1,  2.6, 3.0, 0.1, 4.0 ) ); // Beam
+
+    if( windowIndex == 0 ) flowDomain.add( new Cuboid( -1.0 ,  1.0,  1.0,    1.0 ,  3.0,  2.4 ) );      // Window large
+    if( windowIndex == 1 ) flowDomain.add( new Cuboid( -0.5 ,  1.0,  1.0,    0.5 ,  3.0,  2.4 ) );      // Window medium
+    if( windowIndex == 2 ) flowDomain.add( new Cuboid( -0.25,  1.0,  1.5,    0.25,  3.0,  2.0 ) );      // Window small
+    if( windowIndex == 3 ) flowDomain.add( new Cuboid( -1.0 ,  1.0,  1.0,    1.0 ,  3.0,  2.0 ) );      // Window low
 
     Conglomerate solidDomain;
 
@@ -243,7 +247,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(1);
+    CudaUtility::setCudaDevice(windowIndex);
 
     auto dataBase = std::make_shared<DataBase>( "GPU" );
 
@@ -443,6 +447,12 @@ int main( int argc, char* argv[])
     std::string path( "F:/Work/Computations/out/RoomFireExtended/" );
 #else
     std::string path( "out/" );
+    
+    if( argc > 1 ){
+        path += "Window_";
+        path += argv[1];
+        path += "/";
+    }
 #endif
 
     std::string simulationName ( "RoomFire" );
@@ -465,9 +475,12 @@ int main( int argc, char* argv[])
         uint restartIter = INVALID_INDEX;
         //uint restartIter = 140000;
 
-        if( argc > 1 ) restartIter = atoi( argv[1] );
+        uint windowIndex = 0;
 
-        thermalCavity( path, simulationName, restartIter );
+        if( argc > 1 ) windowIndex = atoi( argv[1] );
+        if( argc > 2 ) restartIter = atoi( argv[2] );
+
+        thermalCavity( path, simulationName, windowIndex, restartIter );
     }
     catch (const std::exception& e)
     {     
