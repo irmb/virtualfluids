@@ -9,6 +9,8 @@
 #include "DataBaseAllocator.h"
 #include "DataBaseStruct.h"
 
+#include "core/Logger/Logger.h"
+
 #include "GksMeshAdapter/GksMeshAdapter.h"
 #include "Communication/Communicator.h"
 
@@ -109,6 +111,8 @@ void DataBase::setCommunicators(GksMeshAdapter & adapter)
                 this->communicators[level][direction] = std::make_shared<Communicator>( shared_from_this() );
 
                 this->communicators[level][direction]->initialize( adapter, level, direction );
+
+                *logging::out << logging::Logger::INFO_LOW << "Generated Communicator " << level << ":" << direction << " \n";
             }
             else
             {

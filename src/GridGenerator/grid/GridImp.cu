@@ -1033,7 +1033,8 @@ HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbm
                      this->getFieldEntry(index) == FLUID_CFC ||
                      this->getFieldEntry(index) == FLUID_CFF ||
                      this->getFieldEntry(index) == FLUID_FCC ||
-                     this->getFieldEntry(index) == FLUID_FCF ) )
+                     this->getFieldEntry(index) == FLUID_FCF ||
+                     this->getFieldEntry(index) == BC_SOLID ) )
             {
                 this->setFieldEntry(index, STOPPER_OUT_OF_GRID_BOUNDARY);
             }

@@ -24,6 +24,8 @@
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/GridFactory.h"
 
+#include "GridGenerator/utilities/communication.h"
+
 #include "GksMeshAdapter/GksMeshAdapter.h"
 
 #include "GksVtkAdapter/VTKInterface.h"
@@ -45,6 +47,9 @@
 #include "GksGpu/BoundaryConditions/CreepingMassFlux.h"
 #include "GksGpu/BoundaryConditions/Open.h"
 
+#include "GksGpu/Communication/Communicator.h"
+#include "GksGpu/Communication/MpiUtility.h"
+
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
 
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
@@ -60,6 +65,30 @@ real getHRR( real t );
 
 void thermalCavity( std::string path, std::string simulationName, uint windowIndex, uint restartIter )
 {
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    int rank = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int mpiWorldSize = 1;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    int sideLengthX, sideLengthY, sideLengthZ, rankX, rankY, rankZ;
+
+    if      (mpiWorldSize == 1 ) { sideLengthX = 1; sideLengthY = 1; sideLengthZ = 1; }
+    else if (mpiWorldSize == 2 ) { sideLengthX = 2; sideLengthY = 1; sideLengthZ = 1; }
+    else if (mpiWorldSize == 4 ) { sideLengthX = 2; sideLengthY = 2; sideLengthZ = 1; }
+    else if (mpiWorldSize == 8 ) { sideLengthX = 2; sideLengthY = 2; sideLengthZ = 2; }
+
+    rankX =   rank %   sideLengthX;
+    rankY = ( rank % ( sideLengthX * sideLengthY ) ) /   sideLengthX;
+    rankZ =   rank                                   / ( sideLengthY * sideLengthX );
+
+    *logging::out << logging::Logger::INFO_HIGH << "SideLength = " << sideLengthX << " " << sideLengthY << " " << sideLengthZ << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "rank       = " << rankX << " " << rankY << " " << rankZ << "\n";
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     real dx = 0.1;
@@ -94,13 +123,10 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
     real specificHeatOfReaction = heatOfReaction / 0.016;
 
     real HRR = 750.0; // kW
-    //real HRR = 500.0; // kW
 
     real U = HRR * 1000.0 / ( rhoFuel * LBurner * LBurner * (specificHeatOfReaction * 100.0) );
 
-    //real CFL = 0.25;
     real CFL = 0.125;
-    //real CFL = 0.0625;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( c1o1 + ( c2o1 * mu ) / ( U * dx * rho ) ) ) );
 
@@ -109,7 +135,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
     *logging::out << logging::Logger::INFO_HIGH << "cs = " << cs << " m/s\n";
     *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
 
-    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * rhoFuel * LBurner * LBurner * (heatOfReaction * 100.0) / 0.016 / 1000.0 << " kW\n";
+    //*logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * rhoFuel * LBurner * LBurner * (heatOfReaction * 100.0) / 0.016 / 1000.0 << " kW\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -163,9 +189,6 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
     gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
                                 2.1,  6.0,  5.0, dx);
 
-    //gridBuilder->addCoarseGrid(-2.1, -0.6, -0.1,  
-    //                            2.1,  0.6,  5.0, dx);
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //#ifdef _WIN32
@@ -205,25 +228,78 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
     Cuboid boxCoarse ( -2.0, -3.0, -0.5, 
                         3.0,  3.0,  3.5 );
 
-    gridBuilder->addGrid( &boxCoarse, 1 );
+    //gridBuilder->addGrid( &boxCoarse, 1 );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Cuboid roomRef( -2.1, -1.8, -1.0, 
+                     2.1,  1.7, 10.0 );
+    
+    Cuboid windowRef( -1.1,  1.6,  0.9, 
+                       1.1,  2.0,  3.0 );
+
+    Conglomerate refRegion1;
+
+    refRegion1.add( &roomRef );
+    refRegion1.add( &windowRef );
+
+    gridBuilder->setNumberOfLayers(0,22);
+
+    //gridBuilder->addGrid( &refRegion1, 2 );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Cuboid boxRef ( -0.6 * LBurner, -0.6 * LBurner, -1.0, 
                      0.6 * LBurner,  0.6 * LBurner, 10.0 );
     Cuboid beamRef( -10.0, -0.25, 2.4, 10.0, 0.25, 10.0 );
 
-    //boxRef.scale (0.5);
-    //beamRef.scale(0.5);
+    Conglomerate refRegion2;
 
-    Conglomerate refRegion1;
-
-    refRegion1.add( &boxRef );
-    refRegion1.add( &beamRef );
+    refRegion2.add( &boxRef );
+    refRegion2.add( &beamRef );
 
     gridBuilder->setNumberOfLayers(0,22);
 
-    gridBuilder->addGrid( &refRegion1, 2 );
+    //gridBuilder->addGrid( &refRegion2, 3 );
 
     uint maxLevel = gridBuilder->getNumberOfGridLevels() - 1;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    real startX = -1e99;
+    real startY = -1e99;
+    real startZ = -1e99;
+    real endX   =  1e99;
+    real endY   =  1e99;
+    real endZ   =  1e99;
+
+    if( mpiWorldSize == 2 )
+    {
+        if( rank == 0 ) { endX   = 0.0; }
+        if( rank == 1 ) { startX = 0.0; }
+    }
+    if( mpiWorldSize == 4 )
+    {
+        if( rank == 0 ) { endX   = 0.0; endY   = 0.0; }
+        if( rank == 1 ) { startX = 0.0; endY   = 0.0; }
+        if( rank == 2 ) { endX   = 0.0; startY = 0.0; }
+        if( rank == 3 ) { startX = 0.0; startY = 0.0; }
+    }
+    if( mpiWorldSize == 8 )
+    {
+        if( rank == 0 ) { endX   = 0.0; endY   = 0.0; endZ   = 1.9; }
+        if( rank == 1 ) { startX = 0.0; endY   = 0.0; endZ   = 1.9; }
+        if( rank == 2 ) { endX   = 0.0; startY = 0.0; endZ   = 1.9; }
+        if( rank == 3 ) { startX = 0.0; startY = 0.0; endZ   = 1.9; }
+        if( rank == 4 ) { endX   = 0.0; endY   = 0.0; startZ = 1.9; }
+        if( rank == 5 ) { startX = 0.0; endY   = 0.0; startZ = 1.9; }
+        if( rank == 6 ) { endX   = 0.0; startY = 0.0; startZ = 1.9; }
+        if( rank == 7 ) { startX = 0.0; startY = 0.0; startZ = 1.9; }
+    }
+
+    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( startX, endX, 
+                                                                 startY, endY, 
+                                                                 startZ, endZ ) );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -231,7 +307,42 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     gridBuilder->buildGrids(GKS, false);
 
-    //gridBuilder->writeGridsToVtk(path + "Grid_lev_");
+    //gridBuilder->writeGridsToVtk(path + "Grid_rank_" + std::to_string( rank ) + "_lev_");
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    
+    if( mpiWorldSize > 1 )
+    {
+        int rankPX = ( (rankX + 1 + sideLengthX) % sideLengthX ) +    rankY                                    * sideLengthX +    rankZ                                    * sideLengthX * sideLengthY;
+        int rankMX = ( (rankX - 1 + sideLengthX) % sideLengthX ) +    rankY                                    * sideLengthX +    rankZ                                    * sideLengthX * sideLengthY;
+        int rankPY =    rankX                                    + ( (rankY + 1 + sideLengthY) % sideLengthY ) * sideLengthX +    rankZ                                    * sideLengthX * sideLengthY;
+        int rankMY =    rankX                                    + ( (rankY - 1 + sideLengthY) % sideLengthY ) * sideLengthX +    rankZ                                    * sideLengthX * sideLengthY;
+        int rankPZ =    rankX                                    +    rankY                                    * sideLengthX + ( (rankZ + 1 + sideLengthZ) % sideLengthZ ) * sideLengthX * sideLengthY;
+        int rankMZ =    rankX                                    +    rankY                                    * sideLengthX + ( (rankZ - 1 + sideLengthZ) % sideLengthZ ) * sideLengthX * sideLengthY;
+
+        if( sideLengthX > 1 && rankX < sideLengthX-1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PX, GKS );
+        if( sideLengthX > 1 && rankX < sideLengthX-1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PX, rankPX);
+
+        if( sideLengthX > 1 && rankX > 0             ) gridBuilder->findCommunicationIndices( CommunicationDirections::MX, GKS );
+        if( sideLengthX > 1 && rankX > 0             ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, rankMX);
+
+        if( sideLengthY > 1 && rankY < sideLengthY-1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PY, GKS );
+        if( sideLengthY > 1 && rankY < sideLengthY-1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PY, rankPY);
+
+        if( sideLengthY > 1 && rankY > 0             ) gridBuilder->findCommunicationIndices( CommunicationDirections::MY, GKS );
+        if( sideLengthY > 1 && rankY > 0             ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MY, rankMY);
+
+        if( sideLengthZ > 1 && rankZ < sideLengthZ-1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PZ, GKS );
+        if( sideLengthZ > 1 && rankZ < sideLengthZ-1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PZ, rankPZ);
+
+        if( sideLengthZ > 1 && rankZ > 0             ) gridBuilder->findCommunicationIndices( CommunicationDirections::MZ, GKS );
+        if( sideLengthZ > 1 && rankZ > 0             ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MZ, rankMZ);
+
+        *logging::out << logging::Logger::INFO_HIGH << "neighborRanks = " << rankPX << " " << rankMX << " " << rankPY << " " << rankMY << " " << rankPZ << " " << rankMZ << "\n";
+    }
+
+    //gridBuilder->writeGridsToVtk(path + "Grid_rank_" + std::to_string( rank ) + "_lev_");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -241,13 +352,13 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     //meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
 
-    //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
+    //meshAdapter.writeMeshFaceVTK( path + "MeshFaces_rank_" + std::to_string( rank ) + ".vtk" );
 
     //meshAdapter.findPeriodicBoundaryNeighbors();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(windowIndex);
+    CudaUtility::setCudaDevice( rank % CudaUtility::getCudaDeviceCount() );
 
     auto dataBase = std::make_shared<DataBase>( "GPU" );
 
@@ -338,6 +449,8 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     dataBase->setMesh( meshAdapter );
 
+    dataBase->setCommunicators( meshAdapter );
+
     CudaUtility::printCudaMemoryUsage();
     
     if( restartIter == INVALID_INDEX )
@@ -347,13 +460,17 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
             return toConservedVariables(prim, parameters.K);
         });
 
-        writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
+        if (rank == 0) writeVtkXMLParallelSummaryFile(dataBase, parameters, path + simulationName + "_0", mpiWorldSize);
+
+        writeVtkXML(dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank));
     }
     else
     {
-        Restart::readRestart( dataBase, path + simulationName + "_" + std::to_string( restartIter ), startIter );
+        Restart::readRestart( dataBase, path + simulationName + "_" + std::to_string( restartIter ) + "_rank_" + std::to_string(rank), startIter );
 
-        writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( restartIter ) + "_restart" );
+        if (rank == 0) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( restartIter ) + "_restart", mpiWorldSize );
+
+        writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( restartIter ) + "_restart" + "_rank_" + std::to_string(rank) );
     }
 
     dataBase->copyDataHostToDevice();
@@ -379,6 +496,12 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     //////////////////////////////////////////////////////////////////////////
 
+    *logging::out << logging::Logger::INFO_HIGH << "================================================================================\n";
+    *logging::out << logging::Logger::INFO_HIGH << "================================================================================\n";
+    *logging::out << logging::Logger::INFO_HIGH << "==================   S t a r t    T i m e    S t e p p i n g   =================\n";
+    *logging::out << logging::Logger::INFO_HIGH << "================================================================================\n";
+    *logging::out << logging::Logger::INFO_HIGH << "================================================================================\n";
+
     cupsAnalyzer.start();
 
     for( uint iter = startIter + 1; iter <= 100000000; iter++ )
@@ -389,12 +512,17 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
         std::dynamic_pointer_cast<CreepingMassFlux>(bcBurner)->velocity = currentHRR * 1000.0 / ( rhoFuel * LBurner * LBurner * (specificHeatOfReaction * 100.0) );
 
+        //////////////////////////////////////////////////////////////////////////
+
+        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+
+        //////////////////////////////////////////////////////////////////////////
 
         cupsAnalyzer.run( iter, parameters.dt );
 
         convergenceAnalyzer.run( iter );
 
-        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+        //////////////////////////////////////////////////////////////////////////
 
         pointTimeSeriesCollector->run(iter, parameters);
 
@@ -408,25 +536,24 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
             break;
         }
 
-        if( iter % 10000 == 0
-            /*|| ( iter >= 145210 )*/ )
+        if( iter % 100 == 0 )
         {
             dataBase->copyDataDeviceToHost();
 
-            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
+            if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( iter ), mpiWorldSize );
+
+            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
         }
 
         if( iter % 10000 == 0 )
         {
-            Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ), iter );
+            Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank), iter );
         }
 
-        if( iter % 100000 == 0 )
-        {
-            pointTimeSeriesCollector->writeToFile(path + simulationName + "_TimeSeries_" + std::to_string( iter ));
-        }
-
-        //turbulenceAnalyzer->run( iter, parameters );
+        //if( iter % 100000 == 0 )
+        //{
+        //    pointTimeSeriesCollector->writeToFile(path + simulationName + "_TimeSeries_" + std::to_string( iter ) + "_rank_" + std::to_string(rank));
+        //}
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -442,6 +569,13 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
 int main( int argc, char* argv[])
 {
+    MPI_Init(&argc, &argv);
+    int rank = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int mpiWorldSize = 1;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
+
+    //////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
     std::string path( "F:/Work/Computations/out/RoomFireExtended/" );
@@ -459,7 +593,7 @@ int main( int argc, char* argv[])
 
     logging::Logger::addStream(&std::cout);
     
-    std::ofstream logFile( path + simulationName + ".log" );
+    std::ofstream logFile( path + simulationName + "_rank_" + std::to_string(rank) + ".log" );
     logging::Logger::addStream(&logFile);
 
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
@@ -469,6 +603,8 @@ int main( int argc, char* argv[])
         *logging::out << logging::Logger::INFO_HIGH << "Using Single Precision\n";
     else
         *logging::out << logging::Logger::INFO_HIGH << "Using Double Precision\n";
+
+    //////////////////////////////////////////////////////////////////////////
 
     try
     {
