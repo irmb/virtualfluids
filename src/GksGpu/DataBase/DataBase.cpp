@@ -9,7 +9,7 @@
 #include "DataBaseAllocator.h"
 #include "DataBaseStruct.h"
 
-#include "core/Logger/Logger.h"
+#include "Core/Logger/Logger.h"
 
 #include "GksMeshAdapter/GksMeshAdapter.h"
 #include "Communication/Communicator.h"

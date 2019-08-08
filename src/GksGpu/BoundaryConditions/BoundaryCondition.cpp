@@ -54,6 +54,8 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, bool allowGh
 
             if( cell.type != STOPPER_OUT_OF_GRID && cell.type != STOPPER_OUT_OF_GRID_BOUNDARY && cell.type != STOPPER_SOLID ) continue;
 
+            if( cell.isRecvCell ) continue;
+
             // look in all directions
             uint maximalSearchDirection = 27;
 

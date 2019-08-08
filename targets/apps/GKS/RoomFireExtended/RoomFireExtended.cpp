@@ -3,6 +3,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <exception>
 #include <fstream>
@@ -188,6 +189,8 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
                                 2.1,  6.0,  5.0, dx);
+    //gridBuilder->addCoarseGrid(-1.1, -1.2,  1.1,  
+                                //1.2,  1.2,  2.2, dx);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -228,41 +231,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
     Cuboid boxCoarse ( -2.0, -3.0, -0.5, 
                         3.0,  3.0,  3.5 );
 
-    //gridBuilder->addGrid( &boxCoarse, 1 );
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Cuboid roomRef( -2.1, -1.8, -1.0, 
-                     2.1,  1.7, 10.0 );
-    
-    Cuboid windowRef( -1.1,  1.6,  0.9, 
-                       1.1,  2.0,  3.0 );
-
-    Conglomerate refRegion1;
-
-    refRegion1.add( &roomRef );
-    refRegion1.add( &windowRef );
-
-    gridBuilder->setNumberOfLayers(0,22);
-
-    //gridBuilder->addGrid( &refRegion1, 2 );
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Cuboid boxRef ( -0.6 * LBurner, -0.6 * LBurner, -1.0, 
-                     0.6 * LBurner,  0.6 * LBurner, 10.0 );
-    Cuboid beamRef( -10.0, -0.25, 2.4, 10.0, 0.25, 10.0 );
-
-    Conglomerate refRegion2;
-
-    refRegion2.add( &boxRef );
-    refRegion2.add( &beamRef );
-
-    gridBuilder->setNumberOfLayers(0,22);
-
-    //gridBuilder->addGrid( &refRegion2, 3 );
-
-    uint maxLevel = gridBuilder->getNumberOfGridLevels() - 1;
+    gridBuilder->addGrid( &boxCoarse, 1 );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -303,9 +272,45 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    Cuboid roomRef( -2.1, -1.8, -1.0, 
+                     2.1,  1.7, 10.0 );
+    
+    Cuboid windowRef( -1.1,  1.6,  0.9, 
+                       1.1,  2.0,  3.0 );
+
+    Conglomerate refRegion1;
+
+    refRegion1.add( &roomRef );
+    refRegion1.add( &windowRef );
+
+    gridBuilder->setNumberOfLayers(0,22);
+
+    //gridBuilder->addGrid( &refRegion1, 2 );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Cuboid boxRef ( -0.6 * LBurner, -0.6 * LBurner, -1.0, 
+                     0.6 * LBurner,  0.6 * LBurner, 10.0 );
+    Cuboid beamRef( -10.0, -0.25, 2.4, 10.0, 0.25, 10.0 );
+
+    Conglomerate refRegion2;
+
+    refRegion2.add( &boxRef );
+    refRegion2.add( &beamRef );
+
+    gridBuilder->setNumberOfLayers(0,22);
+
+    //gridBuilder->addGrid( &refRegion2, 3 );
+
+    uint maxLevel = gridBuilder->getNumberOfGridLevels() - 1;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
     gridBuilder->buildGrids(GKS, false);
+
+    MPI_Barrier(MPI_COMM_WORLD);
 
     //gridBuilder->writeGridsToVtk(path + "Grid_rank_" + std::to_string( rank ) + "_lev_");
 
@@ -358,7 +363,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice( rank % CudaUtility::getCudaDeviceCount() );
+    //CudaUtility::setCudaDevice( rank % CudaUtility::getCudaDeviceCount() );
 
     auto dataBase = std::make_shared<DataBase>( "GPU" );
 
@@ -406,8 +411,6 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
     dataBase->boundaryConditions.push_back( bcBurner );
 
     dataBase->boundaryConditions.push_back( bcWall );
-
-    //dataBase->boundaryConditions.push_back( bcTop );
 
     dataBase->boundaryConditions.push_back( bcOpen );
 
@@ -457,7 +460,11 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
     {
         Initializer::interpret(dataBase, [&](Vec3 cellCenter) -> ConservedVariables {
 
-            return toConservedVariables(prim, parameters.K);
+            PrimitiveVariables primLocal = prim;
+
+            //if( cellCenter.x > 0 ) primLocal.rho = 1.21;
+
+            return toConservedVariables(primLocal, parameters.K);
         });
 
         if (rank == 0) writeVtkXMLParallelSummaryFile(dataBase, parameters, path + simulationName + "_0", mpiWorldSize);
@@ -502,6 +509,8 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
     *logging::out << logging::Logger::INFO_HIGH << "================================================================================\n";
     *logging::out << logging::Logger::INFO_HIGH << "================================================================================\n";
 
+    MPI_Barrier(MPI_COMM_WORLD);
+
     cupsAnalyzer.start();
 
     for( uint iter = startIter + 1; iter <= 100000000; iter++ )
@@ -524,7 +533,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
         //////////////////////////////////////////////////////////////////////////
 
-        pointTimeSeriesCollector->run(iter, parameters);
+        //pointTimeSeriesCollector->run(iter, parameters);
 
         int crashCellIndex = dataBase->getCrashCellIndex();
         if( crashCellIndex >= 0 )
@@ -536,7 +545,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
             break;
         }
 
-        if( iter % 100 == 0 )
+        if( iter % 1000 == 0 )
         {
             dataBase->copyDataDeviceToHost();
 
@@ -599,6 +608,22 @@ int main( int argc, char* argv[])
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
+    //////////////////////////////////////////////////////////////////////////
+
+    // Important: for Cuda-Aware MPI the device must be set before MPI_Init()
+    int deviceCount = CudaUtility::getCudaDeviceCount();
+
+    if(deviceCount == 0)
+    {
+        std::stringstream msg;
+        msg << "No devices devices found!" << std::endl;
+        *logging::out << logging::Logger::WARNING << msg.str(); msg.str("");
+    }
+
+    CudaUtility::setCudaDevice( rank % deviceCount );
+
+    //////////////////////////////////////////////////////////////////////////
+
     if( sizeof(real) == 4 )
         *logging::out << logging::Logger::INFO_HIGH << "Using Single Precision\n";
     else
@@ -632,6 +657,8 @@ int main( int argc, char* argv[])
     }
 
     logFile.close();
+
+    MPI_Finalize();
 
     return 0;
 }
