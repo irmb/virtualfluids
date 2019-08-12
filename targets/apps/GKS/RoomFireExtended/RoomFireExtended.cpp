@@ -1,4 +1,16 @@
-//#define MPI_LOGGING
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//   ||          ||  ||  ||||||  |||||||| ||    ||  ||||||||  ||
+//    ||        ||   ||  ||   ||    ||    ||    ||  ||    ||  ||
+//     ||      ||    ||  ||||||     ||    ||    ||  ||||||||  ||
+//      ||    ||     ||  ||   ||    ||     ||||||   ||    ||  ||||||    ||||||   ||   ||||||   ||||||   ||||||
+//       ||  ||                                                        ||       ||   ||   ||  ||      |||    ||
+//        ||||       |||||||||||||||||||||||||||||||||||||||||||||||||||||||   ||   ||||||   ||||||     |||
+//                                                                    ||      ||   ||   ||  ||       ||   |||
+//                    i R M B  @  T U  B r a u n s c h w e i g       ||      ||   ||   ||  ||||||   |||||||
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -266,9 +278,11 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
         if( rank == 7 ) { startX = 0.0; startY = 0.0; startZ = 1.9; }
     }
 
-    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( startX, endX, 
-                                                                 startY, endY, 
-                                                                 startZ, endZ ) );
+    auto subDomainBox = std::make_shared<BoundingBox>( startX, endX, 
+                                                       startY, endY, 
+                                                       startZ, endZ );
+
+    gridBuilder->setSubDomainBox( subDomainBox );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -285,7 +299,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     gridBuilder->setNumberOfLayers(0,22);
 
-    //gridBuilder->addGrid( &refRegion1, 2 );
+    gridBuilder->addGrid( &refRegion1, 2 );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -300,7 +314,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     gridBuilder->setNumberOfLayers(0,22);
 
-    //gridBuilder->addGrid( &refRegion2, 3 );
+    gridBuilder->addGrid( &refRegion2, 3 );
 
     uint maxLevel = gridBuilder->getNumberOfGridLevels() - 1;
 
@@ -426,21 +440,21 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     auto pointTimeSeriesCollector = std::make_shared<PointTimeSeriesCollector>();
 
-    for( real x = -0.0001; x < 2; x += 0.5 )
+    for( real x = 0.0002; x < 2; x += 0.4449 )
     {
-        pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(x, -1.4999, 2.9999), 'T' );
-        pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(x, -1.0,    2.9999), 'T' );
-        pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(x, -0.5,    2.9999), 'T' );
-        pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(x, -0.2001, 2.9999), 'T' );
+        if( subDomainBox->isInside( x, -1.4999, 2.9999 ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( x, -1.4999, 2.9999 ), 'T' );
+        if( subDomainBox->isInside( x, -1.0,    2.9999 ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( x, -1.0,    2.9999 ), 'T' );
+        if( subDomainBox->isInside( x, -0.5,    2.9999 ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( x, -0.5,    2.9999 ), 'T' );
+        if( subDomainBox->isInside( x, -0.2001, 2.9999 ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( x, -0.2001, 2.9999 ), 'T' );
 
-        pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(x, -0.2001, 2.5999), 'T' );
-        pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(x,  0.0,    2.5999), 'T' );
-        pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(x,  0.2001, 2.5999), 'T' );
+        if( subDomainBox->isInside( x, -0.2001, 2.5999 ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( x, -0.2001, 2.5999 ), 'T' );
+        if( subDomainBox->isInside( x,  0.0001, 2.5999 ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( x,  0.0001, 2.5999 ), 'T' );
+        if( subDomainBox->isInside( x,  0.2001, 2.5999 ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( x,  0.2001, 2.5999 ), 'T' );
         
-        pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(x,  0.2001, 2.9999), 'T' );
-        pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(x,  0.5,    2.9999), 'T' );
-        pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(x,  1.0,    2.9999), 'T' );
-        pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(x,  1.4999, 2.9999), 'T' );
+        if( subDomainBox->isInside( x,  0.2001, 2.9999 ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( x,  0.2001, 2.9999 ), 'T' );
+        if( subDomainBox->isInside( x,  0.5,    2.9999 ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( x,  0.5,    2.9999 ), 'T' );
+        if( subDomainBox->isInside( x,  1.0,    2.9999 ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( x,  1.0,    2.9999 ), 'T' );
+        if( subDomainBox->isInside( x,  1.4999, 2.9999 ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( x,  1.4999, 2.9999 ), 'T' );
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -533,7 +547,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
         //////////////////////////////////////////////////////////////////////////
 
-        //pointTimeSeriesCollector->run(iter, parameters);
+        pointTimeSeriesCollector->run(iter, parameters);
 
         int crashCellIndex = dataBase->getCrashCellIndex();
         if( crashCellIndex >= 0 )
@@ -545,7 +559,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
             break;
         }
 
-        if( iter % 1000 == 0 )
+        if( iter % 10000 == 0 )
         {
             dataBase->copyDataDeviceToHost();
 
@@ -559,10 +573,10 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
             Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank), iter );
         }
 
-        //if( iter % 100000 == 0 )
-        //{
-        //    pointTimeSeriesCollector->writeToFile(path + simulationName + "_TimeSeries_" + std::to_string( iter ) + "_rank_" + std::to_string(rank));
-        //}
+        if( iter % 100000 == 0 )
+        {
+            pointTimeSeriesCollector->writeToFile(path + simulationName + "_TimeSeries_" + std::to_string( iter ) + "_rank_" + std::to_string(rank));
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////
