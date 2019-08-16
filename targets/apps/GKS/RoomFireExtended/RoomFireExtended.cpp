@@ -58,6 +58,7 @@
 #include "GksGpu/BoundaryConditions/AdiabaticWall.h"
 #include "GksGpu/BoundaryConditions/HeatFlux.h"
 #include "GksGpu/BoundaryConditions/CreepingMassFlux.h"
+#include "GksGpu/BoundaryConditions/ConcreteHeatFlux.h"
 #include "GksGpu/BoundaryConditions/Open.h"
 
 #include "GksGpu/Communication/Communicator.h"
@@ -201,8 +202,10 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
                                 2.1,  6.0,  5.0, dx);
-    //gridBuilder->addCoarseGrid(-1.1, -1.2,  1.1,  
-                                //1.2,  1.2,  2.2, dx);
+    //gridBuilder->addCoarseGrid(-1.1, -1.2, -0.1,  
+                                //1.1,  1.2,  2.2, dx);
+    //gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
+                                //2.1,  1.6,  3.1, dx);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -299,7 +302,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     gridBuilder->setNumberOfLayers(0,22);
 
-    gridBuilder->addGrid( &refRegion1, 2 );
+    //gridBuilder->addGrid( &refRegion1, 2 );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -314,7 +317,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     gridBuilder->setNumberOfLayers(0,22);
 
-    gridBuilder->addGrid( &refRegion2, 3 );
+    //gridBuilder->addGrid( &refRegion2, 3 );
 
     uint maxLevel = gridBuilder->getNumberOfGridLevels() - 1;
 
@@ -389,12 +392,12 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
     SPtr<BoundaryCondition> bcWall = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
 
     bcWall->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return true; } );
-
-    ////////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcTop = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
+    SPtr<BoundaryCondition> bcWallHeatFlux = std::make_shared<ConcreteHeatFlux>( dataBase, 10, 1.0e-6, 2400.0, 880, 0.3, 3.0 );
 
-    //bcTop->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > 3.0 || center.z < 0.0; } );
+    bcWallHeatFlux->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > 3.0 && center.y < 1.6; } );
+
+    std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux)->init();
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -423,6 +426,8 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
     //////////////////////////////////////////////////////////////////////////
 
     dataBase->boundaryConditions.push_back( bcBurner );
+
+    dataBase->boundaryConditions.push_back( bcWallHeatFlux );
 
     dataBase->boundaryConditions.push_back( bcWall );
 
@@ -566,6 +571,8 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
             if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( iter ), mpiWorldSize );
 
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
+
+            std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux)->writeVTKFile(dataBase, parameters, path + simulationName + "_Solid_" + std::to_string( iter ));
         }
 
         if( iter % 10000 == 0 )
@@ -633,8 +640,8 @@ int main( int argc, char* argv[])
         msg << "No devices devices found!" << std::endl;
         *logging::out << logging::Logger::WARNING << msg.str(); msg.str("");
     }
-
-    CudaUtility::setCudaDevice( rank % deviceCount );
+    if( mpiWorldSize == 1 ) CudaUtility::setCudaDevice( 1 );
+    else                    CudaUtility::setCudaDevice( rank % deviceCount );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -650,7 +657,7 @@ int main( int argc, char* argv[])
         uint restartIter = INVALID_INDEX;
         //uint restartIter = 140000;
 
-        uint windowIndex = 0;
+        uint windowIndex = 2;
 
         if( argc > 1 ) windowIndex = atoi( argv[1] );
         if( argc > 2 ) restartIter = atoi( argv[2] );

@@ -1,0 +1,97 @@
+#ifndef ConcreteHeatFlux_CUH
+#define ConcreteHeatFlux_CUH
+
+#include <memory>
+
+#include <thrust/device_vector.h>
+
+#include "VirtualFluidsDefinitions.h"
+
+#include "Core/PointerDefinitions.h"
+#include "Core/DataTypes.h"
+#include "Core/VectorTypes.h"
+
+#include "FlowStateData/FlowStateData.cuh"
+
+#include "BoundaryConditions/BoundaryCondition.h"
+
+struct ConcreteHeatFluxStruct
+{
+    uint  numberOfCells;
+
+    uint* ghostCells;
+    uint* domainCells;
+    uint* secondCells;
+
+    uint  numberOfPoints;
+
+    real* temperatures;
+
+    real* heatConductivity;
+
+    real temperatureConductivity;
+    real density;
+    real specificHeatCapacity;
+
+    real L;
+    real ambientTemperature;
+};
+
+struct VF_PUBLIC ConcreteHeatFlux : public BoundaryCondition //, public IsothermalWallStruct
+{
+    real* temperatures;
+
+    uint numberOfPoints;
+
+    real temperatureConductivity;
+    real density;
+    real specificHeatCapacity;
+
+    real L;
+    real ambientTemperature;
+
+    ~ConcreteHeatFlux();
+
+    ConcreteHeatFlux( SPtr<DataBase> dataBase, uint numberOfPoints, real temperatureConductivity, real density, real specificHeatCapacity, real L, real ambientTemperature );
+
+    void init();
+
+    virtual bool isWall() override;
+
+    virtual bool isInsulated() override;
+
+    virtual bool isFluxBC() override;
+
+    virtual bool secondCellsNeeded() override;
+
+    virtual void runBoundaryConditionKernel(const SPtr<DataBase> dataBase,
+                                            const Parameters parameters, 
+                                            const uint level) override;
+
+    ConcreteHeatFluxStruct toStruct()
+    {
+        ConcreteHeatFluxStruct boundaryCondition;
+
+        boundaryCondition.numberOfCells  = this->numberOfCells;
+
+        boundaryCondition.ghostCells     = this->ghostCells;
+        boundaryCondition.domainCells    = this->domainCells;
+        boundaryCondition.secondCells    = this->secondCells;
+
+        boundaryCondition.temperatures   = this->temperatures;
+        boundaryCondition.numberOfPoints = this->numberOfPoints;
+
+        boundaryCondition.temperatureConductivity = this->temperatureConductivity;
+        boundaryCondition.density                 = this->density;
+        boundaryCondition.specificHeatCapacity    = this->specificHeatCapacity;
+
+        boundaryCondition.L                  = this->L;
+        boundaryCondition.ambientTemperature = this->ambientTemperature;
+
+        return boundaryCondition;
+    }
+
+    void writeVTKFile( SPtr<DataBase> dataBase, Parameters& parameters, std::string filename );
+};
+
+#endif
