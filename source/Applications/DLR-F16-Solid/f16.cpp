@@ -37,9 +37,9 @@ void run(string configname)
       vector<double>  nupsStep = config.getVector<double>("nupsStep");
       bool            newStart = config.getValue<bool>("newStart");
       bool            writeBlocks = config.getValue<bool>("writeBlocks");
-      string          pathReInit = config.getValue<string>("pathReInit");
-      int             stepReInit = config.getValue<int>("stepReInit");
-      bool            reinit = config.getValue<bool>("reinit");
+      //string          pathReInit = config.getValue<string>("pathReInit");
+      //int             stepReInit = config.getValue<int>("stepReInit");
+      //bool            reinit = config.getValue<bool>("reinit");
 
       //double          pcpStart = config.getValue<double>("pcpStart");
       //double          pcpStop  = config.getValue<double>("pcpStop");
@@ -100,7 +100,7 @@ void run(string configname)
       double rhoLB = 0.0;
       double rhoReal = 1.2041; //(kg/m3)
       //double nueReal = 153.5e-7; //m^2/s
-      double uReal = 55; //m/s
+      double uReal = 50; //m/s
       double lReal = 0.3;//m
       //double uReal = Re*nueReal / lReal;
       double nuReal = (uReal*lReal)/Re; //m^2/s
@@ -169,7 +169,8 @@ void run(string configname)
       bcProc = SPtr<BCProcessor>(new BCProcessor());
 
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      double bulckViscosity = 10.0*nuLB;
+      //t = 21.8, P = 1.0145 atm, Relative Humidity = 45.8, Second Coefficient of Viscosity = 3120      //Ash, R. L., Zuckerwar, A. J., & Zheng, Z. (1991). Second coefficient of viscosity in air.
+      double bulckViscosity = 3120 * nuLB;
       dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
 
       kernel->setBCProcessor(bcProc);
@@ -178,10 +179,10 @@ void run(string configname)
       spKernel->setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////
       //restart
-      SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
-      SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, rSch, pathOut, comm));
-      restartCoProcessor->setLBMKernel(kernel);
-      restartCoProcessor->setBCProcessor(bcProc);
+      //SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
+      //SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, rSch, pathOut, comm));
+      //restartCoProcessor->setLBMKernel(kernel);
+      //restartCoProcessor->setBCProcessor(bcProc);
 
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
       SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathOut+"/mig", comm));
@@ -595,41 +596,9 @@ void run(string configname)
          }
 
          //initialization of distributions
-         InitDistributionsBlockVisitor initVisitor1;
-         initVisitor1.setVx1(fct);
-         grid->accept(initVisitor1);
-
-         ////set connectors
-         //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
-         SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
-         dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkViscosity(nuLB, bulckViscosity);
-         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-         grid->accept(setConnsVisitor);
-
-         //initialization of distributions
-         if (reinit)
-         {
-            InitDistributionsBlockVisitor initVisitor1;
-            grid->accept(initVisitor1);
-            SPtr<Grid3D> oldGrid(new Grid3D(comm));
-            SPtr<UbScheduler> iSch(new UbScheduler());
-            SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(oldGrid, iSch, pathReInit, comm));
-            rcp->setLBMKernel(kernel);
-            rcp->setBCProcessor(bcProc);
-            rcp->restart(stepReInit);
-            InitDistributionsWithInterpolationGridVisitor initVisitor2(oldGrid, iProcessor, nuLB);
-            grid->accept(initVisitor2);
-         }
-         else
-         {
-            InitDistributionsBlockVisitor initVisitor;
-            initVisitor.setVx1(fct);
-            grid->accept(initVisitor);
-         }
-
-         //bcVisitor should be accept after initialization!!!!
-         grid->accept(bcVisitor);
-         if (myid==0) UBLOG(logINFO, "grid->accept(bcVisitor):end");
+         InitDistributionsBlockVisitor initVisitor;
+         initVisitor.setVx1(fct);
+         grid->accept(initVisitor);
 
          if (myid==0)
          {
@@ -658,12 +627,20 @@ void run(string configname)
          migCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
          ////////////////////////////////////////////////////////////////////////////
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-         grid->accept(setConnsVisitor);
-
-         grid->accept(bcVisitor);
+         WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
+         ppblocks.process(0);
+         ////////////////////////////////////////////////////////////////////////////
       }
+      
+      ////set connectors
+      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkViscosity(nuLB, bulckViscosity);
+      SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+      grid->accept(setConnsVisitor);
+
+      //bcVisitor should be accept after initialization!!!!
+      grid->accept(bcVisitor);
+      if (myid == 0) UBLOG(logINFO, "grid->accept(bcVisitor):end");
 
       ////sponge layer
       GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-0.35, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));

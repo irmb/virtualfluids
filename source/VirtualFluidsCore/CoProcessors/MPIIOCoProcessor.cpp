@@ -205,10 +205,11 @@ void MPIIOCoProcessor::readBlocks(int step)
    int rank, size;
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
    size = 1;
-
-   if (comm->isRoot()) UBLOG(logINFO, "MPIIOCoProcessor restart step: " << step);
-   if (comm->isRoot()) UBLOG(logINFO, "Load check point - start");
-
+   if (comm->isRoot())
+   {
+      UBLOG(logINFO, "MPIIOCoProcessor::readBlocks start MPI IO rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
    double start, finish;
    if (comm->isRoot()) start = MPI_Wtime();
 
