@@ -24,10 +24,13 @@ struct VF_PUBLIC Vec3 {
     __host__ __device__ real length() {
         return std::sqrt( x*x + y*y + z*z );
     }
+
+    Vec3 operator+( Vec3& right );
+    Vec3 operator-( Vec3& right );
 };
 
-VF_PUBLIC Vec3 operator+( Vec3& left, Vec3& right );
-VF_PUBLIC Vec3 operator-( Vec3& left, Vec3& right );
+//VF_PUBLIC Vec3 operator+( Vec3& left, Vec3& right );
+//VF_PUBLIC Vec3 operator-( Vec3& left, Vec3& right );
 VF_PUBLIC Vec3 operator*( real scalar, Vec3& vec );
 
 #endif

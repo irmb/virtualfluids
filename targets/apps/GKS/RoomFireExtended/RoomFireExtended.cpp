@@ -77,7 +77,7 @@
 
 real getHRR( real t );
 
-void thermalCavity( std::string path, std::string simulationName, uint windowIndex, uint restartIter )
+void thermalCavity( std::string path, std::string simulationName, uint windowIndex, uint restartIter, bool useConreteHeatFluxBC )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -200,12 +200,12 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
-                                2.1,  6.0,  5.0, dx);
+    //gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
+                                //2.1,  6.0,  5.0, dx);
     //gridBuilder->addCoarseGrid(-1.1, -1.2, -0.1,  
                                 //1.1,  1.2,  2.2, dx);
-    //gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
-                                //2.1,  1.6,  3.1, dx);
+    gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
+                                2.1,  1.6,  3.1, dx);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -427,7 +427,8 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     dataBase->boundaryConditions.push_back( bcBurner );
 
-    dataBase->boundaryConditions.push_back( bcWallHeatFlux );
+    if( useConreteHeatFluxBC )
+        dataBase->boundaryConditions.push_back( bcWallHeatFlux );
 
     dataBase->boundaryConditions.push_back( bcWall );
 
@@ -489,6 +490,9 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
         if (rank == 0) writeVtkXMLParallelSummaryFile(dataBase, parameters, path + simulationName + "_0", mpiWorldSize);
 
         writeVtkXML(dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank));
+
+        if( useConreteHeatFluxBC )
+            std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux)->writeVTKFile(dataBase, parameters, path + simulationName + "_Solid_0");
     }
     else
     {
@@ -572,7 +576,8 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
 
-            std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux)->writeVTKFile(dataBase, parameters, path + simulationName + "_Solid_" + std::to_string( iter ));
+            if( useConreteHeatFluxBC )
+                std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux)->writeVTKFile(dataBase, parameters, path + simulationName + "_Solid_" + std::to_string( iter ));
         }
 
         if( iter % 10000 == 0 )
@@ -607,19 +612,37 @@ int main( int argc, char* argv[])
 
     //////////////////////////////////////////////////////////////////////////
 
+    uint restartIter = INVALID_INDEX;
+    //uint restartIter = 140000;
+
+    uint windowIndex = 2;
+
+    bool useConcreteHeatFluxBC = true;
+
+    uint defaultDevice = 1;
+
+    if( argc > 1 ) windowIndex = atoi( argv[1] );
+    if( argc > 2 ) useConcreteHeatFluxBC = true;
+    if( argc > 3 ) restartIter = atoi( argv[3] );
+
+    //////////////////////////////////////////////////////////////////////////
+
 #ifdef _WIN32
     std::string path( "F:/Work/Computations/out/RoomFireExtended/" );
 #else
     std::string path( "out/" );
     
-    if( argc > 1 ){
-        path += "Window_";
-        path += argv[1];
-        path += "/";
-    }
+    //if( argc > 1 ){
+    //    path += "Window_";
+    //    path += argv[1];
+    //    path += "/";
+    //}
 #endif
 
     std::string simulationName ( "RoomFire" );
+
+    if( useConcreteHeatFluxBC ) simulationName += "_heatFlux";
+    else                        simulationName += "_adiabatic";
 
     logging::Logger::addStream(&std::cout);
     
@@ -640,7 +663,8 @@ int main( int argc, char* argv[])
         msg << "No devices devices found!" << std::endl;
         *logging::out << logging::Logger::WARNING << msg.str(); msg.str("");
     }
-    if( mpiWorldSize == 1 ) CudaUtility::setCudaDevice( 1 );
+
+    if( mpiWorldSize == 1 ) CudaUtility::setCudaDevice( 0 );
     else                    CudaUtility::setCudaDevice( rank % deviceCount );
 
     //////////////////////////////////////////////////////////////////////////
@@ -654,15 +678,7 @@ int main( int argc, char* argv[])
 
     try
     {
-        uint restartIter = INVALID_INDEX;
-        //uint restartIter = 140000;
-
-        uint windowIndex = 2;
-
-        if( argc > 1 ) windowIndex = atoi( argv[1] );
-        if( argc > 2 ) restartIter = atoi( argv[2] );
-
-        thermalCavity( path, simulationName, windowIndex, restartIter );
+        thermalCavity( path, simulationName, windowIndex, restartIter, useConcreteHeatFluxBC );
     }
     catch (const std::exception& e)
     {     

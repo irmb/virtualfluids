@@ -257,9 +257,10 @@ void ConcreteHeatFlux::writeVTKFile(SPtr<DataBase> dataBase, Parameters& paramet
         Vec3 faceCenter;
         for( uint i = 0; i < 8; i++ )
         {
-            faceCenter = faceCenter + c1o16 * dataBase->nodeCoordinates[ dataBase->cellToNode[ ghostCells [index] ][i] ];
-            faceCenter = faceCenter + c1o16 * dataBase->nodeCoordinates[ dataBase->cellToNode[ domainCells[index] ][i] ];
+            faceCenter = faceCenter + dataBase->nodeCoordinates[ dataBase->cellToNode[ ghostCells [index] ][i] ];
+            faceCenter = faceCenter + dataBase->nodeCoordinates[ dataBase->cellToNode[ domainCells[index] ][i] ];
         }
+        faceCenter = c1o16 * faceCenter;
 
         uint nodeStartNumber = nodes.size();
 
@@ -270,16 +271,18 @@ void ConcreteHeatFlux::writeVTKFile(SPtr<DataBase> dataBase, Parameters& paramet
 
         for( uint i = 1; i <= this->numberOfPoints; i++ )
         {
-            nodes.push_back( faceCenter + real(i) * dx * displacement + dn1 );
-            nodes.push_back( faceCenter + real(i) * dx * displacement + dn2 );
-            nodes.push_back( faceCenter + real(i) * dx * displacement + dn3 );
-            nodes.push_back( faceCenter + real(i) * dx * displacement + dn4 );
+            Vec3 localDisplacement = real(i) * dx * displacement;
+            nodes.push_back( faceCenter + localDisplacement + dn1 );
+            nodes.push_back( faceCenter + localDisplacement + dn2 );
+            nodes.push_back( faceCenter + localDisplacement + dn3 );
+            nodes.push_back( faceCenter + localDisplacement + dn4 );
         }
 
-        nodes.push_back( faceCenter + this->L * displacement + dn1 );
-        nodes.push_back( faceCenter + this->L * displacement + dn2 );
-        nodes.push_back( faceCenter + this->L * displacement + dn3 );
-        nodes.push_back( faceCenter + this->L * displacement + dn4 );
+        Vec3 localDisplacement = this->L * displacement;
+        nodes.push_back( faceCenter + localDisplacement + dn1 );
+        nodes.push_back( faceCenter + localDisplacement + dn2 );
+        nodes.push_back( faceCenter + localDisplacement + dn3 );
+        nodes.push_back( faceCenter + localDisplacement + dn4 );
 
         for( uint i = 0; i <= this->numberOfPoints; i++ )
         {
