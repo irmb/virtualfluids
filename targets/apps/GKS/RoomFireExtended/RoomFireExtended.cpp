@@ -200,12 +200,12 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
-                                //2.1,  6.0,  5.0, dx);
+    gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
+                                2.1,  6.0,  5.0, dx);
     //gridBuilder->addCoarseGrid(-1.1, -1.2, -0.1,  
                                 //1.1,  1.2,  2.2, dx);
-    gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
-                                2.1,  1.6,  3.1, dx);
+    //gridBuilder->addCoarseGrid(-2.1, -1.6, -0.1,  
+                                //2.1,  1.6,  3.1, dx);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -224,7 +224,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     flowDomain.add( new Cuboid( -2.0, -1.5, 0.0, 2.0,  1.5, 3.0 ) );      // Room 
     flowDomain.add( new Cuboid( -2.0,  1.8, 0.0, 2.0,  5.0, 5.0 ) );      // Outside
-    flowDomain.add( new Cuboid( -0.5, -1.8, 0.0, 0.5, -1.0, 2.0 ) );      // Door
+    //flowDomain.add( new Cuboid( -0.5, -1.8, 0.0, 0.5, -1.0, 2.0 ) );      // Door
     flowDomain.subtract( new Cuboid( -0.5, -0.5, -1.0, 0.5, 0.5, 0.5 ) ); // Fire
     flowDomain.subtract( new Cuboid( -3.0, -0.1,  2.6, 3.0, 0.1, 4.0 ) ); // Beam
 
@@ -393,9 +393,13 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     bcWall->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return true; } );
     
-    SPtr<BoundaryCondition> bcWallHeatFlux = std::make_shared<ConcreteHeatFlux>( dataBase, 10, 1.0e-6, 2400.0, 880, 0.3, 3.0 );
+    SPtr<BoundaryCondition> bcWallHeatFlux = std::make_shared<ConcreteHeatFlux>( dataBase, 10, 1.0e-6, 2400.0, 880, 0.1, 3.0 );
 
-    bcWallHeatFlux->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > 3.0 && center.y < 1.6; } );
+    bcWallHeatFlux->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return (center.z >  3.0 && center.y <  1.6)
+                                                                                || (center.x >  2.0 && center.y > -1.5 && center.y < 1.5 & center.z < 3.0 && center.z > 0.0)
+                                                                                || (center.x < -2.0 && center.y > -1.5 && center.y < 1.5 & center.z < 3.0 && center.z > 0.0)
+                                                                                || (center.y < -1.5)
+                                                                                || (center.y >  1.5 && center.y < 1.6); } );
 
     std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux)->init();
 
@@ -492,7 +496,8 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
         writeVtkXML(dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank));
 
         if( useConreteHeatFluxBC )
-            std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux)->writeVTKFile(dataBase, parameters, path + simulationName + "_Solid_0");
+            //std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux)->writeVTKFile(dataBase, parameters, path + simulationName + "_Solid_0");
+            writeConcreteHeatFluxVtkXML( dataBase, std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux), parameters, 0, path + simulationName + "_Solid_0" );
     }
     else
     {
@@ -577,7 +582,8 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
 
             if( useConreteHeatFluxBC )
-                std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux)->writeVTKFile(dataBase, parameters, path + simulationName + "_Solid_" + std::to_string( iter ));
+                //std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux)->writeVTKFile(dataBase, parameters, path + simulationName + "_Solid_" + std::to_string( iter ));
+                writeConcreteHeatFluxVtkXML( dataBase, std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux), parameters, 0, path + simulationName + "_Solid_" + std::to_string( iter ) );
         }
 
         if( iter % 10000 == 0 )

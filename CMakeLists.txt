@@ -173,6 +173,7 @@ IF (HULC.BUILD_VF_GKS)
     #add_subdirectory(targets/apps/GKS/RoomMultiGPU)
     #add_subdirectory(targets/apps/GKS/RoomFire)
     add_subdirectory(targets/apps/GKS/RoomFireExtended)
+    add_subdirectory(targets/apps/GKS/ConcreteHeatFluxBCTest)
     
     #add_subdirectory(targets/apps/GKS/PoolFire)
     add_subdirectory(targets/apps/GKS/Flame7cm)

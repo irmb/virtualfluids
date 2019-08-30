@@ -50,11 +50,19 @@ struct VF_PUBLIC ConcreteHeatFlux : public BoundaryCondition //, public Isotherm
     real L;
     real ambientTemperature;
 
+    std::vector<uint> ghostCellsHost ;
+    std::vector<uint> domainCellsHost;
+    std::vector<uint> secondCellsHost;
+
+    std::vector<real> temperaturesHost;
+
     ~ConcreteHeatFlux();
 
     ConcreteHeatFlux( SPtr<DataBase> dataBase, uint numberOfPoints, real temperatureConductivity, real density, real specificHeatCapacity, real L, real ambientTemperature );
 
     void init();
+
+    void download();
 
     virtual bool isWall() override;
 

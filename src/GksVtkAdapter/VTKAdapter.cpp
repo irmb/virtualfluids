@@ -20,6 +20,8 @@
 
 #include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
 
+#include "GksGpu/BoundaryConditions/ConcreteHeatFlux.h"
+
 #include "GksGpu/Definitions/MemoryAccessPattern.h"
 #include "GksGpu/FlowStateData/FlowStateData.cuh"
 #include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
@@ -708,4 +710,185 @@ void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> targ
 
         gridCellIdx++;
     }
+}
+
+void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, std::shared_ptr<ConcreteHeatFlux> bc, Parameters parameters, int mode, std::string filename)
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".vtu" << " ... \n";
+
+    bc->download();
+
+    vtkGridPtr grid = vtkGridPtr::New();
+ 
+    vtkPointsPtr points = vtkPointsPtr::New();
+
+    //////////////////////////////////////////////////////////////////////////
+
+    for( uint index = 0; index < bc->numberOfCells; index ++ )
+    {
+        real dx = bc->L / real(bc->numberOfPoints + 1);
+
+        Vec3 displacement = dataBase->nodeCoordinates[ dataBase->cellToNode[ bc->ghostCellsHost [index] ][0] ]
+                          - dataBase->nodeCoordinates[ dataBase->cellToNode[ bc->domainCellsHost[index] ][0] ];
+        real dn = displacement.length();
+        displacement = ( c1o1 / displacement.length() ) * displacement;
+
+        char direction = 'z';
+        if ( std::abs(displacement.x) > std::abs(displacement.y) && std::abs(displacement.x) > std::abs(displacement.z) ) direction = 'x';
+        if ( std::abs(displacement.y) > std::abs(displacement.x) && std::abs(displacement.y) > std::abs(displacement.z) ) direction = 'y';
+
+        Vec3 dn1, dn2, dn3, dn4;
+        if( direction == 'x' )
+        {
+            dn1.y =  c1o2*dn; dn1.z =  c1o2*dn; 
+            dn2.y = -c1o2*dn; dn2.z =  c1o2*dn; 
+            dn3.y = -c1o2*dn; dn3.z = -c1o2*dn; 
+            dn4.y =  c1o2*dn; dn4.z = -c1o2*dn;
+        }
+        if( direction == 'y' )
+        {
+            dn1.x =  c1o2*dn; dn1.z =  c1o2*dn; 
+            dn2.x = -c1o2*dn; dn2.z =  c1o2*dn; 
+            dn3.x = -c1o2*dn; dn3.z = -c1o2*dn; 
+            dn4.x =  c1o2*dn; dn4.z = -c1o2*dn;
+        }
+        if( direction == 'z' )
+        {
+            dn1.x =  c1o2*dn; dn1.y =  c1o2*dn; 
+            dn2.x = -c1o2*dn; dn2.y =  c1o2*dn; 
+            dn3.x = -c1o2*dn; dn3.y = -c1o2*dn; 
+            dn4.x =  c1o2*dn; dn4.y = -c1o2*dn;
+        }
+
+        Vec3 faceCenter;
+        for( uint i = 0; i < 8; i++ )
+        {
+            faceCenter = faceCenter + dataBase->nodeCoordinates[ dataBase->cellToNode[ bc->ghostCellsHost [index] ][i] ];
+            faceCenter = faceCenter + dataBase->nodeCoordinates[ dataBase->cellToNode[ bc->domainCellsHost[index] ][i] ];
+        }
+        faceCenter = c1o16 * faceCenter;
+
+        uint nodeStartNumber = points->GetNumberOfPoints();
+
+        //////////////////////////////////////////////////////////////////////////
+
+        Vec3 tmp;
+
+        tmp = faceCenter + dn1; points->InsertNextPoint( tmp.x, tmp.y, tmp.z );
+        tmp = faceCenter + dn2; points->InsertNextPoint( tmp.x, tmp.y, tmp.z );
+        tmp = faceCenter + dn3; points->InsertNextPoint( tmp.x, tmp.y, tmp.z );
+        tmp = faceCenter + dn4; points->InsertNextPoint( tmp.x, tmp.y, tmp.z );
+
+        for( uint i = 1; i <= bc->numberOfPoints; i++ )
+        {
+            Vec3 localDisplacement = real(i) * dx * displacement;
+            tmp = faceCenter + localDisplacement + dn1; points->InsertNextPoint( tmp.x, tmp.y, tmp.z );
+            tmp = faceCenter + localDisplacement + dn2; points->InsertNextPoint( tmp.x, tmp.y, tmp.z );
+            tmp = faceCenter + localDisplacement + dn3; points->InsertNextPoint( tmp.x, tmp.y, tmp.z );
+            tmp = faceCenter + localDisplacement + dn4; points->InsertNextPoint( tmp.x, tmp.y, tmp.z );
+        }
+
+        Vec3 localDisplacement = bc->L * displacement;
+        tmp = faceCenter + localDisplacement + dn1; points->InsertNextPoint( tmp.x, tmp.y, tmp.z );
+        tmp = faceCenter + localDisplacement + dn2; points->InsertNextPoint( tmp.x, tmp.y, tmp.z );
+        tmp = faceCenter + localDisplacement + dn3; points->InsertNextPoint( tmp.x, tmp.y, tmp.z );
+        tmp = faceCenter + localDisplacement + dn4; points->InsertNextPoint( tmp.x, tmp.y, tmp.z );
+
+        //////////////////////////////////////////////////////////////////////////
+        
+        for( uint i = 0; i <= bc->numberOfPoints; i++ )
+        {
+            vtkIdListPtr idList = vtkIdListPtr::New();
+
+            idList->SetNumberOfIds( 8 );
+
+            idList->SetId( 0, nodeStartNumber + (i    ) * 4     );
+            idList->SetId( 1, nodeStartNumber + (i    ) * 4 + 1 );
+            idList->SetId( 2, nodeStartNumber + (i    ) * 4 + 2 );
+            idList->SetId( 3, nodeStartNumber + (i    ) * 4 + 3 );
+            idList->SetId( 4, nodeStartNumber + (i + 1) * 4     );
+            idList->SetId( 5, nodeStartNumber + (i + 1) * 4 + 1 );
+            idList->SetId( 6, nodeStartNumber + (i + 1) * 4 + 2 );
+            idList->SetId( 7, nodeStartNumber + (i + 1) * 4 + 3 );
+
+            grid->InsertNextCell( 12, idList );
+        }
+    }
+
+    grid->SetPoints( points );
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    vtkDoubleArrayPtr data = vtkDoubleArrayPtr::New();
+
+    data->SetNumberOfComponents( 1 );
+
+    data->SetName( "T" );
+
+    for( uint cellIdx = 0; cellIdx < bc->numberOfCells; cellIdx++ )
+    {
+        real T = c0o1;
+
+        {
+            ConservedVariables cons;
+
+            cons.rho  = dataBase->dataHost[RHO__(bc->domainCellsHost[cellIdx], dataBase->numberOfCells)];
+            cons.rhoU = dataBase->dataHost[RHO_U(bc->domainCellsHost[cellIdx], dataBase->numberOfCells)];
+            cons.rhoV = dataBase->dataHost[RHO_V(bc->domainCellsHost[cellIdx], dataBase->numberOfCells)];
+            cons.rhoW = dataBase->dataHost[RHO_W(bc->domainCellsHost[cellIdx], dataBase->numberOfCells)];
+            cons.rhoE = dataBase->dataHost[RHO_E(bc->domainCellsHost[cellIdx], dataBase->numberOfCells)];
+
+            PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
+
+#ifdef USE_PASSIVE_SCALAR
+            T += c3o2 * getT(prim);
+#else // USE_PASSIVE_SCALAR
+            T += c3o2 * 1.0 / prim.lambda;
+#endif // USE_PASSIVE_SCALAR
+        }
+
+        {
+            ConservedVariables cons;
+
+            cons.rho  = dataBase->dataHost[RHO__(bc->secondCellsHost[cellIdx], dataBase->numberOfCells)];
+            cons.rhoU = dataBase->dataHost[RHO_U(bc->secondCellsHost[cellIdx], dataBase->numberOfCells)];
+            cons.rhoV = dataBase->dataHost[RHO_V(bc->secondCellsHost[cellIdx], dataBase->numberOfCells)];
+            cons.rhoW = dataBase->dataHost[RHO_W(bc->secondCellsHost[cellIdx], dataBase->numberOfCells)];
+            cons.rhoE = dataBase->dataHost[RHO_E(bc->secondCellsHost[cellIdx], dataBase->numberOfCells)];
+
+            PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
+
+#ifdef USE_PASSIVE_SCALAR
+            T -= c1o2 * getT(prim);
+#else // USE_PASSIVE_SCALAR
+            T -= c1o2 * 1.0 / prim.lambda;
+#endif // USE_PASSIVE_SCALAR
+        }
+
+        data->InsertNextValue(T);
+        data->InsertNextValue(T);
+        data->InsertNextValue(T);
+        data->InsertNextValue(T);
+
+        for( uint i = 0; i < bc->numberOfPoints; i++ )
+        {
+            data->InsertNextValue(bc->temperaturesHost[ bc->numberOfPoints * cellIdx + i ]);
+            data->InsertNextValue(bc->temperaturesHost[ bc->numberOfPoints * cellIdx + i ]);
+            data->InsertNextValue(bc->temperaturesHost[ bc->numberOfPoints * cellIdx + i ]);
+            data->InsertNextValue(bc->temperaturesHost[ bc->numberOfPoints * cellIdx + i ]);
+        }
+
+        data->InsertNextValue(bc->ambientTemperature);
+        data->InsertNextValue(bc->ambientTemperature);
+        data->InsertNextValue(bc->ambientTemperature);
+        data->InsertNextValue(bc->ambientTemperature);
+    }
+
+    grid->GetPointData()->AddArray( data );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    writeVtkUnstructuredGrid( grid, vtkXMLWriter::Binary, filename );
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }

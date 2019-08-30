@@ -7,6 +7,7 @@
 
 struct DataBase;
 class TurbulenceAnalyzer;
+struct ConcreteHeatFlux;
 
 void VF_PUBLIC writeVtkXML(std::shared_ptr<DataBase> dataBase, 
                            Parameters parameters, 
@@ -30,5 +31,11 @@ void VF_PUBLIC writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<DataBase
                                                         uint mpiWorldSize);
 
 void VF_PUBLIC mapFlowField( std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> target );
+
+void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, 
+                                           std::shared_ptr<ConcreteHeatFlux> bc, 
+                                           Parameters parameters, 
+                                           int mode, 
+                                           std::string filename);
 
 #endif
