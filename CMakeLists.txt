@@ -210,6 +210,6 @@ endif()
 ###					Annas Traffic Sim				      ###
 #############################################################
 
-#add_subdirectory(targets/libs/Traffic)
+add_subdirectory(targets/libs/Traffic)
 
-#add_subdirectory(targets/apps/LBM/TrafficTest)
+add_subdirectory(targets/apps/LBM/TrafficTest)
