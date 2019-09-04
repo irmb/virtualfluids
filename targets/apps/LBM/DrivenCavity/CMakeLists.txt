@@ -1,7 +1,8 @@
 setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR}) 
 
 set(linkDirectories "")
-set(libsToLink Core VirtualFluids_GPU GridGenerator GksMeshAdapter GksVtkAdapter GksGpu)
+#set(libsToLink Core VirtualFluids_GPU GridGenerator GksMeshAdapter GksVtkAdapter GksGpu)
+set(libsToLink Core VirtualFluids_GPU GridGenerator )
 set(includeDirectories "${CMAKE_SOURCE_DIR}/src"
                        "${CMAKE_SOURCE_DIR}/src/Core"
                        "${CMAKE_SOURCE_DIR}/src/VirtualFluids_GPU" 

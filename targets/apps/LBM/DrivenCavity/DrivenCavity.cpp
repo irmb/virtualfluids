@@ -48,28 +48,29 @@
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "GksMeshAdapter/GksMeshAdapter.h"
+//#include "GksMeshAdapter/GksMeshAdapter.h"
 
-#include "GksVtkAdapter/VTKInterface.h"
-
-#include "GksGpu/DataBase/DataBase.h"
-#include "GksGpu/Parameters/Parameters.h"
-#include "GksGpu/Initializer/Initializer.h"
-
-#include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
-
-#include "GksGpu/BoundaryConditions/BoundaryCondition.h"
-#include "GksGpu/BoundaryConditions/IsothermalWall.h"
-
-#include "GksGpu/TimeStepping/NestedTimeStep.h"
-
-#include "GksGpu/Analyzer/CupsAnalyzer.h"
-#include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
-
-#include "GksGpu/CudaUtility/CudaUtility.h"
+//#include "GksVtkAdapter/VTKInterface.h"
+//
+//#include "GksGpu/DataBase/DataBase.h"
+//#include "GksGpu/Parameters/Parameters.h"
+//#include "GksGpu/Initializer/Initializer.h"
+//
+//#include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
+//
+//#include "GksGpu/BoundaryConditions/BoundaryCondition.h"
+//#include "GksGpu/BoundaryConditions/IsothermalWall.h"
+//
+//#include "GksGpu/TimeStepping/NestedTimeStep.h"
+//
+//#include "GksGpu/Analyzer/CupsAnalyzer.h"
+//#include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
+//
+//#include "GksGpu/CudaUtility/CudaUtility.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,21 +87,21 @@ LbmOrGks lbmOrGks = LBM;
 
 const real L  = 1.0;
 
-const real Re = 100.0;
+const real Re = 500.0;// 1000.0;
 
 const real velocity  = 1.0;
 
-const real dt = 0.5e-3;
+const real dt = 1.0e-3; //0.5e-3;
 
 const uint nx = 64;
 
 std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
 //std::string path("E:/DrivenCavity/results/"); //TESLA03
 
-std::string simulationName("DrivenCavity");
+std::string simulationName("DrivenCavity_chim_XY_fast_Re500_inversePrecond");
 
 const uint timeStepOut = 10000;
-const uint timeStepEnd = 50000;
+const uint timeStepEnd = 250000;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +151,8 @@ void multipleLevel(const std::string& configPath)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        SPtr<Parameter> para = Parameter::make(configData, comm);
+        SPtr<Parameter>    para         = Parameter::make(configData, comm);
+		SPtr<KernelMapper> kernelMapper = KernelMapper::getInstance();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -166,6 +168,8 @@ void multipleLevel(const std::string& configPath)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+		para->setDevices(std::vector<uint>{(uint)0});
+
         para->setOutputPath( path );
         para->setOutputPrefix( simulationName );
 
@@ -178,19 +182,25 @@ void multipleLevel(const std::string& configPath)
         para->setVelocity(velocityLB);
         para->setViscosity(viscosityLB);
 
-        para->setVelocityRatio(velocity / velocityLB);
+        para->setVelocityRatio(velocity/ velocityLB);
+
+		// para->setMainKernel(kernelMapper->getEnum("BGKCompSP27"));
+		//para->setMainKernel(kernelMapper->getEnum("BGKPlusCompSP27"));
+		//para->setMainKernel(kernelMapper->getEnum("CumulantOneCompSP27"));
+		//para->setMainKernel(kernelMapper->getEnum("CumulantAA2016CompSP27"));
+		//para->setMainKernel(kernelMapper->getEnum("CumulantOnePreconditionedChimCompSP27"));
 
         para->setTOut( timeStepOut );
         para->setTEnd( timeStepEnd );
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	    gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-	    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-	    gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-	    gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-	    gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  vy, 0.0);
-	    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+		//gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
+		//gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
+		//gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
+	    //gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
+	    gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  vx, 0.0);
+	    //gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -211,116 +221,116 @@ void multipleLevel(const std::string& configPath)
     }
     else
     {
-        CudaUtility::setCudaDevice(0);
-        
-        Parameters parameters;
+     //   CudaUtility::setCudaDevice(0);
+     //   
+     //   Parameters parameters;
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	    const real vx = velocity / sqrt(2.0);
-	    const real vy = velocity / sqrt(2.0);
+	    //const real vx = velocity / sqrt(2.0);
+	    //const real vy = velocity / sqrt(2.0);
     
-        parameters.K  = 2.0;
-        parameters.Pr = 1.0;
-        
-        const real Ma = 0.1;
+     //   parameters.K  = 2.0;
+     //   parameters.Pr = 1.0;
+     //   
+     //   const real Ma = 0.1;
 
-        real rho = 1.0;
+     //   real rho = 1.0;
 
-        real cs = velocity / Ma;
-        real lambda = c1o2 * ( ( parameters.K + 5.0 ) / ( parameters.K + 3.0 ) ) / ( cs * cs );
+     //   real cs = velocity / Ma;
+     //   real lambda = c1o2 * ( ( parameters.K + 5.0 ) / ( parameters.K + 3.0 ) ) / ( cs * cs );
 
-        const real mu = velocity * L * rho / Re;
+     //   const real mu = velocity * L * rho / Re;
 
-        *logging::out << logging::Logger::INFO_HIGH << "mu  = " << mu << " m^2/s\n";
+     //   *logging::out << logging::Logger::INFO_HIGH << "mu  = " << mu << " m^2/s\n";
 
-        *logging::out << logging::Logger::INFO_HIGH << "CFL = " << dt * ( velocity + cs ) / dx << "\n";
+     //   *logging::out << logging::Logger::INFO_HIGH << "CFL = " << dt * ( velocity + cs ) / dx << "\n";
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        parameters.mu = mu;
+     //   parameters.mu = mu;
 
-        parameters.dt = dt;
-        parameters.dx = dx;
+     //   parameters.dt = dt;
+     //   parameters.dx = dx;
 
-        parameters.lambdaRef = lambda;
+     //   parameters.lambdaRef = lambda;
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        GksMeshAdapter meshAdapter( gridBuilder );
+     //   GksMeshAdapter meshAdapter( gridBuilder );
 
-        meshAdapter.inputGrid();
+     //   meshAdapter.inputGrid();
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        auto dataBase = std::make_shared<DataBase>( "GPU" );
+     //   auto dataBase = std::make_shared<DataBase>( "GPU" );
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        SPtr<BoundaryCondition> bcLid  = std::make_shared<IsothermalWall>( dataBase, Vec3(  vx,  vy, 0.0 ), lambda, false );
-        SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, false );
+     //   SPtr<BoundaryCondition> bcLid  = std::make_shared<IsothermalWall>( dataBase, Vec3(  vx,  vy, 0.0 ), lambda, false );
+     //   SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, false );
 
-        bcLid->findBoundaryCells ( meshAdapter, true,  [&](Vec3 center){ return center.z > 0.5; } );
-        bcWall->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.z < 0.5; } );
+     //   bcLid->findBoundaryCells ( meshAdapter, true,  [&](Vec3 center){ return center.z > 0.5; } );
+     //   bcWall->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.z < 0.5; } );
 
-        dataBase->boundaryConditions.push_back( bcLid  );
-        dataBase->boundaryConditions.push_back( bcWall );
+     //   dataBase->boundaryConditions.push_back( bcLid  );
+     //   dataBase->boundaryConditions.push_back( bcWall );
     
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        dataBase->setMesh( meshAdapter );
+     //   dataBase->setMesh( meshAdapter );
 
-        Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables {
+     //   Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables {
 
-            return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda ), parameters.K );
-        });
+     //       return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda ), parameters.K );
+     //   });
 
-        dataBase->copyDataHostToDevice();
+     //   dataBase->copyDataHostToDevice();
 
-        Initializer::initializeDataUpdate(dataBase);
+     //   Initializer::initializeDataUpdate(dataBase);
 
-        writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
+     //   writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        CupsAnalyzer cupsAnalyzer( dataBase, false, 60.0, true, 10000 );
+     //   CupsAnalyzer cupsAnalyzer( dataBase, false, 60.0, true, 10000 );
 
-        ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
+     //   ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
 
-        cupsAnalyzer.start();
+     //   cupsAnalyzer.start();
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        for( uint iter = 1; iter <= timeStepEnd; iter++ )
-        {
-            TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+     //   for( uint iter = 1; iter <= timeStepEnd; iter++ )
+     //   {
+     //       TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
-            if( iter % timeStepOut == 0 )
-            {
-                dataBase->copyDataDeviceToHost();
+     //       if( iter % timeStepOut == 0 )
+     //       {
+     //           dataBase->copyDataDeviceToHost();
 
-                writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
-            }
-            
-            int crashCellIndex = dataBase->getCrashCellIndex();
-            if( crashCellIndex >= 0 )
-            {
-                *logging::out << logging::Logger::LOGGER_ERROR << "Simulation Crashed at CellIndex = " << crashCellIndex << "\n";
-                dataBase->copyDataDeviceToHost();
-                writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
+     //           writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
+     //       }
+     //       
+     //       int crashCellIndex = dataBase->getCrashCellIndex();
+     //       if( crashCellIndex >= 0 )
+     //       {
+     //           *logging::out << logging::Logger::LOGGER_ERROR << "Simulation Crashed at CellIndex = " << crashCellIndex << "\n";
+     //           dataBase->copyDataDeviceToHost();
+     //           writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
 
-                break;
-            }
+     //           break;
+     //       }
 
-            dataBase->getCrashCellIndex();
+     //       dataBase->getCrashCellIndex();
 
-            cupsAnalyzer.run( iter, parameters.dt );
+     //       cupsAnalyzer.run( iter, parameters.dt );
 
-            convergenceAnalyzer.run( iter );
-        }
+     //       convergenceAnalyzer.run( iter );
+     //   }
     }
 }
 
