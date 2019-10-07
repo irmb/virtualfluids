@@ -496,7 +496,6 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
         writeVtkXML(dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank));
 
         if( useConreteHeatFluxBC )
-            //std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux)->writeVTKFile(dataBase, parameters, path + simulationName + "_Solid_0");
             writeConcreteHeatFluxVtkXML( dataBase, std::dynamic_pointer_cast<ConcreteHeatFlux>(bcWallHeatFlux), parameters, 0, path + simulationName + "_Solid_0" );
     }
     else
@@ -625,7 +624,7 @@ int main( int argc, char* argv[])
 
     bool useConcreteHeatFluxBC = true;
 
-    uint defaultDevice = 1;
+    uint defaultDevice = 0;
 
     if( argc > 1 ) windowIndex = atoi( argv[1] );
     if( argc > 2 ) useConcreteHeatFluxBC = true;

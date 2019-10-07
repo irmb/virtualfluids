@@ -93,6 +93,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
                                                           const uint startIndex,
                                                           const uint index)
 {
+#ifdef USE_PASSIVE_SCALAR
     uint ghostCellIdx  = boundaryCondition.ghostCells [ startIndex + index ];
     uint domainCellIdx = boundaryCondition.domainCells[ startIndex + index ];
     uint secondCellIdx = boundaryCondition.secondCells[ startIndex + index ];
@@ -156,7 +157,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
     applyFluxToNegCell(dataBase, domainCellIdx, flux, 'a', parameters);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#endif
 }
 
 ConcreteHeatFlux::~ConcreteHeatFlux()

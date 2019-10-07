@@ -3,6 +3,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <exception>
 #include <fstream>
@@ -34,6 +35,8 @@
 #include "GksGpu/Parameters/Parameters.h"
 #include "GksGpu/Initializer/Initializer.h"
 
+#include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
+
 #include "GksGpu/BoundaryConditions/BoundaryCondition.h"
 #include "GksGpu/BoundaryConditions/IsothermalWall.h"
 #include "GksGpu/BoundaryConditions/Periodic.h"
@@ -41,24 +44,31 @@
 #include "GksGpu/BoundaryConditions/AdiabaticWall.h"
 
 #include "GksGpu/Communication/Communicator.h"
+#include "GksGpu/Communication/MpiUtility.h"
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
 
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
 #include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
+#include "GksGpu/Analyzer/PointTimeseriesCollector.h"
+
+#include "GksGpu/Restart/Restart.h"
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
 //uint deviceMap [2] = {2,3};
 uint deviceMap [2] = {0,1};
 
-void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameters, std::string path, std::string simulationName )
+void simulation( std::string path, std::string simulationName, bool fine, uint restartIter )
 {
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(deviceMap[threadIndex]);
+    int rank = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int mpiWorldSize = 1;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -71,7 +81,7 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
 
     real dx = L / real(nx);
 
-    real Ra = 5.0e8;
+    real Ra = 5.0e9;
 
     real Ba  = 0.1;
     real eps = 1.2;
@@ -92,27 +102,37 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
 
     real CFL = 0.5;
 
-    real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+    real dt  = CFL * ( dx / ( ( U + cs ) * ( c1o1 + ( c2o1 * mu ) / ( U * dx * rho ) ) ) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " s\n";
 
     //////////////////////////////////////////////////////////////////////////
 
-    parameters->K  = K;
-    parameters->Pr = Pr;
-    parameters->mu = mu;
+    Parameters parameters;
 
-    parameters->force.x = 0;
-    parameters->force.y = -g;
-    parameters->force.z = 0;
+    parameters.K  = K;
+    parameters.Pr = Pr;
+    parameters.mu = mu;
 
-    parameters->dt = dt;
-    parameters->dx = dx;
+    parameters.force.x = 0;
+    parameters.force.y = 0;
+    parameters.force.z = -g;
 
-    parameters->lambdaRef = lambda;
+    parameters.dt = dt;
+    parameters.dx = dx;
 
-    parameters->viscosityModel = ViscosityModel::sutherlandsLaw;
+    parameters.lambdaRef = lambda;
 
+    parameters.viscosityModel = ViscosityModel::constant;
+
+    parameters.forcingSchemeIdx = 0;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                M e s h    G e n e r a t i o n
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto gridFactory = GridFactory::make();
@@ -123,75 +143,165 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Conglomerate refRegion_1;
-    Conglomerate refRegion_2;
-    Conglomerate refRegion_3;
-    Conglomerate refRegion_4;
+    real startX, endX;
+    real startY, endY;
+    real startZ, endZ;
 
-    real L_1 = 0.35;
-    real L_2 = 0.45;
-    real L_3 = 0.475;
-    real L_4 = 0.495;
+    if( rank % 2 == 0 ) startX = -0.5 * L;
+    else                startX = -3.0 * dx;
+    if( rank % 2 == 0 ) endX   =  3.0 * dx;
+    else                endX   =  0.5 * L;
 
-    if( threadIndex == 0 ) gridBuilder->addCoarseGrid(-0.5*L , -0.5*L, -0.5*H,  
-                                                       3.0*dx,  0.5*L,  0.5*H, dx);
+    if( mpiWorldSize == 2 )
+    {
+        startY = 0.0;
+        endY   = H;
+    }
+    else
+    {
+        startY =  rank / 2        * H - 3.0 * dx;
+        endY   = (rank / 2 + 1.0) * H + 3.0 * dx;
+    }
 
-    if( threadIndex == 1 ) gridBuilder->addCoarseGrid(-3.0*dx, -0.5*L, -0.5*H,  
-                                                       0.5*L ,  0.5*L,  0.5*H, dx);
+    startZ = -0.5 * L;
+    endZ   =  0.5 * L;
 
-    if( threadIndex == 0 ) refRegion_1.add( new Cuboid (-1.0, -1.0, -1.0, 
-                                                        -L_1,  1.0,  1.0 ) );
+    gridBuilder->addCoarseGrid(startX, startY, startZ,  
+                               endX  , endY  , endZ  , dx);
 
-    if( threadIndex == 1 ) refRegion_1.add( new Cuboid ( L_1, -1.0, -1.0, 
-                                                         1.0,  1.0,  1.0 ) );
+    //////////////////////////////////////////////////////////////////////////
 
-    if( threadIndex == 0 ) refRegion_2.add( new Cuboid (-1.0, -1.0, -1.0, 
-                                                        -L_2,  1.0,  1.0 ) );
+    //real refL[4] = { 0.30, 0.45, 0.49, 0.4975  };
+    real refL[4] = { 0.30, 0.45, 0.475, 0.495  };
 
-    if( threadIndex == 1 ) refRegion_2.add( new Cuboid ( L_2, -1.0, -1.0, 
-                                                         1.0,  1.0,  1.0 ) );
-
-    if( threadIndex == 0 ) refRegion_3.add( new Cuboid (-1.0, -1.0, -1.0, 
-                                                        -L_3,  1.0,  1.0 ) );
-
-    if( threadIndex == 1 ) refRegion_3.add( new Cuboid ( L_3, -1.0, -1.0, 
-                                                         1.0,  1.0,  1.0 ) );
-
-    if( threadIndex == 0 ) refRegion_4.add( new Cuboid (-1.0, -1.0, -1.0, 
-                                                        -L_4,  1.0,  1.0 ) );
-
-    if( threadIndex == 1 ) refRegion_4.add( new Cuboid ( L_4, -1.0, -1.0, 
-                                                         1.0,  1.0,  1.0 ) );
+    if( fine )
+    {
+        refL[1] = 0.4;
+        refL[2] = 0.45;
+        //refL[1] += 2;
+        //refL[2] += 2;
+    }
 
     gridBuilder->setNumberOfLayers(6,6);
-    gridBuilder->addGrid( &refRegion_1, 1);
-    gridBuilder->addGrid( &refRegion_2, 2);
-    //gridBuilder->addGrid( &refRegion_3, 3);
-    //gridBuilder->addGrid( &refRegion_4, 4);
 
-    if( threadIndex == 0 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -1.0, 0.0, 
-                                                                                        -1.0, 1.0, 
-                                                                                        -1.0, 1.0 ) );
+    //////////////////////////////////////////////////////////////////////////
 
-    if( threadIndex == 1 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.0, 1.0, 
-                                                                                        -1.0, 1.0, 
-                                                                                        -1.0, 1.0 ) );
+    Conglomerate coarseRefLevel;
 
-    gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+    if( rank % 2 == 0 ) coarseRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0, 
+                                                        -refL[0],  100.0,  100.0 ) );
+    else                coarseRefLevel.add( new Cuboid ( refL[0], -100.0, -100.0, 
+                                                         100.0,    100.0,  100.0 ) );
+
+    coarseRefLevel.add( new Cuboid (-100.0, -100.0, -100.0,   
+                                     100.0,  100.0, -refL[0] ) );
+    coarseRefLevel.add( new Cuboid (-100.0, -100.0,  refL[0], 
+                                     100.0,  100.0,  100.0   ) );
+
+    gridBuilder->addGrid( &coarseRefLevel, 1);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    Conglomerate firstRefLevel;
+
+    if( rank % 2 == 0 ) firstRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0, 
+                                                       -refL[1],  100.0,  100.0 ) );
+    else                firstRefLevel.add( new Cuboid ( refL[1], -100.0, -100.0, 
+                                                        100.0,    100.0,  100.0 ) );
+
+    firstRefLevel.add( new Cuboid (-100.0, -100.0, -100.0,   
+                                    100.0,  100.0, -refL[1] ) );
+    firstRefLevel.add( new Cuboid (-100.0, -100.0,  refL[1], 
+                                    100.0,  100.0,  100.0   ) );
+
+    gridBuilder->addGrid( &firstRefLevel, 2);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    Conglomerate secondRefLevel;
+
+    if( rank % 2 == 0 ) secondRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0, 
+                                                        -refL[2],  100.0,  100.0 ) );
+    else                secondRefLevel.add( new Cuboid ( refL[2], -100.0, -100.0, 
+                                                         100.0,    100.0,  100.0 ) );
+
+    if( rank % 2 == 0 ) secondRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0,   
+                                                        -refL[0],  100.0, -refL[2] ) );
+    else                secondRefLevel.add( new Cuboid ( refL[0], -100.0, -100.0,   
+                                                         100.0,    100.0, -refL[2] ) );
+
+    if( rank % 2 == 0 ) secondRefLevel.add( new Cuboid (-100.0,   -100.0,  refL[2], 
+                                                        -refL[0],  100.0,  100.0   ) );
+    else                secondRefLevel.add( new Cuboid ( refL[0], -100.0,  refL[2], 
+                                                         100.0,    100.0,  100.0   ) );
+
+    gridBuilder->addGrid( &secondRefLevel, 3);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    Conglomerate thirdRefLevel;
+
+    if( rank % 2 == 0 ) thirdRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0, 
+                                                        -refL[3],  100.0,  100.0 ) );
+    else                thirdRefLevel.add( new Cuboid ( refL[3], -100.0, -100.0, 
+                                                        100.0,    100.0,  100.0 ) );
+
+    if( fine ) gridBuilder->addGrid( &thirdRefLevel, 4);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if( rank % 2 == 0 ) startX = -100.0;
+    else                startX =    0.0;
+    if( rank % 2 == 0 ) endX   =    0.0;
+    else                endX   =  100.0;
+
+    if( mpiWorldSize == 2 )
+    {
+        startY = -100.0;
+        endY   =  100.0;
+    }
+    else
+    {
+        startY =   real(rank/2)         * H;
+        endY   = ( real(rank/2) + 1.0 ) * H;
+    }
+
+    startZ = -100.0;
+    endZ   =  100.0;
+
+    auto subDomainBox = std::make_shared<BoundingBox>( startX, endX, 
+                                                       startY, endY, 
+                                                       startZ, endZ );
+
+    gridBuilder->setSubDomainBox( subDomainBox );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if( mpiWorldSize == 2 ) gridBuilder->setPeriodicBoundaryCondition(false, true,  false);
+    else                    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
     gridBuilder->buildGrids(GKS, false);
             
-    if( threadIndex == 0 ){
-        gridBuilder->findCommunicationIndices(CommunicationDirections::PX, GKS);
-        gridBuilder->setCommunicationProcess (CommunicationDirections::PX, 1);
-    }
-            
-    if( threadIndex == 1 ){
-        gridBuilder->findCommunicationIndices(CommunicationDirections::MX, GKS);
-        gridBuilder->setCommunicationProcess (CommunicationDirections::MX, 0);
-    }
+    //gridBuilder->writeGridsToVtk( path + simulationName + "_0" + "_rank_" + std::to_string(rank) + "_lev_" );
 
-    //gridBuilder->writeGridsToVtk(path + "grid/Grid_" + std::to_string( threadIndex ) + "_lev_");
+    //////////////////////////////////////////////////////////////////////////
+
+    if( rank%2 == 0 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PX, GKS );
+    else              gridBuilder->findCommunicationIndices( CommunicationDirections::MX, GKS );
+
+    if( rank%2 == 0 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PX, rank + 1 );
+    else              gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, rank - 1 );
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    if( mpiWorldSize > 2 )
+    {
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PY, GKS);
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MY, GKS);
+
+        gridBuilder->setCommunicationProcess(CommunicationDirections::PY, (rank + 2 + mpiWorldSize) % mpiWorldSize);
+        gridBuilder->setCommunicationProcess(CommunicationDirections::MY, (rank - 2 + mpiWorldSize) % mpiWorldSize);
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -199,19 +309,20 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
 
     meshAdapter.inputGrid();
 
-    meshAdapter.findPeriodicBoundaryNeighbors();    
+    if( mpiWorldSize == 2 ) meshAdapter.findPeriodicBoundaryNeighbors();    
 
-    meshAdapter.getCommunicationIndices();
+    //meshAdapter.writeMeshFaceVTK( path + simulationName + "_0" + "_rank_" + std::to_string(rank) + ".vtk" );
 
-    //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces_" + std::to_string( threadIndex ) + ".vtk" );
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    auto dataBase = std::make_shared<DataBase>( "GPU" );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                 B o u n d a r y    C o n d i t i o n s
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
-    //SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
     SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot , false );
     SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, false );
 
@@ -220,21 +331,25 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcMY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    SPtr<BoundaryCondition> bcPY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0,0,0), true );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0,0,0), true );
 
-    bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*L; } );
-    bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*L; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*L; } );
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
-    
-    //SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
-    //SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
-    
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*H; } );
-    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*H; } );
+
+    if( mpiWorldSize == 2 )
+    {
+        SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>(dataBase);
+        SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>(dataBase);
+
+        bcMY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y < 0; });
+        bcPY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y > H; });
+
+        dataBase->boundaryConditions.push_back(bcMY);
+        dataBase->boundaryConditions.push_back(bcPY);
+    }
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -243,14 +358,14 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
 
     dataBase->boundaryConditions.push_back( bcMX );
     dataBase->boundaryConditions.push_back( bcPX );
-    
-    dataBase->boundaryConditions.push_back( bcMY );
-    dataBase->boundaryConditions.push_back( bcPY );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                 I n i t i a l    C o n d i t i o n s
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    uint startIter = 0;
 
     dataBase->setMesh( meshAdapter );
 
@@ -258,84 +373,122 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
 
     CudaUtility::printCudaMemoryUsage();
 
-    Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
+    if( restartIter == INVALID_INDEX )
+    {
+        Initializer::interpret(dataBase, [&](Vec3 cellCenter) -> ConservedVariables {
 
-        real Th = 1.0 / lambdaHot;
-        real Tc = 1.0 / lambdaCold;
-        real T = Th - (Th - Tc)*( (cellCenter.x + 0.5 * L) / L);
-        real lambdaLocal = 1.0 / T;
+            real Th = 1.0 / lambdaHot;
+            real Tc = 1.0 / lambdaCold;
+            real T = Th - (Th - Tc)*((cellCenter.x + 0.5 * L) / L);
+            real lambdaLocal = 1.0 / T;
 
-        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda ), parameters->K );
-    });
+            return toConservedVariables(PrimitiveVariables(rho, 0.0, 0.0, 0.0, lambda), parameters.K);
+        });
+
+        if (rank == 0) writeVtkXMLParallelSummaryFile(dataBase, parameters, path + simulationName + "_0", mpiWorldSize);
+
+        writeVtkXML(dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank));
+    }
+    else
+    {
+        Restart::readRestart( dataBase, path + simulationName + "_" + std::to_string( restartIter ) + "_rank_" + std::to_string(rank), startIter );
+
+        if (rank == 0) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( restartIter ) + "_restart", mpiWorldSize );
+
+        writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( restartIter ) + "_restart" + "_rank_" + std::to_string(rank) );
+
+
+    }
 
     dataBase->copyDataHostToDevice();
 
     Initializer::initializeDataUpdate(dataBase);
 
-    //writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( 0 ) );
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameters, std::string path, std::string simulationName )
-{
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                  R u n
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(deviceMap[threadIndex]);
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 300.0 );
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ConvergenceAnalyzer convergenceAnalyzer( dataBase );
 
-    writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( 0 ) );
+    //auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 0 );
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 500000 );
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 300.0, true, 1000 );
+    turbulenceAnalyzer->collect_UU = true;
+    turbulenceAnalyzer->collect_VV = true;
+    turbulenceAnalyzer->collect_WW = true;
+    turbulenceAnalyzer->collect_UV = true;
+    turbulenceAnalyzer->collect_UW = true;
+    turbulenceAnalyzer->collect_VW = true;
 
-    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 1000 );
+    turbulenceAnalyzer->allocate();
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
+    if( restartIter != INVALID_INDEX )
+        turbulenceAnalyzer->readRestartFile( path + simulationName + "_Turbulence_" + std::to_string( restartIter ) + "_rank_" + std::to_string(rank) );
+
+    auto pointTimeSeriesCollector = std::make_shared<PointTimeSeriesCollector>();
+
+    for( real y = 0.5 * H; y < real( mpiWorldSize / 2 ) * H; y += H )
+    {
+        if( subDomainBox->isInside( -0.485, y, -0.3*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( -0.485, y, -0.3*L ), 'W', 10000 );
+        if( subDomainBox->isInside( -0.485, y, -0.1*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( -0.485, y, -0.1*L ), 'W', 10000 );
+        if( subDomainBox->isInside( -0.485, y,  0.1*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( -0.485, y,  0.1*L ), 'W', 10000 );
+        if( subDomainBox->isInside( -0.485, y,  0.3*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( -0.485, y,  0.3*L ), 'W', 10000 );
+        
+        if( subDomainBox->isInside(  0.485, y, -0.3*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y, -0.3*L ), 'W', 10000 );
+        if( subDomainBox->isInside(  0.485, y, -0.1*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y, -0.1*L ), 'W', 10000 );
+        if( subDomainBox->isInside(  0.485, y,  0.1*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y,  0.1*L ), 'W', 10000 );
+        if( subDomainBox->isInside(  0.485, y,  0.3*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y,  0.3*L ), 'W', 10000 );
+    }
 
     //////////////////////////////////////////////////////////////////////////
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 100000; iter++ )
+    for( uint iter = startIter + 1; iter <= 100000000; iter++ )
     {
-        TimeStepping::nestedTimeStep(dataBase, *parameters, 0);
+        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
-        if( 
-            //( iter < 10     && iter % 1     == 0 ) ||
-            //( iter < 100    && iter % 10    == 0 ) ||
-            //( iter < 1000   && iter % 100   == 0 ) ||
-            //( iter < 10000  && iter % 1000  == 0 ) 
-            ( iter < 10000000 && iter % 1000 == 0 )
-          )
+        if( iter % 200000 == 0 )
         {
             dataBase->copyDataDeviceToHost();
 
-            writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( iter ) );
+            if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( iter ), mpiWorldSize );
+
+            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
         }
 
-        cupsAnalyzer.run( iter );
+        cupsAnalyzer.run( iter, parameters.dt );
 
         convergenceAnalyzer.run( iter );
 
-        turbulenceAnalyzer->run( iter, *parameters );
+        turbulenceAnalyzer->run( iter, parameters );
 
-        if( iter % 50000 == 0 )
+        pointTimeSeriesCollector->run(iter, parameters);
+
+        if( iter > 500000 && iter % 200000 == 0 )
+        //if(iter % 1000 == 0)
         {
             turbulenceAnalyzer->download();
 
-            writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_" + std::to_string( iter ));
+            if( rank == 0 ) writeTurbulenceVtkXMLParallelSummaryFile( dataBase, turbulenceAnalyzer, parameters, path + simulationName + "_Turbulence_" + std::to_string( iter ), mpiWorldSize );
+
+            writeTurbulenceVtkXML( dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
+        }
+
+        if( iter > 500000 && iter % 200000 == 0 )
+        {
+            Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank), iter );
+
+            turbulenceAnalyzer->writeRestartFile( path + simulationName + "_Turbulence_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
+        }
+
+        if( iter % 1000000 == 0 )
+        {
+            pointTimeSeriesCollector->writeToFile(path + simulationName + "_TimeSeries_" + std::to_string( iter ) + "_rank_" + std::to_string(rank));
         }
     }
 
@@ -348,50 +501,94 @@ void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameters
 
 int main( int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
+    //////////////////////////////////////////////////////////////////////////
 
+#ifdef _WIN32
+    MPI_Init(&argc, &argv);
     int rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int mpiWorldSize = 1;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
+#else
+    int rank         = MpiUtility::getMpiRankBeforeInit();
+    int mpiWorldSize = MpiUtility::getMpiWorldSizeBeforeInit();
+#endif
+
+    if( mpiWorldSize < 2 || mpiWorldSize%2 != 0 )
+    {
+        std::cerr << "Error: MpiWolrdSize must be multiple of 2!\n";
+        return 1;
+    }
 
     //////////////////////////////////////////////////////////////////////////
 
-    std::string path( "F:/Work/Computations/out/" );
-    //std::string path( "out/" );
-    std::string simulationName ( "ThermalCavity" );
+#ifdef _WIN32
+    std::string path( "F:/Work/Computations/out/ThermalCavity3D/" );
+#else
+    std::string path( "out/" );
+#endif
+
+    std::string simulationName ( "ThermalCavity3D_coarse" );
+
+    //////////////////////////////////////////////////////////////////////////
 
     logging::Logger::addStream(&std::cout);
+    
+    std::ofstream logFile( path + simulationName + "_rank_" + std::to_string(rank) + ".log" );
+    logging::Logger::addStream(&logFile);
+
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
+    //////////////////////////////////////////////////////////////////////////
+
+    // Important: for Cuda-Aware MPI the device must be set before MPI_Init()
+    int deviceCount = CudaUtility::getCudaDeviceCount();
+
+    if(deviceCount == 0)
+    {
+        std::stringstream msg;
+        msg << "No devices devices found!" << std::endl;
+        *logging::out << logging::Logger::WARNING << msg.str(); msg.str("");
+    }
+
+    CudaUtility::setCudaDevice( rank % deviceCount );
+
+    //////////////////////////////////////////////////////////////////////////
+
+#ifndef _WIN32
+    MPI_Init(&argc, &argv);
+#endif
+
+    //////////////////////////////////////////////////////////////////////////
+
     if( sizeof(real) == 4 )
-        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precison\n";
+        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precision\n";
     else
         *logging::out << logging::Logger::INFO_HIGH << "Using Double Precision\n";
 
     try
     {
-        auto dataBase = std::make_shared<DataBase>( "GPU" );
+        uint restartIter = INVALID_INDEX;
 
-        auto parameters = std::make_shared<Parameters>();
+        if( argc > 1 ) restartIter = atoi( argv[1] );
 
-        init( rank, dataBase, parameters, path, simulationName);
-        run ( rank, dataBase, parameters, path, simulationName);
-
-        //writeVtkXML( dataBase_0, *parameters_0, 0, path + simulationName + "_" + std::to_string( 0 ) + "_" + std::to_string( 1 ) );
-        //writeVtkXML( dataBase_1, *parameters_1, 0, path + simulationName + "_" + std::to_string( 1 ) + "_" + std::to_string( 1 ) );
+        simulation(path, simulationName, false, restartIter);
     }
     catch (const std::exception& e)
     {     
-        *logging::out << logging::Logger::ERROR << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
     }
     catch (const std::bad_alloc& e)
     {  
-        *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
     }
     catch (...)
     {
-        *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
     }
+
+    logFile.close();
 
     MPI_Finalize();
 
