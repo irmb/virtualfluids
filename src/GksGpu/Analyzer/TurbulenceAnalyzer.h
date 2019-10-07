@@ -109,11 +109,15 @@ public:
 
     bool run( uint iter, Parameters parameters );
 
-    void writeToFile( std::string filename );
+    void writeRestartFile( std::string filename );
+
+    void readRestartFile( std::string filename );
 
     TurbulenceAnalyzerStruct toStruct();
 
-    void download();
+    void download(bool normalize = true);
+
+    void upload();
 };
 
 #endif

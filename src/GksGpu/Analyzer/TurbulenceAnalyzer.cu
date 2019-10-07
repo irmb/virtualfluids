@@ -202,9 +202,142 @@ void TurbulenceAnalyzer::allocate()
     if( collect_p  ) h_p.resize ( dataBase->numberOfCells );
 }
 
-void TurbulenceAnalyzer::writeToFile(std::string filename)
+void TurbulenceAnalyzer::writeRestartFile(std::string filename)
 {
-    //writeTurbulenceVtkXML( this->dataBase, this->toHostStruct(), 0, filename );
+    this->download(false);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    filename += ".rst";
+
+    *logging::out << logging::Logger::INFO_HIGH << "Writing restart file " << filename << " ... ";
+
+    std::ofstream file;
+
+	file.open( filename.c_str(), std::ios::binary );
+
+	if (!file.is_open()) {
+		throw std::runtime_error("\nFile cannot be opened.\n\nERROR!\n\n\n");
+        return;
+	}
+
+    //////////////////////////////////////////////////////////////////////////
+
+    file.write( (char*) &this->counter, sizeof( uint ) );
+
+    file.write( (char*) &dataBase->numberOfLevels, sizeof( uint ) );
+    file.write( (char*) &dataBase->numberOfCells,  sizeof( uint ) );
+    file.write( (char*) &dataBase->numberOfFaces,  sizeof( uint ) );
+
+    file.write( (char*) &this->collect_U , sizeof( bool ) );
+    file.write( (char*) &this->collect_V , sizeof( bool ) );
+    file.write( (char*) &this->collect_W , sizeof( bool ) );
+    file.write( (char*) &this->collect_UU, sizeof( bool ) );
+    file.write( (char*) &this->collect_VV, sizeof( bool ) );
+    file.write( (char*) &this->collect_WW, sizeof( bool ) );
+    file.write( (char*) &this->collect_UV, sizeof( bool ) );
+    file.write( (char*) &this->collect_UW, sizeof( bool ) );
+    file.write( (char*) &this->collect_VW, sizeof( bool ) );
+    file.write( (char*) &this->collect_T , sizeof( bool ) );
+    file.write( (char*) &this->collect_TT, sizeof( bool ) );
+    file.write( (char*) &this->collect_p , sizeof( bool ) );
+
+    if( collect_U  ) file.write( (char*) this->h_U.data() , dataBase->numberOfCells * sizeof( real ) );
+    if( collect_V  ) file.write( (char*) this->h_V.data() , dataBase->numberOfCells * sizeof( real ) );
+    if( collect_W  ) file.write( (char*) this->h_W.data() , dataBase->numberOfCells * sizeof( real ) );
+    if( collect_UU ) file.write( (char*) this->h_UU.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_VV ) file.write( (char*) this->h_VV.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_WW ) file.write( (char*) this->h_WW.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_UV ) file.write( (char*) this->h_UV.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_UW ) file.write( (char*) this->h_UW.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_VW ) file.write( (char*) this->h_VW.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_T  ) file.write( (char*) this->h_T.data() , dataBase->numberOfCells * sizeof( real ) );
+    if( collect_TT ) file.write( (char*) this->h_TT.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_p  ) file.write( (char*) this->h_p.data() , dataBase->numberOfCells * sizeof( real ) );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    file.close();
+
+    *logging::out << logging::Logger::INFO_HIGH << "done!\n";
+}
+
+void TurbulenceAnalyzer::readRestartFile(std::string filename)
+{
+    filename += ".rst";
+
+    *logging::out << logging::Logger::INFO_HIGH << "Reading restart file " << filename << " ... ";
+	
+    std::ifstream file;
+
+	file.open( filename.c_str(), std::ios::binary );
+
+	if (!file.is_open()) {
+		throw std::runtime_error("\nFile cannot be opened.\n\nERROR!\n\n\n");
+        return;
+	}
+
+    //////////////////////////////////////////////////////////////////////////
+
+    file.read( (char*) &this->counter, sizeof( uint ) );
+
+    uint numberOfLevelsRead;
+    uint numberOfCellsRead;
+    uint numberOfFacesRead;
+    
+    file.read( (char*) &numberOfLevelsRead, sizeof( uint ) );
+    file.read( (char*) &numberOfCellsRead,  sizeof( uint ) );
+    file.read( (char*) &numberOfFacesRead,  sizeof( uint ) );
+
+    if( numberOfLevelsRead != dataBase->numberOfLevels ||
+        numberOfCellsRead  != dataBase->numberOfCells  ||
+        numberOfFacesRead  != dataBase->numberOfFaces  ){
+    
+        *logging::out << logging::Logger::INFO_HIGH << "\n";
+        *logging::out << logging::Logger::INFO_HIGH << "Levels: " << numberOfLevelsRead << " vs. " << dataBase->numberOfLevels << "\n";
+        *logging::out << logging::Logger::INFO_HIGH << "Cells:  " << numberOfCellsRead  << " vs. " << dataBase->numberOfCells  << "\n";
+        *logging::out << logging::Logger::INFO_HIGH << "Faces:  " << numberOfFacesRead  << " vs. " << dataBase->numberOfFaces  << "\n";
+
+        file.close();
+
+        throw std::runtime_error("\nERROR: Restart file does not match current setup");
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    file.read( (char*) &this->collect_U , sizeof( bool ) );
+    file.read( (char*) &this->collect_V , sizeof( bool ) );
+    file.read( (char*) &this->collect_W , sizeof( bool ) );
+    file.read( (char*) &this->collect_UU, sizeof( bool ) );
+    file.read( (char*) &this->collect_VV, sizeof( bool ) );
+    file.read( (char*) &this->collect_WW, sizeof( bool ) );
+    file.read( (char*) &this->collect_UV, sizeof( bool ) );
+    file.read( (char*) &this->collect_UW, sizeof( bool ) );
+    file.read( (char*) &this->collect_VW, sizeof( bool ) );
+    file.read( (char*) &this->collect_T , sizeof( bool ) );
+    file.read( (char*) &this->collect_TT, sizeof( bool ) );
+    file.read( (char*) &this->collect_p , sizeof( bool ) );
+
+    if( collect_U  ) file.read( (char*) this->h_U.data() , dataBase->numberOfCells * sizeof( real ) );
+    if( collect_V  ) file.read( (char*) this->h_V.data() , dataBase->numberOfCells * sizeof( real ) );
+    if( collect_W  ) file.read( (char*) this->h_W.data() , dataBase->numberOfCells * sizeof( real ) );
+    if( collect_UU ) file.read( (char*) this->h_UU.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_VV ) file.read( (char*) this->h_VV.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_WW ) file.read( (char*) this->h_WW.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_UV ) file.read( (char*) this->h_UV.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_UW ) file.read( (char*) this->h_UW.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_VW ) file.read( (char*) this->h_VW.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_T  ) file.read( (char*) this->h_T.data() , dataBase->numberOfCells * sizeof( real ) );
+    if( collect_TT ) file.read( (char*) this->h_TT.data(), dataBase->numberOfCells * sizeof( real ) );
+    if( collect_p  ) file.read( (char*) this->h_p.data() , dataBase->numberOfCells * sizeof( real ) );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    file.close();
+
+    this->upload();
+
+    *logging::out << logging::Logger::INFO_HIGH << "done!\n";
 }
 
 TurbulenceAnalyzerStruct TurbulenceAnalyzer::toStruct()
@@ -230,7 +363,7 @@ TurbulenceAnalyzerStruct TurbulenceAnalyzer::toStruct()
     return turbulenceAnalyzer;
 }
 
-void TurbulenceAnalyzer::download()
+void TurbulenceAnalyzer::download(bool normalize)
 {
     if( collect_U  ) checkCudaErrors( cudaMemcpy( this->h_U.data() , this->U , sizeof(real) * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
     if( collect_V  ) checkCudaErrors( cudaMemcpy( this->h_V.data() , this->V , sizeof(real) * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
@@ -245,31 +378,50 @@ void TurbulenceAnalyzer::download()
     if( collect_TT ) checkCudaErrors( cudaMemcpy( this->h_TT.data(), this->TT, sizeof(real) * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
     if( collect_p  ) checkCudaErrors( cudaMemcpy( this->h_p.data() , this->p , sizeof(real) * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
 
-    for( uint cellIndex = 0; cellIndex < dataBase->numberOfCells; cellIndex++ )
+    if(normalize)
     {
-        if( collect_U  ) this->h_U [ cellIndex ] /= real(this->counter);
-        if( collect_V  ) this->h_V [ cellIndex ] /= real(this->counter);
-        if( collect_W  ) this->h_W [ cellIndex ] /= real(this->counter);
-        if( collect_UU ) this->h_UU[ cellIndex ] /= real(this->counter);
-        if( collect_VV ) this->h_VV[ cellIndex ] /= real(this->counter);
-        if( collect_WW ) this->h_WW[ cellIndex ] /= real(this->counter);
-        if( collect_UV ) this->h_UV[ cellIndex ] /= real(this->counter);
-        if( collect_UW ) this->h_UW[ cellIndex ] /= real(this->counter);
-        if( collect_VW ) this->h_VW[ cellIndex ] /= real(this->counter);
-        if( collect_T  ) this->h_T [ cellIndex ] /= real(this->counter);
-        if( collect_TT ) this->h_TT[ cellIndex ] /= real(this->counter);
-        if( collect_p  ) this->h_p [ cellIndex ] /= real(this->counter);
+        for( uint cellIndex = 0; cellIndex < dataBase->numberOfCells; cellIndex++ )
+        {
+            if( collect_U  ) this->h_U [ cellIndex ] /= real(this->counter);
+            if( collect_V  ) this->h_V [ cellIndex ] /= real(this->counter);
+            if( collect_W  ) this->h_W [ cellIndex ] /= real(this->counter);
+            if( collect_UU ) this->h_UU[ cellIndex ] /= real(this->counter);
+            if( collect_VV ) this->h_VV[ cellIndex ] /= real(this->counter);
+            if( collect_WW ) this->h_WW[ cellIndex ] /= real(this->counter);
+            if( collect_UV ) this->h_UV[ cellIndex ] /= real(this->counter);
+            if( collect_UW ) this->h_UW[ cellIndex ] /= real(this->counter);
+            if( collect_VW ) this->h_VW[ cellIndex ] /= real(this->counter);
+            if( collect_T  ) this->h_T [ cellIndex ] /= real(this->counter);
+            if( collect_TT ) this->h_TT[ cellIndex ] /= real(this->counter);
+            if( collect_p  ) this->h_p [ cellIndex ] /= real(this->counter);
 
-        if( collect_UU ) this->h_UU[ cellIndex ] -= this->h_U[ cellIndex ] * this->h_U[ cellIndex ];
-        if( collect_VV ) this->h_VV[ cellIndex ] -= this->h_V[ cellIndex ] * this->h_V[ cellIndex ];
-        if( collect_WW ) this->h_WW[ cellIndex ] -= this->h_W[ cellIndex ] * this->h_W[ cellIndex ];
+            if( collect_UU ) this->h_UU[ cellIndex ] -= this->h_U[ cellIndex ] * this->h_U[ cellIndex ];
+            if( collect_VV ) this->h_VV[ cellIndex ] -= this->h_V[ cellIndex ] * this->h_V[ cellIndex ];
+            if( collect_WW ) this->h_WW[ cellIndex ] -= this->h_W[ cellIndex ] * this->h_W[ cellIndex ];
 
-        if( collect_UV ) this->h_UV[ cellIndex ] -= this->h_U[ cellIndex ] * this->h_V[ cellIndex ];
-        if( collect_UW ) this->h_UW[ cellIndex ] -= this->h_U[ cellIndex ] * this->h_W[ cellIndex ];
-        if( collect_VW ) this->h_VW[ cellIndex ] -= this->h_V[ cellIndex ] * this->h_W[ cellIndex ];
+            if( collect_UV ) this->h_UV[ cellIndex ] -= this->h_U[ cellIndex ] * this->h_V[ cellIndex ];
+            if( collect_UW ) this->h_UW[ cellIndex ] -= this->h_U[ cellIndex ] * this->h_W[ cellIndex ];
+            if( collect_VW ) this->h_VW[ cellIndex ] -= this->h_V[ cellIndex ] * this->h_W[ cellIndex ];
         
-        if( collect_TT ) this->h_TT[ cellIndex ] -= this->h_T[ cellIndex ] * this->h_T[ cellIndex ];
+            if( collect_TT ) this->h_TT[ cellIndex ] -= this->h_T[ cellIndex ] * this->h_T[ cellIndex ];
+        }
     }
+}
+
+void TurbulenceAnalyzer::upload()
+{
+    if( collect_U  ) checkCudaErrors( cudaMemcpy( this->U , this->h_U.data() , sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
+    if( collect_V  ) checkCudaErrors( cudaMemcpy( this->V , this->h_V.data() , sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
+    if( collect_W  ) checkCudaErrors( cudaMemcpy( this->W , this->h_W.data() , sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
+    if( collect_UU ) checkCudaErrors( cudaMemcpy( this->UU, this->h_UU.data(), sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
+    if( collect_VV ) checkCudaErrors( cudaMemcpy( this->VV, this->h_VV.data(), sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
+    if( collect_WW ) checkCudaErrors( cudaMemcpy( this->WW, this->h_WW.data(), sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
+    if( collect_UV ) checkCudaErrors( cudaMemcpy( this->UV, this->h_UV.data(), sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
+    if( collect_UW ) checkCudaErrors( cudaMemcpy( this->UW, this->h_UW.data(), sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
+    if( collect_VW ) checkCudaErrors( cudaMemcpy( this->VW, this->h_VW.data(), sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
+    if( collect_T  ) checkCudaErrors( cudaMemcpy( this->T , this->h_T.data() , sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
+    if( collect_TT ) checkCudaErrors( cudaMemcpy( this->TT, this->h_TT.data(), sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
+    if( collect_p  ) checkCudaErrors( cudaMemcpy( this->p , this->h_p.data() , sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
 }
 
 
