@@ -26,6 +26,6 @@ How to build Virtual Fluids:
 ============================
 
 1. CMake the project
-2. set the output path in source/Applications/LidDrivenCavity/LidDrivenCavity.cpp
+2. set the output path in Applications/LidDrivenCavity/LidDrivenCavity.cpp
 3. build the project ("compile")
 4. run the generated executable (usually in <build directory>/Applications/LidDrivenCavity)
