@@ -1,0 +1,27 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+PROJECT(VirtualFluids)
+
+set(SOURCE_ROOT "../source")
+
+SET(USE_INTEL OFF CACHE BOOL "include Intel compiler support")
+SET(USE_GCC OFF CACHE BOOL "include gcc compiler support")
+
+#CAB
+INCLUDE("CMake/CMakeCABMacros.txt")
+
+LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DNOMINMAX)
+
+IF(${USE_INTEL})
+   SET(CAB_ADDITIONAL_LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS} -parallel)
+ENDIF()
+
+IF(${USE_GCC})
+   SET(CAB_ADDITIONAL_LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS} -lgomp)
+ENDIF()
+
+add_subdirectory(VirtualFluidsCore)
+
+set(APPS_ROOT "${SOURCE_ROOT}/Applications")
+INCLUDE(${APPS_ROOT}/Applications.cmake)
+
