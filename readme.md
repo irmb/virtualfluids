@@ -15,7 +15,7 @@ Paraview [www.paraview.org](https://www.paraview.org/):
 C++ Compiler:
 * with C++11 support, for example gcc6.3 or Visual C++ 14.0
     
-How to get Virtual Fluids:
+How to get VirtualFluidsGPU:
 ==========================
 
 Option 1: use git
@@ -27,10 +27,15 @@ Option 2: without git
 3. click on VirtualFluids/VirtualFluidsGPU
 4. click on the download symbol on the top right and download zip/tar.gz file
 
-How to build Virtual Fluids:
+How to build VirtualFluidsGPU:
 ============================
 
 1. CMake the project
 2. set the output path in targets/apps/LidDrivenCavity/LidDrivenCavity.cpp
 3. build the project ("compile")
 4. run the generated executable (usually in <build directory>/bin/)
+
+VirtualFluidsGPU results files:
+===============================
+
+VirtualFluidsGPU generates a the time series of output files directly in the output path. In Paraview these time series can be read directly.
