@@ -300,6 +300,14 @@ void run(string configname)
             if (refineLevel - level >= 0)
             {
                dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, refineDistance);
+               //SPtr<GbObject3D> refCylinderL1(new GbCylinder3D(0.3, -0.03, 0.001, 0.3, 0.06, 0.001, 0.1));
+               //RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL1(refCylinderL1, level);
+               //grid->accept(refVisitorCylinderL1);
+
+               //SPtr<GbObject3D> refBoxL1(new GbCuboid3D(0.15, -0.03, -0.035, 0.45, 0.06, 0.035));
+               //if (myid==0) GbSystem3D::writeGeoObject(refBoxL1.get(), pathOut+"/geo/refBoxL1", WbWriterVtkXmlASCII::getInstance());
+               //RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL1(refBoxL1, level);
+               //grid->accept(refVisitorBoxL1);
             }
             
             level = 2;
@@ -308,7 +316,6 @@ void run(string configname)
                dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, refineDistance);
             }
 
-            //level 1
             level = 3;
             if (refineLevel - level >= 0)
             {
@@ -324,64 +331,74 @@ void run(string configname)
                //RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL1(refBoxL1, level);
                //grid->accept(refVisitorBoxL1);
 
-               dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, 24.0*refineDistance);
-            }
+               //SPtr<GbObject3D> refCylinderL1(new GbCylinder3D(0.3, -0.03, 0.001, 0.3, 0.06, 0.001, 0.03));
+               //GbSystem3D::writeGeoObject(refCylinderL1.get(), pathOut + "/geo/refCylinderL1", WbWriterVtkXmlBinary::getInstance());
+               //RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL1(refCylinderL1, level);
+               //grid->accept(refVisitorCylinderL1);
 
-            //level 2
-            level = 4;
-            if (refineLevel - level >= 0)
-            {
-               //SPtr<GbObject3D> refCylinderL2(new GbCylinder3D(0.015, -0.03, 0.0, 0.015, 0.06, 0.0, 0.03));
-               //GbSystem3D::writeGeoObject(refCylinderL2.get(), pathOut + "/geo/refCylinderL2", WbWriterVtkXmlBinary::getInstance());
-               //RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL2(refCylinderL2, level);
-               //grid->accept(refVisitorCylinderL2);
+               SPtr<GbObject3D> refBoxL2(new GbCuboid3D(0.15, -0.03, -0.015, 0.42, 0.06, 0.015));
+               if (myid==0) GbSystem3D::writeGeoObject(refBoxL2.get(), pathOut+"/geo/refBoxL2", WbWriterVtkXmlASCII::getInstance());
+               RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL2(refBoxL2, level);
+               grid->accept(refVisitorBoxL2);
 
-               //SPtr<GbObject3D> refBoxL2(new GbCuboid3D(0.15, -0.03, -0.015, 0.7, 0.06, 0.015));
-               //SPtr<GbObject3D> refBoxL2(new GbCuboid3D(0.15, -0.03, -0.015, 0.33, 0.06, 0.015));
-               //if (myid==0) GbSystem3D::writeGeoObject(refBoxL2.get(), pathOut+"/geo/refBoxL2", WbWriterVtkXmlASCII::getInstance());
-               //RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL2(refBoxL2, level);
-               //grid->accept(refVisitorBoxL2);
-
+               //dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, 24.0*refineDistance);
                dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, 12.0*refineDistance);
             }
 
-            //level 3
-            level = 5;
-            if (refineLevel - level >= 0)
-            {
-               //SPtr<GbObject3D> refCylinderL3(new GbCylinder3D(0.015, -0.03, 0.0, 0.015, 0.06, 0.0, 0.025));
-               //GbSystem3D::writeGeoObject(refCylinderL3.get(), pathOut + "/geo/refCylinderL3", WbWriterVtkXmlBinary::getInstance());
-               //RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL3(refCylinderL3, level);
-               //grid->accept(refVisitorCylinderL3);
+            //level = 4;
+            //if (refineLevel - level >= 0)
+            //{
+            //   //SPtr<GbObject3D> refCylinderL2(new GbCylinder3D(0.015, -0.03, 0.0, 0.015, 0.06, 0.0, 0.03));
+            //   //GbSystem3D::writeGeoObject(refCylinderL2.get(), pathOut + "/geo/refCylinderL2", WbWriterVtkXmlBinary::getInstance());
+            //   //RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL2(refCylinderL2, level);
+            //   //grid->accept(refVisitorCylinderL2);
 
-               //SPtr<GbObject3D> refBoxL3(new GbCuboid3D(0.15, -0.03, -0.010, 0.32, 0.06, 0.012));
-               //if (myid==0) GbSystem3D::writeGeoObject(refBoxL3.get(), pathOut+"/geo/refBoxL3", WbWriterVtkXmlASCII::getInstance());
-               //RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL3(refBoxL3, level);
-               //grid->accept(refVisitorBoxL3);
+            //   //SPtr<GbObject3D> refBoxL2(new GbCuboid3D(0.15, -0.03, -0.015, 0.7, 0.06, 0.015));
+            //   SPtr<GbObject3D> refBoxL2(new GbCuboid3D(0.15, -0.03, -0.015, 0.42, 0.06, 0.015));
+            //   if (myid==0) GbSystem3D::writeGeoObject(refBoxL2.get(), pathOut+"/geo/refBoxL2", WbWriterVtkXmlASCII::getInstance());
+            //   RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL2(refBoxL2, level);
+            //   grid->accept(refVisitorBoxL2);
 
-               dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, 6.0*refineDistance);
-            }
+            //   //SPtr<GbObject3D> refCylinderL1(new GbCylinder3D(0.3, -0.03, 0.001, 0.3, 0.06, 0.001, 0.03));
+            //   //GbSystem3D::writeGeoObject(refCylinderL1.get(), pathOut + "/geo/refCylinderL1", WbWriterVtkXmlBinary::getInstance());
+            //   //RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL1(refCylinderL1, level);
+            //   //grid->accept(refVisitorCylinderL1);
 
-            //level 4
-            level = 6;
-            if (refineLevel - level >= 0)
-            {
-               //SPtr<GbObject3D> refBoxL4(new GbCuboid3D(0.15, -0.03, -0.005, 0.31, 0.06, 0.01));
-               //if (myid==0) GbSystem3D::writeGeoObject(refBoxL4.get(), pathOut+"/geo/refBoxL4", WbWriterVtkXmlASCII::getInstance());
-               //RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL4(refBoxL4, level);
-               //grid->accept(refVisitorBoxL4);
+            //   dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, 6.0*refineDistance);
+            //}
 
-               dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, 3.0*refineDistance);
-            }
+            //level = 5;
+            //if (refineLevel - level >= 0)
+            //{
+            //   //SPtr<GbObject3D> refCylinderL3(new GbCylinder3D(0.015, -0.03, 0.0, 0.015, 0.06, 0.0, 0.025));
+            //   //GbSystem3D::writeGeoObject(refCylinderL3.get(), pathOut + "/geo/refCylinderL3", WbWriterVtkXmlBinary::getInstance());
+            //   //RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL3(refCylinderL3, level);
+            //   //grid->accept(refVisitorCylinderL3);
 
+            //   //SPtr<GbObject3D> refBoxL3(new GbCuboid3D(0.15, -0.03, -0.010, 0.32, 0.06, 0.012));
+            //   //if (myid==0) GbSystem3D::writeGeoObject(refBoxL3.get(), pathOut+"/geo/refBoxL3", WbWriterVtkXmlASCII::getInstance());
+            //   //RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL3(refBoxL3, level);
+            //   //grid->accept(refVisitorBoxL3);
 
+            //   dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, 6.0*refineDistance);
+            //}
 
-            //level 5
-            level = 7;
-            if (refineLevel - level >= 0)
-            {
-               dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, refineDistance);
-            }
+            //level = 6;
+            //if (refineLevel - level >= 0)
+            //{
+            //   //SPtr<GbObject3D> refBoxL4(new GbCuboid3D(0.15, -0.03, -0.005, 0.31, 0.06, 0.01));
+            //   //if (myid==0) GbSystem3D::writeGeoObject(refBoxL4.get(), pathOut+"/geo/refBoxL4", WbWriterVtkXmlASCII::getInstance());
+            //   //RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL4(refBoxL4, level);
+            //   //grid->accept(refVisitorBoxL4);
+
+            //   dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, 3.0*refineDistance);
+            //}
+
+            //level = 7;
+            //if (refineLevel - level >= 0)
+            //{
+            //   dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, refineDistance);
+            //}
 
             //dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(refineLevel, startDistance, refineDistance);
             //
@@ -448,16 +465,16 @@ void run(string configname)
 
             if (myid==0) UBLOG(logINFO, "Refinement - end");
          }
-         else
-         {
-            migCoProcessor->readBlocks(0);
-         }
+         //else
+         //{
+         //   migCoProcessor->readBlocks(0);
+         //}
          grid->updateDistributedBlocks(comm);
 
-         if (writeBlocks)
-         {
-            migCoProcessor->writeBlocks(0);
-         }
+         //if (writeBlocks)
+         //{
+         //   migCoProcessor->writeBlocks(0);
+         //}
 
          std::vector<int> dirs;
          for (int i = D3Q27System::E; i<=D3Q27System::TS; i++)
@@ -521,17 +538,7 @@ void run(string configname)
             ppblocks.process(3);
          }
 
-         //SetSolidBlocksBlockVisitor fngSolidVisitor(fngIntrWhole2);
-         //grid->accept(fngSolidVisitor);
-         //SetBcBlocksBlockVisitor fngBcVisitor(fngIntrWhole2);
-         //grid->accept(fngBcVisitor);
 
-
-         GbCuboid3DPtr mic6(new GbCuboid3D( 0.3, 0.015, -0.46+4.25*deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -0.46+5.25*deltaXcoarse));
-         if (myid==0) GbSystem3D::writeGeoObject(mic6.get(), pathOut+"/geo/mic6", WbWriterVtkXmlBinary::getInstance());
-         GbCuboid3DPtr mic7(new GbCuboid3D(0.3, 0.015, -0.3+4.25*deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -0.3+5.25*deltaXcoarse));
-         if (myid==0) GbSystem3D::writeGeoObject(mic7.get(), pathOut+"/geo/mic7", WbWriterVtkXmlBinary::getInstance());
- 
          unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
          int ghostLayer = 3;
          unsigned long long numberOfNodesPerBlock = (unsigned long long)(blockNx[0])* (unsigned long long)(blockNx[1])* (unsigned long long)(blockNx[2]);
@@ -557,8 +564,6 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
          }
 
-
-
          SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
          grid->accept(kernelVisitor);
 
@@ -581,12 +586,7 @@ void run(string configname)
          //BC
          intHelper.setBC();
 
-         //for (SPtr<Block3D> block : fngIntrWhole2->getSolidBlockSet())
-         //{
-         //   fngIntrWhole2->setDifferencesToGbObject3D(block);
-         //}
-         //fngIntrWhole2->initInteractor();
-         
+        
          if (myid==0) UBLOG(logINFO, "intHelper.setBC():end");
 
          if (myid==0)
@@ -675,17 +675,18 @@ void run(string configname)
       double offsetX1 = 0.017;
       double offsetZ1 = 0.11375;
       std::vector<UbTupleFloat3> nodes;
-      for (int i = 0; i <= 10; i++)
+      //for (int i = 0; i <= 10; i++)
+      for (int i = 0; i <= 6; i++)
       {
          micCoProcessor->addMicrophone(Vector3D(0.3+deltaXcoarse+offsetX1*double(i), 0.015, 0.0-offsetZ1*double(i)));
          nodes.push_back(UbTupleFloat3(float(0.3+deltaXcoarse+offsetX1*float(i)), float(0.015), float(0.0-offsetZ1*float(i))));
       }
-      double offsetX2 = 0.1;
-      for (int i = 0; i <= 6; i++)
-      {
-         micCoProcessor->addMicrophone(Vector3D(0.17+offsetX2*double(i), 0.015, -1.1375));
-         nodes.push_back(UbTupleFloat3(float(0.17+offsetX2*float(i)), float(0.015), float(-1.1375)));
-      }
+      //double offsetX2 = 0.1;
+      //for (int i = 0; i <= 6; i++)
+      //{
+      //   micCoProcessor->addMicrophone(Vector3D(0.17+offsetX2*double(i), 0.015, -1.1375));
+      //   nodes.push_back(UbTupleFloat3(float(0.17+offsetX2*float(i)), float(0.015), float(-1.1375)));
+      //}
       
       if (myid==0) WbWriterVtkXmlBinary::getInstance()->writeNodes(pathOut+"/geo/mic", nodes);
 
@@ -696,7 +697,7 @@ void run(string configname)
       calculator->addCoProcessor(micCoProcessor);
       //calculator->addCoProcessor(restartCoProcessor);
       calculator->addCoProcessor(migCoProcessor);
-      calculator->addCoProcessor(writeMQSelectCoProcessor);
+      //calculator->addCoProcessor(writeMQSelectCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
       calculator->addCoProcessor(tav);
 

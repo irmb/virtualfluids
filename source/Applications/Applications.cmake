@@ -63,4 +63,5 @@ add_subdirectory(Applications/ConvectionOfVortex)
 add_subdirectory(Applications/CheckpointConverter)
 add_subdirectory(Applications/bChannelVA)
 add_subdirectory(Applications/OrganPipe)
+add_subdirectory(Applications/LidDrivenCavity)
 

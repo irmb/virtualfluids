@@ -195,6 +195,7 @@
 #include <LBM/VoidLBMKernel.h>
 #include <LBM/LBMSystem.h>
 #include <LBM/LBMUnitConverter.h>
+#include <LBM/LBMKernelETD3Q27BGK.h>
 
 #include <numerics/geometry3d/CoordinateTransformation3D.h>
 #include <numerics/geometry3d/GbCuboid3D.h>
