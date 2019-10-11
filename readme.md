@@ -35,7 +35,22 @@ How to build VirtualFluidsGPU:
 3. build the project ("compile")
 4. run the generated executable (usually in <build directory>/bin/)
 
+Known Issues:
+-------------
+
+If CMake does not find CUDA_CUT_INCLUDE_DIR use and set the correct CUDA Pathes in CMakeLists.txt in the base directory in lines 35, 36.
+
 VirtualFluidsGPU results files:
 ===============================
 
 VirtualFluidsGPU generates a the time series of output files directly in the output path. In Paraview these time series can be read directly.
+
+VirtualFluidsGPU change between Double and Single Precision:
+============================================================
+
+Option 1:
+1. go to CMakeLists.txt in the base directory
+2. go to line 83 to switch ON/OFF VF_DOUBLE_ACCURACY
+
+Option 2:
+Check/uncheck the item VF_DOUBLE_ACCURACY in CMake.
