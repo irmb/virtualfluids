@@ -38,4 +38,4 @@ VirtualFluidsCPU generates a set of multiple output directories in the prescribe
 Documentation:
 ==============
 
-The doxygen generated documentation can be found [here](git.irmb.bau.tu-bs.de/doku/CPU).
+The doxygen generated documentation can be found [here](https://git.irmb.bau.tu-bs.de/doku/CPU).
