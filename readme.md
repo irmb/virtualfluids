@@ -58,4 +58,4 @@ Check/uncheck the item VF_DOUBLE_ACCURACY in CMake.
 Documentation:
 ==============
 
-The doxygen generated documentation can be found [here](git.irmb.bau.tu-bs.de/doku/GPU).
+The doxygen generated documentation can be found [here](https://git.irmb.bau.tu-bs.de/doku/GPU).
