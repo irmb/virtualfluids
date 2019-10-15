@@ -34,3 +34,8 @@ VirtualFluidsCPU results files:
 ===============================
 
 VirtualFluidsCPU generates a set of multiple output directories in the prescribed output path. The flow fields can be found in the _mq_ directory. To view the flow fields, it is most conveniant to open the _mq_collection.pvd_ file in Paraview. The _bc_ directory contains the boundary condition information, the _geo_ directory contains information on the geometry of the flow domain and the _blocks_ directory contains the block grid.
+
+Documentation:
+==============
+
+The doxygen generated documentation can be found [here](git.irmb.bau.tu-bs.de/doku/CPU).
