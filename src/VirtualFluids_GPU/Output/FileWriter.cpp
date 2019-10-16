@@ -72,12 +72,12 @@ void FileWriter::writeUnstrucuredGridLT(SPtr<Parameter> para, std::vector<std::s
     std::vector< UbTupleFloat3 > nodes;
     std::vector< UbTupleInt8 > cells;
     std::vector< std::string > nodedatanames;
-    nodedatanames.push_back("press");
-    nodedatanames.push_back("rho");
-    nodedatanames.push_back("vx1");
-    nodedatanames.push_back("vx2");
-    nodedatanames.push_back("vx3");
-    nodedatanames.push_back("geo");
+    nodedatanames.push_back("Press");
+    nodedatanames.push_back("DRho");
+    nodedatanames.push_back("Vx1");
+    nodedatanames.push_back("Vx2");
+    nodedatanames.push_back("Vx3");
+    nodedatanames.push_back("geometry");
     unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
     int dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
     bool neighborsAreFluid;
@@ -122,7 +122,7 @@ void FileWriter::writeUnstrucuredGridLT(SPtr<Parameter> para, std::vector<std::s
                 //////////////////////////////////////////////////////////////////////////
                 nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
                 nodedata[0][dn1] = (double)para->getParH()->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-                nodedata[1][dn1] = (double)para->getParH()->rho[pos] * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+                nodedata[1][dn1] = (double)para->getParH()->rho[pos] * (double)para->getDensityRatio();
                 nodedata[2][dn1] = (double)para->getParH()->velocityX[pos] * (double)para->getVelocityRatio();
                 nodedata[3][dn1] = (double)para->getParH()->velocityY[pos] * (double)para->getVelocityRatio();
                 nodedata[4][dn1] = (double)para->getParH()->velocityZ[pos] * (double)para->getVelocityRatio();
