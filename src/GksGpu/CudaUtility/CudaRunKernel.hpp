@@ -35,6 +35,7 @@
 
 #include <string>
 #include <device_launch_parameters.h>
+#include <omp.h>
 
 #include "CudaUtility/CudaUtility.h"
 
@@ -49,7 +50,8 @@ void runKernel(KernelFunctor kernel, FunctionFunctor function, std::string devic
     }
     else
     {
-        for( uint index = 0; index < grid.numberOfEntities; index++ )
+#pragma omp parallel for
+        for( int index = 0; index < grid.numberOfEntities; index++ )
         {
             function( args..., index );
         }
