@@ -74,10 +74,10 @@ void FileWriter::writeUnstrucuredGridLT(SPtr<Parameter> para, std::vector<std::s
     std::vector< std::string > nodedatanames;
     nodedatanames.push_back("Press");
     nodedatanames.push_back("DRho");
-    nodedatanames.push_back("Vx1");
-    nodedatanames.push_back("Vx2");
-    nodedatanames.push_back("Vx3");
-    nodedatanames.push_back("geometry");
+    nodedatanames.push_back("Vx");
+    nodedatanames.push_back("Vy");
+    nodedatanames.push_back("Vz");
+    nodedatanames.push_back("Geometry");
     unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
     int dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
     bool neighborsAreFluid;

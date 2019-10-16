@@ -81,16 +81,16 @@ void VtkWriter::write(std::shared_ptr<DataBase> dataBase, Parameters parameters,
     //////////////////////////////////////////////////////////////////////////
 
     std::vector< std::string > cellDataNames;
-    cellDataNames.push_back("press");   // 0
-    cellDataNames.push_back("rho");     // 1
-    cellDataNames.push_back("vx1");     // 2
-    cellDataNames.push_back("vx2");     // 3
-    cellDataNames.push_back("vx3");     // 4
-    cellDataNames.push_back("T");       // 5
-    cellDataNames.push_back("geo");     // 6
+    cellDataNames.push_back("Press");       // 0
+    cellDataNames.push_back("Rho");         // 1
+    cellDataNames.push_back("Vx");          // 2
+    cellDataNames.push_back("Vy");          // 3
+    cellDataNames.push_back("Vz");          // 4
+    cellDataNames.push_back("Temperature"); // 5
+    cellDataNames.push_back("Geometry");    // 6
 #ifdef USE_PASSIVE_SCALAR
-    cellDataNames.push_back("S_1");     // 7
-    cellDataNames.push_back("S_2");     // 8
+    cellDataNames.push_back("S_1");         // 7
+    cellDataNames.push_back("S_2");         // 8
 #endif
 
     //////////////////////////////////////////////////////////////////////////
