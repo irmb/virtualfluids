@@ -149,16 +149,15 @@ void WriteMacroscopicQuantitiesCoProcessor::clearData()
 //////////////////////////////////////////////////////////////////////////
 void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
-   double level = (double)block->getLevel();
    double blockID = (double)block->getGlobalID();
 
    //This data is written:
    datanames.resize(0);
-   datanames.push_back("Rho");
+   datanames.push_back("DRho");
+   datanames.push_back("Press");
    datanames.push_back("Vx");
    datanames.push_back("Vy");
    datanames.push_back("Vz");
-   datanames.push_back("Level");
    
    data.resize(datanames.size());
 
@@ -166,7 +165,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
    SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
    SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();     
    LBMReal f[D3Q27System::ENDF+1];
-   LBMReal vx1,vx2,vx3,rho;
+   LBMReal vx1,vx2,vx3,drho,press;
 
    //node numbering always starts at 0!
    int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
@@ -212,10 +211,14 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                                               float(worldCoordinates[2]) ));
 
                distributions->getDistribution(f, ix1, ix2, ix3);
-               calcMacros(f,rho,vx1,vx2,vx3);
+               calcMacros(f,drho,vx1,vx2,vx3);
+               press = D3Q27System::calcPress(f,drho,vx1,vx2,vx3);
 
-               if (UbMath::isNaN(rho) || UbMath::isInfinity(rho)) 
-                  UB_THROW( UbException(UB_EXARGS,"rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
+               if (UbMath::isNaN(drho) || UbMath::isInfinity(drho)) 
+                  UB_THROW( UbException(UB_EXARGS,"drho is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
+                   ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+               if (UbMath::isNaN(press) || UbMath::isInfinity(press)) 
+                  UB_THROW( UbException(UB_EXARGS,"press is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
                    ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
                if (UbMath::isNaN(vx1) || UbMath::isInfinity(vx1)) 
                   UB_THROW( UbException(UB_EXARGS,"vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
@@ -227,11 +230,11 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                   UB_THROW( UbException(UB_EXARGS,"vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
                   ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
                
-               data[index++].push_back(rho * conv->getFactorDensityLbToW() );
+               data[index++].push_back(drho * conv->getFactorDensityLbToW());
+               data[index++].push_back(press * conv->getFactorPressureLbToW());
                data[index++].push_back(vx1 * conv->getFactorVelocityLbToW());
                data[index++].push_back(vx2 * conv->getFactorVelocityLbToW());
                data[index++].push_back(vx3 * conv->getFactorVelocityLbToW());
-               data[index++].push_back(level);
             }
          }
       }

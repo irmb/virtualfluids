@@ -582,10 +582,9 @@ namespace D3Q27System
    static inline LBMReal calcPress(const LBMReal* const f, LBMReal rho, LBMReal vx1, LBMReal vx2, LBMReal vx3)
    {
       using namespace UbMath;
-      LBMReal op=1.0;
-      return ((f[E]+f[W]+f[N]+f[S]+f[T]+f[B]+2.*(f[NE]+f[SW]+f[SE]+f[NW]+f[TE]+f[BW]+f[BE]+f[TW]+f[TN]+f[BS]+f[BN]+f[TS])+
-         3.*(f[TNE]+f[TSW]+f[TSE]+f[TNW]+f[BNE]+f[BSW]+f[BSE]+f[BNW])-(vx1*vx1+vx2*vx2+vx3*vx3))*(1-0.5*op)+op*0.5*(rho))*c1o3;
-
+      LBMReal OxxPyyPzz = c1;
+      return ((f[E]+f[W]+f[N]+f[S]+f[T]+f[B]+c2*(f[NE]+f[SW]+f[SE]+f[NW]+f[TE]+f[BW]+f[BE]+f[TW]+f[TN]+f[BS]+f[BN]+f[TS])+
+         c3*(f[TNE]+f[TSW]+f[TSE]+f[TNW]+f[BNE]+f[BSW]+f[BSE]+f[BNW])-(vx1*vx1+vx2*vx2+vx3*vx3))*(c1-c1o2*OxxPyyPzz)+OxxPyyPzz*c1o2*(rho))*c1o3;
    }
 }
 
