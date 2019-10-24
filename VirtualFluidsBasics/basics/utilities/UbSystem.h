@@ -54,8 +54,6 @@
 #elif (defined(__amd64) || defined(__amd64__) || defined(__unix__)) && !defined(__AIX__)
    #define UBSYSTEM_LINUX
    #include "dirent.h"
-   #include "sys/stat.h"
-   //#include <sys/syscall.h>
    #include <sys/stat.h>
    #include <unistd.h>
    #include <string.h>

@@ -68,7 +68,7 @@ namespace Utilities
 //////////////////////////////////////////////////////////////////////////
    static long long getTotalPhysMem()
    {
-      #if defined(MEMORYUTIL_WINDOWS) && !defined(MEMORYUTIL_CYGWIN)
+      #if defined(MEMORYUTIL_WINDOWS)
          MEMORYSTATUSEX memInfo;
          memInfo.dwLength = sizeof(MEMORYSTATUSEX);
          GlobalMemoryStatusEx(&memInfo);
@@ -81,8 +81,6 @@ namespace Utilities
          totalPhysMem *= memInfo.mem_unit;
       #elif defined(MEMORYUTIL_APPLE)
          long long totalPhysMem = 0;
-      #elif defined(MEMORYUTIL_CYGWIN)
-        long long totalPhysMem = 0;
       #else
          #error "MemoryUtil::getTotalPhysMem - UnknownMachine"
       #endif
@@ -92,7 +90,7 @@ namespace Utilities
 //////////////////////////////////////////////////////////////////////////
    static long long getPhysMemUsed()
    {
-      #if defined(MEMORYUTIL_WINDOWS) && !defined(MEMORYUTIL_CYGWIN)
+      #if defined(MEMORYUTIL_WINDOWS)
          MEMORYSTATUSEX memInfo;
          memInfo.dwLength = sizeof(MEMORYSTATUSEX);
          GlobalMemoryStatusEx(&memInfo);
@@ -104,8 +102,6 @@ namespace Utilities
          //Multiply in next statement to avoid int overflow on right hand side...
          physMemUsed *= memInfo.mem_unit;
       #elif defined(MEMORYUTIL_APPLE)
-         long long physMemUsed = 0;
-      #elif defined(MEMORYUTIL_CYGWIN)
          long long physMemUsed = 0;
       #else
          #error "MemoryUtil::getPhysMemUsed - UnknownMachine"

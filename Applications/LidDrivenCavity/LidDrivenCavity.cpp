@@ -44,7 +44,9 @@ int main(int argc, char* argv[])
       //////////////////////////////////////////////////////////////////////////
       // Simulation parameters
       //////////////////////////////////////////////////////////////////////////
-      string path = "/set/your/outputPath/here";
+
+      // set your output path here
+      string path = "./output";
 
       const double L = 1.0;
       const double Re = 1000.0;
@@ -52,8 +54,8 @@ int main(int argc, char* argv[])
       const double dt = 0.5e-3;
       const unsigned int nx = 64;
 
-      const double timeStepOut = 10000;
-      const double timeStepEnd = 250000;
+      const double timeStepOut = 1000;
+      const double timeStepEnd = 25000;
 
       // Number of OpenMP threads
       int numOfThreads = 4;
@@ -205,12 +207,13 @@ int main(int argc, char* argv[])
       mqCoProcessor->process(0);
 
       // Create coprocessor object for writing NUPS
-      SPtr<UbScheduler> nupsSch(new UbScheduler(timeStepOut, timeStepOut));
+      SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100));
       SPtr<CoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
       // OpenMP threads control
+#ifdef _OPENMP
       omp_set_num_threads(numOfThreads);
-
+#endif
       // Create simulation
       SPtr<Calculator> calculator(new BasicCalculator(grid, visSch, (int)timeStepEnd));
       // Add coprocessors objects to simulation
