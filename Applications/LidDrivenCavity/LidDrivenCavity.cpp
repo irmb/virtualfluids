@@ -84,13 +84,16 @@ int main(int argc, char* argv[])
       // set grid spacing
       grid->setDeltaX(dx);
       // set block size for three dimensions
-      grid->setBlockNX(32,32,32);
+      int blockSize = nx / 2;
+      grid->setBlockNX(blockSize,blockSize,blockSize);
       
       // Create simulation bounding box
       SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
       GbSystem3D::writeGeoObject(gridCube.get(), path + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
-      UBLOG(logINFO, "Lid Driven Cavity");
+      UBLOG(logINFO, "Lid Driven Cavity:");
+      UBLOG(logINFO, "Domain size = " << nx << " x "<< nx << " x "<< nx);
+      UBLOG(logINFO, "Block size = " << blockSize << " x "<< blockSize << " x "<< blockSize);
       UBLOG(logINFO, "velocity    = " << velocity << " m/s");
       UBLOG(logINFO, "velocityLB  = " << velocityLB);
       UBLOG(logINFO, "viscosityLB = " << viscosityLB);

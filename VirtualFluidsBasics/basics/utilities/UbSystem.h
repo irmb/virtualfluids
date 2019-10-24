@@ -51,11 +51,11 @@
    #include "sys/stat.h"
    #include <sys/syscall.h>
    #include <sys/stat.h>
-#elif (defined(__amd64) || defined(__amd64__) || defined(__unix__) || defined(__CYGWIN__)) && !defined(__AIX__) 
+#elif (defined(__amd64) || defined(__amd64__) || defined(__unix__)) && !defined(__AIX__)
    #define UBSYSTEM_LINUX
    #include "dirent.h"
    #include "sys/stat.h"
-   #include <sys/syscall.h>
+   //#include <sys/syscall.h>
    #include <sys/stat.h>
    #include <unistd.h>
    #include <string.h>
@@ -69,7 +69,12 @@
    #error "UbSystem::UnknownMachine"
 #endif
 
-
+#if defined(__unix__) && defined(__CYGWIN__)
+   #define UBSYSTEM_CYGWIN
+   #include <windows.h>
+#else
+   #include <sys/syscall.h>
+#endif
 
 #if defined(min) || defined(max) //daruch kann man sich spaeter #undef min; #undef max erparen
 #   error add NOMINMAX to preprocessor defines
@@ -117,10 +122,12 @@ namespace UbSystem
    /*==========================================================*/
    inline void sleepMs(const unsigned int& msec)
    {
-      #if defined UBSYSTEM_WINDOWS
+      #if defined(UBSYSTEM_WINDOWS)
          ::Sleep(  (msec==0) ? 1 : msec );  // +1 here causes a context switch if SleepMSec(0) is called
-      #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)
+      #elif (defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)) && !defined(UBSYSTEM_CYGWIN)
          ::usleep(1000*msec);
+      #elif defined(UBSYSTEM_CYGWIN)
+       ::Sleep(  (msec==0) ? 1 : msec );
       #else
          #error "UbSystem::sleepMSec - UnknownMachine"
       #endif
@@ -128,9 +135,9 @@ namespace UbSystem
    /*==========================================================*/
    inline void sleepS(const unsigned int& sec)
    {
-      #if defined UBSYSTEM_WINDOWS
+      #if defined(UBSYSTEM_WINDOWS) && defined(UBSYSTEM_CYGWIN)
          ::Sleep( (sec==0) ? 1 : sec*1000 );  // +1 here causes a context switch if sleepS(0) is called
-      #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)
+      #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX) && !defined(UBSYSTEM_CYGWIN)
          ::sleep(sec);
       #else
          #error "UbSystem::sleepS - UnknownMachine"
@@ -255,7 +262,7 @@ namespace UbSystem
          if( stat(path.c_str(),&stFileInfo) != 0) 
          {
             return false;
-         } 
+         }
       #endif
       
       return true;
@@ -391,8 +398,10 @@ namespace UbSystem
    {
       #if defined UBSYSTEM_WINDOWS
          return (unsigned long)GetCurrentThreadId();
-      #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE)
+      #elif (defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE)) && !defined(UBSYSTEM_CYGWIN)
          return (unsigned long)syscall(SYS_gettid);
+      #elif defined(UBSYSTEM_CYGWIN)
+         return (unsigned long)GetCurrentThreadId();
       #elif defined(UBSYSTEM_AIX)
          return (unsigned long) getpid(); //WORKAROUND for IBM (for get thread id is another function necessary) 
       #else
@@ -451,7 +460,7 @@ namespace UbSystem
       char Name[150];
       int i = 0;
 
-#ifdef UBSYSTEM_WINDOWS
+#if defined(UBSYSTEM_WINDOWS)  && defined(UBSYSTEM_CYGWIN)
       TCHAR infoBuf[150];
       DWORD bufCharCount = 150;
       memset(Name, 0, 150);
@@ -466,7 +475,7 @@ namespace UbSystem
       {
          strcpy(Name, "Unknown_Host_Name");
       }
-#else
+#elif (defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)) && !defined(UBSYSTEM_CYGWIN)
       memset(Name, 0, 150);
       gethostname(Name, 150);
 #endif
@@ -542,7 +551,7 @@ namespace UbSystem
 //Anwendung z.B. zur Ueberpruefung von Funktionalitaeten, wie z.B. bei UbMath::getNegativeInfinity<double>();
 //
 //Grund fuer macro ist einfach, dass es besser anzuwenden ist in der praxis!
-//ansonsten würde es so aussehen:
+//ansonsten wï¿½rde es so aussehen:
 //     UbSystem::ub_static_assert< aaa == 1 > test();
 //    da ist  UB_STATIC_ASSERT(aaa == 1); schoener
 //

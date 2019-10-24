@@ -46,7 +46,7 @@
    #include "stdlib.h"
    #include "stdio.h"
    #include "string.h"
-#elif (defined(__amd64) || defined(__amd64__) || defined(__unix__) || defined(__CYGWIN__)) && !defined(__AIX__) 
+#elif (defined(__amd64) || defined(__amd64__) || defined(__unix__)) && !defined(__AIX__)
    #define MEMORYUTIL_LINUX
    #include "sys/types.h"
    #include "sys/sysinfo.h"
@@ -56,6 +56,10 @@
 #else
    #error "MemoryUtil::UnknownMachine"
 #endif
+
+#if defined(__CYGWIN__)
+   #define MEMORYUTIL_CYGWIN
+#endif
 //////////////////////////////////////////////////////////////////////////
 //MemoryUtil
 //////////////////////////////////////////////////////////////////////////
@@ -64,7 +68,7 @@ namespace Utilities
 //////////////////////////////////////////////////////////////////////////
    static long long getTotalPhysMem()
    {
-      #if defined MEMORYUTIL_WINDOWS
+      #if defined(MEMORYUTIL_WINDOWS) && !defined(MEMORYUTIL_CYGWIN)
          MEMORYSTATUSEX memInfo;
          memInfo.dwLength = sizeof(MEMORYSTATUSEX);
          GlobalMemoryStatusEx(&memInfo);
@@ -75,10 +79,12 @@ namespace Utilities
          long long totalPhysMem = memInfo.totalram;
          //Multiply in next statement to avoid int overflow on right hand side...
          totalPhysMem *= memInfo.mem_unit;
-    #elif defined(MEMORYUTIL_APPLE)
-    long long totalPhysMem = 0;
+      #elif defined(MEMORYUTIL_APPLE)
+         long long totalPhysMem = 0;
+      #elif defined(MEMORYUTIL_CYGWIN)
+        long long totalPhysMem = 0;
       #else
-      #error "MemoryUtil::getTotalPhysMem - UnknownMachine"
+         #error "MemoryUtil::getTotalPhysMem - UnknownMachine"
       #endif
 
       return (long long)totalPhysMem;
@@ -86,7 +92,7 @@ namespace Utilities
 //////////////////////////////////////////////////////////////////////////
    static long long getPhysMemUsed()
    {
-      #if defined MEMORYUTIL_WINDOWS
+      #if defined(MEMORYUTIL_WINDOWS) && !defined(MEMORYUTIL_CYGWIN)
          MEMORYSTATUSEX memInfo;
          memInfo.dwLength = sizeof(MEMORYSTATUSEX);
          GlobalMemoryStatusEx(&memInfo);
@@ -97,16 +103,18 @@ namespace Utilities
          long long physMemUsed = memInfo.totalram - memInfo.freeram;
          //Multiply in next statement to avoid int overflow on right hand side...
          physMemUsed *= memInfo.mem_unit;
-         #elif defined(MEMORYUTIL_APPLE)
+      #elif defined(MEMORYUTIL_APPLE)
+         long long physMemUsed = 0;
+      #elif defined(MEMORYUTIL_CYGWIN)
          long long physMemUsed = 0;
       #else
-      #error "MemoryUtil::getPhysMemUsed - UnknownMachine"
+         #error "MemoryUtil::getPhysMemUsed - UnknownMachine"
       #endif
 
       return (long long)physMemUsed;
    }
 //////////////////////////////////////////////////////////////////////////
-#if defined(MEMORYUTIL_LINUX) || defined(MEMORYUTIL_APPLE)
+#if defined(MEMORYUTIL_LINUX) || defined(MEMORYUTIL_APPLE) || defined(MEMORYUTIL_CYGWIN)
    static int parseLine(char* line){
       int i = strlen(line);
       while (*line < '0' || *line > '9') line++;
@@ -134,12 +142,14 @@ namespace Utilities
 //////////////////////////////////////////////////////////////////////////
    static long long getPhysMemUsedByMe()
    {
-      #if defined MEMORYUTIL_WINDOWS
+      #if defined(MEMORYUTIL_WINDOWS) && !defined(__CYGWIN__)
          PROCESS_MEMORY_COUNTERS pmc;
          GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
          SIZE_T physMemUsedByMe = pmc.WorkingSetSize;          
       #elif defined(MEMORYUTIL_LINUX) || defined(MEMORYUTIL_APPLE)
          long long physMemUsedByMe = (long long)getValue() * (long long)1024;
+      #elif defined(MEMORYUTIL_CYGWIN)
+        long long physMemUsedByMe = (long long)getValue() * (long long)1024;
       #else
          #error "MemoryUtil::getPhysMemUsedByMe - UnknownMachine"
       #endif
