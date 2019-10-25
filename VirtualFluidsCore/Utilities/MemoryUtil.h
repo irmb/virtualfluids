@@ -142,8 +142,10 @@ namespace Utilities
          PROCESS_MEMORY_COUNTERS pmc;
          GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
          SIZE_T physMemUsedByMe = pmc.WorkingSetSize;          
-      #elif defined(MEMORYUTIL_LINUX) || defined(MEMORYUTIL_APPLE)
+      #elif defined(MEMORYUTIL_LINUX)
          long long physMemUsedByMe = (long long)getValue() * (long long)1024;
+      #elif defined(MEMORYUTIL_APPLE)
+      long long physMemUsedByMe = 0;
       #elif defined(MEMORYUTIL_CYGWIN)
         long long physMemUsedByMe = (long long)getValue() * (long long)1024;
       #else
