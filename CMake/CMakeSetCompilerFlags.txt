@@ -11,6 +11,10 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS compiler_type build_type)
   
   OPTION(USE_OPENMP "activate open" ON)
   
+  IF(APPLE)
+    SET(USE_OPENMP OFF)
+  ENDIF()
+  
   ###############################################################################################################
   ## Flags ruecksetzen
   ###############################################################################################################
