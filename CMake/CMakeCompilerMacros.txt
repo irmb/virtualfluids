@@ -75,6 +75,8 @@ MACRO(SET_CAB_COMPILER)
 		   ELSE()
 		     SET( CAB_COMPILER "msvc19_32" )
 		   ENDIF()
+         ELSEIF(APPLE)
+            SET( CAB_COMPILER "llvm" )
          ELSE()
            EXEC_PROGRAM( ${CMAKE_CXX_COMPILER}                          
                           ARGS --version 
