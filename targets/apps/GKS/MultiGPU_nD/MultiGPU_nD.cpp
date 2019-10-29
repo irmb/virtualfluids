@@ -350,7 +350,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     const uint numberOfIterations = 10000;
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, true, numberOfIterations );
+    CupsAnalyzer cupsAnalyzer( dataBase, false, 30.0, true, numberOfIterations );
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -359,9 +359,9 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     for( uint iter = 1; iter <= numberOfIterations; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
-    }
 
-    cupsAnalyzer.run( numberOfIterations, parameters.dt );
+        cupsAnalyzer.run( iter, parameters.dt );
+    }
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -411,7 +411,7 @@ int main( int argc, char* argv[])
     //////////////////////////////////////////////////////////////////////////
 
     bool strongScaling = false;
-    uint nx = 64;
+    uint nx = 128;
     uint decompositionDimension = 3;
 
     if( argc > 1 ) nx = atoi( argv[1] );
