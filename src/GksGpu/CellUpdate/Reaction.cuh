@@ -19,6 +19,92 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+inline __host__ __device__ real getTurbulentViscosityDeardorff(const DataBaseStruct& dataBase, const Parameters& parameters, const uint cellIndex, const ConservedVariables& cons )
+{
+    // See FDS 6 Technical Reference Guide, Section 4.2.3
+
+    PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
+
+    ConservedVariables neighborCons;
+    PrimitiveVariables neighborPrim;
+
+    real kSGS = c0o1;
+
+    {
+        real uHead = c1o2 * prim.U;
+
+        {
+            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 0, dataBase.numberOfCells)];
+            readCellData(cellIndex, dataBase, neighborCons);
+            neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
+
+            uHead += c1o4 * neighborPrim.U;
+        }
+        {
+            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 1, dataBase.numberOfCells)];
+            readCellData(cellIndex, dataBase, neighborCons);
+            neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
+
+            uHead += c1o4 * neighborPrim.U;
+        }
+
+        kSGS += c1o2 * ( prim.U - uHead ) * ( prim.U - uHead );
+    }
+
+    {
+        real vHead = c1o2 * prim.V;
+
+        {
+            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 2, dataBase.numberOfCells)];
+            readCellData(cellIndex, dataBase, neighborCons);
+            neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
+
+            vHead += c1o4 * neighborPrim.V;
+        }
+        {
+            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 3, dataBase.numberOfCells)];
+            readCellData(cellIndex, dataBase, neighborCons);
+            neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
+
+            vHead += c1o4 * neighborPrim.V;
+        }
+
+        kSGS += c1o2 * ( prim.V - vHead ) * ( prim.V - vHead );
+    }
+
+    {
+        real wHead = c1o2 * prim.W;
+
+        {
+            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 4, dataBase.numberOfCells)];
+            readCellData(cellIndex, dataBase, neighborCons);
+            neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
+
+            wHead += c1o4 * neighborPrim.W;
+        }
+        {
+            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 5, dataBase.numberOfCells)];
+            readCellData(cellIndex, dataBase, neighborCons);
+            neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
+
+            wHead += c1o4 * neighborPrim.W;
+        }
+
+        kSGS += c1o2 * ( prim.W - wHead ) * ( prim.W - wHead );
+    }
+
+    //real turbulentViscosity = prim.rho * parameters.dx * c1o10 * sqrt(kSGS) / 0.3;
+
+    dataBase.diffusivity[cellIndex] = (realAccumulator) kSGS;
+
+    //printf("%f", kSGS);
+
+    return kSGS;
+}
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
@@ -35,6 +121,8 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
         //////////////////////////////////////////////////////////////////////////
 
+        //real diffusivity = getTurbulentViscosityDeardorff(dataBase, parameters, cellIndex, cons);
+        //real diffusivity = dataBase.diffusivity[ cellIndex ];
         real diffusivity = dataBase.diffusivity[ cellIndex ] / ( c6o1 * parameters.dx * parameters.dx * parameters.dt );
         dataBase.diffusivity[ cellIndex ] = c0o1;
 
@@ -42,10 +130,16 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
         real mixingTimeScale = real(0.1) * parameters.dx * parameters.dx / diffusivity;
 
-        //real mixingTimeScale = parameters.dt;
+        //real kSGS = getTurbulentViscosityDeardorff(dataBase, parameters, cellIndex, cons);
 
-        //if( mixingTimeScale < one )
-        //    mixingTimeScale = one;
+        //real mixingTimeScale_d = parameters.dx * parameters.dx / parameters.D;
+
+        //real mixingTimeScale_u = real(0.4) * parameters.dx / sqrt( c2o3 * kSGS );
+
+        //real mixingTimeScale_g = sqrt( c2o1 * parameters.dx / fabs( parameters.force.z ) );
+
+        //real mixingTimeScale = fminf( mixingTimeScale_d, mixingTimeScale_u );
+        //mixingTimeScale      = fminf( mixingTimeScale_g, mixingTimeScale   );
 
         //////////////////////////////////////////////////////////////////////////
 

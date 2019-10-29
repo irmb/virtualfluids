@@ -51,7 +51,7 @@
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
 #include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
-#include "GksGpu/Analyzer/PointTimeseriesCollector.h"
+#include "GksGpu/Analyzer/PointTimeSeriesCollector.h"
 
 #include "GksGpu/Restart/Restart.h"
 
@@ -60,7 +60,7 @@
 //uint deviceMap [2] = {2,3};
 uint deviceMap [2] = {0,1};
 
-void simulation( std::string path, std::string simulationName, bool fine, uint restartIter )
+void simulation( std::string path, std::string simulationName, bool fine, bool highAspect, uint restartIter )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -77,7 +77,11 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     real L = 1.0;
-    real H = 0.25;
+    real W = 0.25;
+
+    real H = L;
+
+    if(highAspect) H = 2.0 * L;
 
     real dx = L / real(nx);
 
@@ -155,31 +159,30 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
     if( mpiWorldSize == 2 )
     {
         startY = 0.0;
-        endY   = H;
+        endY   = W;
     }
     else
     {
-        startY =  rank / 2        * H - 3.0 * dx;
-        endY   = (rank / 2 + 1.0) * H + 3.0 * dx;
+        startY =  rank / 2        * W - 3.0 * dx;
+        endY   = (rank / 2 + 1.0) * W + 3.0 * dx;
     }
 
-    startZ = -0.5 * L;
-    endZ   =  0.5 * L;
+    startZ = - 0.5 * H;
+    endZ   =   0.5 * H;
 
     gridBuilder->addCoarseGrid(startX, startY, startZ,  
                                endX  , endY  , endZ  , dx);
 
+    std::cout << __LINE__ << std::endl;
+
     //////////////////////////////////////////////////////////////////////////
 
-    //real refL[4] = { 0.30, 0.45, 0.49, 0.4975  };
-    real refL[4] = { 0.30, 0.45, 0.475, 0.495  };
+    real refL[4] = { 0.2, 0.05, 0.025, 0.005 };
 
     if( fine )
     {
-        refL[1] = 0.4;
-        refL[2] = 0.45;
-        //refL[1] += 2;
-        //refL[2] += 2;
+        refL[1] = 0.1;
+        refL[2] = 0.05;
     }
 
     gridBuilder->setNumberOfLayers(6,6);
@@ -188,14 +191,14 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
 
     Conglomerate coarseRefLevel;
 
-    if( rank % 2 == 0 ) coarseRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0, 
-                                                        -refL[0],  100.0,  100.0 ) );
-    else                coarseRefLevel.add( new Cuboid ( refL[0], -100.0, -100.0, 
-                                                         100.0,    100.0,  100.0 ) );
+    if( rank % 2 == 0 ) coarseRefLevel.add( new Cuboid (-100.0,           -100.0, -100.0, 
+                                                        -0.5*L + refL[0],  100.0,  100.0 ) );
+    else                coarseRefLevel.add( new Cuboid ( 0.5*L - refL[0], -100.0, -100.0, 
+                                                         100.0,            100.0,  100.0 ) );
 
     coarseRefLevel.add( new Cuboid (-100.0, -100.0, -100.0,   
-                                     100.0,  100.0, -refL[0] ) );
-    coarseRefLevel.add( new Cuboid (-100.0, -100.0,  refL[0], 
+                                     100.0,  100.0, -0.5*H + refL[0] ) );
+    coarseRefLevel.add( new Cuboid (-100.0, -100.0,  0.5*H - refL[0], 
                                      100.0,  100.0,  100.0   ) );
 
     gridBuilder->addGrid( &coarseRefLevel, 1);
@@ -204,14 +207,14 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
 
     Conglomerate firstRefLevel;
 
-    if( rank % 2 == 0 ) firstRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0, 
-                                                       -refL[1],  100.0,  100.0 ) );
-    else                firstRefLevel.add( new Cuboid ( refL[1], -100.0, -100.0, 
-                                                        100.0,    100.0,  100.0 ) );
+    if( rank % 2 == 0 ) firstRefLevel.add( new Cuboid (-100.0,           -100.0, -100.0, 
+                                                       -0.5*L + refL[1],  100.0,  100.0 ) );
+    else                firstRefLevel.add( new Cuboid ( 0.5*L - refL[1], -100.0, -100.0, 
+                                                        100.0,            100.0,  100.0 ) );
 
     firstRefLevel.add( new Cuboid (-100.0, -100.0, -100.0,   
-                                    100.0,  100.0, -refL[1] ) );
-    firstRefLevel.add( new Cuboid (-100.0, -100.0,  refL[1], 
+                                    100.0,  100.0, -0.5*H + refL[1] ) );
+    firstRefLevel.add( new Cuboid (-100.0, -100.0,  0.5*H - refL[1], 
                                     100.0,  100.0,  100.0   ) );
 
     gridBuilder->addGrid( &firstRefLevel, 2);
@@ -220,20 +223,20 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
 
     Conglomerate secondRefLevel;
 
-    if( rank % 2 == 0 ) secondRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0, 
-                                                        -refL[2],  100.0,  100.0 ) );
-    else                secondRefLevel.add( new Cuboid ( refL[2], -100.0, -100.0, 
-                                                         100.0,    100.0,  100.0 ) );
+    if( rank % 2 == 0 ) secondRefLevel.add( new Cuboid (-100.0,           -100.0, -100.0, 
+                                                        -0.5*L + refL[2],  100.0,  100.0 ) );
+    else                secondRefLevel.add( new Cuboid ( 0.5*L - refL[2], -100.0, -100.0, 
+                                                         100.0,            100.0,  100.0 ) );
 
-    if( rank % 2 == 0 ) secondRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0,   
-                                                        -refL[0],  100.0, -refL[2] ) );
-    else                secondRefLevel.add( new Cuboid ( refL[0], -100.0, -100.0,   
-                                                         100.0,    100.0, -refL[2] ) );
+    if( rank % 2 == 0 ) secondRefLevel.add( new Cuboid (-100.0,           -100.0, -100.0,   
+                                                        -0.5*L + refL[0],  100.0, -0.5*H + refL[2] ) );
+    else                secondRefLevel.add( new Cuboid ( 0.5*L - refL[0], -100.0, -100.0,   
+                                                         100.0,            100.0, -0.5*H + refL[2] ) );
 
-    if( rank % 2 == 0 ) secondRefLevel.add( new Cuboid (-100.0,   -100.0,  refL[2], 
-                                                        -refL[0],  100.0,  100.0   ) );
-    else                secondRefLevel.add( new Cuboid ( refL[0], -100.0,  refL[2], 
-                                                         100.0,    100.0,  100.0   ) );
+    if( rank % 2 == 0 ) secondRefLevel.add( new Cuboid (-100.0,           -100.0,  0.5*H - refL[2], 
+                                                        -0.5*L + refL[0],  100.0,  100.0   ) );
+    else                secondRefLevel.add( new Cuboid ( 0.5*L - refL[0], -100.0,  0.5*H - refL[2], 
+                                                         100.0,            100.0,  100.0   ) );
 
     gridBuilder->addGrid( &secondRefLevel, 3);
 
@@ -241,10 +244,10 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
 
     Conglomerate thirdRefLevel;
 
-    if( rank % 2 == 0 ) thirdRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0, 
-                                                        -refL[3],  100.0,  100.0 ) );
-    else                thirdRefLevel.add( new Cuboid ( refL[3], -100.0, -100.0, 
-                                                        100.0,    100.0,  100.0 ) );
+    if( rank % 2 == 0 ) thirdRefLevel.add( new Cuboid (-100.0,           -100.0, -100.0, 
+                                                       -0.5*L + refL[3],  100.0,  100.0 ) );
+    else                thirdRefLevel.add( new Cuboid ( 0.5*L - refL[3], -100.0, -100.0, 
+                                                        100.0,            100.0,  100.0 ) );
 
     if( fine ) gridBuilder->addGrid( &thirdRefLevel, 4);
 
@@ -262,8 +265,8 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
     }
     else
     {
-        startY =   real(rank/2)         * H;
-        endY   = ( real(rank/2) + 1.0 ) * H;
+        startY =   real(rank/2)         * W;
+        endY   = ( real(rank/2) + 1.0 ) * W;
     }
 
     startZ = -100.0;
@@ -334,8 +337,8 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
     SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0,0,0), true );
     SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0,0,0), true );
 
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*L; } );
-    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*L; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*H; } );
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*H; } );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -345,7 +348,7 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
         SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>(dataBase);
 
         bcMY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y < 0; });
-        bcPY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y > H; });
+        bcPY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y > W; });
 
         dataBase->boundaryConditions.push_back(bcMY);
         dataBase->boundaryConditions.push_back(bcPY);
@@ -377,10 +380,10 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
     {
         Initializer::interpret(dataBase, [&](Vec3 cellCenter) -> ConservedVariables {
 
-            real Th = 1.0 / lambdaHot;
-            real Tc = 1.0 / lambdaCold;
-            real T = Th - (Th - Tc)*((cellCenter.x + 0.5 * L) / L);
-            real lambdaLocal = 1.0 / T;
+            //real Th = 1.0 / lambdaHot;
+            //real Tc = 1.0 / lambdaCold;
+            //real T = Th - (Th - Tc)*((cellCenter.x + 0.5 * L) / L);
+            //real lambdaLocal = 1.0 / T;
 
             return toConservedVariables(PrimitiveVariables(rho, 0.0, 0.0, 0.0, lambda), parameters.K);
         });
@@ -431,17 +434,17 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
 
     auto pointTimeSeriesCollector = std::make_shared<PointTimeSeriesCollector>();
 
-    for( real y = 0.5 * H; y < real( mpiWorldSize / 2 ) * H; y += H )
+    for( real y = 0.5 * W; y < real( mpiWorldSize / 2 ) * W; y += W )
     {
-        if( subDomainBox->isInside( -0.485, y, -0.3*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( -0.485, y, -0.3*L ), 'W', 10000 );
-        if( subDomainBox->isInside( -0.485, y, -0.1*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( -0.485, y, -0.1*L ), 'W', 10000 );
-        if( subDomainBox->isInside( -0.485, y,  0.1*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( -0.485, y,  0.1*L ), 'W', 10000 );
-        if( subDomainBox->isInside( -0.485, y,  0.3*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( -0.485, y,  0.3*L ), 'W', 10000 );
+        if( subDomainBox->isInside( -0.485, y, -0.3*H ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( -0.485, y, -0.3*H ), 'W', 10000 );
+        if( subDomainBox->isInside( -0.485, y, -0.1*H ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( -0.485, y, -0.1*H ), 'W', 10000 );
+        if( subDomainBox->isInside( -0.485, y,  0.1*H ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( -0.485, y,  0.1*H ), 'W', 10000 );
+        if( subDomainBox->isInside( -0.485, y,  0.3*H ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3( -0.485, y,  0.3*H ), 'W', 10000 );
         
-        if( subDomainBox->isInside(  0.485, y, -0.3*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y, -0.3*L ), 'W', 10000 );
-        if( subDomainBox->isInside(  0.485, y, -0.1*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y, -0.1*L ), 'W', 10000 );
-        if( subDomainBox->isInside(  0.485, y,  0.1*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y,  0.1*L ), 'W', 10000 );
-        if( subDomainBox->isInside(  0.485, y,  0.3*L ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y,  0.3*L ), 'W', 10000 );
+        if( subDomainBox->isInside(  0.485, y, -0.3*H ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y, -0.3*H ), 'W', 10000 );
+        if( subDomainBox->isInside(  0.485, y, -0.1*H ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y, -0.1*H ), 'W', 10000 );
+        if( subDomainBox->isInside(  0.485, y,  0.1*H ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y,  0.1*H ), 'W', 10000 );
+        if( subDomainBox->isInside(  0.485, y,  0.3*H ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y,  0.3*H ), 'W', 10000 );
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -503,6 +506,12 @@ int main( int argc, char* argv[])
 {
     //////////////////////////////////////////////////////////////////////////
 
+    bool fine = false;
+
+    bool highAspect = true;
+
+    //////////////////////////////////////////////////////////////////////////
+
 #ifdef _WIN32
     MPI_Init(&argc, &argv);
     int rank = 0;
@@ -528,7 +537,10 @@ int main( int argc, char* argv[])
     std::string path( "out/" );
 #endif
 
-    std::string simulationName ( "ThermalCavity3D_coarse" );
+    std::string simulationName ( "ThermalCavity3D" );
+
+    if(fine) simulationName += "_fine";
+    else     simulationName += "_coarse";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -573,7 +585,7 @@ int main( int argc, char* argv[])
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
-        simulation(path, simulationName, false, restartIter);
+        simulation(path, simulationName, fine, highAspect, restartIter);
     }
     catch (const std::exception& e)
     {     

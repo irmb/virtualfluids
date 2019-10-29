@@ -284,6 +284,19 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             real dTdx1 = dEdx1 - c2o1 * facePrim.U * dUdx1 - c2o1 * facePrim.V * dVdx1 - c2o1 * facePrim.W * dWdx1;
             real dTdx2 = dEdx2 - c2o1 * facePrim.U * dUdx2 - c2o1 * facePrim.V * dVdx2 - c2o1 * facePrim.W * dWdx2;
             real dTdx3 = dEdx3 - c2o1 * facePrim.U * dUdx3 - c2o1 * facePrim.V * dVdx3 - c2o1 * facePrim.W * dWdx3;
+    
+            //real E = c1o2 * ( facePrim.U * facePrim.U 
+            //                + facePrim.V * facePrim.V 
+            //                + facePrim.W * facePrim.W 
+            //                + ( parameters.K + c3o1 ) / ( c4o1 * facePrim.lambda ) );
+
+            //real dEdx1 = ( gradN.rhoE  - E * gradN.rho  );
+            //real dEdx2 = ( gradT1.rhoE - E * gradT1.rho );
+            //real dEdx3 = ( gradT2.rhoE - E * gradT2.rho );
+
+            //real dTdx1 = dEdx1 - facePrim.U * dUdx1 - facePrim.V * dVdx1 - facePrim.W * dWdx1;
+            //real dTdx2 = dEdx2 - facePrim.U * dUdx2 - facePrim.V * dVdx2 - facePrim.W * dWdx2;
+            //real dTdx3 = dEdx3 - facePrim.U * dUdx3 - facePrim.V * dVdx3 - facePrim.W * dWdx3;
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // this one works for some time

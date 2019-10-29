@@ -1,11 +1,11 @@
-#include "PointTimeseriesCollector.h"
+#include "PointTimeSeriesCollector.h"
 
 #include <iomanip>
 #include <fstream>
 
 #include "Core/Logger/Logger.h"
 
-#include "Analyzer/PointTimeseriesAnalyzer.h"
+#include "Analyzer/PointTimeSeriesAnalyzer.h"
 
 #include "Parameters/Parameters.h"
 

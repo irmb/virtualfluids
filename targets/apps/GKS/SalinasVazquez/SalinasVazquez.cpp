@@ -100,7 +100,7 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
 
     real CFL = 0.25;
 
-    real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+    real dt  = CFL * ( dx / ( ( U + cs ) * ( c1o1 + ( c2o1 * mu ) / ( U * dx * rho ) ) ) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
     *logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " s\n";
@@ -439,7 +439,7 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
         }
 
-        cupsAnalyzer.run( iter );
+        cupsAnalyzer.run( iter, dt );
 
         convergenceAnalyzer.run( iter );
 
@@ -545,15 +545,15 @@ int main( int argc, char* argv[])
     }
     catch (const std::exception& e)
     {     
-        *logging::out << logging::Logger::ERROR << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
     }
     catch (const std::bad_alloc& e)
     {  
-        *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
     }
     catch (...)
     {
-        *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
     }
 
     logFile.close();

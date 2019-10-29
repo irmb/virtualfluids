@@ -515,8 +515,8 @@ int main( int argc, char* argv[])
     //uint restartIter = 90000;
         
     uint gpuIndex = 1;
-    uint testIndex = 17;
-    uint nx = 128;
+    uint testIndex = 24;
+    uint nx = 64;
 
     if( argc > 1 ) gpuIndex    = atoi( argv[1] );
 

@@ -1,4 +1,4 @@
-#include "PointTimeseriesAnalyzer.h"
+#include "PointTimeSeriesAnalyzer.h"
 
 #include <cuda.h>
 #include <cuda_runtime.h>
