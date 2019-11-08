@@ -75,8 +75,9 @@ MACRO(SET_CAB_COMPILER)
 		   ELSE()
 		     SET( CAB_COMPILER "msvc19_32" )
 		   ENDIF()
-         ELSEIF(APPLE)
-            SET( CAB_COMPILER "llvm" )
+         #ELSEIF(APPLE)
+		 ELSEIF("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+            SET( CAB_COMPILER "clang" )
          ELSE()
            EXEC_PROGRAM( ${CMAKE_CXX_COMPILER}                          
                           ARGS --version 
@@ -91,7 +92,6 @@ MACRO(SET_CAB_COMPILER)
 
             IF(CMAKE_COMPILER_IS_GNUCXX)
                SET(CAB_COMPILER_NAME "gcc")
-               #SET(CAB_ADDITIONAL_LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS} -lgomp)
                SET(USE_GCC ON)
             ENDIF()
             

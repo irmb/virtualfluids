@@ -1,6 +1,6 @@
 ###############################################################################################################
 ## 
-##  gcc74
+##  clang
 ##
 ###############################################################################################################
 
@@ -8,7 +8,7 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS_INTERN build_type use64BitOptions)
    #############################################################################################################
    # Flags
    #############################################################################################################
-   LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-O3 -fomit-frame-pointer -finline-functions -fPIC")
+   LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-O3 -fomit-frame-pointer -finline-functions -fPIC -Wbackslash-newline-escape")
  
    LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-O3 -fomit-frame-pointer -finline-functions -fPIC")
 
@@ -24,8 +24,8 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS_INTERN build_type use64BitOptions)
    # OpenMP support
    #############################################################################################################
    IF(USE_OPENMP)
-     LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-fopenmp")
-     LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-fopenmp")
+     #LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-fopenmp")
+     #LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-fopenmp")
    ENDIF()
 
    #############################################################################################################
@@ -44,7 +44,7 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS_INTERN build_type use64BitOptions)
    # disable warning
    #############################################################################################################
    LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-deprecated") #deprecated header warning
-   LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wbackslash-newline-escape") #backslash and newline separated by space
+   #LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wbackslash-newline-escape") #backslash and newline separated by space
    LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wcomment") #'/*' within block comment
 
    LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-Wbackslash-newline-escape") #backslash and newline separated by space
