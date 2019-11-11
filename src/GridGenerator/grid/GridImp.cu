@@ -138,6 +138,8 @@ HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
 HOST void GridImp::freeMemory()
 {
     gridStrategy->freeMemory(shared_from_this());
+
+    gridStrategy->freeFieldMemory(&field);
 }
 
 HOST GridImp::GridImp()
