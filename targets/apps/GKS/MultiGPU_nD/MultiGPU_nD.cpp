@@ -156,7 +156,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     parameters.force.y = 0;
     parameters.force.z = 0;
 
-    parameters.dt = 0.0001;
+    parameters.dt = 0.0001 * ( double(128) / double(nx) );
     parameters.dx = dx;
 
     parameters.lambdaRef = 1.0e-2;
@@ -228,77 +228,85 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    GksMeshAdapter meshAdapter( gridBuilder );
-
-    meshAdapter.inputGrid();
-
-    if( sideLengthX == 1 || sideLengthY == 1 || sideLengthZ == 1 ) meshAdapter.findPeriodicBoundaryNeighbors();
+    auto dataBase = std::make_shared<DataBase>("GPU");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    auto dataBase = std::make_shared<DataBase>( "GPU" );
+    for ( int i = 0; i < rank % CudaUtility::getCudaDeviceCount(); i++ ) MPI_Barrier(MPI_COMM_WORLD);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+        GksMeshAdapter meshAdapter(gridBuilder);
 
-    SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>( dataBase );
+        meshAdapter.inputGrid();
 
-    if( sideLengthX == 1 ) bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5*L; } );
-    if( sideLengthX == 1 ) bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x >  0.5*L; } );
+        if (sideLengthX == 1 || sideLengthY == 1 || sideLengthZ == 1) meshAdapter.findPeriodicBoundaryNeighbors();
 
-    //////////////////////////////////////////////////////////////////////////
+        gridBuilder->getGrid(0)->freeMemory();
 
-    SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if( sideLengthY == 1 ) bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*L; } );
-    if( sideLengthY == 1 ) bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*L; } );
+        SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>(dataBase);
+        SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>(dataBase);
 
-    //////////////////////////////////////////////////////////////////////////
-    
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
-    
-    if( sideLengthZ == 1 ) bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*L; } );
-    if( sideLengthZ == 1 ) bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*L; } );
+        if (sideLengthX == 1) bcMX->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.x < -0.5*L; });
+        if (sideLengthX == 1) bcPX->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.x > 0.5*L; });
 
-    //////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
 
-    if( sideLengthX == 1 ) dataBase->boundaryConditions.push_back( bcMX );
-    if( sideLengthX == 1 ) dataBase->boundaryConditions.push_back( bcPX );
-    
-    if( sideLengthY == 1 ) dataBase->boundaryConditions.push_back( bcMY );
-    if( sideLengthY == 1 ) dataBase->boundaryConditions.push_back( bcPY );
+        SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>(dataBase);
+        SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>(dataBase);
 
-    if( sideLengthZ == 1 ) dataBase->boundaryConditions.push_back( bcMZ );
-    if( sideLengthZ == 1 ) dataBase->boundaryConditions.push_back( bcPZ );
+        if (sideLengthY == 1) bcMY->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.y < -0.5*L; });
+        if (sideLengthY == 1) bcPY->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.y > 0.5*L; });
 
-    //////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
 
-    *logging::out << logging::Logger::INFO_HIGH << "NumberOfBoundaryConditions = " << (int)dataBase->boundaryConditions.size() << "\n";
+        SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>(dataBase);
+        SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>(dataBase);
 
-    if( sideLengthX == 1 ) *logging::out << logging::Logger::INFO_HIGH << "bcMX ==> " << bcMX->numberOfCellsPerLevel[0] << "\n";
-    if( sideLengthX == 1 ) *logging::out << logging::Logger::INFO_HIGH << "bcPX ==> " << bcPX->numberOfCellsPerLevel[0] << "\n";
+        if (sideLengthZ == 1) bcMZ->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.z < -0.5*L; });
+        if (sideLengthZ == 1) bcPZ->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.z > 0.5*L; });
 
-    if( sideLengthY == 1 ) *logging::out << logging::Logger::INFO_HIGH << "bcMY ==> " << bcMY->numberOfCellsPerLevel[0] << "\n";
-    if( sideLengthY == 1 ) *logging::out << logging::Logger::INFO_HIGH << "bcPY ==> " << bcPY->numberOfCellsPerLevel[0] << "\n";
+        //////////////////////////////////////////////////////////////////////////
 
-    if( sideLengthZ == 1 ) *logging::out << logging::Logger::INFO_HIGH << "bcMZ ==> " << bcMZ->numberOfCellsPerLevel[0] << "\n";
-    if( sideLengthZ == 1 ) *logging::out << logging::Logger::INFO_HIGH << "bcPZ ==> " << bcPZ->numberOfCellsPerLevel[0] << "\n";
+        if (sideLengthX == 1) dataBase->boundaryConditions.push_back(bcMX);
+        if (sideLengthX == 1) dataBase->boundaryConditions.push_back(bcPX);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (sideLengthY == 1) dataBase->boundaryConditions.push_back(bcMY);
+        if (sideLengthY == 1) dataBase->boundaryConditions.push_back(bcPY);
 
-    dataBase->setMesh( meshAdapter );
+        if (sideLengthZ == 1) dataBase->boundaryConditions.push_back(bcMZ);
+        if (sideLengthZ == 1) dataBase->boundaryConditions.push_back(bcPZ);
 
-    dataBase->setCommunicators( meshAdapter );
+        //////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::printCudaMemoryUsage();
+        *logging::out << logging::Logger::INFO_HIGH << "NumberOfBoundaryConditions = " << (int)dataBase->boundaryConditions.size() << "\n";
+
+        if (sideLengthX == 1) *logging::out << logging::Logger::INFO_HIGH << "bcMX ==> " << bcMX->numberOfCellsPerLevel[0] << "\n";
+        if (sideLengthX == 1) *logging::out << logging::Logger::INFO_HIGH << "bcPX ==> " << bcPX->numberOfCellsPerLevel[0] << "\n";
+
+        if (sideLengthY == 1) *logging::out << logging::Logger::INFO_HIGH << "bcMY ==> " << bcMY->numberOfCellsPerLevel[0] << "\n";
+        if (sideLengthY == 1) *logging::out << logging::Logger::INFO_HIGH << "bcPY ==> " << bcPY->numberOfCellsPerLevel[0] << "\n";
+
+        if (sideLengthZ == 1) *logging::out << logging::Logger::INFO_HIGH << "bcMZ ==> " << bcMZ->numberOfCellsPerLevel[0] << "\n";
+        if (sideLengthZ == 1) *logging::out << logging::Logger::INFO_HIGH << "bcPZ ==> " << bcPZ->numberOfCellsPerLevel[0] << "\n";
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        dataBase->setMesh(meshAdapter);
+
+        dataBase->setCommunicators(meshAdapter);
+
+        CudaUtility::printCudaMemoryUsage();
+    }
+
+    for ( int i = 0; i < CudaUtility::getCudaDeviceCount() - rank % CudaUtility::getCudaDeviceCount(); i++ ) MPI_Barrier(MPI_COMM_WORLD);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -348,7 +356,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const uint numberOfIterations = 10000;
+    const uint numberOfIterations = 1000;
 
     CupsAnalyzer cupsAnalyzer( dataBase, false, 30.0, true, numberOfIterations );
 
