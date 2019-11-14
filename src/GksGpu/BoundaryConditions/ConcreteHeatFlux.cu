@@ -116,10 +116,11 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     }
 
     real TF = c3o2 * getT(domainCellPrim) - c1o2 * getT(secondCellPrim);
+    //real TF = getT(domainCellPrim);
 
     for( uint i = 0; i < boundaryCondition.numberOfPoints; i++ )
     {
-        uint finiteDifferenceIndex = index * boundaryCondition.numberOfPoints + i;
+        uint finiteDifferenceIndex = ( startIndex + index ) * boundaryCondition.numberOfPoints + i;
 
         real T0 = boundaryCondition.temperatures[ finiteDifferenceIndex ];
 
@@ -144,8 +145,8 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
     {
         real T0 = TF;
-        real T1 = boundaryCondition.temperatures[ index * boundaryCondition.numberOfPoints     ];
-        real T2 = boundaryCondition.temperatures[ index * boundaryCondition.numberOfPoints + 1 ];
+        real T1 = boundaryCondition.temperatures[ ( startIndex + index ) * boundaryCondition.numberOfPoints     ];
+        real T2 = boundaryCondition.temperatures[ ( startIndex + index ) * boundaryCondition.numberOfPoints + 1 ];
 
 
         real k = boundaryCondition.temperatureConductivity * boundaryCondition.density * boundaryCondition.specificHeatCapacity;

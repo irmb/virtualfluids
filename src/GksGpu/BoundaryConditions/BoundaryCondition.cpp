@@ -88,9 +88,9 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, bool allowGh
                         secondCells.push_back( neighborCell.cellToCell[ idx ] );
                     }
 
-                    cell.isWall      = this->isWall();
-                    cell.isFluxBC    = this->isFluxBC();
-                    cell.isInsulated = this->isInsulated();
+                    if( this->isWall()      ) cell.isWall      = this->isWall();
+                    if( this->isFluxBC()    ) cell.isFluxBC    = this->isFluxBC();
+                    if( this->isInsulated() ) cell.isInsulated = this->isInsulated();
 
                     break;
                 }

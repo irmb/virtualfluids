@@ -20,6 +20,7 @@
 #include <exception>
 #include <fstream>
 #include <memory>
+#include <algorithm>
 
 #include "Core/Timer/Timer.h"
 #include "Core/PointerDefinitions.h"
@@ -69,13 +70,35 @@
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
 #include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
-#include "GksGpu/Analyzer/PointTimeseriesCollector.h"
+#include "GksGpu/Analyzer/PointTimeSeriesCollector.h"
 
 #include "GksGpu/Restart/Restart.h"
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
 real getHRR( real t );
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// from https://stackoverflow.com/questions/865668/how-to-parse-command-line-arguments-in-c
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+char* getCmdOption(char ** begin, char ** end, const std::string & option)
+{
+    char ** itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end)
+    {
+        return *itr;
+    }
+    return 0;
+}
+
+bool cmdOptionExists(char** begin, char** end, const std::string& option)
+{
+    return std::find(begin, end, option) != end;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void thermalCavity( std::string path, std::string simulationName, uint windowIndex, uint restartIter, bool useConreteHeatFluxBC )
 {
@@ -316,7 +339,8 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
     refRegion2.add( &beamRef );
 
     gridBuilder->setNumberOfLayers(0,22);
-
+    
+    gridBuilder->addGrid( &refRegion2, 2 );
     //gridBuilder->addGrid( &refRegion2, 3 );
 
     uint maxLevel = gridBuilder->getNumberOfGridLevels() - 1;
@@ -393,7 +417,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
     bcWall->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return true; } );
     
-    SPtr<BoundaryCondition> bcWallHeatFlux = std::make_shared<ConcreteHeatFlux>( dataBase, 10, 1.0e-6, 2400.0, 880, 0.1, 3.0 );
+    SPtr<BoundaryCondition> bcWallHeatFlux = std::make_shared<ConcreteHeatFlux>( dataBase, 64, 1.0e-6, 2400.0, 880, 0.1, 3.0 );
 
     bcWallHeatFlux->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return (center.z >  3.0 && center.y <  1.6)
                                                                                 || (center.x >  2.0 && center.y > -1.5 && center.y < 1.5 & center.z < 3.0 && center.z > 0.0)
@@ -488,6 +512,8 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
 
             //if( cellCenter.x > 0 ) primLocal.rho = 1.21;
 
+            primLocal.lambda *= 0.5;
+
             return toConservedVariables(primLocal, parameters.K);
         });
 
@@ -572,7 +598,7 @@ void thermalCavity( std::string path, std::string simulationName, uint windowInd
             break;
         }
 
-        if( iter % 10000 == 0 )
+        if( iter % 1000 == 0 )
         {
             dataBase->copyDataDeviceToHost();
 
@@ -626,9 +652,16 @@ int main( int argc, char* argv[])
 
     uint defaultDevice = 0;
 
-    if( argc > 1 ) windowIndex = atoi( argv[1] );
-    if( argc > 2 ) useConcreteHeatFluxBC = true;
-    if( argc > 3 ) restartIter = atoi( argv[3] );
+    //////////////////////////////////////////////////////////////////////////
+
+    if( cmdOptionExists(argv, argv+argc, "-w" ) ) 
+        windowIndex = atoi( getCmdOption(argv, argv+argc, "-w") );
+
+    if( cmdOptionExists(argv, argv+argc, "--useConcreteHeatFlux" ) ) 
+        useConcreteHeatFluxBC = true;
+
+    if( cmdOptionExists(argv, argv+argc, "-r" ) ) 
+        restartIter = atoi( getCmdOption(argv, argv+argc, "-r") );
 
     //////////////////////////////////////////////////////////////////////////
 

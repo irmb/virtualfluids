@@ -726,6 +726,11 @@ void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, s
 
     for( uint index = 0; index < bc->numberOfCells; index ++ )
     {
+        if( bc->domainCellsHost[index] > dataBase->perLevelCount[ dataBase->getCellLevel( bc->domainCellsHost[index] ) ].startOfCells
+                                       + dataBase->perLevelCount[ dataBase->getCellLevel( bc->domainCellsHost[index] ) ].numberOfBulkCells ) continue;
+
+        if( isCellProperties( dataBase->cellPropertiesHost[ bc->domainCellsHost[index] ], CELL_PROPERTIES_FINE_GHOST ) ) continue;
+
         real dx = bc->L / real(bc->numberOfPoints + 1);
 
         Vec3 displacement = dataBase->nodeCoordinates[ dataBase->cellToNode[ bc->ghostCellsHost [index] ][0] ]
@@ -827,6 +832,11 @@ void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, s
 
     for( uint cellIdx = 0; cellIdx < bc->numberOfCells; cellIdx++ )
     {
+        if( bc->domainCellsHost[cellIdx] > dataBase->perLevelCount[ dataBase->getCellLevel( bc->domainCellsHost[cellIdx] ) ].startOfCells
+                                         + dataBase->perLevelCount[ dataBase->getCellLevel( bc->domainCellsHost[cellIdx] ) ].numberOfBulkCells ) continue;
+
+        if( isCellProperties( dataBase->cellPropertiesHost[ bc->domainCellsHost[cellIdx] ], CELL_PROPERTIES_FINE_GHOST ) ) continue;
+
         real T = c0o1;
 
         {
@@ -842,6 +852,7 @@ void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, s
 
 #ifdef USE_PASSIVE_SCALAR
             T += c3o2 * getT(prim);
+            //T += getT(prim);
 #else // USE_PASSIVE_SCALAR
             T += c3o2 * 1.0 / prim.lambda;
 #endif // USE_PASSIVE_SCALAR
