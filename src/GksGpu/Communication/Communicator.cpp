@@ -66,6 +66,8 @@ void Communicator::sendData( SPtr<DataBase> dataBase, int tag )
 
     this->copyFromMeshToSendBuffer( dataBase );
 
+    MPI_Wait(&this->sendBufferIsReady, MPI_STATUSES_IGNORE);
+
     this->myAllocator->copyBuffersDeviceToHost( shared_from_this() );
     
     CudaUtility::synchronizeCudaStream( CudaUtility::communicationStream );

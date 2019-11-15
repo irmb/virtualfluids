@@ -138,6 +138,8 @@ HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
 HOST void GridImp::freeMemory()
 {
     gridStrategy->freeMemory(shared_from_this());
+
+    gridStrategy->freeFieldMemory(&field);
 }
 
 HOST GridImp::GridImp()
@@ -1033,7 +1035,8 @@ HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbm
                      this->getFieldEntry(index) == FLUID_CFC ||
                      this->getFieldEntry(index) == FLUID_CFF ||
                      this->getFieldEntry(index) == FLUID_FCC ||
-                     this->getFieldEntry(index) == FLUID_FCF ) )
+                     this->getFieldEntry(index) == FLUID_FCF ||
+                     this->getFieldEntry(index) == BC_SOLID ) )
             {
                 this->setFieldEntry(index, STOPPER_OUT_OF_GRID_BOUNDARY);
             }
@@ -1414,11 +1417,12 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
         if( this->getFieldEntry(index) == INVALID_OUT_OF_GRID ||
             this->getFieldEntry(index) == INVALID_SOLID ||
             this->getFieldEntry(index) == INVALID_COARSE_UNDER_FINE ||
-            this->getFieldEntry(index) == STOPPER_SOLID ||
+            //this->getFieldEntry(index) == STOPPER_SOLID ||
             this->getFieldEntry(index) == STOPPER_OUT_OF_GRID ||
             this->getFieldEntry(index) == STOPPER_COARSE_UNDER_FINE ) continue;
 
         if( lbmOrGks == LBM && this->getFieldEntry(index) == STOPPER_OUT_OF_GRID_BOUNDARY ) continue;
+        if( lbmOrGks == LBM && this->getFieldEntry(index) == STOPPER_SOLID ) continue;
 
         if( direction == CommunicationDirections::MX ) findCommunicationIndex( index, x, subDomainBox->minX, direction);
         if( direction == CommunicationDirections::PX ) findCommunicationIndex( index, x, subDomainBox->maxX, direction);

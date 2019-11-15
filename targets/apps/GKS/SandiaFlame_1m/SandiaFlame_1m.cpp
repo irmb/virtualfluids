@@ -94,7 +94,7 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
-    setLambdaFromT( prim, 2.85 / T_FAKTOR );
+    setLambdaFromT( prim, 2.85 );
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
@@ -515,8 +515,8 @@ int main( int argc, char* argv[])
     //uint restartIter = 90000;
         
     uint gpuIndex = 1;
-    uint testIndex = 17;
-    uint nx = 128;
+    uint testIndex = 24;
+    uint nx = 64;
 
     if( argc > 1 ) gpuIndex    = atoi( argv[1] );
 

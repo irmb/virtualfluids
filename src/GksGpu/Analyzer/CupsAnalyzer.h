@@ -40,7 +40,7 @@ public:
 
     void restart();
 
-    void run( uint iter, real dt );
+    real run( uint iter, real dt );
 
 private:
 

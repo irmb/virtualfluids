@@ -87,7 +87,7 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
-    setLambdaFromT( prim, 3.0 / T_FAKTOR );
+    setLambdaFromT( prim, 3.0 );
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
@@ -138,13 +138,11 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
     parameters.enableReaction = true;
 
     parameters.useHeatReleaseRateLimiter = true;
-    parameters.useReactionLimiter        = true;
     parameters.useTemperatureLimiter     = _useTempLimiter;
     parameters.usePassiveScalarLimiter   = true;
     parameters.useSmagorinsky            = true;
 
     parameters.heatReleaseRateLimiter = 5000000.0;
-    parameters.reactionLimiter        = 1.005;
     parameters.temperatureLimiter     = 1.0e-8;
 
     parameters.useSpongeLayer = true;

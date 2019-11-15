@@ -33,7 +33,7 @@ struct VF_PUBLIC DataBaseStruct
 
     real* massFlux;
 
-    real* diffusivity;
+    realAccumulator* diffusivity;
 
     int* crashCellIndex;
 };

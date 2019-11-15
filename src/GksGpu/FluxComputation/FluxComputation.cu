@@ -284,6 +284,19 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             real dTdx1 = dEdx1 - c2o1 * facePrim.U * dUdx1 - c2o1 * facePrim.V * dVdx1 - c2o1 * facePrim.W * dWdx1;
             real dTdx2 = dEdx2 - c2o1 * facePrim.U * dUdx2 - c2o1 * facePrim.V * dVdx2 - c2o1 * facePrim.W * dWdx2;
             real dTdx3 = dEdx3 - c2o1 * facePrim.U * dUdx3 - c2o1 * facePrim.V * dVdx3 - c2o1 * facePrim.W * dWdx3;
+    
+            //real E = c1o2 * ( facePrim.U * facePrim.U 
+            //                + facePrim.V * facePrim.V 
+            //                + facePrim.W * facePrim.W 
+            //                + ( parameters.K + c3o1 ) / ( c4o1 * facePrim.lambda ) );
+
+            //real dEdx1 = ( gradN.rhoE  - E * gradN.rho  );
+            //real dEdx2 = ( gradT1.rhoE - E * gradT1.rho );
+            //real dEdx3 = ( gradT2.rhoE - E * gradT2.rho );
+
+            //real dTdx1 = dEdx1 - facePrim.U * dUdx1 - facePrim.V * dVdx1 - facePrim.W * dWdx1;
+            //real dTdx2 = dEdx2 - facePrim.U * dUdx2 - facePrim.V * dVdx2 - facePrim.W * dWdx2;
+            //real dTdx3 = dEdx3 - facePrim.U * dUdx3 - facePrim.V * dVdx3 - facePrim.W * dWdx3;
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // this one works for some time
@@ -300,10 +313,11 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             //k += real(0.00001) * real(0.0025) * S * S;
             
             //real kMax = real(0.01) * c1o2 * parameters.dx * parameters.dx / parameters.dt;
-            real kMax = real(0.01);
+            //real kMax = real(0.01);
 
             real S = parameters.dx * parameters.dx * ( dTdx1 * dTdx1 + dTdx2 * dTdx2 + dTdx3 * dTdx3 );
-            k += fminf(kMax, parameters.temperatureLimiter * S);
+
+            k += fminf(parameters.temperatureLimiterUpperLimit, parameters.temperatureLimiter * S);
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // this one works for some time
@@ -405,8 +419,8 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             uint posCellIdx = dataBase.faceToCell[ POS_CELL(faceIndex, dataBase.numberOfFaces) ];
 
         #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-            atomicAdd( &( dataBase.diffusivity[ negCellIdx ] ), parameters.D * parameters.dx * parameters.dx * parameters.dt );
-            atomicAdd( &( dataBase.diffusivity[ posCellIdx ] ), parameters.D * parameters.dx * parameters.dx * parameters.dt );
+            atomicAdd( &( dataBase.diffusivity[ negCellIdx ] ), (realAccumulator)( parameters.D * parameters.dx * parameters.dx * parameters.dt ) );
+            atomicAdd( &( dataBase.diffusivity[ posCellIdx ] ), (realAccumulator)( parameters.D * parameters.dx * parameters.dx * parameters.dt ) );
         #endif
 
             CellProperties negCellProperties = dataBase.cellProperties[ negCellIdx ];

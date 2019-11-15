@@ -453,8 +453,8 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
 
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start with Q Computation\n";
 
-        for( uint level = 0; level < grids.size(); level++ )
-        //uint level = grids.size() - 1;
+        //for( uint level = 0; level < grids.size(); level++ )
+        uint level = grids.size() - 1;
         {
             grids[level]->mesh(solidObject);
 

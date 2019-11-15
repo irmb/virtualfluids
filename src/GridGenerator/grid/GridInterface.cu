@@ -1,5 +1,7 @@
 #include "GridInterface.h"
 
+#include <iostream>
+
 #include "grid/distributions/D3Q27.h"
 #include "grid/GridImp.h"
 #include "grid/Field.h"
@@ -241,6 +243,9 @@ void GridInterface::findForGridInterfaceSparseIndexCF(GridImp* coarseGrid, GridI
 {
     findSparseIndex(cf.coarse, coarseGrid, index);
     findSparseIndex(cf.fine, fineGrid, index);
+
+    if( cf.coarse[index] == 686916 )
+        printf("%d ===> %d \n", cf.coarse[index], cf.fine[index]);
 }
 
 void GridInterface::findForGridInterfaceSparseIndexFC(GridImp* coarseGrid, GridImp* fineGrid, uint index)

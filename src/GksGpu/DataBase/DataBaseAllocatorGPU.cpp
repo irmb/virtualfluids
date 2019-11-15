@@ -85,7 +85,7 @@ void DataBaseAllocatorGPU::allocateMemory(SPtr<DataBase> dataBase)
 
     checkCudaErrors( cudaMalloc ( &dataBase->massFlux ,  sizeof(real) * LENGTH_VECTOR    * dataBase->numberOfCells ) );
 
-    checkCudaErrors( cudaMalloc ( &dataBase->diffusivity,  sizeof(real) * dataBase->numberOfCells ) );
+    checkCudaErrors( cudaMalloc ( &dataBase->diffusivity,  sizeof(realAccumulator) * dataBase->numberOfCells ) );
 
     checkCudaErrors( cudaMalloc ( &dataBase->crashCellIndex,  sizeof(int) ) );
 

@@ -85,7 +85,7 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     char* faceOrientation;
 
     uint* fineToCoarse;   // 9
-    uint* coarseToFine;   // 15
+    uint* coarseToFine;   // 9
 
     //////////////////////////////////////////////////////////////////////////
     // Host/Device data - READ MODIFY
@@ -96,7 +96,7 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
 
     real* massFlux;
 
-    real* diffusivity;
+    realAccumulator* diffusivity;
 
     int* crashCellIndex;
 

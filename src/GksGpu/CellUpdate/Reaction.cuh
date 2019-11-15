@@ -19,152 +19,93 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-__host__ __device__ inline void chemicalReactionBKP(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
+inline __host__ __device__ real getTurbulentViscosityDeardorff(const DataBaseStruct& dataBase, const Parameters& parameters, const uint cellIndex, const ConservedVariables& cons )
 {
+    // See FDS 6 Technical Reference Guide, Section 4.2.3
 
-#ifdef USE_PASSIVE_SCALAR
-    if (parameters.enableReaction)
+    PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
+
+    ConservedVariables neighborCons;
+    PrimitiveVariables neighborPrim;
+
+    real kSGS = c0o1;
+
     {
-        CellProperties cellProperties = dataBase.cellProperties[ cellIndex ];
+        real uHead = c1o2 * prim.U;
 
-        //if( !isCellProperties( cellProperties, CELL_PROPERTIES_FINE_GHOST ) )
-        //if( !isCellProperties( cellProperties, CELL_PROPERTIES_GHOST ) )
         {
-            PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
+            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 0, dataBase.numberOfCells)];
+            readCellData(cellIndex, dataBase, neighborCons);
+            neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
 
-            //////////////////////////////////////////////////////////////////////////
+            uHead += c1o4 * neighborPrim.U;
+        }
+        {
+            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 1, dataBase.numberOfCells)];
+            readCellData(cellIndex, dataBase, neighborCons);
+            neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
 
-            real Y_F = prim.S_1;
-            real Y_P = prim.S_2;
-
-            real Y_A = c1o1 - Y_F - Y_P;
-
-            real M = c1o1 / ( Y_A / M_A
-                           + Y_F / M_F
-                           + Y_P / M_P );
-
-            real X_A = Y_A * M / M_A;
-            real X_F = Y_F * M / M_F;
-            real X_P = Y_P * M / M_P;
-
-            ///////////////////////////////////////////////////////////////////////////////
-
-            real X_O2 = real(0.21) * X_A;
-
-            ///////////////////////////////////////////////////////////////////////////////
-
-            {
-                //////////////////////////////////////////////////////////////////////////
-
-                real dX_F = fminf(X_F, c1o2 * X_O2);
-
-                //////////////////////////////////////////////////////////////////////////
-
-                if( parameters.useReactionLimiter )
-                {
-                    PrimitiveVariables limitPrim = prim;
-
-                    limitPrim.lambda /= parameters.reactionLimiter;
-
-                    ConservedVariables limitCons = toConservedVariables(limitPrim, parameters.K);
-
-                    real maxHeatRelease = limitCons.rhoE - cons.rhoE;
-
-                    real dX_F_max = maxHeatRelease * M / cons.rho / parameters.heatOfReaction;
-
-                    dX_F = fminf(dX_F_max, dX_F);
-                }
-
-                //////////////////////////////////////////////////////////////////////////
-
-                if( dX_F < c0o1 ) dX_F = c0o1;
-
-                //////////////////////////////////////////////////////////////////////////
-
-                real dn_F = cons.rho * dX_F / M;
-
-                real releasedHeat = dn_F * parameters.heatOfReaction;
-
-                //////////////////////////////////////////////////////////////////////////
-
-                //if( releasedHeat > real(20.0) * parameters.dt )
-                //{
-                //    dX_F = real(20.0) * parameters.dt * M / cons.rho / parameters.heatOfReaction;
-                //}
-
-                //////////////////////////////////////////////////////////////////////////
-
-                //real X_F_new = X_F - dX_F;
-                //real X_P_new = X_P + dX_F;
-
-                real X_A_new = X_A - c2o1 * dX_F / real(0.21);
-                real X_F_new = X_F - dX_F;
-
-                real X_P_new = c1o1 - X_A_new - X_F_new;
-
-                real Z1 = X_F_new * M_F / M;
-                real Z2 = X_P_new * M_P / M;
-
-                //////////////////////////////////////////////////////////////////////////
-
-                //if( Z1 < zero ) { Z2 -= Z1; Z1 = zero; }
-                //if( Z2 < zero ) { Z1 -= Z2; Z2 = zero; }
-
-                //if( Z1 > one  ) { Z2 += Z1 - one; Z1 = one; }
-                //if( Z2 > one  ) { Z1 += Z2 - one; Z2 = one; }
-
-                //if( Z1 < zero ) Z1 = zero;
-                //if( Z2 < zero ) Z2 = zero;
-
-                //if( Z1 > one  ) Z1 = one;
-                //if( Z2 > one  ) Z2 = one;
-
-                //if( Z1 + Z2 > one )
-                //{
-                //    real faktor = (Z1 + Z2);
-
-                //    Z1 /= faktor;
-                //    Z2 /= faktor;
-                //}
-
-                ///////////////////////////////////////////////////////////////////////////////
-
-                ConservedVariables testCons = cons;
-
-                testCons.rhoE += releasedHeat;
-
-                PrimitiveVariables testPrim = toPrimitiveVariables(testCons, parameters.K);
-
-                //////////////////////////////////////////////////////////////////////////
-
-                //if( getT( testPrim ) < 20 )
-                {
-                    cons.rhoS_1 = Z1 * cons.rho;
-                    cons.rhoS_2 = Z2 * cons.rho;
-                    cons.rhoE += releasedHeat;
-                }
-            }
+            uHead += c1o4 * neighborPrim.U;
         }
 
-        //if( cons.rhoS_1 < zero ) cons.rhoS_1 = zero;
-        //if( cons.rhoS_2 < zero ) cons.rhoS_2 = zero;
-
-        //if( cons.rhoS_1 > cons.rho  ) cons.rhoS_1 = cons.rho;
-        //if( cons.rhoS_2 > cons.rho  ) cons.rhoS_2 = cons.rho;
-
-        //if( cons.rhoS_1 + cons.rhoS_2 > cons.rho )
-        //{
-        //    real faktor = (cons.rhoS_1 + cons.rhoS_2) / cons.rho;
-
-        //    cons.rhoS_1 /= faktor;
-        //    cons.rhoS_2 /= faktor;
-        //}
+        kSGS += c1o2 * ( prim.U - uHead ) * ( prim.U - uHead );
     }
 
-#endif // USE_PASSIVE_SCALAR
+    {
+        real vHead = c1o2 * prim.V;
+
+        {
+            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 2, dataBase.numberOfCells)];
+            readCellData(cellIndex, dataBase, neighborCons);
+            neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
+
+            vHead += c1o4 * neighborPrim.V;
+        }
+        {
+            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 3, dataBase.numberOfCells)];
+            readCellData(cellIndex, dataBase, neighborCons);
+            neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
+
+            vHead += c1o4 * neighborPrim.V;
+        }
+
+        kSGS += c1o2 * ( prim.V - vHead ) * ( prim.V - vHead );
+    }
+
+    {
+        real wHead = c1o2 * prim.W;
+
+        {
+            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 4, dataBase.numberOfCells)];
+            readCellData(cellIndex, dataBase, neighborCons);
+            neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
+
+            wHead += c1o4 * neighborPrim.W;
+        }
+        {
+            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 5, dataBase.numberOfCells)];
+            readCellData(cellIndex, dataBase, neighborCons);
+            neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
+
+            wHead += c1o4 * neighborPrim.W;
+        }
+
+        kSGS += c1o2 * ( prim.W - wHead ) * ( prim.W - wHead );
+    }
+
+    //real turbulentViscosity = prim.rho * parameters.dx * c1o10 * sqrt(kSGS) / 0.3;
+
+    dataBase.diffusivity[cellIndex] = (realAccumulator) kSGS;
+
+    //printf("%f", kSGS);
+
+    return kSGS;
 }
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parameters parameters, uint cellIndex, ConservedVariables& cons)
 {
@@ -174,10 +115,14 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
     {
         CellProperties cellProperties = dataBase.cellProperties[ cellIndex ];
 
+        if( isCellProperties( cellProperties, CELL_PROPERTIES_FINE_GHOST ) ) return;
+
         PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
 
         //////////////////////////////////////////////////////////////////////////
 
+        //real diffusivity = getTurbulentViscosityDeardorff(dataBase, parameters, cellIndex, cons);
+        //real diffusivity = dataBase.diffusivity[ cellIndex ];
         real diffusivity = dataBase.diffusivity[ cellIndex ] / ( c6o1 * parameters.dx * parameters.dx * parameters.dt );
         dataBase.diffusivity[ cellIndex ] = c0o1;
 
@@ -185,10 +130,16 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
         real mixingTimeScale = real(0.1) * parameters.dx * parameters.dx / diffusivity;
 
-        //real mixingTimeScale = parameters.dt;
+        //real kSGS = getTurbulentViscosityDeardorff(dataBase, parameters, cellIndex, cons);
 
-        //if( mixingTimeScale < one )
-        //    mixingTimeScale = one;
+        //real mixingTimeScale_d = parameters.dx * parameters.dx / parameters.D;
+
+        //real mixingTimeScale_u = real(0.4) * parameters.dx / sqrt( c2o3 * kSGS );
+
+        //real mixingTimeScale_g = sqrt( c2o1 * parameters.dx / fabs( parameters.force.z ) );
+
+        //real mixingTimeScale = fminf( mixingTimeScale_d, mixingTimeScale_u );
+        //mixingTimeScale      = fminf( mixingTimeScale_g, mixingTimeScale   );
 
         //////////////////////////////////////////////////////////////////////////
 
@@ -199,11 +150,11 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
         ///////////////////////////////////////////////////////////////////////////////
 
-        real Y_O2 = real(0.21) * Y_A * 0.032 / M_A;
+        real Y_O2 = rX * ( M_O2 / M_A ) * Y_A;
 
         ///////////////////////////////////////////////////////////////////////////////
 
-        real s = M_F / ( c2o1 * 0.032 );
+        real s = M_F / ( c2o1 * M_O2 );
 
         real heatReleaseRate = cons.rho * fminf(Y_F, s * Y_O2) / mixingTimeScale * ( parameters.heatOfReaction / M_F );
 
@@ -222,7 +173,8 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
         real drhoY_F = heatReleaseRate * parameters.dt / ( parameters.heatOfReaction / M_F );
 
-        real r = c1o1 + c1o1 / ( c2o1 * real(0.21) ) * M_A / M_F;
+        //real r = c1o1 + ( c1o2 / rX ) * ( M_A / M_F );
+        real r = c1o1 + ( c2o1 / rX ) * ( M_A / M_F );
 
         cons.rhoS_1 -=     drhoY_F;
         cons.rhoS_2 += r * drhoY_F;
