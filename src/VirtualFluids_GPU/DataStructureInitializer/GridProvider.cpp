@@ -45,6 +45,7 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
     for (int j = 1; j <= numberOfNodes; j++)
     {
         const real coordX = para->getParH(level)->coordX_SP[j];
+        const real coordY = para->getParH(level)->coordY_SP[j];
         const real coordZ = para->getParH(level)->coordZ_SP[j];
         const real velocity = para->getVelocity();
 
@@ -116,6 +117,8 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
         //	para->getParH(i)->vz_SP[j] = (doubflo)0.0;
         //}
 
+        //if( abs(coordX) < 0.1 && abs(coordY) < 0.1 && abs(coordZ) < 0.1 )
+            //para->getParH(level)->rho_SP[j] = 0.01; //real((velocity * velocity) * 3.0 / 4.0 * (cos(coordX * 4.0*PI / gridX) + cos(coordZ * 4.0*PI / gridZ))) * gridZ / gridX;
     }
 
 

@@ -690,11 +690,11 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
 	  c0 -= c1o4*(cxx + cyy + czz);
 
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real kxyAverage = c0;
-	  real kyzAverage = c0;
-	  real kxzAverage = c0;
-	  real kxxMyyAverage = c0;
-	  real kxxMzzAverage = c0;
+	  real kxyAverage    = c0o1;
+	  real kyzAverage    = c0o1;
+	  real kxzAverage    = c0o1;
+	  real kxxMyyAverage = c0o1;
+	  real kxxMzzAverage = c0o1;
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  ////Press
 	  //d0   = ( pressPPM + pressPPP + pressMPM + pressMPP + pressPMM + pressPMP + pressMMM + pressMMP) * c1o8;
@@ -740,40 +740,40 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
       cz = cz + c2o1 * zoff * czz + xoff * cxz + yoff * cyz;
 	  d0 = d0 + xoff * dx + yoff * dy + zoff * dz + xoff*yoff*dxy + xoff*zoff*dxz + yoff*zoff*dyz;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real mfcbb = c0;
-	  real mfabb = c0;
-	  real mfbcb = c0;
-	  real mfbab = c0;
-	  real mfbbc = c0;
-	  real mfbba = c0;
-	  real mfccb = c0;
-	  real mfaab = c0;
-	  real mfcab = c0;
-	  real mfacb = c0;
-	  real mfcbc = c0;
-	  real mfaba = c0;
-	  real mfcba = c0;
-	  real mfabc = c0;
-	  real mfbcc = c0;
-	  real mfbaa = c0;
-	  real mfbca = c0;
-	  real mfbac = c0;
-	  real mfbbb = c0;
-	  real mfccc = c0;
-	  real mfaac = c0;
-	  real mfcac = c0;
-	  real mfacc = c0;
-	  real mfcca = c0;
-	  real mfaaa = c0;
-	  real mfcaa = c0;
-	  real mfaca = c0;
+	  real mfcbb = c0o1;
+	  real mfabb = c0o1;
+	  real mfbcb = c0o1;
+	  real mfbab = c0o1;
+	  real mfbbc = c0o1;
+	  real mfbba = c0o1;
+	  real mfccb = c0o1;
+	  real mfaab = c0o1;
+	  real mfcab = c0o1;
+	  real mfacb = c0o1;
+	  real mfcbc = c0o1;
+	  real mfaba = c0o1;
+	  real mfcba = c0o1;
+	  real mfabc = c0o1;
+	  real mfbcc = c0o1;
+	  real mfbaa = c0o1;
+	  real mfbca = c0o1;
+	  real mfbac = c0o1;
+	  real mfbbb = c0o1;
+	  real mfccc = c0o1;
+	  real mfaac = c0o1;
+	  real mfcac = c0o1;
+	  real mfacc = c0o1;
+	  real mfcca = c0o1;
+	  real mfaaa = c0o1;
+	  real mfcaa = c0o1;
+	  real mfaca = c0o1;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real m0, m1, m2, oMdrho;
 	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
 	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
 	  real O3 = c2o1 - o;
 	  real residu, residutmp;
-	  residutmp = c0;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
+	  residutmp = c0o1;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
 	  real NeqOn = c1o1;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -848,37 +848,37 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
 	  // linear combinations
 	  //residu = residutmp * (ayz + bxz + cxy );
 	  //mfbbb = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mfbbb = c0;
+	  mfbbb = c0o1;
 
 	  //residu = residutmp * (axy + two*bxx + two*bzz + cyz );
 	  //residu = -(c1o9*(axy - 2*bxx - 2*bzz + cyz ));
 	  //mxxyPyzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxyPyzz = c0;
+	  mxxyPyzz = c0o1;
 
 	  //residu = residutmp * (axy + two*bxx - two*bzz - cyz );
 	  //residu = c1o9*(axy - 2*bxx + 2*bzz - cyz );
 	  //mxxyMyzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxyMyzz = c0;
+	  mxxyMyzz = c0o1;
 
 	  //residu = residutmp * (axz + byz + two*cxx + two*cyy );
 	  //residu = -(c1o9*(axz + byz - 2*cxx - 2*cyy ));
 	  //mxxzPyyz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxzPyyz = c0;
+	  mxxzPyyz = c0o1;
 
 	  //residu = residutmp * (axz - byz + two*cxx - two*cyy );
 	  //residu = c1o9*(axz - byz - 2*cxx + 2*cyy );
 	  //mxxzMyyz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxzMyyz = c0;
+	  mxxzMyyz = c0o1;
 
 	  //residu = residutmp * (two*ayy + two*azz + bxy + cxz );
 	  //residu = c1o9*(2*ayy + 2*azz - bxy - cxz );
 	  //mxyyPxzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxyyPxzz = c0;
+	  mxyyPxzz = c0o1;
 
 	  //residu = residutmp * (two*ayy - two*azz + bxy - cxz );
 	  //residu = c1o9*(-2*ayy + 2*azz + bxy - cxz );
 	  //mxyyMxzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxyyMxzz = c0;
+	  mxyyMxzz = c0o1;
 
 	  // linear combinations back
 	  mfcba = ( mxxyMyzz + mxxyPyzz) * c1o2;
@@ -4827,11 +4827,11 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
       //bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
       //cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real kxyAverage	 = c0;
-	  real kyzAverage	 = c0;
-	  real kxzAverage	 = c0;
-	  real kxxMyyAverage	 = c0;
-	  real kxxMzzAverage	 = c0;
+	  real kxyAverage	     = c0o1;
+	  real kyzAverage	     = c0o1;
+	  real kxzAverage	     = c0o1;
+	  real kxxMyyAverage	 = c0o1;
+	  real kxxMzzAverage	 = c0o1;
 	  //real kxyAverage	 =(kxyFromfcNEQ_SWB+
 			//				   kxyFromfcNEQ_SWT+
 			//				   kxyFromfcNEQ_SET+
@@ -4887,7 +4887,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
 	  //dxyz =  -press_NEB + press_NET + press_NWB - press_NWT + press_SEB - press_SET - press_SWB + press_SWT;
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //drho
-	  real LapRho = ((xoff != c0) || (yoff != c0) || (zoff != c0)) ? c0 : -c3o1*(ax*ax + by*by + cz*cz) - c6o1 * (bx*ay + cx*az + cy*bz); 
+	  real LapRho = ((xoff != c0o1) || (yoff != c0o1) || (zoff != c0o1)) ? c0o1 : -c3o1*(ax*ax + by*by + cz*cz) - c6o1 * (bx*ay + cx*az + cy*bz); 
 	  d0   = ( drho_NEB + drho_NET + drho_NWB + drho_NWT + drho_SEB + drho_SET + drho_SWB + drho_SWT - c2o1*LapRho) * c1o8;
 	  dx   = ( drho_NEB + drho_NET - drho_NWB - drho_NWT + drho_SEB + drho_SET - drho_SWB - drho_SWT) * c1o4;
 	  dy   = ( drho_NEB + drho_NET + drho_NWB + drho_NWT - drho_SEB - drho_SET - drho_SWB - drho_SWT) * c1o4;
@@ -4955,33 +4955,33 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
 	  //cxz=zero;
 	  //cyz=zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	  
-	  mfcbb = c0;
-	  mfabb = c0;
-	  mfbcb = c0;
-	  mfbab = c0;
-	  mfbbc = c0;
-	  mfbba = c0;
-	  mfccb = c0;
-	  mfaab = c0;
-	  mfcab = c0;
-	  mfacb = c0;
-	  mfcbc = c0;
-	  mfaba = c0;
-	  mfcba = c0;
-	  mfabc = c0;
-	  mfbcc = c0;
-	  mfbaa = c0;
-	  mfbca = c0;
-	  mfbac = c0;
-	  mfbbb = c0;
-	  mfccc = c0;
-	  mfaac = c0;
-	  mfcac = c0;
-	  mfacc = c0;
-	  mfcca = c0;
-	  mfaaa = c0;
-	  mfcaa = c0;
-	  mfaca = c0;
+	  mfcbb = c0o1;
+	  mfabb = c0o1;
+	  mfbcb = c0o1;
+	  mfbab = c0o1;
+	  mfbbc = c0o1;
+	  mfbba = c0o1;
+	  mfccb = c0o1;
+	  mfaab = c0o1;
+	  mfcab = c0o1;
+	  mfacb = c0o1;
+	  mfcbc = c0o1;
+	  mfaba = c0o1;
+	  mfcba = c0o1;
+	  mfabc = c0o1;
+	  mfbcc = c0o1;
+	  mfbaa = c0o1;
+	  mfbca = c0o1;
+	  mfbac = c0o1;
+	  mfbbb = c0o1;
+	  mfccc = c0o1;
+	  mfaac = c0o1;
+	  mfcac = c0o1;
+	  mfacc = c0o1;
+	  mfcca = c0o1;
+	  mfaaa = c0o1;
+	  mfcaa = c0o1;
+	  mfaca = c0o1;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
 	  //real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
@@ -9016,11 +9016,11 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
       //bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
       //cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real kxyAverage	 = c0;
-	  real kyzAverage	 = c0;
-	  real kxzAverage	 = c0;
-	  real kxxMyyAverage	 = c0;
-	  real kxxMzzAverage	 = c0;
+	  real kxyAverage	     = c0o1;
+	  real kyzAverage	     = c0o1;
+	  real kxzAverage	     = c0o1;
+	  real kxxMyyAverage	 = c0o1;
+	  real kxxMzzAverage	 = c0o1;
 	  //real kxyAverage	 =(kxyFromfcNEQ_SWB+
 			//				   kxyFromfcNEQ_SWT+
 			//				   kxyFromfcNEQ_SET+
@@ -9076,7 +9076,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
 	  //dxyz =  -press_NEB + press_NET + press_NWB - press_NWT + press_SEB - press_SET - press_SWB + press_SWT;
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //drho
-	  real LapRho = ((xoff != c0) || (yoff != c0) || (zoff != c0)) ? c0 : -c3o1*(ax*ax + by*by + cz*cz) - c6o1 * (bx*ay + cx*az + cy*bz); 
+	  real LapRho = ((xoff != c0o1) || (yoff != c0o1) || (zoff != c0o1)) ? c0o1 : -c3o1*(ax*ax + by*by + cz*cz) - c6o1 * (bx*ay + cx*az + cy*bz); 
 	  d0   = ( drho_NEB + drho_NET + drho_NWB + drho_NWT + drho_SEB + drho_SET + drho_SWB + drho_SWT - c2o1*LapRho) * c1o8;
 	  dx   = ( drho_NEB + drho_NET - drho_NWB - drho_NWT + drho_SEB + drho_SET - drho_SWB - drho_SWT) * c1o4;
 	  dy   = ( drho_NEB + drho_NET + drho_NWB + drho_NWT - drho_SEB - drho_SET - drho_SWB - drho_SWT) * c1o4;
@@ -9144,33 +9144,33 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
 	  //cxz=zero;
 	  //cyz=zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	  
-	  mfcbb = c0;
-	  mfabb = c0;
-	  mfbcb = c0;
-	  mfbab = c0;
-	  mfbbc = c0;
-	  mfbba = c0;
-	  mfccb = c0;
-	  mfaab = c0;
-	  mfcab = c0;
-	  mfacb = c0;
-	  mfcbc = c0;
-	  mfaba = c0;
-	  mfcba = c0;
-	  mfabc = c0;
-	  mfbcc = c0;
-	  mfbaa = c0;
-	  mfbca = c0;
-	  mfbac = c0;
-	  mfbbb = c0;
-	  mfccc = c0;
-	  mfaac = c0;
-	  mfcac = c0;
-	  mfacc = c0;
-	  mfcca = c0;
-	  mfaaa = c0;
-	  mfcaa = c0;
-	  mfaca = c0;
+	  mfcbb = c0o1;
+	  mfabb = c0o1;
+	  mfbcb = c0o1;
+	  mfbab = c0o1;
+	  mfbbc = c0o1;
+	  mfbba = c0o1;
+	  mfccb = c0o1;
+	  mfaab = c0o1;
+	  mfcab = c0o1;
+	  mfacb = c0o1;
+	  mfcbc = c0o1;
+	  mfaba = c0o1;
+	  mfcba = c0o1;
+	  mfabc = c0o1;
+	  mfbcc = c0o1;
+	  mfbaa = c0o1;
+	  mfbca = c0o1;
+	  mfbac = c0o1;
+	  mfbbb = c0o1;
+	  mfccc = c0o1;
+	  mfaac = c0o1;
+	  mfcac = c0o1;
+	  mfacc = c0o1;
+	  mfcca = c0o1;
+	  mfaaa = c0o1;
+	  mfcaa = c0o1;
+	  mfaca = c0o1;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
 	  //real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
@@ -10344,11 +10344,11 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC,
       //bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
       //cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real kxyAverage	 = c0;
-	  real kyzAverage	 = c0;
-	  real kxzAverage	 = c0;
-	  real kxxMyyAverage	 = c0;
-	  real kxxMzzAverage	 = c0;
+	  real kxyAverage	     = c0o1;
+	  real kyzAverage	     = c0o1;
+	  real kxzAverage	     = c0o1;
+	  real kxxMyyAverage	 = c0o1;
+	  real kxxMzzAverage	 = c0o1;
 	  //real kxyAverage	 =(kxyFromfcNEQ_SWB+
 			//				   kxyFromfcNEQ_SWT+
 			//				   kxyFromfcNEQ_SET+
@@ -10404,7 +10404,7 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC,
 	  //dxyz =  -press_NEB + press_NET + press_NWB - press_NWT + press_SEB - press_SET - press_SWB + press_SWT;
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //drho
-	  real LapRho = ((xoff != c0) || (yoff != c0) || (zoff != c0)) ? c0 : -c3o1*(ax*ax + by*by + cz*cz) - c6o1 * (bx*ay + cx*az + cy*bz); 
+	  real LapRho = ((xoff != c0o1) || (yoff != c0o1) || (zoff != c0o1)) ? c0o1 : -c3o1*(ax*ax + by*by + cz*cz) - c6o1 * (bx*ay + cx*az + cy*bz); 
 	  d0   = ( drho_NEB + drho_NET + drho_NWB + drho_NWT + drho_SEB + drho_SET + drho_SWB + drho_SWT - c2o1*LapRho) * c1o8;
 	  dx   = ( drho_NEB + drho_NET - drho_NWB - drho_NWT + drho_SEB + drho_SET - drho_SWB - drho_SWT) * c1o4;
 	  dy   = ( drho_NEB + drho_NET + drho_NWB + drho_NWT - drho_SEB - drho_SET - drho_SWB - drho_SWT) * c1o4;
@@ -10472,40 +10472,40 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC,
 	  //cxz=zero;
 	  //cyz=zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	  
-	  real mfcbb = c0;
-	  real mfabb = c0;
-	  real mfbcb = c0;
-	  real mfbab = c0;
-	  real mfbbc = c0;
-	  real mfbba = c0;
-	  real mfccb = c0;
-	  real mfaab = c0;
-	  real mfcab = c0;
-	  real mfacb = c0;
-	  real mfcbc = c0;
-	  real mfaba = c0;
-	  real mfcba = c0;
-	  real mfabc = c0;
-	  real mfbcc = c0;
-	  real mfbaa = c0;
-	  real mfbca = c0;
-	  real mfbac = c0;
-	  real mfbbb = c0;
-	  real mfccc = c0;
-	  real mfaac = c0;
-	  real mfcac = c0;
-	  real mfacc = c0;
-	  real mfcca = c0;
-	  real mfaaa = c0;
-	  real mfcaa = c0;
-	  real mfaca = c0;
+	  real mfcbb = c0o1;
+	  real mfabb = c0o1;
+	  real mfbcb = c0o1;
+	  real mfbab = c0o1;
+	  real mfbbc = c0o1;
+	  real mfbba = c0o1;
+	  real mfccb = c0o1;
+	  real mfaab = c0o1;
+	  real mfcab = c0o1;
+	  real mfacb = c0o1;
+	  real mfcbc = c0o1;
+	  real mfaba = c0o1;
+	  real mfcba = c0o1;
+	  real mfabc = c0o1;
+	  real mfbcc = c0o1;
+	  real mfbaa = c0o1;
+	  real mfbca = c0o1;
+	  real mfbac = c0o1;
+	  real mfbbb = c0o1;
+	  real mfccc = c0o1;
+	  real mfaac = c0o1;
+	  real mfcac = c0o1;
+	  real mfacc = c0o1;
+	  real mfcca = c0o1;
+	  real mfaaa = c0o1;
+	  real mfcaa = c0o1;
+	  real mfaca = c0o1;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
 	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
 	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
 	  real O3 = c2o1 - o;
 	  real residu, residutmp;
-	  residutmp = c0;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
+	  residutmp = c0o1;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
 	  real NeqOn = c1o1;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -10579,37 +10579,37 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC,
 	  // linear combinations
 	  //residu = residutmp * (ayz + bxz + cxy );
 	  //mfbbb = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mfbbb = c0;
+	  mfbbb = c0o1;
 
 	  //residu = residutmp * (axy + two*bxx + two*bzz + cyz );
 	  //residu = -(c1o9*(axy - 2*bxx - 2*bzz + cyz ));
 	  //mxxyPyzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxyPyzz = c0;
+	  mxxyPyzz = c0o1;
 
 	  //residu = residutmp * (axy + two*bxx - two*bzz - cyz );
 	  //residu = c1o9*(axy - 2*bxx + 2*bzz - cyz );
 	  //mxxyMyzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxyMyzz = c0;
+	  mxxyMyzz = c0o1;
 
 	  //residu = residutmp * (axz + byz + two*cxx + two*cyy );
 	  //residu = -(c1o9*(axz + byz - 2*cxx - 2*cyy ));
 	  //mxxzPyyz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxzPyyz = c0;
+	  mxxzPyyz = c0o1;
 
 	  //residu = residutmp * (axz - byz + two*cxx - two*cyy );
 	  //residu = c1o9*(axz - byz - 2*cxx + 2*cyy );
 	  //mxxzMyyz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxzMyyz = c0;
+	  mxxzMyyz = c0o1;
 
 	  //residu = residutmp * (two*ayy + two*azz + bxy + cxz );
 	  //residu = c1o9*(2*ayy + 2*azz - bxy - cxz );
 	  //mxyyPxzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxyyPxzz = c0;
+	  mxyyPxzz = c0o1;
 
 	  //residu = residutmp * (two*ayy - two*azz + bxy - cxz );
 	  //residu = c1o9*(-2*ayy + 2*azz + bxy - cxz );
 	  //mxyyMxzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxyyMxzz = c0;
+	  mxyyMxzz = c0o1;
 
 	  // linear combinations back
 	  mfcba = ( mxxyMyzz + mxxyPyzz) * c1o2;
@@ -12600,40 +12600,40 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC,
 	  //cxz=zero;
 	  //cyz=zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	  
-	  real mfcbb = c0;
-	  real mfabb = c0;
-	  real mfbcb = c0;
-	  real mfbab = c0;
-	  real mfbbc = c0;
-	  real mfbba = c0;
-	  real mfccb = c0;
-	  real mfaab = c0;
-	  real mfcab = c0;
-	  real mfacb = c0;
-	  real mfcbc = c0;
-	  real mfaba = c0;
-	  real mfcba = c0;
-	  real mfabc = c0;
-	  real mfbcc = c0;
-	  real mfbaa = c0;
-	  real mfbca = c0;
-	  real mfbac = c0;
-	  real mfbbb = c0;
-	  real mfccc = c0;
-	  real mfaac = c0;
-	  real mfcac = c0;
-	  real mfacc = c0;
-	  real mfcca = c0;
-	  real mfaaa = c0;
-	  real mfcaa = c0;
-	  real mfaca = c0;
+	  real mfcbb = c0o1;
+	  real mfabb = c0o1;
+	  real mfbcb = c0o1;
+	  real mfbab = c0o1;
+	  real mfbbc = c0o1;
+	  real mfbba = c0o1;
+	  real mfccb = c0o1;
+	  real mfaab = c0o1;
+	  real mfcab = c0o1;
+	  real mfacb = c0o1;
+	  real mfcbc = c0o1;
+	  real mfaba = c0o1;
+	  real mfcba = c0o1;
+	  real mfabc = c0o1;
+	  real mfbcc = c0o1;
+	  real mfbaa = c0o1;
+	  real mfbca = c0o1;
+	  real mfbac = c0o1;
+	  real mfbbb = c0o1;
+	  real mfccc = c0o1;
+	  real mfaac = c0o1;
+	  real mfcac = c0o1;
+	  real mfacc = c0o1;
+	  real mfcca = c0o1;
+	  real mfaaa = c0o1;
+	  real mfcaa = c0o1;
+	  real mfaca = c0o1;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
 	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
 	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
 	  real O3 = c2o1 - o;
 	  real residu, residutmp;
-	  residutmp = c0;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
+	  residutmp = c0o1;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
 	  real NeqOn = c1o1;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -14315,11 +14315,11 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
       //bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
       //cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real kxyAverage = c0;
-	  real kyzAverage = c0;
-	  real kxzAverage = c0;
-	  real kxxMyyAverage = c0;
-	  real kxxMzzAverage = c0;
+	  real kxyAverage    = c0o1;
+	  real kyzAverage    = c0o1;
+	  real kxzAverage    = c0o1;
+	  real kxxMyyAverage = c0o1;
+	  real kxxMzzAverage = c0o1;
 
 
 	  //real kxyAverage	 =(kxyFromfcNEQ_SWB+
@@ -14451,40 +14451,40 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
 	  //cxz=zero;
 	  //cyz=zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	  
-	  real mfcbb = c0;
-	  real mfabb = c0;
-	  real mfbcb = c0;
-	  real mfbab = c0;
-	  real mfbbc = c0;
-	  real mfbba = c0;
-	  real mfccb = c0;
-	  real mfaab = c0;
-	  real mfcab = c0;
-	  real mfacb = c0;
-	  real mfcbc = c0;
-	  real mfaba = c0;
-	  real mfcba = c0;
-	  real mfabc = c0;
-	  real mfbcc = c0;
-	  real mfbaa = c0;
-	  real mfbca = c0;
-	  real mfbac = c0;
-	  real mfbbb = c0;
-	  real mfccc = c0;
-	  real mfaac = c0;
-	  real mfcac = c0;
-	  real mfacc = c0;
-	  real mfcca = c0;
-	  real mfaaa = c0;
-	  real mfcaa = c0;
-	  real mfaca = c0;
+	  real mfcbb = c0o1;
+	  real mfabb = c0o1;
+	  real mfbcb = c0o1;
+	  real mfbab = c0o1;
+	  real mfbbc = c0o1;
+	  real mfbba = c0o1;
+	  real mfccb = c0o1;
+	  real mfaab = c0o1;
+	  real mfcab = c0o1;
+	  real mfacb = c0o1;
+	  real mfcbc = c0o1;
+	  real mfaba = c0o1;
+	  real mfcba = c0o1;
+	  real mfabc = c0o1;
+	  real mfbcc = c0o1;
+	  real mfbaa = c0o1;
+	  real mfbca = c0o1;
+	  real mfbac = c0o1;
+	  real mfbbb = c0o1;
+	  real mfccc = c0o1;
+	  real mfaac = c0o1;
+	  real mfcac = c0o1;
+	  real mfacc = c0o1;
+	  real mfcca = c0o1;
+	  real mfaaa = c0o1;
+	  real mfcaa = c0o1;
+	  real mfaca = c0o1;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real m0, m1, m2, oMdrho;
 	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
 	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
 	  real O3 = c2o1 - o;
 	  real residu, residutmp;
-	  residutmp = c0;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
+	  residutmp = c0o1;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
 	  real NeqOn = c1o1;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -14559,37 +14559,37 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
 	  // linear combinations
 	  //residu = residutmp * (ayz + bxz + cxy );
 	  //mfbbb = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mfbbb = c0;
+	  mfbbb = c0o1;
 
 	  //residu = residutmp * (axy + two*bxx + two*bzz + cyz );
 	  //residu = -(c1o9*(axy - 2*bxx - 2*bzz + cyz ));
 	  //mxxyPyzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxyPyzz = c0;
+	  mxxyPyzz = c0o1;
 
 	  //residu = residutmp * (axy + two*bxx - two*bzz - cyz );
 	  //residu = c1o9*(axy - 2*bxx + 2*bzz - cyz );
 	  //mxxyMyzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxyMyzz = c0;
+	  mxxyMyzz = c0o1;
 
 	  //residu = residutmp * (axz + byz + two*cxx + two*cyy );
 	  //residu = -(c1o9*(axz + byz - 2*cxx - 2*cyy ));
 	  //mxxzPyyz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxzPyyz = c0;
+	  mxxzPyyz = c0o1;
 
 	  //residu = residutmp * (axz - byz + two*cxx - two*cyy );
 	  //residu = c1o9*(axz - byz - 2*cxx + 2*cyy );
 	  //mxxzMyyz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxxzMyyz = c0;
+	  mxxzMyyz = c0o1;
 
 	  //residu = residutmp * (two*ayy + two*azz + bxy + cxz );
 	  //residu = c1o9*(2*ayy + 2*azz - bxy - cxz );
 	  //mxyyPxzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxyyPxzz = c0;
+	  mxyyPxzz = c0o1;
 
 	  //residu = residutmp * (two*ayy - two*azz + bxy - cxz );
 	  //residu = c1o9*(-2*ayy + 2*azz + bxy - cxz );
 	  //mxyyMxzz = (abs(residu)+qudricLimit) * residu / (qudricLimit * O3 + abs(residu));
-	  mxyyMxzz = c0;
+	  mxyyMxzz = c0o1;
 
 	  // linear combinations back
 	  mfcba = ( mxxyMyzz + mxxyPyzz) * c1o2;
@@ -15698,40 +15698,40 @@ extern "C" __global__ void scaleFC_NSPress_27(   real* DC,
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //  FIX  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  real mfcbb = c0;
-	  real mfabb = c0;
-	  real mfbcb = c0;
-	  real mfbab = c0;
-	  real mfbbc = c0;
-	  real mfbba = c0;
-	  real mfccb = c0;
-	  real mfaab = c0;
-	  real mfcab = c0;
-	  real mfacb = c0;
-	  real mfcbc = c0;
-	  real mfaba = c0;
-	  real mfcba = c0;
-	  real mfabc = c0;
-	  real mfbcc = c0;
-	  real mfbaa = c0;
-	  real mfbca = c0;
-	  real mfbac = c0;
-	  real mfbbb = c0;
-	  real mfccc = c0;
-	  real mfaac = c0;
-	  real mfcac = c0;
-	  real mfacc = c0;
-	  real mfcca = c0;
-	  real mfaaa = c0;
-	  real mfcaa = c0;
-	  real mfaca = c0;
+	  real mfcbb = c0o1;
+	  real mfabb = c0o1;
+	  real mfbcb = c0o1;
+	  real mfbab = c0o1;
+	  real mfbbc = c0o1;
+	  real mfbba = c0o1;
+	  real mfccb = c0o1;
+	  real mfaab = c0o1;
+	  real mfcab = c0o1;
+	  real mfacb = c0o1;
+	  real mfcbc = c0o1;
+	  real mfaba = c0o1;
+	  real mfcba = c0o1;
+	  real mfabc = c0o1;
+	  real mfbcc = c0o1;
+	  real mfbaa = c0o1;
+	  real mfbca = c0o1;
+	  real mfbac = c0o1;
+	  real mfbbb = c0o1;
+	  real mfccc = c0o1;
+	  real mfaac = c0o1;
+	  real mfcac = c0o1;
+	  real mfacc = c0o1;
+	  real mfcca = c0o1;
+	  real mfaaa = c0o1;
+	  real mfcaa = c0o1;
+	  real mfaca = c0o1;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
 	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
 	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
 	  real O3 = c2o1 - o;
 	  real residu, residutmp;
-	  residutmp = c0;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
+	  residutmp = c0o1;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15745,7 +15745,7 @@ extern "C" __global__ void scaleFC_NSPress_27(   real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  press = (press_NET + press_NWT + press_SET + press_SWT + press_NEB + press_NWB + press_SEB + press_SWB) * c1o8;
 	  
-	  if(xoff!=c0 || yoff!=c0 || zoff!=c0){
+	  if(xoff!=c0o1 || yoff!=c0o1 || zoff!=c0o1){
 		  real dx, dy, dz;
 		  dx=c2o1*nu*(axx+ayy+azz);
 		  dy=c2o1*nu*(bxx+byy+bzz);
@@ -17045,40 +17045,40 @@ extern "C" __global__ void scaleFC_Fix_27(   real* DC,
 	  //cxz=zero;
 	  //cyz=zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	  
-	  real mfcbb = c0;
-	  real mfabb = c0;
-	  real mfbcb = c0;
-	  real mfbab = c0;
-	  real mfbbc = c0;
-	  real mfbba = c0;
-	  real mfccb = c0;
-	  real mfaab = c0;
-	  real mfcab = c0;
-	  real mfacb = c0;
-	  real mfcbc = c0;
-	  real mfaba = c0;
-	  real mfcba = c0;
-	  real mfabc = c0;
-	  real mfbcc = c0;
-	  real mfbaa = c0;
-	  real mfbca = c0;
-	  real mfbac = c0;
-	  real mfbbb = c0;
-	  real mfccc = c0;
-	  real mfaac = c0;
-	  real mfcac = c0;
-	  real mfacc = c0;
-	  real mfcca = c0;
-	  real mfaaa = c0;
-	  real mfcaa = c0;
-	  real mfaca = c0;
+	  real mfcbb = c0o1;
+	  real mfabb = c0o1;
+	  real mfbcb = c0o1;
+	  real mfbab = c0o1;
+	  real mfbbc = c0o1;
+	  real mfbba = c0o1;
+	  real mfccb = c0o1;
+	  real mfaab = c0o1;
+	  real mfcab = c0o1;
+	  real mfacb = c0o1;
+	  real mfcbc = c0o1;
+	  real mfaba = c0o1;
+	  real mfcba = c0o1;
+	  real mfabc = c0o1;
+	  real mfbcc = c0o1;
+	  real mfbaa = c0o1;
+	  real mfbca = c0o1;
+	  real mfbac = c0o1;
+	  real mfbbb = c0o1;
+	  real mfccc = c0o1;
+	  real mfaac = c0o1;
+	  real mfcac = c0o1;
+	  real mfacc = c0o1;
+	  real mfcca = c0o1;
+	  real mfaaa = c0o1;
+	  real mfcaa = c0o1;
+	  real mfaca = c0o1;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
 	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
 	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
 	  real O3 = c2o1 - o;
 	  real residu, residutmp;
-	  residutmp = c0;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
+	  residutmp = c0o1;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
 	  real NeqOn = c1o1;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24834,9 +24834,9 @@ extern "C" __global__ void scaleFC27(real* DC,
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Position C 0.5, 0.5, 0.5
-      x = c0;
-      y = c0;
-      z = c0;
+      x = c0o1;
+      y = c0o1;
+      z = c0o1;
 
       //drho = (drho_SWB + drho_NWB + drho_NEB + drho_SEB + drho_SWT + drho_NWT + drho_NET + drho_SET)/8.;
 	  drho = (drho_NEB*(c1o1 + c2o1*x + c2o1*y + c4o1*x*y - c2o1*z - c4o1*x*z - c4o1*y*z - c8o1*x*y*z) + 

@@ -82,7 +82,7 @@ std::string path("F:/Work/Computations/out/gridGeneratorTest/"); //LEGOLAS
 
 std::string simulationName("DrivenCavity");
 
-const uint timeStepOut = 1;
+const uint timeStepOut = 10;
 const uint timeStepEnd = 1000000;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,13 +118,13 @@ void multipleLevel(const std::string& configPath)
     TriangularMesh* cylinderSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/Cylinder.stl");
     
 
-    //gridBuilder->setNumberOfLayers(6,6);
-    //gridBuilder->addGrid(cylinderSTL, 1);
+    gridBuilder->setNumberOfLayers(6,6);
+    gridBuilder->addGrid(cylinderSTL, 1);
 
-    Object* cube = new Cuboid(-0.5,-0.5,-0.5,0.5,0.5,0.5);
-    gridBuilder->addGrid(cube, 1);
+    //Object* cube = new Cuboid(-0.5,-0.5,-0.5,0.5,0.5,0.5);
+    //gridBuilder->addGrid(cube, 1);
 
-    //gridBuilder->addGeometry(cylinderSTL);
+    gridBuilder->addGeometry(cylinderSTL);
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -178,13 +178,13 @@ void multipleLevel(const std::string& configPath)
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-	//gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-	gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+	gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+	gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+	//gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx, 0.0, 0.0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
