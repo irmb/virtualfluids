@@ -92,7 +92,7 @@ uint gpuIndex = 0;
 
 bool useLimiter = false;
 
-std::string kernel( "CumulantAA2016CompSP27" );
+std::string kernel( "CumulantK17Comp" );
 
 std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
 //std::string path("E:/DrivenCavity/results/"); //TESLA03
@@ -180,6 +180,8 @@ void multipleLevel(const std::string& configPath)
 
     _path << path;
     _path << kernel;
+
+    if( useLimiter ) _path << "_Limiter";
 
     path = _path.str();
 

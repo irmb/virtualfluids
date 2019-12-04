@@ -504,7 +504,7 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 	if (configData->isMainKernelInConfigFile())
 		this->setMainKernel(kernelMapper->getEnum(configData->getMainKernel()));
 	else
-		this->setMainKernel(kernelMapper->getEnum("CumulantOneCompSP27"));
+		this->setMainKernel(kernelMapper->getEnum("CumulantK15Comp"));
 
 	if (configData->isMultiKernelOnInConfigFile())
 		this->setMultiKernelOn(configData->getMultiKernelOn());
@@ -537,7 +537,7 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 		std::vector<KernelType> tmp;
 		for (int i = 0; i < this->getMaxLevel()+1; i++)
 		{
-			tmp.push_back(kernelMapper->getEnum("CumulantOneCompSP27"));
+			tmp.push_back(kernelMapper->getEnum("CumulantK15Comp"));
 		}
 		this->setMultiKernel(tmp);
 	}

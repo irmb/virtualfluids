@@ -6,14 +6,14 @@
 #include "Kernel/Kernels/BasicKernels/Advection/Compressible/BGKPlus/BGKPlusCompSP27.h"
 #include "Kernel/Kernels/BasicKernels/Advection/Compressible/Cascade/CascadeCompSP27.h"
 #include "Kernel/Kernels/BasicKernels/Advection/Compressible/Cumulant/CumulantCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantAA2016/CumulantAA2016CompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantAA2016Bulk/CumulantAA2016CompBulkSP27.h"
+#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK17/CumulantK17Comp.h"
+#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK17Bulk/CumulantK17BulkComp.h"
 #include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantAll4/CumulantAll4CompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantF3/CumulantF3CompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantF32018/CumulantF32018CompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantOne/CumulantOneCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantOneBulk/CumulantOneCompBulkSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantOneSponge/CumulantOneCompSpongeSP27.h"
+#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK18/CumulantK18Comp.h"
+#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK20/CumulantK20Comp.h"
+#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK15/CumulantK15Comp.h"
+#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK15Bulk/CumulantK15BulkComp.h"
+#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK15Sponge/CumulantK15SpongeComp.h"
 #include "Kernel/Kernels/BasicKernels/Advection/Compressible/MRT/MRTCompSP27.h"
 
 #include "Kernel/Kernels/BasicKernels/Advection/Incompressible/BGK/BGKIncompSP27.h"
@@ -21,7 +21,7 @@
 #include "Kernel/Kernels/BasicKernels/Advection/Incompressible/Cascade/CascadeIncompSP27.h"
 #include "Kernel/Kernels/BasicKernels/Advection/Incompressible/Cumulant1hSP27/Cumulant1hIncompSP27.h"
 #include "Kernel/Kernels/BasicKernels/Advection/Incompressible/CumulantIsoSP27/CumulantIsoIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/CumulantOne/CumulantOneIncompSP27.h"
+#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/CumulantK15/CumulantK15Incomp.h"
 #include "Kernel/Kernels/BasicKernels/Advection/Incompressible/MRT/MRTIncompSP27.h"
 
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Compressible/Mod27/ADComp27/ADComp27.h"
@@ -109,36 +109,36 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
 		newKernel = CumulantCompSP27::getNewInstance(para, level);
 		checkStrategy = AdvecCompStrategy::getInstance();
 		break;
-	case LB_CumulantAA2016CompSP27:
-		newKernel = CumulantAA2016CompSP27::getNewInstance(para, level);
+	case LB_CumulantK17Comp:
+		newKernel = CumulantK17Comp::getNewInstance(para, level);
 		checkStrategy = AdvecCompStrategy::getInstance();
 		break;
-	case LB_CumulantAA2016CompBulkSP27:
-		newKernel = CumulantAA2016CompBulkSP27::getNewInstance(para, level);
+	case LB_CumulantK17BulkComp:
+		newKernel = CumulantK17BulkComp::getNewInstance(para, level);
 		checkStrategy = AdvecCompStrategy::getInstance();
 		break;
 	case LB_CumulantAll4CompSP27:
 		newKernel = CumulantAll4CompSP27::getNewInstance(para, level);
 		checkStrategy = AdvecCompStrategy::getInstance();
 		break;
-	case LB_CumulantF3CompSP27:
-		newKernel = CumulantF3CompSP27::getNewInstance(para, level);
+	case LB_CumulantK18Comp:
+		newKernel = CumulantK18Comp::getNewInstance(para, level);
 		checkStrategy = AdvecCompStrategy::getInstance();
 		break;
-	case LB_CumulantF32018CompSP27:
-		newKernel = CumulantF32018CompSP27::getNewInstance(para, level);
+	case LB_CumulantK20Comp:
+		newKernel = CumulantK20Comp::getNewInstance(para, level);
 		checkStrategy = AdvecCompStrategy::getInstance();
 		break;
-	case LB_CumulantOneCompSP27:
-		newKernel = CumulantOneCompSP27::getNewInstance(para, level);
+	case LB_CumulantK15Comp:
+		newKernel = CumulantK15Comp::getNewInstance(para, level);
 		checkStrategy = AdvecCompStrategy::getInstance();
 		break;
-	case LB_CumulantOneCompBulkSP27:
-		newKernel = CumulantOneCompSP27::getNewInstance(para, level);
+	case LB_CumulantK15BulkComp:
+		newKernel = CumulantK15Comp::getNewInstance(para, level);
 		checkStrategy = AdvecCompStrategy::getInstance();
 		break;
-	case LB_CumulantOneCompSpongeSP27:
-		newKernel = CumulantOneCompSpongeSP27::getNewInstance(para, level);
+	case LB_CumulantK15SpongeComp:
+		newKernel = CumulantK15SpongeComp::getNewInstance(para, level);
 		checkStrategy = AdvecCompStrategy::getInstance();
 		break;
 	case LB_MRTCompSP27:
@@ -167,8 +167,8 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
 		newKernel = CumulantIsoIncompSP27::getNewInstance(para, level);
 		checkStrategy = AdvecIncompStrategy::getInstance();
 		break;
-	case LB_CumulantOneIncompSP27:
-		newKernel = CumulantOneIncompSP27::getNewInstance(para, level);
+	case LB_CumulantK15Incomp:
+		newKernel = CumulantK15Incomp::getNewInstance(para, level);
 		checkStrategy = AdvecIncompStrategy::getInstance();
 		break;
 	case LB_MRTIncompSP27:
@@ -208,7 +208,7 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
 		return newKernel;
 	}
 	else
-		throw  std::exception("Kernelfactory does not know the KernelType.");
+		throw  std::exception("KernelFactory does not know the KernelType.");
 
 	
 }
@@ -245,7 +245,7 @@ std::shared_ptr<ADKernel> KernelFactoryImp::makeAdvDifKernel(std::shared_ptr<Par
 		return newKernel;
 	}
 	else
-		throw  std::exception("Kernelfactory does not know the KernelType.");
+		throw  std::exception("KernelFactory does not know the KernelType.");
 }
 
 KernelFactoryImp::KernelFactoryImp()
