@@ -60,13 +60,39 @@
 #include "utilities/communication.h"
 #include "utilities/transformator/TransformatorImp.h"
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// from https://stackoverflow.com/questions/865668/how-to-parse-command-line-arguments-in-c
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+char* getCmdOption(char ** begin, char ** end, const std::string & option)
+{
+    char ** itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end)
+    {
+        return *itr;
+    }
+    return 0;
+}
+
+bool cmdOptionExists(char** begin, char** end, const std::string& option)
+{
+    return std::find(begin, end, option) != end;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //////////////////////////////////////////////////////////////////////////
-const real Re =  160000.0;
+real Re =  1600.0;
 
-const uint dtPerL = 250*4;
+uint dtPerL = 250;
 
-const uint nx = 64;
-const uint gpuIndex = 0;
+uint nx = 64;
+uint gpuIndex = 0;
+
+bool useLimiter = false;
+
+std::string kernel( "CumulantAA2016CompSP27" );
 
 std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
 //std::string path("E:/DrivenCavity/results/"); //TESLA03
@@ -74,7 +100,7 @@ std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
 std::string simulationName("TaylorGreen3D");
 //////////////////////////////////////////////////////////////////////////
 
-void multipleLevel(const std::string& configPath, uint nx, uint gpuIndex)
+void multipleLevel(const std::string& configPath)
 {
     //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
     //std::ofstream logFile( "grid/gridGeneratorLog.txt" );
@@ -150,7 +176,16 @@ void multipleLevel(const std::string& configPath, uint nx, uint gpuIndex)
  //   para->setOutputPrefix(_prefix.str());
  //   para->setFName(_path.str() + "/" + _prefix.str());
 
- //   para->setDevices(std::vector<uint>{gpuIndex});
+    std::stringstream _path;
+
+    _path << path;
+    _path << kernel;
+
+    path = _path.str();
+
+    //////////////////////////////////////////////////////////////////////////
+
+    para->setDevices(std::vector<uint>{gpuIndex});
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -183,10 +218,10 @@ void multipleLevel(const std::string& configPath, uint nx, uint gpuIndex)
 
     } );
 
-    para->setMainKernel(kernelMapper->getEnum("CumulantAA2016CompSP27"));
+    para->setMainKernel(kernelMapper->getEnum( kernel ));
 
-    //para->setQuadricLimiters( 1000000.0, 0.01, 0.01 );
-    //para->setQuadricLimiters( 0.01, 1000000.0, 1000000.0 );
+    if( !useLimiter )
+        para->setQuadricLimiters( 1000000.0, 1000000.0, 1000000.0 );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -233,7 +268,25 @@ int main( int argc, char* argv[])
 			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
 #endif
 
-			multipleLevel(targetPath + "config.txt", nx, gpuIndex);
+            if( cmdOptionExists( argv, argv+argc, "--Re" ) )
+                Re = atof( getCmdOption( argv, argv+argc, "--Re" ) );
+
+            if( cmdOptionExists( argv, argv+argc, "--nx" ) )
+                nx = atoi( getCmdOption( argv, argv+argc, "--nx" ) );
+
+            if( cmdOptionExists( argv, argv+argc, "--dtPerL" ) )
+                dtPerL = atoi( getCmdOption( argv, argv+argc, "--dtPerL" ) );
+
+            if( cmdOptionExists( argv, argv+argc, "--kernel" ) )
+                kernel = getCmdOption( argv, argv+argc, "--kernel" );
+
+            if( cmdOptionExists( argv, argv+argc, "--gpu" ) )
+                gpuIndex = atoi( getCmdOption( argv, argv+argc, "--gpu" ) );
+
+            if( cmdOptionExists( argv, argv+argc, "--useLimiter" ) )
+                useLimiter = true;
+
+			multipleLevel(targetPath + "config.txt");
 
             //////////////////////////////////////////////////////////////////////////
 		}
