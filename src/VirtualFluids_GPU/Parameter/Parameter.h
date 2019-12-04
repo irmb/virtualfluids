@@ -9,6 +9,7 @@
 #define PARAMETER_H
 
 #include <vector>
+#include <functional>
 #include "LBM/LB.h"
 #include "LBM/D3Q27.h"
 #include "Calculation/PorousMedia.h"
@@ -990,6 +991,11 @@ public:
         real *forcingH, *forcingD;
         double hostForcing[3];
 
+	////////////////////////////////////////////////////////////////////////////
+    // initial condition
+    void setInitialCondition(std::function<void(real,real,real,real&,real&,real&,real&)> initialCondition);
+    std::function<void(real,real,real,real&,real&,real&,real&)>& getInitialCondition();
+
 protected:
 private:
 	static Parameter* instanz;
@@ -1087,6 +1093,8 @@ private:
 	// }
 	//}
 	////////////////////////////////////////////////////////////////////////////
+    // initial condition
+    std::function<void(real,real,real,real&,real&,real&,real&)> initialCondition;
 };
 
 #endif

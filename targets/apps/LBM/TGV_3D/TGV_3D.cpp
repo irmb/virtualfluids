@@ -30,6 +30,11 @@
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
+#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+
+#include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+
 #include "global.h"
 
 #include "geometries/Sphere/Sphere.h"
@@ -53,6 +58,20 @@
 #include "utilities/math/Math.h"
 #include "utilities/communication.h"
 #include "utilities/transformator/TransformatorImp.h"
+
+//////////////////////////////////////////////////////////////////////////
+const real Re =  1600.0;
+
+const uint dtPerL = 250*4;
+
+const uint nx = 64;
+const uint gpuIndex = 0;
+
+std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
+//std::string path("E:/DrivenCavity/results/"); //TESLA03
+
+std::string simulationName("TaylorGreen3D");
+//////////////////////////////////////////////////////////////////////////
 
 void multipleLevel(const std::string& configPath, uint nx, uint gpuIndex)
 {
@@ -79,7 +98,6 @@ void multipleLevel(const std::string& configPath, uint nx, uint gpuIndex)
 	SPtr<ConfigData> configData = configReader->readConfigFile(configPath);
 	Communicator* comm = Communicator::getInstanz();
     SPtr<Parameter> para = Parameter::make(configData, comm);
-    SPtr<GridProvider> gridGenerator;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,11 +105,9 @@ void multipleLevel(const std::string& configPath, uint nx, uint gpuIndex)
 
 	const real PI = 3.141592653589793238462643383279;
 
-    const real Re = 1600;
+    real L = nx / ( 2.0 * PI );
 
-    //const uint nx = 64;
-
-    const real velocity = 64.0 / ( 1000 * 2.0 * PI );
+    const real velocity = 64.0 / ( dtPerL * 2.0 * PI );
 
     const real viscosity = nx / ( 2.0 * PI ) * velocity / Re;
 
@@ -109,12 +125,6 @@ void multipleLevel(const std::string& configPath, uint nx, uint gpuIndex)
 	gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
 	gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-
-	//////////////////////////////////////////////////////////////////////////
-
-	gridGenerator = GridGenerator::make(gridBuilder, para);
-
-    //logFile.close();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,9 +150,16 @@ void multipleLevel(const std::string& configPath, uint nx, uint gpuIndex)
  //   para->setDevices(std::vector<uint>{gpuIndex});
 
     //////////////////////////////////////////////////////////////////////////
+    
+    para->setOutputPath( path );
+    para->setOutputPrefix( simulationName );
 
-    para->setTEnd( 40000 * ( real(nx) / 64.0 ) );
-    para->setTOut(  5000 * ( real(nx) / 64.0 ) );
+    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+
+    para->setPrintFiles(true);
+
+    para->setTEnd( 40 * lround(L/velocity) );	
+	para->setTOut(  5 * lround(L/velocity) );
 
     para->setVelocity( velocity );
 
@@ -150,14 +167,36 @@ void multipleLevel(const std::string& configPath, uint nx, uint gpuIndex)
 
     para->setVelocityRatio( 1.0 / velocity );
 
+    para->setInitialCondition( [&]( real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz){
+
+        real a = 1.0;
+        real b = 1.0;
+        real c = 1.0;
+
+        rho = 3.0 * ((velocity * velocity) / 16.0 * ( cos( 2.0 * a * coordX ) + cos( 2.0 * b * coordY ) ) * ( cos( 2.0 * c * coordZ ) + 2.0 ) );
+        vx  =  velocity * sin( a * coordX ) * cos( b * coordY ) * cos( c * coordZ );
+        vy  = -velocity * cos( a * coordX ) * sin( b * coordY ) * cos( c * coordZ );
+        vz  = 0.0;
+
+    } );
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+    //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
 
     Simulation sim;
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-    sim.init(para, gridGenerator, fileWriter);
+    SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
+    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
+    sim.setFactories(kernelFactory, preProcessorFactory);
+    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
+    
     sim.run();
+    sim.free();
 }
 
 
@@ -172,36 +211,41 @@ int main( int argc, char* argv[])
         try
         {
             //////////////////////////////////////////////////////////////////////////
-            
-            uint gpuIndex = 2;
-    
-            uint nx = 64;
 
-            if( argc > 1 ) gpuIndex = atoi( argv[1] );
+            //if( argc > 1 ) gpuIndex = atoi( argv[1] );
 
-            if( argc > 2 ) nx = atoi( argv[2] );
+            //if( argc > 2 ) nx = atoi( argv[2] );
+			std::string targetPath;
 
-			multipleLevel("C:/Users/schoen/Desktop/bin/3D/VirtualFluidsGpuCodes/TGV3D/configTGV3D.txt", nx, gpuIndex);
+			targetPath = __FILE__;
+
+#ifdef _WIN32
+			targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
+#else
+			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
+#endif
+
+			multipleLevel(targetPath + "config.txt", nx, gpuIndex);
 
             //////////////////////////////////////////////////////////////////////////
 		}
         catch (const std::exception& e)
         {
                 
-            *logging::out << logging::Logger::ERROR << e.what() << "\n";
+            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
             //std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
         catch (const std::bad_alloc e)
         {
                 
-            *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
             //std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
         catch (...)
         {
-            *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+            *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
             //std::cout << "unknown exeption" << std::endl;
         }
 
