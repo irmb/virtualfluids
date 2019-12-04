@@ -27,10 +27,10 @@ enum KernelType {
 	
 	LB_PMCumulantOneCompSP27,
 	
-	LB_WaleCumulantAA2016CompSP27,
-	LB_WaleCumulantAA2016DebugCompSP27,
-	LB_WaleCumulantOneCompSP27,
-	LB_WaleBySoniMalavCumulantOneCompSP27
+	LB_WaleCumulantK17Comp,
+	LB_WaleCumulantK17DebugComp,
+	LB_WaleCumulantK15Comp,
+	LB_WaleBySoniMalavCumulantK15Comp
 };
 
 enum ADKernelType

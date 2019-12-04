@@ -1,14 +1,14 @@
-#include "WaleBySoniMalavCumulantOneCompSP27.h"
+#include "WaleBySoniMalavCumulantK15Comp.h"
 
-#include "WaleBySoniMalavCumulantOneCompSP27_Device.cuh"
+#include "WaleBySoniMalavCumulantK15Comp_Device.cuh"
 #include "Parameter\Parameter.h"
 
-std::shared_ptr<WaleBySoniMalavCumulantOneCompSP27> WaleBySoniMalavCumulantOneCompSP27::getNewInstance(std::shared_ptr<Parameter> para, int level)
+std::shared_ptr<WaleBySoniMalavCumulantK15Comp> WaleBySoniMalavCumulantK15Comp::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<WaleBySoniMalavCumulantOneCompSP27>(new WaleBySoniMalavCumulantOneCompSP27(para, level));
+	return std::shared_ptr<WaleBySoniMalavCumulantK15Comp>(new WaleBySoniMalavCumulantK15Comp(para, level));
 }
 
-void WaleBySoniMalavCumulantOneCompSP27::run()
+void WaleBySoniMalavCumulantK15Comp::run()
 {
 	int size_Mat = para->getParD(level)->size_Mat_SP;
 	int numberOfThreads = para->getParD(level)->numberofthreads;
@@ -32,7 +32,7 @@ void WaleBySoniMalavCumulantOneCompSP27::run()
 	dim3 grid(Grid1, Grid2, 1);
 	dim3 threads(numberOfThreads, 1, 1);
 
-	LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27 << < grid, threads >> >(	para->getParD(level)->omega,
+	LB_Kernel_WaleBySoniMalavCumulantK15Comp << < grid, threads >> >(	para->getParD(level)->omega,
 																			para->getParD(level)->geoSP,
 																			para->getParD(level)->neighborX_SP,
 																			para->getParD(level)->neighborY_SP,
@@ -47,10 +47,10 @@ void WaleBySoniMalavCumulantOneCompSP27::run()
 																			level,
 																			para->getForcesDev(),
 																			para->getParD(level)->evenOrOdd);
-	getLastCudaError("LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27 execution failed");
+	getLastCudaError("LB_Kernel_WaleBySoniMalavCumulantK15Comp execution failed");
 }
 
-WaleBySoniMalavCumulantOneCompSP27::WaleBySoniMalavCumulantOneCompSP27(std::shared_ptr<Parameter> para, int level)
+WaleBySoniMalavCumulantK15Comp::WaleBySoniMalavCumulantK15Comp(std::shared_ptr<Parameter> para, int level)
 {
 	this->para = para;
 	this->level = level;
@@ -60,6 +60,6 @@ WaleBySoniMalavCumulantOneCompSP27::WaleBySoniMalavCumulantOneCompSP27(std::shar
 	myKernelGroup = BasicWaleKernel;
 }
 
-WaleBySoniMalavCumulantOneCompSP27::WaleBySoniMalavCumulantOneCompSP27()
+WaleBySoniMalavCumulantK15Comp::WaleBySoniMalavCumulantK15Comp()
 {
 }

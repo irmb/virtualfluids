@@ -1,10 +1,10 @@
-#ifndef LB_KERNEL_WALE_BY_SONI_MALAV_CUM_ONE_COMP_SP_27_H
-#define LB_KERNEL_WALE_BY_SONI_MALAV_CUM_ONE_COMP_SP_27_H
+#ifndef LB_KERNEL_WALE_BY_SONI_MALAV_CUMULANT_K15_COMP_H
+#define LB_KERNEL_WALE_BY_SONI_MALAV_CUMULANT_K15_COMP_H
 
 #include <DataTypes.h>
 #include <curand.h>
 
-extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(real omega_in,
+extern "C" __global__ void LB_Kernel_WaleBySoniMalavCumulantK15Comp(real omega_in,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
 	unsigned int* neighborY,

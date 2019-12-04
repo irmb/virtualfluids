@@ -1,5 +1,5 @@
-#ifndef LB_KERNEL_CUM_ONE_COMP_SPONGE_SP_27_H
-#define LB_KERNEL_CUM_ONE_COMP_SPONGE_SP_27_H
+#ifndef LB_KERNEL_CUMULANT_K15_SPONGE_COMP_H
+#define LB_KERNEL_CUMULANT_K15_SPONGE_COMP_H
 
 #include <DataTypes.h>
 #include <curand.h>

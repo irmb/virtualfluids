@@ -3,7 +3,7 @@
 #include "Core/RealConstants.h"
 #include "math.h"
 
-extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
+extern "C" __global__ void LB_Kernel_WaleCumulantK17Comp(
 	real omega_in,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
@@ -17,7 +17,9 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
 	real* turbulentViscosity,
 	int size_Mat,
 	int level,
+	unsigned int timestep, 
 	real* forces,
+	real* quadricLimiters,
 	bool EvenOrOdd)
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -103,12 +105,32 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
 
 			////////////////////////////////////////////////////////////////////////////////
 			//index
+			//unsigned int kzero= k;
+			//unsigned int ke   = k;
 			unsigned int kw   = neighborX[k];
+			//unsigned int kn   = k;
 			unsigned int ks   = neighborY[k];
+			//unsigned int kt   = k;
 			unsigned int kb   = neighborZ[k];
 			unsigned int ksw  = neighborY[kw];
+			//unsigned int kne  = k;
+			//unsigned int kse  = ks;
+			//unsigned int knw  = kw;
 			unsigned int kbw  = neighborZ[kw];
+			//unsigned int kte  = k;
+			//unsigned int kbe  = kb;
+			//unsigned int ktw  = kw;
 			unsigned int kbs  = neighborZ[ks];
+			//unsigned int ktn  = k;
+			//unsigned int kbn  = kb;
+			//unsigned int kts  = ks;
+			//unsigned int ktse = ks;
+			//unsigned int kbnw = kbw;
+			//unsigned int ktnw = kw;
+			//unsigned int kbse = kbs;
+			//unsigned int ktsw = ksw;
+			//unsigned int kbne = kb;
+			//unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,154 +178,260 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
 			real vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba)) / rho;
-			//////////////////////////////////////////////////////////////////////////////////////
-			real nuOld = c1o3 * (c1o1 / omega_in - c1o2);
+			////////////////////////////////////////////////////////////////////////////////////
 			real nuTurb = c0o1;
-			unsigned int kPx = neighborX[k];
-			unsigned int kPy = neighborY[k];
-			unsigned int kPz = neighborZ[k];
-			unsigned int kMxyz = neighborWSB[k];
-			unsigned int kMx = neighborZ[neighborY[kMxyz]];
-			unsigned int kMy = neighborZ[neighborX[kMxyz]];
-			unsigned int kMz = neighborY[neighborX[kMxyz]];
-
-			real Cw = 0.55;
-			unsigned int DelX = 1;
-
-			////////////////////////////////////////////////////////////////////////////////////
-			/////////////////////          WALE model            ///////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////
-
-			float tauTotal, wOper;									  // total relaxation time and operator for the WALE model
-			float dxux, dyuy, dzuz, dyux, dxuy, dzux, dxuz, dzuy, dyuz; // 9 velocity gradients required for computing the strain rate tensor and vorticity tensor
-
-			// gradients wrt X-axis
-			if (bcMatD[kMx] != GEO_FLUID)
 			{
-				dxux = (veloX[kPx] - veloX[k]) / c1o1;
-				dxuy = (veloY[kPx] - veloY[k]) / c1o1;
-				dxuz = (veloZ[kPx] - veloZ[k]) / c1o1;
+				/////////////      Wale Model     ///////////////
+				//neighbor index
+				unsigned int kPx = neighborX[k];
+				unsigned int kPy = neighborY[k];
+				unsigned int kPz = neighborZ[k];
+				unsigned int kMxyz = neighborWSB[k];
+				unsigned int kMx = neighborZ[neighborY[kMxyz]];
+				unsigned int kMy = neighborZ[neighborX[kMxyz]];
+				unsigned int kMz = neighborY[neighborX[kMxyz]];
+				//getVeloX//
+				real veloXNeighborPx = veloX[kPx];
+				real veloXNeighborMx = veloX[kMx];
+				real veloXNeighborPy = veloX[kPy];
+				real veloXNeighborMy = veloX[kMy];
+				real veloXNeighborPz = veloX[kPz];
+				real veloXNeighborMz = veloX[kMz];
+				//getVeloY//
+				real veloYNeighborPx = veloY[kPx];
+				real veloYNeighborMx = veloY[kMx];
+				real veloYNeighborPy = veloY[kPy];
+				real veloYNeighborMy = veloY[kMy];
+				real veloYNeighborPz = veloY[kPz];
+				real veloYNeighborMz = veloY[kMz];
+				//getVeloZ//
+				real veloZNeighborPx = veloZ[kPx];
+				real veloZNeighborMx = veloZ[kMx];
+				real veloZNeighborPy = veloZ[kPy];
+				real veloZNeighborMy = veloZ[kMy];
+				real veloZNeighborPz = veloZ[kPz];
+				real veloZNeighborMz = veloZ[kMz];
+				//getVeloLocal//
+				real veloLocalX = veloX[k];
+				real veloLocalY = veloY[k];
+				real veloLocalZ = veloZ[k];
+
+				//////////////////////////////////////////////////////////////////////////////
+				real dxvx = c0o1;
+				real dyvx = c0o1;
+				real dzvx = c0o1;
+				real dxvy = c0o1;
+				real dyvy = c0o1;
+				real dzvy = c0o1;
+				real dxvz = c0o1;
+				real dyvz = c0o1;
+				real dzvz = c0o1;
+				real SumSd = c0o1;
+				real SumS = c0o1;
+				//////////////////////////////////////////////////////////////////////////////
+				//no central differences at the boundary nodes
+				//Dx
+				if (bcMatD[kPx] != GEO_FLUID)
+				{
+					dxvx = (veloLocalX - veloXNeighborMx);
+					dxvy = (veloLocalY - veloYNeighborMx);
+					dxvz = (veloLocalZ - veloZNeighborMx);
+				}
+				else if (bcMatD[kMx] != GEO_FLUID)
+				{
+					dxvx = (veloXNeighborPx - veloLocalX);
+					dxvy = (veloYNeighborPx - veloLocalY);
+					dxvz = (veloZNeighborPx - veloLocalZ);
+				}
+				else
+				{
+					dxvx = (veloXNeighborPx - veloXNeighborMx) / c2o1;
+					dxvy = (veloYNeighborPx - veloYNeighborMx) / c2o1;
+					dxvz = (veloZNeighborPx - veloZNeighborMx) / c2o1;
+				}
+				//Dy
+				if (bcMatD[kPy] != GEO_FLUID)
+				{
+					dyvx = (veloLocalX - veloXNeighborMy);
+					dyvy = (veloLocalY - veloYNeighborMy);
+					dyvz = (veloLocalZ - veloZNeighborMy);
+				}
+				else if (bcMatD[kMy] != GEO_FLUID)
+				{
+					dyvx = (veloXNeighborPy - veloLocalX);
+					dyvy = (veloYNeighborPy - veloLocalY);
+					dyvz = (veloZNeighborPy - veloLocalZ);
+				}
+				else
+				{
+					dyvx = (veloXNeighborPy - veloXNeighborMy) / c2o1;
+					dyvy = (veloYNeighborPy - veloYNeighborMy) / c2o1;
+					dyvz = (veloZNeighborPy - veloZNeighborMy) / c2o1;
+				}
+				//Dz
+				if (bcMatD[kPz] != GEO_FLUID)
+				{
+					dzvx = (veloLocalX - veloXNeighborMz);
+					dzvy = (veloLocalY - veloYNeighborMz);
+					dzvz = (veloLocalZ - veloZNeighborMz);
+				}
+				else if (bcMatD[kMz] != GEO_FLUID)
+				{
+					dzvx = (veloXNeighborPz - veloLocalX);
+					dzvy = (veloYNeighborPz - veloLocalY);
+					dzvz = (veloZNeighborPz - veloLocalZ);
+				}
+				else
+				{
+					dzvx = (veloXNeighborPz - veloXNeighborMz) / c2o1;
+					dzvy = (veloYNeighborPz - veloYNeighborMz) / c2o1;
+					dzvz = (veloZNeighborPz - veloZNeighborMz) / c2o1;
+				}
+				//////////////////////////////////////////////////////////////////////////////
+				////partial Div vx in x, y, z//
+				//dxvx = (veloXNeighborPx - veloXNeighborMx) / two; //deltaX * two??
+				//dyvx = (veloXNeighborPy - veloXNeighborMy) / two; //deltaX * two??
+				//dzvx = (veloXNeighborPz - veloXNeighborMz) / two; //deltaX * two??
+				//												  //partial Div vy in x, y, z//
+				//dxvy = (veloYNeighborPx - veloYNeighborMx) / two; //deltaX * two??
+				//dyvy = (veloYNeighborPy - veloYNeighborMy) / two; //deltaX * two??
+				//dzvy = (veloYNeighborPz - veloYNeighborMz) / two; //deltaX * two??
+				//												  //partial Div vz in x, y, z//
+				//dxvz = (veloZNeighborPx - veloZNeighborMx) / two; //deltaX * two??
+				//dyvz = (veloZNeighborPy - veloZNeighborMy) / two; //deltaX * two??
+				//dzvz = (veloZNeighborPz - veloZNeighborMz) / two; //deltaX * two??
+
+				real g11, g12, g13, g21, g22, g23, g31, g32, g33;
+				real g11sq, g12sq, g13sq, g21sq, g22sq, g23sq, g31sq, g32sq, g33sq;
+
+				g11 = dxvx;
+				g12 = dyvx;
+				g13 = dzvx;
+				g21 = dxvy;
+				g22 = dyvy;
+				g23 = dzvy;
+				g31 = dxvz;
+				g32 = dyvz;
+				g33 = dzvz;
+
+				g11sq = g11 * g11 + g12 * g21 + g13 * g31;
+				g12sq = g11 * g12 + g12 * g22 + g13 * g32;
+				g13sq = g11 * g13 + g12 * g23 + g13 * g33;
+				g21sq = g21 * g11 + g22 * g21 + g23 * g31;
+				g22sq = g21 * g12 + g22 * g22 + g23 * g32;
+				g23sq = g21 * g13 + g22 * g23 + g23 * g33;
+				g31sq = g31 * g11 + g32 * g21 + g33 * g31;
+				g32sq = g31 * g12 + g32 * g22 + g33 * g32;
+				g33sq = g31 * g13 * g32 * g23 + g33 * g33;
+
+				real gkk = g11sq + g22sq + g33sq;
+
+				real Sd11 = c1o2 * (g11sq + g11sq) - c1o3 * gkk;
+				real Sd12 = c1o2 * (g12sq + g21sq);
+				real Sd13 = c1o2 * (g13sq + g31sq);
+				real Sd21 = c1o2 * (g21sq + g12sq); // ==Sd12
+				real Sd22 = c1o2 * (g22sq + g22sq) - c1o3 * gkk;
+				real Sd23 = c1o2 * (g23sq + g32sq);
+				real Sd31 = c1o2 * (g31sq + g13sq); // ==Sd13
+				real Sd32 = c1o2 * (g32sq + g23sq); // ==Sd23
+				real Sd33 = c1o2 * (g33sq + g33sq) - c1o3 * gkk;
+
+				SumSd = Sd11*Sd11 + Sd12*Sd12 + Sd13*Sd13 + Sd21*Sd21 + Sd22*Sd22 + Sd23*Sd23 + Sd31*Sd31 + Sd32*Sd32 + Sd33*Sd33;
+
+
+
+				//real SumSd =
+				//	c1o2 * powf(dzvx, four) +
+				//	c1o2 * powf(dzvy, four) +
+				//	c2o3 * powf(dzvz, four) +
+				//	c2o3 * powf(dyvy, four) +
+				//	c1o2 * powf(dyvz, four) +
+				//	c2o3 * powf(dxvx, four) +
+				//	c1o2 * powf(dxvy, four) +
+				//	c1o2 * powf(dxvz, four) +
+				//	c1o2 * powf(dyvx, four) +
+				//	powf(dyvx, two) * powf(dxvy, two) +
+				//	powf(dzvx, two) * powf(dxvz, two) +
+				//	powf(dzvy, two) * powf(dyvz, two) -
+				//	c2o3 * powf(dzvz, two) * powf(dyvy, two) -
+				//	c2o3 * powf(dzvz, two) * powf(dxvx, two) -
+				//	c2o3 * powf(dyvy, two) * powf(dxvx, two);   //powf
+				//real SumSd =
+				//	((c1o2 * (((dzvx*dzvx)*(dzvx*dzvx)) + 
+				//		((dzvy*dzvy)*(dzvy*dzvy)) + 
+				//		((dyvz*dyvz)*(dyvz*dyvz)) + 
+				//		((dyvx*dyvx)*(dyvx*dyvx)) + 
+				//		((dxvy*dxvy)*(dxvy*dxvy)) + 
+				//		((dxvz*dxvz)*(dxvz*dxvz)))) +
+				//	(c2o3 * (((dxvx*dxvx)*(dxvx*dxvx)) + 
+				//		((dyvy*dyvy)*(dyvy*dyvy)) + 
+				//		((dzvz*dzvz)*(dzvz*dzvz)))) +
+				//	((dyvx * dyvx) * (dxvy * dxvy)) +
+				//	((dzvx * dzvx) * (dxvz * dxvz)) +
+				//	((dzvy * dzvy) * (dyvz * dyvz))) -
+				//	(c2o3 * ((dzvz * dzvz) * (dyvy * dyvy)) + 
+				//		((dzvz * dzvz) * (dxvx * dxvx)) + 
+				//		((dyvy * dyvy) * (dxvx * dxvx)));   //explicit
+				//real SumSd =
+				//	c1o2 * pow(dzvx, four) +
+				//	c1o2 * pow(dzvy, four) +
+				//	c2o3 * pow(dzvz, four) +
+				//	c2o3 * pow(dyvy, four) +
+				//	c1o2 * pow(dyvz, four) +
+				//	c2o3 * pow(dxvx, four) +
+				//	c1o2 * pow(dxvy, four) +
+				//	c1o2 * pow(dxvz, four) +
+				//	c1o2 * pow(dyvx, four) +
+				//	pow(dyvx, two) * pow(dxvy, two) +
+				//	pow(dzvx, two) * pow(dxvz, two) +
+				//	pow(dzvy, two) * pow(dyvz, two) -
+				//	c2o3 * pow(dzvz, two) * pow(dyvy, two) -
+				//	c2o3 * pow(dzvz, two) * pow(dxvx, two) -
+				//	c2o3 * pow(dyvy, two) * pow(dxvx, two);    //pow
+				//SumS
+				//real SumS =
+				//	powf(dxvx, two) +
+				//	powf(dyvy, two) +
+				//	powf(dzvz, two) +
+				//	c1o2 * powf(dyvx + dxvy, two) +
+				//	c1o2 * powf(dzvx + dxvz, two) +
+				//	c1o2 * powf(dyvz + dzvy, two);   //powf
+				SumS =
+					((dxvx * dxvx) +
+					(dyvy * dyvy) +
+						(dzvz * dzvz)) +
+						(c1o2 * (((dyvx + dxvy) * (dyvx + dxvy)) +
+					((dzvx + dxvz) * (dzvx + dxvz)) +
+							((dyvz + dzvy) * (dyvz + dzvy))));   //explicit
+																 //real SumS =
+																 //	pow(dxvx, two) +
+																 //	pow(dyvy, two) +
+																 //	pow(dzvz, two) +
+																 //	c1o2 * pow(dyvx + dxvy, two) +
+																 //	c1o2 * pow(dzvx + dxvz, two) +
+																 //	c1o2 * pow(dyvz + dzvy, two);   //pow
+																 //nu turbulent
+				real coefficient = 0.5; //0.325; //
+				real delta = coefficient * c1o1;
+				/////////////////////////////////
+				//real SumSsq = SumS * SumS;
+				//real SumSDsq = SumSd * SumSd;
+				real SumSsq = SumS;
+				real SumSDsq = SumSd;
+				//nuTurb = powf(delta, two) * powf(SumSDsq, c3o2) / (powf(SumSsq, c5o2) + powf(SumSDsq, c5o4) + smallSingle); //powf
+				//nuTurb = pow(delta, two) * pow(SumSDsq, c3o2) / (pow(SumSsq, c5o2) + pow(SumSDsq, c5o4) + smallSingle);     //pow
+				//nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 1.5) / ((real)pow((double)SumSsq, 2.5) + (real)pow((double)SumSDsq, 1.25) + smallSingle); //SMversion//
+				nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 0.25) /
+					((real)pow(((real)pow((double)SumSsq, 0.5) / ((real)pow((double)SumSDsq, 0.25) + c10eM10)), 5.0) + c1o1); //SMversion2//
+																																	  /////////////////////////////////
+																																	  //nuTurb = rho * powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
+																																	  //nuTurb = powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
 			}
-			else if (bcMatD[kPx] != GEO_FLUID)
-			{
-				dxux = (veloX[k] - veloX[kMx]) / c1o1;
-				dxuy = (veloY[k] - veloY[kMx]) / c1o1;
-				dxuz = (veloZ[k] - veloZ[kMx]) / c1o1;
-			}
-			else if (bcMatD[kPx] == GEO_FLUID && bcMatD[kMx] == GEO_FLUID)
-			{
-				dxux = (veloX[kPx] - veloX[kMx]) / c2o1;
-				dxuy = (veloY[kPx] - veloY[kMx]) / c2o1;
-				dxuz = (veloZ[kPx] - veloZ[kMx]) / c2o1;
-			}
-
-			// gradients wrt Y-axis
-			if (bcMatD[kMy] != GEO_FLUID)
-			{
-				dyux = (veloX[kPy] - veloX[k]) / c1o1;
-				dyuy = (veloY[kPy] - veloY[k]) / c1o1;
-				dyuz = (veloZ[kPy] - veloZ[k]) / c1o1;
-			}
-			else if (bcMatD[kPy] != GEO_FLUID)
-			{
-				dyux = (veloX[k] - veloX[kMy]) / c1o1;
-				dyuy = (veloY[k] - veloY[kMy]) / c1o1;
-				dyuz = (veloZ[k] - veloZ[kMy]) / c1o1;
-			}
-			else if (bcMatD[kPy] == GEO_FLUID && bcMatD[kMy] == GEO_FLUID)
-			{
-				dyux = (veloX[kPy] - veloX[kMy]) / c2o1;
-				dyuy = (veloY[kPy] - veloY[kMy]) / c2o1;
-				dyuz = (veloZ[kPy] - veloZ[kMy]) / c2o1;
-			}
-
-			// gradients wrt Z-axis
-			if (bcMatD[kMz] != GEO_FLUID)
-			{
-				dzux = (veloX[kPz] - veloX[k]) / c1o1;
-				dzuy = (veloY[kPz] - veloY[k]) / c1o1;
-				dzuz = (veloZ[kPz] - veloZ[k]) / c1o1;
-			}
-			else if (bcMatD[kPz] != GEO_FLUID)
-			{
-				dzux = (veloX[k] - veloX[kMz]) / c1o1;
-				dzuy = (veloY[k] - veloY[kMz]) / c1o1;
-				dzuz = (veloZ[k] - veloZ[kMz]) / c1o1;
-			}
-			else if (bcMatD[kPz] == GEO_FLUID && bcMatD[kMz] == GEO_FLUID)
-			{
-				dzux = (veloX[kPz] - veloX[kMz]) / c2o1;
-				dzuy = (veloY[kPz] - veloY[kMz]) / c2o1;
-				dzuz = (veloZ[kPz] - veloZ[kMz]) / c2o1;
-			}
-			//dxux = (veloX[kPx] - veloX[kMx]) / two;     dyux = (veloX[kPy] - veloX[kMy]) / two;     dzux = (veloX[kPz] - veloX[kMz]) / two;
-			//dxuy = (veloY[kPx] - veloY[kMx]) / two;     dyuy = (veloY[kPy] - veloY[kMy]) / two;     dzuy = (veloY[kPz] - veloY[kMz]) / two;
-			//dxuz = (veloZ[kPx] - veloZ[kMx]) / two;     dyuz = (veloZ[kPy] - veloZ[kMy]) / two;     dzuz = (veloZ[kPz] - veloZ[kMz]) / two;
-
-
-			/////////// Computing the strain rate and the vorticity tensor ///////////
-			/////////// i=1, j=2, k=3 will be used as indices to compute the strain tensor components as shown below 
-			/////////// S12 is equivalent to Sij and S13 equivalent to Sik and so on. The same applies for the vorticity tensor also////////
-
-			real Sii, Sij, Sik, Sji, Sjj, Sjk, Ski, Skj, Skk; // Strain tensor components
-
-
-			Sii = dxux;     Sij = c1o2 * (dyux + dxuy);     Sik = c1o2 * (dzux + dxuz);
-			Sji = Sij;      Sjj = dyuy;                     Sjk = c1o2 * (dzuy + dyuz);
-			Ski = Sik;      Skj = Sjk;                      Skk = dzuz;
-
-			real Rij, Rik, Rji, Rjk, Rki, Rkj; // Vorticity or Rotation tensor components
-												// the vorticity components will have zero diagonal components
-
-			Rij = c1o2 * (dyux - dxuy);     Rik = c1o2 * (dzux - dxuz);
-			Rji = -1.0f * Rij;								    Rjk = c1o2 * (dzuy - dyuz);
-			Rki = -1.0f * Rik;   Rkj = -1.0f * Rjk;
-
-			///////// Computation for the terms of the traceless tensor /////////////
-			///////// Terms for the matrix multiplication of strain tensor i.e Sik*Skj //////////
-
-			real S1t = Sii*Sii + Sij*Sji + Sik*Ski;     real S2t = Sii*Sij + Sij*Sjj + Sik*Skj;     real S3t = Sii*Sik + Sij*Sjk + Sik*Skk;
-			real S4t = Sji*Sii + Sjj*Sji + Sjk*Ski;     real S5t = Sji*Sij + Sjj*Sjj + Sjk*Skj;     real S6t = Sji*Sik + Sjj*Sjk + Sjk*Skk;
-			real S7t = Ski*Sii + Skj*Sji + Skk*Ski;     real S8t = Ski*Sij + Skj*Sjj + Skk*Skj;     real S9t = Ski*Sik + Skj*Sjk + Skk*Skk;
-
-			///////// Terms for the matrix multiplication of Rotation tensor i.e Rik*Rkj //////////
-
-			real R1t = Rij*Rji + Rik*Rki;     real R2t = Rik*Rkj;               real R3t = Rij*Rjk;
-			real R4t = Rjk*Rki;               real R5t = Rji*Rij + Rjk*Rkj;     real R6t = Rji*Rik;
-			real R7t = Rkj*Rji;               real R8t = Rki*Rij;               real R9t = Rki*Rik + Rkj*Rjk;
-
-			///// Inner product between the terms of the strain (Sij*Sij) and rotation tensor (Rij*Rij) ////
-
-			real S2 = Sii*Sii + c2o1 * Sij*Sij + c2o1 * Sik*Sik + Sjj*Sjj + c2o1 * Sjk*Sjk + Skk*Skk;
-			real R2 = c2o1 * Rij*Rij + c2o1 * Rik*Rik + c2o1 * Rjk*Rjk;
-
-			//Computation for the traceless tensor
-
-			real traceTerm = c1o3 * (S2 - R2);
-
-			real S1d, S2d, S3d, S4d, S5d, S6d, S7d, S8d, S9d;
-
-			S1d = S1t + R1t - traceTerm;     S2d = S2t + R2t;                  S3d = S3t + R3t;
-			S4d = S4t + R4t;                 S5d = S5t + R5t - traceTerm;      S6d = S6t + R6t;
-			S7d = S7t + R7t;                 S8d = S8t + R8t;                  S9d = S9t + R9t - traceTerm;
-
-			// Contraction of the traceless tensor
-
-			real SdSd = S1d*S1d + S2d*S2d + S3d*S3d + S4d*S4d + S5d*S5d + S6d*S6d + S7d*S7d + S8d*S8d + S9d*S9d;
-			/////////////// Computing turbulent viscosity ///////////////////////
-
-			//wOper = (real)pow((double)SdSd, 1.5) / ((real)pow((double)S2, 2.5) + (real)pow((double)SdSd, 1.25) + smallSingle);// 1e-26f);
-			wOper = (float)pow((double)SdSd, 0.25) / ((float)pow((double)((float)pow((double)S2, 0.5) / ((float)pow((double)SdSd, 0.25) + 1e-10)), 5.0) + 1);
-
-			nuTurb = (Cw*Cw * DelX*DelX) * wOper;
-
+			//Test debug
+			//if (nuTurb > c1o100) nuTurb = c1o100;
+			//if (nuTurb < -c1o100) nuTurb = -c1o100;
+			//nuTurb = c1o100;
 			turbulentViscosity[k] = nuTurb;
-
-			real omega = c1o1 / (c3o1 * (nuOld + nuTurb) + c1o2);
-
-			/////////////      Wale Model     ///////////////
-
-
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
 			{
@@ -315,7 +443,12 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
 				vvz += fz*c1o2;
 			}
 			////////////////////////////////////////////////////////////////////////////////////
-			//real omega = omega_in + nuTurb;
+			real omega = omega_in;
+			if (timestep >= 500000)
+			{
+				real nuOld = c1o3 * (c1o1 / omega_in - c1o2);
+				omega = c1o1 / (c3o1 * (nuOld + nuTurb) + c1o2);
+			}
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
 			real oMdrho = c1o1; // comp special
@@ -565,14 +698,14 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
 			////////////////////////////////////////////////////////////////////////////////////
 			// Cumulants
 			////////////////////////////////////////////////////////////////////////////////////
-			real OxxPyyPzz = c1o1;
+			real OxxPyyPzz = c1o1;	//set the bulk viscosity one is high / two is very low and zero is (too) high ... (also called omega 2)
 
 			////////////////////////////////////////////////////////////
 			//3.
 			//////////////////////////////
-			real OxyyPxzz  = c1o1;
-			real OxyyMxzz  = c1o1;
-			real Oxyz      = c1o1;
+			real OxyyPxzz  = c8o1*(-c2o1+omega)*(c1o1+c2o1*omega)/(-c8o1-c14o1*omega+c7o1*omega*omega);//one;
+			real OxyyMxzz  = c8o1*(-c2o1+omega)*(-c7o1+c4o1*omega)/(c56o1-c50o1*omega+c9o1*omega*omega);//one;
+			real Oxyz      = c24o1*(-c2o1+omega)*(-c2o1-c7o1*omega+c3o1*omega*omega)/(c48o1+c152o1*omega-c130o1*omega*omega+c29o1*omega*omega*omega);//one;
 			////////////////////////////////////////////////////////////
 			//4.
 			//////////////////////////////
@@ -592,9 +725,9 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
 
 			//central moments to cumulants
 			//4.
-			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho;	//ab 15.05.2015 verwendet
-			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho; //ab 15.05.2015 verwendet
-			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho; //ab 15.05.2015 verwendet
+			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho;
+			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho;
+			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho;
 				  	 		
 			real CUMcca = mfcca - (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho  - c1o9*(drho/rho));
 			real CUMcac = mfcac - (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho  - c1o9*(drho/rho));
@@ -619,32 +752,42 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
 							+(    c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba) 
 							+           (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3 
 							+ c1o27*((drho * drho - drho)/(rho*rho)));
-							//+ c1o27*(one -three/rho +two/(rho*rho)));
 
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			
-			
-			
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//2.
 			// linear combinations
 			real mxxPyyPzz = mfcaa + mfaca + mfaac;
 			real mxxMyy    = mfcaa - mfaca;
 			real mxxMzz	   = mfcaa - mfaac;
 			
+			////////////////////////////////////////////////////////////////////////////
+            real Dxy =-c3o1*omega*mfbba;
+            real Dxz =-c3o1*omega*mfbab;
+            real Dyz =-c3o1*omega*mfabb;
+
+			//3.
+			// linear combinations
+
+			real mxxyPyzz = mfcba + mfabc;
+			real mxxyMyzz = mfcba - mfabc;
+
+			real mxxzPyyz = mfcab + mfacb;
+			real mxxzMyyz = mfcab - mfacb;
+
+			real mxyyPxzz = mfbca + mfbac;
+			real mxyyMxzz = mfbca - mfbac;
+
  			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- 			//incl. correction
- 			{
+ 			//incl. correction		(hat noch nicht so gut funktioniert...Optimierungsbedarf??)
+ 			
  				real dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
  				real dyuy = dxux + omega * c3o2 * mxxMyy;
  				real dzuz = dxux + omega * c3o2 * mxxMzz;
  
  				//relax
- 				mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);//-magicBulk*OxxPyyPzz;
+				mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);//-magicBulk*OxxPyyPzz;
  				mxxMyy    += omega * (-mxxMyy) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
  				mxxMzz    += omega * (-mxxMzz) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
  
- 			}
  			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
  			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -663,17 +806,6 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
 			mfaca = c1o3 * (-c2o1*  mxxMyy +      mxxMzz + mxxPyyPzz);
 			mfaac = c1o3 * (       mxxMyy - c2o1* mxxMzz + mxxPyyPzz);
 
-			//3.
-			// linear combinations
-
-			real mxxyPyzz = mfcba + mfabc;
-			real mxxyMyzz = mfcba - mfabc;
-
-			real mxxzPyyz = mfcab + mfacb;
-			real mxxzMyyz = mfcab - mfacb;
-
-			real mxyyPxzz = mfbca + mfbac;
-			real mxyyMxzz = mfbca - mfbac;
 
 			//relax
 			//////////////////////////////////////////////////////////////////////////
@@ -728,14 +860,22 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
  		//	wadjust    = O4+(one-O4)*abs(CUMcbb)/(abs(CUMcbb)+qudricLimit);
 			//CUMcbb    += wadjust * (-CUMcbb); 
 			//////////////////////////////////////////////////////////////////////////
+			real A = (c4o1 + c2o1*omega - c3o1*omega*omega) / (c2o1 - c7o1*omega + c5o1*omega*omega);
+			real B = (c4o1 + c28o1*omega - c14o1*omega*omega) / (c6o1 - c21o1*omega + c15o1*omega*omega);
+			//////////////////////////////////////////////////////////////////////////
 			//ohne limiter
-			CUMacc += O4 * (-CUMacc); 
-			CUMcac += O4 * (-CUMcac); 
-			CUMcca += O4 * (-CUMcca); 
-
-			CUMbbc += O4 * (-CUMbbc); 
-			CUMbcb += O4 * (-CUMbcb); 
-			CUMcbb += O4 * (-CUMcbb); 
+			//CUMacc += O4 * (-CUMacc); 
+			//CUMcac += O4 * (-CUMcac); 
+			//CUMcca += O4 * (-CUMcca); 
+			//CUMbbc += O4 * (-CUMbbc); 
+			//CUMbcb += O4 * (-CUMbcb); 
+			//CUMcbb += O4 * (-CUMcbb); 
+			CUMacc = -O4*(c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMacc);
+			CUMcac = -O4*(c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMcac);
+			CUMcca = -O4*(c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * A + (c1o1 - O4) * (CUMcca);
+			CUMbbc = -O4*(c1o1 / omega - c1o2) * Dxy           * c1o3 * B + (c1o1 - O4) * (CUMbbc);
+			CUMbcb = -O4*(c1o1 / omega - c1o2) * Dxz           * c1o3 * B + (c1o1 - O4) * (CUMbcb);
+			CUMcbb = -O4*(c1o1 / omega - c1o2) * Dyz           * c1o3 * B + (c1o1 - O4) * (CUMcbb);
 			//////////////////////////////////////////////////////////////////////////
 			
 					
@@ -751,13 +891,13 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
 
 			//back cumulants to central moments
 			//4.
-			mfcbb = CUMcbb + ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho; //ab 15.05.2015 verwendet
-			mfbcb = CUMbcb + ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho; //ab 15.05.2015 verwendet
-			mfbbc = CUMbbc + ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho; //ab 15.05.2015 verwendet
+			mfcbb = CUMcbb + ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho;
+			mfbcb = CUMbcb + ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho;
+			mfbbc = CUMbbc + ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho;
 						   
-			mfcca = CUMcca + (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho  - c1o9*(drho/rho));//(one/rho-one));
-			mfcac = CUMcac + (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho  - c1o9*(drho/rho));//(one/rho-one));
-			mfacc = CUMacc + (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho  - c1o9*(drho/rho));//(one/rho-one));
+			mfcca = CUMcca + (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho  - c1o9*(drho/rho));
+			mfcac = CUMcac + (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho  - c1o9*(drho/rho));
+			mfacc = CUMacc + (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho  - c1o9*(drho/rho));
 
 			//5.
 			mfbcc = CUMbcc + ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac) ) / rho ;
@@ -778,7 +918,6 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27(
 							+(    c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba) 
 							+           (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3 
 							+ c1o27*((drho * drho - drho)/(rho*rho)));
-							//+ c1o27*(one -three/rho +two/(rho*rho)));
 			////////////////////////////////////////////////////////////////////////////////////
 
 			////////////////////////////////////////////////////////////////////////////////////

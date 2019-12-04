@@ -3,7 +3,7 @@
 #include "Core/RealConstants.h"
 #include "math.h"
 
-extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27(
+extern "C" __global__ void LB_Kernel_WaleCumulantK15Comp(
 	real omega_in,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
@@ -17,7 +17,7 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27(
 	real* turbulentViscosity,
 	int size_Mat,
 	int level,
-	unsigned int timestep, 
+	unsigned int timestep,
 	real* forces,
 	bool EvenOrOdd)
 {
@@ -697,14 +697,14 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27(
 			////////////////////////////////////////////////////////////////////////////////////
 			// Cumulants
 			////////////////////////////////////////////////////////////////////////////////////
-			real OxxPyyPzz = c1o1;	//set the bulk viscosity one is high / two is very low and zero is (too) high ... (also called omega 2)
+			real OxxPyyPzz = c1o1;
 
 			////////////////////////////////////////////////////////////
 			//3.
 			//////////////////////////////
-			real OxyyPxzz  = c8o1*(-c2o1+omega)*(c1o1+c2o1*omega)/(-c8o1-c14o1*omega+c7o1*omega*omega);//one;
-			real OxyyMxzz  = c8o1*(-c2o1+omega)*(-c7o1+c4o1*omega)/(c56o1-c50o1*omega+c9o1*omega*omega);//one;
-			real Oxyz      = c24o1*(-c2o1+omega)*(-c2o1-c7o1*omega+c3o1*omega*omega)/(c48o1+c152o1*omega-c130o1*omega*omega+c29o1*omega*omega*omega);//one;
+			real OxyyPxzz  = c1o1;
+			real OxyyMxzz  = c1o1;
+			real Oxyz      = c1o1;
 			////////////////////////////////////////////////////////////
 			//4.
 			//////////////////////////////
@@ -751,6 +751,10 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27(
 							+(    c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba) 
 							+           (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3 
 							+ c1o27*((drho * drho - drho)/(rho*rho)));
+							//+ c1o27*(one -three/rho +two/(rho*rho)));
+
+
+
 
 			//2.
 			// linear combinations
@@ -758,10 +762,83 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27(
 			real mxxMyy    = mfcaa - mfaca;
 			real mxxMzz	   = mfcaa - mfaac;
 			
+			//////////////////////////////////////////////////////////////////////////
+// 			real magicBulk=(CUMacc+CUMcac+CUMcca)*(one/OxxPyyPzz-c1o2)*c3o2*8.;
+
+			//////////////////////////////////////////////////////////////////////////
+			//limiter-Scheise Teil 1
+			//real oxxyy,oxxzz,oxy,oxz,oyz;
+			//real smag=0.001;
+			//oxxyy    = omega+(one-omega)*abs(mxxMyy)/(abs(mxxMyy)+smag);
+			//oxxzz    = omega+(one-omega)*abs(mxxMzz)/(abs(mxxMzz)+smag);
+			//oxy      = omega+(one-omega)*abs(mfbba)/(abs(mfbba)+smag);
+			//oxz      = omega+(one-omega)*abs(mfbab)/(abs(mfbab)+smag);
+			//oyz      = omega+(one-omega)*abs(mfabb)/(abs(mfabb)+smag);
+
 			////////////////////////////////////////////////////////////////////////////
-            real Dxy =-c3o1*omega*mfbba;
-            real Dxz =-c3o1*omega*mfbab;
-            real Dyz =-c3o1*omega*mfabb;
+			////Teil 1b
+			//real constante = 1000.0;
+			//real nuEddi = constante * abs(mxxPyyPzz);
+			//real omegaLimit = one / (one / omega + three * nuEddi);
+
+			//{
+			//	real dxux = c1o2 * (-omegaLimit) *(mxxMyy + mxxMzz) +  OxxPyyPzz * (mfaaa - mxxPyyPzz);
+			//	real dyuy = dxux + omegaLimit * c3o2 * mxxMyy;
+			//	real dzuz = dxux + omegaLimit * c3o2 * mxxMzz;
+
+				////relax
+				//mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+				//mxxMyy    += omegaLimit * (-mxxMyy) - three * (one + c1o2 * (-omegaLimit)) * (vx2 * dxux + vy2 * dyuy);
+				//mxxMzz    += omegaLimit * (-mxxMzz) - three * (one + c1o2 * (-omegaLimit)) * (vx2 * dxux + vz2 * dzuz);
+
+			//}
+			//mfabb     += omegaLimit * (-mfabb);
+			//mfbab     += omegaLimit * (-mfbab);
+			//mfbba     += omegaLimit * (-mfbba);
+			////////////////////////////////////////////////////////////////////////////
+
+ 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 			//incl. correction		(hat noch nicht so gut funktioniert...Optimierungsbedarf??)
+ 			{
+ 				real dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
+ 				real dyuy = dxux + omega * c3o2 * mxxMyy;
+ 				real dzuz = dxux + omega * c3o2 * mxxMzz;
+ 
+ 				//relax
+ 				mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz) - c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);//-magicBulk*OxxPyyPzz;
+ 				mxxMyy    += omega * (-mxxMyy) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
+ 				mxxMzz    += omega * (-mxxMzz) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
+ 
+ 				//////////////////////////////////////////////////////////////////////////
+ 				//limiter-Scheise Teil 2
+ 				//mxxMyy    += oxxyy * (-mxxMyy) - three * (one + c1o2 * (-omega)) * (vx2 * dxux + vy2 * dyuy);
+ 				//mxxMzz    += oxxzz * (-mxxMzz) - three * (one + c1o2 * (-omega)) * (vx2 * dxux + vz2 * dzuz);
+ 				//////////////////////////////////////////////////////////////////////////
+ 
+ 			}
+ 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 			////no correction
+ 			//mxxPyyPzz += OxxPyyPzz*(mfaaa-mxxPyyPzz);//-magicBulk*OxxPyyPzz;
+ 			//mxxMyy    += -(-omega) * (-mxxMyy);
+ 			//mxxMzz    += -(-omega) * (-mxxMzz);
+ 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			mfabb     += omega * (-mfabb);
+			mfbab     += omega * (-mfbab);
+			mfbba     += omega * (-mfbba);
+
+			//////////////////////////////////////////////////////////////////////////
+			//limiter-Scheise Teil 3
+			//mfabb     += oyz * (-mfabb);
+			//mfbab     += oxz * (-mfbab);
+			//mfbba     += oxy * (-mfbba);
+			//////////////////////////////////////////////////////////////////////////
+
+			// linear combinations back
+			mfcaa = c1o3 * (       mxxMyy +      mxxMzz + mxxPyyPzz);
+			mfaca = c1o3 * (-c2o1*  mxxMyy +      mxxMzz + mxxPyyPzz);
+			mfaac = c1o3 * (       mxxMyy - c2o1* mxxMzz + mxxPyyPzz);
 
 			//3.
 			// linear combinations
@@ -774,37 +851,6 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27(
 
 			real mxyyPxzz = mfbca + mfbac;
 			real mxyyMxzz = mfbca - mfbac;
-
- 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- 			//incl. correction		(hat noch nicht so gut funktioniert...Optimierungsbedarf??)
- 			
- 				real dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
- 				real dyuy = dxux + omega * c3o2 * mxxMyy;
- 				real dzuz = dxux + omega * c3o2 * mxxMzz;
- 
- 				//relax
-				mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- c3o1 * (c1o1 - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);//-magicBulk*OxxPyyPzz;
- 				mxxMyy    += omega * (-mxxMyy) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
- 				mxxMzz    += omega * (-mxxMzz) - c3o1 * (c1o1 + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
- 
- 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
- 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- 			////no correction
- 			//mxxPyyPzz += OxxPyyPzz*(mfaaa-mxxPyyPzz);//-magicBulk*OxxPyyPzz;
- 			//mxxMyy    += -(-omega) * (-mxxMyy);
- 			//mxxMzz    += -(-omega) * (-mxxMzz);
- 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			mfabb     += omega * (-mfabb);
-			mfbab     += omega * (-mfbab);
-			mfbba     += omega * (-mfbba);
-			//////////////////////////////////////////////////////////////////////////
-
-			// linear combinations back
-			mfcaa = c1o3 * (       mxxMyy +      mxxMzz + mxxPyyPzz);
-			mfaca = c1o3 * (-c2o1*  mxxMyy +      mxxMzz + mxxPyyPzz);
-			mfaac = c1o3 * (       mxxMyy - c2o1* mxxMzz + mxxPyyPzz);
-
 
 			//relax
 			//////////////////////////////////////////////////////////////////////////
@@ -859,22 +905,14 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27(
  		//	wadjust    = O4+(one-O4)*abs(CUMcbb)/(abs(CUMcbb)+qudricLimit);
 			//CUMcbb    += wadjust * (-CUMcbb); 
 			//////////////////////////////////////////////////////////////////////////
-			real A = (c4o1 + c2o1*omega - c3o1*omega*omega) / (c2o1 - c7o1*omega + c5o1*omega*omega);
-			real B = (c4o1 + c28o1*omega - c14o1*omega*omega) / (c6o1 - c21o1*omega + c15o1*omega*omega);
-			//////////////////////////////////////////////////////////////////////////
 			//ohne limiter
-			//CUMacc += O4 * (-CUMacc); 
-			//CUMcac += O4 * (-CUMcac); 
-			//CUMcca += O4 * (-CUMcca); 
-			//CUMbbc += O4 * (-CUMbbc); 
-			//CUMbcb += O4 * (-CUMbcb); 
-			//CUMcbb += O4 * (-CUMcbb); 
-			CUMacc = -O4*(c1o1 / omega - c1o2) * (dyuy + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMacc);
-			CUMcac = -O4*(c1o1 / omega - c1o2) * (dxux + dzuz) * c2o3 * A + (c1o1 - O4) * (CUMcac);
-			CUMcca = -O4*(c1o1 / omega - c1o2) * (dyuy + dxux) * c2o3 * A + (c1o1 - O4) * (CUMcca);
-			CUMbbc = -O4*(c1o1 / omega - c1o2) * Dxy           * c1o3 * B + (c1o1 - O4) * (CUMbbc);
-			CUMbcb = -O4*(c1o1 / omega - c1o2) * Dxz           * c1o3 * B + (c1o1 - O4) * (CUMbcb);
-			CUMcbb = -O4*(c1o1 / omega - c1o2) * Dyz           * c1o3 * B + (c1o1 - O4) * (CUMcbb);
+			CUMacc += O4 * (-CUMacc); 
+			CUMcac += O4 * (-CUMcac); 
+			CUMcca += O4 * (-CUMcca); 
+
+			CUMbbc += O4 * (-CUMbbc); 
+			CUMbcb += O4 * (-CUMbcb); 
+			CUMcbb += O4 * (-CUMcbb); 
 			//////////////////////////////////////////////////////////////////////////
 			
 					
@@ -890,13 +928,13 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27(
 
 			//back cumulants to central moments
 			//4.
-			mfcbb = CUMcbb + ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho;
-			mfbcb = CUMbcb + ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho;
-			mfbbc = CUMbbc + ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho;
+			mfcbb = CUMcbb + ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho; //ab 15.05.2015 verwendet
+			mfbcb = CUMbcb + ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho; //ab 15.05.2015 verwendet
+			mfbbc = CUMbbc + ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho; //ab 15.05.2015 verwendet
 						   
-			mfcca = CUMcca + (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho  - c1o9*(drho/rho));
-			mfcac = CUMcac + (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho  - c1o9*(drho/rho));
-			mfacc = CUMacc + (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho  - c1o9*(drho/rho));
+			mfcca = CUMcca + (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho  - c1o9*(drho/rho));//(one/rho-one));
+			mfcac = CUMcac + (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho  - c1o9*(drho/rho));//(one/rho-one));
+			mfacc = CUMacc + (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho  - c1o9*(drho/rho));//(one/rho-one));
 
 			//5.
 			mfbcc = CUMbcc + ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac) ) / rho ;
@@ -917,6 +955,7 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27(
 							+(    c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba) 
 							+           (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3 
 							+ c1o27*((drho * drho - drho)/(rho*rho)));
+							//+ c1o27*(one -three/rho +two/(rho*rho)));
 			////////////////////////////////////////////////////////////////////////////////////
 
 			////////////////////////////////////////////////////////////////////////////////////

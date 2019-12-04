@@ -1,14 +1,14 @@
-#include "WaleCumulantAA2016DebugCompSP27.h"
+#include "WaleCumulantK17DebugComp.h"
 
-#include "WaleCumulantAA2016DebugCompSP27_Device.cuh"
+#include "WaleCumulantK17DebugComp_Device.cuh"
 #include "Parameter\Parameter.h"
 
-std::shared_ptr<WaleCumulantAA2016DebugCompSP27> WaleCumulantAA2016DebugCompSP27::getNewInstance(std::shared_ptr<Parameter> para, int level)
+std::shared_ptr<WaleCumulantK17DebugComp> WaleCumulantK17DebugComp::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<WaleCumulantAA2016DebugCompSP27>(new WaleCumulantAA2016DebugCompSP27(para, level));
+	return std::shared_ptr<WaleCumulantK17DebugComp>(new WaleCumulantK17DebugComp(para, level));
 }
 
-void WaleCumulantAA2016DebugCompSP27::run()
+void WaleCumulantK17DebugComp::run()
 {
 	int size_Mat = para->getParD(level)->size_Mat_SP;
 	int numberOfThreads = para->getParD(level)->numberofthreads;
@@ -32,7 +32,7 @@ void WaleCumulantAA2016DebugCompSP27::run()
 	dim3 grid(Grid1, Grid2, 1);
 	dim3 threads(numberOfThreads, 1, 1);
 
-	LB_Kernel_Wale_Cum_AA2016_Debug_Comp_SP_27 << < grid, threads >> >(
+	LB_Kernel_WaleCumulantK17DebugComp << < grid, threads >> >(
 																		para->getParD(level)->omega,
 																		para->getParD(level)->geoSP,
 																		para->getParD(level)->neighborX_SP,
@@ -58,11 +58,12 @@ void WaleCumulantAA2016DebugCompSP27::run()
 																		para->getParD(level)->size_Mat_SP,
 																		level,
 																		para->getForcesDev(),
+                                                                        para->getQuadricLimitersDev(),
 																		para->getParD(level)->evenOrOdd);
-	getLastCudaError("LB_Kernel_Wale_Cum_AA2016_Debug_Comp_SP_27 execution failed");
+	getLastCudaError("LB_Kernel_WaleCumulantK17DebugComp execution failed");
 }
 
-WaleCumulantAA2016DebugCompSP27::WaleCumulantAA2016DebugCompSP27(std::shared_ptr<Parameter> para, int level)
+WaleCumulantK17DebugComp::WaleCumulantK17DebugComp(std::shared_ptr<Parameter> para, int level)
 {
 	this->para = para;
 	this->level = level;
@@ -72,6 +73,6 @@ WaleCumulantAA2016DebugCompSP27::WaleCumulantAA2016DebugCompSP27(std::shared_ptr
 	myKernelGroup = BasicWaleKernel;
 }
 
-WaleCumulantAA2016DebugCompSP27::WaleCumulantAA2016DebugCompSP27()
+WaleCumulantK17DebugComp::WaleCumulantK17DebugComp()
 {
 }

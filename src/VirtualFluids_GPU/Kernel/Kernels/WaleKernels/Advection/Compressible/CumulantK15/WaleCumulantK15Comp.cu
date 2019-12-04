@@ -1,14 +1,14 @@
-#include "WaleCumulantOneCompSP27.h"
+#include "WaleCumulantK15Comp.h"
 
-#include "WaleCumulantOneCompSP27_Device.cuh"
+#include "WaleCumulantK15Comp_Device.cuh"
 #include "Parameter\Parameter.h"
 
-std::shared_ptr<WaleCumulantOneCompSP27> WaleCumulantOneCompSP27::getNewInstance(std::shared_ptr<Parameter> para, int level)
+std::shared_ptr<WaleCumulantK15Comp> WaleCumulantK15Comp::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<WaleCumulantOneCompSP27>(new WaleCumulantOneCompSP27(para, level));
+	return std::shared_ptr<WaleCumulantK15Comp>(new WaleCumulantK15Comp(para, level));
 }
 
-void WaleCumulantOneCompSP27::run()
+void WaleCumulantK15Comp::run()
 {
 	int size_Mat = para->getParD(level)->size_Mat_SP;
 	int numberOfThreads = para->getParD(level)->numberofthreads;
@@ -28,7 +28,7 @@ void WaleCumulantOneCompSP27::run()
 	dim3 grid(Grid1, Grid2, 1);
 	dim3 threads(numberOfThreads, 1, 1);
 
-	LB_Kernel_Wale_Cum_One_Comp_SP_27 << < grid, threads >> >(	para->getParD(level)->omega,
+	LB_Kernel_WaleCumulantK15Comp << < grid, threads >> >(	para->getParD(level)->omega,
 																para->getParD(level)->geoSP,
 																para->getParD(level)->neighborX_SP,
 																para->getParD(level)->neighborY_SP,
@@ -44,10 +44,10 @@ void WaleCumulantOneCompSP27::run()
 																para->getTimestepOfCoarseLevel(),
 																para->getForcesDev(),
 																para->getParD(level)->evenOrOdd);
-	getLastCudaError("LB_Kernel_Wale_Cum_One_Comp_SP_27 execution failed");
+	getLastCudaError("LB_Kernel_WaleCumulantK15Comp execution failed");
 }
 
-WaleCumulantOneCompSP27::WaleCumulantOneCompSP27(std::shared_ptr<Parameter> para, int level)
+WaleCumulantK15Comp::WaleCumulantK15Comp(std::shared_ptr<Parameter> para, int level)
 {
 	this->para = para;
 	this->level = level;
@@ -57,6 +57,6 @@ WaleCumulantOneCompSP27::WaleCumulantOneCompSP27(std::shared_ptr<Parameter> para
 	myKernelGroup = BasicWaleKernel;
 }
 
-WaleCumulantOneCompSP27::WaleCumulantOneCompSP27()
+WaleCumulantK15Comp::WaleCumulantK15Comp()
 {
 }

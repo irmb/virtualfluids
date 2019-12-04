@@ -32,10 +32,10 @@
 
 #include "Kernel/Kernels/PorousMediaKernels/Advection/Compressible/CumulantOne/PMCumulantOneCompSP27.h"
 
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantAA2016/WaleCumulantAA2016CompSP27.h"
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantAA2016Debug/WaleCumulantAA2016DebugCompSP27.h"
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantOne/WaleCumulantOneCompSP27.h"
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantOneBySoniMalav/WaleBySoniMalavCumulantOneCompSP27.h"
+#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantK17/WaleCumulantK17Comp.h"
+#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantK17Debug/WaleCumulantK17DebugComp.h"
+#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantK15/WaleCumulantK15Comp.h"
+#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantK15BySoniMalav/WaleBySoniMalavCumulantK15Comp.h"
 
 #include "Kernel/Kernels/BasicKernels/Advection/Compressible/AdvecCompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/Advection/Incompressible/AdvecIncompStrategy.h"
@@ -183,20 +183,20 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
 
 
 
-	case LB_WaleCumulantAA2016CompSP27:
-		newKernel = WaleCumulantAA2016CompSP27::getNewInstance(para, level);
+	case LB_WaleCumulantK17Comp:
+		newKernel = WaleCumulantK17Comp::getNewInstance(para, level);
 		checkStrategy = WaleAdvecCompStrategy::getInstance();
 		break;
-	case LB_WaleCumulantAA2016DebugCompSP27:
-		newKernel = WaleCumulantAA2016DebugCompSP27::getNewInstance(para, level);
+	case LB_WaleCumulantK17DebugComp:
+		newKernel = WaleCumulantK17DebugComp::getNewInstance(para, level);
 		checkStrategy = WaleAdvecCompStrategy::getInstance();
 		break;
-	case LB_WaleCumulantOneCompSP27:
-		newKernel = WaleCumulantOneCompSP27::getNewInstance(para, level);
+	case LB_WaleCumulantK15Comp:
+		newKernel = WaleCumulantK15Comp::getNewInstance(para, level);
 		checkStrategy = WaleAdvecCompStrategy::getInstance();
 		break;
-	case LB_WaleBySoniMalavCumulantOneCompSP27:
-		newKernel = WaleBySoniMalavCumulantOneCompSP27::getNewInstance(para, level);
+	case LB_WaleBySoniMalavCumulantK15Comp:
+		newKernel = WaleBySoniMalavCumulantK15Comp::getNewInstance(para, level);
 		checkStrategy = WaleAdvecCompStrategy::getInstance();
 		break;
 	default:

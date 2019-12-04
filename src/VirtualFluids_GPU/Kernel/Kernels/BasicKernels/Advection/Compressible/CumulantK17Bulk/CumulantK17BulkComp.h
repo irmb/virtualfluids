@@ -1,5 +1,5 @@
-#ifndef CUMULANT_AA2016_COMP_BULK_SP27_H
-#define CUMULANT_AA2016_COMP_BULK_SP27_H
+#ifndef CUMULANT_K17_BULK_COMP_H
+#define CUMULANT_K17_BULK_COMP_H
 
 #include "Kernel\KernelImp.h"
 

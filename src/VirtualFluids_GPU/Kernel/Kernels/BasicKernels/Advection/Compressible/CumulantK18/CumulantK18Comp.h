@@ -1,5 +1,5 @@
-#ifndef CUMULANT_F3_COMP_SP27_H
-#define CUMULANT_F3_COMP_SP27_H
+#ifndef CUMULANT_K18_COMP_H
+#define CUMULANT_K18_COMP_H
 
 #include "Kernel\KernelImp.h"
 

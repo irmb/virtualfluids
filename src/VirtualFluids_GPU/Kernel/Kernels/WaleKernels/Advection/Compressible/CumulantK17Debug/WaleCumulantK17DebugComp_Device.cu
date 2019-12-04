@@ -3,7 +3,7 @@
 #include "Core/RealConstants.h"
 #include "math.h"
 
-extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Debug_Comp_SP_27(
+extern "C" __global__ void LB_Kernel_WaleCumulantK17DebugComp(
 	real omega_in,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
@@ -29,6 +29,7 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Debug_Comp_SP_27(
 	int size_Mat,
 	int level,
 	real* forces,
+	real* quadricLimiters,
 	bool EvenOrOdd)
 {
 	////////////////////////////////////////////////////////////////////////////////

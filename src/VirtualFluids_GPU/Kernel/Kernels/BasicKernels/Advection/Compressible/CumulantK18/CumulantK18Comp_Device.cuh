@@ -1,5 +1,5 @@
-#ifndef LB_Kernel_Cumulant_D3Q27F3_H
-#define LB_Kernel_Cumulant_D3Q27F3_H
+#ifndef LB_Kernel_Cumulant_K18_H
+#define LB_Kernel_Cumulant_K18_H
 
 #include <DataTypes.h>
 #include <curand.h>

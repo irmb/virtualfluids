@@ -41,8 +41,8 @@ KernelMapper::KernelMapper()
 	myEnumMapper.addEnum(LB_CumulantK15Incomp,				    "CumulantK15Incomp");
 	myEnumMapper.addEnum(LB_MRTIncompSP27,						"MRTIncompSP27");
 	myEnumMapper.addEnum(LB_PMCumulantOneCompSP27,				"PMCumulantOneCompSP27");
-	myEnumMapper.addEnum(LB_WaleCumulantAA2016CompSP27,			"WaleCumulantAA2016CompSP27");
-	myEnumMapper.addEnum(LB_WaleCumulantAA2016DebugCompSP27,	"WaleCumulantAA2016DebugCompSP27");
-	myEnumMapper.addEnum(LB_WaleCumulantOneCompSP27,			"WaleCumulantOneCompSP27");
-	myEnumMapper.addEnum(LB_WaleBySoniMalavCumulantOneCompSP27,	"WaleBySoniMalavCumulantOneCompSP27");
+	myEnumMapper.addEnum(LB_WaleCumulantK17Comp,			    "WaleCumulantK17Comp");
+	myEnumMapper.addEnum(LB_WaleCumulantK17DebugComp,	        "WaleCumulantK17DebugComp");
+	myEnumMapper.addEnum(LB_WaleCumulantK15Comp,			    "WaleCumulantK15Comp");
+	myEnumMapper.addEnum(LB_WaleBySoniMalavCumulantK15Comp,	    "WaleBySoniMalavCumulantK15Comp");
 }
