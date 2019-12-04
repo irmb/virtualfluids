@@ -97,7 +97,7 @@ std::string kernel( "CumulantK17Comp" );
 std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
 //std::string path("E:/DrivenCavity/results/"); //TESLA03
 
-std::string simulationName("TaylorGreen3D");
+std::string simulationName("TGV_3D");
 //////////////////////////////////////////////////////////////////////////
 
 void multipleLevel(const std::string& configPath)
@@ -176,14 +176,30 @@ void multipleLevel(const std::string& configPath)
  //   para->setOutputPrefix(_prefix.str());
  //   para->setFName(_path.str() + "/" + _prefix.str());
 
-    std::stringstream _path;
+    //////////////////////////////////////////////////////////////////////////
 
-    _path << path;
-    _path << kernel;
+    {
+        std::stringstream _path;
 
-    if( useLimiter ) _path << "_Limiter";
+        _path << path;
+        _path << kernel;
 
-    path = _path.str();
+        if (useLimiter) _path << "_Limiter";
+
+        path = _path.str();
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    {
+        std::stringstream _simulationName;
+
+        _simulationName << simulationName;
+        _simulationName << "_nx_" << nx;
+        _simulationName << "_dtPerL_" << dtPerL << "_";
+
+        simulationName = _simulationName.str();
+    }
 
     //////////////////////////////////////////////////////////////////////////
 

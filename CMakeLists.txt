@@ -45,7 +45,7 @@ include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FileUtilities.cmake)
 ###                   PROJECT SETTINGS                    ###
 #############################################################
 
-project(VirtualFluidsGpuCodes)
+project(VirtualFluidsGPU)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -76,13 +76,14 @@ ENDIF(MSVC)
 #############################################################
 ###                         OPTIONS                       ###
 #############################################################
-option(BUILD_SHARED_LIBS        "Build shared libraries"  ON )
-option(HULC.BUILD_VF_GPU        "Build VirtualFluids GPU" ON )
-option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" OFF )
-option(HULC.BUILD_JSONCPP       "Builds json cpp "        ON )
-option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     ON )
+option(BUILD_SHARED_LIBS        "Build shared libraries"      ON )
+option(VF.BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
+option(VF.BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF)
+option(VF.BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" OFF)
+option(VF.BUILD_JSONCPP         "Builds json cpp "            OFF)
+option(VF.BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
 
-option(VF_DOUBLE_ACCURACY       "Build shared libraries"  OFF )
+option(VF.BUILD_DOUBLE_ACCURACY "Use double accuracy"         OFF )
 
 #############################################################
 
@@ -124,7 +125,7 @@ add_subdirectory(targets/libs/GridGenerator)
 ###                  Virtual Fluids GPU                   ###
 #############################################################
 
-IF (HULC.BUILD_VF_GPU)
+IF (VF.BUILD_VF_GPU)
     add_subdirectory(targets/libs/VirtualFluids_GPU)
 
     #add_subdirectory(targets/apps/LBM/lbmTest)
@@ -143,7 +144,7 @@ ENDIF()
 ###                  Virtual Fluids GKS                   ###
 #############################################################
 
-IF (HULC.BUILD_VF_GKS)
+IF (VF.BUILD_VF_GKS)
     add_subdirectory(targets/libs/GksMeshAdapter)
     add_subdirectory(targets/libs/GksVtkAdapter)
 
@@ -192,7 +193,7 @@ ENDIF()
 #############################################################
 ###                     JSONCPP                           ###
 #############################################################
-IF (NOT HULC.BUILD_JSONCPP)
+IF (NOT VF.BUILD_JSONCPP)
    MESSAGE( STATUS "Build Input Project without JsonCpp." )
 ELSE()
    add_subdirectory(3rdParty/jsoncpp)
@@ -203,7 +204,7 @@ ENDIF()
 ###                   Numeric Tests                       ###
 #############################################################
 
-if(HULC.BUILD_NUMERIC_TESTS)
+if(VF.BUILD_NUMERIC_TESTS)
  	add_subdirectory(3rdParty/fftw/fftw-3.3.7)
 	add_subdirectory(3rdParty/googletest)
 	add_subdirectory(targets/tests/NumericalTests)
@@ -214,6 +215,8 @@ endif()
 ###					Annas Traffic Sim				      ###
 #############################################################
 
-add_subdirectory(targets/libs/Traffic)
+if(VF.BUILD_VF_TRAFFIC)
+    add_subdirectory(targets/libs/Traffic)
 
-add_subdirectory(targets/apps/LBM/TrafficTest)
+    add_subdirectory(targets/apps/LBM/TrafficTest)
+endif()
