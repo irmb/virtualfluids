@@ -120,6 +120,12 @@ void GridProvider::allocAndCopyForcing()
     cudaMemoryManager->cudaCopyForcingToDevice();
 }
 
+void GridProvider::allocAndCopyQuadricLimiters()
+{
+    cudaMemoryManager->cudaAllocQuadricLimiters();
+    cudaMemoryManager->cudaCopyQuadricLimitersToDevice();
+}
+
 void GridProvider::freeMemoryOnHost()
 {
     for (int level = para->getCoarse(); level <= para->getFine(); level++)

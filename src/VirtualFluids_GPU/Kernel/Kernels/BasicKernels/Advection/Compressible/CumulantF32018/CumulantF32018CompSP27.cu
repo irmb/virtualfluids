@@ -39,6 +39,7 @@ void CumulantF32018CompSP27::run()
 																para->getParD(level)->size_Mat_SP,
 																level,
 																para->getForcesDev(),
+                                                                para->getQuadricLimitersDev(),
 																para->getParD(level)->evenOrOdd);
 	getLastCudaError("LB_Kernel_Cumulant_D3Q27F3 execution failed");
 }

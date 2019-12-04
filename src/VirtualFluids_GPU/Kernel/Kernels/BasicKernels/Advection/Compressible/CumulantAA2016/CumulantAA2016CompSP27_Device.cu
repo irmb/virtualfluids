@@ -13,6 +13,7 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_SP_27(real omega,
 	int size_Mat,
 	int level,
 	real* forces,
+	real* quadricLimiters,
 	bool EvenOrOdd)
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -326,9 +327,9 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_SP_27(real omega,
 			vz2 = vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
 			real wadjust;
-			real qudricLimitP = 0.01f;// * 0.0001f; // 1000000.0f; // 1000000.0f; //
-			real qudricLimitM = 0.01f;// * 0.0001f; // 1000000.0f; // 1000000.0f; //
-			real qudricLimitD = 0.01f;// * 0.001f;  // 1000000.0f; // 1000000.0f; //
+			real qudricLimitP = quadricLimiters[0];  //0.01f; //  * 0.0001f; // 1000000.0f; // 1000000.0f; //
+			real qudricLimitM = quadricLimiters[1];  //0.01f; //  * 0.0001f; // 1000000.0f; // 1000000.0f; //
+			real qudricLimitD = quadricLimiters[2];  //0.01f; //  * 0.001f;  // 1000000.0f; // 1000000.0f; //
 									  ////////////////////////////////////////////////////////////////////////////////////
 									  //Hin
 									  ////////////////////////////////////////////////////////////////////////////////////

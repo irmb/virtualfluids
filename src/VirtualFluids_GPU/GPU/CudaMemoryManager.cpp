@@ -374,6 +374,30 @@ void CudaMemoryManager::cudaFreeForcing()
 {
 	checkCudaErrors( cudaFreeHost(parameter->getForcesHost()));
 }
+//quadric Limiters
+void CudaMemoryManager::cudaAllocQuadricLimiters()
+{
+	unsigned int mem_size = sizeof(real) * 3;
+	//Host
+	checkCudaErrors( cudaMallocHost((void**) &(parameter->quadricLimitersH), mem_size));
+    parameter->quadricLimitersH[0] = parameter->getQuadricLimitersDouble()[0];
+    parameter->quadricLimitersH[1] = parameter->getQuadricLimitersDouble()[1];
+    parameter->quadricLimitersH[2] = parameter->getQuadricLimitersDouble()[2];
+	//Device
+	checkCudaErrors( cudaMalloc((void**) &parameter->quadricLimitersD, mem_size));
+	//////////////////////////////////////////////////////////////////////////
+	double tmp = (real)mem_size;
+	setMemsizeGPU(tmp, false);
+}
+void CudaMemoryManager::cudaCopyQuadricLimitersToDevice()
+{
+	unsigned int mem_size = sizeof(real) * 3;
+	checkCudaErrors( cudaMemcpy(parameter->quadricLimitersD, parameter->quadricLimitersH, mem_size, cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaFreeQuadricLimiters()
+{
+	checkCudaErrors( cudaFreeHost(parameter->getQuadricLimitersHost()));
+}
 
 //////////////////////////////////////////////////////////////////////////
 //Process Neighbors

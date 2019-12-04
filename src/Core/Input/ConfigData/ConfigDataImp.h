@@ -61,6 +61,9 @@ public:
 	real getForcingX();
 	real getForcingY();
 	real getForcingZ();
+    real getQuadricLimiterP();
+    real getQuadricLimiterM();
+    real getQuadricLimiterD();
 	bool getCalcParticles();
 	int getParticleBasicLevel();
 	int getParticleInitLevel();
@@ -140,6 +143,9 @@ public:
 	void setForcingX(real forcingX);
 	void setForcingY(real forcingY);
 	void setForcingZ(real forcingZ);
+	void setQuadricLimiterP(real quadricLimiterP);
+	void setQuadricLimiterM(real quadricLimiterM);
+	void setQuadricLimiterD(real quadricLimiterD);
 	void setCalcParticles(bool calcParticles);
 	void setParticleBasicLevel(int particleBasicLevel);
 	void setParticleInitLevel(int particleInitLevel);
@@ -219,6 +225,9 @@ public:
 	bool isForcingXInConfigFile();
 	bool isForcingYInConfigFile();
 	bool isForcingZInConfigFile();
+	bool isQuadricLimiterPInConfigFile();
+	bool isQuadricLimiterMInConfigFile();
+	bool isQuadricLimiterDInConfigFile();
 	bool isCalcParticlesInConfigFile();
 	bool isParticleBasicLevelInConfigFile();
 	bool isParticleInitLevelInConfigFile();
@@ -300,6 +309,9 @@ private:
 	real forcingX;
 	real forcingY;
 	real forcingZ;
+	real quadricLimiterP;
+	real quadricLimiterM;
+	real quadricLimiterD;
 	bool calcParticles;
 	int particleBasicLevel;
 	int particleInitLevel;
@@ -379,6 +391,9 @@ private:
 	bool isForcingX;
 	bool isForcingY;
 	bool isForcingZ;
+	bool isQuadricLimiterP;
+	bool isQuadricLimiterM;
+	bool isQuadricLimiterD;
 	bool isCalcParticles;
 	bool isParticleBasicLevel;
 	bool isParticleInitLevel;

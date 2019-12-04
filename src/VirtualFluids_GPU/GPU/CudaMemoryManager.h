@@ -72,6 +72,10 @@ public:
 	void cudaCopyForcingToHost();
 	void cudaFreeForcing();
 
+	void cudaAllocQuadricLimiters();
+	void cudaCopyQuadricLimitersToDevice();
+	void cudaFreeQuadricLimiters();
+
 	//////////////////////////////////////////////////////////////////////////
 	//3D domain decomposition
 	void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);

@@ -26,6 +26,7 @@ void CumulantAA2016CompBulkSP27::run()
 																	para->getParD(level)->size_Mat_SP,
 																	level,
 																	para->getForcesDev(),
+                                                                    para->getQuadricLimitersDev(),
 																	para->getParD(level)->evenOrOdd);
 	getLastCudaError("LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27 execution failed");
 }

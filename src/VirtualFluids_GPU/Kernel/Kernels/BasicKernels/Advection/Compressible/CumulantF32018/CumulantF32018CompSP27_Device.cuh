@@ -14,6 +14,7 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3_2018(	real omega,
 															int size_Mat,
 															int level,
 															real* forces,
+                                                            real* quadricLimiters,
 															bool EvenOrOdd);
 
 #endif 

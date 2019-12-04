@@ -586,6 +586,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//setter
 	void setForcing(real forcingX, real forcingY, real forcingZ);
+	void setQuadricLimiters(real quadricLimiterP, real quadricLimiterM, real quadricLimiterD);
 	void setPhi(real inPhi);
 	void setAngularVelocity(real inAngVel);
 	void setStepEnsight(unsigned int step);
@@ -784,6 +785,9 @@ public:
 	double* getForcesDouble();
 	real* getForcesHost();
 	real* getForcesDev();
+	double* getQuadricLimitersDouble();
+	real* getQuadricLimitersHost();
+	real* getQuadricLimitersDev();
 	real getPhi();
 	real getAngularVelocity();
 	real getStartXHotWall();
@@ -990,6 +994,11 @@ public:
         //Forcing///////////////
         real *forcingH, *forcingD;
         double hostForcing[3];
+
+    //////////////////////////////////////////////////////////////////////////
+    // limiters
+    real *quadricLimitersH, *quadricLimitersD;
+    double hostQuadricLimiters[3];
 
 	////////////////////////////////////////////////////////////////////////////
     // initial condition

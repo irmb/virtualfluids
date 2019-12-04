@@ -183,6 +183,14 @@ VF_PUBLIC std::shared_ptr<ConfigData> ConfigFileReader::readConfigFile(const std
 	if (input->getValue("ForcingZ") != "")
 		data->setForcingZ(StringUtil::toFloat(input->getValue("ForcingZ")));
 	//////////////////////////////////////////////////////////////////////////
+	//Quadric Limiters
+	if (input->getValue("QuadricLimiterP") != "")
+		data->setQuadricLimiterP(StringUtil::toFloat(input->getValue("QuadricLimiterP")));
+	if (input->getValue("QuadricLimiterM") != "")
+		data->setQuadricLimiterM(StringUtil::toFloat(input->getValue("QuadricLimiterM")));
+	if (input->getValue("QuadricLimiterD") != "")
+		data->setQuadricLimiterD(StringUtil::toFloat(input->getValue("QuadricLimiterD")));
+	//////////////////////////////////////////////////////////////////////////
 	//Particles
 	if (input->getValue("calcParticles") != "")
 		data->setCalcParticles(StringUtil::toBool(input->getValue("calcParticles")));

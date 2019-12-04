@@ -16,6 +16,7 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(
 	int size_Mat,
 	int level,
 	real* forces,
+	real* quadricLimiters,
 	bool EvenOrOdd)
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -225,9 +226,9 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(
 			vz2 = vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
 			real wadjust;
-			real qudricLimitP = 0.01f;// * 0.0001f;
-			real qudricLimitM = 0.01f;// * 0.0001f;
-			real qudricLimitD = 0.01f;// * 0.001f;
+			real qudricLimitP = quadricLimiters[0];  //0.01f; //  * 0.0001f; // 1000000.0f; // 1000000.0f; //
+			real qudricLimitM = quadricLimiters[1];  //0.01f; //  * 0.0001f; // 1000000.0f; // 1000000.0f; //
+			real qudricLimitD = quadricLimiters[2];  //0.01f; //  * 0.001f;  // 1000000.0f; // 1000000.0f; //
 										 ////////////////////////////////////////////////////////////////////////////////////
 										 //Hin
 										 ////////////////////////////////////////////////////////////////////////////////////

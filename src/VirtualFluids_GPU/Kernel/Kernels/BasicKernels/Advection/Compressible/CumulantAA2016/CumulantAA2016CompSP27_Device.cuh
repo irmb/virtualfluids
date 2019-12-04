@@ -13,5 +13,6 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_SP_27(	real omega,
 															int size_Mat,
 															int level,
 															real* forces,
+                                                            real* quadricLimiters,
 															bool EvenOrOdd);
 #endif

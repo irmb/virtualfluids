@@ -34,6 +34,7 @@
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
 
 #include "global.h"
 
@@ -60,7 +61,7 @@
 #include "utilities/transformator/TransformatorImp.h"
 
 //////////////////////////////////////////////////////////////////////////
-const real Re =  1600.0;
+const real Re =  160000.0;
 
 const uint dtPerL = 250*4;
 
@@ -98,6 +99,8 @@ void multipleLevel(const std::string& configPath, uint nx, uint gpuIndex)
 	SPtr<ConfigData> configData = configReader->readConfigFile(configPath);
 	Communicator* comm = Communicator::getInstanz();
     SPtr<Parameter> para = Parameter::make(configData, comm);
+
+    std::shared_ptr<KernelMapper> kernelMapper = KernelMapper::getInstance();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -179,6 +182,11 @@ void multipleLevel(const std::string& configPath, uint nx, uint gpuIndex)
         vz  = 0.0;
 
     } );
+
+    para->setMainKernel(kernelMapper->getEnum("CumulantAA2016CompSP27"));
+
+    //para->setQuadricLimiters( 1000000.0, 0.01, 0.01 );
+    //para->setQuadricLimiters( 0.01, 1000000.0, 1000000.0 );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

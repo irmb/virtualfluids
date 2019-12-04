@@ -334,6 +334,21 @@ real ConfigDataImp::getForcingZ()
 	return this->forcingZ;
 }
 
+real ConfigDataImp::getQuadricLimiterP()
+{
+    return this->quadricLimiterP;
+}
+
+real ConfigDataImp::getQuadricLimiterM()
+{
+    return this->quadricLimiterM;
+}
+
+real ConfigDataImp::getQuadricLimiterD()
+{
+    return this->quadricLimiterD;
+}
+
 bool ConfigDataImp::getCalcParticles()
 {
 	return this->calcParticles;
@@ -759,6 +774,24 @@ void ConfigDataImp::setForcingZ(real forcingZ)
 	this->isForcingZ = true;
 }
 
+void ConfigDataImp::setQuadricLimiterP(real quadricLimiterP)
+{
+	this->quadricLimiterP = quadricLimiterP;
+	this->isQuadricLimiterP = true;
+}
+
+void ConfigDataImp::setQuadricLimiterM(real quadricLimiterM)
+{
+	this->quadricLimiterM = quadricLimiterM;
+	this->isQuadricLimiterM = true;
+}
+
+void ConfigDataImp::setQuadricLimiterD(real quadricLimiterD)
+{
+	this->quadricLimiterD = quadricLimiterD;
+	this->isQuadricLimiterD = true;
+}
+
 void ConfigDataImp::setCalcParticles(bool calcParticles)
 {
 	this->calcParticles = calcParticles;
@@ -1152,6 +1185,21 @@ bool ConfigDataImp::isForcingYInConfigFile()
 bool ConfigDataImp::isForcingZInConfigFile()
 {
 	return this->isForcingZ;
+}
+
+bool ConfigDataImp::isQuadricLimiterPInConfigFile()
+{
+	return this->isQuadricLimiterP;
+}
+
+bool ConfigDataImp::isQuadricLimiterMInConfigFile()
+{
+	return this->isQuadricLimiterM;
+}
+
+bool ConfigDataImp::isQuadricLimiterDInConfigFile()
+{
+	return this->isQuadricLimiterD;
 }
 
 bool ConfigDataImp::isCalcParticlesInConfigFile()

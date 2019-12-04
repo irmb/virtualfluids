@@ -90,6 +90,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    devCheck(comm->mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
 
    gridProvider->allocAndCopyForcing();
+   gridProvider->allocAndCopyQuadricLimiters();
    gridProvider->setDimensions();
    gridProvider->setBoundingBox();
 

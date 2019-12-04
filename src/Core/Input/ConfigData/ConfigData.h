@@ -58,6 +58,9 @@ public:
 	virtual real getForcingX() = 0;
 	virtual real getForcingY() = 0;
 	virtual real getForcingZ() = 0;
+    virtual real getQuadricLimiterP() = 0;
+    virtual real getQuadricLimiterM() = 0;
+    virtual real getQuadricLimiterD() = 0;
 	virtual bool getCalcParticles() = 0;
 	virtual int getParticleBasicLevel() = 0;
 	virtual int getParticleInitLevel() = 0;
@@ -137,6 +140,9 @@ public:
 	virtual bool isForcingXInConfigFile() = 0;
 	virtual bool isForcingYInConfigFile() = 0;
 	virtual bool isForcingZInConfigFile() = 0;
+	virtual bool isQuadricLimiterPInConfigFile() = 0;
+	virtual bool isQuadricLimiterMInConfigFile() = 0;
+	virtual bool isQuadricLimiterDInConfigFile() = 0;
 	virtual bool isCalcParticlesInConfigFile() = 0;
 	virtual bool isParticleBasicLevelInConfigFile() = 0;
 	virtual bool isParticleInitLevelInConfigFile() = 0;

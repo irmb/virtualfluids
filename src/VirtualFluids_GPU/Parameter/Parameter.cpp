@@ -369,6 +369,20 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 
 	this->setForcing(forcingX, forcingY, forcingZ);
 	//////////////////////////////////////////////////////////////////////////
+	//quadricLimiters
+	real quadricLimiterP = 0.01;
+	real quadricLimiterM = 0.01;
+	real quadricLimiterD = 0.01;
+
+	if (configData->isQuadricLimiterPInConfigFile())
+		quadricLimiterP = configData->getQuadricLimiterP();
+	if (configData->isQuadricLimiterMInConfigFile())
+		quadricLimiterM = configData->getQuadricLimiterM();
+	if (configData->isQuadricLimiterDInConfigFile())
+		quadricLimiterD = configData->getQuadricLimiterD();
+
+	this->setQuadricLimiters(quadricLimiterP, quadricLimiterM, quadricLimiterD);
+	//////////////////////////////////////////////////////////////////////////
 	//Particles
 	if (configData->isCalcParticlesInConfigFile())
 		this->setCalcParticles(configData->getCalcParticles());
@@ -3339,6 +3353,12 @@ void Parameter::setForcing(real forcingX, real forcingY, real forcingZ)
 	this->hostForcing[1] = forcingY;
 	this->hostForcing[2] = forcingZ;
 }
+void Parameter::setQuadricLimiters(real quadricLimiterP, real quadricLimiterM, real quadricLimiterD)
+{
+	this->hostQuadricLimiters[0] = quadricLimiterP;
+	this->hostQuadricLimiters[1] = quadricLimiterM;
+	this->hostQuadricLimiters[2] = quadricLimiterD;
+}
 void Parameter::setPhi(real inPhi)
 {
 	Phi = inPhi;
@@ -4239,6 +4259,18 @@ real* Parameter::getForcesHost()
 real* Parameter::getForcesDev()
 {
 	return this->forcingD;
+}
+double * Parameter::getQuadricLimitersDouble()
+{
+    return this->hostQuadricLimiters;
+}
+real * Parameter::getQuadricLimitersHost()
+{
+    return this->quadricLimitersH;
+}
+real * Parameter::getQuadricLimitersDev()
+{
+    return this->quadricLimitersD;
 }
 real Parameter::getPhi()
 {

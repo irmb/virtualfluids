@@ -28,6 +28,7 @@ public:
 	virtual void initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned int> > > periodV, std::vector<std::vector<unsigned int> > periodIndex, std::string way) = 0;
 
     virtual void allocAndCopyForcing();
+    virtual void allocAndCopyQuadricLimiters();
     virtual void freeMemoryOnHost();
     virtual void cudaCopyDataToHost(int level);
 
