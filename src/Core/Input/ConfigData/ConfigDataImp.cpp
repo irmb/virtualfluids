@@ -174,6 +174,11 @@ bool ConfigDataImp::getUseWale()
 	return this->useWale;
 }
 
+bool ConfigDataImp::getUseInitNeq()
+{
+    return this->useInitNeq;
+}
+
 bool ConfigDataImp::getSimulatePorousMedia()
 {
 	return this->simulatePorousMedia;
@@ -574,6 +579,12 @@ void ConfigDataImp::setUseWale(bool useWale)
 {
 	this->useWale = useWale;
 	this->isUseWale = true;
+}
+
+void ConfigDataImp::setUseInitNeq(bool useInitNeq)
+{
+	this->useInitNeq = useInitNeq;
+	this->isUseInitNeq = true;
 }
 
 void ConfigDataImp::setSimulatePorousMedia(bool simulatePorousMedia)
@@ -985,6 +996,11 @@ bool ConfigDataImp::isUseMeasurePointsInConfigFile()
 bool ConfigDataImp::isUseWaleInConfigFile()
 {
 	return this->isUseWale;
+}
+
+bool ConfigDataImp::isUseInitNeqInConfigFile()
+{
+    return this->isUseInitNeq;
 }
 
 bool ConfigDataImp::isSimulatePorousMediaInConfigFile()

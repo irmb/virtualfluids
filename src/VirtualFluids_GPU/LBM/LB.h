@@ -96,7 +96,7 @@ typedef struct InitCond{
    real vis, vis_ratio;
    real u0, u0_ratio;
    real delta_rho, delta_press;
-   bool  printFiles, readGeo, doRestart, doCheckPoint, isGeo, isProp, isCp, calcMedian, GeometryValues, isConc, is2ndOrderMoments, is3rdOrderMoments, isHighOrderMoments, isWale, isMeasurePoints;
+   bool  printFiles, readGeo, doRestart, doCheckPoint, isGeo, isProp, isCp, calcMedian, GeometryValues, isConc, is2ndOrderMoments, is3rdOrderMoments, isHighOrderMoments, isWale, isMeasurePoints, isInitNeq;
    bool isGeoNormal, isInflowNormal, isOutflowNormal;
    bool simulatePorousMedia;
    bool streetVelocityFile;

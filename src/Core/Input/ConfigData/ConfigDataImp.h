@@ -29,6 +29,7 @@ public:
 	bool getStreetVelocityFile();
 	bool getUseMeasurePoints();
 	bool getUseWale();
+	bool getUseInitNeq();
 	bool getSimulatePorousMedia();
 	uint getD3Qxx();
 	uint getTEnd();
@@ -110,6 +111,7 @@ public:
 	void setStreetVelocityFile(bool streetVelocityFile);
 	void setUseMeasurePoints(bool useMeasurePoints);
 	void setUseWale(bool useWale);
+	void setUseInitNeq(bool useInitNeq);
 	void setSimulatePorousMedia(bool simulatePorousMedia);
 	void setD3Qxx(uint d3Qxx);
 	void setTEnd(uint tEnd);
@@ -192,6 +194,7 @@ public:
 	bool isStreetVelocityFileInConfigFile();
 	bool isUseMeasurePointsInConfigFile();
 	bool isUseWaleInConfigFile();
+	bool isUseInitNeqInConfigFile();
 	bool isSimulatePorousMediaInConfigFile();
 	bool isD3QxxInConfigFile();
 	bool isTEndInConfigFile();
@@ -276,6 +279,7 @@ private:
 	bool streetVelocityFile;
 	bool useMeasurePoints;
 	bool useWale;
+	bool useInitNeq;
 	bool simulatePorousMedia;
 	uint d3Qxx;
 	uint tEnd;
@@ -358,6 +362,7 @@ private:
 	bool isStreetVelocityFile;
 	bool isUseMeasurePoints;
 	bool isUseWale;
+	bool isUseInitNeq;
 	bool isSimulatePorousMedia;
 	bool isD3Qxx;
 	bool isTEnd;

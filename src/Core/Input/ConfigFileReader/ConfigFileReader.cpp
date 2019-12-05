@@ -85,6 +85,9 @@ VF_PUBLIC std::shared_ptr<ConfigData> ConfigFileReader::readConfigFile(const std
 	if (input->getValue("UseWale") != "")
 		data->setUseWale(StringUtil::toBool(input->getValue("UseWale")));
 
+	if (input->getValue("UseInitNeq") != "")
+		data->setUseInitNeq(StringUtil::toBool(input->getValue("UseInitNeq")));
+
 	if (input->getValue("SimulatePorousMedia") != "")
 		data->setSimulatePorousMedia(StringUtil::toBool(input->getValue("SimulatePorousMedia")));
 

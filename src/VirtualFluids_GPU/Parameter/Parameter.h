@@ -709,6 +709,7 @@ public:
 	void setStreetVelocityFile(bool streetVelocityFile);
 	void setUseMeasurePoints(bool useMeasurePoints);
 	void setUseWale(bool useWale);
+	void setUseInitNeq(bool useInitNeq);
 	void setSimulatePorousMedia(bool simulatePorousMedia);
 	void setclockCycleForMP(real clockCycleForMP);
 	void setDevices(std::vector<uint> devices);
@@ -952,6 +953,7 @@ public:
 	bool isStreetVelocityFile();
 	bool getUseMeasurePoints();
 	bool getUseWale();
+	bool getUseInitNeq();
 	bool getSimulatePorousMedia();
 	double getMemsizeGPU();
 	//1D domain decomposition

@@ -26,6 +26,7 @@ public:
 	virtual bool getStreetVelocityFile() = 0;
 	virtual bool getUseMeasurePoints() = 0;
 	virtual bool getUseWale() = 0;
+	virtual bool getUseInitNeq() = 0;
 	virtual bool getSimulatePorousMedia() = 0;
 	virtual uint getD3Qxx() = 0;
 	virtual uint getTEnd() = 0;
@@ -107,6 +108,7 @@ public:
 	virtual bool isStreetVelocityFileInConfigFile() = 0;
 	virtual bool isUseMeasurePointsInConfigFile() = 0;
 	virtual bool isUseWaleInConfigFile() = 0;
+	virtual bool isUseInitNeqInConfigFile() = 0;
 	virtual bool isSimulatePorousMediaInConfigFile() = 0;
 	virtual bool isD3QxxInConfigFile() = 0;
 	virtual bool isTEndInConfigFile() = 0;

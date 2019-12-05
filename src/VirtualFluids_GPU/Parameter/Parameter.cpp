@@ -116,6 +116,11 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 	else
 		this->setUseWale(false);
 	//////////////////////////////////////////////////////////////////////////
+	if (configData->isUseInitNeqInConfigFile())
+		this->setUseInitNeq(configData->getUseInitNeq());
+	else
+		this->setUseInitNeq(false);
+	//////////////////////////////////////////////////////////////////////////
 	if (configData->isSimulatePorousMediaInConfigFile())
 		this->setSimulatePorousMedia(configData->getSimulatePorousMedia());
 	else
@@ -3617,6 +3622,10 @@ void Parameter::setUseWale(bool useWale)
 {
 	ic.isWale = useWale;
 }
+void Parameter::setUseInitNeq(bool useInitNeq)
+{
+	ic.isInitNeq = useInitNeq;
+}
 void Parameter::setSimulatePorousMedia(bool simulatePorousMedia)
 {
 	ic.simulatePorousMedia = simulatePorousMedia;
@@ -4941,6 +4950,10 @@ bool Parameter::getUseMeasurePoints()
 bool Parameter::getUseWale()
 {
 	return ic.isWale;
+}
+bool Parameter::getUseInitNeq()
+{
+	return ic.isInitNeq;
 }
 bool Parameter::getSimulatePorousMedia()
 {
