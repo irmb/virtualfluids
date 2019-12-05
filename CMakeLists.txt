@@ -85,6 +85,10 @@ option(VF.BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
 
 option(VF.BUILD_DOUBLE_ACCURACY "Use double accuracy"         OFF )
 
+IF( VF.BUILD_DOUBLE_ACCURACY )
+  SET( VF_DOUBLE_ACCURACY 1 )
+ENDIF()
+
 #############################################################
 
 enable_language(CUDA)
