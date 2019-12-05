@@ -60,6 +60,9 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 		para->cudaAllocF3SP(level);
 		cudaMemoryManager->cudaAllocNeighborWSB(level);
 
+        if(para->getUseWale())
+            cudaMemoryManager->cudaAllocTurbulentViscosity(level);
+
 		builder->getNodeValues(
 			para->getParH(level)->coordX_SP,
 			para->getParH(level)->coordY_SP,

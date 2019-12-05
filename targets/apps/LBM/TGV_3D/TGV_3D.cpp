@@ -91,6 +91,7 @@ uint nx = 64;
 uint gpuIndex = 0;
 
 bool useLimiter = false;
+bool useWale = false;
 
 std::string kernel( "CumulantK17Comp" );
 
@@ -241,6 +242,9 @@ void multipleLevel(const std::string& configPath)
     if( !useLimiter )
         para->setQuadricLimiters( 1000000.0, 1000000.0, 1000000.0 );
 
+    if( useWale )
+        para->setUseWale( true );
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -256,6 +260,9 @@ void multipleLevel(const std::string& configPath)
     sim.setFactories(kernelFactory, preProcessorFactory);
     sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
     
+    sim.addKineticEnergyAnalyzer( 10 );
+    sim.addEnstrophyAnalyzer( 10 );
+
     sim.run();
     sim.free();
 }
@@ -272,19 +279,15 @@ int main( int argc, char* argv[])
         try
         {
             //////////////////////////////////////////////////////////////////////////
-
-            //if( argc > 1 ) gpuIndex = atoi( argv[1] );
-
-            //if( argc > 2 ) nx = atoi( argv[2] );
-			std::string targetPath;
-
-			targetPath = __FILE__;
+			std::string targetPath( __FILE__ );
 
 #ifdef _WIN32
 			targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
 #else
 			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
 #endif
+
+            //////////////////////////////////////////////////////////////////////////
 
             if( cmdOptionExists( argv, argv+argc, "--Re" ) )
                 Re = atof( getCmdOption( argv, argv+argc, "--Re" ) );
@@ -303,6 +306,9 @@ int main( int argc, char* argv[])
 
             if( cmdOptionExists( argv, argv+argc, "--useLimiter" ) )
                 useLimiter = true;
+
+            if( cmdOptionExists( argv, argv+argc, "--useWale" ) )
+                useWale = true;
 
 			multipleLevel(targetPath + "config.txt");
 

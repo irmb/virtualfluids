@@ -8,6 +8,8 @@
 #include <VirtualFluidsDefinitions.h>
 
 #include "Output/LogWriter.hpp"
+#include "GPU/KineticEnergyAnalyzer.h"
+#include "GPU/EnstrophyAnalyzer.h"
 #include "Utilities/Buffer2D.hpp"
 #include "LBM/LB.h"
 
@@ -40,6 +42,9 @@ public:
 	void definePMarea(std::shared_ptr<PorousMedia> pm);
 
 	void setFactories(std::shared_ptr<KernelFactory> kernelFactory, std::shared_ptr<PreProcessorFactory> preProcessorFactory);
+
+    void addKineticEnergyAnalyzer( uint tAnalyse );
+    void addEnstrophyAnalyzer    ( uint tAnalyse );
 
 protected:
 	std::shared_ptr<KernelFactory> kernelFactory;
@@ -94,5 +99,13 @@ protected:
 	real *VxED,          *VyED,       *VzED,       *deltaVED;
 	real *VxWH,          *VyWH,       *VzWH,       *deltaVWH;
 	real *VxWD,          *VyWD,       *VzWD,       *deltaVWD;
+
+
+	////////////////////////////////////////////////////////////////////////////
+	SPtr<KineticEnergyAnalyzer> kineticEnergyAnalyzer;
+	////////////////////////////////////////////////////////////////////////////
+	SPtr<EnstrophyAnalyzer> enstrophyAnalyzer;
+	////////////////////////////////////////////////////////////////////////////
+
  };
 #endif
