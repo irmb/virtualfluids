@@ -168,7 +168,6 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    std::vector<PreProcessorType> preProTypes = kernels.at(0)->getPreProcessorTypes();
    preProcessor = preProcessorFactory->makePreProcessor(preProTypes, para);
 
-
    //////////////////////////////////////////////////////////////////////////
    //Particles preprocessing
    //////////////////////////////////////////////////////////////////////////
@@ -212,9 +211,9 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    //Median
    //////////////////////////////////////////////////////////////////////////
-   output << "alloc Calculation for Mean Valus  " << "\n";
    if (para->getCalcMedian())
    {
+       output << "alloc Calculation for Mean Valus  " << "\n";
 	   if (para->getDiffOn())	allocMedianAD(para.get(), cudaManager.get());
 	   else						allocMedian(para.get(), cudaManager.get());
    }

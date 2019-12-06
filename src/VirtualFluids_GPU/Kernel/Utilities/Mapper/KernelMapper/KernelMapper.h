@@ -5,6 +5,7 @@
 #include "Kernel//Utilities/KernelType.h"
 
 #include <memory>
+#include <string>
 
 class VF_PUBLIC KernelMapper
 {

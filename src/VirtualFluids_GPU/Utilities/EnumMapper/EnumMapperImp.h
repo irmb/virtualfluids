@@ -2,6 +2,7 @@
 #define ENUM_MAPPER_IMP_H
 
 #include <map>
+#include <string>
 
 template <typename T>
 

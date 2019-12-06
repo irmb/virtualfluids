@@ -2,6 +2,7 @@
 #define StreetPointFinder_H
 
 #include <vector>
+#include <string>
 
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
