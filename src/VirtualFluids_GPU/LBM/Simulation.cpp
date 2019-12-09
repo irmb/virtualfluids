@@ -1720,6 +1720,32 @@ void Simulation::run()
 	  ////////////////////////////////////////////////////////////////////////////////
 
 
+	  if (para->getNumprocs() > 1)
+	  {
+	  	  ////1D domain decomposition
+	  	  //exchangePostCollDataGPU27(para, comm, 0);
+	  	  //////////////////////////////////////////////////////////////////////////
+	  	  //3D domain decomposition
+	  	  //output << "start exchange Post X (level 0) \n";
+	  	  exchangePostCollDataXGPU27(para.get(), comm, cudaManager.get(), 0);
+	  	  //output << "end exchange Post X (level 0) \n";
+	  	  //output << "start exchange Post Y (level 0) \n";
+	  	  exchangePostCollDataYGPU27(para.get(), comm, cudaManager.get(), 0);
+	  	  //output << "end exchange Post Y (level 0) \n";
+	  	  //output << "start exchange Post Z (level 0) \n";
+	  	  exchangePostCollDataZGPU27(para.get(), comm, cudaManager.get(), 0);
+	  	  //output << "end exchange Post Z (level 0) \n";
+	  	  ////////////////////////////////////////////////////////////////////////
+	  	  //3D domain decomposition convection diffusion
+	  	  if (para->getDiffOn()==true)
+	  	  {
+	  	  	  exchangePostCollDataADXGPU27(para.get(), comm, cudaManager.get(), 0);
+	  	  	  exchangePostCollDataADYGPU27(para.get(), comm, cudaManager.get(), 0);
+	  	  	  exchangePostCollDataADZGPU27(para.get(), comm, cudaManager.get(), 0);
+	  	  }
+	  }
+
+
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -2096,10 +2122,10 @@ void Simulation::run()
 			   //////////////////////////////////////////////////////////////////////////
                if( this->kineticEnergyAnalyzer || this->enstrophyAnalyzer )
                {
-                   std::string fname = para->getFName() + StringUtil::toString<int>(t) + "_t_";
+                   std::string fname = para->getFName() + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + StringUtil::toString<int>(t);
 
                    if (this->kineticEnergyAnalyzer) this->kineticEnergyAnalyzer->writeToFile(fname);
-                   if (this->enstrophyAnalyzer) this->enstrophyAnalyzer->writeToFile(fname);
+                   if (this->enstrophyAnalyzer)     this->enstrophyAnalyzer->writeToFile(fname);
                }
 			   //////////////////////////////////////////////////////////////////////////
 

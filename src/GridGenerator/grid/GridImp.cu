@@ -1468,6 +1468,29 @@ uint GridImp::getReceiveIndex(int direction, uint index)
     return this->communicationIndices[direction].receiveIndices[ index ];
 }
 
+void GridImp::repairCommunicationInices(int direction )
+{
+    this->communicationIndices[direction].sendIndices.insert( this->communicationIndices[direction].sendIndices.end(), 
+                                                              this->communicationIndices[direction+1].sendIndices.begin(), 
+                                                              this->communicationIndices[direction+1].sendIndices.end() );
+
+
+
+    this->communicationIndices[direction+1].receiveIndices.insert( this->communicationIndices[direction+1].receiveIndices.end(), 
+                                                                 this->communicationIndices[direction].receiveIndices.begin(), 
+                                                                 this->communicationIndices[direction].receiveIndices.end() );
+
+    this->communicationIndices[direction].receiveIndices = this->communicationIndices[direction+1].receiveIndices;
+
+
+
+
+
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "size send " << (int)this->communicationIndices[direction].sendIndices.size() << "\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "recv send " << (int)this->communicationIndices[direction].receiveIndices.size() << "\n";
+}
+
 
 // --------------------------------------------------------- //
 //                        Getter                             //

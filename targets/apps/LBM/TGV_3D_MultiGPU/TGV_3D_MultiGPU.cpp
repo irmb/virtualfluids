@@ -10,6 +10,8 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
+#include <numeric>
 #include <stdexcept>
 #include <fstream>
 #define _USE_MATH_DEFINES
@@ -93,6 +95,9 @@ uint gpuIndex = 0;
 bool useLimiter = false;
 bool useWale = false;
 
+int mpirank;
+int mpiWorldSize;
+
 std::string kernel( "CumulantK17Comp" );
 
 std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
@@ -103,11 +108,30 @@ std::string simulationName("TGV_3D");
 
 void multipleLevel(const std::string& configPath)
 {
-    //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
-    //std::ofstream logFile( "grid/gridGeneratorLog.txt" );
-    //logging::Logger::addStream(&logFile);
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    int sideLengthX, sideLengthY, sideLengthZ, rankX, rankY, rankZ;
+
+    
+    if      (mpiWorldSize == 1 ) { sideLengthX = 1; sideLengthY = 1; sideLengthZ = 1; }
+    else if (mpiWorldSize == 2 ) { sideLengthX = 2; sideLengthY = 1; sideLengthZ = 1; }
+    else if (mpiWorldSize == 4 ) { sideLengthX = 2; sideLengthY = 2; sideLengthZ = 1; }
+    else if (mpiWorldSize == 8 ) { sideLengthX = 2; sideLengthY = 2; sideLengthZ = 2; }
+    else if (mpiWorldSize == 16) { sideLengthX = 4; sideLengthY = 2; sideLengthZ = 2; }
+    else if (mpiWorldSize == 32) { sideLengthX = 4; sideLengthY = 4; sideLengthZ = 2; }
+
+    rankX =   mpirank %   sideLengthX;
+    rankY = ( mpirank % ( sideLengthX * sideLengthY ) ) /   sideLengthX;
+    rankZ =   mpirank                                   / ( sideLengthY * sideLengthX );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     logging::Logger::addStream(&std::cout);
+    
+    std::ofstream logFile( path + simulationName + "_rank_" + std::to_string(mpirank) + ".log" );
+    logging::Logger::addStream(&logFile);
+
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
@@ -129,6 +153,9 @@ void multipleLevel(const std::string& configPath)
 
     std::shared_ptr<KernelMapper> kernelMapper = KernelMapper::getInstance();
 
+    *logging::out << logging::Logger::INFO_HIGH << "SideLength = " << sideLengthX << " " << sideLengthY << " " << sideLengthZ << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "rank       = " << rankX << " " << rankY << " " << rankZ << "\n";
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,35 +174,72 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    real LX = 2.0 * PI / double(sideLengthX);
+    real LY = 2.0 * PI / double(sideLengthY);
+    real LZ = 2.0 * PI / double(sideLengthZ);
+
+    *logging::out << logging::Logger::INFO_HIGH << "L       = " << LX << " " << LY << " " << LZ << "\n";
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	real dx = 2.0 * PI / real(nx);
 
-	gridBuilder->addCoarseGrid(-PI, -PI, -PI,
-								PI,  PI,  PI, dx);
+    real xOverlap = ( sideLengthX == 1 ) ? 0.0 : 5.0*dx;
+    real yOverlap = ( sideLengthY == 1 ) ? 0.0 : 5.0*dx;
+    real zOverlap = ( sideLengthZ == 1 ) ? 0.0 : 5.0*dx;
 
-	gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+    *logging::out << logging::Logger::INFO_HIGH << "Domain       = " <<  rankX*LX    - PI - xOverlap << " " <<  rankY*LY    - PI - yOverlap << " " <<  rankZ*LZ    - PI - zOverlap << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "Domain       = " << (rankX*LX+1) - PI + xOverlap << " " << (rankY*LY+1) - PI + yOverlap << " " << (rankZ*LZ+1) - PI + zOverlap << "\n";
+
+    gridBuilder->addCoarseGrid(  rankX   *LX - PI - xOverlap,      rankY   *LY - PI - yOverlap,      rankZ   *LZ - PI - zOverlap,
+                                (rankX+1)*LX - PI + xOverlap,     (rankY+1)*LY - PI + yOverlap,     (rankZ+1)*LZ - PI + zOverlap, dx);
+
+    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( rankX*LX - PI, (rankX+1)*LX - PI, 
+                                                                 rankY*LY - PI, (rankY+1)*LY - PI,
+                                                                 rankZ*LZ - PI, (rankZ+1)*LZ - PI  ) );
+
+    gridBuilder->setPeriodicBoundaryCondition(sideLengthX == 1, sideLengthY == 1, sideLengthZ == 1);
 
 	gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
 
+    if( mpiWorldSize > 1 )
+    {
+        int rankPX = ( (rankX + 1 + sideLengthX) % sideLengthX ) +    rankY                                    * sideLengthX +    rankZ                                    * sideLengthX * sideLengthY;
+        int rankMX = ( (rankX - 1 + sideLengthX) % sideLengthX ) +    rankY                                    * sideLengthX +    rankZ                                    * sideLengthX * sideLengthY;
+        int rankPY =    rankX                                    + ( (rankY + 1 + sideLengthY) % sideLengthY ) * sideLengthX +    rankZ                                    * sideLengthX * sideLengthY;
+        int rankMY =    rankX                                    + ( (rankY - 1 + sideLengthY) % sideLengthY ) * sideLengthX +    rankZ                                    * sideLengthX * sideLengthY;
+        int rankPZ =    rankX                                    +    rankY                                    * sideLengthX + ( (rankZ + 1 + sideLengthZ) % sideLengthZ ) * sideLengthX * sideLengthY;
+        int rankMZ =    rankX                                    +    rankY                                    * sideLengthX + ( (rankZ - 1 + sideLengthZ) % sideLengthZ ) * sideLengthX * sideLengthY;
+
+        if( sideLengthX > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PX, GKS );
+        if( sideLengthX > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MX, GKS );
+        if( sideLengthY > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PY, GKS );
+        if( sideLengthY > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MY, GKS );
+        if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PZ, GKS );
+        if( sideLengthZ > 1 ) gridBuilder->findCommunicationIndices( CommunicationDirections::MZ, GKS );
+
+        if( sideLengthX > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, rankMX);
+        if( sideLengthY > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MY, rankMY);
+        if( sideLengthZ > 1 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::MZ, rankMZ);
+
+        if( sideLengthX > 1 && rankMX != rankPX ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PX, rankPX);
+        if( sideLengthY > 1 && rankMY != rankPY ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PY, rankPY);
+        if( sideLengthZ > 1 && rankMZ != rankPZ ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PZ, rankPZ);
+
+        if( rankMX == rankPX ) gridBuilder->getGrid(0)->repairCommunicationInices(CommunicationDirections::MX);
+        if( rankMY == rankPY ) gridBuilder->getGrid(0)->repairCommunicationInices(CommunicationDirections::MY);
+        if( rankMZ == rankPZ ) gridBuilder->getGrid(0)->repairCommunicationInices(CommunicationDirections::MZ);
+
+        *logging::out << logging::Logger::INFO_HIGH << "neighborRanks = " << rankPX << " " << rankMX << " " << rankPY << " " << rankMY << " " << rankPZ << " " << rankMZ << "\n";
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
-	//std::stringstream _path;
- //   std::stringstream _prefix;
 
- //   //_path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_Re_1.6e4";
- //   //_path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_neqInit";
- //   _path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/Re_1600/AA2016/" << nx << "_FD_O8";
+    //////////////////////////////////////////////////////////////////////////
 
- //   //_path << "./results/AA2016/" << nx;
- //   //_path << "./results/CumOne/" << nx;
- //   //_path << "./results/F3_2018/" << nx;
-
- //   _prefix << "TGV_3D_" << nx << "_" ;
-
- //   para->setOutputPath(_path.str());
- //   para->setOutputPrefix(_prefix.str());
- //   para->setFName(_path.str() + "/" + _prefix.str());
+    SimulationFileWriter::write(path + "grid/" + std::to_string(mpirank) + "/", gridBuilder, FILEFORMAT::BINARY);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -184,7 +248,7 @@ void multipleLevel(const std::string& configPath)
 
         _path << path;
         _path << kernel;
-        _path << "SingleGPU";
+        _path << "MultiGPU";
 
         if (useLimiter) _path << "_Limiter";
 
@@ -205,7 +269,12 @@ void multipleLevel(const std::string& configPath)
 
     //////////////////////////////////////////////////////////////////////////
 
-    para->setDevices(std::vector<uint>{gpuIndex});
+    std::vector<uint> devices( mpiWorldSize );
+
+    std::iota(devices.begin(), devices.end(), 0);
+
+    //para->setDevices(std::vector<uint>{0,1});
+    para->setDevices(devices);
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -218,6 +287,9 @@ void multipleLevel(const std::string& configPath)
 
     para->setTEnd( 40 * lround(L/velocity) );	
 	para->setTOut(  5 * lround(L/velocity) );
+
+    //para->setTEnd( 1000 );	
+	//para->setTOut(    1 );
 
     para->setVelocity( velocity );
 
@@ -235,6 +307,11 @@ void multipleLevel(const std::string& configPath)
         vx  =  velocity * sin( a * coordX ) * cos( b * coordY ) * cos( c * coordZ );
         vy  = -velocity * cos( a * coordX ) * sin( b * coordY ) * cos( c * coordZ );
         vz  = 0.0;
+
+        //rho = mpirank;
+        //vx  = 0.0;
+        //vy  = 0.0;
+        //vz  = 0.0;
 
     } );
 
@@ -268,6 +345,8 @@ void multipleLevel(const std::string& configPath)
 
     sim.run();
     sim.free();
+
+    logFile.close();
 }
 
 
@@ -281,6 +360,9 @@ int main( int argc, char* argv[])
         
         try
         {
+            MPI_Comm_rank(MPI_COMM_WORLD, &mpirank);
+            MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
+
             //////////////////////////////////////////////////////////////////////////
 			std::string targetPath( __FILE__ );
 

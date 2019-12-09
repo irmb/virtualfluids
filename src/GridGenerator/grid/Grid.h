@@ -135,6 +135,9 @@ public:
 
     virtual uint getSendIndex(int direction, uint index)  = 0;
     virtual uint getReceiveIndex(int direction, uint index)  = 0;
+
+    virtual void repairCommunicationInices(int direction) = 0;
+
 };
 
 #endif

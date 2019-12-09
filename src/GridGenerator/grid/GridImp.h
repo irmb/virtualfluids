@@ -288,7 +288,9 @@ public:
     uint getSendIndex(int direction, uint index) override;
     uint getReceiveIndex(int direction, uint index) override;
 
-private:
+    void repairCommunicationInices(int direction) override;
+
+public:
 
     struct CommunicationIndices
     {

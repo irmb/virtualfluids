@@ -21,9 +21,9 @@
 #include "GPU/GPU_Kernels.cuh"
 #include "Core/RealConstants.h"
 
-__global__                 void kineticEnergyKernel  (real* vx, real* vy, real* vz, real* rho, uint* geo, real* kineticEnergy, uint* isFluid, uint size_Mat);
+__global__                 void kineticEnergyKernel  (real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, uint size_Mat);
 
-__host__ __device__ inline void kineticEnergyFunction(real* vx, real* vy, real* vz, real* rho,            real* kineticEnergy, uint* isFluid, uint index);
+__host__ __device__ inline void kineticEnergyFunction(real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, uint index);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -71,6 +71,10 @@ bool KineticEnergyAnalyzer::run(uint iter)
 											    para->getParD(lev)->vy_SP, 
 												para->getParD(lev)->vz_SP, 
 												para->getParD(lev)->rho_SP, 
+											    para->getParD(lev)->neighborX_SP,
+											    para->getParD(lev)->neighborY_SP,
+											    para->getParD(lev)->neighborZ_SP,
+											    para->getParD(lev)->neighborWSB_SP,
 											    para->getParD(lev)->geoSP,
 												kineticEnergy.data().get(), 
                                                 isFluid.data().get(),
@@ -82,12 +86,14 @@ bool KineticEnergyAnalyzer::run(uint iter)
 	 real EKin               = thrust::reduce(kineticEnergy.begin(), kineticEnergy.end(), c0o1, thrust::plus<real>());
      uint numberOfFluidNodes = thrust::reduce(isFluid.begin(),       isFluid.end(),       0,    thrust::plus<uint>());
 
+    //std::cout << "EKin " << EKin << "   " << numberOfFluidNodes << std::endl;
+
     this->kineticEnergyTimeSeries.push_back( EKin / real(numberOfFluidNodes) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__global__ void kineticEnergyKernel(real* vx, real* vy, real* vz, real* rho, uint* geo, real* kineticEnergy, uint* isFluid, uint size_Mat)
+__global__ void kineticEnergyKernel(real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, uint size_Mat)
 {
     //////////////////////////////////////////////////////////////////////////
     const uint x = threadIdx.x;  // Globaler x-Index 
@@ -101,17 +107,31 @@ __global__ void kineticEnergyKernel(real* vx, real* vy, real* vz, real* rho, uin
 	////////////////////////////////////////////////////////////////////////////////
     //printf("%d\n", index);
 
+    //if( index % 34 == 0 || index % 34 == 33 ) return;
+
     if( index >= size_Mat) return;
 
 	unsigned int BC;
 	BC = geo[index];
 	if (BC != GEO_FLUID) return;
 
-    kineticEnergyFunction( vx, vy, vz, rho, kineticEnergy, isFluid, index );
+    kineticEnergyFunction( vx, vy, vz, rho, neighborX, neighborY, neighborZ, neighborWSB, geo, kineticEnergy, isFluid, index );
 }
 
-__host__ __device__ void kineticEnergyFunction(real* vx, real* vy, real* vz, real* rho, real* kineticEnergy, uint* isFluid, uint index)
+__host__ __device__ void kineticEnergyFunction(real* vx, real* vy, real* vz, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* kineticEnergy, uint* isFluid, uint index)
 {
+    //////////////////////////////////////////////////////////////////////////////
+	//neighbor index                                
+	uint k     = index;                             
+	uint kPx   = neighborX[k];                      if( geo[ kPx   ] != GEO_FLUID ) return;
+	uint kPy   = neighborY[k];                      if( geo[ kPy   ] != GEO_FLUID ) return;
+	uint kPz   = neighborZ[k];                      if( geo[ kPz   ] != GEO_FLUID ) return;
+	uint kMxyz = neighborWSB[k];                    if( geo[ kMxyz ] != GEO_FLUID ) return;
+	uint kMx   = neighborZ[neighborY[kMxyz]];       if( geo[ kMx   ] != GEO_FLUID ) return;
+	uint kMy   = neighborZ[neighborX[kMxyz]];       if( geo[ kMy   ] != GEO_FLUID ) return;
+	uint kMz   = neighborY[neighborX[kMxyz]];       if( geo[ kMz   ] != GEO_FLUID ) return;
+    //////////////////////////////////////////////////////////////////////////
+
     isFluid[ index ] = 1;
 
     kineticEnergy[ index ] = c1o2 * ( vx[index] * vx[index] + vy[index] * vy[index] + vz[index] * vz[index] ) * (rho[index] + c1o1);
