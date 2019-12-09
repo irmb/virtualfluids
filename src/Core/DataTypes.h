@@ -1,6 +1,8 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
+#include <string>
+
 #include "VirtualFluidsDefinitions.h"
 
 #ifdef VF_DOUBLE_ACCURACY

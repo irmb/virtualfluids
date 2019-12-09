@@ -105,8 +105,10 @@ ELSE(MSVC)
   SET( CMAKE_CXX_FLAGS "-include ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
 ENDIF(MSVC)
 
-# only use this with device of CC larger than 6.0
-set(CMAKE_CUDA_FLAGS " -arch=sm_60" CACHE STRING "" FORCE)
+IF( VF.BUILD_VF_GKS )
+  # only use this with device of CC larger than 6.0
+  set(CMAKE_CUDA_FLAGS " -arch=sm_60" CACHE STRING "" FORCE)
+ENDIF()
 
 set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
 
