@@ -100,7 +100,7 @@ int mpiWorldSize;
 
 std::string kernel( "CumulantK17Comp" );
 
-std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
+//std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
 std::string path("results/"); //PHOENIX
 //std::string path("E:/DrivenCavity/results/"); //TESLA03
 
