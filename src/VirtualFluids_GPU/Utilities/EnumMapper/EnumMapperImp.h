@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <exception>
 
 template <typename T>
 class EnumMapperImp
@@ -22,10 +23,10 @@ private:
 template<typename T>
 inline std::string EnumMapperImp<T>::getString(T enumeration)
 {
-	std::map< T, std::string>::iterator it;
+	typename std::map< T, std::string>::iterator it;
 	it = enumMap.find(enumeration);
 	if (it == enumMap.end()) {
-		throw std::exception("Enumeration is not registered.");
+		throw std::runtime_error("Enumeration is not registered.");
 	}
 	else
 		return it->second;
@@ -34,10 +35,10 @@ inline std::string EnumMapperImp<T>::getString(T enumeration)
 template<typename T>
 inline T EnumMapperImp<T>::getEnum(std::string name)
 {
-	std::map< std::string, T>::iterator it;
+	typename std::map< std::string, T>::iterator it;
 	it = stringMap.find(name);
 	if (it == stringMap.end()) {
-		throw std::exception("String is not registered.");
+		throw std::runtime_error("String is not registered.");
 	}
 	else
 		return it->second;

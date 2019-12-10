@@ -61,5 +61,5 @@ std::shared_ptr<PreProcessorStrategy> PreProcessorFactoryImp::makePreProcessorSt
 	default:
 		break;
 	}
-	throw  std::exception("PreProcessorFactory does not know the PreProcessorType.");
+	throw  std::runtime_error("PreProcessorFactory does not know the PreProcessorType.");
 }

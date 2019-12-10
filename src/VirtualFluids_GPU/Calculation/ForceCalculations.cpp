@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <sstream>
-#include "utilities/StringUtil.hpp"
+#include "Utilities/StringUtil.hpp"
 #include "GPU/CudaMemoryManager.h"
 
 using namespace std;

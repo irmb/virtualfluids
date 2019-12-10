@@ -208,7 +208,7 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
 		return newKernel;
 	}
 	else
-		throw  std::exception("KernelFactory does not know the KernelType.");
+		throw  std::runtime_error("KernelFactory does not know the KernelType.");
 
 	
 }
@@ -245,7 +245,7 @@ std::shared_ptr<ADKernel> KernelFactoryImp::makeAdvDifKernel(std::shared_ptr<Par
 		return newKernel;
 	}
 	else
-		throw  std::exception("KernelFactory does not know the KernelType.");
+		throw  std::runtime_error("KernelFactory does not know the KernelType.");
 }
 
 KernelFactoryImp::KernelFactoryImp()
