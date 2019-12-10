@@ -101,6 +101,7 @@ int mpiWorldSize;
 std::string kernel( "CumulantK17Comp" );
 
 std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
+std::string path("results/"); //PHOENIX
 //std::string path("E:/DrivenCavity/results/"); //TESLA03
 
 std::string simulationName("TGV_3D");
@@ -243,32 +244,6 @@ void multipleLevel(const std::string& configPath)
 
     //////////////////////////////////////////////////////////////////////////
 
-    {
-        std::stringstream _path;
-
-        _path << path;
-        _path << kernel;
-        _path << "MultiGPU";
-
-        if (useLimiter) _path << "_Limiter";
-
-        path = _path.str();
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-
-    {
-        std::stringstream _simulationName;
-
-        _simulationName << simulationName;
-        _simulationName << "_nx_" << nx;
-        _simulationName << "_dtPerL_" << dtPerL << "_";
-
-        simulationName = _simulationName.str();
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-
     std::vector<uint> devices( mpiWorldSize );
 
     std::iota(devices.begin(), devices.end(), 0);
@@ -394,6 +369,34 @@ int main( int argc, char* argv[])
 
             if( cmdOptionExists( argv, argv+argc, "--useWale" ) )
                 useWale = true;
+
+            //////////////////////////////////////////////////////////////////////////
+
+            {
+                std::stringstream _path;
+
+                _path << path;
+                _path << kernel;
+                _path << "MultiGPU";
+
+                if (useLimiter) _path << "_Limiter";
+
+                path = _path.str();
+            }
+
+            //////////////////////////////////////////////////////////////////////////
+
+            {
+                std::stringstream _simulationName;
+
+                _simulationName << simulationName;
+                _simulationName << "_nx_" << nx;
+                _simulationName << "_dtPerL_" << dtPerL << "_";
+
+                simulationName = _simulationName.str();
+            }
+
+            //////////////////////////////////////////////////////////////////////////
 
 			multipleLevel(targetPath + "config.txt");
 
