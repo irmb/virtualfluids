@@ -5,7 +5,6 @@
 #include <string>
 
 template <typename T>
-
 class EnumMapperImp
 {
 public:

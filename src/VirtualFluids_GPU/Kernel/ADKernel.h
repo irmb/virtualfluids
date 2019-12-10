@@ -1,7 +1,7 @@
 #ifndef ADV_DIFF_KERNEL_H
 #define ADV_DIFF_KERNEL_H
 
-#include "Kernel\KernelImp.h"
+#include "Kernel/KernelImp.h"
 
 class ADKernel : public KernelImp
 {

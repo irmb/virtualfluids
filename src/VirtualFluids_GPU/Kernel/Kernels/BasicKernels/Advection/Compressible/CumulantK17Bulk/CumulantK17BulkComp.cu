@@ -1,7 +1,7 @@
 #include "CumulantK17BulkComp.h"
 
 #include "CumulantK17BulkComp_Device.cuh"
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 
 std::shared_ptr<CumulantK17BulkComp> CumulantK17BulkComp::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

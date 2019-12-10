@@ -1,7 +1,7 @@
 #ifndef BGK_PLUS_COMP_SP27_H
 #define BGK_PLUS_COMP_SP27_H
 
-#include "Kernel\KernelImp.h"
+#include "Kernel/KernelImp.h"
 
 class BGKPlusCompSP27 : public KernelImp
 {

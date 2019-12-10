@@ -1,7 +1,7 @@
 #include "WaleCumulantK17Comp.h"
 
 #include "WaleCumulantK17Comp_Device.cuh"
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 
 std::shared_ptr<WaleCumulantK17Comp> WaleCumulantK17Comp::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

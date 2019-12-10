@@ -1,7 +1,7 @@
 #ifndef CUMULANT_ALL4_COMP_SP27_H
 #define CUMULANT_ALL4_COMP_SP27_H
 
-#include "Kernel\KernelImp.h"
+#include "Kernel/KernelImp.h"
 
 class CumulantAll4CompSP27 : public KernelImp
 {

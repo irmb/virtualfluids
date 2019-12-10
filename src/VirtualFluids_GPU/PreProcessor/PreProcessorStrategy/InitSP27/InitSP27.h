@@ -1,7 +1,7 @@
 #ifndef INIT_SP27_H
 #define INIT_SP27_H
 
-#include "PreProcessor\PreProcessorStrategy\PreProcessorStrategy.h"
+#include "PreProcessor/PreProcessorStrategy/PreProcessorStrategy.h"
 
 #include <memory>
 

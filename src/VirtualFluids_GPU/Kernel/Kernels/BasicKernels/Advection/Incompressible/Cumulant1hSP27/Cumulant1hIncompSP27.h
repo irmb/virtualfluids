@@ -1,7 +1,7 @@
 #ifndef CUMULANT_1H_INCOMP_SP27_H
 #define CUMULANT_1H_INCOMP_SP27_H
 
-#include "Kernel\KernelImp.h"
+#include "Kernel/KernelImp.h"
 
 class Cumulant1hIncompSP27 : public KernelImp
 {

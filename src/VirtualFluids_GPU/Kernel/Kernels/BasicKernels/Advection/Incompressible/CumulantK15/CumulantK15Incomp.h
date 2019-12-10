@@ -1,7 +1,7 @@
 #ifndef CUMULANT_K15_INCOMP_H
 #define CUMULANT_K15_INCOMP_H
 
-#include "Kernel\KernelImp.h"
+#include "Kernel/KernelImp.h"
 
 class CumulantK15Incomp : public KernelImp
 {

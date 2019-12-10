@@ -1,7 +1,7 @@
 #ifndef WALE_CUMULANT_K15_COMP_H
 #define WALE_CUMULANT_K15_COMP_H
 
-#include "Kernel\KernelImp.h"
+#include "Kernel/KernelImp.h"
 
 class WaleCumulantK15Comp : public KernelImp
 {

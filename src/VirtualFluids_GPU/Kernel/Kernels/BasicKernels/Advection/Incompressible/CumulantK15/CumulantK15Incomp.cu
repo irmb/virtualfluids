@@ -1,7 +1,7 @@
 #include "CumulantK15Incomp.h"
 
 #include "CumulantK15Incomp_Device.cuh"
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 
 std::shared_ptr<CumulantK15Incomp> CumulantK15Incomp::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

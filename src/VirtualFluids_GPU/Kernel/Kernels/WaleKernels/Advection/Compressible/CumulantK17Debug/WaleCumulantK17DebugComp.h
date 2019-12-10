@@ -1,7 +1,7 @@
 #ifndef WALE_CUMULANT_AA2016_DEBUG_COMP_SP27_H
 #define WALE_CUMULANT_AA2016_DEBUG_COMP_SP27_H
 
-#include "Kernel\KernelImp.h"
+#include "Kernel/KernelImp.h"
 
 class WaleCumulantK17DebugComp : public KernelImp
 {

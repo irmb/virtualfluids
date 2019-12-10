@@ -1,7 +1,7 @@
 #include "CascadeIncompSP27.h"
 
 #include "CascadeIncompSP27_Device.cuh"
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 
 std::shared_ptr<CascadeIncompSP27> CascadeIncompSP27::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

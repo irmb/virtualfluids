@@ -1,7 +1,7 @@
 #include "InitIncompAD7.h"
 
 #include "InitIncompAD7_Device.cuh"
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 
 std::shared_ptr<PreProcessorStrategy> InitIncompAD7::getNewInstance(std::shared_ptr<Parameter> para)
 {

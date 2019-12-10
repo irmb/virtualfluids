@@ -1,7 +1,7 @@
 #ifndef INITF3_H
 #define INITF3_H
 
-#include "PreProcessor\PreProcessorStrategy\PreProcessorStrategy.h"
+#include "PreProcessor/PreProcessorStrategy/PreProcessorStrategy.h"
 
 #include <memory>
 

@@ -1,7 +1,7 @@
 #ifndef MRT_INCOMP_SP27_H
 #define MRT_INCOMP_SP27_H
 
-#include "Kernel\KernelImp.h"
+#include "Kernel/KernelImp.h"
 
 class MRTIncompSP27 : public KernelImp
 {

@@ -1,7 +1,7 @@
 #ifndef CUMULANT_K17_COMP_H
 #define CUMULANT_K17_COMP_H
 
-#include "Kernel\KernelImp.h"
+#include "Kernel/KernelImp.h"
 
 class CumulantK17Comp : public KernelImp
 {

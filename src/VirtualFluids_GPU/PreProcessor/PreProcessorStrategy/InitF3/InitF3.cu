@@ -1,7 +1,7 @@
 #include "InitF3.h"
 
 #include "InitF3_Device.cuh"
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 
 std::shared_ptr<PreProcessorStrategy> InitF3::getNewInstance(std::shared_ptr<Parameter> para)
 {

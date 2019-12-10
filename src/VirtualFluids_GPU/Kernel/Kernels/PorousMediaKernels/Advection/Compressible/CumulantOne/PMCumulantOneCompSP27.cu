@@ -1,7 +1,7 @@
 #include "PMCumulantOneCompSP27.h"
 
 #include "PMCumulantOneCompSP27_Device.cuh"
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 #include "Calculation/PorousMedia.h"
 
 std::shared_ptr<PMCumulantOneCompSP27> PMCumulantOneCompSP27::getNewInstance(std::shared_ptr<Parameter> para, std::vector<std::shared_ptr<PorousMedia>> pm, int level)

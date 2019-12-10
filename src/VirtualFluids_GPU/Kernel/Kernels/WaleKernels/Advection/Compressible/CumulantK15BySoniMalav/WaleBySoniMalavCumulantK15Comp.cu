@@ -1,7 +1,7 @@
 #include "WaleBySoniMalavCumulantK15Comp.h"
 
 #include "WaleBySoniMalavCumulantK15Comp_Device.cuh"
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 
 std::shared_ptr<WaleBySoniMalavCumulantK15Comp> WaleBySoniMalavCumulantK15Comp::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

@@ -1,7 +1,7 @@
 #include "ADComp27.h"
 
 #include "ADComp27_Device.cuh"
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 
 std::shared_ptr<ADComp27> ADComp27::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

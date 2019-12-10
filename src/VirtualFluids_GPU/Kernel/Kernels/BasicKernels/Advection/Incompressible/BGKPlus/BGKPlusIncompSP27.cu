@@ -1,7 +1,7 @@
 #include "BGKPlusIncompSP27.h"
 
 #include "BGKPlusIncompSP27_Device.cuh"
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 
 std::shared_ptr<BGKPlusIncompSP27> BGKPlusIncompSP27::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

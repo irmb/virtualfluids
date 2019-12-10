@@ -1,7 +1,7 @@
 #ifndef PM_CUMULANT_ONE_COMP_SP27_H
 #define PM_CUMULANT_ONE_COMP_SP27_H
 
-#include "Kernel\KernelImp.h"
+#include "Kernel/KernelImp.h"
 
 class PorousMedia;
 

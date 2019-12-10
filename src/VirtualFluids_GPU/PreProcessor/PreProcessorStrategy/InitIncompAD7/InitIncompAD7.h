@@ -1,7 +1,7 @@
 #ifndef INIT_INCOMP_AD7_H
 #define INIT_INCOMP_AD7_H
 
-#include "PreProcessor\PreProcessorStrategy\PreProcessorStrategy.h"
+#include "PreProcessor/PreProcessorStrategy/PreProcessorStrategy.h"
 
 #include <memory>
 

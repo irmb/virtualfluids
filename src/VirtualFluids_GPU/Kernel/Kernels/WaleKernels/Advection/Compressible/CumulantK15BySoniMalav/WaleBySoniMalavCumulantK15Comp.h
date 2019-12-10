@@ -1,7 +1,7 @@
 #ifndef WALE_CUMULANT_K15_COMP_BY_SONI_MALAV_H
 #define WALE_CUMULANT_K15_COMP_BY_SONI_MALAV_H
 
-#include "Kernel\KernelImp.h"
+#include "Kernel/KernelImp.h"
 
 class WaleBySoniMalavCumulantK15Comp : public KernelImp
 {

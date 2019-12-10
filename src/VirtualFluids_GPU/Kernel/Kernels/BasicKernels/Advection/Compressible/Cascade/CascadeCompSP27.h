@@ -1,7 +1,7 @@
 #ifndef CASCADE_COMP_SP27_H
 #define CASCADE_COMP_SP27_H
 
-#include "Kernel\KernelImp.h"
+#include "Kernel/KernelImp.h"
 
 class CascadeCompSP27 : public KernelImp
 {

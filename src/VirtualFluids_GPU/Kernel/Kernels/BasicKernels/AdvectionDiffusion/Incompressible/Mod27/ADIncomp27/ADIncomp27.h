@@ -1,7 +1,7 @@
 #ifndef AD_INCOMP_27_H
 #define AD_INCOMP_27_H
 
-#include "Kernel\ADKernel.h"
+#include "Kernel/ADKernel.h"
 
 
 class ADIncomp27 : public ADKernel
