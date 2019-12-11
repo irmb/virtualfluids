@@ -101,8 +101,9 @@ int mpiWorldSize;
 std::string kernel( "CumulantK17Comp" );
 
 //std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
-std::string path("results/"); //PHOENIX
+//std::string path("results/"); //PHOENIX
 //std::string path("E:/DrivenCavity/results/"); //TESLA03
+std::string path("E:/TaylorGreen3D/"); //AzultecPC
 
 std::string simulationName("TGV_3D");
 //////////////////////////////////////////////////////////////////////////
@@ -250,6 +251,8 @@ void multipleLevel(const std::string& configPath)
 
     //para->setDevices(std::vector<uint>{0,1});
     para->setDevices(devices);
+	
+	para->setMaxDev(mpiWorldSize);
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -262,6 +265,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setTEnd( 40 * lround(L/velocity) );	
 	para->setTOut(  5 * lround(L/velocity) );
+	//para->setTOut(  100  );
 
     //para->setTEnd( 1000 );	
 	//para->setTOut(    1 );
@@ -377,7 +381,7 @@ int main( int argc, char* argv[])
 
                 _path << path;
                 _path << kernel;
-                _path << "MultiGPU";
+                _path << "MultiGPU/";
 
                 if (useLimiter) _path << "_Limiter";
 
