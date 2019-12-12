@@ -34,6 +34,7 @@
 #define FILE_WRITER_H
 
 #include <vector>
+#include <string>
 
 #include "DataWriter.h"
 

@@ -40,7 +40,7 @@
 //! precision accumulator can prevent undeterministic behavior
 //! that stems from the order of addition to the accumulator.
 
-//typedef float realAccumulator;
-typedef double realAccumulator;
+typedef float realAccumulator;
+//typedef double realAccumulator;
 
 #endif

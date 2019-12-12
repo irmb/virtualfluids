@@ -92,15 +92,18 @@ sharedLibs()
 
 include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FindCompiler.cmake)
 configure_file(src/VirtualFluidsDefinitions.in.h VirtualFluidsDefinitions.h)
-if(MSVC)
+IF(MSVC)
   SET( CMAKE_CXX_FLAGS "/FI${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
 ELSE(MSVC)
   SET( CMAKE_CXX_FLAGS "-include ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
 ENDIF(MSVC)
 
 # only use this with device of CC larger than 6.0
-set(CMAKE_CUDA_FLAGS " -arch=sm_60" CACHE STRING "" FORCE)
-
+IF(VF_DOUBLE_ACCURACY)
+	set(CMAKE_CUDA_FLAGS " -arch=sm_60" CACHE STRING "" FORCE)
+ELSE(VF_DOUBLE_ACCURACY)	
+	set(CMAKE_CUDA_FLAGS "" CACHE STRING "" FORCE)
+ENDIF(VF_DOUBLE_ACCURACY)
 set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
 
 
