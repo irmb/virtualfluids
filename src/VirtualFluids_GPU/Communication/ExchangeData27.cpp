@@ -1451,3 +1451,285 @@ void exchangePostCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemor
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//3D domain decomposition F3 - K18/K20
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// X
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void exchangeCollDataF3XGPU(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+{
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//copy Device to Host
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
+	{
+		getSendGsDevF3(
+			para->getParD(level)->g6.g[0],
+			para->getParD(level)->sendProcessNeighborF3X[i].g[0],
+			para->getParD(level)->sendProcessNeighborF3X[i].index,
+			para->getParD(level)->sendProcessNeighborF3X[i].numberOfNodes,
+			para->getParD(level)->neighborX_SP,
+			para->getParD(level)->neighborY_SP,
+			para->getParD(level)->neighborZ_SP,
+			para->getParD(level)->size_Mat_SP,
+			para->getParD(level)->evenOrOdd,
+			para->getParD(level)->numberofthreads);
+		//////////////////////////////////////////////////////////////////////////
+		cudaManager->cudaCopyProcessNeighborF3XFsDH(level, i);
+	}
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//start non blocking MPI receive
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
+	{
+		comm->nbRecvDataGPU(
+			para->getParH(level)->recvProcessNeighborF3X[i].g[0],
+			para->getParH(level)->recvProcessNeighborF3X[i].numberOfGs,
+			para->getParH(level)->recvProcessNeighborF3X[i].rankNeighbor);
+	}
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//start blocking MPI send
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
+	{
+		comm->sendDataGPU(
+			para->getParH(level)->sendProcessNeighborF3X[i].g[0],
+			para->getParH(level)->sendProcessNeighborF3X[i].numberOfGs,
+			para->getParH(level)->sendProcessNeighborF3X[i].rankNeighbor);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//Wait
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
+	{
+		comm->waitGPU(i);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//reset the request array
+	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")))
+	{
+		comm->resetRequest();
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//copy Host to Device
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
+	{
+		cudaManager->cudaCopyProcessNeighborF3XFsHD(level, i);
+		//////////////////////////////////////////////////////////////////////////
+		setRecvGsDevF3(
+			para->getParD(level)->g6.g[0],
+			para->getParD(level)->recvProcessNeighborF3X[i].g[0],
+			para->getParD(level)->recvProcessNeighborF3X[i].index,
+			para->getParD(level)->recvProcessNeighborF3X[i].numberOfNodes,
+			para->getParD(level)->neighborX_SP,
+			para->getParD(level)->neighborY_SP,
+			para->getParD(level)->neighborZ_SP,
+			para->getParD(level)->size_Mat_SP,
+			para->getParD(level)->evenOrOdd,
+			para->getParD(level)->numberofthreads);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Y
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void exchangeCollDataF3YGPU(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+{
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//copy Device to Host
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
+	{
+		getSendGsDevF3(
+			para->getParD(level)->g6.g[0],
+			para->getParD(level)->sendProcessNeighborF3Y[i].g[0],
+			para->getParD(level)->sendProcessNeighborF3Y[i].index,
+			para->getParD(level)->sendProcessNeighborF3Y[i].numberOfNodes,
+			para->getParD(level)->neighborX_SP,
+			para->getParD(level)->neighborY_SP,
+			para->getParD(level)->neighborZ_SP,
+			para->getParD(level)->size_Mat_SP,
+			para->getParD(level)->evenOrOdd,
+			para->getParD(level)->numberofthreads);
+		//////////////////////////////////////////////////////////////////////////
+		cudaManager->cudaCopyProcessNeighborF3YFsDH(level, i);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//start non blocking MPI receive
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
+	{
+		comm->nbRecvDataGPU(
+			para->getParH(level)->recvProcessNeighborF3Y[i].g[0],
+			para->getParH(level)->recvProcessNeighborF3Y[i].numberOfGs,
+			para->getParH(level)->recvProcessNeighborF3Y[i].rankNeighbor);
+	}
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//start blocking MPI send
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
+	{
+		comm->sendDataGPU(
+			para->getParH(level)->sendProcessNeighborF3Y[i].g[0],
+			para->getParH(level)->sendProcessNeighborF3Y[i].numberOfGs,
+			para->getParH(level)->sendProcessNeighborF3Y[i].rankNeighbor);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//Wait
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
+	{
+		comm->waitGPU(i);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//reset the request array
+	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")))
+	{
+		comm->resetRequest();
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//copy Host to Device
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
+	{
+		cudaManager->cudaCopyProcessNeighborF3YFsHD(level, i);
+		//////////////////////////////////////////////////////////////////////////
+		setRecvGsDevF3(
+			para->getParD(level)->g6.g[0],
+			para->getParD(level)->recvProcessNeighborF3Y[i].g[0],
+			para->getParD(level)->recvProcessNeighborF3Y[i].index,
+			para->getParD(level)->recvProcessNeighborF3Y[i].numberOfNodes,
+			para->getParD(level)->neighborX_SP,
+			para->getParD(level)->neighborY_SP,
+			para->getParD(level)->neighborZ_SP,
+			para->getParD(level)->size_Mat_SP,
+			para->getParD(level)->evenOrOdd,
+			para->getParD(level)->numberofthreads);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Z
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void exchangeCollDataF3ZGPU(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+{
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//copy Device to Host
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
+	{
+		getSendGsDevF3(
+			para->getParD(level)->g6.g[0],
+			para->getParD(level)->sendProcessNeighborF3Z[i].g[0],
+			para->getParD(level)->sendProcessNeighborF3Z[i].index,
+			para->getParD(level)->sendProcessNeighborF3Z[i].numberOfNodes,
+			para->getParD(level)->neighborX_SP,
+			para->getParD(level)->neighborY_SP,
+			para->getParD(level)->neighborZ_SP,
+			para->getParD(level)->size_Mat_SP,
+			para->getParD(level)->evenOrOdd,
+			para->getParD(level)->numberofthreads);
+		//////////////////////////////////////////////////////////////////////////
+		cudaManager->cudaCopyProcessNeighborF3ZFsDH(level, i);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//start non blocking MPI receive
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
+	{
+		comm->nbRecvDataGPU(
+			para->getParH(level)->recvProcessNeighborF3Z[i].g[0],
+			para->getParH(level)->recvProcessNeighborF3Z[i].numberOfGs,
+			para->getParH(level)->recvProcessNeighborF3Z[i].rankNeighbor);
+	}
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//start blocking MPI send
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
+	{
+		comm->sendDataGPU(
+			para->getParH(level)->sendProcessNeighborF3Z[i].g[0],
+			para->getParH(level)->sendProcessNeighborF3Z[i].numberOfGs,
+			para->getParH(level)->sendProcessNeighborF3Z[i].rankNeighbor);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//Wait
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
+	{
+		comm->waitGPU(i);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//reset the request array
+	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")))
+	{
+		comm->resetRequest();
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//copy Host to Device
+	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
+	{
+		cudaManager->cudaCopyProcessNeighborF3ZFsHD(level, i);
+		//////////////////////////////////////////////////////////////////////////
+		setRecvGsDevF3(
+			para->getParD(level)->g6.g[0],
+			para->getParD(level)->recvProcessNeighborF3Z[i].g[0],
+			para->getParD(level)->recvProcessNeighborF3Z[i].index,
+			para->getParD(level)->recvProcessNeighborF3Z[i].numberOfNodes,
+			para->getParD(level)->neighborX_SP,
+			para->getParD(level)->neighborY_SP,
+			para->getParD(level)->neighborZ_SP,
+			para->getParD(level)->size_Mat_SP,
+			para->getParD(level)->evenOrOdd,
+			para->getParD(level)->numberofthreads);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

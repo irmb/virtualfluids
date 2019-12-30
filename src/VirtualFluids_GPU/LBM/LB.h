@@ -220,6 +220,16 @@ typedef struct PN27{
 	int numberOfFs;
 }ProcessNeighbor27;
 
+typedef struct PN_F3 {
+	real* g[6];
+	uint memsizeGs;
+	int* index;
+	uint memsizeIndex;
+	uint rankNeighbor;
+	int numberOfNodes;
+	int numberOfGs;
+}ProcessNeighborF3;
+
 //path line particles
 typedef struct PLP{
 	bool *stuck, *hot;

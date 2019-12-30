@@ -765,6 +765,12 @@ void Simulation::run()
 				exchangePostCollDataADYGPU27(para.get(), comm, cudaManager.get(), 0);
 				exchangePostCollDataADZGPU27(para.get(), comm, cudaManager.get(), 0);
 			}
+			if (para->getIsF3())
+			{
+				exchangeCollDataF3XGPU(para.get(), comm, cudaManager.get(), 0);
+				exchangeCollDataF3YGPU(para.get(), comm, cudaManager.get(), 0);
+				exchangeCollDataF3ZGPU(para.get(), comm, cudaManager.get(), 0);
+			}
 		}
 		////////////////////////////////////////////////////////////////////////////////
 		//PressX0
@@ -1510,6 +1516,12 @@ void Simulation::run()
 					 exchangePreCollDataADYGPU27(para.get(), comm, cudaManager.get(), 0);
 					 exchangePreCollDataADZGPU27(para.get(), comm, cudaManager.get(), 0);
 				 }
+				 if (para->getIsF3())
+				 {
+					 exchangeCollDataF3XGPU(para.get(), comm, cudaManager.get(), 0);
+					 exchangeCollDataF3YGPU(para.get(), comm, cudaManager.get(), 0);
+					 exchangeCollDataF3ZGPU(para.get(), comm, cudaManager.get(), 0);
+				 }
 			 }
 		    //////////////////////////////////////////////////////////////////////////
 		    //coarse to fine interpolation
@@ -1742,6 +1754,12 @@ void Simulation::run()
 	  	  	  exchangePostCollDataADYGPU27(para.get(), comm, cudaManager.get(), 0);
 	  	  	  exchangePostCollDataADZGPU27(para.get(), comm, cudaManager.get(), 0);
 	  	  }
+		  if (para->getIsF3())
+		  {
+			  exchangeCollDataF3XGPU(para.get(), comm, cudaManager.get(), 0);
+			  exchangeCollDataF3YGPU(para.get(), comm, cudaManager.get(), 0);
+			  exchangeCollDataF3ZGPU(para.get(), comm, cudaManager.get(), 0);
+		  }
 	  }
 
 

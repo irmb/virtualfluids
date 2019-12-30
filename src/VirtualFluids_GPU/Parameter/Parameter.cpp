@@ -3630,6 +3630,12 @@ void Parameter::setSimulatePorousMedia(bool simulatePorousMedia)
 {
 	ic.simulatePorousMedia = simulatePorousMedia;
 }
+
+void Parameter::setIsF3(bool isF3)
+{
+	this->isF3 = isF3;
+}
+
 void Parameter::setGridX(std::vector<int> GridX)
 {
 	ic.GridX = GridX;
@@ -4959,6 +4965,12 @@ bool Parameter::getSimulatePorousMedia()
 {
 	return ic.simulatePorousMedia;
 }
+
+bool Parameter::getIsF3()
+{
+	return this->isF3;
+}
+
 bool Parameter::getIsGeometryValues()
 {
 	return ic.GeometryValues;

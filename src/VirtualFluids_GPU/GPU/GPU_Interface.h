@@ -2380,6 +2380,30 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 								   bool evenOrOdd,
 								   unsigned int numberOfThreads);
 
+extern "C" void getSendGsDevF3(
+	real* G6,
+	real* bufferGs,
+	int* sendIndex,
+	int buffmax,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int size_Mat,
+	bool evenOrOdd,
+	unsigned int numberOfThreads);
+
+extern "C" void setRecvGsDevF3(
+	real* G6,
+	real* bufferGs,
+	int* recvIndex,
+	int buffmax,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int size_Mat,
+	bool evenOrOdd,
+	unsigned int numberOfThreads);
+
 extern "C" void WallFuncDev27(unsigned int numberOfThreads,
 							  int nx,
 							  int ny,

@@ -98,7 +98,7 @@ bool useWale = false;
 int mpirank;
 int mpiWorldSize;
 
-std::string kernel( "CumulantK17Comp" );
+std::string kernel( "CumulantK20Comp" );
 
 //std::string path("F:/Work/Computations/out/TaylorGreen3DNew/"); //LEGOLAS
 //std::string path("results/"); //PHOENIX
@@ -263,11 +263,11 @@ void multipleLevel(const std::string& configPath)
 
     para->setPrintFiles(true);
 
-    para->setTEnd( 40 * lround(L/velocity) );	
-	para->setTOut(  5 * lround(L/velocity) );
-	//para->setTOut(  100  );
+ //   para->setTEnd( 40 * lround(L/velocity) );	
+	//para->setTOut(  5 * lround(L/velocity) );
+	para->setTOut(  100  );
 
-    //para->setTEnd( 1000 );	
+    para->setTEnd( 1000 );	
 	//para->setTOut(    1 );
 
     para->setVelocity( velocity );
@@ -303,6 +303,11 @@ void multipleLevel(const std::string& configPath)
         para->setUseWale( true );
 
     para->setUseInitNeq( true );
+
+	if (kernel == "CumulantK18Comp" || kernel == "CumulantK20Comp")
+		para->setIsF3(true);
+	else
+		para->setIsF3(false);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

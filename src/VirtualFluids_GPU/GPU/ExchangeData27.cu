@@ -864,3 +864,206 @@ extern "C" __global__ void setRecvFsPre27(real* DD,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+extern "C" __global__ void getSendGsF3(
+	real* G6,
+	real* bufferGs,
+	int* sendIndex,
+	int buffmax,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int size_Mat,
+	bool evenOrOdd)
+{
+	////////////////////////////////////////////////////////////////////////////////
+	const unsigned  x = threadIdx.x;  // Globaler x-Index 
+	const unsigned  y = blockIdx.x;   // Globaler y-Index 
+	const unsigned  z = blockIdx.y;   // Globaler z-Index 
+
+	const unsigned nx = blockDim.x;
+	const unsigned ny = gridDim.x;
+
+	const unsigned k = nx*(ny*z + y) + x;
+	//////////////////////////////////////////////////////////////////////////
+
+	if (k < buffmax)
+	{
+		////////////////////////////////////////////////////////////////////////////////
+		//set index
+		unsigned int kIndex = sendIndex[k];
+		unsigned int kr = kIndex;
+		unsigned int kw = neighborX[kIndex];
+		unsigned int ks = neighborY[kIndex];
+		unsigned int kb = neighborZ[kIndex];
+		////////////////////////////////////////////////////////////////////////////////
+		//set Pointer for Gs
+		Distributions6 G;
+		if (evenOrOdd)
+		{
+			G.g[dirE] = &G6[dirE   *size_Mat];
+			G.g[dirW] = &G6[dirW   *size_Mat];
+			G.g[dirN] = &G6[dirN   *size_Mat];
+			G.g[dirS] = &G6[dirS   *size_Mat];
+			G.g[dirT] = &G6[dirT   *size_Mat];
+			G.g[dirB] = &G6[dirB   *size_Mat];
+		}
+		else
+		{
+			G.g[dirW] = &G6[dirE   *size_Mat];
+			G.g[dirE] = &G6[dirW   *size_Mat];
+			G.g[dirS] = &G6[dirN   *size_Mat];
+			G.g[dirN] = &G6[dirS   *size_Mat];
+			G.g[dirB] = &G6[dirT   *size_Mat];
+			G.g[dirT] = &G6[dirB   *size_Mat];
+		}
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//set Pointer for Buffer Gs
+		Distributions6 Dbuff;
+		Dbuff.g[dirE] = &bufferGs[dirE   *buffmax];
+		Dbuff.g[dirW] = &bufferGs[dirW   *buffmax];
+		Dbuff.g[dirN] = &bufferGs[dirN   *buffmax];
+		Dbuff.g[dirS] = &bufferGs[dirS   *buffmax];
+		Dbuff.g[dirT] = &bufferGs[dirT   *buffmax];
+		Dbuff.g[dirB] = &bufferGs[dirB   *buffmax];
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//write Gs to buffer
+		(Dbuff.g[dirE])[k] = (G.g[dirW])[kw];
+		(Dbuff.g[dirW])[k] = (G.g[dirE])[kr];
+		(Dbuff.g[dirN])[k] = (G.g[dirS])[ks];
+		(Dbuff.g[dirS])[k] = (G.g[dirN])[kr];
+		(Dbuff.g[dirT])[k] = (G.g[dirB])[kb];
+		(Dbuff.g[dirB])[k] = (G.g[dirT])[kr];
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+extern "C" __global__ void setRecvGsF3(
+	real* G6,
+	real* bufferGs,
+	int* recvIndex,
+	int buffmax,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int size_Mat,
+	bool evenOrOdd)
+{
+	////////////////////////////////////////////////////////////////////////////////
+	const unsigned  x = threadIdx.x;  // Globaler x-Index 
+	const unsigned  y = blockIdx.x;   // Globaler y-Index 
+	const unsigned  z = blockIdx.y;   // Globaler z-Index 
+
+	const unsigned nx = blockDim.x;
+	const unsigned ny = gridDim.x;
+
+	const unsigned k = nx*(ny*z + y) + x;
+	//////////////////////////////////////////////////////////////////////////
+
+	if (k < buffmax)
+	{
+		////////////////////////////////////////////////////////////////////////////////
+		//set index
+		unsigned int kIndex = recvIndex[k];
+		unsigned int kr = kIndex;
+		unsigned int kw = neighborX[kIndex];
+		unsigned int ks = neighborY[kIndex];
+		unsigned int kb = neighborZ[kIndex];
+		////////////////////////////////////////////////////////////////////////////////
+		//set Pointer for Gs
+		Distributions6 G;
+		if (evenOrOdd)
+		{
+			G.g[dirE] = &G6[dirE   *size_Mat];
+			G.g[dirW] = &G6[dirW   *size_Mat];
+			G.g[dirN] = &G6[dirN   *size_Mat];
+			G.g[dirS] = &G6[dirS   *size_Mat];
+			G.g[dirT] = &G6[dirT   *size_Mat];
+			G.g[dirB] = &G6[dirB   *size_Mat];
+		}
+		else
+		{
+			G.g[dirW] = &G6[dirE   *size_Mat];
+			G.g[dirE] = &G6[dirW   *size_Mat];
+			G.g[dirS] = &G6[dirN   *size_Mat];
+			G.g[dirN] = &G6[dirS   *size_Mat];
+			G.g[dirB] = &G6[dirT   *size_Mat];
+			G.g[dirT] = &G6[dirB   *size_Mat];
+		}
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//set Pointer for Buffer Gs
+		Distributions6 Dbuff;
+		Dbuff.g[dirE] = &bufferGs[dirE   *buffmax];
+		Dbuff.g[dirW] = &bufferGs[dirW   *buffmax];
+		Dbuff.g[dirN] = &bufferGs[dirN   *buffmax];
+		Dbuff.g[dirS] = &bufferGs[dirS   *buffmax];
+		Dbuff.g[dirT] = &bufferGs[dirT   *buffmax];
+		Dbuff.g[dirB] = &bufferGs[dirB   *buffmax];
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//write buffer to Gs
+		(G.g[dirW])[kw] = (Dbuff.g[dirE])[k];
+		(G.g[dirE])[kr] = (Dbuff.g[dirW])[k];
+		(G.g[dirS])[ks] = (Dbuff.g[dirN])[k];
+		(G.g[dirN])[kr] = (Dbuff.g[dirS])[k];
+		(G.g[dirB])[kb] = (Dbuff.g[dirT])[k];
+		(G.g[dirT])[kr] = (Dbuff.g[dirB])[k];
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

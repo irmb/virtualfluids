@@ -6922,6 +6922,86 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 	getLastCudaError("setRecvFsPost27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void getSendGsDevF3(
+	real* G6,
+	real* bufferGs,
+	int* sendIndex,
+	int buffmax,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int size_Mat,
+	bool evenOrOdd,
+	unsigned int numberOfThreads)
+{
+	int Grid = (buffmax / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	getSendGsF3 <<< grid, threads >>> (
+		G6,
+		bufferGs,
+		sendIndex,
+		buffmax,
+		neighborX,
+		neighborY,
+		neighborZ,
+		size_Mat,
+		evenOrOdd);
+	getLastCudaError("getSendGsF3 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void setRecvGsDevF3(
+	real* G6,
+	real* bufferGs,
+	int* recvIndex,
+	int buffmax,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int size_Mat,
+	bool evenOrOdd,
+	unsigned int numberOfThreads)
+{
+	int Grid = (buffmax / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	setRecvGsF3 <<< grid, threads >>> (
+		G6,
+		bufferGs,
+		recvIndex,
+		buffmax,
+		neighborX,
+		neighborY,
+		neighborZ,
+		size_Mat,
+		evenOrOdd);
+	getLastCudaError("setRecvGsF3 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void WallFuncDev27(unsigned int numberOfThreads,
 							  int nx,
 							  int ny,

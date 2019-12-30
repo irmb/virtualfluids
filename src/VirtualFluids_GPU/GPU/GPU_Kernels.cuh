@@ -2254,6 +2254,28 @@ extern "C" __global__ void setRecvFsPost27(real* DD,
                                            unsigned int size_Mat, 
                                            bool evenOrOdd);
 
+extern "C" __global__ void getSendGsF3(
+	real* G6,
+	real* bufferGs,
+	int* sendIndex,
+	int buffmax,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int size_Mat,
+	bool evenOrOdd);
+
+extern "C" __global__ void setRecvGsF3(
+	real* G6,
+	real* bufferGs,
+	int* recvIndex,
+	int buffmax,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int size_Mat,
+	bool evenOrOdd);
+
 extern "C" __global__ void WallFunction27(  int inx,
 											int iny,
 											real* vx,

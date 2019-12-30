@@ -97,7 +97,28 @@ public:
 	void cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor);
 	//////////////////////////////////////////////////////////////////////////
 
-    void cudaAllocTurbulentViscosity(int lev);
+	//////////////////////////////////////////////////////////////////////////
+	//3D domain decomposition F3
+	void cudaAllocProcessNeighborF3X(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborF3XFsHD(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborF3XFsDH(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborF3XIndex(int lev, unsigned int processNeighbor);
+	void cudaFreeProcessNeighborF3X(int lev, unsigned int processNeighbor);
+	//
+	void cudaAllocProcessNeighborF3Y(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborF3YFsHD(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborF3YFsDH(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborF3YIndex(int lev, unsigned int processNeighbor);
+	void cudaFreeProcessNeighborF3Y(int lev, unsigned int processNeighbor);
+	//
+	void cudaAllocProcessNeighborF3Z(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborF3ZFsHD(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborF3ZFsDH(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborF3ZIndex(int lev, unsigned int processNeighbor);
+	void cudaFreeProcessNeighborF3Z(int lev, unsigned int processNeighbor);
+	//////////////////////////////////////////////////////////////////////////
+
+	void cudaAllocTurbulentViscosity(int lev);
     void cudaCopyTurbulentViscosityHD(int lev);
     void cudaCopyTurbulentViscosityDH(int lev);
     void cudaFreeTurbulentViscosity(int lev);
@@ -295,15 +316,6 @@ public:
     
     
     
-//
-//private:
-//	int coarse, fine, maxlevel;
-//	int factor_gridNZ;
-//	int D3Qxx;
-//	InitCondition ic;
-//	double memsizeGPU;
-//	unsigned int limitOfNodesForVTK;
-
 private:
     CudaMemoryManager(std::shared_ptr<Parameter> parameter);
     CudaMemoryManager(const CudaMemoryManager&);

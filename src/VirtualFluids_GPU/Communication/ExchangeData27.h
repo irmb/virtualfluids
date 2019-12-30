@@ -28,6 +28,11 @@ extern "C" void exchangePostCollDataADXGPU27(Parameter* para, Communicator* comm
 extern "C" void exchangePostCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level);
 extern "C" void exchangePostCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level);
 //////////////////////////////////////////////////////////////////////////
+//3D domain decomposition F3 - K18/K20
+extern "C" void exchangeCollDataF3XGPU( Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level);
+extern "C" void exchangeCollDataF3YGPU( Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level);
+extern "C" void exchangeCollDataF3ZGPU( Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level);
+//////////////////////////////////////////////////////////////////////////
 extern "C" void barrierGPU(Communicator* comm);
 //////////////////////////////////////////////////////////////////////////
 

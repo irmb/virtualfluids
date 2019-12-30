@@ -268,6 +268,14 @@ struct ParameterStruct{
 	std::vector< ProcessNeighbor27 > recvProcessNeighborADX;
 	std::vector< ProcessNeighbor27 > recvProcessNeighborADY;
 	std::vector< ProcessNeighbor27 > recvProcessNeighborADZ;
+	///////////////////////////////////////////////////////
+	//3D domain decomposition F3
+	std::vector< ProcessNeighborF3 > sendProcessNeighborF3X;
+	std::vector< ProcessNeighborF3 > sendProcessNeighborF3Y;
+	std::vector< ProcessNeighborF3 > sendProcessNeighborF3Z;
+	std::vector< ProcessNeighborF3 > recvProcessNeighborF3X;
+	std::vector< ProcessNeighborF3 > recvProcessNeighborF3Y;
+	std::vector< ProcessNeighborF3 > recvProcessNeighborF3Z;
 	////////////////////////////////////////////////////////////////////////////
 
 
@@ -711,6 +719,7 @@ public:
 	void setUseWale(bool useWale);
 	void setUseInitNeq(bool useInitNeq);
 	void setSimulatePorousMedia(bool simulatePorousMedia);
+	void setIsF3(bool isF3);
 	void setclockCycleForMP(real clockCycleForMP);
 	void setDevices(std::vector<uint> devices);
 	void setGridX(std::vector<int> GridX);
@@ -955,6 +964,7 @@ public:
 	bool getUseWale();
 	bool getUseInitNeq();
 	bool getSimulatePorousMedia();
+	bool getIsF3();
 	double getMemsizeGPU();
 	//1D domain decomposition
 	std::vector<std::string> getPossNeighborFiles(std::string sor);
@@ -1012,6 +1022,7 @@ private:
 	static Parameter* instanz;
 	bool compOn;
 	bool diffOn;
+	bool isF3;
 	int diffMod;
 	int coarse, fine, maxlevel;
 	int factor_gridNZ;
