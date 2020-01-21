@@ -34,6 +34,8 @@ void run(string configname)
       string          opipeGeoFile = "/OrganPipeTransformed.stl";
       string          inletTubeGeoFile = "/tubeTransformed.stl";
 
+      double          QN = config.getValue<double>("QN");
+
       double  deltaXfine = 0.0000625;
       const int baseLevel = 0;
       int refineLevel = 9;
@@ -41,11 +43,22 @@ void run(string configname)
 
       LBMReal rho_LB = 0.0;
       double rhoReal = 1.2041; //(kg/m3)
-      double uReal = 33.9; //m/s
       double L = 0.195; //m
       double hLB = L / deltaXcoarse;
       double csReal = 343.3;
       double nuReal = 1.51e-5; //m^2/s
+
+      double Q = QN * 1e-3 / 60;
+      double D = 0.005; // m
+      double R = D / 2; // m
+      double A = UbMath::PI * pow(R,2);
+      double uReal = Q / A;
+      double muReal = nuReal * rhoReal;
+      double Re_inlet = D * uReal * rhoReal / muReal;
+      double lbd = 0.3164 / pow(Re_inlet,0.25);
+      double deltaP = (lbd / (2 * R)) * (rhoReal * pow(uReal,2) / 2);
+      double N = pow(R,2) / (2 * muReal * uReal) * deltaP - 3;
+
       LBMUnitConverter unitConverter(L, csReal, rhoReal, hLB);
       if (myid == 0) UBLOG(logINFO, unitConverter.toString());
 
@@ -104,12 +117,14 @@ void run(string configname)
       if (myid == 0)
       {
          UBLOG(logINFO, "Parameters:");
+         UBLOG(logINFO, "QN                  = " << QN      << " [Nl/min]");
          UBLOG(logINFO, "u_Real              = " << uReal   << " [m/s]");
          UBLOG(logINFO, "rho_Real            = " << rhoReal << " [kg/m^3]");
          UBLOG(logINFO, "nu_Real             = " << nuReal  << " [m^2/s]");
          UBLOG(logINFO, "u_LB                = " << u_LB    << " [dx/dt]");
-         UBLOG(logINFO, "rho_LB              = " << rho_LB  << " [mass/dx^3]");
+         UBLOG(logINFO, "rho_LB              = " << rho_LB+1<< " [mass/dx^3]");
          UBLOG(logINFO, "nu_LB               = " << nu_LB   << " [dx^2/dt]");
+         UBLOG(logINFO, "N                   = " << N);
          UBLOG(logINFO, "dx coarse           = " << deltaXcoarse);
          UBLOG(logINFO, "dx fine             = " << deltaXfine);
          UBLOG(logINFO, "number of refinement levels = " << refineLevel);
@@ -130,14 +145,16 @@ void run(string configname)
       double cx2 = 0.0;
       double cx3 = 0.0;
 
+      //Štigler, J. (2014). Analytical velocity profile in tube for laminar and turbulent flow. Engineering Mechanics, 21(6), 371-379.
       mu::Parser fct;
       //fct.SetExpr("U");
-      fct.SetExpr("U*(1-(((((x2-y0)^2+(x3-z0)^2)^0.5)/R)^19.53824))");
+      fct.SetExpr("U*(1-(((((x2-y0)^2+(x3-z0)^2)^0.5)/R)^NplusOne))");
       fct.DefineConst("x0", cx1);
       fct.DefineConst("y0", cx2);
       fct.DefineConst("z0", cx3);
       fct.DefineConst("R", diameter_inlet/2.0);
-      fct.DefineConst("U", u_LB*1.16182766);
+      fct.DefineConst("U", u_LB*((N+3)/(N+1)));
+      fct.DefineConst("NplusOne", N+1.0);
 
       SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
       velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
@@ -156,7 +173,8 @@ void run(string configname)
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      double bulckViscosity = 3700*nu_LB;
+      double bulckViscosity = 3700.0*nu_LB;
+      if (myid == 0) UBLOG(logINFO, "bulckViscosity  =  "<< bulckViscosity);
       dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
       kernel->setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////
