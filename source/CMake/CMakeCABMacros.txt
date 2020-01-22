@@ -63,12 +63,7 @@ ENDIF()
 ############################################################################
 # externe (ACHTUNG: die darin enthaltenen benoetigen teils noch macros die 
 # hier im Anschluss folgen
-INCLUDE("${SOURCE_ROOT}/CMake/CMakePCHMacros.txt")
 INCLUDE("${SOURCE_ROOT}/CMake/CMakeSetCompilerFlags.txt")
-#INCLUDE("${SOURCE_ROOT}/CMake/CMakeSetBoostStuff.txt")
-INCLUDE("${SOURCE_ROOT}/CMake/CMakeSetMPIStuff.txt")
-INCLUDE("${SOURCE_ROOT}/CMake/CMakeRubyMacros.txt")
-INCLUDE("${SOURCE_ROOT}/CMake/CMakeSwigMacros.txt")
 INCLUDE("${SOURCE_ROOT}/CMake/CMakeCompilerMacros.txt")
 
 ################################################################
@@ -242,53 +237,6 @@ MACRO(CREATE_CAB_PROJECT project_name build_type)
 
    MESSAGE(STATUS "configuring ${project_name} (type=${build_type})...")
 
-   #################################################################
-   ###   RCF                                                     ###
-   #################################################################
-   IF(RCF_VERSION_NUMBER)
-      #RCF wird durch include(.../rcf/CMakePackage.txt) konfiguriert
-      MESSAGE(STATUS "RCF-Ver.${RCF_VERSION_NUMBER} is available")
-   ENDIF()
-
-   #################################################################
-   ###   BOOST                                                   ###
-   #################################################################
-   IF(NEED_BOOST)
-      MESSAGE(STATUS "INCLUDE BOOST")
-      #LIST(REMOVE_DUPLICATES NECESSARY_BOOST_LIBS)
-      SET_BOOST_STUFF( ${NECESSARY_BOOST_LIBS} )
-   ENDIF()
-   
-   #################################################################
-   ###   MPI                                                     ###
-   #################################################################
-   IF(NEED_MPI)
-      MESSAGE(STATUS "INCLUDE MPI")
-      SET_MPI_STUFF(CAB_MACHINE)
-   ENDIF(NEED_MPI)
-   
-   #################################################################
-   ###   SWIG                                                    ###
-   #################################################################
-   IF(SWIG_FILES)
-      MESSAGE(STATUS "INCLUDE SWIG")
-      IF(NOT SWIG_FOUND)
-         SET_SWIG_STUFF()
-      ENDIF()
-      SET(TMP_OUTFILES "")
-      SWIG_WAPP_CPP(SWIG_FILES "ruby" TMP_OUTFILES)
-      LIST(APPEND ALL_SOURCES ${TMP_OUTFILES})
-   ENDIF()
-
-   #################################################################
-   ###   RUBY                                                    ###
-   #################################################################
-   IF(NEED_RUBY)
-      MESSAGE(STATUS "INCLUDE RUBY")
-      IF(NOT FOUND_RUBY)
-         SET_RUBY_STUFF()
-      ENDIF()
-   ENDIF()
 
    #################################################################
    ###   OS DEFINES                                              ###
@@ -362,17 +310,6 @@ MACRO(CREATE_CAB_PROJECT project_name build_type)
    MESSAGE(STATUS "configuring ${project_name} (type=${build_type})... done")
 
 ENDMACRO(CREATE_CAB_PROJECT project_name build_type)
-
-#################################################################
-# fuer kompatibilit�t zu alten versionen (NICH TMEHR NUTZEN)
-###############################################################
-MACRO(CREATE_CAB_PROJECT_DEPRECATED)
-  MESSAGE(WARNING "You are still using the old CREATE_CAB_PROJECT_DEPRECATED Macro, please e.g. swith to CREATE_CAB_PROJECT(${PROJECT_NAME} BINARY)")
-  IF(NOT CAB_PROJECT_NAME)
-     SET(CAB_PROJECT_NAME ${CMAKE_PROJECT_NAME})
-  ENDIF()
-  CREATE_CAB_PROJECT(${CAB_PROJECT_NAME} BINARY)
-ENDMACRO(CREATE_CAB_PROJECT_DEPRECATED)
 
 #################################################################
 # ALLGEMEINGUELTIGER STUFF

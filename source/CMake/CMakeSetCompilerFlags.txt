@@ -11,6 +11,10 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS compiler_type build_type)
   
   OPTION(USE_OPENMP "activate open" ON)
   
+  IF(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+    SET(USE_OPENMP OFF)
+  ENDIF()
+  
   ###############################################################################################################
   ## Flags ruecksetzen
   ###############################################################################################################
@@ -40,7 +44,10 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS compiler_type build_type)
 	## unknown compiler
 	###############################################################################################################
 	ELSE()
-	   MESSAGE(FATAL_ERROR "CAB_COMPILER=${CAB_COMPILER} seems to be a not supported compiler")
+	   #MESSAGE(FATAL_ERROR "CAB_COMPILER=${CAB_COMPILER} seems to be a not supported compiler")
+	   #MESSAGE(WARNING "CAB_COMPILER=${CAB_COMPILER} seems to be a not supported compiler; set to generic")
+	   SET(CAB_COMPILER "gccGeneric")
+	   INCLUDE( ${SOURCE_ROOT}/CMake/compilerflags/${CAB_COMPILER}.cmake)
 	ENDIF()
    
 
