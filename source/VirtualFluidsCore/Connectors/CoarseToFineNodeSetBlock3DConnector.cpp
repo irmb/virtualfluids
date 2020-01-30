@@ -624,10 +624,10 @@ void CoarseToFineNodeSetBlock3DConnector::findFCCells()
       //////////////////////////////////////////////////////
       //Debug
       //////////////////////////////////////////////////////
-      if (block.lock()->getGlobalID() == 2234)
-      {
-         int test = 0;
-      }
+      // if (block.lock()->getGlobalID() == 2234)
+      // {
+      //    int test = 0;
+      // }
 
       //faces
    case E: case W:

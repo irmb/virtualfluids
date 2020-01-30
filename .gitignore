@@ -1,5 +1,6 @@
 .gitignore
 bin/
 binWSL/
+build/
 source/MSVC2015/
 source/Applications/DLR-F16-Solid/f16-solid-coarse.cfg
