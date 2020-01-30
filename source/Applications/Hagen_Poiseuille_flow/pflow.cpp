@@ -304,29 +304,29 @@ void pflowdp(string configname)
       ConfigurationFile   config;
       config.load(configname);
 
-      string          pathname     = config.getString("pathname");
+      string          pathname = config.getValue<string>("pathname");
       int             numOfThreads = config.getValue<int>("numOfThreads");
-      vector<int>     blocknx      = config.getVector<int>("blocknx");
-      vector<double>  boundingBox       = config.getVector<double>("boundingBox");
-      double          nuLB         = config.getValue<double>("nuLB");
-      double          endTime      = config.getValue<double>("endTime");
-      double          outTime      = config.getValue<double>("outTime");
-      double          availMem     = config.getValue<double>("availMem");
-      int             refineLevel  = config.getValue<int>("refineLevel");
-      bool            logToFile    = config.getValue<bool>("logToFile");
-      double          restartStep  = config.getValue<double>("restartStep");
-      double          dpLB         = config.getValue<double>("dpLB");
-      bool            thinWall     = config.getValue<bool>("thinWall");
-      double          deltax       = config.getValue<double>("deltax");
-      double          cpStep       = config.getDouble("cpStep");
-      double          cpStepStart  = config.getDouble("cpStepStart");
-      bool            newStart     = config.getValue<bool>("newStart");
+      vector<int>     blocknx = config.getVector<int>("blocknx");
+      vector<double>  boundingBox = config.getVector<double>("boundingBox");
+      double          nuLB = config.getValue<double>("nuLB");
+      double          endTime = config.getValue<double>("endTime");
+      double          outTime = config.getValue<double>("outTime");
+      double          availMem = config.getValue<double>("availMem");
+      int             refineLevel = config.getValue<int>("refineLevel");
+      bool            logToFile = config.getValue<bool>("logToFile");
+      double          restartStep = config.getValue<double>("restartStep");
+      double          dpLB = config.getValue<double>("dpLB");
+      bool            thinWall = config.getValue<bool>("thinWall");
+      double          deltax = config.getValue<double>("deltax");
+      double          cpStep = config.getValue<double>("cpStep");
+      double          cpStepStart = config.getValue<double>("cpStepStart");
+      bool            newStart = config.getValue<bool>("newStart");
 
       SPtr<Communicator> comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       LBMReal rhoLB = 0.0;
-      double rhoLBinflow = dpLB*3.0;
+      double rhoLBinflow = dpLB * 3.0;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
@@ -336,17 +336,17 @@ void pflowdp(string configname)
       double g_minX1 = 0;
       double g_minX2 = 0;
       double g_minX3 = 0;
-      
+
       double g_maxX1 = boundingBox[0];
       double g_maxX2 = boundingBox[1];
       double g_maxX3 = boundingBox[2];
 
-      double blockLength = 3.0*deltax;
+      double blockLength = 3.0 * deltax;
 
       double h = (g_maxX2) / 2.0;
       double dex = g_maxX1;
-      double Umax = (1.0 / (4.0*nuLB))*(dpLB / dex)*(h*h);
-      double Re = (4 * h*Umax) / (3 * nuLB);
+      double Umax = (1.0 / (4.0 * nuLB)) * (dpLB / dex) * (h * h);
+      double Re = (4 * h * Umax) / (3 * nuLB);
 
       //bc
       LBMReal uLB = 0.01;
@@ -378,7 +378,7 @@ void pflowdp(string configname)
 
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-      noSlipBCAdapter->setBcAlgorithm(NoSlipSPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
 
       //SPtr<BCAdapter> denBCAdapterInflow(new DensityBCAdapter(rhoLBinflow));
       //denBCAdapterInflow->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
@@ -425,18 +425,18 @@ void pflowdp(string configname)
       //SPtr<UbScheduler> rSch(new UbScheduler(restartStep));
       //RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
 
-      SPtr<UbScheduler> rSch2(new UbScheduler(cpStep, cpStepStart));
-      MPIIORestart1CoProcessor rcp(grid, rSch2, pathname, comm);
+      //SPtr<UbScheduler> rSch2(new UbScheduler(cpStep, cpStepStart));
+      //MPIIORestart1CoProcessor rcp(grid, rSch2, pathname, comm);
 
       SPtr<LBMKernel> kernel;
-      kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
+      kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
 
       SPtr<BCProcessor> bcProc(new BCProcessor());
       //SPtr<BCProcessor> bcProc = SPtr<BCProcessor>(new ThinWallBCProcessor());
       kernel->setBCProcessor(bcProc);
 
-      rcp.setLBMKernel(kernel);
-      rcp.setBCProcessor(bcProc);
+      //rcp.setLBMKernel(kernel);
+      //rcp.setBCProcessor(bcProc);
       //rcp.setChunk(1);
       //////////////////////////////////////////////////////////////////////////
 
@@ -462,17 +462,17 @@ void pflowdp(string configname)
          }
 
          //walls
-         GbCuboid3DPtr addWallYmin (new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_minX2, g_maxX3+blockLength));
-         if(myid == 0) GbSystem3D::writeGeoObject(addWallYmin.get(), pathname+"/geo/addWallYmin", WbWriterVtkXmlASCII::getInstance());
+         GbCuboid3DPtr addWallYmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_minX2, g_maxX3 + blockLength));
+         if (myid == 0) GbSystem3D::writeGeoObject(addWallYmin.get(), pathname + "/geo/addWallYmin", WbWriterVtkXmlASCII::getInstance());
 
-         GbCuboid3DPtr addWallYmax (new GbCuboid3D(g_minX1-blockLength, g_maxX2, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         if(myid == 0) GbSystem3D::writeGeoObject(addWallYmax.get(), pathname+"/geo/addWallYmax", WbWriterVtkXmlASCII::getInstance());
+         GbCuboid3DPtr addWallYmax(new GbCuboid3D(g_minX1 - blockLength, g_maxX2, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
+         if (myid == 0) GbSystem3D::writeGeoObject(addWallYmax.get(), pathname + "/geo/addWallYmax", WbWriterVtkXmlASCII::getInstance());
 
-         GbCuboid3DPtr addWallZmin(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3));
-         if (myid == 0) GbSystem3D::writeGeoObject(addWallZmin.get(), pathname+"/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
+         GbCuboid3DPtr addWallZmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_minX3));
+         if (myid == 0) GbSystem3D::writeGeoObject(addWallZmin.get(), pathname + "/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
 
-         GbCuboid3DPtr addWallZmax(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_maxX3, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         if (myid == 0) GbSystem3D::writeGeoObject(addWallZmax.get(), pathname+"/geo/addWallZmax", WbWriterVtkXmlASCII::getInstance());
+         GbCuboid3DPtr addWallZmax(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_maxX3, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
+         if (myid == 0) GbSystem3D::writeGeoObject(addWallZmax.get(), pathname + "/geo/addWallZmax", WbWriterVtkXmlASCII::getInstance());
 
 
          //GbCuboid3DPtr addWallXmax(new GbCuboid3D(g_maxX1-4.0*deltax, g_maxX2, g_minX3 - 4.0*blockLength, g_maxX1 + 4.0*blockLength, g_maxX2 + 4.0*blockLength, g_maxX3 + 4.0*blockLength));
@@ -483,7 +483,7 @@ void pflowdp(string configname)
          if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
 
          //outflow
-         GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2+blockLength, g_maxX3 + blockLength));
+         GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
          if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
          //GbCuboid3DPtr geoOutflowSolid(new GbCuboid3D(g_maxX1-1.0*deltax, g_minX2 - 4.0*blockLength, g_minX3 - 4.0*blockLength, g_maxX1 + 4.0*blockLength, g_maxX2+4.0*blockLength, g_maxX3 + 4.0*blockLength));
@@ -497,12 +497,12 @@ void pflowdp(string configname)
          //GbCuboid3DPtr geoOutflow (new GbCuboid3D(g_minX1-4.0*blockLength, g_minX2-4.0*blockLength, g_maxX3, g_maxX1+4.0*blockLength, g_maxX2+4.0*blockLength, g_maxX3+4.0*blockLength));
          //if(myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
-         WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
          if (refineLevel > 0)
          {
             if (myid == 0) UBLOG(logINFO, "Refinement - start");
-            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel,comm);
+            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
             //refineHelper.addGbObject(refineCube1_1, 1);
             //refineHelper.addGbObject(refineCube1_2, 1);
             //refineHelper.addGbObject(refineCube2_1, 2);
@@ -513,8 +513,8 @@ void pflowdp(string configname)
          }
 
          //walls
-         SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter,Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter,Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
          SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
          SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
@@ -541,7 +541,7 @@ void pflowdp(string configname)
          intHelper.addInteractor(addWallZmaxInt);
 
          intHelper.addInteractor(inflowInt);
-         
+
          intHelper.addInteractor(outflowInt);
 
          //die Geschwindigkeit Randbedingung soll Ausflüß überdecken !!!!!
@@ -570,7 +570,7 @@ void pflowdp(string configname)
          unsigned long nodb = (blocknx[0]) * (blocknx[1]) * (blocknx[2]);
          unsigned long nod = nob * (blocknx[0]) * (blocknx[1]) * (blocknx[2]);
          unsigned long nodg = nob * (blocknx[0] + gl) * (blocknx[1] + gl) * (blocknx[1] + gl);
-         double needMemAll = double(nodg*(27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
+         double needMemAll = double(nodg * (27 * sizeof(double) + sizeof(int) + sizeof(float) * 4));
          double needMem = needMemAll / double(comm->getNumberOfProcesses());
 
          if (myid == 0)
@@ -583,7 +583,7 @@ void pflowdp(string configname)
             {
                int nobl = grid->getNumberOfBlocks(level);
                UBLOG(logINFO, "Number of blocks for level " << level << " = " << nobl);
-               UBLOG(logINFO, "Number of nodes for level " << level << " = " << nobl*nodb);
+               UBLOG(logINFO, "Number of nodes for level " << level << " = " << nobl * nodb);
             }
             UBLOG(logINFO, "Necessary memory  = " << needMemAll << " bytes");
             UBLOG(logINFO, "Necessary memory per process = " << needMem << " bytes");
@@ -612,7 +612,7 @@ void pflowdp(string configname)
          intHelper.setBC();
 
          grid->accept(bcVisitor);
-         
+
 
          //initialization of distributions
          //mu::Parser fct;
@@ -626,9 +626,9 @@ void pflowdp(string configname)
          fct.SetExpr("(x1max-x1)/l*dp*3.0");
          fct.DefineConst("dp", dpLB);
          fct.DefineConst("x1max", g_maxX1);
-         fct.DefineConst("l", g_maxX1-g_minX1);
+         fct.DefineConst("l", g_maxX1 - g_minX1);
 
-         InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
+         InitDistributionsBlockVisitor initVisitor;
          //initVisitor.setVx1(fct);
          //initVisitor.setVx1(uLB);
          //initVisitor.setVx3(fct);
@@ -637,8 +637,8 @@ void pflowdp(string configname)
 
          //Postrozess
          SPtr<UbScheduler> geoSch(new UbScheduler(1));
-         WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
-            new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+         SPtr<CoProcessor> ppgeo(
+            new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
          ppgeo->process(0);
          ppgeo.reset();
 
@@ -652,7 +652,7 @@ void pflowdp(string configname)
          //rcp.readDataSet(restartStep);
          //rcp.readBoundaryConds(restartStep);
 
-         rcp.restart((int)restartStep);
+         //rcp.restart((int)restartStep);
 
          grid->setTimeStep(restartStep);
 
@@ -664,17 +664,18 @@ void pflowdp(string configname)
          grid->accept(bcVisitor);
 
          SPtr<UbScheduler> geoSch(new UbScheduler(1));
-         WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+         WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm);
          ppgeo.process(1);
 
          if (myid == 0) UBLOG(logINFO, "Restart - end");
       }
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
+      SPtr<CoProcessor> npr(new NUPSCounterCoProcessor (grid, nupsSch, numOfThreads, comm));
 
-      SPtr<UbScheduler> stepSch(new UbScheduler(outTime));
-
-      WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+      //write data for visualization of macroscopic quantities
+      SPtr<UbScheduler> visSch(new UbScheduler(outTime));
+      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, 
+      WbWriterVtkXmlASCII::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
       SPtr<UbScheduler> AdjForcSch(new UbScheduler());
       AdjForcSch->addSchedule(10, 0, 10000000);
@@ -683,22 +684,27 @@ void pflowdp(string configname)
          g_maxX1, g_maxX2, g_maxX3));
       if (myid == 0) GbSystem3D::writeGeoObject(intValHelp->getBoundingBox().get(), pathname + "/geo/IntValHelp", WbWriterVtkXmlBinary::getInstance());
 
-      double vxTarget=uLB;
+      double vxTarget = uLB;
       AdjustForcingCoProcessor AdjForcPPPtr(grid, AdjForcSch, pathname, intValHelp, vxTarget, comm);
 
-      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
-       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch, CalculationManager::MPI));
-      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch, CalculationManager::PrePostBc));
+      //start simulation 
+      //omp_set_num_threads(numOfThreads);
+      SPtr<UbScheduler> stepGhostLayer(new UbScheduler(outTime));
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+      calculator->addCoProcessor(npr);
+      calculator->addCoProcessor(writeMQCoProcessor);
+      //calculator->addCoProcessor(migCoProcessor);
+      //calculator->addCoProcessor(restartCoProcessor);
+
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
-      calculation->calculate();
+      calculator->calculate();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");
    }
-   catch (std::exception& e)
+   catch (std::exception & e)
    {
       cerr << e.what() << endl << flush;
    }
-   catch (std::string& s)
+   catch (std::string & s)
    {
       cerr << s << endl;
    }
