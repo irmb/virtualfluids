@@ -1,10 +1,6 @@
 #include <iostream>
 #include <string>
 
-#include <boost/pointer_cast.hpp>
-
-#include <boost/pointer_cast.hpp>
-
 #include "VirtualFluids.h"
 
 using namespace std;
@@ -16,21 +12,21 @@ void run(string configname)
       ConfigurationFile   config;
       config.load(configname);
 
-      string          pathOut = config.getString("pathOut");
-      string          pathGeo = config.getString("pathGeo");
-      string          pathMesh = config.getString("pathMesh");
-      int             numOfThreads = config.getInt("numOfThreads");
+      string          pathOut = config.getValue<string>("pathOut");
+      string          pathGeo = config.getValue<string>("pathGeo");
+      string          pathMesh = config.getValue<string>("pathMesh");
+      int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blockNx = config.getVector<int>("blockNx");
-      double          restartStep = config.getDouble("restartStep");
-      double          restartStepStart = config.getDouble("restartStepStart");
-      double          endTime = config.getDouble("endTime");
-      double          outTime = config.getDouble("outTime");
-      double          availMem = config.getDouble("availMem");
-      int             refineLevel = config.getInt("refineLevel");
-      bool            logToFile = config.getBool("logToFile");
-      double          deltaXcoarse = config.getDouble("deltaXcoarse");
-      double          deltaXfine = config.getDouble("deltaXfine");
-      double          refineDistance = config.getDouble("refineDistance");
+      double          restartStep = config.getValue<double>("restartStep");
+      double          restartStepStart = config.getValue<double>("restartStepStart");
+      double          endTime = config.getValue<double>("endTime");
+      double          outTime = config.getValue<double>("outTime");
+      double          availMem = config.getValue<double>("availMem");
+      int             refineLevel = config.getValue<int>("refineLevel");
+      bool            logToFile = config.getValue<bool>("logToFile");
+      double          deltaXcoarse = config.getValue<double>("deltaXcoarse");
+      double          deltaXfine = config.getValue<double>("deltaXfine");
+      double          refineDistance = config.getValue<double>("refineDistance");
       vector<double>  nupsStep = config.getVector<double>("nupsStep");
 
       vector<double>  WTUNNEL1 = config.getVector<double>("WTUNNEL1");
@@ -42,15 +38,15 @@ void run(string configname)
       vector<double>  VRES0700 = config.getVector<double>("VRES0700");
       vector<double>  VRES0900 = config.getVector<double>("VRES0900");
 
-      string          SAE = config.getString("SAE");
-      string          VRES0600_chopped = config.getString("VRES0600_chopped");
-      string          VRES0700_chopped = config.getString("VRES0700_chopped");
-      string          VRES0800_Fahrzeug = config.getString("VRES0800_Fahrzeug");
-      //string          VRES0900 = config.getString("VRES0900");
-      string          VRES1000_ASaeule = config.getString("VRES1000_ASaeule");
-      string          VRES1000_Scheibe = config.getString("VRES1000_Scheibe");
-      string          VRES1000_Spiegel = config.getString("VRES1000_Spiegel");
-      string          VRES1100_Spiegel_fein = config.getString("VRES1100_Spiegel_fein");
+      string          SAE = config.getValue<string>("SAE");
+      string          VRES0600_chopped = config.getValue<string>("VRES0600_chopped");
+      string          VRES0700_chopped = config.getValue<string>("VRES0700_chopped");
+      string          VRES0800_Fahrzeug = config.getValue<string>("VRES0800_Fahrzeug");
+      //string          VRES0900 = config.getValue<string>("VRES0900");
+      string          VRES1000_ASaeule = config.getValue<string>("VRES1000_ASaeule");
+      string          VRES1000_Scheibe = config.getValue<string>("VRES1000_Scheibe");
+      string          VRES1000_Spiegel = config.getValue<string>("VRES1000_Spiegel");
+      string          VRES1100_Spiegel_fein = config.getValue<string>("VRES1100_Spiegel_fein");
 
 
       SPtr<Communicator> comm = MPICommunicator::getInstance();
@@ -150,8 +146,7 @@ void run(string configname)
 
       //////////////////////////////////////////////////////////////////////////
       //restart
-      SPtr<UbScheduler> rSch(new UbScheduler(restartStep, restartStep));
-      RestartCoProcessor rp(grid, rSch, comm, pathOut, RestartCoProcessor::BINARY);
+    
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -435,7 +430,7 @@ void run(string configname)
 
          if (myid==0)
          {
-            WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
+            SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
             ppblocks->process(2);
             ppblocks.reset();
          }
@@ -503,8 +498,7 @@ void run(string configname)
 
          //Postrozess
          SPtr<UbScheduler> geoSch(new UbScheduler(1));
-         WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
-            new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+         SPtr<CoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
          ppgeo->process(0);
          ppgeo.reset();
 
