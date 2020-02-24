@@ -452,7 +452,35 @@ void run(string configname)
       nodes.push_back(UbTupleFloat3(float(organPipeGeo->getX1Minimum()+0.0719), float(0.0), float(organPipeGeo->getX3Maximum()+0.05)));
       micCoProcessor->addMicrophone(Vector3D(organPipeGeo->getX1Maximum()+0.05, 0.0, organPipeGeo->getX3Centroid()));
       nodes.push_back(UbTupleFloat3(float(organPipeGeo->getX1Maximum()+0.05), float(0.0), float(organPipeGeo->getX3Centroid())));
+
+      //additional mics for ray traysing
+      Vector3D vec1(g_minX1+0.5*deltaXcoarse, g_minX2+0.5*deltaXcoarse, g_minX3+0.5*deltaXcoarse);
+      micCoProcessor->addMicrophone(vec1);
+      nodes.push_back(UbTupleFloat3(float(vec1[0]), float(vec1[1]), float(vec1[2])));
+
+      Vector3D vec2(g_minX1+0.5*deltaXcoarse, g_maxX2-0.5*deltaXcoarse, g_minX3+0.5*deltaXcoarse);
+      micCoProcessor->addMicrophone(vec2);
+      nodes.push_back(UbTupleFloat3(float(vec2[0]), float(vec2[1]), float(vec2[2])));
+
+      Vector3D vec3(g_minX1+0.5*deltaXcoarse, g_minX2+0.5*deltaXcoarse, g_maxX3-0.5*deltaXcoarse);
+      micCoProcessor->addMicrophone(vec3);
+      nodes.push_back(UbTupleFloat3(float(vec3[0]), float(vec3[1]), float(vec3[2])));
+
+      Vector3D vec4(g_minX1+0.5*deltaXcoarse, g_maxX2-0.5*deltaXcoarse, g_maxX3-0.5*deltaXcoarse);
+      micCoProcessor->addMicrophone(vec4);
+      nodes.push_back(UbTupleFloat3(float(vec4[0]), float(vec4[1]), float(vec4[2])));
+
+      Vector3D vec5(organPipeGeo->getX1Minimum()+0.0719, 0.0, organPipeGeo->getX3Maximum());
+      micCoProcessor->addMicrophone(vec5);
+      nodes.push_back(UbTupleFloat3(float(vec5[0]), float(vec5[1]), float(vec5[2])));
+
+      Vector3D vec6(organPipeGeo->getX1Maximum(), 0.0, organPipeGeo->getX3Centroid());
+      micCoProcessor->addMicrophone(vec6);
+      nodes.push_back(UbTupleFloat3(float(vec6[0]), float(vec6[1]), float(vec6[2])));
+      //////////////////////////////////////////////////////////////////
+      
       if (myid==0) WbWriterVtkXmlBinary::getInstance()->writeNodes(pathOut+"/geo/mic", nodes);
+
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));

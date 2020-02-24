@@ -1,9 +1,11 @@
 pathOut = e:/temp/OrganPipe
-pathGeo = C:/Users/maini/Desktop/organflute
+pathGeo = d:/Projects/SFB880/OrganPipe/geo
 
 availMem = 2e9
 
 logToFile = false
+
+QN = 67.5
 
 newStart = true
 restartStep = 250000
