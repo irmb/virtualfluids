@@ -29,12 +29,22 @@ void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<Cuda
 		cudaManager->cudaCopyPrint(level);
 		writeTimestep(para, timestep, level);
 	}
+
+    this->writeCollectionFile(para, timestep);
+
+    if( para->getCalcMedian() )
+        this->writeCollectionFileMedian(para, timestep);
 }
 
 void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep)
 {
     for (int level = para->getCoarse(); level <= para->getFine(); level++)
         writeTimestep(para, timestep, level);
+
+    this->writeCollectionFile(para, timestep);
+
+    if( para->getCalcMedian() )
+        this->writeCollectionFileMedian(para, timestep);
 }
 
 void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level)
@@ -46,6 +56,9 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int tim
 	{
 		fname.push_back(para->getFName() + "_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk");
 		fnameMed.push_back(para->getFName() + "_bin_median_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk");
+
+        this->fileNamesForCollectionFile.push_back( fname.back() );
+        this->fileNamesForCollectionFileMedian.push_back( fnameMed.back() );
 	}
 
 	if (para->getDiffOn() == true)
@@ -67,6 +80,94 @@ bool FileWriter::isPeriodicCell(std::shared_ptr<Parameter> para, int level, unsi
 	return (para->getParH(level)->coordX_SP[number2] < para->getParH(level)->coordX_SP[number1]) ||
 		   (para->getParH(level)->coordY_SP[number3] < para->getParH(level)->coordY_SP[number1]) ||
 		   (para->getParH(level)->coordZ_SP[number5] < para->getParH(level)->coordZ_SP[number1]);
+}
+
+void VF_PUBLIC FileWriter::writeCollectionFile(std::shared_ptr<Parameter> para, unsigned int timestep)
+{
+
+    std::string filename = para->getFName() + "_bin_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk";
+
+    std::ofstream file;
+
+    file.open( filename + ".pvtu" );
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
+    file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
+
+    file << "    <PPointData>" << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"press\" /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"rho\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"vx1\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"vx2\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"vx3\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"geo\"   /> " << std::endl;
+    if( para->getDiffOn() ) file << "       <DataArray type=\"Float32\" Name=\"conc\"  /> " << std::endl;
+    file << "    </PPointData>" << std::endl;
+
+    file << "    <PPoints>" << std::endl;
+    file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
+    file << "    </PPoints>" << std::endl;
+
+    for( auto& fname : this->fileNamesForCollectionFile )
+    {
+        const auto filenameWithoutPath=fname.substr( fname.find_last_of('/') + 1 );
+        file << "    <Piece Source=\"" << filenameWithoutPath << ".bin.vtu\"/>" << std::endl;
+    }
+
+    file << "  </PUnstructuredGrid>" << std::endl;
+    file << "</VTKFile>" << std::endl;
+
+    //////////////////////////////////////////////////////////////////////////
+
+    file.close();
+
+    this->fileNamesForCollectionFile.clear();
+}
+
+void VF_PUBLIC FileWriter::writeCollectionFileMedian(std::shared_ptr<Parameter> para, unsigned int timestep)
+{
+
+    std::string filename = para->getFName() + "_bin_median_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk";
+
+    std::ofstream file;
+
+    file.open( filename + ".pvtu" );
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
+    file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
+
+    file << "    <PPointData>" << std::endl;
+    if( para->getDiffOn() ) file << "       <DataArray type=\"Float32\" Name=\"concMed\"  /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"pressMed\" /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"rhoMed\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"vx1Med\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"vx2Med\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"vx3Med\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"geo\"   /> " << std::endl;
+    file << "    </PPointData>" << std::endl;
+
+    file << "    <PPoints>" << std::endl;
+    file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
+    file << "    </PPoints>" << std::endl;
+
+    for( auto& fname : this->fileNamesForCollectionFileMedian )
+    {
+        const auto filenameWithoutPath=fname.substr( fname.find_last_of('/') + 1 );
+        file << "    <Piece Source=\"" << filenameWithoutPath << ".bin.vtu\"/>" << std::endl;
+    }
+
+    file << "  </PUnstructuredGrid>" << std::endl;
+    file << "</VTKFile>" << std::endl;
+
+    //////////////////////////////////////////////////////////////////////////
+
+    file.close();
+
+    this->fileNamesForCollectionFileMedian.clear();
 }
 
 void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)

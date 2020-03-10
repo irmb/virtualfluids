@@ -2,6 +2,8 @@
 #define FILE_WRITER_H
 
 #include <memory>
+#include <vector>
+#include <string>
 
 #include <VirtualFluidsDefinitions.h>
 
@@ -28,5 +30,12 @@ private:
 	bool VF_PUBLIC isPeriodicCell(std::shared_ptr<Parameter> para, int level, unsigned int number2, unsigned int number1, unsigned int number3, unsigned int number5);
 
 	FileWriter(const FileWriter& fileWriter) {};
+
+    void VF_PUBLIC writeCollectionFile( std::shared_ptr<Parameter> para, unsigned int timestep );
+
+    void VF_PUBLIC writeCollectionFileMedian( std::shared_ptr<Parameter> para, unsigned int timestep );
+
+    std::vector< std::string > fileNamesForCollectionFile;
+    std::vector< std::string > fileNamesForCollectionFileMedian;
 };
 #endif
