@@ -10,6 +10,18 @@ bool BoundaryCondition::isSide( SideType side ) const
     return this->side->whoAmI() == side;
 }
 
+VF_PUBLIC void VelocityBoundaryCondition::setVelocityProfile(SPtr<Grid> grid, std::function<void(real, real, real, real&, real&, real&)> velocityProfile)
+{
+    for( uint index = 0; index < this->indices.size(); index++ ){
+
+            real x, y, z;
+
+            grid->transIndexToCoords( this->indices[index], x, y, z );
+
+            velocityProfile(x,y,z,this->vxList[index],this->vyList[index],this->vzList[index]);
+    }
+}
+
 void GeometryBoundaryCondition::setTangentialVelocityForPatch(SPtr<Grid> grid, uint patch, 
                                                               real p1x, real p1y, real p1z, 
                                                               real p2x, real p2y, real p2z, 

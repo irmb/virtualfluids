@@ -2,6 +2,7 @@
 #define BoundaryCondition_H
 
 #include <vector>
+#include <functional>
 
 #include "global.h"
 
@@ -94,6 +95,8 @@ public:
     real getVx(uint index) { return this->vxList[index]; }
     real getVy(uint index) { return this->vyList[index]; }
     real getVz(uint index) { return this->vzList[index]; }
+    
+    VF_PUBLIC void setVelocityProfile( SPtr<Grid> grid, std::function<void(real,real,real,real&,real&,real&)> velocityProfile );
 };
 
 //////////////////////////////////////////////////////////////////////////
