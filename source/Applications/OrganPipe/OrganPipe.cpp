@@ -48,7 +48,7 @@ void run(string configname)
       double csReal = 343.3;
       double nuReal = 1.51e-5; //m^2/s
 
-      double Q = QN * 1e-3 / 60;
+      double Q = QN * 1e-3 / 60; //m^3/s
       double D = 0.005; // m
       double R = D / 2; // m
       double A = UbMath::PI * pow(R,2);

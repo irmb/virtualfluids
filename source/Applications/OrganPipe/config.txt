@@ -5,7 +5,7 @@ availMem = 2e9
 
 logToFile = false
 
-QN = 67.5
+QN = 67.5 #Nl/min
 
 newStart = true
 restartStep = 250000
