@@ -24,6 +24,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu{
+
 //////////////////////////////////////////////////////////////////////////
 
 __global__                 void boundaryConditionKernel  ( const DataBaseStruct dataBase, 
@@ -148,3 +150,5 @@ bool Periodic::isWall()
 {
     return false;
 }
+
+} // namespace GksGpu

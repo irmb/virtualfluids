@@ -11,6 +11,8 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
+namespace GksGpu{
+
 struct ExtrapolationStruct
 {
     uint  numberOfCells;
@@ -45,5 +47,7 @@ struct VF_PUBLIC Extrapolation : public BoundaryCondition //, public IsothermalW
         return boundaryCondition;
     }
 };
+
+} // namespace GksGpu
 
 #endif

@@ -11,6 +11,8 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
+namespace GksGpu{
+
 struct SalinasVazquezStruct
 {
     uint  numberOfCells;
@@ -69,5 +71,7 @@ struct VF_PUBLIC SalinasVazquez : public BoundaryCondition //, public Isothermal
         return boundaryCondition;
     }
 };
+
+} // namespace GksGpu
 
 #endif

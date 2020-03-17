@@ -11,6 +11,8 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
+namespace GksGpu{
+
 struct SymmetryStruct
 {
     uint  numberOfCells;
@@ -51,5 +53,7 @@ struct VF_PUBLIC Symmetry : public BoundaryCondition //, public IsothermalWallSt
         return boundaryCondition;
     }
 };
+
+} // namespace GksGpu
 
 #endif

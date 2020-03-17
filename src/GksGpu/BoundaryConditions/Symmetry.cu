@@ -22,6 +22,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu{
+
 //////////////////////////////////////////////////////////////////////////
 
 __global__                 void boundaryConditionKernel  ( const DataBaseStruct dataBase, 
@@ -121,4 +123,6 @@ bool Symmetry::secondCellsNeeded()
 {
     return false;
 }
+
+} // namespace GksGpu
 

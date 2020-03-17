@@ -233,14 +233,14 @@ int DataBaseAllocatorGPU::getCrashCellIndex(SPtr<DataBase> dataBase)
     return crashCellIndex;
 }
 
-void DataBaseAllocatorGPU::freeMemory(BoundaryCondition& boundaryCondition)
+void DataBaseAllocatorGPU::freeMemory(GksGpu::BoundaryCondition& boundaryCondition)
 {
     checkCudaErrors( cudaFree ( boundaryCondition.ghostCells  ) );
     checkCudaErrors( cudaFree ( boundaryCondition.domainCells ) );
     checkCudaErrors( cudaFree ( boundaryCondition.secondCells ) );
 }
 
-void DataBaseAllocatorGPU::allocateMemory(SPtr<BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells)
+void DataBaseAllocatorGPU::allocateMemory(SPtr<GksGpu::BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells)
 {
     checkCudaErrors( cudaMalloc ( &boundaryCondition->ghostCells , sizeof(uint) * ghostCells.size()  ) );
     checkCudaErrors( cudaMalloc ( &boundaryCondition->domainCells, sizeof(uint) * domainCells.size() ) );

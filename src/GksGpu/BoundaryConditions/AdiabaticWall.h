@@ -11,6 +11,8 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
+namespace GksGpu{
+
 struct AdiabaticWallStruct
 {
     uint  numberOfCells;
@@ -59,5 +61,7 @@ struct VF_PUBLIC AdiabaticWall : public BoundaryCondition //, public IsothermalW
         return boundaryCondition;
     }
 };
+
+} // namespace GksGpu
 
 #endif

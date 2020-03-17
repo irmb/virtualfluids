@@ -30,7 +30,7 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
 
     //////////////////////////////////////////////////////////////////////////
 
-    for( SPtr<BoundaryCondition> bc : dataBase->boundaryConditions )
+    for( SPtr<GksGpu::BoundaryCondition> bc : dataBase->boundaryConditions )
     {
         bc->runBoundaryConditionKernel( dataBase, parameters, level );
     }

@@ -712,7 +712,7 @@ void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> targ
     }
 }
 
-void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, std::shared_ptr<ConcreteHeatFlux> bc, Parameters parameters, int mode, std::string filename)
+void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, std::shared_ptr<GksGpu::ConcreteHeatFlux> bc, Parameters parameters, int mode, std::string filename)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".vtu" << " ... \n";
 

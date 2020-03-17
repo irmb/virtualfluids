@@ -11,6 +11,8 @@
 #include "DataBase/DataBaseAllocator.h"
 #include "DataBase/DataBaseStruct.h"
 
+namespace GksGpu{
+
 BoundaryCondition::BoundaryCondition( SPtr<DataBase> dataBase )
     : myAllocator ( dataBase->myAllocator )
 {
@@ -125,3 +127,5 @@ bool BoundaryCondition::secondCellsNeeded()
 {
     return false;
 }
+
+} // namespace GksGpu

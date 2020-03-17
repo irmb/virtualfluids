@@ -29,6 +29,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu{
+
 //////////////////////////////////////////////////////////////////////////
 
 __global__                 void boundaryConditionKernel  ( const DataBaseStruct dataBase, 
@@ -147,4 +149,6 @@ bool MassCompensation::secondCellsNeeded()
 {
     return false;
 }
+
+} // namespace GksGpu
 

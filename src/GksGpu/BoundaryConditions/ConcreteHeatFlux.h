@@ -15,6 +15,8 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
+namespace GksGpu{
+
 struct ConcreteHeatFluxStruct
 {
     uint  numberOfCells;
@@ -101,5 +103,7 @@ struct VF_PUBLIC ConcreteHeatFlux : public BoundaryCondition //, public Isotherm
 
     void writeVTKFile( SPtr<DataBase> dataBase, Parameters& parameters, std::string filename );
 };
+
+} // namespace GksGpu
 
 #endif

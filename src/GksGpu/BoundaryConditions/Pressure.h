@@ -11,6 +11,8 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
+namespace GksGpu{
+
 //struct IsothermalWallStruct : virtual public BoundaryConditionStruct
 //{
 //    Vec3 velocity;
@@ -58,5 +60,7 @@ struct VF_PUBLIC Pressure : public BoundaryCondition
         return boundaryCondition;
     }
 };
+
+} // namespace GksGpu
 
 #endif
