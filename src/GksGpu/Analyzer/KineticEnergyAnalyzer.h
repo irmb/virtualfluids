@@ -11,6 +11,8 @@
 
 #include "FlowStateData/FlowStateData.cuh"
 
+namespace GksGpu {
+
 struct DataBase;
 
 class VF_PUBLIC KineticEnergyAnalyzer
@@ -34,5 +36,7 @@ public:
     void writeToFile( std::string filename );
 
 };
+
+} // namespace GksGpu
 
 #endif

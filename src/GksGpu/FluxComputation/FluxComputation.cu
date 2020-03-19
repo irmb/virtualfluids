@@ -24,6 +24,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu {
+
 __global__                 void fluxKernel  ( DataBaseStruct dataBase, Parameters parameters, char direction, uint startIndex, uint numberOfEntities );
 
 __host__ __device__ inline void fluxFunction( DataBaseStruct dataBase, Parameters parameters, char direction, uint startIndex, uint index );
@@ -472,3 +474,5 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
         }
     }
 }
+
+} // namespace GksGpu

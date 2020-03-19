@@ -9,6 +9,8 @@
 #include "Core/DataTypes.h"
 #include "Core/Timer/Timer.h"
 
+namespace GksGpu {
+
 struct DataBase;
 
 class VF_PUBLIC CupsAnalyzer
@@ -51,5 +53,7 @@ private:
 
     std::string getTimeString( real time );
 };
+
+} // namespace GksGpu
 
 #endif

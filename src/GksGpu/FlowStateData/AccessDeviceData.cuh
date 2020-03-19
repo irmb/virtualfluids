@@ -18,6 +18,8 @@
 
 #include "FlowStateData/FlowStateData.cuh"
 
+namespace GksGpu {
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 __host__ __device__ inline void readCellData(const uint cellIdx, const DataBaseStruct& dataBase, ConservedVariables& cellCons)
@@ -73,5 +75,7 @@ __host__ __device__ inline void writeCellDataUpdate(const uint cellIdx, const Da
 	dataBase.dataUpdate[ RHO_S_2( cellIdx, dataBase.numberOfCells ) ] = cellCons.rhoS_2;
 #endif // USE_PASSIVE_SCALAR
 }
+
+} // namespace GksGpu
 
 #endif

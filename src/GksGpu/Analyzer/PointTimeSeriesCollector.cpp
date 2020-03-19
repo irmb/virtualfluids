@@ -9,6 +9,8 @@
 
 #include "Parameters/Parameters.h"
 
+namespace GksGpu {
+
 PointTimeSeriesCollector::~PointTimeSeriesCollector()
 {
 }
@@ -78,3 +80,5 @@ void PointTimeSeriesCollector::writeToFile(std::string filename)
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
+
+} // namespace GksGpu

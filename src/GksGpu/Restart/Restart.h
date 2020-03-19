@@ -9,6 +9,8 @@
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
 
+namespace GksGpu {
+
 struct DataBase;
 
 class VF_PUBLIC Restart
@@ -23,6 +25,8 @@ private:
     Restart(){}
     ~Restart(){}
 };
+
+} // namespace GksGpu
 
 
 #endif

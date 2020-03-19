@@ -9,6 +9,8 @@
 #include "DataBase/DataBase.h"
 #include "Parameters/Parameters.h"
 
+namespace GksGpu {
+
 class VF_PUBLIC CellUpdate
 {
 public:
@@ -17,5 +19,7 @@ public:
                      Parameters parameters, 
                      uint level );
 };
+
+} // namespace GksGpu
 
 #endif

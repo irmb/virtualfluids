@@ -13,6 +13,8 @@
 #include "FlowStateData/FlowStateData.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
 
+namespace GksGpu {
+
 inline __host__ __device__ real getTurbulentViscositySmagorinsky(const Parameters & parameters, 
                                                                  const PrimitiveVariables& facePrim, 
                                                                  const ConservedVariables gradX1, 
@@ -47,5 +49,7 @@ inline __host__ __device__ real getTurbulentViscositySmagorinsky(const Parameter
 
     return facePrim.rho * Cs*Cs * parameters.dx*parameters.dx * S;
 }
+
+} // namespace GksGpu
 
 #endif

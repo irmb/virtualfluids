@@ -26,7 +26,7 @@
 #include "GksGpu/FlowStateData/FlowStateData.cuh"
 #include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
 
-vtkGridPtr getVtkUnstructuredOctGrid( SPtr<DataBase> dataBase, bool excludeGhostCells )
+vtkGridPtr getVtkUnstructuredOctGrid( SPtr<GksGpu::DataBase> dataBase, bool excludeGhostCells )
 {
     vtkGridPtr grid = vtkGridPtr::New();
  
@@ -126,7 +126,7 @@ void addVectorCellData( vtkGridPtr grid,
     grid->GetCellData()->AddArray( data );
 }
 
-void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters)
+void addBaseData(vtkGridPtr grid, SPtr<GksGpu::DataBase> dataBase, GksGpu::Parameters parameters)
 {
     addScalarIntCellData( grid, dataBase->numberOfCells, "CellIdx", [&] (uint cellIdx) {
         return cellIdx;
@@ -138,7 +138,7 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
 
     addScalarRealCellData( grid, dataBase->numberOfCells, "T", [&] (uint cellIdx) {
                     
-        ConservedVariables cons;
+        GksGpu::ConservedVariables cons;
 
         cons.rho  = dataBase->dataHost[ RHO__(cellIdx, dataBase->numberOfCells) ];
         cons.rhoU = dataBase->dataHost[ RHO_U(cellIdx, dataBase->numberOfCells) ];
@@ -150,7 +150,7 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
         cons.rhoS_2 = dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ];
 #endif // USE_PASSIVE_SCALAR
 
-        PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
+        GksGpu::PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
         
 #ifdef USE_PASSIVE_SCALAR
         return getT(prim);
@@ -161,7 +161,7 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
 
     addScalarRealCellData( grid, dataBase->numberOfCells, "lambda", [&] (uint cellIdx) {
                     
-        ConservedVariables cons;
+        GksGpu::ConservedVariables cons;
 
         cons.rho  = dataBase->dataHost[ RHO__(cellIdx, dataBase->numberOfCells) ];
         cons.rhoU = dataBase->dataHost[ RHO_U(cellIdx, dataBase->numberOfCells) ];
@@ -173,14 +173,14 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
         cons.rhoS_2 = dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ];
 #endif // USE_PASSIVE_SCALAR
 
-        PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
+        GksGpu::PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
 
         return prim.lambda;
     } );
 
     addScalarRealCellData( grid, dataBase->numberOfCells, "p", [&] (uint cellIdx) {
                     
-        ConservedVariables cons;
+        GksGpu::ConservedVariables cons;
 
         cons.rho  = dataBase->dataHost[ RHO__(cellIdx, dataBase->numberOfCells) ];
         cons.rhoU = dataBase->dataHost[ RHO_U(cellIdx, dataBase->numberOfCells) ];
@@ -192,7 +192,7 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
         cons.rhoS_2 = dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ];
 #endif // USE_PASSIVE_SCALAR
 
-        PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
+        GksGpu::PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
 
         return 0.5 * prim.rho / prim.lambda;
     } );
@@ -207,7 +207,7 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
             
     addVectorCellData( grid, dataBase->numberOfCells, "Velocity", [&] (uint cellIdx) {
                     
-        ConservedVariables cons;
+        GksGpu::ConservedVariables cons;
 
         cons.rho  = dataBase->dataHost[ RHO__(cellIdx, dataBase->numberOfCells) ];
         cons.rhoU = dataBase->dataHost[ RHO_U(cellIdx, dataBase->numberOfCells) ];
@@ -215,7 +215,7 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
         cons.rhoW = dataBase->dataHost[ RHO_W(cellIdx, dataBase->numberOfCells) ];
         cons.rhoE = dataBase->dataHost[ RHO_E(cellIdx, dataBase->numberOfCells) ];
 
-        PrimitiveVariables prim = toPrimitiveVariables( cons, parameters.K );
+        GksGpu::PrimitiveVariables prim = toPrimitiveVariables( cons, parameters.K );
 
         return Vec3( prim.U, prim.V, prim.W );
     } );
@@ -413,8 +413,8 @@ void writePNG( vtkDataObject * inputData, int nx, int ny, double L, double H, st
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void writeVtkXML(std::shared_ptr<DataBase> dataBase, 
-                 Parameters parameters, 
+void writeVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase, 
+                 GksGpu::Parameters parameters, 
                  int mode, 
                  std::string filename)
 {
@@ -429,7 +429,7 @@ void writeVtkXML(std::shared_ptr<DataBase> dataBase,
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
-void VF_PUBLIC writeVtkXMLParallelSummaryFile(std::shared_ptr<DataBase> dataBase, Parameters parameters, std::string filename, uint mpiWorldSize)
+void VF_PUBLIC writeVtkXMLParallelSummaryFile(std::shared_ptr<GksGpu::DataBase> dataBase, GksGpu::Parameters parameters, std::string filename, uint mpiWorldSize)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".pvtu" << " ... \n";
 
@@ -442,8 +442,8 @@ void VF_PUBLIC writeVtkXMLParallelSummaryFile(std::shared_ptr<DataBase> dataBase
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
-void writeTurbulenceVtkXML(std::shared_ptr<DataBase> dataBase, 
-                           std::shared_ptr<TurbulenceAnalyzer> turbulenceAnalyzer,
+void writeTurbulenceVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase, 
+                           std::shared_ptr<GksGpu::TurbulenceAnalyzer> turbulenceAnalyzer,
                            int mode, 
                            std::string filename)
 {
@@ -534,7 +534,7 @@ void writeTurbulenceVtkXML(std::shared_ptr<DataBase> dataBase,
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
-void VF_PUBLIC writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<DataBase> dataBase, std::shared_ptr<TurbulenceAnalyzer> turbulenceAnalyzer,Parameters parameters, std::string filename, uint mpiWorldSize)
+void VF_PUBLIC writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<GksGpu::DataBase> dataBase, std::shared_ptr<GksGpu::TurbulenceAnalyzer> turbulenceAnalyzer,GksGpu::Parameters parameters, std::string filename, uint mpiWorldSize)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".pvtu" << " ... \n";
 
@@ -593,7 +593,7 @@ void VF_PUBLIC writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<DataBase
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
-void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> target)
+void mapFlowField(std::shared_ptr<GksGpu::DataBase> base, std::shared_ptr<GksGpu::DataBase> target)
 {
     vtkGridPtr gridBase   = getVtkUnstructuredOctGrid(base,   true);
     vtkGridPtr gridTarget = getVtkUnstructuredOctGrid(target, true);
@@ -616,7 +616,7 @@ void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> targ
 
         if( base->isGhostCell( cellIdx ) ) continue;
                     
-        ConservedVariables cons;
+        GksGpu::ConservedVariables cons;
 
         cons.rho  = base->dataHost[ RHO__(cellIdx, base->numberOfCells) ];
         cons.rhoU = base->dataHost[ RHO_U(cellIdx, base->numberOfCells) ];
@@ -712,7 +712,7 @@ void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> targ
     }
 }
 
-void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, std::shared_ptr<GksGpu::ConcreteHeatFlux> bc, Parameters parameters, int mode, std::string filename)
+void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase, std::shared_ptr<GksGpu::ConcreteHeatFlux> bc, GksGpu::Parameters parameters, int mode, std::string filename)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".vtu" << " ... \n";
 
@@ -729,7 +729,7 @@ void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, s
         if( bc->domainCellsHost[index] > dataBase->perLevelCount[ dataBase->getCellLevel( bc->domainCellsHost[index] ) ].startOfCells
                                        + dataBase->perLevelCount[ dataBase->getCellLevel( bc->domainCellsHost[index] ) ].numberOfBulkCells ) continue;
 
-        if( isCellProperties( dataBase->cellPropertiesHost[ bc->domainCellsHost[index] ], CELL_PROPERTIES_FINE_GHOST ) ) continue;
+        if( GksGpu::isCellProperties( dataBase->cellPropertiesHost[ bc->domainCellsHost[index] ], CELL_PROPERTIES_FINE_GHOST ) ) continue;
 
         real dx = bc->L / real(bc->numberOfPoints + 1);
 
@@ -835,12 +835,12 @@ void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, s
         if( bc->domainCellsHost[cellIdx] > dataBase->perLevelCount[ dataBase->getCellLevel( bc->domainCellsHost[cellIdx] ) ].startOfCells
                                          + dataBase->perLevelCount[ dataBase->getCellLevel( bc->domainCellsHost[cellIdx] ) ].numberOfBulkCells ) continue;
 
-        if( isCellProperties( dataBase->cellPropertiesHost[ bc->domainCellsHost[cellIdx] ], CELL_PROPERTIES_FINE_GHOST ) ) continue;
+        if( GksGpu::isCellProperties( dataBase->cellPropertiesHost[ bc->domainCellsHost[cellIdx] ], CELL_PROPERTIES_FINE_GHOST ) ) continue;
 
         real T = c0o1;
 
         {
-            ConservedVariables cons;
+            GksGpu::ConservedVariables cons;
 
             cons.rho  = dataBase->dataHost[RHO__(bc->domainCellsHost[cellIdx], dataBase->numberOfCells)];
             cons.rhoU = dataBase->dataHost[RHO_U(bc->domainCellsHost[cellIdx], dataBase->numberOfCells)];
@@ -848,7 +848,7 @@ void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, s
             cons.rhoW = dataBase->dataHost[RHO_W(bc->domainCellsHost[cellIdx], dataBase->numberOfCells)];
             cons.rhoE = dataBase->dataHost[RHO_E(bc->domainCellsHost[cellIdx], dataBase->numberOfCells)];
 
-            PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
+            GksGpu::PrimitiveVariables prim = GksGpu::toPrimitiveVariables(cons, parameters.K);
 
 #ifdef USE_PASSIVE_SCALAR
             T += c3o2 * getT(prim);
@@ -859,7 +859,7 @@ void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, s
         }
 
         {
-            ConservedVariables cons;
+            GksGpu::ConservedVariables cons;
 
             cons.rho  = dataBase->dataHost[RHO__(bc->secondCellsHost[cellIdx], dataBase->numberOfCells)];
             cons.rhoU = dataBase->dataHost[RHO_U(bc->secondCellsHost[cellIdx], dataBase->numberOfCells)];
@@ -867,7 +867,7 @@ void VF_PUBLIC writeConcreteHeatFluxVtkXML(std::shared_ptr<DataBase> dataBase, s
             cons.rhoW = dataBase->dataHost[RHO_W(bc->secondCellsHost[cellIdx], dataBase->numberOfCells)];
             cons.rhoE = dataBase->dataHost[RHO_E(bc->secondCellsHost[cellIdx], dataBase->numberOfCells)];
 
-            PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
+            GksGpu::PrimitiveVariables prim = GksGpu::toPrimitiveVariables(cons, parameters.K);
 
 #ifdef USE_PASSIVE_SCALAR
             T -= c1o2 * getT(prim);

@@ -11,9 +11,12 @@
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
 
+class  GksMeshAdapter;
+
+namespace GksGpu {
+
 struct DataBase;
 struct Parameters;
-class  GksMeshAdapter;
 
 struct PointTimeSeriesAnalyzerStruct
 {
@@ -66,5 +69,7 @@ public:
 
     void download();
 };
+
+} // namespace GksGpu
 
 #endif

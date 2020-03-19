@@ -21,6 +21,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu {
+
 __global__                 void kineticEnergyKernel  ( DataBaseStruct dataBase, real* kineticEnergy, uint startIndex, uint numberOfEntities );
 
 __host__ __device__ inline void kineticEnergyFunction( DataBaseStruct dataBase, real* kineticEnergy, uint startIndex, uint index );
@@ -106,5 +108,7 @@ void KineticEnergyAnalyzer::writeToFile(std::string filename)
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
+
+} // namespace GksGpu
 
 

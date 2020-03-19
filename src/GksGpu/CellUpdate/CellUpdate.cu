@@ -22,6 +22,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu {
+
 __global__                 void cellUpdateKernel  ( DataBaseStruct dataBase, Parameters parameters, uint startIndex, uint numberOfEntities );
 
 __host__ __device__ inline void cellUpdateFunction( DataBaseStruct dataBase, Parameters parameters, uint startIndex, uint index );
@@ -214,3 +216,5 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
     writeCellData(cellIndex, dataBase, cons);
 }
+
+} // namespace GksGpu

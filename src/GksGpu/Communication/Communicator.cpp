@@ -22,6 +22,8 @@
 
 #include "CudaUtility/CudaUtility.h"
 
+namespace GksGpu {
+
 int Communicator::tagSendPositive = 0;
 int Communicator::tagSendNegative = 1;
 
@@ -95,3 +97,5 @@ void Communicator::recvData( SPtr<DataBase> dataBase, int tag )
 
 #endif // USE_CUDA_AWARE_MPI
 }
+
+} // namespace GksGpu

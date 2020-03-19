@@ -18,6 +18,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu {
+
 //////////////////////////////////////////////////////////////////////////
 
 __global__                 void coarseToFineKernel  ( DataBaseStruct dataBase, uint startIndex, uint numberOfEntities );
@@ -421,3 +423,5 @@ __host__ __device__ inline void coarseToFineFunctionPrimitiveInterpolation( Data
         writeCellData(childCellIndex, dataBase, childCons);
     }
 }
+
+} // namespace GksGpu

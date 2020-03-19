@@ -26,6 +26,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu {
+
 __global__                 void turbulenceKernel  ( DataBaseStruct dataBase, TurbulenceAnalyzerStruct turbulenceAnalyzer, Parameters parameters, uint startIndex, uint numberOfEntities );
 
 __host__ __device__ inline void turbulenceFunction( DataBaseStruct dataBase, TurbulenceAnalyzerStruct turbulenceAnalyzer, Parameters parameters, uint startIndex, uint index );
@@ -423,5 +425,7 @@ void TurbulenceAnalyzer::upload()
     if( collect_TT ) checkCudaErrors( cudaMemcpy( this->TT, this->h_TT.data(), sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
     if( collect_p  ) checkCudaErrors( cudaMemcpy( this->p , this->h_p.data() , sizeof(real) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
 }
+
+} // namespace GksGpu
 
 

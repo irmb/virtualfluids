@@ -15,6 +15,8 @@
 
 #include "Parameters/Parameters.h"
 
+namespace GksGpu {
+
 struct DataBase;
 
 class VF_PUBLIC HeatFluxAnalyzer
@@ -44,5 +46,7 @@ public:
     void writeToFile( std::string filename );
 
 };
+
+} // namespace GksGpu
 
 #endif

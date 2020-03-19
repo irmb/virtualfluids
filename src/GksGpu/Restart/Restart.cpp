@@ -11,6 +11,8 @@
 
 #include "Definitions/MemoryAccessPattern.h"
 
+namespace GksGpu {
+
 void Restart::writeRestart( SPtr<DataBase> dataBase, std::string filename, uint iter )
 {
     filename += ".rst";
@@ -90,3 +92,5 @@ bool Restart::readRestart( SPtr<DataBase> dataBase, std::string filename, uint& 
 
     return true;
 }
+
+} // namespace GksGpu

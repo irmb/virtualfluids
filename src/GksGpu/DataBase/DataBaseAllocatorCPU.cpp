@@ -17,6 +17,8 @@
 
 #include "Definitions/MemoryAccessPattern.h"
 
+namespace GksGpu {
+
 void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
 {
     dataBase.cellToNode.clear();
@@ -256,3 +258,5 @@ std::string DataBaseAllocatorCPU::getDeviceType()
 {
     return std::string("CPU");
 }
+
+} // namespace GksGpu

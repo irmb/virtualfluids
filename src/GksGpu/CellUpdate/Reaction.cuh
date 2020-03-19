@@ -19,6 +19,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu {
+
 inline __host__ __device__ real getTurbulentViscosityDeardorff(const DataBaseStruct& dataBase, const Parameters& parameters, const uint cellIndex, const ConservedVariables& cons )
 {
     // See FDS 6 Technical Reference Guide, Section 4.2.3
@@ -185,3 +187,5 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
 #endif // USE_PASSIVE_SCALAR
 }
+
+} // namespace GksGpu

@@ -5,6 +5,8 @@
 
 #include <VirtualFluidsDefinitions.h>
 
+namespace GksGpu{ 
+
 struct VF_PUBLIC DataBaseStruct
 {
     uint  numberOfCells;
@@ -37,6 +39,8 @@ struct VF_PUBLIC DataBaseStruct
 
     int* crashCellIndex;
 };
+
+} // namespace GksGpu
 
 
 #endif

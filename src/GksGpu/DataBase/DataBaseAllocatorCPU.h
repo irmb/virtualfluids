@@ -8,6 +8,8 @@
 
 #include "VirtualFluidsDefinitions.h"
 
+namespace GksGpu {
+
 class VF_PUBLIC DataBaseAllocatorCPU : public DataBaseAllocator {
 
 public:
@@ -26,9 +28,9 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
 
-    virtual void freeMemory( GksGpu::BoundaryCondition& boundaryCondition ) override;
+    virtual void freeMemory( BoundaryCondition& boundaryCondition ) override;
 
-    virtual void allocateMemory( SPtr<GksGpu::BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells ) override;
+    virtual void allocateMemory( SPtr<BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells ) override;
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -45,6 +47,8 @@ public:
 
     virtual std::string getDeviceType() override;
 };
+
+} // namespace GksGpu
 
 
 #endif

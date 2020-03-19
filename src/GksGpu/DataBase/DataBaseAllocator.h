@@ -10,8 +10,11 @@
 #include "VirtualFluidsDefinitions.h"
 
 class  GksMeshAdapter;
+
+namespace GksGpu {
+
 struct DataBase;
-namespace GksGpu { struct BoundaryCondition; };
+struct BoundaryCondition;
 struct Communicator;
 
 class VF_PUBLIC DataBaseAllocator {
@@ -36,9 +39,9 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
 
-    virtual void freeMemory( GksGpu::BoundaryCondition& boundaryCondition ) = 0;
+    virtual void freeMemory( BoundaryCondition& boundaryCondition ) = 0;
 
-    virtual void allocateMemory( SPtr<GksGpu::BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells ) = 0;
+    virtual void allocateMemory( SPtr<BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells ) = 0;
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -63,6 +66,8 @@ protected:
     DataBaseAllocator( const DataBaseAllocator& orig );
 
 };
+
+} // namespace GksGpu
 
 
 #endif

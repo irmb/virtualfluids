@@ -22,6 +22,8 @@
 
 #include "CudaUtility/CudaUtility.h"
 
+namespace GksGpu {
+
 void DataBaseAllocatorGPU::freeMemory( DataBase& dataBase )
 {
     dataBase.cellToNode.clear();
@@ -299,3 +301,5 @@ std::string DataBaseAllocatorGPU::getDeviceType()
 {
     return std::string("GPU");
 }
+
+} // namespace GksGpu

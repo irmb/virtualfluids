@@ -12,6 +12,8 @@
 #include "Definitions/MemoryAccessPattern.h"
 #include "Definitions/PassiveScalar.h"
 
+namespace GksGpu {
+
 void Initializer::interpret(SPtr<DataBase> dataBase, std::function<ConservedVariables(Vec3)> initialCondition)
 {
     for( uint cellIdx = 0; cellIdx < dataBase->numberOfCells; cellIdx++ ){
@@ -33,3 +35,5 @@ void Initializer::interpret(SPtr<DataBase> dataBase, std::function<ConservedVari
 
     return;
 }
+
+} // namespace GksGpu

@@ -13,6 +13,8 @@
 #include "FlowStateData/FlowStateData.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
 
+namespace GksGpu {
+
 inline __host__ __device__ real sutherlandsLaw(const Parameters & parameters, const real r)
 {
     real S  = real( 110.5 );
@@ -23,5 +25,7 @@ inline __host__ __device__ real sutherlandsLaw(const Parameters & parameters, co
 
     return parameters.mu * sqrt( r * r * r ) * ( C  + c1o1 ) / ( r  + C );
 }
+
+} // namespace GksGpu
 
 #endif

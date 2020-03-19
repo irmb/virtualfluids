@@ -13,6 +13,9 @@
 #include "Core/VectorTypes.h"
 
 class  GksMeshAdapter;
+
+namespace GksGpu {
+
 class  DataBaseAllocator;
 struct DataBase;
 
@@ -53,5 +56,7 @@ struct VF_PUBLIC Communicator : public std::enable_shared_from_this<Communicator
     void sendData( SPtr<DataBase> dataBase, int tag );
     void recvData( SPtr<DataBase> dataBase, int tag );
 };
+
+} // namespace GksGpu
 
 #endif

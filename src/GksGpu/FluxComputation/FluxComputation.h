@@ -9,6 +9,8 @@
 #include "DataBase/DataBase.h"
 #include "Parameters/Parameters.h"
 
+namespace GksGpu {
+
 class VF_PUBLIC FluxComputation
 {
 public:
@@ -18,5 +20,7 @@ public:
                      uint level,
                      bool evaluateCommFaces = false);
 };
+
+} // namespace GksGpu
 
 #endif

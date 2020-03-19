@@ -14,6 +14,8 @@
 #include "DataBase/DataBase.h"
 #include "FlowStateData/FlowStateData.cuh"
 
+namespace GksGpu {
+
 class VF_PUBLIC Initializer
 {
 public:
@@ -22,5 +24,7 @@ public:
 
     static void initializeDataUpdate( SPtr<DataBase> dataBase );
 };
+
+} // namespace GksGpu
 
 #endif

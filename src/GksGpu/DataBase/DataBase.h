@@ -19,7 +19,9 @@
 
 class  GksMeshAdapter;
 
-namespace GksGpu{ struct BoundaryCondition; }
+namespace GksGpu { 
+
+struct BoundaryCondition;
 class  DataBaseAllocator;
 struct DataBase;
 struct PerLevelCounts;
@@ -34,7 +36,7 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
 
     SPtr<DataBaseAllocator> myAllocator;
 
-    std::vector< SPtr<GksGpu::BoundaryCondition> > boundaryConditions;
+    std::vector< SPtr<BoundaryCondition> > boundaryConditions;
 
     std::vector< std::array< SPtr< Communicator >, 6 > > communicators;
 
@@ -171,5 +173,7 @@ struct VF_PUBLIC PerLevelCounts
     uint numberOfFineToCoarse;
     uint startOfFineToCoarse;
 };
+
+} // namespace GksGpu
 
 #endif

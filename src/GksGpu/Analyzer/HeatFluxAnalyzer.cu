@@ -26,6 +26,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu {
+
 __global__                 void heatFluxKernel  ( DataBaseStruct  dataBase, GksGpu::BoundaryConditionStruct  boundaryCondition, Parameters  parameters, real* heatFlux, uint startIndex, uint numberOfEntities );
 __host__ __device__ inline void heatFluxFunction( DataBaseStruct& dataBase, GksGpu::BoundaryConditionStruct& boundaryCondition, Parameters& parameters, real* heatFlux, uint startIndex, uint index );
 
@@ -143,5 +145,7 @@ void HeatFluxAnalyzer::writeToFile(std::string filename)
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
+
+} // namespace GksGpu
 
 

@@ -12,6 +12,8 @@
 
 #include "FlowStateData/FlowStateData.cuh"
 
+namespace GksGpu {
+
 struct DataBase;
 struct Parameters;
 
@@ -119,5 +121,7 @@ public:
 
     void upload();
 };
+
+} // namespace GksGpu
 
 #endif

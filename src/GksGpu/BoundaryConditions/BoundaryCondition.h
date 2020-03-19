@@ -15,10 +15,11 @@
 #include "Parameters/Parameters.h"
 
 class  GksMeshAdapter;
-class  DataBaseAllocator;
-struct DataBase;
 
 namespace GksGpu{
+
+class  DataBaseAllocator;
+struct DataBase;
 
 struct BoundaryConditionStruct
 {

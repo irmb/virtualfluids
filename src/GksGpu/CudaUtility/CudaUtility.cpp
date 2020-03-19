@@ -8,6 +8,8 @@
 #include "Core/DataTypes.h"
 #include "Core/Logger/Logger.h"
 
+namespace GksGpu {
+
 cudaStream_t CudaUtility::computeStream = nullptr;
 cudaStream_t CudaUtility::communicationStream = nullptr;
 
@@ -90,3 +92,5 @@ void CudaUtility::synchronizeCudaStream(cudaStream_t stream)
 {
     checkCudaErrors( cudaStreamSynchronize(stream) );
 }
+
+} // namespace GksGpu

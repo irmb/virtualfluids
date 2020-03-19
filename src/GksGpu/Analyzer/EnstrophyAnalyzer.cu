@@ -21,6 +21,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu {
+
 __global__                 void enstrophyKernel  ( DataBaseStruct dataBase, Parameters parameters, real* enstrophy, uint nx, uint startIndex, uint numberOfEntities );
 
 __host__ __device__ inline void enstrophyFunction( DataBaseStruct dataBase, Parameters parameters, real* enstrophy, uint nx, uint startIndex, uint index );
@@ -336,5 +338,7 @@ void EnstrophyAnalyzer::writeToFile(std::string filename)
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
+
+} // namespace GksGpu
 
 

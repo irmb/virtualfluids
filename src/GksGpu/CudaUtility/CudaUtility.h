@@ -8,6 +8,8 @@
 
 #include "Core/DataTypes.h"
 
+namespace GksGpu {
+
 class VF_PUBLIC CudaUtility
 {
 public:
@@ -39,5 +41,7 @@ public:
 
     static void synchronizeCudaStream( cudaStream_t stream );
 };
+
+} // namespace GksGpu
 
 #endif
