@@ -12,6 +12,7 @@
 #include "global.h"
 
 class GridImp;
+struct Vertex;
 
 class VF_PUBLIC Object
 {
@@ -48,6 +49,8 @@ public:
     }
 
     HOST virtual void findInnerNodes(SPtr<GridImp> grid);
+
+    HOST virtual int getIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnObject, real &qVal);
 };
 
 
