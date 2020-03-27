@@ -10,7 +10,8 @@ namespace GksGpu {
 
 enum class VF_PUBLIC ViscosityModel{
     constant,
-    sutherlandsLaw
+    sutherlandsLaw,
+    sutherlandsLaw2
 };
 
 struct  VF_PUBLIC Parameters

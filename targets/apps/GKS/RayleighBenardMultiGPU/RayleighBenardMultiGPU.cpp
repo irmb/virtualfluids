@@ -99,8 +99,8 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
 
     real dx = L / real(nx);
 
-    //real Ra = 1.0e7;
-    real Ra = 1.0e2;
+    real Ra = 3.0e6;
+    //real Ra = 1.0e2;
 
     real Ba  = 0.1;
     real eps = 0.8;
@@ -119,7 +119,7 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
     real cs  = sqrt( ( ( K + 4.0 ) / ( K + 2.0 ) ) / ( 2.0 * lambda ) );
     real U   = sqrt( Ra ) * mu / ( rho * L );
 
-    real CFL = 0.05;
+    real CFL = 0.5;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( c1o1 + ( c2o1 * mu ) / ( U * dx * rho ) ) ) );
 
@@ -129,7 +129,7 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
 
     //////////////////////////////////////////////////////////////////////////
 
-    Parameters parameters;
+    GksGpu::Parameters parameters;
 
     parameters.K  = K;
     parameters.Pr = Pr;
@@ -144,8 +144,8 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
 
     parameters.lambdaRef = lambda;
 
-    //parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
-    parameters.viscosityModel = ViscosityModel::constant;
+    parameters.viscosityModel = GksGpu::ViscosityModel::sutherlandsLaw2;
+    //parameters.viscosityModel = ViscosityModel::constant;
 
     parameters.forcingSchemeIdx = 0;
 
@@ -237,7 +237,7 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
     if( sideLengthZ == 1 || rankZ == 1 ) firstRefLevel.add( new Cuboid (-100.0, -100.0,  0.5*L - refL[1], 
                                                                          100.0,  100.0,  100.0           ) );
 
-    //gridBuilder->addGrid( &firstRefLevel, 2);
+    gridBuilder->addGrid( &firstRefLevel, 2);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -346,7 +346,7 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    auto dataBase = std::make_shared<DataBase>( "GPU" );
+    auto dataBase = std::make_shared<GksGpu::DataBase>( "GPU" );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -397,18 +397,18 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
 
     dataBase->setCommunicators( meshAdapter );
 
-    CudaUtility::printCudaMemoryUsage();
+    GksGpu::CudaUtility::printCudaMemoryUsage();
 
     if( restartIter == INVALID_INDEX )
     {
-        Initializer::interpret(dataBase, [&](Vec3 cellCenter) -> ConservedVariables {
+        GksGpu::Initializer::interpret(dataBase, [&](Vec3 cellCenter) -> GksGpu::ConservedVariables {
 
             //real Th = 1.0 / lambdaHot;
             //real Tc = 1.0 / lambdaCold;
             //real T = Th - (Th - Tc)*((cellCenter.x + 0.5 * L) / L);
             //real lambdaLocal = 1.0 / T;
 
-            return toConservedVariables(PrimitiveVariables(rho, 0.0, 0.0, 0.0, lambda), parameters.K);
+            return GksGpu::toConservedVariables(GksGpu::PrimitiveVariables(rho, 0.0, 0.0, 0.0, lambda), parameters.K);
         });
 
         if (rank == 0) writeVtkXMLParallelSummaryFile(dataBase, parameters, path + simulationName + "_0", mpiWorldSize);
@@ -417,7 +417,7 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
     }
     else
     {
-        Restart::readRestart( dataBase, path + simulationName + "_" + std::to_string( restartIter ) + "_rank_" + std::to_string(rank), startIter );
+        GksGpu::Restart::readRestart( dataBase, path + simulationName + "_" + std::to_string( restartIter ) + "_rank_" + std::to_string(rank), startIter );
 
         if (rank == 0) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( restartIter ) + "_restart", mpiWorldSize );
 
@@ -428,7 +428,7 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
 
     dataBase->copyDataHostToDevice();
 
-    Initializer::initializeDataUpdate(dataBase);
+    GksGpu::Initializer::initializeDataUpdate(dataBase);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -436,12 +436,12 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 300.0 );
+    GksGpu::CupsAnalyzer cupsAnalyzer( dataBase, true, 300.0 );
 
-    ConvergenceAnalyzer convergenceAnalyzer( dataBase );
+    GksGpu::ConvergenceAnalyzer convergenceAnalyzer( dataBase );
 
     //auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 0 );
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
+    auto turbulenceAnalyzer = std::make_shared<GksGpu::TurbulenceAnalyzer>( dataBase, 50000 );
 
     turbulenceAnalyzer->collect_UU = true;
     turbulenceAnalyzer->collect_VV = true;
@@ -470,8 +470,8 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
     //    if( subDomainBox->isInside(  0.485, y,  0.3*H ) ) pointTimeSeriesCollector->addAnalyzer( dataBase, meshAdapter, Vec3(  0.485, y,  0.3*H ), 'W', 10000 );
     //}
 
-    HeatFluxAnalyzer heatFluxAnalyzerPZ(dataBase, bcPZ, 100, 100, lambdaHot, lambdaCold, L);
-    HeatFluxAnalyzer heatFluxAnalyzerMZ(dataBase, bcMZ, 100, 100, lambdaHot, lambdaCold, L);
+    GksGpu::HeatFluxAnalyzer heatFluxAnalyzerPZ(dataBase, bcPZ, 100, 10000, lambdaHot, lambdaCold, L);
+    GksGpu::HeatFluxAnalyzer heatFluxAnalyzerMZ(dataBase, bcMZ, 100, 10000, lambdaHot, lambdaCold, L);
     //HeatFluxAnalyzer heatFluxAnalyzer(dataBase, bcPZ);
 
     //////////////////////////////////////////////////////////////////////////
@@ -480,16 +480,7 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
 
     for( uint iter = startIter + 1; iter <= 100000000; iter++ )
     {
-        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
-
-        if( iter % 10000 == 0 )
-        {
-            dataBase->copyDataDeviceToHost();
-
-            if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( iter ), mpiWorldSize );
-
-            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
-        }
+        GksGpu::TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         cupsAnalyzer.run( iter, parameters.dt );
 
@@ -500,21 +491,33 @@ void simulation( std::string path, std::string simulationName, bool fine, uint r
         if(rankZ == 1) heatFluxAnalyzerPZ.run( iter, parameters );
         if(rankZ == 0) heatFluxAnalyzerMZ.run( iter, parameters );
 
+        if( iter % 10000 == 0 )
+        //if( iter % 25 == 0 )
+        {
+            dataBase->copyDataDeviceToHost();
+
+            if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( iter ), mpiWorldSize );
+
+            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
+
+            if(rankZ == 1) heatFluxAnalyzerPZ.writeToFile( path + simulationName + "_Nu_top_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
+            if(rankZ == 0) heatFluxAnalyzerMZ.writeToFile( path + simulationName + "_Nu_bot_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
+        }
+
         //pointTimeSeriesCollector->run(iter, parameters);
 
         if( iter > 50000 && iter % 10000 == 0 )
-        //if(iter % 1000 == 0)
         {
             turbulenceAnalyzer->download();
-
+        
             if( rank == 0 ) writeTurbulenceVtkXMLParallelSummaryFile( dataBase, turbulenceAnalyzer, parameters, path + simulationName + "_Turbulence_" + std::to_string( iter ), mpiWorldSize );
-
+        
             writeTurbulenceVtkXML( dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
         }
 
-        if( iter > 50000 && iter % 10000 == 0 )
+        if( iter % 10000 == 0 )
         {
-            Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank), iter );
+            GksGpu::Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank), iter );
 
             turbulenceAnalyzer->writeRestartFile( path + simulationName + "_Turbulence_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
         }
@@ -549,14 +552,15 @@ int main( int argc, char* argv[])
     int mpiWorldSize = 1;
     MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
 #else
-    int rank         = MpiUtility::getMpiRankBeforeInit();
-    int mpiWorldSize = MpiUtility::getMpiWorldSizeBeforeInit();
+    int rank         = GksGpu::MpiUtility::getMpiRankBeforeInit();
+    int mpiWorldSize = GksGpu::MpiUtility::getMpiWorldSizeBeforeInit();
 #endif
 
     //////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
-    std::string path( "F:/Work/Computations/out/RayleighBenardMultiGPU/" );
+    std::string path( "F:/Work/Computations/out/RayleighBenardMultiGPU/test/" );
+    //std::string path( "F:/Work/Computations/out/RayleighBenardMultiGPU/" );
 #else
     std::string path( "out/" );
 #endif
@@ -579,7 +583,7 @@ int main( int argc, char* argv[])
     //////////////////////////////////////////////////////////////////////////
 
     // Important: for Cuda-Aware MPI the device must be set before MPI_Init()
-    int deviceCount = CudaUtility::getCudaDeviceCount();
+    int deviceCount = GksGpu::CudaUtility::getCudaDeviceCount();
 
     if(deviceCount == 0)
     {
@@ -588,7 +592,7 @@ int main( int argc, char* argv[])
         *logging::out << logging::Logger::WARNING << msg.str(); msg.str("");
     }
 
-    CudaUtility::setCudaDevice( rank % deviceCount );
+    GksGpu::CudaUtility::setCudaDevice( rank % deviceCount );
 
     //////////////////////////////////////////////////////////////////////////
 

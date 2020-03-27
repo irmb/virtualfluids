@@ -106,13 +106,7 @@ __host__ __device__ void heatFluxFunction(DataBaseStruct& dataBase, GksGpu::Boun
 
     real r   = parameters.lambdaRef / lambda;
 
-    real mu;
-    if ( parameters.viscosityModel == ViscosityModel::constant ){
-        mu = parameters.mu;
-    }
-    else if ( parameters.viscosityModel == ViscosityModel::sutherlandsLaw ){
-        mu = sutherlandsLaw( parameters, r );
-    }
+    real mu = getViscosity(parameters, r);
 
     heatFlux[ startIndex + index ] = c1o4 * (parameters.K + c5o1) * ( mu / parameters.Pr ) / parameters.dx * ( c1o1 / domainPrim.lambda - c1o1 / ghostPrim.lambda );
 }
