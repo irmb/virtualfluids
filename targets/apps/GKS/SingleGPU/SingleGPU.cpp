@@ -72,7 +72,7 @@ real performanceTest( std::string path, std::string simulationName, uint nx )
 
     //////////////////////////////////////////////////////////////////////////
 
-    Parameters parameters;
+    GksGpu::Parameters parameters;
 
     parameters.K  = 0;
     parameters.Pr = 1;
@@ -121,31 +121,31 @@ real performanceTest( std::string path, std::string simulationName, uint nx )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    auto dataBase = std::make_shared<DataBase>( "CPU" );
+    auto dataBase = std::make_shared<GksGpu::DataBase>( "GPU" );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>( dataBase );
+    SPtr<GksGpu::BoundaryCondition> bcMX = std::make_shared<GksGpu::Periodic>( dataBase );
+    SPtr<GksGpu::BoundaryCondition> bcPX = std::make_shared<GksGpu::Periodic>( dataBase );
 
     bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
+    SPtr<GksGpu::BoundaryCondition> bcMY = std::make_shared<GksGpu::Periodic>( dataBase );
+    SPtr<GksGpu::BoundaryCondition> bcPY = std::make_shared<GksGpu::Periodic>( dataBase );
 
     bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*L; } );
     bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
+    SPtr<GksGpu::BoundaryCondition> bcMZ = std::make_shared<GksGpu::Periodic>( dataBase );
+    SPtr<GksGpu::BoundaryCondition> bcPZ = std::make_shared<GksGpu::Periodic>( dataBase );
     
     bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*L; } );
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*L; } );
@@ -183,11 +183,11 @@ real performanceTest( std::string path, std::string simulationName, uint nx )
 
     dataBase->setCommunicators( meshAdapter );
 
-    CudaUtility::printCudaMemoryUsage();
+    GksGpu::CudaUtility::printCudaMemoryUsage();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables
+    GksGpu::Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> GksGpu::ConservedVariables
     {
         real U = 0.1;
 
@@ -203,7 +203,7 @@ real performanceTest( std::string path, std::string simulationName, uint nx )
 
         real rhoLocal = 2.0 * pLocal * parameters.lambdaRef;
 
-        return toConservedVariables( PrimitiveVariables( rhoLocal, ULocal, VLocal, WLocal, parameters.lambdaRef ), parameters.K );
+        return GksGpu::toConservedVariables( GksGpu::PrimitiveVariables( rhoLocal, ULocal, VLocal, WLocal, parameters.lambdaRef ), parameters.K );
     });
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -214,12 +214,12 @@ real performanceTest( std::string path, std::string simulationName, uint nx )
         for( uint level = 0; level < dataBase->numberOfLevels; level++ )
             bc->runBoundaryConditionKernel( dataBase, parameters, level );
 
-    Initializer::initializeDataUpdate(dataBase);
+    GksGpu::Initializer::initializeDataUpdate(dataBase);
 
     //dataBase->copyDataDeviceToHost();
 
     //writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -227,7 +227,7 @@ real performanceTest( std::string path, std::string simulationName, uint nx )
 
     const uint numberOfIterations = 1000;
 
-    CupsAnalyzer cupsAnalyzer( dataBase, false, 30.0, true, numberOfIterations );
+    GksGpu::CupsAnalyzer cupsAnalyzer( dataBase, false, 30.0, true, numberOfIterations );
 
     real CUPS = 0;
 
@@ -235,7 +235,7 @@ real performanceTest( std::string path, std::string simulationName, uint nx )
 
     for( uint iter = 1; iter <= numberOfIterations; iter++ )
     {
-        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+        GksGpu::TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         CUPS = cupsAnalyzer.run( iter, parameters.dt );
     }
@@ -244,7 +244,7 @@ real performanceTest( std::string path, std::string simulationName, uint nx )
 
     //dataBase->copyDataDeviceToHost();
 
-    //writeVtkXML( dataBase, parameters, 0, path + simulationName + "_final" );
+    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_final" );
     
     //////////////////////////////////////////////////////////////////////////
 
@@ -284,7 +284,8 @@ int main( int argc, char* argv[])
         std::ofstream file;
         file.open( path + simulationName + ".dat" );
 
-        std::vector<uint> nxList = {32,64,128,256};
+        //std::vector<uint> nxList = {32,64,128,256};
+        std::vector<uint> nxList = {256};
 
         for( auto nx : nxList )
         {
@@ -293,7 +294,7 @@ int main( int argc, char* argv[])
             std::ofstream logFile( path + simulationName + "_nx_" + std::to_string(nx) + ".log" );
             logging::Logger::addStream(&logFile);
 
-            CudaUtility::setCudaDevice( 0 );
+            GksGpu::CudaUtility::setCudaDevice( 0 );
     
             //////////////////////////////////////////////////////////////////////////
 

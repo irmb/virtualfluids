@@ -55,7 +55,7 @@
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
 #include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
-#include "GksGpu/Analyzer/PointTimeseriesAnalyzer.h"
+#include "GksGpu/Analyzer/PointTimeSeriesAnalyzer.h"
 
 #include "GksGpu/Restart/Restart.h"
 
@@ -92,9 +92,9 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
     if( _testIndex == 24 ) { U = 0.097; rhoFuel = 0.5464; }    // Test 24      medium flow rate
     if( _testIndex == 17 ) { U = 0.117; rhoFuel = 0.5641; }    // Test 17      high flow rate
 
-    PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
+    GksGpu::PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
-    setLambdaFromT( prim, 2.85 );
+    GksGpu::setLambdaFromT( prim, 2.85 );
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
@@ -117,7 +117,7 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     //////////////////////////////////////////////////////////////////////////
 
-    Parameters parameters;
+    GksGpu::Parameters parameters;
 
     parameters.K  = K;
     parameters.Pr = Pr;
@@ -138,8 +138,8 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     parameters.heatOfReaction = dh;
 
-    parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
-    //parameters.viscosityModel = ViscosityModel::constant;
+    parameters.viscosityModel = GksGpu::ViscosityModel::sutherlandsLaw;
+    //parameters.viscosityModel = GksGpu::ViscosityModel::constant;
 
     parameters.enableReaction = true;
 
@@ -217,9 +217,9 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(_gpuIndex);
+    GksGpu::CudaUtility::setCudaDevice(_gpuIndex);
 
-    auto dataBase = std::make_shared<DataBase>( "GPU" );
+    auto dataBase = std::make_shared<GksGpu::DataBase>( "GPU" );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -228,11 +228,11 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
     
     real openBoundaryVelocityLimiter = 1.0;
 
-    SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
+    SPtr<GksGpu::BoundaryCondition> bcMX = std::make_shared<GksGpu::Open>( dataBase, prim, openBoundaryVelocityLimiter );
+    SPtr<GksGpu::BoundaryCondition> bcPX = std::make_shared<GksGpu::Open>( dataBase, prim, openBoundaryVelocityLimiter );
 
-    SPtr<BoundaryCondition> bcMX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
-    SPtr<BoundaryCondition> bcPX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
+    SPtr<GksGpu::BoundaryCondition> bcMX_2 = std::make_shared<GksGpu::Symmetry>( dataBase, 'x' );
+    SPtr<GksGpu::BoundaryCondition> bcPX_2 = std::make_shared<GksGpu::Symmetry>( dataBase, 'x' );
 
     bcMX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcPX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L; } );
@@ -242,19 +242,19 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     //////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMY;
-    SPtr<BoundaryCondition> bcPY;
+    SPtr<GksGpu::BoundaryCondition> bcMY;
+    SPtr<GksGpu::BoundaryCondition> bcPY;
 
-    SPtr<BoundaryCondition> bcMY_2;
-    SPtr<BoundaryCondition> bcPY_2;
+    SPtr<GksGpu::BoundaryCondition> bcMY_2;
+    SPtr<GksGpu::BoundaryCondition> bcPY_2;
 
     if( threeDimensional )
     {
-        bcMY = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
-        bcPY = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
+        bcMY = std::make_shared<GksGpu::Open>( dataBase, prim, openBoundaryVelocityLimiter );
+        bcPY = std::make_shared<GksGpu::Open>( dataBase, prim, openBoundaryVelocityLimiter );
 
-        bcMY_2 = std::make_shared<Symmetry>( dataBase, 'y' );
-        bcPY_2 = std::make_shared<Symmetry>( dataBase, 'y' );
+        bcMY_2 = std::make_shared<GksGpu::Symmetry>( dataBase, 'y' );
+        bcPY_2 = std::make_shared<GksGpu::Symmetry>( dataBase, 'y' );
 
         bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*L; } );
         bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*L; } );
@@ -264,8 +264,8 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
     }
     else
     {
-        bcMY = std::make_shared<Periodic>(dataBase);
-        bcPY = std::make_shared<Periodic>(dataBase);
+        bcMY = std::make_shared<GksGpu::Periodic>(dataBase);
+        bcPY = std::make_shared<GksGpu::Periodic>(dataBase);
 
         bcMY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y < -0.5*dx; });
         bcPY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y >  0.5*dx; });
@@ -273,19 +273,19 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     //////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
+    SPtr<GksGpu::BoundaryCondition> bcMZ = std::make_shared<GksGpu::AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, true );
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, 0.0, prim.lambda, 0.0, 0.0) );
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<Open>( dataBase );
 
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
+    SPtr<GksGpu::BoundaryCondition> bcPZ = std::make_shared<GksGpu::Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
     
     bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0; } );
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > H  ; } );
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> burner = std::make_shared<CreepingMassFlux>( dataBase, rhoFuel, U, prim.lambda );
+    SPtr<GksGpu::BoundaryCondition> burner = std::make_shared<GksGpu::CreepingMassFlux>( dataBase, rhoFuel, U, prim.lambda );
     //SPtr<BoundaryCondition> burner = std::make_shared<Inflow>( dataBase, Vec3(0,0,U), prim.lambda, rhoFuel, 1, 0, 0, 1.0 );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
@@ -321,21 +321,21 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     //////////////////////////////////////////////////////////////////////////
 
-    auto pointTimeSeriesAnalyzerU_P1 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 0.505), 'U' );
-    auto pointTimeSeriesAnalyzerV_P1 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 0.505), 'V' );
-    auto pointTimeSeriesAnalyzerW_P1 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 0.505), 'W' );
+    auto pointTimeSeriesAnalyzerU_P1 = std::make_shared<GksGpu::PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 0.505), 'U' );
+    auto pointTimeSeriesAnalyzerV_P1 = std::make_shared<GksGpu::PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 0.505), 'V' );
+    auto pointTimeSeriesAnalyzerW_P1 = std::make_shared<GksGpu::PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 0.505), 'W' );
 
-    auto pointTimeSeriesAnalyzerU_P2 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 0.505), 'U' );
-    auto pointTimeSeriesAnalyzerV_P2 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 0.505), 'V' );
-    auto pointTimeSeriesAnalyzerW_P2 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 0.505), 'W' );
+    auto pointTimeSeriesAnalyzerU_P2 = std::make_shared<GksGpu::PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 0.505), 'U' );
+    auto pointTimeSeriesAnalyzerV_P2 = std::make_shared<GksGpu::PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 0.505), 'V' );
+    auto pointTimeSeriesAnalyzerW_P2 = std::make_shared<GksGpu::PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 0.505), 'W' );
 
-    auto pointTimeSeriesAnalyzerU_P3 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 2.0), 'U' );
-    auto pointTimeSeriesAnalyzerV_P3 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 2.0), 'V' );
-    auto pointTimeSeriesAnalyzerW_P3 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 2.0), 'W' );
+    auto pointTimeSeriesAnalyzerU_P3 = std::make_shared<GksGpu::PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 2.0), 'U' );
+    auto pointTimeSeriesAnalyzerV_P3 = std::make_shared<GksGpu::PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 2.0), 'V' );
+    auto pointTimeSeriesAnalyzerW_P3 = std::make_shared<GksGpu::PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.0, 0.0, 2.0), 'W' );
 
-    auto pointTimeSeriesAnalyzerU_P4 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 2.0), 'U' );
-    auto pointTimeSeriesAnalyzerV_P4 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 2.0), 'V' );
-    auto pointTimeSeriesAnalyzerW_P4 = std::make_shared<PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 2.0), 'W' );
+    auto pointTimeSeriesAnalyzerU_P4 = std::make_shared<GksGpu::PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 2.0), 'U' );
+    auto pointTimeSeriesAnalyzerV_P4 = std::make_shared<GksGpu::PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 2.0), 'V' );
+    auto pointTimeSeriesAnalyzerW_P4 = std::make_shared<GksGpu::PointTimeSeriesAnalyzer>( dataBase, meshAdapter, Vec3(0.5, 0.0, 2.0), 'W' );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -346,22 +346,22 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     dataBase->setMesh( meshAdapter );
 
-    CudaUtility::printCudaMemoryUsage();
+    GksGpu::CudaUtility::printCudaMemoryUsage();
     
     if( restartIter == INVALID_INDEX )
     {
-        Initializer::interpret(dataBase, [&](Vec3 cellCenter) -> ConservedVariables {
+        GksGpu::Initializer::interpret(dataBase, [&](Vec3 cellCenter) -> GksGpu::ConservedVariables {
 
-            PrimitiveVariables primLocal = prim;
+            GksGpu::PrimitiveVariables primLocal = prim;
 
-            return toConservedVariables(primLocal, parameters.K);
+            return GksGpu::toConservedVariables(primLocal, parameters.K);
         });
 
         writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
     }
     else
     {
-        Restart::readRestart( dataBase, path + simulationName + "_" + std::to_string( restartIter ), startIter );
+        GksGpu::Restart::readRestart( dataBase, path + simulationName + "_" + std::to_string( restartIter ), startIter );
 
         writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( restartIter ) + "_restart" );
     }
@@ -372,7 +372,7 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
         for( uint level = 0; level < dataBase->numberOfLevels; level++ )
             bc->runBoundaryConditionKernel( dataBase, parameters, level );
 
-    Initializer::initializeDataUpdate(dataBase);
+    GksGpu::Initializer::initializeDataUpdate(dataBase);
 
     dataBase->copyDataDeviceToHost();
 
@@ -387,11 +387,11 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     //////////////////////////////////////////////////////////////////////////
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, true, 10000 );
+    GksGpu::CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, true, 10000 );
 
-    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
+    GksGpu::ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 10 * iterPerSecond );
+    auto turbulenceAnalyzer = std::make_shared<GksGpu::TurbulenceAnalyzer>( dataBase, 10 * iterPerSecond );
 
     turbulenceAnalyzer->collect_UU = true;
     turbulenceAnalyzer->collect_VV = true;
@@ -409,7 +409,7 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
         convergenceAnalyzer.run( iter );
 
-        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+        GksGpu::TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         pointTimeSeriesAnalyzerU_P1->run(iter, parameters);
         pointTimeSeriesAnalyzerV_P1->run(iter, parameters);
@@ -450,7 +450,7 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
         if( iter % 10000 == 0 /*|| iter == 39000*/)
         {
             dataBase->copyDataDeviceToHost();
-            Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ), iter );
+            GksGpu::Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ), iter );
         }
 
         if( iter % 100000 == 0 )
