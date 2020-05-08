@@ -82,7 +82,7 @@ real performanceTest( std::string path, std::string simulationName, uint nx )
     parameters.force.y = 0;
     parameters.force.z = 0;
 
-    parameters.dt = 0.0001;
+    parameters.dt = 0.0001 * ( double(128) / double(nx) );
     parameters.dx = dx;
 
     parameters.lambdaRef = 1.0e-2;
@@ -244,7 +244,7 @@ real performanceTest( std::string path, std::string simulationName, uint nx )
 
     //dataBase->copyDataDeviceToHost();
 
-    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_final" );
+    //writeVtkXML( dataBase, parameters, 0, path + simulationName + "_final" );
     
     //////////////////////////////////////////////////////////////////////////
 
@@ -285,7 +285,7 @@ int main( int argc, char* argv[])
         file.open( path + simulationName + ".dat" );
 
         //std::vector<uint> nxList = {32,64,128,256};
-        std::vector<uint> nxList = {256};
+        std::vector<uint> nxList = {128};
 
         for( auto nx : nxList )
         {
