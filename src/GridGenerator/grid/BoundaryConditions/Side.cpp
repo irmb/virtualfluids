@@ -67,11 +67,26 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         real x,y,z;
         grid->transIndexToCoords( index, x, y, z );
 
-        x += grid->getDirection()[dir * DIMENSION + 0] * grid->getDelta();
-        y += grid->getDirection()[dir * DIMENSION + 1] * grid->getDelta();
-        z += grid->getDirection()[dir * DIMENSION + 2] * grid->getDelta();
+        real coords[3] = {x,y,z};
 
-        uint neighborIndex = grid->transCoordToIndex( x, y, z );
+        real neighborX = x + grid->getDirection()[dir * DIMENSION + 0] * grid->getDelta();
+        real neighborY = y + grid->getDirection()[dir * DIMENSION + 1] * grid->getDelta();
+        real neighborZ = z + grid->getDirection()[dir * DIMENSION + 2] * grid->getDelta();
+
+        // correct neighbor coordinates in case of periodic boundaries
+        if( grid->getPeriodicityX() && grid->getFieldEntry( grid->transCoordToIndex( neighborX, y, z ) ) == STOPPER_OUT_OF_GRID_BOUNDARY )
+            if( neighborX > x ) neighborX = grid->getFirstFluidNode( coords, 0, grid->getStartX() );
+            else                neighborX = grid->getLastFluidNode ( coords, 0, grid->getEndX() );
+
+        if( grid->getPeriodicityY() && grid->getFieldEntry( grid->transCoordToIndex( x, neighborY, z ) ) == STOPPER_OUT_OF_GRID_BOUNDARY )
+            if( neighborY > y ) neighborY = grid->getFirstFluidNode( coords, 1, grid->getStartY() );
+            else                neighborY = grid->getLastFluidNode ( coords, 1, grid->getEndY() );
+
+        if( grid->getPeriodicityZ() && grid->getFieldEntry( grid->transCoordToIndex( x, y, neighborZ ) ) == STOPPER_OUT_OF_GRID_BOUNDARY )
+            if( neighborZ > z ) neighborZ = grid->getFirstFluidNode( coords, 2, grid->getStartZ() );
+            else                neighborZ = grid->getLastFluidNode ( coords, 2, grid->getEndZ() );
+
+        uint neighborIndex = grid->transCoordToIndex( neighborX, neighborY, neighborZ );
 
         if( grid->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY ||
             grid->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID ||
