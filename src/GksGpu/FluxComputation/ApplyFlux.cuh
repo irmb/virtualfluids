@@ -10,6 +10,8 @@
 #include "FlowStateData/FlowStateData.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
 
+namespace GksGpu {
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 __host__ __device__ inline void applyFluxToNegCell( const DataBaseStruct& dataBase,
@@ -132,5 +134,7 @@ __host__ __device__ inline void applyFluxToPosCell( const DataBaseStruct& dataBa
     }
 #endif
 }
+
+} // namespace GksGpu
 
 #endif

@@ -41,7 +41,7 @@ struct rgbColor
     unsigned char b;
 };
 
-vtkGridPtr VF_PUBLIC getVtkUnstructuredOctGrid( SPtr<DataBase> dataBase, bool excludeGhostCells = false );
+vtkGridPtr VF_PUBLIC getVtkUnstructuredOctGrid( SPtr<GksGpu::DataBase> dataBase, bool excludeGhostCells = false );
 
 void VF_PUBLIC addScalarIntCellData( vtkGridPtr grid, 
                                      uint numberOfCells, 
@@ -58,7 +58,7 @@ void VF_PUBLIC addVectorCellData( vtkGridPtr grid,
                                   std::string name, 
                                   std::function<Vec3(uint)> getData );
 
-void VF_PUBLIC addBaseData( vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters );
+void VF_PUBLIC addBaseData( vtkGridPtr grid, SPtr<GksGpu::DataBase> dataBase, GksGpu::Parameters parameters );
 
 void VF_PUBLIC writeVtkUnstructuredGrid( vtkGridPtr grid, int mode, std::string filename );
 

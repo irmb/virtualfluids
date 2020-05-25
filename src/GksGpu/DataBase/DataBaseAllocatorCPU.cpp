@@ -17,6 +17,8 @@
 
 #include "Definitions/MemoryAccessPattern.h"
 
+namespace GksGpu {
+
 void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
 {
     dataBase.cellToNode.clear();
@@ -192,14 +194,14 @@ int DataBaseAllocatorCPU::getCrashCellIndex(SPtr<DataBase> dataBase)
     return *dataBase->crashCellIndex;
 }
 
-void DataBaseAllocatorCPU::freeMemory(BoundaryCondition& boundaryCondition)
+void DataBaseAllocatorCPU::freeMemory(GksGpu::BoundaryCondition& boundaryCondition)
 {
     delete [] boundaryCondition.ghostCells ;
     delete [] boundaryCondition.domainCells;
     delete [] boundaryCondition.secondCells;
 }
 
-void DataBaseAllocatorCPU::allocateMemory(SPtr<BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells)
+void DataBaseAllocatorCPU::allocateMemory(SPtr<GksGpu::BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells)
 {
     boundaryCondition->ghostCells  = new uint[ ghostCells.size()  ];
     boundaryCondition->domainCells = new uint[ domainCells.size() ];
@@ -256,3 +258,5 @@ std::string DataBaseAllocatorCPU::getDeviceType()
 {
     return std::string("CPU");
 }
+
+} // namespace GksGpu

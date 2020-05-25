@@ -8,6 +8,8 @@
 
 #include "VirtualFluidsDefinitions.h"
 
+namespace GksGpu {
+
 class VF_PUBLIC DataBaseAllocatorCPU : public DataBaseAllocator {
 
 public:
@@ -45,6 +47,8 @@ public:
 
     virtual std::string getDeviceType() override;
 };
+
+} // namespace GksGpu
 
 
 #endif

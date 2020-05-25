@@ -14,6 +14,8 @@
 #include "GksMeshAdapter/GksMeshAdapter.h"
 #include "Communication/Communicator.h"
 
+namespace GksGpu {
+
 DataBase::DataBase( std::string type ) 
         : myAllocator    ( DataBaseAllocator::create( type ) ),
           numberOfNodes      (0),
@@ -234,3 +236,5 @@ std::string DataBase::getDeviceType()
 {
     return this->myAllocator->getDeviceType();
 }
+
+} // namespace GksGpu

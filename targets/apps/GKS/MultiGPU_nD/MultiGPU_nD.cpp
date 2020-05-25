@@ -146,7 +146,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     //////////////////////////////////////////////////////////////////////////
 
-    Parameters parameters;
+    GksGpu::Parameters parameters;
 
     parameters.K  = 0;
     parameters.Pr = 1;
@@ -160,6 +160,10 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     parameters.dx = dx;
 
     parameters.lambdaRef = 1.0e-2;
+    
+    parameters.forcingSchemeIdx = 2;
+
+    parameters.enableReaction = true;
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -228,11 +232,11 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    auto dataBase = std::make_shared<DataBase>("GPU");
+    auto dataBase = std::make_shared<GksGpu::DataBase>("GPU");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    for ( int i = 0; i < rank % CudaUtility::getCudaDeviceCount(); i++ ) MPI_Barrier(MPI_COMM_WORLD);
+    for ( int i = 0; i < rank % GksGpu::CudaUtility::getCudaDeviceCount(); i++ ) MPI_Barrier(MPI_COMM_WORLD);
 
     {
         GksMeshAdapter meshAdapter(gridBuilder);
@@ -248,24 +252,24 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>(dataBase);
-        SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>(dataBase);
+        SPtr<GksGpu::BoundaryCondition> bcMX = std::make_shared<GksGpu::Periodic>(dataBase);
+        SPtr<GksGpu::BoundaryCondition> bcPX = std::make_shared<GksGpu::Periodic>(dataBase);
 
         if (sideLengthX == 1) bcMX->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.x < -0.5*L; });
         if (sideLengthX == 1) bcPX->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.x > 0.5*L; });
 
         //////////////////////////////////////////////////////////////////////////
 
-        SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>(dataBase);
-        SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>(dataBase);
+        SPtr<GksGpu::BoundaryCondition> bcMY = std::make_shared<GksGpu::Periodic>(dataBase);
+        SPtr<GksGpu::BoundaryCondition> bcPY = std::make_shared<GksGpu::Periodic>(dataBase);
 
         if (sideLengthY == 1) bcMY->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.y < -0.5*L; });
         if (sideLengthY == 1) bcPY->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.y > 0.5*L; });
 
         //////////////////////////////////////////////////////////////////////////
 
-        SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>(dataBase);
-        SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>(dataBase);
+        SPtr<GksGpu::BoundaryCondition> bcMZ = std::make_shared<GksGpu::Periodic>(dataBase);
+        SPtr<GksGpu::BoundaryCondition> bcPZ = std::make_shared<GksGpu::Periodic>(dataBase);
 
         if (sideLengthZ == 1) bcMZ->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.z < -0.5*L; });
         if (sideLengthZ == 1) bcPZ->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.z > 0.5*L; });
@@ -303,14 +307,14 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
         dataBase->setCommunicators(meshAdapter);
 
-        CudaUtility::printCudaMemoryUsage();
+        GksGpu::CudaUtility::printCudaMemoryUsage();
     }
 
-    for ( int i = 0; i < CudaUtility::getCudaDeviceCount() - rank % CudaUtility::getCudaDeviceCount(); i++ ) MPI_Barrier(MPI_COMM_WORLD);
+    for ( int i = 0; i < GksGpu::CudaUtility::getCudaDeviceCount() - rank % GksGpu::CudaUtility::getCudaDeviceCount(); i++ ) MPI_Barrier(MPI_COMM_WORLD);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables
+    GksGpu::Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> GksGpu::ConservedVariables
     {
         real U = 0.1;
 
@@ -332,7 +336,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
         //rhoLocal = rank + 1;
 
-        return toConservedVariables( PrimitiveVariables( rhoLocal, ULocal, VLocal, WLocal, parameters.lambdaRef ), parameters.K );
+        return GksGpu::toConservedVariables( GksGpu::PrimitiveVariables( rhoLocal, ULocal, VLocal, WLocal, parameters.lambdaRef ), parameters.K );
     });
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -343,13 +347,13 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
         for( uint level = 0; level < dataBase->numberOfLevels; level++ )
             bc->runBoundaryConditionKernel( dataBase, parameters, level );
 
-    Initializer::initializeDataUpdate(dataBase);
+    GksGpu::Initializer::initializeDataUpdate(dataBase);
 
     dataBase->copyDataDeviceToHost();
 
-    if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_0", mpiWorldSize );
+    //if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_0", mpiWorldSize );
 
-    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank) );
+    //writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank) );
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -358,7 +362,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     const uint numberOfIterations = 1000;
 
-    CupsAnalyzer cupsAnalyzer( dataBase, false, 30.0, true, numberOfIterations );
+    GksGpu::CupsAnalyzer cupsAnalyzer( dataBase, false, 30.0, true, numberOfIterations );
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -366,18 +370,18 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     for( uint iter = 1; iter <= numberOfIterations; iter++ )
     {
-        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+        GksGpu::TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         cupsAnalyzer.run( iter, parameters.dt );
     }
 
     //////////////////////////////////////////////////////////////////////////
 
-    dataBase->copyDataDeviceToHost();
+    //dataBase->copyDataDeviceToHost();
 
-    if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_final", mpiWorldSize );
+    //if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_final", mpiWorldSize );
 
-    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_final_rank_" + std::to_string(rank) );
+    //writeVtkXML( dataBase, parameters, 0, path + simulationName + "_final_rank_" + std::to_string(rank) );
     
     //////////////////////////////////////////////////////////////////////////
 
@@ -452,7 +456,7 @@ int main( int argc, char* argv[])
     //////////////////////////////////////////////////////////////////////////
 
     // Important: for Cuda-Aware MPI the device must be set before MPI_Init()
-    int deviceCount = CudaUtility::getCudaDeviceCount();
+    int deviceCount = GksGpu::CudaUtility::getCudaDeviceCount();
 
     if(deviceCount == 0)
     {
@@ -461,7 +465,7 @@ int main( int argc, char* argv[])
         *logging::out << logging::Logger::WARNING << msg.str(); msg.str("");
     }
 
-    CudaUtility::setCudaDevice( rank % deviceCount );
+    GksGpu::CudaUtility::setCudaDevice( rank % deviceCount );
 
     //////////////////////////////////////////////////////////////////////////
 

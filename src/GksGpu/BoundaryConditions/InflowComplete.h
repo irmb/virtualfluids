@@ -13,6 +13,8 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
+namespace GksGpu{
+
 struct InflowCompleteStruct
 {
     uint  numberOfCells;
@@ -55,5 +57,7 @@ struct VF_PUBLIC InflowComplete : public BoundaryCondition //, public Isothermal
         return boundaryCondition;
     }
 };
+
+} // namespace GksGpu
 
 #endif

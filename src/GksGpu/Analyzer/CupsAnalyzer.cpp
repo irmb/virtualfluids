@@ -10,6 +10,8 @@
 
 #include "DataBase/DataBase.h"
 
+namespace GksGpu {
+
 CupsAnalyzer::CupsAnalyzer(SPtr<DataBase> dataBase, 
                            bool outputPerTime, real outputTime, 
                            bool outputPerIter, uint outputIter)
@@ -126,5 +128,7 @@ std::string CupsAnalyzer::getTimeString(real time)
 
     return timeString.str();
 }
+
+} // namespace GksGpu
 
 

@@ -12,6 +12,8 @@
 #include "Initializer/Initializer.h"
 #include "CudaUtility/CudaUtility.h"
 
+namespace GksGpu {
+
 void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase, 
                                    Parameters parameters,
                                    uint level )
@@ -100,4 +102,6 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
 
     //////////////////////////////////////////////////////////////////////////
 }
+
+} // namespace GksGpu
 

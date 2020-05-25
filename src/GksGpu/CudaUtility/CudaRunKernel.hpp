@@ -8,6 +8,8 @@
 
 #include "CudaUtility/CudaUtility.h"
 
+namespace GksGpu {
+
 template<typename KernelFunctor, typename FunctionFunctor, typename... TArgs>
 void runKernel(KernelFunctor kernel, FunctionFunctor function, std::string deviceType, const CudaUtility::CudaGrid& grid, TArgs... args)
 {
@@ -26,5 +28,7 @@ void runKernel(KernelFunctor kernel, FunctionFunctor function, std::string devic
         }
     }
 }
+
+} // namespace GksGpu
 
 #endif

@@ -33,6 +33,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu{
+
 //////////////////////////////////////////////////////////////////////////
 
 __global__                 void boundaryConditionKernel  ( const DataBaseStruct dataBase, 
@@ -224,4 +226,6 @@ bool ConcreteHeatFlux::secondCellsNeeded()
 {
     return true;
 }
+
+} // namespace GksGpu
 

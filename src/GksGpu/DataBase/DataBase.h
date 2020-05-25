@@ -19,6 +19,8 @@
 
 class  GksMeshAdapter;
 
+namespace GksGpu { 
+
 struct BoundaryCondition;
 class  DataBaseAllocator;
 struct DataBase;
@@ -171,5 +173,7 @@ struct VF_PUBLIC PerLevelCounts
     uint numberOfFineToCoarse;
     uint startOfFineToCoarse;
 };
+
+} // namespace GksGpu
 
 #endif

@@ -13,6 +13,8 @@
 
 #include "FlowStateData/FlowStateData.cuh"
 
+namespace GksGpu {
+
 struct DataBase;
 
 class VF_PUBLIC EnstrophyAnalyzer
@@ -38,5 +40,7 @@ public:
     void writeToFile( std::string filename );
 
 };
+
+} // namespace GksGpu
 
 #endif

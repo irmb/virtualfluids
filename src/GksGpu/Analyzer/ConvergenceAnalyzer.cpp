@@ -10,6 +10,8 @@
 
 #include "FlowStateData/AccessDeviceData.cuh"
 
+namespace GksGpu {
+
 ConvergenceAnalyzer::ConvergenceAnalyzer(SPtr<DataBase> dataBase, uint outputIter, real convergenceThreshold)
 {
     this->dataBase = dataBase;
@@ -132,3 +134,5 @@ void ConvergenceAnalyzer::printL2Change(ConservedVariables L2Change)
     *logging::out << logging::Logger::INFO_HIGH << header.str() << "\n";
     *logging::out << logging::Logger::INFO_HIGH << body.str()   << "\n";
 }
+
+} // namespace GksGpu

@@ -10,6 +10,8 @@
 #include "FlowStateData/FlowStateData.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
 
+namespace GksGpu {
+
 __host__ __device__ inline void computeExpansionCoefficients(const PrimitiveVariables & facePrim, 
                                                              const ConservedVariables & gradient,
                                                              const real K, 
@@ -52,5 +54,7 @@ __host__ __device__ inline void computeExpansionCoefficients(const PrimitiveVari
 	expansionCoefficient[6] = c2o1 * facePrim.lambda * (gradient.rhoS_2 - facePrim.S_2 * gradient.rho);
 #endif // USE_PASSIVE_SCALAR
 }
+
+} // namespace GksGpu
 
 #endif

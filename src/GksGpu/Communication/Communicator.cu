@@ -24,6 +24,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu {
+
 //////////////////////////////////////////////////////////////////////////
 
 __global__                 void sendBufferKernel  ( const DataBaseStruct dataBase, 
@@ -159,3 +161,5 @@ __host__ __device__ inline void recvBufferFunction( const DataBaseStruct dataBas
     dataBase.data[ RHO_S_2(cellIdx, dataBase.numberOfCells) ] = recvBuffer[ RHO_S_2(index, numberOfRecvNodes) ] ;
 #endif // USE_PASSIVE_SCALAR
 }
+
+} // namespace GksGpu

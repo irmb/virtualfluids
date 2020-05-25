@@ -12,6 +12,8 @@
 
 #define NUMBER_OF_MOMENTS 7
 
+namespace GksGpu {
+
 __host__ __device__ inline void computeMoments( const PrimitiveVariables & facePrim,
                                                 const real K,
                                                 real momentU [NUMBER_OF_MOMENTS], 
@@ -45,6 +47,8 @@ __host__ __device__ inline void computeMoments( const PrimitiveVariables & faceP
     momentXi[5] = c0o1;
     momentXi[6] = ( K + c4o1 ) / ( c2o1 * facePrim.lambda ) * momentXi[4];
 }
+
+} // namespace GksGpu
 
 
 

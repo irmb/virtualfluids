@@ -13,6 +13,8 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
+namespace GksGpu{
+
 struct HeatFluxStruct
 {
     uint  numberOfCells;
@@ -55,5 +57,7 @@ struct VF_PUBLIC HeatFlux : public BoundaryCondition //, public IsothermalWallSt
         return boundaryCondition;
     }
 };
+
+} // namespace GksGpu
 
 #endif

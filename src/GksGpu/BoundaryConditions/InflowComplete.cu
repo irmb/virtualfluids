@@ -29,6 +29,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu{
+
 //////////////////////////////////////////////////////////////////////////
 
 __global__                 void boundaryConditionKernel  ( const DataBaseStruct dataBase, 
@@ -200,98 +202,98 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if( false )
-    {
-        PrimitiveVariables domainCellPrim;
-        {
-            ConservedVariables domainCellData;
-            readCellData(domainCellIdx, dataBase, domainCellData);
-            domainCellPrim = toPrimitiveVariables(domainCellData, parameters.K);
-        }    
+    //if( false )
+    //{
+    //    PrimitiveVariables domainCellPrim;
+    //    {
+    //        ConservedVariables domainCellData;
+    //        readCellData(domainCellIdx, dataBase, domainCellData);
+    //        domainCellPrim = toPrimitiveVariables(domainCellData, parameters.K);
+    //    }    
 
-        PrimitiveVariables facePrim = boundaryCondition.prim;
+    //    PrimitiveVariables facePrim = boundaryCondition.prim;
 
-        //////////////////////////////////////////////////////////////////////////
+    //    //////////////////////////////////////////////////////////////////////////
 
-        real ax[LENGTH_CELL_DATA];
-        real ay[LENGTH_CELL_DATA];
-        real az[LENGTH_CELL_DATA];
-        real at[LENGTH_CELL_DATA];
+    //    real ax[LENGTH_CELL_DATA];
+    //    real ay[LENGTH_CELL_DATA];
+    //    real az[LENGTH_CELL_DATA];
+    //    real at[LENGTH_CELL_DATA];
 
-    #pragma unroll
-        for( uint i = 0; i < LENGTH_CELL_DATA; i++ )
-        { 
-            ax[i] = c0o1; 
-            ay[i] = c0o1; 
-            az[i] = c0o1; 
-            at[i] = c0o1;
-        }
-        
-        {
-            ConservedVariables gradN, gradT1, gradT2;
+    //#pragma unroll
+    //    for( uint i = 0; i < LENGTH_CELL_DATA; i++ )
+    //    { 
+    //        ax[i] = c0o1; 
+    //        ay[i] = c0o1; 
+    //        az[i] = c0o1; 
+    //        at[i] = c0o1;
+    //    }
+    //    
+    //    {
+    //        ConservedVariables gradN, gradT1, gradT2;
 
-            transformGlobalToLocal( gradN , 'z' );
-            transformGlobalToLocal( gradT1, 'z' );
-            transformGlobalToLocal( gradT2, 'z' );
+    //        transformGlobalToLocal( gradN , 'z' );
+    //        transformGlobalToLocal( gradT1, 'z' );
+    //        transformGlobalToLocal( gradT2, 'z' );
 
-            transformGlobalToLocal( facePrim, 'z' );
+    //        transformGlobalToLocal( facePrim, 'z' );
 
-            computeExpansionCoefficients(facePrim, gradN , parameters.K, ax);
-            computeExpansionCoefficients(facePrim, gradT1, parameters.K, ay);
-            computeExpansionCoefficients(facePrim, gradT2, parameters.K, az);
-        }
+    //        computeExpansionCoefficients(facePrim, gradN , parameters.K, ax);
+    //        computeExpansionCoefficients(facePrim, gradT1, parameters.K, ay);
+    //        computeExpansionCoefficients(facePrim, gradT2, parameters.K, az);
+    //    }
 
-        //////////////////////////////////////////////////////////////////////////
+    //    //////////////////////////////////////////////////////////////////////////
 
-        {
-            ConservedVariables flux;
-            {
-                real momentU [ NUMBER_OF_MOMENTS ]; 
-                real momentV [ NUMBER_OF_MOMENTS ]; 
-                real momentW [ NUMBER_OF_MOMENTS ]; 
-                real momentXi[ NUMBER_OF_MOMENTS ];
+    //    {
+    //        ConservedVariables flux;
+    //        {
+    //            real momentU [ NUMBER_OF_MOMENTS ]; 
+    //            real momentV [ NUMBER_OF_MOMENTS ]; 
+    //            real momentW [ NUMBER_OF_MOMENTS ]; 
+    //            real momentXi[ NUMBER_OF_MOMENTS ];
 
-                computeMoments( facePrim, parameters.K, momentU, momentV, momentW, momentXi );
+    //            computeMoments( facePrim, parameters.K, momentU, momentV, momentW, momentXi );
 
-                Vec3 force = parameters.force;
+    //            Vec3 force = parameters.force;
 
-                transformGlobalToLocal(force, 'z');
+    //            transformGlobalToLocal(force, 'z');
 
-                {
-                    ConservedVariables timeGrad;
-                    computeTimeDerivative( facePrim, 
-                                           momentU, 
-                                           momentV, 
-                                           momentW, 
-                                           momentXi, 
-                                           ax, ay, az,
-                                           force,
-                                           timeGrad );
+    //            {
+    //                ConservedVariables timeGrad;
+    //                computeTimeDerivative( facePrim, 
+    //                                       momentU, 
+    //                                       momentV, 
+    //                                       momentW, 
+    //                                       momentXi, 
+    //                                       ax, ay, az,
+    //                                       force,
+    //                                       timeGrad );
 
-                    computeExpansionCoefficients( facePrim, timeGrad, parameters.K, at );
-                }
-                {
-                    real timeCoefficients[4];
-                    computeTimeCoefficients( facePrim, parameters, timeCoefficients );
+    //                computeExpansionCoefficients( facePrim, timeGrad, parameters.K, at );
+    //            }
+    //            {
+    //                real timeCoefficients[4];
+    //                computeTimeCoefficients( facePrim, parameters, timeCoefficients );
 
-                    real heatFlux;
-                    assembleFlux( facePrim, 
-                                  momentU, momentV, momentW, momentXi,
-                                  ax, ay, az, at, 
-                                  timeCoefficients, 
-                                  parameters,
-                                  force,
-                                  flux,
-                                  heatFlux );
+    //                real heatFlux;
+    //                assembleFlux( facePrim, 
+    //                              momentU, momentV, momentW, momentXi,
+    //                              ax, ay, az, at, 
+    //                              timeCoefficients, 
+    //                              parameters,
+    //                              force,
+    //                              flux,
+    //                              heatFlux );
 
-                    transformLocalToGlobal( flux, 'z' );
-                }
-            }
+    //                transformLocalToGlobal( flux, 'z' );
+    //            }
+    //        }
 
-            applyFluxToPosCell(dataBase, domainCellIdx, flux, 'z', parameters);
-            applyFluxToNegCell(dataBase, ghostCellIdx , flux, 'z', parameters);
-        }
-    }
+    //        applyFluxToPosCell(dataBase, domainCellIdx, flux, 'z', parameters);
+    //        applyFluxToNegCell(dataBase, ghostCellIdx , flux, 'z', parameters);
+    //    }
+    //}
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
@@ -315,4 +317,6 @@ bool InflowComplete::secondCellsNeeded()
 {
     return false;
 }
+
+} // namespace GksGpu
 

@@ -8,6 +8,7 @@
 
 #include "DataBase/DataBase.h"
 #include "Parameters/Parameters.h"
+namespace GksGpu{ 
 
 class VF_PUBLIC TimeStepping
 {
@@ -18,5 +19,7 @@ public:
                                 uint level );
 
 };
+
+} // namespace GksGpu
 
 #endif

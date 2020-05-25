@@ -12,10 +12,13 @@
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
 
+class  GksMeshAdapter;
+
+namespace GksGpu {
+
 class  PointTimeSeriesAnalyzer;
 struct DataBase;
 struct Parameters;
-class  GksMeshAdapter;
 
 class VF_PUBLIC PointTimeSeriesCollector
 {
@@ -35,5 +38,7 @@ public:
 
     void writeToFile( std::string filename );
 };
+
+} // namespace GksGpu
 
 #endif

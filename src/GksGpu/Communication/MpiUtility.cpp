@@ -5,6 +5,8 @@
 #define ENV_LOCAL_RANK	     "OMPI_COMM_WORLD_RANK"
 #define ENV_COMM_WORLD_SIZE  "OMPI_COMM_WORLD_SIZE"
 
+namespace GksGpu {
+
 int MpiUtility::getMpiRankBeforeInit()
 {
     char * localRankStr = NULL;
@@ -34,3 +36,5 @@ int MpiUtility::getMpiWorldSizeBeforeInit()
         return 1;
     }
 }
+
+} // namespace GksGpu

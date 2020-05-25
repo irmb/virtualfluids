@@ -13,6 +13,8 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
+namespace GksGpu{
+
 struct CreepingMassFluxStruct
 {
     uint  numberOfCells;
@@ -61,5 +63,7 @@ struct VF_PUBLIC CreepingMassFlux : public BoundaryCondition //, public Isotherm
         return boundaryCondition;
     }
 };
+
+} // namespace GksGpu
 
 #endif

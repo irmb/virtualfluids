@@ -6,9 +6,12 @@
 
 #include <VirtualFluidsDefinitions.h>
 
+namespace GksGpu {
+
 enum class VF_PUBLIC ViscosityModel{
     constant,
-    sutherlandsLaw
+    sutherlandsLaw,
+    sutherlandsLaw2
 };
 
 struct  VF_PUBLIC Parameters
@@ -68,5 +71,7 @@ struct  VF_PUBLIC Parameters
     bool useReactionLimiter = false;
     real reactionLimiter    = real(1.005);
 };
+
+} // namespace GksGpu
 
 #endif

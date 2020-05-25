@@ -11,6 +11,8 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
+namespace GksGpu{
+
 struct VF_PUBLIC Periodic : public BoundaryCondition
 {
     Periodic( SPtr<DataBase> dataBase ) : BoundaryCondition( dataBase ){}
@@ -36,5 +38,7 @@ struct VF_PUBLIC Periodic : public BoundaryCondition
         return boundaryCondition;
     }
 };
+
+} // namespace GksGpu
 
 #endif

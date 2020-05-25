@@ -8,6 +8,8 @@
 
 #include <string>
 
+namespace GksGpu {
+
 std::shared_ptr<DataBaseAllocator> DataBaseAllocator::create(std::string type)
 {
     if ( type == "GPU" )
@@ -27,3 +29,5 @@ DataBaseAllocator::DataBaseAllocator()
 DataBaseAllocator::DataBaseAllocator(const DataBaseAllocator & orig)
 {
 }
+
+} // namespace GksGpu

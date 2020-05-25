@@ -10,6 +10,9 @@
 #include "Core/VectorTypes.h"
 
 class  GksMeshAdapter;
+
+namespace GksGpu {
+
 class  DataBaseAllocator;
 struct DataBase;
 
@@ -19,5 +22,7 @@ struct VF_PUBLIC MpiUtility
 
     static int getMpiWorldSizeBeforeInit();
 };
+
+} // namespace GksGpu
 
 #endif

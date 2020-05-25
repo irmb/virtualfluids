@@ -8,6 +8,8 @@
 
 #include "DataBase/DataBase.h"
 
+namespace GksGpu {
+
 class VF_PUBLIC Interface
 {
 public:
@@ -15,5 +17,7 @@ public:
 
     static void runCoarseToFine( SPtr<DataBase> dataBase, uint level );
 };
+
+} // namespace GksGpu
 
 #endif

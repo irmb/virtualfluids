@@ -10,6 +10,9 @@
 #include "VirtualFluidsDefinitions.h"
 
 class  GksMeshAdapter;
+
+namespace GksGpu {
+
 struct DataBase;
 struct BoundaryCondition;
 struct Communicator;
@@ -63,6 +66,8 @@ protected:
     DataBaseAllocator( const DataBaseAllocator& orig );
 
 };
+
+} // namespace GksGpu
 
 
 #endif

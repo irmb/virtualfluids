@@ -11,6 +11,8 @@
 
 #include "FlowStateData/FlowStateData.cuh"
 
+namespace GksGpu {
+
 struct DataBase;
 
 class VF_PUBLIC ConvergenceAnalyzer
@@ -40,5 +42,7 @@ private:
     void printL2Change( ConservedVariables L2Change );
 
 };
+
+} // namespace GksGpu
 
 #endif

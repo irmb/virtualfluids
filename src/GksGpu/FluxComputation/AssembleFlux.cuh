@@ -19,6 +19,8 @@ extern __device__ real atomicAdd(real* address, real val);
 
 #define NUMBER_OF_MOMENTS 7
 
+namespace GksGpu {
+
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -203,19 +205,13 @@ __host__ __device__ inline void computeTimeDerivative( const PrimitiveVariables&
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__host__ __device__ inline void computeTimeCoefficients(const PrimitiveVariables & facePrim, const Parameters& parameters, real timeCoefficients[4])
+__host__ __device__ inline void computeTimeCoefficients(const PrimitiveVariables & facePrim, Parameters& parameters, real timeCoefficients[4])
 {
     real r   = parameters.lambdaRef / facePrim.lambda;
 
     //if( r < zero ) printf( "ERROR: %f/%f\n", parameters.lambdaRef, facePrim.lambda );
 
-    real mu;
-    if ( parameters.viscosityModel == ViscosityModel::constant ){
-        mu = parameters.mu;
-    }
-    else if ( parameters.viscosityModel == ViscosityModel::sutherlandsLaw ){
-        mu = sutherlandsLaw( parameters, r );
-    }
+    real mu = getViscosity(parameters, r);
 
     real tau = c2o1 * facePrim.lambda * mu / facePrim.rho;
 
@@ -228,17 +224,11 @@ __host__ __device__ inline void computeTimeCoefficients(const PrimitiveVariables
     timeCoefficients[3] =                   tau     ;
 }
 
-__host__ __device__ inline void getTau(const PrimitiveVariables & facePrim, const Parameters& parameters, real& tau)
+__host__ __device__ inline void getTau(const PrimitiveVariables & facePrim, Parameters& parameters, real& tau)
 {
     real r   = parameters.lambdaRef / facePrim.lambda;
 
-    real mu;
-    if ( parameters.viscosityModel == ViscosityModel::constant ){
-        mu = parameters.mu;
-    }
-    else if ( parameters.viscosityModel == ViscosityModel::sutherlandsLaw ){
-        mu = sutherlandsLaw( parameters, r );
-    }
+    real mu = getViscosity(parameters, r);  mu = sutherlandsLaw2( parameters, r );
 
     tau = c2o1 * facePrim.lambda * mu / facePrim.rho;
 }
@@ -572,5 +562,7 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+} // namespace GksGpu
 
 #endif

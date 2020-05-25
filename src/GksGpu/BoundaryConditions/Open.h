@@ -13,6 +13,8 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
+namespace GksGpu{
+
 struct OpenStruct
 {
     uint  numberOfCells;
@@ -59,5 +61,7 @@ struct VF_PUBLIC Open : public BoundaryCondition //, public IsothermalWallStruct
         return boundaryCondition;
     }
 };
+
+} // namespace GksGpu
 
 #endif

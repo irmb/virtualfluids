@@ -14,6 +14,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu {
+
 __global__                 void initializeDataUpdateKernel  ( DataBaseStruct dataBase, uint numberOfEntities );
 
 __host__ __device__ inline void initializeDataUpdateFunction( DataBaseStruct dataBase, uint index );
@@ -63,3 +65,5 @@ __host__ __device__ inline void initializeDataUpdateFunction(DataBaseStruct data
 
     dataBase.diffusivity[ index ] = c1o1;
 }
+
+} // namespace GksGpu

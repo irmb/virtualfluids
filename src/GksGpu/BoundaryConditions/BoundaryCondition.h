@@ -15,9 +15,11 @@
 #include "Parameters/Parameters.h"
 
 class  GksMeshAdapter;
+
+namespace GksGpu{
+
 class  DataBaseAllocator;
 struct DataBase;
-struct BoundaryConditionStruct;
 
 struct BoundaryConditionStruct
 {
@@ -53,6 +55,21 @@ struct VF_PUBLIC BoundaryCondition : virtual public BoundaryConditionStruct, pub
                                              const Parameters parameters, 
                                              const uint level ) = 0;
 
+    BoundaryConditionStruct toStruct()
+    {
+        BoundaryConditionStruct boundaryCondition;
+
+        boundaryCondition.numberOfCells = this->numberOfCells;
+
+        boundaryCondition.ghostCells      = this->ghostCells;
+        boundaryCondition.domainCells     = this->domainCells;
+        boundaryCondition.secondCells     = this->secondCells;
+
+        return boundaryCondition;
+    }
+
 };
+
+} // namespace GksGpu
 
 #endif

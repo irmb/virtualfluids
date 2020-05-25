@@ -28,6 +28,8 @@
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
+namespace GksGpu {
+
 __global__                 void pointTimeSeriesKernel  ( DataBaseStruct dataBase, PointTimeSeriesAnalyzerStruct pointTimeSeriesAnalyzer, Parameters parameters, uint startIndex, uint numberOfEntities );
 
 __host__ __device__ inline void pointTimeSeriesFunction( DataBaseStruct dataBase, PointTimeSeriesAnalyzerStruct pointTimeSeriesAnalyzer, Parameters parameters, uint startIndex, uint index );
@@ -188,5 +190,7 @@ void PointTimeSeriesAnalyzer::download()
 
     checkCudaErrors( cudaMemcpy( this->hostSeries.data() + oldSize, this->deviceSeries , sizeof(real) * outputIter, cudaMemcpyDeviceToHost ) );
 }
+
+} // namespace GksGpu
 
 
