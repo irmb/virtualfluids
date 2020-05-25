@@ -260,6 +260,8 @@ public:
     HOST void findQs(Object* object) override;
     HOST void findQs(TriangularMesh &triangularMesh);
     HOSTDEVICE void findQs(Triangle &triangle);
+
+    HOST void findQsPrimitive(Object* object);
 private:
 
     enum class qComputationStageType{
@@ -275,7 +277,11 @@ private:
     HOSTDEVICE void setDebugPoint(uint index, int pointValue);
 	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &triangle) const;
 	HOSTDEVICE void calculateQs(const uint index, const Vertex &point, const Triangle &triangle) const;
-    HOSTDEVICE bool checkIfAtLeastOneValidQ(const uint index, const Vertex &point, const Triangle &triangle) const;
+	HOST void calculateQs(const uint index, const Vertex &point, Object* object) const;
+
+    HOST bool checkIfAtLeastOneValidQ(const uint index, const Vertex &point, const Triangle &triangle) const;
+
+    HOST bool checkIfAtLeastOneValidQ(const uint index, const Vertex &point, Object* object) const;
 
 public:
 

@@ -1225,6 +1225,8 @@ HOST void GridImp::findQs(Object* object) //TODO: enable qs for primitive object
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
     if (triangularMesh)
         findQs(*triangularMesh);
+    else
+        findQsPrimitive(object);
 }
 
 HOST void GridImp::findQs(TriangularMesh &triangularMesh)
@@ -1286,6 +1288,114 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
     }
 }
 
+HOST void GridImp::findQsPrimitive(Object * object)
+{
+
+    if( this->qComputationStage == qComputationStageType::ComputeQs ){
+	    gridStrategy->allocateQs(shared_from_this());
+    }
+
+
+    for( int index = 0; index < this->size; index++ )
+    {
+
+        if( this->qIndices[index] == INVALID_INDEX ) continue;
+
+        real x,y,z;
+
+        this->transIndexToCoords(index,x,y,z);
+        
+        const Vertex point(x, y, z);
+
+        if( this->qComputationStage == qComputationStageType::ComputeQs ){
+            if(this->field.is(index, BC_SOLID))
+            {
+				calculateQs(index, point, object);
+			}
+        }
+        else if( this->qComputationStage == qComputationStageType::FindSolidBoundaryNodes )
+        {
+            if( !this->field.is(index, FLUID) ) continue;
+
+            if( checkIfAtLeastOneValidQ(index, point, object) )
+            {
+                // similar as in void GridImp::findBoundarySolidNode(uint index)
+                this->field.setFieldEntry( index, BC_SOLID );
+                this->qIndices[index] = this->numberOfSolidBoundaryNodes++;
+            }
+        }
+
+    }
+}
+
+HOSTDEVICE void GridImp::calculateQs(const uint index, const Vertex &point, Object* object) const
+{
+    Vertex pointOnTriangle, direction;
+
+	real subdistance;
+	int error;
+	for (int i = distribution.dir_start; i <= distribution.dir_end; i++)
+	{
+		direction = Vertex( real(distribution.dirs[i * DIMENSION + 0]), 
+                            real(distribution.dirs[i * DIMENSION + 1]),
+			                real(distribution.dirs[i * DIMENSION + 2]) );
+
+		uint neighborIndex = this->transCoordToIndex(point.x + direction.x * this->delta,
+													    point.y + direction.y * this->delta,
+													    point.z + direction.z * this->delta);
+
+		if (neighborIndex == INVALID_INDEX) continue;
+
+		error = object->getIntersection(point, direction, pointOnTriangle, subdistance);
+
+		subdistance /= this->delta;
+
+		if (error == 0 && vf::Math::lessEqual(subdistance, 1.0) && vf::Math::greaterEqual(subdistance, 0.0))
+		{
+			if ( -0.5        > this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] ||
+                    subdistance < this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] )
+			{
+
+				this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = subdistance;
+                    
+                this->qPatches[ this->qIndices[index] ] = 0;
+
+				//printf("%d %f \n", this->qIndices[index], subdistance);
+			}
+		}
+	}
+}
+
+HOSTDEVICE bool GridImp::checkIfAtLeastOneValidQ(const uint index, const Vertex &point, Object* object) const
+{
+    Vertex pointOnTriangle, direction;
+
+	real subdistance;
+	int error;
+	for (int i = distribution.dir_start; i <= distribution.dir_end; i++)
+	{
+		direction = Vertex( real(distribution.dirs[i * DIMENSION + 0]), 
+                            real(distribution.dirs[i * DIMENSION + 1]),
+			                real(distribution.dirs[i * DIMENSION + 2]) );
+
+		uint neighborIndex = this->transCoordToIndex(point.x + direction.x * this->delta,
+													 point.y + direction.y * this->delta,
+													 point.z + direction.z * this->delta);
+
+		if (neighborIndex == INVALID_INDEX) continue;
+
+		error = object->getIntersection(point, direction, pointOnTriangle, subdistance);
+
+		subdistance /= this->delta;
+
+		if (error == 0 && vf::Math::lessEqual(subdistance, 1.0) && vf::Math::greaterEqual(subdistance, 0.0))
+		{
+			return true;
+		}
+	}
+    return false;
+}
+
 HOSTDEVICE void GridImp::setDebugPoint(uint index, int pointValue)
 {
     if (field.isInvalidCoarseUnderFine(index) && pointValue == INVALID_SOLID)
@@ -1329,7 +1439,6 @@ HOSTDEVICE void GridImp::calculateQs(const Vertex &point, const Triangle &triang
 HOSTDEVICE void GridImp::calculateQs(const uint index, const Vertex &point, const Triangle &triangle) const
 {
 	Vertex pointOnTriangle, direction;
-	//VertexInteger solid_node;
 	real subdistance;
 	int error;
 	for (int i = distribution.dir_start; i <= distribution.dir_end; i++)
@@ -1347,14 +1456,6 @@ HOSTDEVICE void GridImp::calculateQs(const uint index, const Vertex &point, cons
 													 point.z + direction.z * this->delta);
 
 		if (neighborIndex == INVALID_INDEX) continue;
-
-		//if ( this->field.is(neighborIndex, STOPPER_SOLID) )
-  //      {
-  //          if (this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] < -0.5)
-  //          {
-  //              this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = 1.0;
-  //          }
-  //      }
 
 		error = triangle.getTriangleIntersection(point, direction, pointOnTriangle, subdistance);
 
@@ -1378,7 +1479,6 @@ HOSTDEVICE void GridImp::calculateQs(const uint index, const Vertex &point, cons
 HOSTDEVICE bool GridImp::checkIfAtLeastOneValidQ(const uint index, const Vertex & point, const Triangle & triangle) const
 {
 	Vertex pointOnTriangle, direction;
-	//VertexInteger solid_node;
 	real subdistance;
 	int error;
 	for (int i = distribution.dir_start; i <= distribution.dir_end; i++)
@@ -1386,8 +1486,9 @@ HOSTDEVICE bool GridImp::checkIfAtLeastOneValidQ(const uint index, const Vertex 
 #if defined(__CUDA_ARCH__)
 		direction = Vertex(DIRECTIONS[i][0], DIRECTIONS[i][1], DIRECTIONS[i][2]);
 #else
-		direction = Vertex(real(distribution.dirs[i * DIMENSION + 0]), real(distribution.dirs[i * DIMENSION + 1]),
-			real(distribution.dirs[i * DIMENSION + 2]));
+		direction = Vertex(real(distribution.dirs[i * DIMENSION + 0]), 
+                           real(distribution.dirs[i * DIMENSION + 1]),
+			               real(distribution.dirs[i * DIMENSION + 2]));
 #endif
 
 		uint neighborIndex = this->transCoordToIndex(point.x + direction.x * this->delta,
