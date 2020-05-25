@@ -77,7 +77,7 @@ ENDIF(MSVC)
 ###                         OPTIONS                       ###
 #############################################################
 option(BUILD_SHARED_LIBS        "Build shared libraries"      ON )
-option(VF.BUILD_VF_GPU          "Build VirtualFluids GPU"     OFF)
+option(VF.BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
 option(VF.BUILD_VF_GKS          "Build VirtualFluids GKS"     ON )
 option(VF.BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" OFF)
 option(VF.BUILD_JSONCPP         "Builds json cpp "            OFF)
