@@ -8,8 +8,986 @@
 #include "Communication/ExchangeData27.h"
 #include "Kernel/Kernel.h"
 
+void updateGrid27(Parameter* para, 
+                  Communicator* comm, 
+                  CudaMemoryManager* cudaManager, 
+                  std::vector<std::shared_ptr<PorousMedia>>& pm, 
+                  int level, 
+                  unsigned int t, 
+                  std::vector < SPtr< Kernel>>& kernels)
+{
+    //////////////////////////////////////////////////////////////////////////
+
+    if( level != para->getFine() )
+    {
+        updateGrid27(para, comm, cudaManager, pm, level+1, t, kernels);
+        updateGrid27(para, comm, cudaManager, pm, level+1, t, kernels);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    collision(para, pm, level, t, kernels);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    exchangeMultiGPU(para, comm, cudaManager, level);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    postCollisionBC(para, level);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    swapBetweenEvenAndOddTimestep(para, level);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    preCollisionBC(para, level);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if( level != para->getFine() )
+    {
+        fineToCoarse();
+
+        exchangeMultiGPU(para, comm, cudaManager, level);
+
+        coarseToFine();
+    }
+}
+
+void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels)
+{
+    kernels.at(level)->run();
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getSimulatePorousMedia())
+        collisionPorousMedia(para, pm, level);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getDiffOn())
+        collisionAdvectionDiffusion(para, level);
+
+    {
+        if (para->getDiffMod() == 7)
+        {
+            //output << " Diff Mod 7\n";
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // incomp
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //advection diffusion kernel
+            //KernelADincomp7(para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
+            //			   para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+            //			   para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],      para->getParD(level)->size_Mat_SP,  
+            //			   para->getParD(level)->evenOrOdd); 
+            //getLastCudaError("KernelADincomp7 execution failed");
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //advection diffusion boundary condition
+            QNoSlipADincompDev7( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+            para->getParD(level)->d0SP.f[0],             para->getParD(level)->d7.f[0],      para->getParD(level)->Temp.temp,  
+            para->getParD(level)->diffusivity,           para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0], 
+            para->getParD(level)->Temp.kTemp,            para->getParD(level)->Temp.kTemp,   para->getParD(level)->omega,
+            para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+            para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+            getLastCudaError("QNoSlipADincompDev7 execution failed");
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //advection diffusion + velocity boundary condition
+            if (t<15580)//(t>500000 && t<515580)//(t>300000 && t<315580)
+            {
+                QADVeloIncompDev7(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+                para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.tempPulse, 
+                para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
+                para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,	para->getParD(level)->TempVel.kTemp,  
+                para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+                para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                getLastCudaError("QADVeloIncompDev7 execution failed");
+            }
+            else
+            {
+                QADVeloIncompDev7(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+                para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.temp, 
+                para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
+                para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,	para->getParD(level)->TempVel.kTemp,  
+                para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+                para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                getLastCudaError("QADVeloIncompDev7 execution failed");
+            }
+            //QADVeloIncompDev7(  para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+            //                    para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.tempPulse, 
+            //                    para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
+            //                    para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,	    para->getParD(level)->TempVel.kTemp,  
+            //                    para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	    para->getParD(level)->neighborY_SP, 
+            //                    para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+            //getLastCudaError("QADVeloIncompDev7 execution failed");
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //advection diffusion + velocity boundary condition
+            QADPressIncompDev7(   para->getParD(level)->numberofthreads,  para->getParD(level)->nx,				para->getParD(level)->ny,
+            para->getParD(level)->d0SP.f[0],        para->getParD(level)->d7.f[0],			para->getParD(level)->TempPress.temp, 
+            para->getParD(level)->TempPress.velo,   para->getParD(level)->diffusivity,		para->getParD(level)->TempPress.k,
+            para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp, para->getParD(level)->TempPress.kTemp,  
+            para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+            para->getParD(level)->neighborZ_SP,     para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+            getLastCudaError("QADPressIncompDev7 execution failed");
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			   
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //// comp
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////advection diffusion kernel
+            //KernelThS7( para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
+            //            para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+            //            para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],      para->getParD(level)->size_Mat_SP,  
+            //            para->getParD(level)->evenOrOdd); 
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////advection diffusion boundary condition
+            //QADDev7( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+            //         para->getParD(level)->d0SP.f[0],             para->getParD(level)->d7.f[0],      para->getParD(level)->Temp.temp,  
+            //         para->getParD(level)->diffusivity,           para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0], 
+            //         para->getParD(level)->Temp.kTemp,            para->getParD(level)->Temp.kTemp,   para->getParD(level)->omega,
+            //         para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+            //         para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+            //getLastCudaError("QADDev27 execution failed");
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////advection diffusion + velocity boundary condition
+            //QADVelDev7( para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+            //            para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.temp, 
+            //            para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
+            //            para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,     para->getParD(level)->TempVel.kTemp,  
+            //            para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP, 
+            //            para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+            //getLastCudaError("QADVelDev27 execution failed");
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////advection diffusion + velocity boundary condition
+            //QADPressDev7( para->getParD(level)->numberofthreads,  para->getParD(level)->nx,				para->getParD(level)->ny,
+            //              para->getParD(level)->d0SP.f[0],        para->getParD(level)->d7.f[0],			para->getParD(level)->TempPress.temp, 
+            //              para->getParD(level)->TempPress.velo,   para->getParD(level)->diffusivity,		para->getParD(level)->TempPress.k,
+            //              para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp,   para->getParD(level)->TempPress.kTemp,  
+            //              para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP, 
+            //              para->getParD(level)->neighborZ_SP,     para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+            //getLastCudaError("QADPressDev27 execution failed");
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        } 
+        else if (para->getDiffMod() == 27)
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // incomp
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //advection diffusion kernel
+            //         KernelADincomp27( para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
+            //		   para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+            //		   para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],     para->getParD(level)->size_Mat_SP,  
+            //		   para->getParD(level)->evenOrOdd); 
+            //getLastCudaError("KernelADincomp27 execution failed");
+            //         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //         //advection diffusion boundary condition
+            //         QNoSlipADincompDev27(para->getParD(level)->numberofthreads,      para->getParD(level)->nx,           para->getParD(level)->ny,
+            //			  para->getParD(level)->d0SP.f[0],            para->getParD(level)->d27.f[0],     para->getParD(level)->Temp.temp,  
+            //			  para->getParD(level)->diffusivity,          para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0], 
+            //			  para->getParD(level)->Temp.kTemp,           para->getParD(level)->Temp.kTemp,   para->getParD(level)->omega,
+            //			  para->getParD(level)->neighborX_SP,         para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+            //			  para->getParD(level)->size_Mat_SP,          para->getParD(level)->evenOrOdd);
+            //         getLastCudaError("QNoSlipADincompDev27 execution failed");
+            //         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //         //advection diffusion + velocity boundary condition
+            //if (t>500000 && t<515580)//(t>300000 && t<315580)
+            //{
+            //QADVeloIncompDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				 para->getParD(level)->ny,
+            //		    para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		 para->getParD(level)->TempVel.tempPulse, 
+            //		    para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,	 para->getParD(level)->TempVel.k,
+            //		    para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,   para->getParD(level)->TempVel.kTemp,  
+            //		    para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	 para->getParD(level)->neighborY_SP, 
+            //		    para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,	 para->getParD(level)->evenOrOdd);
+            //getLastCudaError("QADVeloIncompDev27 execution failed");
+            //}
+            //else
+            //{
+            // QADVeloIncompDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+            //			    para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		para->getParD(level)->TempVel.temp, 
+            //			    para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,	para->getParD(level)->TempVel.k,
+            //			    para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,  para->getParD(level)->TempVel.kTemp,  
+            //			    para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+            //			    para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,	para->getParD(level)->evenOrOdd);
+            // getLastCudaError("QADVeloIncompDev27 execution failed");
+            //}
+            //     //    QADVeloIncompDev27( para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+            //		     //para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		para->getParD(level)->TempVel.temp, 
+            //		     //para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
+            //		     //para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,   para->getParD(level)->TempVel.kTemp,  
+            //		     //para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+            //		     //para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+            //     //    getLastCudaError("QADVeloIncompDev27 execution failed");
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //advection diffusion + pressure boundary condition
+            //    QADPressIncompDev27(   para->getParD(level)->numberofthreads,  para->getParD(level)->nx,				para->getParD(level)->ny,
+            //para->getParD(level)->d0SP.f[0],        para->getParD(level)->d27.f[0],			para->getParD(level)->TempPress.temp, 
+            //para->getParD(level)->TempPress.velo,   para->getParD(level)->diffusivity,		para->getParD(level)->TempPress.k,
+            //para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp,  para->getParD(level)->TempPress.kTemp,  
+            //para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP, 
+            //para->getParD(level)->neighborZ_SP,     para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+            //    getLastCudaError("QADPressIncompDev27 execution failed");
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //// comp
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //advection diffusion kernel
+            //KernelThS27(para->getParD(level)->numberofthreads,
+            //            para->getParD(level)->diffusivity, 
+            //            para->getParD(level)->geoSP, 
+            //            para->getParD(level)->neighborX_SP, 
+            //            para->getParD(level)->neighborY_SP, 
+            //            para->getParD(level)->neighborZ_SP,
+            //            para->getParD(level)->d0SP.f[0],    
+            //            para->getParD(level)->d27.f[0],    
+            //            para->getParD(level)->size_Mat_SP,  
+            //            para->getParD(level)->evenOrOdd); 
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //advection diffusion boundary condition
+            QADBBDev27(para->getParD(level)->numberofthreads,      para->getParD(level)->nx,           para->getParD(level)->ny,
+            para->getParD(level)->d0SP.f[0],            para->getParD(level)->d27.f[0],     para->getParD(level)->Temp.temp,  
+            para->getParD(level)->diffusivity,          para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0], 
+            para->getParD(level)->Temp.kTemp,           para->getParD(level)->Temp.kTemp,   para->getParD(level)->omega,
+            para->getParD(level)->neighborX_SP,         para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+            para->getParD(level)->size_Mat_SP,          para->getParD(level)->evenOrOdd);
+            getLastCudaError("QADBBDev27 execution failed");
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //Street Manhattan - never use again, please
+            QADDirichletDev27( para->getParD(level)->numberofthreads,      para->getParD(level)->nx,					para->getParD(level)->ny,
+            para->getParD(level)->d0SP.f[0],            para->getParD(level)->d27.f[0],			para->getParD(level)->TempVel.tempPulse,  
+            para->getParD(level)->diffusivity,          para->getParD(level)->concIndex,			para->getParD(level)->QGeom.q27[0], 
+            para->getParD(level)->numberOfPointsConc,   para->getParD(level)->numberOfPointsConc, para->getParD(level)->omega,
+            para->getParD(level)->neighborX_SP,         para->getParD(level)->neighborY_SP,		para->getParD(level)->neighborZ_SP,
+            para->getParD(level)->size_Mat_SP,          para->getParD(level)->evenOrOdd);
+            getLastCudaError("QADDirichletDev27 execution failed");
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////advection diffusion + velocity boundary condition
+            //if (t<1000)//(t>100000 && t<103895)//(t>1600000 && t<1662317)//(t>500000 && t<515580)//(t<1000)//(t<15580)//(t>400000 && t<415580)//
+            //{
+            //    QADVelDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+            // 	              para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		    para->getParD(level)->TempVel.tempPulse, 
+            // 	              para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->Qinflow.k,
+            // 	              para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->kInflowQ,         para->getParD(level)->kInflowQ,  
+            // 	              para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,     para->getParD(level)->neighborY_SP, 
+            // 	              para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+            //    getLastCudaError("QADVelDev27 execution failed");
+            //}
+            //else
+            //{
+            //    QADVelDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+            //                para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		    para->getParD(level)->TempVel.temp, 
+            //                para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->Qinflow.k,
+            //                para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->kInflowQ,         para->getParD(level)->kInflowQ,  
+            //                para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	    para->getParD(level)->neighborY_SP, 
+            //                para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+            //    getLastCudaError("QADVelDev27 execution failed");
+            //}
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////advection diffusion + velocity boundary condition
+            ////QADPressDev27( para->getParD(level)->numberofthreads,  para->getParD(level)->nx,				para->getParD(level)->ny,
+            ////               para->getParD(level)->d0SP.f[0],        para->getParD(level)->d27.f[0],			para->getParD(level)->TempPress.temp, 
+            ////               para->getParD(level)->TempPress.velo,   para->getParD(level)->diffusivity,		para->getParD(level)->TempPress.k,
+            ////               para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp,  para->getParD(level)->TempPress.kTemp,  
+            ////               para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP, 
+            ////               para->getParD(level)->neighborZ_SP,     para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+            ////getLastCudaError("QADPressDev27 execution failed");
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+    }
+}
+
+void collisionPorousMedia(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level)
+{
+    for( int i = 0; i < pm.size(); i++ )
+    {
+        KernelPMCumOneCompSP27(para->getParD(level)->numberofthreads,
+                               para->getParD(level)->omega,
+                               para->getParD(level)->neighborX_SP,
+                               para->getParD(level)->neighborY_SP,
+                               para->getParD(level)->neighborZ_SP,
+                               para->getParD(level)->d0SP.f[0],
+                               para->getParD(level)->size_Mat_SP,
+                               level,
+                               para->getForcesDev(),
+                               pm[i]->getPorosity(),
+                               pm[i]->getDarcyLBM(),
+                               pm[i]->getForchheimerLBM(),
+                               pm[i]->getSizePM(),
+                               pm[i]->getHostNodeIDsPM(),
+                               para->getParD(level)->evenOrOdd);
+	    getLastCudaError("KernelPMCumOneCompSP27 execution failed");
+    }
+}
+
+void collisionAdvectionDiffusion(Parameter* para, int level)
+{
+    if (para->getDiffMod() == 7)
+    {
+        //output << " Diff Mod 7\n";
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // incomp
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //advection diffusion kernel
+        //KernelADincomp7(para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
+        //                para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //                para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],      para->getParD(level)->size_Mat_SP,  
+        //                para->getParD(level)->evenOrOdd); 
+        //getLastCudaError("KernelADincomp7 execution failed");
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // comp
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //advection diffusion kernel
+        //KernelThS7( para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
+        //            para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //            para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],      para->getParD(level)->size_Mat_SP,  
+        //            para->getParD(level)->evenOrOdd); 
+        //getLastCudaError("KernelThS7 execution failed");
+    } 
+    else if (para->getDiffMod() == 27)
+    {
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // incomp
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //advection diffusion kernel
+        //         KernelADincomp27( para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
+        //		   para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //		   para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],     para->getParD(level)->size_Mat_SP,  
+        //		   para->getParD(level)->evenOrOdd); 
+        //getLastCudaError("KernelADincomp27 execution failed");
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //// comp
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //advection diffusion kernel
+        //KernelThS27(para->getParD(level)->numberofthreads,
+        //            para->getParD(level)->diffusivity, 
+        //            para->getParD(level)->geoSP, 
+        //            para->getParD(level)->neighborX_SP, 
+        //            para->getParD(level)->neighborY_SP, 
+        //            para->getParD(level)->neighborZ_SP,
+        //            para->getParD(level)->d0SP.f[0],    
+        //            para->getParD(level)->d27.f[0],    
+        //            para->getParD(level)->size_Mat_SP,  
+        //            para->getParD(level)->evenOrOdd); 
+    }
+}
+
+void exchangeMultiGPU(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+{
+    if (para->getNumprocs() > 1)
+	{
+        // St. Lenz: exchange for post-collision data and pre-collision data are identical!
+
+		////1D domain decomposition
+		//exchangePostCollDataGPU27(para, comm, level);
+		//3D domain decomposition
+		//printf("start exchange Post X (level: %d, myID: %d) \n", level, para->getMyID());
+		exchangePostCollDataXGPU27(para, comm, cudaManager, level);
+		//printf("end exchange Post X (level: %d, myID: %d) \n", level, para->getMyID());
+		//printf("start exchange Post Y (level: %d, myID: %d) \n", level, para->getMyID());
+		exchangePostCollDataYGPU27(para, comm, cudaManager, level);
+		//printf("end exchange Post Y (level: %d, myID: %d) \n", level, para->getMyID());
+		//printf("start exchange Post Z (level: %d, myID: %d) \n", level, para->getMyID());
+		exchangePostCollDataZGPU27(para, comm, cudaManager, level);
+		//printf("end exchange Post Z (level: %d, myID: %d) \n", level, para->getMyID());
+		//////////////////////////////////////////////////////////////////////////
+		//3D domain decomposition convection diffusion
+		if (para->getDiffOn()==true)
+		{
+			exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
+			exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
+			exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
+		}
+	}
+}
+
+void postCollisionBC(Parameter* para, int level, unsigned int t)
+{
+    //////////////////////////////////////////////////////////////////////////
+    // I N F L O W
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getParD(level)->kInflowQ > 0)
+    {
+        //QVelDev27( para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+        //           para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
+        //           para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+        //           para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
+        //           para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //           para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QVelDev27 execution failed");
+        
+        //QVelDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+        //               para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
+        //               para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+        //               para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
+        //               para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //               para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QVelDevComp27 execution failed");
+
+        QVelDevCompZeroPress27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,             para->getParD(level)->ny,
+                               para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,     para->getParD(level)->Qinflow.Vz,
+                               para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,      para->getParD(level)->Qinflow.q27[0],
+                               para->getParD(level)->kInflowQ,        para->getParD(level)->Qinflow.kArray, para->getParD(level)->omega,
+                               para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
+                               para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        getLastCudaError("QVelDevCompZeroPress27 execution failed");
+
+        //////////////////////////////////////////////////////////////////////////
+        // D E P R E C A T E D
+        //////////////////////////////////////////////////////////////////////////
+
+        //QVelDevice1h27( para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+        //                para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
+        //                para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+        //                para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,          
+        //                para->getPhi(),                        para->getAngularVelocity(),
+        //                para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //                para->getParD(level)->coordX_SP,       para->getParD(level)->coordY_SP,    para->getParD(level)->coordZ_SP,
+        //                para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QVelDev27 execution failed");
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // N O - S L I P
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getParD(level)->kQ > 0)
+    {
+        //QDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+        //	      para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0], 
+        //	      para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
+        //	      para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //	      para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QDev27 execution failed");
+        
+        //BBDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+        //         para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0], 
+        //         para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
+        //         para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //         para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+        //getLastCudaError("BBDev27 (Wall) execution failed");
+
+        //QDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+        //        para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0], 
+        //        para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
+        //        para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //        para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QDev27 (Wall) execution failed");
+
+        QDevComp27(para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+                   para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0], 
+                   para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
+                   para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                   para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+        getLastCudaError("QDevComp27 (Wall) execution failed");
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // S L I P
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getParD(level)->kSlipQ > 0)
+    {
+        //QSlipDev27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QSlip.k,
+        //            para->getParD(level)->QSlip.q27[0],    para->getParD(level)->kSlipQ,       para->getParD(level)->omega,
+        //            para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //            para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        //getLastCudaError("Slip27 execution failed");
+
+        QSlipDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QSlip.k,
+                        para->getParD(level)->QSlip.q27[0],    para->getParD(level)->kSlipQ,       para->getParD(level)->omega,
+                        para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                        para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        getLastCudaError("QSlipDev27 execution failed");
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // G E O M E T R Y
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getParD(level)->QGeom.kQ > 0)
+    {    
+        //BBDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+        //         para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+        //         para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //         para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //         para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+        //getLastCudaError("BBDev27 (Wall) execution failed");
+
+        //QDev27(para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+        //		 para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+        //		 para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //		 para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //		 para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QDev27 (Geom) execution failed");
+
+        //QVelDev27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+        //          para->getParD(level)->QGeom.Vx,        para->getParD(level)->QGeom.Vy,     para->getParD(level)->QGeom.Vz,
+        //          para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+        //          para->getParD(level)->QGeom.kQ,        para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //          para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //          para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QVelDev27 execution failed");
+
+        //QDevComp27(para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+        //           para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+        //           para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //           para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //           para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QDevComp27 (Geom) execution failed");
+
+        QVelDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+                      para->getParD(level)->QGeom.Vx,        para->getParD(level)->QGeom.Vy,     para->getParD(level)->QGeom.Vz,
+                      para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+                      para->getParD(level)->QGeom.kQ,        para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+                      para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                      para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        getLastCudaError("QVelDevComp27 execution failed");
+
+        //QDev3rdMomentsComp27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+        //                      para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+        //                      para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //                      para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //                      para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QDev3rdMomentsComp27 (Geom) execution failed");
+
+        //QSlipDev27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QGeom.k,
+        //            para->getParD(level)->QGeom.q27[0],    para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //            para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //            para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        //getLastCudaError("Slip27 execution failed");
+
+        //////////////////////////////////////////////////////////////////////////
+        // D E P R E C A T E D
+        //////////////////////////////////////////////////////////////////////////
+        // the GridGenerator does currently not provide normals!
+        
+        //QSlipGeomDevComp27(para->getParD(level)->numberofthreads,     para->getParD(level)->d0SP.f[0],           para->getParD(level)->QGeom.k,
+        //                   para->getParD(level)->QGeom.q27[0],        para->getParD(level)->QGeom.kQ,            para->getParD(level)->omega,
+        //                   para->getParD(level)->QGeomNormalX.q27[0], para->getParD(level)->QGeomNormalY.q27[0], para->getParD(level)->QGeomNormalZ.q27[0],
+        //                   para->getParD(level)->neighborX_SP,        para->getParD(level)->neighborY_SP,        para->getParD(level)->neighborZ_SP,
+        //                   para->getParD(level)->size_Mat_SP,         para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QSlipGeomDev27 execution failed");
+
+        //QSlipNormDevComp27(para->getParD(level)->numberofthreads,     para->getParD(level)->d0SP.f[0],           para->getParD(level)->QGeom.k,
+        //                   para->getParD(level)->QGeom.q27[0],        para->getParD(level)->QGeom.kQ,            para->getParD(level)->omega,
+        //                   para->getParD(level)->QGeomNormalX.q27[0], para->getParD(level)->QGeomNormalY.q27[0], para->getParD(level)->QGeomNormalZ.q27[0],
+        //                   para->getParD(level)->neighborX_SP,        para->getParD(level)->neighborY_SP,        para->getParD(level)->neighborZ_SP,
+        //                   para->getParD(level)->size_Mat_SP,         para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QSlipGeomDev27 execution failed");
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // O U T F L O W
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getParD(level)->kOutflowQ > 0)
+    {
+        //////////////////////////////////////////////////////////////////////////
+        // D E P R E C A T E D
+        //////////////////////////////////////////////////////////////////////////
+
+        //QPressDevFixBackflow27( para->getParD(level)->numberofthreads,       RhoBCOutflowD,
+        //                        para->getParD(level)->d0SP.f[0],              QoutflowD.k, kOutflowQ,             para->getParD(level)->omega,
+        //                        para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //                        para->getParD(level)->size_Mat_SP,  para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QPressDev27 execution failed");
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // P R E S S U R E
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getParD(level)->kPressQ > 0)
+    {
+        QPressDev27_IntBB(  para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
+        					para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,       para->getParD(level)->QPress.q27[0], 
+        					para->getParD(level)->QPress.kQ,       para->getParD(level)->QPress.kQ,      para->getParD(level)->omega,
+        					para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
+        					para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        getLastCudaError("QPressDev27_IntBB fine execution failed");
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // A D V E C T I O N    D I F F U S I O N
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getDiffOn())
+    {
+        if (para->getDiffMod() == 7)
+        {
+            if (para->getParD(level)->QGeom.kQ > 0)
+            {
+                //QNoSlipADincompDev7( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+                //                     para->getParD(level)->d0SP.f[0],             para->getParD(level)->d7.f[0],      para->getParD(level)->Temp.temp,  
+                //                     para->getParD(level)->diffusivity,           para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0], 
+                //                     para->getParD(level)->Temp.kTemp,            para->getParD(level)->Temp.kTemp,   para->getParD(level)->omega,
+                //                     para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                //                     para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+                //getLastCudaError("QNoSlipADincompDev7 execution failed");
+
+                //////////////////////////////////////////////////////////////////////////
+                // C O M P R E S S I B L E
+                //////////////////////////////////////////////////////////////////////////
+                
+                QADDev7( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+                         para->getParD(level)->d0SP.f[0],             para->getParD(level)->d7.f[0],      para->getParD(level)->Temp.temp,  
+                         para->getParD(level)->diffusivity,           para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0], 
+                         para->getParD(level)->Temp.kTemp,            para->getParD(level)->Temp.kTemp,   para->getParD(level)->omega,
+                         para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                         para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+                getLastCudaError("QADDev27 execution failed");
+            }
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            if (para->getParD(level)->TempVel.kTemp > 0)
+            {
+                //QADVeloIncompDev7(  para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+                //                    para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.tempPulse, 
+                //                    para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
+                //                    para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,	para->getParD(level)->TempVel.kTemp,  
+                //                    para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	    para->getParD(level)->neighborY_SP, 
+                //                    para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                //getLastCudaError("QADVeloIncompDev7 execution failed");
+
+                //////////////////////////////////////////////////////////////////////////
+                // D E P R E C A T E D
+                //////////////////////////////////////////////////////////////////////////
+
+                //if (t<15580)//(t>500000 && t<515580)//(t>300000 && t<315580)
+                //{
+                //    QADVeloIncompDev7(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+                //                      para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.tempPulse, 
+                //                      para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
+                //                      para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,	para->getParD(level)->TempVel.kTemp,  
+                //                      para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+                //                      para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                //    getLastCudaError("QADVeloIncompDev7 execution failed");
+                //}
+                //else
+                //{
+                //    QADVeloIncompDev7(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+                //                      para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.temp, 
+                //                      para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
+                //                      para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,	para->getParD(level)->TempVel.kTemp,  
+                //                      para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+                //                      para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                //    getLastCudaError("QADVeloIncompDev7 execution failed");
+                //}
+
+                //////////////////////////////////////////////////////////////////////////
+                // C O M P R E S S I B L E
+                //////////////////////////////////////////////////////////////////////////
+                
+                QADVelDev7( para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+                            para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],			para->getParD(level)->TempVel.temp, 
+                            para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
+                            para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,     para->getParD(level)->TempVel.kTemp,  
+                            para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP, 
+                            para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                getLastCudaError("QADVelDev27 execution failed");
+            }
+
+            if (para->getParD(level)->TempPress.kTemp > 0)
+            {
+                //QADPressIncompDev7( para->getParD(level)->numberofthreads,  para->getParD(level)->nx,				para->getParD(level)->ny,
+                //                    para->getParD(level)->d0SP.f[0],        para->getParD(level)->d7.f[0],			para->getParD(level)->TempPress.temp, 
+                //                    para->getParD(level)->TempPress.velo,   para->getParD(level)->diffusivity,		para->getParD(level)->TempPress.k,
+                //                    para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp, para->getParD(level)->TempPress.kTemp,  
+                //                    para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+                //                    para->getParD(level)->neighborZ_SP,     para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                //getLastCudaError("QADPressIncompDev7 execution failed");
+
+                //////////////////////////////////////////////////////////////////////////
+                // C O M P R E S S I B L E
+                //////////////////////////////////////////////////////////////////////////
+
+                QADPressDev7( para->getParD(level)->numberofthreads,  para->getParD(level)->nx,				para->getParD(level)->ny,
+                              para->getParD(level)->d0SP.f[0],        para->getParD(level)->d7.f[0],			para->getParD(level)->TempPress.temp, 
+                              para->getParD(level)->TempPress.velo,   para->getParD(level)->diffusivity,		para->getParD(level)->TempPress.k,
+                              para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp,   para->getParD(level)->TempPress.kTemp,  
+                              para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP, 
+                              para->getParD(level)->neighborZ_SP,     para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                getLastCudaError("QADPressDev27 execution failed");
+            }
+        } 
+        else if (para->getDiffMod() == 27)
+        {
+            if (para->getParD(level)->QGeom.kQ > 0)
+            {
+                //QNoSlipADincompDev27(para->getParD(level)->numberofthreads,      para->getParD(level)->nx,           para->getParD(level)->ny,
+                //                     para->getParD(level)->d0SP.f[0],            para->getParD(level)->d27.f[0],     para->getParD(level)->Temp.temp,  
+                //                     para->getParD(level)->diffusivity,          para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0], 
+                //                     para->getParD(level)->Temp.kTemp,           para->getParD(level)->Temp.kTemp,   para->getParD(level)->omega,
+                //                     para->getParD(level)->neighborX_SP,         para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                //                     para->getParD(level)->size_Mat_SP,          para->getParD(level)->evenOrOdd);
+                //getLastCudaError("QNoSlipADincompDev27 execution failed");
+
+                //////////////////////////////////////////////////////////////////////////
+                // C O M P R E S S I B L E
+                //////////////////////////////////////////////////////////////////////////
+
+                QADBBDev27(para->getParD(level)->numberofthreads,      para->getParD(level)->nx,           para->getParD(level)->ny,
+                           para->getParD(level)->d0SP.f[0],            para->getParD(level)->d27.f[0],     para->getParD(level)->Temp.temp,  
+                           para->getParD(level)->diffusivity,          para->getParD(level)->Temp.k,       para->getParD(level)->QGeom.q27[0], 
+                           para->getParD(level)->Temp.kTemp,           para->getParD(level)->Temp.kTemp,   para->getParD(level)->omega,
+                           para->getParD(level)->neighborX_SP,         para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                           para->getParD(level)->size_Mat_SP,          para->getParD(level)->evenOrOdd);
+                getLastCudaError("QADBBDev27 execution failed");
+            }
+
+            if (para->getParD(level)->TempVel.kTemp > 0)
+            {
+                QADVeloIncompDev27( para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+            	                    para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		para->getParD(level)->TempVel.temp, 
+            	                    para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->TempVel.k,
+            	                    para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,   para->getParD(level)->TempVel.kTemp,  
+            	                    para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+            	                    para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                getLastCudaError("QADVeloIncompDev27 execution failed");
+
+                //////////////////////////////////////////////////////////////////////////
+                // D E P R E C A T E D
+                //////////////////////////////////////////////////////////////////////////
+                
+                //if (t>500000 && t<515580)//(t>300000 && t<315580)
+                //{
+                //    QADVeloIncompDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				 para->getParD(level)->ny,
+                //                       para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		 para->getParD(level)->TempVel.tempPulse, 
+                //                       para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,	 para->getParD(level)->TempVel.k,
+                //                       para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,   para->getParD(level)->TempVel.kTemp,  
+                //                       para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	 para->getParD(level)->neighborY_SP, 
+                //                       para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,	 para->getParD(level)->evenOrOdd);
+                //    getLastCudaError("QADVeloIncompDev27 execution failed");
+                //}
+                //else
+                //{
+                //    QADVeloIncompDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+                //                       para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		para->getParD(level)->TempVel.temp, 
+                //                       para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,	para->getParD(level)->TempVel.k,
+                //                       para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->TempVel.kTemp,  para->getParD(level)->TempVel.kTemp,  
+                //                       para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	para->getParD(level)->neighborY_SP, 
+                //                       para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,	para->getParD(level)->evenOrOdd);
+                //    getLastCudaError("QADVeloIncompDev27 execution failed");
+                //}
+
+                //////////////////////////////////////////////////////////////////////////
+                // C O M P R E S S I B L E
+                //////////////////////////////////////////////////////////////////////////
+                
+                QADVelDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+                 	        para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		    para->getParD(level)->TempVel.tempPulse, 
+                 	        para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->Qinflow.k,
+                 	        para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->kInflowQ,         para->getParD(level)->kInflowQ,  
+                 	        para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,     para->getParD(level)->neighborY_SP, 
+                 	        para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                getLastCudaError("QADVelDev27 execution failed");
+
+                //////////////////////////////////////////////////////////////////////////
+                // D E P R E C A T E D
+                //////////////////////////////////////////////////////////////////////////
+
+                //if (t<1000)//(t>100000 && t<103895)//(t>1600000 && t<1662317)//(t>500000 && t<515580)//(t<1000)//(t<15580)//(t>400000 && t<415580)//
+                //{
+                //    QADVelDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+                // 	              para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		    para->getParD(level)->TempVel.tempPulse, 
+                // 	              para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->Qinflow.k,
+                // 	              para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->kInflowQ,         para->getParD(level)->kInflowQ,  
+                // 	              para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,     para->getParD(level)->neighborY_SP, 
+                // 	              para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                //    getLastCudaError("QADVelDev27 execution failed");
+                //}
+                //else
+                //{
+                //    QADVelDev27(para->getParD(level)->numberofthreads,    para->getParD(level)->nx,				para->getParD(level)->ny,
+                //                para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],		    para->getParD(level)->TempVel.temp, 
+                //                para->getParD(level)->TempVel.velo,       para->getParD(level)->diffusivity,		para->getParD(level)->Qinflow.k,
+                //                para->getParD(level)->Qinflow.q27[0],     para->getParD(level)->kInflowQ,         para->getParD(level)->kInflowQ,  
+                //                para->getParD(level)->omega,              para->getParD(level)->neighborX_SP,	    para->getParD(level)->neighborY_SP, 
+                //                para->getParD(level)->neighborZ_SP,       para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                //    getLastCudaError("QADVelDev27 execution failed");
+                //}
+            }
+
+            if (para->getParD(level)->TempPress.kTemp > 0)
+            {
+                //QADPressIncompDev27( para->getParD(level)->numberofthreads,  para->getParD(level)->nx,				para->getParD(level)->ny,
+                //                     para->getParD(level)->d0SP.f[0],        para->getParD(level)->d27.f[0],			para->getParD(level)->TempPress.temp, 
+                //                     para->getParD(level)->TempPress.velo,   para->getParD(level)->diffusivity,		para->getParD(level)->TempPress.k,
+                //                     para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp,  para->getParD(level)->TempPress.kTemp,  
+                //                     para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP, 
+                //                     para->getParD(level)->neighborZ_SP,     para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                //getLastCudaError("QADPressIncompDev27 execution failed");
+
+                //////////////////////////////////////////////////////////////////////////
+                // C O M P R E S S I B L E
+                //////////////////////////////////////////////////////////////////////////
+                
+                QADPressDev27( para->getParD(level)->numberofthreads,  para->getParD(level)->nx,				para->getParD(level)->ny,
+                               para->getParD(level)->d0SP.f[0],        para->getParD(level)->d27.f[0],			para->getParD(level)->TempPress.temp, 
+                               para->getParD(level)->TempPress.velo,   para->getParD(level)->diffusivity,		para->getParD(level)->TempPress.k,
+                               para->getParD(level)->QPress.q27[0],    para->getParD(level)->TempPress.kTemp,  para->getParD(level)->TempPress.kTemp,  
+                               para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,		para->getParD(level)->neighborY_SP, 
+                               para->getParD(level)->neighborZ_SP,     para->getParD(level)->size_Mat_SP,		para->getParD(level)->evenOrOdd);
+                getLastCudaError("QADPressDev27 execution failed");
+            
+            }
+        }
+    }
+}
+
+void swapBetweenEvenAndOddTimestep(Parameter* para, int level)
+{
+    if (para->getParD(level)->evenOrOdd==true)  para->getParD(level)->evenOrOdd=false;
+    else                                        para->getParD(level)->evenOrOdd=true;
+}
+
+void preCollisionBC(Parameter* para, int level)
+{
+    ////////////////////////////////////////////////////////////////////////////////
+    //QPressDevNEQ27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
+    //				  para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
+    //				  para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(level)->omega,
+    //				  para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+    //				  para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+    //getLastCudaError("QPressDev27 execution failed");
+    ////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    ////test for drag crisis
+    //if (para->getParD(level)->QGeom.kQ > 0)
+    //{
+    //    QDevCompHighNu27(para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+    //                     para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+    //                     para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+    //                     para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+    //                     para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+    //    getLastCudaError("QDevComp27 (Geom) execution failed");
+    //}
+    //////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    ////press EQ comp
+    if (para->getParD(level)->QPress.kQ > 0)
+    {
+        QPressNoRhoDev27(  para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
+                           para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
+                           para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(level)->omega,
+                           para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                           para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        getLastCudaError("QPressNoRhoDev27 execution failed");
+
+        //QPressDevEQZ27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
+        //               para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
+        //               para->getParD(level)->QPress.kN,       para->getParD(level)->kDistTestRE.f[0],       
+        //               para->getParD(level)->QPress.kQ,       para->getParD(level)->omega,
+        //               para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(0)->neighborZ_SP,
+        //               para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QPressDevEQZ27 execution failed");
+
+        //QInflowScaleByPressDev27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
+        //                          para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
+        //                          para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(0)->omega,
+        //                          para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(0)->neighborZ_SP,
+        //                          para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QInflowScaleByPressDev27 execution failed");
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    ////only for a round off error test
+    //para->cudaCopyTestREtoHost(0,para->getParH(0)->QPress.kQ);
+    //printRE(para, t);
+    //////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //QPressNoRhoDev27( para->getParD(level)->numberofthreads, para->getParD(level)->Qoutflow.RhoBC, 
+    //                  para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qoutflow.k,  
+    //                  para->getParD(level)->Qoutflow.kN,     para->getParD(level)->Qoutflow.kQ,    para->getParD(level)->omega,
+    //                  para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
+    //                  para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+    //getLastCudaError("QPressNoRhoDev27 execution failed");
+    //////////////////////////////////////////////////////////////////////////////////
+    ////press NEQ incomp
+    //QPressDevIncompNEQ27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
+    //                     para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
+    //                     para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(level)->omega,
+    //                     para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+    //                     para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+    //getLastCudaError("QPressDevIncompNEQ27 execution failed");
+    //////////////////////////////////////////////////////////////////////////////////
+    //press NEQ comp
+    //QPressDevNEQ27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
+    //                para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
+    //                para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(level)->omega,
+    //                para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+    //                para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+    //getLastCudaError("QPressDevNEQ27 execution failed");
+    ////////////////////////////////////////////////////////////////////////////////
+    //if (  myid == numprocs - 1)  
+    //PressSchlaffer27( para->getParD(level)->numberofthreads,  para->getParD(level)->Qoutflow.RhoBC,
+    //                  para->getParD(level)->d0SP.f[0],        para->getParD(level)->Qoutflow.Vx, 
+    //                  para->getParD(level)->Qoutflow.Vy,      para->getParD(level)->Qoutflow.Vz, 
+    //                  para->getParD(level)->Qoutflow.deltaVz, para->getParD(level)->Qoutflow.k,  
+    //                  para->getParD(level)->Qoutflow.kN,      para->getParD(level)->kOutflowQ,                      
+    //                  para->getParD(level)->omega,            para->getParD(level)->neighborX_SP,    
+    //                  para->getParD(level)->neighborY_SP,     para->getParD(level)->neighborZ_SP,
+    //                  para->getParD(level)->size_Mat_SP,      para->getParD(level)->evenOrOdd);
+    //getLastCudaError("PressSchlaffer27 execution failed");
+    ////////////////////////////////////////////////////////////////////////////////
+    //if (  myid == 0)
+    //{
+    //    VelSchlaffer27(para->getParD(level)->numberofthreads, t,
+    //                   para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.Vz, 
+    //                   para->getParD(level)->Qinflow.deltaVz, para->getParD(level)->Qinflow.k,  
+    //                   para->getParD(level)->Qinflow.kN,      para->getParD(level)->kInflowQ, 
+    //                   para->getParD(level)->omega,           para->getParD(level)->neighborX_SP, 
+    //                   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP,
+    //                   para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+    //    getLastCudaError("VelSchlaffer27 execution failed");
+    //}
+    ////////////////////////////////////////////////////////////////////////////////
+    ////High noon incomp
+    //QVelDevIncompHighNu27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+    //                      para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
+    //                      para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+    //                      para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
+    //                      para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+    //                      para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+    //getLastCudaError("QVelDevComp27 execution failed");
+
+    //QDevIncompHighNu27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+    //                    para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+    //                    para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+    //                    para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+    //                    para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+    //getLastCudaError("QDevComp27 (Geom) execution failed");
+    //////////////////////////////////////////////////////////////////////////////////
+    ////High noon comp
+    //QVelDevCompHighNu27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+    //                    para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
+    //                    para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+    //                    para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
+    //                    para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+    //                    para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+    //getLastCudaError("QVelDevComp27 execution failed");
+
+    //QDevCompHighNu27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+    //                  para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+    //                  para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+    //                  para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+    //                  para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+    //getLastCudaError("QDevComp27 (Geom) execution failed");
+    //////////////////////////////////////////////////////////////////////////////////
+
+}
 
 void updateGrid27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, std::vector<std::shared_ptr<PorousMedia>> pm, int level, int max_level, unsigned int t, std::vector < SPtr< Kernel>> kernels)
 {
