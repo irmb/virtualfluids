@@ -34,13 +34,18 @@ void updateGrid27(Parameter* para,
 
     //////////////////////////////////////////////////////////////////////////
 
-    postCollisionBC(para, level);
+    postCollisionBC(para, level, t);
 
     //////////////////////////////////////////////////////////////////////////
 
     swapBetweenEvenAndOddTimestep(para, level);
 
-    //////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+
+	if (para->getUseWale())
+		calcMacroscopicQuantities(para, level);
+
+	//////////////////////////////////////////////////////////////////////////
 
     preCollisionBC(para, level);
 
@@ -616,6 +621,24 @@ void swapBetweenEvenAndOddTimestep(Parameter* para, int level)
 {
     if (para->getParD(level)->evenOrOdd==true)  para->getParD(level)->evenOrOdd=false;
     else                                        para->getParD(level)->evenOrOdd=true;
+}
+
+void calcMacroscopicQuantities(Parameter* para, int level)
+{
+    CalcMacCompSP27(para->getParD(level)->vx_SP,       
+                    para->getParD(level)->vy_SP,        
+                    para->getParD(level)->vz_SP,        
+                    para->getParD(level)->rho_SP, 
+                    para->getParD(level)->press_SP, 
+                    para->getParD(level)->geoSP,       
+                    para->getParD(level)->neighborX_SP, 
+                    para->getParD(level)->neighborY_SP, 
+                    para->getParD(level)->neighborZ_SP,
+                    para->getParD(level)->size_Mat_SP,
+                    para->getParD(level)->numberofthreads,       
+                    para->getParD(level)->d0SP.f[0],    
+                    para->getParD(level)->evenOrOdd);
+    getLastCudaError("CalcMacSP27 execution failed"); 
 }
 
 void preCollisionBC(Parameter* para, int level)
