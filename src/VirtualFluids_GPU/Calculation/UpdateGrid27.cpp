@@ -1259,7 +1259,7 @@ void coarseToFine(Parameter* para, int level)
 
 
 
-
+/*
 
 void updateGrid27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, std::vector<std::shared_ptr<PorousMedia>> pm, int level, int max_level, unsigned int t, std::vector < SPtr< Kernel>> kernels)
 {
@@ -2842,7 +2842,7 @@ void updateGrid27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaMa
 		 //////////////////////////////////////////////////////////////////////////////////
 		 ////Calculation of cp
 		 //////////////////////////////////////////////////////////////////////////////////
-		 //if (/*(para->getParD(level)->numberOfPointsCpTop > 0)*/ (level == 5) && (t > para->getTStartOut()))
+		 //if ((para->getParD(level)->numberOfPointsCpTop > 0) (level == 5) && (t > para->getTStartOut()))
 		 //{
 			// ////////////////////////////////////////////////////////////////////////////////
 			// //Level 7
@@ -3256,5 +3256,5 @@ void updateGrid27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaMa
    }
 }
 
-
+*/
 

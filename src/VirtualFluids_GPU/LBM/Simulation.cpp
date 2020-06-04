@@ -434,6 +434,10 @@ void Simulation::run()
 	////////////////////////////////////////////////////////////////////////////////
 	for(t=para->getTStart();t<=para->getTEnd();t++)
 	{
+        updateGrid27(para.get(), comm, cudaManager.get(), pm, 0, t, kernels);
+
+        /*
+
 		getLastCudaError("before starting a kernel we get an execution failed");
 		if (para->getMaxLevel()>=1)
         {
@@ -1192,7 +1196,7 @@ void Simulation::run()
 
 		  //////////////////////////////////////////////////////////////////////////////////
 		  ////calculate the new forcing
-		  //if (((t%10) == 0) && (t >= 10)/*((t%para->getTStartOut()) == 0) && (t >= para->getTStartOut())*/)
+		  //if (((t%10) == 0) && (t >= 10)((t%para->getTStartOut()) == 0) && (t >= para->getTStartOut()))
 		  //{
 			 // forceCalculator->calcPIDControllerForForce(para);
 			 // forceCalculator->printForcing(para);
@@ -1950,7 +1954,7 @@ void Simulation::run()
 	  }
 	  //////////////////////////////////////////////////////////////////////////////////
 
-
+      */
 
 
 	  ////////////////////////////////////////////////////////////////////////////////

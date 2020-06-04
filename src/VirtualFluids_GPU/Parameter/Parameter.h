@@ -159,7 +159,7 @@ struct ParameterStruct{
 
 	//BC's////////////////////
 	QforBoundaryConditions  QWall,   Qinflow,      Qoutflow,      QSlip;
-	unsigned int            kQ,      kInflowQ,     kOutflowQ,     kSlipQ;
+	unsigned int            kQ=0,      kInflowQ=0,     kOutflowQ=0,     kSlipQ=0;
 	unsigned int            kQread,  kInflowQread, kOutflowQread, kSlipQread;
 
 	QforBoundaryConditions  QpressX0,QpressX1,QpressY0,QpressY1,QpressZ0,QpressZ1;
@@ -171,7 +171,7 @@ struct ParameterStruct{
 	QforBoundaryConditions  QOutflowNormalX, QOutflowNormalY, QOutflowNormalZ;
 	QforBoundaryConditions  QInlet, QOutlet, QPeriodic;
 	unsigned int            kInletQread, kOutletQread;
-	unsigned int            kPressQ, kPressQread;
+	unsigned int            kPressQ=0, kPressQread;
 	//testRoundoffError
 	Distributions27         kDistTestRE;
 

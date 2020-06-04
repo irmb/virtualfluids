@@ -184,10 +184,10 @@ void multipleLevel(const std::string& configPath)
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         {
             real dx = 1.0 / 16.0;
-            real vx = 0.0125;
+            real vx = 0.05;
 
             real D = 1.0;
-            real Re = 1140000;
+            real Re = 11400;
 
             para->setOutputPath( "F:/Work/Computations/out/Sphere/" );
             para->setOutputPrefix( "Sphere" );
@@ -206,7 +206,7 @@ void multipleLevel(const std::string& configPath)
 
             para->setUseWale(false);
 
-            para->setMainKernel(kernelMapper->getEnum("CumulantK20Comp"));
+            para->setMainKernel(kernelMapper->getEnum("CumulantK15Comp"));
 
             //////////////////////////////////////////////////////////////////////////
 
@@ -218,18 +218,18 @@ void multipleLevel(const std::string& configPath)
 
             Object* sphere = new Sphere( 0, 0, 0, 0.5*D );
 
-            gridBuilder->addCoarseGrid(-2.0*D, -5.5*D, -5.5*D,
-                                        9.0*D,  5.5*D,  5.5*D, dx);  // DrivAer
+            gridBuilder->addCoarseGrid(-2.0*D, -2.5*D, -2.5*D,
+                                        9.0*D,  2.5*D,  2.5*D, dx);  // DrivAer
 
             //gridBuilder->setNumberOfLayers(10,8);
             //gridBuilder->addGrid(SphereSTL, 2);
             
             gridBuilder->setNumberOfLayers(4,8);
-            gridBuilder->addGrid(sphereRef_1_STL, 3);
-            gridBuilder->addGrid(sphereRef_2_STL, 4);
+            gridBuilder->addGrid(sphereRef_1_STL, 1);
+            //gridBuilder->addGrid(sphereRef_2_STL, 4);
 
-            gridBuilder->setNumberOfLayers(10,8);
-            gridBuilder->addGrid(sphere, 5);
+            //gridBuilder->setNumberOfLayers(10,8);
+            //gridBuilder->addGrid(sphere, 5);
 
 
         
