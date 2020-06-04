@@ -96,6 +96,16 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 	else
 		this->setCalcMedian(false);
 	//////////////////////////////////////////////////////////////////////////
+	if (configData->isCalcDragLiftInConfigFile())
+		this->setCalcDragLift(configData->getCalcDragLift());
+	else
+		this->setCalcDragLift(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isCalcCpInConfigFile())
+		this->setCalcCp(configData->getCalcCp());
+	else
+		this->setCalcCp(false);
+	//////////////////////////////////////////////////////////////////////////
 	if (configData->isConcFileInConfigFile())
 		this->setConcFile(configData->getConcFile());
 	else
@@ -3452,6 +3462,14 @@ void Parameter::setCalcMedian(bool calcMedian)
 {
 	ic.calcMedian = calcMedian;
 }
+void Parameter::setCalcDragLift(bool calcDragLift)
+{
+	this->calcDragLift = calcDragLift;
+}
+void Parameter::setCalcCp(bool calcCp)
+{
+	this->calcCp = calcCp;
+}
 void Parameter::setTimeCalcMedStart(int CalcMedStart)
 {
 	ic.tCalcMedStart = CalcMedStart;
@@ -4432,6 +4450,14 @@ unsigned int Parameter::getTStartOut()
 bool Parameter::getCalcMedian()
 {
 	return ic.calcMedian;
+}
+bool Parameter::getCalcDragLift()
+{
+	return this->calcDragLift;
+}
+bool Parameter::getCalcCp()
+{
+	return this->calcCp;
 }
 bool Parameter::getCalcParticle()
 {

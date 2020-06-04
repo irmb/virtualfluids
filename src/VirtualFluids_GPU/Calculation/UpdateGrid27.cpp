@@ -47,7 +47,7 @@ void updateGrid27(Parameter* para,
 
 	//////////////////////////////////////////////////////////////////////////
 
-    preCollisionBC(para, level);
+    preCollisionBC(para, cudaManager, level, t);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -225,6 +225,7 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
         //                para->getParD(level)->coordX_SP,       para->getParD(level)->coordY_SP,    para->getParD(level)->coordZ_SP,
         //                para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("QVelDev27 execution failed");
+
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -286,7 +287,26 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////
 
     if (para->getParD(level)->QGeom.kQ > 0)
-    {    
+    {
+		if (para->getCalcDragLift())
+		{
+			//Drag and Lift Part I
+			DragLiftPostD27(para->getParD(level)->d0SP.f[0], 
+			                para->getParD(level)->QGeom.k, 
+			                para->getParD(level)->QGeom.q27[0],
+			                para->getParD(level)->QGeom.kQ, 
+			                para->getParD(level)->DragPostX,
+			                para->getParD(level)->DragPostY,
+			                para->getParD(level)->DragPostZ,
+			                para->getParD(level)->neighborX_SP,
+			                para->getParD(level)->neighborY_SP,
+			                para->getParD(level)->neighborZ_SP,
+			                para->getParD(level)->size_Mat_SP, 
+			                para->getParD(level)->evenOrOdd,
+			                para->getParD(level)->numberofthreads);
+			getLastCudaError("DragLift27 execution failed"); 
+		}
+
         //BBDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
         //         para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
         //         para->getParD(level)->QGeom.kQ,              para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
@@ -380,12 +400,12 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
 
     if (para->getParD(level)->kPressQ > 0)
     {
-        QPressDev27_IntBB(  para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
-        					para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,       para->getParD(level)->QPress.q27[0], 
-        					para->getParD(level)->QPress.kQ,       para->getParD(level)->QPress.kQ,      para->getParD(level)->omega,
-        					para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
-        					para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        getLastCudaError("QPressDev27_IntBB fine execution failed");
+        //QPressDev27_IntBB(  para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
+        //					para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,       para->getParD(level)->QPress.q27[0], 
+        //					para->getParD(level)->QPress.kQ,       para->getParD(level)->QPress.kQ,      para->getParD(level)->omega,
+        //					para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
+        //					para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QPressDev27_IntBB fine execution failed");
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -641,7 +661,7 @@ void calcMacroscopicQuantities(Parameter* para, int level)
     getLastCudaError("CalcMacSP27 execution failed"); 
 }
 
-void preCollisionBC(Parameter* para, int level)
+void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
 {
     //////////////////////////////////////////////////////////////////////////
     // I N F L O W
@@ -686,6 +706,77 @@ void preCollisionBC(Parameter* para, int level)
 
 	if (para->getParD(level)->QGeom.kQ > 0)
 	{
+		if (para->getCalcDragLift())
+		{
+			//Drag and Lift Part II
+			DragLiftPreD27(para->getParD(level)->d0SP.f[0], 
+			               para->getParD(level)->QGeom.k, 
+			               para->getParD(level)->QGeom.q27[0],
+			               para->getParD(level)->QGeom.kQ, 
+			               para->getParD(level)->DragPreX,
+			               para->getParD(level)->DragPreY,
+			               para->getParD(level)->DragPreZ,
+			               para->getParD(level)->neighborX_SP,
+			               para->getParD(level)->neighborY_SP,
+			               para->getParD(level)->neighborZ_SP,
+			               para->getParD(level)->size_Mat_SP, 
+			               para->getParD(level)->evenOrOdd,
+			               para->getParD(level)->numberofthreads);
+			getLastCudaError("DragLift27 execution failed"); 
+			////////////////////////////////////////////////////////////////////////////////
+			//Calculation of Drag and Lift
+			////////////////////////////////////////////////////////////////////////////////
+			calcDragLift(para, cudaManager, level);
+			////////////////////////////////////////////////////////////////////////////////
+		}
+
+		if (para->getCalcCp())
+		{
+			////////////////////////////////////////////////////////////////////////////////
+			//Calculation of cp
+			////////////////////////////////////////////////////////////////////////////////
+
+			if(t > para->getTStartOut())
+			{
+                ////////////////////////////////////////////////////////////////////////////////
+                CalcCPtop27(para->getParD(level)->d0SP.f[0], 
+                            para->getParD(level)->cpTopIndex, 
+                            para->getParD(level)->numberOfPointsCpTop, 
+                            para->getParD(level)->cpPressTop,
+                            para->getParD(level)->neighborX_SP,
+                            para->getParD(level)->neighborY_SP,
+                            para->getParD(level)->neighborZ_SP,
+                            para->getParD(level)->size_Mat_SP, 
+                            para->getParD(level)->evenOrOdd,
+                            para->getParD(level)->numberofthreads);
+                //////////////////////////////////////////////////////////////////////////////////
+                CalcCPbottom27(para->getParD(level)->d0SP.f[0],
+                               para->getParD(level)->cpBottomIndex, 
+                               para->getParD(level)->numberOfPointsCpBottom, 
+                               para->getParD(level)->cpPressBottom,
+                               para->getParD(level)->neighborX_SP,
+                               para->getParD(level)->neighborY_SP,
+                               para->getParD(level)->neighborZ_SP,
+                               para->getParD(level)->size_Mat_SP, 
+                               para->getParD(level)->evenOrOdd,
+                               para->getParD(level)->numberofthreads);
+                //////////////////////////////////////////////////////////////////////////////////
+                CalcCPbottom27(para->getParD(level)->d0SP.f[0],
+                               para->getParD(level)->cpBottom2Index, 
+                               para->getParD(level)->numberOfPointsCpBottom2, 
+                               para->getParD(level)->cpPressBottom2,
+                               para->getParD(level)->neighborX_SP,
+                               para->getParD(level)->neighborY_SP,
+                               para->getParD(level)->neighborZ_SP,
+                               para->getParD(level)->size_Mat_SP, 
+                               para->getParD(level)->evenOrOdd,
+                               para->getParD(level)->numberofthreads);
+                //////////////////////////////////////////////////////////////////////////////////
+                calcCp(para, cudaManager, level);
+			}
+		}
+
+
 		////////////////////////////////////////////////////////////////////////////////
 		// high viscosity incompressible
 		//QDevIncompHighNu27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
@@ -1835,7 +1926,7 @@ void updateGrid27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaMa
 		//				 para->getParD(level)->size_Mat_SP, 
 		//				 para->getParD(level)->evenOrOdd,
 		//				 para->getParD(level)->numberofthreads);
-		//getLastCudaError("DragLift27 execution failed"); 
+		//getLastCudaError("DragLift27 execution failed");  
 		//  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
        //   BBDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
        //            para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
@@ -1959,6 +2050,7 @@ void updateGrid27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaMa
 			// getLastCudaError("QDevComp27 (Geom) execution failed");
 		 //}
 		 //////////////////////////////////////////////////////////////////////////////////
+ 
 
 		 //////////////////////////////////////////////////////////////////////////////////
 		 ////Calculation of cp

@@ -21,6 +21,8 @@ ConfigDataImp::ConfigDataImp()
 	this->isCalcHighOrderMoments=false;
 	this->isReadGeo=false;
 	this->isCalcMedian=false;
+	this->isCalcDragLift = false;
+	this->isCalcCp = false;
 	this->isConcFile=false;
 	this->isUseMeasurePoints=false;
 	this->isUseWale=false;
@@ -152,6 +154,16 @@ bool ConfigDataImp::getReadGeo()
 bool ConfigDataImp::getCalcMedian()
 {
 	return this->calcMedian;
+}
+
+bool ConfigDataImp::getCalcDragLift()
+{
+	return this->calcDragLift;
+}
+
+bool ConfigDataImp::getCalcCp()
+{
+	return this->calcCp;
 }
 
 bool ConfigDataImp::getConcFile()
@@ -555,6 +567,18 @@ void ConfigDataImp::setCalcMedian(bool calcMedian)
 {
 	this->calcMedian = calcMedian;
 	this->isCalcMedian = true;
+}
+
+void ConfigDataImp::setCalcDragLift(bool calcDragLift)
+{
+	this->calcDragLift = calcDragLift;
+	this->isCalcDragLift = true;
+}
+
+void ConfigDataImp::setCalcCp(bool calcCp)
+{
+	this->calcCp = calcCp;
+	this->isCalcCp = true;
 }
 
 void ConfigDataImp::setConcFile(bool concFile)
@@ -976,6 +1000,16 @@ bool ConfigDataImp::isReadGeoInConfigFile()
 bool ConfigDataImp::isCalcMedianInConfigFile()
 {
 	return this->isCalcMedian;
+}
+
+bool ConfigDataImp::isCalcDragLiftInConfigFile()
+{
+	return this->isCalcDragLift;
+}
+
+bool ConfigDataImp::isCalcCpInConfigFile()
+{
+	return this->isCalcCp;
 }
 
 bool ConfigDataImp::isConcFileInConfigFile()

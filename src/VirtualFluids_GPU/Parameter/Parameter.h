@@ -619,6 +619,8 @@ public:
 	void setTStartOut(unsigned int tStartOut);
 	void setTimestepOfCoarseLevel(unsigned int timestep);
 	void setCalcMedian(bool calcMedian);
+	void setCalcDragLift(bool calcDragLift);
+	void setCalcCp(bool calcCp);
 	void setTimeCalcMedStart(int CalcMedStart);
 	void setTimeCalcMedEnd(int CalcMedEnd);
 	void setMaxDev(int maxdev);
@@ -812,6 +814,8 @@ public:
 	bool getPrintFiles();
 	bool getReadGeo();
 	bool getCalcMedian();
+	bool getCalcDragLift();
+	bool getCalcCp();
 	bool getCalcParticle();
 	int getFine();
 	int getCoarse();
@@ -1023,6 +1027,7 @@ private:
 	bool compOn;
 	bool diffOn;
 	bool isF3;
+	bool calcDragLift, calcCp;
 	int diffMod;
 	int coarse, fine, maxlevel;
 	int factor_gridNZ;
