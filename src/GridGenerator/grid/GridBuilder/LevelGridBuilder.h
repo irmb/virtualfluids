@@ -94,6 +94,10 @@ protected:
         std::vector<SPtr<VelocityBoundaryCondition> > velocityBoundaryConditions;
         std::vector<SPtr<PressureBoundaryCondition> > pressureBoundaryConditions;
 
+		//TODO: add slip BC
+
+
+
         std::vector<SPtr<VelocityBoundaryCondition> > noSlipBoundaryConditions;
 
         SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
