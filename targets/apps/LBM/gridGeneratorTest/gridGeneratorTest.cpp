@@ -187,7 +187,7 @@ void multipleLevel(const std::string& configPath)
             real vx = 0.05;
 
             real D = 1.0;
-            real Re = 11400;
+            real Re = 100;
 
             para->setOutputPath( "F:/Work/Computations/out/Sphere/" );
             para->setOutputPrefix( "Sphere" );
@@ -203,6 +203,8 @@ void multipleLevel(const std::string& configPath)
 
             para->setTOut( 1000 );
             para->setTEnd( 100000 );
+
+            para->setCalcDragLift(true);
 
             para->setUseWale(false);
 

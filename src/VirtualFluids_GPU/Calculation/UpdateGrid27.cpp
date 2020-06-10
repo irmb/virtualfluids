@@ -126,10 +126,10 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // incompressible
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //         KernelADincomp27( para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
-        //		   para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-        //		   para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],     para->getParD(level)->size_Mat_SP,  
-        //		   para->getParD(level)->evenOrOdd); 
+        //KernelADincomp27( para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
+        //		            para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //		            para->getParD(level)->d0SP.f[0],          para->getParD(level)->d27.f[0],     para->getParD(level)->size_Mat_SP,  
+        //		            para->getParD(level)->evenOrOdd); 
         //getLastCudaError("KernelADincomp27 execution failed");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -799,7 +799,7 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
     // P R E S S U R E
     //////////////////////////////////////////////////////////////////////////
 
-	if (para->getParD(level)->kPressQ > 0)
+	if (para->getParD(level)->QPress.kQ > 0)
 	{
 		QPressNoRhoDev27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
 		                 para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
