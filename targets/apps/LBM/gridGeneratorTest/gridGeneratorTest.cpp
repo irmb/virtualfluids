@@ -633,6 +633,37 @@ void multipleLevel(const std::string& configPath)
         if( testcase == MultiGPU )
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         {
+
+            real dx = 1.0 / 40.0;
+            real vx = 0.05;
+
+            real D = 1.0;
+            real Re = 100;
+
+            para->setOutputPath( "F:/Work/Computations/out/Sphere/" );
+            para->setOutputPrefix( "Sphere" );
+
+            para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+
+            para->setPrintFiles(true);
+    
+            para->setVelocity( vx );
+            para->setViscosity( ( vx * D / dx ) / Re );
+
+            para->setVelocityRatio(1.0);
+
+            para->setTOut( 1000 );
+            para->setTEnd( 100000 );
+
+            para->setCalcDragLift(true);
+
+            para->setUseWale(false);
+
+            para->setMainKernel(kernelMapper->getEnum("CumulantK15Comp"));
+
+            para->setDevices( { 0, 1 } );
+            para->setMaxDev(2);
+
             //const uint generatePart = 1;
             const uint generatePart = Communicator::getInstanz()->getPID();
             
@@ -648,10 +679,7 @@ void multipleLevel(const std::string& configPath)
 
             logging::Logger::addStream(&logFile2);
 
-            real dx = 1.0 / 40.0;
-            real vx = 0.05;
-
-            TriangularMesh* triangularMesh = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/ShpereNotOptimal.stl");
+            TriangularMesh* triangularMesh = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/Sphere/SphereNotOptimal.stl");
             //TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
 
             // all
