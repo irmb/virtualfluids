@@ -106,6 +106,16 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 	else
 		this->setCalcCp(false);
 	//////////////////////////////////////////////////////////////////////////
+	if (configData->isWriteVeloASCIIfilesInConfigFile())
+		this->setWriteVeloASCIIfiles(configData->getWriteVeloASCIIfiles());
+	else
+		this->setWriteVeloASCIIfiles(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isCalcPlaneConcInConfigFile())
+		this->setCalcPlaneConc(configData->getCalcPlaneConc());
+	else
+		this->setCalcPlaneConc(false);
+	//////////////////////////////////////////////////////////////////////////
 	if (configData->isConcFileInConfigFile())
 		this->setConcFile(configData->getConcFile());
 	else
@@ -3470,8 +3480,16 @@ void Parameter::setCalcCp(bool calcCp)
 {
 	this->calcCp = calcCp;
 }
-void Parameter::setTimeCalcMedStart(int CalcMedStart)
+void Parameter::setWriteVeloASCIIfiles(bool writeVeloASCII)
 {
+	this->writeVeloASCII = writeVeloASCII;
+}
+void Parameter::setCalcPlaneConc(bool calcPlaneConc)
+{
+	this->calcPlaneConc = calcPlaneConc;
+}
+void Parameter::setTimeCalcMedStart(int CalcMedStart)
+{		
 	ic.tCalcMedStart = CalcMedStart;
 }
 void Parameter::setTimeCalcMedEnd(int CalcMedEnd)
@@ -4462,6 +4480,14 @@ bool Parameter::getCalcCp()
 bool Parameter::getCalcParticle()
 {
 	return this->calcParticles;
+}
+bool Parameter::getWriteVeloASCIIfiles()
+{
+	return this->writeVeloASCII;
+}
+bool Parameter::getCalcPlaneConc()
+{
+	return this->calcPlaneConc;
 }
 int Parameter::getTimeCalcMedStart()
 {

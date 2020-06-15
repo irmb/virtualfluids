@@ -27,6 +27,8 @@ public:
 	bool getCalcMedian();
 	bool getCalcDragLift();
 	bool getCalcCp();
+	bool getWriteVeloASCIIfiles();
+	bool getCalcPlaneConc();
 	bool getConcFile();
 	bool getStreetVelocityFile();
 	bool getUseMeasurePoints();
@@ -111,6 +113,8 @@ public:
 	void setCalcMedian(bool calcMedian);   
 	void setCalcDragLift(bool calcDragLift);
 	void setCalcCp(bool calcCp);
+	void setWriteVeloASCIIfiles(bool writeVeloASCIIfiles);
+	void setCalcPlaneConc(bool calcPlaneConc);
 	void setConcFile(bool concFile);
 	void setStreetVelocityFile(bool streetVelocityFile);
 	void setUseMeasurePoints(bool useMeasurePoints);
@@ -196,6 +200,8 @@ public:
 	bool isCalcMedianInConfigFile();
 	bool isCalcDragLiftInConfigFile();
 	bool isCalcCpInConfigFile();
+	bool isWriteVeloASCIIfilesInConfigFile();
+	bool isCalcPlaneConcInConfigFile();
 	bool isConcFileInConfigFile();
 	bool isStreetVelocityFileInConfigFile();
 	bool isUseMeasurePointsInConfigFile();
@@ -283,6 +289,8 @@ private:
 	bool calcMedian;
 	bool calcDragLift;
 	bool calcCp;
+	bool writeVeloASCIIfiles;
+	bool calcPlaneConc;
 	bool concFile;
 	bool streetVelocityFile;
 	bool useMeasurePoints;
@@ -368,6 +376,8 @@ private:
 	bool isCalcMedian;
 	bool isCalcDragLift;
 	bool isCalcCp;
+	bool isWriteVeloASCII;
+	bool isCalcPlaneConc;
 	bool isConcFile;
 	bool isStreetVelocityFile;
 	bool isUseMeasurePoints;

@@ -166,6 +166,16 @@ bool ConfigDataImp::getCalcCp()
 	return this->calcCp;
 }
 
+bool ConfigDataImp::getWriteVeloASCIIfiles()
+{
+	return this->writeVeloASCIIfiles;
+}
+
+bool ConfigDataImp::getCalcPlaneConc()
+{
+	return	this->calcPlaneConc;
+}
+
 bool ConfigDataImp::getConcFile()
 {
 	return this->concFile;
@@ -579,6 +589,18 @@ void ConfigDataImp::setCalcCp(bool calcCp)
 {
 	this->calcCp = calcCp;
 	this->isCalcCp = true;
+}
+
+void ConfigDataImp::setWriteVeloASCIIfiles(bool writeVeloASCIIfiles)
+{
+	this->writeVeloASCIIfiles = writeVeloASCIIfiles;
+	this->isWriteVeloASCII = true;
+}
+
+void ConfigDataImp::setCalcPlaneConc(bool calcPlaneConc)
+{
+	this->calcPlaneConc = calcPlaneConc;
+	this->isCalcPlaneConc = true;
 }
 
 void ConfigDataImp::setConcFile(bool concFile)
@@ -1010,6 +1032,16 @@ bool ConfigDataImp::isCalcDragLiftInConfigFile()
 bool ConfigDataImp::isCalcCpInConfigFile()
 {
 	return this->isCalcCp;
+}
+
+bool ConfigDataImp::isWriteVeloASCIIfilesInConfigFile()
+{
+	return this->isWriteVeloASCII;
+}
+
+bool ConfigDataImp::isCalcPlaneConcInConfigFile()
+{
+	return this->isCalcPlaneConc;
 }
 
 bool ConfigDataImp::isConcFileInConfigFile()

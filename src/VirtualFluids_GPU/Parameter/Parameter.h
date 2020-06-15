@@ -621,6 +621,8 @@ public:
 	void setCalcMedian(bool calcMedian);
 	void setCalcDragLift(bool calcDragLift);
 	void setCalcCp(bool calcCp);
+	void setWriteVeloASCIIfiles(bool writeVeloASCII);
+	void setCalcPlaneConc(bool calcPlaneConc);
 	void setTimeCalcMedStart(int CalcMedStart);
 	void setTimeCalcMedEnd(int CalcMedEnd);
 	void setMaxDev(int maxdev);
@@ -817,6 +819,8 @@ public:
 	bool getCalcDragLift();
 	bool getCalcCp();
 	bool getCalcParticle();
+	bool getWriteVeloASCIIfiles();
+	bool getCalcPlaneConc();
 	int getFine();
 	int getCoarse();
 	int getParticleBasicLevel();
@@ -1028,6 +1032,8 @@ private:
 	bool diffOn;
 	bool isF3;
 	bool calcDragLift, calcCp;
+	bool writeVeloASCII;
+	bool calcPlaneConc;
 	int diffMod;
 	int coarse, fine, maxlevel;
 	int factor_gridNZ;

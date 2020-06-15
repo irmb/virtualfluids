@@ -590,7 +590,7 @@ void Simulation::run()
         //////////////////////////////////////////////////////////////////////////////////
         ////get concentration at the plane
         //////////////////////////////////////////////////////////////////////////////////
-        if (para->getDiffOn()==true) 
+        if (para->getDiffOn() && para->getCalcPlaneConc()) 
         {
             PlaneConcThS27( para->getParD(0)->ConcPlaneIn,
             		       para->getParD(0)->cpTopIndex,
@@ -798,7 +798,8 @@ void Simulation::run()
 
 			   //////////////////////////////////////////////////////////////////////////
                //TODO: implement flag to write ASCII data
-			   //VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, t);
+			   if (para->getWriteVeloASCIIfiles())
+				   VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, t);
 			   //////////////////////////////////////////////////////////////////////////
                if( this->kineticEnergyAnalyzer || this->enstrophyAnalyzer )
                {
