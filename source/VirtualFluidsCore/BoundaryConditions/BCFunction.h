@@ -44,7 +44,7 @@ public:
    void setFunction(const std::string& functionstring) { this->function.SetExpr(functionstring); }
    void setFunction(const double& constVelocity) { std::stringstream dummy; dummy<<constVelocity; function.SetExpr(dummy.str());  }
    void setStartTime(const double& starttime) {this->starttime = starttime; }
-   void setEndTime(const double& starttime) {this->endtime = endtime; }
+   void setEndTime(const double& endtime) {this->endtime = endtime; }
 
    mu::Parser&        getFunction()        { return function;  }
    const mu::Parser&  getFunction()  const { return function;  }
