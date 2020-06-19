@@ -211,6 +211,9 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
+    // This method computes the start and end coordinates with respect to the coarse grid
+    // The following sketch visualizes this procedure for level 2:
+    //
     //                          /----------------------- domain --------------------------------\ 
     //                          |                      /----------------- refinement region ------------------------\
     //                          |                      |                                        |                   |
@@ -415,15 +418,49 @@ std::vector<SPtr<Grid> > MultipleGridBuilder::getGrids() const
     return this->grids;
 }
 
+// this method initiates the actual grid generation
+//
+//  => before calling this MultipleGridBuilder::buildGrids(...), several options 
+//     parameters and similar have to be set for the grid generation:
+//      => MultipleGridBuilder::addCoarseGrid(...)                      => background grid
+//      => MultipleGridBuilder::setNumberOfLayers(...)                  => additional layers outside refinement region
+//      => MultipleGridBuilder::addGrid(..)                             => refinement region
+//      => MultipleGridBuilder::setSubDomainBox(...)                    => sub domain for Multi GPU
+//      => MultipleGridBuilder::addGeometry(...)                        => object for solid domain
+//      => MultipleGridBuilder::setPeriodicBoundaryCondition(...)       => periodicity
+//
+//  => LBM boundary conditions are set after MultipleGridBuilder::buildGrids(...):
+//      => LevelGridBuilder::setVelocityBoundaryCondition(...)
+//      => LevelGridBuilder::setPressureBoundaryCondition(...)
+//      => GeometryBoundaryCondition::setTangentialVelocityForPatch(...)
+//      => VelocityBoundaryCondition::setVelocityProfile(...)
+//
+//  => Multi GPU connectivity is set after MultipleGridBuilder::buildGrids(...):
+//      => MultipleGridBuilder::findCommunicationIndices(...)
+//      => LevelGridBuilder::setCommunicationProcess(...)
+//
 void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
 {
     //////////////////////////////////////////////////////////////////////////
 
-    // orginal version with scaling the object (also use old version of MultipleGridBuilder::addGrid()
-    //for (auto grid : grids)
-    //    grid->inital();
-
-     //new version with 
+    // initialize the grids:
+    //      => allocate memory
+    //      => set everything to INVALID_OUT_OF_GRID
+    //      => find nodes inside the refinement region, either based on 
+    //         an object or on the shape of the underlying fine grid
+    //      => add overlap as specified by MultipleGridBuilder::setNumberOfLayers
+    //      => fix odd cells, such that we obtain steps of size on the 
+    //         boundary of the grid (for complete cells for interpolation)
+    //      => fix refinement into the wall, i.e. make sure the refinement 
+    //         goes straight into the walls
+    //      => set stopper nodes to STOPPER_OUT_OF_GRID and STOPPER_OUT_OF_GRID_BOUNDARY
+    //
+    // the number of layers is passed to the Grid::initial(...) method as argument
+    //
+    // For further documentation of the grid initialization see Section 5.2.2 and
+    // Figure 5.2 in the Dissertation of Stephan Lenz:
+    // https://publikationsserver.tu-braunschweig.de/receive/dbbs_mods_00068716
+    //
     for( int level = grids.size()-1; level >= 0; level-- ){
 
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initializing level " << level << "\n";
@@ -431,11 +468,6 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
         // On the coarse grid every thing is Fluid (w.r.t. the refinement)
         // On the finest grid the Fluid region is defined by the Object
         // On the intermediate levels the Fluid region is defined by the fluid region of the finer level
-        //if( level == 0 || level == grids.size()-1 )
-        //    grids[level]->inital();
-        //else
-        //    grids[level]->inital( grids[level+1] );
-        
         if     ( level == 0 )
             grids[level]->inital( nullptr, 0 );
         else if( level == grids.size()-1 )
@@ -448,16 +480,41 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
 
     //////////////////////////////////////////////////////////////////////////
 
+    // set the solid region and find Qs
+    // this is only done if a solid object was added to the GridBuilder
+    //
+    // For further documentation of the treatment of solid objects see Section 5.2.3
+    // and figure 5.3 in the Dissertation of Stephan Lenz:
+    // https://publikationsserver.tu-braunschweig.de/receive/dbbs_mods_00068716
+    //
     if (solidObject)
     {
 
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start with Q Computation\n";
 
+        // Currently the solid object is only used on the finest grid,
+        // because refinement into solid objects is not yet implemented.
+        // If the solid object does not intersect the interfaces, it 
+        // might be possible to have a solid object on more than the finest
+        // level (See Bachelor thesis of Lennard Lux). To enable this, 
+        // change the following two lines. This is not tested though!
+
         //for( uint level = 0; level < grids.size(); level++ )
         uint level = grids.size() - 1;
         {
+            // the Grid::mesh(...) method distinguishes inside and ouside regions
+            // of the solid domain.:
+            //      => set inner nodes to INVALID_SOLID
+            //      => close needle sells
+            //      => set one layer of STOPPER_SOLID nodes in the solid domain
+            //      => set one layer of BC_SOLID nodes in the fluid domain
             grids[level]->mesh(solidObject);
 
+            // if thin walls are enables additional BC_SOLID nodes are found by
+            // Grid::findOs(...). To prevent the actual Q computation, 
+            // Grid::enableFindSolidBoundaryNodes() and Grid::enableComputeQs()
+            // set a flag that changes the behavior of Grid::findOs(...);
+            // additionally some needle cells are closed in this process.
             if (enableThinWalls) {
                 grids[level]->enableFindSolidBoundaryNodes();
                 grids[level]->findQs(solidObject);
@@ -465,34 +522,53 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
                 grids[level]->enableComputeQs();
             }
 
+            // compute the sub grid distances 
+            // this works for STL and Sphere objects, but not yet for other primitives!
             if( lbmOrGks == LBM )
                 grids[level]->findQs(solidObject);
         }
 
-        //for (size_t i = 0; i < grids.size(); i++){
-        //    grids[i]->mesh(solidObject);
-        //    grids[i]->findQs(solidObject);
-        //}
-
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done with Q Computation\n";
     }
 
+    //////////////////////////////////////////////////////////////////////////
+
+    // find the interface interpolations cells
+    // For further documentation see Section 5.2.4 and Figure 5.3 in the dissertation
+    // of Stephan Lenz:
+    // https://publikationsserver.tu-braunschweig.de/receive/dbbs_mods_00068716
+    //
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findGridInterface(grids[i + 1], lbmOrGks);
 
+    //////////////////////////////////////////////////////////////////////////
+
+    // set all points outside the sub domain to STOPPER_OUT_OF_GRID_BOUNDARY
+    // and INVALID_OUT_OF_GRID
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
             grids[i]->limitToSubDomain( this->subDomainBox, lbmOrGks );
 
+    //////////////////////////////////////////////////////////////////////////
+
+    // shrinks the interface cell lists to the correct size
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->repairGridInterfaceOnMultiGPU(grids[i + 1]);
 
+    //////////////////////////////////////////////////////////////////////////
+
+    // unrolls the matrix
+    //      => computes the sparse indices
+    //      => generates neighbor connectivity taking into account periodic boundaries
+    //      => undates the interface connectivity to sparse indices (overwrites matrix indices!)
 	if (lbmOrGks == LBM) {
 		for (size_t i = 0; i < grids.size() - 1; i++)
 			grids[i]->findSparseIndices(grids[i + 1]);
 
 		grids[grids.size() - 1]->findSparseIndices(nullptr);
 	}
+
+    //////////////////////////////////////////////////////////////////////////
 }
 
 VF_PUBLIC void MultipleGridBuilder::setNumberOfLayers(uint numberOfLayersFine, uint numberOfLayersBetweenLevels)

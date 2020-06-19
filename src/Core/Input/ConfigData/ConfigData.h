@@ -22,6 +22,10 @@ public:
 	virtual bool getCalcHighOrderMoments() = 0;
 	virtual bool getReadGeo() = 0;
 	virtual bool getCalcMedian() = 0;
+	virtual bool getCalcDragLift() = 0;
+	virtual bool getCalcCp() = 0;
+	virtual bool getWriteVeloASCIIfiles() = 0;
+	virtual bool getCalcPlaneConc() = 0;
 	virtual bool getConcFile() = 0;
 	virtual bool getStreetVelocityFile() = 0;
 	virtual bool getUseMeasurePoints() = 0;
@@ -104,6 +108,10 @@ public:
 	virtual bool isCalcHighOrderMomentsInConfigFile() = 0;
 	virtual bool isReadGeoInConfigFile() = 0;
 	virtual bool isCalcMedianInConfigFile() = 0;
+	virtual bool isCalcDragLiftInConfigFile() = 0;
+	virtual bool isCalcCpInConfigFile() = 0;
+	virtual bool isWriteVeloASCIIfilesInConfigFile() = 0;
+	virtual bool isCalcPlaneConcInConfigFile() = 0;
 	virtual bool isConcFileInConfigFile() = 0;
 	virtual bool isStreetVelocityFileInConfigFile() = 0;
 	virtual bool isUseMeasurePointsInConfigFile() = 0;

@@ -96,6 +96,26 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 	else
 		this->setCalcMedian(false);
 	//////////////////////////////////////////////////////////////////////////
+	if (configData->isCalcDragLiftInConfigFile())
+		this->setCalcDragLift(configData->getCalcDragLift());
+	else
+		this->setCalcDragLift(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isCalcCpInConfigFile())
+		this->setCalcCp(configData->getCalcCp());
+	else
+		this->setCalcCp(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isWriteVeloASCIIfilesInConfigFile())
+		this->setWriteVeloASCIIfiles(configData->getWriteVeloASCIIfiles());
+	else
+		this->setWriteVeloASCIIfiles(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isCalcPlaneConcInConfigFile())
+		this->setCalcPlaneConc(configData->getCalcPlaneConc());
+	else
+		this->setCalcPlaneConc(false);
+	//////////////////////////////////////////////////////////////////////////
 	if (configData->isConcFileInConfigFile())
 		this->setConcFile(configData->getConcFile());
 	else
@@ -3452,8 +3472,24 @@ void Parameter::setCalcMedian(bool calcMedian)
 {
 	ic.calcMedian = calcMedian;
 }
-void Parameter::setTimeCalcMedStart(int CalcMedStart)
+void Parameter::setCalcDragLift(bool calcDragLift)
 {
+	this->calcDragLift = calcDragLift;
+}
+void Parameter::setCalcCp(bool calcCp)
+{
+	this->calcCp = calcCp;
+}
+void Parameter::setWriteVeloASCIIfiles(bool writeVeloASCII)
+{
+	this->writeVeloASCII = writeVeloASCII;
+}
+void Parameter::setCalcPlaneConc(bool calcPlaneConc)
+{
+	this->calcPlaneConc = calcPlaneConc;
+}
+void Parameter::setTimeCalcMedStart(int CalcMedStart)
+{		
 	ic.tCalcMedStart = CalcMedStart;
 }
 void Parameter::setTimeCalcMedEnd(int CalcMedEnd)
@@ -4433,9 +4469,25 @@ bool Parameter::getCalcMedian()
 {
 	return ic.calcMedian;
 }
+bool Parameter::getCalcDragLift()
+{
+	return this->calcDragLift;
+}
+bool Parameter::getCalcCp()
+{
+	return this->calcCp;
+}
 bool Parameter::getCalcParticle()
 {
 	return this->calcParticles;
+}
+bool Parameter::getWriteVeloASCIIfiles()
+{
+	return this->writeVeloASCII;
+}
+bool Parameter::getCalcPlaneConc()
+{
+	return this->calcPlaneConc;
 }
 int Parameter::getTimeCalcMedStart()
 {

@@ -290,6 +290,8 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
     grids[level]->getNodeValues(xCoords, yCoords, zCoords, neighborX, neighborY, neighborZ, neighborNegative, geo);
 }
 
+//TODO: add getSlipSize...
+
 
 uint LevelGridBuilder::getVelocitySize(int level) const
 {
@@ -300,6 +302,9 @@ uint LevelGridBuilder::getVelocitySize(int level) const
     }
     return size;
 }
+
+//TODO: add getSlipIndices...
+
 
 void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const
 {

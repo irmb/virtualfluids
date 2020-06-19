@@ -159,7 +159,7 @@ struct ParameterStruct{
 
 	//BC's////////////////////
 	QforBoundaryConditions  QWall,   Qinflow,      Qoutflow,      QSlip;
-	unsigned int            kQ,      kInflowQ,     kOutflowQ,     kSlipQ;
+	unsigned int            kQ=0,      kInflowQ=0,     kOutflowQ=0,     kSlipQ=0;
 	unsigned int            kQread,  kInflowQread, kOutflowQread, kSlipQread;
 
 	QforBoundaryConditions  QpressX0,QpressX1,QpressY0,QpressY1,QpressZ0,QpressZ1;
@@ -171,7 +171,7 @@ struct ParameterStruct{
 	QforBoundaryConditions  QOutflowNormalX, QOutflowNormalY, QOutflowNormalZ;
 	QforBoundaryConditions  QInlet, QOutlet, QPeriodic;
 	unsigned int            kInletQread, kOutletQread;
-	unsigned int            kPressQ, kPressQread;
+	unsigned int            kPressQ=0, kPressQread;
 	//testRoundoffError
 	Distributions27         kDistTestRE;
 
@@ -619,6 +619,10 @@ public:
 	void setTStartOut(unsigned int tStartOut);
 	void setTimestepOfCoarseLevel(unsigned int timestep);
 	void setCalcMedian(bool calcMedian);
+	void setCalcDragLift(bool calcDragLift);
+	void setCalcCp(bool calcCp);
+	void setWriteVeloASCIIfiles(bool writeVeloASCII);
+	void setCalcPlaneConc(bool calcPlaneConc);
 	void setTimeCalcMedStart(int CalcMedStart);
 	void setTimeCalcMedEnd(int CalcMedEnd);
 	void setMaxDev(int maxdev);
@@ -812,7 +816,11 @@ public:
 	bool getPrintFiles();
 	bool getReadGeo();
 	bool getCalcMedian();
+	bool getCalcDragLift();
+	bool getCalcCp();
 	bool getCalcParticle();
+	bool getWriteVeloASCIIfiles();
+	bool getCalcPlaneConc();
 	int getFine();
 	int getCoarse();
 	int getParticleBasicLevel();
@@ -1023,6 +1031,9 @@ private:
 	bool compOn;
 	bool diffOn;
 	bool isF3;
+	bool calcDragLift, calcCp;
+	bool writeVeloASCII;
+	bool calcPlaneConc;
 	int diffMod;
 	int coarse, fine, maxlevel;
 	int factor_gridNZ;

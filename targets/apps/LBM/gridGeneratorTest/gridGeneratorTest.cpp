@@ -184,10 +184,10 @@ void multipleLevel(const std::string& configPath)
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         {
             real dx = 1.0 / 16.0;
-            real vx = 0.0125;
+            real vx = 0.05;
 
             real D = 1.0;
-            real Re = 1140000;
+            real Re = 100;
 
             para->setOutputPath( "F:/Work/Computations/out/Sphere/" );
             para->setOutputPrefix( "Sphere" );
@@ -204,9 +204,11 @@ void multipleLevel(const std::string& configPath)
             para->setTOut( 1000 );
             para->setTEnd( 100000 );
 
+            para->setCalcDragLift(true);
+
             para->setUseWale(false);
 
-            para->setMainKernel(kernelMapper->getEnum("CumulantK20Comp"));
+            para->setMainKernel(kernelMapper->getEnum("CumulantK15Comp"));
 
             //////////////////////////////////////////////////////////////////////////
 
@@ -218,18 +220,18 @@ void multipleLevel(const std::string& configPath)
 
             Object* sphere = new Sphere( 0, 0, 0, 0.5*D );
 
-            gridBuilder->addCoarseGrid(-2.0*D, -5.5*D, -5.5*D,
-                                        9.0*D,  5.5*D,  5.5*D, dx);  // DrivAer
+            gridBuilder->addCoarseGrid(-2.0*D, -2.5*D, -2.5*D,
+                                        9.0*D,  2.5*D,  2.5*D, dx);  // DrivAer
 
             //gridBuilder->setNumberOfLayers(10,8);
             //gridBuilder->addGrid(SphereSTL, 2);
             
             gridBuilder->setNumberOfLayers(4,8);
-            gridBuilder->addGrid(sphereRef_1_STL, 3);
-            gridBuilder->addGrid(sphereRef_2_STL, 4);
+            gridBuilder->addGrid(sphereRef_1_STL, 1);
+            //gridBuilder->addGrid(sphereRef_2_STL, 4);
 
-            gridBuilder->setNumberOfLayers(10,8);
-            gridBuilder->addGrid(sphere, 5);
+            //gridBuilder->setNumberOfLayers(10,8);
+            //gridBuilder->addGrid(sphere, 5);
 
 
         
@@ -631,6 +633,37 @@ void multipleLevel(const std::string& configPath)
         if( testcase == MultiGPU )
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         {
+
+            real dx = 1.0 / 40.0;
+            real vx = 0.05;
+
+            real D = 1.0;
+            real Re = 100;
+
+            para->setOutputPath( "F:/Work/Computations/out/Sphere/" );
+            para->setOutputPrefix( "Sphere" );
+
+            para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+
+            para->setPrintFiles(true);
+    
+            para->setVelocity( vx );
+            para->setViscosity( ( vx * D / dx ) / Re );
+
+            para->setVelocityRatio(1.0);
+
+            para->setTOut( 1000 );
+            para->setTEnd( 100000 );
+
+            para->setCalcDragLift(true);
+
+            para->setUseWale(false);
+
+            para->setMainKernel(kernelMapper->getEnum("CumulantK15Comp"));
+
+            para->setDevices( { 0, 1 } );
+            para->setMaxDev(2);
+
             //const uint generatePart = 1;
             const uint generatePart = Communicator::getInstanz()->getPID();
             
@@ -646,10 +679,7 @@ void multipleLevel(const std::string& configPath)
 
             logging::Logger::addStream(&logFile2);
 
-            real dx = 1.0 / 40.0;
-            real vx = 0.05;
-
-            TriangularMesh* triangularMesh = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/ShpereNotOptimal.stl");
+            TriangularMesh* triangularMesh = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/Sphere/SphereNotOptimal.stl");
             //TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
 
             // all

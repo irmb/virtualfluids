@@ -10,6 +10,32 @@
 
 class Kernel;
 
-extern "C" void updateGrid27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, std::vector<std::shared_ptr<PorousMedia>> pm, int level, int max_level, unsigned int t, std::vector < SPtr< Kernel>> kernels);
+extern "C" void updateGrid27(Parameter* para, 
+                             Communicator* comm, 
+                             CudaMemoryManager* cudaManager, 
+                             std::vector<std::shared_ptr<PorousMedia>>& pm, 
+                             int level,
+                             unsigned int t, 
+                             std::vector < SPtr< Kernel>>& kernels);
+
+extern "C" void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels);
+
+extern "C" void collisionPorousMedia(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level);
+
+extern "C" void collisionAdvectionDiffusion(Parameter* para, int level);
+
+extern "C" void exchangeMultiGPU(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level);
+
+extern "C" void postCollisionBC(Parameter* para, int level, unsigned int t);
+
+extern "C" void swapBetweenEvenAndOddTimestep(Parameter* para, int level);
+
+extern "C" void calcMacroscopicQuantities(Parameter* para, int level);
+
+extern "C" void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+
+extern "C" void fineToCoarse(Parameter* para, int level);
+
+extern "C" void coarseToFine(Parameter* para, int level);
 
 #endif

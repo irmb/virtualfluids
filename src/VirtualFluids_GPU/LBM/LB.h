@@ -166,7 +166,7 @@ typedef struct QforBC{
    real* qread;
    real* q27[27];
    real* q19[19];
-   int kQ;
+   int kQ=0;
    int kArray;
    real *Vx, *Vy, *Vz, *deltaVz, *RhoBC;
 }QforBoundaryConditions;
@@ -175,7 +175,7 @@ typedef struct QforBC{
 typedef struct TempforBC{
    int* k;
    real* temp;
-   int kTemp;
+   int kTemp=0;
 }TempforBoundaryConditions;
 
 //BCTempVel
@@ -184,7 +184,7 @@ typedef struct TempVelforBC{
    real* temp;
    real* tempPulse;
    real* velo;
-   int kTemp;
+   int kTemp=0;
 }TempVelforBoundaryConditions;
 
 //BCTempPress
@@ -192,7 +192,7 @@ typedef struct TempPressforBC{
    int* k;
    real* temp;
    real* velo;
-   int kTemp;
+   int kTemp=0;
 }TempPressforBoundaryConditions;
 
 //measurePoints
