@@ -1,0 +1,57 @@
+#simulation parameters
+
+#x1min x2min x3min x1max x2max x3max
+#boundingBox = 0 0 0 300 1520 2320
+
+#boundingBox = 60 1370 130 190 1530 320 #test bb
+
+boundingBox = 60 20 130 190 170 320 #test bb
+
+#boundingBox = 60 0 10 190 1530 750 #test bb 2
+
+#boundingBox = 60 0 10 190 1530 2320  #production bb
+ 
+blocknx = 10 10 10 
+#blocknx = 300 420 320
+availMem = 25e9
+#uLB = 0.1
+uLB = 0.03
+Re = 300
+
+#PE parameters
+#test pe offset
+peMinOffset = 46 2 2
+peMaxOffset = -8 -25 -2
+
+#production pe offset
+#peMinOffset = 46 18 14
+#peMaxOffset = -8 -25 -23
+
+sphereTime = 10
+
+#geometry files
+pathGeo = d:/Projects/ThermoPlast/SimPerfMS
+michel = /Werkzeug_Michel_MS.stl
+plexiglas = /plexiglas.stl
+
+#obstacle
+obstacle = true
+obstacleGeo1 = /QuaderMS.stl #/DreieckMS_2.stl # DreieckSchoen.iges.stl #/QuaderMS.stl
+obstacleGeo2 = /KugelMS_2.stl
+obstacleGeo3 = /DreieckMS.stl
+
+pathOut = g:/temp/thermoplastObst
+
+logToFile = false
+
+#restart
+restart = false
+restartStep = 1000
+
+#timing
+nupsTime = 100 100 1000000
+cpStart = 1000
+cpStep =  1000
+outTime = 1000
+endTime = 100000
+

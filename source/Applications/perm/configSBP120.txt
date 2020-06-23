@@ -1,0 +1,70 @@
+#
+#Simulation parameters for determitatoin of permeability
+#SBP120
+
+pathname = /beegfs/work/koskuche/perm
+pathGeo = /work/koskuche/data/Permiability/isotropic
+numOfThreads = 10
+availMem = 320e9
+logToFile = true
+
+#porous media
+rawFile = true
+sampleFilename = /Sinterbronze_SBP120_1358x1376x1572.raw
+
+#diminsions [voxel]
+pmNX1 = 1358
+pmNX2 = 1376
+pmNX3 = 1572
+
+#threshold
+lthreshold = 38370
+uthreshold = 65535
+
+#diminsions [m]
+pmL1 = 5092499.73e-9
+pmL2 = 5159999.85e-9
+pmL3 = 5894999.98e-9
+
+#test
+#########################################
+#rawFile = false
+#sampleFilename = /SBP120s500_center.vti
+#pmNX1 = 500
+#pmNX2 = 500
+#pmNX3 = 500
+#lthreshold = 1
+#uthreshold = 1
+#pmL1 = 0.001875
+#pmL2 = 0.001875
+#pmL3 = 0.001875
+########################################
+
+writeSampleToFile = false
+
+#grid
+blocknx = 32
+deltax = 3750e-9
+
+#physic
+dpLB = 1e-7
+nuLB = 0.01
+
+timeSeriesFile = /timeseries/simSBP120_1
+timeSeriesOutTime = 10
+
+restartStep = 20000
+restartStepStart=20000
+
+newStart = true
+restartStep = 31000
+
+cpStep = 1000
+cpStart = 1000
+
+outTimeStep = 1000
+outTimeStart = 1000
+
+nupsStep = 100 100 10000000
+
+endTime = 390000000

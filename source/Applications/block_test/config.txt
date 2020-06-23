@@ -1,0 +1,20 @@
+#number of threads
+numOfThreads = 3
+
+#block dimensions
+blocknx1 = 8
+blocknx2 = 8
+blocknx3 = 8
+
+#grid dimensions
+gridNx1 = 8
+gridNx2 = 4
+gridNx3 = 4
+
+#grid refinement
+refineLevel = 0
+
+path = "/work/koskuche/scratch/block_test"
+
+#BGK=0, CLB=1, CCLB=2
+kernel = 0
