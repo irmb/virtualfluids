@@ -1,36 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file BasicCalculator.cpp
-//! \ingroup Grid
-//! \author Konstantin Kutscher
-//=======================================================================================
-
 #include "BasicCalculator.h"
 
 #include "Block3D.h"
@@ -48,7 +15,7 @@
 //#define TIMING
 //#include "UbTiming.h"
 
-BasicCalculator::BasicCalculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayerUpdateScheduler, int numberOfTimeSteps) : 
+BasicCalculator::BasicCalculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayerUpdateScheduler, int numberOfTimeSteps) :
    Calculator(grid, additionalGhostLayerUpdateScheduler, numberOfTimeSteps)
 {
 
@@ -61,14 +28,14 @@ BasicCalculator::~BasicCalculator()
 //////////////////////////////////////////////////////////////////////////
 void BasicCalculator::calculate()
 {
-   UBLOG(logDEBUG1, "BasicCalculator::calculate() - started");
+   UBLOG(logDEBUG1, "OMPCalculator::calculate() - started");
    int calcStep = 0;
    try
    {
       int minInitLevel = minLevel;
-      int maxInitLevel = maxLevel-minLevel;
+      int maxInitLevel = maxLevel - minLevel;
       int straightStartLevel = minInitLevel;
-      int internalIterations = 1<<(maxInitLevel-minInitLevel);
+      int internalIterations = 1 << (maxInitLevel - minInitLevel);
       int forwardStartLevel;
       int threshold;
 
@@ -77,22 +44,22 @@ void BasicCalculator::calculate()
       double time[6];
 #endif
 
-      for (calcStep = startTimeStep; calcStep<=numberOfTimeSteps; calcStep++)
+      for (calcStep = startTimeStep; calcStep <= numberOfTimeSteps; calcStep++)
       {
          //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
-         UBLOG(logINFO, "calcStep = "<<calcStep);
+         UBLOG(logINFO, "calcStep = " << calcStep);
 #endif
          //////////////////////////////////////////////////////////////////////////
 
-         for (int staggeredStep = 1; staggeredStep<=internalIterations; staggeredStep++)
+         for (int staggeredStep = 1; staggeredStep <= internalIterations; staggeredStep++)
          {
             forwardStartLevel = straightStartLevel;
-            if (staggeredStep==internalIterations) straightStartLevel = minInitLevel;
+            if (staggeredStep == internalIterations) straightStartLevel = minInitLevel;
             else
             {
                for (straightStartLevel = maxInitLevel, threshold = 1;
-                  (staggeredStep&threshold)!=threshold; straightStartLevel--, threshold <<= 1);
+                  (staggeredStep & threshold) != threshold; straightStartLevel--, threshold <<= 1);
             }
             //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
@@ -106,7 +73,7 @@ void BasicCalculator::calculate()
             //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[0] = timer.stop();
-            UBLOG(logINFO, "calculateBlocks time = "<<time[0]);
+            UBLOG(logINFO, "calculateBlocks time = " << time[0]);
 #endif
             //////////////////////////////////////////////////////////////////////////
                         //////////////////////////////////////////////////////////////////////////
@@ -115,14 +82,14 @@ void BasicCalculator::calculate()
             //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[1] = timer.stop();
-            UBLOG(logINFO, "exchangeBlockData time = "<<time[1]);
+            UBLOG(logINFO, "exchangeBlockData time = " << time[1]);
 #endif
             //////////////////////////////////////////////////////////////////////////
             applyPostCollisionBC(straightStartLevel, maxInitLevel);
             //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[2] = timer.stop();
-            UBLOG(logINFO, "applyBCs time = "<<time[2]);
+            UBLOG(logINFO, "applyBCs time = " << time[2]);
 #endif
             //////////////////////////////////////////////////////////////////////////
             //swap distributions in kernel
@@ -130,17 +97,17 @@ void BasicCalculator::calculate()
             //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[3] = timer.stop();
-            UBLOG(logINFO, "swapDistributions time = "<<time[3]);
+            UBLOG(logINFO, "swapDistributions time = " << time[3]);
 #endif
             //////////////////////////////////////////////////////////////////////////
             if (refinement)
             {
-               if (straightStartLevel<maxInitLevel)
+               if (straightStartLevel < maxInitLevel)
                   exchangeBlockData(straightStartLevel, maxInitLevel);
                //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
                time[4] = timer.stop();
-               UBLOG(logINFO, "refinement exchangeBlockData time = "<<time[4]);
+               UBLOG(logINFO, "refinement exchangeBlockData time = " << time[4]);
 #endif
                //////////////////////////////////////////////////////////////////////////
                //now ghost nodes have actual values
@@ -149,7 +116,7 @@ void BasicCalculator::calculate()
                //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
                time[5] = timer.stop();
-               UBLOG(logINFO, "refinement interpolation time = "<<time[5]);
+               UBLOG(logINFO, "refinement interpolation time = " << time[5]);
 #endif
                //////////////////////////////////////////////////////////////////////////
             }
@@ -162,24 +129,26 @@ void BasicCalculator::calculate()
          coProcess((double)(calcStep));
          //now ghost nodes have actual values
       }
-      UBLOG(logDEBUG1, "BasicCalculator::calculate() - stoped");
+      UBLOG(logDEBUG1, "OMPCalculator::calculate() - stoped");
    }
-   catch (std::exception& e)
+   catch (std::exception & e)
    {
       UBLOG(logERROR, e.what());
-      UBLOG(logERROR, " step = "<<calcStep);
-      //throw;
-      exit(EXIT_FAILURE);
+      UBLOG(logERROR, " step = " << calcStep);
+      //throw e;
+      //exit(EXIT_FAILURE);
    }
-   catch (std::string& s)
+   catch (std::string & s)
    {
       UBLOG(logERROR, s);
-      exit(EXIT_FAILURE);
+      //exit(EXIT_FAILURE);
+      //throw s;
    }
    catch (...)
    {
       UBLOG(logERROR, "unknown exception");
-      exit(EXIT_FAILURE);
+      //exit(EXIT_FAILURE);
+      //throw;
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -190,32 +159,31 @@ void BasicCalculator::calculateBlocks(int startLevel, int maxInitLevel, int calc
 #endif
    {
       SPtr<Block3D> blockTemp;
-      try
+      //startLevel bis maxInitLevel
+      for (int level = startLevel; level <= maxInitLevel; level++)
       {
-         //startLevel bis maxInitLevel
-         for (int level = startLevel; level<=maxInitLevel; level++)
-         {
-            //timer.resetAndStart();
-            //call LBM kernel
-            int size = (int)blocks[level].size();
+         //timer.resetAndStart();
+         //call LBM kernel
+         int size = (int)blocks[level].size();
 #ifdef _OPENMP
 #pragma omp for schedule(OMP_SCHEDULE)
 #endif
-            for (int i =0; i<size; i++)
+         for (int i = 0; i < size; i++)
+         {
+            try
             {
                blockTemp = blocks[level][i];
                blockTemp->getKernel()->calculate(calcStep);
             }
-            //timer.stop();
-            //UBLOG(logINFO, "level = " << level << " blocks = " << blocks[level].size() << " collision time = " << timer.getTotalTime());
+            catch (std::exception & e)
+            {
+               UBLOG(logERROR, e.what());
+               UBLOG(logERROR, blockTemp->toString() << " step = " << calcStep);
+               std::exit(EXIT_FAILURE);
+            }
          }
-      }
-      catch (std::exception& e)
-      {
-         UBLOG(logERROR, e.what());
-         //UBLOG(logERROR, blockTemp->toString()<<" step = "<<calcStep);
-         //throw;
-         exit(EXIT_FAILURE);
+         //timer.stop();
+         //UBLOG(logINFO, "level = " << level << " blocks = " << blocks[level].size() << " collision time = " << timer.getTotalTime());
       }
    }
 }
@@ -223,7 +191,7 @@ void BasicCalculator::calculateBlocks(int startLevel, int maxInitLevel, int calc
 void BasicCalculator::exchangeBlockData(int startLevel, int maxInitLevel)
 {
    //startLevel bis maxInitLevel
-   for (int level = startLevel; level<=maxInitLevel; level++)
+   for (int level = startLevel; level <= maxInitLevel; level++)
    {
       //connectorsPrepareLocal(localConns[level]);
       connectorsSendLocal(localConns[level]);
@@ -241,14 +209,14 @@ void BasicCalculator::swapDistributions(int startLevel, int maxInitLevel)
 #pragma omp parallel
 #endif
    {
-      //from startLevel to maxInitLevel
-      for (int level = startLevel; level<=maxInitLevel; level++)
+      //startLevel bis maxInitLevel
+      for (int level = startLevel; level <= maxInitLevel; level++)
       {
          int size = (int)blocks[level].size();
 #ifdef _OPENMP
 #pragma omp for schedule(OMP_SCHEDULE)
 #endif
-         for (int i =0; i<size; i++)
+         for (int i = 0; i < size; i++)
          {
             blocks[level][i]->getKernel()->swapDistributions();
          }
@@ -262,10 +230,18 @@ void BasicCalculator::connectorsPrepareLocal(std::vector< SPtr<Block3DConnector>
 #ifdef _OPENMP
 #pragma omp parallel for schedule(OMP_SCHEDULE)
 #endif
-   for (int i =0; i<size; i++)
+   for (int i = 0; i < size; i++)
    {
-      connectors[i]->prepareForReceive();
-      connectors[i]->prepareForSend();
+      try
+      {
+         connectors[i]->prepareForReceive();
+         connectors[i]->prepareForSend();
+      }
+      catch (std::exception & e)
+      {
+         UBLOG(logERROR, e.what());
+         std::exit(EXIT_FAILURE);
+      }
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -275,10 +251,18 @@ void BasicCalculator::connectorsSendLocal(std::vector< SPtr<Block3DConnector> >&
 #ifdef _OPENMP
 #pragma omp parallel for schedule(OMP_SCHEDULE)
 #endif
-   for (int i =0; i<size; i++)
+   for (int i = 0; i < size; i++)
    {
-      connectors[i]->fillSendVectors();
-      connectors[i]->sendVectors();
+      try
+      {
+         connectors[i]->fillSendVectors();
+         connectors[i]->sendVectors();
+      }
+      catch (std::exception & e)
+      {
+         UBLOG(logERROR, e.what());
+         std::exit(EXIT_FAILURE);
+      }
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -288,7 +272,7 @@ void BasicCalculator::connectorsReceiveLocal(std::vector< SPtr<Block3DConnector>
 #ifdef _OPENMP
 #pragma omp parallel for schedule(OMP_SCHEDULE)
 #endif
-   for (int i =0; i<size; i++)
+   for (int i = 0; i < size; i++)
    {
       connectors[i]->receiveVectors();
       connectors[i]->distributeReceiveVectors();
@@ -297,7 +281,7 @@ void BasicCalculator::connectorsReceiveLocal(std::vector< SPtr<Block3DConnector>
 void BasicCalculator::connectorsPrepareRemote(std::vector< SPtr<Block3DConnector> >& connectors)
 {
    int size = (int)connectors.size();
-   for (int i =0; i<size; i++)
+   for (int i = 0; i < size; i++)
    {
       connectors[i]->prepareForReceive();
       connectors[i]->prepareForSend();
@@ -307,7 +291,7 @@ void BasicCalculator::connectorsPrepareRemote(std::vector< SPtr<Block3DConnector
 void BasicCalculator::connectorsSendRemote(std::vector< SPtr<Block3DConnector> >& connectors)
 {
    int size = (int)connectors.size();
-   for (int i =0; i<size; i++)
+   for (int i = 0; i < size; i++)
    {
       connectors[i]->fillSendVectors();
       connectors[i]->sendVectors();
@@ -317,7 +301,7 @@ void BasicCalculator::connectorsSendRemote(std::vector< SPtr<Block3DConnector> >
 void BasicCalculator::connectorsReceiveRemote(std::vector< SPtr<Block3DConnector> >& connectors)
 {
    int size = (int)connectors.size();
-   for (int i =0; i<size; i++)
+   for (int i = 0; i < size; i++)
    {
       connectors[i]->receiveVectors();
       connectors[i]->distributeReceiveVectors();
@@ -326,19 +310,19 @@ void BasicCalculator::connectorsReceiveRemote(std::vector< SPtr<Block3DConnector
 //////////////////////////////////////////////////////////////////////////
 void BasicCalculator::interpolation(int startLevel, int maxInitLevel)
 {
-   for (int level = startLevel; level<maxInitLevel; level++)
+   for (int level = startLevel; level < maxInitLevel; level++)
    {
       connectorsPrepareLocal(localInterConns[level]);
       connectorsPrepareRemote(remoteInterConns[level]);
    }
 
-   for (int level = startLevel; level<maxInitLevel; level++)
+   for (int level = startLevel; level < maxInitLevel; level++)
    {
       connectorsSendLocal(localInterConns[level]);
       connectorsSendRemote(remoteInterConns[level]);
    }
 
-   for (int level = startLevel; level<maxInitLevel; level++)
+   for (int level = startLevel; level < maxInitLevel; level++)
    {
       connectorsReceiveLocal(localInterConns[level]);
       connectorsReceiveRemote(remoteInterConns[level]);
@@ -347,54 +331,69 @@ void BasicCalculator::interpolation(int startLevel, int maxInitLevel)
 //////////////////////////////////////////////////////////////////////////
 void BasicCalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
 {
-   //from startLevel to maxInitLevel
-   for (int level = startLevel; level<=maxInitLevel; level++)
+   //startLevel bis maxInitLevel
+   for (int level = startLevel; level <= maxInitLevel; level++)
    {
       int size = (int)blocks[level].size();
 #ifdef _OPENMP
 #pragma omp parallel for schedule(OMP_SCHEDULE)
 #endif
-      for (int i =0; i<size; i++)
+      for (int i = 0; i < size; i++)
       {
-         blocks[level][i]->getKernel()->getBCProcessor()->applyPreCollisionBC();
+         try 
+         {
+            blocks[level][i]->getKernel()->getBCProcessor()->applyPreCollisionBC();
+         }
+         catch (std::exception & e)
+         {
+            UBLOG(logERROR, e.what());
+            exit(EXIT_FAILURE);
+         }
+         catch (std::string & s)
+         {
+            UBLOG(logERROR, s);
+            exit(EXIT_FAILURE);
+         }
+         catch (...)
+         {
+            UBLOG(logERROR, "unknown exception");
+            exit(EXIT_FAILURE);
+         }
       }
    }
 }
 //////////////////////////////////////////////////////////////////////////
 void BasicCalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
 {
-   try{
-   //from startLevel to maxInitLevel
-   for (int level = startLevel; level<=maxInitLevel; level++)
+   //startLevel bis maxInitLevel
+   for (int level = startLevel; level <= maxInitLevel; level++)
    {
       int size = (int)blocks[level].size();
 #ifdef _OPENMP
 #pragma omp parallel for schedule(OMP_SCHEDULE)
 #endif
-      for (int i =0; i<size; i++)
+      for (int i = 0; i < size; i++)
       {
-         blocks[level][i]->getKernel()->getBCProcessor()->applyPostCollisionBC();
+         try 
+         {
+            blocks[level][i]->getKernel()->getBCProcessor()->applyPostCollisionBC();
+         }
+         catch (std::exception & e)
+         {
+            UBLOG(logERROR, e.what());
+            exit(EXIT_FAILURE);
+         }
+         catch (std::string & s)
+         {
+            UBLOG(logERROR, s);
+            exit(EXIT_FAILURE);
+         }
+         catch (...)
+         {
+            UBLOG(logERROR, "unknown exception");
+            exit(EXIT_FAILURE);
+         }
       }
-   }
-}
-   catch (std::exception& e)
-   {
-      UBLOG(logERROR, e.what());
-      //UBLOG(logERROR, " step = "<<calcStep);
-      //throw;
-      exit(EXIT_FAILURE);
-   }
-   catch (std::string& s)
-   {
-      UBLOG(logERROR, s);
-      //throw;
-      exit(EXIT_FAILURE);
-   }
-   catch (...)
-   {
-      UBLOG(logERROR, "unknown exception");
-      //throw;
-      exit(EXIT_FAILURE);
    }
 }
 

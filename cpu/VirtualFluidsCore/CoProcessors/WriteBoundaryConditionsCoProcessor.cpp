@@ -1,36 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file WriteBoundaryConditionsCoProcessor.cpp
-//! \ingroup CoProcessors
-//! \author Konstantin Kutscher
-//=======================================================================================
-
 #include "WriteBoundaryConditionsCoProcessor.h"
 #include "LBMKernel.h"
 #include "BCProcessor.h"
@@ -110,8 +77,7 @@ void WriteBoundaryConditionsCoProcessor::collectData(double step)
    piece = subfolder+"/"+piece;
 
    vector<string> cellDataNames;
-   vector<std::string> pieces;
-   pieces.push_back(piece);
+   vector<string> pieces = comm->gather(piece);
    if (comm->getProcessID()==comm->getRoot())
    {
       string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath, pieces, datanames, cellDataNames);
@@ -156,9 +122,7 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
    datanames.push_back("Boundary Conditions");
    datanames.push_back("Geometry");
    datanames.push_back("Level");
-   datanames.push_back("Algorithm");
    //datanames.push_back("Interface CF");
-   datanames.push_back("qs");
 
    data.resize(datanames.size());
 
@@ -197,7 +161,7 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
          {
             if (!bcArray->isUndefined(ix1, ix2, ix3))
             {
-               int index = 0;
+               //int index = 0;
                nodeNumbers(ix1, ix2, ix3) = nr++;
                nodes.push_back(makeUbTuple(float(val<1>(org)-val<1>(nodeOffset)+ix1*dx),
                   float(val<2>(org)-val<2>(nodeOffset)+ix2*dx),
@@ -207,36 +171,31 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
 
                if (!bcArray->hasBC(ix1, ix2, ix3))
                {
-                  data[index++].push_back(0.0);
+                  data[0].push_back(0.0);
                }
                else if (bcArray->getBC(ix1, ix2, ix3)->hasNoSlipBoundary())
-                  data[index++].push_back(1.0);
+                  data[0].push_back(1.0);
                else if (bcArray->getBC(ix1, ix2, ix3)->hasVelocityBoundary())
-                  data[index++].push_back(2.0);
+                  data[0].push_back(2.0);
                else if (bcArray->getBC(ix1, ix2, ix3)->hasDensityBoundary())
-                  data[index++].push_back(3.0);
+                  data[0].push_back(3.0);
                else if (bcArray->getBC(ix1, ix2, ix3)->hasSlipBoundary())
-                  data[index++].push_back(4.0);
+                  data[0].push_back(4.0);
                //else
                //   data[0].push_back(5.0);
 
 
                if (bcArray->isSolid(ix1, ix2, ix3))
                {
-                  data[index++].push_back(1.0);
+                  data[1].push_back(1.0);
                }
                else
                {
-                  data[index++].push_back(0.0);
+                  data[1].push_back(0.0);
                }
                   
 
-               data[index++].push_back(level);
-
-               if (bcArray->hasBC(ix1, ix2, ix3))
-                  data[index++].push_back(bcArray->getBC(ix1, ix2, ix3)->getBcAlgorithmType());
-               else
-                  data[index++].push_back(-1.0);
+               data[2].push_back(level);
 
                //if (bcArray->isInterfaceCF(ix1, ix2, ix3))
                //{
@@ -247,25 +206,6 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
                //   data[3].push_back(0.0);
                //}
 
-               if (bcArray->hasBC(ix1, ix2, ix3))
-               {
-                  unsigned int a = 1;
-                  unsigned int b = 0;
-                  for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++)
-                  {
-                     if (bcArray->getBC(ix1, ix2, ix3)->hasVelocityBoundaryFlag(fdir))
-                     {
-                        a = a << 1;
-                        if (bcArray->getBC(ix1, ix2, ix3)->hasVelocityBoundaryFlag(fdir))
-                        {
-                           b = b | a;
-                        }
-                     }
-                  }
-                  data[index++].push_back(b);
-               }
-               else
-                  data[index++].push_back(-1.0);
             }
          }
       }

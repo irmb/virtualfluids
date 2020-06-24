@@ -1,41 +1,8 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file Grid.cpp
-//! \ingroup Grid
-//! \author Konstantin Kutscher
-//=======================================================================================
-
 #include "Grid3D.h"
 
 #include <set>
 
-#include <geometry3d/CoordinateTransformation3D.h>
+#include <numerics/geometry3d/CoordinateTransformation3D.h>
 #include <basics/writer/WbWriterVtkXmlASCII.h>
 
 #include "Grid3DVisitor.h"
@@ -64,7 +31,7 @@ Grid3D::Grid3D() :
    nx2(0),
    nx3(0)
 {
-   levelSet.resize(Grid3DSystem::MAXLEVEL+1);
+   levelSet.resize(Grid3DSystem::MAXLEVEL + 1);
 }
 //////////////////////////////////////////////////////////////////////////
 Grid3D::Grid3D(SPtr<Communicator> comm) :
@@ -82,7 +49,8 @@ Grid3D::Grid3D(SPtr<Communicator> comm) :
    nx2(0),
    nx3(0)
 {
-   levelSet.resize(Grid3DSystem::MAXLEVEL+1);
+   levelSet.resize(Grid3DSystem::MAXLEVEL + 1);
+   bundle = comm->getBundleID();
    rank = comm->getProcessID();
 }
 //////////////////////////////////////////////////////////////////////////
@@ -101,7 +69,8 @@ Grid3D::Grid3D(SPtr<Communicator> comm, int blockNx1, int blockNx2, int blockNx3
    nx2(gridNx2),
    nx3(gridNx3)
 {
-   levelSet.resize(Grid3DSystem::MAXLEVEL+1);
+   levelSet.resize(Grid3DSystem::MAXLEVEL + 1);
+   bundle = comm->getBundleID();
    rank = comm->getProcessID();
    trafo = SPtr<CoordinateTransformation3D>(new CoordinateTransformation3D(0.0, 0.0, 0.0, (double)blockNx1, (double)blockNx2, (double)blockNx3));
    UbTupleInt3 minInd(0, 0, 0);
@@ -127,42 +96,42 @@ Grid3D::Interactor3DSet Grid3D::getInteractors()
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::accept(Block3DVisitor& blockVisitor)
 {
-   int startLevel   = blockVisitor.getStartLevel();
-   int stopLevel    = blockVisitor.getStopLevel();
+   int startLevel = blockVisitor.getStartLevel();
+   int stopLevel = blockVisitor.getStopLevel();
 
    if (startLevel < 0 || stopLevel < 0 || startLevel > Grid3DSystem::MAXLEVEL || stopLevel > Grid3DSystem::MAXLEVEL)
       throw UbException(UB_EXARGS, "not valid level!");
 
-   bool dir     = startLevel < stopLevel;
+   bool dir = startLevel < stopLevel;
    if (dir) stopLevel += 1;
-   else stopLevel    -= 1;
+   else stopLevel -= 1;
 
-//#pragma omp parallel
-//   {
-//      for (int l = startLevel; l!=stopLevel;)
-//      {
-//         std::vector<SPtr<Block3D>> blockVector;
-//         getBlocks(l, blockVector);
-//         int sizeb = (int)blockVector.size();
-//
-//#pragma omp for
-//         for (int i = 0; i < sizeb; i++)
-//         {
-//            blockVisitor.visit(shared_from_this(), blockVector[i]);
-//         }
-//         if (dir)  l++;
-//         else     l--;
-//      }
-//   }
-   for(int l=startLevel; l!=stopLevel;)
+   //#pragma omp parallel
+   //   {
+   //      for (int l = startLevel; l!=stopLevel;)
+   //      {
+   //         std::vector<SPtr<Block3D>> blockVector;
+   //         getBlocks(l, blockVector);
+   //         int sizeb = (int)blockVector.size();
+   //
+   //#pragma omp for
+   //         for (int i = 0; i < sizeb; i++)
+   //         {
+   //            blockVisitor.visit(shared_from_this(), blockVector[i]);
+   //         }
+   //         if (dir)  l++;
+   //         else     l--;
+   //      }
+   //   }
+   for (int l = startLevel; l != stopLevel;)
    {
       std::vector<SPtr<Block3D>> blockVector;
       getBlocks(l, blockVector);
-      for(SPtr<Block3D> b : blockVector)
+      for (SPtr<Block3D> b : blockVector)
       {
-         blockVisitor.visit( shared_from_this(), b );
+         blockVisitor.visit(shared_from_this(), b);
       }
-      if(dir)  l++;
+      if (dir)  l++;
       else     l--;
    }
 }
@@ -205,6 +174,18 @@ bool Grid3D::deleteBlock(int ix1, int ix2, int ix3, int level)
       return false;
    }
 }
+void Grid3D::deleteBlocks()
+{
+   std::vector < std::vector<SPtr<Block3D> > >  blocksVector(25);
+   int minInitLevel = Grid3DSystem::MINLEVEL;
+   int maxInitLevel = Grid3DSystem::MAXLEVEL;
+   for (int level = minInitLevel; level < maxInitLevel; level++)
+   {
+      getBlocks(level, blocksVector[level]);
+      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
+         deleteBlock(block);
+   }
+}
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::replaceBlock(SPtr<Block3D> block)
 {
@@ -219,16 +200,16 @@ SPtr<Block3D> Grid3D::getBlock(int ix1, int ix2, int ix3, int level) const
 {
    if (!this->hasLevel(level)) return SPtr<Block3D>();
 
-   int N1 = (nx1<<level);
-   int N2 = (nx2<<level);
-   int N3 = (nx3<<level);
+   int N1 = (nx1 << level);
+   int N2 = (nx2 << level);
+   int N3 = (nx3 << level);
 
-   if (!this->isPeriodicX1() && (ix1>N1-1  || ix1<0)) return SPtr<Block3D>();
-   else if (this->isPeriodicX1() && (ix1>=N1-1 || ix1<0)) { ix1=((ix1%N1)+N1)%N1; }
-   if (!this->isPeriodicX2() && (ix2>N2-1  || ix2<0)) return SPtr<Block3D>();
-   else if (this->isPeriodicX2() && (ix2>=N2-1 || ix2<0)) { ix2=((ix2%N2)+N2)%N2; }
-   if (!this->isPeriodicX3() && (ix3>N3-1  || ix3<0)) return SPtr<Block3D>();
-   else if (this->isPeriodicX3() && (ix3>=N3-1 || ix3<0)) { ix3=((ix3%N3)+N3)%N3; }
+   if (!this->isPeriodicX1() && (ix1 > N1 - 1 || ix1 < 0)) return SPtr<Block3D>();
+   else if (this->isPeriodicX1() && (ix1 >= N1 - 1 || ix1 < 0)) { ix1 = ((ix1 % N1) + N1) % N1; }
+   if (!this->isPeriodicX2() && (ix2 > N2 - 1 || ix2 < 0)) return SPtr<Block3D>();
+   else if (this->isPeriodicX2() && (ix2 >= N2 - 1 || ix2 < 0)) { ix2 = ((ix2 % N2) + N2) % N2; }
+   if (!this->isPeriodicX3() && (ix3 > N3 - 1 || ix3 < 0)) return SPtr<Block3D>();
+   else if (this->isPeriodicX3() && (ix3 >= N3 - 1 || ix3 < 0)) { ix3 = ((ix3 % N3) + N3) % N3; }
 
    Block3DMap::const_iterator it;
    it = levelSet[level].find(Block3DKey(ix1, ix2, ix3));
@@ -241,13 +222,18 @@ SPtr<Block3D> Grid3D::getBlock(int ix1, int ix2, int ix3, int level) const
 SPtr<Block3D> Grid3D::getBlock(int id) const
 {
    BlockIDMap::const_iterator it;
-   if ((it=blockIdMap.find(id)) == blockIdMap.end())
+   if ((it = blockIdMap.find(id)) == blockIdMap.end())
    {
       return SPtr<Block3D>();
    }
 
    return it->second;
 }
+//////////////////////////////////////////////////////////////////////////
+//const Grid3D::Block3DMap& Grid3D::getBlocks(int level) 
+//{ 
+//   return levelSet[level];
+//}
 //////////////////////////////////////////////////////////////////////////
 Grid3D::BlockIDMap& Grid3D::getBlockIDs()
 {
@@ -266,11 +252,11 @@ SPtr<Block3D> Grid3D::getSuperBlock(SPtr<Block3D> block)
 SPtr<Block3D> Grid3D::getSuperBlock(int ix1, int ix2, int ix3, int level)
 {
    if (!this->hasLevel(level)) return SPtr<Block3D>();
-   if (level <  1) throw UbException(UB_EXARGS, "level <1");
+   if (level < 1) throw UbException(UB_EXARGS, "level <1");
 
    //from Lower Level to higher:	 >> 	1 in x1,x2,x3 
    SPtr<Block3D> block;
-   for (int l=level-1; l>=0; l--)
+   for (int l = level - 1; l >= 0; l--)
    {
       ix1 = ix1 >> 1;
       ix2 = ix2 >> 1;
@@ -295,16 +281,16 @@ void Grid3D::getSubBlocks(int ix1, int ix2, int ix3, int level, int levelDepth, 
 {
    if (!this->getBlock(ix1, ix2, ix3, level)) return;
    if (level > 0 && !this->getSuperBlock(ix1, ix2, ix3, level)) return;
-   if (level >=  Grid3DSystem::MAXLEVEL)    throw UbException(UB_EXARGS, "Level bigger then MAXLEVEL");
+   if (level >= Grid3DSystem::MAXLEVEL)    throw UbException(UB_EXARGS, "Level bigger then MAXLEVEL");
 
-   int x1[] ={ ix1<<1, (ix1<<1)+1 };
-   int x2[] ={ ix2<<1, (ix2<<1)+1 };
-   int x3[] ={ ix3<<1, (ix3<<1)+1 };
-   int l    = level + 1;
+   int x1[] = { ix1 << 1, (ix1 << 1) + 1 };
+   int x2[] = { ix2 << 1, (ix2 << 1) + 1 };
+   int x3[] = { ix3 << 1, (ix3 << 1) + 1 };
+   int l = level + 1;
 
-   for (int i=0; i<2; i++)
-      for (int j=0; j<2; j++)
-         for (int k=0; k<2; k++)
+   for (int i = 0; i < 2; i++)
+      for (int j = 0; j < 2; j++)
+         for (int k = 0; k < 2; k++)
          {
             SPtr<Block3D> block = this->getBlock(x1[i], x2[j], x3[k], l);
             if (block) blocks.push_back(block);
@@ -317,22 +303,23 @@ bool Grid3D::expandBlock(int ix1, int ix2, int ix3, int level)
    this->checkLevel(level);
 
    SPtr<Block3D> block = this->getBlock(ix1, ix2, ix3, level);
-   if (!block)             throw UbException(UB_EXARGS, "block(x1="+UbSystem::toString(ix1)+", x2="+UbSystem::toString(ix2)+", x3="+UbSystem::toString(ix3)+", l="+UbSystem::toString(level)+") is not exist");
+   if (!block)             throw UbException(UB_EXARGS, "block(x1=" + UbSystem::toString(ix1) + ", x2=" + UbSystem::toString(ix2) + ", x3=" + UbSystem::toString(ix3) + ", l=" + UbSystem::toString(level) + ") is not exist");
+   //if(!block->isActive()) throw UbException(UB_EXARGS,"block(x1="+UbSystem::toString(ix1)+", x2="+UbSystem::toString(ix2)+", x3="+UbSystem::toString(ix3)+", l="+UbSystem::toString(level)+") is not active");
 
    //da bei periodic der eigentliche block andere indizes hat:
    ix1 = block->getX1();
    ix2 = block->getX2();
    ix3 = block->getX3();
 
-   int l      = level+1;
-   if (l>Grid3DSystem::MAXLEVEL) throw UbException(UB_EXARGS, "level > Grid3D::MAXLEVEL");
+   int l = level + 1;
+   if (l > Grid3DSystem::MAXLEVEL) throw UbException(UB_EXARGS, "level > Grid3D::MAXLEVEL");
 
-   int west   = ix1<<1;
-   int east   = west+1;
-   int south  = ix2<<1;
-   int north  = south+1;
-   int bottom = ix3<<1;
-   int top    = bottom+1;
+   int west = ix1 << 1;
+   int east = west + 1;
+   int south = ix2 << 1;
+   int north = south + 1;
+   int bottom = ix3 << 1;
+   int top = bottom + 1;
 
    SPtr<Block3D> blockBSW = SPtr<Block3D>(new Block3D(west, south, bottom, l));
    SPtr<Block3D> blockBSE = SPtr<Block3D>(new Block3D(east, south, bottom, l));
@@ -363,12 +350,12 @@ SPtr<Block3D> Grid3D::collapseBlock(int fix1, int fix2, int fix3, int flevel, in
    using UbSystem::toString;
 
    SPtr<Block3D> fblock = this->getBlock(fix1, fix2, fix3, flevel);
-   if (flevel <  1) throw UbException(UB_EXARGS, "level of block ("+toString(fix1)+","+toString(fix2)+","+toString(fix3)+","+toString(flevel)+") is < 1");
+   if (flevel < 1) throw UbException(UB_EXARGS, "level of block (" + toString(fix1) + "," + toString(fix2) + "," + toString(fix3) + "," + toString(flevel) + ") is < 1");
    if (!fblock)
    {
-      throw UbException(UB_EXARGS, "specific block("+toString(fix1)+","+toString(fix2)+","+toString(fix3)+","+toString(flevel)+") doesn't exists");
+      throw UbException(UB_EXARGS, "specific block(" + toString(fix1) + "," + toString(fix2) + "," + toString(fix3) + "," + toString(flevel) + ") doesn't exists");
    }
-   if (!fblock->isActive()) throw UbException(UB_EXARGS, "block("+toString(fix1)+","+toString(fix2)+","+toString(fix3)+","+toString(flevel)+") is not active");
+   if (!fblock->isActive()) throw UbException(UB_EXARGS, "block(" + toString(fix1) + "," + toString(fix2) + "," + toString(fix3) + "," + toString(flevel) + ") is not active");
 
    //da bei periodic der eigentliche block andere indizes hat:
    fix1 = fblock->getX1();
@@ -379,15 +366,15 @@ SPtr<Block3D> Grid3D::collapseBlock(int fix1, int fix2, int fix3, int flevel, in
    int cix2 = fblock->getX2() >> 1;
    int cix3 = fblock->getX3() >> 1;
 
-   int fx1[2] ={ cix1<<1,  (cix1<<1)+1 };
-   int fx2[2] ={ cix2<<1,  (cix2<<1)+1 };
-   int fx3[2] ={ cix3<<1,  (cix3<<1)+1 };
+   int fx1[2] = { cix1 << 1,  (cix1 << 1) + 1 };
+   int fx2[2] = { cix2 << 1,  (cix2 << 1) + 1 };
+   int fx3[2] = { cix3 << 1,  (cix3 << 1) + 1 };
    int clevel = flevel - 1;
 
    vector<SPtr<Block3D>> blocks;
-   for (int i=0; i<2; i++)
-      for (int k=0; k<2; k++)
-         for (int l=0; l<2; l++)
+   for (int i = 0; i < 2; i++)
+      for (int k = 0; k < 2; k++)
+         for (int l = 0; l < 2; l++)
          {
             this->getSubBlocks(fx1[k], fx2[i], fx3[l], flevel, levelDepth, blocks);
             while (!blocks.empty())
@@ -411,9 +398,9 @@ SPtr<Block3D> Grid3D::collapseBlock(int fix1, int fix2, int fix3, int flevel, in
 
    SPtr<Block3D> cblock = SPtr<Block3D>(new Block3D(cix1, cix2, cix3, clevel));
 
-   for (int i=0; i<2; i++)
-      for (int k=0; k<2; k++)
-         for (int l=0; l<2; l++)
+   for (int i = 0; i < 2; i++)
+      for (int k = 0; k < 2; k++)
+         for (int l = 0; l < 2; l++)
             if (!this->deleteBlock(fx1[k], fx2[i], fx3[l], flevel))
                throw UbException(UB_EXARGS, "could not delete block");
 
@@ -429,8 +416,9 @@ void Grid3D::deleteConnectors()
    {
       for (Block3DMap::value_type b : blockMap)
       {
-         SPtr<Block3D> block =  b.second;
+         SPtr<Block3D> block = b.second;
          block->deleteConnectors();
+         //block->deleteInterpolationConnectors();
       }
    }
 }
@@ -507,9 +495,9 @@ UbTupleInt3 Grid3D::getBlockIndexes(double blockX1Coord, double blockX2Coord, do
 
    double dx = getDeltaX(level);
    double blockLentghX1, blockLentghX2, blockLentghX3;
-   blockLentghX1 = blockNx1*dx;
-   blockLentghX2 = blockNx2*dx;
-   blockLentghX3 = blockNx3*dx;
+   blockLentghX1 = blockNx1 * dx;
+   blockLentghX2 = blockNx2 * dx;
+   blockLentghX3 = blockNx3 * dx;
    UbTupleDouble3 org = getBlockWorldCoordinates(0, 0, 0, 0);
 
    SPtr<CoordinateTransformation3D> trafo_temp(new CoordinateTransformation3D(val<1>(org), val<2>(org), val<3>(org), blockLentghX1, blockLentghX2, blockLentghX3));
@@ -528,13 +516,13 @@ UbTupleInt3 Grid3D::getBlockIndexes(double blockX1Coord, double blockX2Coord, do
 UbTupleDouble3  Grid3D::getBlockLengths(const SPtr<Block3D> block) const
 {
    int    level = block->getLevel();
-   double delta = 1.0/(double)(1<<level);
+   double delta = 1.0 / (double)(1 << level);
 
    if (!trafo) makeUbTuple<double, double, double>(delta, delta, delta);
 
-   return makeUbTuple(trafo->getX1CoordinateScaling()*delta,
-      trafo->getX2CoordinateScaling()*delta,
-      trafo->getX3CoordinateScaling()*delta);
+   return makeUbTuple(trafo->getX1CoordinateScaling() * delta,
+      trafo->getX2CoordinateScaling() * delta,
+      trafo->getX3CoordinateScaling() * delta);
 }
 //////////////////////////////////////////////////////////////////////////
 UbTupleDouble6 Grid3D::getBlockOversize() const
@@ -559,12 +547,12 @@ void Grid3D::setDeltaX(double dx)
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::setDeltaX(double worldUnit, double gridUnit)
 {
-   this->orgDeltaX = worldUnit/gridUnit;
+   this->orgDeltaX = worldUnit / gridUnit;
 }
 //////////////////////////////////////////////////////////////////////////
 double Grid3D::getDeltaX(int level) const
 {
-   double delta = this->orgDeltaX/(double)(1<<level);
+   double delta = this->orgDeltaX / (double)(1 << level);
    return delta;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -585,9 +573,9 @@ Vector3D Grid3D::getNodeCoordinates(SPtr<Block3D> block, int ix1, int ix2, int i
    UbTupleDouble3 nodeOffset = this->getNodeOffset(block);
    double deltaX = getDeltaX(block);
 
-   double x1 = val<1>(org) - val<1>(nodeOffset) + (double)ix1*deltaX;
-   double x2 = val<2>(org) - val<2>(nodeOffset) + (double)ix2*deltaX;
-   double x3 = val<3>(org) - val<3>(nodeOffset) + (double)ix3*deltaX;
+   double x1 = val<1>(org) - val<1>(nodeOffset) + (double)ix1 * deltaX;
+   double x2 = val<2>(org) - val<2>(nodeOffset) + (double)ix2 * deltaX;
+   double x3 = val<3>(org) - val<3>(nodeOffset) + (double)ix3 * deltaX;
 
    return Vector3D(x1, x2, x3);
 }
@@ -599,12 +587,12 @@ UbTupleInt3 Grid3D::getNodeIndexes(SPtr<Block3D> block, double nodeX1Coord, doub
    double deltaX = getDeltaX(block);
 
    int ix1, ix2, ix3;
-   double ixx1=(abs(nodeX1Coord - val<1>(org) + val<1>(nodeOffset)) / deltaX);
-   double ixx2=(abs(nodeX2Coord - val<2>(org) + val<2>(nodeOffset)) / deltaX);
-   double ixx3=(abs(nodeX3Coord - val<3>(org) + val<3>(nodeOffset)) / deltaX);
-   if (ixx1-(int)ixx1>.9999999999) ix1=(int)ixx1+1; else ix1=(int)ixx1;
-   if (ixx2-(int)ixx2>.9999999999) ix2=(int)ixx2+1; else ix2=(int)ixx2;
-   if (ixx3-(int)ixx3>.9999999999) ix3=(int)ixx3+1; else ix3=(int)ixx3;
+   double ixx1 = (abs(nodeX1Coord - val<1>(org) + val<1>(nodeOffset)) / deltaX);
+   double ixx2 = (abs(nodeX2Coord - val<2>(org) + val<2>(nodeOffset)) / deltaX);
+   double ixx3 = (abs(nodeX3Coord - val<3>(org) + val<3>(nodeOffset)) / deltaX);
+   if (ixx1 - (int)ixx1 > .9999999999) ix1 = (int)ixx1 + 1; else ix1 = (int)ixx1;
+   if (ixx2 - (int)ixx2 > .9999999999) ix2 = (int)ixx2 + 1; else ix2 = (int)ixx2;
+   if (ixx3 - (int)ixx3 > .9999999999) ix3 = (int)ixx3 + 1; else ix3 = (int)ixx3;
 
    return makeUbTuple(ix1, ix2, ix3);
 }
@@ -625,10 +613,10 @@ UbTupleDouble3 Grid3D::getBlockWorldCoordinates(SPtr<Block3D> block) const
 //////////////////////////////////////////////////////////////////////////
 UbTupleDouble3 Grid3D::getBlockWorldCoordinates(int blockX1Index, int blockX2Index, int blockX3Index, int level) const
 {
-   double c1oShiftedLevel = 1.0/(double)(1<<level);
-   double x1 = (double)blockX1Index*c1oShiftedLevel;
-   double x2 = (double)blockX2Index*c1oShiftedLevel;
-   double x3 = (double)blockX3Index*c1oShiftedLevel;
+   double c1oShiftedLevel = 1.0 / (double)(1 << level);
+   double x1 = (double)blockX1Index * c1oShiftedLevel;
+   double x2 = (double)blockX2Index * c1oShiftedLevel;
+   double x3 = (double)blockX3Index * c1oShiftedLevel;
 
    if (!trafo) return UbTupleDouble3(x1, x2, x3);
 
@@ -648,15 +636,15 @@ void Grid3D::checkLevel(int level)
 {
    if (level < 0)
    {
-      throw UbException(UB_EXARGS, "l("+UbSystem::toString(level)+(string)")<0");
+      throw UbException(UB_EXARGS, "l(" + UbSystem::toString(level) + (string)")<0");
    }
    if (level > Grid3DSystem::MAXLEVEL)
    {
-      throw UbException(UB_EXARGS, "l("+UbSystem::toString(level)+(string)")>MAXLEVEL");
+      throw UbException(UB_EXARGS, "l(" + UbSystem::toString(level) + (string)")>MAXLEVEL");
    }
    if (this->levelSet[level].size() == 0)
    {
-      throw UbException(UB_EXARGS, "levelMap for level("+UbSystem::toString(level)+(string)")==NULL");
+      throw UbException(UB_EXARGS, "levelMap for level(" + UbSystem::toString(level) + (string)")==NULL");
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -684,7 +672,7 @@ UbTupleInt3 Grid3D::getBlockNX() const
 
 SPtr<Block3D> Grid3D::getNeighborBlock(int dir, int ix1, int ix2, int ix3, int level) const
 {
-   return this->getBlock(ix1+Grid3DSystem::EX1[dir], ix2+Grid3DSystem::EX2[dir], ix3+Grid3DSystem::EX3[dir], level);
+   return this->getBlock(ix1 + Grid3DSystem::EX1[dir], ix2 + Grid3DSystem::EX2[dir], ix3 + Grid3DSystem::EX3[dir], level);
 }
 //////////////////////////////////////////////////////////////////////////
 SPtr<Block3D> Grid3D::getNeighborBlock(int dir, SPtr<Block3D> block) const
@@ -698,7 +686,7 @@ SPtr<Block3D> Grid3D::getNeighborBlock(int dir, SPtr<Block3D> block) const
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getAllNeighbors(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   for (int dir=Grid3DSystem::STARTDIR; dir<=Grid3DSystem::ENDDIR; dir++)
+   for (int dir = Grid3DSystem::STARTDIR; dir <= Grid3DSystem::ENDDIR; dir++)
       //for (int dir = Grid3DSystem::STARTDIR; dir<=Grid3DSystem::TS; dir++)
    {
       this->getNeighborBlocksForDirection(dir, ix1, ix2, ix3, level, levelDepth, blocks);
@@ -722,349 +710,349 @@ void Grid3D::getAllNeighbors(SPtr<Block3D> block, int level, int levelDepth, std
    */
 void Grid3D::getNeighborsNorth(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1, ix2+1, ix3, level);
+   SPtr<Block3D> block = this->getBlock(ix1, ix2 + 1, ix3, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1, ix2+1, ix3, level);
+      block = this->getSuperBlock(ix1, ix2 + 1, ix3, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksSouth(ix1, ix2+1, ix3, level, blocks, levelDepth);
+   this->getSubBlocksSouth(ix1, ix2 + 1, ix3, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsTop(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1, ix2, ix3+1, level);
+   SPtr<Block3D> block = this->getBlock(ix1, ix2, ix3 + 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1, ix2, ix3+1, level);
+      block = this->getSuperBlock(ix1, ix2, ix3 + 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksBottom(ix1, ix2, ix3+1, level, blocks, levelDepth);
+   this->getSubBlocksBottom(ix1, ix2, ix3 + 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsBottom(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1, ix2, ix3-1, level);
+   SPtr<Block3D> block = this->getBlock(ix1, ix2, ix3 - 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1, ix2, ix3-1, level);
+      block = this->getSuperBlock(ix1, ix2, ix3 - 1, level);
       if (block) { blocks.push_back(block); }
 
    }
-   this->getSubBlocksTop(ix1, ix2, ix3-1, level, blocks, levelDepth);
+   this->getSubBlocksTop(ix1, ix2, ix3 - 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsSouth(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1, ix2-1, ix3, level);
+   SPtr<Block3D> block = this->getBlock(ix1, ix2 - 1, ix3, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1, ix2-1, ix3, level);
+      block = this->getSuperBlock(ix1, ix2 - 1, ix3, level);
       if (block) { blocks.push_back(block); }
 
    }
-   this->getSubBlocksNorth(ix1, ix2-1, ix3, level, blocks, levelDepth);
+   this->getSubBlocksNorth(ix1, ix2 - 1, ix3, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsEast(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1+1, ix2, ix3, level);
+   SPtr<Block3D> block = this->getBlock(ix1 + 1, ix2, ix3, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1+1, ix2, ix3, level);
+      block = this->getSuperBlock(ix1 + 1, ix2, ix3, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksWest(ix1+1, ix2, ix3, level, blocks, levelDepth);
+   this->getSubBlocksWest(ix1 + 1, ix2, ix3, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsWest(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1-1, ix2, ix3, level);
+   SPtr<Block3D> block = this->getBlock(ix1 - 1, ix2, ix3, level);
    if (block) { blocks.push_back(block); }
 
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1-1, ix2, ix3, level);
+      block = this->getSuperBlock(ix1 - 1, ix2, ix3, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksEast(ix1-1, ix2, ix3, level, blocks, levelDepth);
+   this->getSubBlocksEast(ix1 - 1, ix2, ix3, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 //   diagonals                                            
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsNorthEast(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1+1, ix2+1, ix3, level);
+   SPtr<Block3D> block = this->getBlock(ix1 + 1, ix2 + 1, ix3, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1+1, ix2+1, ix3, level);
+      block = this->getSuperBlock(ix1 + 1, ix2 + 1, ix3, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksSouthWest(ix1+1, ix2+1, ix3, level, blocks, levelDepth);
+   this->getSubBlocksSouthWest(ix1 + 1, ix2 + 1, ix3, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsNorthWest(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1-1, ix2+1, ix3, level);
+   SPtr<Block3D> block = this->getBlock(ix1 - 1, ix2 + 1, ix3, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1-1, ix2+1, ix3, level);
+      block = this->getSuperBlock(ix1 - 1, ix2 + 1, ix3, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksSouthEast(ix1-1, ix2+1, ix3, level, blocks, levelDepth);
+   this->getSubBlocksSouthEast(ix1 - 1, ix2 + 1, ix3, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsSouthEast(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1+1, ix2-1, ix3, level);
+   SPtr<Block3D> block = this->getBlock(ix1 + 1, ix2 - 1, ix3, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1+1, ix2-1, ix3, level);
+      block = this->getSuperBlock(ix1 + 1, ix2 - 1, ix3, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksNorthWest(ix1+1, ix2-1, ix3, level, blocks, levelDepth);
+   this->getSubBlocksNorthWest(ix1 + 1, ix2 - 1, ix3, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsSouthWest(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1-1, ix2-1, ix3, level);
+   SPtr<Block3D> block = this->getBlock(ix1 - 1, ix2 - 1, ix3, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1-1, ix2-1, ix3, level);
+      block = this->getSuperBlock(ix1 - 1, ix2 - 1, ix3, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksNorthEast(ix1-1, ix2-1, ix3, level, blocks, levelDepth);
+   this->getSubBlocksNorthEast(ix1 - 1, ix2 - 1, ix3, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 //   diagonals  top                                     
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsTopEast(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1+1, ix2, ix3+1, level);
+   SPtr<Block3D> block = this->getBlock(ix1 + 1, ix2, ix3 + 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1+1, ix2, ix3+1, level);
+      block = this->getSuperBlock(ix1 + 1, ix2, ix3 + 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksBottomWest(ix1+1, ix2, ix3+1, level, blocks, levelDepth);
+   this->getSubBlocksBottomWest(ix1 + 1, ix2, ix3 + 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsTopWest(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1-1, ix2, ix3+1, level);
+   SPtr<Block3D> block = this->getBlock(ix1 - 1, ix2, ix3 + 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1-1, ix2, ix3+1, level);
+      block = this->getSuperBlock(ix1 - 1, ix2, ix3 + 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksBottomEast(ix1-1, ix2, ix3+1, level, blocks, levelDepth);
+   this->getSubBlocksBottomEast(ix1 - 1, ix2, ix3 + 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsTopNorth(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1, ix2+1, ix3+1, level);
+   SPtr<Block3D> block = this->getBlock(ix1, ix2 + 1, ix3 + 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1, ix2+1, ix3+1, level);
+      block = this->getSuperBlock(ix1, ix2 + 1, ix3 + 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksBottomSouth(ix1, ix2+1, ix3+1, level, blocks, levelDepth);
+   this->getSubBlocksBottomSouth(ix1, ix2 + 1, ix3 + 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsTopSouth(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1, ix2-1, ix3+1, level);
+   SPtr<Block3D> block = this->getBlock(ix1, ix2 - 1, ix3 + 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1, ix2-1, ix3+1, level);
+      block = this->getSuperBlock(ix1, ix2 - 1, ix3 + 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksBottomNorth(ix1, ix2-1, ix3+1, level, blocks, levelDepth);
+   this->getSubBlocksBottomNorth(ix1, ix2 - 1, ix3 + 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 //   diagonals  bottom                                
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsBottomEast(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1+1, ix2, ix3-1, level);
+   SPtr<Block3D> block = this->getBlock(ix1 + 1, ix2, ix3 - 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1+1, ix2, ix3-1, level);
+      block = this->getSuperBlock(ix1 + 1, ix2, ix3 - 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksTopWest(ix1+1, ix2, ix3-1, level, blocks, levelDepth);
+   this->getSubBlocksTopWest(ix1 + 1, ix2, ix3 - 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsBottomWest(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1-1, ix2, ix3-1, level);
+   SPtr<Block3D> block = this->getBlock(ix1 - 1, ix2, ix3 - 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1-1, ix2, ix3-1, level);
+      block = this->getSuperBlock(ix1 - 1, ix2, ix3 - 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksTopEast(ix1-1, ix2, ix3-1, level, blocks, levelDepth);
+   this->getSubBlocksTopEast(ix1 - 1, ix2, ix3 - 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsBottomNorth(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1, ix2+1, ix3-1, level);
+   SPtr<Block3D> block = this->getBlock(ix1, ix2 + 1, ix3 - 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1, ix2+1, ix3-1, level);
+      block = this->getSuperBlock(ix1, ix2 + 1, ix3 - 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksTopSouth(ix1, ix2+1, ix3-1, level, blocks, levelDepth);
+   this->getSubBlocksTopSouth(ix1, ix2 + 1, ix3 - 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsBottomSouth(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1, ix2-1, ix3-1, level);
+   SPtr<Block3D> block = this->getBlock(ix1, ix2 - 1, ix3 - 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1, ix2-1, ix3-1, level);
+      block = this->getSuperBlock(ix1, ix2 - 1, ix3 - 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksTopNorth(ix1, ix2-1, ix3-1, level, blocks, levelDepth);
+   this->getSubBlocksTopNorth(ix1, ix2 - 1, ix3 - 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsTopNorthEast(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1+1, ix2+1, ix3+1, level);
+   SPtr<Block3D> block = this->getBlock(ix1 + 1, ix2 + 1, ix3 + 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1+1, ix2+1, ix3+1, level);
+      block = this->getSuperBlock(ix1 + 1, ix2 + 1, ix3 + 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksBottomSouthWest(ix1+1, ix2+1, ix3+1, level, blocks, levelDepth);
+   this->getSubBlocksBottomSouthWest(ix1 + 1, ix2 + 1, ix3 + 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsTopNorthWest(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1-1, ix2+1, ix3+1, level);
+   SPtr<Block3D> block = this->getBlock(ix1 - 1, ix2 + 1, ix3 + 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1-1, ix2+1, ix3+1, level);
+      block = this->getSuperBlock(ix1 - 1, ix2 + 1, ix3 + 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksBottomSouthEast(ix1-1, ix2+1, ix3+1, level, blocks, levelDepth);
+   this->getSubBlocksBottomSouthEast(ix1 - 1, ix2 + 1, ix3 + 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsTopSouthEast(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1+1, ix2-1, ix3+1, level);
+   SPtr<Block3D> block = this->getBlock(ix1 + 1, ix2 - 1, ix3 + 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1+1, ix2-1, ix3+1, level);
+      block = this->getSuperBlock(ix1 + 1, ix2 - 1, ix3 + 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksBottomNorthWest(ix1+1, ix2-1, ix3+1, level, blocks, levelDepth);
+   this->getSubBlocksBottomNorthWest(ix1 + 1, ix2 - 1, ix3 + 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsTopSouthWest(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1-1, ix2-1, ix3+1, level);
+   SPtr<Block3D> block = this->getBlock(ix1 - 1, ix2 - 1, ix3 + 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1-1, ix2-1, ix3+1, level);
+      block = this->getSuperBlock(ix1 - 1, ix2 - 1, ix3 + 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksBottomNorthEast(ix1-1, ix2-1, ix3+1, level, blocks, levelDepth);
+   this->getSubBlocksBottomNorthEast(ix1 - 1, ix2 - 1, ix3 + 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsBottomNorthEast(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1+1, ix2+1, ix3-1, level);
+   SPtr<Block3D> block = this->getBlock(ix1 + 1, ix2 + 1, ix3 - 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1+1, ix2+1, ix3-1, level);
+      block = this->getSuperBlock(ix1 + 1, ix2 + 1, ix3 - 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksTopSouthWest(ix1+1, ix2+1, ix3-1, level, blocks, levelDepth);
+   this->getSubBlocksTopSouthWest(ix1 + 1, ix2 + 1, ix3 - 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsBottomNorthWest(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1-1, ix2+1, ix3-1, level);
+   SPtr<Block3D> block = this->getBlock(ix1 - 1, ix2 + 1, ix3 - 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1-1, ix2+1, ix3-1, level);
+      block = this->getSuperBlock(ix1 - 1, ix2 + 1, ix3 - 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksTopSouthEast(ix1-1, ix2+1, ix3-1, level, blocks, levelDepth);
+   this->getSubBlocksTopSouthEast(ix1 - 1, ix2 + 1, ix3 - 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsBottomSouthEast(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1+1, ix2-1, ix3-1, level);
+   SPtr<Block3D> block = this->getBlock(ix1 + 1, ix2 - 1, ix3 - 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1+1, ix2-1, ix3-1, level);
+      block = this->getSuperBlock(ix1 + 1, ix2 - 1, ix3 - 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksTopNorthWest(ix1+1, ix2-1, ix3-1, level, blocks, levelDepth);
+   this->getSubBlocksTopNorthWest(ix1 + 1, ix2 - 1, ix3 - 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborsBottomSouthWest(int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
 {
-   SPtr<Block3D> block = this->getBlock(ix1-1, ix2-1, ix3-1, level);
+   SPtr<Block3D> block = this->getBlock(ix1 - 1, ix2 - 1, ix3 - 1, level);
    if (block) { blocks.push_back(block); }
 
    if (level > 0)
    {
-      block = this->getSuperBlock(ix1-1, ix2-1, ix3-1, level);
+      block = this->getSuperBlock(ix1 - 1, ix2 - 1, ix3 - 1, level);
       if (block) { blocks.push_back(block); }
    }
-   this->getSubBlocksTopNorthEast(ix1-1, ix2-1, ix3-1, level, blocks, levelDepth);
+   this->getSubBlocksTopNorthEast(ix1 - 1, ix2 - 1, ix3 - 1, level, blocks, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getNeighborBlocksForDirection(int dir, int ix1, int ix2, int ix3, int level, int levelDepth, std::vector<SPtr<Block3D>>& blocks)
@@ -1097,7 +1085,7 @@ void Grid3D::getNeighborBlocksForDirection(int dir, int ix1, int ix2, int ix3, i
    case Grid3DSystem::BNW: this->getNeighborsBottomNorthWest(ix1, ix2, ix3, level, levelDepth, blocks); break;
    case Grid3DSystem::BSE: this->getNeighborsBottomSouthEast(ix1, ix2, ix3, level, levelDepth, blocks); break;
    case Grid3DSystem::BSW: this->getNeighborsBottomSouthWest(ix1, ix2, ix3, level, levelDepth, blocks); break;
-   default:throw UbException(UB_EXARGS, "direction "+UbSystem::toString(dir)+" is not exist");
+   default:throw UbException(UB_EXARGS, "direction " + UbSystem::toString(dir) + " is not exist");
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1115,15 +1103,15 @@ void Grid3D::getNeighborsZero(int ix1, int ix2, int ix3, int level, int levelDep
    this->getSubBlocks(ix1, ix2, ix3, level, levelDepth, blocks);
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::getSubBlocksZero(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>> &blockVector, int levelDepth)
+void Grid3D::getSubBlocksZero(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1E  = (ix1 << 1) + 1;
-   int x1W  = (ix1 << 1);
+   int x1E = (ix1 << 1) + 1;
+   int x1W = (ix1 << 1);
    int x2S = ix2 << 1;
    int x2N = x2S + 1;
    int x3B = ix3 << 1;
    int x3T = x3B + 1;
-   int l   = level + 1;
+   int l = level + 1;
 
    SPtr<Block3D> block = this->getBlock(x1E, x2S, x3B, l);
    if (block != NULL)       blockVector.push_back(block);
@@ -1188,19 +1176,19 @@ void Grid3D::getNeighborBlocksForDirectionWithDirZero(int dir, int ix1, int ix2,
    case Grid3DSystem::BNW: this->getNeighborsBottomNorthWest(ix1, ix2, ix3, level, levelDepth, blocks); break;
    case Grid3DSystem::BSE: this->getNeighborsBottomSouthEast(ix1, ix2, ix3, level, levelDepth, blocks); break;
    case Grid3DSystem::BSW: this->getNeighborsBottomSouthWest(ix1, ix2, ix3, level, levelDepth, blocks); break;
-   case Grid3DSystem::REST: this->getNeighborsZero(ix1, ix2, ix3, level, levelDepth, blocks); break;
-   default:throw UbException(UB_EXARGS, "direction "+UbSystem::toString(dir)+" is not exist");
+   case Grid3DSystem::ZERO: this->getNeighborsZero(ix1, ix2, ix3, level, levelDepth, blocks); break;
+   default:throw UbException(UB_EXARGS, "direction " + UbSystem::toString(dir) + " is not exist");
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::getSubBlocksEast(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>> &blockVector, int levelDepth)
+void Grid3D::getSubBlocksEast(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1  = (ix1 << 1) + 1;
+   int x1 = (ix1 << 1) + 1;
    int x2S = ix2 << 1;
    int x2N = x2S + 1;
    int x3B = ix3 << 1;
    int x3T = x3B + 1;
-   int l   = level + 1;
+   int l = level + 1;
 
    SPtr<Block3D> block = this->getBlock(x1, x2S, x3B, l);
    if (block != NULL)       blockVector.push_back(block);
@@ -1220,14 +1208,14 @@ void Grid3D::getSubBlocksEast(int ix1, int ix2, int ix3, int level, vector<SPtr<
 }
 
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::getSubBlocksWest(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>> &blockVector, int levelDepth)
+void Grid3D::getSubBlocksWest(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1  = ix1 << 1;
+   int x1 = ix1 << 1;
    int x2S = ix2 << 1;
    int x2N = x2S + 1;
    int x3B = ix3 << 1;
    int x3T = x3B + 1;
-   int l   = level + 1;
+   int l = level + 1;
 
    SPtr<Block3D> block = this->getBlock(x1, x2S, x3B, l);
    if (block != NULL)       blockVector.push_back(block);
@@ -1246,14 +1234,14 @@ void Grid3D::getSubBlocksWest(int ix1, int ix2, int ix3, int level, vector<SPtr<
    else if (l < levelDepth) this->getSubBlocksWest(x1, x2N, x3T, l, blockVector, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::getSubBlocksNorth(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>> &blockVector, int levelDepth)
+void Grid3D::getSubBlocksNorth(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
    int x1W = ix1 << 1;
    int x1E = x1W + 1;
-   int x2  = (ix2 << 1) + 1;
+   int x2 = (ix2 << 1) + 1;
    int x3B = ix3 << 1;
    int x3T = x3B + 1;
-   int l   = level + 1;
+   int l = level + 1;
 
    SPtr<Block3D> block = this->getBlock(x1W, x2, x3B, l);
    if (block != NULL)       blockVector.push_back(block);
@@ -1272,14 +1260,14 @@ void Grid3D::getSubBlocksNorth(int ix1, int ix2, int ix3, int level, vector<SPtr
    else if (l < levelDepth) this->getSubBlocksNorth(x1E, x2, x3T, l, blockVector, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::getSubBlocksSouth(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>> &blockVector, int levelDepth)
+void Grid3D::getSubBlocksSouth(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
    int x1W = ix1 << 1;
    int x1E = x1W + 1;
-   int x2  = ix2 << 1;
+   int x2 = ix2 << 1;
    int x3B = ix3 << 1;
    int x3T = x3B + 1;
-   int l   = level + 1;
+   int l = level + 1;
 
    SPtr<Block3D> block = this->getBlock(x1W, x2, x3B, l);
    if (block != NULL)       blockVector.push_back(block);
@@ -1298,14 +1286,14 @@ void Grid3D::getSubBlocksSouth(int ix1, int ix2, int ix3, int level, vector<SPtr
    else if (l < levelDepth) this->getSubBlocksSouth(x1E, x2, x3T, l, blockVector, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::getSubBlocksTop(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>> &blockVector, int levelDepth)
+void Grid3D::getSubBlocksTop(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
    int x1W = ix1 << 1;
    int x1E = x1W + 1;
    int x2S = ix2 << 1;
    int x2N = x2S + 1;
-   int x3  = (ix3 << 1) + 1;
-   int l   = level + 1;
+   int x3 = (ix3 << 1) + 1;
+   int l = level + 1;
 
    SPtr<Block3D> block = this->getBlock(x1W, x2N, x3, l);
    if (block != NULL)       blockVector.push_back(block);
@@ -1324,14 +1312,14 @@ void Grid3D::getSubBlocksTop(int ix1, int ix2, int ix3, int level, vector<SPtr<B
    else if (l < levelDepth) this->getSubBlocksTop(x1E, x2S, x3, l, blockVector, levelDepth);
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::getSubBlocksBottom(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>> &blockVector, int levelDepth)
+void Grid3D::getSubBlocksBottom(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
    int x1W = ix1 << 1;
    int x1E = x1W + 1;
    int x2S = ix2 << 1;
    int x2N = x2S + 1;
-   int x3  = ix3 << 1;
-   int l   = level + 1;
+   int x3 = ix3 << 1;
+   int l = level + 1;
 
    SPtr<Block3D> block = this->getBlock(x1W, x2N, x3, l);
    if (block != NULL)       blockVector.push_back(block);
@@ -1354,11 +1342,11 @@ void Grid3D::getSubBlocksBottom(int ix1, int ix2, int ix3, int level, vector<SPt
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getSubBlocksNorthEast(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1  = (ix1 << 1) + 1;
-   int x2  = (ix2 << 1) + 1;
+   int x1 = (ix1 << 1) + 1;
+   int x2 = (ix2 << 1) + 1;
    int x3B = (ix3 << 1);
-   int x3T = x3B+1;
-   int l   = level + 1;
+   int x3T = x3B + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockB = this->getBlock(x1, x2, x3B, l);
    if (blockB) blockVector.push_back(blockB);
@@ -1371,11 +1359,11 @@ void Grid3D::getSubBlocksNorthEast(int ix1, int ix2, int ix3, int level, vector<
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getSubBlocksNorthWest(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1  = (ix1 << 1);
-   int x2  = (ix2 << 1) + 1;
+   int x1 = (ix1 << 1);
+   int x2 = (ix2 << 1) + 1;
    int x3B = (ix3 << 1);
-   int x3T = x3B+1;
-   int l   = level + 1;
+   int x3T = x3B + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockB = this->getBlock(x1, x2, x3B, l);
    if (blockB) blockVector.push_back(blockB);
@@ -1388,11 +1376,11 @@ void Grid3D::getSubBlocksNorthWest(int ix1, int ix2, int ix3, int level, vector<
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getSubBlocksSouthWest(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1  = ix1 << 1;
-   int x2  = ix2 << 1;
+   int x1 = ix1 << 1;
+   int x2 = ix2 << 1;
    int x3B = (ix3 << 1);
-   int x3T = x3B+1;
-   int l  = level + 1;
+   int x3T = x3B + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockB = this->getBlock(x1, x2, x3B, l);
    if (blockB) blockVector.push_back(blockB);
@@ -1405,11 +1393,11 @@ void Grid3D::getSubBlocksSouthWest(int ix1, int ix2, int ix3, int level, vector<
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getSubBlocksSouthEast(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1  = (ix1 << 1) + 1;
-   int x2  = ix2 << 1;
+   int x1 = (ix1 << 1) + 1;
+   int x2 = ix2 << 1;
    int x3B = (ix3 << 1);
-   int x3T = x3B+1;
-   int l   = level + 1;
+   int x3T = x3B + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockB = this->getBlock(x1, x2, x3B, l);
    if (blockB) blockVector.push_back(blockB);
@@ -1424,11 +1412,11 @@ void Grid3D::getSubBlocksSouthEast(int ix1, int ix2, int ix3, int level, vector<
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getSubBlocksTopEast(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1  = (ix1 << 1) + 1;
+   int x1 = (ix1 << 1) + 1;
    int x2S = (ix2 << 1);
    int x2N = x2S + 1;
-   int x3  = (ix3 << 1)+1;
-   int l   = level + 1;
+   int x3 = (ix3 << 1) + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockN = this->getBlock(x1, x2N, x3, l);
    if (blockN) blockVector.push_back(blockN);
@@ -1441,11 +1429,11 @@ void Grid3D::getSubBlocksTopEast(int ix1, int ix2, int ix3, int level, vector<SP
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getSubBlocksTopWest(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1  = ix1 << 1;
+   int x1 = ix1 << 1;
    int x2S = ix2 << 1;
    int x2N = x2S + 1;
-   int x3  = (ix3 << 1)+1;
-   int l   = level + 1;
+   int x3 = (ix3 << 1) + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockN = this->getBlock(x1, x2N, x3, l);
    if (blockN) blockVector.push_back(blockN);
@@ -1458,11 +1446,11 @@ void Grid3D::getSubBlocksTopWest(int ix1, int ix2, int ix3, int level, vector<SP
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getSubBlocksBottomEast(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1  = (ix1 << 1) + 1;
+   int x1 = (ix1 << 1) + 1;
    int x2S = ix2 << 1;
    int x2N = x2S + 1;
-   int x3  = ix3 << 1;
-   int l   = level + 1;
+   int x3 = ix3 << 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockN = this->getBlock(x1, x2N, x3, l);
    if (blockN) blockVector.push_back(blockN);
@@ -1475,11 +1463,11 @@ void Grid3D::getSubBlocksBottomEast(int ix1, int ix2, int ix3, int level, vector
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getSubBlocksBottomWest(int ix1, int ix2, int ix3, int level, vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1  = (ix1 << 1);
+   int x1 = (ix1 << 1);
    int x2S = (ix2 << 1);
    int x2N = x2S + 1;
-   int x3  = ix3 << 1;
-   int l   = level + 1;
+   int x3 = ix3 << 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockN = this->getBlock(x1, x2N, x3, l);
    if (blockN) blockVector.push_back(blockN);
@@ -1497,9 +1485,9 @@ void Grid3D::getSubBlocksTopNorth(int ix1, int ix2, int ix3, int level, vector<S
 {
    int x1E = (ix1 << 1);
    int x1W = x1E + 1;
-   int x2  = (ix2 << 1)+1;
-   int x3  = (ix3 << 1)+1;
-   int l   = level + 1;
+   int x2 = (ix2 << 1) + 1;
+   int x3 = (ix3 << 1) + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockE = this->getBlock(x1E, x2, x3, l);
    if (blockE) blockVector.push_back(blockE);
@@ -1514,9 +1502,9 @@ void Grid3D::getSubBlocksTopSouth(int ix1, int ix2, int ix3, int level, vector<S
 {
    int x1E = (ix1 << 1);
    int x1W = x1E + 1;
-   int x2  = (ix2 << 1);
-   int x3  = (ix3 << 1)+1;
-   int l   = level + 1;
+   int x2 = (ix2 << 1);
+   int x3 = (ix3 << 1) + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockE = this->getBlock(x1E, x2, x3, l);
    if (blockE) blockVector.push_back(blockE);
@@ -1531,9 +1519,9 @@ void Grid3D::getSubBlocksBottomNorth(int ix1, int ix2, int ix3, int level, vecto
 {
    int x1E = ix1 << 1;
    int x1W = x1E + 1;
-   int x2  = (ix2 << 1)+1;
-   int x3  = ix3 << 1;
-   int l   = level + 1;
+   int x2 = (ix2 << 1) + 1;
+   int x3 = ix3 << 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockE = this->getBlock(x1E, x2, x3, l);
    if (blockE) blockVector.push_back(blockE);
@@ -1548,9 +1536,9 @@ void Grid3D::getSubBlocksBottomSouth(int ix1, int ix2, int ix3, int level, vecto
 {
    int x1E = (ix1 << 1);
    int x1W = x1E + 1;
-   int x2  = ix2 << 1;
-   int x3  = ix3 << 1;
-   int l   = level + 1;
+   int x2 = ix2 << 1;
+   int x3 = ix3 << 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockE = this->getBlock(x1E, x2, x3, l);
    if (blockE) blockVector.push_back(blockE);
@@ -1568,7 +1556,7 @@ void Grid3D::getSubBlocksTopNorthEast(int ix1, int ix2, int ix3, int level, std:
    int x1 = (ix1 << 1) + 1;
    int x2 = (ix2 << 1) + 1;
    int x3 = (ix3 << 1) + 1;
-   int l  = level + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockTNE = this->getBlock(x1, x2, x3, l);
    if (blockTNE) blockVector.push_back(blockTNE);
@@ -1580,7 +1568,7 @@ void Grid3D::getSubBlocksTopNorthWest(int ix1, int ix2, int ix3, int level, std:
    int x1 = ix1 << 1;
    int x2 = (ix2 << 1) + 1;
    int x3 = (ix3 << 1) + 1;
-   int l  = level + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockTNW = this->getBlock(x1, x2, x3, l);
    if (blockTNW) blockVector.push_back(blockTNW);
@@ -1590,9 +1578,9 @@ void Grid3D::getSubBlocksTopNorthWest(int ix1, int ix2, int ix3, int level, std:
 void Grid3D::getSubBlocksTopSouthEast(int ix1, int ix2, int ix3, int level, std::vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
    int x1 = (ix1 << 1) + 1;
-   int x2 =  ix2 << 1;
+   int x2 = ix2 << 1;
    int x3 = (ix3 << 1) + 1;
-   int l  = level + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockTNW = this->getBlock(x1, x2, x3, l);
    if (blockTNW) blockVector.push_back(blockTNW);
@@ -1601,10 +1589,10 @@ void Grid3D::getSubBlocksTopSouthEast(int ix1, int ix2, int ix3, int level, std:
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getSubBlocksTopSouthWest(int ix1, int ix2, int ix3, int level, std::vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1 =  ix1 << 1;
-   int x2 =  ix2 << 1;
+   int x1 = ix1 << 1;
+   int x2 = ix2 << 1;
    int x3 = (ix3 << 1) + 1;
-   int l  = level + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockTSW = this->getBlock(x1, x2, x3, l);
    if (blockTSW) blockVector.push_back(blockTSW);
@@ -1615,8 +1603,8 @@ void Grid3D::getSubBlocksBottomNorthEast(int ix1, int ix2, int ix3, int level, s
 {
    int x1 = (ix1 << 1) + 1;
    int x2 = (ix2 << 1) + 1;
-   int x3 =  ix3 << 1;
-   int l  = level + 1;
+   int x3 = ix3 << 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockBNE = this->getBlock(x1, x2, x3, l);
    if (blockBNE) blockVector.push_back(blockBNE);
@@ -1625,10 +1613,10 @@ void Grid3D::getSubBlocksBottomNorthEast(int ix1, int ix2, int ix3, int level, s
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getSubBlocksBottomNorthWest(int ix1, int ix2, int ix3, int level, std::vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
-   int x1 =  ix1 << 1;
+   int x1 = ix1 << 1;
    int x2 = (ix2 << 1) + 1;
-   int x3 =  ix3 << 1;
-   int l  = level + 1;
+   int x3 = ix3 << 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockBNW = this->getBlock(x1, x2, x3, l);
    if (blockBNW) blockVector.push_back(blockBNW);
@@ -1638,9 +1626,9 @@ void Grid3D::getSubBlocksBottomNorthWest(int ix1, int ix2, int ix3, int level, s
 void Grid3D::getSubBlocksBottomSouthEast(int ix1, int ix2, int ix3, int level, std::vector<SPtr<Block3D>>& blockVector, int levelDepth)
 {
    int x1 = (ix1 << 1) + 1;
-   int x2 =  ix2 << 1;
-   int x3 =  ix3 << 1;
-   int l  = level + 1;
+   int x2 = ix2 << 1;
+   int x3 = ix3 << 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockBSE = this->getBlock(x1, x2, x3, l);
    if (blockBSE) blockVector.push_back(blockBSE);
@@ -1652,7 +1640,7 @@ void Grid3D::getSubBlocksBottomSouthWest(int ix1, int ix2, int ix3, int level, s
    int x1 = ix1 << 1;
    int x2 = ix2 << 1;
    int x3 = ix3 << 1;
-   int l  = level + 1;
+   int l = level + 1;
 
    SPtr<Block3D> blockBSW = this->getBlock(x1, x2, x3, l);
    if (blockBSW) blockVector.push_back(blockBSW);
@@ -1665,6 +1653,7 @@ void Grid3D::getBlocks(int level, std::vector<SPtr<Block3D>>& blockVector)
    {
       blockVector.push_back(b.second);
    }
+
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getBlocks(int level, int rank, std::vector<SPtr<Block3D>>& blockVector)
@@ -1696,13 +1685,13 @@ void Grid3D::getBlocks(int level, int rank, bool active, std::vector<SPtr<Block3
 //////////////////////////////////////////////////////////////////////////
 int Grid3D::getFinestInitializedLevel()
 {
-   for (int i=Grid3DSystem::MAXLEVEL; i>=0; i--) if (this->levelSet[i].size() > 0) return(i);
+   for (int i = Grid3DSystem::MAXLEVEL; i >= 0; i--) if (this->levelSet[i].size() > 0) return(i);
    return(-1);
 }
 //////////////////////////////////////////////////////////////////////////
 int Grid3D::getCoarsestInitializedLevel()
 {
-   for (int i=0; i<=Grid3DSystem::MAXLEVEL; i++) if (this->levelSet[i].size() > 0) return(i);
+   for (int i = 0; i <= Grid3DSystem::MAXLEVEL; i++) if (this->levelSet[i].size() > 0) return(i);
    return(-1);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1763,46 +1752,46 @@ int Grid3D::getNumberOfBlocks(int level)
 void Grid3D::getBlocksByCuboid(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3, std::vector<SPtr<Block3D>>& blocks)
 {
    int coarsestLevel = this->getCoarsestInitializedLevel();
-   int finestLevel   = this->getFinestInitializedLevel();
+   int finestLevel = this->getFinestInitializedLevel();
 
    //////////////////////////////////////////////////////////////////////////
    //MINIMALE BLOCK-INDIZES BESTIMMEN
    //  
    //min:
-   double dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3)*(1<<finestLevel);
-   double dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3)*(1<<finestLevel);
-   double dMinX3 = trafo->transformForwardToX3Coordinate(minX1, minX2, minX3)*(1<<finestLevel);
+   double dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
+   double dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
+   double dMinX3 = trafo->transformForwardToX3Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
 
    //Achtung, wenn minX1 genau auf grenze zwischen zwei bloecken -> der "kleinere" muss genommen werden,
    //da beim Transformieren der "groessere" Index rauskommt
-   int iMinX1 = (int)dMinX1; if (UbMath::zero(dMinX1-iMinX1)) iMinX1-=1;
-   int iMinX2 = (int)dMinX2; if (UbMath::zero(dMinX2-iMinX2)) iMinX2-=1;
-   int iMinX3 = (int)dMinX3; if (UbMath::zero(dMinX3-iMinX3)) iMinX3-=1;
+   int iMinX1 = (int)dMinX1; if (UbMath::zero(dMinX1 - iMinX1)) iMinX1 -= 1;
+   int iMinX2 = (int)dMinX2; if (UbMath::zero(dMinX2 - iMinX2)) iMinX2 -= 1;
+   int iMinX3 = (int)dMinX3; if (UbMath::zero(dMinX3 - iMinX3)) iMinX3 -= 1;
 
    //max (hier kann die Zusatzabfrage vernachlaessigt werden):
-   int iMaxX1 = (int)(trafo->transformForwardToX1Coordinate(maxX1, maxX2, maxX3)*(1<<finestLevel));
-   int iMaxX2 = (int)(trafo->transformForwardToX2Coordinate(maxX1, maxX2, maxX3)*(1<<finestLevel));
-   int iMaxX3 = (int)(trafo->transformForwardToX3Coordinate(maxX1, maxX2, maxX3)*(1<<finestLevel));
+   int iMaxX1 = (int)(trafo->transformForwardToX1Coordinate(maxX1, maxX2, maxX3) * (1 << finestLevel));
+   int iMaxX2 = (int)(trafo->transformForwardToX2Coordinate(maxX1, maxX2, maxX3) * (1 << finestLevel));
+   int iMaxX3 = (int)(trafo->transformForwardToX3Coordinate(maxX1, maxX2, maxX3) * (1 << finestLevel));
 
    SPtr<Block3D> block;
 
    //set, um doppelte bloecke zu vermeiden, die u.U. bei periodic auftreten koennen
    std::set<SPtr<Block3D>> blockset;
-   for (int level=coarsestLevel; level<=finestLevel; level++)
+   for (int level = coarsestLevel; level <= finestLevel; level++)
    {
       //damit bei negativen werten auch der "kleinere" genommen wird -> floor!
-      int minx1 = (int)std::floor((double)iMinX1/(1<<(finestLevel-level)));
-      int minx2 = (int)std::floor((double)iMinX2/(1<<(finestLevel-level)));
-      int minx3 = (int)std::floor((double)iMinX3/(1<<(finestLevel-level)));
+      int minx1 = (int)std::floor((double)iMinX1 / (1 << (finestLevel - level)));
+      int minx2 = (int)std::floor((double)iMinX2 / (1 << (finestLevel - level)));
+      int minx3 = (int)std::floor((double)iMinX3 / (1 << (finestLevel - level)));
 
-      int maxx1 = iMaxX1/(1<<(finestLevel-level));
-      int maxx2 = iMaxX2/(1<<(finestLevel-level));
-      int maxx3 = iMaxX3/(1<<(finestLevel-level));
+      int maxx1 = iMaxX1 / (1 << (finestLevel - level));
+      int maxx2 = iMaxX2 / (1 << (finestLevel - level));
+      int maxx3 = iMaxX3 / (1 << (finestLevel - level));
 
-      for (int ix1=minx1; ix1<=maxx1; ix1++)
-         for (int ix2=minx2; ix2<=maxx2; ix2++)
-            for (int ix3=minx3; ix3<=maxx3; ix3++)
-               if ((block=this->getBlock(ix1, ix2, ix3, level)))
+      for (int ix1 = minx1; ix1 <= maxx1; ix1++)
+         for (int ix2 = minx2; ix2 <= maxx2; ix2++)
+            for (int ix3 = minx3; ix3 <= maxx3; ix3++)
+               if ((block = this->getBlock(ix1, ix2, ix3, level)))
                {
                   if (block->getRank() == rank)
                   {
@@ -1821,29 +1810,29 @@ void Grid3D::getBlocksByCuboid(int level, double minX1, double minX2, double min
    //MINIMALE BLOCK-INDIZES BESTIMMEN
    //
    //min:
-   double dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3)*(1<<level);
-   double dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3)*(1<<level);
-   double dMinX3 = trafo->transformForwardToX3Coordinate(minX1, minX2, minX3)*(1<<level);
+   double dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3) * (1 << level);
+   double dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3) * (1 << level);
+   double dMinX3 = trafo->transformForwardToX3Coordinate(minX1, minX2, minX3) * (1 << level);
 
    //Achtung, wenn minX1 genau auf grenze zwischen zwei bloecken -> der "kleinere" muss genommen werden:
-   int iMinX1 = (int)dMinX1; if (UbMath::zero(dMinX1-iMinX1)) iMinX1-=1;
-   int iMinX2 = (int)dMinX2; if (UbMath::zero(dMinX2-iMinX2)) iMinX2-=1;
-   int iMinX3 = (int)dMinX3; if (UbMath::zero(dMinX3-iMinX3)) iMinX3-=1;
+   int iMinX1 = (int)dMinX1; if (UbMath::zero(dMinX1 - iMinX1)) iMinX1 -= 1;
+   int iMinX2 = (int)dMinX2; if (UbMath::zero(dMinX2 - iMinX2)) iMinX2 -= 1;
+   int iMinX3 = (int)dMinX3; if (UbMath::zero(dMinX3 - iMinX3)) iMinX3 -= 1;
 
    //max:
-   int iMaxX1 = (int)(trafo->transformForwardToX1Coordinate(maxX1, maxX2, maxX3)*(1<<level));
-   int iMaxX2 = (int)(trafo->transformForwardToX2Coordinate(maxX1, maxX2, maxX3)*(1<<level));
-   int iMaxX3 = (int)(trafo->transformForwardToX3Coordinate(maxX1, maxX2, maxX3)*(1<<level));
+   int iMaxX1 = (int)(trafo->transformForwardToX1Coordinate(maxX1, maxX2, maxX3) * (1 << level));
+   int iMaxX2 = (int)(trafo->transformForwardToX2Coordinate(maxX1, maxX2, maxX3) * (1 << level));
+   int iMaxX3 = (int)(trafo->transformForwardToX3Coordinate(maxX1, maxX2, maxX3) * (1 << level));
 
 
    //set, um doppelte bloecke zu vermeiden, die u.U. bei periodic auftreten koennen
    std::set<SPtr<Block3D>> blockset;
    SPtr<Block3D> block;
 
-   for (int ix1=iMinX1; ix1<=iMaxX1; ix1++)
-      for (int ix2=iMinX2; ix2<=iMaxX2; ix2++)
-         for (int ix3=iMinX3; ix3<=iMaxX3; ix3++)
-            if ((block=this->getBlock(ix1, ix2, ix3, level)))
+   for (int ix1 = iMinX1; ix1 <= iMaxX1; ix1++)
+      for (int ix2 = iMinX2; ix2 <= iMaxX2; ix2++)
+         for (int ix3 = iMinX3; ix3 <= iMaxX3; ix3++)
+            if ((block = this->getBlock(ix1, ix2, ix3, level)))
             {
                if (block->getRank() == rank)
                {
@@ -1858,46 +1847,46 @@ void Grid3D::getBlocksByCuboid(int level, double minX1, double minX2, double min
 void Grid3D::getAllBlocksByCuboid(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3, std::vector<SPtr<Block3D>>& blocks)
 {
    int coarsestLevel = this->getCoarsestInitializedLevel();
-   int finestLevel   = this->getFinestInitializedLevel();
+   int finestLevel = this->getFinestInitializedLevel();
 
    //////////////////////////////////////////////////////////////////////////
    //MINIMALE BLOCK-INDIZES BESTIMMEN
    //  
    //min:
-   double dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3)*(1<<finestLevel);
-   double dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3)*(1<<finestLevel);
-   double dMinX3 = trafo->transformForwardToX3Coordinate(minX1, minX2, minX3)*(1<<finestLevel);
+   double dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
+   double dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
+   double dMinX3 = trafo->transformForwardToX3Coordinate(minX1, minX2, minX3) * (1 << finestLevel);
 
    //Achtung, wenn minX1 genau auf grenze zwischen zwei bloecken -> der "kleinere" muss genommen werden,
    //da beim Transformieren der "groessere" Index rauskommt
-   int iMinX1 = (int)dMinX1; if (UbMath::zero(dMinX1-iMinX1)) iMinX1-=1;
-   int iMinX2 = (int)dMinX2; if (UbMath::zero(dMinX2-iMinX2)) iMinX2-=1;
-   int iMinX3 = (int)dMinX3; if (UbMath::zero(dMinX3-iMinX3)) iMinX3-=1;
+   int iMinX1 = (int)dMinX1; if (UbMath::zero(dMinX1 - iMinX1)) iMinX1 -= 1;
+   int iMinX2 = (int)dMinX2; if (UbMath::zero(dMinX2 - iMinX2)) iMinX2 -= 1;
+   int iMinX3 = (int)dMinX3; if (UbMath::zero(dMinX3 - iMinX3)) iMinX3 -= 1;
 
    //max (hier kann die Zusatzabfrage vernachlaessigt werden):
-   int iMaxX1 = (int)(trafo->transformForwardToX1Coordinate(maxX1, maxX2, maxX3)*(1<<finestLevel));
-   int iMaxX2 = (int)(trafo->transformForwardToX2Coordinate(maxX1, maxX2, maxX3)*(1<<finestLevel));
-   int iMaxX3 = (int)(trafo->transformForwardToX3Coordinate(maxX1, maxX2, maxX3)*(1<<finestLevel));
+   int iMaxX1 = (int)(trafo->transformForwardToX1Coordinate(maxX1, maxX2, maxX3) * (1 << finestLevel));
+   int iMaxX2 = (int)(trafo->transformForwardToX2Coordinate(maxX1, maxX2, maxX3) * (1 << finestLevel));
+   int iMaxX3 = (int)(trafo->transformForwardToX3Coordinate(maxX1, maxX2, maxX3) * (1 << finestLevel));
 
    SPtr<Block3D> block;
 
    //set, um doppelte bloecke zu vermeiden, die u.U. bei periodic auftreten koennen
    std::set<SPtr<Block3D>> blockset;
-   for (int level=coarsestLevel; level<=finestLevel; level++)
+   for (int level = coarsestLevel; level <= finestLevel; level++)
    {
       //damit bei negativen werten auch der "kleinere" genommen wird -> floor!
-      int minx1 = (int)std::floor((double)iMinX1/(1<<(finestLevel-level)));
-      int minx2 = (int)std::floor((double)iMinX2/(1<<(finestLevel-level)));
-      int minx3 = (int)std::floor((double)iMinX3/(1<<(finestLevel-level)));
+      int minx1 = (int)std::floor((double)iMinX1 / (1 << (finestLevel - level)));
+      int minx2 = (int)std::floor((double)iMinX2 / (1 << (finestLevel - level)));
+      int minx3 = (int)std::floor((double)iMinX3 / (1 << (finestLevel - level)));
 
-      int maxx1 = iMaxX1/(1<<(finestLevel-level));
-      int maxx2 = iMaxX2/(1<<(finestLevel-level));
-      int maxx3 = iMaxX3/(1<<(finestLevel-level));
+      int maxx1 = iMaxX1 / (1 << (finestLevel - level));
+      int maxx2 = iMaxX2 / (1 << (finestLevel - level));
+      int maxx3 = iMaxX3 / (1 << (finestLevel - level));
 
-      for (int ix1=minx1; ix1<=maxx1; ix1++)
-         for (int ix2=minx2; ix2<=maxx2; ix2++)
-            for (int ix3=minx3; ix3<=maxx3; ix3++)
-               if ((block=this->getBlock(ix1, ix2, ix3, level)))
+      for (int ix1 = minx1; ix1 <= maxx1; ix1++)
+         for (int ix2 = minx2; ix2 <= maxx2; ix2++)
+            for (int ix3 = minx3; ix3 <= maxx3; ix3++)
+               if ((block = this->getBlock(ix1, ix2, ix3, level)))
                {
                   if (block)
                   {
@@ -1912,11 +1901,11 @@ void Grid3D::getAllBlocksByCuboid(double minX1, double minX2, double minX3, doub
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::calcStartCoordinatesAndDelta(SPtr<Block3D> block, double& worldX1, double& worldX2, double& worldX3, double& deltaX)
 {
-   int blocklevel  = block->getLevel();
-   worldX1  = block->getX1()/(float)(1<<blocklevel);
-   worldX2  = block->getX2()/(float)(1<<blocklevel);
-   worldX3  = block->getX3()/(float)(1<<blocklevel);
-   deltaX   = (double)1.0/(double)(this->blockNx1*(double)(1<<blocklevel));
+   int blocklevel = block->getLevel();
+   worldX1 = block->getX1() / (float)(1 << blocklevel);
+   worldX2 = block->getX2() / (float)(1 << blocklevel);
+   worldX3 = block->getX3() / (float)(1 << blocklevel);
+   deltaX = (double)1.0 / (double)(this->blockNx1 * (double)(1 << blocklevel));
 
    if (this->trafo)
    {
@@ -1924,16 +1913,16 @@ void Grid3D::calcStartCoordinatesAndDelta(SPtr<Block3D> block, double& worldX1, 
       worldX1 = this->trafo->transformBackwardToX1Coordinate(x1tmp, x2tmp, x3tmp);
       worldX2 = this->trafo->transformBackwardToX2Coordinate(x1tmp, x2tmp, x3tmp);
       worldX3 = this->trafo->transformBackwardToX3Coordinate(x1tmp, x2tmp, x3tmp);
-      deltaX  = this->trafo->getX1CoordinateScaling()/(double)(this->blockNx1*(double)(1<<blocklevel));
+      deltaX = this->trafo->getX1CoordinateScaling() / (double)(this->blockNx1 * (double)(1 << blocklevel));
    }
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::calcStartCoordinatesWithOutOverlap(SPtr<Block3D> block, double& worldX1, double& worldX2, double& worldX3)
 {
-   int blocklevel  = block->getLevel();
-   worldX1  = block->getX1()/(float)(1<<blocklevel);
-   worldX2  = block->getX2()/(float)(1<<blocklevel);
-   worldX3  = block->getX3()/(float)(1<<blocklevel);
+   int blocklevel = block->getLevel();
+   worldX1 = block->getX1() / (float)(1 << blocklevel);
+   worldX2 = block->getX2() / (float)(1 << blocklevel);
+   worldX3 = block->getX3() / (float)(1 << blocklevel);
 
    if (this->trafo)
    {
@@ -2036,4 +2025,57 @@ void Grid3D::renumberBlockIDs()
 
 
 //////////////////////////////////////////////////////////////////////////
+void Grid3D::updateDistributedBlocks(SPtr<Communicator> comm)
+{
 
+   std::vector<int> blocks;
+
+   if (comm->isRoot())
+   {
+      int startLevel = getCoarsestInitializedLevel();
+      int stopLevel = getFinestInitializedLevel();
+
+      for (int l = startLevel; l <= stopLevel; l++)
+      {
+         std::vector<SPtr<Block3D>> blockVector;
+         getBlocks(l, blockVector);
+         for (SPtr<Block3D> block : blockVector)
+         {
+            blocks.push_back(block->getX1());
+            blocks.push_back(block->getX2());
+            blocks.push_back(block->getX3());
+            blocks.push_back(l);
+            blocks.push_back(block->getGlobalID());
+         }
+      }
+   }
+
+   comm->broadcast(blocks);
+
+   if (!comm->isRoot())
+   {
+      int startLevel = getCoarsestInitializedLevel();
+      int stopLevel = getFinestInitializedLevel();
+
+      blockIdMap.clear();
+
+      for (int l = startLevel; l <= stopLevel; l++)
+      {
+         levelSet[l].clear();
+      }
+      this->levelSet.clear();
+      levelSet.resize(Grid3DSystem::MAXLEVEL + 1);
+
+      int rsize = (int)blocks.size();
+      for (int i = 0; i < rsize; i += 5)
+      {
+         SPtr<Block3D> block(new Block3D(blocks[i], blocks[i + 1], blocks[i + 2], blocks[i + 3]));
+         block->setGlobalID(blocks[i + 4]);
+         this->addBlock(block);
+      }
+
+   }
+
+}
+
+//////////////////////////////////////////////////////////////////////////

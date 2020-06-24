@@ -1,42 +1,8 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file EsoTwistD3Q27System.h
-//! \ingroup Data
-//! \author Konstantin Kutscher
-//=======================================================================================
-
 #ifndef ESOTWISTD3Q27SYSTEM_H
 #define ESOTWISTD3Q27SYSTEM_H
 
 #include "D3Q27System.h"
 
-//! 
 struct EsoTwistD3Q27System
 {
    const static int FSTARTDIR = D3Q27System::FSTARTDIR;
@@ -48,7 +14,7 @@ struct EsoTwistD3Q27System
    const static int STARTDIR  = D3Q27System::STARTDIR;
    const static int ENDDIR		= D3Q27System::ENDDIR;
 
-   static const int REST = D3Q27System::REST;/*f0 */
+   static const int ZERO = D3Q27System::ZERO;/*f0 */
    static const int E =  D3Q27System::E;    /*f1 */ 
    static const int W =  D3Q27System::W;    /*f2 */ 
    static const int N =  D3Q27System::N;    /*f3 */ 

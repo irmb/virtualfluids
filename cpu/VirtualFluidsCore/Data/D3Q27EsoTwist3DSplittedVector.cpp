@@ -1,36 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file D3Q27EsoTwist3DSplittedVector.cpp
-//! \ingroup Data
-//! \author Konstantin Kutscher
-//=======================================================================================
-
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "EsoTwistD3Q27System.h"
 
@@ -47,7 +14,7 @@ D3Q27EsoTwist3DSplittedVector::D3Q27EsoTwist3DSplittedVector( size_t nx1, size_t
    this->localDistributions    = CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal,IndexerX4X3X2X1>(13, nx1+1, nx2+1, nx3+1, value));
    this->nonLocalDistributions = CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal,IndexerX4X3X2X1>(13, nx1+1, nx2+1, nx3+1, value));
 
-   this->restDistributions     = CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal,IndexerX3X2X1>(nx1, nx2, nx3, value));
+   this->zeroDistributions     = CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal,IndexerX3X2X1>(nx1, nx2, nx3, value));
 }
 //////////////////////////////////////////////////////////////////////////
 D3Q27EsoTwist3DSplittedVector::~D3Q27EsoTwist3DSplittedVector()
@@ -90,7 +57,7 @@ void D3Q27EsoTwist3DSplittedVector::getDistribution(LBMReal* const f, size_t x1,
    f[D3Q27System::BNW] = (*this->nonLocalDistributions)(D3Q27System::ET_BNW,x1+1,x2,x3+1);
    f[D3Q27System::BNE] = (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,x2,x3+1);
 
-   f[D3Q27System::REST] = (*this->restDistributions)(x1,x2,x3);
+   f[D3Q27System::ZERO] = (*this->zeroDistributions)(x1,x2,x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistribution(const LBMReal* const f, size_t x1, size_t x2, size_t x3)
@@ -123,7 +90,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistribution(const LBMReal* const f, size
    (*this->nonLocalDistributions)(D3Q27System::ET_BNW,x1+1,x2,  x3+1) = f[D3Q27System::INV_BNW];
    (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1) = f[D3Q27System::INV_BNE];
 
-   (*this->restDistributions)(x1,x2,x3) = f[D3Q27System::REST];
+   (*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::ZERO];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::getDistributionInv(LBMReal* const f, size_t x1, size_t x2, size_t x3)
@@ -156,7 +123,7 @@ void D3Q27EsoTwist3DSplittedVector::getDistributionInv(LBMReal* const f, size_t 
    f[D3Q27System::INV_BNW] = (*this->nonLocalDistributions)(D3Q27System::ET_BNW,x1+1,x2,x3+1);
    f[D3Q27System::INV_BNE] = (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,x2,x3+1);
 
-   f[D3Q27System::REST] = (*this->restDistributions)(x1,x2,x3);
+   f[D3Q27System::ZERO] = (*this->zeroDistributions)(x1,x2,x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistributionInv(const LBMReal* const f, size_t x1, size_t x2, size_t x3)
@@ -189,7 +156,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInv(const LBMReal* const f, s
    (*this->nonLocalDistributions)(D3Q27System::ET_BNW,x1+1,x2,  x3+1) = f[D3Q27System::BNW];
    (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1) = f[D3Q27System::BNE];
 
-   (*this->restDistributions)(x1,x2,x3) = f[D3Q27System::REST];
+   (*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::ZERO];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(const LBMReal* const f, size_t x1, size_t x2, size_t x3, unsigned long int direction)
@@ -247,8 +214,8 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(const LBMReal* c
       (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3) = f[D3Q27System::BNE]; directionFlag=true;
    if ((direction & EsoTwistD3Q27System::etTSW) == EsoTwistD3Q27System::etTSW)
       (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1) = f[D3Q27System::TSW]; directionFlag=true;
-   if ((direction & EsoTwistD3Q27System::REST) == EsoTwistD3Q27System::REST)
-      (*this->restDistributions)(x1,x2,x3) = f[D3Q27System::REST]; directionFlag=true;
+   if ((direction & EsoTwistD3Q27System::ZERO) == EsoTwistD3Q27System::ZERO)
+      (*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::ZERO]; directionFlag=true;
 #ifdef _DEBUG
    if(!directionFlag)UB_THROW( UbException(UB_EXARGS, "Direction didn't find") );
 #endif //DEBUG
@@ -336,8 +303,8 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(LBMReal f, size_
    case D3Q27System::TSW :
       (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1) = f;
       break;
-   case D3Q27System::REST :
-      (*this->restDistributions)(x1,x2,x3) = f;
+   case D3Q27System::ZERO :
+      (*this->zeroDistributions)(x1,x2,x3) = f;
       break;
    default:
       UB_THROW( UbException(UB_EXARGS, "Direction didn't find") );     
@@ -399,8 +366,8 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(const LBMReal
        (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1)= f[D3Q27System::BNE]; directionFlag=true;
    if ((direction & EsoTwistD3Q27System::etTSW) == EsoTwistD3Q27System::etTSW)
       (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3) = f[D3Q27System::TSW]; directionFlag=true;
-   if ((direction & EsoTwistD3Q27System::REST) == EsoTwistD3Q27System::REST)
-      (*this->restDistributions)(x1,x2,x3) = f[D3Q27System::REST]; directionFlag=true;
+   if ((direction & EsoTwistD3Q27System::ZERO) == EsoTwistD3Q27System::ZERO)
+      (*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::ZERO]; directionFlag=true;
 #ifdef _DEBUG
    if(!directionFlag)UB_THROW( UbException(UB_EXARGS, "Direction didn't find") );
 #endif //DEBUG
@@ -488,8 +455,8 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(LBMReal f, si
    case D3Q27System::TSW :
       (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3) = f;
       break;
-   case D3Q27System::REST :
-      (*this->restDistributions)(x1,x2,x3) = f;
+   case D3Q27System::ZERO :
+      (*this->zeroDistributions)(x1,x2,x3) = f;
       break;
    default:
       UB_THROW( UbException(UB_EXARGS, "Direction didn't find") );     
@@ -552,8 +519,8 @@ LBMReal D3Q27EsoTwist3DSplittedVector::getDistributionForDirection(size_t x1, si
       return (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3);
    case D3Q27System::BNE :
       return (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1);
-   case D3Q27System::REST :
-      return (*this->restDistributions)(x1,x2,x3);
+   case D3Q27System::ZERO :
+      return (*this->zeroDistributions)(x1,x2,x3);
    default:
       UB_THROW( UbException(UB_EXARGS, "Direction didn't find") );     
    }
@@ -615,8 +582,8 @@ LBMReal D3Q27EsoTwist3DSplittedVector::getDistributionInvForDirection(size_t x1,
       return (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3);
    case D3Q27System::TSW :
       return (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1);
-   case D3Q27System::REST :
-      return (*this->restDistributions)(x1,x2,x3);
+   case D3Q27System::ZERO :
+      return (*this->zeroDistributions)(x1,x2,x3);
    default:
       UB_THROW( UbException(UB_EXARGS, "Direction didn't find") );     
    }
@@ -649,7 +616,7 @@ CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr D3Q27EsoTwist3DSplittedVector::
 //////////////////////////////////////////////////////////////////////////
 CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr D3Q27EsoTwist3DSplittedVector::getZeroDistributions()
 {
-   return this->restDistributions;
+   return this->zeroDistributions;
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setNX1(size_t newNX1)
@@ -679,7 +646,7 @@ void D3Q27EsoTwist3DSplittedVector::setNonLocalDistributions(CbArray4D<LBMReal, 
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr array)
 {
-   restDistributions = array;
+   zeroDistributions = array;
 }
 
 //////////////////////////////////////////////////////////////////////////

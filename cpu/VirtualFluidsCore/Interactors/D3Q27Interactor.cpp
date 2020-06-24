@@ -1,46 +1,11 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file D3Q27Interactor.cpp
-//! \ingroup Interactor
-//! \author Sören Freudiger
-//! \author Sebastian Geller
-//! \author Konstantin Kutscher
-//=======================================================================================
-
 #include "D3Q27Interactor.h"
 #include <basics/utilities/UbMath.h>
 #include <basics/utilities/UbLogger.h>
 
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-#include <GbCuboid3D.h>
-#include <GbLine3D.h>
+#include <numerics/geometry3d/GbCuboid3D.h>
+#include <numerics/geometry3d/GbLine3D.h>
 #include "Block3D.h"
 #include "Grid3D.h"
 #include "BCArray3D.h"
@@ -48,6 +13,10 @@
 #include "LBMKernel.h"
 #include "BCProcessor.h"
 #include "BCAdapter.h"
+
+//#include <3rdParty/MarchingCubes/MarchingCubes.h>
+
+
 
 
 using namespace std;
@@ -140,10 +109,41 @@ void D3Q27Interactor::initInteractor(const double& timeStep)
    else                   this->unsetTimeDependent();
 
    Interactor3D::initInteractor(timeStep);
+
+  ////calcForces arbeitet nicht korrekt, wenn Geo mit Bloecken 
+  // //unterschiedlicher Leveltiefe diskretisiert -> exception
+  // //abfrage steht hier, weil es theoretisch sein kann, dass bei parallelen rechnungen
+  // //genau der block mit dem anderen level auf einem anderen prozess liegt...
+  // //Update: es kann u.U. passieren, dass Bl�cke in der Liste nicht aktiv sin
+  // //(falls diese z.B. duch andere Interactoren solid gesetzt wurden)
+  // //diese werden nicht ber�cksichtigt (auch nicht beid er kraftauswertung sp�ter)
+  // if(this->isRelevantForForces() )
+  // {
+  //    int level = -1;     
+  //    for( vector<Block3D*>::const_iterator pos = transBlockSet->begin(); pos!=transBlockSet->end(); ++pos)
+  //       if( (*pos)->isActive() )
+  //       {
+  //          level = (*pos)->getLevel();
+  //          break;
+  //       }
+  //    
+  //    bool check = false;
+  //    for( vector<Block3D*>::const_iterator pos = transBlockSet->begin(); pos!=transBlockSet->end(); ++pos)
+  //       if( (*pos)->isActive() && (*pos)->getLevel()!=level)
+  //       {
+  //          throw UbException(UB_EXARGS,"interactor is relevant for forces,"
+  //                                  +(string)" but has transblocks with different levels"
+  //                                  +(string)" -> not supportet by D3Q27Interactor::getForces()"
+  //                                  +(string)" -> increase refineWidth");
+  //       }
+  // }
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27Interactor::updateInteractor(const double& timestep)
 {
+   //UB_THROW( UbException(UB_EXARGS,"toDo") );
+   //if(this->isFluid()) return;
+
    UBLOG(logDEBUG5,"D3Q27Interactor::updateInteractor - for timestep = "<<timestep);
 
    //////////////////////////////////////////////////////////////////////////
@@ -161,10 +161,14 @@ void D3Q27Interactor::updateInteractor(const double& timestep)
    if(needTimeDependence) this->setTimeDependent();
    else                   this->unsetTimeDependent();
    
+   //UBLOG(logINFO, "transNodeIndicesMap = "<<transNodeIndicesMap.size());
+   
    for(BcNodeIndicesMap::value_type t : bcNodeIndicesMap)
    {
       SPtr<Block3D> block = t.first;
       std::set< std::vector<int> >& transNodeIndicesSet = t.second;
+
+      //UBLOG(logINFO, "transNodeIndicesSet = "<<transNodeIndicesSet.size());
 
       if(block->isNotActive() || !block) continue;
 
@@ -184,20 +188,24 @@ void D3Q27Interactor::updateInteractor(const double& timestep)
          double worldX3 = coords[2];
 
          SPtr<BoundaryConditions> bc = bcArray->getBC(x1,x2,x3);
-         if(bc) //may be that the BC has been deleted by the solid setting of another interactor
+         if(bc) //kann sein, dass die BC durch das solid setzen eines andern interactors geloescht wurde
          {
             for(size_t i=0; i<bcAdapters.size(); i++)
                bcAdapters[i]->adaptBC(*this,bc,worldX1,worldX2,worldX3,timestep);
          }
+         //else 
+         //{
+         //   UBLOG(logERROR,"D3Q27Interactor.updateInteractor (Z."<<__LINE__<<"): da ist kein BC dran ... kann aber korrekt sein s.h. code");
+         //}
       }
    }
 }
 //////////////////////////////////////////////////////////////////////////
-// calculation takes place in the real coordinate system !!!
-// not normalized!
-// x1, x2, x3 are the coordinates at the bottom left of the "system"
-// extendedBoundingGeoOfGeoObject MUST already have been magnified by delta_x_level in each direction for SOLID
-bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
+// Berechnung findet im realen Koordinatensystem statt !!!
+// nicht im normierten !
+//x1,x2,x3 sind die Koordinaten unten links vom "System"
+//extendedBoundingGeoOfGeoObject MUSS bereits um delta_x_level in jede richtung vergroesert worden sein fuer SOLID
+bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep*/)
 {
    if(!block) return false;
 
@@ -210,8 +218,8 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 
 
    double timestep = 0;
-   bool oneEntryGotBC = false; 
-   bool gotQs         = false; 
+   bool oneEntryGotBC = false; //ob ueberhaupt ein eintrag ein BC zugewiesen wurde
+   bool gotQs         = false; //true, wenn "difference" gesetzt wurde
    SPtr<BoundaryConditions> bc;
 
    SPtr<ILBMKernel> kernel = block->getKernel();
@@ -233,7 +241,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
    double         dx       = grid.lock()->getDeltaX(block);
    UbTupleDouble3 orgDelta = grid.lock()->getNodeOffset(block);
 
-   //other boundingRect than in init, because here the boundrect has to be increased by one dx
+   //anderes boundingRect als in init, da hier das boundrect um ein dx vergroessert werden muss
    GbCuboid3D extendedBoundingGeoOfGeoObject(  geoObject3D->getX1Minimum()-1.02*dx 
                                              , geoObject3D->getX2Minimum()-1.02*dx 
                                              , geoObject3D->getX3Minimum()-1.02*dx 
@@ -246,7 +254,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
    if(   geoObject3D->hasRaytracing() 
         || (this->isInverseSolid() && geoObject3D->raytracingSupportsPointsInside() ) )
    {
-      //if deltaX1==deltaX2==deltaX3 (must for LB!!)
+      //wenn deltaX1==deltaX2==deltaX3 (muss fuer LB!!)
       if(!UbMath::zero( deltaX1-deltaX2 + deltaX1-deltaX3 + deltaX2-deltaX3 ) )
          throw UbException(UB_EXARGS,"fuer den bei LB nicht vorkommenden Fall deltaX1!=deltaX2!=deltaX3  nicht implementiert ");
 
@@ -270,7 +278,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
          {
             for(int ix1=startIX1; ix1<stopIX1; ix1++)
             {
-               //TODO: further, investigate if this is not a mistake
+               //TODO weiter untersuchen, ob das nicht ein Fehler ist
                if(bcArray->isUndefined(ix1, ix2, ix3)) continue;
 
                Vector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
@@ -278,14 +286,17 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                internX2 = coords[1];
                internX3 = coords[2];
 
-               // Point in the object test is superfluous, since the start and stop indices already exist
-               // are determined -> only point-in-cube indexes are considered
+               //point in object test ist ueberfluessig, weil die start und stop indices bereits zuvor 
+               //ermittelt werden -> es werden nur point-IN-cube indizes betrachtet
                if(extendedBoundingGeoOfGeoObject.isPointInGbObject3D(internX1,internX2,internX3))
                {
                   if(this->isSolid() )
                   {
                      if(this->geoObject3D->isPointInGbObject3D(internX1, internX2, internX3))
                      {
+//#ifdef _OPENMP
+//                        #pragma omp critical (SOLIDNODE_SET_CHANGE)
+//#endif
                         {
                            solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
                            bcArray->setSolid(ix1,ix2,ix3); 
@@ -295,11 +306,13 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                   }
                   else if( this->isInverseSolid()  )
                   {
-                     //in inverse solid all nodes are OUTSIDE and on the boundary SOLID
+                     //bei inverse solid sind alle Knoten AUSSERHALB und auf der boundary SOLID
                      if( !this->geoObject3D->isPointInGbObject3D(internX1, internX2, internX3, pointOnBoundary) 
                         || pointOnBoundary == true )
                      {
-
+//#ifdef _OPENMP
+//                        #pragma omp critical (SOLID_SET_CHANGE)
+//#endif
                         {
                            solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
                            bcArray->setSolid(ix1,ix2,ix3); 
@@ -308,11 +321,18 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                      }
                   }
 
+                  //evtl wurde node von anderen interactoren solid gesetzt (muss hie rein->sonst evtl bei
+                  //ueberschneidender geo -> solidNodeIndicesMap unvollstaendig)
                   if(bcArray->isSolid(ix1,ix2,ix3)) 
                      continue;
 
                   gotQs = false;
 
+                  //TODO: prüfen was passiert wenn ein Geoobjekt zwischen zwei knoten rausguckt
+                  //  * /
+                  //<
+                  //  * \  //
+                  //sollen dann keine qs gesetzt werden
                   for(int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
                   {
                      q = geoObject3D->getIntersectionRaytraceFactor(internX1,internX2,internX3,rayX1[fdir],rayX2[fdir],rayX3[fdir]);
@@ -328,17 +348,22 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                            bc = bcArray->getBC(ix1,ix2,ix3);
                            if(!bc)
                            {
+                              //bc = bvd->createD3Q27BoundaryCondition(); //= new D3Q27BoundaryCondition();
                               bc = SPtr<BoundaryConditions>(new BoundaryConditions);
                               bcArray->setBC(ix1,ix2,ix3,bc);
                            }
-
+                     //TODO: man muss ueberlegen, wie kann man, dass die Geschwindigkeit auf 0.0 gesetzt werden, vermeiden
+                     //das folgt zu unguenstigen "design rules"
+                      //SG 31.08.2010 das Problem - bewegter Interactor angrenzend an stehenden noslip interactor
+                      // hier sollte die Geschwindigkeit auf 0.0 gesetzt werden
                            if(bc->hasNoSlipBoundary())
                            {
                               bc->setBoundaryVelocityX1(0.0);
                               bc->setBoundaryVelocityX2(0.0);
                               bc->setBoundaryVelocityX3(0.0);
                            }
-                       
+                       //SG 31.08.2010
+                        
                            for(int index=(int)bcAdapters.size()-1; index>=0; --index)
                               bcAdapters[index]->adaptBCForDirection(*this,bc,internX1,internX2,internX3,q,fdir, timestep);
                         }
@@ -349,6 +374,9 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 
                   if(gotQs)
                   {
+//#ifdef _OPENMP
+//                     #pragma omp critical (TRANSNODE_SET_CHANGE)
+//#endif
                      {
                         oneEntryGotBC = true;
 
@@ -367,6 +395,9 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                   if( !this->geoObject3D->isPointInGbObject3D(internX1, internX2, internX3, pointOnBoundary) 
                      || pointOnBoundary == true )
                  {
+//#ifdef _OPENMP 
+//   #pragma omp critical (SOLID_SET_CHANGE)
+//#endif
                      {
                         solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
                         bcArray->setSolid(ix1,ix2,ix3); 
@@ -378,9 +409,10 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
          }
       }
    }
-   else  //clipping -> slower (currently also used for all inverse Solid objects whose raytracing does not work for nodes INSIDE the geo)
+   else  //clipping -> langsamer (wird derzeit auch fuer alle inverseSolid objekte verwendet deren raytracing nicht fuer nodes INNERHALB der geo funzt)
    {
       bool pointOnBoundary = false;
+      //#pragma omp parallel for private(internX1,internX2,internX3,gotQs,bc,pointOnBoundary )
       for(int ix1=startIX1; ix1<stopIX1; ix1++)
       {
          for(int ix2=startIX2; ix2<stopIX2; ix2++)
@@ -398,6 +430,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                {
                   if( this->isSolid() && this->geoObject3D->isPointInGbObject3D(internX1, internX2, internX3) )
                   {
+                     //#pragma omp critical (SOLID_SET_CHANGE)
                      {
                         solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
                         bcArray->setSolid(ix1,ix2,ix3); 
@@ -410,6 +443,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                      if( !this->geoObject3D->isPointInGbObject3D(internX1, internX2, internX3, pointOnBoundary) 
                          || pointOnBoundary == true )
                      {
+                        //#pragma omp critical (SOLID_SET_CHANGE)
                         {
                            solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
                            bcArray->setSolid(ix1,ix2,ix3); 
@@ -433,7 +467,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                      if(clippedLine)
                      {
                         double q=0.0;
-                        if( !this->isInverseSolid() )  //A is outside
+                        if( !this->isInverseSolid() )  //A liegt auf jeden Fall aussen
                         {
                            double distanceAB = pointA.getDistance(&pointB); //pointA to B
                            double distanceAP = UbMath::min(pointA.getDistance(clippedLine->getPoint1()),
@@ -446,7 +480,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                            if(   !clippedLine->getPoint1()->equals(&pointB)
                               && !clippedLine->getPoint2()->equals(&pointB) )
                            {
-                              //A is inside, a clipped line must not contain B
+                              //A liegt auf jeden Fall drinnen, clipped line darf B nicht enthalten
                               double distanceAB = pointA.getDistance(&pointB); //pointA to B
                               double distanceAP = clippedLine->getLength();
                               q = distanceAP/distanceAB;
@@ -457,7 +491,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                                                             ,pointIsOnBoundary )
                                    && pointIsOnBoundary )
                            {
-                              //A is definitely inside, B is exactly on ObjectBoundary => q = 1.0
+                              //A liegt auf jeden Fall drinnen, B liegt genau auf ObjektBoundary => q=1.0
                               q=1.0;
                            }
                            else
@@ -469,10 +503,12 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                         if(UbMath::inClosedInterval(q, 1.0, 1.0)) q = 1.0;
                         if(UbMath::lessEqual(q, 1.0) && UbMath::greater(q, 0.0))
                         {
+                           //#pragma omp critical (BC_CHANGE)
                            {
                               bc = bcArray->getBC(ix1,ix2,ix3);
                               if(!bc)
                               {
+                                 //bc = bvd->createD3Q27BoundaryCondition(); //= new D3Q27BoundaryCondition();
                                  bc = SPtr<BoundaryConditions>(new BoundaryConditions);
                                  bcArray->setBC(ix1,ix2,ix3,bc);
                               }
@@ -491,6 +527,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 
                   if(gotQs)
                   {
+                     //#pragma omp critical (TRANSNODE_SET_CHANGE)
                      {
                         oneEntryGotBC = true;
 
@@ -541,7 +578,7 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3 >& nodes, std::vect
             int ix2 = (*setPos)[1];
             int ix3 = (*setPos)[2];
 
-            if(bcArray->isFluid(ix1,ix2,ix3)) //it may be that the node is replaced by another interactor e.g. was marked as solid !!!
+            if(bcArray->isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
                if( !bcArray->hasBC(ix1,ix2,ix3) ) continue;
                SPtr<BoundaryConditions> bc = bcArray->getBC(ix1,ix2,ix3);
@@ -609,14 +646,16 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
    int blocknx1 = val<1>(blocknx);
    int blocknx2 = val<2>(blocknx);
    int blocknx3 = val<3>(blocknx);
+   //   vector<double> deltaT = grid->getD3Q27Calculator()->getDeltaT();
 
    for(SPtr<Block3D> block : bcBlocks)
    {
-      SPtr<ILBMKernel> kernel = block->getKernel();
+       SPtr<ILBMKernel> kernel = block->getKernel();
       SPtr<BCArray3D> bcMatrix = kernel->getBCProcessor()->getBCArray();
       UbTupleDouble3 nodeOffset   = grid.lock()->getNodeOffset(block);
 
-      //Check whether top row is double in the system or not
+      //double collFactor = ((LbD3Q27Calculator*)grid->getCalculator())->getCollisionsFactors()[block->getLevel()];
+      //checken ob obere reihe doppelt im system vorhanden oder nicht
       bool include_N_Face  = false; //x1=[0..blocknx1[ && x3=[0..blocknx3[
       bool include_E_Face  = false; //x2=[0..blocknx2[ && x3=[0..blocknx3[
       bool include_T_Face  = false; //x1=[0..blocknx1[ && x2=[0..blocknx2[
@@ -633,6 +672,8 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
          if( !block->getConnector(D3Q27System::TE) && include_T_Face && include_E_Face ) include_TE_Edge = true;
       }
 
+      //      double dT = deltaT[block->getLevel()];
+
       map<SPtr<Block3D>, set< std::vector<int> > >::iterator pos = bcNodeIndicesMap.find(block);
       if(pos==bcNodeIndicesMap.end()) throw UbException(UB_EXARGS,"block nicht in indizes map!!!"+block->toString());
       set< std::vector<int> >& transNodeIndicesSet = pos->second;
@@ -641,21 +682,23 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
       double x1,x2,x3,dx;
       grid.lock()->calcStartCoordinatesAndDelta(block,x1,x2,x3,dx);
 
+      //cout<<"getQs: "<<transBlockSet->size()<<" "<<transNodeIndicesVec.size()<<endl;
+
       for(setPos=transNodeIndicesSet.begin(); setPos!=transNodeIndicesSet.end();  ++setPos)
       {
          int ix1 = (*setPos)[0];
          int ix2 = (*setPos)[1];
          int ix3 = (*setPos)[2];
 
-         if(   ( ix1<blocknx1 && ix2<blocknx2 && ix3<blocknx3 ) 
+         if(   ( ix1<blocknx1 && ix2<blocknx2 && ix3<blocknx3 ) //std fall
             || ( include_E_Face  && ix1==blocknx1 && ix2<blocknx2  && ix3<blocknx3  )
             || ( include_N_Face  && ix2==blocknx2 && ix1<blocknx1  && ix3<blocknx3  )
             || ( include_T_Face  && ix3==blocknx3 && ix1<blocknx1  && ix2<blocknx2  )
             || ( include_NE_Edge && ix1==blocknx1 && ix2==blocknx2 )
             || ( include_TN_Edge && ix2==blocknx2 && ix3==blocknx3 )
-            || ( include_TE_Edge && ix1==blocknx1 && ix3==blocknx3 ) )
+            || ( include_TE_Edge && ix1==blocknx1 && ix3==blocknx3 ) ) //ansonsten doppelt im kraftwert
          {
-            if(bcMatrix->isFluid(ix1,ix2,ix3)) //it may be that the node is replaced by another interactor e.g. was marked as solid !!!
+            if(bcMatrix->isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
                if( !bcMatrix->hasBC(ix1,ix2,ix3) ) continue;
                SPtr<BoundaryConditions> bc = bcMatrix->getBC(ix1,ix2,ix3);
@@ -711,6 +754,7 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
          }
       }
    }
+   //cout<<"getQs: "<<QsLineSet.size()<<endl;
    return QsLineSet;
 }
 

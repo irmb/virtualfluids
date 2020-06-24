@@ -1,6 +1,0 @@
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsBasics)
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsBasics/geometry3d)
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsBasics/basics/container)
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsBasics/basics/objects)
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsBasics/basics/utilities)
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsBasics/basics/writer)

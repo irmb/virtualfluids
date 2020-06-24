@@ -47,7 +47,7 @@ ENDIF()
 ###############################################################
 # WITH_SUBFOLDERS_FOR_SG erstellen, wenn noch nicht vorhanden
 # ist diese auf true wird bei SOURCE_GROUP in VS unterordner erzeugt
-# dies funktioniert erst ab CMake-2.5 vernuenftig
+# dies funzt erst ab CMake-2.5 vernuenftig
 ###############################################################
 IF(NOT WITH_SUBFOLDERS_FOR_SG)
    SET(WITH_SUBFOLDERS_FOR_SG FALSE)
@@ -237,6 +237,7 @@ MACRO(CREATE_CAB_PROJECT project_name build_type)
 
    MESSAGE(STATUS "configuring ${project_name} (type=${build_type})...")
 
+
    #################################################################
    ###   OS DEFINES                                              ###
    #################################################################
@@ -315,3 +316,13 @@ ENDMACRO(CREATE_CAB_PROJECT project_name build_type)
 # CAB_COMPILER setzen und machinespecific configfile laden
 ###############################################################
 SET_CAB_COMPILER()
+CHECK_FOR_VARIABLE(CAB_MACHINE "machine name, e.g. ALTIX, ARWEN")
+LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DCAB_MACHINE_${CAB_MACHINE})
+LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DCAB_MACHINE=${CAB_MACHINE})
+SET(CMAKE_CONFIG_FILE "${SOURCE_ROOT}/CMake/cmake_config_files/${CAB_MACHINE}.config.cmake")
+
+IF(NOT EXISTS ${CMAKE_CONFIG_FILE})
+  MESSAGE(FATAL_ERROR "${CMAKE_CONFIG_FILE} does not exists... maybe false CAB_MACHINE = ${CAB_MACHINE}")
+ELSE()
+  INCLUDE(${CMAKE_CONFIG_FILE})  
+ENDIF()

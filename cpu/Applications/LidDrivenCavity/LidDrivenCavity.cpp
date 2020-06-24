@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file LidDrivenCavity.cpp
+//! \file ldc.cpp
 //! \ingroup Applications
 //! \author Konstantin Kutscher
 //=======================================================================================
@@ -44,9 +44,7 @@ int main(int argc, char* argv[])
       //////////////////////////////////////////////////////////////////////////
       // Simulation parameters
       //////////////////////////////////////////////////////////////////////////
-
-      // set your output path here
-      string path = "./output";
+      string path = "d:/temp/LidDrivenCavityClean";
 
       const double L = 1.0;
       const double Re = 1000.0;
@@ -54,11 +52,11 @@ int main(int argc, char* argv[])
       const double dt = 0.5e-3;
       const unsigned int nx = 64;
 
-      const double timeStepOut = 1000;
-      const double timeStepEnd = 25000;
+      const double timeStepOut = 10000;
+      const double timeStepEnd = 250000;
 
       // Number of OpenMP threads
-      int numOfThreads = 4;
+      int numOfThreads = 1;
 
       //////////////////////////////////////////////////////////////////////////
 
@@ -86,16 +84,13 @@ int main(int argc, char* argv[])
       // set grid spacing
       grid->setDeltaX(dx);
       // set block size for three dimensions
-      int blockSize = nx / 2;
-      grid->setBlockNX(blockSize,blockSize,blockSize);
+      grid->setBlockNX(64,64,64);
       
       // Create simulation bounding box
       SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
       GbSystem3D::writeGeoObject(gridCube.get(), path + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
-      UBLOG(logINFO, "Lid Driven Cavity:");
-      UBLOG(logINFO, "Domain size = " << nx << " x "<< nx << " x "<< nx);
-      UBLOG(logINFO, "Block size = " << blockSize << " x "<< blockSize << " x "<< blockSize);
+      UBLOG(logINFO, "Lid Driven Cavity");
       UBLOG(logINFO, "velocity    = " << velocity << " m/s");
       UBLOG(logINFO, "velocityLB  = " << velocityLB);
       UBLOG(logINFO, "viscosityLB = " << viscosityLB);
@@ -115,7 +110,10 @@ int main(int argc, char* argv[])
       ppblocks.reset();
 
       // Create LBM kernel
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel());
+      
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel());
+
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new LBMKernelETD3Q27BGK());
 
       //////////////////////////////////////////////////////////////////////////
       // Create boundary conditions (BC)
@@ -211,9 +209,8 @@ int main(int argc, char* argv[])
       SPtr<CoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
       // OpenMP threads control
-#ifdef _OPENMP
       omp_set_num_threads(numOfThreads);
-#endif
+
       // Create simulation
       SPtr<Calculator> calculator(new BasicCalculator(grid, visSch, (int)timeStepEnd));
       // Add coprocessors objects to simulation

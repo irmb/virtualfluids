@@ -1,40 +1,7 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file EsoTwistD3Q27System.cpp
-//! \ingroup Data
-//! \author Konstantin Kutscher
-//=======================================================================================
-
 #include "EsoTwistD3Q27System.h"
 
 //index                                                              0   1   2   3   4   5  6   7   8    9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26  
-//f:                                                                 E,  W,  N,  S,  T,  B, NE, SW, SE, NW, TE, BW, BE, TW, TN, BS, BN, TS, TNE TNW TSE TSW BNE BNW BSE BSW REST
+//f:                                                                 E,  W,  N,  S,  T,  B, NE, SW, SE, NW, TE, BW, BE, TW, TN, BS, BN, TS, TNE TNW TSE TSW BNE BNW BSE BSW ZERO
 const int EsoTwistD3Q27System::ETX1[EsoTwistD3Q27System::ENDF+1] = { 0,  1,  0,  0,  0,  0,  0,  1,  0,  1,  0,  1,  0,  1,  0,  0,  0,  0,  0,  1,  0,  1,  0,  1,  0,  1,  0 };
 const int EsoTwistD3Q27System::ETX2[EsoTwistD3Q27System::ENDF+1] = { 0,  0,  0,  1,  0,  0,  0,  1,  0, -1,  0,  0,  0,  0,  0,  1, -1,  0,  0, -1,  0,  1,  0, -1,  0,  1,  0 };
 const int EsoTwistD3Q27System::ETX3[EsoTwistD3Q27System::ENDF+1] = { 0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  1,  0, -1,  0,  1,  1,  0,  0, -1,  0, -1,  0,  1,  0,  1,  0 };
@@ -65,7 +32,7 @@ const int EsoTwistD3Q27System::etINVDIR[EsoTwistD3Q27System::ENDF+1] = { D3Q27Sy
                                                                            D3Q27System::INV_BNW,
                                                                            D3Q27System::INV_BSE,
                                                                            D3Q27System::INV_BSW,
-                                                                           D3Q27System::REST};
+                                                                           D3Q27System::ZERO};
 
 const unsigned long int EsoTwistD3Q27System::etDIR[EsoTwistD3Q27System::ENDF+1] = { etE,   
                                                                                     etW,  

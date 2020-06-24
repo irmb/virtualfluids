@@ -1,36 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file NUPSCounterCoProcessor.cpp
-//! \ingroup CoProcessors
-//! \author Konstantin Kutscher
-//=======================================================================================
-
 #include "NUPSCounterCoProcessor.h"
 
 #include "Communicator.h"
@@ -52,7 +19,9 @@ NUPSCounterCoProcessor::NUPSCounterCoProcessor(SPtr<Grid3D> grid, SPtr<UbSchedul
       double nop = comm->getNumberOfProcesses();
       int minInitLevel = grid->getCoarsestInitializedLevel();
       int maxInitLevel = grid->getFinestInitializedLevel();
+      int gl = 2;
       UbTupleInt3 blocknx = grid->getBlockNX();
+      //double nod = (val<1>(blocknx)+gl) * (val<2>(blocknx)+gl) * (val<3>(blocknx)+gl);
       double nod = (double)(val<1>(blocknx)) * (double)(val<2>(blocknx)) * (double)(val<3>(blocknx));
       nup = 0;
 
@@ -80,14 +49,28 @@ void NUPSCounterCoProcessor::collectData(double step)
    if (comm->getProcessID() == comm->getRoot())
    {
       double time = timer.stop();
+      //double time = timer.elapsed();
+      //std::ofstream ostr;
+      //std::string fname = path;
+      //ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
+      //if(!ostr)
+      //{ 
+      //   ostr.clear(); 
+      //   std::string path = UbSystem::getPathFromString(fname);
+      //   if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);}
+      //   if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
+      //}
       double nups_t = nup_t*(step-nupsStep)/time;
-      double nups = nup*(step-nupsStep)/time;
+      double nups = nup*(step-nupsStep)/time;//timer.getTotalTime();
       double tnups = nups/(double)numOfThreads;
+      //ostr << nups << std::endl;
+      //ostr.close();
       UBLOG(logINFO, "Calculation step = "<<step);
       UBLOG(logINFO, "Total performance = "<<nups_t<<" NUPS");
       UBLOG(logINFO, "Performance per process = "<<nups<<" NUPS");
       UBLOG(logINFO, "Performance per thread = "<<tnups<<" NUPS");
       UBLOG(logINFO, "Time for " << step-nupsStep <<" steps = "<< time <<" s");
+      //timer.restart();
       nupsStep = step;
       timer.resetAndStart();
    }
