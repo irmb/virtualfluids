@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file AssembleFlux.cuh
-//! \ingroup FluxComputation
-//! \author Stephan Lenz
-//=======================================================================================
 #ifndef AssembleFlux_CUH
 #define AssembleFlux_CUH
 
@@ -51,33 +19,12 @@ extern __device__ real atomicAdd(real* address, real val);
 
 #define NUMBER_OF_MOMENTS 7
 
+namespace GksGpu {
+
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-//! \brief Computes the time derivative of the conserved variables based on 
-//!  expansion coefficients and moments of the equilibrium distribution
-//!
-//! This function implements the expanded equations found in Eq. (17) in 
-//! <a href="https://doi.org/10.1016/j.ijthermalsci.2018.10.004"><b>[ Lenz et al. (2019), DOI: 10.1016/j.ijthermalsci.2018.10.004 ]</b></a>.
-//! which is based on 
-//! <a href="https://doi.org/10.1006/jcph.2001.6790"><b>[ Kun Xu (2001), DOI: 10.1006/jcph.2001.6790 ]</b></a>
-//! and 
-//! <a href="https://doi.org/10.1016/j.jcp.2007.06.024"><b>[ Tian et al. (2007), DOI: 10.1016/j.jcp.2007.06.024 ]</b></a>.
-//!
-//! Part of the equations was expanded using a computer algebra system 
-//! and are, hence, not well structured.
-//! 
-//! \param[in]  facePrim       flow state on the interface as \ref PrimitiveVariables
-//! \param[in]  momentU        array of moments of the equilibrium function with respect to x-velocity
-//! \param[in]  momentV        array of moments of the equilibrium function with respect to y-velocity
-//! \param[in]  momentW        array of moments of the equilibrium function with respect to z-velocity
-//! \param[in]  momentXi       array of moments of the equilibrium function with respect to internal degrees of freedom
-//! \param[in]  ax             array of spatial expansion coefficients of the Taylor expansion of the equilibrium distribution
-//! \param[in]  ay             array of spatial expansion coefficients of the Taylor expansion of the equilibrium distribution 
-//! \param[in]  az             array of spatial expansion coefficients of the Taylor expansion of the equilibrium distribution
-//! \param[in]  force          volume force vector
-//! \param[out] timeGrad       time derivatives of the \ref ConservedVariables
 __host__ __device__ inline void computeTimeDerivative( const PrimitiveVariables& facePrim, 
                                                        const real momentU [ NUMBER_OF_MOMENTS ], 
                                                        const real momentV [ NUMBER_OF_MOMENTS ], 
@@ -258,26 +205,13 @@ __host__ __device__ inline void computeTimeDerivative( const PrimitiveVariables&
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//! \brief Computes the products of relaxation time \f$\tau\f$ and time step 
-//! \f$\Delta t\f$ that stem from the symbolic time integration of the flux
-//!
-//! It further considers temperature dependent viscisity based on 
-//! \ref sutherlandsLaw, if enabled.
-//!
-//! \param[in]  facePrim          flow state on the interface as \ref PrimitiveVariables
-//! \param[in]  parameters        \ref Parameters struct
-//! \param[out] timeCoefficients  various products of relaxation time \f$\tau\f$ and time step \f$\Delta t\f$ that stem from the symbolic time integration of the flux
-__host__ __device__ inline void computeTimeCoefficients(const PrimitiveVariables & facePrim, const Parameters& parameters, real timeCoefficients[4])
+__host__ __device__ inline void computeTimeCoefficients(const PrimitiveVariables & facePrim, Parameters& parameters, real timeCoefficients[4])
 {
     real r   = parameters.lambdaRef / facePrim.lambda;
 
-    real mu;
-    if ( parameters.viscosityModel == ViscosityModel::constant ){
-        mu = parameters.mu;
-    }
-    else if ( parameters.viscosityModel == ViscosityModel::sutherlandsLaw ){
-        mu = sutherlandsLaw( parameters, r );
-    }
+    //if( r < zero ) printf( "ERROR: %f/%f\n", parameters.lambdaRef, facePrim.lambda );
+
+    real mu = getViscosity(parameters, r);
 
     real tau = c2o1 * facePrim.lambda * mu / facePrim.rho;
 
@@ -290,25 +224,11 @@ __host__ __device__ inline void computeTimeCoefficients(const PrimitiveVariables
     timeCoefficients[3] =                   tau     ;
 }
 
-//! \brief Computes the relaxation time
-//!
-//! It further considers temperature dependent viscisity based on 
-//! \ref sutherlandsLaw, if enabled.
-//!
-//! \param[in]  facePrim          flow state on the interface as \ref PrimitiveVariables
-//! \param[in]  parameters        \ref Parameters struct
-//! \param[out] tau               relaxation time
-__host__ __device__ inline void getTau(const PrimitiveVariables & facePrim, const Parameters& parameters, real& tau)
+__host__ __device__ inline void getTau(const PrimitiveVariables & facePrim, Parameters& parameters, real& tau)
 {
     real r   = parameters.lambdaRef / facePrim.lambda;
 
-    real mu;
-    if ( parameters.viscosityModel == ViscosityModel::constant ){
-        mu = parameters.mu;
-    }
-    else if ( parameters.viscosityModel == ViscosityModel::sutherlandsLaw ){
-        mu = sutherlandsLaw( parameters, r );
-    }
+    real mu = getViscosity(parameters, r);  mu = sutherlandsLaw2( parameters, r );
 
     tau = c2o1 * facePrim.lambda * mu / facePrim.rho;
 }
@@ -319,37 +239,6 @@ __host__ __device__ inline void getTau(const PrimitiveVariables & facePrim, cons
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//! \brief Computes the flux of the conserved variables based on expansion
-//! coefficients and moments of the equilibrium distribution
-//!
-//! 
-//! This function implements the expanded equations found in Eq. (19) in 
-//! <a href="https://doi.org/10.1016/j.ijthermalsci.2018.10.004"><b>[ Lenz et al. (2019), DOI: 10.1016/j.ijthermalsci.2018.10.004 ]</b></a>.
-//! which is based on 
-//! <a href="https://doi.org/10.1006/jcph.2001.6790"><b>[ Kun Xu (2001), DOI: 10.1006/jcph.2001.6790 ]</b></a>
-//! and 
-//! <a href="https://doi.org/10.1016/j.jcp.2007.06.024"><b>[ Tian et al. (2007), DOI: 10.1016/j.jcp.2007.06.024 ]</b></a>.
-//!
-//! This function incorporates the Pandtl number fix from Eq. Eq. (27) in 
-//! <a href="https://doi.org/10.1006/jcph.2001.6790"><b>[ Kun Xu (2001), DOI: 10.1006/jcph.2001.6790 ]</b></a>.
-//!
-//! Part of the equations was expanded using a computer algebra system 
-//! and are, hence, not well structured.
-//!
-//! \param[in]  facePrim          flow state on the interface as \ref PrimitiveVariables
-//! \param[in]  momentU           array of moments of the equilibrium function with respect to x-velocity
-//! \param[in]  momentV           array of moments of the equilibrium function with respect to y-velocity
-//! \param[in]  momentW           array of moments of the equilibrium function with respect to z-velocity
-//! \param[in]  momentXi          array of moments of the equilibrium function with respect to internal degrees of freedom
-//! \param[in]  ax                array of spatial expansion coefficients of the Taylor expansion of the equilibrium distribution
-//! \param[in]  ay                array of spatial expansion coefficients of the Taylor expansion of the equilibrium distribution 
-//! \param[in]  az                array of spatial expansion coefficients of the Taylor expansion of the equilibrium distribution
-//! \param[in]  at                array of temporal expansion coefficients of the Taylor expansion of the equilibrium distribution
-//! \param[in]  timeCoefficients  various products of relaxation time \f$\tau\f$ and time step \f$\Delta t\f$ that stem from the symbolic time integration of the flux
-//! \param[in]  parameters        \ref Parameters struct
-//! \param[in]  force             volume force vector
-//! \param[out] flux              time integrated absolute amount of \ref ConservedVariables transported over the face in this time step
-//! \param[out] heatFlux          amount of heat transported over the face
 __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim, 
                                               const real momentU [ NUMBER_OF_MOMENTS ], 
                                               const real momentV [ NUMBER_OF_MOMENTS ], 
@@ -582,6 +471,48 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
 
     //////////////////////////////////////////////////////////////////////////
 
+//#ifdef USE_PASSIVE_SCALAR
+//	flux_1.rhoS_1 = flux_1.rho * facePrim.S_1;
+//	flux_1.rhoS_2 = flux_1.rho * facePrim.S_2;
+//
+//	flux_2.rhoS_1 = flux_2.rho * facePrim.S_1 
+//				  + ( ax[5] * momentU[1+1]                          
+//				    + ay[5] * momentU[0+1] * momentV[1]             
+//				    + az[5] * momentU[0+1] *              momentW[1]
+//				    ) / (two * facePrim.lambda);
+//
+//	flux_2.rhoS_2 = flux_2.rho * facePrim.S_2 
+//				  + ( ax[6] * momentU[1+1]                          
+//				    + ay[6] * momentU[0+1] * momentV[1]             
+//				    + az[6] * momentU[0+1] *              momentW[1]
+//				    ) / (two * facePrim.lambda);
+//
+//	flux_3.rhoS_1 = flux_3.rho * facePrim.S_1
+//				  + at[5] * momentU[0 + 1]
+//				  / ( two * facePrim.lambda );
+//
+//	flux_3.rhoS_2 = flux_3.rho * facePrim.S_2
+//				  + at[6] * momentU[0 + 1]
+//				  / ( two * facePrim.lambda );
+//
+//    
+//	real tauS = parameters.D * two * facePrim.lambda;
+//
+//	real dt = parameters.dt;
+//
+//    real timeCoefficientsScalar [3];
+//
+//	timeCoefficientsScalar[0] =							dt;
+//	timeCoefficientsScalar[1] =					-tauS * dt;
+//	timeCoefficientsScalar[2] = c1o2 * dt * dt - tauS * dt;
+//
+//    flux.rhoS_1 = ( timeCoefficientsScalar[0] * flux_1.rhoS_1 + timeCoefficientsScalar[1] * flux_2.rhoS_1 + timeCoefficientsScalar[2] * flux_3.rhoS_1 ) * parameters.dx * parameters.dx * facePrim.rho;
+//    flux.rhoS_2 = ( timeCoefficientsScalar[0] * flux_1.rhoS_2 + timeCoefficientsScalar[1] * flux_2.rhoS_2 + timeCoefficientsScalar[2] * flux_3.rhoS_2 ) * parameters.dx * parameters.dx * facePrim.rho;
+//
+//#endif // USE_PASSIVE_SCALAR
+
+    //////////////////////////////////////////////////////////////////////////
+
 #ifdef USE_PASSIVE_SCALAR
 
 	flux_2.rhoS_1 = ( ax[5] * momentU[1+1]                          
@@ -631,5 +562,7 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+} // namespace GksGpu
 
 #endif

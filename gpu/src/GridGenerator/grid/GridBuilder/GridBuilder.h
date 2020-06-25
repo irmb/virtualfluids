@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file GridBuilder.h
-//! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz
-//=======================================================================================
 #ifndef GridBuilder_H
 #define GridBuilder_H
 
@@ -75,6 +43,9 @@ public:
     virtual void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY, std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY, std::vector<int>& distZ) = 0;
     virtual VF_PUBLIC uint getNumberOfGridLevels() const = 0;
 
+
+    virtual void writeArrows(std::string fileName) const = 0;
+
 	virtual SPtr<Grid> getGrid(uint level) = 0;
 
     virtual unsigned int getNumberOfNodes(unsigned int level) const = 0;
@@ -91,9 +62,27 @@ public:
 
     virtual uint getVelocitySize(int level) const = 0;
     virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const = 0;
+    virtual uint getPressureSize(int level) const = 0;
+    virtual void getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const = 0;
     virtual void getVelocityQs(real* qs[27], int level) const = 0;
+    virtual void getPressureQs(real* qs[27], int level) const = 0;
+
+    virtual uint getGeometrySize(int level) const = 0;
+    virtual void getGeometryIndices(int* indices, int level) const = 0;
+    virtual void getGeometryQs(real* qs[27], int level) const = 0;
+    virtual bool hasGeometryValues() const = 0;
+    virtual void getGeometryValues(real* vx, real* vy, real* vz, int level) const = 0;
+
+    virtual uint getCommunicationProcess(int direction) = 0;
 
     virtual SPtr<BoundaryCondition> getBoundaryCondition( SideType side, uint level ) const = 0;
+
+    virtual SPtr<GeometryBoundaryCondition> getGeometryBoundaryCondition( uint level ) const = 0;
+
+    virtual uint getNumberOfSendIndices( int direction, uint level ) = 0;
+    virtual uint getNumberOfReceiveIndices( int direction, uint level ) = 0;
+    virtual void getSendIndices( int* sendIndices, int direction, int level ) = 0;
+    virtual void getReceiveIndices( int* sendIndices, int direction, int level ) = 0;
 
 };
 

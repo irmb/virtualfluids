@@ -1,243 +1,1133 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//  _    ___      __              __________      _     __        ______________   __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file Parameter.h
-//! \ingroup Parameter
-//! \author Martin Schoenherr
-//=======================================================================================
+//////////////////////////////////////////////////////////////////////////
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
+#include <vector>
+#include <functional>
 #include "LBM/LB.h"
+#include "LBM/D3Q27.h"
+#include "Calculation/PorousMedia.h"
+//#include "Output/LogWriter.hpp"
+//#include "boost/serialization/serialization.hpp"
+//#include "boost/serialization/vector.hpp"
+
+#include <cuda_runtime.h>
+#include <helper_cuda.h>
+//random numbers
+#include <curand.h>
+#include <curand_kernel.h>
 #include "Core/PointerDefinitions.h"
 #include "VirtualFluidsDefinitions.h"
 
-//! \struct ParameterStruct
-//! \brief struct holds and manages the LB-parameter of the simulation
-//! \brief For this purpose it holds structures and pointer for host and device data, respectively.
+#include "Kernel/Utilities/KernelType.h"
+
+class ConfigData;
+class Communicator;
+
+//struct
 struct ParameterStruct{
+	bool evenOrOdd;
+	unsigned int numberofthreads;
+
+	//distributions///////////
+	//Distributions19 d0;
+	Distributions27 d0;
+	Distributions27 d0SP;
+
+	//distributions F3////////
+	Distributions6 g6;
+
+	//thermo//////////////////
+	Distributions7 d7;
+	Distributions27 d27;
+	real *Conc, *Conc_Full;
+	real diffusivity;
+	//BC NoSlip
+	TempforBoundaryConditions Temp;
+	//BC Velocity
+	TempVelforBoundaryConditions TempVel;
+	//BC Pressure
+	TempPressforBoundaryConditions TempPress;
+	//Plane Conc
+	real *ConcPlaneIn, *ConcPlaneOut1, *ConcPlaneOut2;
+	std::vector<double> PlaneConcVectorIn, PlaneConcVectorOut1, PlaneConcVectorOut2;
+
+	//trafo///////////////////
+	real mTtoWx, mTtoWy, mTtoWz;
+	real cTtoWx, cTtoWy, cTtoWz;
+
+	//MGstrafo////////////////
+	real cStartx, cStarty, cStartz;
+	real cFx, cFy, cFz;
+
+	//geo/////////////////////
+	int *geo;
+	unsigned int *geoSP;
+
+	//k///////////////////////
+	unsigned int *k;
+
+	//neighbor////////////////
+	//unsigned int *neighborX, *neighborY, *neighborZ;
+	unsigned int *neighborX_SP, *neighborY_SP, *neighborZ_SP, *neighborWSB_SP;
+
+	//coordinates////////////
+	//unsigned int *coordX_SP, *coordY_SP, *coordZ_SP;
+	real *coordX_SP, *coordY_SP, *coordZ_SP;
+
+	//vel parab///////////////
+	real *vParab;
+
+	// turbulent viscosity ///
+	real *turbViscosity;
+    real *gSij, *gSDij, *gDxvx, *gDyvx, *gDzvx, *gDxvy, *gDyvy, *gDzvy, *gDxvz, *gDyvz, *gDzvz; //DebugInformation
+
+	//macroscopic values//////
+	real *vx,    *vy,    *vz,    *rho;
+	real *vx_SP, *vy_SP, *vz_SP, *rho_SP, *press_SP;
+	real vis, omega;
+
+	//derivations for iso test
+	real *dxxUx, *dyyUy, *dzzUz;
+
+	//median-macro-values/////
+	real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
+	real *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
+	//Advection-Diffusion
+	real *Conc_Med, *Conc_Med_Out;
+
+	//grid////////////////////
+	unsigned int nx, ny, nz;
+	unsigned int gridNX, gridNY, gridNZ;
+
+	//size of matrix//////////
+	unsigned int size_Mat;
+	unsigned int sizePlaneXY, sizePlaneYZ, sizePlaneXZ;
+
+	//size of sparse matrix//////////
+	unsigned int size_Mat_SP;
+	unsigned int size_Array_SP;
+
+	//size of Plane btw. 2 GPUs//////
+	unsigned int sizePlaneSB, sizePlaneRB, startB, endB;
+	unsigned int sizePlaneST, sizePlaneRT, startT, endT;
+	bool isSetSendB, isSetRecvB, isSetSendT, isSetRecvT;
+	int *SendT, *SendB, *RecvT, *RecvB;
+
+	//size of Plane for PressMess
+	unsigned int sizePlanePress, startP;
+	unsigned int sizePlanePressIN, startPIN;
+	unsigned int sizePlanePressOUT, startPOUT;
+	bool isSetPress;
+
+	//memsizeSP/////////////////
+	unsigned int mem_size_real_SP;
+	unsigned int mem_size_int_SP;
+
+	//memsize/////////////////
+	unsigned int mem_size_real;
+	unsigned int mem_size_int;
+	unsigned int mem_size_bool;
+	unsigned int mem_size_real_yz;
+
+	//print///////////////////
+	unsigned int startz, endz;
+	real Lx,Ly,Lz,dx;
+	real distX, distY, distZ;
+
+	//interface////////////////
+	bool need_interface[6];
+	unsigned int XdistKn, YdistKn, ZdistKn;
+	InterpolationCellCF intCF;
+	InterpolationCellFC intFC;
+	unsigned int K_CF;
+	unsigned int K_FC;
+	unsigned int mem_size_kCF;
+	unsigned int mem_size_kFC;
+
+	//offset//////////////////
+	OffsetCF offCF;
+	OffsetFC offFC;
+	unsigned int mem_size_kCF_off;
+	unsigned int mem_size_kFC_off;
+
+	//BC's////////////////////
+	QforBoundaryConditions  QWall,   Qinflow,      Qoutflow,      QSlip;
+	unsigned int            kQ=0,      kInflowQ=0,     kOutflowQ=0,     kSlipQ=0;
+	unsigned int            kQread,  kInflowQread, kOutflowQread, kSlipQread;
+
+	QforBoundaryConditions  QpressX0,QpressX1,QpressY0,QpressY1,QpressZ0,QpressZ1;
+	QforBoundaryConditions  QPropeller;
+	QforBoundaryConditions  QPress;
+	QforBoundaryConditions  QGeom;
+	QforBoundaryConditions  QGeomNormalX,    QGeomNormalY,    QGeomNormalZ;
+	QforBoundaryConditions  QInflowNormalX,  QInflowNormalY,  QInflowNormalZ;
+	QforBoundaryConditions  QOutflowNormalX, QOutflowNormalY, QOutflowNormalZ;
+	QforBoundaryConditions  QInlet, QOutlet, QPeriodic;
+	unsigned int            kInletQread, kOutletQread;
+	unsigned int            kPressQ=0, kPressQread;
+	//testRoundoffError
+	Distributions27         kDistTestRE;
+
 	//////////////////////////////////////////////////////////////////////////
-	//! \brief decides if the simulation timestep is even or odd
-	//! \brief this information is important for the esoteric twist
-	bool isEvenTimestep;
+	//velocities to fit the force
+	real *VxForce, *VyForce, *VzForce;
 	//////////////////////////////////////////////////////////////////////////
-	//! \brief stores the number of threads per GPU block
-	uint numberofthreads;
-	//////////////////////////////////////////////////////////////////////////
-	//! \brief store all distribution functions for the D3Q27
-	Distributions27 distributions;
-	//////////////////////////////////////////////////////////////////////////
-	//! \brief stores the type for every lattice node (f.e. fluid node)
-	uint *typeOfGridNode;
-	//////////////////////////////////////////////////////////////////////////
-	//! \brief store the neighbors in +X, +Y, +Z, and in diagonal negative direction
-	//! \brief this information is important because we use an indirect addressing scheme
-	uint *neighborX, *neighborY, *neighborZ, *neighborInverse;
-	//////////////////////////////////////////////////////////////////////////
-	//! \brief store the coordinates for every lattice node 
-	real *coordinateX, *coordinateY, *coordinateZ;
-	//////////////////////////////////////////////////////////////////////////
-	//! \brief store the macroscopic values (velocity, density, pressure)
-	//! \brief for every lattice node
-	real *velocityX, *velocityY, *velocityZ, *rho, *pressure;
-	//! \brief stores the value for omega
-	real omega;
-	//////////////////////////////////////////////////////////////////////////
-	//! \brief stores the number of nodes (based on indirect addressing scheme)
-	uint numberOfNodes;
-	//! \brief stores the size of the memory consumption for real/int values of the above arrays
-	uint mem_size_real, mem_size_int;
-	//////////////////////////////////////////////////////////////////////////
-	//! \brief stores the velocity boundary condition data
-	QforBoundaryConditions inflowBC;
-	//! \brief number of lattice nodes for the velocity boundary condition
-	uint numberOfInflowBCnodes;
-	//////////////////////////////////////////////////////////////////////////
-	//! \brief sets the forcing uniform on every fluid node in all three space dimensions 
-	real *forcing;
+
+	//Measure Points/////////
+	std::vector<MeasurePoints> MP; 
+	unsigned int* kMP;
+	real* VxMP;
+	real* VyMP;
+	real* VzMP;
+	real* RhoMP;
+	unsigned int memSizerealkMP, memSizeIntkMP,    numberOfPointskMP;
+	unsigned int numberOfValuesMP;
+
+	//Drag Lift//////////////
+	double *DragPreX, *DragPostX;
+	double *DragPreY, *DragPostY;
+	double *DragPreZ, *DragPostZ;
+	std::vector<double> DragXvector;
+	std::vector<double> DragYvector;
+	std::vector<double> DragZvector;
+
+	//2ndMoments////////////
+	real *kxyFromfcNEQ, *kyzFromfcNEQ, *kxzFromfcNEQ, *kxxMyyFromfcNEQ, *kxxMzzFromfcNEQ;
+
+	//3rdMoments////////////
+	real *CUMbbb, *CUMabc, *CUMbac, *CUMbca, *CUMcba, *CUMacb, *CUMcab;
+																				
+	//HigherMoments/////////
+	real *CUMcbb, *CUMbcb, *CUMbbc, *CUMcca, *CUMcac, *CUMacc, *CUMbcc, *CUMcbc, *CUMccb, *CUMccc;
+
+	//CpTop/////////////////													
+	int *cpTopIndex;															
+	double *cpPressTop;															
+	unsigned int numberOfPointsCpTop;							
+	std::vector< std::vector< double > > cpTop;	
+	std::vector< double > pressMirror;
+	std::vector< bool > isOutsideInterface;
+	unsigned int numberOfPointsPressWindow;
+
+																
+	//CpBottom/////////////										
+	int *cpBottomIndex;											
+	double *cpPressBottom;										
+	unsigned int numberOfPointsCpBottom;						
+	std::vector< std::vector< double > > cpBottom;
+
+	//CpBottom2////////////
+	int *cpBottom2Index;
+	double *cpPressBottom2;
+	unsigned int numberOfPointsCpBottom2;
+	std::vector< std::vector< double > > cpBottom2;
+
+	//Concentration////////
+	int *concIndex;
+	real *concentration;
+	unsigned int numberOfPointsConc;
+
+	//street X and Y velocity fractions///////
+	real *streetFractionXvelocity;
+	real *streetFractionYvelocity;
+	int *naschVelocity;
+	uint numberOfStreetNodes;
+
+	//deltaPhi
+	real deltaPhi;
+
+	////////////////////////////////////////////////////////////////////////////
+	//particles
+	PathLineParticles plp;
+	////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////////////////
+	//1D domain decomposition
+	std::vector< ProcessNeighbor27 > sendProcessNeighbor;
+	std::vector< ProcessNeighbor27 > recvProcessNeighbor;
+	///////////////////////////////////////////////////////
+	//3D domain decomposition
+	std::vector< ProcessNeighbor27 > sendProcessNeighborX;
+	std::vector< ProcessNeighbor27 > sendProcessNeighborY;
+	std::vector< ProcessNeighbor27 > sendProcessNeighborZ;
+	std::vector< ProcessNeighbor27 > recvProcessNeighborX;
+	std::vector< ProcessNeighbor27 > recvProcessNeighborY;
+	std::vector< ProcessNeighbor27 > recvProcessNeighborZ;
+	///////////////////////////////////////////////////////
+	//3D domain decomposition convection diffusion
+	std::vector< ProcessNeighbor27 > sendProcessNeighborADX;
+	std::vector< ProcessNeighbor27 > sendProcessNeighborADY;
+	std::vector< ProcessNeighbor27 > sendProcessNeighborADZ;
+	std::vector< ProcessNeighbor27 > recvProcessNeighborADX;
+	std::vector< ProcessNeighbor27 > recvProcessNeighborADY;
+	std::vector< ProcessNeighbor27 > recvProcessNeighborADZ;
+	///////////////////////////////////////////////////////
+	//3D domain decomposition F3
+	std::vector< ProcessNeighborF3 > sendProcessNeighborF3X;
+	std::vector< ProcessNeighborF3 > sendProcessNeighborF3Y;
+	std::vector< ProcessNeighborF3 > sendProcessNeighborF3Z;
+	std::vector< ProcessNeighborF3 > recvProcessNeighborF3X;
+	std::vector< ProcessNeighborF3 > recvProcessNeighborF3Y;
+	std::vector< ProcessNeighborF3 > recvProcessNeighborF3Z;
+	////////////////////////////////////////////////////////////////////////////
+
+
+
+	////////////////////////////////////////////////////////////////////////////
+	////Restart
+	//friend class boost::serialization::access;
+	//template<class Archive>
+	//void serialize(Archive & ar, const unsigned int version)
+	//{
+	// unsigned int i;
+	// for (i=0; i<size_Mat_SP;i++)
+	// {
+	//  ar & d0SP.f[0][i];
+	// }
+
+	// for (i=0; i<size_Mat;i++)
+	// {
+	//  ar & k[i];
+	// }
+	//}
+	////////////////////////////////////////////////////////////////////////////
 };
 
-//! \class Parameter implements the singleton design pattern.
-//! \brief Class for LBM-parameter management
 class VF_PUBLIC Parameter
 {
 public:
 	////////////////////////////////////////////////////////////////////////////
-	//! \brief generate a new instance of parameter object
-	static SPtr<Parameter> make();
-	//! \brief returns the instance generate a new instance of parameter object
+	////really ugly...should be in private...
+	//Parameter();
+	////////////////////////////////////////////////////////////////////////////
+    static SPtr<Parameter> make();
+	static SPtr<Parameter> make(SPtr<ConfigData> configData, Communicator* comm);
+
+
 	static Parameter* getInstanz();
-	//! \brief Pointer to instance of ParameterStruct - stored on Host System
-	ParameterStruct* getParH();
-	//! \brief Pointer to instance of ParameterStruct - stored on Device (GPU)
-	ParameterStruct* getParD();
-
-	//////////////////////////////////////////////////////////////////////////
-	//! \brief initialization of necessary parameters at startup
+	ParameterStruct* getParH(int level);
+	ParameterStruct* getParD(int level);
 	void initParameter();
+	void fillSparse(int level);
+
+	//measure points
+	void copyMeasurePointsArrayToVector(int lev);
+
+	//alloc
+	void cudaAllocFull(int lev);
+	void cudaFreeFull(int lev);
+
+	void cudaAllocCoord(int lev);
+	void cudaCopyCoord(int lev);
+	void cudaFreeCoord(int lev);
+
+	void cudaCopyPrint(int lev);
+	void cudaCopyMedianPrint(int lev);
+	void cudaCopyMedianADPrint(int lev);
+
+	void cudaAllocSP(int lev);
+	void cudaCopySP(int lev);
+	void cudaFreeSP(int lev);
+
+	void cudaAllocF3SP(int lev);
+
+	void cudaAllocNeighborWSB(int lev);
+	void cudaCopyNeighborWSB(int lev);
+	void cudaFreeNeighborWSB(int lev);
+
+	void cudaAllocTurbulentViscosity(int lev);
+	void cudaCopyTurbulentViscosityHD(int lev);
+	void cudaCopyTurbulentViscosityDH(int lev);
+	void cudaFreeTurbulentViscosity(int lev);
+
+	void cudaAllocMedianSP(int lev);
+	void cudaCopyMedianSP(int lev);
+	void cudaFreeMedianSP(int lev);
+	void cudaAllocMedianOut(int lev);
+	void cudaFreeMedianOut(int lev);
+
+	void cudaAllocMedianAD(int lev);
+	void cudaCopyMedianAD(int lev);
+	void cudaFreeMedianAD(int lev);
+	void cudaAllocMedianOutAD(int lev);
+	void cudaFreeMedianOutAD(int lev);
+
+	void cudaAllocInterfaceCF(int lev);
+	void cudaCopyInterfaceCF(int lev);
+	void cudaFreeInterfaceCF(int lev);
+	void cudaAllocInterfaceFC(int lev);
+	void cudaCopyInterfaceFC(int lev);
+	void cudaFreeInterfaceFC(int lev);
+	void cudaAllocInterfaceOffCF(int lev);
+	void cudaCopyInterfaceOffCF(int lev);
+	void cudaFreeInterfaceOffCF(int lev);
+	void cudaAllocInterfaceOffFC(int lev);
+	void cudaCopyInterfaceOffFC(int lev);
+	void cudaFreeInterfaceOffFC(int lev);
+
+	void cudaAllocVeloBC(int lev);
+	void cudaCopyVeloBC(int lev);
+	void cudaFreeVeloBC(int lev);
+	void cudaAllocOutflowBC(int lev);
+	void cudaCopyOutflowBC(int lev);
+	void cudaFreeOutflowBC(int lev);
+	void cudaAllocWallBC(int lev);
+	void cudaCopyWallBC(int lev);
+	void cudaFreeWallBC(int lev);
+	void cudaAllocSlipBC(int lev);
+	void cudaCopySlipBC(int lev);
+	void cudaFreeSlipBC(int lev);
+
+	void cudaAllocGeomValuesBC(int lev);
+	void cudaCopyGeomValuesBC(int lev);
+	void cudaFreeGeomValuesBC(int lev);
+	void cudaAllocGeomBC(int lev);
+	void cudaCopyGeomBC(int lev);
+	void cudaFreeGeomBC(int lev);
+	//Normals
+	void cudaAllocGeomNormals(int lev);
+	void cudaCopyGeomNormals(int lev);
+	void cudaFreeGeomNormals(int lev);
+	void cudaAllocInflowNormals(int lev);
+	void cudaCopyInflowNormals(int lev);
+	void cudaFreeInflowNormals(int lev);
+	void cudaAllocOutflowNormals(int lev);
+	void cudaCopyOutflowNormals(int lev);
+	void cudaFreeOutflowNormals(int lev);
+
+	void cudaAllocPress(int lev);
+	void cudaCopyPress(int lev);
+	void cudaFreePress(int lev);
+	void cudaAllocTestRE(int lev, unsigned int size);
+	void cudaCopyTestREtoDevice(int lev, unsigned int size);
+	void cudaCopyTestREtoHost(int lev, unsigned int size);
+	void cudaFreeTestRE(int lev);
+
+	void cudaAllocCpTop(int lev);
+	void cudaCopyCpTopInit(int lev);
+	void cudaCopyCpTop(int lev);
+	void cudaFreeCpTop(int lev);
+
+	void cudaAllocCpBottom(int lev);
+	void cudaCopyCpBottomInit(int lev);
+	void cudaCopyCpBottom(int lev);
+	void cudaFreeCpBottom(int lev);
+
+	void cudaAllocCpBottom2(int lev);
+	void cudaCopyCpBottom2Init(int lev);
+	void cudaCopyCpBottom2(int lev);
+	void cudaFreeCpBottom2(int lev);
+
+	void cudaAllocConcFile(int lev);
+	void cudaCopyConcFile(int lev);
+	void cudaCopyConcs(int lev);
+	void cudaFreeConcFile(int lev);
+
+	void cudaAllocStreetVelocityFractions(int lev);
+	void cudaCopyStreetVelocityFractions(int lev);
+	void cudaFreeStreetVelocityFractions(int lev);
+
+	void cudaAllocInlet(int lev);
+	void cudaCopyInlet(int lev);
+	void cudaFreeInlet(int lev);
+	void cudaAllocOutlet(int lev);
+	void cudaCopyOutlet(int lev);
+	void cudaFreeOutlet(int lev);
+
+
+	void cudaAllocPressX0(int lev);
+	void cudaCopyPressX0(int lev);
+	void cudaFreePressX0(int lev);
+	void cudaAllocPressX1(int lev);
+	void cudaCopyPressX1(int lev);
+	void cudaFreePressX1(int lev);
+
+	void cudaAllocVeloPropeller(int lev);
+	void cudaCopyVeloPropeller(int lev);
+	void cudaFreeVeloPropeller(int lev);
+
+	void cudaAllocMeasurePoints(int lev, int i);
+	void cudaCopyMeasurePoints(int lev, int i);
+	void cudaFreeMeasurePoints(int lev, int i);
+	void cudaAllocMeasurePointsIndex(int lev);
+	void cudaCopyMeasurePointsIndex(int lev);
+	void cudaCopyMeasurePointsToHost(int lev);
+	void cudaFreeMeasurePointsIndex(int lev);
+
+	void cudaAllocFsForCheckPointAndRestart(int lev);
+	void cudaCopyFsForRestart(int lev);
+	void cudaCopyFsForCheckPoint(int lev);
+	void cudaFreeFsForCheckPointAndRestart(int lev);
+
+	void cudaAllocDragLift(int lev, int numofelem);
+	void cudaCopyDragLift(int lev, int numofelem);
+	void cudaFreeDragLift(int lev);
+
+	void cudaAlloc2ndMoments(int lev, int numofelem);
+	void cudaCopy2ndMoments(int lev, int numofelem);
+	void cudaFree2ndMoments(int lev);
+
+	void cudaAlloc3rdMoments(int lev, int numofelem);
+	void cudaCopy3rdMoments(int lev, int numofelem);
+	void cudaFree3rdMoments(int lev);
+
+	void cudaAllocHigherMoments(int lev, int numofelem);
+	void cudaCopyHigherMoments(int lev, int numofelem);
+	void cudaFreeHigherMoments(int lev);
+
+	void cudaAllocForceVelo(int lev, int numofelem);
+	void cudaCopyForceVelo(int lev, int numofelem);
+	void cudaFreeForceVelo(int lev);
+
+	void cudaAllocForcing();
+	void cudaCopyForcingToDevice();
+	void cudaCopyForcingToHost();
+	void cudaFreeForcing();
 
 	//////////////////////////////////////////////////////////////////////////
-	//set methods
+	//Particles
+	void cudaAllocParticles(int lev);
+	void cudaCopyParticles(int lev);
+	void cudaFreeParticles(int lev);
+	//random value
+	void cudaAllocRandomValues();
 	//////////////////////////////////////////////////////////////////////////
-	//! \brief sets the limit of nodes, that can be written to a binary unstructured grid VTK file  
-	//! \param limitOfNodesForVTK holds the maximum number of nodes
-	void setlimitOfNodesForVTK(uint limitOfNodesForVTK);
-	//! \brief sets the LBM stencil
-	//! \param d3qxx holds the number of neighbors (f.e. 27)
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//Porous Media
+	void cudaAllocPorousMedia(PorousMedia* pm, int lev);
+	void cudaCopyPorousMedia(PorousMedia* pm, int lev);
+	void cudaFreePorousMedia(PorousMedia* pm, int lev);
+	//////////////////////////////////////////////////////////////////////////
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//Temperature
+	void cudaAllocConc(int lev);
+	void cudaCopyConcDH(int lev);
+	void cudaCopyConcHD(int lev);
+	void cudaFreeConc(int lev);
+	//////////////////////////////////////////////////////////////////////////
+	void cudaAllocTempFs(int lev);
+	//////////////////////////////////////////////////////////////////////////
+	void cudaAllocTempPressBC(int lev);
+	void cudaCopyTempPressBCHD(int lev);
+	void cudaFreeTempPressBC(int lev);
+	//////////////////////////////////////////////////////////////////////////
+	void cudaAllocTempVeloBC(int lev);
+	void cudaCopyTempVeloBCHD(int lev);
+	void cudaFreeTempVeloBC(int lev);
+	//////////////////////////////////////////////////////////////////////////
+	void cudaAllocTempNoSlipBC(int lev);
+	void cudaCopyTempNoSlipBCHD(int lev);
+	void cudaFreeTempNoSlipBC(int lev);
+	//////////////////////////////////////////////////////////////////////////
+	void cudaAllocPlaneConcIn(int lev, int numofelem);
+	void cudaCopyPlaneConcIn(int lev, int numofelem);
+	void cudaAllocPlaneConcOut1(int lev, int numofelem);
+	void cudaCopyPlaneConcOut1(int lev, int numofelem);
+	void cudaAllocPlaneConcOut2(int lev, int numofelem);
+	void cudaCopyPlaneConcOut2(int lev, int numofelem);
+	void cudaFreePlaneConc(int lev);
+	//////////////////////////////////////////////////////////////////////////
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//1D domain decomposition
+	void cudaAllocProcessNeighbor(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborFsHD(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborFsDH(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborIndex(int lev, unsigned int processNeighbor);
+	void cudaFreeProcessNeighbor(int lev, unsigned int processNeighbor);
+	//////////////////////////////////////////////////////////////////////////
+	//3D domain decomposition
+	void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborXFsHD(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor);
+	void cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor);
+	//
+	void cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborYIndex(int lev, unsigned int processNeighbor);
+	void cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor);
+	//
+	void cudaAllocProcessNeighborZ(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborZFsHD(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborZFsDH(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborZIndex(int lev, unsigned int processNeighbor);
+	void cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor);
+	//////////////////////////////////////////////////////////////////////////
+	//3D domain decomposition convection diffusion
+	void cudaAllocProcessNeighborADX(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborADXFsHD(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborADXFsDH(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborADXIndex(int lev, unsigned int processNeighbor);
+	void cudaFreeProcessNeighborADX(int lev, unsigned int processNeighbor);
+	//
+	void cudaAllocProcessNeighborADY(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborADYFsHD(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborADYFsDH(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborADYIndex(int lev, unsigned int processNeighbor);
+	void cudaFreeProcessNeighborADY(int lev, unsigned int processNeighbor);
+	//
+	void cudaAllocProcessNeighborADZ(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborADZFsHD(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborADZFsDH(int lev, unsigned int processNeighbor);
+	void cudaCopyProcessNeighborADZIndex(int lev, unsigned int processNeighbor);
+	void cudaFreeProcessNeighborADZ(int lev, unsigned int processNeighbor);
+	//////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//setter
+	void setForcing(real forcingX, real forcingY, real forcingZ);
+	void setQuadricLimiters(real quadricLimiterP, real quadricLimiterM, real quadricLimiterD);
+	void setPhi(real inPhi);
+	void setAngularVelocity(real inAngVel);
+	void setStepEnsight(unsigned int step);
+	void setOutputCount(unsigned int outputCount);
+	void setlimitOfNodesForVTK(unsigned int limitOfNodesForVTK);
+	void setStartTurn(unsigned int inStartTurn);
+	void setSizeMatSparse(int level);
+	void setDiffOn(bool isDiff);
+	void setCompOn(bool isComp);
+	void setDiffMod(int DiffMod);
+	void setDiffusivity(real Diffusivity);
 	void setD3Qxx(int d3qxx);
-	//! \brief sets timestep to stop the simulation
-	//! \param timestepEnd holds the last timestep of the simulation
-	void setTimestepEnd(uint timestepEnd);
-	//! \brief sets time interval to write output files
-	//! \param timestepOut holds the value for the output interval
-	void setTimestepOut(uint timestepOut);
-	//! \brief sets first timestep to write output files
-	//! \param timestepStartOut holds the value for the first output timestep
-	void setTimestepStartOut(uint timestepStartOut);
-	//! \brief sets the path, where the vtk-files are stored 
-	//! \param string "oPath" represents the output path
-	void setOutputPath(std::string outputPath);
-	//! \brief sets the prefix of the vtk-files name 
-	//! \param string "oPrefix" represents the file-name-prefix
-	void setOutputPrefix(std::string outputPrefix);
-	//! \brief sets the complete string for the vtk-files with results 
-	//! \param string "fname" represents the combination of path and prefix
-	void setPathAndFilename(std::string pathAndFilename);
-	//! \brief sets the status, if the vtk files should be printed
-	//! \param if printfiles is true, the vtk files will be printed 
+	void setMaxLevel(int maxlevel);
+	void setParticleBasicLevel(int pbl);
+	void setParticleInitLevel(int pil);
+	void setNumberOfParticles(int nop);
+	void setCalcParticles(bool calcParticles);
+	void setStartXHotWall(real startXHotWall);
+	void setEndXHotWall(real endXHotWall);
+	void setTEnd(unsigned int tend);
+	void setTOut(unsigned int tout);
+	void setTStartOut(unsigned int tStartOut);
+	void setTimestepOfCoarseLevel(unsigned int timestep);
+	void setCalcMedian(bool calcMedian);
+	void setCalcDragLift(bool calcDragLift);
+	void setCalcCp(bool calcCp);
+	void setWriteVeloASCIIfiles(bool writeVeloASCII);
+	void setCalcPlaneConc(bool calcPlaneConc);
+	void setTimeCalcMedStart(int CalcMedStart);
+	void setTimeCalcMedEnd(int CalcMedEnd);
+	void setMaxDev(int maxdev);
+	void setMyID(int myid);
+	void setNumprocs(int numprocs);
+	void setPressInID(unsigned int PressInID);
+	void setPressOutID(unsigned int PressOutID);
+	void setPressInZ(unsigned int PressInZ);
+	void setPressOutZ(unsigned int PressOutZ);
+	void settimestepForMP(unsigned int timestepForMP);
+	void setOutputPath(std::string oPath);
+	void setOutputPrefix(std::string oPrefix);
+	void setFName(std::string fname);
+	void setGeometryFileC(std::string GeometryFileC);
+	void setGeometryFileM(std::string GeometryFileM);
+	void setGeometryFileF(std::string GeometryFileF);
+	void setkFull(std::string kFull);
+	void setgeoFull(std::string geoFull);
+	void setgeoVec(std::string geoVec);
+	void setcoordX(std::string coordX);
+	void setcoordY(std::string coordY);
+	void setcoordZ(std::string coordZ);
+	void setneighborX(std::string neighborX);
+	void setneighborY(std::string neighborY);
+	void setneighborZ(std::string neighborZ);
+	void setneighborWSB(std::string neighborWSB);
+	void setscaleCFC(std::string scaleCFC);
+	void setscaleCFF(std::string scaleCFF);
+	void setscaleFCC(std::string scaleFCC);
+	void setscaleFCF(std::string scaleFCF);
+	void setscaleOffsetCF(std::string scaleOffsetCF);
+	void setscaleOffsetFC(std::string scaleOffsetFC);
+	void setgeomBoundaryBcQs(std::string geomBoundaryBcQs);
+	void setgeomBoundaryBcValues(std::string geomBoundaryBcValues);
+	void setnoSlipBcPos(std::string noSlipBcPos);
+	void setnoSlipBcQs(std::string noSlipBcQs);
+	void setnoSlipBcValue(std::string noSlipBcValue);
+	void setnoSlipBcValues(std::string noSlipBcValues);
+	void setslipBcPos(std::string slipBcPos);
+	void setslipBcQs(std::string slipBcQs);
+	void setslipBcValue(std::string slipBcValue);
+	void setpressBcPos(std::string pressBcPos);
+	void setpressBcQs(std::string pressBcQs);
+	void setpressBcValue(std::string pressBcValue);
+	void setpressBcValues(std::string pressBcValues);
+	void setvelBcQs(std::string velBcQs);
+	void setvelBcValues(std::string velBcValues);
+	void setinletBcQs(std::string inletBcQs);
+	void setinletBcValues(std::string inletBcValues);
+	void setoutletBcQs(std::string outletBcQs);
+	void setoutletBcValues(std::string outletBcValues);
+	void settopBcQs(std::string topBcQs);
+	void settopBcValues(std::string topBcValues);
+	void setbottomBcQs(std::string bottomBcQs);
+	void setbottomBcValues(std::string bottomBcValues);
+	void setfrontBcQs(std::string frontBcQs);
+	void setfrontBcValues(std::string frontBcValues);
+	void setbackBcQs(std::string backBcQs);
+	void setbackBcValues(std::string backBcValues);
+	void setwallBcQs(std::string wallBcQs);
+	void setwallBcValues(std::string wallBcValues);
+	void setperiodicBcQs(std::string periodicBcQs);
+	void setperiodicBcValues(std::string periodicBcValues);
+	void setpropellerCylinder(std::string propellerCylinder);
+	void setpropellerValues(std::string propellerValues);
+	void setpropellerQs(std::string propellerQs);
+	void setmeasurePoints(std::string measurePoints);
+	void setnumberNodes(std::string numberNodes);
+	void setLBMvsSI(std::string LBMvsSI);
+	void setcpTop(std::string cpTop);
+	void setcpBottom(std::string cpBottom);
+	void setcpBottom2(std::string cpBottom2);
+	void setConcentration(std::string concFile);
+	void setStreetVelocity(std::string streetVelocity);
 	void setPrintFiles(bool printfiles);
-	//! \brief sets the viscosity in LB units
-	//! \param viscosity in LB units 
-	void setViscosityLB(real viscosity);
-	//! \brief sets the velocity in LB units
-	//! \param velocity in LB units 
-	void setVelocityLB(real velocity);
-	//! \brief sets the viscosity ratio between SI and LB units
-	//! \param viscosityRatio SI/LB units 
-	void setViscosityRatio(real viscosityRatio);
-	//! \brief sets the velocity ratio between SI and LB units
-	//! \param velocityRatio SI/LB units 
-	void setVelocityRatio(real velocityRatio);
-	//! \brief sets the density ratio between SI and LB units
-	//! \param densityRatio SI/LB units 
-	void setDensityRatio(real densityRatio);
-	//! \brief sets the pressure ratio between SI and LB units
-	//! \param pressureRatio SI/LB units 
-	void setPressureRatio(real pressureRatio);
-	//! \brief sets the Reynolds number (Re) for the simulation
-	//! \param Reynolds number (Re) 
+	void setReadGeo(bool readGeo);
+	void setTemperatureInit(real Temp);
+	void setTemperatureBC(real TempBC);
+	void setViscosity(real Viscosity);
+	void setVelocity(real Velocity);
+	void setViscosityRatio(real ViscosityRatio);
+	void setVelocityRatio(real VelocityRatio);
+	void setDensityRatio(real DensityRatio);
+	void setPressRatio(real PressRatio);
+	void setRealX(real RealX);
+	void setRealY(real RealY);
 	void setRe(real Re);
-	//! \brief sets the necessary memory on the device(s)/GPU(s)
-	//! \param addMemory is the amount of additional memory 
-	//! \param reset decides if the value for overall GPU memory should be set to zero 
-	void setMemsizeGPU(double addMemory, bool reset);
+	void setFactorPressBC(real factorPressBC);
+	void setIsGeo(bool isGeo);
+	void setIsGeoNormal(bool isGeoNormal);
+	void setIsInflowNormal(bool isInflowNormal);
+	void setIsOutflowNormal(bool isOutflowNormal);
+	void setIsProp(bool isProp);
+	void setIsCp(bool isCp);
+	void setConcFile(bool concFile);
+	void setStreetVelocityFile(bool streetVelocityFile);
+	void setUseMeasurePoints(bool useMeasurePoints);
+	void setUseWale(bool useWale);
+	void setUseInitNeq(bool useInitNeq);
+	void setSimulatePorousMedia(bool simulatePorousMedia);
+	void setIsF3(bool isF3);
+	void setclockCycleForMP(real clockCycleForMP);
+	void setDevices(std::vector<uint> devices);
+	void setGridX(std::vector<int> GridX);
+	void setGridY(std::vector<int> GridY);
+	void setGridZ(std::vector<int> GridZ);
+	void setDistX(std::vector<int> DistX);
+	void setDistY(std::vector<int> DistY);
+	void setDistZ(std::vector<int> DistZ);
+	void setScaleLBMtoSI(std::vector<real> scaleLBMtoSI);
+	void setTranslateLBMtoSI(std::vector<real> translateLBMtoSI);
+	void setMinCoordX(std::vector<real> MinCoordX);
+	void setMinCoordY(std::vector<real> MinCoordY);
+	void setMinCoordZ(std::vector<real> MinCoordZ);
+	void setMaxCoordX(std::vector<real> MaxCoordX);
+	void setMaxCoordY(std::vector<real> MaxCoordY);
+	void setMaxCoordZ(std::vector<real> MaxCoordZ);
+	void setNeedInterface(std::vector<bool> NeedInterface);
+	void setTempH(TempforBoundaryConditions* TempH);
+	void setTempD(TempforBoundaryConditions* TempD);
+	void setTempVelH(TempVelforBoundaryConditions* TempVelH);
+	void setTempVelD(TempVelforBoundaryConditions* TempVelD);
+	void setTempPressH(TempPressforBoundaryConditions* TempPressH);
+	void setTempPressD(TempPressforBoundaryConditions* TempPressD);
+	void setTimeDoCheckPoint(unsigned int tDoCheckPoint);
+	void setTimeDoRestart(unsigned int tDoRestart);   
+	void setDoCheckPoint(bool doCheckPoint);
+	void setDoRestart(bool doRestart);
+	void setObj(std::string str, bool isObj);
+	void setGeometryValues(bool GeometryValues);
+	void setCalc2ndOrderMoments(bool is2ndOrderMoments);
+	void setCalc3rdOrderMoments(bool is3rdOrderMoments);
+	void setCalcHighOrderMoments(bool isHighOrderMoments);
+	void setMemsizeGPU(double admem, bool reset);
+	//1D domain decomposition
+	void setPossNeighborFiles(std::vector<std::string> possNeighborFiles, std::string sor);
+	void setNumberOfProcessNeighbors(unsigned int numberOfProcessNeighbors, int level, std::string sor);
+	void setIsNeighbor(bool isNeighbor);
+	//3D domain decomposition
+	void setPossNeighborFilesX(std::vector<std::string> possNeighborFiles, std::string sor);
+	void setPossNeighborFilesY(std::vector<std::string> possNeighborFiles, std::string sor);
+	void setPossNeighborFilesZ(std::vector<std::string> possNeighborFiles, std::string sor);
+	void setNumberOfProcessNeighborsX(unsigned int numberOfProcessNeighbors, int level, std::string sor);
+	void setNumberOfProcessNeighborsY(unsigned int numberOfProcessNeighbors, int level, std::string sor);
+	void setNumberOfProcessNeighborsZ(unsigned int numberOfProcessNeighbors, int level, std::string sor);
+	void setIsNeighborX(bool isNeighbor);
+	void setIsNeighborY(bool isNeighbor);
+	void setIsNeighborZ(bool isNeighbor);
+	//void setkInflowQ(unsigned int kInflowQ);
+	//void setkOutflowQ(unsigned int kOutflowQ);
+	//void setQinflowH(QforBoundaryConditions* QinflowH);
+	//void setQinflowD(QforBoundaryConditions* QinflowD);
+	//void setQoutflowH(QforBoundaryConditions* QoutflowH);
+	//void setQoutflowD(QforBoundaryConditions* QoutflowD);
+	//Normals
+	void setgeomBoundaryNormalX(std::string geomNormalX);
+	void setgeomBoundaryNormalY(std::string geomNormalY);
+	void setgeomBoundaryNormalZ(std::string geomNormalZ);
+	void setInflowBoundaryNormalX(std::string inflowNormalX);
+	void setInflowBoundaryNormalY(std::string inflowNormalY);
+	void setInflowBoundaryNormalZ(std::string inflowNormalZ);
+	void setOutflowBoundaryNormalX(std::string outflowNormalX);
+	void setOutflowBoundaryNormalY(std::string outflowNormalY);
+	void setOutflowBoundaryNormalZ(std::string outflowNormalZ);
+	//Kernel
+	void setMainKernel(KernelType kernel);
+	void setMultiKernelOn(bool isOn);
+	void setMultiKernelLevel(std::vector< int> kernelLevel);
+	void setMultiKernel(std::vector< KernelType> kernel);
 
-	//////////////////////////////////////////////////////////////////////////
-	//get methods
-	//////////////////////////////////////////////////////////////////////////
-	//! \brief return the limit of nodes, that can be written to a binary unstructured grid VTK file  
-	uint getlimitOfNodesForVTK();
-	//! \brief return if the timestep is even or odd
-	bool getIsTimestepEven();
-	//! \brief return if the simulation should write VTK files
+	void setADKernel(ADKernelType adKernel);
+
+	//getter
+	double* getForcesDouble();
+	real* getForcesHost();
+	real* getForcesDev();
+	double* getQuadricLimitersDouble();
+	real* getQuadricLimitersHost();
+	real* getQuadricLimitersDev();
+	real getPhi();
+	real getAngularVelocity();
+	real getStartXHotWall();
+	real getEndXHotWall();	
+	unsigned int getStepEnsight();
+	unsigned int getOutputCount();
+	unsigned int getlimitOfNodesForVTK();
+	unsigned int getStartTurn();
+	bool getEvenOrOdd(int level);
+	bool getDiffOn();
+	bool getCompOn();
 	bool getPrintFiles();
-	//! \brief return the number of neighbors of a lattice node (stencil)
+	bool getReadGeo();
+	bool getCalcMedian();
+	bool getCalcDragLift();
+	bool getCalcCp();
+	bool getCalcParticle();
+	bool getWriteVeloASCIIfiles();
+	bool getCalcPlaneConc();
+	int getFine();
+	int getCoarse();
+	int getParticleBasicLevel();
+	int getParticleInitLevel();
+	int getNumberOfParticles();
+	int getDiffMod();
+	int getFactorNZ();
 	int getD3Qxx();
-	//! \brief return the output path
+	int getMaxLevel();
+	int getTimeCalcMedStart();
+	int getTimeCalcMedEnd();
+	int getMaxDev();
+	int getMyID();
+	int getNumprocs();
 	std::string getOutputPath();
-	//! \brief return the prefix of the output files
 	std::string getOutputPrefix();
-	//! \brief return the combination of output path and prefix
-	std::string getPathAndFilename();
-	//! \brief return the timestep to start the simulation (in this code version = 1)
-	uint getTimestepStart();
-	//! \brief return the timestep to end the simulation
-	uint getTimestepEnd();
-	//! \brief return the time interval to write output files
-	uint getTimestepOut();
-	//! \brief return the timestep to start writing output files
-	uint getTimestepStartOut();
-	//! \brief return the viscosity in LB units
-	real getViscosityLB();
-	//! \brief return the velocity in LB units
-	real getVelocityLB();
-	//! \brief return the viscosity ratio in SI/LB units
+	std::string getFName();
+	std::string getGeometryFileC();
+	std::string getGeometryFileM();
+	std::string getGeometryFileF();
+	std::string getkFull();
+	std::string getgeoFull();
+	std::string getgeoVec();
+	std::string getcoordX();
+	std::string getcoordY();
+	std::string getcoordZ();
+	std::string getneighborX();
+	std::string getneighborY();
+	std::string getneighborZ();
+	std::string getneighborWSB();
+	std::string getscaleCFC();
+	std::string getscaleCFF();
+	std::string getscaleFCC();
+	std::string getscaleFCF();
+	std::string getscaleOffsetCF();
+	std::string getscaleOffsetFC();
+	std::string getgeomBoundaryBcQs();
+	std::string getgeomBoundaryBcValues();
+	std::string getnoSlipBcPos();
+	std::string getnoSlipBcQs();
+	std::string getnoSlipBcValue();
+	std::string getnoSlipBcValues();
+	std::string getslipBcPos();
+	std::string getslipBcQs();
+	std::string getslipBcValue();
+	std::string getpressBcPos();
+	std::string getpressBcQs();
+	std::string getpressBcValue();
+	std::string getpressBcValues();
+	std::string getvelBcQs();
+	std::string getvelBcValues();
+	std::string getinletBcQs();
+	std::string getinletBcValues();
+	std::string getoutletBcQs();
+	std::string getoutletBcValues();
+	std::string gettopBcQs();
+	std::string gettopBcValues();
+	std::string getbottomBcQs();
+	std::string getbottomBcValues();
+	std::string getfrontBcQs();
+	std::string getfrontBcValues();
+	std::string getbackBcQs();
+	std::string getbackBcValues();
+	std::string getwallBcQs();
+	std::string getwallBcValues();
+	std::string getperiodicBcQs();
+	std::string getperiodicBcValues();
+	std::string getpropellerQs();
+	std::string getpropellerCylinder();
+	std::string getpropellerValues();
+	std::string getmeasurePoints();
+	std::string getnumberNodes();
+	std::string getLBMvsSI();
+	std::string getcpTop();
+	std::string getcpBottom();
+	std::string getcpBottom2();
+	std::string getConcentration();
+	std::string getStreetVelocityFilePath();
+	unsigned int getPressInID();
+	unsigned int getPressOutID();
+	unsigned int getPressInZ();
+	unsigned int getPressOutZ();
+	unsigned int getMemSizereal(int level);
+	unsigned int getMemSizeInt(int level);
+	unsigned int getMemSizeBool(int level);
+	unsigned int getMemSizerealYZ(int level);
+	unsigned int getSizeMat(int level);
+	unsigned int getTStart();
+	unsigned int getTInit();
+	unsigned int getTEnd();
+	unsigned int getTOut();
+	unsigned int getTStartOut();
+	unsigned int getTimestepForMP();
+	unsigned int getTimestepOfCoarseLevel();
+	real getDiffusivity();
+	real getTemperatureInit();
+	real getTemperatureBC();
+	real getViscosity();
+	real getVelocity();
 	real getViscosityRatio();
-	//! \brief return the velocity ratio in SI/LB units
 	real getVelocityRatio();
-	//! \brief return the density ratio in SI/LB units
 	real getDensityRatio();
-	//! \brief return the pressure ratio in SI/LB units
-	real getPressureRatio();
-	//! \brief return the Reynolds number
+	real getPressRatio();
+	real getRealX();
+	real getRealY();
 	real getRe();
-	//! \brief return the used device memory
+	real getFactorPressBC();
+	real getclockCycleForMP();
+	std::vector<uint> getDevices();
+	std::vector<int> getGridX();
+	std::vector<int> getGridY();
+	std::vector<int> getGridZ();
+	std::vector<int> getDistX();
+	std::vector<int> getDistY();
+	std::vector<int> getDistZ();
+	std::vector<real> getScaleLBMtoSI();
+	std::vector<real> getTranslateLBMtoSI();
+	std::vector<real> getMinCoordX();
+	std::vector<real> getMinCoordY();
+	std::vector<real> getMinCoordZ();
+	std::vector<real> getMaxCoordX();
+	std::vector<real> getMaxCoordY();
+	std::vector<real> getMaxCoordZ();
+	std::vector<bool> getNeedInterface();
+	TempforBoundaryConditions* getTempH();
+	TempforBoundaryConditions* getTempD();
+	TempVelforBoundaryConditions* getTempVelH();
+	TempVelforBoundaryConditions* getTempVelD();
+	TempPressforBoundaryConditions* getTempPressH();
+	TempPressforBoundaryConditions* getTempPressD();
+	unsigned int getTimeDoCheckPoint();
+	unsigned int	getTimeDoRestart();   
+	bool getDoCheckPoint();
+	bool getDoRestart();
+	bool overWritingRestart(unsigned int t);
+	bool getIsGeo();
+	bool getIsGeoNormal();
+	bool getIsInflowNormal();
+	bool getIsOutflowNormal();
+	bool getIsProp();
+	bool getIsCp();
+	bool getIsGeometryValues();
+	bool getCalc2ndOrderMoments();
+	bool getCalc3rdOrderMoments();
+	bool getCalcHighOrderMoments();
+	bool getConcFile();
+	bool isStreetVelocityFile();
+	bool getUseMeasurePoints();
+	bool getUseWale();
+	bool getUseInitNeq();
+	bool getSimulatePorousMedia();
+	bool getIsF3();
 	double getMemsizeGPU();
+	//1D domain decomposition
+	std::vector<std::string> getPossNeighborFiles(std::string sor);
+	unsigned int getNumberOfProcessNeighbors(int level, std::string sor);
+	bool getIsNeighbor();
+	//3D domain decomposition
+	std::vector<std::string> getPossNeighborFilesX(std::string sor);
+	std::vector<std::string> getPossNeighborFilesY(std::string sor);
+	std::vector<std::string> getPossNeighborFilesZ(std::string sor);
+	unsigned int getNumberOfProcessNeighborsX(int level, std::string sor);
+	unsigned int getNumberOfProcessNeighborsY(int level, std::string sor);
+	unsigned int getNumberOfProcessNeighborsZ(int level, std::string sor);
+	bool getIsNeighborX();
+	bool getIsNeighborY();
+	bool getIsNeighborZ();
+	//Normals
+	std::string getgeomBoundaryNormalX();
+	std::string getgeomBoundaryNormalY();
+	std::string getgeomBoundaryNormalZ();
+	std::string getInflowBoundaryNormalX();
+	std::string getInflowBoundaryNormalY();
+	std::string getInflowBoundaryNormalZ();
+	std::string getOutflowBoundaryNormalX();
+	std::string getOutflowBoundaryNormalY();
+	std::string getOutflowBoundaryNormalZ();
+	//CUDA random number
+	curandState* getRandomState();
+	//Kernel
+	KernelType getMainKernel();
+	bool getMultiKernelOn();
+	std::vector< int> getMultiKernelLevel();
+	std::vector< KernelType> getMultiKernel();
 
-	//////////////////////////////////////////////////////////////////////////
-	//! Class destructor
+	ADKernelType getADKernel();
+
 	~Parameter();
+
+    public:
+        //Forcing///////////////
+        real *forcingH, *forcingD;
+        double hostForcing[3];
+
+    //////////////////////////////////////////////////////////////////////////
+    // limiters
+    real *quadricLimitersH, *quadricLimitersD;
+    double hostQuadricLimiters[3];
+
+	////////////////////////////////////////////////////////////////////////////
+    // initial condition
+    void setInitialCondition(std::function<void(real,real,real,real&,real&,real&,real&)> initialCondition);
+    std::function<void(real,real,real,real&,real&,real&,real&)>& getInitialCondition();
+
 protected:
 private:
-	//! \brief instance of parameter object 
-	static Parameter* instance;
-	//! \brief stencil for the LB simulation, number of node neighbors
+	static Parameter* instanz;
+	bool compOn;
+	bool diffOn;
+	bool isF3;
+	bool calcDragLift, calcCp;
+	bool writeVeloASCII;
+	bool calcPlaneConc;
+	int diffMod;
+	int coarse, fine, maxlevel;
+	int factor_gridNZ;
 	int D3Qxx;
-	//! \brief limit of nodes, that can be written to a binary unstructured grid VTK file  
-	uint limitOfNodesForVTK;
-	//! \brief last timestep of the simulation
-	uint timestepEnd;
-	//! \brief time interval to write output files
-	uint timestepOut;
-	//! \brief timestep - start writing output files
-	uint timestepStartOut;
-	//! \brief Reynolds number
-	real Re;
-	//! \brief viscosity and velocity in LB units
-	real viscosityLB, velocityLB;
-	//! \brief ratio SI units / LB units for viscosity, velocity, density and pressure
-	real viscosityRatio, velocityRatio;
-	real densityRatio, pressRatio;
-	//! \brief used device memory
+	InitCondition ic;
 	double memsizeGPU;
-	//! \brief write output files on/off
-	bool printFiles;
-	//! \brief strings to store output path, prefix and combination of both
-	std::string pathAndFilename, outputPath, outputPrefix;
+	unsigned int limitOfNodesForVTK;
+	unsigned int outputCount;
+	unsigned int timestep;
 
-	//! \brief pointer to LB-parameter struct on host system
-	ParameterStruct* parametersOnHost;
-	//! \brief pointer to LB-parameter struct on device/GPU
-	ParameterStruct* parametersOnDevice;
 
-	//! Class default constructor
+	//Kernel
+	KernelType mainKernel;
+	bool multiKernelOn;
+	std::vector< int> multiKernelLevel;
+	std::vector< KernelType> multiKernel;
+
+	ADKernelType adKernel;
+
+	//////////////////////////////////////////////////////////////////////////
+	//particles
+	int particleBasicLevel, particleInitLevel;
+	int numberOfParticles;
+	bool calcParticles;
+	real stickToSolid;
+	real startXHotWall, endXHotWall;
+	//////////////////////////////////////////////////////////////////////////
+	//CUDA random number generation
+	curandState* devState;
+	//////////////////////////////////////////////////////////////////////////
+
+	//Temperature
+	TempforBoundaryConditions *TempH, *TempD;
+	//Temperature Velocity
+	TempVelforBoundaryConditions *TempVelH, *TempVelD;
+	//Temperature Pressure
+	TempPressforBoundaryConditions *TempPressH, *TempPressD;
+
+	//Drehung///////////////
+	real Phi, angularVelocity;
+	unsigned int startTurn;
+
+	//Step of Ensight writing//
+	unsigned int stepEnsight;
+
+	std::vector<ParameterStruct*> parH;
+	std::vector<ParameterStruct*> parD;
+	//LogWriter output;
+
 	Parameter();
-	//Parameter(const Parameter&);
+	Parameter(SPtr<ConfigData> configData, Communicator* comm);
+	Parameter(const Parameter&);
+	void initInterfaceParameter(int level);
+	real TrafoXtoWorld(int CoordX, int level);
+	real TrafoYtoWorld(int CoordY, int level);
+	real TrafoZtoWorld(int CoordZ, int level);
+public:
+	real TrafoXtoMGsWorld(int CoordX, int level);
+	real TrafoYtoMGsWorld(int CoordY, int level);
+	real TrafoZtoMGsWorld(int CoordZ, int level);
+private:
+	//Multi GPGPU///////////////
+	//1D domain decomposition
+	std::vector<std::string> possNeighborFilesSend;
+	std::vector<std::string> possNeighborFilesRecv;
+	bool isNeigbor;
+	//3D domain decomposition
+	std::vector<std::string> possNeighborFilesSendX, possNeighborFilesSendY, possNeighborFilesSendZ;
+	std::vector<std::string> possNeighborFilesRecvX, possNeighborFilesRecvY, possNeighborFilesRecvZ;
+	bool isNeigborX, isNeigborY, isNeigborZ;
+	////////////////////////////////////////////////////////////////////////////
+	////Restart
+	//friend class boost::serialization::access;
+	//template<class Archive>
+	//void serialize(Archive & ar, const unsigned int version)
+	//{
+	// unsigned int i;
+	// int j;
+	// for (j=coarse; j<=fine; j++)
+	// {
+	//  for (i=0; i<parH[j]->size_Mat_SP;i++)
+	//  {
+	//   ar & parH[j]->d0SP.f[0][i];
+	//  }
+
+	//  for (i=0; i<parH[j]->size_Mat;i++)
+	//  {
+	//   ar & parH[j]->k[j];
+	//  }
+	// }
+	//}
+	////////////////////////////////////////////////////////////////////////////
+    // initial condition
+    std::function<void(real,real,real,real&,real&,real&,real&)> initialCondition;
 };
 
 #endif

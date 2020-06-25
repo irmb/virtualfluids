@@ -1,39 +1,6 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file WbWriterVtkXmlASCII.cpp
-//! \ingroup writer
-//! \author Soeren Freudiger, Sebastian Geller
-//=======================================================================================
 #include <basics/writer/WbWriterVtkXmlASCII.h>
 #include <basics/utilities/UbLogger.h>
 #include <cstring>
-#include <limits>
 
 using namespace std;
 
@@ -119,7 +86,7 @@ std::string WbWriterVtkXmlASCII::writeParallelFile(const string& filename,vector
    out<<"    </PPoints>\n";
    out<<"    <PPointData>\n";
    for(size_t s=0; s<pointDataNames.size(); s++)
-      out<< "      <PDataArray type=\"Float64\" Name=\""<< pointDataNames[s] <<"\"/>\n";
+      out<< "      <PDataArray type=\"Float32\" Name=\""<< pointDataNames[s] <<"\"/>\n";
    out<<"    </PPointData>\n";
    if (cellDataNames.size() > 0)
    {
@@ -839,7 +806,7 @@ std::string WbWriterVtkXmlASCII::writeOctsWithCellData(const string& filename,ve
    return vtkfilename;
 }
 /*===============================================================================*/
-std::string WbWriterVtkXmlASCII::writeOctsWithNodeData(const string& filename,vector< UbTupleFloat3 >& nodes, vector< UbTupleInt8 >& cells, vector< string >& datanames, vector< vector< double > >& nodedata)
+std::string WbWriterVtkXmlASCII::writeOctsWithNodeData(const string& filename,vector< UbTupleFloat3 >& nodes, vector< UbTupleUInt8 >& cells, vector< string >& datanames, vector< vector< double > >& nodedata)
 {
    string vtkfilename=filename+getFileExtension();
    UBLOG(logDEBUG1,"WbWriterVtkXmlASCII::writeOctsWithNodeData to "<<vtkfilename<<" - start");
@@ -907,7 +874,7 @@ std::string WbWriterVtkXmlASCII::writeOctsWithNodeData(const string& filename,ve
    out<<"         <PointData Scalars=\"PScalars\"> \n";
    for(int s=0; s<(int)datanames.size(); ++s)
    {
-      out<< "           <DataArray type=\"Float64\" Name=\""<< datanames[s] <<"\" format=\"ascii\">";
+      out<< "           <DataArray type=\"Float32\" Name=\""<< datanames[s] <<"\" format=\"ascii\">";
 
       for(int d=0; d<(int)nodedata[s].size(); d++)
       {

@@ -1,46 +1,43 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//  _    ___      __              __________      _     __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file CbArray4D.h
-//! \ingroup container
-//! \author Soeren Freudiger, Sebastian Geller
-//=======================================================================================
 #ifndef CBARRAY4D_H
 #define CBARRAY4D_H
 
-
+//////////////////////////////////////////////////////////////////////////
+// 4D Array
+// die Daten werden in einem Vector gehalten
+//
+// Ver 1.0
+// Sept. 2006 muffmolch@gmx.de
+// Ver 1.1
+// Jul. 2006 - size_t + range check bei getIndex
+// Ver 1.2
+// Mrz. 2008 - typedefs, new index checks, NO_CB_RANGECHECK, no base class
+//             assigmetcomparison between Matrices with different value_type and/or index-class
+// Oct. 2008 - +isEmpty()
+//
+// Rangecheck aktiv, wenn:
+// -debug  : not defined "NO_CB_RANGECHECK"
+// -release: not defined "NO_CB_RANGECHECK" && defined "CB_RANGECHECK"
+//////////////////////////////////////////////////////////////////////////
 
 #include <iomanip>
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbEqual.h>
 #include <algorithm>
 #include <typeinfo>
-#include "PointerDefinitions.h"
+#include <boost/serialization/serialization.hpp>
+
+#include <VirtualFluidsDefinitions.h>
+
+#ifdef CAB_RCF
+   #include <3rdParty/rcf/RcfSerializationIncludes.h>
+#endif //CAB_RCF
+
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -53,7 +50,7 @@
 //  for(alle X2)
 //    for(alle X3)
 //      for(alle X4)
-class IndexerX1X2X3X4
+class VF_PUBLIC IndexerX1X2X3X4
 {
 public:
    typedef int size_type;
@@ -96,21 +93,13 @@ public:
    }
 };
 //////////////////////////////////////////////////////////////////////////
-// CbArray4D
-//! \brief 4D Array
-//! \details The data is stored in a vector
-//!
-//! Rangecheck active, if:
-//!
-//! -debug  : not defined "NO_CB_RANGECHECK"
-//!
-//! -release: not defined "NO_CB_RANGECHECK" && defined "CB_RANGECHECK"
 //////////////////////////////////////////////////////////////////////////
+// CbArray4D
 template<typename T, typename IndexClass = IndexerX4X3X2X1>
 class CbArray4D
 {
 public:
-   typedef SPtr< CbArray4D <T,IndexClass> > CbArray4DPtr;
+   typedef std::shared_ptr< CbArray4D <T,IndexClass> > CbArray4DPtr;
 
    typedef T                                                   value_type;
    typedef IndexClass                                          indexer_type;
@@ -414,6 +403,18 @@ public:
       return indexer.getIndex(x1,x2,x3,x4,nx1,nx2,nx3,nx4);
    }
 
+#ifdef CAB_RCF
+   template<class Archive>
+   void serialize(Archive & ar, const unsigned int version)
+   {
+      ar & nx1;
+      ar & nx2;
+      ar & nx3;
+      ar & nx4;
+      ar & data;
+   }
+#endif //CAB_RCF
+
 protected:
    /*=======================================================================*/
    //success -> true
@@ -446,6 +447,16 @@ protected:
    indexer_type indexer;
    std::vector< value_type > data;
 
+   friend class boost::serialization::access;
+   template<class Archive>
+   void serialize(Archive & ar, const unsigned int version)
+   {
+      ar & nx1;
+      ar & nx2;
+      ar & nx3;
+      ar & nx4;
+      ar & data;
+   }
 };
 
 #endif //CBARRAY4D_H

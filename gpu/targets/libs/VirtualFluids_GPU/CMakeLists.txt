@@ -3,8 +3,9 @@ setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR})
 set(linkDirectories "")
 
 IF(MSVC)
-  set(libsToLink ws2_32 GridGenerator VirtualFluidsBasics Core) # ws_32 throws an error on Phoenix
+  set(libsToLink ws2_32 GridGenerator VirtualFluidsBasics Core Traffic) # ws_32 throws an error on Phoenix
 ELSE(MSVC)
+  #set(libsToLink GridGenerator VirtualFluidsBasics Core Traffic)
   set(libsToLink GridGenerator VirtualFluidsBasics Core)
 ENDIF(MSVC)
 
@@ -13,7 +14,8 @@ set(includeDirectories ${CMAKE_SOURCE_DIR}/src/${targetName}
                        ${CMAKE_SOURCE_DIR}/src/GridGenerator
                        ${CMAKE_SOURCE_DIR}/src/VirtualFluidsBasics
                        ${CMAKE_SOURCE_DIR}/src/Core 
-					   )
+                       ${CMAKE_SOURCE_DIR}/src/Traffic 
+                       )
 
 #glob files and save in MY_SRCS
 include(CMakePackage.cmake)

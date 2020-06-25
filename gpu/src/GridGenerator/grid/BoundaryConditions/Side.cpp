@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file Side.cpp
-//! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz
-//=======================================================================================
 #include "Side.h"
 
 #include "grid/BoundaryConditions/BoundaryCondition.h"
@@ -99,11 +67,26 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         real x,y,z;
         grid->transIndexToCoords( index, x, y, z );
 
-        x += grid->getDirection()[dir * DIMENSION + 0] * grid->getDelta();
-        y += grid->getDirection()[dir * DIMENSION + 1] * grid->getDelta();
-        z += grid->getDirection()[dir * DIMENSION + 2] * grid->getDelta();
+        real coords[3] = {x,y,z};
 
-        uint neighborIndex = grid->transCoordToIndex( x, y, z );
+        real neighborX = x + grid->getDirection()[dir * DIMENSION + 0] * grid->getDelta();
+        real neighborY = y + grid->getDirection()[dir * DIMENSION + 1] * grid->getDelta();
+        real neighborZ = z + grid->getDirection()[dir * DIMENSION + 2] * grid->getDelta();
+
+        // correct neighbor coordinates in case of periodic boundaries
+        if( grid->getPeriodicityX() && grid->getFieldEntry( grid->transCoordToIndex( neighborX, y, z ) ) == STOPPER_OUT_OF_GRID_BOUNDARY )
+            if( neighborX > x ) neighborX = grid->getFirstFluidNode( coords, 0, grid->getStartX() );
+            else                neighborX = grid->getLastFluidNode ( coords, 0, grid->getEndX() );
+
+        if( grid->getPeriodicityY() && grid->getFieldEntry( grid->transCoordToIndex( x, neighborY, z ) ) == STOPPER_OUT_OF_GRID_BOUNDARY )
+            if( neighborY > y ) neighborY = grid->getFirstFluidNode( coords, 1, grid->getStartY() );
+            else                neighborY = grid->getLastFluidNode ( coords, 1, grid->getEndY() );
+
+        if( grid->getPeriodicityZ() && grid->getFieldEntry( grid->transCoordToIndex( x, y, neighborZ ) ) == STOPPER_OUT_OF_GRID_BOUNDARY )
+            if( neighborZ > z ) neighborZ = grid->getFirstFluidNode( coords, 2, grid->getStartZ() );
+            else                neighborZ = grid->getLastFluidNode ( coords, 2, grid->getEndZ() );
+
+        uint neighborIndex = grid->transCoordToIndex( neighborX, neighborY, neighborZ );
 
         if( grid->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY ||
             grid->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID ||
@@ -126,6 +109,50 @@ uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, 
         return grid->transCoordToIndex(v1, v2, constant);
     return INVALID_INDEX;
 }
+
+
+void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<BoundaryCondition> boundaryCondition)
+{
+    auto geometryBoundaryCondition = std::dynamic_pointer_cast<GeometryBoundaryCondition>(boundaryCondition);
+
+    std::vector<real> qNode(grids[level]->getEndDirection() + 1);
+    bool qFound = false;
+
+    for (uint index = 0; index < grids[level]->getSize(); index++)
+    {
+        if (grids[level]->getFieldEntry(index) != BC_SOLID)
+            continue;
+
+        for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
+        {
+			const real q = grids[level]->getQValue(index, dir);
+
+            qNode[dir] = q;
+
+            // also the neighbor if any Qs are required
+            real x,y,z;
+            grids[level]->transIndexToCoords( index, x, y, z );
+
+            x += grids[level]->getDirection()[dir * DIMENSION + 0] * grids[level]->getDelta();
+            y += grids[level]->getDirection()[dir * DIMENSION + 1] * grids[level]->getDelta();
+            z += grids[level]->getDirection()[dir * DIMENSION + 2] * grids[level]->getDelta();
+
+            uint neighborIndex = grids[level]->transCoordToIndex( x, y, z );
+
+            if( qNode[dir] < -0.5 && ( grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY ||
+                                       grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID ||
+                                       grids[level]->getFieldEntry(neighborIndex) == STOPPER_SOLID ) )
+                qNode[dir] = 0.5;
+        }
+
+        geometryBoundaryCondition->indices.push_back(index);
+        geometryBoundaryCondition->qs.push_back(qNode);
+        geometryBoundaryCondition->patches.push_back( grids[level]->getQPatch(index) );
+
+        qFound = false;
+    }
+}
+
 
 
 void MX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)

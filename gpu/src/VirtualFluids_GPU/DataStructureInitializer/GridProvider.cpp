@@ -1,74 +1,117 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file GridProvider.cpp
-//! \ingroup DataStructureInitializer
-//! \author Martin Schoenherr
-//=======================================================================================
 #include "GridProvider.h"
 
-#include "Parameter/Parameter.h"
-#include "GPU/CudaMemoryManager.h"
+#include <Parameter/Parameter.h>
+#include "GridReaderFiles/GridReader.h"
 #include "GridReaderGenerator/GridGenerator.h"
-#include "GridGenerator/grid/GridBuilder/GridBuilder.h"
+
+#include <GridGenerator/grid/GridBuilder/GridBuilder.h>
+
+#include <GPU/CudaMemoryManager.h>
 
 
-SPtr<GridProvider> GridProvider::makeGridGenerator(SPtr<GridBuilder> builder, SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaManager)
+std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
-    return SPtr<GridProvider>(new GridGenerator(builder, para, cudaManager));
+    return std::shared_ptr<GridProvider>(new GridGenerator(builder, para, cudaManager));
 }
 
-void GridProvider::setNumberOfNodes(const int numberOfNodes) const
+std::shared_ptr<GridProvider> GridProvider::makeGridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
-    para->getParH()->numberOfNodes = numberOfNodes;
-    para->getParD()->numberOfNodes = numberOfNodes;
-    para->getParH()->mem_size_real = sizeof(real) * para->getParH()->numberOfNodes;
-    para->getParH()->mem_size_int  = sizeof(uint) * para->getParH()->numberOfNodes;
-    para->getParD()->mem_size_real = sizeof(real) * para->getParD()->numberOfNodes;
-    para->getParD()->mem_size_int  = sizeof(uint) * para->getParD()->numberOfNodes;
+    return std::shared_ptr<GridProvider>(new GridReader(format, para, cudaManager));
 }
 
-void GridProvider::setInitalNodeValues(const int numberOfNodes) const
+void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) const
+{
+    para->getParH(level)->size_Mat_SP = numberOfNodes;
+    para->getParD(level)->size_Mat_SP = numberOfNodes;
+    para->getParH(level)->mem_size_real_SP = sizeof(real) * para->getParH(level)->size_Mat_SP;
+    para->getParH(level)->mem_size_int_SP = sizeof(uint) * para->getParH(level)->size_Mat_SP;
+    para->getParD(level)->mem_size_real_SP = sizeof(real) * para->getParD(level)->size_Mat_SP;
+    para->getParD(level)->mem_size_int_SP = sizeof(uint) * para->getParD(level)->size_Mat_SP;
+}
+
+void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level) const
 {
     for (int j = 1; j <= numberOfNodes; j++)
     {
-        para->getParH()->rho[j] = real(0.0);
-        para->getParH()->velocityY[j]  = real(0.0);
-        para->getParH()->velocityX[j]  = real(0.0);
-        para->getParH()->velocityZ[j]  = real(0.0);
+        const real coordX = para->getParH(level)->coordX_SP[j];
+        const real coordY = para->getParH(level)->coordY_SP[j];
+        const real coordZ = para->getParH(level)->coordZ_SP[j];
+
+        real rho, vx, vy, vz;
+
+        // call functor object with initial condition
+        if( para->getInitialCondition() )
+        {
+            para->getInitialCondition()(coordX,coordY,coordZ,rho,vx,vy,vz);
+        }
+        else
+        {
+            rho = real(0.0);
+            vx  = real(0.0);
+            vy  = real(0.0);
+            vz  = real(0.0);
+        }
+
+        para->getParH(level)->rho_SP[j] = rho; 
+        para->getParH(level)->vx_SP[j]  = vx; 
+        para->getParH(level)->vy_SP[j]  = vy;
+        para->getParH(level)->vz_SP[j]  = vz; 
+
+        //////////////////////////////////////////////////////////////////////////
+
+        if (para->getCalcMedian()) {
+            para->getParH(level)->vx_SP_Med[j] = 0.0f;
+            para->getParH(level)->vy_SP_Med[j] = 0.0f;
+            para->getParH(level)->vz_SP_Med[j] = 0.0f;
+            para->getParH(level)->rho_SP_Med[j] = 0.0f;
+            para->getParH(level)->press_SP_Med[j] = 0.0f;
+        }
+        if (para->getUseWale()) {
+            para->getParH(level)->turbViscosity[j] = 0.0f;
+            //Debug
+            para->getParH(level)->gSij[j] = 0.0f;
+            para->getParH(level)->gSDij[j] = 0.0f;
+            para->getParH(level)->gDxvx[j] = 0.0f;
+            para->getParH(level)->gDyvx[j] = 0.0f;
+            para->getParH(level)->gDzvx[j] = 0.0f;
+            para->getParH(level)->gDxvy[j] = 0.0f;
+            para->getParH(level)->gDyvy[j] = 0.0f;
+            para->getParH(level)->gDzvy[j] = 0.0f;
+            para->getParH(level)->gDxvz[j] = 0.0f;
+            para->getParH(level)->gDyvz[j] = 0.0f;
+            para->getParH(level)->gDzvz[j] = 0.0f;
+        }
     }
+
+
 }
 
 
-void GridProvider::setVelocitySize(int size) const
+void GridProvider::setPressSizePerLevel(int level, int sizePerLevel) const
 {
-    para->getParH()->numberOfInflowBCnodes = size;
-    para->getParD()->numberOfInflowBCnodes = size;
+    para->getParH(level)->QPress.kQ = sizePerLevel;
+    para->getParD(level)->QPress.kQ = sizePerLevel;
+    para->getParH(level)->kPressQread = sizePerLevel * para->getD3Qxx();
+    para->getParD(level)->kPressQread = sizePerLevel * para->getD3Qxx();
+}
+
+
+void GridProvider::setVelocitySizePerLevel(int level, int sizePerLevel) const
+{
+    para->getParH(level)->Qinflow.kQ = sizePerLevel;
+    para->getParD(level)->Qinflow.kQ = sizePerLevel;
+    para->getParH(level)->kInflowQ = sizePerLevel;
+    para->getParD(level)->kInflowQ = sizePerLevel;
+    para->getParH(level)->kInflowQread = sizePerLevel * para->getD3Qxx();
+    para->getParD(level)->kInflowQread = sizePerLevel * para->getD3Qxx();
+}
+
+void GridProvider::setOutflowSizePerLevel(int level, int sizePerLevel) const
+{
+    para->getParH(level)->Qoutflow.kQ = sizePerLevel;
+    para->getParD(level)->Qoutflow.kQ = sizePerLevel;
+    para->getParH(level)->kOutflowQread = sizePerLevel * para->getD3Qxx();
+    para->getParD(level)->kOutflowQread = sizePerLevel * para->getD3Qxx();
 }
 
 void GridProvider::allocAndCopyForcing()
@@ -77,13 +120,22 @@ void GridProvider::allocAndCopyForcing()
     cudaMemoryManager->cudaCopyForcingToDevice();
 }
 
-void GridProvider::freeMemoryOnHost()
+void GridProvider::allocAndCopyQuadricLimiters()
 {
-    cudaMemoryManager->cudaFreeCoord();
-    cudaMemoryManager->cudaFreeSP();
+    cudaMemoryManager->cudaAllocQuadricLimiters();
+    cudaMemoryManager->cudaCopyQuadricLimitersToDevice();
 }
 
-void GridProvider::cudaCopyDataToHost()
+void GridProvider::freeMemoryOnHost()
 {
-    cudaMemoryManager->cudaCopyDataToHost();
+    for (int level = para->getCoarse(); level <= para->getFine(); level++)
+    {
+        cudaMemoryManager->cudaFreeCoord(level);
+        cudaMemoryManager->cudaFreeSP(level);
+    }
+}
+
+void GridProvider::cudaCopyDataToHost(int level)
+{
+    cudaMemoryManager->cudaCopyDataToHost(level);
 }

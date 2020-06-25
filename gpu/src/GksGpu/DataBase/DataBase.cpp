@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file DataBase.cpp
-//! \ingroup DataBase
-//! \author Stephan Lenz
-//=======================================================================================
 #include "DataBase.h"
 
 #include <iostream>
@@ -41,7 +9,12 @@
 #include "DataBaseAllocator.h"
 #include "DataBaseStruct.h"
 
+#include "Core/Logger/Logger.h"
+
 #include "GksMeshAdapter/GksMeshAdapter.h"
+#include "Communication/Communicator.h"
+
+namespace GksGpu {
 
 DataBase::DataBase( std::string type ) 
         : myAllocator    ( DataBaseAllocator::create( type ) ),
@@ -49,6 +22,8 @@ DataBase::DataBase( std::string type )
           numberOfCells      (0),
           numberOfFaces      (0),
           numberOfLevels     (0),
+          numberOfCoarseGhostCells(0),
+          numberOfFineGhostCells(0),
           cellToCell     (nullptr),
           faceToCell     (nullptr),
           parentCell     (nullptr),
@@ -56,6 +31,8 @@ DataBase::DataBase( std::string type )
           cellCenter     (nullptr),
           cellProperties (nullptr),
           faceOrientation(nullptr),
+          fineToCoarse   (nullptr),
+          coarseToFine   (nullptr),
           data           (nullptr),
           dataUpdate     (nullptr),
           massFlux       (nullptr),
@@ -101,11 +78,52 @@ void DataBase::setMesh(GksMeshAdapter & adapter)
                                              + perLevelCount[ level ].numberOfFacesZ;
 
         perLevelCount[ level ].numberOfInnerFaces = adapter.numberOfInnerFacesPerLevel[ level ];
+
+        perLevelCount[ level ].numberOfFineToCoarse = adapter.numberOfFineToCoarsePerLevel[ level ];
+        perLevelCount[ level ].numberOfCoarseToFine = adapter.numberOfCoarseToFinePerLevel[ level ];
+
+        perLevelCount[ level ].startOfFineToCoarse = adapter.startOfFineToCoarsePerLevel[ level ];
+        perLevelCount[ level ].startOfCoarseToFine = adapter.startOfCoarseToFinePerLevel[ level ];
     }
+
+    this->numberOfCoarseGhostCells = adapter.fineToCoarse.size();
+
+    this->numberOfFineGhostCells   = adapter.coarseToFine.size();
 
     this->myAllocator->allocateMemory( shared_from_this() );
 
     this->myAllocator->copyMesh( shared_from_this(), adapter );
+}
+
+void DataBase::setCommunicators(GksMeshAdapter & adapter)
+{
+    this->communicators.resize( this->numberOfLevels );
+
+    for( uint level = 0; level < this->numberOfLevels; level++ )
+    {
+        for( uint direction = 0; direction < 6; direction++ )
+        {
+            if( adapter.communicationProcesses[direction] != INVALID_INDEX &&
+                ( 
+                  adapter.communicationIndices[level].sendIndices[direction].size() > 0 ||
+                  adapter.communicationIndices[level].recvIndices[direction].size() > 0
+                )
+              )
+            {
+                this->communicators[level][direction] = std::make_shared<Communicator>( shared_from_this() );
+
+                this->communicators[level][direction]->initialize( adapter, level, direction );
+
+                *logging::out << logging::Logger::INFO_LOW << "Generated Communicator " << level << ":" << direction << " \n";
+            }
+            else
+            {
+                this->communicators[level][direction] = nullptr;
+            }
+        }
+
+    
+    }
 }
 
 void DataBase::copyDataHostToDevice()
@@ -135,10 +153,16 @@ DataBaseStruct DataBase::toStruct()
     dataBase.numberOfCells            = this->numberOfCells;
     dataBase.numberOfFaces            = this->numberOfFaces;
 
+    dataBase.numberOfCoarseGhostCells = this->numberOfCoarseGhostCells;
+    dataBase.numberOfFineGhostCells   = this->numberOfFineGhostCells;
+
     dataBase.cellToCell               = this->cellToCell;
     dataBase.faceToCell               = this->faceToCell;
 
     dataBase.parentCell               = this->parentCell;
+
+    dataBase.fineToCoarse             = this->fineToCoarse;
+    dataBase.coarseToFine             = this->coarseToFine;
 
     dataBase.faceCenter               = this->faceCenter;
     dataBase.cellCenter               = this->cellCenter;
@@ -146,6 +170,9 @@ DataBaseStruct DataBase::toStruct()
     dataBase.cellProperties           = this->cellProperties;
 
     dataBase.faceOrientation          = this->faceOrientation;
+
+    dataBase.fineToCoarse             = this->fineToCoarse;
+    dataBase.coarseToFine             = this->coarseToFine;
 
     dataBase.data                     = this->data;
     dataBase.dataUpdate               = this->dataUpdate;
@@ -209,3 +236,5 @@ std::string DataBase::getDeviceType()
 {
     return this->myAllocator->getDeviceType();
 }
+
+} // namespace GksGpu

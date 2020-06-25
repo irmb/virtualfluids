@@ -1,44 +1,49 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file WbWriterVtkXmlBinary.cpp
-//! \ingroup writer
-//! \author Soeren Freudiger, Sebastian Geller
-//=======================================================================================
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <basics/writer/WbWriterVtkXmlASCII.h>
 #include <basics/utilities/UbLogger.h>
+#include <basics/utilities/UbSystem.h>
+
+#include "Core/buildInfo.h"
 #include <cstring>
 
 using namespace std;
 
 /*===============================================================================*/
 string WbWriterVtkXmlBinary::pvdEndTag ="   </Collection>\n</VTKFile>";
+
+std::string WbWriterVtkXmlBinary::getHeaderTag()
+{
+    std::string header = "<!--- \n";
+
+    header += "git-commit-hash=\"";
+    header += buildInfo::gitCommitHash();
+    header += "\" \n";
+
+    header += "git-branch=\"";
+    header += buildInfo::gitBranch();
+    header += "\" \n";
+
+    header += "compiler-flag=\"";
+    header += buildInfo::compilerFlags();
+    header += "\" \n";
+
+    header += "buildMachine=\"";
+    header += buildInfo::buildMachine();
+    header += "\" \n";
+
+    header += "ProjectDir=\"";
+    header += buildInfo::projectDir();
+    header += "\" \n";
+
+    header += "binaryDir=\"";
+    header += buildInfo::binaryDir();
+    header += "\" \n";
+
+
+    header += "-->\n";
+    return header;
+}
+
 /*===============================================================================*/
 string WbWriterVtkXmlBinary::writeCollection(const string& filename, const vector<string>& filenames, const double& timeStep, const bool& sepGroups)
 {
@@ -727,7 +732,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithNodeData(const string& filename,vecto
    out<<"         <PointData>\n";
    for(size_t s=0; s<datanames.size(); ++s)
    {
-      out<< "            <DataArray type=\"Float64\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
+      out<< "            <DataArray type=\"Float32\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
       offset += (bytesPerByteVal + bytesScalarData);
    }
    out<<"         </PointData>\n";
@@ -1190,7 +1195,8 @@ string WbWriterVtkXmlBinary::writeOctsWithCellData(const string& filename,vector
    return vtkfilename;
 }
 /*===============================================================================*/
-string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleInt8 >& cells, vector<string >& datanames, vector<vector<double > >& nodedata)
+
+string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleUInt8 >& cells, vector<string >& datanames, vector<vector<double > >& nodedata)
 {
    string vtkfilename = filename+getFileExtension();
    UBLOG(logDEBUG1,"WbWriterVtkXmlBinary::writeOctsWithNodeData to "<<vtkfilename<<" - start");
@@ -1212,11 +1218,12 @@ string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string& filename,vector
    int bytesCellConnectivty = 8 /*nodes per oct */ * nofCells * sizeof(int  );
    int bytesCellOffsets     = 1 /*offset per oct*/ * nofCells * sizeof(int  );
    int bytesCellTypes       = 1 /*type of oct   */ * nofCells * sizeof(unsigned char);
-   int bytesScalarData      = 1 /*scalar        */ * nofNodes * sizeof(double); 
+   int bytesScalarData      = 1 /*scalar        */ * nofNodes * sizeof(float); 
 
-   unsigned long long offset = 0;
+   int offset = 0;
    //VTK FILE
-   out<<"<?xml version=\"2.0\"?>\n";
+   out<<"<?xml version=\"1.0\"?>\n";
+   out<< getHeaderTag();
    out<<"<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" >"<<"\n";
    out<<"   <UnstructuredGrid>"<<"\n";
    out<<"      <Piece NumberOfPoints=\""<<nofNodes<<"\" NumberOfCells=\""<<nofCells<<"\">\n";
@@ -1241,7 +1248,7 @@ string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string& filename,vector
    out<<"         <PointData>\n";
    for(size_t s=0; s<datanames.size(); ++s)
    {
-      out<< "            <DataArray type=\"Float64\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
+      out<< "            <DataArray type=\"Float32\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
       offset += (bytesPerByteVal + bytesScalarData);
    }
    out<<"         </PointData>\n";
@@ -1302,10 +1309,8 @@ string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string& filename,vector
       for(size_t d=0; d<nodedata[s].size(); ++d)
       {
          //loake kopie machen, da in nodedata "doubles" sind
-         //float tmp = (float)nodedata[s][d];
-         //out.write((char*)&tmp,sizeof(float));
-         double tmp = nodedata[s][d];
-         out.write((char*)&tmp,sizeof(double));
+         float tmp = (float)nodedata[s][d];
+         out.write((char*)&tmp,sizeof(float));
       }
    }
    out<<"\n</AppendedData>\n";
@@ -1526,7 +1531,7 @@ std::string WbWriterVtkXmlBinary::writeNodesWithNodeData(const std::string& file
    int bytesCellConnectivty = 1 /*nodes per cell */ * nofNodes * sizeof(int  );
    int bytesCellOffsets     = 1 /*offset per cell*/ * nofNodes * sizeof(int  );
    int bytesCellTypes       = 1 /*type of oct    */ * nofNodes * sizeof(unsigned char);
-   int bytesScalarData      = 1 /*scalar         */ * nofNodes * sizeof(double); 
+   int bytesScalarData      = 1 /*scalar         */ * nofNodes * sizeof(float); 
 
    int offset = 0;
    //VTK FILE
@@ -1555,7 +1560,7 @@ std::string WbWriterVtkXmlBinary::writeNodesWithNodeData(const std::string& file
    out<<"         <PointData>\n";
    for(size_t s=0; s<datanames.size(); ++s)
    {
-      out<< "            <DataArray type=\"Float64\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
+      out<< "            <DataArray type=\"Float32\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
       offset += (bytesPerByteVal + bytesScalarData);
    }
    out<<"         </PointData>\n";
@@ -1601,10 +1606,8 @@ std::string WbWriterVtkXmlBinary::writeNodesWithNodeData(const std::string& file
       for(size_t d=0; d<nodedata[s].size(); ++d)
       {
          //loake kopie machen, da in nodedata "doubles" sind
-         //float tmp = (float)nodedata[s][d];
-         //out.write((char*)&tmp,sizeof(float));
-         double tmp = nodedata[s][d];
-         out.write((char*)&tmp, sizeof(double));
+         float tmp = (float)nodedata[s][d];
+         out.write((char*)&tmp,sizeof(float));
       }
    }
    out<<"\n</AppendedData>\n";

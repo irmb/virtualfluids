@@ -1,37 +1,18 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//  _    ___      __              __________      _     __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file WbWriter.h
-//! \ingroup writer
-//! \author Soeren Freudiger, Sebastian Geller
-//=======================================================================================
 #ifndef WBWRITER_H
 #define WBWRITER_H
+
+#ifdef CAB_RCF
+   #include <3rdParty/rcf/RcfSerializationIncludes.h>
+#endif
+
+#include <VirtualFluidsDefinitions.h>
+
 
 #include <vector>
 #include <string>
@@ -40,14 +21,21 @@
 #include <iostream>
 #include <map>
 
+#include <basics/utilities/UbSystem.h>
 
 #include <basics/utilities/UbException.h>
-#include <basics/utilities/UbSystem.h>
 #include <basics/utilities/UbTuple.h>
+#include <basics/utilities/UbPointerWrapper.h>
+#include <basics/utilities/UbAutoRun.hpp>
+#include <basics/objects/ObFactory.h>
+
+#include <boost/serialization/serialization.hpp>
 
 class VF_PUBLIC WbWriter
 {
 public:
+   OBCREATOR_EXT(WbWriter)
+
    //////////////////////////////////////////////////////////////////////////
    virtual ~WbWriter() 
    {
@@ -92,7 +80,8 @@ public:
    virtual std::string writeQuadsWithNodeData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt4 >& cells, std::vector< std::string >& datanames, std::vector< std::vector< double > >& nodedata){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
    virtual std::string writeQuadsWithCellData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt4 >& cells, std::vector< std::string >& datanames, std::vector< std::vector< double > >& celldata){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
    virtual std::string writeQuadsWithNodeAndCellData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt4 >& cells, 
-                                                     std::vector< std::string >& nodedatanames, std::vector< std::vector< double > >& nodedata, std::vector< std::string >& celldatanames, std::vector< std::vector< double > >&celldata) { throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
+                                                     std::vector< std::string >& nodedatanames, std::vector< std::vector< double > >& nodedata, std::vector< std::string >& celldatanames,
+                                                     std::vector< std::vector< double > >& celldata                                                                                       ){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
 
    //////////////////////////////////////////////////////////////////////////
    //octs
@@ -105,10 +94,92 @@ public:
    //   0 ---- 1
    virtual std::string writeOcts(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt8 >& cells){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
    virtual std::string writeOctsWithCellData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& celldata){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
-   virtual std::string writeOctsWithNodeData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
+   virtual std::string writeOctsWithNodeData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleUInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
 
 private:
+   friend class boost::serialization::access;
+   template<class Archive>
+   void serialize(Archive & ar, const unsigned int version)
+   {
 
+   }
 };
+
+
+#ifdef CAB_RCF
+//serialize von singletons muss hier etwas anders erfolgen ;-)
+template<class Archive>
+inline bool serializeWbWriter(Archive &ar, WbWriter*& writer)
+{
+   std::string writerID;
+
+   if( ArchiveTools::isReading(ar) )
+   {                                                                  
+      ar & writerID;
+      if(writerID!="no_WbWriter") writer = ObFactory<WbWriter>::getInstance()->createObject(writerID);
+      else                        writer = NULL;
+   }                                                                  
+   else /* if (ar.isWrite())) if(Archive::is_saving())*/                                      
+   {                                                                   
+      if(writer) writerID = writer->getClassObjectTypeID(); 
+      else       writerID = "no_WbWriter";
+      ar & writerID;
+   } 
+   return true;
+}
+//////////////////
+template<class Archive, class STL_container>
+inline bool serializeWbWriter(Archive &ar, STL_container& writers)
+{
+   int       nofCounter;
+   std::string    writerID;
+   WbWriter* dummy;
+
+   if( ArchiveTools::isReading(ar) )
+   {                                                                  
+      ar & nofCounter;
+      for(int i=0; i<nofCounter; i++)
+      {
+         serializeWbWriter(ar, dummy);
+         writers.push_back(dummy);
+      }
+   }                                                                  
+   else                                 
+   {                                                                   
+      nofCounter = (int)writers.size();
+      ar & nofCounter;
+      typename STL_container::iterator pos;
+      for(pos=writers.begin(); pos!=writers.end(); ++pos)
+         serializeWbWriter(ar, *pos);
+   }                                                                   
+
+   return true;
+}
+//////////////////////////////////////////////////////////////////////////
+// Spezialisierung des UbPointerWrappers fuer WbWriter... 
+// da man bei singletons keine serializemethode einbauen kann...
+template< >
+class UbPointerWrapper< WbWriter > 
+{
+public:
+   UbPointerWrapper() : pointer(NULL) {}
+
+   UbPointerWrapper(WbWriter* pointer) : pointer(pointer) {}
+
+   WbWriter* get() { return pointer; }
+
+   template<class Archive>
+   void serialize(Archive& ar, const unsigned int version) 
+   {
+      serializeWbWriter(ar, pointer);
+   }
+
+private:
+   WbWriter* pointer;
+};
+
+
+#endif //CAB_RCF
+
 
 #endif //WBWRITER_H

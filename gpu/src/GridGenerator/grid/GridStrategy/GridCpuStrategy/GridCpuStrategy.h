@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file GridCpuStrategy.h
-//! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz
-//=======================================================================================
 #ifndef GRID_CPU_STRATEGY_H
 #define GRID_CPU_STRATEGY_H
 
@@ -47,9 +15,26 @@ public:
 
     void allocateGridMemory(SPtr<GridImp> grid) override;
 
+	void allocateQs(SPtr<GridImp> grid) override;
+
     void initalNodesToOutOfGrid(SPtr<GridImp> grid) override;
+    void fixOddCells(SPtr<GridImp> grid) override;
     void findInnerNodes(SPtr<GridImp> grid) override;
+    void addOverlap(SPtr<GridImp> grid) override;
+    void fixRefinementIntoWall(SPtr<GridImp> grid) override;
+    void findStopperNodes(SPtr<GridImp> grid) override;
+	void findBoundarySolidNodes(SPtr<GridImp> grid)  override;
 	void findEndOfGridStopperNodes(SPtr<GridImp> grid) override;
+	void findSolidStopperNodes(SPtr<GridImp> grid) override;
+
+    void mesh(SPtr<GridImp> grid, TriangularMesh &geom) override;
+
+    uint closeNeedleCells(SPtr<GridImp> grid) override;
+    uint closeNeedleCellsThinWall(SPtr<GridImp> grid) override;
+
+    void findQs(SPtr<GridImp> grid, TriangularMesh &geom) override;
+
+    void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid, LbmOrGks lbmOrGks) override;
 
     void freeMemory(SPtr<GridImp> grid) override;
 
@@ -59,6 +44,7 @@ public:
 
 protected:
     static void findForNeighborsNewIndices(SPtr<GridImp> grid);
+    static void findForGridInterfaceNewIndices(SPtr<GridImp> grid, SPtr<GridImp> fineGrid);
 public:
     void allocateFieldMemory(Field* field) override;
     void freeFieldMemory(Field* field) override;

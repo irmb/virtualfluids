@@ -1,51 +1,33 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//  _    ___      __              __________      _     __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file UbKeys.h
-//! \ingroup utilities
-//! \author Soeren Freudiger, Sebastian Geller
-//=======================================================================================
 #ifndef UBKEYS_H
 #define UBKEYS_H
 
 #include <iostream>
 
+#include <boost/serialization/serialization.hpp>
 
 #ifdef CAB_RCF
    #include <3rdParty/rcf/RcfSerializationIncludes.h>
 #endif //CAB_RCF
 
-//////////////////////////////////////////////////////////////////////////
-//!
-//!  \brief 
-//!  namespace for global Keys (e.g. for STL-maps)
-//!
-//////////////////////////////////////////////////////////////////////////
+/*=========================================================================*/
+/*  UbKeys                                                             */
+/*                                                                         */
+/**
+namespace for global Keys (e.g. for STL-maps)
+<BR><BR>
+@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
+@version 1.0 - 08.08.07
+*/ 
+
+/*
+usage: ...
+*/
 
 namespace UbKeys
 {
@@ -120,6 +102,13 @@ namespace UbKeys
       T1 t1;
       T2 t2;
 
+      friend class boost::serialization::access;
+      template<class Archive>
+      void serialize(Archive & ar, const unsigned int version)
+      {
+         ar & t1;
+         ar & t2;
+      }
    };
 
    //////////////////////////////////////////////////////////////////////////
@@ -208,6 +197,15 @@ namespace UbKeys
       T1 t1;
       T2 t2;
       T3 t3;
+
+      friend class boost::serialization::access;
+      template<class Archive>
+      void serialize(Archive & ar, const unsigned int version)
+      {
+         ar & t1;
+         ar & t2;
+         ar & t3;
+      }
    };
 
    //////////////////////////////////////////////////////////////////////////
@@ -298,6 +296,15 @@ namespace UbKeys
       T3 t3;
       T4 t4;
 
+      friend class boost::serialization::access;
+      template<class Archive>
+      void serialize(Archive & ar, const unsigned int version)
+      {
+         ar & t1;
+         ar & t2;
+         ar & t3;
+         ar & t4;
+      }
    };
 }
 

@@ -14,5 +14,7 @@ include(CMakePackage.cmake)
 buildLib(${targetName} "${MY_SRCS}" "${linkDirectories}" "${libsToLink}" "${includeDirectories}")
 groupTarget(${targetName} ${libraryFolder})
 
+set_property(TARGET ${targetName} PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+
 # Specify the linking to 3rdParty libs
 include(3rdPartyLinking.cmake)
