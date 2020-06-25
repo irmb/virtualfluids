@@ -1,4 +1,0 @@
-2
-in	1	7	6	4	out	5	3	2	9	t	45
-in	0	5			out	8	1			c
-end
