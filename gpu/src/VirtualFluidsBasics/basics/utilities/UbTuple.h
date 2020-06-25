@@ -1,35 +1,9 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//  _    ___      __              __________      _     __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file UbTupel.h
-//! \ingroup utilities
-//! \author Soeren Freudiger, Sebastian Geller
-//=======================================================================================
 #ifndef UBTUPLE_H
 #define UBTUPLE_H
 
@@ -37,43 +11,56 @@
 #include <string>
 #include <ostream>
 
-//////////////////////////////////////////////////////////////////////////
-//! \brief A class implements a tuple
-//! \details
-//! usage: ...<BR>
-//! Advanced UbTuple
-//! Example:
-//! create and use tuple with only c1 field
-//! \code
-//! UbTuple<int,int,int,int,int> t1;
-//! val<1>(t1) += 42;
-//! std::cout << t1.v1() << std::endl;
-//! \endcode
-//! create and use duo:
-//! \code
-//! UbTuple<bool,int> t2;
-//! std::cout << val<1>(t2) << ", ";
-//! std::cout << t2.v1() << std::endl;
-//! \endcode
-//! create and use triple:
-//! \code
-//! UbTuple<bool,int,double> t3;
-//! val<1>(t3) = true;  // new values via: val< pos >(triple) = ...
-//! val<2>(t3) = 42;
-//! val<3>(t3) = 0.2;
-//! t3 = makeUbTuple(false, 23, 13.13);
-//! 
-//! std::cout << val<1>(t3) << ", ";
-//! std::cout << val<2>(t3) << ", ";
-//! std::cout << val<3>(t3) << std::endl;
-//! \endcode
-//! create and use quadruple:
-//! \code
-//! UbType<bool,int,float,double> t4(true,42,13,1.95583);
-//! std::cout << val<4>(t4) << std::endl;        //<- option 2 (std)
-//! std::cout << t4.v2().v2().v2() << std::endl; //<- option 2
-//! \endcode
+#ifdef CAB_RCF
+   #include <3rdParty/rcf/RcfSerializationIncludes.h>
+#endif //CAB_RCF
 
+/*=========================================================================*/
+/*  UbTuple                                                             */
+/*                                                                         */
+/**
+...
+<BR><BR>
+@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
+@version 1.0 - 23.10.06
+*/ 
+
+/*
+usage: ...
+////Advanced UbTuple
+//Bsp:
+//// create and use tuple with only one field
+//UbTuple<int,int,int,int,int> t1;
+//val<1>(t1) += 42;
+//std::cout << t1.v1() << std::endl;
+
+//// create and use duo
+//UbTuple<bool,int> t2;
+//std::cout << val<1>(t2) << ", ";
+//std::cout << t2.v1() << std::endl;
+
+//// create and use triple
+//UbTuple<bool,int,double> t3;
+//val<1>(t3) = true;  // new values via: val< pos >(triple) = ...
+//val<2>(t3) = 42;
+//val<3>(t3) = 0.2;
+//t3 = makeUbTuple(false, 23, 13.13);
+
+//std::cout << val<1>(t3) << ", ";
+//std::cout << val<2>(t3) << ", ";
+//std::cout << val<3>(t3) << std::endl;
+
+//// create and use quadruple
+//UbType<bool,int,float,double> t4(true,42,13,1.95583);
+//std::cout << val<4>(t4) << std::endl;        //<- option 2 (std)
+//std::cout << t4.v2().v2().v2() << std::endl; //<- option 2
+*/
+
+//typeop.h
+// primary template
+/**********************************
+* typeop1.hpp:
+**********************************/
 template <typename T>
 class UbTypeOp    // primary template
 {           
@@ -178,6 +165,15 @@ public:
    T2& v2()             { return value2; }
    T2 const& v2() const { return value2; }
 
+#ifdef CAB_RCF
+   template<class Archive>
+   void serialize(Archive& ar, const unsigned int version)
+   {
+      ar & value1;
+      ar & value2;
+   }
+#endif //CAB_RCF
+
 private:
    T1 value1;         // value of first field
    T2 value2;         // value of second field
@@ -252,6 +248,15 @@ public:
 
    T2& v2()             { return value2; }
    T2 const& v2() const { return value2; }
+
+#ifdef CAB_RCF
+   template<class Archive>
+   void serialize(Archive & ar, const unsigned int version)
+   {
+      ar & value1;
+      ar & value2;
+   }
+#endif //CAB_RCF
 
 private:
    T1 value1;         // value of first field
@@ -383,7 +388,7 @@ inline typename UbTypeOp<typename UbDuoT<N, UbDuo<A, B> >::ResultT>::RefConstT v
 }
 
 //duo6.hpp
-// partial specialization for UbDuo<> with only c1 field
+// partial specialization for UbDuo<> with only one field
 template <typename A>
 struct UbDuo<A,void> 
 {
@@ -407,6 +412,13 @@ public:
    void v2() { }
    void v2() const { }
 
+   #ifdef CAB_RCF
+      template<class Archive>
+      void serialize(Archive & ar, const unsigned int version)
+      {
+         ar & value1;
+      }
+   #endif
 };
 
 //tupel1.hpp
@@ -415,44 +427,7 @@ class UbNullT
 {
 };
 
-//////////////////////////////////////////////////////////////////////////
-//! \brief A class implements a tuple
-//! \details
-//! usage: ...<BR>
-//! Advanced UbTuple
-//! Example:
-//! create and use tuple with only c1 field
-//! \code
-//! UbTuple<int,int,int,int,int> t1;
-//! val<1>(t1) += 42;
-//! std::cout << t1.v1() << std::endl;
-//! \endcode
-//! create and use duo:
-//! \code
-//! UbTuple<bool,int> t2;
-//! std::cout << val<1>(t2) << ", ";
-//! std::cout << t2.v1() << std::endl;
-//! \endcode
-//! create and use triple:
-//! \code
-//! UbTuple<bool,int,double> t3;
-//! val<1>(t3) = true;  // new values via: val< pos >(triple) = ...
-//! val<2>(t3) = 42;
-//! val<3>(t3) = 0.2;
-//! t3 = makeUbTuple(false, 23, 13.13);
-//! 
-//! std::cout << val<1>(t3) << ", ";
-//! std::cout << val<2>(t3) << ", ";
-//! std::cout << val<3>(t3) << std::endl;
-//! \endcode
-//! create and use quadruple:
-//! \code
-//! UbType<bool,int,float,double> t4(true,42,13,1.95583);
-//! std::cout << val<4>(t4) << std::endl;        //<- option 2 (std)
-//! std::cout << t4.v2().v2().v2() << std::endl; //<- option 2
-//! \endcode
-
-// UbTuple<> in general derives from UbTuple<> with c1 more UbNullT
+// UbTuple<> in general derives from UbTuple<> with one more UbNullT
 template <typename P1,
           typename P2 = UbNullT,
           typename P3 = UbNullT,
@@ -616,6 +591,7 @@ typedef UbTuple<int,int,int,int>                           UbTupleInt4;
 typedef UbTuple<int,int,int,int,int>                       UbTupleInt5;
 typedef UbTuple<int,int,int,int,int,int>                   UbTupleInt6;
 typedef UbTuple<int,int,int,int,int,int,int,int>           UbTupleInt8;
+typedef UbTuple<unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned>  UbTupleUInt8;
 typedef UbTuple<double,double>                             UbTupleDouble2;
 typedef UbTuple<double,double,double>                      UbTupleDouble3;
 typedef UbTuple<double,double,double,double>               UbTupleDouble4;

@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file FlowStateData.cuh
-//! \ingroup FlowStateData
-//! \author Stephan Lenz
-//=======================================================================================
 #ifndef FlowStateData_H
 #define FlowStateData_H
 
@@ -45,11 +13,12 @@
 
 #include "Definitions/PassiveScalar.h"
 
+namespace GksGpu {
+
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-//! \brief Holds flow state data in terms of primitive variables
 struct PrimitiveVariables
 {
     real rho;
@@ -64,7 +33,6 @@ struct PrimitiveVariables
 
     //////////////////////////////////////////////////////////////////////////
 
-    //! default constructor that sets all values to zero
     __host__ __device__ PrimitiveVariables()
 		: rho   (c0o1)
          ,U     (c0o1)
@@ -79,7 +47,6 @@ struct PrimitiveVariables
 
     //////////////////////////////////////////////////////////////////////////
 
-    //! constructor that initializes the variables according to the arguments
     __host__ __device__ PrimitiveVariables(real rho
                                           ,real U
                                           ,real V
@@ -108,7 +75,6 @@ struct PrimitiveVariables
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-//! \brief Holds flow state data in terms of conserved variables
 struct ConservedVariables
 {
     real rho;
@@ -123,7 +89,6 @@ struct ConservedVariables
 
     //////////////////////////////////////////////////////////////////////////
 
-    //! default constructor that sets all values to zero
     __host__ __device__ ConservedVariables()
         : rho (c0o1)
          ,rhoU(c0o1)
@@ -138,7 +103,6 @@ struct ConservedVariables
 
     //////////////////////////////////////////////////////////////////////////
 		  
-    //! constructor that initializes the variables according to the arguments
     __host__ __device__ ConservedVariables(real rho
                                           ,real rhoU
                                           ,real rhoV
@@ -175,7 +139,6 @@ struct ConservedVariables
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//! \return the sum of all components of the two PrimitiveVariables left and right as PrimitiveVariables object
 __host__ __device__ inline PrimitiveVariables operator+ ( const PrimitiveVariables& left, const PrimitiveVariables& right )
 {
     PrimitiveVariables result;
@@ -194,7 +157,6 @@ __host__ __device__ inline PrimitiveVariables operator+ ( const PrimitiveVariabl
     return result;
 }
 
-//! \return the sum of all components of two ConservedVariables left and right as ConservedVariables object
 __host__ __device__ inline ConservedVariables operator+ ( const ConservedVariables& left, const ConservedVariables& right )
 {
     ConservedVariables result;
@@ -215,7 +177,6 @@ __host__ __device__ inline ConservedVariables operator+ ( const ConservedVariabl
 
 //////////////////////////////////////////////////////////////////////////
 
-//! \return the difference of all components of the two PrimitiveVariables left and right as PrimitiveVariables object
 __host__ __device__ inline PrimitiveVariables operator- ( const PrimitiveVariables& left, const PrimitiveVariables& right )
 {
     PrimitiveVariables result;
@@ -234,7 +195,6 @@ __host__ __device__ inline PrimitiveVariables operator- ( const PrimitiveVariabl
     return result;
 }
 
-//! \return the difference of all components of two ConservedVariables left and right as ConservedVariables object
 __host__ __device__ inline ConservedVariables operator- ( const ConservedVariables& left, const ConservedVariables& right )
 {
     ConservedVariables result;
@@ -255,7 +215,6 @@ __host__ __device__ inline ConservedVariables operator- ( const ConservedVariabl
 
 //////////////////////////////////////////////////////////////////////////
 
-//! \return the product of the scalar left and all components of the PrimitiveVariables right as PrimitiveVariables object
 __host__ __device__ inline PrimitiveVariables operator* ( const real left, const PrimitiveVariables& right )
 {
     PrimitiveVariables result;
@@ -274,7 +233,6 @@ __host__ __device__ inline PrimitiveVariables operator* ( const real left, const
     return result;
 }
 
-//! \return the product of the scalar left and all components of the ConservedVariables right as ConservedVariables object
 __host__ __device__ inline ConservedVariables operator* ( const real left, const ConservedVariables& right )
 {
     ConservedVariables result;
@@ -292,6 +250,8 @@ __host__ __device__ inline ConservedVariables operator* ( const real left, const
 
     return result;
 }
+
+} // namespace GksGpu
 
 #endif
 

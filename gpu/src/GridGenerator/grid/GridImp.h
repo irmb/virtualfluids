@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file GridImp.h
-//! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz
-//=======================================================================================
 #ifndef GRID_IMP_H
 #define GRID_IMP_H
 
@@ -44,39 +12,44 @@
 #include "grid/Cell.h"
 #include "grid/Field.h" 
 
+class TriangularMesh;
 struct Vertex;
+struct Triangle;
 class GridStrategy;
+class GridInterface;
 class Object;
 class BoundingBox;
+class TriangularMeshDiscretizationStrategy;
 
-extern int DIRECTIONS[DIR_END_MAX][DIMENSION];
+extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 class VF_PUBLIC GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
 private:
-    GridImp();
-    GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level);
+    HOST GridImp();
+    HOST GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level);
 
 public:
-    virtual ~GridImp();
-    static SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level);
+    virtual HOSTDEVICE ~GridImp();
+    static HOST SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level);
 
 private:
-    void initalNumberOfNodesAndSize();
-    bool isValidSolidStopper(uint index) const;
-	bool shouldBeBoundarySolidNode(uint index) const;
-	bool isValidEndOfGridStopper(uint index) const;
-    bool isValidEndOfGridBoundaryStopper(uint index) const;
-    bool isOutSideOfGrid(Cell &cell) const;
-    bool contains(Cell &cell, char type) const;
-    void setNodeTo(Cell &cell, char type);
+    HOST void initalNumberOfNodesAndSize();
+    HOSTDEVICE Cell getOddCellFromIndex(uint index) const;
+    HOSTDEVICE bool isValidSolidStopper(uint index) const;
+	HOSTDEVICE bool shouldBeBoundarySolidNode(uint index) const;
+	HOSTDEVICE bool isValidEndOfGridStopper(uint index) const;
+    HOSTDEVICE bool isValidEndOfGridBoundaryStopper(uint index) const;
+    HOSTDEVICE bool isOutSideOfGrid(Cell &cell) const;
+    HOSTDEVICE bool contains(Cell &cell, char type) const;
+    HOSTDEVICE void setNodeTo(Cell &cell, char type);
 
-    bool nodeInPreviousCellIs(int index, char type) const;
-    bool nodeInCellIs(Cell& cell, char type) const override;
+    HOSTDEVICE bool nodeInPreviousCellIs(int index, char type) const;
+    HOSTDEVICE bool nodeInCellIs(Cell& cell, char type) const override;
 
-    uint getXIndex(real x) const;
-    uint getYIndex(real y) const;
-    uint getZIndex(real z) const;
+    HOSTDEVICE uint getXIndex(real x) const;
+    HOSTDEVICE uint getYIndex(real y) const;
+    HOSTDEVICE uint getZIndex(real z) const;
 
     uint level;
 
@@ -94,6 +67,7 @@ private:
 
     Field field;
     Object* object;
+    GridInterface* gridInterface;
 
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
     int *sparseIndices;
@@ -102,12 +76,23 @@ private:
 	real *qValues;
     uint *qPatches;
 
-    SPtr<GridStrategy> gridStrategy;
+    bool innerRegionFromFinerGrid;
+
+    uint numberOfLayers;
+
+	SPtr<GridStrategy> gridStrategy;
+    TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy;
+
+	uint numberOfSolidBoundaryNodes;
+
+    bool enableFixRefinementIntoTheWall;
 
 public:
-    void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) override;
+    HOST void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) override;
+    HOST void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) override;
+    HOSTDEVICE void fixOddCell(uint index);
 
-    void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override;
+    HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override;
     void setPeriodicityX(bool periodicity) override;
     void setPeriodicityY(bool periodicity) override;
     void setPeriodicityZ(bool periodicity) override;
@@ -116,85 +101,211 @@ public:
     bool getPeriodicityY() override;
     bool getPeriodicityZ() override;
 
-    void setCellTo(uint index, char type);
-    void setNonStopperOutOfGridCellTo(uint index, char type);
+    void setEnableFixRefinementIntoTheWall( bool enableFixRefinementIntoTheWall ) override;
 
-    uint transCoordToIndex(const real &x, const real &y, const real &z) const override;
-    void transIndexToCoords(uint index, real &x, real &y, real &z) const override;
+    HOSTDEVICE void setCellTo(uint index, char type);
+    HOSTDEVICE void setNonStopperOutOfGridCellTo(uint index, char type);
 
-    void freeMemory() override;
+    HOSTDEVICE uint transCoordToIndex(const real &x, const real &y, const real &z) const override;
+    HOSTDEVICE void transIndexToCoords(uint index, real &x, real &y, real &z) const override;
 
-    uint getLevel(real levelNull) const;
-    uint getLevel() const;
+    HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
+
+    HOST void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
+
+    HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+
+    HOST void freeMemory() override;
+
+    HOST uint getLevel(real levelNull) const;
+    HOST uint getLevel() const;
+    HOST void setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy);
+    HOST TriangularMeshDiscretizationStrategy* getTriangularMeshDiscretizationStrategy();
+
+	HOST uint getNumberOfSolidBoundaryNodes() const override;
+	HOST void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override;
+
+	HOST real getQValue(const uint index, const uint dir) const override;
+	HOST uint getQPatch(const uint index) const override;
+
+    HOST void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) override;
+
+    HOST void setNumberOfLayers( uint numberOfLayers ) override;
 
 public:
     Distribution distribution;
 
-    void initalNodeToOutOfGrid(uint index);
+    HOSTDEVICE void initalNodeToOutOfGrid(uint index);
 
-    void findInnerNode(uint index);
+    HOSTDEVICE void findInnerNode(uint index);
 
-	void findEndOfGridStopperNode(uint index);
+    HOSTDEVICE void discretize(Object* object, char innerType, char outerType);
 
-    void setNodeTo(uint index, char type);
-    bool isNode(uint index, char type) const;
-    bool nodeInNextCellIs(int index, char type) const;
-    bool hasAllNeighbors(uint index) const;
-    bool hasNeighborOfType(uint index, char type)const;
-    bool cellContainsOnly(Cell &cell, char type) const;
-    bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
+    bool isInside(const Cell& cell) const;
 
-    const Object* getObject() const override;
+    HOSTDEVICE void setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid);
+    
+    HOSTDEVICE void addOverlap();
+    HOSTDEVICE void setOverlapTmp( uint index );
+    HOSTDEVICE void setOverlapFluid( uint index );
 
-    Field getField() const;
-    char getFieldEntry(uint index) const override;
-    void setFieldEntry(uint matrixIndex, char type) override;
+    HOSTDEVICE void fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir);
+    HOSTDEVICE void findStopperNode(uint index);
+	HOSTDEVICE void findEndOfGridStopperNode(uint index);
+	HOSTDEVICE void findSolidStopperNode(uint index);
+	HOSTDEVICE void findBoundarySolidNode(uint index);
+
+    HOSTDEVICE void findGridInterfaceCF(uint index, GridImp& finerGrid, LbmOrGks lbmOrGks);
+    HOSTDEVICE void findGridInterfaceFC(uint index, GridImp& finerGrid);
+    HOSTDEVICE void findOverlapStopper(uint index, GridImp& finerGrid);
+    HOSTDEVICE void findInvalidBoundaryNodes(uint index);
+
+    HOSTDEVICE void setNodeTo(uint index, char type);
+    HOSTDEVICE bool isNode(uint index, char type) const;
+    HOSTDEVICE bool nodeInNextCellIs(int index, char type) const;
+    HOSTDEVICE bool hasAllNeighbors(uint index) const;
+    HOSTDEVICE bool hasNeighborOfType(uint index, char type)const;
+    HOSTDEVICE bool cellContainsOnly(Cell &cell, char type) const;
+    HOSTDEVICE bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
+
+    HOSTDEVICE const Object* getObject() const override;
+
+    HOSTDEVICE Field getField() const;
+    HOSTDEVICE char getFieldEntry(uint index) const override;
+    HOSTDEVICE void setFieldEntry(uint matrixIndex, char type) override;
 
 
-    real getDelta() const override;
-    uint getSize() const override;
-    uint getSparseSize() const override;
-    int getSparseIndex(uint matrixIndex) const override;
-    real* getDistribution() const override;
-    int* getDirection() const override;
-    int getStartDirection() const override;
-    int getEndDirection() const override;
+    HOSTDEVICE real getDelta() const override;
+    HOSTDEVICE uint getSize() const override;
+    HOSTDEVICE uint getSparseSize() const override;
+    HOSTDEVICE int getSparseIndex(uint matrixIndex) const override;
+    HOST real* getDistribution() const override;
+    HOST int* getDirection() const override;
+    HOST int getStartDirection() const override;
+    HOST int getEndDirection() const override;
 
-    real getStartX() const override;
-    real getStartY() const override;
-    real getStartZ() const override;
-    real getEndX() const override;
-    real getEndY() const override;
-    real getEndZ() const override;
-    uint getNumberOfNodesX() const override;
-    uint getNumberOfNodesY() const override;
-    uint getNumberOfNodesZ() const override;
-    void getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, uint *geo) const override;
+    HOSTDEVICE Vertex getMinimumOnNode(Vertex exact) const;
+    HOSTDEVICE Vertex getMaximumOnNode(Vertex exact) const;
+
+    HOSTDEVICE real getStartX() const override;
+    HOSTDEVICE real getStartY() const override;
+    HOSTDEVICE real getStartZ() const override;
+    HOSTDEVICE real getEndX() const override;
+    HOSTDEVICE real getEndY() const override;
+    HOSTDEVICE real getEndZ() const override;
+    HOSTDEVICE uint getNumberOfNodesX() const override;
+    HOSTDEVICE uint getNumberOfNodesY() const override;
+    HOSTDEVICE uint getNumberOfNodesZ() const override;
+    HOST void getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, uint *geo) const override;
+
+    HOSTDEVICE uint getNumberOfNodesCF() const override;
+    HOSTDEVICE uint getNumberOfNodesFC() const override;
+    HOST void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const override;
+    HOST static void getGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size);
 
     int* getNeighborsX() const override;
     int* getNeighborsY() const override;
     int* getNeighborsZ() const override;
     int* getNeighborsNegative() const override;
 
+    HOST uint* getCF_coarse() const override;
+    HOST uint* getCF_fine() const override;
+    HOST uint* getCF_offset() const override;
+
+
+    HOST uint* getFC_coarse() const override;
+    HOST uint* getFC_fine() const override;
+    HOST uint* getFC_offset() const override;
+
     SPtr<GridStrategy> getGridStrategy() const override;
 
 
-public:
-    virtual void findSparseIndices(SPtr<Grid> fineGrid);
+    HOSTDEVICE void print() const;
 
-    void updateSparseIndices();
-    void setNeighborIndices(uint index);
-    real getFirstFluidNode(real coords[3], int direction, real startCoord) const;
-    real getLastFluidNode(real coords[3], int direction, real startCoord) const;
+
+public:
+    HOST virtual void findSparseIndices(SPtr<Grid> fineGrid);
+
+    HOST void updateSparseIndices();
+    HOSTDEVICE void setNeighborIndices(uint index);
+    HOSTDEVICE real getFirstFluidNode(real coords[3], int direction, real startCoord) const;
+    HOSTDEVICE real getLastFluidNode(real coords[3], int direction, real startCoord) const;
 private:
-    void setStopperNeighborCoords(uint index);
-    void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
-    real getNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
-    void getNegativeNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
-    real getNegativeNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
+    HOSTDEVICE void setStopperNeighborCoords(uint index);
+    HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
+    HOSTDEVICE real getNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
+    HOSTDEVICE void getNegativeNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
+    HOSTDEVICE real getNegativeNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
     
 
-    int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
+    HOSTDEVICE int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
+
+    HOSTDEVICE static real getMinimumOnNodes(const real& minExact, const real& decimalStart, const real& delta);
+    HOSTDEVICE static real getMaximumOnNodes(const real& maxExact, const real& decimalStart, const real& delta);
+
+public:
+    HOSTDEVICE BoundingBox getBoundingBoxOnNodes(Triangle &triangle) const;
+
+    HOST void mesh(Object* object) override;
+
+    HOST void mesh(TriangularMesh &geometry) override;
+    HOSTDEVICE void mesh(Triangle &triangle);
+
+    HOST void closeNeedleCells() override;
+    HOSTDEVICE bool closeCellIfNeedle(uint index);
+
+    HOST void closeNeedleCellsThinWall() override;
+    HOSTDEVICE bool closeCellIfNeedleThinWall(uint index);
+
+    HOST void findQs(Object* object) override;
+    HOST void findQs(TriangularMesh &triangularMesh);
+    HOSTDEVICE void findQs(Triangle &triangle);
+
+    HOST void findQsPrimitive(Object* object);
+private:
+
+    enum class qComputationStageType{
+        FindSolidBoundaryNodes,
+        ComputeQs
+    } qComputationStage;
+
+public:
+    HOST void enableFindSolidBoundaryNodes(){ qComputationStage = qComputationStageType::FindSolidBoundaryNodes; }
+    HOST void enableComputeQs(){ qComputationStage = qComputationStageType::ComputeQs; }
+
+private:
+    HOSTDEVICE void setDebugPoint(uint index, int pointValue);
+	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &triangle) const;
+	HOSTDEVICE void calculateQs(const uint index, const Vertex &point, const Triangle &triangle) const;
+	HOST void calculateQs(const uint index, const Vertex &point, Object* object) const;
+
+    HOST bool checkIfAtLeastOneValidQ(const uint index, const Vertex &point, const Triangle &triangle) const;
+
+    HOST bool checkIfAtLeastOneValidQ(const uint index, const Vertex &point, Object* object) const;
+
+public:
+
+    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+    void findCommunicationIndex( uint index, real coordinate, real limit, int direction );
+
+    uint getNumberOfSendNodes(int direction) override;
+    uint getNumberOfReceiveNodes(int direction) override;
+
+    uint getSendIndex(int direction, uint index) override;
+    uint getReceiveIndex(int direction, uint index) override;
+
+    void repairCommunicationInices(int direction) override;
+
+public:
+
+    struct CommunicationIndices
+    {
+        std::vector<uint> sendIndices;
+        std::vector<uint> receiveIndices;
+    };
+
+    std::array<CommunicationIndices, 6> communicationIndices;
+
 
 private:
     friend class GridGpuStrategy;

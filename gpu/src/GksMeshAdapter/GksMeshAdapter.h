@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file GksMeshAdapter.h
-//! \ingroup GksMeshAdapter
-//! \author Stephan Lenz
-//=======================================================================================
 #ifndef GKS_MESH_ADAPTER_H
 #define GKS_MESH_ADAPTER_H
 
@@ -92,6 +60,28 @@ public:
     std::vector<uint> numberOfInnerFacesPerLevel;
 
     //////////////////////////////////////////////////////////////////////////
+    //
+    //    F i n e T o C o a r s e    s o r t i n g :
+    //
+    //  | Coarse Cell Idx | Child Idcs | ...
+    //
+    std::vector<uint_9> fineToCoarse;
+
+    std::vector<uint> numberOfFineToCoarsePerLevel;
+    std::vector<uint> startOfFineToCoarsePerLevel;
+
+    //////////////////////////////////////////////////////////////////////////
+    //
+    //    F i n e T o C o a r s e    s o r t i n g :
+    //
+    //  | Coarse Cell Idx | Coarse Neighbor Idcs | Child Idcs | ...
+    //
+    std::vector<uint_15> coarseToFine;
+
+    std::vector<uint> numberOfCoarseToFinePerLevel;
+    std::vector<uint> startOfCoarseToFinePerLevel;
+
+    //////////////////////////////////////////////////////////////////////////
     // 
     // Connectivity from LBM grid to GKS Mesh
     //
@@ -105,12 +95,23 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
 
+    struct CommunicationIndices
+    {
+        std::array< std::vector< uint >, 6 > sendIndices;
+        std::array< std::vector< uint >, 6 > recvIndices;
+    };
+
+    std::vector< CommunicationIndices > communicationIndices;
+
+    std::array<uint, 6> communicationProcesses;
+
 public:
 
     GksMeshAdapter( SPtr<MultipleGridBuilder> gridBuilder );
 
     void inputGrid();
 
+    void findQuadtreeConnectivity();
 
     void findCellToCellConnectivity();
 
@@ -119,6 +120,8 @@ public:
     void partitionCells();
 
     void refreshCellConnectivity(const std::vector<uint>& idxMap);
+
+    void findCornerCells();
 
     void generateNodes();
 
@@ -129,8 +132,22 @@ public:
     void sortFaces();
 
     void countFaces();
-    
+
+    void countInnerFaces();
+
+    void generateInterfaceConnectivity();
+
     void findPeriodicBoundaryNeighbors();
+
+    void getCommunicationIndices();
+
+    void writeMeshVTK( std::string filename );
+
+    void writeMeshFaceVTK( std::string filename );
+
+    void writeMeshCellToCellVTK( std::string filename );
+
+    void writeMeshFaceToCellVTK( std::string filename );
 
     //////////////////////////////////////////////////////////////////////////
 

@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file MultipleGridBuilder.h
-//! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz
-//=======================================================================================
 #ifndef MULTIPLE_GRID_BUILDER_H
 #define MULTIPLE_GRID_BUILDER_H
 
@@ -55,6 +23,11 @@ public:
     VF_PUBLIC static SPtr<MultipleGridBuilder> makeShared(SPtr<GridFactory> gridFactory);
 
     VF_PUBLIC void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
+    VF_PUBLIC void addGrid(Object* gridShape);
+    VF_PUBLIC void addGrid(Object* gridShape, uint levelFine);
+
+    VF_PUBLIC void addGeometry(Object* gridShape);
+    VF_PUBLIC void addGeometry(Object* solidObject, uint level);
 
     VF_PUBLIC uint getNumberOfLevels() const;
     VF_PUBLIC real getDelta(uint level) const;
@@ -72,13 +45,33 @@ public:
 
     VF_PUBLIC void setNumberOfLayers( uint numberOfLayersFine, uint numberOfLayersBetweenLevels );
 
+    VF_PUBLIC void writeGridsToVtk(const std::string& path) const;
+
+    VF_PUBLIC void setSubDomainBox(SPtr<BoundingBox> subDomainBox);
 
 private:
     void addGridToList(SPtr<Grid> grid);
+    real calculateDelta(uint level) const;
     bool coarseGridExists() const;
+    bool isGridInCoarseGrid(SPtr<Grid> grid) const;
 
+    void addFineGridToList(uint level, Object* gridShape);
+    void addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, Object* gridShape);
+    void eraseGridsFromListIfInvalid(uint oldSize);
+    void addGridToListIfValid(SPtr<Grid> grid);
+
+	std::array<real, 6> getStaggeredCoordinates(Object* gridShape, uint level, uint levelFine, bool& xOddStart, bool& yOddStart, bool& zOddStart) const;
+    std::array<real, 6> getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const;
+    std::array<real, 3> getOffset(real delta) const;
+    std::vector<uint> getSpacingFactors(uint levelDifference) const;
+
+    SPtr<Grid> makeGrid(Object* gridShape, uint level, uint levelFine);
     SPtr<Grid> makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const;
 
+    static void emitNoCoarseGridExistsWarning();
+    static void emitGridIsNotInCoarseGridWarning();
+
+    //std::vector<SPtr<Grid> > grids;
 
     SPtr<GridFactory> gridFactory;
     Object* solidObject;
@@ -88,6 +81,9 @@ private:
 
     SPtr<BoundingBox> subDomainBox;
 
+public:
+
+    VF_PUBLIC void findCommunicationIndices( int direction, LbmOrGks lbmOrGks );
 };
 
 #endif

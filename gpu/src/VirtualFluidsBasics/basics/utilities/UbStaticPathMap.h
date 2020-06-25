@@ -1,35 +1,9 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//  _    ___      __              __________      _     __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file UbStaticPathMap.h
-//! \ingroup utilities
-//! \author Soeren Freudiger, Sebastian Geller
-//=======================================================================================
 #ifndef UBSTATICPATHMAP_H
 #define UBSTATICPATHMAP_H
 
@@ -39,13 +13,21 @@
 
 #include <basics/utilities/UbSystem.h>
 
-//////////////////////////////////////////////////////////////////////////
-//!
-//! \brief A class stores pathnames for pathIDs
-//! \details (e.g. on different processes different paths with same pathID)
-//! adding an path autom. changes "\" to "/" and removed last "/" if exists
-//!
-//////////////////////////////////////////////////////////////////////////
+/*=========================================================================*/
+/*  UbStaticPathMap                                                             */
+/*                                                                         */
+/**
+...
+<BR><BR>
+@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
+@version 1.0 - 12.10.2007
+*/ 
+
+/*
+stores pathnames for pathIDs (e.g. on different processes different paths with same pathID)
+adding an path autom. changes "\" to "/" and removed last "/" if exists
+
+*/
 
 class UbStaticPathMap
 {

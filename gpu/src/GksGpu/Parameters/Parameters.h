@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file Parameters.h
-//! \ingroup Parameters
-//! \author Stephan Lenz
-//=======================================================================================
 #ifndef Parameters_H
 #define Parameters_H
 
@@ -38,12 +6,14 @@
 
 #include <VirtualFluidsDefinitions.h>
 
+namespace GksGpu {
+
 enum class VF_PUBLIC ViscosityModel{
     constant,
-    sutherlandsLaw
+    sutherlandsLaw,
+    sutherlandsLaw2
 };
 
-//! Comprises all simulation parameters for passing them to kernels
 struct  VF_PUBLIC Parameters
 {
 
@@ -84,11 +54,24 @@ struct  VF_PUBLIC Parameters
 
     //////////////////////////////////////////////////////////////////////////
 
+    bool enableReaction = false;
+
+    real heatOfReaction = real(8000.0); // kJ / kmol  
+
+    bool useHeatReleaseRateLimiter = false;
     bool useTemperatureLimiter     = false;
     bool usePassiveScalarLimiter   = false;
 
-    real temperatureLimiter     = real(1.0e-3);
-    real passiveScalarLimiter   = real(0.1);
+    real heatReleaseRateLimiter       = real(20000.0);
+    real temperatureLimiter           = real(1.0e-3);
+    real temperatureLimiterUpperLimit = real(1.0e-3);
+    real passiveScalarLimiter         = real(0.1);
+
+    // deprecated limiters
+    bool useReactionLimiter = false;
+    real reactionLimiter    = real(1.005);
 };
+
+} // namespace GksGpu
 
 #endif

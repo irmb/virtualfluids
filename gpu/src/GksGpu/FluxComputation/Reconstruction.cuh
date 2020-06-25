@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file Reconstruction.cuh
-//! \ingroup FluxComputation
-//! \author Stephan Lenz
-//=======================================================================================
 #ifndef Reconstruction_CUH
 #define Reconstruction_CUH
 
@@ -43,6 +11,9 @@
 #include "FlowStateData/FlowStateData.cuh"
 #include "FlowStateData/FlowStateDataConversion.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
+#include "FlowStateData/ThermalDependencies.cuh"
+
+namespace GksGpu {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,12 +21,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//! \brief Reads the cell indices of the cells on positive and negative side of the face
-//!
-//! \param[in]  faceIndex       index of the current face
-//! \param[in]  dataBase        \ref DataBaseStruct that holds the memory pointers
-//! \param[out] posCellIndexN   index of the cell on the positive side of the face
-//! \param[out] negCellIndexN   index of the cell on the negative side of the face
 __host__ __device__ inline void getCellIndicesN ( const uint faceIndex,
                                                   const DataBaseStruct& dataBase,
                                                   uint& posCellIndexN,
@@ -65,18 +30,6 @@ __host__ __device__ inline void getCellIndicesN ( const uint faceIndex,
     negCellIndexN = dataBase.faceToCell[ NEG_CELL( faceIndex, dataBase.numberOfFaces ) ];
 }
 
-//! \brief Reads the cell indices of the tangential cells in x direction on positive and
-//! negative side of the face
-//!
-//! The indices are obtained by pointer chasing. First one goes to the positive/negative 
-//! cell. Then from there to the adjacent cells in x direction.
-//! 
-//! \param[in]  faceIndex       index of the current face
-//! \param[in]  dataBase        \ref DataBaseStruct that holds the memory pointers
-//! \param[in]  posCellIndexN   index of the cell on the positive side of the face
-//! \param[in]  negCellIndexN   index of the cell on the negative side of the face
-//! \param[out] posCellIndexTX  two cell indices of the cells that are neighbors in positive x direction of the positive and negative cells
-//! \param[out] negCellIndexTX  two cell indices of the cells that are neighbors in negative x direction of the positive and negative cells
 __host__ __device__ inline void getCellIndicesTX( const uint faceIndex,
                                                   const DataBaseStruct& dataBase,
                                                   const uint posCellIndexN,
@@ -91,18 +44,6 @@ __host__ __device__ inline void getCellIndicesTX( const uint faceIndex,
     negCellIndexTX[1] = dataBase.cellToCell[ CELL_TO_CELL( negCellIndexN, 1, dataBase.numberOfCells ) ];
 }
 
-//! \brief Reads the cell indices of the tangential cells in y direction on positive and
-//! negative side of the face
-//!
-//! The indices are obtained by pointer chasing. First one goes to the positive/negative 
-//! cell. Then from there to the adjacent cells in y direction.
-//! 
-//! \param[in]  faceIndex       index of the current face
-//! \param[in]  dataBase        \ref DataBaseStruct that holds the memory pointers
-//! \param[in]  posCellIndexN   index of the cell on the positive side of the face
-//! \param[in]  negCellIndexN   index of the cell on the negative side of the face
-//! \param[out] posCellIndexTY  two cell indices of the cells that are neighbors in positive y direction of the positive and negative cells
-//! \param[out] negCellIndexTY  two cell indices of the cells that are neighbors in negative y direction of the positive and negative cells
 __host__ __device__ inline void getCellIndicesTY( const uint faceIndex,
                                                   const DataBaseStruct& dataBase,
                                                   const uint posCellIndexN,
@@ -117,18 +58,6 @@ __host__ __device__ inline void getCellIndicesTY( const uint faceIndex,
     negCellIndexTY[1] = dataBase.cellToCell[ CELL_TO_CELL( negCellIndexN, 3, dataBase.numberOfCells ) ];
 }
 
-//! \brief Reads the cell indices of the tangential cells in z direction on positive and
-//! negative side of the face
-//!
-//! The indices are obtained by pointer chasing. First one goes to the positive/negative 
-//! cell. Then from there to the adjacent cells in z direction.
-//! 
-//! \param[in]  faceIndex       index of the current face
-//! \param[in]  dataBase        \ref DataBaseStruct that holds the memory pointers
-//! \param[in]  posCellIndexN   index of the cell on the positive side of the face
-//! \param[in]  negCellIndexN   index of the cell on the negative side of the face
-//! \param[out] posCellIndexTZ  two cell indices of the cells that are neighbors in positive z direction of the positive and negative cells
-//! \param[out] negCellIndexTZ  two cell indices of the cells that are neighbors in negative z direction of the positive and negative cells
 __host__ __device__ inline void getCellIndicesTZ( const uint faceIndex,
                                                   const DataBaseStruct& dataBase,
                                                   const uint posCellIndexN,
@@ -149,14 +78,6 @@ __host__ __device__ inline void getCellIndicesTZ( const uint faceIndex,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//! \brief Computes the flow state on the cell face
-//! 
-//! Linear interpolation of the conserved variables is used. Due to the uniform grid
-//! this is a simple average of the two adjacent cell states.
-//!
-//! \param[in]  posCons    \ref ConservedVariables object with flow state on positive side of the face
-//! \param[in]  negCons    \ref ConservedVariables object with flow state on negative side of the face
-//! \param[out] faceCons   \ref ConservedVariables object with flow state on the face
 __host__ __device__ inline void computeFaceCons( const ConservedVariables& posCons,
                                                  const ConservedVariables& negCons,
                                                  ConservedVariables& faceCons )
@@ -172,14 +93,6 @@ __host__ __device__ inline void computeFaceCons( const ConservedVariables& posCo
 #endif // USE_PASSIVE_SCALAR
 }
 
-//! \brief Computes the normal derivative of the conserved variables
-//! on the face by central finite difference
-//! 
-//! \param[in]  parameters   \ref Parameters struct
-//! \param[in]  posCons      \ref ConservedVariables object with flow state on positive side of the face
-//! \param[in]  negCons      \ref ConservedVariables object with flow state on negative side of the face
-//! \param[in]  facePrim     \ref PrimitiveVariables object with flow state on the face
-//! \param[out] gradN        \ref ConservedVariables object with normal derivative of the flow state in terms of conserved variables and divided by density
 __host__ __device__ inline void computeGradN( const Parameters& parameters,
                                               const ConservedVariables& posCons,
                                               const ConservedVariables& negCons,
@@ -197,18 +110,6 @@ __host__ __device__ inline void computeGradN( const Parameters& parameters,
 #endif // USE_PASSIVE_SCALAR
 }
 
-//! \brief Computes the tangential derivative of the conserved variables
-//! on the face by central finite difference
-//! 
-//! This function can be used for all three directions, by providing suitable 
-//! cell indices.
-//! 
-//! \param[in]  dataBase          \ref DataBaseStruct that holds the memory pointers
-//! \param[in]  parameters        \ref Parameters struct
-//! \param[in]  posCellIndexT     two ConservedVariables object with flow state in positive direction
-//! \param[in]  negCellIndexT     two ConservedVariables object with flow state in negative direction
-//! \param[in]  facePrim          \ref PrimitiveVariables object with flow state on the face
-//! \param[out] gradN             \ref ConservedVariables object with derivative of the flow state in terms of conserved variables and divided by density
 __host__ __device__ inline void computeGradT( const DataBaseStruct& dataBase,
                                               const Parameters& parameters,
                                               const uint posCellIndexT[2],
@@ -295,17 +196,6 @@ __host__ __device__ inline void computeGradT( const DataBaseStruct& dataBase,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//! \brief Computes the linear reconstruction of the flow field around the face
-//!
-//! \param[in]  faceIndex        index of the current face
-//! \param[in]  dataBase         \ref DataBaseStruct that holds the memory pointers
-//! \param[in]  parameters       \ref Parameters struct
-//! \param[in]  direction        char with 'x', 'y' or 'z', used for deciding on tangential derivative directions
-//! \param[out] gradN            \ref ConservedVariables object with normal derivative of the flow state in terms of conserved variables and divided by density
-//! \param[out] gradT1           \ref ConservedVariables object with first  tangential derivative of the flow state in terms of conserved variables and divided by density
-//! \param[out] gradT2           \ref ConservedVariables object with second tangential derivative of the flow state in terms of conserved variables and divided by density
-//! \param[out] facePrim         \ref PrimitiveVariables object with flow state on the face
-//! \param[out] K                deprecated
 __host__ __device__ inline void reconstructFiniteDifferences( const uint faceIndex,
                                                               const DataBaseStruct& dataBase,
                                                               const Parameters& parameters,
@@ -327,6 +217,12 @@ __host__ __device__ inline void reconstructFiniteDifferences( const uint faceInd
         readCellData(negCellIndexN, dataBase, negCons);
         
         computeFaceCons(posCons, negCons, faceCons);
+
+    #ifdef USE_PASSIVE_SCALAR
+        {
+            //K = getK(faceCons);
+        }
+    #endif
 
         facePrim = toPrimitiveVariables( faceCons, K, false );
 
@@ -355,6 +251,8 @@ __host__ __device__ inline void reconstructFiniteDifferences( const uint faceInd
         computeGradT( dataBase, parameters, posCellIndexT2, negCellIndexT2, facePrim, gradT2 );
     }
 }
+
+} // namespace GksGpu
 
 
 

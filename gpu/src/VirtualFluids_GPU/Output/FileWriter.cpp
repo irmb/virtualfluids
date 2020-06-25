@@ -1,85 +1,188 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//  _    ___      __              __________      _     __        ______________   __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file FileWriter.cpp
-//! \ingroup Output
-//! \author Martin Schoenherr
-//=======================================================================================
+//////////////////////////////////////////////////////////////////////////
 #include "FileWriter.h"
-#include "GPU/CudaMemoryManager.h"
-#include "Parameter/Parameter.h"
-#include "VirtualFluidsBasics/basics/writer/WbWriterVtkXmlBinary.h"
 
-void FileWriter::writeInit(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaManager)
+#include <stdio.h>
+#include <fstream>
+#include <sstream>
+#include <cmath>
+
+#include <Core/StringUtilities/StringUtil.h>
+
+#include "Parameter/Parameter.h"
+#include "GPU/CudaMemoryManager.h"
+
+#include "LBM/LB.h"
+#include "LBM/D3Q27.h"
+
+#include <VirtualFluidsBasics/basics/writer/WbWriterVtkXmlBinary.h>
+
+void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
-    uint timestep = 0;
-	uint level = 0;
-	cudaManager->cudaCopyDataToHost();
-	writeTimestep(para, timestep);
+    unsigned int timestep = para->getTInit();
+	for (int level = para->getCoarse(); level <= para->getFine(); level++) {
+		cudaManager->cudaCopyPrint(level);
+		writeTimestep(para, timestep, level);
+	}
+
+    this->writeCollectionFile(para, timestep);
+
+    if( para->getCalcMedian() )
+        this->writeCollectionFileMedian(para, timestep);
 }
 
-void FileWriter::writeTimestep(SPtr<Parameter> para, uint timestep)
+void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep)
 {
-	const unsigned int numberOfParts = para->getParH()->numberOfNodes / para->getlimitOfNodesForVTK() + 1;
-	std::vector<std::string> fname;
+    for (int level = para->getCoarse(); level <= para->getFine(); level++)
+        writeTimestep(para, timestep, level);
 
-	std::ostringstream strTimestep;
-	strTimestep << timestep;
+    this->writeCollectionFile(para, timestep);
 
+    if( para->getCalcMedian() )
+        this->writeCollectionFileMedian(para, timestep);
+}
+
+void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level)
+{
+    const unsigned int numberOfParts = para->getParH(level)->size_Mat_SP / para->getlimitOfNodesForVTK() + 1;
+    std::vector<std::string> fname;
+	std::vector<std::string> fnameMed;
 	for (unsigned int i = 1; i <= numberOfParts; i++)
 	{
-		std::ostringstream strPart;
-		strPart << i;
-		fname.push_back(para->getPathAndFilename() + "_bin_Part_" + strPart.str() + "_t_" + strTimestep.str() + ".vtk");
+		fname.push_back(para->getFName() + "_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk");
+		fnameMed.push_back(para->getFName() + "_bin_median_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk");
+
+        this->fileNamesForCollectionFile.push_back( fname.back() );
+        this->fileNamesForCollectionFileMedian.push_back( fnameMed.back() );
 	}
-	writeUnstrucuredGridLT(para, fname);
+
+	if (para->getDiffOn() == true)
+		writeUnstrucuredGridLTConc(para, level, fname);
+	else
+		writeUnstrucuredGridLT(para, level, fname);
+
+	if (para->getCalcMedian())
+	{
+		if (para->getDiffOn() == true)
+			writeUnstrucuredGridMedianLTConc(para, level, fnameMed);
+		else
+			writeUnstrucuredGridMedianLT(para, level, fnameMed);
+	}
 }
 
-bool FileWriter::isPeriodicCell(SPtr<Parameter> para, uint number2, uint number1, uint number3, uint number5)
+bool FileWriter::isPeriodicCell(std::shared_ptr<Parameter> para, int level, unsigned int number2, unsigned int number1, unsigned int number3, unsigned int number5)
 {
-	return (para->getParH()->coordinateX[number2] < para->getParH()->coordinateX[number1]) ||
-		   (para->getParH()->coordinateY[number3] < para->getParH()->coordinateY[number1]) ||
-		   (para->getParH()->coordinateZ[number5] < para->getParH()->coordinateZ[number1]);
+	return (para->getParH(level)->coordX_SP[number2] < para->getParH(level)->coordX_SP[number1]) ||
+		   (para->getParH(level)->coordY_SP[number3] < para->getParH(level)->coordY_SP[number1]) ||
+		   (para->getParH(level)->coordZ_SP[number5] < para->getParH(level)->coordZ_SP[number1]);
 }
 
-void FileWriter::writeUnstrucuredGridLT(SPtr<Parameter> para, std::vector<std::string >& fname)
+void VF_PUBLIC FileWriter::writeCollectionFile(std::shared_ptr<Parameter> para, unsigned int timestep)
+{
+
+    std::string filename = para->getFName() + "_bin_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk";
+
+    std::ofstream file;
+
+    file.open( filename + ".pvtu" );
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
+    file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
+
+    file << "    <PPointData>" << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"press\" /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"rho\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"vx1\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"vx2\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"vx3\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"geo\"   /> " << std::endl;
+    if( para->getDiffOn() ) file << "       <DataArray type=\"Float32\" Name=\"conc\"  /> " << std::endl;
+    file << "    </PPointData>" << std::endl;
+
+    file << "    <PPoints>" << std::endl;
+    file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
+    file << "    </PPoints>" << std::endl;
+
+    for( auto& fname : this->fileNamesForCollectionFile )
+    {
+        const auto filenameWithoutPath=fname.substr( fname.find_last_of('/') + 1 );
+        file << "    <Piece Source=\"" << filenameWithoutPath << ".bin.vtu\"/>" << std::endl;
+    }
+
+    file << "  </PUnstructuredGrid>" << std::endl;
+    file << "</VTKFile>" << std::endl;
+
+    //////////////////////////////////////////////////////////////////////////
+
+    file.close();
+
+    this->fileNamesForCollectionFile.clear();
+}
+
+void VF_PUBLIC FileWriter::writeCollectionFileMedian(std::shared_ptr<Parameter> para, unsigned int timestep)
+{
+
+    std::string filename = para->getFName() + "_bin_median_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk";
+
+    std::ofstream file;
+
+    file.open( filename + ".pvtu" );
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
+    file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
+
+    file << "    <PPointData>" << std::endl;
+    if( para->getDiffOn() ) file << "       <DataArray type=\"Float32\" Name=\"concMed\"  /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"pressMed\" /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"rhoMed\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"vx1Med\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"vx2Med\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"vx3Med\"   /> " << std::endl;
+    file << "       <DataArray type=\"Float32\" Name=\"geo\"   /> " << std::endl;
+    file << "    </PPointData>" << std::endl;
+
+    file << "    <PPoints>" << std::endl;
+    file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
+    file << "    </PPoints>" << std::endl;
+
+    for( auto& fname : this->fileNamesForCollectionFileMedian )
+    {
+        const auto filenameWithoutPath=fname.substr( fname.find_last_of('/') + 1 );
+        file << "    <Piece Source=\"" << filenameWithoutPath << ".bin.vtu\"/>" << std::endl;
+    }
+
+    file << "  </PUnstructuredGrid>" << std::endl;
+    file << "</VTKFile>" << std::endl;
+
+    //////////////////////////////////////////////////////////////////////////
+
+    file.close();
+
+    this->fileNamesForCollectionFileMedian.clear();
+}
+
+void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)
 {
     std::vector< UbTupleFloat3 > nodes;
-    std::vector< UbTupleInt8 > cells;
+    std::vector< UbTupleUInt8 > cells;
     std::vector< std::string > nodedatanames;
-    nodedatanames.push_back("Press");
-    nodedatanames.push_back("DRho");
-    nodedatanames.push_back("Vx");
-    nodedatanames.push_back("Vy");
-    nodedatanames.push_back("Vz");
-    nodedatanames.push_back("Geometry");
+    nodedatanames.push_back("press");
+    nodedatanames.push_back("rho");
+    nodedatanames.push_back("vx1");
+    nodedatanames.push_back("vx2");
+    nodedatanames.push_back("vx3");
+    nodedatanames.push_back("geo");
     unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
-    int dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
+    uint dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
     bool neighborsAreFluid;
     double vxmax = 0;
     unsigned int startpos = 0;
@@ -89,8 +192,8 @@ void FileWriter::writeUnstrucuredGridLT(SPtr<Parameter> para, std::vector<std::s
 
     for (unsigned int part = 0; part < fname.size(); part++)
     {
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH()->numberOfNodes)
-            sizeOfNodes = para->getParH()->numberOfNodes - (part * para->getlimitOfNodesForVTK());
+        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+            sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
         else
             sizeOfNodes = para->getlimitOfNodesForVTK();
 
@@ -109,40 +212,40 @@ void FileWriter::writeUnstrucuredGridLT(SPtr<Parameter> para, std::vector<std::s
         //////////////////////////////////////////////////////////////////////////
         for (unsigned int pos = startpos; pos < endpos; pos++)
         {
-            if (para->getParH()->typeOfGridNode[pos] == GEO_FLUID)
+            if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
             {
                 //////////////////////////////////////////////////////////////////////////
-                double x1 = para->getParH()->coordinateX[pos];
-                double x2 = para->getParH()->coordinateY[pos];
-                double x3 = para->getParH()->coordinateZ[pos];
+                double x1 = para->getParH(level)->coordX_SP[pos];
+                double x2 = para->getParH(level)->coordY_SP[pos];
+                double x3 = para->getParH(level)->coordZ_SP[pos];
                 //////////////////////////////////////////////////////////////////////////
                 number1 = pos;
                 dn1 = pos - startpos;
                 neighborsAreFluid = true;
                 //////////////////////////////////////////////////////////////////////////
                 nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
-                nodedata[0][dn1] = (double)para->getParH()->pressure[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-                nodedata[1][dn1] = (double)para->getParH()->rho[pos] * (double)para->getDensityRatio();
-                nodedata[2][dn1] = (double)para->getParH()->velocityX[pos] * (double)para->getVelocityRatio();
-                nodedata[3][dn1] = (double)para->getParH()->velocityY[pos] * (double)para->getVelocityRatio();
-                nodedata[4][dn1] = (double)para->getParH()->velocityZ[pos] * (double)para->getVelocityRatio();
-                nodedata[5][dn1] = (double)para->getParH()->typeOfGridNode[pos];
+                nodedata[0][dn1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+                nodedata[1][dn1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+                nodedata[2][dn1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
+                nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
+                nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
+                nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
                 //////////////////////////////////////////////////////////////////////////
-                number2 = para->getParH()->neighborX[number1];
-                number3 = para->getParH()->neighborY[number2];
-                number4 = para->getParH()->neighborY[number1];
-                number5 = para->getParH()->neighborZ[number1];
-                number6 = para->getParH()->neighborZ[number2];
-                number7 = para->getParH()->neighborZ[number3];
-                number8 = para->getParH()->neighborZ[number4];
+                number2 = para->getParH(level)->neighborX_SP[number1];
+                number3 = para->getParH(level)->neighborY_SP[number2];
+                number4 = para->getParH(level)->neighborY_SP[number1];
+                number5 = para->getParH(level)->neighborZ_SP[number1];
+                number6 = para->getParH(level)->neighborZ_SP[number2];
+                number7 = para->getParH(level)->neighborZ_SP[number3];
+                number8 = para->getParH(level)->neighborZ_SP[number4];
                 //////////////////////////////////////////////////////////////////////////
-                if (para->getParH()->typeOfGridNode[number2] != GEO_FLUID ||
-                    para->getParH()->typeOfGridNode[number3] != GEO_FLUID ||
-                    para->getParH()->typeOfGridNode[number4] != GEO_FLUID ||
-                    para->getParH()->typeOfGridNode[number5] != GEO_FLUID ||
-                    para->getParH()->typeOfGridNode[number6] != GEO_FLUID ||
-                    para->getParH()->typeOfGridNode[number7] != GEO_FLUID ||
-                    para->getParH()->typeOfGridNode[number8] != GEO_FLUID)  neighborsAreFluid = false;
+                if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
+                    para->getParH(level)->geoSP[number3] != GEO_FLUID ||
+                    para->getParH(level)->geoSP[number4] != GEO_FLUID ||
+                    para->getParH(level)->geoSP[number5] != GEO_FLUID ||
+                    para->getParH(level)->geoSP[number6] != GEO_FLUID ||
+                    para->getParH(level)->geoSP[number7] != GEO_FLUID ||
+                    para->getParH(level)->geoSP[number8] != GEO_FLUID)  neighborsAreFluid = false;
                 //////////////////////////////////////////////////////////////////////////
                 if (number2 > endpos ||
                     number3 > endpos ||
@@ -160,7 +263,7 @@ void FileWriter::writeUnstrucuredGridLT(SPtr<Parameter> para, std::vector<std::s
                 dn7 = number7 - startpos;
                 dn8 = number8 - startpos;
 				//////////////////////////////////////////////////////////////////////////
-				if (isPeriodicCell(para, number2, number1, number3, number5))
+				if (isPeriodicCell(para, level, number2, number1, number3, number5))
 					continue;
 				//////////////////////////////////////////////////////////////////////////
                 if (neighborsAreFluid)
@@ -170,6 +273,338 @@ void FileWriter::writeUnstrucuredGridLT(SPtr<Parameter> para, std::vector<std::s
         WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(fname[part], nodes, cells, nodedatanames, nodedata);
     }
 }
+
+void FileWriter::writeUnstrucuredGridLTConc(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)
+{
+	std::vector< UbTupleFloat3 > nodes;
+	std::vector< UbTupleUInt8 > cells;
+	std::vector< std::string > nodedatanames;
+	nodedatanames.push_back("press");
+	nodedatanames.push_back("rho");
+	nodedatanames.push_back("vx1");
+	nodedatanames.push_back("vx2");
+	nodedatanames.push_back("vx3");
+	nodedatanames.push_back("geo");
+	nodedatanames.push_back("conc");
+	unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
+	uint dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
+	bool neighborsAreFluid;
+	double vxmax = 0;
+	unsigned int startpos = 0;
+	unsigned int endpos = 0;
+	unsigned int sizeOfNodes = 0;
+	std::vector< std::vector< double > > nodedata(nodedatanames.size());
+
+	for (unsigned int part = 0; part < fname.size(); part++)
+	{
+		if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+		else
+			sizeOfNodes = para->getlimitOfNodesForVTK();
+
+		//////////////////////////////////////////////////////////////////////////
+		startpos = part * para->getlimitOfNodesForVTK();
+		endpos = startpos + sizeOfNodes;
+		//////////////////////////////////////////////////////////////////////////
+		cells.clear();
+		nodes.resize(sizeOfNodes);
+		nodedata[0].resize(sizeOfNodes);
+		nodedata[1].resize(sizeOfNodes);
+		nodedata[2].resize(sizeOfNodes);
+		nodedata[3].resize(sizeOfNodes);
+		nodedata[4].resize(sizeOfNodes);
+		nodedata[5].resize(sizeOfNodes);
+		nodedata[6].resize(sizeOfNodes);
+		//////////////////////////////////////////////////////////////////////////
+		for (unsigned int pos = startpos; pos < endpos; pos++)
+		{
+			if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+			{
+				//////////////////////////////////////////////////////////////////////////
+				double x1 = para->getParH(level)->coordX_SP[pos];
+				double x2 = para->getParH(level)->coordY_SP[pos];
+				double x3 = para->getParH(level)->coordZ_SP[pos];
+				//////////////////////////////////////////////////////////////////////////
+				number1 = pos;
+				dn1 = pos - startpos;
+				neighborsAreFluid = true;
+				//////////////////////////////////////////////////////////////////////////
+				nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
+				nodedata[0][dn1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+				nodedata[1][dn1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+				nodedata[2][dn1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
+				nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
+				nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
+				nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+				nodedata[6][dn1] = (double)para->getParH(level)->Conc[pos];
+				//////////////////////////////////////////////////////////////////////////
+				number2 = para->getParH(level)->neighborX_SP[number1];
+				number3 = para->getParH(level)->neighborY_SP[number2];
+				number4 = para->getParH(level)->neighborY_SP[number1];
+				number5 = para->getParH(level)->neighborZ_SP[number1];
+				number6 = para->getParH(level)->neighborZ_SP[number2];
+				number7 = para->getParH(level)->neighborZ_SP[number3];
+				number8 = para->getParH(level)->neighborZ_SP[number4];
+				//////////////////////////////////////////////////////////////////////////
+				if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number3] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number4] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number5] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number6] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number7] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number8] != GEO_FLUID)  neighborsAreFluid = false;
+				//////////////////////////////////////////////////////////////////////////
+				if (number2 > endpos ||
+					number3 > endpos ||
+					number4 > endpos ||
+					number5 > endpos ||
+					number6 > endpos ||
+					number7 > endpos ||
+					number8 > endpos)  neighborsAreFluid = false;
+				//////////////////////////////////////////////////////////////////////////
+				dn2 = number2 - startpos;
+				dn3 = number3 - startpos;
+				dn4 = number4 - startpos;
+				dn5 = number5 - startpos;
+				dn6 = number6 - startpos;
+				dn7 = number7 - startpos;
+				dn8 = number8 - startpos;
+				//////////////////////////////////////////////////////////////////////////
+				if (isPeriodicCell(para, level, number2, number1, number3, number5))
+					continue;
+				//////////////////////////////////////////////////////////////////////////
+				if (neighborsAreFluid)
+					cells.push_back(makeUbTuple(dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8));
+			}
+		}
+		WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(fname[part], nodes, cells, nodedatanames, nodedata);
+	}
+}
+
+void FileWriter::writeUnstrucuredGridMedianLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)
+{
+	vector< UbTupleFloat3 > nodes;
+	vector< UbTupleUInt8 > cells;
+	//vector< UbTupleUInt8 > cells2;
+	vector< string > nodedatanames;
+	nodedatanames.push_back("pressMed");
+	nodedatanames.push_back("rhoMed");
+	nodedatanames.push_back("vx1Med");
+	nodedatanames.push_back("vx2Med");
+	nodedatanames.push_back("vx3Med");
+	nodedatanames.push_back("geo");
+	unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
+	unsigned int dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
+	bool neighborsFluid;
+	double vxmax = 0;
+	unsigned int startpos = 0;
+	unsigned int endpos = 0;
+	unsigned int sizeOfNodes = 0;
+	vector< vector< double > > nodedata(nodedatanames.size());
+
+	//printf("\n test for if... \n");
+	for (unsigned int part = 0; part < fname.size(); part++)
+	{
+		vxmax = 0;
+		//printf("\n test in if I... \n");
+		//////////////////////////////////////////////////////////////////////////
+		if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+		{
+			sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+		}
+		else
+		{
+			sizeOfNodes = para->getlimitOfNodesForVTK();
+		}
+		//////////////////////////////////////////////////////////////////////////
+		startpos = part * para->getlimitOfNodesForVTK();
+		endpos = startpos + sizeOfNodes;
+		//////////////////////////////////////////////////////////////////////////
+		cells.clear();
+		nodes.resize(sizeOfNodes);
+		nodedata[0].resize(sizeOfNodes);
+		nodedata[1].resize(sizeOfNodes);
+		nodedata[2].resize(sizeOfNodes);
+		nodedata[3].resize(sizeOfNodes);
+		nodedata[4].resize(sizeOfNodes);
+		nodedata[5].resize(sizeOfNodes);
+		//////////////////////////////////////////////////////////////////////////
+		//printf("\n test in if II... \n");
+		for (unsigned int pos = startpos; pos < endpos; pos++)
+		{
+			if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+			{
+				//////////////////////////////////////////////////////////////////////////
+				double x1 = para->getParH(level)->coordX_SP[pos];
+				double x2 = para->getParH(level)->coordY_SP[pos];
+				double x3 = para->getParH(level)->coordZ_SP[pos];
+				//////////////////////////////////////////////////////////////////////////
+				number1 = pos;
+				dn1 = pos - startpos;
+				neighborsFluid = true;
+				//////////////////////////////////////////////////////////////////////////
+				nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
+				nodedata[0][dn1] = para->getParH(level)->press_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+				nodedata[1][dn1] = para->getParH(level)->rho_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+				nodedata[2][dn1] = para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
+				nodedata[3][dn1] = para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
+				nodedata[4][dn1] = para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
+				nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+				//////////////////////////////////////////////////////////////////////////
+				number2 = para->getParH(level)->neighborX_SP[number1];
+				number3 = para->getParH(level)->neighborY_SP[number2];
+				number4 = para->getParH(level)->neighborY_SP[number1];
+				number5 = para->getParH(level)->neighborZ_SP[number1];
+				number6 = para->getParH(level)->neighborZ_SP[number2];
+				number7 = para->getParH(level)->neighborZ_SP[number3];
+				number8 = para->getParH(level)->neighborZ_SP[number4];
+				//////////////////////////////////////////////////////////////////////////
+				if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number3] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number4] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number5] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number6] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number7] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number8] != GEO_FLUID)  neighborsFluid = false;
+				//////////////////////////////////////////////////////////////////////////
+				if (number2 > endpos ||
+					number3 > endpos ||
+					number4 > endpos ||
+					number5 > endpos ||
+					number6 > endpos ||
+					number7 > endpos ||
+					number8 > endpos)  neighborsFluid = false;
+				//////////////////////////////////////////////////////////////////////////
+				dn2 = number2 - startpos;
+				dn3 = number3 - startpos;
+				dn4 = number4 - startpos;
+				dn5 = number5 - startpos;
+				dn6 = number6 - startpos;
+				dn7 = number7 - startpos;
+				dn8 = number8 - startpos;
+				//////////////////////////////////////////////////////////////////////////
+				if (isPeriodicCell(para, level, number2, number1, number3, number5))
+					continue;
+				//////////////////////////////////////////////////////////////////////////
+				if (neighborsFluid == true) cells.push_back(makeUbTuple(dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8));
+				//////////////////////////////////////////////////////////////////////////
+			}
+		}
+		WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(fname[part], nodes, cells, nodedatanames, nodedata);
+		//////////////////////////////////////////////////////////////////////////
+	}
+}
+
+void FileWriter::writeUnstrucuredGridMedianLTConc(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)
+{
+	vector< UbTupleFloat3 > nodes;
+	vector< UbTupleUInt8 > cells;
+	vector< string > nodedatanames;
+	nodedatanames.push_back("concMed");
+	nodedatanames.push_back("pressMed");
+	nodedatanames.push_back("rhoMed");
+	nodedatanames.push_back("vx1Med");
+	nodedatanames.push_back("vx2Med");
+	nodedatanames.push_back("vx3Med");
+	nodedatanames.push_back("geo");
+	uint number1, number2, number3, number4, number5, number6, number7, number8;
+	uint dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
+	bool neighborsFluid;
+	uint startpos = 0;
+	uint endpos = 0;
+	uint sizeOfNodes = 0;
+	vector< vector< double > > nodedata(nodedatanames.size());
+
+	for (unsigned int part = 0; part < fname.size(); part++)
+	{
+		if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+		else
+			sizeOfNodes = para->getlimitOfNodesForVTK();
+		//////////////////////////////////////////////////////////////////////////
+		startpos = part * para->getlimitOfNodesForVTK();
+		endpos = startpos + sizeOfNodes;
+		//////////////////////////////////////////////////////////////////////////
+		cells.clear();
+		nodes.resize(sizeOfNodes);
+		nodedata[0].resize(sizeOfNodes);
+		nodedata[1].resize(sizeOfNodes);
+		nodedata[2].resize(sizeOfNodes);
+		nodedata[3].resize(sizeOfNodes);
+		nodedata[4].resize(sizeOfNodes);
+		nodedata[5].resize(sizeOfNodes);
+		nodedata[6].resize(sizeOfNodes);
+		//////////////////////////////////////////////////////////////////////////
+		for (unsigned int pos = startpos; pos < endpos; pos++)
+		{
+			if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
+			{
+				//////////////////////////////////////////////////////////////////////////
+				double x1 = para->getParH(level)->coordX_SP[pos];
+				double x2 = para->getParH(level)->coordY_SP[pos];
+				double x3 = para->getParH(level)->coordZ_SP[pos];
+				//////////////////////////////////////////////////////////////////////////
+				number1 = pos;
+				dn1 = pos - startpos;
+				neighborsFluid = true;
+				//////////////////////////////////////////////////////////////////////////
+				nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
+				nodedata[0][dn1] = (double)para->getParH(level)->Conc_Med_Out[pos];
+				nodedata[1][dn1] = (double)para->getParH(level)->press_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+				nodedata[2][dn1] = (double)para->getParH(level)->rho_SP_Med_Out[pos] / 3.0f * para->getDensityRatio() * para->getVelocityRatio() * para->getVelocityRatio();
+				nodedata[3][dn1] = (double)para->getParH(level)->vx_SP_Med_Out[pos] * para->getVelocityRatio();
+				nodedata[4][dn1] = (double)para->getParH(level)->vy_SP_Med_Out[pos] * para->getVelocityRatio();
+				nodedata[5][dn1] = (double)para->getParH(level)->vz_SP_Med_Out[pos] * para->getVelocityRatio();
+				nodedata[6][dn1] = (double)para->getParH(level)->geoSP[pos];
+				//////////////////////////////////////////////////////////////////////////
+				number2 = para->getParH(level)->neighborX_SP[number1];
+				number3 = para->getParH(level)->neighborY_SP[number2];
+				number4 = para->getParH(level)->neighborY_SP[number1];
+				number5 = para->getParH(level)->neighborZ_SP[number1];
+				number6 = para->getParH(level)->neighborZ_SP[number2];
+				number7 = para->getParH(level)->neighborZ_SP[number3];
+				number8 = para->getParH(level)->neighborZ_SP[number4];
+				//////////////////////////////////////////////////////////////////////////
+				if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number3] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number4] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number5] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number6] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number7] != GEO_FLUID ||
+					para->getParH(level)->geoSP[number8] != GEO_FLUID)  neighborsFluid = false;
+				//////////////////////////////////////////////////////////////////////////
+				if (number2 > endpos ||
+					number3 > endpos ||
+					number4 > endpos ||
+					number5 > endpos ||
+					number6 > endpos ||
+					number7 > endpos ||
+					number8 > endpos)  neighborsFluid = false;
+				//////////////////////////////////////////////////////////////////////////
+				dn2 = number2 - startpos;
+				dn3 = number3 - startpos;
+				dn4 = number4 - startpos;
+				dn5 = number5 - startpos;
+				dn6 = number6 - startpos;
+				dn7 = number7 - startpos;
+				dn8 = number8 - startpos;
+				//////////////////////////////////////////////////////////////////////////
+				if (isPeriodicCell(para, level, number2, number1, number3, number5))
+					continue;
+				//////////////////////////////////////////////////////////////////////////
+				if (neighborsFluid) 
+					cells.push_back(makeUbTuple(dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8));
+				//////////////////////////////////////////////////////////////////////////
+			}
+		}
+		WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(fname[part], nodes, cells, nodedatanames, nodedata);
+		//////////////////////////////////////////////////////////////////////////
+	}
+}
+//////////////////////////////////////////////////////////////////////////
+
+
+
 
 
 

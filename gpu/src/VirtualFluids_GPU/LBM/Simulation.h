@@ -1,76 +1,111 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file Simulation.h
-//! \ingroup LBM
-//! \author Martin Schoenherr
-//=======================================================================================
 #ifndef _SIMULATION_H_
 #define _SIMULATION_H_
 
+#include <memory>
+#include <vector>
 #include <Core/PointerDefinitions.h>
-#include <VirtualFluidsDefinitions.h>
-#include "Output/LogWriter.hpp"
 
-//! \brief Class forwarding for CudaMemoryManager, Parameter, GridProvider and DataWriter
+#include <VirtualFluidsDefinitions.h>
+
+#include "Output/LogWriter.hpp"
+#include "GPU/KineticEnergyAnalyzer.h"
+#include "GPU/EnstrophyAnalyzer.h"
+#include "Utilities/Buffer2D.hpp"
+#include "LBM/LB.h"
+
+class Communicator;
 class CudaMemoryManager;
 class Parameter;
 class GridProvider;
+class PorousMedia;
+class RestartObject;
+class RestartPostprocessor;
+class ForceCalculations;
 class DataWriter;
+class Kernel;
+class ADKernel;
+class KernelFactory;
+class PreProcessor;
+class PreProcessorFactory;
+class TrafficMovementFactory;
 
-//! \class Simulation
-//! \brief manages the preprocessing, simulations and post-processing
 class VF_PUBLIC Simulation
 {
 public:
-	//! Class default constructor
 	Simulation();
-	//! Class destructor
 	~Simulation();
-	//! \brief includes the time loop over all LB-timesteps 
 	void run();
-	//! \brief initialize the lattice (incl. distribution functions)
-	void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, SPtr<DataWriter> dataWriter, SPtr<CudaMemoryManager> cudaManager);
-	//! \brief frees the pinned host memory
+	void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter, std::shared_ptr<CudaMemoryManager> cudaManager);
 	void free();
+	void bulk();
+	void porousMedia();
+	void definePMarea(std::shared_ptr<PorousMedia> pm);
+
+	void setFactories(std::shared_ptr<KernelFactory> kernelFactory, std::shared_ptr<PreProcessorFactory> preProcessorFactory);
+
+    void addKineticEnergyAnalyzer( uint tAnalyse );
+    void addEnstrophyAnalyzer    ( uint tAnalyse );
 
 protected:
-	//! \property output is an object of LogWriter
+	std::shared_ptr<KernelFactory> kernelFactory;
+	std::shared_ptr<PreProcessorFactory> preProcessorFactory;
+
+	Buffer2D <real> sbuf_t; 
+	Buffer2D <real> rbuf_t;
+	Buffer2D <real> sbuf_b;
+	Buffer2D <real> rbuf_b;
+
+	Buffer2D <int> geo_sbuf_t; 
+	Buffer2D <int> geo_rbuf_t;
+	Buffer2D <int> geo_sbuf_b;
+	Buffer2D <int> geo_rbuf_b;
+
+
 	LogWriter output;
 
-	//! \brief shared pointer to parameter, gridProvider, dataWriter and cudaManager objects
-	//! \property para is a shared pointer to an object of Parameter
-	SPtr<Parameter> para;
-	//! \property gridProvider is a shared pointer to an object of GridProvider
-	SPtr<GridProvider> gridProvider;
-	//! \property dataWriter is a shared pointer to an object of DataWriter
-	SPtr<DataWriter> dataWriter;
-	//! \property cudaManager is a shared pointer to an object of CudaMemoryManager
+    Communicator* comm;
+    SPtr<Parameter> para;
+    SPtr<GridProvider> gridProvider;
+    SPtr<DataWriter> dataWriter;
 	SPtr<CudaMemoryManager> cudaManager;
+	std::vector < SPtr< Kernel>> kernels;
+	std::vector < SPtr< ADKernel>> adKernels;
+	std::shared_ptr<PreProcessor> preProcessor;
+
+	//Restart object
+	RestartObject* restObj;
+	RestartPostprocessor* rest;
+
+	//Forcing Calculation
+	ForceCalculations* forceCalculator;
+
+	//Porous Media
+	std::vector<std::shared_ptr<PorousMedia>> pm;
+	//PorousMedia* pm0;
+	//PorousMedia* pm1;
+	//PorousMedia* pm2;
+
+	//KQ - Schlaff
+	unsigned int            kNQ, kSQ, kEQ, kWQ;
+	QforBoundaryConditions  QnH, QnD;
+	QforBoundaryConditions  QsH, QsD;
+	QforBoundaryConditions  QeH, QeD;
+	QforBoundaryConditions  QwH, QwD;
+	real *VxNH,          *VyNH,       *VzNH,       *deltaVNH;
+	real *VxND,          *VyND,       *VzND,       *deltaVND;
+	real *VxSH,          *VySH,       *VzSH,       *deltaVSH;
+	real *VxSD,          *VySD,       *VzSD,       *deltaVSD;
+	real *VxEH,          *VyEH,       *VzEH,       *deltaVEH;
+	real *VxED,          *VyED,       *VzED,       *deltaVED;
+	real *VxWH,          *VyWH,       *VzWH,       *deltaVWH;
+	real *VxWD,          *VyWD,       *VzWD,       *deltaVWD;
+
+
+	////////////////////////////////////////////////////////////////////////////
+	SPtr<KineticEnergyAnalyzer> kineticEnergyAnalyzer;
+	////////////////////////////////////////////////////////////////////////////
+	SPtr<EnstrophyAnalyzer> enstrophyAnalyzer;
+	////////////////////////////////////////////////////////////////////////////
+
  };
 #endif

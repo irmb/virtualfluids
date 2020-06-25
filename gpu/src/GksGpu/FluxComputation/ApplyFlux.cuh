@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file ApplyFlux.cuh
-//! \ingroup FluxComputation
-//! \author Stephan Lenz
-//=======================================================================================
 #ifndef ApplyFlux_CUH
 #define ApplyFlux_CUH
 
@@ -42,15 +10,10 @@
 #include "FlowStateData/FlowStateData.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
 
+namespace GksGpu {
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//! \brief This function applies the negative flux to the \ref DataBase::dataUpdate variable of the cell with index negCellIdx
-//! 
-//! \param dataBase     \ref DataBaseStruct that holds the memory pointers
-//! \param negCellIdx   index of the negative cell
-//! \param flux         flux that goes from negative to positive cell
-//! \param direction    char with 'x', 'y' or 'z', used for mass flux computation
-//! \param parameters   \ref Parameters struct
 __host__ __device__ inline void applyFluxToNegCell( const DataBaseStruct& dataBase,
                                                     const uint& negCellIdx,
                                                     const ConservedVariables& flux,
@@ -112,13 +75,6 @@ __host__ __device__ inline void applyFluxToNegCell( const DataBaseStruct& dataBa
 
 }
 
-//! \brief This function applies the positive flux to the \ref DataBase::dataUpdate variable of the cell with index posCellIdx
-//! 
-//! \param dataBase     \ref DataBaseStruct that holds the memory pointers
-//! \param posCellIdx   index of the positive cell
-//! \param flux         flux that goes from negative to positive cell
-//! \param direction    char with 'x', 'y' or 'z', used for mass flux computation
-//! \param parameters   \ref Parameters struct
 __host__ __device__ inline void applyFluxToPosCell( const DataBaseStruct& dataBase,
                                                     const uint& posCellIdx,
                                                     const ConservedVariables& flux,
@@ -178,5 +134,7 @@ __host__ __device__ inline void applyFluxToPosCell( const DataBaseStruct& dataBa
     }
 #endif
 }
+
+} // namespace GksGpu
 
 #endif

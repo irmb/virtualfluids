@@ -1,55 +1,30 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//  _    ___      __              __________      _     __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
 //
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file UbEqual.h
-//! \ingroup utilities
-//! \author Soeren Freudiger, Sebastian Geller
-//=======================================================================================
 #ifndef UBEQUAL_H
 #define UBEQUAL_H
 
 #include<cmath>
 
 //////////////////////////////////////////////////////////////////////////
+//isUbEqual<T1,T2>(a,b)
+//vergleicht die gleichtheit der beiden werte a und b
 //
-//! \brief isUbEqual<T1,T2>(a,b)
-//! Compares the equality of values a and b.
-//!
-//! By default operator== is used for this.
-//!
-//! Execption: floating-point variables
-//! In these cases the type with higher precision is casted to the type of lower precision
-//! and then the two values are compared.
-//! e.g.: double d=1.2; int i=1; bool check = isUbEqual(d,i); -> true
-//!
-//! For classes operator== must be implemented for const objects!
-//! e.g.: bool operator==(const Test&) const { if(blabla) return true; else return false; }
+//std-maessig wird hierfür der operator== verwendet
 //
+//Ausnahme: floating-points
+//hier wird jeweils der "genauere typ zum ungenaueren gecastet und dann verglichen"
+//e.g.: double d=1.2; int i=1; bool check = isUbEqual(d,i); -> true
+//
+//bei klassen muss hier operator== fuer const objecte implementiert sein!!!
+//e.g.: bool operator==(const Test&) const { if(blabla) return true; else return false; }
+//
+//
+//author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
+//version 1.0 - 25.03.2008
 //////////////////////////////////////////////////////////////////////////
 
 //std-trait, fuer alle nicht spezifischen typen:

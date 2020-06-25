@@ -1,35 +1,3 @@
-//=======================================================================================
-// ____          ____    __    ______     __________   __      __       __        __         
-// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
-//      \    \  |    |   ________________________________________________________________    
-//       \    \ |    |  |  ______________________________________________________________|   
-//        \    \|    |  |  |         __          __     __     __     ______      _______    
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
-//
-//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
-//  redistribute it and/or modify it under the terms of the GNU General Public
-//  License as published by the Free Software Foundation, either version 3 of 
-//  the License, or (at your option) any later version.
-//  
-//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
-//  for more details.
-//  
-//  You should have received a copy of the GNU General Public License along
-//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
-//
-//! \file LevelGridBuilder.h
-//! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz
-//=======================================================================================
 #ifndef LEVEL_GRID_BUILDER_H
 #define LEVEL_GRID_BUILDER_H
 
@@ -42,16 +10,21 @@
 
 #include "grid/GridBuilder/GridBuilder.h"
 #include "grid/Grid.h"
+#include "grid/GridInterface.h"
 #include "grid/NodeValues.h"
 
 struct Vertex;
 class  Grid;
+class Transformator;
+class ArrowTransformator;
 class PolyDataWriterWrapper;
 class BoundingBox;
 enum class Device;
 
 class Side;
 class VelocityBoundaryCondition;
+class PressureBoundaryCondition;
+class GeometryBoundaryCondition;
 enum class SideType;
 
 
@@ -66,13 +39,22 @@ public:
 
     VF_PUBLIC SPtr<Grid> getGrid(uint level) override;
 
+    VF_PUBLIC void copyDataFromGpu();
     VF_PUBLIC virtual ~LevelGridBuilder();
 
     VF_PUBLIC void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
+    VF_PUBLIC void setPressureBoundaryCondition(SideType sideType, real rho);
     VF_PUBLIC void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
     VF_PUBLIC void setNoSlipBoundaryCondition(SideType sideType);
 
+    VF_PUBLIC void setEnableFixRefinementIntoTheWall( bool enableFixRefinementIntoTheWall );
+
+    VF_PUBLIC void setCommunicationProcess(int direction, uint process);
+
+    VF_PUBLIC uint getCommunicationProcess(int direction) override;
+
     VF_PUBLIC virtual std::shared_ptr<Grid> getGrid(int level, int box);
+
 
     VF_PUBLIC virtual unsigned int getNumberOfNodes(unsigned int level) const;
 
@@ -86,26 +68,58 @@ public:
     VF_PUBLIC uint getVelocitySize(int level) const;
     VF_PUBLIC virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const;
     VF_PUBLIC virtual void getVelocityQs(real* qs[27], int level) const;
+    VF_PUBLIC uint getPressureSize(int level) const override;
+    VF_PUBLIC void getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const override;
+    VF_PUBLIC virtual void getPressureQs(real* qs[27], int level) const;
+
+    VF_PUBLIC virtual void getGeometryQs(real* qs[27], int level) const;
+    VF_PUBLIC virtual uint getGeometrySize(int level) const;
+    VF_PUBLIC virtual void getGeometryIndices(int* indices, int level) const;
+    VF_PUBLIC virtual bool hasGeometryValues() const;
+    VF_PUBLIC virtual void getGeometryValues(real* vx, real* vy, real* vz, int level) const;
+
+
+    VF_PUBLIC void writeArrows(std::string fileName) const;
 
     VF_PUBLIC SPtr<BoundaryCondition> getBoundaryCondition( SideType side, uint level ) const override;
+    VF_PUBLIC SPtr<GeometryBoundaryCondition> getGeometryBoundaryCondition(uint level) const override;
 
 protected:
     
 
     struct BoundaryConditions
     {
-		BoundaryConditions() {}
+		BoundaryConditions() : geometryBoundaryCondition(nullptr) {}
 
         std::vector<SPtr<VelocityBoundaryCondition> > velocityBoundaryConditions;
+        std::vector<SPtr<PressureBoundaryCondition> > pressureBoundaryConditions;
+
+		//TODO: add slip BC
+
+
 
         std::vector<SPtr<VelocityBoundaryCondition> > noSlipBoundaryConditions;
+
+        SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
     };
     bool geometryHasValues = false;
 
     std::vector<std::shared_ptr<Grid> > grids;
     std::vector<SPtr<BoundaryConditions> > boundaryConditions;
-    
+
+    std::array<uint, 6> communicationProcesses;
+
     void checkLevel(int level);
+
+protected:
+    void setVelocityGeometryBoundaryCondition(real vx, real vy, real vz);
+
+    void createBCVectors();
+    void addShortQsToVector(int index);
+    void addQsToVector(int index);
+    void fillRBForNode(int index, int direction, int directionSign, int rb);
+
+    Vertex getVertex(const int matrixIndex) const;
 
 private:
     Device device;
@@ -124,6 +138,11 @@ public:
 
     VF_PUBLIC void getOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
     VF_PUBLIC void getOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;
+
+    VF_PUBLIC uint getNumberOfSendIndices( int direction, uint level ) override;
+    VF_PUBLIC uint getNumberOfReceiveIndices( int direction, uint level ) override;
+    VF_PUBLIC void getSendIndices( int* sendIndices, int direction, int level ) override;
+    VF_PUBLIC void getReceiveIndices( int* sendIndices, int direction, int level ) override;
 
 };
 
