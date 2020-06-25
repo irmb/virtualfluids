@@ -63,8 +63,8 @@ ENDIF()
 ############################################################################
 # externe (ACHTUNG: die darin enthaltenen benoetigen teils noch macros die 
 # hier im Anschluss folgen
-INCLUDE("${SOURCE_ROOT}/CMake/CMakeSetCompilerFlags.txt")
-INCLUDE("${SOURCE_ROOT}/CMake/CMakeCompilerMacros.txt")
+INCLUDE("${SOURCE_ROOT}/CMake/CMakeSetCompilerFlags.cmake")
+INCLUDE("${SOURCE_ROOT}/CMake/CMakeCompilerMacros.cmake")
 
 ################################################################
 ###               ADD_TARGET_PROPERTIES                      ###
