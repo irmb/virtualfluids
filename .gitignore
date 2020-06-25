@@ -4,3 +4,6 @@ binWSL/
 build/
 source/MSVC2015/
 source/Applications/DLR-F16-Solid/f16-solid-coarse.cfg
+.vscode/
+MSVC2017/
+VS2017/
