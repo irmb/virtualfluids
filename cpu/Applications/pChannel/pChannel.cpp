@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include "VirtualFluids.h"
-
+#include <omp.h>
 double rangeRandom(double M, double N)
 {
    return M + (rand() / (RAND_MAX / (N - M)));
@@ -653,7 +653,8 @@ void run(string configname)
          UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
       }
 
-      omp_set_num_threads(numOfThreads);
+      //omp_set_num_threads(numOfThreads);
+       numOfThreads = 4;
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, (int)endTime));
       calculator->addCoProcessor(nupsCoProcessor);

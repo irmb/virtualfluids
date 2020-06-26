@@ -1,10 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 
-########################################################
-## C++ PROJECT                                       ###
-########################################################
-PROJECT(VirtualFluids)
-  
+
 #################################################################
 ###   PACKAGES						                          ###
 #################################################################
@@ -13,19 +9,19 @@ SET(WITH_SUBFOLDERS_FOR_SG TRUE)
 INCLUDE(${SOURCE_ROOT}/ThirdParty/MuParser/CMakePackage.txt)
 
 #new VirtualFluids
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/BoundaryConditions/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Connectors/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Data/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Interactors/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/LBM/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Parallel/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Grid/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Visitors/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/CoProcessors/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Utilities/CMakePackage.txt)
+#sINCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/BoundaryConditions/CMakePackage.txt)
+#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Connectors/CMakePackage.txt)
+#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Data/CMakePackage.txt)
+#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Interactors/CMakePackage.txt)
+#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/LBM/CMakePackage.txt)
+#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Parallel/CMakePackage.txt)
+#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Grid/CMakePackage.txt)
+#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Visitors/CMakePackage.txt)
+#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/CoProcessors/CMakePackage.txt)
+#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Utilities/CMakePackage.txt)
 
 #old VirtualFluids
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsBasic/VirtualFluidsBasic.cmake)
+#INCLUDE(${SOURCE_ROOT}/VirtualFluidsBasic/VirtualFluidsBasic.cmake)
 
 #FETOL
 IF(${USE_FETOL})
@@ -98,4 +94,19 @@ message("CAB_ADDITIONAL_LINK_LIBRARIES: " ${CAB_ADDITIONAL_LINK_LIBRARIES})
 #################################################################
 ###   CREATE PROJECT                                          ###
 #################################################################
-CREATE_CAB_PROJECT(VirtualFluids STATIC)
+#CREATE_CAB_PROJECT(VirtualFluids STATIC)
+include (${PROJECT_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
+
+vf_add_library(DEPENDS VirtualFluidsBasic)
+
+vf_get_library_name(library_name)
+target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic)
+target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/numerics/geometry3d)
+target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/numerics/geometry3d/Creator)
+target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/numerics/geometry3d/KdTree)
+target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/basics/container)
+target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/basics/memory)
+target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/basics/objects)
+target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/basics/transmiitter)
+target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/basics/utilities)
+target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/basics/writer)
