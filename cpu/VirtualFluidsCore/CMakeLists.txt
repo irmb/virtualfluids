@@ -1,5 +1,3 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
-
 
 #################################################################
 ###   PACKAGES						                          ###
@@ -97,7 +95,7 @@ message("CAB_ADDITIONAL_LINK_LIBRARIES: " ${CAB_ADDITIONAL_LINK_LIBRARIES})
 #CREATE_CAB_PROJECT(VirtualFluids STATIC)
 include (${PROJECT_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
 
-vf_add_library(DEPENDS VirtualFluidsBasic)
+vf_add_library(BUILDTYPE static DEPENDS VirtualFluidsBasic)
 
 vf_get_library_name(library_name)
 target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic)

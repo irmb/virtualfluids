@@ -18,7 +18,8 @@ SET(CAB_ADDITIONAL_LINK_LIBRARIES ${MPI_LIBRARY})
 INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsCore)
 INCLUDE_DIRECTORIES(${MPI_INCLUDE_PATH})
 
-vf_add_library(FOLDER
+vf_add_library(BUILDTYPE static
+               FOLDER
         ${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d
         ${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d/Creator
         ${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d/KdTree
