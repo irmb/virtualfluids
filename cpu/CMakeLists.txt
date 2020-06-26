@@ -20,7 +20,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 #set(CMAKE_CXX_COMPILER mpiCC)
 
 PROJECT(VirtualFluids)
-
+set (SOURCE_DIR ${PROJECT_SOURCE_DIR})
 set(SOURCE_ROOT "../source")
 
 #debug build for unix
@@ -42,7 +42,9 @@ SET(USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
 SET(USE_DEM_COUPLING OFF CACHE BOOL "PE plugin")
 
 #CAB
-INCLUDE("CMake/CMakeCABMacros.cmake")
+include("../CMake/CMakeCABMacros.cmake")
+include("../CMake/FileUtilities.cmake")
+include("../CMake/VirtualFluidsMacros.cmake")
 
 #MPI
 IF((NOT ${CMAKE_CXX_COMPILER} MATCHES mpicxx) AND (NOT ${CMAKE_CXX_COMPILER} MATCHES mpiicpc))# OR NOT ${CMAKE_CXX_COMPILER} MATCHES cc OR NOT ${CMAKE_CXX_COMPILER} MATCHES mpiCC)
@@ -157,13 +159,11 @@ ENDIF()
 #    add_subdirectory(Plugins/dem_coupling)
 #ENDIF()
 
-include (${PROJECT_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
-
 add_subdirectory(ThirdParty/MuParser)
 
 add_subdirectory(VirtualFluidsCore)
 add_subdirectory(VirtualFluidsBasic)
 
-set(APPS_ROOT "${SOURCE_ROOT}/Applications")
+set(APPS_ROOT "${SOURCE_ROOT}/cpu/Applications")
 INCLUDE(${APPS_ROOT}/Applications.cmake)
 

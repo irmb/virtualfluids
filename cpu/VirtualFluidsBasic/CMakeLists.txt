@@ -1,5 +1,5 @@
 
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsBasic)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR})
 INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsBasic/numerics/geometry3d)
 INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsBasic/numerics/geometry3d/Creator)
 INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsBasic/numerics/geometry3d/KdTree)
@@ -11,11 +11,11 @@ INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsBasic/basics/utilities)
 INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsBasic/basics/writer)
 
 
-include (${PROJECT_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
+include (${CMAKE_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
 #message (${MPI_LIBRARY})
 SET(CAB_ADDITIONAL_LINK_LIBRARIES ${MPI_LIBRARY})
 
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsCore)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/VirtualFluidsCore)
 INCLUDE_DIRECTORIES(${MPI_INCLUDE_PATH})
 
 vf_add_library(BUILDTYPE static

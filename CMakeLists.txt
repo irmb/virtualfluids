@@ -6,14 +6,15 @@ endif()
 
 project(VirtualFluids CXX)
 
+set (CMAKE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 
-option(BUILD_VF_CPU "Build VirtualFluids cpu variant" ON)
-option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
+option(BUILD_VF_CPU "Build VirtualFluids cpu variant" OFF)
+option(BUILD_VF_GPU "Build VirtualFluids gpu variant" ON)
 
 
-if (BUILD_VF_CPU)
-    add_subdirectory(cpu)
-endif()
-if(BUILD_VF_GPU)
+#if (BUILD_VF_CPU)
+#    add_subdirectory(cpu)
+#endif()
+#if(BUILD_VF_GPU)
     add_subdirectory(gpu)
-endif()
+#endif()

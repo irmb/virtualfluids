@@ -2,7 +2,7 @@
 #################################################################
 ###   PACKAGES						                          ###
 #################################################################
-SET(WITH_SUBFOLDERS_FOR_SG TRUE)
+#SET(WITH_SUBFOLDERS_FOR_SG TRUE)
 
 #INCLUDE(${SOURCE_ROOT}/ThirdParty/MuParser/CMakePackage.txt)
 
@@ -23,10 +23,10 @@ SET(WITH_SUBFOLDERS_FOR_SG TRUE)
 
 #FETOL
 IF(${USE_FETOL})
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/FETOL/CMakePackage.txt)
+INCLUDE(${SOURCE_DIR}/VirtualFluidsCore/FETOL/CMakePackage.txt)
 ENDIF()
 
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/IncludsList.cmake)
+INCLUDE(${CMAKE_CURRENT_LIST_DIR}/IncludsList.cmake)
 
 #SET(CAB_ADDITIONAL_LINK_LIBRARIES muParserLib ${Boost_LIBRARIES} ${MPI_LIBRARY})
 SET(CAB_ADDITIONAL_LINK_LIBRARIES ${MPI_LIBRARY})
@@ -93,18 +93,18 @@ message("CAB_ADDITIONAL_LINK_LIBRARIES: " ${CAB_ADDITIONAL_LINK_LIBRARIES})
 ###   CREATE PROJECT                                          ###
 #################################################################
 #CREATE_CAB_PROJECT(VirtualFluids STATIC)
-include (${PROJECT_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
+include (${CMAKE_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
 
 vf_add_library(BUILDTYPE static DEPENDS VirtualFluidsBasic MuParser)
 
 vf_get_library_name(library_name)
-target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic)
-target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/numerics/geometry3d)
-target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/numerics/geometry3d/Creator)
-target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/numerics/geometry3d/KdTree)
-target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/basics/container)
-target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/basics/memory)
-target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/basics/objects)
-target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/basics/transmiitter)
-target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/basics/utilities)
-target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic/basics/writer)
+target_include_directories(${library_name} PRIVATE ${SOURCE_DIR}/VirtualFluidsBasic)
+target_include_directories(${library_name} PRIVATE ${SOURCE_DIR}/VirtualFluidsBasic/numerics/geometry3d)
+target_include_directories(${library_name} PRIVATE ${SOURCE_DIR}/VirtualFluidsBasic/numerics/geometry3d/Creator)
+target_include_directories(${library_name} PRIVATE ${SOURCE_DIR}/VirtualFluidsBasic/numerics/geometry3d/KdTree)
+target_include_directories(${library_name} PRIVATE ${SOURCE_DIR}/VirtualFluidsBasic/basics/container)
+target_include_directories(${library_name} PRIVATE ${SOURCE_DIR}/VirtualFluidsBasic/basics/memory)
+target_include_directories(${library_name} PRIVATE ${SOURCE_DIR}/VirtualFluidsBasic/basics/objects)
+target_include_directories(${library_name} PRIVATE ${SOURCE_DIR}/VirtualFluidsBasic/basics/transmiitter)
+target_include_directories(${library_name} PRIVATE ${SOURCE_DIR}/VirtualFluidsBasic/basics/utilities)
+target_include_directories(${library_name} PRIVATE ${SOURCE_DIR}/VirtualFluidsBasic/basics/writer)

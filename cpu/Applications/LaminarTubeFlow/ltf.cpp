@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <omp.h>
 
 #include "VirtualFluids.h"
 
@@ -299,7 +300,8 @@ void run(string configname)
       SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100, 100000000));
       SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
-      omp_set_num_threads(numOfThreads);
+      //omp_set_num_threads(numOfThreads);
+      numOfThreads = 1;
       SPtr<UbScheduler> stepGhostLayer(visSch);
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(npr);

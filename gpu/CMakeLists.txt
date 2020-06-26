@@ -31,15 +31,20 @@ endif()
 ###                     ENVIRONMENT                       ###
 #############################################################
 set(cmakeMacroPath "CMakeMacros")
-include(${cmakeMacroPath}/Environment/environment.cmake)
+#include(${cmakeMacroPath}/Environment/environment.cmake)
+
+#CAB
+include("../CMake/CMakeCABMacros.cmake")
+include("../CMake/FileUtilities.cmake")
+include("../CMake/VirtualFluidsMacros.cmake")
 
 #############################################################
 ###                   GENERAL MACROS                      ###
 #############################################################
-include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/BuildTarget.cmake)
-include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/BuildTargetUtilities.cmake)
-include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/EndingsToCollect.cmake)
-include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FileUtilities.cmake)
+#include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/BuildTarget.cmake)
+#include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/BuildTargetUtilities.cmake)
+#include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/EndingsToCollect.cmake)
+#include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FileUtilities.cmake)
 
 #############################################################
 ###                   PROJECT SETTINGS                    ###
@@ -49,7 +54,7 @@ project(VirtualFluidsGPU)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-include_directories(${CMAKE_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR}/gpu)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER ".cmake")
@@ -77,8 +82,8 @@ ENDIF(MSVC)
 ###                         OPTIONS                       ###
 #############################################################
 option(BUILD_SHARED_LIBS        "Build shared libraries"      ON )
-option(VF.BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
-option(VF.BUILD_VF_GKS          "Build VirtualFluids GKS"     ON )
+option(VF.BUILD_VF_GPU          "Build VirtualFluids GPU"     OFF )
+option(VF.BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF )
 option(VF.BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" OFF)
 option(VF.BUILD_JSONCPP         "Builds json cpp "            OFF)
 option(VF.BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
@@ -91,18 +96,18 @@ ENDIF()
 
 #############################################################
 
-enable_language(CUDA)
+#enable_language(CUDA)
 
-sharedLibs()
+#sharedLibs()
 
 #############################################################
 
-include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FindCompiler.cmake)
+include(${CMAKE_SOURCE_DIR}/gpu/${cmakeMacroPath}/general/FindCompiler.cmake)
 configure_file(src/VirtualFluidsDefinitions.in.h VirtualFluidsDefinitions.h)
 if(MSVC)
-    SET( CMAKE_CXX_FLAGS "/FI${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
+    SET( CMAKE_CXX_FLAGS "/FI${CMAKE_BINARY_DIR}/gpu/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
 ELSE(MSVC)
-    SET( CMAKE_CXX_FLAGS "-include ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
+    SET( CMAKE_CXX_FLAGS "-include ${CMAKE_BINARY_DIR}/gpu/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
 ENDIF(MSVC)
 
 IF( VF.BUILD_VF_GKS )
@@ -121,10 +126,10 @@ set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
 ###                  Core                                 ###
 #############################################################
 
-add_subdirectory(targets/libs/VirtualFluidsBasics)
-add_subdirectory(targets/libs/Core)
+#add_subdirectory(targets/libs/VirtualFluidsBasics)
+add_subdirectory(src/core)
 
-add_subdirectory(targets/libs/GridGenerator)
+#add_subdirectory(targets/libs/GridGenerator)
 #add_subdirectory(3rdParty/metis/metis-5.1.0)
 
 #############################################################

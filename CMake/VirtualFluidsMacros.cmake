@@ -21,10 +21,10 @@ function(vf_add_library)
 
     set( options )
     set( oneValueArgs )
-    set( multiValueArgs BUILDTYPE DEPENDS FILES FOLDER)
+    set( multiValueArgs BUILDTYPE DEPENDS FILES FOLDER EXCLUDE)
     cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    message("Files: ${ARG_FILES}")
+    #message("Files: ${ARG_FILES}")
 
     vf_get_library_name (library_name)
 
@@ -44,21 +44,38 @@ function(vf_add_library)
     endif()
 
     if (NOT ARG_FILES AND NOT ARG_FOLDER)
-        file ( GLOB_RECURSE sourceFiles ${VIRTUAL_FLUIDS_GLOB_FILES} )
+        file ( GLOB_RECURSE all_files ${VIRTUAL_FLUIDS_GLOB_FILES} )
+        set(sourceFiles ${sourceFiles} ${all_files})
     endif()
 
-    #    foreach(X IN LISTS sourceFiles)
-    #      message(STATUS "${X}")
-    #    endforeach()
+    if (ARG_EXCLUDE)
+        foreach(file_path ${sourceFiles})
+            foreach(file_exclude ${ARG_EXCLUDE})
+                get_filename_component(file_name ${file_path} NAME)
+                if (NOT ${file_name} STREQUAL ${file_exclude})
+                    set(new_files ${new_files} ${file_path})
+                endif()
+
+            endforeach()
+        endforeach()
+        set(sourceFiles ${new_files})
+    endif()
+
+
+    includeProductionFiles (${library_name} "${sourceFiles}")
+
+    foreach(X IN LISTS MY_SRCS)
+        message(STATUS "${X}")
+    endforeach()
 
 
     # SET SOURCE GROUP
     # IF SOURCE GROUP ENABLED
     foreach(source ${sourceFiles})
-        get_filename_component(source_dir ${source} DIRECTORY)
+        #  get_filename_component(source_dir ${source} DIRECTORY)
 
         if (source_dir)
-          setSourceGroupForFilesIn(${source_dir} ${library_name})
+            #setSourceGroupForFilesIn(${source_dir} ${library_name})
         endif()
     endforeach()
 
@@ -87,11 +104,11 @@ function(vf_add_library)
     ###   EXCECUTABLE                                             ###
     #################################################################
     IF(${ARG_BUILDTYPE} MATCHES binary)
-        ADD_EXECUTABLE(${library_name} ${sourceFiles} )
+        ADD_EXECUTABLE(${library_name} ${MY_SRCS} )
     ELSEIF(${ARG_BUILDTYPE} MATCHES shared)
-        ADD_LIBRARY(${library_name} shared ${sourceFiles} )
+        ADD_LIBRARY(${library_name} SHARED ${MY_SRCS} )
     ELSEIF(${ARG_BUILDTYPE} MATCHES static)
-        ADD_LIBRARY(${library_name} STATIC ${sourceFiles} )
+        ADD_LIBRARY(${library_name} STATIC ${MY_SRCS} )
     ELSE()
         MESSAGE(FATAL_ERROR "build_type=${ARG_BUILDTYPE} doesn't match BINARY, SHARED or STATIC")
     ENDIF()
@@ -145,44 +162,3 @@ function(vf_add_library)
 
 endfunction(vf_add_library)
 
-
-
-
-macro(setSourceGroupForFilesIn package_dir targetName)
-    #input: target_name PACKAGE_SRCS
-    buildSourceGroup(${targetName} ${package_dir})
-
-    if(isAllTestSuite)
-        source_group(${targetName}\\${SOURCE_GROUP} FILES ${source})
-    else()
-        source_group(${SOURCE_GROUP} FILES ${source})
-    endif()
-    #output: -
-endmacro(setSourceGroupForFilesIn)
-
-
-
-
-macro(buildSourceGroup targetName path)
-    #input: targetName (e.g. lib name, exe name)
-
-    unset(SOURCE_GROUP)
-    string(REPLACE "/" ";" folderListFromPath ${path})
-    set(findTargetName 0)
-
-    foreach(folder ${folderListFromPath})
-        if(findTargetName)
-            set(SOURCE_GROUP ${SOURCE_GROUP}\\${folder})
-        endif()
-
-        if(${folder} STREQUAL ${targetName})
-            SET(findTargetName 1)
-        endif()
-    endforeach()
-
-    if(NOT SOURCE_GROUP)
-        set(SOURCE_GROUP "general")
-    endif()
-    #message("Source group: ${SOURCE_GROUP}")
-    #output: SOURCE_GROUP
-endmacro(buildSourceGroup)
