@@ -4,7 +4,7 @@
 #################################################################
 SET(WITH_SUBFOLDERS_FOR_SG TRUE)
 
-INCLUDE(${SOURCE_ROOT}/ThirdParty/MuParser/CMakePackage.txt)
+#INCLUDE(${SOURCE_ROOT}/ThirdParty/MuParser/CMakePackage.txt)
 
 #new VirtualFluids
 #sINCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/BoundaryConditions/CMakePackage.txt)
@@ -29,7 +29,7 @@ ENDIF()
 INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/IncludsList.cmake)
 
 #SET(CAB_ADDITIONAL_LINK_LIBRARIES muParserLib ${Boost_LIBRARIES} ${MPI_LIBRARY})
-SET(CAB_ADDITIONAL_LINK_LIBRARIES muParserLib ${MPI_LIBRARY})
+SET(CAB_ADDITIONAL_LINK_LIBRARIES ${MPI_LIBRARY})
 
 IF(${USE_GCC})
    SET(CAB_ADDITIONAL_LINK_LIBRARIES ${CAB_ADDITIONAL_LINK_LIBRARIES} rt)
@@ -95,7 +95,7 @@ message("CAB_ADDITIONAL_LINK_LIBRARIES: " ${CAB_ADDITIONAL_LINK_LIBRARIES})
 #CREATE_CAB_PROJECT(VirtualFluids STATIC)
 include (${PROJECT_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
 
-vf_add_library(BUILDTYPE static DEPENDS VirtualFluidsBasic)
+vf_add_library(BUILDTYPE static DEPENDS VirtualFluidsBasic MuParser)
 
 vf_get_library_name(library_name)
 target_include_directories(${library_name} PRIVATE ${SOURCE_ROOT}/VirtualFluidsBasic)

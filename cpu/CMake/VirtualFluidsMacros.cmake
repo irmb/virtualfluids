@@ -183,6 +183,6 @@ macro(buildSourceGroup targetName path)
     if(NOT SOURCE_GROUP)
         set(SOURCE_GROUP "general")
     endif()
-    message("Source group: ${SOURCE_GROUP}")
+    #message("Source group: ${SOURCE_GROUP}")
     #output: SOURCE_GROUP
 endmacro(buildSourceGroup)

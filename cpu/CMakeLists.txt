@@ -157,6 +157,10 @@ ENDIF()
 #    add_subdirectory(Plugins/dem_coupling)
 #ENDIF()
 
+include (${PROJECT_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
+
+add_subdirectory(ThirdParty/MuParser)
+
 add_subdirectory(VirtualFluidsCore)
 add_subdirectory(VirtualFluidsBasic)
 
