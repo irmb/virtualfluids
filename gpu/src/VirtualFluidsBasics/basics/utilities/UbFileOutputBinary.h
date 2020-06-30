@@ -63,6 +63,16 @@ public:
       file.outfile.write((char*)&data,sizeof(T));
       return file;
    }
+
+   template< typename T>
+   void writeVector(std::vector<T>& v)
+   {
+      size_t size = v.size();
+      if (size > 0)
+      {
+         outfile.write((char*)&v[0],sizeof(T)*size);
+      }
+   }
 };
 
 #endif

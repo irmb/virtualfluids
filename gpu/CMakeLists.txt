@@ -126,7 +126,7 @@ set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
 ###                  Core                                 ###
 #############################################################
 
-#add_subdirectory(targets/libs/VirtualFluidsBasics)
+add_subdirectory(src/VirtualFluidsBasics)
 add_subdirectory(src/core)
 
 #add_subdirectory(targets/libs/GridGenerator)

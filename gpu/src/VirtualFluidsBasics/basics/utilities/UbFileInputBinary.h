@@ -64,6 +64,17 @@ public:
       file.infile.read((char*)&data,sizeof(T));
       return file;
    }
+
+   template< typename T>
+   void readVector(std::vector<T>& v)
+   {
+      size_t size = v.size();
+      if (size > 0)
+      {
+         infile.read((char*)&v[0], sizeof(T)*size);
+      }
+   }
+
 };
 
 #endif

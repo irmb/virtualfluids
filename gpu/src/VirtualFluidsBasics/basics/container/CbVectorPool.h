@@ -39,20 +39,20 @@
 /*
 Durch Verwendung eines CbVectors in Verbindung mit einem CbVectorAllocatorPool
 wird der Datenvector nicht direkt im CbVector gehalten, sondern ist ein Teil
-des Datenvectors des Übergabe-CbVectorPools.
+des Datenvectors des ï¿½bergabe-CbVectorPools.
 Die Methoden der von CbVectors funktionieren fehlerfrei
-Es mss einem jedoch bewußt sein, dass die "resize"-Methoden länger benötigen, da
+Es mss einem jedoch bewuï¿½t sein, dass die "resize"-Methoden lï¿½nger benï¿½tigen, da
 u.U. viele Elemente im Speicher verschoeben werden muessen.
-Der Poolvector enthaelt KEINE gaps, so dass er z.B. gut zur Übertragung via MPI
+Der Poolvector enthaelt KEINE gaps, so dass er z.B. gut zur ï¿½bertragung via MPI
 geeignet ist...
 
-Verhaltensweise bei Zerstören des Pools:
-wird der Pool zerstört bevor man die CbVectoren zerstört, so wird beim nächsten
+Verhaltensweise bei Zerstï¿½ren des Pools:
+wird der Pool zerstï¿½rt bevor man die CbVectoren zerstï¿½rt, so wird beim nï¿½chsten
 Datenzugriffsversuch eine entsprechende Exception geworfen, denn alle DatenElemente
 des CbVEctors werden restet und der Pool dort zu NULL gesetzt.
 
-Verhaltensweise bei Zerstören eines CbVectors:
-hier ganz normal der Datenspeicher wieder freigegen und der Poolvektor verkürzt
+Verhaltensweise bei Zerstï¿½ren eines CbVectors:
+hier ganz normal der Datenspeicher wieder freigegen und der Poolvektor verkï¿½rzt
 */
 
 //////////////////////////////////////////////////////////////////////////
@@ -91,7 +91,7 @@ public:
       {
          CbVector< value_type >& vec = *it->second;
          CbVectorAllocatorPool< value_type >& allocator = dynamic_cast< CbVectorAllocatorPool< value_type >& >(*vec.getAllocator() );
-         if(allocator.ptrVectorPool != this) UB_THROW( UbException(UB_EXARGS,"CbVectorAllocator is part of different Pool") );
+         //FIXME: //if(allocator.ptrVectorPool != this) UB_THROW( UbException(UB_EXARGS,"CbVectorAllocator is part of different Pool") );
 
          //allocator daten reseten
          allocator.ptrVectorPool    = NULL;
@@ -165,7 +165,7 @@ public:
       }
 
       
-      //CommunicatorPtr comm = MPICommunicator::getInstance();
+      //SPtr<Communicator> comm = MPICommunicator::getInstance();
       //int myid = comm->getProcessID();
 
 //      // Get the name of the processor
@@ -289,7 +289,7 @@ protected:
             UB_THROW( UbException(UB_EXARGS,"index Problem... Annahme falsch?") );
       }
 
-      //vector zu map hinzufügen (speicher wird dann anschliessend zugwiesen)
+      //vector zu map hinzufï¿½gen (speicher wird dann anschliessend zugwiesen)
       cbVectorMap.insert( std::make_pair( allocator.key, &vec ) ); // ist angeblich performanter als  cbVectorMap[ allocator.key ] = cbVector; //aus Effective STL von Scott Meyer
       allocator.dataSizeOf(vec) = dataSize;
 
@@ -320,7 +320,7 @@ protected:
             if( tmpVec.size()>0 )
             {
                CbVectorAllocatorPool< value_type >& tmpAllocator = dynamic_cast< CbVectorAllocatorPool<value_type>& >(*tmpVec.getAllocator());
-               //liegt CbVector VOR verändertem CbVector?
+               //liegt CbVector VOR verï¿½ndertem CbVector?
                if( tmpAllocator.startIndexInPool <= allocator.startIndexInPool ) //ja: anpassung NUR wenn pool verschoben wurde!
                {
                   if(poolMoved && tmpVec.size()>0 ) tmpAllocator.ptrDataOf(tmpVec) = &pool[ tmpAllocator.startIndexInPool];

@@ -34,7 +34,7 @@ namespace for global system-functions
 @version 1.1 - 09.09.06
 @version 1.2 - 03.07.08 - nun auch isDue(t) mehrmals fuer dasselbe t moeglich
                           isDue(t) auch fuer t < lastUsedT
-                          bug entfernt, der bei Schedule (5,0,500) auch 505 als Due zurückgibt!
+                          bug entfernt, der bei Schedule (5,0,500) auch 505 als Due zurï¿½ckgibt!
 */ 
 
 /*
@@ -198,9 +198,9 @@ public:
             nextDueTime = tmpNextDueTime;
          } 
 
-         //wenn t = der aktuuellen oder gar schon der nächstmöglichen ist (hierbei wurde
+         //wenn t = der aktuuellen oder gar schon der nï¿½chstmï¿½glichen ist (hierbei wurde
          //zuvor actDueTime und nextDueTime ggf. angepasst)
-         //Bsp.: nextDuTime war 5, aber für t=400 gilt andere schedule -> Bsp actDue=350 und nextDue 405
+         //Bsp.: nextDuTime war 5, aber fï¿½r t=400 gilt andere schedule -> Bsp actDue=350 und nextDue 405
          if(    UbMath::equal(t,actDueTime)    
              || UbMath::equal(t,nextDueTime) ) 
          {
@@ -210,7 +210,7 @@ public:
       }
       else if( UbMath::lessEqual(t, lastDueTime) ) 
       {
-         if(UbMath::equal(t, lastDueTime) ) return true; //braucht man, wenn man für dasselbe t isDue(t) aufruft
+         if(UbMath::equal(t, lastDueTime) ) return true; //braucht man, wenn man fï¿½r dasselbe t isDue(t) aufruft
          else  
          {
             //Fall: Zeit liegt faktisch in der Vergangenheit -> neu initialsisieren

@@ -1,5 +1,5 @@
-setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR})
-
+#setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR})
+set (targetName "VirtualFluidsBasics")
 set(linkDirectories "")
 set(libsToLink Core)
 set(includeDirectories ${CMAKE_SOURCE_DIR}/src/${targetName}

@@ -15,7 +15,7 @@
 #include <vector>
 #include <algorithm> //for std::swap
 #include <typeinfo>  //for typeid
-#include <memory>    //for memcopy
+#include <PointerDefinitions.h>    //for memcopy
 
 #include <basics/utilities/UbSystem.h>
 #include <basics/utilities/UbEqual.h>
@@ -36,9 +36,9 @@
 usage: ...
 Da es Voraussetzun bei doeser Klasse war, dass lediglich der Typ als
 template-parameter miteingeht, muss der allcocator eine abstrakte klasse sein
-ansonsten hätte sich hier der allokator als zweites argument
+ansonsten hï¿½tte sich hier der allokator als zweites argument
 wie beim STL vector angeboten, womit man auch keinen pointer speichern muesste.
-Im letzteren Fall würde aber jeweils ein bestimmeter Klassentyp in Abhaengigkeit
+Im letzteren Fall wï¿½rde aber jeweils ein bestimmeter Klassentyp in Abhaengigkeit
 des allokators zur compilezeit erzeugt. Problem wir wollen ein und denselben
 typ benutzen und nur der allokator innerhalb der klasse soll sich unterscheiden
 //

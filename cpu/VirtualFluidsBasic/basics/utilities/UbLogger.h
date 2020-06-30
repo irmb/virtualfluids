@@ -32,7 +32,7 @@
 // oder auf dem Bildschirm ausgegeben. Es werden verschiedene LogLevel unterstuetzt 
 //
 // Hilfsmakro:  UBLOG
-// Bsp1:        UBLOG(logINFO) << "Klasse::foo entered"; //endl wir nicht benötigt
+// Bsp1:        UBLOG(logINFO) << "Klasse::foo entered"; //endl wir nicht benï¿½tigt
 //              --> Eintrag:
 //
 // Bsp2: siehe Dateiende!
@@ -60,7 +60,7 @@ public:
     virtual ~UbLogger();
     std::ostringstream& get(const LogLevel& level = logINFO);
 public:
-   //static, weil man so später die ObjErstellunge ersparen kann,
+   //static, weil man so spï¿½ter die ObjErstellunge ersparen kann,
    //falls level kleiner als Level
    static LogLevel&   reportingLevel();
     
@@ -179,7 +179,7 @@ inline std::string UbLogger<OutputPolicy>::logTimeString()
 //Anm: die erste Version mit auto_ptr fuer den stream fuehrte zu
 //     exceptions bei Verwedung vom Logger in dtors stat. globaler
 //     Objekte. Aber auch die Pointer-Lsg. ist noch nicht die 
-//     optimale Lösung
+//     optimale Lï¿½sung
 class Output2Stream // implementation of OutputPolicy
 {
 public:
@@ -254,7 +254,7 @@ class UbLog : public UbLogger< Output2Stream >
 
 };
 
-//Makro um compilerseitig maxLevel zu beschränken
+//Makro um compilerseitig maxLevel zu beschrï¿½nken
 #ifndef UBLOG_MAX_LEVEL
    #define UBLOG_MAX_LEVEL logDEBUG5
 #endif
@@ -297,7 +297,7 @@ class UbLog : public UbLogger< Output2Stream >
       }                                                                                            \
    }                                                                                          
 //////////////////////////////////////////////////////////////////////////
-//makro3, falls auch bildschirmausgabe erwünscht
+//makro3, falls auch bildschirmausgabe erwï¿½nscht
 //   -> es wird sowohl ins logfile als auch auf den "stream" geschrieben
 //      wenn reporting level und level passen :D
 //example1: UBLOG2ML(logINFO, std::cout,  "line1"<<endl<<"line2"<<endl<<"line3" ) 

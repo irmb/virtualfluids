@@ -590,6 +590,7 @@ vector<GbTriangle3D*> GbTriFaceMesh3D::getSurfaceTriangleSet()
 /*=======================================================*/
 void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3>& pts, vector<UbTupleInt3>& tris)
 {
+   int nodeNr = pts.size();
    for(int i=0; i<(int)this->triangles->size(); i++)
    {
       Vertex& v1 = (*nodes)[(*triangles)[i].v1];
@@ -599,8 +600,9 @@ void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3>& pts, vector<U
       pts.push_back( makeUbTuple(v2.x,v2.y,v2.z));
       pts.push_back( makeUbTuple(v3.x,v3.y,v3.z));
 
-      tris.push_back( makeUbTuple( 3*i, 3*i+1, 3*i+2) );
-   }
+      tris.push_back( makeUbTuple( nodeNr, nodeNr+1, nodeNr+2 ) );
+      nodeNr+=3;
+   } 
 }
 /*======================================================================*/
 //bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, const double& x3, int counter)

@@ -209,9 +209,9 @@ long GbVoxelMatrix3D::getNumberOfFluid()
 /*=======================================================*/
 double GbVoxelMatrix3D::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
 {
-   if (!((UbMath::equal(rx1, 0.0)||UbMath::equal(fabs(rx1), 1.0)||UbMath::equal(fabs(rx1), UbMath::one_over_sqrt2))
-      &&(UbMath::equal(rx2, 0.0)||UbMath::equal(fabs(rx2), 1.0)||UbMath::equal(fabs(rx2), UbMath::one_over_sqrt2))
-      &&(UbMath::equal(rx3, 0.0)||UbMath::equal(fabs(rx3), 1.0)||UbMath::equal(fabs(rx3), UbMath::one_over_sqrt2))))
+   if (!((UbMath::equal(rx1, 0.0)||UbMath::equal(fabs(rx1), 1.0)||UbMath::equal(fabs(rx1), UbMath::one_over_sqrt2)||UbMath::equal(fabs(rx1), UbMath::one_over_sqrt3))
+      &&(UbMath::equal(rx2, 0.0)||UbMath::equal(fabs(rx2), 1.0)||UbMath::equal(fabs(rx2), UbMath::one_over_sqrt2)||UbMath::equal(fabs(rx2), UbMath::one_over_sqrt3))
+      &&(UbMath::equal(rx3, 0.0)||UbMath::equal(fabs(rx3), 1.0)||UbMath::equal(fabs(rx3), UbMath::one_over_sqrt2)||UbMath::equal(fabs(rx3), UbMath::one_over_sqrt3))))
    {
       throw UbException(UB_EXARGS, "nur fuer diskrete Boltzmannrichungen implementiert!!!");
    }
@@ -279,7 +279,7 @@ bool GbVoxelMatrix3D::isPointInGbObject3D(const double& x1p, const double& x2p, 
 bool GbVoxelMatrix3D::isCellInsideGbObject3D(const double& x1p1, const double& x2p1, const double& x3p1, const double& x1p2, const double& x2p2, const double& x3p2)
 {
    return false;
-   //dass hängt von der Konfigration ab, aber meist ist der Block grösser wie etliche Poren ...
+   //dass hï¿½ngt von der Konfigration ab, aber meist ist der Block grï¿½sser wie etliche Poren ...
 
       //indizes ermitteln
    int startix1 = (int)std::floor((x1p1-minX1)/deltaX1+1E-13);
@@ -1094,8 +1094,8 @@ void GbVoxelMatrix3D::writeToVTKImageDataAppended(const std::string& fileName)
    fclose(file);
 
    file = fopen(fn.c_str(), "ab");
-   int size = (int)voxelMatrix.getDataVector().size()*sizeof(float);
-   fwrite(&size, sizeof(int), 1, file);
+   unsigned long long size = (unsigned long long)voxelMatrix.getDataVector().size()*sizeof(float);
+   fwrite(&size, sizeof(unsigned long long), 1, file);
    fwrite(voxelMatrix.getStartAdressOfSortedArray(0, 0, 0), sizeof(float), voxelMatrix.getDataVector().size(), file);
    fclose(file);
 

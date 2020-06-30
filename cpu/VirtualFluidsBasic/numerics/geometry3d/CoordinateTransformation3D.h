@@ -38,7 +38,7 @@
 //   |--1--2--3--4--5------------- > x1
 //
 // Bemerkung: kann sein, dass die Verdrehung um x1 und x3 vertauschst sind 
-//            - muss mal einer prüfen ...
+//            - muss mal einer prï¿½fen ...
 
 
 
@@ -61,7 +61,7 @@ public:
    double getRotationX2Angle()     const { return this->beta;  }
    double getRotationX3Angle()     const { return this->gamma; }	 //Rotation
 
-   //Achtung die Winkel passen nicht überein -siehe setTransformationValues 
+   //Achtung die Winkel passen nicht ï¿½berein -siehe setTransformationValues 
    void setRotationX1Angle(double alpha) { this->setTransformationValues(this->Tx1, this->Tx2, this->Tx3, this->Sx1, this->Sx2, this->Sx3, alpha, this->beta, this->gamma); }
    void setRotationX2Angle(double beta ) { this->setTransformationValues(this->Tx1, this->Tx2, this->Tx3, this->Sx1, this->Sx2, this->Sx3, this->alpha, beta, this->gamma); }
    void setRotationX3Angle(double gamma) { this->setTransformationValues(this->Tx1, this->Tx2, this->Tx3, this->Sx1, this->Sx2, this->Sx3, this->alpha, this->beta, gamma); }

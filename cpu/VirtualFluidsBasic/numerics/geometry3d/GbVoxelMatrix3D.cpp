@@ -279,7 +279,7 @@ bool GbVoxelMatrix3D::isPointInGbObject3D(const double& x1p, const double& x2p, 
 bool GbVoxelMatrix3D::isCellInsideGbObject3D(const double& x1p1, const double& x2p1, const double& x3p1, const double& x1p2, const double& x2p2, const double& x3p2)
 {
    return false;
-   //dass hängt von der Konfigration ab, aber meist ist der Block grösser wie etliche Poren ...
+   //dass hï¿½ngt von der Konfigration ab, aber meist ist der Block grï¿½sser wie etliche Poren ...
 
       //indizes ermitteln
    int startix1 = (int)std::floor((x1p1-minX1)/deltaX1+1E-13);

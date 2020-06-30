@@ -21,8 +21,7 @@
 #include <basics/container/CbVector.h>
 #include <basics/container/CbVectorPool.h>
 
-#include <memory>
-
+#include <PointerDefinitions.h>
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //TbCbVectorMpiPoolSender/Receiver
@@ -42,7 +41,7 @@ template<typename T>
 class TbCbVectorMpiPool : public CbVectorPool<T>
 {
 public:
-   typedef std::shared_ptr< TbCbVectorMpiPool< T > > MpiPoolPtr;
+   typedef SPtr< TbCbVectorMpiPool< T > > MpiPoolPtr;
 
    //////////////////////////////////////////////////////////////////////////
    typedef std::map<std::string, MpiPoolPtr >      MpiPoolPtrMap;

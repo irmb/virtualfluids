@@ -35,7 +35,7 @@
 #include <basics/utilities/UbEqual.h>
 #include <algorithm>
 #include <typeinfo>
-#include <boost/serialization/serialization.hpp>
+#include "PointerDefinitions.h"
 
 #ifdef CAB_RCF
    #include <3rdParty/rcf/RcfSerializationIncludes.h>
@@ -126,7 +126,7 @@ template<typename T, typename IndexClass = IndexerX3X2X1>
 class CbArray3D
 {
 public:
-   typedef std::shared_ptr< CbArray3D <T,IndexClass> > CbArray3DPtr;
+   typedef SPtr< CbArray3D <T,IndexClass> > CbArray3DPtr;
 
    typedef T                                                   value_type;
    typedef IndexClass                                          indexer_type;
@@ -161,7 +161,7 @@ public:
       this->resize(uniformDimensionSize,uniformDimensionSize,uniformDimensionSize);
    }
    /*=======================================================================*/
-   //übernimmt vector als daten vector! (erstellt KEINE kopie!!!, vec ist anschließend leer, da swap verwendet wird)
+   //ï¿½bernimmt vector als daten vector! (erstellt KEINE kopie!!!, vec ist anschlieï¿½end leer, da swap verwendet wird)
    CbArray3D(std::vector<value_type>& vec, const size_type& nx1,const size_type& nx2, const size_type& nx3)
    {
       assert( (nx1*nx2*nx3)==vec.size() );
@@ -464,15 +464,6 @@ protected:
    indexer_type indexer;
    std::vector< value_type > data;
 
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & nx1;
-      ar & nx2;
-      ar & nx3;
-      ar & data;
-   }
 };
 
 #endif //CBARRAY3D_H

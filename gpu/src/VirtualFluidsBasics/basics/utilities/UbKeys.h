@@ -9,7 +9,6 @@
 
 #include <iostream>
 
-#include <boost/serialization/serialization.hpp>
 
 #ifdef CAB_RCF
    #include <3rdParty/rcf/RcfSerializationIncludes.h>
@@ -102,13 +101,6 @@ namespace UbKeys
       T1 t1;
       T2 t2;
 
-      friend class boost::serialization::access;
-      template<class Archive>
-      void serialize(Archive & ar, const unsigned int version)
-      {
-         ar & t1;
-         ar & t2;
-      }
    };
 
    //////////////////////////////////////////////////////////////////////////
@@ -198,14 +190,6 @@ namespace UbKeys
       T2 t2;
       T3 t3;
 
-      friend class boost::serialization::access;
-      template<class Archive>
-      void serialize(Archive & ar, const unsigned int version)
-      {
-         ar & t1;
-         ar & t2;
-         ar & t3;
-      }
    };
 
    //////////////////////////////////////////////////////////////////////////
@@ -296,15 +280,6 @@ namespace UbKeys
       T3 t3;
       T4 t4;
 
-      friend class boost::serialization::access;
-      template<class Archive>
-      void serialize(Archive & ar, const unsigned int version)
-      {
-         ar & t1;
-         ar & t2;
-         ar & t3;
-         ar & t4;
-      }
    };
 }
 

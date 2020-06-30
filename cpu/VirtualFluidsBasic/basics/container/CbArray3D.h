@@ -161,7 +161,7 @@ public:
       this->resize(uniformDimensionSize,uniformDimensionSize,uniformDimensionSize);
    }
    /*=======================================================================*/
-   //übernimmt vector als daten vector! (erstellt KEINE kopie!!!, vec ist anschließend leer, da swap verwendet wird)
+   //ï¿½bernimmt vector als daten vector! (erstellt KEINE kopie!!!, vec ist anschlieï¿½end leer, da swap verwendet wird)
    CbArray3D(std::vector<value_type>& vec, const size_type& nx1,const size_type& nx2, const size_type& nx3)
    {
       assert( (nx1*nx2*nx3)==vec.size() );

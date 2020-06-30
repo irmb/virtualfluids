@@ -556,7 +556,7 @@ double GbCuboid3D::getIntersectionRaytraceFactor(const double& x1, const double&
 
    return maxT[whichPlane] ;				/* ray hits box */
 }	
-// /*==========================================================*/
+/*==========================================================*/
 // double GbCuboid3D::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
 // {
 //     double absX,absMaxX,absY,absMaxY,absZ,absMaxZ;
@@ -623,8 +623,8 @@ double GbCuboid3D::getIntersectionRaytraceFactor(const double& x1, const double&
 //     //in dieser Fall gibt es keine Verschneidung
 //     if( (tmin > tymax) || (tymin > tmax) ) return -1;
 // 
-//     tmin = UbMath::max3(tmin,tymin,tzmin);
-//     tmax = UbMath::min3(tmax,tymax,tzmax);
+//     tmin = UbMath::max(tmin,tymin,tzmin);
+//     tmax = UbMath::min(tmax,tymax,tzmax);
 //  
 //     if( (tmin > tzmax) || (tzmin > tmax) ) return -1;
 //     if(tmin >= 0.0) return tmin ;

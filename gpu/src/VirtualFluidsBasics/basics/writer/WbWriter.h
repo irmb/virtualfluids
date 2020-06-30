@@ -29,8 +29,6 @@
 #include <basics/utilities/UbAutoRun.hpp>
 #include <basics/objects/ObFactory.h>
 
-#include <boost/serialization/serialization.hpp>
-
 class VF_PUBLIC WbWriter
 {
 public:
@@ -81,7 +79,7 @@ public:
    virtual std::string writeQuadsWithCellData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt4 >& cells, std::vector< std::string >& datanames, std::vector< std::vector< double > >& celldata){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
    virtual std::string writeQuadsWithNodeAndCellData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt4 >& cells, 
                                                      std::vector< std::string >& nodedatanames, std::vector< std::vector< double > >& nodedata, std::vector< std::string >& celldatanames,
-                                                     std::vector< std::vector< double > >& celldata                                                                                       ){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
+                                                     std::vector< std::vector< double > >&celldata) { throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
 
    //////////////////////////////////////////////////////////////////////////
    //octs
@@ -97,12 +95,7 @@ public:
    virtual std::string writeOctsWithNodeData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleUInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
 
 private:
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
 
-   }
 };
 
 

@@ -30,7 +30,7 @@
 #include <basics/utilities/UbEqual.h>
 #include <algorithm>
 #include <typeinfo>
-#include <boost/serialization/serialization.hpp>
+#include "PointerDefinitions.h"
 
 #include <VirtualFluidsDefinitions.h>
 
@@ -99,7 +99,7 @@ template<typename T, typename IndexClass = IndexerX4X3X2X1>
 class CbArray4D
 {
 public:
-   typedef std::shared_ptr< CbArray4D <T,IndexClass> > CbArray4DPtr;
+   typedef SPtr< CbArray4D <T,IndexClass> > CbArray4DPtr;
 
    typedef T                                                   value_type;
    typedef IndexClass                                          indexer_type;
@@ -134,7 +134,7 @@ public:
       this->resize(uniformDimensionSize,uniformDimensionSize,uniformDimensionSize,uniformDimensionSize);
    }
    /*=======================================================================*/
-   //ubernimmt vector als daten vector! (erstellt KEINE kopie!!!, vec ist anschließend leer, da swap verwendet wird)
+   //ubernimmt vector als daten vector! (erstellt KEINE kopie!!!, vec ist anschlieï¿½end leer, da swap verwendet wird)
    CbArray4D(std::vector<value_type>& vec, const size_type& nx1,const size_type& nx2, const size_type& nx3, const size_type& nx4)
    {
       assert( (nx1*nx2*nx3*nx4)==vec.size() );
@@ -447,16 +447,6 @@ protected:
    indexer_type indexer;
    std::vector< value_type > data;
 
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & nx1;
-      ar & nx2;
-      ar & nx3;
-      ar & nx4;
-      ar & data;
-   }
 };
 
 #endif //CBARRAY4D_H
