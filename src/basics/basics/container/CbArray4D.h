@@ -32,7 +32,7 @@
 #include <typeinfo>
 #include "PointerDefinitions.h"
 
-#include "basics_export"
+#include "basics_export.h"
 
 #ifdef CAB_RCF
    #include <3rdParty/rcf/RcfSerializationIncludes.h>

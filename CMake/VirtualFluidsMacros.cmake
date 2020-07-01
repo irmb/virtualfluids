@@ -165,8 +165,10 @@ function(vf_add_library)
     MESSAGE(STATUS "configuring ${library_name} (type=${ARG_BUILDTYPE})... done")
 
     if (NOT ${ARG_BUILDTYPE} MATCHES binary)
-    generateExportHeader (${library_name})
-        endif()
+      generateExportHeader (${library_name})
+    endif()
+
+    target_include_directories(${library_name} PRIVATE ${CMAKE_BINARY_DIR})
 
 endfunction(vf_add_library)
 

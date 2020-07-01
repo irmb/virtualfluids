@@ -109,7 +109,7 @@ macro(generateExportHeader libName)
 		GENERATE_EXPORT_HEADER	(${libName}
 				#BASE_NAME ${libName}
 				#EXPORT_MACRO_NAME ${libName}_EXPORT
-				EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/${libName}_export.h
+				EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/${libName}_export.h
 				#STATIC_DEFINE ${libName}_BUILT_AS_STATIC
 				)
 	#endif()
