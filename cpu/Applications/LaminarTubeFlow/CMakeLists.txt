@@ -14,7 +14,7 @@ INCLUDE(${APPS_ROOT}/IncludsList.cmake)
  #                        ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
   #                       ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp  )
  
-#SET(ALL_SOURCES ${ALL_SOURCES} ${SPECIFIC_FILES})
+#SET(ALL_SOURCES ${ALL_SOURCES}  ${SPECIFIC_FILES})
 #SOURCE_GROUP(src FILES ${SPECIFIC_FILES})
   
 #SET(CAB_ADDITIONAL_LINK_LIBRARIES VirtualFluids)
@@ -25,4 +25,4 @@ INCLUDE(${APPS_ROOT}/IncludsList.cmake)
 #CREATE_CAB_PROJECT(ltf BINARY)
 
 
-vf_add_library(BUILDTYPE binary DEPENDS VirtualFluidsCore VirtualFluidsBasic FILES ltf.cpp)
+vf_add_library(BUILDTYPE binary DEPENDS VirtualFluidsCore basics ${MPI_CXX_LIBRARIES} FILES ltf.cpp )

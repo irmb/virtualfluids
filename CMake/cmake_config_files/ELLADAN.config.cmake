@@ -1,6 +1,6 @@
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__unix__)
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__UNIX__)
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__APPLE__)
+#LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__unix__)
+#LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__UNIX__)
+#LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__APPLE__)
 
 #################################################################################
 # MPI
@@ -35,8 +35,8 @@ LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__APPLE__)
 #  METIS
 #################################################################################
 IF(${USE_METIS})
-    SET(METIS_INCLUDEDIR "/usr/local/include")
-    SET(METIS_DEBUG_LIBRARY "/usr/local/lib/libmetis.a")
-    SET(METIS_RELEASE_LIBRARY "/usr/local/lib/libmetis.a")
+    SET(METIS_INCLUDEDIR "/usr/include")
+    SET(METIS_DEBUG_LIBRARY "/usr/lib/x86_64-linux-gnu/libmetis.so")
+    SET(METIS_RELEASE_LIBRARY "/usr/lib/x86_64-linux-gnu/libmetis.so")
 ENDIF()
 #set(SOURCE_ROOT "/host/Projects/pFluid/source")

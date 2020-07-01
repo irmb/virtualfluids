@@ -26,7 +26,7 @@
    #include <sys/syscall.h>
    #include <sys/stat.h>
    #include <unistd.h>
-#elif (defined(__amd64) || defined(__amd64__) || defined(__unix__) || defined(__CYGWIN__)) && !defined(__AIX__) 
+#elif (defined(__amd64) || defined(__amd64__) || defined(__unix__) || defined(__CYGWIN__)) && !defined(__AIX__)
    #define UBSYSTEM_LINUX
    #include "dirent.h"
    #include "sys/stat.h"

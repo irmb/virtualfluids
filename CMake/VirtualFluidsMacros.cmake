@@ -24,7 +24,7 @@ function(vf_add_library)
     set( multiValueArgs BUILDTYPE DEPENDS FILES FOLDER EXCLUDE)
     cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    #message("Files: ${ARG_FILES}")
+    #message("Files: ${ARG_FOLDER}")
 
     vf_get_library_name (library_name)
 
@@ -66,7 +66,7 @@ function(vf_add_library)
     includeProductionFiles (${library_name} "${sourceFiles}")
 
     foreach(X IN LISTS MY_SRCS)
-        message(STATUS "${X}")
+        #message(STATUS "${X}")
     endforeach()
 
 
@@ -125,6 +125,9 @@ function(vf_add_library)
     IF(CAB_ADDITIONAL_LINK_LIBRARIES)
         TARGET_LINK_LIBRARIES(${library_name} PRIVATE ${CAB_ADDITIONAL_LINK_LIBRARIES})
     ENDIF()
+
+    get_target_property(OUT ${library_name} LINK_LIBRARIES)
+    message(STATUS My libs: ${OUT})
 
     #################################################################
     ###   COMPILER Flags                                          ###

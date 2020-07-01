@@ -12,8 +12,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR}/basics/writer)
 
 
 include (${CMAKE_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
-#message (${MPI_LIBRARY})
-SET(CAB_ADDITIONAL_LINK_LIBRARIES ${MPI_LIBRARY})
+SET(CAB_ADDITIONAL_LINK_LIBRARIES ${MPI_CXX_LIBRARIES})
 
 include(core/buildInfo.cmake)
 
@@ -23,7 +22,7 @@ INCLUDE_DIRECTORIES(${MPI_INCLUDE_PATH})
 vf_add_library(BUILDTYPE static
                FOLDER
         ${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d
-        ${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d/Creator
+        ${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d/creator
         ${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d/KdTree
         ${CMAKE_CURRENT_LIST_DIR}/basics/container
         ${CMAKE_CURRENT_LIST_DIR}/basics/memory

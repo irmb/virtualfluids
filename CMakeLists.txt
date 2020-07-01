@@ -16,6 +16,11 @@ include("CMake/CMakeCABMacros.cmake")
 include("CMake/FileUtilities.cmake")
 include("CMake/VirtualFluidsMacros.cmake")
 
+# FIND MPI
+IF((NOT ${CMAKE_CXX_COMPILER} MATCHES mpicxx) AND (NOT ${CMAKE_CXX_COMPILER} MATCHES mpiicpc))# OR NOT ${CMAKE_CXX_COMPILER} MATCHES cc OR NOT ${CMAKE_CXX_COMPILER} MATCHES mpiCC)
+    FIND_PACKAGE(MPI REQUIRED)
+ENDIF()
+
 add_subdirectory(src/basics)
 
 #if (BUILD_VF_CPU)

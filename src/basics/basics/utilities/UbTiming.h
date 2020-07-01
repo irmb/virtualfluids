@@ -380,7 +380,7 @@ protected:
 //                                                                         
 //
 //
-//UbProressTimer misst die Zeit von seiner Instantiierung bis zur Zerstörung
+//UbProressTimer misst die Zeit von seiner Instantiierung bis zur Zerstoerung
 //und gib die verstrichene Zeit auf "os" in [s] aus
 //example:
 // {

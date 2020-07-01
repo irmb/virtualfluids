@@ -100,7 +100,7 @@ MACRO(ADD_COMPILER_FLAGS_TO_PROJECT compiler_type project_name project_language 
    ################################################################
    SET_COMPILER_SPECIFIC_FLAGS( ${compiler_type} ${build_type} )
 
-   #workaround für itanium processoren
+   #workaround fuer itanium processoren
    IF(${CMAKE_SYSTEM_PROCESSOR} MATCHES "ia64")
       LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS -D_M_IA64)
       LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS   -D_M_IA64)

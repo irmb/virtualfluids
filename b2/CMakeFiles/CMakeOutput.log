@@ -1,0 +1,450 @@
+The system is: Linux - 5.4.0-39-generic - x86_64
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /usr/bin/clang++ 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is Clang, found in "/home/soeren/synced_folder/VF/b2/CMakeFiles/3.16.3/CompilerIdCXX/a.out"
+
+Determining if the CXX compiler works passed with the following output:
+Change Dir: /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_143a1/fast && /usr/bin/make -f CMakeFiles/cmTC_143a1.dir/build.make CMakeFiles/cmTC_143a1.dir/build
+make[1]: Entering directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_143a1.dir/testCXXCompiler.cxx.o
+/usr/bin/clang++     -o CMakeFiles/cmTC_143a1.dir/testCXXCompiler.cxx.o -c /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+Linking CXX executable cmTC_143a1
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_143a1.dir/link.txt --verbose=1
+/usr/bin/clang++       CMakeFiles/cmTC_143a1.dir/testCXXCompiler.cxx.o  -o cmTC_143a1 
+make[1]: Leaving directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_bb86a/fast && /usr/bin/make -f CMakeFiles/cmTC_bb86a.dir/build.make CMakeFiles/cmTC_bb86a.dir/build
+make[1]: Entering directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_bb86a.dir/CMakeCXXCompilerABI.cpp.o
+/usr/bin/clang++    -v -o CMakeFiles/cmTC_bb86a.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.16/Modules/CMakeCXXCompilerABI.cpp
+Ubuntu clang version 10.0.1-++20200626112928+77d76b71d7d-1~exp1~20200626213538.59 
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/8
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/8
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/9
+Selected GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9
+Candidate multilib: .;@m64
+Selected multilib: .;@m64
+Found CUDA installation: /usr/lib/cuda, version 10.1
+ (in-process)
+ "/usr/lib/llvm-10/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -mrelax-all -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model static -mthread-model posix -mframe-pointer=all -fmath-errno -fno-rounding-math -masm-verbose -mconstructor-aliases -munwind-tables -target-cpu x86-64 -dwarf-column-info -fno-split-dwarf-inlining -debugger-tuning=gdb -v -resource-dir /usr/lib/llvm-10/lib/clang/10.0.1 -internal-isystem /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9 -internal-isystem /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/x86_64-linux-gnu/c++/9 -internal-isystem /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/x86_64-linux-gnu/c++/9 -internal-isystem /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9/backward -internal-isystem /usr/local/include -internal-isystem /usr/lib/llvm-10/lib/clang/10.0.1/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdeprecated-macro -fdebug-compilation-dir /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp -ferror-limit 19 -fmessage-length 0 -fgnuc-version=4.2.1 -fobjc-runtime=gcc -fcxx-exceptions -fexceptions -fdiagnostics-show-option -faddrsig -o CMakeFiles/cmTC_bb86a.dir/CMakeCXXCompilerABI.cpp.o -x c++ /usr/share/cmake-3.16/Modules/CMakeCXXCompilerABI.cpp
+clang -cc1 version 10.0.1 based upon LLVM 10.0.1 default target x86_64-pc-linux-gnu
+ignoring nonexistent directory "/include"
+ignoring duplicate directory "/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/x86_64-linux-gnu/c++/9"
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9
+ /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/x86_64-linux-gnu/c++/9
+ /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9/backward
+ /usr/local/include
+ /usr/lib/llvm-10/lib/clang/10.0.1/include
+ /usr/include/x86_64-linux-gnu
+ /usr/include
+End of search list.
+Linking CXX executable cmTC_bb86a
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bb86a.dir/link.txt --verbose=1
+/usr/bin/clang++      -v CMakeFiles/cmTC_bb86a.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_bb86a 
+Ubuntu clang version 10.0.1-++20200626112928+77d76b71d7d-1~exp1~20200626213538.59 
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/8
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/8
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/9
+Selected GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9
+Candidate multilib: .;@m64
+Selected multilib: .;@m64
+Found CUDA installation: /usr/lib/cuda, version 10.1
+ "/usr/bin/ld" -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_bb86a /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crt1.o /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/bin/../lib/gcc/x86_64-linux-gnu/9/crtbegin.o -L/usr/bin/../lib/gcc/x86_64-linux-gnu/9 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../.. -L/usr/lib/llvm-10/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_bb86a.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/bin/../lib/gcc/x86_64-linux-gnu/9/crtend.o /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o
+make[1]: Leaving directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+
+
+
+Parsed CXX implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9]
+    add: [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/x86_64-linux-gnu/c++/9]
+    add: [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9/backward]
+    add: [/usr/local/include]
+    add: [/usr/lib/llvm-10/lib/clang/10.0.1/include]
+    add: [/usr/include/x86_64-linux-gnu]
+    add: [/usr/include]
+  end of search list found
+  collapse include dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9] ==> [/usr/include/c++/9]
+  collapse include dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/x86_64-linux-gnu/c++/9] ==> [/usr/include/x86_64-linux-gnu/c++/9]
+  collapse include dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9/backward] ==> [/usr/include/c++/9/backward]
+  collapse include dir [/usr/local/include] ==> [/usr/local/include]
+  collapse include dir [/usr/lib/llvm-10/lib/clang/10.0.1/include] ==> [/usr/lib/llvm-10/lib/clang/10.0.1/include]
+  collapse include dir [/usr/include/x86_64-linux-gnu] ==> [/usr/include/x86_64-linux-gnu]
+  collapse include dir [/usr/include] ==> [/usr/include]
+  implicit include dirs: [/usr/include/c++/9;/usr/include/x86_64-linux-gnu/c++/9;/usr/include/c++/9/backward;/usr/local/include;/usr/lib/llvm-10/lib/clang/10.0.1/include;/usr/include/x86_64-linux-gnu;/usr/include]
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/make cmTC_bb86a/fast && /usr/bin/make -f CMakeFiles/cmTC_bb86a.dir/build.make CMakeFiles/cmTC_bb86a.dir/build]
+  ignore line: [make[1]: Entering directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp']
+  ignore line: [Building CXX object CMakeFiles/cmTC_bb86a.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/usr/bin/clang++    -v -o CMakeFiles/cmTC_bb86a.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.16/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Ubuntu clang version 10.0.1-++20200626112928+77d76b71d7d-1~exp1~20200626213538.59 ]
+  ignore line: [Target: x86_64-pc-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/bin]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/8]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/8]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/9]
+  ignore line: [Selected GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Selected multilib: .]
+  ignore line: [@m64]
+  ignore line: [Found CUDA installation: /usr/lib/cuda  version 10.1]
+  ignore line: [ (in-process)]
+  ignore line: [ "/usr/lib/llvm-10/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -mrelax-all -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model static -mthread-model posix -mframe-pointer=all -fmath-errno -fno-rounding-math -masm-verbose -mconstructor-aliases -munwind-tables -target-cpu x86-64 -dwarf-column-info -fno-split-dwarf-inlining -debugger-tuning=gdb -v -resource-dir /usr/lib/llvm-10/lib/clang/10.0.1 -internal-isystem /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9 -internal-isystem /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/x86_64-linux-gnu/c++/9 -internal-isystem /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/x86_64-linux-gnu/c++/9 -internal-isystem /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9/backward -internal-isystem /usr/local/include -internal-isystem /usr/lib/llvm-10/lib/clang/10.0.1/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdeprecated-macro -fdebug-compilation-dir /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp -ferror-limit 19 -fmessage-length 0 -fgnuc-version=4.2.1 -fobjc-runtime=gcc -fcxx-exceptions -fexceptions -fdiagnostics-show-option -faddrsig -o CMakeFiles/cmTC_bb86a.dir/CMakeCXXCompilerABI.cpp.o -x c++ /usr/share/cmake-3.16/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [clang -cc1 version 10.0.1 based upon LLVM 10.0.1 default target x86_64-pc-linux-gnu]
+  ignore line: [ignoring nonexistent directory "/include"]
+  ignore line: [ignoring duplicate directory "/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/x86_64-linux-gnu/c++/9"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9]
+  ignore line: [ /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/x86_64-linux-gnu/c++/9]
+  ignore line: [ /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9/backward]
+  ignore line: [ /usr/local/include]
+  ignore line: [ /usr/lib/llvm-10/lib/clang/10.0.1/include]
+  ignore line: [ /usr/include/x86_64-linux-gnu]
+  ignore line: [ /usr/include]
+  ignore line: [End of search list.]
+  ignore line: [Linking CXX executable cmTC_bb86a]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bb86a.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/clang++      -v CMakeFiles/cmTC_bb86a.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_bb86a ]
+  ignore line: [Ubuntu clang version 10.0.1-++20200626112928+77d76b71d7d-1~exp1~20200626213538.59 ]
+  ignore line: [Target: x86_64-pc-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/bin]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/8]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/8]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/9]
+  ignore line: [Selected GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Selected multilib: .]
+  ignore line: [@m64]
+  ignore line: [Found CUDA installation: /usr/lib/cuda  version 10.1]
+  link line: [ "/usr/bin/ld" -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_bb86a /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crt1.o /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/bin/../lib/gcc/x86_64-linux-gnu/9/crtbegin.o -L/usr/bin/../lib/gcc/x86_64-linux-gnu/9 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../.. -L/usr/lib/llvm-10/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_bb86a.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/bin/../lib/gcc/x86_64-linux-gnu/9/crtend.o /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o]
+    arg [/usr/bin/ld] ==> ignore
+    arg [-zrelro] ==> ignore
+    arg [--hash-style=gnu] ==> ignore
+    arg [--build-id] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_bb86a] ==> ignore
+    arg [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crt1.o] ==> ignore
+    arg [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o] ==> ignore
+    arg [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/crtbegin.o] ==> ignore
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/9] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9]
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu]
+    arg [-L/lib/x86_64-linux-gnu] ==> dir [/lib/x86_64-linux-gnu]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../..] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../..]
+    arg [-L/usr/lib/llvm-10/bin/../lib] ==> dir [/usr/lib/llvm-10/bin/../lib]
+    arg [-L/lib] ==> dir [/lib]
+    arg [-L/usr/lib] ==> dir [/usr/lib]
+    arg [CMakeFiles/cmTC_bb86a.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lstdc++] ==> lib [stdc++]
+    arg [-lm] ==> lib [m]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/crtend.o] ==> ignore
+    arg [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o] ==> ignore
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9] ==> [/usr/lib/gcc/x86_64-linux-gnu/9]
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+  collapse library dir [/lib/x86_64-linux-gnu] ==> [/lib/x86_64-linux-gnu]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../..] ==> [/usr/lib]
+  collapse library dir [/usr/lib/llvm-10/bin/../lib] ==> [/usr/lib/llvm-10/lib]
+  collapse library dir [/lib] ==> [/lib]
+  collapse library dir [/usr/lib] ==> [/usr/lib]
+  implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+  implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/9;/usr/lib/x86_64-linux-gnu;/lib/x86_64-linux-gnu;/lib64;/usr/lib;/usr/lib/llvm-10/lib;/lib]
+  implicit fwks: []
+
+
+Performing C++ SOURCE FILE Test COMPILER_HAS_HIDDEN_VISIBILITY succeeded with the following output:
+Change Dir: /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_cf518/fast && /usr/bin/make -f CMakeFiles/cmTC_cf518.dir/build.make CMakeFiles/cmTC_cf518.dir/build
+make[1]: Entering directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_cf518.dir/src.cxx.o
+/usr/bin/clang++    -DCOMPILER_HAS_HIDDEN_VISIBILITY   -fvisibility=hidden -o CMakeFiles/cmTC_cf518.dir/src.cxx.o -c /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_cf518
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cf518.dir/link.txt --verbose=1
+/usr/bin/clang++   -DCOMPILER_HAS_HIDDEN_VISIBILITY    CMakeFiles/cmTC_cf518.dir/src.cxx.o  -o cmTC_cf518 
+make[1]: Leaving directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY succeeded with the following output:
+Change Dir: /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_a470c/fast && /usr/bin/make -f CMakeFiles/cmTC_a470c.dir/build.make CMakeFiles/cmTC_a470c.dir/build
+make[1]: Entering directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_a470c.dir/src.cxx.o
+/usr/bin/clang++    -DCOMPILER_HAS_HIDDEN_INLINE_VISIBILITY   -fvisibility-inlines-hidden -o CMakeFiles/cmTC_a470c.dir/src.cxx.o -c /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_a470c
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a470c.dir/link.txt --verbose=1
+/usr/bin/clang++   -DCOMPILER_HAS_HIDDEN_INLINE_VISIBILITY    CMakeFiles/cmTC_a470c.dir/src.cxx.o  -o cmTC_a470c 
+make[1]: Leaving directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test COMPILER_HAS_DEPRECATED_ATTR succeeded with the following output:
+Change Dir: /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_bfc0b/fast && /usr/bin/make -f CMakeFiles/cmTC_bfc0b.dir/build.make CMakeFiles/cmTC_bfc0b.dir/build
+make[1]: Entering directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_bfc0b.dir/src.cxx.o
+/usr/bin/clang++    -DCOMPILER_HAS_DEPRECATED_ATTR   -o CMakeFiles/cmTC_bfc0b.dir/src.cxx.o -c /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp/src.cxx
+/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp/src.cxx:2:25: warning: 'somefunc' is deprecated [-Wdeprecated-declarations]
+    int main() { return somefunc();}
+                        ^
+/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp/src.cxx:1:16: note: 'somefunc' has been explicitly marked deprecated here
+__attribute__((__deprecated__)) int somefunc() { return 0; }
+               ^
+1 warning generated.
+Linking CXX executable cmTC_bfc0b
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bfc0b.dir/link.txt --verbose=1
+/usr/bin/clang++   -DCOMPILER_HAS_DEPRECATED_ATTR    CMakeFiles/cmTC_bfc0b.dir/src.cxx.o  -o cmTC_bfc0b 
+make[1]: Leaving directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+
+
+Source file was:
+__attribute__((__deprecated__)) int somefunc() { return 0; }
+    int main() { return somefunc();}
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /usr/bin/clang 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is Clang, found in "/home/soeren/synced_folder/VF/b2/CMakeFiles/3.16.3/CompilerIdC/a.out"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_89238/fast && /usr/bin/make -f CMakeFiles/cmTC_89238.dir/build.make CMakeFiles/cmTC_89238.dir/build
+make[1]: Entering directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_89238.dir/testCCompiler.c.o
+/usr/bin/clang    -o CMakeFiles/cmTC_89238.dir/testCCompiler.c.o   -c /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTC_89238
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_89238.dir/link.txt --verbose=1
+/usr/bin/clang      CMakeFiles/cmTC_89238.dir/testCCompiler.c.o  -o cmTC_89238 
+make[1]: Leaving directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_571b7/fast && /usr/bin/make -f CMakeFiles/cmTC_571b7.dir/build.make CMakeFiles/cmTC_571b7.dir/build
+make[1]: Entering directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_571b7.dir/CMakeCCompilerABI.c.o
+/usr/bin/clang   -v -o CMakeFiles/cmTC_571b7.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake-3.16/Modules/CMakeCCompilerABI.c
+Ubuntu clang version 10.0.1-++20200626112928+77d76b71d7d-1~exp1~20200626213538.59 
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/8
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/8
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/9
+Selected GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9
+Candidate multilib: .;@m64
+Selected multilib: .;@m64
+Found CUDA installation: /usr/lib/cuda, version 10.1
+ (in-process)
+ "/usr/lib/llvm-10/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -mrelax-all -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model static -mthread-model posix -mframe-pointer=all -fmath-errno -fno-rounding-math -masm-verbose -mconstructor-aliases -munwind-tables -target-cpu x86-64 -dwarf-column-info -fno-split-dwarf-inlining -debugger-tuning=gdb -v -resource-dir /usr/lib/llvm-10/lib/clang/10.0.1 -internal-isystem /usr/local/include -internal-isystem /usr/lib/llvm-10/lib/clang/10.0.1/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdebug-compilation-dir /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp -ferror-limit 19 -fmessage-length 0 -fgnuc-version=4.2.1 -fobjc-runtime=gcc -fdiagnostics-show-option -faddrsig -o CMakeFiles/cmTC_571b7.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.16/Modules/CMakeCCompilerABI.c
+clang -cc1 version 10.0.1 based upon LLVM 10.0.1 default target x86_64-pc-linux-gnu
+ignoring nonexistent directory "/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/local/include
+ /usr/lib/llvm-10/lib/clang/10.0.1/include
+ /usr/include/x86_64-linux-gnu
+ /usr/include
+End of search list.
+Linking C executable cmTC_571b7
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_571b7.dir/link.txt --verbose=1
+/usr/bin/clang     -v CMakeFiles/cmTC_571b7.dir/CMakeCCompilerABI.c.o  -o cmTC_571b7 
+Ubuntu clang version 10.0.1-++20200626112928+77d76b71d7d-1~exp1~20200626213538.59 
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/8
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/8
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/9
+Selected GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9
+Candidate multilib: .;@m64
+Selected multilib: .;@m64
+Found CUDA installation: /usr/lib/cuda, version 10.1
+ "/usr/bin/ld" -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_571b7 /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crt1.o /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/bin/../lib/gcc/x86_64-linux-gnu/9/crtbegin.o -L/usr/bin/../lib/gcc/x86_64-linux-gnu/9 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../.. -L/usr/lib/llvm-10/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_571b7.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/bin/../lib/gcc/x86_64-linux-gnu/9/crtend.o /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o
+make[1]: Leaving directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp'
+
+
+
+Parsed C implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/usr/local/include]
+    add: [/usr/lib/llvm-10/lib/clang/10.0.1/include]
+    add: [/usr/include/x86_64-linux-gnu]
+    add: [/usr/include]
+  end of search list found
+  collapse include dir [/usr/local/include] ==> [/usr/local/include]
+  collapse include dir [/usr/lib/llvm-10/lib/clang/10.0.1/include] ==> [/usr/lib/llvm-10/lib/clang/10.0.1/include]
+  collapse include dir [/usr/include/x86_64-linux-gnu] ==> [/usr/include/x86_64-linux-gnu]
+  collapse include dir [/usr/include] ==> [/usr/include]
+  implicit include dirs: [/usr/local/include;/usr/lib/llvm-10/lib/clang/10.0.1/include;/usr/include/x86_64-linux-gnu;/usr/include]
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/make cmTC_571b7/fast && /usr/bin/make -f CMakeFiles/cmTC_571b7.dir/build.make CMakeFiles/cmTC_571b7.dir/build]
+  ignore line: [make[1]: Entering directory '/home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp']
+  ignore line: [Building C object CMakeFiles/cmTC_571b7.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/usr/bin/clang   -v -o CMakeFiles/cmTC_571b7.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake-3.16/Modules/CMakeCCompilerABI.c]
+  ignore line: [Ubuntu clang version 10.0.1-++20200626112928+77d76b71d7d-1~exp1~20200626213538.59 ]
+  ignore line: [Target: x86_64-pc-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/bin]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/8]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/8]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/9]
+  ignore line: [Selected GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Selected multilib: .]
+  ignore line: [@m64]
+  ignore line: [Found CUDA installation: /usr/lib/cuda  version 10.1]
+  ignore line: [ (in-process)]
+  ignore line: [ "/usr/lib/llvm-10/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -mrelax-all -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model static -mthread-model posix -mframe-pointer=all -fmath-errno -fno-rounding-math -masm-verbose -mconstructor-aliases -munwind-tables -target-cpu x86-64 -dwarf-column-info -fno-split-dwarf-inlining -debugger-tuning=gdb -v -resource-dir /usr/lib/llvm-10/lib/clang/10.0.1 -internal-isystem /usr/local/include -internal-isystem /usr/lib/llvm-10/lib/clang/10.0.1/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdebug-compilation-dir /home/soeren/synced_folder/VF/b2/CMakeFiles/CMakeTmp -ferror-limit 19 -fmessage-length 0 -fgnuc-version=4.2.1 -fobjc-runtime=gcc -fdiagnostics-show-option -faddrsig -o CMakeFiles/cmTC_571b7.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.16/Modules/CMakeCCompilerABI.c]
+  ignore line: [clang -cc1 version 10.0.1 based upon LLVM 10.0.1 default target x86_64-pc-linux-gnu]
+  ignore line: [ignoring nonexistent directory "/include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /usr/local/include]
+  ignore line: [ /usr/lib/llvm-10/lib/clang/10.0.1/include]
+  ignore line: [ /usr/include/x86_64-linux-gnu]
+  ignore line: [ /usr/include]
+  ignore line: [End of search list.]
+  ignore line: [Linking C executable cmTC_571b7]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_571b7.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/clang     -v CMakeFiles/cmTC_571b7.dir/CMakeCCompilerABI.c.o  -o cmTC_571b7 ]
+  ignore line: [Ubuntu clang version 10.0.1-++20200626112928+77d76b71d7d-1~exp1~20200626213538.59 ]
+  ignore line: [Target: x86_64-pc-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/bin]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/8]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/8]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/9]
+  ignore line: [Selected GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/9]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Selected multilib: .]
+  ignore line: [@m64]
+  ignore line: [Found CUDA installation: /usr/lib/cuda  version 10.1]
+  link line: [ "/usr/bin/ld" -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_571b7 /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crt1.o /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o /usr/bin/../lib/gcc/x86_64-linux-gnu/9/crtbegin.o -L/usr/bin/../lib/gcc/x86_64-linux-gnu/9 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../.. -L/usr/lib/llvm-10/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_571b7.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/bin/../lib/gcc/x86_64-linux-gnu/9/crtend.o /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o]
+    arg [/usr/bin/ld] ==> ignore
+    arg [-zrelro] ==> ignore
+    arg [--hash-style=gnu] ==> ignore
+    arg [--build-id] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_571b7] ==> ignore
+    arg [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crt1.o] ==> ignore
+    arg [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crti.o] ==> ignore
+    arg [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/crtbegin.o] ==> ignore
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/9] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9]
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu]
+    arg [-L/lib/x86_64-linux-gnu] ==> dir [/lib/x86_64-linux-gnu]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../..] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../..]
+    arg [-L/usr/lib/llvm-10/bin/../lib] ==> dir [/usr/lib/llvm-10/bin/../lib]
+    arg [-L/lib] ==> dir [/lib]
+    arg [-L/usr/lib] ==> dir [/usr/lib]
+    arg [CMakeFiles/cmTC_571b7.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/crtend.o] ==> ignore
+    arg [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu/crtn.o] ==> ignore
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9] ==> [/usr/lib/gcc/x86_64-linux-gnu/9]
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+  collapse library dir [/lib/x86_64-linux-gnu] ==> [/lib/x86_64-linux-gnu]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../..] ==> [/usr/lib]
+  collapse library dir [/usr/lib/llvm-10/bin/../lib] ==> [/usr/lib/llvm-10/lib]
+  collapse library dir [/lib] ==> [/lib]
+  collapse library dir [/usr/lib] ==> [/usr/lib]
+  implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
+  implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/9;/usr/lib/x86_64-linux-gnu;/lib/x86_64-linux-gnu;/lib64;/usr/lib;/usr/lib/llvm-10/lib;/lib]
+  implicit fwks: []
+
+
