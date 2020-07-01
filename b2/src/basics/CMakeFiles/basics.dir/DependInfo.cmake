@@ -77,6 +77,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../VirtualFluidsCore"
   "/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"
   "/usr/lib/x86_64-linux-gnu/openmpi/include"
+  "."
   "../src/basics/core"
   "src/basics"
   )

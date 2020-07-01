@@ -6,5 +6,5 @@ CXX_FLAGS =   -O3 -fomit-frame-pointer -finline-functions -fPIC -Wbackslash-newl
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/soeren/synced_folder/VF -I/home/soeren/synced_folder/VF/cpu/ThirdParty/MuParser/include 
+CXX_INCLUDES = -I/home/soeren/synced_folder/VF -I/home/soeren/synced_folder/VF/b2 -I/home/soeren/synced_folder/VF/cpu/ThirdParty/MuParser/include 
 

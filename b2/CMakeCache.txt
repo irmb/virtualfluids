@@ -331,7 +331,7 @@ VirtualFluids_BINARY_DIR:STATIC=/home/soeren/synced_folder/VF/b2/cpu
 VirtualFluids_SOURCE_DIR:STATIC=/home/soeren/synced_folder/VF/cpu
 
 //Dependencies for the target
-basics_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so;
+basics_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so;general;/usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so;
 
 //Value Computed by CMake
 ltf_BINARY_DIR:STATIC=/home/soeren/synced_folder/VF/b2/cpu/Applications/LaminarTubeFlow

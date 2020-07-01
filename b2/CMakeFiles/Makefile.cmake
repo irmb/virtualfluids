@@ -29,7 +29,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "../cpu/Applications/LaminarTubeFlow/CMakeLists.txt"
   "../cpu/CMakeLists.txt"
   "../cpu/ThirdParty/MuParser/CMakeLists.txt"
-  "../cpu/VirtualFluidsBasic/IncludsList.cmake"
   "../cpu/VirtualFluidsCore/CMakeLists.txt"
   "../cpu/VirtualFluidsCore/IncludsList.cmake"
   "../src/basics/CMakeLists.txt"
