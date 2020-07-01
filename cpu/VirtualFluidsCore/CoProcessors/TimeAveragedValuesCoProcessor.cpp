@@ -285,7 +285,7 @@ void TimeAveragedValuesCoProcessor::addData(const SPtr<Block3D> block)
    //int ghostLayerWidth = kernel->getGhostLayerWidth();
 
    //knotennummerierung faengt immer bei 0 an!
-   int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
+   unsigned int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
 
    int minX1 = iMinC;
    int minX2 = iMinC;

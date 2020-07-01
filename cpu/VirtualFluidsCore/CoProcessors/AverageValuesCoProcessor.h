@@ -48,7 +48,7 @@ protected:
 
 private:
 	std::vector<UbTupleFloat3> nodes;
-	std::vector<UbTupleInt8> cells;
+	std::vector<UbTupleUInt8> cells;
 	std::vector<std::string> datanames;
 	std::vector<std::vector<double> > data; 
 	std::vector<std::vector<SPtr<Block3D>> > blockVector;

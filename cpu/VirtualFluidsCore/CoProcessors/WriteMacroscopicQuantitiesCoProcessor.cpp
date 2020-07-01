@@ -139,7 +139,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
    LBMReal vx1,vx2,vx3,rho;
 
    //knotennummerierung faengt immer bei 0 an!
-   int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
+   unsigned int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
 
    if(block->getKernel()->getCompressible())
    {
