@@ -12,9 +12,15 @@ option(BUILD_VF_CPU "Build VirtualFluids cpu variant" OFF)
 option(BUILD_VF_GPU "Build VirtualFluids gpu variant" ON)
 
 
+include("CMake/CMakeCABMacros.cmake")
+include("CMake/FileUtilities.cmake")
+include("CMake/VirtualFluidsMacros.cmake")
+
+add_subdirectory(src/basics)
+
 #if (BUILD_VF_CPU)
-#    add_subdirectory(cpu)
+    add_subdirectory(cpu)
 #endif()
 #if(BUILD_VF_GPU)
-    add_subdirectory(gpu)
+ #   add_subdirectory(gpu)
 #endif()

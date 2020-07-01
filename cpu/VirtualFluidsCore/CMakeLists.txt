@@ -95,7 +95,7 @@ message("CAB_ADDITIONAL_LINK_LIBRARIES: " ${CAB_ADDITIONAL_LINK_LIBRARIES})
 #CREATE_CAB_PROJECT(VirtualFluids STATIC)
 include (${CMAKE_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
 
-vf_add_library(BUILDTYPE static DEPENDS VirtualFluidsBasic MuParser)
+vf_add_library(BUILDTYPE static DEPENDS basics MuParser)
 
 vf_get_library_name(library_name)
 target_include_directories(${library_name} PRIVATE ${SOURCE_DIR}/VirtualFluidsBasic)

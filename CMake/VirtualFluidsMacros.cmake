@@ -28,6 +28,7 @@ function(vf_add_library)
 
     vf_get_library_name (library_name)
 
+
     if (ARG_FILES)
         set(sourceFiles ${sourceFiles} ${ARG_FILES})
     endif()
@@ -159,6 +160,10 @@ function(vf_add_library)
     #SET(project_name ${library_name} CACHE STRING "name of binary")
 
     MESSAGE(STATUS "configuring ${library_name} (type=${ARG_BUILDTYPE})... done")
+
+    if (NOT ${ARG_BUILDTYPE} MATCHES binary)
+    generateExportHeader (${library_name})
+        endif()
 
 endfunction(vf_add_library)
 
