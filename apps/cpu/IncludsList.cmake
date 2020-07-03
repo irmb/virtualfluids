@@ -1,5 +1,5 @@
-INCLUDE_DIRECTORIES(${APPS_ROOT})
-INCLUDE(${SOURCE_DIR}/VirtualFluidsCore/IncludsList.cmake)
+INCLUDE_DIRECTORIES(${APPS_ROOT_CPU})
+INCLUDE(${CMAKE_SOURCE_DIR}/cpu/VirtualFluidsCore/IncludsList.cmake)
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/basics)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/basics/numerics/geometry3d)

@@ -1,5 +1,7 @@
 #directory pathes for header files
 
+set (SOURCE_DIR "${CMAKE_SOURCE_DIR}/cpu/")
+
 INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore)
 INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore/BoundaryConditions)
 INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore/Connectors)

@@ -126,8 +126,6 @@ function(vf_add_library)
         TARGET_LINK_LIBRARIES(${library_name} PRIVATE ${CAB_ADDITIONAL_LINK_LIBRARIES})
     ENDIF()
 
-    get_target_property(OUT ${library_name} LINK_LIBRARIES)
-    message(STATUS My libs: ${OUT})
 
     #################################################################
     ###   COMPILER Flags                                          ###
@@ -169,6 +167,8 @@ function(vf_add_library)
     endif()
 
     target_include_directories(${library_name} PRIVATE ${CMAKE_BINARY_DIR})
+    #target_include_directories(${library_name} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
 endfunction(vf_add_library)
 

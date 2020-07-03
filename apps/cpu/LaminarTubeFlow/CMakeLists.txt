@@ -1,11 +1,9 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-
 ########################################################
 ## C++ PROJECT                                       ###
 ########################################################
 PROJECT(ltf)
 
-INCLUDE(${APPS_ROOT}/IncludsList.cmake) 
+INCLUDE(${APPS_ROOT_CPU}IncludsList.cmake)
 
 #################################################################
 ###   LOCAL FILES                                             ###

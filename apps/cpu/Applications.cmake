@@ -12,7 +12,7 @@
 # add_subdirectory(Applications/plate)
 # add_subdirectory(Applications/plate2)
 ##add_subdirectory(Applications/FlowAroundCylinder)
-add_subdirectory(Applications/LaminarTubeFlow)
+add_subdirectory(${APPS_ROOT_CPU}/LaminarTubeFlow)
 # add_subdirectory(Applications/LaminarTubeFlowConv)
 #add_subdirectory(Applications/cylinderSt)
 #add_subdirectory(Applications/mpichTest)

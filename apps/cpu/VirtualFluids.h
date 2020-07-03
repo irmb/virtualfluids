@@ -12,7 +12,7 @@
 #include <omp.h>
 #endif 
 
-#include <PointerDefinitions.h>
+#include <basics/core/PointerDefinitions.h>
 
 #include <MuParser/include/muParser.h>
 #include <MuParser/include/muParserBase.h>
