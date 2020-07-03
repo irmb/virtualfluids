@@ -159,7 +159,7 @@ ENDIF()
 #    add_subdirectory(Plugins/dem_coupling)
 #ENDIF()
 
-add_subdirectory(ThirdParty/MuParser)
+#add_subdirectory(ThirdParty/MuParser)
 
 add_subdirectory(VirtualFluidsCore)
 #add_subdirectory(VirtualFluidsBasic)

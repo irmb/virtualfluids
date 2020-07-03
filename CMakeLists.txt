@@ -43,6 +43,7 @@ ENDIF()
 add_subdirectory(src/basics)
 
 #if (BUILD_VF_CPU)
+    add_subdirectory(3rdParty/MuParser)
     add_subdirectory(cpu)
 #endif()
 #if(BUILD_VF_GPU)
