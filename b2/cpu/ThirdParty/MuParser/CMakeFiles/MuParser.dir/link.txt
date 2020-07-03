@@ -1,2 +1,0 @@
-/usr/bin/ar qc libMuParser.a  CMakeFiles/MuParser.dir/src/muParser.cpp.o CMakeFiles/MuParser.dir/src/muParserBase.cpp.o CMakeFiles/MuParser.dir/src/muParserBytecode.cpp.o CMakeFiles/MuParser.dir/src/muParserCallback.cpp.o CMakeFiles/MuParser.dir/src/muParserDLL.cpp.o CMakeFiles/MuParser.dir/src/muParserError.cpp.o CMakeFiles/MuParser.dir/src/muParserInt.cpp.o CMakeFiles/MuParser.dir/src/muParserTokenReader.cpp.o
-/usr/bin/ranlib libMuParser.a
