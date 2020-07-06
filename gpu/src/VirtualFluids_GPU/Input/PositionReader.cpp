@@ -1,6 +1,6 @@
 #include "PositionReader.h"
 
-#include "VirtualFluidsBasics/basics/utilities/UbFileInputASCII.h"
+#include "basics/utilities/UbFileInputASCII.h"
 
 static const int E    = dirE;		   //static const int E    = 0;
 static const int W    = dirW;		   //static const int W    = 1;
@@ -89,7 +89,7 @@ const int INVDIR[] = {	INV_E,
 						INV_ZERO,			//INV_BSW = TNE  = 18 = dirZERO = ZERO= INV_ZERO
 						INV_TNE};			//INV_ZERO= ZERO = 26 = dirBSW  = BSW = INV_TNE
 
-static const int        optionDigits = 2;  //--> 2 bits für secondary Option
+static const int        optionDigits = 2;  //--> 2 bits fï¿½r secondary Option
 static const long long  maxOptionVal = ( 1<<optionDigits ) - 1; //2^3-1 -> 7
 float q[27]; 
 long long noslipBoundaryFlags;		
@@ -494,7 +494,7 @@ void PositionReader::readFileNoSlipBcQs(const std::string fileName, Parameter* p
 			//	test = 100.;
 			//}
 			
-			////TÄST -> shit
+			////Tï¿½ST -> shit
 			//para->getParH(level)->QWall.qread[u] = 0.5f;
 			//orig
 			para->getParH(level)->QWall.qread[u] = test;

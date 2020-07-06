@@ -20,7 +20,7 @@
 #include "LBM/LB.h"
 #include "LBM/D3Q27.h"
 
-#include <VirtualFluidsBasics/basics/writer/WbWriterVtkXmlBinary.h>
+#include <basics/writer/WbWriterVtkXmlBinary.h>
 
 void FileWriter::writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
 {

@@ -2,7 +2,7 @@
 #define FORCE_CALCULATIONS_H
 
 #include "Parameter/Parameter.h"
-#include "VirtualFluidsBasics/basics/utilities/UbSystem.h"
+#include "basics/utilities/UbSystem.h"
 
 #include <iostream>
 #include <stdio.h>

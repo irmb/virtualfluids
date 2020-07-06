@@ -1,6 +1,6 @@
 #include "VtkGeometryReader.h"
 
-#include "VirtualFluidsBasics/basics/utilities/UbFileInputASCII.h"
+#include "basics/utilities/UbFileInputASCII.h"
 
 void VtkGeometryReader::readFile(const std::string& fileName, unsigned int* geoMat)
 {

@@ -1,6 +1,6 @@
 #include "kFullReader.h"
 
-#include "VirtualFluidsBasics/basics/utilities/UbFileInputASCII.h"
+#include "basics/utilities/UbFileInputASCII.h"
 
 void kFullReader::readFileForAlloc(const std::string fileName, Parameter* para)
 {

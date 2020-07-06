@@ -82,7 +82,7 @@ ENDIF(MSVC)
 ###                         OPTIONS                       ###
 #############################################################
 option(BUILD_SHARED_LIBS        "Build shared libraries"      ON )
-option(VF.BUILD_VF_GPU          "Build VirtualFluids GPU"     OFF )
+option(VF.BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
 option(VF.BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF )
 option(VF.BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" OFF)
 option(VF.BUILD_JSONCPP         "Builds json cpp "            OFF)
@@ -126,7 +126,7 @@ set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
 ###                  Core                                 ###
 #############################################################
 
-add_subdirectory(gpu/src/GridGenerator)
+add_subdirectory(src/gpu/GridGenerator)
 #add_subdirectory(3rdParty/metis/metis-5.1.0)
 
 #############################################################
@@ -134,17 +134,18 @@ add_subdirectory(gpu/src/GridGenerator)
 #############################################################
 
 IF (VF.BUILD_VF_GPU)
-    add_subdirectory(targets/libs/VirtualFluids_GPU)
+    add_subdirectory(gpu/src/VirtualFluids_GPU)
 
     #add_subdirectory(targets/apps/LBM/lbmTest)
     #add_subdirectory(targets/apps/LBM/metisTest)
     #add_subdirectory(targets/apps/LBM/Basel)
     #add_subdirectory(targets/apps/LBM/BaselNU)
     #add_subdirectory(targets/apps/LBM/BaselMultiGPU)
-    add_subdirectory(targets/apps/LBM/DrivenCavity)
-    add_subdirectory(targets/apps/LBM/gridGeneratorTest)
-    add_subdirectory(targets/apps/LBM/TGV_3D)
-    add_subdirectory(targets/apps/LBM/TGV_3D_MultiGPU)
+
+    #add_subdirectory(targets/apps/LBM/DrivenCavity)
+    #add_subdirectory(targets/apps/LBM/gridGeneratorTest)
+    #add_subdirectory(targets/apps/LBM/TGV_3D)
+    #add_subdirectory(targets/apps/LBM/TGV_3D_MultiGPU)
 ELSE()
     MESSAGE( STATUS "exclude Virtual Fluids GPU." )
 ENDIF()

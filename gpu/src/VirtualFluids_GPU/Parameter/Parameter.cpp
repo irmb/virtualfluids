@@ -17,8 +17,8 @@
 
 #include "Core/Input/ConfigData/ConfigData.h"
 #include "Core/StringUtilities/StringUtil.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
+#include "Communication/Communicator.h"
+#include "Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
 //#ifdef WIN32
 //   #include <Winsock2.h>
 //#endif
@@ -654,9 +654,9 @@ void Parameter::initParameter()
 			parH[i]->mTtoWx                = (real)pow(0.5f,i);
 			parH[i]->mTtoWy                = (real)pow(0.5f,i);
 			parH[i]->mTtoWz                = (real)pow(0.5f,i);
-			parH[i]->cTtoWx                = (real)(STARTOFFX/2.f + (parH[i]->gridNX+1.f)/4.f); //funzt nur für zwei level
-			parH[i]->cTtoWy                = (real)(STARTOFFY/2.f + (parH[i]->gridNY+1.f)/4.f); //funzt nur für zwei level
-			parH[i]->cTtoWz                = (real)(STARTOFFZ/2.f + (parH[i]->gridNZ+1.f)/4.f); //funzt nur für zwei level
+			parH[i]->cTtoWx                = (real)(STARTOFFX/2.f + (parH[i]->gridNX+1.f)/4.f); //funzt nur fï¿½r zwei level
+			parH[i]->cTtoWy                = (real)(STARTOFFY/2.f + (parH[i]->gridNY+1.f)/4.f); //funzt nur fï¿½r zwei level
+			parH[i]->cTtoWz                = (real)(STARTOFFZ/2.f + (parH[i]->gridNZ+1.f)/4.f); //funzt nur fï¿½r zwei level
 			////MGs Trafo///////////////////////////////////////////////////////////////
 			//parH[i]->cStartx               = (real)parH[i]->XdistKn;
 			//parH[i]->cStarty               = (real)parH[i]->XdistKn;
@@ -896,21 +896,21 @@ void Parameter::fillSparse(int level)
 				//parH[level]->vx_SP[parH[level]->k[m]] = (real)((32. * 32. * 3.) / (1000.*(real)parH[level]->gridNX));//(real)parH[level]->gridNX / (real)1000 * 3.0;
 				//parH[level]->vy_SP[parH[level]->k[m]] = (real)((getVelocity() * sin(2.0 * i / parH[level]->gridNX * PI) * cos(2.0 * k / parH[level]->gridNZ * PI)) * (32. / (real)parH[level]->gridNX));
 				//parH[level]->vz_SP[parH[level]->k[m]] = (real)0.0f;
-				//schräg x
+				//schrï¿½g x
 				// 			parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNX) + (getVelocity() * cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
 				// 			parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
 				// 			parH[level]->vz_SP[parH[level]->k[m]]        = (real)(getVelocity() * cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
-				//schräg z
+				//schrï¿½g z
 				//parH[level]->vx_SP[parH[level]->k[m]]        = (real)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
 				//parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
 				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNZ) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
 
 				  			//Taylor Green Vortex uniform
 				  			parH[level]->rho_SP[parH[level]->k[m]]       = (real)((getVelocity()*getVelocity())*3.0/4.0*(cos((i)*4.0*PI/(real)parH[level]->gridNX)+cos((k)*4.0*PI/(real)parH[level]->gridNZ)))*(real)(parH[level]->gridNZ)/(real)(parH[level]->gridNX);
-				  			//inkl. überlagerter Geschwindigkeit
+				  			//inkl. ï¿½berlagerter Geschwindigkeit
 				  // 			parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNX) + getVelocity()*sin(((i)*2.0*PI/(real)parH[level]->gridNX))*cos((k)*2.0*PI/(real)parH[level]->gridNZ));
 				  			parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000. * 32.) * getVelocity() / 0.001 + getVelocity()*sin(((i)*2.0*PI/(real)parH[level]->gridNX))*cos((k)*2.0*PI/(real)parH[level]->gridNZ));
-				  			//ohne überlagerter Geschwindigkeit
+				  			//ohne ï¿½berlagerter Geschwindigkeit
 				  //			parH[level]->vx_SP[parH[level]->k[m]]        = (real)(getVelocity()*sin(((i)*2.0*PI/(real)parH[level]->gridNX))*cos((k)*2.0*PI/(real)parH[level]->gridNZ));
 				  			parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
 				  			parH[level]->vz_SP[parH[level]->k[m]]        = (real)(-getVelocity()*cos(((i)*2.0*PI/(real)parH[level]->gridNX))*sin((k)*2.0*PI/(real)parH[level]->gridNZ))*(real)(parH[level]->gridNZ)/(real)(parH[level]->gridNX);            
@@ -1708,7 +1708,7 @@ void Parameter::cudaFreeGeomValuesBC(int lev)
 	checkCudaErrors( cudaFreeHost(parH[lev]->QGeom.Vy));
 	checkCudaErrors( cudaFreeHost(parH[lev]->QGeom.Vz));
 }
-//Geometrie inkl. Normale für Slip
+//Geometrie inkl. Normale fï¿½r Slip
 void Parameter::cudaAllocGeomNormals(int lev)
 {
 	unsigned int mem_size_Q_k      = sizeof(int)*parH[lev]->QGeomNormalX.kQ;
@@ -1755,7 +1755,7 @@ void Parameter::cudaFreeGeomNormals(int lev)
 	checkCudaErrors( cudaFreeHost(parH[lev]->QGeomNormalZ.q27[0]));
 	checkCudaErrors( cudaFreeHost(parH[lev]->QGeomNormalZ.k));
 }
-//Geometrie inkl. Normale für Inflow
+//Geometrie inkl. Normale fï¿½r Inflow
 void Parameter::cudaAllocInflowNormals(int lev)
 {
 	unsigned int mem_size_Q_k      = sizeof(int)*parH[lev]->QInflowNormalX.kQ;
@@ -1802,7 +1802,7 @@ void Parameter::cudaFreeInflowNormals(int lev)
 	checkCudaErrors( cudaFreeHost(parH[lev]->QInflowNormalZ.q27[0]));
 	checkCudaErrors( cudaFreeHost(parH[lev]->QInflowNormalZ.k));
 }
-//Geometrie inkl. Normale für Outflow
+//Geometrie inkl. Normale fï¿½r Outflow
 void Parameter::cudaAllocOutflowNormals(int lev)
 {
 	unsigned int mem_size_Q_k      = sizeof(int)*parH[lev]->QOutflowNormalX.kQ;
