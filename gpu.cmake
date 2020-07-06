@@ -134,7 +134,7 @@ add_subdirectory(src/gpu/GridGenerator)
 #############################################################
 
 IF (VF.BUILD_VF_GPU)
-    add_subdirectory(gpu/src/VirtualFluids_GPU)
+    add_subdirectory(src/gpu/VirtualFluids_GPU)
 
     #add_subdirectory(targets/apps/LBM/lbmTest)
     #add_subdirectory(targets/apps/LBM/metisTest)
