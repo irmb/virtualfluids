@@ -4,7 +4,7 @@
 //#include <stdio.h>
 //#include <iostream>
 //
-//#include <GridGenerator/global.h>
+//#include <global.h>
 //#include <GridGenerator/grid/Grid.h>
 //#include <GridGenerator/geometries/Triangle/Triangle.h>
 //#include <GridGenerator/geometries/Vertex/Vertex.h>

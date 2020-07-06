@@ -2,7 +2,7 @@
 
 #include "Core/Timer/Timer.h"
 
-#include "VirtualFluidsBasics/numerics/geometry3d/GbTriFaceMesh3D.h"
+#include "basics/numerics/geometry3d/GbTriFaceMesh3D.h"
 
 #include "geometries/Triangle/Triangle.h"
 #include "geometries/TriangularMesh/TriangularMesh.h"

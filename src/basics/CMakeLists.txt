@@ -14,7 +14,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR}/basics/writer)
 include (${CMAKE_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
 SET(CAB_ADDITIONAL_LINK_LIBRARIES ${MPI_CXX_LIBRARIES})
 
-include(core/buildInfo.cmake)
+include(Core/buildInfo.cmake)
 
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/VirtualFluidsCore)
 INCLUDE_DIRECTORIES(${MPI_INCLUDE_PATH})
@@ -30,10 +30,10 @@ vf_add_library(BUILDTYPE static
         ${CMAKE_CURRENT_LIST_DIR}/basics/transmiitter
         ${CMAKE_CURRENT_LIST_DIR}/basics/utilities
         ${CMAKE_CURRENT_LIST_DIR}/basics/writer
-        ${CMAKE_CURRENT_LIST_DIR}/core
+        ${CMAKE_CURRENT_LIST_DIR}/Core
 
         EXCLUDE buildInfo.in.cpp
         )
 vf_get_library_name (library_name)
-target_include_directories(${library_name} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/core)
+target_include_directories(${library_name} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/Core)
 target_include_directories(${library_name} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

@@ -116,23 +116,36 @@ MACRO(ADD_COMPILER_FLAGS_TO_PROJECT compiler_type project_name project_language 
      ADD_TARGET_PROPERTIES(${project_name} LINK_FLAGS ${CAB_COMPILER_ADDITIONAL_LINK_PROPS_DEBUG}) 
    ENDIF()
    IF(CAB_COMPILER_ADDITIONAL_LINK_PROPS_RELEASE)
-     ADD_TARGET_PROPERTIES(${project_name} LINK_FLAGS ${CAB_COMPILER_ADDITIONAL_LINK_PROPS_RELEASE}) 
+     ADD_TARGET_PROPERTIES(${project_name} LINK_FLAGS ${CAB_COMPILER_ADDITIONAL_LINK_PROPS_RELEASE})
    ENDIF()
 
    ################################################################
    # COMPILER FLAGS
    ################################################################
+   #message (COMPILE FLAGS INTERN: ${CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS})
+
+    # TODO: Clean this up!!
    IF(CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS)
-     ADD_TARGET_PROPERTIES(${project_name} COMPILE_FLAGS ${CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS}) 
+       #message (COMPILE FLAGS INTERN: ${CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS})
+       foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS)
+           #message(compiler option: ${flag})
+           target_compile_options(${project_name} PRIVATE "$<$<COMPILE_LANGUAGE:${project_language}>:${flag}>")
+       endforeach()
+       #get_target_property(var ${project_name} COMPILE_OPTIONS)
+       #message(set compile options: ${var})
+
+       #add_custom_command(TARGET ${project_name} POST_BUILD COMMAND echo built with the flags: ${var})
+       #ADD_TARGET_PROPERTIES(${project_name} COMPILE_FLAGS ${CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS})
+       #target_compile_options (${project_name} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS}>)
    ENDIF()
    IF(CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS_DEBUG)
      MESSAGE(STATUS "ADD_COMPILER_FLAGS_TO_PROJECT: sorry, a long as CMake has no support for COMPILE_FLAGS_<CONFIG> -> DEBUG flags are neglected")
-     #ADD_TARGET_PROPERTIES(${project_name} COMPILE_FLAGS_DEBUG ${CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS_DEBUG}) 
+     #ADD_TARGET_PROPERTIES(${project_name} COMPILE_FLAGS_DEBUG ${CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS_DEBUG})
    ENDIF()
    IF(CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS_RELEASE)
      MESSAGE(STATUS "ADD_COMPILER_FLAGS_TO_PROJECT: sorry, a long as CMake has no support for COMPILE_FLAGS_<CONFIG> -> RELEASE flags are set for RELEASE AND DEBUG")
      ADD_TARGET_PROPERTIES(${project_name} COMPILE_FLAGS ${CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS_RELEASE}) 
-     #ADD_TARGET_PROPERTIES(${project_name} COMPILE_FLAGS_RELEASE ${CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS_RELEASE}) 
+     #ADD_TARGET_PROPERTIES(${project_name} COMPILE_FLAGS_RELEASE ${CAB_COMPILER_ADDTIONAL_${project_language}_COMPILER_FLAGS_RELEASE})
    ENDIF()
 
 

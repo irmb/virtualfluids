@@ -1,7 +1,7 @@
 //#ifndef Partition_H
 //#define Partition_H
 //
-//#include "GridGenerator/global.h"
+//#include "global.h"
 //
 //
 //#include <vector>

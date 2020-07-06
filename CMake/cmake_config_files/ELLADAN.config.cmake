@@ -34,6 +34,9 @@
 #################################################################################
 #  METIS
 #################################################################################
+set (NVCUDASAMPLES_ROOT "~/cuda-samples/Common")
+
+
 IF(${USE_METIS})
     SET(METIS_INCLUDEDIR "/usr/include")
     SET(METIS_DEBUG_LIBRARY "/usr/lib/x86_64-linux-gnu/libmetis.so")

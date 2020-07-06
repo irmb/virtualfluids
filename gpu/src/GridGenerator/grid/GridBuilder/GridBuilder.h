@@ -5,7 +5,7 @@
 #include <string>
 #include <memory>
 
-#include "GridGenerator/global.h"
+#include "global.h"
 
 #define GEOMQS 6
 #define INLETQS 0

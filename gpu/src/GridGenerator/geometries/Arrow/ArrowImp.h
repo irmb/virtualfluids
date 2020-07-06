@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "GridGenerator/global.h"
+#include "global.h"
 
 #include "Arrow.h"
 

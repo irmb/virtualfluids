@@ -476,7 +476,7 @@ HOSTDEVICE bool GridImp::isValidEndOfGridStopper(uint index) const
 
 	return hasNeighborOfType(index, FLUID);
 
-	//previous version of Sören P.
+	//previous version of Sï¿½ren P.
     //return this->field.is(index, OUT_OF_GRID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
     //    || this->field.is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
 }
@@ -489,7 +489,7 @@ HOSTDEVICE bool GridImp::isValidEndOfGridBoundaryStopper(uint index) const
 
 	return ! hasAllNeighbors(index);
 
-	//previous version of Sören P.
+	//previous version of Sï¿½ren P.
     //return this->field.is(index, OUT_OF_GRID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
     //    || this->field.is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
 }
@@ -502,7 +502,7 @@ HOSTDEVICE bool GridImp::isValidSolidStopper(uint index) const
 
 	return hasNeighborOfType(index, FLUID);
 
-	//previous version of Sören P.
+	//previous version of Sï¿½ren P.
 	//return this->field.is(index, SOLID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
  //       || this->field.is(index, SOLID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
 }

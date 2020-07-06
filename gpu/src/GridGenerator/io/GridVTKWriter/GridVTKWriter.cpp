@@ -6,8 +6,8 @@
 #include <sstream>
 #include <memory>
 
-#include "VirtualFluidsBasics/basics/writer/WbWriterVtkXmlBinary.h"
-#include "VirtualFluidsBasics/basics/container/CbArray3D.h"
+#include "basics/basics/writer/WbWriterVtkXmlBinary.h"
+#include "basics/basics/container/CbArray3D.h"
 
 #include "geometries/Vertex/Vertex.h"
 
