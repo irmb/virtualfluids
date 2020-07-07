@@ -30,6 +30,7 @@ function(vf_add_library)
 
 
     if (ARG_FILES)
+        message ("${ARG_FILES}")
         set(sourceFiles ${sourceFiles} ${ARG_FILES})
     endif()
 

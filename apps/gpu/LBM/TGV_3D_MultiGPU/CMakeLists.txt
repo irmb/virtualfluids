@@ -1,14 +1,15 @@
-setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR}) 
+PROJECT(TGV_3D_MultiGPU)
 
-set(linkDirectories "")
-set(libsToLink VirtualFluids_GPU GridGenerator)
-set(includeDirectories "${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/src/VirtualFluids_GPU" "${CMAKE_SOURCE_DIR}/src/GridGenerator" "${CMAKE_SOURCE_DIR}/src/VirtualFluidsBasics")
+vf_add_library(BUILDTYPE binary DEPENDS basics VirtualFluids_GPU GridGenerator FILES TGV_3D_MultiGPU.cpp)
 
-#glob files and save in MY_SRCS
-include(CMakePackage.cmake)
+include (${CMAKE_PATH}/3rd/cuda.cmake)
+include (${CMAKE_PATH}/3rd/mpi.cmake)
+include (${CMAKE_PATH}/3rd/boost.cmake)
+linkBoost ("serialization")
 
-buildExe(${targetName} "${MY_SRCS}" "${linkDirectories}" "${libsToLink}" "${includeDirectories}")
-groupTarget(${targetName} ${lbmAppFolder})
-
-# Specify the linking to 3rdParty libs
-include(3rdPartyLinking.cmake)
+vf_get_library_name(library_name)
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/basics")
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/gpu")
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/gpu/VirtualFluids_GPU")
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/gpu/GridGenerator")
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/basics/Core")
