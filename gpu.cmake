@@ -229,5 +229,5 @@ endif()
 if(VF.BUILD_VF_TRAFFIC)
     add_subdirectory(src/gpu/Traffic)
 
-    #add_subdirectory(targets/apps/LBM/TrafficTest)
+    add_subdirectory(apps/gpu/LBM/TrafficTest)
 endif()
