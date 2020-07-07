@@ -8,7 +8,7 @@ SET(FFTW_ROOT ${CMAKE_SOURCE_DIR}/3rdParty/fftw/fftw-3.3.7 CACHE PATH "JSONCPP R
 #SET(BOOST_ROOT  "C:/lib/boost_1_65_1"  CACHE PATH "BOOST_ROOT")
 #SET(BOOST_LIBRARYDIR  "C:/lib/boost_1_65_1/stageMSVC64/lib"  CACHE PATH "BOOST_LIBRARYDIR")
 
-SET(VTK_DIR "/opt/vtk/VTK-8.1.0/build/" CACHE PATH "VTK directory override" FORCE)
+SET(BOOST_ROOT  "C:/lib/boost_1_71_0"  CACHE PATH "BOOST_ROOT")
+SET(BOOST_LIBRARYDIR  "C:/lib/boost_1_71_0/stageMSVC64/lib"  CACHE PATH "BOOST_LIBRARYDIR")
 
-SET(CUDA_CUT_INCLUDE_DIR "/usr/local/cuda-10.0/include;/usr/local/cuda-10.0/samples/common/inc" CACHE PATH "CUDA_CUT_INCLUDE_DIR" FORCE)
-SET(CUDA_SAMPLE_INCLUDE_DIR "/usr/local/cuda-10.0/samples/common/inc" CACHE PATH "CUDA_CUT_INCLUDE_DIR" FORCE)
+SET(VTK_DIR "C:/lib/VTK-8.2.0./build" CACHE PATH "VTK directory override" FORCE)
