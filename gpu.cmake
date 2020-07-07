@@ -24,7 +24,7 @@ endif()
 
 
 if(UNIX)
-    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_STANDARD 14)
 endif()
 
 #############################################################
@@ -84,7 +84,7 @@ ENDIF(MSVC)
 option(BUILD_SHARED_LIBS        "Build shared libraries"      ON )
 option(VF.BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
 option(VF.BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF )
-option(VF.BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" OFF)
+option(VF.BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" ON)
 option(VF.BUILD_JSONCPP         "Builds json cpp "            OFF)
 option(VF.BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
 
@@ -227,7 +227,7 @@ endif()
 #############################################################
 
 if(VF.BUILD_VF_TRAFFIC)
-    add_subdirectory(targets/libs/Traffic)
+    add_subdirectory(src/gpu/Traffic)
 
-    add_subdirectory(targets/apps/LBM/TrafficTest)
+    #add_subdirectory(targets/apps/LBM/TrafficTest)
 endif()

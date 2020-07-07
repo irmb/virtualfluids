@@ -1,5 +1,6 @@
 #include "TrafficMovement.h"
 
+#include <memory>
 #include <iostream>
 #include <stdexcept>
 

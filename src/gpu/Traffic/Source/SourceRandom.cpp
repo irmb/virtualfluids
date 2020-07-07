@@ -1,5 +1,3 @@
-#pragma once
-
 #include "SourceRandom.h"
 
 #include <iostream>
