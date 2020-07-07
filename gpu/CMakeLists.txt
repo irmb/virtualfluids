@@ -30,7 +30,7 @@ endif()
 #############################################################
 ###                     ENVIRONMENT                       ###
 #############################################################
-set(cmakeMacroPath "CMakeMacros")
+set(cmakeMacroPath "CMakeMacros_old")
 #include(${cmakeMacroPath}/Environment/environment.cmake)
 
 #CAB
