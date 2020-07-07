@@ -25,7 +25,7 @@ public:
 	BoundingBox(const BoundingBox &t);
 
 public:
-    HOST static BoundingBox makeInvalidMinMaxBox();
+    CUDA_HOST static BoundingBox makeInvalidMinMaxBox();
 
     void setMinMax(const Triangle& t);
 	void print() const;
@@ -37,7 +37,7 @@ public:
 	std::vector<std::vector<Vertex> > getIntersectionPoints(const BoundingBox &b) const;
 	bool intersect(const BoundingBox &box) const;
 
-    HOST bool operator==(const BoundingBox &box) const;
+    CUDA_HOST bool operator==(const BoundingBox &box) const;
     
     void extend(real delta);
 

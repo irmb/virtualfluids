@@ -36,7 +36,7 @@ public:
 
     void scale(double delta) override;
     
-    HOST int getIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnObject, real &qVal) override;
+    CUDA_HOST int getIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnObject, real &qVal) override;
 
 
 protected:

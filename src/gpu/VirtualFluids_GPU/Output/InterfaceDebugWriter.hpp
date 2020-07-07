@@ -14,15 +14,15 @@
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
 
-using namespace std;
+//using namespace std;
 
 namespace InterfaceDebugWriter
 {
 
     void writeGridInterfaceLines(Parameter* para, int level, const uint* coarse, const uint* fine, uint numberOfNodes, const std::string& name)
     {
-        vector<UbTupleFloat3> nodes(numberOfNodes * 2);
-        vector<UbTupleInt2> cells(numberOfNodes);
+        std::vector<UbTupleFloat3> nodes(numberOfNodes * 2);
+        std::vector<UbTupleInt2> cells(numberOfNodes);
 
         int actualNodeNumber = 0;
         for (uint u = 0; u < numberOfNodes; u++)
@@ -69,8 +69,8 @@ namespace InterfaceDebugWriter
 	//////////////////////////////////////////////////////////////////////////
     void writeGridInterfaceLinesNeighbors(Parameter* para, int level, const uint* interfaceIndices, uint numberOfNodes, const std::string& name)
     {
-        vector<UbTupleFloat3> nodes(numberOfNodes * 2);
-        vector<UbTupleInt2> cells(numberOfNodes);
+        std::vector<UbTupleFloat3> nodes(numberOfNodes * 2);
+        std::vector<UbTupleInt2> cells(numberOfNodes);
 
         int actualNodeNumber = 0;
         for (uint u = 0; u < numberOfNodes; u++)
@@ -137,8 +137,8 @@ namespace InterfaceDebugWriter
 
 	//////////////////////////////////////////////////////////////////////////
 	void writeInterfaceLinesDebugOff(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec;
-		vector< UbTupleInt2 > cellsVec;
+		std::vector< UbTupleFloat3 > nodesVec;
+		std::vector< UbTupleInt2 > cellsVec;
 		int nodeNumberVec = 0;
 
 		for (int level = 0; level < para->getMaxLevel(); level++) //evtl. Maxlevel + 1
@@ -188,7 +188,7 @@ namespace InterfaceDebugWriter
 
 
 	void writeInterfacePointsDebugCFC(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec2;
+		std::vector< UbTupleFloat3 > nodesVec2;
 		int nodeNumberVec = 0;
 
 		for (int level = 0; level < para->getMaxLevel(); level++) //evtl. Maxlevel + 1
@@ -223,7 +223,7 @@ namespace InterfaceDebugWriter
 
 
 	void writeBcPointsDebug(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec2;
+		std::vector< UbTupleFloat3 > nodesVec2;
 		int nodeNumberVec = 0;
 
 		for (int level = 0; level <= para->getMaxLevel(); level++) //evtl. Maxlevel + 1
@@ -258,7 +258,7 @@ namespace InterfaceDebugWriter
 
 
 	void writePressPointsDebug(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec;
+		std::vector< UbTupleFloat3 > nodesVec;
 		int nodeNumberVec = 0;
 
 		for (int level = 0; level <= para->getMaxLevel(); level++) //evtl. Maxlevel + 1
@@ -290,7 +290,7 @@ namespace InterfaceDebugWriter
 
 
 	void writePressNeighborPointsDebug(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec;
+		std::vector< UbTupleFloat3 > nodesVec;
 		int nodeNumberVec = 0;
 
 		for (int level = 0; level <= para->getMaxLevel(); level++)
@@ -321,7 +321,7 @@ namespace InterfaceDebugWriter
 
 
 	void writeNeighborXPointsDebug(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec;
+		std::vector< UbTupleFloat3 > nodesVec;
 		int nodeNumberVec = 0;
 
 		for (int level = 0; level <= para->getMaxLevel(); level++)
@@ -350,8 +350,8 @@ namespace InterfaceDebugWriter
 
 
 	void writeNeighborXLinesDebug(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec;
-		vector< UbTupleInt2 > cellsVec;
+		std::vector< UbTupleFloat3 > nodesVec;
+		std::vector< UbTupleInt2 > cellsVec;
 		int nodeNumberVec = 0;
 
 		for (int level = 0; level < para->getMaxLevel(); level++) //evtl. Maxlevel + 1
@@ -390,7 +390,7 @@ namespace InterfaceDebugWriter
 
 
 	void writeNeighborYPointsDebug(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec;
+		std::vector< UbTupleFloat3 > nodesVec;
 		int nodeNumberVec = 0;
 
 		for (int level = 0; level <= para->getMaxLevel(); level++)
@@ -419,8 +419,8 @@ namespace InterfaceDebugWriter
 
 
 	void writeNeighborYLinesDebug(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec;
-		vector< UbTupleInt2 > cellsVec;
+		std::vector< UbTupleFloat3 > nodesVec;
+		std::vector< UbTupleInt2 > cellsVec;
 		int nodeNumberVec = 0;
 
 		for (int level = 0; level < para->getMaxLevel(); level++) //evtl. Maxlevel + 1
@@ -459,7 +459,7 @@ namespace InterfaceDebugWriter
 
 
 	void writeNeighborZPointsDebug(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec;
+		std::vector< UbTupleFloat3 > nodesVec;
 		int nodeNumberVec = 0;
 
 		for (int level = 0; level <= para->getMaxLevel(); level++)
@@ -488,8 +488,8 @@ namespace InterfaceDebugWriter
 
 
 	void writeNeighborZLinesDebug(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec;
-		vector< UbTupleInt2 > cellsVec;
+		std::vector< UbTupleFloat3 > nodesVec;
+		std::vector< UbTupleInt2 > cellsVec;
 		int nodeNumberVec = 0;
 
 		for (int level = 0; level < para->getMaxLevel(); level++) //evtl. Maxlevel + 1
@@ -529,8 +529,8 @@ namespace InterfaceDebugWriter
 
 	void writeInterfaceCellsDebugCFC(Parameter* para){
 
-		vector< UbTupleFloat3 > nodesVec;
-		vector< UbTupleInt8 > cellsVec;
+		std::vector< UbTupleFloat3 > nodesVec;
+		std::vector< UbTupleInt8 > cellsVec;
 		int nodeNumberVec = 0;
 		for (int level = 0; level < para->getMaxLevel(); level++) //evtl. Maxlevel + 1
 		{
@@ -576,8 +576,8 @@ namespace InterfaceDebugWriter
 
 	void writeInterfaceCellsDebugCFF(Parameter* para){
 
-		vector< UbTupleFloat3 > nodesVec;
-		vector< UbTupleInt8 > cellsVec;
+		std::vector< UbTupleFloat3 > nodesVec;
+		std::vector< UbTupleInt8 > cellsVec;
 		int nodeNumberVec = 0;
 		for (int level = 0; level < para->getMaxLevel(); level++) //evtl. Maxlevel + 1
 		{

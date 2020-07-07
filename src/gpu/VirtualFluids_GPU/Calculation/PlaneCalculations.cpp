@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <sstream>
-using namespace std;
+//using namespace std;
 //////////////////////////////////////////////////////////////////////////
 
 void setSizeOfPlane(Parameter* para, int lev, unsigned int z)
@@ -274,7 +274,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 	const char* fnameIn = ffnameIn.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
-	ofstream ostrIn;
+	std::ofstream ostrIn;
 	//////////////////////////////////////////////////////////////////////////
 	//open file
 	ostrIn.open(fnameIn);
@@ -282,7 +282,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 	//fill file with data
 	for (size_t i = 0; i < para->getParH(lev)->PlaneConcVectorIn.size(); i++)
 	{
-		ostrIn << para->getParH(lev)->PlaneConcVectorIn[i]  << endl ;
+		ostrIn << para->getParH(lev)->PlaneConcVectorIn[i]  << std::endl ;
 	}
 	//////////////////////////////////////////////////////////////////////////
 	//close file
@@ -294,7 +294,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 	const char* fnameOut1 = ffnameOut1.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
-	ofstream ostrOut1;
+    std::ofstream ostrOut1;
 	//////////////////////////////////////////////////////////////////////////
 	//open file
 	ostrOut1.open(fnameOut1);
@@ -302,7 +302,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 	//fill file with data
 	for (size_t i = 0; i < para->getParH(lev)->PlaneConcVectorOut1.size(); i++)
 	{
-		ostrOut1 << para->getParH(lev)->PlaneConcVectorOut1[i]  << endl ;
+		ostrOut1 << para->getParH(lev)->PlaneConcVectorOut1[i]  << std::endl ;
 	}
 	//////////////////////////////////////////////////////////////////////////
 	//close file
@@ -314,7 +314,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 	const char* fnameOut2 = ffnameOut2.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
-	ofstream ostrOut2;
+    std::ofstream ostrOut2;
 	//////////////////////////////////////////////////////////////////////////
 	//open file
 	ostrOut2.open(fnameOut2);
@@ -322,7 +322,7 @@ void printPlaneConc(Parameter* para, CudaMemoryManager* cudaManager)
 	//fill file with data
 	for (size_t i = 0; i < para->getParH(lev)->PlaneConcVectorOut2.size(); i++)
 	{
-		ostrOut2 << para->getParH(lev)->PlaneConcVectorOut2[i]  << endl ;
+		ostrOut2 << para->getParH(lev)->PlaneConcVectorOut2[i]  << std::endl ;
 	}
 	//////////////////////////////////////////////////////////////////////////
 	//close file
@@ -349,7 +349,7 @@ void printRE(Parameter* para, CudaMemoryManager* cudaManager, int timestep)
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
-	ofstream ostr;
+    std::ofstream ostr;
 	//////////////////////////////////////////////////////////////////////////
 	//open file
 	ostr.open(fname);
@@ -372,7 +372,7 @@ void printRE(Parameter* para, CudaMemoryManager* cudaManager, int timestep)
 		{
 			continue;
 		}
-		ostr << endl;
+		ostr << std::endl;
 	}
 	//////////////////////////////////////////////////////////////////////////
 	//close file

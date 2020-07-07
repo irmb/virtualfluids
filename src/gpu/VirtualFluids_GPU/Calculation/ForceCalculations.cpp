@@ -10,7 +10,7 @@
 #include "Utilities/StringUtil.hpp"
 #include "GPU/CudaMemoryManager.h"
 
-using namespace std;
+//using namespace std;
 //////////////////////////////////////////////////////////////////////////
 
 ForceCalculations::ForceCalculations(Parameter* para)
@@ -129,12 +129,12 @@ void ForceCalculations::printForcing(Parameter* para)
 	const char* fname = ffname.c_str();
 	//////////////////////////////////////////////////////////////////////////
 	//set ofstream
-	ofstream ostr;
+	std::ofstream ostr;
 	//////////////////////////////////////////////////////////////////////////
 	//open file
 	ostr.open(fname, std::fstream::app);
 	ostr << para->getForcesHost()[0] << " " << para->getForcesHost()[1] << " " << para->getForcesHost()[2];
-	ostr << endl;
+	ostr << std::endl;
 	//////////////////////////////////////////////////////////////////////////
 	//close file
 	ostr.close();

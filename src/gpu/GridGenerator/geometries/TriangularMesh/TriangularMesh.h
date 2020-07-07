@@ -42,13 +42,13 @@ public:
 
     SPtr<GbTriFaceMesh3D> VF_GbTriFaceMesh3D;
 
-    HOST VF_PUBLIC bool operator==(const TriangularMesh &geometry) const;
+    CUDA_HOST VF_PUBLIC bool operator==(const TriangularMesh &geometry) const;
 
     VF_PUBLIC void findNeighbors();
 
     HOSTDEVICE VF_PUBLIC GbTriFaceMesh3D* getGbTriFaceMesh3D() const;
 
-    HOST VF_PUBLIC void generateGbTriFaceMesh3D();
+    CUDA_HOST VF_PUBLIC void generateGbTriFaceMesh3D();
 
 private:
 	

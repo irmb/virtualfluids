@@ -13,7 +13,7 @@
 //#include <math.h>
 //#include "LB.h"
 
-using namespace std;
+//using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void allocParticles(Parameter* para, CudaMemoryManager* cudaManager)
@@ -181,9 +181,9 @@ void initParticles(Parameter* para)
 		//////////////////////////////////////////////////////////////////////////
 		//calc 1
 		size_t in_var_max = 50;			//declearation of max size of input data values
-		vector<double>sum(in_var_max);	//vector sum is used for calculation
-		vector<int>c(in_var_max);		//This vector c stores the no.of counts that each particle size classes has occurred
-		vector <int> c_temp1(in_var_max);
+		std::vector<double>sum(in_var_max);	//std::vector sum is used for calculation
+		std::vector<int>c(in_var_max);		//This vector c stores the no.of counts that each particle size classes has occurred
+		std::vector <int> c_temp1(in_var_max);
 		static int c_temp2[50];
 
 		//This loop is used to assign the no.of counts of the various particle size classes which are randomly generated
@@ -193,14 +193,14 @@ void initParticles(Parameter* para)
 		}//end of for loop
 
 		int numberOfValues;				//variable to store the number of actual values given in a file
-		vector<double>d_a(in_var_max);	//vector to store the diameter of the actual data given
-		vector<double>q_a(in_var_max);	//vector q_a to store vol % of the actual data given
-		vector<double>q(in_var_max);	//vector q to store vol % of the calculated data
+		std::vector<double>d_a(in_var_max);	//vector to store the diameter of the actual data given
+		std::vector<double>q_a(in_var_max);	//vector q_a to store vol % of the actual data given
+		std::vector<double>q(in_var_max);	//vector q to store vol % of the calculated data
 		//////////////////////////////////////////////////////////////////////////
 
 		//////////////////////////////////////////////////////////////////////////
 		//read file
-		ifstream fin;					//object fin to read the file data
+		std::ifstream fin;					//object fin to read the file data
 		fin.open("Actual_data.dat");	//opens the desired file name
 
 		fin>>numberOfValues;

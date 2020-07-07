@@ -2,12 +2,12 @@
 
 #define MAXBLOCKSIZE 65535
 
-HOST LaunchParameter::LaunchParameter()
+CUDA_HOST LaunchParameter::LaunchParameter()
 {
 
 }
 
-HOST LaunchParameter LaunchParameter::make_2D1D_launchParameter(int size, int threadDim)
+CUDA_HOST LaunchParameter LaunchParameter::make_2D1D_launchParameter(int size, int threadDim)
 {
 	LaunchParameter para;
 	para.threads = dim3(threadDim, 1, 1);
@@ -22,7 +22,7 @@ HOST LaunchParameter LaunchParameter::make_2D1D_launchParameter(int size, int th
 	return para;
 }
 
-HOST LaunchParameter LaunchParameter::make_1D1D_launchParameter(int size, int threadDim)
+CUDA_HOST LaunchParameter LaunchParameter::make_1D1D_launchParameter(int size, int threadDim)
 {
 	LaunchParameter para;
 	para.threads = dim3(threadDim, 1, 1);
@@ -43,7 +43,7 @@ DEVICE int LaunchParameter::getGlobalIdx_1D_1D()
 	return blockIdx.x *blockDim.x + threadIdx.x;
 }
 
-HOST void LaunchParameter::print() const
+CUDA_HOST void LaunchParameter::print() const
 {
 	*logging::out << logging::Logger::INFO_INTERMEDIATE << "blocks: (" << blocks.x << ", " << blocks.y << ", " << blocks.z << ")"
 		<< ", threads: (" << threads.x << ", " << threads.y << ", " << threads.z << ")\n";

@@ -13,6 +13,7 @@
 #include "utilities/communication.h"
 
 
+
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
 {
 	this->builder = builder;
@@ -93,7 +94,7 @@ void GridGenerator::allocArrays_BoundaryValues()
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfPressureValues = int(builder->getPressureSize(level));
 
-        cout << "size pressure level " << level << " : " << numberOfPressureValues << endl;
+        std::cout << "size pressure level " << level << " : " << numberOfPressureValues << std::endl;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->QPress.kQ = numberOfPressureValues;
         para->getParD(level)->QPress.kQ = numberOfPressureValues;
@@ -110,7 +111,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfVelocityValues = int(builder->getVelocitySize(level));
-        cout << "size velocity level " << level << " : " << numberOfVelocityValues << endl;
+        std::cout << "size velocity level " << level << " : " << numberOfVelocityValues << std::endl;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         int blocks = (numberOfVelocityValues / para->getParH(level)->numberofthreads) + 1;
         para->getParH(level)->Qinflow.kArray = blocks * para->getParH(level)->numberofthreads;
@@ -153,8 +154,8 @@ void GridGenerator::allocArrays_BoundaryValues()
             	//////////////////////////////////////////////////////////////////////////
             	para->getParH(level)->TempVel.kTemp = numberOfVelocityValues;
             	//cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
-            	cout << "getTemperatureInit = " << para->getTemperatureInit() << endl;
-            	cout << "getTemperatureBC = " << para->getTemperatureBC() << endl;
+            	std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
+            	std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
             	//////////////////////////////////////////////////////////////////////////
             	para->cudaAllocTempVeloBC(level);
             	//cout << "nach alloc " << endl;
@@ -182,7 +183,7 @@ void GridGenerator::allocArrays_BoundaryValues()
         para->setGeometryValues(true);
         for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
             int numberOfGeometryValues = builder->getGeometrySize(i);
-            cout << "size geometry values, Level " << i << " : " << numberOfGeometryValues << endl;
+            std::cout << "size geometry values, Level " << i << " : " << numberOfGeometryValues << std::endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             para->getParH(i)->QGeom.kQ = numberOfGeometryValues;
             para->getParD(i)->QGeom.kQ = numberOfGeometryValues;
@@ -210,7 +211,7 @@ void GridGenerator::allocArrays_BoundaryValues()
                     //para->getParH(i)->QGeom.Vz[m] = 0.0f;
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                ////Täst
+                ////Tï¿½st
                 //for (int m = 0; m < temp4; m++)
                 //{
                 //	para->getParH(i)->QGeom.Vx[m] = para->getVelocity();//0.035f;
@@ -224,7 +225,7 @@ void GridGenerator::allocArrays_BoundaryValues()
                 //if (para->getDiffOn()==true){
                 //	//////////////////////////////////////////////////////////////////////////
                 //	para->getParH(i)->Temp.kTemp = temp4;
-                //	cout << "Groesse kTemp = " << para->getParH(i)->Temp.kTemp << endl;
+                //	cout << "Groesse kTemp = " << para->getParH(i)->Temp.kTemp << std::endl;
                 //	//////////////////////////////////////////////////////////////////////////
                 //	para->cudaAllocTempNoSlipBC(i);
                 //	//////////////////////////////////////////////////////////////////////////
@@ -622,7 +623,7 @@ void GridGenerator::allocArrays_BoundaryQs()
         int numberOfPressureValues = (int)builder->getPressureSize(i);
         if (numberOfPressureValues > 0)
         {
-            cout << "size Pressure:  " << i << " : " << numberOfPressureValues << endl;
+            std::cout << "size Pressure:  " << i << " : " << numberOfPressureValues << std::endl;
             //cout << "Groesse Pressure:  " << i << " : " << temp1 << "MyID: " << para->getMyID() << endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
@@ -668,7 +669,7 @@ void GridGenerator::allocArrays_BoundaryQs()
                 //cout << "vor setzen von kTemp" << endl;
                 para->getParH(i)->TempPress.kTemp = numberOfPressureValues;
                 para->getParD(i)->TempPress.kTemp = numberOfPressureValues;
-                cout << "Groesse TempPress.kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
+                std::cout << "Groesse TempPress.kTemp = " << para->getParH(i)->TempPress.kTemp << std::endl;
                 //////////////////////////////////////////////////////////////////////////
                 para->cudaAllocTempPressBC(i);
                 //cout << "nach alloc" << endl;
@@ -697,8 +698,8 @@ void GridGenerator::allocArrays_BoundaryQs()
         const auto numberOfVelocityNodes = int(builder->getVelocitySize(i));
         if (numberOfVelocityNodes > 0)
         {
-            cout << "size velocity level " << i << " : " << numberOfVelocityNodes << endl;
-            //cout << "Groesse velocity level:  " << i << " : " << temp3 << "MyID: " << para->getMyID() << endl;
+            std::cout << "size velocity level " << i << " : " << numberOfVelocityNodes << std::endl;
+            //cout << "Groesse velocity level:  " << i << " : " << temp3 << "MyID: " << para->getMyID() << std::endl;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //preprocessing
             real* QQ = para->getParH(i)->Qinflow.q27[0];
@@ -738,12 +739,12 @@ void GridGenerator::allocArrays_BoundaryQs()
                 //////////////////////////////////////////////////////////////////////////
                 para->getParH(i)->TempVel.kTemp = numberOfVelocityNodes;
                 para->getParD(i)->TempVel.kTemp = numberOfVelocityNodes;
-                cout << "Groesse TempVel.kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
-                cout << "getTemperatureInit = " << para->getTemperatureInit() << endl;
-                cout << "getTemperatureBC = " << para->getTemperatureBC() << endl;
+                std::cout << "Groesse TempVel.kTemp = " << para->getParH(i)->TempPress.kTemp << std::endl;
+                std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
+                std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
                 //////////////////////////////////////////////////////////////////////////
                 para->cudaAllocTempVeloBC(i);
-                //cout << "nach alloc " << endl;
+                //cout << "nach alloc " << std::endl;
                 //////////////////////////////////////////////////////////////////////////
                 for (int m = 0; m < numberOfVelocityNodes; m++)
                 {
@@ -753,9 +754,9 @@ void GridGenerator::allocArrays_BoundaryQs()
                     para->getParH(i)->TempVel.k[m] = para->getParH(i)->Qinflow.k[m];
                 }
                 //////////////////////////////////////////////////////////////////////////
-                //cout << "vor copy " << endl;
+                //cout << "vor copy " << std::endl;
                 para->cudaCopyTempVeloBCHD(i);
-                //cout << "nach copy " << endl;
+                //cout << "nach copy " << std::endl;
                 //////////////////////////////////////////////////////////////////////////
             }
             para->cudaCopyVeloBC(i);
@@ -765,7 +766,7 @@ void GridGenerator::allocArrays_BoundaryQs()
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
         const int numberOfGeometryNodes = builder->getGeometrySize(i);
-        cout << "size of GeomBoundaryQs, Level " << i << " : " << numberOfGeometryNodes << endl;
+        std::cout << "size of GeomBoundaryQs, Level " << i << " : " << numberOfGeometryNodes << std::endl;
 
         para->getParH(i)->QGeom.kQ = numberOfGeometryNodes;
         para->getParD(i)->QGeom.kQ = para->getParH(i)->QGeom.kQ;
@@ -827,7 +828,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //{
             //	for (int tmp = 0; tmp < 27; tmp++)
             //	{
-            //		cout <<"Kuhs: " << Q.q27[tmp][test]  << endl;				
+            //		cout <<"Kuhs: " << Q.q27[tmp][test]  << std::endl;
             //	}
             //}
 
@@ -837,7 +838,7 @@ void GridGenerator::allocArrays_BoundaryQs()
                     //////////////////////////////////////////////////////////////////////////
                     para->getParH(i)->Temp.kTemp = numberOfGeometryNodes;
                     para->getParD(i)->Temp.kTemp = numberOfGeometryNodes;
-                    cout << "Groesse Temp.kTemp = " << para->getParH(i)->Temp.kTemp << endl;
+                    std::cout << "Groesse Temp.kTemp = " << para->getParH(i)->Temp.kTemp << std::endl;
                     //////////////////////////////////////////////////////////////////////////
                     para->cudaAllocTempNoSlipBC(i);
                     //////////////////////////////////////////////////////////////////////////
@@ -867,8 +868,8 @@ void GridGenerator::allocArrays_OffsetScale()
         const uint numberOfNodesPerLevelCF = builder->getNumberOfNodesCF(level);
         const uint numberOfNodesPerLevelFC = builder->getNumberOfNodesFC(level);
 
-        cout << "number of nodes CF Level " << level << " : " << numberOfNodesPerLevelCF << endl;
-        cout << "number of nodes FC level " << level << " : " << numberOfNodesPerLevelFC << endl;
+        std::cout << "number of nodes CF Level " << level << " : " << numberOfNodesPerLevelCF << std::endl;
+        std::cout << "number of nodes FC level " << level << " : " << numberOfNodesPerLevelFC << std::endl;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //size + memsize CF

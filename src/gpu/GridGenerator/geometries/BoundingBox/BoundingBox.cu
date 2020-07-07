@@ -21,7 +21,7 @@
  BoundingBox::BoundingBox(const BoundingBox &t) : minX(t.minX), maxX(t.maxX), minY(t.minY), maxY(t.maxY), minZ(t.minZ), maxZ(t.maxZ) {}
 
 
- HOST BoundingBox BoundingBox::makeInvalidMinMaxBox()
+ CUDA_HOST BoundingBox BoundingBox::makeInvalidMinMaxBox()
  {
      BoundingBox box = BoundingBox(std::numeric_limits<real>::max(),
          std::numeric_limits<real>::lowest(),
@@ -157,7 +157,7 @@
  }
 
 
- HOST bool BoundingBox::operator==(const BoundingBox &box) const
+ CUDA_HOST bool BoundingBox::operator==(const BoundingBox &box) const
  {
      return vf::Math::equal(minX, box.minX)
          && vf::Math::equal(maxX, box.maxX)

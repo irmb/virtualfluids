@@ -48,9 +48,9 @@ public:
         return true;
     }
 
-    HOST virtual void findInnerNodes(SPtr<GridImp> grid);
+    CUDA_HOST virtual void findInnerNodes(SPtr<GridImp> grid);
 
-    HOST virtual int getIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnObject, real &qVal);
+    CUDA_HOST virtual int getIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnObject, real &qVal);
 };
 
 

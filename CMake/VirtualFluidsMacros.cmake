@@ -133,7 +133,7 @@ function(vf_add_library)
     ADD_COMPILER_FLAGS_TO_PROJECT(${CAB_COMPILER} ${library_name} "CXX" ${ARG_BUILDTYPE})
     MESSAGE(STATUS "compiler flags for compiler ${CAB_COMPILER} on machine ${CAB_MACHINE} for project ${project_name} (${ARG_BUILDTYPE}) have been configured")
 
-    MESSAGE (COMPILE FLAGS: ${CAB_ADDTIONAL_COMPILER_FLAGS})
+    #MESSAGE (COMPILE FLAGS: ${CAB_ADDTIONAL_COMPILER_FLAGS})
     IF(CAB_ADDTIONAL_COMPILER_FLAGS)
         ADD_TARGET_PROPERTIES(${library_name} COMPILE_FLAGS ${CAB_ADDTIONAL_COMPILER_FLAGS})
     ENDIF()

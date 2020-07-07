@@ -51,10 +51,10 @@ struct VF_PUBLIC Triangle
     HOSTDEVICE bool isQNode(const Vertex & point, const real &s) const;
     HOSTDEVICE bool isNegativeDirectionBorder(const Vertex & point) const;
 
-    HOST bool operator==(const Triangle &t) const;
+    CUDA_HOST bool operator==(const Triangle &t) const;
 
-    HOST TriangleMemento getState() const;
-    HOST void setState(const TriangleMemento &memento);
+    CUDA_HOST TriangleMemento getState() const;
+    CUDA_HOST void setState(const TriangleMemento &memento);
 
 
     HOSTDEVICE void setMinMax(real &minX, real &maxX, real &minY, real &maxY, real &minZ, real &maxZ) const;

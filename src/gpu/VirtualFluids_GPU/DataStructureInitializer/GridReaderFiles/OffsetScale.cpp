@@ -5,9 +5,9 @@
 
 using namespace std;
 
-OffsetScale::OffsetScale(string ad, bool off)
+OffsetScale::OffsetScale(std::string ad, bool off)
 {
-	file.open(ad.c_str(), ios::in);
+	file.open(ad.c_str(), std::ios::in);
 
 	if (!file) {
 		cerr << "Fehler beim Oeffnen" <<endl;

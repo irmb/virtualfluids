@@ -29,7 +29,7 @@
 CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 
-HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution, uint level) 
+CUDA_HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution, uint level)
             : object(object), 
     startX(startX),
     startY(startY),
@@ -61,7 +61,7 @@ HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, rea
     initalNumberOfNodesAndSize();
 }
 
-HOST SPtr<GridImp> GridImp::makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level)
+CUDA_HOST SPtr<GridImp> GridImp::makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level)
 {
     SPtr<GridImp> grid(new GridImp(object, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, d, level));
     return grid;
@@ -85,7 +85,7 @@ void GridImp::initalNumberOfNodesAndSize()
 	this->numberOfSolidBoundaryNodes = 0;
 }
 
-HOST void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
+CUDA_HOST void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
 {
     field = Field(gridStrategy, size);
     field.allocateMemory();
@@ -123,7 +123,7 @@ HOST void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
         << "nodes: " << this->nx << " x " << this->ny << " x " << this->nz << " = " << this->size << "\n";
 }
 
-HOST void GridImp::setOddStart(bool xOddStart, bool yOddStart, bool zOddStart)
+CUDA_HOST void GridImp::setOddStart(bool xOddStart, bool yOddStart, bool zOddStart)
 {
     this->xOddStart = xOddStart;
     this->yOddStart = yOddStart;
@@ -135,20 +135,20 @@ HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
     this->field.setFieldEntryToInvalidOutOfGrid(index);
 }
 
-HOST void GridImp::freeMemory()
+CUDA_HOST void GridImp::freeMemory()
 {
     gridStrategy->freeMemory(shared_from_this());
 
     gridStrategy->freeFieldMemory(&field);
 }
 
-HOST GridImp::GridImp()
+CUDA_HOST GridImp::GridImp()
 {
     //printf("Constructor\n");
     //this->print();
 }
 
-HOST GridImp::~GridImp()
+CUDA_HOST GridImp::~GridImp()
 {
     //printf("Destructor\n");
     //this->print();
@@ -695,7 +695,7 @@ void GridImp::setNonStopperOutOfGridCellTo(uint index, char type)
 }
 
 
-HOST void GridImp::setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ)
+CUDA_HOST void GridImp::setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ)
 {
     this->periodicityX = periodicityX;
     this->periodicityY = periodicityY;
@@ -763,7 +763,7 @@ HOSTDEVICE void GridImp::transIndexToCoords(uint index, real &x, real &y, real &
     z = (z * delta) + startZ;
 }
 
-HOST uint GridImp::getLevel(real startDelta) const
+CUDA_HOST uint GridImp::getLevel(real startDelta) const
 {
     uint level = 0;
     real delta = this->delta;
@@ -775,50 +775,50 @@ HOST uint GridImp::getLevel(real startDelta) const
     return level;
 }
 
-HOST uint GridImp::getLevel() const
+CUDA_HOST uint GridImp::getLevel() const
 {
     return this->level;
 }
 
-HOST void GridImp::setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy)
+CUDA_HOST void GridImp::setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy)
 {
     this->triangularMeshDiscretizationStrategy = triangularMeshDiscretizationStrategy;
 }
 
-HOST TriangularMeshDiscretizationStrategy * GridImp::getTriangularMeshDiscretizationStrategy()
+CUDA_HOST TriangularMeshDiscretizationStrategy * GridImp::getTriangularMeshDiscretizationStrategy()
 {
     return this->triangularMeshDiscretizationStrategy;
 }
 
-HOST uint GridImp::getNumberOfSolidBoundaryNodes() const
+CUDA_HOST uint GridImp::getNumberOfSolidBoundaryNodes() const
 {
 	return this->numberOfSolidBoundaryNodes;
 }
 
-HOST void GridImp::setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes)
+CUDA_HOST void GridImp::setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes)
 {
 	if (numberOfSolidBoundaryNodes >= 0 && numberOfSolidBoundaryNodes < INVALID_INDEX)
 		this->numberOfSolidBoundaryNodes = numberOfSolidBoundaryNodes;
 }
 
-HOST real GridImp::getQValue(const uint index, const uint dir) const
+CUDA_HOST real GridImp::getQValue(const uint index, const uint dir) const
 {
 	const int qIndex = dir * this->numberOfSolidBoundaryNodes + this->qIndices[index];
 
 	return this->qValues[qIndex];
 }
 
-HOST uint GridImp::getQPatch(const uint index) const
+CUDA_HOST uint GridImp::getQPatch(const uint index) const
 {
     return this->qPatches[ this->qIndices[index] ];
 }
 
-HOST void GridImp::setInnerRegionFromFinerGrid(bool innerRegionFromFinerGrid)
+CUDA_HOST void GridImp::setInnerRegionFromFinerGrid(bool innerRegionFromFinerGrid)
 {
    this->innerRegionFromFinerGrid = innerRegionFromFinerGrid;
 }
 
-HOST void GridImp::setNumberOfLayers(uint numberOfLayers)
+CUDA_HOST void GridImp::setNumberOfLayers(uint numberOfLayers)
 {
     this->numberOfLayers = numberOfLayers;
 }
@@ -827,13 +827,13 @@ HOST void GridImp::setNumberOfLayers(uint numberOfLayers)
 //                  Set Sparse Indices                       //
 // --------------------------------------------------------- //
 
-HOST void GridImp::findSparseIndices(SPtr<Grid> fineGrid)
+CUDA_HOST void GridImp::findSparseIndices(SPtr<Grid> fineGrid)
 {
     this->gridStrategy->findSparseIndices(shared_from_this(), std::static_pointer_cast<GridImp>(fineGrid));
 }
 
 
-HOST void GridImp::updateSparseIndices()
+CUDA_HOST void GridImp::updateSparseIndices()
 {
     int removedNodes = 0;
     int newIndex = 0;
@@ -1006,7 +1006,7 @@ HOSTDEVICE int GridImp::getSparseIndex(const real &x, const real &y, const real 
 // --------------------------------------------------------- //
 //                    Find Interface                         //
 // --------------------------------------------------------- //
-HOST void GridImp::findGridInterface(SPtr<Grid> finerGrid, LbmOrGks lbmOrGks)
+CUDA_HOST void GridImp::findGridInterface(SPtr<Grid> finerGrid, LbmOrGks lbmOrGks)
 {
     gridStrategy->findGridInterface(shared_from_this(), std::static_pointer_cast<GridImp>(finerGrid), lbmOrGks);
 }
@@ -1016,7 +1016,7 @@ HOSTDEVICE void GridImp::repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid)
     this->gridInterface->repairGridInterfaceOnMultiGPU( shared_from_this(), std::static_pointer_cast<GridImp>(fineGrid) );
 }
 
-HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks)
+CUDA_HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks)
 {
     for( uint index = 0; index < this->size; index++ ){
 
@@ -1088,7 +1088,7 @@ HOSTDEVICE void GridImp::findInvalidBoundaryNodes(uint index)
 // --------------------------------------------------------- //
 //                    Mesh Triangle                          //
 // --------------------------------------------------------- //
-HOST void GridImp::mesh(Object* object)
+CUDA_HOST void GridImp::mesh(Object* object)
 {
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
     if (triangularMesh)
@@ -1105,7 +1105,7 @@ HOST void GridImp::mesh(Object* object)
 }
 
 
-HOST void GridImp::mesh(TriangularMesh &triangularMesh)
+CUDA_HOST void GridImp::mesh(TriangularMesh &triangularMesh)
 {
     const clock_t begin = clock();
 
@@ -1143,7 +1143,7 @@ HOSTDEVICE void GridImp::mesh(Triangle &triangle)
     }
 }
 
-HOST void GridImp::closeNeedleCells()
+CUDA_HOST void GridImp::closeNeedleCells()
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start closeNeedleCells()\n";
 
@@ -1178,7 +1178,7 @@ HOSTDEVICE bool GridImp::closeCellIfNeedle(uint index)
     return false;
 }
 
-HOST void GridImp::closeNeedleCellsThinWall()
+CUDA_HOST void GridImp::closeNeedleCellsThinWall()
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start closeNeedleCellsThinWall()\n";
 
@@ -1220,7 +1220,7 @@ HOSTDEVICE bool GridImp::closeCellIfNeedleThinWall(uint index)
 
 
 
-HOST void GridImp::findQs(Object* object) //TODO: enable qs for primitive objects
+CUDA_HOST void GridImp::findQs(Object* object) //TODO: enable qs for primitive objects
 {
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
     if (triangularMesh)
@@ -1229,7 +1229,7 @@ HOST void GridImp::findQs(Object* object) //TODO: enable qs for primitive object
         findQsPrimitive(object);
 }
 
-HOST void GridImp::findQs(TriangularMesh &triangularMesh)
+CUDA_HOST void GridImp::findQs(TriangularMesh &triangularMesh)
 {
     const clock_t begin = clock();
 
@@ -1288,7 +1288,7 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
     }
 }
 
-HOST void GridImp::findQsPrimitive(Object * object)
+CUDA_HOST void GridImp::findQsPrimitive(Object * object)
 {
 
     if( this->qComputationStage == qComputationStageType::ComputeQs ){
@@ -1601,22 +1601,22 @@ HOSTDEVICE int GridImp::getSparseIndex(uint matrixIndex) const
     return this->sparseIndices[matrixIndex];
 }
 
-HOST real* GridImp::getDistribution() const
+CUDA_HOST real* GridImp::getDistribution() const
 {
     return this->distribution.f;
 }
 
-HOST int* GridImp::getDirection() const
+CUDA_HOST int* GridImp::getDirection() const
 {
     return this->distribution.dirs;
 }
 
-HOST int GridImp::getStartDirection() const
+CUDA_HOST int GridImp::getStartDirection() const
 {
     return this->distribution.dir_start;
 }
 
-HOST int GridImp::getEndDirection() const
+CUDA_HOST int GridImp::getEndDirection() const
 {
     return this->distribution.dir_end;
 }
@@ -1831,7 +1831,7 @@ uint* GridImp::getCF_fine() const
     return this->gridInterface->cf.fine;
 }
 
-HOST uint * GridImp::getCF_offset() const
+CUDA_HOST uint * GridImp::getCF_offset() const
 {
     return this->gridInterface->cf.offset;
 }
@@ -1846,7 +1846,7 @@ uint* GridImp::getFC_fine() const
     return this->gridInterface->fc.fine;
 }
 
-HOST uint * GridImp::getFC_offset() const
+CUDA_HOST uint * GridImp::getFC_offset() const
 {
     return this->gridInterface->fc.offset;
 }
@@ -1868,7 +1868,7 @@ void GridImp::getGridInterface(uint* gridInterfaceList, const uint* oldGridInter
 #define GEOFLUID 19
 #define GEOSOLID 16
 
-HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, uint *geo) const
+CUDA_HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, uint *geo) const
 {
     xCoords[0] = 0;
     yCoords[0] = 0;

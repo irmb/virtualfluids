@@ -26,15 +26,15 @@ extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 class VF_PUBLIC GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
 private:
-    HOST GridImp();
-    HOST GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level);
+    CUDA_HOST GridImp();
+    CUDA_HOST GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level);
 
 public:
     virtual HOSTDEVICE ~GridImp();
-    static HOST SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level);
+    static CUDA_HOST SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level);
 
 private:
-    HOST void initalNumberOfNodesAndSize();
+    CUDA_HOST void initalNumberOfNodesAndSize();
     HOSTDEVICE Cell getOddCellFromIndex(uint index) const;
     HOSTDEVICE bool isValidSolidStopper(uint index) const;
 	HOSTDEVICE bool shouldBeBoundarySolidNode(uint index) const;
@@ -88,11 +88,11 @@ private:
     bool enableFixRefinementIntoTheWall;
 
 public:
-    HOST void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) override;
-    HOST void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) override;
+    CUDA_HOST void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) override;
+    CUDA_HOST void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) override;
     HOSTDEVICE void fixOddCell(uint index);
 
-    HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override;
+    CUDA_HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override;
     void setPeriodicityX(bool periodicity) override;
     void setPeriodicityY(bool periodicity) override;
     void setPeriodicityZ(bool periodicity) override;
@@ -109,28 +109,28 @@ public:
     HOSTDEVICE uint transCoordToIndex(const real &x, const real &y, const real &z) const override;
     HOSTDEVICE void transIndexToCoords(uint index, real &x, real &y, real &z) const override;
 
-    HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
+    CUDA_HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
 
-    HOST void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
+    CUDA_HOST void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
 
-    HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
+    CUDA_HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
 
-    HOST void freeMemory() override;
+    CUDA_HOST void freeMemory() override;
 
-    HOST uint getLevel(real levelNull) const;
-    HOST uint getLevel() const;
-    HOST void setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy);
-    HOST TriangularMeshDiscretizationStrategy* getTriangularMeshDiscretizationStrategy();
+    CUDA_HOST uint getLevel(real levelNull) const;
+    CUDA_HOST uint getLevel() const;
+    CUDA_HOST void setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy);
+    CUDA_HOST TriangularMeshDiscretizationStrategy* getTriangularMeshDiscretizationStrategy();
 
-	HOST uint getNumberOfSolidBoundaryNodes() const override;
-	HOST void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override;
+	CUDA_HOST uint getNumberOfSolidBoundaryNodes() const override;
+	CUDA_HOST void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override;
 
-	HOST real getQValue(const uint index, const uint dir) const override;
-	HOST uint getQPatch(const uint index) const override;
+	CUDA_HOST real getQValue(const uint index, const uint dir) const override;
+	CUDA_HOST uint getQPatch(const uint index) const override;
 
-    HOST void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) override;
+    CUDA_HOST void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) override;
 
-    HOST void setNumberOfLayers( uint numberOfLayers ) override;
+    CUDA_HOST void setNumberOfLayers( uint numberOfLayers ) override;
 
 public:
     Distribution distribution;
@@ -179,10 +179,10 @@ public:
     HOSTDEVICE uint getSize() const override;
     HOSTDEVICE uint getSparseSize() const override;
     HOSTDEVICE int getSparseIndex(uint matrixIndex) const override;
-    HOST real* getDistribution() const override;
-    HOST int* getDirection() const override;
-    HOST int getStartDirection() const override;
-    HOST int getEndDirection() const override;
+    CUDA_HOST real* getDistribution() const override;
+    CUDA_HOST int* getDirection() const override;
+    CUDA_HOST int getStartDirection() const override;
+    CUDA_HOST int getEndDirection() const override;
 
     HOSTDEVICE Vertex getMinimumOnNode(Vertex exact) const;
     HOSTDEVICE Vertex getMaximumOnNode(Vertex exact) const;
@@ -196,26 +196,26 @@ public:
     HOSTDEVICE uint getNumberOfNodesX() const override;
     HOSTDEVICE uint getNumberOfNodesY() const override;
     HOSTDEVICE uint getNumberOfNodesZ() const override;
-    HOST void getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, uint *geo) const override;
+    CUDA_HOST void getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, uint *geo) const override;
 
     HOSTDEVICE uint getNumberOfNodesCF() const override;
     HOSTDEVICE uint getNumberOfNodesFC() const override;
-    HOST void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const override;
-    HOST static void getGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size);
+    CUDA_HOST void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const override;
+    CUDA_HOST static void getGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size);
 
     int* getNeighborsX() const override;
     int* getNeighborsY() const override;
     int* getNeighborsZ() const override;
     int* getNeighborsNegative() const override;
 
-    HOST uint* getCF_coarse() const override;
-    HOST uint* getCF_fine() const override;
-    HOST uint* getCF_offset() const override;
+    CUDA_HOST uint* getCF_coarse() const override;
+    CUDA_HOST uint* getCF_fine() const override;
+    CUDA_HOST uint* getCF_offset() const override;
 
 
-    HOST uint* getFC_coarse() const override;
-    HOST uint* getFC_fine() const override;
-    HOST uint* getFC_offset() const override;
+    CUDA_HOST uint* getFC_coarse() const override;
+    CUDA_HOST uint* getFC_fine() const override;
+    CUDA_HOST uint* getFC_offset() const override;
 
     SPtr<GridStrategy> getGridStrategy() const override;
 
@@ -224,9 +224,9 @@ public:
 
 
 public:
-    HOST virtual void findSparseIndices(SPtr<Grid> fineGrid);
+    CUDA_HOST virtual void findSparseIndices(SPtr<Grid> fineGrid);
 
-    HOST void updateSparseIndices();
+    CUDA_HOST void updateSparseIndices();
     HOSTDEVICE void setNeighborIndices(uint index);
     HOSTDEVICE real getFirstFluidNode(real coords[3], int direction, real startCoord) const;
     HOSTDEVICE real getLastFluidNode(real coords[3], int direction, real startCoord) const;
@@ -246,22 +246,22 @@ private:
 public:
     HOSTDEVICE BoundingBox getBoundingBoxOnNodes(Triangle &triangle) const;
 
-    HOST void mesh(Object* object) override;
+    CUDA_HOST void mesh(Object* object) override;
 
-    HOST void mesh(TriangularMesh &geometry) override;
+    CUDA_HOST void mesh(TriangularMesh &geometry) override;
     HOSTDEVICE void mesh(Triangle &triangle);
 
-    HOST void closeNeedleCells() override;
+    CUDA_HOST void closeNeedleCells() override;
     HOSTDEVICE bool closeCellIfNeedle(uint index);
 
-    HOST void closeNeedleCellsThinWall() override;
+    CUDA_HOST void closeNeedleCellsThinWall() override;
     HOSTDEVICE bool closeCellIfNeedleThinWall(uint index);
 
-    HOST void findQs(Object* object) override;
-    HOST void findQs(TriangularMesh &triangularMesh);
+    CUDA_HOST void findQs(Object* object) override;
+    CUDA_HOST void findQs(TriangularMesh &triangularMesh);
     HOSTDEVICE void findQs(Triangle &triangle);
 
-    HOST void findQsPrimitive(Object* object);
+    CUDA_HOST void findQsPrimitive(Object* object);
 private:
 
     enum class qComputationStageType{
@@ -270,18 +270,18 @@ private:
     } qComputationStage;
 
 public:
-    HOST void enableFindSolidBoundaryNodes(){ qComputationStage = qComputationStageType::FindSolidBoundaryNodes; }
-    HOST void enableComputeQs(){ qComputationStage = qComputationStageType::ComputeQs; }
+    CUDA_HOST void enableFindSolidBoundaryNodes(){ qComputationStage = qComputationStageType::FindSolidBoundaryNodes; }
+    CUDA_HOST void enableComputeQs(){ qComputationStage = qComputationStageType::ComputeQs; }
 
 private:
     HOSTDEVICE void setDebugPoint(uint index, int pointValue);
 	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &triangle) const;
 	HOSTDEVICE void calculateQs(const uint index, const Vertex &point, const Triangle &triangle) const;
-	HOST void calculateQs(const uint index, const Vertex &point, Object* object) const;
+	CUDA_HOST void calculateQs(const uint index, const Vertex &point, Object* object) const;
 
-    HOST bool checkIfAtLeastOneValidQ(const uint index, const Vertex &point, const Triangle &triangle) const;
+    CUDA_HOST bool checkIfAtLeastOneValidQ(const uint index, const Vertex &point, const Triangle &triangle) const;
 
-    HOST bool checkIfAtLeastOneValidQ(const uint index, const Vertex &point, Object* object) const;
+    CUDA_HOST bool checkIfAtLeastOneValidQ(const uint index, const Vertex &point, Object* object) const;
 
 public:
 

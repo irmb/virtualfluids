@@ -50,8 +50,8 @@ void calcDragLift(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	//double A  = 110.0 * 28.0; //Ship width times height in fine nodes
 	//double delta_x = 0.0045;//[m] fine
 	//double delta_t = para->getVelocity() * delta_x / 15.96; 
-	//double LBtoSI = 1.204 * (pow(delta_x, 4))/(pow(delta_t,2));//rho_SI * delta_x^4 / delta_t^2 = 1.204 kg/m³ * (0.0045m)^4 / (0.00000757s)^2 ... LB to kg*m/s²
-	//double LBtoSI = 1000 * (pow(delta_x, 4))/(pow(delta_t,2));//rho_SI * delta_x^4 / delta_t^2 = 1000 kg/m³ * (0.1m)^4 / (0.00187s)^2 ... LB to kg*m/s²
+	//double LBtoSI = 1.204 * (pow(delta_x, 4))/(pow(delta_t,2));//rho_SI * delta_x^4 / delta_t^2 = 1.204 kg/mï¿½ * (0.0045m)^4 / (0.00000757s)^2 ... LB to kg*m/sï¿½
+	//double LBtoSI = 1000 * (pow(delta_x, 4))/(pow(delta_t,2));//rho_SI * delta_x^4 / delta_t^2 = 1000 kg/mï¿½ * (0.1m)^4 / (0.00187s)^2 ... LB to kg*m/sï¿½
 
 	for (int it = 0; it < para->getParH(lev)->QGeom.kQ; it++)
 	{

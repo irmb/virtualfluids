@@ -130,7 +130,7 @@ void GridReader::allocArrays_BoundaryValues()
 
 void GridReader::allocArrays_OffsetScale()
 {
-    cout << "-----Config Arrays OffsetScale------" << endl;
+    std::cout << "-----Config Arrays OffsetScale------" << std::endl;
     OffsetScale *obj_offCF = new OffsetScale(para->getscaleOffsetCF(), true);
     OffsetScale *obj_offFC = new OffsetScale(para->getscaleOffsetFC(), true);
     OffsetScale *obj_scaleCFC = new OffsetScale(para->getscaleCFC(), false);
@@ -145,9 +145,9 @@ void GridReader::allocArrays_OffsetScale()
 
     for (int i = 0; i<level; i++) {
         unsigned int tempCF = obj_offCF->getSize(i);
-        cout << "Groesse der Daten CF vom Level " << i << " : " << tempCF << endl;
+        std::cout << "Groesse der Daten CF vom Level " << i << " : " << tempCF << std::endl;
         unsigned int tempFC = obj_offFC->getSize(i);
-        cout << "Groesse der Daten FC vom Level " << i << " : " << tempFC << endl;
+        std::cout << "Groesse der Daten FC vom Level " << i << " : " << tempFC << std::endl;
 
         AnzahlKnotenGesCF += tempCF;
         AnzahlKnotenGesFC += tempFC;
@@ -194,8 +194,8 @@ void GridReader::allocArrays_OffsetScale()
 		cudaMemoryManager->cudaCopyInterfaceOffFC(i);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
-    cout << "Gesamtanzahl Knoten CF = " << AnzahlKnotenGesCF << endl;
-    cout << "Gesamtanzahl Knoten FC = " << AnzahlKnotenGesFC << endl;
+    std::cout << "Gesamtanzahl Knoten CF = " << AnzahlKnotenGesCF << std::endl;
+    std::cout << "Gesamtanzahl Knoten FC = " << AnzahlKnotenGesFC << std::endl;
 
     delete obj_offCF;
     delete obj_offFC;
@@ -203,7 +203,7 @@ void GridReader::allocArrays_OffsetScale()
     delete obj_scaleCFF;
     delete obj_scaleFCC;
     delete obj_scaleFCF;
-    cout << "-----Ende OffsetScale------" << endl;
+    std::cout << "-----Ende OffsetScale------" << std::endl;
 }
 
 

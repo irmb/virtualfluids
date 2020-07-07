@@ -98,14 +98,14 @@ HOSTDEVICE void Vertex::print() const
     printf("(%2.8f,%2.8f,%2.8f)\n", x, y, z);
 }
 
-HOST void Vertex::print(std::ostream &ost) const
+CUDA_HOST void Vertex::print(std::ostream &ost) const
 {
     ost.write((char*)&x, 4);
     ost.write((char*)&y, 4);
     ost.write((char*)&z, 4);
 }
 
-HOST void Vertex::printFormatted(std::ostream &ost) const
+CUDA_HOST void Vertex::printFormatted(std::ostream &ost) const
 {
     ost << x << " " << y << " " << z;
 }
@@ -118,17 +118,17 @@ HOSTDEVICE bool Vertex::operator==(const Vertex &v) const
 }
 
 
-HOST bool Vertex::isXbetween(real min, real max) const
+CUDA_HOST bool Vertex::isXbetween(real min, real max) const
 {
     return x >= min && x <= max;
 }
 
-HOST bool Vertex::isYbetween(real min, real max) const
+CUDA_HOST bool Vertex::isYbetween(real min, real max) const
 {
     return y >= min && y <= max;
 }
 
-HOST bool Vertex::isZbetween(real min, real max) const
+CUDA_HOST bool Vertex::isZbetween(real min, real max) const
 {
     return z >= min && z <= max;
 }

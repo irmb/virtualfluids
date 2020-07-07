@@ -14,7 +14,7 @@
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
 
-using namespace std;
+//using namespace std;
 
 namespace QDebugWriter
 {

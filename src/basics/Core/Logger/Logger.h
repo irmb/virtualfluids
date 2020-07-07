@@ -62,7 +62,7 @@ namespace logging
         static bool timeStampEnabled;
 
     };
-    extern VF_SHARED_LIB_IMPORT std::shared_ptr<Logger> out;
+    extern BASICS_EXPORT std::shared_ptr<Logger> out;
 }
 
 

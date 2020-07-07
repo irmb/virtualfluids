@@ -254,7 +254,7 @@ void GridInterface::findForGridInterfaceSparseIndexFC(GridImp* coarseGrid, GridI
     findSparseIndex(fc.fine, fineGrid, index);
 }
 
-HOST void VF_PUBLIC GridInterface::repairGridInterfaceOnMultiGPU(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid)
+CUDA_HOST void VF_PUBLIC GridInterface::repairGridInterfaceOnMultiGPU(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid)
 {
     {
         std::vector<uint> tmpCFC;

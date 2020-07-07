@@ -383,10 +383,10 @@ void FileWriter::writeUnstrucuredGridLTConc(std::shared_ptr<Parameter> para, int
 
 void FileWriter::writeUnstrucuredGridMedianLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)
 {
-	vector< UbTupleFloat3 > nodes;
-	vector< UbTupleUInt8 > cells;
-	//vector< UbTupleUInt8 > cells2;
-	vector< string > nodedatanames;
+	std::vector< UbTupleFloat3 > nodes;
+	std::vector< UbTupleUInt8 > cells;
+	//std::vector< UbTupleUInt8 > cells2;
+	std::vector< std::string > nodedatanames;
 	nodedatanames.push_back("pressMed");
 	nodedatanames.push_back("rhoMed");
 	nodedatanames.push_back("vx1Med");
@@ -400,7 +400,7 @@ void FileWriter::writeUnstrucuredGridMedianLT(std::shared_ptr<Parameter> para, i
 	unsigned int startpos = 0;
 	unsigned int endpos = 0;
 	unsigned int sizeOfNodes = 0;
-	vector< vector< double > > nodedata(nodedatanames.size());
+	std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
 	//printf("\n test for if... \n");
 	for (unsigned int part = 0; part < fname.size(); part++)
@@ -497,9 +497,9 @@ void FileWriter::writeUnstrucuredGridMedianLT(std::shared_ptr<Parameter> para, i
 
 void FileWriter::writeUnstrucuredGridMedianLTConc(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)
 {
-	vector< UbTupleFloat3 > nodes;
-	vector< UbTupleUInt8 > cells;
-	vector< string > nodedatanames;
+	std::vector< UbTupleFloat3 > nodes;
+	std::vector< UbTupleUInt8 > cells;
+	std::vector< std::string > nodedatanames;
 	nodedatanames.push_back("concMed");
 	nodedatanames.push_back("pressMed");
 	nodedatanames.push_back("rhoMed");
@@ -513,7 +513,7 @@ void FileWriter::writeUnstrucuredGridMedianLTConc(std::shared_ptr<Parameter> par
 	uint startpos = 0;
 	uint endpos = 0;
 	uint sizeOfNodes = 0;
-	vector< vector< double > > nodedata(nodedatanames.size());
+	std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
 	for (unsigned int part = 0; part < fname.size(); part++)
 	{

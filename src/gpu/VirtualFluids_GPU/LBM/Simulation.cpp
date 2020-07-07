@@ -78,12 +78,12 @@ void Simulation::setFactories(std::shared_ptr<KernelFactory> kernelFactory, std:
 
 void Simulation::addKineticEnergyAnalyzer(uint tAnalyse)
 {
-    this->kineticEnergyAnalyzer = make_shared<KineticEnergyAnalyzer>(this->para, tAnalyse);
+    this->kineticEnergyAnalyzer = std::make_shared<KineticEnergyAnalyzer>(this->para, tAnalyse);
 }
 
 void Simulation::addEnstrophyAnalyzer(uint tAnalyse)
 {
-    this->enstrophyAnalyzer = make_shared<EnstrophyAnalyzer>(this->para, tAnalyse);
+    this->enstrophyAnalyzer = std::make_shared<EnstrophyAnalyzer>(this->para, tAnalyse);
 }
 
 
@@ -747,7 +747,7 @@ void Simulation::run()
 								   para->getParD(lev)->evenOrOdd);
                    getLastCudaError("CalcMacSP27 execution failed"); 
 
-				   //überschreiben mit Wandknoten
+				   //ï¿½berschreiben mit Wandknoten
 				   //SetOutputWallVelocitySP27(  para->getParD(lev)->numberofthreads,
 							//				   para->getParD(lev)->vx_SP,       
 							//				   para->getParD(lev)->vy_SP,        

@@ -8,9 +8,9 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS_INTERN build_type use64BitOptions)
    #############################################################################################################
    # Flags
    #############################################################################################################
-   LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-O3 -fomit-frame-pointer -finline-functions -fPIC -Wbackslash-newline-escape")
+   LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-O3;-fomit-frame-pointer;-finline-functions;-fPIC;-Wbackslash-newline-escape")
  
-   LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-O3 -fomit-frame-pointer -finline-functions -fPIC")
+   LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-O3;-fomit-frame-pointer;-finline-functions;-fPIC")
 
    #############################################################################################################
    # 64Bit support

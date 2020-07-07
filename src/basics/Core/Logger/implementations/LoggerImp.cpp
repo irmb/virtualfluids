@@ -1,6 +1,6 @@
 #include "LoggerImp.h"
 
-#include "mpi.h"
+#include <mpi.h>
 #include <sstream>
 #include <iostream>
 #include <iomanip>

@@ -90,7 +90,7 @@ void Sphere::scale(double delta)
     this->radius += delta;
 }
 
-HOST int Sphere::getIntersection(const Vertex & point, const Vertex & direction, Vertex & pointOnObject, real & qVal)
+CUDA_HOST int Sphere::getIntersection(const Vertex & point, const Vertex & direction, Vertex & pointOnObject, real & qVal)
 {
     
     Vertex relativePoint( point.x - this->centerX, 

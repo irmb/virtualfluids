@@ -9,11 +9,11 @@ class GridStrategy;
 class VF_PUBLIC Field : public enableSharedFromThis<Field>
 {
 public:
-    HOST Field(SPtr<GridStrategy> gridStrategy, uint size);
+    CUDA_HOST Field(SPtr<GridStrategy> gridStrategy, uint size);
     HOSTDEVICE Field();
     HOSTDEVICE ~Field();
-    HOST void allocateMemory();
-    HOST void freeMemory();
+    CUDA_HOST void allocateMemory();
+    CUDA_HOST void freeMemory();
 
     HOSTDEVICE uint getSize() const;
     HOSTDEVICE char getFieldEntry(uint index) const;

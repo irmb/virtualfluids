@@ -99,7 +99,7 @@ void TriangularMesh::initalizeDataFromTriangles()
     }
 }
 
-HOST bool TriangularMesh::operator==(const TriangularMesh &geometry) const
+CUDA_HOST bool TriangularMesh::operator==(const TriangularMesh &geometry) const
 {
     if (!(minmax == geometry.minmax))
         return false;
@@ -119,7 +119,7 @@ HOSTDEVICE GbTriFaceMesh3D* TriangularMesh::getGbTriFaceMesh3D() const
     return this->VF_GbTriFaceMesh3D.get();
 }
 
-HOST VF_PUBLIC void TriangularMesh::generateGbTriFaceMesh3D()
+CUDA_HOST VF_PUBLIC void TriangularMesh::generateGbTriFaceMesh3D()
 {
     if( this->VF_GbTriFaceMesh3D ) return;
 

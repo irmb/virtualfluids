@@ -23,7 +23,7 @@ public:
 
 	static void writeMeasurePoints(Parameter* para, int level, int index, int t)
 	{
-		ostringstream convert;   // stream used for the conversion
+		std::ostringstream convert;   // stream used for the conversion
 		convert << t;      // insert the textual representation of 'Number' in the characters in the stream
 		std::string st = convert.str();
 		UbFileOutputASCII out(para->getFName()+"_MeasurePoint_"+para->getParH(level)->MP[index].name+"_"+st+".dat");
@@ -49,10 +49,10 @@ public:
 
 	static void writeTestAcousticXY(Parameter* para, int level, int t)
 	{
-		ostringstream convert;   // stream used for the conversion
+        std::ostringstream convert;   // stream used for the conversion
 		convert << t;      // insert the textual representation of 'Number' in the characters in the stream
 		std::string st = convert.str();
-		ostringstream convertLevel;   // stream used for the conversion
+        std::ostringstream convertLevel;   // stream used for the conversion
 		convertLevel << level;      // insert the textual representation of 'Number' in the characters in the stream
 		std::string sLevel = convertLevel.str();
 
@@ -82,10 +82,10 @@ public:
 
 	static void writeTestAcousticYZ(Parameter* para, int level, int t)
 	{
-		ostringstream convert;   // stream used for the conversion
+        std::ostringstream convert;   // stream used for the conversion
 		convert << t;      // insert the textual representation of 'Number' in the characters in the stream
 		std::string st = convert.str();
-		ostringstream convertLevel;   // stream used for the conversion
+        std::ostringstream convertLevel;   // stream used for the conversion
 		convertLevel << level;      // insert the textual representation of 'Number' in the characters in the stream
 		std::string sLevel = convertLevel.str();
 
@@ -114,10 +114,10 @@ public:
 
 	static void writeTestAcousticXZ(Parameter* para, int level, int t)
 	{
-		ostringstream convert;   // stream used for the conversion
+        std::ostringstream convert;   // stream used for the conversion
 		convert << t;      // insert the textual representation of 'Number' in the characters in the stream
 		std::string st = convert.str();
-		ostringstream convertLevel;   // stream used for the conversion
+        std::ostringstream convertLevel;   // stream used for the conversion
 		convertLevel << level;      // insert the textual representation of 'Number' in the characters in the stream
 		std::string sLevel = convertLevel.str();
 
@@ -267,7 +267,7 @@ public:
 
 	static void writeNodes(SPtr<Parameter> para, int level)
 	{
-		ostringstream convert;   // stream used for the conversion
+        std::ostringstream convert;   // stream used for the conversion
 		std::string st = convert.str();
 		UbFileOutputASCII out(para->getFName() + "_Nodes_" + std::to_string(level) + ".dat");
 

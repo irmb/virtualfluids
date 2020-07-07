@@ -4,13 +4,13 @@
 #include <cuda_runtime.h>
 #include <stdio.h>
 
-#define HOST __host__
+#define CUDA_HOST __host__
 #define DEVICE __device__
 #define GLOBAL __global__
 #define CONSTANT __constant__
 
 
-#define HOSTDEVICE HOST DEVICE 
+#define HOSTDEVICE CUDA_HOST DEVICE
 
 static void printCudaInformation(int i) {
     cudaDeviceProp prop;

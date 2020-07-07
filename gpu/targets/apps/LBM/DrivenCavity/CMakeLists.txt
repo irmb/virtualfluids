@@ -1,22 +1,31 @@
-setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR}) 
+PROJECT(DrivenCavity)
 
-set(linkDirectories "")
-#set(libsToLink Core VirtualFluids_GPU GridGenerator GksMeshAdapter GksVtkAdapter GksGpu)
-set(libsToLink Core VirtualFluids_GPU GridGenerator )
-set(includeDirectories "${CMAKE_SOURCE_DIR}/src"
-                       "${CMAKE_SOURCE_DIR}/src/Core"
-                       "${CMAKE_SOURCE_DIR}/src/VirtualFluids_GPU" 
-                       "${CMAKE_SOURCE_DIR}/src/GridGenerator" 
-                       "${CMAKE_SOURCE_DIR}/src/VirtualFluidsBasics"
-                       "${CMAKE_SOURCE_DIR}/src/GksMeshAdapter"
-                       "${CMAKE_SOURCE_DIR}/src/GksVtkAdapter"
-                       "${CMAKE_SOURCE_DIR}/src/GksGpu")
+#LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-DOMPI_SKIP_MPICXX" )
 
-#glob files and save in MY_SRCS
-include(CMakePackage.cmake)
+vf_add_library(BUILDTYPE binary DEPENDS VirtualFluids_GPU basics GridGenerator FILES DrivenCavity.cpp )
 
-buildExe(${targetName} "${MY_SRCS}" "${linkDirectories}" "${libsToLink}" "${includeDirectories}")
-groupTarget(${targetName} ${lbmAppFolder})
+include (${CMAKE_PATH}/3rd/cuda.cmake)
+include (${CMAKE_PATH}/3rd/mpi.cmake)
+include (${CMAKE_PATH}/3rd/boost.cmake)
+linkBoost ("serialization")
 
-# Specify the linking to 3rdParty libs
-include(3rdPartyLinking.cmake)
+vf_get_library_name(library_name)
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/basics")
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/gpu")
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/gpu/VirtualFluids_GPU")
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/gpu/GridGenerator")
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/basics/Core")
+
+#include (${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/MPI/Link.cmake)
+#linkMPI(${targetName})
+#include (${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/Cuda/Link.cmake)
+#linkCuda(${targetName})
+#include (${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/Boost/Link.cmake)
+#linkBoost(${targetName} "serialization")
+#include (${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/Metis/Link.cmake)
+#linkMetis(${targetName})
+
+#if(HULC.BUILD_JSONCPP)
+#    include (${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/JsonCpp/Link.cmake)
+#    linkJsonCpp(${targetName})
+#endif()

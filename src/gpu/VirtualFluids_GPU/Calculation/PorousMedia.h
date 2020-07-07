@@ -8,7 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <stdio.h>
-using namespace std;
+//using namespace std;
 
 class PorousMedia
 {

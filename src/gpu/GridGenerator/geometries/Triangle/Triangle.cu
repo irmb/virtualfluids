@@ -305,7 +305,7 @@ HOSTDEVICE void Triangle::print() const
     normal.print();
 }
 
-HOST bool Triangle::operator==(const Triangle &t) const
+CUDA_HOST bool Triangle::operator==(const Triangle &t) const
 {
     return v1 == t.v1 && v2 == t.v2 && v3 == t.v3
         && vf::Math::equal(alphaAngles[0], t.alphaAngles[0]) && vf::Math::equal(alphaAngles[1], t.alphaAngles[1]) && vf::Math::equal(alphaAngles[2], t.alphaAngles[2]);

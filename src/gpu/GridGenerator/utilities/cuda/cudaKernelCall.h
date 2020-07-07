@@ -6,7 +6,7 @@
 #include "utilities/cuda/LaunchParameter.cuh"
 
 template<typename Functor, typename... TArgs>
-HOST float runKernel(Functor kernel, const LaunchParameter& para, TArgs... args)
+CUDA_HOST float runKernel(Functor kernel, const LaunchParameter& para, TArgs... args)
 {
 	para.print();
 

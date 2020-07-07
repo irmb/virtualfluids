@@ -2,17 +2,17 @@
 #include <stdlib.h>
 #include <iostream>
 
-using namespace std;
+//using namespace std;
 
 MeasuredPoints::MeasuredPoints(void)
 {
 }
 
 MeasuredPoints::MeasuredPoints(std::string ad){
-	file.open(ad.c_str(), ios::in | ios::binary);
+	file.open(ad.c_str(), std::ios::in | std::ios::binary);
 
 	if (!file) {
-		cerr << "Fehler beim Oeffnen Measured Points" <<endl;
+		std::cerr << "Fehler beim Oeffnen Measured Points" << std::endl;
 			exit(1);
 	}
 
@@ -29,7 +29,7 @@ MeasuredPoints::~MeasuredPoints(void)
 
 void MeasuredPoints::init() {
 	
-	string bufferString;
+	std::string bufferString;
 	unsigned int bufferInt;
 
 	getline(file,bufferString);

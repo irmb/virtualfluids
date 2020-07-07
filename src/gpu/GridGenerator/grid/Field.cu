@@ -3,7 +3,7 @@
 #include "grid/NodeValues.h"
 #include "grid/GridStrategy/GridStrategy.h"
 
-HOST Field::Field(SPtr<GridStrategy> gridStrategy, uint size) : gridStrategy(gridStrategy), size(size)
+CUDA_HOST Field::Field(SPtr<GridStrategy> gridStrategy, uint size) : gridStrategy(gridStrategy), size(size)
 {
     
 }
@@ -18,12 +18,12 @@ Field::~Field()
     
 }
 
-HOST void Field::allocateMemory()
+CUDA_HOST void Field::allocateMemory()
 {
     gridStrategy->allocateFieldMemory(this);
 }
 
-HOST void Field::freeMemory()
+CUDA_HOST void Field::freeMemory()
 {
     gridStrategy->freeFieldMemory(this);
 }

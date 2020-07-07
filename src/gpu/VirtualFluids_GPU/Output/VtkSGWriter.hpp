@@ -10,7 +10,7 @@
 #include "LBM/D3Q27.h"
 #include "basics/utilities/UbSystem.h"
 
-using namespace std;
+//using namespace std;
 
 namespace VtkSGWriter
 {
@@ -141,7 +141,7 @@ void writeVTKsgSP(unsigned int nx_D, unsigned int ny_D, unsigned int nz_D, int s
 	unsigned int nx = nx_D;
 	unsigned int ny = ny_D;
 	unsigned int nz = nz_D;
-	////für Geller
+	////fï¿½r Geller
 	//startoffx = 0;
 	//startoffy = 0;
 	//startoffz = 0;
@@ -832,7 +832,7 @@ void writeVTKsgThS(unsigned int nx, unsigned int ny, unsigned int nz, int starto
 				 //////////////////////////////////////////////////////////////////////////
 				 if(coordX[count]==i && coordY[count]==j && coordZ[count]==k) {
 					 tmp = bcMatH[count]; 
-					 count++; //count wird nur im "if" erhöht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
+					 count++; //count wird nur im "if" erhï¿½ht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
 				 }
 				 else tmp = 99;//GEO_VOID; 
 				 //////////////////////////////////////////////////////////////////////////
@@ -855,7 +855,7 @@ void writeVTKsgThS(unsigned int nx, unsigned int ny, unsigned int nz, int starto
 				 //////////////////////////////////////////////////////////////////////////
 				 if(coordX[count]==i && coordY[count]==j && coordZ[count]==k) {
 					 tmp_rho = (float)(rhoH[count] / 3.0f * rho_ratio * v_ratio *v_ratio); 
-					 count++; //count wird nur im "if" erhöht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
+					 count++; //count wird nur im "if" erhï¿½ht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
 				 }
 				 else tmp_rho=0.0f;
 				 //////////////////////////////////////////////////////////////////////////
@@ -878,7 +878,7 @@ void writeVTKsgThS(unsigned int nx, unsigned int ny, unsigned int nz, int starto
 				 //////////////////////////////////////////////////////////////////////////
 				 if(coordX[count]==i && coordY[count]==j && coordZ[count]==k) {
 					 tmp_rho = (float)(pressH[count] / 3.0f * rho_ratio * v_ratio *v_ratio); 
-					 count++; //count wird nur im "if" erhöht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
+					 count++; //count wird nur im "if" erhï¿½ht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
 				 }
 				 else tmp_rho=0.0f;
 				 //////////////////////////////////////////////////////////////////////////
@@ -902,7 +902,7 @@ void writeVTKsgThS(unsigned int nx, unsigned int ny, unsigned int nz, int starto
 					 tmp_ux=(float)(vxH[count] * v_ratio);
 					 tmp_uy=(float)(vyH[count] * v_ratio);
 					 tmp_uz=(float)(vzH[count] * v_ratio);
-					 count++; //count wird nur im "if" erhöht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
+					 count++; //count wird nur im "if" erhï¿½ht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
 				 }
 				 else {
 					 tmp_ux=0.0f;
@@ -990,7 +990,7 @@ void writeVTKsgThS(unsigned int nx, unsigned int ny, unsigned int nz, int starto
 				 //////////////////////////////////////////////////////////////////////////
 				 if(coordX[count]==i && coordY[count]==j && coordZ[count]==k) {
 					 tmp = bcMatH[count]; 
-					 count++; //count wird nur im "if" erhöht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
+					 count++; //count wird nur im "if" erhï¿½ht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
 				 }
 				 else tmp = GEO_VOID; 
 				 //////////////////////////////////////////////////////////////////////////
@@ -1013,7 +1013,7 @@ void writeVTKsgThS(unsigned int nx, unsigned int ny, unsigned int nz, int starto
 				 //////////////////////////////////////////////////////////////////////////
 				 if(coordX[count]==i && coordY[count]==j && coordZ[count]==k) {
 					 tmp_rho = (float)((rhoH[count] / tdiff) / 3.0f * rho_ratio * v_ratio *v_ratio); 
-					 count++; //count wird nur im "if" erhöht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
+					 count++; //count wird nur im "if" erhï¿½ht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
 				 }
 				 else tmp_rho=0.0f;
 				 //////////////////////////////////////////////////////////////////////////
@@ -1036,7 +1036,7 @@ void writeVTKsgThS(unsigned int nx, unsigned int ny, unsigned int nz, int starto
 				 //////////////////////////////////////////////////////////////////////////
 				 if(coordX[count]==i && coordY[count]==j && coordZ[count]==k) {
 					 tmp_rho = (float)((pressH[count] / tdiff) / 3.0f * rho_ratio * v_ratio *v_ratio); 
-					 count++; //count wird nur im "if" erhöht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
+					 count++; //count wird nur im "if" erhï¿½ht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
 				 }
 				 else tmp_rho=0.0f;
 				 //////////////////////////////////////////////////////////////////////////
@@ -1060,7 +1060,7 @@ void writeVTKsgThS(unsigned int nx, unsigned int ny, unsigned int nz, int starto
 					 tmp_ux=(float)((vxH[count] / tdiff) * v_ratio);
 					 tmp_uy=(float)((vyH[count] / tdiff) * v_ratio);
 					 tmp_uz=(float)((vzH[count] / tdiff) * v_ratio);
-					 count++; //count wird nur im "if" erhöht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
+					 count++; //count wird nur im "if" erhï¿½ht. stellt sicher, dass wir im array nur einen schritt weiter gehen wenn eine kombination gefunden wurde
 				 }
 				 else {
 					 tmp_ux=0.0f;

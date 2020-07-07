@@ -142,7 +142,7 @@ IF (VF.BUILD_VF_GPU)
     #add_subdirectory(targets/apps/LBM/BaselNU)
     #add_subdirectory(targets/apps/LBM/BaselMultiGPU)
 
-    #add_subdirectory(targets/apps/LBM/DrivenCavity)
+    add_subdirectory(gpu/targets/apps/LBM/DrivenCavity)
     #add_subdirectory(targets/apps/LBM/gridGeneratorTest)
     #add_subdirectory(targets/apps/LBM/TGV_3D)
     #add_subdirectory(targets/apps/LBM/TGV_3D_MultiGPU)
