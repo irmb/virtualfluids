@@ -41,8 +41,8 @@
   #endif
 #endif
 
-// Now we use the generic helper definitions above to define VF_PUBLIC, VF_PROTECTED
-// and VF_PRIVATE. VF_PUBLIC is for symbols part of the public application programming
+// Now we use the generic helper definitions above to define VIRTUALFLUIDS_GPU_EXPORT, VF_PROTECTED
+// and VF_PRIVATE. VIRTUALFLUIDS_GPU_EXPORT is for symbols part of the public application programming
 // interface (API), VF_PROTECTED is for symbols used e.g. by public templated or
 // inlined code. These symbols must also be publicly available when compiling the
 // application. VF_PRIVATE are symbols for internal use inside the library only.
@@ -51,16 +51,16 @@
    // defined if VF is compiled as a shared library
    #ifdef VF_SHARED_LIB_SELECT_IMPORTS
       // defined if we are building the VF SHARED_LIB (instead of using it)
-      #define VF_PUBLIC VF_SHARED_LIB_IMPORT
+      #define VIRTUALFLUIDS_GPU_EXPORT VF_SHARED_LIB_IMPORT
    #else
-      #define VF_PUBLIC VF_SHARED_LIB_EXPORT
+      #define VIRTUALFLUIDS_GPU_EXPORT VF_SHARED_LIB_EXPORT
    #endif
    #define VF_PRIVATE VF_SHARED_LIB_LOCAL
 #else
    // VF_SHARED_LIB is not defined: this means VF is a static library
-   #define VF_PUBLIC
+   #define VIRTUALFLUIDS_GPU_EXPORT
    #define VF_PRIVATE
 #endif
-#define VF_PROTECTED VF_PUBLIC
+#define VF_PROTECTED VIRTUALFLUIDS_GPU_EXPORT
 
 #endif

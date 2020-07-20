@@ -28,7 +28,7 @@ struct MassCompensationStruct
     real lambda;
 };
 
-struct VF_PUBLIC MassCompensation : public BoundaryCondition //, public IsothermalWallStruct
+struct VIRTUALFLUIDS_GPU_EXPORT MassCompensation : public BoundaryCondition //, public IsothermalWallStruct
 {
     real rho;
     real velocity;

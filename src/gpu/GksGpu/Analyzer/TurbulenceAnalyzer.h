@@ -39,7 +39,7 @@ struct TurbulenceAnalyzerStruct
     real* p ;
 };
 
-class VF_PUBLIC TurbulenceAnalyzer
+class VIRTUALFLUIDS_GPU_EXPORT TurbulenceAnalyzer
 {
 private:
 

@@ -60,7 +60,7 @@ struct Distribution
 
 class Grid;
 
-class VF_PUBLIC DistributionHelper
+class VIRTUALFLUIDS_GPU_EXPORT DistributionHelper
 {
 public:
     static Distribution getDistribution7();

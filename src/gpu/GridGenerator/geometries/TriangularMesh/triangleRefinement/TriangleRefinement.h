@@ -14,17 +14,17 @@ struct IntegerPtr2D;
 class  TriangleRefinement
 {
 public:
-    VF_PUBLIC TriangleRefinement(std::vector<Triangle> *triangles);
-    VF_PUBLIC ~TriangleRefinement();
+    VIRTUALFLUIDS_GPU_EXPORT TriangleRefinement(std::vector<Triangle> *triangles);
+    VIRTUALFLUIDS_GPU_EXPORT ~TriangleRefinement();
 
-    void VF_PUBLIC refine(int iTriangle);
-    static void VF_PUBLIC refine(Triangle t, Triangle &firstNewTriangle, Triangle &secondNewTriangle);
+    void VIRTUALFLUIDS_GPU_EXPORT refine(int iTriangle);
+    static void VIRTUALFLUIDS_GPU_EXPORT refine(Triangle t, Triangle &firstNewTriangle, Triangle &secondNewTriangle);
     
-    void VF_PUBLIC refineUntilMinDistance(double d_min);
-    void VF_PUBLIC refineUntilcountTriangle(int countTri);
-    void VF_PUBLIC redoubleTriangles();
+    void VIRTUALFLUIDS_GPU_EXPORT refineUntilMinDistance(double d_min);
+    void VIRTUALFLUIDS_GPU_EXPORT refineUntilcountTriangle(int countTri);
+    void VIRTUALFLUIDS_GPU_EXPORT redoubleTriangles();
 
-    static VF_PUBLIC Vertex getHalfVertex(const Vertex &v, const Vertex &w);
+    static VIRTUALFLUIDS_GPU_EXPORT Vertex getHalfVertex(const Vertex &v, const Vertex &w);
 
 private:
     std::vector<Triangle> *triangles;
@@ -39,8 +39,8 @@ private:
     int findCommonEdgeFromTriangles(int indexNeighbor, int iTriangle);
 
 public:
-    static int VF_PUBLIC getEdgeWithLongestDistance(Triangle &t);
-    static real VF_PUBLIC getLongestEdgeDistance(Triangle &t);
+    static int VIRTUALFLUIDS_GPU_EXPORT getEdgeWithLongestDistance(Triangle &t);
+    static real VIRTUALFLUIDS_GPU_EXPORT getLongestEdgeDistance(Triangle &t);
 };
 
 

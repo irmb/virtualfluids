@@ -9,7 +9,7 @@
 #include "Junction/Junction.h"
 
 
-class VF_PUBLIC CarDisplay {
+class VIRTUALFLUIDS_GPU_EXPORT CarDisplay {
 public:
 	CarDisplay(std::vector<int> **pcurrent, const uint safetyDistance);
 	~CarDisplay() {};

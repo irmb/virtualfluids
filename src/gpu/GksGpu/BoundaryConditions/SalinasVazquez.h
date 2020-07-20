@@ -29,7 +29,7 @@ struct SalinasVazquezStruct
     bool useSecondCells;
 };
 
-struct VF_PUBLIC SalinasVazquez : public BoundaryCondition //, public IsothermalWallStruct
+struct VIRTUALFLUIDS_GPU_EXPORT SalinasVazquez : public BoundaryCondition //, public IsothermalWallStruct
 {
     real lambdaMX;
     real lambdaPX;

@@ -8,7 +8,7 @@
 
 
 
-class VF_PUBLIC SourceRandom:
+class VIRTUALFLUIDS_GPU_EXPORT SourceRandom:
 	public Source
 {
 private:

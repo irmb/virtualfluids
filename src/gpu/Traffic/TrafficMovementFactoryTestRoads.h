@@ -10,7 +10,7 @@
 #include "GridGenerator/StreetPointFinder/StreetPointFinder.h"
 
 
-class VF_PUBLIC TrafficMovementFactoryTest :
+class VIRTUALFLUIDS_GPU_EXPORT TrafficMovementFactoryTest :
 	public TrafficMovementFactory {
 public:
 	TrafficMovementFactoryTest() {};

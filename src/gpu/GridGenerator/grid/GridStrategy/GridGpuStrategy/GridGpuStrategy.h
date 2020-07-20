@@ -8,7 +8,7 @@
 class BoundingBox;
 class TriangularMesh;
 
-class VF_PUBLIC GridGpuStrategy : public GridStrategy
+class VIRTUALFLUIDS_GPU_EXPORT GridGpuStrategy : public GridStrategy
 {
 public:
     virtual ~GridGpuStrategy() {};

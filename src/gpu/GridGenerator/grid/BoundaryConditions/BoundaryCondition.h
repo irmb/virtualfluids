@@ -96,7 +96,7 @@ public:
     real getVy(uint index) { return this->vyList[index]; }
     real getVz(uint index) { return this->vzList[index]; }
     
-    VF_PUBLIC void setVelocityProfile( SPtr<Grid> grid, std::function<void(real,real,real,real&,real&,real&)> velocityProfile );
+    VIRTUALFLUIDS_GPU_EXPORT void setVelocityProfile( SPtr<Grid> grid, std::function<void(real,real,real,real&,real&,real&)> velocityProfile );
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -129,7 +129,7 @@ public:
         }
     }
 
-    VF_PUBLIC void setTangentialVelocityForPatch( SPtr<Grid> grid, uint patch, 
+    VIRTUALFLUIDS_GPU_EXPORT void setTangentialVelocityForPatch( SPtr<Grid> grid, uint patch,
                                                   real p1x, real p1y, real p1z, 
                                                   real p2x, real p2y, real p2z, 
                                                   real v, real r );

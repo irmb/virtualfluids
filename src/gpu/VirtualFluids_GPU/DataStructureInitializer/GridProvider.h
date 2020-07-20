@@ -13,7 +13,7 @@ class Parameter;
 class GridBuilder;
 class CudaMemoryManager;
 
-class VF_PUBLIC GridProvider
+class VIRTUALFLUIDS_GPU_EXPORT GridProvider
 {
 public:
     static std::shared_ptr<GridProvider> makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);

@@ -119,7 +119,7 @@ HOSTDEVICE GbTriFaceMesh3D* TriangularMesh::getGbTriFaceMesh3D() const
     return this->VF_GbTriFaceMesh3D.get();
 }
 
-CUDA_HOST VF_PUBLIC void TriangularMesh::generateGbTriFaceMesh3D()
+CUDA_HOST VIRTUALFLUIDS_GPU_EXPORT void TriangularMesh::generateGbTriFaceMesh3D()
 {
     if( this->VF_GbTriFaceMesh3D ) return;
 

@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-class VF_PUBLIC KernelMapper
+class VIRTUALFLUIDS_GPU_EXPORT KernelMapper
 {
 public:
 	static std::shared_ptr<KernelMapper> getInstance(); 

@@ -28,7 +28,7 @@ struct CreepingMassFluxStruct
     real lambda;
 };
 
-struct VF_PUBLIC CreepingMassFlux : public BoundaryCondition //, public IsothermalWallStruct
+struct VIRTUALFLUIDS_GPU_EXPORT CreepingMassFlux : public BoundaryCondition //, public IsothermalWallStruct
 {
     real rho;
     real velocity;

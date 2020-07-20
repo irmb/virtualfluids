@@ -10,7 +10,7 @@ bool BoundaryCondition::isSide( SideType side ) const
     return this->side->whoAmI() == side;
 }
 
-VF_PUBLIC void VelocityBoundaryCondition::setVelocityProfile(SPtr<Grid> grid, std::function<void(real, real, real, real&, real&, real&)> velocityProfile)
+VIRTUALFLUIDS_GPU_EXPORT void VelocityBoundaryCondition::setVelocityProfile(SPtr<Grid> grid, std::function<void(real, real, real, real&, real&, real&)> velocityProfile)
 {
     for( uint index = 0; index < this->indices.size(); index++ ){
 

@@ -10,7 +10,7 @@
 #include "Parameters/Parameters.h"
 namespace GksGpu{ 
 
-class VF_PUBLIC TimeStepping
+class VIRTUALFLUIDS_GPU_EXPORT TimeStepping
 {
 public:
 

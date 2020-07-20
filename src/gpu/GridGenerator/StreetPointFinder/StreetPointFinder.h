@@ -11,7 +11,7 @@
 
 class Grid;
 
-struct VF_PUBLIC Street
+struct VIRTUALFLUIDS_GPU_EXPORT Street
 {
     // The start and end coordinates are stored for cell centers!
     //
@@ -39,7 +39,7 @@ struct VF_PUBLIC Street
     void findIndicesLB( SPtr<Grid> grid, real initialSearchHeight);
 };
 
-struct VF_PUBLIC StreetPointFinder
+struct VIRTUALFLUIDS_GPU_EXPORT StreetPointFinder
 {
     std::vector<Street> streets;
 

@@ -8,26 +8,26 @@ class GridImp;
 class GridInterface
 {
 public:
-    HOSTDEVICE VF_PUBLIC GridInterface();
-    HOSTDEVICE VF_PUBLIC ~GridInterface();
+    HOSTDEVICE VIRTUALFLUIDS_GPU_EXPORT GridInterface();
+    HOSTDEVICE VIRTUALFLUIDS_GPU_EXPORT ~GridInterface();
 
-    HOSTDEVICE void VF_PUBLIC findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
-    HOSTDEVICE void VF_PUBLIC findBoundaryGridInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+    HOSTDEVICE void VIRTUALFLUIDS_GPU_EXPORT findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+    HOSTDEVICE void VIRTUALFLUIDS_GPU_EXPORT findBoundaryGridInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
 
 
-	HOSTDEVICE void VF_PUBLIC findInterfaceCF_GKS(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+	HOSTDEVICE void VIRTUALFLUIDS_GPU_EXPORT findInterfaceCF_GKS(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
 
-	HOSTDEVICE void VF_PUBLIC findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
-    HOSTDEVICE void VF_PUBLIC findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+	HOSTDEVICE void VIRTUALFLUIDS_GPU_EXPORT findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+    HOSTDEVICE void VIRTUALFLUIDS_GPU_EXPORT findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
     
-    HOSTDEVICE void VF_PUBLIC findInvalidBoundaryNodes(const uint& indexOnCoarseGrid, GridImp* coarseGrid);
+    HOSTDEVICE void VIRTUALFLUIDS_GPU_EXPORT findInvalidBoundaryNodes(const uint& indexOnCoarseGrid, GridImp* coarseGrid);
 
-    HOSTDEVICE void VF_PUBLIC findForGridInterfaceSparseIndexCF(GridImp* coarseGrid, GridImp* fineGrid, uint index);
-    HOSTDEVICE void VF_PUBLIC findForGridInterfaceSparseIndexFC(GridImp* coarseGrid, GridImp* fineGrid, uint index);
+    HOSTDEVICE void VIRTUALFLUIDS_GPU_EXPORT findForGridInterfaceSparseIndexCF(GridImp* coarseGrid, GridImp* fineGrid, uint index);
+    HOSTDEVICE void VIRTUALFLUIDS_GPU_EXPORT findForGridInterfaceSparseIndexFC(GridImp* coarseGrid, GridImp* fineGrid, uint index);
 
-    CUDA_HOST void VF_PUBLIC repairGridInterfaceOnMultiGPU(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid);
+    CUDA_HOST void VIRTUALFLUIDS_GPU_EXPORT repairGridInterfaceOnMultiGPU(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid);
 
-    HOSTDEVICE void VF_PUBLIC print() const;
+    HOSTDEVICE void VIRTUALFLUIDS_GPU_EXPORT print() const;
 
     struct Interface
     {

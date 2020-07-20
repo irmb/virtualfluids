@@ -26,7 +26,7 @@ struct HeatFluxStruct
     real HRRPUA;
 };
 
-struct VF_PUBLIC HeatFlux : public BoundaryCondition //, public IsothermalWallStruct
+struct VIRTUALFLUIDS_GPU_EXPORT HeatFlux : public BoundaryCondition //, public IsothermalWallStruct
 {
     real HRRPUA;
 

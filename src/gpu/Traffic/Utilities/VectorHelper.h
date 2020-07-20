@@ -5,7 +5,7 @@
 #include <VirtualFluidsDefinitions.h>
 #include "Core/DataTypes.h"
 
-class VF_PUBLIC VectorHelper
+class VIRTUALFLUIDS_GPU_EXPORT VectorHelper
 {
 public:
 	static void fillVector(std::vector<int>& vector, int insertNumber);

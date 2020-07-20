@@ -5,7 +5,7 @@
 #include <VirtualFluidsDefinitions.h>
 #include "Core/DataTypes.h"
 
-class VF_PUBLIC ConcentrationOutwriter
+class VIRTUALFLUIDS_GPU_EXPORT ConcentrationOutwriter
 {
 public:
 	virtual void resetConcentrations();

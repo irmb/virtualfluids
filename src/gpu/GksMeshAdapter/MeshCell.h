@@ -7,7 +7,7 @@
 #include "Core/VectorTypes.h"
 #include "Core/ArrayTypes.h"
 
-struct VF_PUBLIC MeshCell{
+struct VIRTUALFLUIDS_GPU_EXPORT MeshCell{
 
     uint level;
     uint gridIdx;

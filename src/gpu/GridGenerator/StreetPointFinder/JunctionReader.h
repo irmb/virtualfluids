@@ -10,7 +10,7 @@
 
 #include <VirtualFluidsDefinitions.h>
 
-struct VF_PUBLIC JunctionReaderData
+struct VIRTUALFLUIDS_GPU_EXPORT JunctionReaderData
 {
 	std::vector<uint> inCells;
 	std::vector<uint> outCells;
@@ -21,7 +21,7 @@ struct VF_PUBLIC JunctionReaderData
 };
 
 
-struct VF_PUBLIC Neighbors
+struct VIRTUALFLUIDS_GPU_EXPORT Neighbors
 {
 	std::vector<int> cells;
 	std::vector<int> neighbors;
@@ -29,7 +29,7 @@ struct VF_PUBLIC Neighbors
 
 
 
-struct VF_PUBLIC JunctionReader
+struct VIRTUALFLUIDS_GPU_EXPORT JunctionReader
 {
 	std::vector<JunctionReaderData> junctions;
 	Neighbors specialNeighbors;

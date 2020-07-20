@@ -6,7 +6,7 @@
 #include <vector>
 
 
-struct VF_PUBLIC SourceData {
+struct VIRTUALFLUIDS_GPU_EXPORT SourceData {
 	uint sourceIndex;
 	real sourcePossibility;
 	uint maxVelocity;

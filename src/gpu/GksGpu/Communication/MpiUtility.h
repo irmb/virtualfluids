@@ -16,7 +16,7 @@ namespace GksGpu {
 class  DataBaseAllocator;
 struct DataBase;
 
-struct VF_PUBLIC MpiUtility
+struct VIRTUALFLUIDS_GPU_EXPORT MpiUtility
 {
     static int getMpiRankBeforeInit();
 

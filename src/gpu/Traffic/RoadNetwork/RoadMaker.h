@@ -6,7 +6,7 @@
 #include "Utilities/RandomHelper.h"
 
 
-struct VF_PUBLIC RoadMaker :
+struct VIRTUALFLUIDS_GPU_EXPORT RoadMaker :
 	public RoadNetworkData
 {
 public:

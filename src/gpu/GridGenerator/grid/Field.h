@@ -6,7 +6,7 @@
 struct Vertex;
 class GridStrategy;
 
-class VF_PUBLIC Field : public enableSharedFromThis<Field>
+class VIRTUALFLUIDS_GPU_EXPORT Field : public enableSharedFromThis<Field>
 {
 public:
     CUDA_HOST Field(SPtr<GridStrategy> gridStrategy, uint size);

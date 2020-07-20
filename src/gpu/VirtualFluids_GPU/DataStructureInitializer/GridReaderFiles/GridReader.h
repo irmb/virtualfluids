@@ -16,7 +16,7 @@ class BoundaryValues;
 class BoundaryQs;
 class CoordNeighborGeoV;
 
-class VF_PUBLIC GridReader
+class VIRTUALFLUIDS_GPU_EXPORT GridReader
 	: public GridProvider
 {
 private:

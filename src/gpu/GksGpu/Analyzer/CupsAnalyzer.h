@@ -13,7 +13,7 @@ namespace GksGpu {
 
 struct DataBase;
 
-class VF_PUBLIC CupsAnalyzer
+class VIRTUALFLUIDS_GPU_EXPORT CupsAnalyzer
 {
 private:
     SPtr<Timer> timer;

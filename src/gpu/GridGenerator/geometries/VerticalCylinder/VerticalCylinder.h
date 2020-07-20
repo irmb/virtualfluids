@@ -11,7 +11,7 @@
 
 #include "geometries/Object.h"
 
-class VF_PUBLIC VerticalCylinder : public Object
+class VIRTUALFLUIDS_GPU_EXPORT VerticalCylinder : public Object
 {
 public:
     HOSTDEVICE VerticalCylinder(const double& centerX, const double& centerY, const double& centerZ, const double& radius, const double& height);

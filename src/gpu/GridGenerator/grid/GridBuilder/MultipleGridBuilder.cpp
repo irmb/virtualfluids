@@ -571,7 +571,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     //////////////////////////////////////////////////////////////////////////
 }
 
-VF_PUBLIC void MultipleGridBuilder::setNumberOfLayers(uint numberOfLayersFine, uint numberOfLayersBetweenLevels)
+VIRTUALFLUIDS_GPU_EXPORT void MultipleGridBuilder::setNumberOfLayers(uint numberOfLayersFine, uint numberOfLayersBetweenLevels)
 {
     this->numberOfLayersFine = numberOfLayersFine;
     this->numberOfLayersBetweenLevels = numberOfLayersBetweenLevels;
@@ -618,7 +618,7 @@ void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
     }
 }
 
-VF_PUBLIC void MultipleGridBuilder::setSubDomainBox(SPtr<BoundingBox> subDomainBox)
+VIRTUALFLUIDS_GPU_EXPORT void MultipleGridBuilder::setSubDomainBox(SPtr<BoundingBox> subDomainBox)
 {
     this->subDomainBox = subDomainBox;
 }

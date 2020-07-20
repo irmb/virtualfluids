@@ -32,57 +32,57 @@ enum class SideType;
 class LevelGridBuilder : public GridBuilder
 {
 protected:
-    VF_PUBLIC LevelGridBuilder(Device device, const std::string& d3qxx);
+    VIRTUALFLUIDS_GPU_EXPORT LevelGridBuilder(Device device, const std::string& d3qxx);
 
 public:
-    VF_PUBLIC static std::shared_ptr<LevelGridBuilder> makeShared(Device device, const std::string& d3qxx);
+    VIRTUALFLUIDS_GPU_EXPORT static std::shared_ptr<LevelGridBuilder> makeShared(Device device, const std::string& d3qxx);
 
-    VF_PUBLIC SPtr<Grid> getGrid(uint level) override;
+    VIRTUALFLUIDS_GPU_EXPORT SPtr<Grid> getGrid(uint level) override;
 
-    VF_PUBLIC void copyDataFromGpu();
-    VF_PUBLIC virtual ~LevelGridBuilder();
+    VIRTUALFLUIDS_GPU_EXPORT void copyDataFromGpu();
+    VIRTUALFLUIDS_GPU_EXPORT virtual ~LevelGridBuilder();
 
-    VF_PUBLIC void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
-    VF_PUBLIC void setPressureBoundaryCondition(SideType sideType, real rho);
-    VF_PUBLIC void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
-    VF_PUBLIC void setNoSlipBoundaryCondition(SideType sideType);
+    VIRTUALFLUIDS_GPU_EXPORT void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
+    VIRTUALFLUIDS_GPU_EXPORT void setPressureBoundaryCondition(SideType sideType, real rho);
+    VIRTUALFLUIDS_GPU_EXPORT void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
+    VIRTUALFLUIDS_GPU_EXPORT void setNoSlipBoundaryCondition(SideType sideType);
 
-    VF_PUBLIC void setEnableFixRefinementIntoTheWall( bool enableFixRefinementIntoTheWall );
+    VIRTUALFLUIDS_GPU_EXPORT void setEnableFixRefinementIntoTheWall( bool enableFixRefinementIntoTheWall );
 
-    VF_PUBLIC void setCommunicationProcess(int direction, uint process);
+    VIRTUALFLUIDS_GPU_EXPORT void setCommunicationProcess(int direction, uint process);
 
-    VF_PUBLIC uint getCommunicationProcess(int direction) override;
+    VIRTUALFLUIDS_GPU_EXPORT uint getCommunicationProcess(int direction) override;
 
-    VF_PUBLIC virtual std::shared_ptr<Grid> getGrid(int level, int box);
-
-
-    VF_PUBLIC virtual unsigned int getNumberOfNodes(unsigned int level) const;
+    VIRTUALFLUIDS_GPU_EXPORT virtual std::shared_ptr<Grid> getGrid(int level, int box);
 
 
-    VF_PUBLIC virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, 
+    VIRTUALFLUIDS_GPU_EXPORT virtual unsigned int getNumberOfNodes(unsigned int level) const;
+
+
+    VIRTUALFLUIDS_GPU_EXPORT virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords,
                                          uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, 
                                          uint *geo, const int level) const override;
-    VF_PUBLIC virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const;
+    VIRTUALFLUIDS_GPU_EXPORT virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const;
 
 
-    VF_PUBLIC uint getVelocitySize(int level) const;
-    VF_PUBLIC virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const;
-    VF_PUBLIC virtual void getVelocityQs(real* qs[27], int level) const;
-    VF_PUBLIC uint getPressureSize(int level) const override;
-    VF_PUBLIC void getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const override;
-    VF_PUBLIC virtual void getPressureQs(real* qs[27], int level) const;
+    VIRTUALFLUIDS_GPU_EXPORT uint getVelocitySize(int level) const;
+    VIRTUALFLUIDS_GPU_EXPORT virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const;
+    VIRTUALFLUIDS_GPU_EXPORT virtual void getVelocityQs(real* qs[27], int level) const;
+    VIRTUALFLUIDS_GPU_EXPORT uint getPressureSize(int level) const override;
+    VIRTUALFLUIDS_GPU_EXPORT void getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const override;
+    VIRTUALFLUIDS_GPU_EXPORT virtual void getPressureQs(real* qs[27], int level) const;
 
-    VF_PUBLIC virtual void getGeometryQs(real* qs[27], int level) const;
-    VF_PUBLIC virtual uint getGeometrySize(int level) const;
-    VF_PUBLIC virtual void getGeometryIndices(int* indices, int level) const;
-    VF_PUBLIC virtual bool hasGeometryValues() const;
-    VF_PUBLIC virtual void getGeometryValues(real* vx, real* vy, real* vz, int level) const;
+    VIRTUALFLUIDS_GPU_EXPORT virtual void getGeometryQs(real* qs[27], int level) const;
+    VIRTUALFLUIDS_GPU_EXPORT virtual uint getGeometrySize(int level) const;
+    VIRTUALFLUIDS_GPU_EXPORT virtual void getGeometryIndices(int* indices, int level) const;
+    VIRTUALFLUIDS_GPU_EXPORT virtual bool hasGeometryValues() const;
+    VIRTUALFLUIDS_GPU_EXPORT virtual void getGeometryValues(real* vx, real* vy, real* vz, int level) const;
 
 
-    VF_PUBLIC void writeArrows(std::string fileName) const;
+    VIRTUALFLUIDS_GPU_EXPORT void writeArrows(std::string fileName) const;
 
-    VF_PUBLIC SPtr<BoundaryCondition> getBoundaryCondition( SideType side, uint level ) const override;
-    VF_PUBLIC SPtr<GeometryBoundaryCondition> getGeometryBoundaryCondition(uint level) const override;
+    VIRTUALFLUIDS_GPU_EXPORT SPtr<BoundaryCondition> getBoundaryCondition( SideType side, uint level ) const override;
+    VIRTUALFLUIDS_GPU_EXPORT SPtr<GeometryBoundaryCondition> getGeometryBoundaryCondition(uint level) const override;
 
 protected:
     
@@ -126,23 +126,23 @@ private:
     std::string d3qxx;
 
 public:
-    VF_PUBLIC void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY,
+    VIRTUALFLUIDS_GPU_EXPORT void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY,
                                        std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY,
                                        std::vector<int>& distZ) override;
-    VF_PUBLIC uint getNumberOfGridLevels() const override;
+    VIRTUALFLUIDS_GPU_EXPORT uint getNumberOfGridLevels() const override;
 
-    VF_PUBLIC uint getNumberOfNodesCF(int level) override;
-    VF_PUBLIC uint getNumberOfNodesFC(int level) override;
+    VIRTUALFLUIDS_GPU_EXPORT uint getNumberOfNodesCF(int level) override;
+    VIRTUALFLUIDS_GPU_EXPORT uint getNumberOfNodesFC(int level) override;
 
-    VF_PUBLIC void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const override;
+    VIRTUALFLUIDS_GPU_EXPORT void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const override;
 
-    VF_PUBLIC void getOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
-    VF_PUBLIC void getOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;
+    VIRTUALFLUIDS_GPU_EXPORT void getOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
+    VIRTUALFLUIDS_GPU_EXPORT void getOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;
 
-    VF_PUBLIC uint getNumberOfSendIndices( int direction, uint level ) override;
-    VF_PUBLIC uint getNumberOfReceiveIndices( int direction, uint level ) override;
-    VF_PUBLIC void getSendIndices( int* sendIndices, int direction, int level ) override;
-    VF_PUBLIC void getReceiveIndices( int* sendIndices, int direction, int level ) override;
+    VIRTUALFLUIDS_GPU_EXPORT uint getNumberOfSendIndices( int direction, uint level ) override;
+    VIRTUALFLUIDS_GPU_EXPORT uint getNumberOfReceiveIndices( int direction, uint level ) override;
+    VIRTUALFLUIDS_GPU_EXPORT void getSendIndices( int* sendIndices, int direction, int level ) override;
+    VIRTUALFLUIDS_GPU_EXPORT void getReceiveIndices( int* sendIndices, int direction, int level ) override;
 
 };
 

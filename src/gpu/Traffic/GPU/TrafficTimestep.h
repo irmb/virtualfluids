@@ -16,7 +16,7 @@ class Sink;
 class Junction;
 class Source;
 
-class VF_PUBLIC TrafficTimestep
+class VIRTUALFLUIDS_GPU_EXPORT TrafficTimestep
 {
 private:
 

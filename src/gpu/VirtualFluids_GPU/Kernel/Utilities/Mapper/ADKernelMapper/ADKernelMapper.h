@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-class VF_PUBLIC ADKernelMapper
+class VIRTUALFLUIDS_GPU_EXPORT ADKernelMapper
 {
 public:
 	static std::shared_ptr<ADKernelMapper> getInstance();

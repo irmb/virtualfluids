@@ -10,7 +10,7 @@
 
 namespace GksGpu {
 
-class VF_PUBLIC DataBaseAllocatorCPU : public DataBaseAllocator {
+class VIRTUALFLUIDS_GPU_EXPORT DataBaseAllocatorCPU : public DataBaseAllocator {
 
 public:
 

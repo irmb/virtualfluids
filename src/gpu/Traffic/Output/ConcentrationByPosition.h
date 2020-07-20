@@ -2,7 +2,7 @@
 
 #include "ConcentrationOutwriter.h"
 
-class VF_PUBLIC ConcentrationByPosition:
+class VIRTUALFLUIDS_GPU_EXPORT ConcentrationByPosition:
 	public ConcentrationOutwriter
 {
 public:

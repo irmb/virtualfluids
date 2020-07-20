@@ -29,7 +29,7 @@ class PreProcessor;
 class PreProcessorFactory;
 class TrafficMovementFactory;
 
-class VF_PUBLIC Simulation
+class VIRTUALFLUIDS_GPU_EXPORT Simulation
 {
 public:
 	Simulation();

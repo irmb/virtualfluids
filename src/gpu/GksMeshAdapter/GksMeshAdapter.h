@@ -15,7 +15,7 @@
 
 class MultipleGridBuilder;
 
-class VF_PUBLIC GksMeshAdapter{
+class VIRTUALFLUIDS_GPU_EXPORT GksMeshAdapter{
 
 public:
 

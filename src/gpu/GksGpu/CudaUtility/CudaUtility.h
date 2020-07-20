@@ -10,7 +10,7 @@
 
 namespace GksGpu {
 
-class VF_PUBLIC CudaUtility
+class VIRTUALFLUIDS_GPU_EXPORT CudaUtility
 {
 public:
 

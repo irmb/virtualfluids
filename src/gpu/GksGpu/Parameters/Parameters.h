@@ -8,13 +8,13 @@
 
 namespace GksGpu {
 
-enum class VF_PUBLIC ViscosityModel{
+enum class VIRTUALFLUIDS_GPU_EXPORT ViscosityModel{
     constant,
     sutherlandsLaw,
     sutherlandsLaw2
 };
 
-struct  VF_PUBLIC Parameters
+struct  VIRTUALFLUIDS_GPU_EXPORT Parameters
 {
 
     real mu = real(0.01);

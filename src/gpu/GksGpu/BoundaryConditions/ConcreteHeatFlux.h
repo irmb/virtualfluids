@@ -39,7 +39,7 @@ struct ConcreteHeatFluxStruct
     real ambientTemperature;
 };
 
-struct VF_PUBLIC ConcreteHeatFlux : public BoundaryCondition //, public IsothermalWallStruct
+struct VIRTUALFLUIDS_GPU_EXPORT ConcreteHeatFlux : public BoundaryCondition //, public IsothermalWallStruct
 {
     real* temperatures;
 

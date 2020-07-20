@@ -10,7 +10,7 @@
 
 namespace GksGpu {
 
-class VF_PUBLIC Interface
+class VIRTUALFLUIDS_GPU_EXPORT Interface
 {
 public:
     static void runFineToCoarse( SPtr<DataBase> dataBase, uint level );

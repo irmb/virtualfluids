@@ -22,7 +22,7 @@ enum class TriangularMeshDiscretizationMethod
     RAYCASTING, POINT_IN_OBJECT, POINT_UNDER_TRIANGLE
 };
 
-class VF_PUBLIC GridFactory
+class VIRTUALFLUIDS_GPU_EXPORT GridFactory
 {
 public:
     static SPtr<GridFactory> make()

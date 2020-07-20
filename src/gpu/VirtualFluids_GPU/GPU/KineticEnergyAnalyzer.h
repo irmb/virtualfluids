@@ -11,7 +11,7 @@
 
 class Parameter;
 
-class VF_PUBLIC KineticEnergyAnalyzer
+class VIRTUALFLUIDS_GPU_EXPORT KineticEnergyAnalyzer
 {
 private:
 

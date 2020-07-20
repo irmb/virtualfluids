@@ -17,7 +17,7 @@ struct DataBase;
 struct BoundaryCondition;
 struct Communicator;
 
-class VF_PUBLIC DataBaseAllocator {
+class VIRTUALFLUIDS_GPU_EXPORT DataBaseAllocator {
 
 public:
 

@@ -19,7 +19,7 @@ namespace GksGpu {
 
 struct DataBase;
 
-class VF_PUBLIC HeatFluxAnalyzer
+class VIRTUALFLUIDS_GPU_EXPORT HeatFluxAnalyzer
 {
 private:
 

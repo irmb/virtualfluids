@@ -26,7 +26,7 @@ struct AdiabaticWallStruct
     bool useSecondCells;
 };
 
-struct VF_PUBLIC AdiabaticWall : public BoundaryCondition //, public IsothermalWallStruct
+struct VIRTUALFLUIDS_GPU_EXPORT AdiabaticWall : public BoundaryCondition //, public IsothermalWallStruct
 {
     Vec3 velocity;
 

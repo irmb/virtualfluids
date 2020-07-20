@@ -9,7 +9,7 @@
 
 class TrafficMovement;
 
-class VF_PUBLIC JunctionRandom :
+class VIRTUALFLUIDS_GPU_EXPORT JunctionRandom :
 	public Junction
 {
 

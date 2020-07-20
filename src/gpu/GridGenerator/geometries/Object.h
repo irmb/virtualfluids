@@ -14,7 +14,7 @@
 class GridImp;
 struct Vertex;
 
-class VF_PUBLIC Object
+class VIRTUALFLUIDS_GPU_EXPORT Object
 {
 public:
     HOSTDEVICE virtual ~Object() {}

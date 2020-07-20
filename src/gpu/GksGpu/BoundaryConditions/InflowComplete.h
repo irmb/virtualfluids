@@ -26,7 +26,7 @@ struct InflowCompleteStruct
     PrimitiveVariables prim;
 };
 
-struct VF_PUBLIC InflowComplete : public BoundaryCondition //, public IsothermalWallStruct
+struct VIRTUALFLUIDS_GPU_EXPORT InflowComplete : public BoundaryCondition //, public IsothermalWallStruct
 {
     PrimitiveVariables prim;
 

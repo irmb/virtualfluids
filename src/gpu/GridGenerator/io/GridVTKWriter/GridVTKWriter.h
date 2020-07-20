@@ -9,7 +9,7 @@ enum class WRITING_FORMAT { BINARY, ASCII };
 
 class Grid;
 
-class VF_PUBLIC GridVTKWriter
+class VIRTUALFLUIDS_GPU_EXPORT GridVTKWriter
 {
 public:
     static void writeSparseGridToVTK(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format = WRITING_FORMAT::ASCII);

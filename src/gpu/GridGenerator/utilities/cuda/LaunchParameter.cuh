@@ -11,10 +11,10 @@
 class LaunchParameter
 {
 public:
-	CUDA_HOST VF_PUBLIC LaunchParameter();
+	CUDA_HOST VIRTUALFLUIDS_GPU_EXPORT LaunchParameter();
 
-	CUDA_HOST VF_PUBLIC static LaunchParameter make_2D1D_launchParameter(int size, int threadDim);
-	CUDA_HOST VF_PUBLIC static LaunchParameter make_1D1D_launchParameter(int size, int threadDim);
+	CUDA_HOST VIRTUALFLUIDS_GPU_EXPORT static LaunchParameter make_2D1D_launchParameter(int size, int threadDim);
+	CUDA_HOST VIRTUALFLUIDS_GPU_EXPORT static LaunchParameter make_1D1D_launchParameter(int size, int threadDim);
 
 	DEVICE static int getGlobalIdx_2D_1D();
 	DEVICE static int getGlobalIdx_1D_1D();

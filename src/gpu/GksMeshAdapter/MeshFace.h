@@ -5,7 +5,7 @@
 #include "Core/VectorTypes.h"
 #include "Core/ArrayTypes.h"
 
-struct VF_PUBLIC MeshFace
+struct VIRTUALFLUIDS_GPU_EXPORT MeshFace
 {
     //////////////////////////////////////////////////////////////////////////
 

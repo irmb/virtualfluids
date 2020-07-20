@@ -11,7 +11,7 @@
 class TrafficMovement;
 class TrafficLogger;
 
-class VF_PUBLIC TrafficMovementFactory
+class VIRTUALFLUIDS_GPU_EXPORT TrafficMovementFactory
 {
 public:
 	TrafficMovementFactory();

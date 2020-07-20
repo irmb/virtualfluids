@@ -17,7 +17,7 @@
 class Parameter;
 class PorousMedia;
 
-class VF_PUBLIC CudaMemoryManager
+class VIRTUALFLUIDS_GPU_EXPORT CudaMemoryManager
 {
 public:
 	static std::shared_ptr<CudaMemoryManager> make(std::shared_ptr<Parameter> parameter);

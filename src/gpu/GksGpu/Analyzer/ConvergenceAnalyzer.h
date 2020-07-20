@@ -15,7 +15,7 @@ namespace GksGpu {
 
 struct DataBase;
 
-class VF_PUBLIC ConvergenceAnalyzer
+class VIRTUALFLUIDS_GPU_EXPORT ConvergenceAnalyzer
 {
 private:
 

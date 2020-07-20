@@ -28,7 +28,7 @@ struct PerLevelCounts;
 struct DataBaseStruct;
 struct Communicator;
 
-struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
+struct VIRTUALFLUIDS_GPU_EXPORT DataBase : public std::enable_shared_from_this<DataBase>
 {
     //////////////////////////////////////////////////////////////////////////
     // Management
@@ -147,7 +147,7 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     std::string getDeviceType();
 };
 
-struct VF_PUBLIC PerLevelCounts
+struct VIRTUALFLUIDS_GPU_EXPORT PerLevelCounts
 {
     uint numberOfCells;
     uint startOfCells;

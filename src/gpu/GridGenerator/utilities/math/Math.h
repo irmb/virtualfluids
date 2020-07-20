@@ -11,7 +11,7 @@
 
 namespace vf 
 {
-    class VF_PUBLIC Math
+    class VIRTUALFLUIDS_GPU_EXPORT Math
     {
     public:
         HOSTDEVICE static bool equal(const real& val1, const real& val2, real maxRelDiff = EPSILON);

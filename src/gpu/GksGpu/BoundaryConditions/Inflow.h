@@ -30,7 +30,7 @@ struct InflowStruct
     real a0, a1, a2;
 };
 
-struct VF_PUBLIC Inflow : public BoundaryCondition //, public IsothermalWallStruct
+struct VIRTUALFLUIDS_GPU_EXPORT Inflow : public BoundaryCondition //, public IsothermalWallStruct
 {
     Vec3 velocity;
     real lambda;

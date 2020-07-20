@@ -9,7 +9,7 @@
 #include "Junction/Junction.h"
 
 
-struct VF_PUBLIC RoadNetworkData
+struct VIRTUALFLUIDS_GPU_EXPORT RoadNetworkData
 {
 protected:
 	friend class TrafficMovement;

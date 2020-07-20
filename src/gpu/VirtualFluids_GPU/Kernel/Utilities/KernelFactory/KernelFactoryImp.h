@@ -5,7 +5,7 @@
 
 class PorousMedia;
 
-class VF_PUBLIC KernelFactoryImp : public KernelFactory
+class VIRTUALFLUIDS_GPU_EXPORT KernelFactoryImp : public KernelFactory
 {
 public:
 	static std::shared_ptr< KernelFactoryImp> getInstance();

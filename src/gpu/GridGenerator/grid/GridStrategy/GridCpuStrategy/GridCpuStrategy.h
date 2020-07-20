@@ -8,7 +8,7 @@
 class GridImp;
 class TriangularMesh;
 
-class VF_PUBLIC GridCpuStrategy : public GridStrategy
+class VIRTUALFLUIDS_GPU_EXPORT GridCpuStrategy : public GridStrategy
 {
 public:
     virtual ~GridCpuStrategy() {};

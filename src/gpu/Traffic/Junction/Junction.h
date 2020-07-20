@@ -8,7 +8,7 @@
 
 class TrafficMovement;
 
-class VF_PUBLIC Junction
+class VIRTUALFLUIDS_GPU_EXPORT Junction
 {
 public:
 	virtual void checkOutCellIndices(const uint roadLength) const = 0;

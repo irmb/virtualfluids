@@ -7,7 +7,7 @@
 #include "Utilities/RandomHelper.h"
 
 
-struct VF_PUBLIC JunctionData
+struct VIRTUALFLUIDS_GPU_EXPORT JunctionData
 {
 public:
 	std::vector<uint> inCellIndices;

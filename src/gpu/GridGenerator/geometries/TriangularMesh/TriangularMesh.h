@@ -24,16 +24,16 @@ class TriangularMesh : public Object
 {
 public:
 
-    VF_PUBLIC static TriangularMesh* make(const std::string& fileName, const std::vector<uint> ignorePatches = std::vector<uint>());
-	VF_PUBLIC TriangularMesh();
-    VF_PUBLIC TriangularMesh(const std::string& inputPath, const std::vector<uint> ignorePatches = std::vector<uint>());
-	VF_PUBLIC TriangularMesh(const std::string& inputPath, const BoundingBox &box);
-	HOSTDEVICE VF_PUBLIC ~TriangularMesh();
+    VIRTUALFLUIDS_GPU_EXPORT static TriangularMesh* make(const std::string& fileName, const std::vector<uint> ignorePatches = std::vector<uint>());
+	VIRTUALFLUIDS_GPU_EXPORT TriangularMesh();
+    VIRTUALFLUIDS_GPU_EXPORT TriangularMesh(const std::string& inputPath, const std::vector<uint> ignorePatches = std::vector<uint>());
+	VIRTUALFLUIDS_GPU_EXPORT TriangularMesh(const std::string& inputPath, const BoundingBox &box);
+	HOSTDEVICE VIRTUALFLUIDS_GPU_EXPORT ~TriangularMesh();
 
-    VF_PUBLIC uint getNumberOfTriangles() const;
+    VIRTUALFLUIDS_GPU_EXPORT uint getNumberOfTriangles() const;
 
-	VF_PUBLIC void setTriangles(std::vector<Triangle> triangles);
-	VF_PUBLIC void setMinMax(BoundingBox minmax);
+	VIRTUALFLUIDS_GPU_EXPORT void setTriangles(std::vector<Triangle> triangles);
+	VIRTUALFLUIDS_GPU_EXPORT void setMinMax(BoundingBox minmax);
 
 	std::vector<Triangle> triangleVec;
 	Triangle *triangles;
@@ -42,13 +42,13 @@ public:
 
     SPtr<GbTriFaceMesh3D> VF_GbTriFaceMesh3D;
 
-    CUDA_HOST VF_PUBLIC bool operator==(const TriangularMesh &geometry) const;
+    CUDA_HOST VIRTUALFLUIDS_GPU_EXPORT bool operator==(const TriangularMesh &geometry) const;
 
-    VF_PUBLIC void findNeighbors();
+    VIRTUALFLUIDS_GPU_EXPORT void findNeighbors();
 
-    HOSTDEVICE VF_PUBLIC GbTriFaceMesh3D* getGbTriFaceMesh3D() const;
+    HOSTDEVICE VIRTUALFLUIDS_GPU_EXPORT GbTriFaceMesh3D* getGbTriFaceMesh3D() const;
 
-    CUDA_HOST VF_PUBLIC void generateGbTriFaceMesh3D();
+    CUDA_HOST VIRTUALFLUIDS_GPU_EXPORT void generateGbTriFaceMesh3D();
 
 private:
 	

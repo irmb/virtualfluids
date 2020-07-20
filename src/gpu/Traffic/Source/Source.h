@@ -3,7 +3,7 @@
 
 #include "SourceData.h"
 
-class VF_PUBLIC Source
+class VIRTUALFLUIDS_GPU_EXPORT Source
 {
 public:
 	virtual uint getIndex() const = 0;

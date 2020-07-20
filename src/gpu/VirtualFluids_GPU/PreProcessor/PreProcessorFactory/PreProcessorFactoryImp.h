@@ -5,7 +5,7 @@
 
 class PreProcessorStrategy;
 
-class VF_PUBLIC PreProcessorFactoryImp : public PreProcessorFactory
+class VIRTUALFLUIDS_GPU_EXPORT PreProcessorFactoryImp : public PreProcessorFactory
 {
 public:
 	static std::shared_ptr< PreProcessorFactoryImp> getInstance();

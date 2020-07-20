@@ -11,7 +11,7 @@
 
 namespace GksGpu {
 
-class VF_PUBLIC CellUpdate
+class VIRTUALFLUIDS_GPU_EXPORT CellUpdate
 {
 public:
 

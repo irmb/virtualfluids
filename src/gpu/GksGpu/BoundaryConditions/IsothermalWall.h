@@ -29,7 +29,7 @@ struct IsothermalWallStruct
     bool useSecondCells;
 };
 
-struct VF_PUBLIC IsothermalWall : public BoundaryCondition //, public IsothermalWallStruct
+struct VIRTUALFLUIDS_GPU_EXPORT IsothermalWall : public BoundaryCondition //, public IsothermalWallStruct
 {
     Vec3 velocity;
     real lambda;

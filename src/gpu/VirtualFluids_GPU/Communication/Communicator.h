@@ -20,7 +20,7 @@
 
 
 
-class VF_PUBLIC Communicator
+class VIRTUALFLUIDS_GPU_EXPORT Communicator
 {
 public:
 	static Communicator* getInstanz();

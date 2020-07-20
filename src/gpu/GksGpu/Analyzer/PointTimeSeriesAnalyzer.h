@@ -29,7 +29,7 @@ struct PointTimeSeriesAnalyzerStruct
     uint cellIndex;
 };
 
-class VF_PUBLIC PointTimeSeriesAnalyzer
+class VIRTUALFLUIDS_GPU_EXPORT PointTimeSeriesAnalyzer
 {
 public:
 

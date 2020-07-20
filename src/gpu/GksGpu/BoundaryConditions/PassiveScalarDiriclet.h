@@ -32,7 +32,7 @@ struct PassiveScalarDiricletStruct
     real S_2;
 };
 
-struct VF_PUBLIC PassiveScalarDiriclet : public BoundaryCondition
+struct VIRTUALFLUIDS_GPU_EXPORT PassiveScalarDiriclet : public BoundaryCondition
 {
     real S_1;
     real S_2;

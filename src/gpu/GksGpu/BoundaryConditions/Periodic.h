@@ -13,7 +13,7 @@
 
 namespace GksGpu{
 
-struct VF_PUBLIC Periodic : public BoundaryCondition
+struct VIRTUALFLUIDS_GPU_EXPORT Periodic : public BoundaryCondition
 {
     Periodic( SPtr<DataBase> dataBase ) : BoundaryCondition( dataBase ){}
 

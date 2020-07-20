@@ -12,7 +12,7 @@ class ADKernel;
 class Parameter;
 class PorousMedia;
 
-class VF_PUBLIC KernelFactory
+class VIRTUALFLUIDS_GPU_EXPORT KernelFactory
 {
 public:
 	virtual std::vector< std::shared_ptr< Kernel>> makeKernels(std::shared_ptr<Parameter> para) = 0;

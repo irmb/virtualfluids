@@ -19,7 +19,7 @@ namespace GksGpu {
 class  DataBaseAllocator;
 struct DataBase;
 
-struct VF_PUBLIC Communicator : public std::enable_shared_from_this<Communicator>
+struct VIRTUALFLUIDS_GPU_EXPORT Communicator : public std::enable_shared_from_this<Communicator>
 {
     SPtr<DataBaseAllocator> myAllocator;
 

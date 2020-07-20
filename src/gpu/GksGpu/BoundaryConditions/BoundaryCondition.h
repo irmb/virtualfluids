@@ -30,7 +30,7 @@ struct BoundaryConditionStruct
     uint* secondCells;
 };
 
-struct VF_PUBLIC BoundaryCondition : virtual public BoundaryConditionStruct, public std::enable_shared_from_this<BoundaryCondition>
+struct VIRTUALFLUIDS_GPU_EXPORT BoundaryCondition : virtual public BoundaryConditionStruct, public std::enable_shared_from_this<BoundaryCondition>
 {
     SPtr<DataBaseAllocator> myAllocator;
 

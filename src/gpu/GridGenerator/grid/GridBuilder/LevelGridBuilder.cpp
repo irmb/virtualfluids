@@ -126,18 +126,18 @@ void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
     }
 }
 
-VF_PUBLIC void LevelGridBuilder::setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall)
+VIRTUALFLUIDS_GPU_EXPORT void LevelGridBuilder::setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall)
 {
     for( uint level = 0; level < this->grids.size(); level++ )
         grids[level]->setEnableFixRefinementIntoTheWall( enableFixRefinementIntoTheWall );
 }
 
-VF_PUBLIC void LevelGridBuilder::setCommunicationProcess(int direction, uint process)
+VIRTUALFLUIDS_GPU_EXPORT void LevelGridBuilder::setCommunicationProcess(int direction, uint process)
 {
     this->communicationProcesses[direction] = process;
 }
 
-VF_PUBLIC uint LevelGridBuilder::getCommunicationProcess(int direction)
+VIRTUALFLUIDS_GPU_EXPORT uint LevelGridBuilder::getCommunicationProcess(int direction)
 {
     return this->communicationProcesses[direction];
 }
@@ -228,17 +228,17 @@ void LevelGridBuilder::getOffsetCF(real * xOffCF, real * yOffCF, real * zOffCF, 
     }
 }
 
-VF_PUBLIC uint LevelGridBuilder::getNumberOfSendIndices(int direction, uint level)
+VIRTUALFLUIDS_GPU_EXPORT uint LevelGridBuilder::getNumberOfSendIndices(int direction, uint level)
 {
     return this->grids[level]->getNumberOfSendNodes(direction);
 }
 
-VF_PUBLIC uint LevelGridBuilder::getNumberOfReceiveIndices(int direction, uint level)
+VIRTUALFLUIDS_GPU_EXPORT uint LevelGridBuilder::getNumberOfReceiveIndices(int direction, uint level)
 {
     return this->grids[level]->getNumberOfReceiveNodes(direction);
 }
 
-VF_PUBLIC void LevelGridBuilder::getSendIndices(int * sendIndices, int direction, int level)
+VIRTUALFLUIDS_GPU_EXPORT void LevelGridBuilder::getSendIndices(int * sendIndices, int direction, int level)
 {
     SPtr<Grid> grid = this->grids[level];
     for( uint i = 0; i < getNumberOfSendIndices(direction, level); i++ )
@@ -247,7 +247,7 @@ VF_PUBLIC void LevelGridBuilder::getSendIndices(int * sendIndices, int direction
     }
 }
 
-VF_PUBLIC void LevelGridBuilder::getReceiveIndices(int * receiveIndices, int direction, int level)
+VIRTUALFLUIDS_GPU_EXPORT void LevelGridBuilder::getReceiveIndices(int * receiveIndices, int direction, int level)
 {
     SPtr<Grid> grid = this->grids[level];
     for( uint i = 0; i < getNumberOfReceiveIndices(direction, level); i++ )
@@ -469,7 +469,7 @@ void LevelGridBuilder::writeArrows(std::string fileName) const
     QLineWriter::writeArrows(fileName, boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition, grids[getNumberOfGridLevels() - 1]);
 }
 
-VF_PUBLIC SPtr<BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideType side, uint level) const
+VIRTUALFLUIDS_GPU_EXPORT SPtr<BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideType side, uint level) const
 {
     for( auto bc : this->boundaryConditions[level]->pressureBoundaryConditions )
         if( bc->isSide(side) )
@@ -487,7 +487,7 @@ VF_PUBLIC SPtr<BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideTyp
     return nullptr;
 }
 
-VF_PUBLIC SPtr<GeometryBoundaryCondition> LevelGridBuilder::getGeometryBoundaryCondition(uint level) const
+VIRTUALFLUIDS_GPU_EXPORT SPtr<GeometryBoundaryCondition> LevelGridBuilder::getGeometryBoundaryCondition(uint level) const
 {
     return this->boundaryConditions[level]->geometryBoundaryCondition;
 }

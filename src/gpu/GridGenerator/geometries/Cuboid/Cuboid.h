@@ -11,7 +11,7 @@
 
 #include "geometries/Object.h"
 
-class VF_PUBLIC Cuboid : public Object
+class VIRTUALFLUIDS_GPU_EXPORT Cuboid : public Object
 {
 public:              
     HOSTDEVICE Cuboid(const double& minX1, const double& minX2, const double& minX3, const double& maxX1,const double& maxX2, const double& maxX3);

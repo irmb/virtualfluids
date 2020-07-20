@@ -10,7 +10,7 @@ struct Vertex;
 struct Triangle;
 
 
-class VF_PUBLIC BoundingBox
+class VIRTUALFLUIDS_GPU_EXPORT BoundingBox
 {
 public:
 	real minX;

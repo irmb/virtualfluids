@@ -19,7 +19,7 @@ class TrafficLogger;
 //class CarDisplay;
 class TrafficTimestep;
 
-class VF_PUBLIC TrafficMovement
+class VIRTUALFLUIDS_GPU_EXPORT TrafficMovement
 {
 public:
 	TrafficMovement(std::shared_ptr<RoadNetworkData> road, const real dawdlePossibility);

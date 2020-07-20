@@ -28,7 +28,7 @@ struct OpenStruct
     real velocityLimiter;
 };
 
-struct VF_PUBLIC Open : public BoundaryCondition //, public IsothermalWallStruct
+struct VIRTUALFLUIDS_GPU_EXPORT Open : public BoundaryCondition //, public IsothermalWallStruct
 {
     PrimitiveVariables prim;
 

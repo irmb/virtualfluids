@@ -13,7 +13,7 @@
 //struct Vertex;
 //class Grid;
 //
-//class VF_PUBLIC UnstructuredGridWrapper
+//class VIRTUALFLUIDS_GPU_EXPORT UnstructuredGridWrapper
 //{
 //public:
 //    UnstructuredGridWrapper();

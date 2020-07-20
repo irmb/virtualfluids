@@ -11,7 +11,7 @@
 
 #include "geometries/Object.h"
 
-class VF_PUBLIC Sphere : public Object
+class VIRTUALFLUIDS_GPU_EXPORT Sphere : public Object
 {
 public:
     HOSTDEVICE Sphere(const double& centerX, const double& centerY, const double& centerZ, const double& radius);

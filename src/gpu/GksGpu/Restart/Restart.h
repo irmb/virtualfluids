@@ -13,7 +13,7 @@ namespace GksGpu {
 
 struct DataBase;
 
-class VF_PUBLIC Restart
+class VIRTUALFLUIDS_GPU_EXPORT Restart
 {
 
 public:

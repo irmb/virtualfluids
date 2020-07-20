@@ -3,7 +3,7 @@
 #include <VirtualFluidsDefinitions.h>
 #include "Core/DataTypes.h"
 
-struct VF_PUBLIC SinkData {
+struct VIRTUALFLUIDS_GPU_EXPORT SinkData {
 	uint sinkIndex;
 	real sinkBlockedPossibility;
 };

@@ -22,14 +22,14 @@ struct IntegerPtr2D {
 class TriangleNeighborFinder
 {
 public:
-    VF_PUBLIC TriangleNeighborFinder(Triangle *triangles, int size);
-    VF_PUBLIC ~TriangleNeighborFinder();
+    VIRTUALFLUIDS_GPU_EXPORT TriangleNeighborFinder(Triangle *triangles, int size);
+    VIRTUALFLUIDS_GPU_EXPORT ~TriangleNeighborFinder();
     
     std::vector<int> getTriangleIDsWithCommonVertex(int vertexID) const;
     std::vector< std::vector<Triangle> > getTrianglesPerVertex() const;
 
-    void VF_PUBLIC fillWithNeighborIndices(IntegerPtr2D *indices, Triangle *triangles);
-	void VF_PUBLIC fillWithNeighborAngles(TriangularMesh *geom) const;
+    void VIRTUALFLUIDS_GPU_EXPORT fillWithNeighborIndices(IntegerPtr2D *indices, Triangle *triangles);
+	void VIRTUALFLUIDS_GPU_EXPORT fillWithNeighborAngles(TriangularMesh *geom) const;
 
     void printSortedToTriangles() const;
     void printSortedInSpace() const;

@@ -27,25 +27,25 @@ class TransformatorImp
 	: public Transformator, public ArrowTransformator
 {
 public:
-	VF_PUBLIC TransformatorImp();
-	VF_PUBLIC TransformatorImp(const TransformatorImp& trafo);
-	VF_PUBLIC TransformatorImp(real delta, const Vertex& translater);
-	VF_PUBLIC TransformatorImp(real delta, real dx, real dy, real dz);
-	VF_PUBLIC virtual ~TransformatorImp();
+	VIRTUALFLUIDS_GPU_EXPORT TransformatorImp();
+	VIRTUALFLUIDS_GPU_EXPORT TransformatorImp(const TransformatorImp& trafo);
+	VIRTUALFLUIDS_GPU_EXPORT TransformatorImp(real delta, const Vertex& translater);
+	VIRTUALFLUIDS_GPU_EXPORT TransformatorImp(real delta, real dx, real dy, real dz);
+	VIRTUALFLUIDS_GPU_EXPORT virtual ~TransformatorImp();
 	
-	VF_PUBLIC void transformWorldToGrid(Triangle &value) const;
-	VF_PUBLIC void transformWorldToGrid(TriangularMesh &geom) const;
-	VF_PUBLIC void transformWorldToGrid(Vertex &value) const;
+	VIRTUALFLUIDS_GPU_EXPORT void transformWorldToGrid(Triangle &value) const;
+	VIRTUALFLUIDS_GPU_EXPORT void transformWorldToGrid(TriangularMesh &geom) const;
+	VIRTUALFLUIDS_GPU_EXPORT void transformWorldToGrid(Vertex &value) const;
 
-    VF_PUBLIC void transformGridToWorld(Triangle &t) const;
-	VF_PUBLIC void transformGridToWorld(Vertex &value) const;
+    VIRTUALFLUIDS_GPU_EXPORT void transformGridToWorld(Triangle &t) const;
+	VIRTUALFLUIDS_GPU_EXPORT void transformGridToWorld(Vertex &value) const;
 
-	VF_PUBLIC void transformGridToWorld(BoundingBox &box) const;
-	VF_PUBLIC void transformWorldToGrid(BoundingBox &box) const;
+	VIRTUALFLUIDS_GPU_EXPORT void transformGridToWorld(BoundingBox &box) const;
+	VIRTUALFLUIDS_GPU_EXPORT void transformWorldToGrid(BoundingBox &box) const;
 
-	VF_PUBLIC bool operator==(const TransformatorImp& trafo) const;
+	VIRTUALFLUIDS_GPU_EXPORT bool operator==(const TransformatorImp& trafo) const;
 
-	VF_PUBLIC virtual void transformGridToWorld(std::shared_ptr<Arrow> arrow) const override;
+	VIRTUALFLUIDS_GPU_EXPORT virtual void transformGridToWorld(std::shared_ptr<Arrow> arrow) const override;
 
 private:
 	real delta;

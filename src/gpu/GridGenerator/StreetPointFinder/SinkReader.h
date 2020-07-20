@@ -10,13 +10,13 @@
 
 #include <VirtualFluidsDefinitions.h>
 
-struct VF_PUBLIC SinkReaderData{
+struct VIRTUALFLUIDS_GPU_EXPORT SinkReaderData{
 	uint sinkIndex;
 	float sinkBlockedPossibility;
 	SinkReaderData(uint sinkIndex, float sinkBlockedPossibility);
 };
 
-struct VF_PUBLIC SinkReader
+struct VIRTUALFLUIDS_GPU_EXPORT SinkReader
 {
 	std::vector<SinkReaderData> sinks;
 	StreetPointFinder* streetPointFinder;

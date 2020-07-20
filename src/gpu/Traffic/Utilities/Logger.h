@@ -6,7 +6,7 @@
 #include <string>
 #include <fstream>
 
-class VF_PUBLIC TrafficLogger
+class VIRTUALFLUIDS_GPU_EXPORT TrafficLogger
 {
 private:
 	std::string filename;	

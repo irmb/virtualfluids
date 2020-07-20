@@ -20,7 +20,7 @@ class  PointTimeSeriesAnalyzer;
 struct DataBase;
 struct Parameters;
 
-class VF_PUBLIC PointTimeSeriesCollector
+class VIRTUALFLUIDS_GPU_EXPORT PointTimeSeriesCollector
 {
 public:
 

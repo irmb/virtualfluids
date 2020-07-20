@@ -4,7 +4,7 @@
 // using standard exceptions
 #include <stdexcept>
 
-class VF_PUBLIC invalidInput_error :
+class VIRTUALFLUIDS_GPU_EXPORT invalidInput_error :
 	public std::runtime_error
 {
 public:

@@ -23,7 +23,7 @@ class TriangularMeshDiscretizationStrategy;
 
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
-class VF_PUBLIC GridImp : public enableSharedFromThis<GridImp>, public Grid
+class VIRTUALFLUIDS_GPU_EXPORT GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
 private:
     CUDA_HOST GridImp();

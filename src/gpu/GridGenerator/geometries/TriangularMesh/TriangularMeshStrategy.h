@@ -7,7 +7,7 @@ class GridImp;
 class TriangularMesh;
 struct Triangle;
 
-class VF_PUBLIC TriangularMeshDiscretizationStrategy
+class VIRTUALFLUIDS_GPU_EXPORT TriangularMeshDiscretizationStrategy
 {
 public:
     TriangularMeshDiscretizationStrategy() {}
@@ -26,7 +26,7 @@ private:
 
 
 
-class VF_PUBLIC PointInObjectDiscretizationStrategy : public TriangularMeshDiscretizationStrategy
+class VIRTUALFLUIDS_GPU_EXPORT PointInObjectDiscretizationStrategy : public TriangularMeshDiscretizationStrategy
 {
 public:
     PointInObjectDiscretizationStrategy() {}
@@ -35,7 +35,7 @@ public:
     virtual void doDiscretize(TriangularMesh* triangularMesh, GridImp* grid, char InnerType, char OuterType);
 };
 
-class VF_PUBLIC RayCastingDiscretizationStrategy : public TriangularMeshDiscretizationStrategy
+class VIRTUALFLUIDS_GPU_EXPORT RayCastingDiscretizationStrategy : public TriangularMeshDiscretizationStrategy
 {
 public:
     RayCastingDiscretizationStrategy() {}
@@ -44,7 +44,7 @@ public:
     virtual void doDiscretize(TriangularMesh* triangularMesh, GridImp* grid, char InnerType, char OuterType);
 };
 
-class VF_PUBLIC PointUnderTriangleStrategy : public TriangularMeshDiscretizationStrategy
+class VIRTUALFLUIDS_GPU_EXPORT PointUnderTriangleStrategy : public TriangularMeshDiscretizationStrategy
 {
 public:
     PointUnderTriangleStrategy() {}

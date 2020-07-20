@@ -9,7 +9,7 @@
 
 class TriangleMemento;
 
-struct VF_PUBLIC Triangle
+struct VIRTUALFLUIDS_GPU_EXPORT Triangle
 {
     Vertex v1, v2, v3, normal;
     real alphaAngles[3];

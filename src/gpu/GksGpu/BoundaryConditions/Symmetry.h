@@ -24,7 +24,7 @@ struct SymmetryStruct
     char direction;
 };
 
-struct VF_PUBLIC Symmetry : public BoundaryCondition //, public IsothermalWallStruct
+struct VIRTUALFLUIDS_GPU_EXPORT Symmetry : public BoundaryCondition //, public IsothermalWallStruct
 {
     char direction;
 

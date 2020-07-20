@@ -5,7 +5,7 @@
 
 #include "global.h"
 
-struct VF_PUBLIC simulationFileNames
+struct VIRTUALFLUIDS_GPU_EXPORT simulationFileNames
 {
 	static const std::string coordX;
 	static const std::string coordY;

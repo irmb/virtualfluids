@@ -14,7 +14,7 @@
 //class Grid;
 //class Transformator;
 //
-//class VF_PUBLIC Partition
+//class VIRTUALFLUIDS_GPU_EXPORT Partition
 //{
 //public:
 //    static void partitionGridMesh(SPtr<Grid> grid);

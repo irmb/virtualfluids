@@ -2,7 +2,7 @@
 
 
 
-class VF_PUBLIC ConsoleColor
+class VIRTUALFLUIDS_GPU_EXPORT ConsoleColor
 {
 public:
 	static void setDefaultWhite();

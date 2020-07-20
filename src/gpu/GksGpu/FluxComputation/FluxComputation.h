@@ -11,7 +11,7 @@
 
 namespace GksGpu {
 
-class VF_PUBLIC FluxComputation
+class VIRTUALFLUIDS_GPU_EXPORT FluxComputation
 {
 public:
 

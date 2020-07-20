@@ -31,7 +31,7 @@ struct PressureStruct
     real p0;
 };
 
-struct VF_PUBLIC Pressure : public BoundaryCondition
+struct VIRTUALFLUIDS_GPU_EXPORT Pressure : public BoundaryCondition
 {
     real p0;
 

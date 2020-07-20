@@ -82,7 +82,7 @@ bool FileWriter::isPeriodicCell(std::shared_ptr<Parameter> para, int level, unsi
 		   (para->getParH(level)->coordZ_SP[number5] < para->getParH(level)->coordZ_SP[number1]);
 }
 
-void VF_PUBLIC FileWriter::writeCollectionFile(std::shared_ptr<Parameter> para, unsigned int timestep)
+void VIRTUALFLUIDS_GPU_EXPORT FileWriter::writeCollectionFile(std::shared_ptr<Parameter> para, unsigned int timestep)
 {
 
     std::string filename = para->getFName() + "_bin_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk";
@@ -126,7 +126,7 @@ void VF_PUBLIC FileWriter::writeCollectionFile(std::shared_ptr<Parameter> para, 
     this->fileNamesForCollectionFile.clear();
 }
 
-void VF_PUBLIC FileWriter::writeCollectionFileMedian(std::shared_ptr<Parameter> para, unsigned int timestep)
+void VIRTUALFLUIDS_GPU_EXPORT FileWriter::writeCollectionFileMedian(std::shared_ptr<Parameter> para, unsigned int timestep)
 {
 
     std::string filename = para->getFName() + "_bin_median_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk";

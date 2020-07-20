@@ -17,7 +17,7 @@ namespace GksGpu {
 
 struct DataBase;
 
-class VF_PUBLIC EnstrophyAnalyzer
+class VIRTUALFLUIDS_GPU_EXPORT EnstrophyAnalyzer
 {
 private:
 

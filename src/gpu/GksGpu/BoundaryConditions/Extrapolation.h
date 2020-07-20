@@ -22,7 +22,7 @@ struct ExtrapolationStruct
     uint* secondCells;
 };
 
-struct VF_PUBLIC Extrapolation : public BoundaryCondition //, public IsothermalWallStruct
+struct VIRTUALFLUIDS_GPU_EXPORT Extrapolation : public BoundaryCondition //, public IsothermalWallStruct
 {
     Extrapolation( SPtr<DataBase> dataBase );
 

@@ -16,7 +16,7 @@
 
 namespace GksGpu {
 
-class VF_PUBLIC Initializer
+class VIRTUALFLUIDS_GPU_EXPORT Initializer
 {
 public:
 
