@@ -5,7 +5,7 @@
 #include "../Logger.h"
 
 
-TEST(LoggerTest, logStringWithoutSettingLevels_WillPutTheLogMesssageIntoTheStream)
+TEST(DISABLED_LoggerTest, logStringWithoutSettingLevels_WillPutTheLogMesssageIntoTheStream)
 {
     std::ostringstream stream;
     logging::Logger::setStream(&stream);
@@ -15,7 +15,7 @@ TEST(LoggerTest, logStringWithoutSettingLevels_WillPutTheLogMesssageIntoTheStrea
     EXPECT_THAT(stream.str(), "[LOW] Hello World\n");
 }
 
-TEST(LoggerTest, logStringWithHighDebugLevel_logOnlyHighLevelMessages)
+TEST(DISABLED_LoggerTest, logStringWithHighDebugLevel_logOnlyHighLevelMessages)
 {
     std::ostringstream stream;
     logging::Logger::setStream(&stream);
@@ -26,7 +26,7 @@ TEST(LoggerTest, logStringWithHighDebugLevel_logOnlyHighLevelMessages)
     EXPECT_THAT(stream.str(), "[HIGH] HIGH Debug Message\n");
 }
 
-TEST(LoggerTest, addTwoStreams_shouldWriteToBoth)
+TEST(DISABLED_LoggerTest, addTwoStreams_shouldWriteToBoth)
 {
     logging::Logger::resetStreams();
 
@@ -41,7 +41,7 @@ TEST(LoggerTest, addTwoStreams_shouldWriteToBoth)
     EXPECT_THAT(stream2.str(), "[LOW] Hello World\n");
 }
 
-TEST(LoggerTest, splittetOutputShouldHaveDebugInformationOnce)
+TEST(DISABLED_LoggerTest, splittetOutputShouldHaveDebugInformationOnce)
 {
     std::ostringstream stream;
     logging::Logger::setStream(&stream);
@@ -51,7 +51,7 @@ TEST(LoggerTest, splittetOutputShouldHaveDebugInformationOnce)
     EXPECT_THAT(stream.str(), "[LOW] Hello World\n");
 }
 
-TEST(LoggerTest, enableTimeStampInOutput)
+TEST(DISABLED_LoggerTest, enableTimeStampInOutput)
 {
     std::ostringstream stream;
     logging::Logger::setStream(&stream);

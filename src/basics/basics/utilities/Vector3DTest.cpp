@@ -1,6 +1,8 @@
 #include "gmock/gmock.h"
 #include "Vector3D.h"
 
+#include <cmath>
+
 using namespace testing;
 
 class Vector3DTest : public Test 

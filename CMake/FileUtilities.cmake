@@ -28,11 +28,21 @@ endmacro(includeTestFiles)
 
 macro(includeFiles targetName file_path)
 	foreach(file ${file_path})
+		message("File: " ${file})
 		get_filename_component(package_dir ${file} DIRECTORY)
+
+		message("package_dir: " ${package_dir})
 
 		 collectFilesFrom(${file})
 		if (package_dir)
-		 setSourceGroupForFilesIn(${package_dir} ${targetName})
+		 #setSourceGroupForFilesIn(${package_dir} ${targetName})
+		 buildSourceGroup(${targetName} ${package_dir})
+
+		 if(isAllTestSuite)
+			 source_group(${targetName}\\${SOURCE_GROUP} FILES ${MY_SRCS})
+		 else()
+			 source_group(${SOURCE_GROUP} FILES ${file})
+		 endif()
 		endif()
 	endforeach()
 endmacro(includeFiles)
@@ -94,6 +104,8 @@ macro(buildSourceGroup targetName path)
 			SET(findTargetName 1)
 		endif()
 	endforeach()
+
+	message("SOURCE_GROUP: " ${SOURCE_GROUP})
 
 	if(NOT SOURCE_GROUP)
 		set(SOURCE_GROUP "general")

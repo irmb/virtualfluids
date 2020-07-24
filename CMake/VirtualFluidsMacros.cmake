@@ -50,6 +50,10 @@ function(vf_add_library)
         set(sourceFiles ${sourceFiles} ${all_files})
     endif()
 
+    foreach(X IN LISTS sourceFiles)
+        message(STATUS "${X}")
+    endforeach()
+
     if (ARG_EXCLUDE)
         foreach(file_path ${sourceFiles})
             foreach(file_exclude ${ARG_EXCLUDE})
@@ -175,3 +179,27 @@ function(vf_add_library)
 
 endfunction(vf_add_library)
 
+function(vf_add_tests)
+
+    vf_get_library_name (folder_name)
+    set (targetName ${folder_name}Tests)
+    message(Add Test binary: ${targetName})
+    file ( GLOB_RECURSE all_files ${VIRTUAL_FLUIDS_GLOB_FILES} )
+    set(sourceFiles ${sourceFiles} ${all_files})
+    includeTestFiles (${folder_name} "${sourceFiles}")
+
+    message(${MY_SRCS})
+    ADD_EXECUTABLE(${targetName} ${MY_SRCS})
+
+    target_link_libraries(${targetName} PRIVATE ${folder_name})
+
+    target_include_directories(${targetName} PRIVATE ${CMAKE_BINARY_DIR})
+    target_include_directories(${targetName} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_include_directories(${targetName} PRIVATE ${CMAKE_SOURCE_DIR}/src)
+
+    include(${CMAKE_PATH}/3rd/gmock.cmake)
+    #add_compile_options (-std=c++11)
+    add_definitions("-std=c++11")
+
+
+endfunction(vf_add_tests)

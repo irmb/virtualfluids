@@ -19,6 +19,10 @@ include(Core/buildInfo.cmake)
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/VirtualFluidsCore)
 INCLUDE_DIRECTORIES(${MPI_INCLUDE_PATH})
 
+IF(MSVC)
+    add_compile_definitions(NOMINMAX)                # Disable Min/Max-Macros
+ENDIF(MSVC)
+
 vf_add_library(BUILDTYPE static
                FOLDER
         ${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d
@@ -43,8 +47,13 @@ vf_add_library(BUILDTYPE static
 
         EXCLUDE buildInfo.in.cpp
         )
+
 vf_get_library_name (library_name)
 target_include_directories(${library_name} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/Core)
 target_include_directories(${library_name} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 include (${CMAKE_PATH}/3rd/mpi.cmake)
+include (${CMAKE_PATH}/3rd/boost.cmake)
+linkBoost ("")
+
+vf_add_tests()

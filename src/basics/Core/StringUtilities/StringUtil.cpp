@@ -88,6 +88,17 @@ bool StringUtil::toBool(bool &t, const std::string &input, std::ios_base &(*f)(s
     return !(iss >> f >> t).fail();
 }
 
+std::vector<std::string> split(const std::string& str, char delim = ' ')
+{
+    std::stringstream ss(str);
+    std::string token;
+    std::vector<std::string> list;
+    while (std::getline(ss, token, delim)) {
+        list.push_back(token);
+    }
+    return list;
+}
+
 std::vector<int> StringUtil::toIntVector(const std::string& input)
 {
     std::vector<int> v;
@@ -160,5 +171,10 @@ template BASICS_EXPORT std::string StringUtil::toString<int>(const int& t);
 
 bool StringUtil::endsWith(const std::string &input, const std::string &end)
 {
-    return boost::algorithm::ends_with(input, end);
+    if (input.length() >= end.length()) {
+        return (0 == input.compare (input.length() - end.length(), end.length(), end));
+    } else {
+        return false;
+    }
+    //return boost::algorithm::ends_with(input, end);
 }

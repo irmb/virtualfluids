@@ -40,3 +40,5 @@ IF(${USE_METIS})
     SET(METIS_RELEASE_LIBRARY "/usr/local/lib/libmetis.a")
 ENDIF()
 #set(SOURCE_ROOT "/host/Projects/pFluid/source")
+
+SET(GMOCK_ROOT "~/Libraries/googletest-release-1.10.0" CACHE PATH "GMOCK ROOT")
