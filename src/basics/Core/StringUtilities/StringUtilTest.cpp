@@ -38,3 +38,24 @@ TEST(StringUtilTest, toIntVector)
 
     ASSERT_THAT(result,testing::Eq(expected_result));
 }
+
+TEST(StringUtilTest, splitIntoStringsWithDelimeter)
+{
+    const std::string input {"1   2\n3 4\t5"};
+    const std::string delimeter {" \n\t"};
+    std::vector<std::string> expected_result {"1", "2", "3", "4", "5"};
+
+    auto result = StringUtil::split(input, delimeter);
+
+    ASSERT_THAT(result,testing::Eq(expected_result));
+}
+
+TEST(StringUtilTest, toStringVector)
+{
+    const std::string input {"1   2\n3 4\t5"};
+    std::vector<std::string> expected_result {"1", "2", "3", "4", "5"};
+
+    auto result = StringUtil::toStringVector(input);
+
+    ASSERT_THAT(result,testing::Eq(expected_result));
+}

@@ -18,6 +18,7 @@ public:
     static BASICS_EXPORT std::string findAndReplace(const std::string &source, const std::string& find, const std::string& replace);
     static BASICS_EXPORT std::string makeUpper(const std::string& instring);
     static BASICS_EXPORT std::string makeLower(const std::string& instring);
+    static BASICS_EXPORT std::vector<std::string> split(const std::string& input, const std::string& delim = " ");
     static BASICS_EXPORT bool contains(const std::string& source, const char *find);
     static BASICS_EXPORT std::string pad(const std::string& input, char pad, int length);
     static BASICS_EXPORT std::string trim(const std::string &input, const std::string &trim = std::string(" \t\n"));

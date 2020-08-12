@@ -1,6 +1,7 @@
 #include "StringUtil.h"
 
-#include <boost/algorithm/string.hpp>
+#include <regex>
+#include <sstream>
 
 std::string StringUtil::findAndReplace(const std::string &source, const std::string& find, const std::string& replace)
 {
@@ -97,11 +98,27 @@ std::vector<std::string> split(const std::string& str, char delim = ' ')
     return list;
 }
 
+std::vector<std::string> StringUtil::split(const std::string& input, const std::string& delim/*= " "*/)
+{
+    std::stringstream ss;
+    ss << "[" << delim << "]";
+
+    std::regex re(ss.str());
+    std::sregex_token_iterator first{input.begin(), input.end(), re, -1}, last; //the '-1' is what makes the regex split (-1 := what was not matched)
+    std::vector<std::string> tokens{first, last};
+    tokens.erase(std::remove_if(tokens.begin(), tokens.end(), [](std::string& token)
+    {
+        return token.empty();
+    }), tokens.end());
+
+    return tokens;
+}
+
 std::vector<int> StringUtil::toIntVector(const std::string& input)
 {
     std::vector<int> v;
     std::vector<std::string> inputEntries;
-    boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
+    inputEntries = split(input, " \n\t");
     for(std::string entry : inputEntries)
         if (entry != "")
             v.push_back(toInt(entry));
@@ -112,7 +129,7 @@ std::vector<unsigned int> StringUtil::toUintVector(const std::string & input)
 {
 	std::vector<unsigned int> v;
 	std::vector<std::string> inputEntries;
-	boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
+    inputEntries = split(input, " \n\t");
 	for(std::string entry : inputEntries)
 		if (entry != "")
 			v.push_back(toInt(entry));
@@ -123,7 +140,7 @@ std::vector<bool> StringUtil::toBoolVector(const std::string & input)
 {
 	std::vector<bool> v;
 	std::vector<std::string> inputEntries;
-	boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
+    inputEntries = split(input, " \n\t");
 	for(std::string entry : inputEntries)
 	{
 		bool b = 0;
@@ -136,20 +153,14 @@ std::vector<bool> StringUtil::toBoolVector(const std::string & input)
 
 std::vector<std::string> StringUtil::toStringVector(const std::string & input)
 {
-	std::vector<std::string> v;
-	std::vector<std::string> inputEntries;
-	boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
-	for(std::string entry : inputEntries)
-		if (entry != "")
-			v.push_back(toString(entry));
-	return v;
+    return split(input, " \n\t");
 }
 
 BASICS_EXPORT std::vector<double> StringUtil::toDoubleVector(const std::string & input)
 {
 	std::vector<double> v;
 	std::vector<std::string> inputEntries;
-	boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
+    inputEntries = split(input, " \n\t");
 	for(std::string entry : inputEntries)
 		if (entry != "")
 			v.push_back(toDouble(entry));

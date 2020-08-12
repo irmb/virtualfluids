@@ -53,7 +53,5 @@ target_include_directories(${library_name} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/Cor
 target_include_directories(${library_name} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 include (${CMAKE_PATH}/3rd/mpi.cmake)
-include (${CMAKE_PATH}/3rd/boost.cmake)
-linkBoost ("")
 
 vf_add_tests()
