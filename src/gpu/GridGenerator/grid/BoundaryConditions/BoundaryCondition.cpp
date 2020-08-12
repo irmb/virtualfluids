@@ -1,7 +1,7 @@
 #include "BoundaryCondition.h"
 
 #include <cmath>
-
+#include "GridGenerator_export.h"
 #include "grid/BoundaryConditions/Side.h"
 #include "grid/Grid.h"
 
@@ -10,7 +10,7 @@ bool BoundaryCondition::isSide( SideType side ) const
     return this->side->whoAmI() == side;
 }
 
-VIRTUALFLUIDS_GPU_EXPORT void VelocityBoundaryCondition::setVelocityProfile(SPtr<Grid> grid, std::function<void(real, real, real, real&, real&, real&)> velocityProfile)
+GRIDGENERATOR_EXPORT void VelocityBoundaryCondition::setVelocityProfile(SPtr<Grid> grid, std::function<void(real, real, real, real&, real&, real&)> velocityProfile)
 {
     for( uint index = 0; index < this->indices.size(); index++ ){
 

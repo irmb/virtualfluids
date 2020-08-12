@@ -11,7 +11,7 @@
 class Transformator;
 struct Triangle;
 
-class VIRTUALFLUIDS_GPU_EXPORT STLWriter
+class GRIDGENERATOR_EXPORT STLWriter
 {
 public:
     static void writeSTL(std::vector<Triangle> &vec, const std::string &name, bool writeBinary = false);

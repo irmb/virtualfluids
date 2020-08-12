@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#include "GridGenerator_export.h"
+
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
 
@@ -11,7 +13,7 @@
 
 class Grid;
 
-struct VIRTUALFLUIDS_GPU_EXPORT Street
+struct GRIDGENERATOR_EXPORT Street
 {
     // The start and end coordinates are stored for cell centers!
     //
@@ -39,7 +41,7 @@ struct VIRTUALFLUIDS_GPU_EXPORT Street
     void findIndicesLB( SPtr<Grid> grid, real initialSearchHeight);
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT StreetPointFinder
+struct GRIDGENERATOR_EXPORT StreetPointFinder
 {
     std::vector<Street> streets;
 

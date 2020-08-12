@@ -2,7 +2,7 @@
 #define TriangleNeighborFinder_h
 
 #include "GridGenerator/global.h"
-
+#include "GridGenerator_export.h"
 #include <vector>
 
 struct IDS {
@@ -22,14 +22,14 @@ struct IntegerPtr2D {
 class TriangleNeighborFinder
 {
 public:
-    VIRTUALFLUIDS_GPU_EXPORT TriangleNeighborFinder(Triangle *triangles, int size);
-    VIRTUALFLUIDS_GPU_EXPORT ~TriangleNeighborFinder();
+    GRIDGENERATOR_EXPORT TriangleNeighborFinder(Triangle *triangles, int size);
+    GRIDGENERATOR_EXPORT ~TriangleNeighborFinder();
     
     std::vector<int> getTriangleIDsWithCommonVertex(int vertexID) const;
     std::vector< std::vector<Triangle> > getTrianglesPerVertex() const;
 
-    void VIRTUALFLUIDS_GPU_EXPORT fillWithNeighborIndices(IntegerPtr2D *indices, Triangle *triangles);
-	void VIRTUALFLUIDS_GPU_EXPORT fillWithNeighborAngles(TriangularMesh *geom) const;
+    void GRIDGENERATOR_EXPORT fillWithNeighborIndices(IntegerPtr2D *indices, Triangle *triangles);
+	void GRIDGENERATOR_EXPORT fillWithNeighborAngles(TriangularMesh *geom) const;
 
     void printSortedToTriangles() const;
     void printSortedInSpace() const;

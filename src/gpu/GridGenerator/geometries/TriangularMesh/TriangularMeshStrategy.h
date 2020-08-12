@@ -2,12 +2,13 @@
 #define TriangularMeshStrategy_H
 
 #include "global.h"
+#include "GridGenerator_export.h"
 
 class GridImp;
 class TriangularMesh;
 struct Triangle;
 
-class VIRTUALFLUIDS_GPU_EXPORT TriangularMeshDiscretizationStrategy
+class GRIDGENERATOR_EXPORT TriangularMeshDiscretizationStrategy
 {
 public:
     TriangularMeshDiscretizationStrategy() {}
@@ -26,7 +27,7 @@ private:
 
 
 
-class VIRTUALFLUIDS_GPU_EXPORT PointInObjectDiscretizationStrategy : public TriangularMeshDiscretizationStrategy
+class GRIDGENERATOR_EXPORT PointInObjectDiscretizationStrategy : public TriangularMeshDiscretizationStrategy
 {
 public:
     PointInObjectDiscretizationStrategy() {}
@@ -35,7 +36,7 @@ public:
     virtual void doDiscretize(TriangularMesh* triangularMesh, GridImp* grid, char InnerType, char OuterType);
 };
 
-class VIRTUALFLUIDS_GPU_EXPORT RayCastingDiscretizationStrategy : public TriangularMeshDiscretizationStrategy
+class GRIDGENERATOR_EXPORT RayCastingDiscretizationStrategy : public TriangularMeshDiscretizationStrategy
 {
 public:
     RayCastingDiscretizationStrategy() {}
@@ -44,7 +45,7 @@ public:
     virtual void doDiscretize(TriangularMesh* triangularMesh, GridImp* grid, char InnerType, char OuterType);
 };
 
-class VIRTUALFLUIDS_GPU_EXPORT PointUnderTriangleStrategy : public TriangularMeshDiscretizationStrategy
+class GRIDGENERATOR_EXPORT PointUnderTriangleStrategy : public TriangularMeshDiscretizationStrategy
 {
 public:
     PointUnderTriangleStrategy() {}

@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "GridGenerator_export.h"
+
 #include "Core/DataTypes.h"
 #include "Core/Logger/Logger.h"
 
@@ -10,13 +12,13 @@
 
 #include <VirtualFluidsDefinitions.h>
 
-struct VIRTUALFLUIDS_GPU_EXPORT SinkReaderData{
+struct GRIDGENERATOR_EXPORT SinkReaderData{
 	uint sinkIndex;
 	float sinkBlockedPossibility;
 	SinkReaderData(uint sinkIndex, float sinkBlockedPossibility);
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT SinkReader
+struct GRIDGENERATOR_EXPORT SinkReader
 {
 	std::vector<SinkReaderData> sinks;
 	StreetPointFinder* streetPointFinder;

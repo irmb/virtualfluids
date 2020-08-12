@@ -12,7 +12,7 @@
 #linkOpenMP(${targetName})
 
 
-vf_add_library(BUILDTYPE shared)
+vf_add_library(BUILDTYPE shared DEPENDS basics)
 
 include (${CMAKE_PATH}/3rd/cuda.cmake)
 include (${CMAKE_PATH}/3rd/OpenMP.cmake)

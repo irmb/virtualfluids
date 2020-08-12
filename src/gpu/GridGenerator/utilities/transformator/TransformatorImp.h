@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "global.h"
+#include "GridGenerator_export.h"
 
 #include "utilities/transformator/Transformator.h"
 #include "utilities/transformator/ArrowTransformator.h"
@@ -27,25 +28,25 @@ class TransformatorImp
 	: public Transformator, public ArrowTransformator
 {
 public:
-	VIRTUALFLUIDS_GPU_EXPORT TransformatorImp();
-	VIRTUALFLUIDS_GPU_EXPORT TransformatorImp(const TransformatorImp& trafo);
-	VIRTUALFLUIDS_GPU_EXPORT TransformatorImp(real delta, const Vertex& translater);
-	VIRTUALFLUIDS_GPU_EXPORT TransformatorImp(real delta, real dx, real dy, real dz);
-	VIRTUALFLUIDS_GPU_EXPORT virtual ~TransformatorImp();
+	GRIDGENERATOR_EXPORT TransformatorImp();
+	GRIDGENERATOR_EXPORT TransformatorImp(const TransformatorImp& trafo);
+	GRIDGENERATOR_EXPORT TransformatorImp(real delta, const Vertex& translater);
+	GRIDGENERATOR_EXPORT TransformatorImp(real delta, real dx, real dy, real dz);
+	GRIDGENERATOR_EXPORT virtual ~TransformatorImp();
 	
-	VIRTUALFLUIDS_GPU_EXPORT void transformWorldToGrid(Triangle &value) const;
-	VIRTUALFLUIDS_GPU_EXPORT void transformWorldToGrid(TriangularMesh &geom) const;
-	VIRTUALFLUIDS_GPU_EXPORT void transformWorldToGrid(Vertex &value) const;
+	GRIDGENERATOR_EXPORT void transformWorldToGrid(Triangle &value) const;
+	GRIDGENERATOR_EXPORT void transformWorldToGrid(TriangularMesh &geom) const;
+	GRIDGENERATOR_EXPORT void transformWorldToGrid(Vertex &value) const;
 
-    VIRTUALFLUIDS_GPU_EXPORT void transformGridToWorld(Triangle &t) const;
-	VIRTUALFLUIDS_GPU_EXPORT void transformGridToWorld(Vertex &value) const;
+    GRIDGENERATOR_EXPORT void transformGridToWorld(Triangle &t) const;
+	GRIDGENERATOR_EXPORT void transformGridToWorld(Vertex &value) const;
 
-	VIRTUALFLUIDS_GPU_EXPORT void transformGridToWorld(BoundingBox &box) const;
-	VIRTUALFLUIDS_GPU_EXPORT void transformWorldToGrid(BoundingBox &box) const;
+	GRIDGENERATOR_EXPORT void transformGridToWorld(BoundingBox &box) const;
+	GRIDGENERATOR_EXPORT void transformWorldToGrid(BoundingBox &box) const;
 
-	VIRTUALFLUIDS_GPU_EXPORT bool operator==(const TransformatorImp& trafo) const;
+	GRIDGENERATOR_EXPORT bool operator==(const TransformatorImp& trafo) const;
 
-	VIRTUALFLUIDS_GPU_EXPORT virtual void transformGridToWorld(std::shared_ptr<Arrow> arrow) const override;
+	GRIDGENERATOR_EXPORT virtual void transformGridToWorld(std::shared_ptr<Arrow> arrow) const override;
 
 private:
 	real delta;

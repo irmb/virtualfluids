@@ -8,10 +8,10 @@
 #define SPHERE_H
 
 #include "global.h"
-
+#include "GridGenerator_export.h"
 #include "geometries/Object.h"
 
-class VIRTUALFLUIDS_GPU_EXPORT Sphere : public Object
+class GRIDGENERATOR_EXPORT Sphere : public Object
 {
 public:
     HOSTDEVICE Sphere(const double& centerX, const double& centerY, const double& centerZ, const double& radius);

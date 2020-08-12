@@ -11,11 +11,11 @@
 //class PolyDataWriterWrapper
 //{
 //public:
-//	VIRTUALFLUIDS_GPU_EXPORT PolyDataWriterWrapper();
-//	VIRTUALFLUIDS_GPU_EXPORT ~PolyDataWriterWrapper();
+//	GRIDGENERATOR_EXPORT PolyDataWriterWrapper();
+//	GRIDGENERATOR_EXPORT ~PolyDataWriterWrapper();
 //
-//	VIRTUALFLUIDS_GPU_EXPORT virtual void addVectorArrow(std::shared_ptr<const Arrow> arrow);
-//	VIRTUALFLUIDS_GPU_EXPORT virtual void writePolyDataToFile(const std::string &filename) const;
+//	GRIDGENERATOR_EXPORT virtual void addVectorArrow(std::shared_ptr<const Arrow> arrow);
+//	GRIDGENERATOR_EXPORT virtual void writePolyDataToFile(const std::string &filename) const;
 //
 //private:
 //    std::shared_ptr<PolyDataWriter> writer;

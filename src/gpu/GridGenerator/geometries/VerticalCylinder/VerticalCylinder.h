@@ -8,10 +8,10 @@
 #define VERTICAL_CYLINDER_H
 
 #include "global.h"
-
+#include "GridGenerator_export.h"
 #include "geometries/Object.h"
 
-class VIRTUALFLUIDS_GPU_EXPORT VerticalCylinder : public Object
+class GRIDGENERATOR_EXPORT VerticalCylinder : public Object
 {
 public:
     HOSTDEVICE VerticalCylinder(const double& centerX, const double& centerY, const double& centerZ, const double& radius, const double& height);

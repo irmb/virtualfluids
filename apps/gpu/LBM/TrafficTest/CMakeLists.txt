@@ -6,7 +6,7 @@ set(includeDirectories "${CMAKE_SOURCE_DIR}/src"
 
 
 
-vf_add_library(BUILDTYPE binary DEPENDS Traffic)
+vf_add_library(BUILDTYPE binary DEPENDS Traffic basics GridGenerator)
 
 vf_get_library_name(library_name)
 target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/basics")

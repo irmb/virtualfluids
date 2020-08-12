@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 #include <memory>
-
+#include "GridGenerator_export.h"
 #include "global.h"
 
 #include "geometries/Triangle/Triangle.h"
@@ -24,16 +24,16 @@ class TriangularMesh : public Object
 {
 public:
 
-    VIRTUALFLUIDS_GPU_EXPORT static TriangularMesh* make(const std::string& fileName, const std::vector<uint> ignorePatches = std::vector<uint>());
-	VIRTUALFLUIDS_GPU_EXPORT TriangularMesh();
-    VIRTUALFLUIDS_GPU_EXPORT TriangularMesh(const std::string& inputPath, const std::vector<uint> ignorePatches = std::vector<uint>());
-	VIRTUALFLUIDS_GPU_EXPORT TriangularMesh(const std::string& inputPath, const BoundingBox &box);
-	HOSTDEVICE VIRTUALFLUIDS_GPU_EXPORT ~TriangularMesh();
+    GRIDGENERATOR_EXPORT static TriangularMesh* make(const std::string& fileName, const std::vector<uint> ignorePatches = std::vector<uint>());
+	GRIDGENERATOR_EXPORT TriangularMesh();
+    GRIDGENERATOR_EXPORT TriangularMesh(const std::string& inputPath, const std::vector<uint> ignorePatches = std::vector<uint>());
+	GRIDGENERATOR_EXPORT TriangularMesh(const std::string& inputPath, const BoundingBox &box);
+	HOSTDEVICE GRIDGENERATOR_EXPORT ~TriangularMesh();
 
-    VIRTUALFLUIDS_GPU_EXPORT uint getNumberOfTriangles() const;
+    GRIDGENERATOR_EXPORT uint getNumberOfTriangles() const;
 
-	VIRTUALFLUIDS_GPU_EXPORT void setTriangles(std::vector<Triangle> triangles);
-	VIRTUALFLUIDS_GPU_EXPORT void setMinMax(BoundingBox minmax);
+	GRIDGENERATOR_EXPORT void setTriangles(std::vector<Triangle> triangles);
+	GRIDGENERATOR_EXPORT void setMinMax(BoundingBox minmax);
 
 	std::vector<Triangle> triangleVec;
 	Triangle *triangles;
@@ -42,13 +42,13 @@ public:
 
     SPtr<GbTriFaceMesh3D> VF_GbTriFaceMesh3D;
 
-    CUDA_HOST VIRTUALFLUIDS_GPU_EXPORT bool operator==(const TriangularMesh &geometry) const;
+    CUDA_HOST GRIDGENERATOR_EXPORT bool operator==(const TriangularMesh &geometry) const;
 
-    VIRTUALFLUIDS_GPU_EXPORT void findNeighbors();
+    GRIDGENERATOR_EXPORT void findNeighbors();
 
-    HOSTDEVICE VIRTUALFLUIDS_GPU_EXPORT GbTriFaceMesh3D* getGbTriFaceMesh3D() const;
+    HOSTDEVICE GRIDGENERATOR_EXPORT GbTriFaceMesh3D* getGbTriFaceMesh3D() const;
 
-    CUDA_HOST VIRTUALFLUIDS_GPU_EXPORT void generateGbTriFaceMesh3D();
+    CUDA_HOST GRIDGENERATOR_EXPORT void generateGbTriFaceMesh3D();
 
 private:
 	

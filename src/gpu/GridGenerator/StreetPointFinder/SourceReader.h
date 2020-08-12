@@ -10,13 +10,13 @@
 
 #include <VirtualFluidsDefinitions.h>
 
-struct VIRTUALFLUIDS_GPU_EXPORT SourceReaderData {
+struct GRIDGENERATOR_EXPORT SourceReaderData {
 	unsigned int sourceIndex;
 	float sourcePossibility;
 	SourceReaderData(unsigned int sourceIndex, float sourcePossibility);
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT SourceReader
+struct GRIDGENERATOR_EXPORT SourceReader
 {
 	std::vector<SourceReaderData> sources;
 	StreetPointFinder* streetPointFinder;

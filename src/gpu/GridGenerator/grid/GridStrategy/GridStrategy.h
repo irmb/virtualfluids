@@ -11,7 +11,7 @@ struct Vertex;
 class TriangularMesh;
 class GridImp;
 
-class VIRTUALFLUIDS_GPU_EXPORT GridStrategy
+class GRIDGENERATOR_EXPORT GridStrategy
 {
 public:
     virtual ~GridStrategy() {}

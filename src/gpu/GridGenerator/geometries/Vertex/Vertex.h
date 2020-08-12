@@ -10,7 +10,7 @@
 
 class VertexMemento;
 
-struct VIRTUALFLUIDS_GPU_EXPORT Vertex
+struct GRIDGENERATOR_EXPORT Vertex
 {
 public:
     real x, y, z;

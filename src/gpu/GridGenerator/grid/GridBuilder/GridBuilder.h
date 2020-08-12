@@ -39,9 +39,9 @@ public:
         CPU, GPU
     };
 
-    virtual VIRTUALFLUIDS_GPU_EXPORT ~GridBuilder() {}
+    virtual GRIDGENERATOR_EXPORT ~GridBuilder() {}
     virtual void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY, std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY, std::vector<int>& distZ) = 0;
-    virtual VIRTUALFLUIDS_GPU_EXPORT uint getNumberOfGridLevels() const = 0;
+    virtual GRIDGENERATOR_EXPORT uint getNumberOfGridLevels() const = 0;
 
 
     virtual void writeArrows(std::string fileName) const = 0;

@@ -28,5 +28,3 @@ add_subdirectory(src/basics)
 include (gpu.cmake)
 #endif()
 
-set (APPS_ROOT_CPU "${CMAKE_SOURCE_DIR}/apps/cpu/")
-#include(${APPS_ROOT_CPU}/Applications.cmake)

@@ -3,14 +3,14 @@
 
 #include <vector>
 #include <cuda_runtime.h>
-
+#include "GridGenerator_export.h"
 #include "global.h"
 
 struct Vertex;
 struct Triangle;
 
 
-class VIRTUALFLUIDS_GPU_EXPORT BoundingBox
+class GRIDGENERATOR_EXPORT BoundingBox
 {
 public:
 	real minX;

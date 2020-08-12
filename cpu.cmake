@@ -164,5 +164,5 @@ add_subdirectory(3rdParty/MuParser)
 add_subdirectory(src/cpu/VirtualFluidsCore)
 #add_subdirectory(VirtualFluidsBasic)
 
-#set(APPS_ROOT "${SOURCE_ROOT}/cpu/Applications")
-#INCLUDE(${APPS_ROOT}/Applications.cmake)
+set (APPS_ROOT_CPU "${CMAKE_SOURCE_DIR}/apps/cpu/")
+include(${APPS_ROOT_CPU}/Applications.cmake)

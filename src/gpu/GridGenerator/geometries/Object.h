@@ -6,7 +6,7 @@
 //
 #ifndef OBJECT_H
 #define OBJECT_H
-
+#include "GridGenerator_export.h"
 #include <VirtualFluidsDefinitions.h>
 #include "grid/Cell.h"
 #include "global.h"
@@ -14,7 +14,7 @@
 class GridImp;
 struct Vertex;
 
-class VIRTUALFLUIDS_GPU_EXPORT Object
+class GRIDGENERATOR_EXPORT Object
 {
 public:
     HOSTDEVICE virtual ~Object() {}

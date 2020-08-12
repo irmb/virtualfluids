@@ -14,7 +14,7 @@ struct Vertex;
 class Transformator
 {
 public:
-    static VIRTUALFLUIDS_GPU_EXPORT std::shared_ptr<Transformator> makeTransformator(real delta, real dx, real dy, real dz);
+    static GRIDGENERATOR_EXPORT std::shared_ptr<Transformator> makeTransformator(real delta, real dx, real dy, real dz);
 	virtual ~Transformator() {}
 
 protected:

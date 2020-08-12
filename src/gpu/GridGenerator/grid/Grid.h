@@ -17,7 +17,7 @@ class GridInterface;
 class Object;
 class BoundingBox;
 
-class VIRTUALFLUIDS_GPU_EXPORT Grid
+class GRIDGENERATOR_EXPORT Grid
 {
 public:
     HOSTDEVICE virtual ~Grid() {}

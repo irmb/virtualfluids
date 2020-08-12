@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "GridGenerator_export.h"
+
 #include "Core/DataTypes.h"
 #include "Core/Logger/Logger.h"
 
@@ -10,7 +12,7 @@
 
 #include <VirtualFluidsDefinitions.h>
 
-struct VIRTUALFLUIDS_GPU_EXPORT JunctionReaderData
+struct GRIDGENERATOR_EXPORT JunctionReaderData
 {
 	std::vector<uint> inCells;
 	std::vector<uint> outCells;
@@ -21,7 +23,7 @@ struct VIRTUALFLUIDS_GPU_EXPORT JunctionReaderData
 };
 
 
-struct VIRTUALFLUIDS_GPU_EXPORT Neighbors
+struct GRIDGENERATOR_EXPORT Neighbors
 {
 	std::vector<int> cells;
 	std::vector<int> neighbors;
@@ -29,7 +31,7 @@ struct VIRTUALFLUIDS_GPU_EXPORT Neighbors
 
 
 
-struct VIRTUALFLUIDS_GPU_EXPORT JunctionReader
+struct GRIDGENERATOR_EXPORT JunctionReader
 {
 	std::vector<JunctionReaderData> junctions;
 	Neighbors specialNeighbors;

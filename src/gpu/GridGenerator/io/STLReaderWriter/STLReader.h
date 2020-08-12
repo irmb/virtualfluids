@@ -11,7 +11,7 @@ struct Triangle;
 struct Vertex;
 class BoundingBox;
 
-class VIRTUALFLUIDS_GPU_EXPORT STLReader
+class GRIDGENERATOR_EXPORT STLReader
 {
 public:
 

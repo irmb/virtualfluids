@@ -4,12 +4,12 @@
 #include <memory>
 
 #include "global.h"
-
+#include "GridGenerator_export.h"
 #include "geometries/Vertex/Vertex.h"
 
 class TriangleMemento;
 
-struct VIRTUALFLUIDS_GPU_EXPORT Triangle
+struct GRIDGENERATOR_EXPORT Triangle
 {
     Vertex v1, v2, v3, normal;
     real alphaAngles[3];

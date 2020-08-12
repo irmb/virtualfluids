@@ -8,6 +8,7 @@
 #define MASTERRANK 0
 
 #include "VirtualFluidsDefinitions.h"
+#include "GridGenerator_export.h"
 
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"

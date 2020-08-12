@@ -13,7 +13,7 @@
 
 #define MAX_NUMBER_OF_OBJECTS 20
 
-class VIRTUALFLUIDS_GPU_EXPORT Conglomerate : public Object
+class GRIDGENERATOR_EXPORT Conglomerate : public Object
 {
 public:              
     HOSTDEVICE Conglomerate();

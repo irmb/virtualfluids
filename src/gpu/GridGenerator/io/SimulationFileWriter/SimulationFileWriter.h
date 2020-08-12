@@ -25,7 +25,7 @@ enum class FILEFORMAT
 class SimulationFileWriter : private NonCreatable
 {
 public:
-    VIRTUALFLUIDS_GPU_EXPORT static void write(std::string folder, SPtr<GridBuilder> builder, FILEFORMAT format);
+    GRIDGENERATOR_EXPORT static void write(std::string folder, SPtr<GridBuilder> builder, FILEFORMAT format);
 
 private:
     static void write(SPtr<GridBuilder> builder, FILEFORMAT format);

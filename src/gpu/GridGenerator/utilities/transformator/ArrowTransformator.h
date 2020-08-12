@@ -10,7 +10,7 @@ class Arrow;
 class ArrowTransformator
 {
 public:
-    static VIRTUALFLUIDS_GPU_EXPORT std::shared_ptr<ArrowTransformator> makeTransformator(real delta, real dx, real dy, real dz);
+    static GRIDGENERATOR_EXPORT std::shared_ptr<ArrowTransformator> makeTransformator(real delta, real dx, real dy, real dz);
 	virtual ~ArrowTransformator() {}
 
 protected:

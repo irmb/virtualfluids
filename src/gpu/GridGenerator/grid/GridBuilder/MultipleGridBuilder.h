@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <array>
-
+#include "GridGenerator_export.h"
 #include "Core/LbmOrGks.h"
 
 #include "global.h"
@@ -17,37 +17,37 @@ class BoundingBox;
 class MultipleGridBuilder : public LevelGridBuilder
 {
 private:
-    VIRTUALFLUIDS_GPU_EXPORT MultipleGridBuilder(SPtr<GridFactory> gridFactory, Device device = Device::CPU, const std::string &d3qxx = "D3Q27");
+    GRIDGENERATOR_EXPORT MultipleGridBuilder(SPtr<GridFactory> gridFactory, Device device = Device::CPU, const std::string &d3qxx = "D3Q27");
 
 public:
-    VIRTUALFLUIDS_GPU_EXPORT static SPtr<MultipleGridBuilder> makeShared(SPtr<GridFactory> gridFactory);
+    GRIDGENERATOR_EXPORT static SPtr<MultipleGridBuilder> makeShared(SPtr<GridFactory> gridFactory);
 
-    VIRTUALFLUIDS_GPU_EXPORT void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
-    VIRTUALFLUIDS_GPU_EXPORT void addGrid(Object* gridShape);
-    VIRTUALFLUIDS_GPU_EXPORT void addGrid(Object* gridShape, uint levelFine);
+    GRIDGENERATOR_EXPORT void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
+    GRIDGENERATOR_EXPORT void addGrid(Object* gridShape);
+    GRIDGENERATOR_EXPORT void addGrid(Object* gridShape, uint levelFine);
 
-    VIRTUALFLUIDS_GPU_EXPORT void addGeometry(Object* gridShape);
-    VIRTUALFLUIDS_GPU_EXPORT void addGeometry(Object* solidObject, uint level);
+    GRIDGENERATOR_EXPORT void addGeometry(Object* gridShape);
+    GRIDGENERATOR_EXPORT void addGeometry(Object* solidObject, uint level);
 
-    VIRTUALFLUIDS_GPU_EXPORT uint getNumberOfLevels() const;
-    VIRTUALFLUIDS_GPU_EXPORT real getDelta(uint level) const;
+    GRIDGENERATOR_EXPORT uint getNumberOfLevels() const;
+    GRIDGENERATOR_EXPORT real getDelta(uint level) const;
 
-    VIRTUALFLUIDS_GPU_EXPORT real getStartX(uint level) const;
-    VIRTUALFLUIDS_GPU_EXPORT real getStartY(uint level) const;
-    VIRTUALFLUIDS_GPU_EXPORT real getStartZ(uint level) const;
+    GRIDGENERATOR_EXPORT real getStartX(uint level) const;
+    GRIDGENERATOR_EXPORT real getStartY(uint level) const;
+    GRIDGENERATOR_EXPORT real getStartZ(uint level) const;
 
-    VIRTUALFLUIDS_GPU_EXPORT real getEndX(uint level) const;
-    VIRTUALFLUIDS_GPU_EXPORT real getEndY(uint level) const;
-    VIRTUALFLUIDS_GPU_EXPORT real getEndZ(uint level) const;
+    GRIDGENERATOR_EXPORT real getEndX(uint level) const;
+    GRIDGENERATOR_EXPORT real getEndY(uint level) const;
+    GRIDGENERATOR_EXPORT real getEndZ(uint level) const;
 
-    VIRTUALFLUIDS_GPU_EXPORT std::vector<SPtr<Grid> > getGrids() const;
-    VIRTUALFLUIDS_GPU_EXPORT void buildGrids(LbmOrGks lbmOrGks, bool enableThinWalls = false);
+    GRIDGENERATOR_EXPORT std::vector<SPtr<Grid> > getGrids() const;
+    GRIDGENERATOR_EXPORT void buildGrids(LbmOrGks lbmOrGks, bool enableThinWalls = false);
 
-    VIRTUALFLUIDS_GPU_EXPORT void setNumberOfLayers( uint numberOfLayersFine, uint numberOfLayersBetweenLevels );
+    GRIDGENERATOR_EXPORT void setNumberOfLayers( uint numberOfLayersFine, uint numberOfLayersBetweenLevels );
 
-    VIRTUALFLUIDS_GPU_EXPORT void writeGridsToVtk(const std::string& path) const;
+    GRIDGENERATOR_EXPORT void writeGridsToVtk(const std::string& path) const;
 
-    VIRTUALFLUIDS_GPU_EXPORT void setSubDomainBox(SPtr<BoundingBox> subDomainBox);
+    GRIDGENERATOR_EXPORT void setSubDomainBox(SPtr<BoundingBox> subDomainBox);
 
 private:
     void addGridToList(SPtr<Grid> grid);
@@ -83,7 +83,7 @@ private:
 
 public:
 
-    VIRTUALFLUIDS_GPU_EXPORT void findCommunicationIndices( int direction, LbmOrGks lbmOrGks );
+    GRIDGENERATOR_EXPORT void findCommunicationIndices( int direction, LbmOrGks lbmOrGks );
 };
 
 #endif

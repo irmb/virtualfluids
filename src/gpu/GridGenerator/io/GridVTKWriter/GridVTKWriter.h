@@ -4,12 +4,13 @@
 #include <string>
 
 #include "global.h"
+#include "GridGenerator_export.h"
 
 enum class WRITING_FORMAT { BINARY, ASCII };
 
 class Grid;
 
-class VIRTUALFLUIDS_GPU_EXPORT GridVTKWriter
+class GRIDGENERATOR_EXPORT GridVTKWriter
 {
 public:
     static void writeSparseGridToVTK(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format = WRITING_FORMAT::ASCII);
