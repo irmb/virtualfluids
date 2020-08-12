@@ -30,7 +30,7 @@ function(vf_add_library)
 
 
     if (ARG_FILES)
-        message ("${ARG_FILES}")
+        #message ("${ARG_FILES}")
         set(sourceFiles ${sourceFiles} ${ARG_FILES})
     endif()
 
@@ -51,7 +51,7 @@ function(vf_add_library)
     endif()
 
     foreach(X IN LISTS sourceFiles)
-        message(STATUS "${X}")
+        #message(STATUS "${X}")
     endforeach()
 
     if (ARG_EXCLUDE)

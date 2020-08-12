@@ -28,10 +28,10 @@ endmacro(includeTestFiles)
 
 macro(includeFiles targetName file_path)
 	foreach(file ${file_path})
-		message("File: " ${file})
+		#message("File: " ${file})
 		get_filename_component(package_dir ${file} DIRECTORY)
 
-		message("package_dir: " ${package_dir})
+		#message("package_dir: " ${package_dir})
 
 		 collectFilesFrom(${file})
 		if (package_dir)
@@ -105,7 +105,7 @@ macro(buildSourceGroup targetName path)
 		endif()
 	endforeach()
 
-	message("SOURCE_GROUP: " ${SOURCE_GROUP})
+	#message("SOURCE_GROUP: " ${SOURCE_GROUP})
 
 	if(NOT SOURCE_GROUP)
 		set(SOURCE_GROUP "general")

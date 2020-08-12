@@ -176,5 +176,4 @@ bool StringUtil::endsWith(const std::string &input, const std::string &end)
     } else {
         return false;
     }
-    //return boost::algorithm::ends_with(input, end);
 }
