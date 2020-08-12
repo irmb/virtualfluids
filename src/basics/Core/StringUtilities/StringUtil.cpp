@@ -1,8 +1,6 @@
 #include "StringUtil.h"
 
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/predicate.hpp>
 
 std::string StringUtil::findAndReplace(const std::string &source, const std::string& find, const std::string& replace)
 {
@@ -104,7 +102,7 @@ std::vector<int> StringUtil::toIntVector(const std::string& input)
     std::vector<int> v;
     std::vector<std::string> inputEntries;
     boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
-    BOOST_FOREACH(std::string entry, inputEntries)
+    for(std::string entry : inputEntries)
         if (entry != "")
             v.push_back(toInt(entry));
     return v;
@@ -115,7 +113,7 @@ std::vector<unsigned int> StringUtil::toUintVector(const std::string & input)
 	std::vector<unsigned int> v;
 	std::vector<std::string> inputEntries;
 	boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
-	BOOST_FOREACH(std::string entry, inputEntries)
+	for(std::string entry : inputEntries)
 		if (entry != "")
 			v.push_back(toInt(entry));
 	return v;
@@ -126,7 +124,7 @@ std::vector<bool> StringUtil::toBoolVector(const std::string & input)
 	std::vector<bool> v;
 	std::vector<std::string> inputEntries;
 	boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
-	BOOST_FOREACH(std::string entry, inputEntries)
+	for(std::string entry : inputEntries)
 	{
 		bool b = 0;
 		std::string trimmedInput = trim(input);
@@ -141,7 +139,7 @@ std::vector<std::string> StringUtil::toStringVector(const std::string & input)
 	std::vector<std::string> v;
 	std::vector<std::string> inputEntries;
 	boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
-	BOOST_FOREACH(std::string entry, inputEntries)
+	for(std::string entry : inputEntries)
 		if (entry != "")
 			v.push_back(toString(entry));
 	return v;
@@ -152,7 +150,7 @@ BASICS_EXPORT std::vector<double> StringUtil::toDoubleVector(const std::string &
 	std::vector<double> v;
 	std::vector<std::string> inputEntries;
 	boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
-	BOOST_FOREACH(std::string entry, inputEntries)
+	for(std::string entry : inputEntries)
 		if (entry != "")
 			v.push_back(toDouble(entry));
 	return v;
@@ -167,6 +165,7 @@ std::string StringUtil::toString(const T& t)
 }
 
 template BASICS_EXPORT std::string StringUtil::toString<int>(const int& t);
+
 
 
 bool StringUtil::endsWith(const std::string &input, const std::string &end)

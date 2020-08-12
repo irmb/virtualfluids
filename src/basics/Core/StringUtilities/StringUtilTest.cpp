@@ -28,3 +28,13 @@ TEST(StringUtilTest, endsWith_shouldReturnFalse)
 
     ASSERT_FALSE(StringUtil::endsWith(input, ends_with));
 }
+
+TEST(StringUtilTest, toIntVector)
+{
+    const std::string input {"1   2\n3 4"};
+    std::vector<int> expected_result {1, 2, 3, 4};
+
+    auto result = StringUtil::toIntVector(input);
+
+    ASSERT_THAT(result,testing::Eq(expected_result));
+}
