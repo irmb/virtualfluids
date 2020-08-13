@@ -180,6 +180,9 @@ function(vf_add_library)
 endfunction(vf_add_library)
 
 function(vf_add_tests)
+    if (NOT BUILD_VF_UNIT_TESTS)
+        return()
+    endif()
 
     vf_get_library_name (folder_name)
     set (targetName ${folder_name}Tests)
