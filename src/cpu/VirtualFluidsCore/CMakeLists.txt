@@ -93,7 +93,7 @@ message("CAB_ADDITIONAL_LINK_LIBRARIES: " ${CAB_ADDITIONAL_LINK_LIBRARIES})
 ###   CREATE PROJECT                                          ###
 #################################################################
 #CREATE_CAB_PROJECT(VirtualFluids STATIC)
-include (${CMAKE_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
+#include (${CMAKE_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
 
 vf_add_library(BUILDTYPE static DEPENDS basics MuParser ${MPI_LIBRARY})
 
@@ -105,6 +105,6 @@ target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basic
 target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/container)
 target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/memory)
 target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/objects)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/transmiitter)
+target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/transmitter)
 target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/utilities)
 target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/writer)

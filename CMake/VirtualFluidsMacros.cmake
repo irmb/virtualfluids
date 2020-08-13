@@ -1,5 +1,15 @@
+#################################################################################
+#   _    ___      __              __________      _     __
+# | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
+# | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
+# | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
+# |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+#
+#################################################################################
 
-
+#################################################################################
+## set global project file endings
+#################################################################################
 set (VIRTUAL_FLUIDS_GLOB_FILES
         *.cpp
         *.c
@@ -8,14 +18,31 @@ set (VIRTUAL_FLUIDS_GLOB_FILES
         CACHE INTERNAL "File endings to glob for source files" )
 
 
-
+#################################################################################
+## Sets the library name to the current folder name.
+## output parameter: library_name
+#################################################################################
 function (vf_get_library_name library_name)
     get_filename_component(library_name_out ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     set(${library_name} ${library_name_out} PARENT_SCOPE)
 endfunction(vf_get_library_name)
 
 
-
+#################################################################################
+## Add a target, link the libraries and add the compiler flags to the target
+## The name of the target is vf_get_library_name().
+##
+## parameter:
+## BUILDTYPE - STATIC; SHARED; EXECUTABLE
+## DEPENDS   - libraries to link
+## FILES     - adds these files to the target
+## FOLDER    - adds all files in these folders to the targets
+## EXCLUDE   - excludes these files from the target
+##
+## note: If no files and folders are passed, all files from the level of current
+##       CMakeLists.txt are added recursively.
+##
+#################################################################################
 function(vf_add_library)
     message("Start new Cmake")
 
@@ -179,6 +206,13 @@ function(vf_add_library)
 
 endfunction(vf_add_library)
 
+
+
+#################################################################################
+## Add a test executable corresponding to the added target.
+## Must be called after vf_add_library().
+## The name of the test executable is: vf_get_library_name()Tests
+#################################################################################
 function(vf_add_tests)
     if (NOT BUILD_VF_UNIT_TESTS)
         return()
@@ -188,11 +222,12 @@ function(vf_add_tests)
     set (targetName ${folder_name}Tests)
     message(Add Test binary: ${targetName})
     file ( GLOB_RECURSE all_files ${VIRTUAL_FLUIDS_GLOB_FILES} )
+
     set(sourceFiles ${sourceFiles} ${all_files})
     includeTestFiles (${folder_name} "${sourceFiles}")
 
     message(${MY_SRCS})
-    ADD_EXECUTABLE(${targetName} ${MY_SRCS})
+    add_executable(${targetName} ${MY_SRCS})
 
     target_link_libraries(${targetName} PRIVATE ${folder_name})
 
