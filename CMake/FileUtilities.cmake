@@ -1,10 +1,16 @@
+#################################################################################
+## Helper functions for building source groups
+## and extracting test/production files.
+##
+## After function call the files are stored in: MY_SRCS
+#################################################################################
+
 macro(includeAllFiles targetName file_path)
 	set(collectTestFiles ON)
 	set(collectProductionFiles ON)
 
 	includeFiles(${targetName} "${file_path}")
 endmacro(includeAllFiles)
-
 
 
 macro(includeProductionFiles targetName file_path)
@@ -16,35 +22,31 @@ endmacro(includeProductionFiles)
 
 
 
-macro(includeTestFiles targetName file_path)
+macro(includeTestFiles targetName file_paths)
 	set(collectTestFiles ON)
 	set(collectProductionFiles OFF)
 
-	includeFiles(${targetName} "${file_path}")
+	includeFiles(${targetName} "${file_paths}")
 endmacro(includeTestFiles)
 
 
 
 
-macro(includeFiles targetName file_path)
-	foreach(file ${file_path})
-		#message("File: " ${file})
-		get_filename_component(package_dir ${file} DIRECTORY)
+macro(includeFiles targetName file_paths)
 
+	foreach(file ${file_paths})
+
+		get_filename_component(package_dir ${file} DIRECTORY)
+		#message("File: " ${file})
 		#message("package_dir: " ${package_dir})
 
-		 collectFilesFrom(${file})
+		collectFilesFrom(${file})
 		if (package_dir)
-		 #setSourceGroupForFilesIn(${package_dir} ${targetName})
-		 buildSourceGroup(${targetName} ${package_dir})
-
-		 if(isAllTestSuite)
-			 source_group(${targetName}\\${SOURCE_GROUP} FILES ${MY_SRCS})
-		 else()
-			 source_group(${SOURCE_GROUP} FILES ${file})
-		 endif()
+		   setSourceGroupForFilesIn(${package_dir} ${targetName})
 		endif()
+
 	endforeach()
+
 endmacro(includeFiles)
 
 
@@ -52,23 +54,20 @@ endmacro(includeFiles)
 macro(collectFilesFrom path)
 	#input: path from files to collect
 
-	#foreach(_file ${path})
-		get_filename_component(fileName ${path} NAME)
-		if(collectTestFiles)
-			if(${fileName} MATCHES "Test" OR ${fileName} MATCHES "Mock")
-				set(MY_SRCS ${MY_SRCS} ${path})
-			endif()
+	get_filename_component(fileName ${path} NAME)
+	if(collectTestFiles)
+		if(${fileName} MATCHES "Test" OR ${fileName} MATCHES "Mock")
+			set(MY_SRCS ${MY_SRCS} ${path})
 		endif()
-		if(collectProductionFiles)
-			if(NOT ${fileName} MATCHES "Test" AND NOT ${fileName} MATCHES "Mock")
-				set(MY_SRCS ${MY_SRCS} ${path})
-			endif()
+	endif()
+	if(collectProductionFiles)
+		if(NOT ${fileName} MATCHES "Test" AND NOT ${fileName} MATCHES "Mock")
+			set(MY_SRCS ${MY_SRCS} ${path})
 		endif()
-	#endforeach()
-	#set(MY_SRCS ${MY_SRCS} ${COLLECTED_FILES_IN_PATH})
+	endif()
 
 	#output: MY_SRCS
-endmacro(collectFilesFrom)
+endmacro()
 
 
 

@@ -10,3 +10,6 @@
     target_link_directories(${library_name} PRIVATE ${GMOCK_ROOT}/build/lib)
 
     target_link_libraries(${library_name} PRIVATE gtest gmock gmock_main)
+
+    #add_compile_options (-std=c++11)
+    add_definitions("-std=c++11") #TODO: Really necessary?

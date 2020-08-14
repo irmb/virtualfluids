@@ -8,7 +8,7 @@
 #################################################################################
 
 function(status msg)
-    message(STATUS " VF  -- ${msg}")
+    message(STATUS "  VF - ${msg}")
 endfunction()
 
 #################################################################################
@@ -231,32 +231,33 @@ endfunction()
 ## Precondition: BUILD_VF_UNIT_TESTS needs to be ON
 #################################################################################
 function(vf_add_tests)
+
     if (NOT BUILD_VF_UNIT_TESTS)
         return()
     endif()
 
+    # get the test library name
     vf_get_library_test_name(library_test_name)
     vf_get_library_name (folder_name)
 
     status("Add test executable: ${library_test_name}")
 
+    # set test files to MY_SRCS
     file ( GLOB_RECURSE all_files ${VIRTUAL_FLUIDS_GLOB_FILES} )
+    includeTestFiles (${folder_name} "${all_files}")
 
-    set(sourceFiles ${sourceFiles} ${all_files})
-    includeTestFiles (${folder_name} "${sourceFiles}")
-
-    cmake_print_variables(MY_SRCS)
-
+    # add the target
     add_executable(${library_test_name} ${MY_SRCS})
 
+    # link tested library
     target_link_libraries(${library_test_name} PRIVATE ${folder_name})
 
+    # link tested library
     target_include_directories(${library_test_name} PRIVATE ${CMAKE_BINARY_DIR})
     target_include_directories(${library_test_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(${library_test_name} PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
+    # link googlemock
     include(${CMAKE_PATH}/3rd/gmock.cmake)
-    #add_compile_options (-std=c++11)
-    add_definitions("-std=c++11")
 
 endfunction()
