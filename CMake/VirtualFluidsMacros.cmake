@@ -7,6 +7,10 @@
 #
 #################################################################################
 
+function(status msg)
+    message(STATUS " VF  -- ${msg}")
+endfunction()
+
 #################################################################################
 ## set global project file endings
 #################################################################################
@@ -25,7 +29,17 @@ set (VIRTUAL_FLUIDS_GLOB_FILES
 function (vf_get_library_name library_name)
     get_filename_component(library_name_out ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     set(${library_name} ${library_name_out} PARENT_SCOPE)
-endfunction(vf_get_library_name)
+endfunction()
+
+
+#################################################################################
+## Sets the library test name to the current folder name + Tests.
+## output parameter: library_test_name
+#################################################################################
+function (vf_get_library_test_name library_test_name)
+    vf_get_library_name (folder_name)
+    set (${library_test_name} ${library_name}Tests PARENT_SCOPE)
+endfunction()
 
 
 #################################################################################
@@ -54,6 +68,7 @@ function(vf_add_library)
     #message("Files: ${ARG_FOLDER}")
 
     vf_get_library_name (library_name)
+    message("LIB NAME: ${library_name}")
 
 
     if (ARG_FILES)
@@ -204,7 +219,7 @@ function(vf_add_library)
     target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
 
-endfunction(vf_add_library)
+endfunction()
 
 
 
@@ -212,32 +227,36 @@ endfunction(vf_add_library)
 ## Add a test executable corresponding to the added target.
 ## Must be called after vf_add_library().
 ## The name of the test executable is: vf_get_library_name()Tests
+##
+## Precondition: BUILD_VF_UNIT_TESTS needs to be ON
 #################################################################################
 function(vf_add_tests)
     if (NOT BUILD_VF_UNIT_TESTS)
         return()
     endif()
 
+    vf_get_library_test_name(library_test_name)
     vf_get_library_name (folder_name)
-    set (targetName ${folder_name}Tests)
-    message(Add Test binary: ${targetName})
+
+    status("Add test executable: ${library_test_name}")
+
     file ( GLOB_RECURSE all_files ${VIRTUAL_FLUIDS_GLOB_FILES} )
 
     set(sourceFiles ${sourceFiles} ${all_files})
     includeTestFiles (${folder_name} "${sourceFiles}")
 
-    message(${MY_SRCS})
-    add_executable(${targetName} ${MY_SRCS})
+    cmake_print_variables(MY_SRCS)
 
-    target_link_libraries(${targetName} PRIVATE ${folder_name})
+    add_executable(${library_test_name} ${MY_SRCS})
 
-    target_include_directories(${targetName} PRIVATE ${CMAKE_BINARY_DIR})
-    target_include_directories(${targetName} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_include_directories(${targetName} PRIVATE ${CMAKE_SOURCE_DIR}/src)
+    target_link_libraries(${library_test_name} PRIVATE ${folder_name})
+
+    target_include_directories(${library_test_name} PRIVATE ${CMAKE_BINARY_DIR})
+    target_include_directories(${library_test_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_include_directories(${library_test_name} PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
     include(${CMAKE_PATH}/3rd/gmock.cmake)
     #add_compile_options (-std=c++11)
     add_definitions("-std=c++11")
 
-
-endfunction(vf_add_tests)
+endfunction()

@@ -31,6 +31,7 @@ set (CMAKE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 include("${CMAKE_PATH}/CMakeCABMacros.cmake")
 include("${CMAKE_PATH}/FileUtilities.cmake")
 include("${CMAKE_PATH}/VirtualFluidsMacros.cmake")
+include(CMakePrintHelpers)
 
 #################################################################################
 #  COMMON LIBRARIES
@@ -41,9 +42,9 @@ add_subdirectory(src/basics)
 #  VIRTUAL FLUIDS CPU / GPU
 #################################################################################
 #if (BUILD_VF_CPU)
-#include (cpu.cmake)
+include (cpu.cmake)
 #endif()
 #if(BUILD_VF_GPU)
-include (gpu.cmake)
+#include (gpu.cmake)
 #endif()
 
