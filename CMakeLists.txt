@@ -17,6 +17,12 @@ endif()
 
 project(VirtualFluids CXX)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER ".cmake")
+set(libraryFolder "libs")
+set(testFolder    "tests")
+set(appFolder     "apps")
+
 #################################################################################
 #  OPTIONS
 #################################################################################

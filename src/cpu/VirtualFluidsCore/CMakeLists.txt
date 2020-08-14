@@ -88,14 +88,14 @@ IF(${USE_DEM_COUPLING})
    INCLUDE(${SOURCE_ROOT}/DemCoupling/DemCoupling.cmake)
 ENDIF()
 
-message("CAB_ADDITIONAL_LINK_LIBRARIES: " ${CAB_ADDITIONAL_LINK_LIBRARIES})
+#message("CAB_ADDITIONAL_LINK_LIBRARIES: " ${CAB_ADDITIONAL_LINK_LIBRARIES})
 #################################################################
 ###   CREATE PROJECT                                          ###
 #################################################################
 #CREATE_CAB_PROJECT(VirtualFluids STATIC)
 #include (${CMAKE_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
 
-vf_add_library(BUILDTYPE static DEPENDS basics MuParser ${MPI_LIBRARY})
+vf_add_library(BUILDTYPE static DEPENDS basics MuParser ${CAB_ADDITIONAL_LINK_LIBRARIES})
 
 vf_get_library_name(library_name)
 target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics)

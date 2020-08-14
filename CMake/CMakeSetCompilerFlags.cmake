@@ -109,6 +109,8 @@ MACRO(ADD_COMPILER_FLAGS_TO_PROJECT compiler_type project_name project_language 
    ################################################################
    # LINKER PROPS
    ################################################################
+   status("additional linker probs: ${CAB_COMPILER_ADDITIONAL_LINK_PROPS}")
+
    IF(CAB_COMPILER_ADDITIONAL_LINK_PROPS)
      ADD_TARGET_PROPERTIES(${project_name} LINK_FLAGS ${CAB_COMPILER_ADDITIONAL_LINK_PROPS}) 
    ENDIF()

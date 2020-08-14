@@ -125,3 +125,52 @@ macro(generateExportHeader libName)
 				)
 	#endif()
 endmacro(generateExportHeader)
+
+
+
+
+function(collectFiles source_files ARG_FILES ARG_FOLDER ARG_EXCLUDE)
+	set(local_source_files)
+
+	#cmake_print_variables(ARG_FOLDER)
+	#cmake_print_variables(ARG_FILES)
+	#cmake_print_variables(ARG_EXCLUDE)
+
+	if (ARG_FILES)
+		set(local_source_files ${local_source_files} ${ARG_FILES})
+	endif()
+
+	if (ARG_FOLDER)
+		foreach(folder ${ARG_FOLDER})
+			foreach(file ${VIRTUAL_FLUIDS_GLOB_FILES})
+				set (filePath ${folder}/${file})
+				#message("${filePath}")
+				file (GLOB part_files ${filePath} )
+				set(local_source_files ${local_source_files} ${part_files})
+				#message("${local_source_files}")
+			endforeach()
+		endforeach()
+	endif()
+
+
+	if (NOT ARG_FILES AND NOT ARG_FOLDER)
+		file ( GLOB_RECURSE all_files ${VIRTUAL_FLUIDS_GLOB_FILES} )
+		set(local_source_files ${local_source_files} ${all_files})
+	endif()
+
+
+	if (ARG_EXCLUDE)
+		foreach(file_path ${local_source_files})
+			foreach(file_exclude ${ARG_EXCLUDE})
+				get_filename_component(file_name ${file_path} NAME)
+				if (NOT ${file_name} STREQUAL ${file_exclude})
+					set(new_files ${new_files} ${file_path})
+				endif()
+
+			endforeach()
+		endforeach()
+		set(local_source_files ${new_files})
+	endif()
+
+	set("${source_files}" "${local_source_files}" PARENT_SCOPE)
+endfunction()

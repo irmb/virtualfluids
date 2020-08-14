@@ -58,78 +58,20 @@ endfunction()
 ##
 #################################################################################
 function(vf_add_library)
-    message("Start new Cmake")
 
     set( options )
     set( oneValueArgs )
     set( multiValueArgs BUILDTYPE DEPENDS FILES FOLDER EXCLUDE)
     cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    #message("Files: ${ARG_FOLDER}")
-
     vf_get_library_name (library_name)
-    message("LIB NAME: ${library_name}")
+    status("Configuring the target: ${library_name} (type=${ARG_BUILDTYPE})...")
 
 
-    if (ARG_FILES)
-        #message ("${ARG_FILES}")
-        set(sourceFiles ${sourceFiles} ${ARG_FILES})
-    endif()
-
-    if (ARG_FOLDER)
-        foreach(folder ${ARG_FOLDER})
-            foreach(file ${VIRTUAL_FLUIDS_GLOB_FILES})
-                set (filePath ${folder}/${file})
-                #message("${filePath}")
-                file (GLOB part_files ${filePath} )
-                set(sourceFiles ${sourceFiles} ${part_files})
-            endforeach()
-        endforeach()
-    endif()
-
-    if (NOT ARG_FILES AND NOT ARG_FOLDER)
-        file ( GLOB_RECURSE all_files ${VIRTUAL_FLUIDS_GLOB_FILES} )
-        set(sourceFiles ${sourceFiles} ${all_files})
-    endif()
-
-    foreach(X IN LISTS sourceFiles)
-        #message(STATUS "${X}")
-    endforeach()
-
-    if (ARG_EXCLUDE)
-        foreach(file_path ${sourceFiles})
-            foreach(file_exclude ${ARG_EXCLUDE})
-                get_filename_component(file_name ${file_path} NAME)
-                if (NOT ${file_name} STREQUAL ${file_exclude})
-                    set(new_files ${new_files} ${file_path})
-                endif()
-
-            endforeach()
-        endforeach()
-        set(sourceFiles ${new_files})
-    endif()
-
+    collectFiles(sourceFiles "${ARG_FILES}" "${ARG_FOLDER}" "${ARG_EXCLUDE}")
 
     includeProductionFiles (${library_name} "${sourceFiles}")
 
-    foreach(X IN LISTS MY_SRCS)
-        #message(STATUS "${X}")
-    endforeach()
-
-
-    # SET SOURCE GROUP
-    # IF SOURCE GROUP ENABLED
-    foreach(source ${sourceFiles})
-        #  get_filename_component(source_dir ${source} DIRECTORY)
-
-        if (source_dir)
-            #setSourceGroupForFilesIn(${source_dir} ${library_name})
-        endif()
-    endforeach()
-
-
-
-    MESSAGE(STATUS "configuring ${library_name} (type=${ARG_BUILDTYPE})...")
 
 
     #################################################################
@@ -153,10 +95,13 @@ function(vf_add_library)
     #################################################################
     IF(${ARG_BUILDTYPE} MATCHES binary)
         ADD_EXECUTABLE(${library_name} ${MY_SRCS} )
+        groupTarget(${library_name} ${appFolder})
     ELSEIF(${ARG_BUILDTYPE} MATCHES shared)
         ADD_LIBRARY(${library_name} SHARED ${MY_SRCS} )
+        groupTarget(${library_name} ${libraryFolder})
     ELSEIF(${ARG_BUILDTYPE} MATCHES static)
         ADD_LIBRARY(${library_name} STATIC ${MY_SRCS} )
+        groupTarget(${library_name} ${libraryFolder})
     ELSE()
         MESSAGE(FATAL_ERROR "build_type=${ARG_BUILDTYPE} doesn't match BINARY, SHARED or STATIC")
     ENDIF()
@@ -164,21 +109,18 @@ function(vf_add_library)
     #################################################################
     ###   ADDITIONAL LINK LIBRARIES                               ###
     #################################################################
-    message("Link Depending Libraries: ${ARG_DEPENDS}")
+    status("Link Depending Libraries: ${ARG_DEPENDS}")
     if (ARG_DEPENDS)
         target_link_libraries(${library_name} PRIVATE ${ARG_DEPENDS})
     endif()
-
-    IF(CAB_ADDITIONAL_LINK_LIBRARIES)
-        TARGET_LINK_LIBRARIES(${library_name} PRIVATE ${CAB_ADDITIONAL_LINK_LIBRARIES})
-    ENDIF()
-
 
     #################################################################
     ###   COMPILER Flags                                          ###
     #################################################################
     ADD_COMPILER_FLAGS_TO_PROJECT(${CAB_COMPILER} ${library_name} "CXX" ${ARG_BUILDTYPE})
-    MESSAGE(STATUS "compiler flags for compiler ${CAB_COMPILER} on machine ${CAB_MACHINE} for project ${project_name} (${ARG_BUILDTYPE}) have been configured")
+    status("compiler flags for compiler ${CAB_COMPILER} on machine ${CAB_MACHINE} for project ${project_name} (${ARG_BUILDTYPE}) have been configured")
+    status("compiler flags: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS}")
+    status("additional compiler flags: ${CAB_ADDTIONAL_COMPILER_FLAGS}")
 
     #MESSAGE (COMPILE FLAGS: ${CAB_ADDTIONAL_COMPILER_FLAGS})
     IF(CAB_ADDTIONAL_COMPILER_FLAGS)
@@ -196,6 +138,8 @@ function(vf_add_library)
     #################################################################
     ###   ADDITIONAL LINK PROPERTIES                              ###
     #################################################################
+    status("additional linker flags: ${CAB_ADDITIONAL_LINK_FLAGS}")
+
     IF(CAB_ADDITIONAL_LINK_FLAGS)
         ADD_TARGET_PROPERTIES(${library_name} LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS})
     ENDIF()
@@ -206,9 +150,6 @@ function(vf_add_library)
         ADD_TARGET_PROPERTIES(${library_name} LINK_FLAGS_RELEASE ${CAB_ADDITIONAL_LINK_FLAGS_RELEASE})
     ENDIF()
 
-    #SET(project_name ${library_name} CACHE STRING "name of binary")
-
-    MESSAGE(STATUS "configuring ${library_name} (type=${ARG_BUILDTYPE})... done")
 
     if (NOT ${ARG_BUILDTYPE} MATCHES binary)
       generateExportHeader (${library_name})
@@ -218,6 +159,8 @@ function(vf_add_library)
     target_include_directories(${library_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
+
+    #status("... configuring target: ${library_name} (type=${ARG_BUILDTYPE}) done")
 
 endfunction()
 
@@ -240,7 +183,7 @@ function(vf_add_tests)
     vf_get_library_test_name(library_test_name)
     vf_get_library_name (folder_name)
 
-    status("Add test executable: ${library_test_name}")
+    status("Configuring test executable: ${library_test_name}")
 
     # set test files to MY_SRCS
     file ( GLOB_RECURSE all_files ${VIRTUAL_FLUIDS_GLOB_FILES} )
@@ -248,6 +191,7 @@ function(vf_add_tests)
 
     # add the target
     add_executable(${library_test_name} ${MY_SRCS})
+    groupTarget (${library_test_name} ${testFolder})
 
     # link tested library
     target_link_libraries(${library_test_name} PRIVATE ${folder_name})
@@ -261,3 +205,10 @@ function(vf_add_tests)
     include(${CMAKE_PATH}/3rd/gmock.cmake)
 
 endfunction()
+
+#################################################################################
+## group target for VisualStudio
+#################################################################################
+function(groupTarget targetName folderName)
+    set_property( TARGET  ${targetName}  PROPERTY  FOLDER  ${folderName} )
+endfunction(groupTarget)
