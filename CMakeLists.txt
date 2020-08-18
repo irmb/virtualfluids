@@ -27,17 +27,18 @@ set(appFolder     "apps")
 #  OPTIONS
 #################################################################################
 option(BUILD_VF_CPU "Build VirtualFluids cpu variant" OFF)
-option(BUILD_VF_GPU "Build VirtualFluids gpu variant" ON)
+option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" ON)
 
 #################################################################################
 #  MACROS
 #################################################################################
+include(CMakePrintHelpers)
 set (CMAKE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 include("${CMAKE_PATH}/CMakeCABMacros.cmake")
 include("${CMAKE_PATH}/FileUtilities.cmake")
 include("${CMAKE_PATH}/VirtualFluidsMacros.cmake")
-include(CMakePrintHelpers)
+
 
 #################################################################################
 #  COMMON LIBRARIES
@@ -47,10 +48,10 @@ add_subdirectory(src/basics)
 #################################################################################
 #  VIRTUAL FLUIDS CPU / GPU
 #################################################################################
-#if (BUILD_VF_CPU)
-include (cpu.cmake)
-#endif()
-#if(BUILD_VF_GPU)
-#include (gpu.cmake)
-#endif()
+if (BUILD_VF_CPU)
+    include (cpu.cmake)
+endif()
+if(BUILD_VF_GPU)
+    include (gpu.cmake)
+endif()
 
