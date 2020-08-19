@@ -1,29 +1,43 @@
-#include <numerics/geometry3d/GbTriangle3D.h>
-#include <numerics/geometry3d/creator/GbTriangle3DCreator.h>
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GbTriangle3D.cpp
+//! \ingroup geometry3d
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
+#include <GbTriangle3D.h>
+#include <GbSystem3D.h>
+#include <GbLine3D.h>
+#include <GbCuboid3D.h>
 
 #include <basics/utilities/UbMath.h>
 
-#include <numerics/geometry3d/GbSystem3D.h>
-#include <numerics/geometry3d/GbLine3D.h>
-#include <numerics/geometry3d/GbCuboid3D.h>
-//#include <numerics/geometry3d/GbPolygon3D.h>                                  
-
-using namespace std;
-
-ObObjectCreator* GbTriangle3D::getCreator()
-{
-   return GbTriangle3DCreator::getInstance();
-}
-
-/*=========================================================================*/
-/* GbTriangle3D                                                            */
-/*                                                                         */
-/*
-* This Class provides basic 3D triangle objects.
-* The describing points are observed by 2D triangle objects.
-* <BR><BR><HR>
-* @version 1.0 - 24.01.05
-*/                                                                  
+using namespace std;                                                               
 
 GbTriangle3D::GbTriangle3D()
 {
@@ -246,42 +260,6 @@ void GbTriangle3D::setPoint(GbPoint3D* point, int index)
 }
 
 /*
-* Returns true if this 2D triangle equals the specified object.
-* Two triangle are equal, if their points are equal.
-* <BR>Note that the order of points is not recognized!
-* @return true if this 2D triangle equals the specified object
-* @see GbPoint2D#equals(java.lang.Object)
-* @see GbPoint3D#equals(java.lang.Object)
-*/
-//bool equals(GbObject3D *object)
-//{
-//   try
-//   {
-//      GbTriangle3D *triangle = (GbTriangle3D*) object;
-
-//if(this.points[0].equals(triangle.points[0]))
-//{
-//   if(this.points[1].equals(triangle.points[1]) && this.points[2].equals(triangle.points[2])) return(true);
-//   if(this.points[1].equals(triangle.points[2]) && this.points[2].equals(triangle.points[1])) return(true);
-//   return(false);
-//}
-//else if(this.points[0].equals(triangle.points[1]))
-//{
-//   if(this.points[1].equals(triangle.points[0]) && this.points[2].equals(triangle.points[2])) return(true);
-//   if(this.points[1].equals(triangle.points[2]) && this.points[2].equals(triangle.points[0])) return(true);
-//   return(false);
-//}
-//else if(this.points[0].equals(triangle.points[2]))
-//{
-//   if(this.points[1].equals(triangle.points[0]) && this.points[2].equals(triangle.points[1])) return(true);
-//   if(this.points[1].equals(triangle.points[1]) && this.points[2].equals(triangle.points[0])) return(true);
-//   return(false);
-//}
-//return(false);
-//    }
-//    catch(Exception e){ return(false); }
-// }
-/*
 * Returns the surface triangle set with new nodes !!!
 * @returns the surface triangle set with new nodes !!!
 */
@@ -366,32 +344,6 @@ double GbTriangle3D::getIntersectionRaytraceFactor(const double& x1, const doubl
    return f * (e2x1*qx1 + e2x2*qx2 + e2x3*qx3);
 }
 
-/*======================================================================*/
-/*  Calculation                                                         */
-/*                                                                      */
-/*
-* Returns the intersection points of this 2D triangle and the specified 2D line.
-* @param line the 2D line to intersect
-* @return the intersection points of this 2D triangle and the specified 2D line
-*/
-/*
-vector<GbPoint3D> GbTriangle3D::calculateIntersectionPoints3D(GbLine3D *line)
-{
-//throw UbException(UB_EXARGS,"not yet implemented");	
-
-GbSystem::PointSet3 pointSet(0);
-GbPoint3D          *pCrossed = NULL;
-
-pCrossed = GbSystem::calculateIntersectionPoint3D(*this->points[0], *this->points[1], *line->getPoint1(), *line->getPoint2());
-if(pCrossed != NULL) pointSet.addUnequal(pCrossed);
-pCrossed = GbSystem::calculateIntersectionPoint3D(*this->points[1], *this->points[2], *line->getPoint1(), *line->getPoint2());
-if(pCrossed != NULL) pointSet.addUnequal(pCrossed);
-pCrossed = GbSystem::calculateIntersectionPoint3D(*this->points[2], *this->points[0], *line->getPoint1(), *line->getPoint2());
-if(pCrossed != NULL) pointSet.addUnequal(pCrossed);
-//vector<GbPoint3D> points = pointSet->getPoints();
-return(pointSet.getPoints());
-}
-*/
 /*===========================================================*/
 
 GbLine3D* GbTriangle3D::createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2)
@@ -901,31 +853,6 @@ void GbTriangle3D::calculateValues()
 
 
 /*======================================================================*/
-//class PointObserver : public UbObserver
-//{
-//    GbTriangle3D *triangle;
-
-//    PointObserver(GbTriangle3D *triangle)
-//    {
-//      this->triangle = triangle;
-//    }
-
-//public:
-//   void objectChanged(GbObject3D *object)
-//    {
-//      if(object == this->triangle->points[0] || object == this->triangle->points[1]  || object == this->triangle->points[2])
-//      {
-//         this->triangle->consistent = false;
-//         this->triangle->notifyObservers();
-//      }
-//    }
-//};
-//bool GbTriangle3D::isPointOnEdge(GbVector3D& q)
-//{
-////cout<<"muss einer machen ...\n";
-//   return false;
-//}
-/*======================================================================*/
 GbVector3D GbTriangle3D::getNormal()
 {
    this->calculateNormal();
@@ -944,32 +871,6 @@ void GbTriangle3D::init()
    area       = 0.0;
    consistent = false;
    points.resize(3,NULL);
-}
-/*=======================================================*/
-void GbTriangle3D::write(UbFileOutput* out) 
-{                                      
-   out->writeString(this->getCreator()->getTypeID());
-   if(points[0]) points[0]->write(out);
-   else {GbPoint3D tmp; tmp.write(out);}
-   if(points[1]) points[1]->write(out);
-   else {GbPoint3D tmp; tmp.write(out);}
-   if(points[2]) points[2]->write(out);
-   else {GbPoint3D tmp; tmp.write(out);}
-}
-/*=======================================================*/
-void GbTriangle3D::read(UbFileInput* in) 
-{  
-   this->deletePoints();
-   points[0] = new GbPoint3D;
-   points[1] = new GbPoint3D;
-   points[2] = new GbPoint3D;
-   in->readString();                                    
-   points[0]->read(in);
-   in->readString();                                    
-   points[1]->read(in);
-   in->readString();                                    
-   points[2]->read(in);
-   consistent = false;
 }
 /*=======================================================*/
 void GbTriangle3D::calculateNormal()

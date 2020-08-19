@@ -1,3 +1,36 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file WriteMacroscopicQuantitiesCoProcessor.cpp
+//! \ingroup CoProcessors
+//! \author Konstantin Kutscher
+//=======================================================================================
+
 #include "WriteMacroscopicQuantitiesCoProcessor.h"
 #include "LBMKernel.h"
 #include "BCProcessor.h"
@@ -82,7 +115,8 @@ void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
    piece = subfolder + "/" + piece;
 
    std::vector<std::string> cellDataNames;
-   std::vector<std::string> pieces = comm->gather(piece);
+   std::vector<std::string> pieces;
+   pieces.push_back(piece);
    if (comm->getProcessID() == comm->getRoot())
    {
       std::string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath,pieces,datanames,cellDataNames);
@@ -115,31 +149,26 @@ void WriteMacroscopicQuantitiesCoProcessor::clearData()
 //////////////////////////////////////////////////////////////////////////
 void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
-   double level = (double)block->getLevel();
    double blockID = (double)block->getGlobalID();
 
-   //Diese Daten werden geschrieben:
+   //This data is written:
    datanames.resize(0);
-   datanames.push_back("Rho");
+   datanames.push_back("DRho");
+   datanames.push_back("Press");
    datanames.push_back("Vx");
    datanames.push_back("Vy");
    datanames.push_back("Vz");
-   //datanames.push_back("Press");
-   datanames.push_back("Level");
-   //datanames.push_back("BlockID");
-
-     
-
+   
    data.resize(datanames.size());
 
    SPtr<ILBMKernel> kernel = block->getKernel();
    SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
    SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();     
    LBMReal f[D3Q27System::ENDF+1];
-   LBMReal vx1,vx2,vx3,rho;
+   LBMReal vx1,vx2,vx3,drho,press;
 
-   //knotennummerierung faengt immer bei 0 an!
-   unsigned int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
+   //node numbering always starts at 0!
+   int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
 
    if(block->getKernel()->getCompressible())
    {
@@ -158,21 +187,12 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
    int maxX2 = (int)(distributions->getNX2());
    int maxX3 = (int)(distributions->getNX3());
 
-   //int minX1 = 1;
-   //int minX2 = 1;
-   //int minX3 = 1;
-
-   //int maxX1 = (int)(distributions->getNX1());
-   //int maxX2 = (int)(distributions->getNX2());
-   //int maxX3 = (int)(distributions->getNX3());
-
-   //nummern vergeben und node vector erstellen + daten sammeln
+   //assign numbers and create node vector + collect data
    CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3,-1);
    maxX1 -= 2;
    maxX2 -= 2;
    maxX3 -= 2;
 
-   //D3Q27BoundaryConditionPtr bcPtr;
    int nr = (int)nodes.size();
  
    for(int ix3=minX3; ix3<=maxX3; ix3++)
@@ -191,41 +211,30 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                                               float(worldCoordinates[2]) ));
 
                distributions->getDistribution(f, ix1, ix2, ix3);
-               calcMacros(f,rho,vx1,vx2,vx3);
-               //double press = D3Q27System::calcPress(f,rho,vx1,vx2,vx3);
+               calcMacros(f,drho,vx1,vx2,vx3);
+               press = D3Q27System::calcPress(f,drho,vx1,vx2,vx3);
 
-               if (UbMath::isNaN(rho) || UbMath::isInfinity(rho)) 
-                  UB_THROW( UbException(UB_EXARGS,"rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
+               if (UbMath::isNaN(drho) || UbMath::isInfinity(drho)) 
+                  UB_THROW( UbException(UB_EXARGS,"drho is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
                    ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                     //rho=999.0;
-               //if (UbMath::isNaN(press) || UbMath::isInfinity(press)) 
-               //   UB_THROW( UbException(UB_EXARGS,"press is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
-               //   ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                  //press=999.0;
+               if (UbMath::isNaN(press) || UbMath::isInfinity(press)) 
+                  UB_THROW( UbException(UB_EXARGS,"press is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
+                   ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
                if (UbMath::isNaN(vx1) || UbMath::isInfinity(vx1)) 
                   UB_THROW( UbException(UB_EXARGS,"vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
                   ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                     //vx1=999.0;
                if (UbMath::isNaN(vx2) || UbMath::isInfinity(vx2)) 
                   UB_THROW( UbException(UB_EXARGS,"vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
                   ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                     //vx2=999.0;
                if (UbMath::isNaN(vx3) || UbMath::isInfinity(vx3)) 
                   UB_THROW( UbException(UB_EXARGS,"vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
                   ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-
-               data[index++].push_back(rho);
-               data[index++].push_back(vx1);
-               data[index++].push_back(vx2);
-               data[index++].push_back(vx3);
                
-               //data[index++].push_back(rho * conv->getFactorDensityLbToW2() );
-               //data[index++].push_back(vx1 * conv->getFactorVelocityLbToW2());
-               //data[index++].push_back(vx2 * conv->getFactorVelocityLbToW2());
-               //data[index++].push_back(vx3 * conv->getFactorVelocityLbToW2());
-               //data[index++].push_back(press * conv->getFactorPressureLbToW2());
-               data[index++].push_back(level);
-               //data[index++].push_back(blockID);
+               data[index++].push_back(drho * conv->getFactorDensityLbToW());
+               data[index++].push_back(press * conv->getFactorPressureLbToW());
+               data[index++].push_back(vx1 * conv->getFactorVelocityLbToW());
+               data[index++].push_back(vx2 * conv->getFactorVelocityLbToW());
+               data[index++].push_back(vx3 * conv->getFactorVelocityLbToW());
             }
          }
       }

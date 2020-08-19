@@ -1,21 +1,43 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GbTriangle3D.h
+//! \ingroup geometry3d
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef GBTRIANGLE3D_H
 #define GBTRIANGLE3D_H
 
 #include <sstream>
 
-#include <numerics/geometry3d/GbObject3D.h>
-#include <numerics/geometry3d/GbVector3D.h>
-#include <numerics/geometry3d/GbPoint3D.h>
-
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
+#include <GbObject3D.h>
+#include <GbVector3D.h>
+#include <GbPoint3D.h>
 
 #include <PointerDefinitions.h>
 
@@ -23,13 +45,14 @@ class GbCuboid3D;
 class GbPolygon3D;
 class GbObject3DCreator;
 
-/*=========================================================================*/
-/* GbTriangle3D                                                            */
-/*                                                                         */
-/*                                                               
-* This Class provides basic 3D triangle objects.
-*/
-//class GbLine2D;
+//////////////////////////////////////////////////////////////////////////
+//! 
+//! \class GbTriangle3D
+//! 
+//! \brief This Class provides basic 3D triangle objects.
+//! \details The describing points are observed by 2D triangle objects.
+//! 
+//////////////////////////////////////////////////////////////////////////  
 
 class GbTriangle3D : public GbObject3D , public UbObserver
 {
@@ -101,9 +124,6 @@ public:
    double getDistanceFromPoint(GbVector3D punct);
 
    std::string toString();
-   ObObjectCreator* getCreator();
-   void write(UbFileOutput* out);
-   void read(UbFileInput* in);
 
    /*======================================================================*/
    /*  Calculation                                                         */
@@ -140,27 +160,6 @@ public:
    /*                                                                      */
    virtual void calculateValues();
 
-   /*======================================================================*/
-   //class PointObserver : public UbObserver
-   //{
-   //    GbTriangle3D *triangle;
-
-   //    PointObserver(GbTriangle3D *triangle)
-   //    {
-   //      this->triangle = triangle;
-   //    }
-
-   //public:
-   //   void objectChanged(GbObject3D *object)
-   //    {
-   //      if(object == this->triangle->points[0] || object == this->triangle->points[1]  || object == this->triangle->points[2])
-   //      {
-   //         this->triangle->consistent = false;
-   //         this->triangle->notifyObservers();
-   //      }
-   //    }
-   //};
-   /*======================================================================*/
 
    //virtuelle Methoden von UbObserver
    //!! quick and dirty von sirann !!
@@ -193,28 +192,6 @@ public:
    }
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere
 
-#ifdef CAB_RCF
-   template<class Archive>
-   void SF_SERIALIZE(Archive & ar)
-   {
-      SF_SERIALIZE_PARENT<GbObject3D>(ar, *this);
-      ar & points;
-      ar & normal;
-      ar & x1s;
-      ar & x2s;
-      ar & x3s;
-      ar & x1min;
-      ar & x1max;
-      ar & x2min;
-      ar & x2max;
-      ar & x3min;
-      ar & x3max;
-      ar & area;
-      ar & consistent;
-      if( ArchiveTools::isReading(ar) ) this->calculateNormal();
-   }
-#endif //CAB_RCF
-
 protected:
    bool   consistent;
    double x1s;
@@ -235,11 +212,5 @@ private:
    void init();
 };
 /*=========================================================================*/
-
-#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-   UB_AUTO_RUN_NAMED(   SF::registerType<GbTriangle3D  >("GbTriangle3D  ")        , SF_GbTriangle3D     );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< GbObject3D, GbTriangle3D >() ), SF_GbTriangle3D_BD1 );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< UbObserver, GbTriangle3D>()  ), SF_GbTriangle3D_BD2 );
-#endif //RCF_USE_SF_SERIALIZATION
 
 #endif

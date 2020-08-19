@@ -1,3 +1,36 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file Grid.h
+//! \ingroup Grid
+//! \author Konstantin Kutscher, Soeren Freudiger, Sebastian Geller
+//=======================================================================================
+
 #ifndef GRID3D_H
 #define GRID3D_H
 
@@ -18,10 +51,10 @@ class CoordinateTransformation3D;
 class Communicator;
 class Block3D;
 class Interactor3D;
-//class Grid3DVisitor;
 
 #define OFFSET 0.5
 
+//! A class implements block grid 
 //////////////////////////////////////////////////////////////////////////
 class Grid3D : public enableSharedFromThis<Grid3D>
 {
@@ -42,7 +75,6 @@ public:
    void addBlock(SPtr<Block3D> block);
    bool deleteBlock(SPtr<Block3D> block);
    bool deleteBlock(int ix1, int ix2, int ix3, int level);
-   void deleteBlocks();
    void deleteBlocks(const std::vector<int>& ids);
    void replaceBlock(SPtr<Block3D> block);
    SPtr<Block3D> getBlock(int ix1, int ix2, int ix3, int level) const;
@@ -62,11 +94,9 @@ public:
    void getBlocks(int level, int rank, bool active, std::vector<SPtr<Block3D>>& blockVector);
    int getNumberOfBlocks();
    int getNumberOfBlocks(int level);
-   //const Block3DMap& getBlocks(int level);
    BlockIDMap& getBlockIDs();
    void deleteBlockIDs();
    void renumberBlockIDs();
-   void updateDistributedBlocks(SPtr<Communicator> comm);
    SPtr<Block3D> getSuperBlock(SPtr<Block3D> block);
    SPtr<Block3D> getSuperBlock(int ix1, int ix2, int ix3, int level);
    void getSubBlocks(SPtr<Block3D> block, int levelDepth, std::vector<SPtr<Block3D>>& blocks);

@@ -1,3 +1,36 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file LBMKernel.h
+//! \ingroup LBM
+//! \author Konstantin Kutscher
+//=======================================================================================
+
 #ifndef LBMKERNEL_H
 #define LBMKERNEL_H
 
@@ -5,12 +38,14 @@
 #include "LBMSystem.h"
 #include "ILBMKernel.h"
 #include <array>
+#include <limits>
 #include <MuParser/include/muParser.h>
 
 class BCProcessor;
 class DataSet3D;
 class Block3D;
 
+//! \brief A base class provides basic functionality for LBM kernel 
 class LBMKernel : public ILBMKernel, public enableSharedFromThis<LBMKernel>
 {
 public:
@@ -22,7 +57,6 @@ public:
     virtual SPtr<LBMKernel> clone() = 0;
 
     virtual void calculate(int step) = 0;
-    virtual double getCalculationTime() = 0;
 
     void setBCProcessor(SPtr<BCProcessor> bcp);
     SPtr<BCProcessor> getBCProcessor() const;
@@ -70,7 +104,7 @@ public:
 
     bool isInsideOfDomain(const int &x1, const int &x2, const int &x3) const;
 
-    void swapDistributions();
+    void swapDistributions() override;
 
     void setNX(std::array<int, 3> nx);
     std::array<int, 3> getNX();

@@ -1,20 +1,42 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GbCuboid3D.h
+//! \ingroup geometry3d
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef GBCUBOID3D_H
 #define GBCUBOID3D_H
-
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
 
 #include <vector>
 #include <cmath>
 
-#include <numerics/geometry3d/GbPoint3D.h>
+#include <GbPoint3D.h>
 #include <basics/utilities/UbObserver.h>
 #include <basics/utilities/UbMath.h>
 
@@ -25,7 +47,7 @@ class GbObject3DCreator;
 class GbCuboid3D;
 typedef SPtr<GbCuboid3D> GbCuboid3DPtr;
 
-
+//! \brief This Class provides basic 3D box objects.
 class GbCuboid3D : public GbObject3D, public UbObserver
 {
 public:              
@@ -108,10 +130,6 @@ public:
 
    std::string toString();
 
-   ObObjectCreator* getCreator();
-   void write(UbFileOutput* out);
-   void read(UbFileInput* in);
-
    //virtuelle Methoden von UbObserver
    void objectChanged(UbObservable* changedObject);
    void objectWillBeDeleted(UbObservable* objectForDeletion);
@@ -119,26 +137,9 @@ public:
 
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere
 
-#ifdef CAB_RCF
-   template<class Archive>
-   void SF_SERIALIZE(Archive & ar)
-   {
-      SF_SERIALIZE_PARENT<GbObject3D>(ar, *this);
-      ar & p1;
-      ar & p2;
-   }
-#endif //CAB_RCF
-
 protected:
    GbPoint3D* p1;
    GbPoint3D* p2;
 };
-
-#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-   UB_AUTO_RUN_NAMED(   SF::registerType<GbCuboid3D>("GbCuboid3D")             , SF_GbCuboid3D     );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< GbObject3D, GbCuboid3D >()), SF_GbCuboid3D_BD1 );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< UbObserver, GbCuboid3D>() ), SF_GbCuboid3D_BD2 );
-#endif //RCF_USE_SF_SERIALIZATION
-
 
 #endif   

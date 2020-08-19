@@ -1,9 +1,35 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GbVector3D.h
+//! \ingroup geometry3d
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef GBVECTOR3D_H
 #define GBVECTOR3D_H
                                                                    
@@ -11,14 +37,11 @@
 #include <cassert> 
 #include <string>
 
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
-
 #include <PointerDefinitions.h>
 
 class GbPoint3D;
 
+//! \brief This Class provides basic 3D vector objects.
 class GbVector3D 
 {
 public:
@@ -109,13 +132,6 @@ public:
     static const GbVector3D UNIT_X2;
     static const GbVector3D UNIT_X3;
 
-#ifdef CAB_RCF
-    template<class Archive>
-    void SF_SERIALIZE(Archive & ar)
-    {
-       ar & m_afTuple;
-    }
-#endif //CAB_RCF
 private:
     // support for comparisons
     int CompareArrays (const GbVector3D& rkV) const;
@@ -124,9 +140,5 @@ private:
 };
 
 GbVector3D operator* (const double& fScalar, const GbVector3D& rkV);
-
-#ifdef RCF_USE_SF_SERIALIZATION
-   UB_AUTO_RUN_NAMED(   SF::registerType<GbVector3D  >("GbVector3D  "), SF_GbVector3D     );
-#endif //RCF_USE_SF_SERIALIZATION
 
 #endif //GBVECTOR3D_H

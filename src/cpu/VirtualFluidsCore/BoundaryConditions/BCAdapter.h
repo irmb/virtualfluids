@@ -1,38 +1,47 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file BCAdapter.h
+//! \ingroup BoundarConditions
+//! \author Sören Freudiger
+//=======================================================================================
 #ifndef BCAdapter_H
 #define BCAdapter_H
 
 #include <PointerDefinitions.h>
 
 #include "BoundaryConditions.h"
-#include "basics/objects/ObObject.h"
-#include "basics/objects/ObObjectCreator.h"
-#include "basics/utilities/UbFileOutput.h"
-#include "basics/utilities/UbFileInput.h"
-#include "basics/utilities/UbAutoRun.hpp"
 #include "BCAlgorithm.h"
-
-
-/*=========================================================================*/
-/*  D3Q27BoundaryConditionAdapter                                          */
-/*                                                                         */
-/**
-<BR><BR>
-@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-@version 1.0 - 06.09.06
-*/ 
-
-/*
-usage: ...
-*/
 
 class D3Q27Interactor;
 
+//! \brief Abstract class of baundary conditions adapter
+//! \details  BCAdapter supports the definition of boundary conditions in grid generation
 class BCAdapter
 {
 public:
@@ -42,6 +51,7 @@ public:
        , algorithmType(-1)
    {
    }
+   //! \param secondaryBcOption additional option of boundary conditions
    BCAdapter(const short& secondaryBcOption) 
       :  secondaryBcOption(secondaryBcOption) 
        , type(0)
@@ -76,10 +86,7 @@ protected:
 
    static const char   TIMEDEPENDENT = 1<<0;//'1';
    static const char   TIMEPERIODIC  = 1<<1;//'2';
-
-private:
-
 };
 
 
-#endif //D3Q27BOUNDARYCONDITIONADAPTER_H
+#endif 

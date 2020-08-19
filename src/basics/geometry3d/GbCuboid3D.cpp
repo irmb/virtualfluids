@@ -1,18 +1,43 @@
-#include <numerics/geometry3d/GbCuboid3D.h>
-#include <numerics/geometry3d/creator/GbCuboid3DCreator.h>
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GbCuboid3D.cpp
+//! \ingroup geometry3d
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
+#include <GbCuboid3D.h>
+#include <GbSystem3D.h>
+#include <GbTriangle3D.h>
 
 #include <basics/utilities/UbMath.h>
 
-#include <numerics/geometry3d/GbSystem3D.h>
-#include <numerics/geometry3d/GbTriangle3D.h>
-
 using namespace std;
 
-/*=======================================================*/
-ObObjectCreator* GbCuboid3D::getCreator()
-{
-   return GbCuboid3DCreator::getInstance();
-}
 /*=======================================================*/
 // Konstruktor
 GbCuboid3D::GbCuboid3D() : GbObject3D()
@@ -415,23 +440,6 @@ void GbCuboid3D::objectWillBeDeleted(UbObservable* objectForDeletion)
    //ACHTUNG: eigentlich muessten in allen methoden von GbLine if abfragen fuer NULL pointer hin... toDo
 }
 /*=======================================================*/
-void GbCuboid3D::write(UbFileOutput* out) 
-{                                      
-   out->writeString(this->getCreator()->getTypeID());
-   p1->write(out);
-   p2->write(out);
-}
-/*=======================================================*/
-void GbCuboid3D::read(UbFileInput* in) 
-{  
-   in->readString();                                    
-   this->p1 = new GbPoint3D;
-   p1->read(in);
-   in->readString();                                    
-   this->p2 = new GbPoint3D;
-   p2->read(in);
-}
-/*=======================================================*/
 void GbCuboid3D::translate(const double& tx1, const double& tx2, const double& tx3)
 {  
    this->p1->translate(tx1, tx2, tx3);
@@ -556,78 +564,4 @@ double GbCuboid3D::getIntersectionRaytraceFactor(const double& x1, const double&
 
    return maxT[whichPlane] ;				/* ray hits box */
 }	
-/*==========================================================*/
-// double GbCuboid3D::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
-// {
-//     double absX,absMaxX,absY,absMaxY,absZ,absMaxZ;
-//  
-//     if(rx1<0.0)     absX    = this->getX1Maximum() - x1;
-//     else            absX    = this->getX1Minimum() - x1;
-//     if(1-(rx1<0.0)) absMaxX = this->getX1Maximum() - x1;
-//     else            absMaxX = this->getX1Minimum() - x1;
-//  
-//     if(rx2<0.0)     absY    = this->getX2Maximum() - x2;
-//     else            absY    = this->getX2Minimum() - x2;
-//     if(1-(rx2<0.0)) absMaxY = this->getX2Maximum() - x2;
-//     else            absMaxY = this->getX2Minimum() - x2;
-//  
-//     if(rx3<0.0)     absZ    = this->getX3Maximum() - x3;
-//     else            absZ    = this->getX3Minimum() - x3;
-//     if(1-(rx3<0.0)) absMaxZ = this->getX3Maximum() - x3;
-//     else            absMaxZ = this->getX3Minimum() - x3;
-//  
-//     
-//     //tmin ist die verschneidung des Gerade (Ray) durch die naehere Gerade (MinX oder MaxX)
-//     //tmax ist die verschneidung des Gerade (Ray) durch die weiteste Gerade (MinX oder MaxX)
-//     //analog fuer tymin und tymax 
-//     double tmin, tymin, tzmin, tmax, tymax, tzmax;
-// 
-//     if(!UbMath::zero(rx1)) tmin  = tmax  = 1.0/rx1;     
-//     else if(rx1<0.0)       tmin  = tmax  = -UbMath::getPositiveInfinity<double>();
-//     else                   tmin  = tmax  = UbMath::getPositiveInfinity<double>();
-// 
-//     if(!UbMath::zero(rx2)) tymin = tymax = 1.0/rx2;     
-//     else if(rx2<0.0)       tymin = tymax = -UbMath::getPositiveInfinity<double>();
-//     else                   tymin = tymax = UbMath::getPositiveInfinity<double>();
-// 
-//     if(!UbMath::zero(rx3)) tzmin = tzmax = 1.0/rx3;     
-//     else if(rx1<0.0)       tzmin = tzmax = -UbMath::getPositiveInfinity<double>();
-//     else                   tzmin = tzmax = UbMath::getPositiveInfinity<double>();
-// 
-//     //tmin  *= absX;
-//     //tmax  *= absMaxX;
-//     //tymin *= absY;
-//     //tymax *= absMaxY;
-//     //tzmin *= absZ;
-//     //tzmax *= absMaxZ;
-//  
-//     //0 * 1/0  vermeiden, da es ein Undefined wert produziert 
-//     if( !UbMath::zero(absX) || !UbMath::zero(rx1) ) tmin *= absX;
-//     else                                            tmin  = tymin;
-// 
-//     if( !UbMath::zero(absY) || !UbMath::zero(rx2))    tymin *= absY;
-//     else                                              tymin  = tmin;
-//     
-//     if( !UbMath::zero(absZ) || !UbMath::zero(rx3))    tzmin *= absZ;
-//     else                                              tzmin  = tymin;
-//  
-//     if( !UbMath::zero(absMaxX) || !UbMath::zero(rx1)) tmax *= absMaxX;
-//     else                                              tmax  = tymax;
-//     
-//     if( !UbMath::zero(absMaxY) || !UbMath::zero(rx2)) tymax *= absMaxY;
-//     else                                              tymax  = tmax;
-//     
-//     if( !UbMath::zero(absMaxZ) || !UbMath::zero(rx3)) tzmax *= absMaxZ;
-//     else                                              tzmax = tymax;
-//  
-//     //in dieser Fall gibt es keine Verschneidung
-//     if( (tmin > tymax) || (tymin > tmax) ) return -1;
-// 
-//     tmin = UbMath::max(tmin,tymin,tzmin);
-//     tmax = UbMath::min(tmax,tymax,tzmax);
-//  
-//     if( (tmin > tzmax) || (tzmin > tmax) ) return -1;
-//     if(tmin >= 0.0) return tmin ;
-//  
-//     return tmax;
-//}
+

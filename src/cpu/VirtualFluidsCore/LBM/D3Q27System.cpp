@@ -1,8 +1,9 @@
 #include "D3Q27System.h"
 namespace D3Q27System
 {
+   using namespace UbMath;
     //index             0   1   2   3   4   5  6   7   8    9  10  11  12  13  14  15  16  17  18//falsch
-    //f:              ZERO, E,  W,  N,  S,  T,  B, NE, SW, SE, NW, TE, BW, BE, TW, TN, BS, BN, TS, TNE TNW TSE TSW BNE BNW BSE BSW
+    //f:              REST, E,  W,  N,  S,  T,  B, NE, SW, SE, NW, TE, BW, BE, TW, TN, BS, BN, TS, TNE TNW TSE TSW BNE BNW BSE BSW
     //const int EX1[] = { 0,  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1 };
     //const int EX2[] = { 0,  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,  1,  1, -1, -1,  1,  1, -1, -1 };
     //const int EX3[] = { 0,  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,  1,  1,  1,  1, -1, -1, -1, -1 };
@@ -140,7 +141,7 @@ namespace D3Q27System
 //const int BNW          = 23;
 //const int BSE          = 24;
 //const int BSW          = 25;
-//const int ZERO /*f0 */ = 26;
+//const int REST /*f0 */ = 26;
 
 //const int INV_E   = W;  
 //const int INV_W   = E;  

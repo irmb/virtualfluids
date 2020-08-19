@@ -1,31 +1,49 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GbPoint3D.h
+//! \ingroup geometry3d
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef GBPOINT3D_H
 #define GBPOINT3D_H
-
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
 
 #include <string>
 #include <sstream>
 #include <cmath>
 
-#include <numerics/geometry3d/GbObject3D.h>
+#include <GbObject3D.h>
 
 #include <PointerDefinitions.h>
 
 class GbTriangle3D;
-class GbObject3DCreator;
 
-#ifdef CAB_CTL
-   #include <ctl.h>
-#endif
-
+//! \brief This Class provides basic 3D point objects.
 class GbPoint3D : public GbObject3D
 {
 public:
@@ -77,33 +95,9 @@ public:
    std::vector<GbTriangle3D*> getSurfaceTriangleSet();
    GbLine3D* createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2);
    virtual std::string toString();
-   ObObjectCreator* getCreator();
-   void write(UbFileOutput* out);
-   void read(UbFileInput* in);
 
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren
                                           //, welche sonst hier "ueberdeckt" waere,da es dieselbe methode mit anderen args gibt!
-#ifdef CAB_RCF
-   template<class Archive>
-   void SF_SERIALIZE(Archive & ar)
-   {
-      SF_SERIALIZE_PARENT<GbObject3D>(ar, *this);
-      ar & x1; 
-      ar & x2; 
-      ar & x3;
-   }
-#endif //CAB_RCF
-
-#ifdef CAB_CTL
-   ctl::oStream &write(ctl::oStream &os) const
-   { 
-      return os<<x1<<x2<<x3; 
-   }
-   ctl::iStream &read(ctl::iStream &is) 
-   { 
-      return is>>x1>>x2>>x3;
-   }
-#endif
 
    //member
    double x1;
@@ -111,10 +105,5 @@ public:
    double x3;      
 };
 
-
-#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-   UB_AUTO_RUN_NAMED(   SF::registerType<GbPoint3D>("GbPoint3D")              , SF_GbPoint3D      );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< GbObject3D, GbPoint3D >()), SF_GbPoint3D_BD1 );
-#endif //RCF_USE_SF_SERIALIZATION
 
 #endif

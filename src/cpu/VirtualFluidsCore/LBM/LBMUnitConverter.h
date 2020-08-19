@@ -1,3 +1,36 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file LBMUnitConverter.h
+//! \ingroup LBM
+//! \author Sören Freudiger
+//=======================================================================================
+
 #ifndef LBMUNITCONVERTER_H
 #define LBMUNITCONVERTER_H
 
@@ -7,25 +40,25 @@
 #include <sstream>
 #include <cmath>
 
-//#include "LBMUnitConverter.h"
-
 #include <basics/utilities/UbException.h>
-#include <basics/utilities/UbFileInput.h>
-#include <basics/utilities/UbFileOutput.h>
 
-// LBMUnitConverter conv(  100 /*L_World*/, 1484/*cs_water*/    , 1000/*rho_water*/
-//                         , 1000/*L_LB*/   , 1./srqt(3.)/*cs_Lb*/, 1/*rho_Lb*/ );
-// cout<<conv.toString()<<endl;
-// 
-// cout<<"100m       = "<< 100  * conv.getFactorLentghWToLb()   << "dx    " << std::endl;
-// cout<<"1000dx     = "<< 1000 * conv.getFactorLentghLbToW()   << "m     " << std::endl;
-// 
-// cout<<"25m/s      = "<< 25   * conv.getFactorVelocityWToLb() << "dx/dt " << std::endl;
-// cout<<"0.04 dx/dt = "<< 0.04 * conv.getFactorVelocityLbToW() << "m/s   " << std::endl;
-//
-//alternativ
-// LBMUnitConverter conv(, 100 /*L_World*/, LBMUnitConverter::WATER, 1000/*L_LB*/  );
-
+//! \brief A class provides converter for LB units <-> SI units
+//! \details
+//! \code
+//! LBMUnitConverter conv(  100 /*L_World*/, 1484/*cs_water*/    , 1000/*rho_water*/
+//!                         , 1000/*L_LB*/   , 1./srqt(3.)/*cs_Lb*/, 1/*rho_Lb*/ );
+//! cout<<conv.toString()<<endl;
+//! 
+//! cout<<"100m       = "<< 100  * conv.getFactorLentghWToLb()   << "dx    " << std::endl;
+//! cout<<"1000dx     = "<< 1000 * conv.getFactorLentghLbToW()   << "m     " << std::endl;
+//! 
+//! cout<<"25m/s      = "<< 25   * conv.getFactorVelocityWToLb() << "dx/dt " << std::endl;
+//! cout<<"0.04 dx/dt = "<< 0.04 * conv.getFactorVelocityLbToW() << "m/s   " << std::endl;
+//! \endcode
+//! alternative
+//! \code
+//! LBMUnitConverter conv(, 100 /*L_World*/, LBMUnitConverter::WATER, 1000/*L_LB*/  );
+//! \endcode
 
 class LBMUnitConverter
 {
@@ -36,11 +69,7 @@ public:
    LBMUnitConverter() :  factorLengthLbToW(1.0),
                          factorTimeLbToW(1.0),
                          factorMassLbToW(1.0), 
-                         refRhoLb(1.0),
-                         factorVelocityLbToW(1.0), 
-                         factorViscosityLbToW(1.0),
-                         factorDensityLbToW(1.0),
-                         factorPressureLbToW(1.0)
+                         refRhoLb(1.0)
    {
 
    }
@@ -66,14 +95,6 @@ public:
 
       this->init(  refLengthWorld, csWorld, rhoWorld, csWorld, refLengthLb, rhoLb, csLb  );
 
-   }
-
-   LBMUnitConverter(int dummy, double uReal, double uLB, double nuReal, double nuLB) 
-   {
-      factorVelocityLbToW = uReal/uLB;
-      factorViscosityLbToW = nuReal/nuLB;
-      factorDensityLbToW = factorViscosityLbToW * factorVelocityLbToW * factorVelocityLbToW;
-      factorPressureLbToW = factorDensityLbToW;
    }
 
    virtual ~LBMUnitConverter() {}
@@ -108,12 +129,6 @@ public:
    double  getFactorAccWToLb()       { return 1.0/this->getFactorAccLbToW();                                           }
 
    double  getFactorTimeLbToW(double deltaX)        const { return factorTimeWithoutDx * deltaX;             }
-   //////////////////////////////////////////////////////////////////////////
-   double  getFactorVelocityLbToW2() { return factorVelocityLbToW; }
-   double  getFactorDensityLbToW2()  { return factorDensityLbToW;  }
-   double  getFactorPressureLbToW2() { return factorPressureLbToW; }
-   
-
 
    /*==========================================================*/
    friend inline std::ostream& operator << (std::ostream& os, LBMUnitConverter c) 
@@ -153,22 +168,6 @@ public:
 
       return out.str();
    }
-   /*==========================================================*/
-   virtual void write(UbFileOutput* out)
-   {
-      out->writeDouble(factorLengthLbToW);
-      out->writeDouble(factorTimeLbToW  );
-      out->writeDouble(factorMassLbToW  );
-   }
-   /*==========================================================*/
-   virtual void read(UbFileInput* in)
-   {
-      factorLengthLbToW = in->readDouble();
-      factorTimeLbToW   = in->readDouble();
-      factorMassLbToW   = in->readDouble();
-   }
-
-
 
    void init(  const double& refLengthWorld, const double& csWorld, const double& rhoWorld, const double& vWorld, 
                const double& refLengthLb, const double& rhoLb, const double& vLb  )
@@ -179,18 +178,13 @@ public:
       factorTimeWithoutDx=vLb/vWorld;
       this->refRhoLb = rhoLb;
    }
+
    protected:
    double factorLengthLbToW;
    double factorTimeLbToW;
    double factorMassLbToW;
    double refRhoLb;
    double factorTimeWithoutDx;
-   
-   double factorVelocityLbToW;
-   double factorViscosityLbToW;
-   double factorDensityLbToW;
-   double factorPressureLbToW;
-
 };
 
 #endif //LBMUNITCONVERTER_H

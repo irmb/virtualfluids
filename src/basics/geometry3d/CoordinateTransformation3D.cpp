@@ -1,4 +1,36 @@
-#include <numerics/geometry3d/CoordinateTransformation3D.h>
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file CoordinateTransformation3D.cpp
+//! \ingroup geometry3d
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
+#include <geometry3d/CoordinateTransformation3D.h>
 #include <basics/utilities/UbMath.h>
 
 using namespace std;
@@ -42,7 +74,9 @@ CoordinateTransformation3D::CoordinateTransformation3D(CoordinateTransformation3
 // }
 /*======================================================*/
 
-/**====  Set transformation values
+/**====  Set transformation values  ====**/
+/*!
+\brief Set transformation values
 @param a     transformed coordinate system x0 (in global coordinates)
 @param b     transformed coordinate system y0 (in global coordinates)
 @param c     transformed coordinate system z0 (in global coordinates)
@@ -52,8 +86,8 @@ CoordinateTransformation3D::CoordinateTransformation3D(CoordinateTransformation3
 @param alpha rotation around z angle    (positive FROM global TO transformed coordinate system)
 @param beta  rotation around y angle            
 @param gamma rotation around x angle            
-@exception IllegalArgumentException if one of the scale values is between -1.0E-8 and 1.0E-8
-**/
+@exception IllegalArgumentException if c1 of the scale values is between -1.0E-8 and 1.0E-8
+*/
 
 void CoordinateTransformation3D::setTransformationValues(const double& originX1, const double& originX2, const double& originX3, const double& dx1, const double& dx2, const double& dx3, const double& alpha, const double& beta, const double& gamma)
 {
@@ -124,7 +158,7 @@ void CoordinateTransformation3D::setTransformationValues(const double& originX1,
    this->transformation =  true;
 }
 /*======================================================*/
-/**
+/*!
 Set transformation active state (if this IS a transformation)
 @param active true to be active, false otherwise
 **/
@@ -134,7 +168,7 @@ void CoordinateTransformation3D::setActive(const bool& active)
    if(this->transformation)   this->active = active;
 }
 /*======================================================*/
-/**
+/*!
 Transform FROM global coordinates TO transformed coordinates.
 @param x1  the global x coordinate
 @param x2  the global y coordinate
@@ -158,7 +192,7 @@ double CoordinateTransformation3D::transformForwardToX3Coordinate(const double& 
    else             return x3;
 }
 /*======================================================*/
-/**
+/*!
 Transform FROM global coordinates TO transformed coordinates (ignoring rotation).
 @param x1  the global x coordinate
 **/
@@ -180,7 +214,7 @@ double CoordinateTransformation3D::transformForwardToX3CoordinateIgnoringRotatio
    else             return x3;
 }
 /*======================================================*/
-/**
+/*!
 Transform FROM transformed coordinates TO global coordinates.
 @param x1  the transformed x coordinate
 @param x2  the transformed y coordinate
@@ -204,7 +238,7 @@ double CoordinateTransformation3D::transformBackwardToX3Coordinate(const double&
    else             return x3;
 }
 /*======================================================*/
-/**
+/*!
 Transform FROM transformed coordinates TO global coordinates (ignoring rotation).
 @param x1  the transformed x coordinate
 **/
@@ -226,7 +260,7 @@ double CoordinateTransformation3D::transformBackwardToX3CoordinateIgnoringRotati
    else             return x3;
 }
 /*======================================================*/
-/**
+/*!
 Returns a string representation of this transformation.
 @return a string representation of this transformation
 **/

@@ -1,16 +1,42 @@
-#include <numerics/geometry3d/GbLine3D.h>
-#include <numerics/geometry3d/creator/GbLine3DCreator.h>
-
-#include <numerics/geometry3d/GbSystem3D.h>
-#include <numerics/geometry3d/GbCuboid3D.h>
-#include <numerics/geometry3d/GbTriangle3D.h>
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GbLine3D.cpp
+//! \ingroup geometry3d
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
+#include <GbLine3D.h>
+#include <GbSystem3D.h>
+#include <GbCuboid3D.h>
+#include <GbTriangle3D.h>
 
 using namespace std;
 
-ObObjectCreator* GbLine3D::getCreator()
-{
-   return GbLine3DCreator::getInstance();
-}
 /*=======================================================*/
 GbLine3D::GbLine3D()
 {
@@ -181,26 +207,6 @@ void GbLine3D::objectWillBeDeleted(UbObservable* objectForDeletion)
       if(objectForDeletion == observedObj) { this->p2 = NULL; length = 0.0; }
    }
    //ACHTUNG: eigentlich muessten in allen methoden von GbLine if abfragen fuer NULL pointer hin... toDo
-}
-/*==========================================================*/
-void GbLine3D::write(UbFileOutput* out) 
-{                                      
-   out->writeString(this->getCreator()->getTypeID());
-   p1->write(out);
-   p2->write(out);
-}
-/*==========================================================*/
-void GbLine3D::read(UbFileInput* in) 
-{  
-   p1 = new GbPoint3D;
-   p2 = new GbPoint3D;
-   in->readString();                                    
-   p1->read(in);
-   p1->addObserver(this);
-   in->readString();                                    
-   p2->read(in);
-   p2->addObserver(this);
-   this->calculateValues();
 }
 /*==========================================================*/
 void GbLine3D::scale(const double& sx1, const double& sx2, const double& sx3)

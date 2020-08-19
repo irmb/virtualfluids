@@ -1,9 +1,35 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GbObject3D.h
+//! \ingroup geometry3d
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef GBOBJECT3D_H
 #define GBOBJECT3D_H
 
@@ -11,14 +37,8 @@
 #include <vector>
 
 
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
-
 #include <basics/utilities/UbSystem.h>
 #include <basics/utilities/UbException.h>
-#include <basics/utilities/UbFileInput.h>
-#include <basics/utilities/UbFileOutput.h>
 #include <basics/utilities/UbObservable.h>
 #include <basics/utilities/UbTuple.h>
 #include <basics/objects/ObObject.h>
@@ -28,47 +48,23 @@ class GbLine3D;
 class GbTriangle3D;
 class GbObject3DCreator;
 
-#ifdef CAB_CTL
-#include <ctl.h>
-#endif
-
-#include "basics_export.h"
 #include <PointerDefinitions.h>
 
+//////////////////////////////////////////////////////////////////////////
+//! 
+//! \class GbObject3D
+//! 
+//! \brief This Interface provides basic 3D geometry objects methods.
+//! 
+//////////////////////////////////////////////////////////////////////////
 
-/*=========================================================================*/
-/* GbObject3D                                                              */
-/*                                                                         */
-/**
- * This Interface provides basic 3D geometry objects methods.
- * <BR><BR><HR>
- * @author <A HREF="mailto:geller@cab.bau.tu-bs.de">S. Geller</A>
- * @author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
- * @version 1.0 - 02.02.05
-*/
-class BASICS_EXPORT GbObject3D : public ObObject
+class GbObject3D : public ObObject
 {
 public:
-#ifdef CAB_CTL
-   virtual ctl::oStream &write(ctl::oStream &os) const
-   {
-      return os;
-   }
-   virtual ctl::iStream &read(ctl::iStream &is)
-   {
-      return is;
-   }
-#endif
-
    virtual ~GbObject3D(){}
-
-   //ueberschriebene methode von ObObject
-   virtual std::string getTypeID();
 
    //abstract Methods
    virtual void finalize() =0 ; //detroys also all dynamic objects (e.g. GbPoints in GbLine)
-   virtual ObObjectCreator* getCreator()=0;
-
    /**
     * Returns the centroid x1 coordinate of this 3D object.
     * @return the centroid x1 coordinate of this 3D object
@@ -129,9 +125,6 @@ public:
    virtual void translate(const double& x1, const double& x2, const double& x3) { throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() ); }
    virtual void scale(const double& sx1, const double& sx2, const double& sx3)  { throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() ); }
 
-   virtual void write(UbFileOutput* out)=0;
-   virtual void read(UbFileInput* in)=0;
-
    virtual bool isPointInGbObject3D(GbPoint3D* p);
    virtual bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary)=0;
    virtual bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3)=0;
@@ -153,21 +146,7 @@ public:
    //|r| must be 1! einheitsvector!!
    //return negativ value oder zero if no intersection
    virtual double getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3) { throw UbException("GbObject3D::getIntersectionRaytraceFactor - not implemented"); }
-#ifdef CAB_RCF
-   template<class Archive>
-   void SF_SERIALIZE(Archive & ar)
-   {
-      SF_SERIALIZE_PARENT<ObObject>(ar, *this);
-   }
-#endif //CAB_RCF
 };
 /*=========================================================================*/
-
-#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-   SF_NO_CTOR(GbObject3D);
-   UB_AUTO_RUN_NAMED(SF::registerType<GbObject3D>("GbObject3D") , SF_GbObject3D);
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived<ObObject, GbObject3D >() ), SF_GbObject3D_BD1 );
-#endif //RCF_USE_SF_SERIALIZATION
-
 
 #endif

@@ -1,5 +1,37 @@
-#include "BCArray3D.h"
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file BCArray3D.cpp
+//! \ingroup BoundarConditions
+//! \author Sören Freudiger
+//=======================================================================================
 
+#include "BCArray3D.h"
 
 const int BCArray3D::SOLID = -1;
 const int BCArray3D::FLUID = -2;
@@ -48,7 +80,7 @@ void BCArray3D::setBC(std::size_t x1, std::size_t x2, std::size_t x3, SPtr<Bound
       else                            this->deleteBC(x1, x2, x3);
    }
 
-   //wenn keine frei gewordene BCs vorhanden
+   //if no vacant BCs available
    if (indexContainer.empty())
    {
       bcvector.push_back(bc);
@@ -185,19 +217,19 @@ void BCArray3D::deleteBCAndSetType(std::size_t x1, std::size_t x2, std::size_t x
    {
       this->deleteBC(x1, x2, x3);
 
-      //matrix neuen Typ zuweisen
+      //Assign matrix to new type
       bcindexmatrix(x1, x2, x3) = type;
    }
 //////////////////////////////////////////////////////////////////////////
 void BCArray3D::deleteBC(std::size_t x1, std::size_t x2, std::size_t x3)
    {
-      //ueberpruefen, ob ueberhaupt BC vorhanden
+      //check if BC exists at all
       int index = bcindexmatrix(x1, x2, x3);
       if (index < 0) return;
 
-      //frei gewordenen Index in den Indexcontainer schieben
+      //slide the released index into the index container
       indexContainer.push_back(index);
 
-      //element "loeschen"
+      //"delete" element
       bcvector[index] = SPtr<BoundaryConditions>();
    }

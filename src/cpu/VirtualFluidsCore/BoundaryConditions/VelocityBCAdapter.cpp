@@ -1,3 +1,36 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file VelocityBCAdapter.cpp
+//! \ingroup BoundarConditions
+//! \author Sören Freudiger
+//=======================================================================================
+
 #include "VelocityBCAdapter.h"
 #include "basics/utilities/UbLogger.h"
 #include "basics/utilities/UbMath.h"
@@ -256,9 +289,9 @@ void VelocityBCAdapter::setNodeVelocity( const D3Q27Interactor& interactor, SPtr
       this->x3 = worldX3;
       this->timeStep = timestep;
 
-      if(tmpVx1Function) bc->setBoundaryVelocityX1((float)tmpVx1Function->Eval());  
-      if(tmpVx2Function) bc->setBoundaryVelocityX2((float)tmpVx2Function->Eval());
-      if(tmpVx3Function) bc->setBoundaryVelocityX3((float)tmpVx3Function->Eval());
+      if(tmpVx1Function) bc->setBoundaryVelocityX1((LBMReal)tmpVx1Function->Eval());  
+      if(tmpVx2Function) bc->setBoundaryVelocityX2((LBMReal)tmpVx2Function->Eval());
+      if(tmpVx3Function) bc->setBoundaryVelocityX3((LBMReal)tmpVx3Function->Eval());
    }
    catch(mu::Parser::exception_type& e){ stringstream error; error<<"mu::parser exception occurs, message("<<e.GetMsg()<<"), formula("<<e.GetExpr()+"), token("+e.GetToken()<<")"
                                          <<", pos("<<e.GetPos()<<"), error code("<<e.GetCode(); throw UbException(error.str()); }

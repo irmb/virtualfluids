@@ -1,3 +1,36 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file InitDistributionsBlockVisitor.h
+//! \ingroup Visitors
+//! \author Konstantin Kutscher, Soeren Freudiger
+//=======================================================================================
+
 #ifndef InitDistributionsBlockVisitor_H
 #define InitDistributionsBlockVisitor_H
 
@@ -8,32 +41,24 @@
 
 #include <MuParser/include/muParser.h>
 
-/*================================================================================*/
-/*  D3Q27ETInitDistributionsBlockVisitor                                             */
-/*                                                                                */
-/**
-more flexible way to initialize flow area
-you can define functions to calculate macroscopic values for feq 
-!!! x1,x2,x3 are automatically defined via this adapter and are the real world
-vertex coordinates !!!
-
-if function is invalid an UbException with detailed information is thrown
-
-<BR><BR>
-@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-@version 1.0 - 19.04.08
-*/ 
-
-//! \details example:<BR>
-//! D3Q27InitDistributionsBlockVisitor init(1.0,0.0,0.0,0.0);<BR>
-//! Bem.: rho=0.0 bei inkompressibel<BR>
-//! init.setVx1("0.01*x2");<BR>
-//! init.setVx1("0.01*x2^2");<BR>
-//! patch.adaptByPatchCriterion(init);
-
 class Grid3D;
 class Block3D;
 
+//! \brief A class implements an initialization of the flow area.
+//! \details 
+//! It is more flexible way to initialize flow area.
+//! You can define functions to calculate macroscopic values for feq. 
+//! x1,x2,x3 are automatically defined via this adapter and are the real world
+//! vertex coordinates.
+//!
+//!if function is invalid an UbException with detailed information is thrown
+//!
+//! Example:
+//! \code
+//! InitDistributionsBlockVisitor init;
+//! init.setVx1("0.01*x2");
+//! init.setVx2("0.01*x2^2");
+//! \endcode
 
 class InitDistributionsBlockVisitor : public Block3DVisitor
 {
