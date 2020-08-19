@@ -1,23 +1,41 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file ObObject.h
+//! \ingroup objects
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef OBOBJECT_H
 #define OBOBJECT_H
 
 #include <string>
 
-#include <basics/objects/ObObjectCreator.h>
 #include <basics/utilities/UbObservable.h>
-
-#ifdef CAB_RCF
-#include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif
-
-
-class ObObjectCreator;
 
 class ObObject : public UbObservable
 {
@@ -28,33 +46,16 @@ public:
    virtual ~ObObject() { }
 
    virtual ObObject*   clone()=0;
-   virtual std::string getTypeID()=0;
 
    virtual std::string getName()  { return name; }
    void setName(std::string name) { this->name=name; }
 
    virtual std::string toString()=0;
 
-   virtual ObObjectCreator* getCreator()=0;
-
-#ifdef CAB_RCF
-   template<class Archive>
-   void SF_SERIALIZE(Archive & ar) 
-   {
-      //SF::SF_SERIALIZE_PARENT<UbObservable>(ar, *this);
-      SF_SERIALIZE_PARENT<UbObservable>(ar, *this);
-      ar & name;
-   }
-#endif //CAB_RCF
 
 private:
    std::string name;
 };
 
-#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-SF_NO_CTOR(ObObject);
-UB_AUTO_RUN_NAMED( ( SF::registerType<ObObject>("ObObject") ),                SF_ObObject     );
-UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived<UbObservable, ObObject >() ), SF_ObObject_BD1 );
-#endif //RCF_USE_SF_SERIALIZATION
 
 #endif

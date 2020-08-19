@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file UbInfinity.h
+//! \ingroup utilities
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef UB_INFINITY_H
 #define UB_INFINITY_H
 #include <limits>
@@ -5,16 +37,14 @@
 #include <basics/utilities/UbLimits.h>
 #include <basics/utilities/UbSystem.h>
 
+//////////////////////////////////////////////////////////////////////////
+//!
+//!  \brief UbNegInfinity
+//!  \details Note: The UbNegInfinity class cannot be instantiated on its own, but works 
+//!        as a base class for the Infinity class.
+//!
+//////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////
-//
-//  UbNegInfinity
-//  Anm: keine template klasse, da man am Ende eine Instanz "inf" verwendet
-//       die in "verschiedene"(!!!) Typen konvertiert werden kann und nicht 
-//       nur in den template Typ!
-//  Note: The UbNegInfinity class cannot be instantiated on its own, but works 
-//        as a base class for the Infinity class.
-//////////////////////////////////////////////////////////////////////////
 class UbNegInfinity
 {
  public:
@@ -29,9 +59,9 @@ class UbNegInfinity
    inline operator double()      const { return UbLimits<double>::ninf();      }
    inline operator long double() const { return UbLimits<long double>::ninf(); }
 
-   // This function compares built-in data types with their largest possible value. The function
-   // only works for built-in data types. The attempt to compare user-defined class types will
-   // result in a compile time error.
+   //! This function compares built-in data types with their largest possible value. The function
+   //! only works for built-in data types. The attempt to compare user-defined class types will
+   //! result in a compile time error.
    template< typename T >
    inline bool equal( const T& rhs ) const
    {

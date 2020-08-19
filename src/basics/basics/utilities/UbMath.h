@@ -1,9 +1,35 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file UbMath.h
+//! \ingroup utilities
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef UBMATH_H
 #define UBMATH_H
 
@@ -13,20 +39,6 @@
 #include <cassert>
 #include <basics/utilities/UbSystem.h>
 #include <basics/utilities/UbEqual.h>
-
-/*=========================================================================*/
-/*  UbMath                                                             */
-/*                                                                         */
-/**
-namespace for global math-functions
-<BR><BR>
-@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-@version 1.4 - 04.10.07
-*/ 
-
-/*
-usage: ...
-*/
 
 namespace UbMath 
 {
@@ -346,7 +358,7 @@ namespace UbMath
       return UbMath::calcGgt( UbMath::calcGgt(val1, val2), val3 );
    }
    /*=======================================================*/
-   //returns the max of two values
+   //returns the max of c2 values
    //to avoid errors at mixed argument-types use: double myMax = max<double>(2,2.3);
    template< typename T >
    inline const T& max(const T& a1, const T& a2) 
@@ -399,7 +411,8 @@ namespace UbMath
    static const double c2o27 = 2. / 27.;
    static const double c1o54 = 1. / 54.;
    static const double c1o216 = 1. / 216.;
-   static const double c9o2 = 9. / 2.;
+   static const double c9o2 = 9. / 2.; //4.5
+   static const double c9o4 = 9. / 4.; //2.25
    static const double c3o9 = 3. / 9.;
    static const double c3o54 = 3. / 54.;
    static const double c3o216 = 3. / 216.;
@@ -420,6 +433,7 @@ namespace UbMath
    static const double c1o6 = 1. / 6.;           //0.16666666
    static const double c1o5 = 1. / 5.;           //0.2
    static const double c1o4 = 1. / 4.;           //0.25
+   static const double c1o100 = 1. / 100.;
    static const double c5o16 = 5. / 16.;          //0.3125
    static const double c1o3 = 1. / 3.;           //0.33333333
    static const double c3o8 = 3. / 8.;           //0.375
@@ -438,25 +452,27 @@ namespace UbMath
    static const double sqrt2 = sqrt(2.0); //1.4142135
    static const double sqrt3 = sqrt(3.0); //1.7320508
    static const double zeroReal = 0.0;
-   static const double one = 1.0;
-   static const double two = 2.0;
-   static const double three = 3.0;
-   static const double four = 4.0;
-   static const double five = 5.0;
-   static const double six = 6.0;
-   static const double seven = 7.0;
-   static const double eight = 8.0;
-   static const double nine = 9.0;
-   static const double fourteen = 14.0;
-   static const double fiveteen = 15.0;
-   static const double sixteen = 16.0;
-   static const double twentyone = 21.0;
-   static const double twentyfour = 24.0;
-   static const double twentyeight = 28.0;
-   static const double twentynine = 29.0;
-   static const double fourtyeight = 48.0;
-   static const double fifty = 50.0;
-   static const double fiftysix = 56.0;
+   static const double c1 = 1.0;
+   static const double c2 = 2.0;
+   static const double c3 = 3.0;
+   static const double c4 = 4.0;
+   static const double c5 = 5.0;
+   static const double c6 = 6.0;
+   static const double c7 = 7.0;
+   static const double c8 = 8.0;
+   static const double c9 = 9.0;
+   static const double c14 = 14.0;
+   static const double c15 = 15.0;
+   static const double c16 = 16.0;
+   static const double c18 = 18.0;
+   static const double c21 = 21.0;
+   static const double c24 = 24.0;
+   static const double c28 = 28.0;
+   static const double c29 = 29.0;
+   static const double c36 = 36.0;
+   static const double c48 = 48.0;
+   static const double c50 = 50.0;
+   static const double c56 = 56.0;
    static const double c152 = 152.0;
    static const double c130 = 130.0;
 }

@@ -1,9 +1,35 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file UbTiming.h
+//! \ingroup utilities
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef UBTIMING_H
 #define UBTIMING_H
 
@@ -14,26 +40,10 @@
 #include <vector>
 #include <ctime>
 
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
-
 #ifdef VF_MPI
    #include <mpi.h>
    #include <basics/parallel/PbMpi.h>
 #endif //VF_MPI
-
-/*=========================================================================*/
-//  UbTiming - Time Measuring                                              
-//                                                                         
-//
-//
-//This Class provides the base for ...
-//<BR><BR>
-//@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-//@author <A HREF="mailto:geller@cab.bau.tu-bs.de">S. Geller</A>
-//@version 1.1 - 14.02.06
-// 
 
 class UbTiming
 {
@@ -162,16 +172,6 @@ protected:
 	double deltaT;
 };
 
-/*=========================================================================*/
-//  UbTimer - Time Measuring                                              
-//                                                                         
-//
-//
-//This Class provides the base for ...
-//<BR><BR>
-//@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-//@version 1.0 - 16.08.2007
-// 
 #include <basics/utilities/UbSystem.h> //for definitons of system/OS type
 
 #ifdef UBSYSTEM_APPLE   //Apple hack
@@ -197,22 +197,27 @@ protected:
    #include <pthread.h>
 #endif
 
-//example:
-//t=0  start 
-//t=1 
-//t=2  stop  -> return 2; getLapTime=2; getTotalTime 2; getLapTimes:  2
-//t=3 
-//t=4 
-//t=5  stop  -> return 3; getLapTime=3; getTotalTime 5; getLapTimes:  2,3
-//t=6  stop  -> return 1; getLapTime=1; getTotalTime 6; getLapTimes:  2,3,1
-//t=7  
-//t=8  start ->no consideration of time 7 and 8 
-//t=9  
-//t=10 stop  -> return 2; getLapTime=2; getTotalTime 8; getLapTimes:  2,3,1,2
-//t=11 resetAndStart timer wird zurueckgestellt und neu gestaret
-//t=12
-//t=13 
-//t=14 stop  -> return 3; getLapTime=3; getTotalTime 3; getLapTimes:  3
+/*=========================================================================*/
+//! \brief Time Measuring                                              
+//! \details                                                                         
+//! example:
+//! \code
+//! t=0  start 
+//! t=1 
+//! t=2  stop  -> return 2; getLapTime=2; getTotalTime 2; getLapTimes:  2
+//! t=3 
+//! t=4 
+//! t=5  stop  -> return 3; getLapTime=3; getTotalTime 5; getLapTimes:  2,3
+//! t=6  stop  -> return 1; getLapTime=1; getTotalTime 6; getLapTimes:  2,3,1
+//! t=7  
+//! t=8  start ->no consideration of time 7 and 8 
+//! t=9  
+//! t=10 stop  -> return 2; getLapTime=2; getTotalTime 8; getLapTimes:  2,3,1,2
+//! t=11 resetAndStart -> Timer is reset and restarted
+//! t=12
+//! t=13 
+//! t=14 stop  -> return 3; getLapTime=3; getTotalTime 3; getLapTimes:  3
+//! \endcode
 
 class UbTimer
 {
@@ -348,20 +353,6 @@ public:
    }
 
 
-#ifdef CAB_RCF
-   template<class Archive>
-   void SF_SERIALIZE(Archive & ar)
-   {
-      ar & name;
-      ar & isMeasuring;
-      ar & startTime;
-      ar & totalTime;
-      ar & lapTime;
-      ar & lapTimes;
-      ar & storeLapTimes;
-   }
-#endif //CAB_RCF
-
 protected:
    std::string name;
    bool        isMeasuring;
@@ -376,21 +367,17 @@ protected:
 
 
 /*=========================================================================*/
-//  UbProgressTimer - Time Measuring                                              
-//                                                                         
-//
-//
-//UbProressTimer misst die Zeit von seiner Instantiierung bis zur Zerstoerung
-//und gib die verstrichene Zeit auf "os" in [s] aus
-//example:
-// {
-//    UbProgressTimer timer;
-//    UbSystem::sleepS(10);
-// } //--> 10s
-//<BR><BR>
-//@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-//@version 1.0 - 10.03.2008
-// 
+//! \brief Time Measuring                                              
+//! 
+//! \details UbProressTimer measures the time from its instantiation to destruction and spend the elapsed time on "os" in [s]
+//! example:
+//! \code
+//!  {
+//!     UbProgressTimer timer;
+//!     UbSystem::sleepS(10);
+//!  } //--> 10s
+//! \endcode
+
 class UbProgressTimer : public UbTimer
 {
 private:
