@@ -1,14 +1,43 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GridFactory.h
+//! \ingroup grid
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #ifndef GRID_FACTORY_H
 #define GRID_FACTORY_H
 
 #include "global.h"
 
 #include "geometries/Cuboid/Cuboid.h"
-#include "geometries/Sphere/Sphere.h"
-#include "geometries/TriangularMesh/TriangularMeshStrategy.h"
 
 #include "grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
-#include "grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h"
 #include "grid/distributions/Distribution.h"
 #include "grid/GridImp.h"
 
@@ -34,7 +63,6 @@ private:
     GridFactory()
     {
         gridStrategy = SPtr<GridStrategy>(new GridCpuStrategy());
-        triangularMeshDiscretizationStrategy = new RayCastingDiscretizationStrategy();
     }
 
 public:
@@ -46,8 +74,6 @@ public:
 
         grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution, level);
 
-        grid->setTriangularMeshDiscretizationStrategy(this->triangularMeshDiscretizationStrategy);
-
         return grid;
     }
 
@@ -58,8 +84,6 @@ public:
         {
         case Device::CPU:
             gridStrategy = SPtr<GridStrategy>(new GridCpuStrategy()); break;
-        case Device::GPU:
-            gridStrategy = SPtr<GridStrategy>(new GridGpuStrategy()); break;
         }
     }
 
@@ -68,24 +92,7 @@ public:
         this->gridStrategy = gridStrategy;
     }
 
-    void setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod triangularMeshDiscretizationMethod)
-    {
-        switch (triangularMeshDiscretizationMethod)
-        {
-        case TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE:
-            triangularMeshDiscretizationStrategy = new PointUnderTriangleStrategy();
-            break;
-        case TriangularMeshDiscretizationMethod::RAYCASTING:
-            triangularMeshDiscretizationStrategy = new RayCastingDiscretizationStrategy();
-            break;
-        case TriangularMeshDiscretizationMethod::POINT_IN_OBJECT:
-            triangularMeshDiscretizationStrategy = new PointInObjectDiscretizationStrategy();
-            break;
-        }
-    }
-
 private:
-    TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy;
     SPtr<GridStrategy> gridStrategy;
 };
 

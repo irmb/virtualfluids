@@ -1,196 +1,42 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file Distribution.cpp
+//! \ingroup grid
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #include "Distribution.h"
 
 #include <stdio.h>
-  
-#include "grid/distributions/D3Q7.h"
-#include "grid/distributions/D3Q13.h"
-#include "grid/distributions/D3Q19.h"
+
 #include "grid/distributions/D3Q27.h"
 
 #include "grid/Grid.h"
-
-Distribution DistributionHelper::getDistribution7() 
-{
-    Distribution d7;
-    d7.name = "D3Q7";
-    d7.dir_start = DIR_7_START;
-    d7.dir_end = DIR_7_END;
-
-    d7.dirs = new int[DIR_7_END * DIMENSION];
-
-    int dir_num = 0;
-    d7.dirs[dir_num++] = DIR_7_E_X;
-    d7.dirs[dir_num++] = DIR_7_E_Y;
-    d7.dirs[dir_num++] = DIR_7_E_Z;
-
-    d7.dirs[dir_num++] = DIR_7_W_X;
-    d7.dirs[dir_num++] = DIR_7_W_Y;
-    d7.dirs[dir_num++] = DIR_7_W_Z;
-          
-    d7.dirs[dir_num++] = DIR_7_N_X;
-    d7.dirs[dir_num++] = DIR_7_N_Y;
-    d7.dirs[dir_num++] = DIR_7_N_Z;
-        
-    d7.dirs[dir_num++] = DIR_7_S_X;
-    d7.dirs[dir_num++] = DIR_7_S_Y;
-    d7.dirs[dir_num++] = DIR_7_S_Z;
-          
-    d7.dirs[dir_num++] = DIR_7_T_X;
-    d7.dirs[dir_num++] = DIR_7_T_Y;
-    d7.dirs[dir_num++] = DIR_7_T_Z;
-           
-    d7.dirs[dir_num++] = DIR_7_B_X;
-    d7.dirs[dir_num++] = DIR_7_B_Y;
-    d7.dirs[dir_num++] = DIR_7_B_Z;
-
-    return d7;
-}
-
-Distribution DistributionHelper::getDistribution13() 
-{
-    Distribution d13;
-    d13.name = "D3Q13";
-    d13.dir_start = DIR_13_START;
-    d13.dir_end = DIR_13_END;
-
-    d13.dirs = new int[DIR_13_END * DIMENSION];
-
-    int dir_num = 0;
-    d13.dirs[dir_num++] = DIR_13_NE_X;
-    d13.dirs[dir_num++] = DIR_13_NE_Y;
-    d13.dirs[dir_num++] = DIR_13_NE_Z;
-
-    d13.dirs[dir_num++] = DIR_13_SW_X;
-    d13.dirs[dir_num++] = DIR_13_SW_Y;
-    d13.dirs[dir_num++] = DIR_13_SW_Z;
-
-    d13.dirs[dir_num++] = DIR_13_SE_X;
-    d13.dirs[dir_num++] = DIR_13_SE_Y;
-    d13.dirs[dir_num++] = DIR_13_SE_Z;
-
-    d13.dirs[dir_num++] = DIR_13_NW_X;
-    d13.dirs[dir_num++] = DIR_13_NW_Y;
-    d13.dirs[dir_num++] = DIR_13_NW_Z;
-
-    d13.dirs[dir_num++] = DIR_13_TE_X;
-    d13.dirs[dir_num++] = DIR_13_TE_Y;
-    d13.dirs[dir_num++] = DIR_13_TE_Z;
-
-    d13.dirs[dir_num++] = DIR_13_BW_X;
-    d13.dirs[dir_num++] = DIR_13_BW_Y;
-    d13.dirs[dir_num++] = DIR_13_BW_Z;
-
-    d13.dirs[dir_num++] = DIR_13_BE_X;
-    d13.dirs[dir_num++] = DIR_13_BE_Y;
-    d13.dirs[dir_num++] = DIR_13_BE_Z;
-
-    d13.dirs[dir_num++] = DIR_13_TW_X;
-    d13.dirs[dir_num++] = DIR_13_TW_Y;
-    d13.dirs[dir_num++] = DIR_13_TW_Z;
-
-    d13.dirs[dir_num++] = DIR_13_TN_X;
-    d13.dirs[dir_num++] = DIR_13_TN_Y;
-    d13.dirs[dir_num++] = DIR_13_TN_Z;
-
-    d13.dirs[dir_num++] = DIR_13_BS_X;
-    d13.dirs[dir_num++] = DIR_13_BS_Y;
-    d13.dirs[dir_num++] = DIR_13_BS_Z;
-
-    d13.dirs[dir_num++] = DIR_13_BN_X;
-    d13.dirs[dir_num++] = DIR_13_BN_Y;
-    d13.dirs[dir_num++] = DIR_13_BN_Z;
-
-    d13.dirs[dir_num++] = DIR_13_TS_X;
-    d13.dirs[dir_num++] = DIR_13_TS_Y;
-    d13.dirs[dir_num++] = DIR_13_TS_Z;
-
-    return d13;
-}
-
-Distribution DistributionHelper::getDistribution19() 
-{
-    Distribution d19;
-    d19.name = "D3Q19";
-    d19.dir_start = DIR_19_START;
-    d19.dir_end = DIR_19_END;
-
-    d19.dirs = new int[DIR_19_END * DIMENSION];
-
-    int dir_num = 0;
-    d19.dirs[dir_num++] = DIR_19_E_X;
-    d19.dirs[dir_num++] = DIR_19_E_Y;
-    d19.dirs[dir_num++] = DIR_19_E_Z;
-
-    d19.dirs[dir_num++] = DIR_19_W_X;
-    d19.dirs[dir_num++] = DIR_19_W_Y;
-    d19.dirs[dir_num++] = DIR_19_W_Z;
-
-    d19.dirs[dir_num++] = DIR_19_N_X;
-    d19.dirs[dir_num++] = DIR_19_N_Y;
-    d19.dirs[dir_num++] = DIR_19_N_Z;
-
-    d19.dirs[dir_num++] = DIR_19_S_X;
-    d19.dirs[dir_num++] = DIR_19_S_Y;
-    d19.dirs[dir_num++] = DIR_19_S_Z;
-
-    d19.dirs[dir_num++] = DIR_19_T_X;
-    d19.dirs[dir_num++] = DIR_19_T_Y;
-    d19.dirs[dir_num++] = DIR_19_T_Z;
-
-    d19.dirs[dir_num++] = DIR_19_B_X;
-    d19.dirs[dir_num++] = DIR_19_B_Y;
-    d19.dirs[dir_num++] = DIR_19_B_Z;
-
-    d19.dirs[dir_num++] = DIR_19_NE_X;
-    d19.dirs[dir_num++] = DIR_19_NE_Y;
-    d19.dirs[dir_num++] = DIR_19_NE_Z;
-
-    d19.dirs[dir_num++] = DIR_19_SW_X;
-    d19.dirs[dir_num++] = DIR_19_SW_Y;
-    d19.dirs[dir_num++] = DIR_19_SW_Z;
-
-    d19.dirs[dir_num++] = DIR_19_SE_X;
-    d19.dirs[dir_num++] = DIR_19_SE_Y;
-    d19.dirs[dir_num++] = DIR_19_SE_Z;
-
-    d19.dirs[dir_num++] = DIR_19_NW_X;
-    d19.dirs[dir_num++] = DIR_19_NW_Y;
-    d19.dirs[dir_num++] = DIR_19_NW_Z;
-
-    d19.dirs[dir_num++] = DIR_19_TE_X;
-    d19.dirs[dir_num++] = DIR_19_TE_Y;
-    d19.dirs[dir_num++] = DIR_19_TE_Z;
-
-    d19.dirs[dir_num++] = DIR_19_BW_X;
-    d19.dirs[dir_num++] = DIR_19_BW_Y;
-    d19.dirs[dir_num++] = DIR_19_BW_Z;
-
-    d19.dirs[dir_num++] = DIR_19_BE_X;
-    d19.dirs[dir_num++] = DIR_19_BE_Y;
-    d19.dirs[dir_num++] = DIR_19_BE_Z;
-    
-    d19.dirs[dir_num++] = DIR_19_TW_X;
-    d19.dirs[dir_num++] = DIR_19_TW_Y;
-    d19.dirs[dir_num++] = DIR_19_TW_Z;
-    
-    d19.dirs[dir_num++] = DIR_19_TN_X;
-    d19.dirs[dir_num++] = DIR_19_TN_Y;
-    d19.dirs[dir_num++] = DIR_19_TN_Z;
-    
-    d19.dirs[dir_num++] = DIR_19_BS_X;
-    d19.dirs[dir_num++] = DIR_19_BS_Y;
-    d19.dirs[dir_num++] = DIR_19_BS_Z;
-    
-    d19.dirs[dir_num++] = DIR_19_BN_X;
-    d19.dirs[dir_num++] = DIR_19_BN_Y;
-    d19.dirs[dir_num++] = DIR_19_BN_Z;
-    
-    d19.dirs[dir_num++] = DIR_19_TS_X;
-    d19.dirs[dir_num++] = DIR_19_TS_Y;
-    d19.dirs[dir_num++] = DIR_19_TS_Z;
-
-    return d19;
-}
 
 Distribution DistributionHelper::getDistribution27() 
 {
@@ -357,12 +203,6 @@ Distribution DistributionHelper::getDistribution27()
 
 Distribution DistributionHelper::getDistribution(std::string name)
 {
-    if (name == "D3Q7")
-        return getDistribution7();
-    if (name == "D3Q13")
-        return getDistribution13();
-    if (name == "D3Q19")
-        return getDistribution19();
     if (name == "D3Q27")
         return getDistribution27();
     

@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file SutherlandsLaw.cuh
+//! \ingroup FluxComputation
+//! \author Stephan Lenz
+//=======================================================================================
 #ifndef SutherlandsLaw_CUH
 #define SutherlandsLaw_CUH
 
@@ -13,9 +45,13 @@
 #include "FlowStateData/FlowStateData.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
 
-namespace GksGpu {
-
-inline __host__ __device__ real sutherlandsLaw(Parameters & parameters, const real r)
+//! \brief Computes temperature dependent viscosity based on Sutherlands law
+//! 
+//! \param parameters       \ref Parameters struct
+//! \param r                ratio of temperature and reference temperature at which viscosity is defined
+//! 
+//! \return viscosity for given temperature ratio
+inline __host__ __device__ real sutherlandsLaw(const Parameters & parameters, const real r)
 {
     real S  = real( 110.5 );
 
@@ -25,30 +61,5 @@ inline __host__ __device__ real sutherlandsLaw(Parameters & parameters, const re
 
     return parameters.mu * sqrt( r * r * r ) * ( C  + c1o1 ) / ( r  + C );
 }
-
-inline __host__ __device__ real sutherlandsLaw2(Parameters & parameters, const real r)
-{
-    real Smu = real( 0.648 );
-
-    real Sk  = real( 0.368 );
-
-    parameters.Pr *= ( ( Smu  + c1o1 ) / ( Sk  + c1o1 ) ) * ( ( r  + Sk ) / ( r  + Smu ) );
-
-    return parameters.mu * sqrt( r * r * r ) * ( Smu  + c1o1 ) / ( r  + Smu );
-}
-
-inline __host__ __device__ real getViscosity(Parameters & parameters, const real r)
-{
-    if ( parameters.viscosityModel == ViscosityModel::sutherlandsLaw ){
-        return sutherlandsLaw( parameters, r );
-    }
-    else if ( parameters.viscosityModel == ViscosityModel::sutherlandsLaw2 ){
-        return sutherlandsLaw2( parameters, r );
-    }
-
-    return parameters.mu;
-}
-
-} // namespace GksGpu
 
 #endif

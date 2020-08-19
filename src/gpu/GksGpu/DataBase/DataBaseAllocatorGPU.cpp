@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file DataBaseAllocatorGPU.cpp
+//! \ingroup DataBase
+//! \author Stephan Lenz
+//=======================================================================================
 #include "DataBaseAllocatorGPU.h"
 
 #include <cstring>
@@ -16,13 +48,9 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
-#include "Communication/Communicator.h"
-
 #include "Definitions/MemoryAccessPattern.h"
 
 #include "CudaUtility/CudaUtility.h"
-
-namespace GksGpu {
 
 void DataBaseAllocatorGPU::freeMemory( DataBase& dataBase )
 {
@@ -43,9 +71,6 @@ void DataBaseAllocatorGPU::freeMemory( DataBase& dataBase )
     checkCudaErrors( cudaFree ( dataBase.cellProperties ) );
 
     checkCudaErrors( cudaFree ( dataBase.faceOrientation ) );
-
-    checkCudaErrors( cudaFree ( dataBase.fineToCoarse ) );
-    checkCudaErrors( cudaFree ( dataBase.coarseToFine ) );
 
     checkCudaErrors( cudaFree ( dataBase.data ) );
     checkCudaErrors( cudaFree ( dataBase.dataUpdate ) );
@@ -79,15 +104,12 @@ void DataBaseAllocatorGPU::allocateMemory(SPtr<DataBase> dataBase)
 
     checkCudaErrors( cudaMalloc ( &dataBase->faceOrientation, sizeof(char) * dataBase->numberOfFaces ) );
 
-    checkCudaErrors( cudaMalloc ( &dataBase->fineToCoarse, sizeof(uint) * LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells ) );
-    checkCudaErrors( cudaMalloc ( &dataBase->coarseToFine, sizeof(uint) * LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells   ) );
-
     checkCudaErrors( cudaMalloc ( &dataBase->data,       sizeof(real) *            LENGTH_CELL_DATA * dataBase->numberOfCells ) );
     checkCudaErrors( cudaMalloc ( &dataBase->dataUpdate, sizeof(realAccumulator) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
 
     checkCudaErrors( cudaMalloc ( &dataBase->massFlux ,  sizeof(real) * LENGTH_VECTOR    * dataBase->numberOfCells ) );
 
-    checkCudaErrors( cudaMalloc ( &dataBase->diffusivity,  sizeof(realAccumulator) * dataBase->numberOfCells ) );
+    checkCudaErrors( cudaMalloc ( &dataBase->diffusivity,  sizeof(real) * dataBase->numberOfCells ) );
 
     checkCudaErrors( cudaMalloc ( &dataBase->crashCellIndex,  sizeof(int) ) );
 
@@ -112,9 +134,6 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
     std::vector<real> cellCenterBuffer   ( LENGTH_VECTOR * dataBase->numberOfCells );
 
     std::vector<char> faceOrientationBuffer( dataBase->numberOfFaces );
-
-    std::vector<uint> fineToCoarseBuffer ( LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells );
-    std::vector<uint> coarseToFineBuffer ( LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells   );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -175,22 +194,6 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
 
     //////////////////////////////////////////////////////////////////////////
 
-    for( uint cellIdx = 0; cellIdx < dataBase->numberOfCoarseGhostCells; cellIdx++ ){
-        for( uint connectivityIdx = 0; connectivityIdx < LENGTH_FINE_TO_COARSE; connectivityIdx++ ){
-            fineToCoarseBuffer[ FINE_TO_COARSE( cellIdx, connectivityIdx, dataBase->numberOfCoarseGhostCells ) ]
-                = adapter.fineToCoarse[cellIdx][connectivityIdx];
-        }
-    }
-
-    for( uint cellIdx = 0; cellIdx < dataBase->numberOfFineGhostCells; cellIdx++ ){
-        for( uint connectivityIdx = 0; connectivityIdx < LENGTH_COARSE_TO_FINE; connectivityIdx++ ){
-            coarseToFineBuffer[ COARSE_TO_FINE( cellIdx, connectivityIdx, dataBase->numberOfFineGhostCells ) ]
-                = adapter.coarseToFine[cellIdx][connectivityIdx];
-        }
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-
     checkCudaErrors( cudaMemcpy ( dataBase->cellToCell,     cellToCellBuffer.data(),     sizeof(uint) * LENGTH_CELL_TO_CELL * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
     
     checkCudaErrors( cudaMemcpy ( dataBase->faceToCell,     faceToCellBuffer.data(),     sizeof(uint) * LENGTH_FACE_TO_CELL * dataBase->numberOfFaces, cudaMemcpyHostToDevice ) );
@@ -203,9 +206,6 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
     checkCudaErrors( cudaMemcpy ( dataBase->cellProperties, dataBase->cellPropertiesHost.data(), sizeof(CellProperties) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
 
     checkCudaErrors( cudaMemcpy ( dataBase->faceOrientation, faceOrientationBuffer.data(), sizeof(char) * dataBase->numberOfFaces, cudaMemcpyHostToDevice ) );
-
-    checkCudaErrors( cudaMemcpy ( dataBase->fineToCoarse,   fineToCoarseBuffer.data(),   sizeof(uint) * LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells, cudaMemcpyHostToDevice ) );
-    checkCudaErrors( cudaMemcpy ( dataBase->coarseToFine,   coarseToFineBuffer.data(),   sizeof(uint) * LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells  , cudaMemcpyHostToDevice ) );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -235,14 +235,14 @@ int DataBaseAllocatorGPU::getCrashCellIndex(SPtr<DataBase> dataBase)
     return crashCellIndex;
 }
 
-void DataBaseAllocatorGPU::freeMemory(GksGpu::BoundaryCondition& boundaryCondition)
+void DataBaseAllocatorGPU::freeMemory(BoundaryCondition& boundaryCondition)
 {
     checkCudaErrors( cudaFree ( boundaryCondition.ghostCells  ) );
     checkCudaErrors( cudaFree ( boundaryCondition.domainCells ) );
     checkCudaErrors( cudaFree ( boundaryCondition.secondCells ) );
 }
 
-void DataBaseAllocatorGPU::allocateMemory(SPtr<GksGpu::BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells)
+void DataBaseAllocatorGPU::allocateMemory(SPtr<BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells)
 {
     checkCudaErrors( cudaMalloc ( &boundaryCondition->ghostCells , sizeof(uint) * ghostCells.size()  ) );
     checkCudaErrors( cudaMalloc ( &boundaryCondition->domainCells, sizeof(uint) * domainCells.size() ) );
@@ -253,53 +253,7 @@ void DataBaseAllocatorGPU::allocateMemory(SPtr<GksGpu::BoundaryCondition> bounda
     checkCudaErrors( cudaMemcpy ( boundaryCondition->secondCells, secondCells.data(), sizeof(uint) * secondCells.size(), cudaMemcpyHostToDevice ) );
 }
 
-void DataBaseAllocatorGPU::freeMemory(Communicator & communicator)
-{
-    checkCudaErrors( cudaFree     ( communicator.sendIndices     ) );
-    checkCudaErrors( cudaFree     ( communicator.recvIndices     ) );
-
-    checkCudaErrors( cudaFree     ( communicator.sendBuffer      ) );
-    checkCudaErrors( cudaFree     ( communicator.recvBuffer      ) );
-
-    checkCudaErrors( cudaFreeHost ( communicator.sendBufferHost  ) );
-    checkCudaErrors( cudaFreeHost ( communicator.recvBufferHost  ) );
-}
-
-void DataBaseAllocatorGPU::allocateMemory(Communicator & communicator, std::vector<uint>& sendIndices, std::vector<uint>& recvIndices)
-{
-    checkCudaErrors( cudaMalloc     ( &communicator.sendIndices    , sizeof(uint) * communicator.numberOfSendNodes ) );
-    checkCudaErrors( cudaMalloc     ( &communicator.recvIndices    , sizeof(uint) * communicator.numberOfRecvNodes ) );
-    
-    checkCudaErrors( cudaMalloc     ( &communicator.sendBuffer     , LENGTH_CELL_DATA * sizeof(real) * communicator.numberOfSendNodes ) );
-    checkCudaErrors( cudaMalloc     ( &communicator.recvBuffer     , LENGTH_CELL_DATA * sizeof(real) * communicator.numberOfRecvNodes ) );
-    
-    checkCudaErrors( cudaMallocHost ( &communicator.sendBufferHost , LENGTH_CELL_DATA * sizeof(real) * communicator.numberOfSendNodes ) );
-    checkCudaErrors( cudaMallocHost ( &communicator.recvBufferHost , LENGTH_CELL_DATA * sizeof(real) * communicator.numberOfRecvNodes ) );
-
-    checkCudaErrors( cudaMemcpy     ( communicator.sendIndices , sendIndices.data() , sizeof(uint) * communicator.numberOfSendNodes, cudaMemcpyHostToDevice ) );
-    checkCudaErrors( cudaMemcpy     ( communicator.recvIndices , recvIndices.data() , sizeof(uint) * communicator.numberOfRecvNodes, cudaMemcpyHostToDevice ) );
-}
-
-void DataBaseAllocatorGPU::copyDataDeviceToDevice(SPtr<Communicator> dst, SPtr<Communicator> src)
-{
-    checkCudaErrors( cudaMemcpy ( dst->recvBuffer, src->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * src->numberOfSendNodes, cudaMemcpyDefault ) );
-}
-
-void DataBaseAllocatorGPU::copyBuffersDeviceToHost(SPtr<Communicator> communicator)
-{
-    size_t size = LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes;
-    cudaMemcpyAsync ( communicator->sendBufferHost, communicator->sendBuffer, size, cudaMemcpyDeviceToHost, CudaUtility::communicationStream );
-}
-
-void DataBaseAllocatorGPU::copyBuffersHostToDevice(SPtr<Communicator> communicator)
-{
-    size_t size = LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes;
-    cudaMemcpyAsync ( communicator->recvBuffer, communicator->recvBufferHost, size, cudaMemcpyHostToDevice, CudaUtility::communicationStream );
-}
-
 std::string DataBaseAllocatorGPU::getDeviceType()
 {
     return std::string("GPU");
 }
-
-} // namespace GksGpu

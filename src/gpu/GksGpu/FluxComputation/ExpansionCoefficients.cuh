@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file ExpansionCoefficients.cuh
+//! \ingroup FluxComputation
+//! \author Stephan Lenz
+//=======================================================================================
 #ifndef ExpansionCoefficients_CUH
 #define ExpansionCoefficients_CUH
 
@@ -10,8 +42,17 @@
 #include "FlowStateData/FlowStateData.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
 
-namespace GksGpu {
-
+//! \brief computes spatial and temporal expansion coefficients of the Taylor 
+//! expansion of the equilibrium distribution based on corresponding derivatives
+//!
+//! The equations for the computation of the expansion coefficints can be found in
+//! Appendix C in 
+//! <a href="https://doi.org/10.1142/9324"><b>[ Kun Xu, (2015), DOI: 10.1142/9324 ]</b></a>.
+//!
+//! \param[in]  facePrim               flow state on the interface as \ref PrimitiveVariables
+//! \param[in]  gradient               derivative of the \ref ConservedVariables
+//! \param[in]  K                      number of internal degrees of freedom
+//! \param[out] expansionCoefficient   array of expansion coefficients with respect to the provided derivatives
 __host__ __device__ inline void computeExpansionCoefficients(const PrimitiveVariables & facePrim, 
                                                              const ConservedVariables & gradient,
                                                              const real K, 
@@ -54,7 +95,5 @@ __host__ __device__ inline void computeExpansionCoefficients(const PrimitiveVari
 	expansionCoefficient[6] = c2o1 * facePrim.lambda * (gradient.rhoS_2 - facePrim.S_2 * gradient.rho);
 #endif // USE_PASSIVE_SCALAR
 }
-
-} // namespace GksGpu
 
 #endif

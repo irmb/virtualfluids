@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file CupsAnalyzer.cpp
+//! \ingroup Analyzer
+//! \author Stephan Lenz
+//=======================================================================================
 #include "CupsAnalyzer.h"
 
 #include <cmath>
@@ -9,8 +41,6 @@
 #include "VirtualFluidsDefinitions.h"
 
 #include "DataBase/DataBase.h"
-
-namespace GksGpu {
 
 CupsAnalyzer::CupsAnalyzer(SPtr<DataBase> dataBase, 
                            bool outputPerTime, real outputTime, 
@@ -46,12 +76,10 @@ void CupsAnalyzer::restart()
     this->timerRestart->start();
 }
 
-real CupsAnalyzer::run( uint iter, real dt )
+void CupsAnalyzer::run( uint iter, real dt )
 {
     real currentRuntime             = this->timer->getCurrentRuntimeInSeconds();
     real currentRuntimeSinceRestart = this->timerRestart->getCurrentRuntimeInSeconds();
-
-    real CUPS = -1.0;
 
     this->counter++;
 
@@ -59,7 +87,7 @@ real CupsAnalyzer::run( uint iter, real dt )
     {
         unsigned long long numberOfCellUpdates = this->numberOfCellUpdatesPerTimeStep * (unsigned long long)counter;
 
-        CUPS = real(numberOfCellUpdates) / currentRuntimeSinceRestart;
+        real CUPS = real(numberOfCellUpdates) / currentRuntimeSinceRestart;
 
         this->printCups( iter, iter * dt, currentRuntime, CUPS );
 
@@ -70,8 +98,6 @@ real CupsAnalyzer::run( uint iter, real dt )
     {
         outputPerTimeCounter++;
     }
-
-    return CUPS;
 }
 
 bool CupsAnalyzer::checkOutputPerTime(real currentRuntime)
@@ -128,7 +154,5 @@ std::string CupsAnalyzer::getTimeString(real time)
 
     return timeString.str();
 }
-
-} // namespace GksGpu
 
 

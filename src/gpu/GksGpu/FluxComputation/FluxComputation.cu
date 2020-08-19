@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file FluxComputation.cu
+//! \ingroup FluxComputation
+//! \author Stephan Lenz
+//=======================================================================================
 #include "FluxComputation.h"
 
 #include <cuda.h>
@@ -20,108 +52,87 @@
 #include "FluxComputation/ExpansionCoefficients.cuh"
 #include "FluxComputation/AssembleFlux.cuh"
 #include "FluxComputation/ApplyFlux.cuh"
-#include "FluxComputation/Smagorinsky.cuh"
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
-namespace GksGpu {
-
+//! \brief This is a CUDA Kernel that computes the face index and calls \ref fluxFunction for this index
 __global__                 void fluxKernel  ( DataBaseStruct dataBase, Parameters parameters, char direction, uint startIndex, uint numberOfEntities );
 
+//! \brief This function performs the flux computation
+//!
+//! The \ref reconstructFiniteDifferences function computes the flow state 
+//! on the cell face as well as the gradient of the flow state.
+//! The flow state is computed by directly averaging the conserved variables
+//! of the positive and negative neighboring cells and afterwards transformed
+//! to primitive variables.
+//! The normal derivatives are also clearly defined by positive and negative
+//! cells and are computed by central difference.
+//! For the tangential derivative the orientation (in the sense of normal to 
+//! which coordinate direction) of the face is utilized to choose the correct 
+//! data access pattern.
+//! While the positive and negative cell indices are stored per face, the cells
+//! for the tangential derivatives are obtained pointer chasing, i.e. utilizing
+//! the cell to cell connectivity stored per cell. The gradients of the 
+//! conserved variables are divided by the density for implementation reasons.
+//! 
+//! In order to unify the flux computation for all three possible directions,
+//! the conserved variables in both gradients and flow state are rotated into
+//! a local frame of reference with the function \ref transformGlobalToLocal.
+//! 
+//! Subsequently the expansion coefficients according to Appendix C in 
+//! <a href="https://doi.org/10.1142/9324"><b>[ Kun Xu, (2015), DOI: 10.1142/9324 ]</b></a>
+//! are computed by \ref computeExpansionCoefficients.
+//! 
+//! The next major stage in the flux computation is related to the time 
+//! derivative, which is evaluated from the spatial derivatives. First a set
+//! of several moments of the equilibrium distribution is evaluated explicitly.
+//! The formulas for the moments can be found for example in 
+//! <a href="https://doi.org/10.1142/9324"><b>[ Kun Xu (2015), DOI: 10.1142/9324 ]</b></a>. 
+//! The moments are subsequently weighted by the spatial expansion coefficients
+//! and assembled to form the time derivative according to Eq. (17) in 
+//! <a href="https://doi.org/10.1016/j.ijthermalsci.2018.10.004"><b>[ Lenz et al. (2019), DOI: 10.1016/j.ijthermalsci.2018.10.004 ]</b></a>
+//! in function \ref computeTimeDerivative. The temporal expansion coefficients 
+//! are then computed with the same function used for the spatial expansion 
+//! coefficients.
+//! 
+//! With all expansion coefficients in place, they are used to assemble the 
+//! flux according to Eq. (19) in 
+//! <a href="https://doi.org/10.1016/j.ijthermalsci.2018.10.004"><b>[ Lenz et al. (2019), DOI: 10.1016/j.ijthermalsci.2018.10.004 ]</b></a>
+//! in the function \ref assembleFlux. This function includes the Prandtl 
+//! number fix from Eq. (27) in 
+//! <a href="https://doi.org/10.1006/jcph.2001.6790"><b>[ Kun Xu (2001), DOI: 10.1006/jcph.2001.6790 ]</b></a>.
+//! 
+//! At this stage the flux exists as conserved variables in the local frame of 
+//! reference. Transformation to the global frame follows in the function 
+//! \ref transformLocalToGlobal.
+//! 
+//! Concluding the flux computation the fluxes are applied to the positive and
+//! negative cells \ref DataBase::dataUpdate variables. In this process several 
+//! \ref CellProperties, which are stored as bitmaps, are evaluated, such as 
+//! impenetrable walls. Finally, the functions \ref applyFluxToNegCell and 
+//! \ref applyFluxToPosCell add the fluxes to \ref DataBase::dataUpdate of 
+//! negative and positive cells respectively. As there is the possibility of race
+//! conditions in the case, where multiple faces are processed simultaneously.
+//! In order to prevent this, CUDA atomics are used to protect the write operations.
+//! 
+//! The fluxes are multiplied by the face area \f$\Delta x^2\f$. Hence, they have to 
+//! interpreted as absolute amounts of conserved quantities, in opposition to the
+//! storage of cell average conserved quantities.
 __host__ __device__ inline void fluxFunction( DataBaseStruct dataBase, Parameters parameters, char direction, uint startIndex, uint index );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, uint level, bool evaluateCommFaces )
 {
-    //{
-    //    CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFacesX, 128);
+    CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfInnerFaces, 64, CudaUtility::computeStream);
 
-    //    runKernel(fluxKernel,
-    //              fluxFunction,
-    //              dataBase->getDeviceType(), grid,
-    //              dataBase->toStruct(),
-    //              parameters,
-    //              'x',
-    //              dataBase->perLevelCount[level].startOfFacesX);
-
-    //    cudaDeviceSynchronize();
-
-    //    getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'x', uint level )");
-    //}
-    //{
-    //    CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFacesY, 128);
-
-    //    runKernel(fluxKernel,
-    //              fluxFunction,
-    //              dataBase->getDeviceType(), grid,
-    //              dataBase->toStruct(),
-    //              parameters,
-    //              'y',
-    //              dataBase->perLevelCount[level].startOfFacesY);
-
-    //    cudaDeviceSynchronize();
-
-    //    getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'y', uint level )");
-    //}
-    //{
-    //    CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFacesZ, 128);
-
-    //    runKernel(fluxKernel,
-    //              fluxFunction,
-    //              dataBase->getDeviceType(), grid,
-    //              dataBase->toStruct(),
-    //              parameters,
-    //              'z',
-    //              dataBase->perLevelCount[level].startOfFacesZ);
-
-    //    cudaDeviceSynchronize();
-
-    //    getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'z', uint level )");
-    //}
-    //////////////////////////////////////////////////////////////////////////
-    //{
-    //    CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFaces, 64);
-
-    //    runKernel(fluxKernel,
-    //              fluxFunction,
-    //              dataBase->getDeviceType(), grid,
-    //              dataBase->toStruct(),
-    //              parameters,
-    //              'x',
-    //              dataBase->perLevelCount[level].startOfFacesX);
-
-    //    cudaDeviceSynchronize();
-
-    //    getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'x', uint level )");
-    //}
-    //////////////////////////////////////////////////////////////////////////
-    if( evaluateCommFaces )
-    {
-        CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFaces - dataBase->perLevelCount[level].numberOfInnerFaces, 64, CudaUtility::communicationStream);
-
-        if( grid.numberOfEntities <= 0 ) return;
-
-        runKernel(fluxKernel,
-                  fluxFunction,
-                  dataBase->getDeviceType(), grid,
-                  dataBase->toStruct(),
-                  parameters,
-                  'x',
-                  dataBase->perLevelCount[level].startOfFacesX + dataBase->perLevelCount[level].numberOfInnerFaces);
-    }
-    else
-    {
-        CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfInnerFaces, 64, CudaUtility::computeStream);
-
-        runKernel(fluxKernel,
-                  fluxFunction,
-                  dataBase->getDeviceType(), grid,
-                  dataBase->toStruct(),
-                  parameters,
-                  'x',
-                  dataBase->perLevelCount[level].startOfFacesX);
-    }
+    runKernel(fluxKernel,
+                fluxFunction,
+                dataBase->getDeviceType(), grid,
+                dataBase->toStruct(),
+                parameters,
+                'x',
+                dataBase->perLevelCount[level].startOfFacesX);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,59 +156,6 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
     parameters.D1 = parameters.D;
     parameters.D2 = parameters.D;
-
-    //////////////////////////////////////////////////////////////////////////
-
-    if( parameters.useSpongeLayer )
-    {
-        if( parameters.spongeLayerIdx == 0 )
-        {
-            real x = dataBase.faceCenter[VEC_X(faceIndex, dataBase.numberOfFaces)];
-            real z = dataBase.faceCenter[VEC_Z(faceIndex, dataBase.numberOfFaces)];
-
-            real muNew = parameters.mu;
-
-            real zStart = real(0.35);
-
-            if (fabsf(z) > zStart)
-            {
-                muNew += (fabs(z) - zStart) * c10o1 * c10o1 * c10o1 * parameters.mu;
-            }
-
-            parameters.mu = muNew;
-        }
-        if( parameters.spongeLayerIdx == 1 )
-        {
-            real x = dataBase.faceCenter[VEC_X(faceIndex, dataBase.numberOfFaces)];
-            real z = dataBase.faceCenter[VEC_Z(faceIndex, dataBase.numberOfFaces)];
-
-            real muNew = parameters.mu;
-
-            real zStart = real(3.5);
-
-            if (fabsf(z) > zStart)
-            {
-                muNew += (fabs(z) - zStart) * c10o1 * c10o1 * c10o1 * parameters.mu;
-            }
-
-            parameters.mu = muNew;
-        }
-        if( parameters.spongeLayerIdx == 2 )
-        {
-            real y = dataBase.faceCenter[VEC_Y(faceIndex, dataBase.numberOfFaces)];
-
-            real muNew = parameters.mu;
-
-            real yStart = real(3.0);
-
-            if (fabsf(y) > yStart)
-            {
-                muNew += (fabs(y) - yStart) * c10o1 * c10o1 * parameters.mu;
-            }
-
-            parameters.mu = muNew;
-        }
-    }
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -245,128 +203,7 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
         computeExpansionCoefficients(facePrim, gradT2, K, az);
 
         //////////////////////////////////////////////////////////////////////////
-
-        if(parameters.useSmagorinsky)
-        {
-            real muTurb = getTurbulentViscositySmagorinsky( parameters, facePrim, gradN, gradT1, gradT2 );
-
-            if( muTurb > parameters.mu )
-            {
-                real turbSc = real(0.3);
-                real turbPr = real(0.5);
-
-                parameters.mu = muTurb;
-
-                parameters.D  = muTurb / turbSc;
-                parameters.Pr = turbPr;
-            }
-        }
-
-        //////////////////////////////////////////////////////////////////////////
-
-        if(parameters.useTemperatureLimiter){
-            real k = parameters.mu / parameters.Pr;
-
-            real dUdx1 = ( gradN.rhoU  - facePrim.U * gradN.rho  );
-            real dUdx2 = ( gradT1.rhoU - facePrim.U * gradT1.rho );
-            real dUdx3 = ( gradT2.rhoU - facePrim.U * gradT2.rho );
-    
-            real dVdx1 = ( gradN.rhoV  - facePrim.V * gradN.rho  );
-            real dVdx2 = ( gradT1.rhoV - facePrim.V * gradT1.rho );
-            real dVdx3 = ( gradT2.rhoV - facePrim.V * gradT2.rho );
-    
-            real dWdx1 = ( gradN.rhoW  - facePrim.W * gradN.rho  );
-            real dWdx2 = ( gradT1.rhoW - facePrim.W * gradT1.rho );
-            real dWdx3 = ( gradT2.rhoW - facePrim.W * gradT2.rho );
-    
-            real dEdx1 = ( gradN.rhoE  - facePrim.W * gradN.rho  );
-            real dEdx2 = ( gradT1.rhoE - facePrim.W * gradT1.rho );
-            real dEdx3 = ( gradT2.rhoE - facePrim.W * gradT2.rho );
-
-            real dTdx1 = dEdx1 - c2o1 * facePrim.U * dUdx1 - c2o1 * facePrim.V * dVdx1 - c2o1 * facePrim.W * dWdx1;
-            real dTdx2 = dEdx2 - c2o1 * facePrim.U * dUdx2 - c2o1 * facePrim.V * dVdx2 - c2o1 * facePrim.W * dWdx2;
-            real dTdx3 = dEdx3 - c2o1 * facePrim.U * dUdx3 - c2o1 * facePrim.V * dVdx3 - c2o1 * facePrim.W * dWdx3;
-    
-            //real E = c1o2 * ( facePrim.U * facePrim.U 
-            //                + facePrim.V * facePrim.V 
-            //                + facePrim.W * facePrim.W 
-            //                + ( parameters.K + c3o1 ) / ( c4o1 * facePrim.lambda ) );
-
-            //real dEdx1 = ( gradN.rhoE  - E * gradN.rho  );
-            //real dEdx2 = ( gradT1.rhoE - E * gradT1.rho );
-            //real dEdx3 = ( gradT2.rhoE - E * gradT2.rho );
-
-            //real dTdx1 = dEdx1 - facePrim.U * dUdx1 - facePrim.V * dVdx1 - facePrim.W * dWdx1;
-            //real dTdx2 = dEdx2 - facePrim.U * dUdx2 - facePrim.V * dVdx2 - facePrim.W * dWdx2;
-            //real dTdx3 = dEdx3 - facePrim.U * dUdx3 - facePrim.V * dVdx3 - facePrim.W * dWdx3;
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // this one works for some time
-            //real S = parameters.dx * parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
-            //k += real(0.00002) / real(0.015625) * S;
-
-            //real T = getT(facePrim);
-            //if( T > 20 )
-                //k += parameters.temperatureLimiter * S;
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            
-            //real S = parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
-            //k += real(0.00001) * real(0.0025) * S * S;
-            
-            //real kMax = real(0.01) * c1o2 * parameters.dx * parameters.dx / parameters.dt;
-            //real kMax = real(0.01);
-
-            real S = parameters.dx * parameters.dx * ( dTdx1 * dTdx1 + dTdx2 * dTdx2 + dTdx3 * dTdx3 );
-
-            k += fminf(parameters.temperatureLimiterUpperLimit, parameters.temperatureLimiter * S);
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // this one works for some time
-            //real S = ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
-            //k += real(0.00002) / real(0.015625) * S;
-            //k += real(1.28e-4) * parameters.dx * parameters.dx * parameters.dx * S * S;
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            parameters.Pr = parameters.mu / k;
-        }
     }
-
-    //////////////////////////////////////////////////////////////////////////
-
-    parameters.D1 = parameters.D;
-    parameters.D2 = parameters.D;
-
-    if(parameters.usePassiveScalarLimiter){
-    #ifdef USE_PASSIVE_SCALAR
-
-        if( facePrim.S_1 < c0o1 ) parameters.D1 += - parameters.passiveScalarLimiter *   facePrim.S_1;
-        if( facePrim.S_1 > c1o1  ) parameters.D1 +=   parameters.passiveScalarLimiter * ( facePrim.S_1 - c1o1 );
-        
-        parameters.D2 = parameters.D1;
-
-        if( facePrim.S_2 < c0o1 ) parameters.D2 += - real(0.1)*parameters.passiveScalarLimiter *   facePrim.S_2;
-        if( facePrim.S_2 > c1o1  ) parameters.D2 +=   real(0.1)*parameters.passiveScalarLimiter * ( facePrim.S_2 - c1o1 );
-    #endif // USE_PASSIVE_SCALAR
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-
-    //{
-    //#ifdef USE_PASSIVE_SCALAR
-    //    if( facePrim.S_1 < zero )
-    //    {
-    //        parameters.D += - real(0.1) * facePrim.S_1;
-    //    }
-    //    if( facePrim.S_1 > one )
-    //    {
-    //        parameters.D +=   real(0.1) * ( facePrim.S_1 - one );
-    //    }
-
-    //#endif // USE_PASSIVE_SCALAR
-    //}
-
-    //////////////////////////////////////////////////////////////////////////
 
     {
         ConservedVariables flux;
@@ -421,8 +258,8 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             uint posCellIdx = dataBase.faceToCell[ POS_CELL(faceIndex, dataBase.numberOfFaces) ];
 
         #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
-            atomicAdd( &( dataBase.diffusivity[ negCellIdx ] ), (realAccumulator)( parameters.D * parameters.dx * parameters.dx * parameters.dt ) );
-            atomicAdd( &( dataBase.diffusivity[ posCellIdx ] ), (realAccumulator)( parameters.D * parameters.dx * parameters.dx * parameters.dt ) );
+            atomicAdd( &( dataBase.diffusivity[ negCellIdx ] ), parameters.D * parameters.dx * parameters.dx * parameters.dt );
+            atomicAdd( &( dataBase.diffusivity[ posCellIdx ] ), parameters.D * parameters.dx * parameters.dx * parameters.dt );
         #endif
 
             CellProperties negCellProperties = dataBase.cellProperties[ negCellIdx ];
@@ -474,5 +311,3 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
         }
     }
 }
-
-} // namespace GksGpu

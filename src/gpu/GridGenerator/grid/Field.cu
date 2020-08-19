@@ -1,9 +1,41 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file Field.cu
+//! \ingroup grid
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #include "Field.h"
 
 #include "grid/NodeValues.h"
 #include "grid/GridStrategy/GridStrategy.h"
 
-CUDA_HOST Field::Field(SPtr<GridStrategy> gridStrategy, uint size) : gridStrategy(gridStrategy), size(size)
+Field::Field(SPtr<GridStrategy> gridStrategy, uint size) : gridStrategy(gridStrategy), size(size)
 {
     
 }
@@ -18,12 +50,12 @@ Field::~Field()
     
 }
 
-CUDA_HOST void Field::allocateMemory()
+void Field::allocateMemory()
 {
     gridStrategy->allocateFieldMemory(this);
 }
 
-CUDA_HOST void Field::freeMemory()
+void Field::freeMemory()
 {
     gridStrategy->freeFieldMemory(this);
 }
@@ -31,12 +63,12 @@ CUDA_HOST void Field::freeMemory()
 // --------------------------------------------------------- //
 //                        Getter                             //
 // --------------------------------------------------------- //
-HOSTDEVICE uint Field::getSize() const
+uint Field::getSize() const
 {
     return this->size;
 }
 
-HOSTDEVICE char Field::getFieldEntry(uint index) const
+char Field::getFieldEntry(uint index) const
 {
     return this->field[index];
 }
@@ -44,68 +76,63 @@ HOSTDEVICE char Field::getFieldEntry(uint index) const
 // --------------------------------------------------------- //
 //                           Is                              //
 // --------------------------------------------------------- //
-HOSTDEVICE bool Field::is(uint index, char type) const
+bool Field::is(uint index, char type) const
 {
     return field[index] == type;
 }
 
-HOSTDEVICE bool Field::isCoarseToFineNode(uint index) const
+bool Field::isCoarseToFineNode(uint index) const
 {
     return field[index] == FLUID_CFC;
 }
 
-HOSTDEVICE bool Field::isFineToCoarseNode(uint index) const
+bool Field::isFineToCoarseNode(uint index) const
 {
     return field[index] == FLUID_FCC;
 }
 
-HOSTDEVICE bool Field::isFluid(uint index) const
+bool Field::isFluid(uint index) const
 {
     const char type = field[index];
     return type == FLUID || type == FLUID_CFC || type == FLUID_CFF || type == FLUID_FCC || type == FLUID_FCF || isBoundaryConditionNode(index);
 }
 
-HOSTDEVICE bool Field::isInvalidSolid(uint index) const
+bool Field::isInvalidSolid(uint index) const
 {
     return field[index] == INVALID_SOLID;
 }
 
-HOSTDEVICE bool Field::isInvalidOutOfGrid(uint index) const
+bool Field::isInvalidOutOfGrid(uint index) const
 {
     return field[index] == INVALID_OUT_OF_GRID;
 }
 
-HOSTDEVICE bool Field::isInvalidCoarseUnderFine(uint index) const
+bool Field::isInvalidCoarseUnderFine(uint index) const
 {
     return field[index] == INVALID_COARSE_UNDER_FINE;
 }
 
-HOSTDEVICE bool Field::isStopperOutOfGrid(uint index) const
+bool Field::isStopperOutOfGrid(uint index) const
 {
     return field[index] == STOPPER_OUT_OF_GRID;
 }
 
-HOSTDEVICE bool Field::isStopperCoarseUnderFine(uint index) const
+bool Field::isStopperCoarseUnderFine(uint index) const
 {
     return field[index] == STOPPER_COARSE_UNDER_FINE;
 }
 
-HOSTDEVICE bool Field::isStopperSolid(uint index) const
+bool Field::isStopperSolid(uint index) const
 {
 	return field[index] == STOPPER_SOLID;
 }
 
-HOSTDEVICE bool Field::isStopper(uint index) const
+bool Field::isStopper(uint index) const
 {
     return isStopperOutOfGrid(index) || isStopperCoarseUnderFine(index) || isStopperSolid(index) || is(index, STOPPER_OUT_OF_GRID_BOUNDARY);
 }
 
-HOSTDEVICE bool Field::isQ(uint index) const
-{
-    return field[index] == Q_DEPRECATED;
-}
-
-HOSTDEVICE bool Field::isBoundaryConditionNode(uint index) const
+bool Field::isBoundaryConditionNode(uint index) const
 {
     return  field[index] == BC_SOLID || field[index] == BC_OUTFLOW || field[index] == BC_VELOCITY || field[index] == BC_PRESSURE || field[index] == BC_SLIP;
 }
@@ -113,42 +140,42 @@ HOSTDEVICE bool Field::isBoundaryConditionNode(uint index) const
 // --------------------------------------------------------- //
 //                        Setter                             //
 // --------------------------------------------------------- //
-HOSTDEVICE void Field::setFieldEntry(uint index, char val)
+void Field::setFieldEntry(uint index, char val)
 {
     this->field[index] = val;
 }
 
-HOSTDEVICE void Field::setFieldEntryToFluid(uint index)
+void Field::setFieldEntryToFluid(uint index)
 {
     this->field[index] = FLUID;
 }
 
-HOSTDEVICE void Field::setFieldEntryToInvalidSolid(uint index)
+void Field::setFieldEntryToInvalidSolid(uint index)
 {
     this->field[index] = INVALID_SOLID;
 }
 
-HOSTDEVICE void Field::setFieldEntryToStopperOutOfGrid(uint index)
+void Field::setFieldEntryToStopperOutOfGrid(uint index)
 {
     this->field[index] = STOPPER_OUT_OF_GRID;
 }
 
-HOSTDEVICE void Field::setFieldEntryToStopperOutOfGridBoundary(uint index)
+void Field::setFieldEntryToStopperOutOfGridBoundary(uint index)
 {
     this->field[index] = STOPPER_OUT_OF_GRID_BOUNDARY;
 }
 
-HOSTDEVICE void Field::setFieldEntryToStopperCoarseUnderFine(uint index)
+void Field::setFieldEntryToStopperCoarseUnderFine(uint index)
 {
     this->field[index] = STOPPER_COARSE_UNDER_FINE;
 }
 
-HOSTDEVICE void Field::setFieldEntryToInvalidCoarseUnderFine(uint index)
+void Field::setFieldEntryToInvalidCoarseUnderFine(uint index)
 {
     this->field[index] = INVALID_COARSE_UNDER_FINE;
 }
 
-HOSTDEVICE void Field::setFieldEntryToInvalidOutOfGrid(uint index)
+void Field::setFieldEntryToInvalidOutOfGrid(uint index)
 {
     this->field[index] = INVALID_OUT_OF_GRID;
 }

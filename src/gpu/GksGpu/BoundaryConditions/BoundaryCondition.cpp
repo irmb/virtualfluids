@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file BoundaryCondition.cpp
+//! \ingroup BoundaryCondition
+//! \author Stephan Lenz
+//=======================================================================================
 #include "BoundaryCondition.h"
 
 #include <memory>
@@ -10,8 +42,6 @@
 #include "DataBase/DataBase.h"
 #include "DataBase/DataBaseAllocator.h"
 #include "DataBase/DataBaseStruct.h"
-
-namespace GksGpu{
 
 BoundaryCondition::BoundaryCondition( SPtr<DataBase> dataBase )
     : myAllocator ( dataBase->myAllocator )
@@ -56,8 +86,6 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, bool allowGh
 
             if( cell.type != STOPPER_OUT_OF_GRID && cell.type != STOPPER_OUT_OF_GRID_BOUNDARY && cell.type != STOPPER_SOLID ) continue;
 
-            if( cell.isRecvCell ) continue;
-
             // look in all directions
             uint maximalSearchDirection = 27;
 
@@ -90,9 +118,9 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, bool allowGh
                         secondCells.push_back( neighborCell.cellToCell[ idx ] );
                     }
 
-                    if( this->isWall()      ) cell.isWall      = this->isWall();
-                    if( this->isFluxBC()    ) cell.isFluxBC    = this->isFluxBC();
-                    if( this->isInsulated() ) cell.isInsulated = this->isInsulated();
+                    cell.isWall      = this->isWall();
+                    cell.isFluxBC    = this->isFluxBC();
+                    cell.isInsulated = this->isInsulated();
 
                     break;
                 }
@@ -127,5 +155,3 @@ bool BoundaryCondition::secondCellsNeeded()
 {
     return false;
 }
-
-} // namespace GksGpu

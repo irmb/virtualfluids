@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file DataBaseAllocatorCPU.cpp
+//! \ingroup DataBase
+//! \author Stephan Lenz
+//=======================================================================================
 #include "DataBaseAllocatorCPU.h"
 
 #include <cstring>
@@ -13,11 +45,7 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
-#include "Communication/Communicator.h"
-
 #include "Definitions/MemoryAccessPattern.h"
-
-namespace GksGpu {
 
 void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
 {
@@ -38,9 +66,6 @@ void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
     delete [] dataBase.cellProperties;
 
     delete [] dataBase.faceOrientation;
-
-    delete [] dataBase.fineToCoarse;
-    delete [] dataBase.coarseToFine;
 
     delete [] dataBase.data;
     delete [] dataBase.dataUpdate;
@@ -74,15 +99,12 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<DataBase> dataBase)
 
     dataBase->faceOrientation = new char [ dataBase->numberOfFaces ];
 
-    dataBase->fineToCoarse = new uint [ LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells ];
-    dataBase->coarseToFine = new uint [ LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells   ];
-
     dataBase->data       = new real            [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
     dataBase->dataUpdate = new realAccumulator [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
 
     dataBase->massFlux   = new real [ LENGTH_VECTOR    * dataBase->numberOfCells ];
 
-    dataBase->diffusivity  = new realAccumulator [ dataBase->numberOfCells ];
+    dataBase->diffusivity  = new real [ dataBase->numberOfCells ];
 
     dataBase->crashCellIndex = new int;
 
@@ -154,22 +176,6 @@ void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
 
     //////////////////////////////////////////////////////////////////////////
 
-    for( uint idx = 0; idx < dataBase->numberOfCoarseGhostCells; idx++ ){
-        for( uint connectivityIdx = 0; connectivityIdx < LENGTH_FINE_TO_COARSE; connectivityIdx++ ){
-            dataBase->fineToCoarse[ FINE_TO_COARSE( idx, connectivityIdx, dataBase->numberOfCoarseGhostCells ) ]
-                = adapter.fineToCoarse[idx][connectivityIdx];
-        }
-    }
-
-    for( uint idx = 0; idx < dataBase->numberOfFineGhostCells; idx++ ){
-        for( uint connectivityIdx = 0; connectivityIdx < LENGTH_COARSE_TO_FINE; connectivityIdx++ ){
-            dataBase->coarseToFine[ COARSE_TO_FINE( idx, connectivityIdx, dataBase->numberOfFineGhostCells ) ]
-                = adapter.coarseToFine[idx][connectivityIdx];
-        }
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-
     memcpy ( dataBase->cellProperties, dataBase->cellPropertiesHost.data(), sizeof(CellProperties) * dataBase->numberOfCells );
 
     //////////////////////////////////////////////////////////////////////////
@@ -194,14 +200,14 @@ int DataBaseAllocatorCPU::getCrashCellIndex(SPtr<DataBase> dataBase)
     return *dataBase->crashCellIndex;
 }
 
-void DataBaseAllocatorCPU::freeMemory(GksGpu::BoundaryCondition& boundaryCondition)
+void DataBaseAllocatorCPU::freeMemory(BoundaryCondition& boundaryCondition)
 {
     delete [] boundaryCondition.ghostCells ;
     delete [] boundaryCondition.domainCells;
     delete [] boundaryCondition.secondCells;
 }
 
-void DataBaseAllocatorCPU::allocateMemory(SPtr<GksGpu::BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells)
+void DataBaseAllocatorCPU::allocateMemory(SPtr<BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells)
 {
     boundaryCondition->ghostCells  = new uint[ ghostCells.size()  ];
     boundaryCondition->domainCells = new uint[ domainCells.size() ];
@@ -212,51 +218,7 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<GksGpu::BoundaryCondition> bounda
     memcpy ( boundaryCondition->secondCells, secondCells.data(), sizeof(uint) * secondCells.size() );
 }
 
-void DataBaseAllocatorCPU::freeMemory(Communicator & communicator)
-{
-    delete [] communicator.sendIndices;
-    delete [] communicator.recvIndices;
-    
-    delete [] communicator.sendBuffer;
-    delete [] communicator.recvBuffer;
-    
-    delete [] communicator.sendBufferHost;
-    delete [] communicator.recvBufferHost;
-}
-
-void DataBaseAllocatorCPU::allocateMemory(Communicator & communicator, std::vector<uint>& sendIndices, std::vector<uint>& recvIndices)
-{
-    communicator.sendIndices     = new uint[communicator.numberOfSendNodes];
-    communicator.recvIndices     = new uint[communicator.numberOfRecvNodes];
-
-    communicator.sendBuffer      = new real[LENGTH_CELL_DATA * communicator.numberOfSendNodes];
-    communicator.recvBuffer      = new real[LENGTH_CELL_DATA * communicator.numberOfRecvNodes];
-
-    communicator.sendBufferHost  = new real[LENGTH_CELL_DATA * communicator.numberOfSendNodes];
-    communicator.recvBufferHost  = new real[LENGTH_CELL_DATA * communicator.numberOfRecvNodes];
-
-    memcpy ( communicator.sendIndices , sendIndices.data() , sizeof(uint) * communicator.numberOfSendNodes );
-    memcpy ( communicator.recvIndices , recvIndices.data() , sizeof(uint) * communicator.numberOfRecvNodes );
-}
-
-void DataBaseAllocatorCPU::copyDataDeviceToDevice(SPtr<Communicator> dst, SPtr<Communicator> src)
-{
-    memcpy( dst->recvBuffer, src->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * src->numberOfSendNodes );
-}
-
-void DataBaseAllocatorCPU::copyBuffersDeviceToHost(SPtr<Communicator> communicator)
-{
-    memcpy( communicator->sendBufferHost, communicator->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes );
-}
-
-void DataBaseAllocatorCPU::copyBuffersHostToDevice(SPtr<Communicator> communicator)
-{
-    memcpy( communicator->recvBuffer, communicator->recvBufferHost, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes );
-}
-
 std::string DataBaseAllocatorCPU::getDeviceType()
 {
     return std::string("CPU");
 }
-
-} // namespace GksGpu

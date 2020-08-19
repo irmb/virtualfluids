@@ -1,18 +1,11 @@
-setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR}) 
 
-set(linkDirectories "")
-set(libsToLink GridGenerator Core)
 
-set(includeDirectories ${CMAKE_SOURCE_DIR}/src/${targetName}
-                       ${CMAKE_SOURCE_DIR}/src
-                       ${CMAKE_SOURCE_DIR}/src/GridGenerator
-                       ${CMAKE_SOURCE_DIR}/src/Core )
+vf_add_library(BUILDTYPE shared DEPENDS basics GridGenerator)
 
-#glob files and save in MY_SRCS
-include(CMakePackage.cmake)
 
-buildLib(${targetName} "${MY_SRCS}" "${linkDirectories}" "${libsToLink}" "${includeDirectories}")
-groupTarget(${targetName} ${gksLibraryFolder})
+vf_get_library_name(library_name)
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/basics")
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/gpu")
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/gpu/GridGenerator")
+target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/basics/Core")
 
-#Specify the linking to 3rdParty libs
-include(3rdPartyLinking.cmake)
