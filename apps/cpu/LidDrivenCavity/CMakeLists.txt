@@ -1,27 +1,8 @@
-#CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-########################################################
-## C++ PROJECT                                       ###
-########################################################
-#PROJECT(LidDrivenCavity)
 
-INCLUDE(${APPS_ROOT}/IncludsList.cmake) 
+PROJECT(LidDrivenCavity)
 
-#################################################################
-###   LOCAL FILES                                             ###
-#################################################################
-#FILE(GLOB SPECIFIC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.h
- #                        ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
- #                        ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp  )
- 
-#SET(ALL_SOURCES ${ALL_SOURCES} ${SPECIFIC_FILES})
-#SOURCE_GROUP(src FILES ${SPECIFIC_FILES})
-  
-#SET(CAB_ADDITIONAL_LINK_LIBRARIES VirtualFluids)
+INCLUDE(${APPS_ROOT_CPU}/IncludsList.cmake)
 
-#################################################################
-###   CREATE PROJECT                                          ###
-#################################################################
-#CREATE_CAB_PROJECT(LidDrivenCavity BINARY)
 
-vf_add_library(BUILDTYPE binary DEPENDS VirtualFluidsCore VirtualFluidsBasic FILES LidDrivenCavity.cpp)
+vf_add_library(BUILDTYPE binary DEPENDS VirtualFluidsCore basics FILES LidDrivenCavity.cpp)

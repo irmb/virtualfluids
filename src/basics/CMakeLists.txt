@@ -1,8 +1,8 @@
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR})
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d/Creator)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d/KdTree)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR}/geometry3d)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR}/geometry3d/Creator)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR}/geometry3d/KdTree)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR}/basics/container)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR}/basics/memory)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR}/basics/objects)
@@ -25,9 +25,9 @@ ENDIF(MSVC)
 
 vf_add_library(BUILDTYPE static
                FOLDER
-        ${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d
-        ${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d/creator
-        ${CMAKE_CURRENT_LIST_DIR}/numerics/geometry3d/KdTree
+        ${CMAKE_CURRENT_LIST_DIR}/geometry3d
+        ${CMAKE_CURRENT_LIST_DIR}/geometry3d/creator
+        ${CMAKE_CURRENT_LIST_DIR}/geometry3d/KdTree
         ${CMAKE_CURRENT_LIST_DIR}/basics/container
         ${CMAKE_CURRENT_LIST_DIR}/basics/memory
         ${CMAKE_CURRENT_LIST_DIR}/basics/objects
