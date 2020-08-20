@@ -1,0 +1,11 @@
+INCLUDE_DIRECTORIES(${APPS_ROOT_CPU})
+INCLUDE(${CMAKE_SOURCE_DIR}/src/cpu/VirtualFluidsCore/IncludsList.cmake)
+
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/basics)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/basics/geometry3d)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/basics/basics/container)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/basics/basics/memory)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/basics/basics/objects)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/basics/basics/transmiitter)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/basics/basics/utilities)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/basics/basics/writer)

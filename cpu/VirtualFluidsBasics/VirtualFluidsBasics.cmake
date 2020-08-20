@@ -1,6 +1,0 @@
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsBasics/geometry3d/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsBasics/basics/objects/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsBasics/basics/utilities/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsBasics/basics/container/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsBasics/basics/writer/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsBasics/IncludsList.cmake)
