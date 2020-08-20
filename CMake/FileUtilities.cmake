@@ -42,7 +42,7 @@ macro(includeFiles targetName file_paths)
 
 		collectFilesFrom(${file})
 		if (package_dir)
-		   setSourceGroupForFilesIn(${package_dir} ${targetName})
+		   setSourceGroupForFilesIn(${file} ${package_dir} ${targetName})
 		endif()
 
 	endforeach()
@@ -72,14 +72,14 @@ endmacro()
 
 
 
-macro(setSourceGroupForFilesIn package_dir targetName)
+macro(setSourceGroupForFilesIn file package_dir targetName)
 #input: target_name PACKAGE_SRCS
 	buildSourceGroup(${targetName} ${package_dir})
 
 	if(isAllTestSuite)
-		source_group(${targetName}\\${SOURCE_GROUP} FILES ${MY_SRCS})
+		source_group(${targetName}\\${SOURCE_GROUP} FILES ${file})
 	else()
-		source_group(${SOURCE_GROUP} FILES ${MY_SRCS})
+		source_group(${SOURCE_GROUP} FILES ${file})
 	endif()
 #output: -
 endmacro(setSourceGroupForFilesIn)

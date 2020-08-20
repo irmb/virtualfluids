@@ -48,10 +48,10 @@ add_subdirectory(src/basics)
 #################################################################################
 #  VIRTUAL FLUIDS CPU / GPU
 #################################################################################
-#if (BUILD_VF_CPU)
+if (BUILD_VF_CPU)
     include (cpu.cmake)
-#endif()
-#if(BUILD_VF_GPU)
+endif()
+if(BUILD_VF_GPU)
     include (gpu.cmake)
-#endif()
+endif()
 
