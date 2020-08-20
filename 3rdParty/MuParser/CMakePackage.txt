@@ -25,7 +25,7 @@ IF( ${outOption} )
      ADD_COMPILER_FLAGS_TO_PROJECT(${CAB_COMPILER} "muParserLib" "CXX" "STATIC")
 
    ELSE() #not as lib
-      SET( CURRENT_DIR_TMP ${CURRENT_DIR} ) #wird im nächsten befehl geaendert
+      SET( CURRENT_DIR_TMP ${CURRENT_DIR} ) #wird im naechsten befehl geaendert
       INCLUDE( ${CURRENT_DIR_TMP}/include/CMakePackage.txt)
       INCLUDE( ${CURRENT_DIR_TMP}/src/CMakePackage.txt)
    ENDIF()

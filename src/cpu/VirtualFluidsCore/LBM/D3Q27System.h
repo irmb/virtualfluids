@@ -10,7 +10,7 @@
 //        \    \|    |  |  |         __          __     __     __     ______      _______    
 //         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
 //          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
 //            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can 
@@ -28,7 +28,7 @@
 //
 //! \file D3Q27System.h
 //! \ingroup LBM
-//! \author Konstantin Kutscher, Sebastian Geller, Sören Freudiger
+//! \author Konstantin Kutscher, Sebastian Geller, Soeren Freudiger
 //=======================================================================================
 
 #ifndef D3Q27SYSTEM_H

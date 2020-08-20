@@ -148,7 +148,7 @@
 //public:
 //   Matrix4DWrapper() : valIndex(-1), matrix(NULL), minX1(-1), minX2(-1), minX3(-1), maxX1(-1), maxX2(-1), maxX3(-1)
 //   {
-//      //wird benötigt, damit MarchingCubes generell eine membervariabel erstellen kann
+//      //wird benoetigt, damit MarchingCubes generell eine membervariabel erstellen kann
 //   }
 //   /*==========================================================*/
 //   //fuer beliebige matrizen
@@ -168,7 +168,7 @@
 //   }
 //   /*==========================================================*/
 //   //wenn man z.B. matrixX1 von[0..10] geht und man nur den bereich 1..9 fuer MC
-//   //verwenden möchte -> minX1=1 und maxX2=2
+//   //verwenden moechte -> minX1=1 und maxX2=2
 //   Matrix4DWrapper( Matrix4D* matrix, const int& valIndex, const int& minX1, const int& minX2, const int& minX3,
 //                                                           const int& maxX1, const int& maxX2, const int& maxX3)
 //       : valIndex(valIndex), matrix(matrix), minX1(minX1), minX2(minX2), minX3(minX3), maxX1(maxX1), maxX2(maxX2), maxX3(maxX3)
@@ -238,7 +238,7 @@
 //public:
 //   Matrix3DWrapper() : matrix(NULL), minX1(-1), minX2(-1), minX3(-1), maxX1(-1), maxX2(-1), maxX3(-1)
 //   {
-//      //wird benötigt, damit MarchingCubes generell eine membervariabel erstellen kann
+//      //wird benoetigt, damit MarchingCubes generell eine membervariabel erstellen kann
 //   }
 //   /*==========================================================*/
 //   Matrix3DWrapper( Matrix3D* matrix)

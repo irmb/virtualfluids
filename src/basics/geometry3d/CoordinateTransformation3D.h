@@ -10,7 +10,7 @@
 //        \    \|    |  |  |         __          __     __     __     ______      _______    
 //         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
 //          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
 //            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can 
@@ -83,7 +83,7 @@ public:
    double getRotationX2Angle()     const { return this->beta;  }
    double getRotationX3Angle()     const { return this->gamma; }	 //Rotation
 
-   //Achtung die Winkel passen nicht überein -siehe setTransformationValues 
+   //Achtung die Winkel passen nicht ueberein -siehe setTransformationValues
    void setRotationX1Angle(double alpha) { this->setTransformationValues(this->Tx1, this->Tx2, this->Tx3, this->Sx1, this->Sx2, this->Sx3, alpha, this->beta, this->gamma); }
    void setRotationX2Angle(double beta ) { this->setTransformationValues(this->Tx1, this->Tx2, this->Tx3, this->Sx1, this->Sx2, this->Sx3, this->alpha, beta, this->gamma); }
    void setRotationX3Angle(double gamma) { this->setTransformationValues(this->Tx1, this->Tx2, this->Tx3, this->Sx1, this->Sx2, this->Sx3, this->alpha, this->beta, gamma); }

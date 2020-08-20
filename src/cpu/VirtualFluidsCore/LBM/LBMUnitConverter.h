@@ -10,7 +10,7 @@
 //        \    \|    |  |  |         __          __     __     __     ______      _______    
 //         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
 //          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
 //            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can 
@@ -28,7 +28,7 @@
 //
 //! \file LBMUnitConverter.h
 //! \ingroup LBM
-//! \author Sören Freudiger
+//! \author Soeren Freudiger
 //=======================================================================================
 
 #ifndef LBMUNITCONVERTER_H

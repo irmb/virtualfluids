@@ -10,7 +10,7 @@
 //        \    \|    |  |  |         __          __     __     __     ______      _______    
 //         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
 //          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
 //            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can 
@@ -137,7 +137,7 @@ public:
       this->resize(uniformDimensionSize,uniformDimensionSize);
    }
    /*=======================================================================*/
-   //übernimmt vector als daten vector! (erstellt KEINE kopie!!!, vec ist anschließend leer, da swap verwendet wird)
+   //ssbernimmt vector als daten vector! (erstellt KEINE kopie!!!, vec ist anschlieueend leer, da swap verwendet wird)
    CbArray2D(std::vector<value_type>& vec, const size_type& nx1,const size_type& nx2)
    {
       assert( (nx1*nx2)==vec.size() );
@@ -199,7 +199,7 @@ public:
       this->data.resize(rhs.data.size());
 
       //Sourcedaten kopieren (!! koennte anderen Indexer besitzen!!! -> operator() benutzen)
-      //ACHTUNG: für diese Konvertierung muss bei Klassen der demenstrechende operator
+      //ACHTUNG: fuer diese Konvertierung muss bei Klassen der demenstrechende operator
       //         implementiert sein, e.g.: class value_type2 {public: inline operator value_type2() const { return value_type2(); }
       for(int x1=0; x1<this->nx1; x1++)
          for(int x2=0; x2<this->nx2; x2++)

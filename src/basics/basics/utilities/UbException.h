@@ -10,7 +10,7 @@
 //        \    \|    |  |  |         __          __     __     __     ______      _______    
 //         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
 //          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
 //            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can 
@@ -116,7 +116,7 @@ public:
    virtual const char* what() const throw()
    {
       exceptionString = this->toString();
-      return exceptionString.c_str();  //ansonsten ist das Verhalten anschließend undefiniert!
+      return exceptionString.c_str();  //ansonsten ist das Verhalten anschliessend undefiniert!
    }
    /*==========================================================*/
    virtual void addInfo(const std::string& err_str)	 

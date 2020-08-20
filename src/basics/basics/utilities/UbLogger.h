@@ -10,7 +10,7 @@
 //        \    \|    |  |  |         __          __     __     __     ______      _______    
 //         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
 //          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
 //            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can 
@@ -116,7 +116,7 @@ public:
     virtual ~UbLogger();
     std::ostringstream& get(const LogLevel& level = logINFO);
 public:
-   //static, weil man so später die ObjErstellunge ersparen kann,
+   //static, weil man so spaeter die ObjErstellunge ersparen kann,
    //falls level kleiner als Level
    static LogLevel&   reportingLevel();
     
@@ -338,7 +338,7 @@ class UbLog : public UbLogger< Output2Stream >
       }                                                                                            \
    }                                                                                          
 //////////////////////////////////////////////////////////////////////////
-//makro3, falls auch bildschirmausgabe erwünscht
+//makro3, falls auch bildschirmausgabe erwuenscht
 //   -> es wird sowohl ins logfile als auch auf den "stream" geschrieben
 //      wenn reporting level und level passen :D
 //example1: UBLOG2ML(logINFO, std::cout,  "line1"<<endl<<"line2"<<endl<<"line3" ) 

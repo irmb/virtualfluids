@@ -10,7 +10,7 @@
 //        \    \|    |  |  |         __          __     __     __     ______      _______    
 //         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
 //          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
 //            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can 
@@ -550,7 +550,7 @@ namespace UbSystem
 //Anwendung z.B. zur Ueberpruefung von Funktionalitaeten, wie z.B. bei UbMath::getNegativeInfinity<double>();
 //
 //Grund fuer macro ist einfach, dass es besser anzuwenden ist in der praxis!
-//ansonsten w�rde es so aussehen:
+//ansonsten wuerde es so aussehen:
 //     UbSystem::ub_static_assert< aaa == 1 > test();
 //    da ist  UB_STATIC_ASSERT(aaa == 1); schoener
 //

@@ -10,7 +10,7 @@
 //        \    \|    |  |  |         __          __     __     __     ______      _______    
 //         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
 //          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
 //            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can 
@@ -145,7 +145,7 @@ public:
       this->resize(uniformDimensionSize,uniformDimensionSize,uniformDimensionSize,uniformDimensionSize);
    }
    /*=======================================================================*/
-   //ubernimmt vector als daten vector! (erstellt KEINE kopie!!!, vec ist anschlieﬂend leer, da swap verwendet wird)
+   //ubernimmt vector als daten vector! (erstellt KEINE kopie!!!, vec ist anschliessend leer, da swap verwendet wird)
    CbArray4D(std::vector<value_type>& vec, const size_type& nx1,const size_type& nx2, const size_type& nx3, const size_type& nx4)
    {
       assert( (nx1*nx2*nx3*nx4)==vec.size() );

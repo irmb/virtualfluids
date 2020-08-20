@@ -10,7 +10,7 @@
 //        \    \|    |  |  |         __          __     __     __     ______      _______    
 //         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
 //          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
 //            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can 
@@ -111,7 +111,7 @@ inline bool operator!=( const T& lhs, const UbNegInfinity& rhs )
 //  UbInfinity
 //
 //////////////////////////////////////////////////////////////////////////
-class UbInfinity : public UbNegInfinity //um später -UbInfinity leichter zu implementieren!!!
+class UbInfinity : public UbNegInfinity //um spaeter -UbInfinity leichter zu implementieren!!!
 {
  public:
    inline UbInfinity() 

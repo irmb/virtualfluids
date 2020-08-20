@@ -10,7 +10,7 @@
 //        \    \|    |  |  |         __          __     __     __     ______      _______    
 //         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
 //          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
 //            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can 
@@ -68,7 +68,7 @@ struct UbEqualTrait< T, T >
    typedef T Low;
 };
 
-//spezialisierung für diverse Typen-Tuples
+//spezialisierung fuer diverse Typen-Tuples
 template<> struct UbEqualTrait< short, int >          { typedef int         High; typedef short  Low; };
 template<> struct UbEqualTrait< short, long >         { typedef long        High; typedef short  Low; };
 template<> struct UbEqualTrait< short, float >        { typedef float       High; typedef short  Low; };
