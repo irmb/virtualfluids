@@ -1,7 +1,7 @@
 
 
 SET(USE_INTEL OFF CACHE BOOL "include Intel compiler support")
-SET(USE_GCC ON CACHE BOOL "include gcc compiler support")
+SET(USE_GCC OFF CACHE BOOL "include gcc compiler support")
 
 
 set (SOURCE_DIR ${PROJECT_SOURCE_DIR})

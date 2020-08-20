@@ -43,6 +43,9 @@ include("${CMAKE_PATH}/VirtualFluidsMacros.cmake")
 #################################################################################
 #  COMMON LIBRARIES
 #################################################################################
+if(MSVC)
+    ADD_DEFINITIONS ( "-DNOMINMAX" )                # Disable Min/Max-Macros
+endif()
 add_subdirectory(src/basics)
 
 #################################################################################

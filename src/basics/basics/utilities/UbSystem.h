@@ -72,7 +72,7 @@
    #define UBSYSTEM_CYGWIN
    #include <windows.h>
 #else
-   #include <sys/syscall.h>
+    //#include <sys/syscall.h> // TODO: Did not work on windows!
 #endif
 
 #if defined(min) || defined(max) //daruch kann man sich spaeter #undef min; #undef max erparen
@@ -134,7 +134,7 @@ namespace UbSystem
    /*==========================================================*/
    inline void sleepS(const unsigned int& sec)
    {
-      #if defined(UBSYSTEM_WINDOWS) && defined(UBSYSTEM_CYGWIN)
+      #if defined(UBSYSTEM_WINDOWS) || defined(UBSYSTEM_CYGWIN)
          ::Sleep( (sec==0) ? 1 : sec*1000 );  // +1 here causes a context switch if sleepS(0) is called
       #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX) && !defined(UBSYSTEM_CYGWIN)
          ::sleep(sec);
@@ -459,7 +459,7 @@ namespace UbSystem
       char Name[150];
       int i = 0;
 
-#if defined(UBSYSTEM_WINDOWS)  && defined(UBSYSTEM_CYGWIN)
+#if defined(UBSYSTEM_WINDOWS) || defined(UBSYSTEM_CYGWIN)
       TCHAR infoBuf[150];
       DWORD bufCharCount = 150;
       memset(Name, 0, 150);
