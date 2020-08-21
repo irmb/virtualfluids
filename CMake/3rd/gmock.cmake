@@ -1,15 +1,16 @@
+#################################################################################
+#  Links gmock to the current target.
+#  Note: gmock has to be build by the project itself (Located in 3rd).
+#################################################################################
 
-    if(BUILD_SHARED_LIBS)
-        add_definitions(-DGTEST_LINKED_AS_SHARED_LIBRARY)
-    endif()
+vf_get_library_test_name(library_name)
+target_link_libraries(${library_name} PRIVATE gtest gmock gmock_main)
 
-    vf_get_library_test_name(library_name)
-    target_include_directories(${library_name} PRIVATE ${GMOCK_ROOT}/googlemock/include)
-    target_include_directories(${library_name} PRIVATE ${GMOCK_ROOT}/googletest/include)
 
-    target_link_directories(${library_name} PRIVATE ${GMOCK_ROOT}/build/lib)
-
-    target_link_libraries(${library_name} PRIVATE gtest gmock gmock_main)
-
-    #add_compile_options (-std=c++11)
-    add_definitions("-std=c++11") #TODO: Really necessary?
+if(BUILD_SHARED_LIBS)
+    # add compile option according to
+    # https://github.com/google/googletest/blob/master/googletest/README.md#as-a-shared-library-dll
+    set_target_properties(${library_name}
+            PROPERTIES
+            COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+endif()
