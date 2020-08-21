@@ -17,11 +17,14 @@ endif()
 
 project(VirtualFluids CXX)
 
+set (CMAKE_CXX_STANDARD 11)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER ".cmake")
 set(libraryFolder "libs")
 set(testFolder    "tests")
 set(appFolder     "apps")
+set(thirdFolder   "3rd")
 
 #################################################################################
 #  OPTIONS
@@ -29,6 +32,8 @@ set(appFolder     "apps")
 option(BUILD_VF_CPU "Build VirtualFluids cpu variant" OFF)
 option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" ON)
+
+option(BUILD_SHARED_LIBS "" ON)
 
 #################################################################################
 #  MACROS
@@ -55,3 +60,9 @@ if(BUILD_VF_GPU)
     include (gpu.cmake)
 endif()
 
+#################################################################################
+#  3rd Party Libraries
+#################################################################################
+if(BUILD_VF_UNIT_TESTS)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/googletest)
+endif()
