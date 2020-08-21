@@ -10,6 +10,14 @@ endif (POLICY CMP0048)
 project(googletest-distribution)
 set(GOOGLETEST_VERSION 1.10.0)
 
+##########################################################
+# Enable MACOSX_RPATH support for gtest and gmock
+# to avoid CMP0042 warnings
+IF(APPLE)
+  SET(CMAKE_MACOSX_RPATH 1)
+ENDIF()
+##########################################################
+
 if (CMAKE_VERSION VERSION_LESS "3.1")
   add_definitions(-std=c++11)
 else()
@@ -27,7 +35,7 @@ include(GNUInstallDirs)
 
 #Note that googlemock target already builds googletest
 #option(BUILD_GMOCK "Builds the googlemock subproject" ON)
-option(INSTALL_GTEST "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" OFF)
+#option(INSTALL_GTEST "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" OFF)
 
 #if(BUILD_GMOCK)
   add_subdirectory( googlemock )
