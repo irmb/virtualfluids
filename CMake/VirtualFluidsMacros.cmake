@@ -106,6 +106,14 @@ function(vf_add_library)
         MESSAGE(FATAL_ERROR "build_type=${ARG_BUILDTYPE} doesn't match BINARY, SHARED or STATIC")
     ENDIF()
 
+    # Set the output directory for build artifacts
+    set_target_properties(${library_name}
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+            PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
     #################################################################
     ###   ADDITIONAL LINK LIBRARIES                               ###
     #################################################################
@@ -192,6 +200,14 @@ function(vf_add_tests)
     # add the target
     add_executable(${library_test_name} ${MY_SRCS})
     groupTarget (${library_test_name} ${testFolder})
+
+    # Set the output directory for build artifacts
+    set_target_properties(${library_test_name}
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+            PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
     # link tested library
     target_link_libraries(${library_test_name} PRIVATE ${folder_name})
