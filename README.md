@@ -4,7 +4,7 @@ VirtualFluids (VF) is a research code developed at the Institute for Computation
 
 ## Getting Start
 ### Suported Platforms
-VirtualFluids has been used n a variety of platforms:
+VirtualFluids has been used on a variety of platforms:
  - Linux
  - Mac OS X
  - Windows
@@ -68,4 +68,4 @@ If you notice any problems on your platform, please report an gitea issue.
 
 
 ## Authors
-A list of the developers of VirtualFludis is available [here](AUTHORS.md).
+A list of the developers of VirtualFluids is available [here](AUTHORS.md).
