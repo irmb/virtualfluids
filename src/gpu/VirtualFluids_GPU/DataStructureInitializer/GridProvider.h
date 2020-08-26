@@ -37,6 +37,7 @@
 
 #include <VirtualFluidsDefinitions.h>
 #include "Core/PointerDefinitions.h"
+#include "VirtualFluids_GPU_export.h"
 
 //! \brief Class forwarding for CudaMemoryManager, GridBuilder and Parameter
 class Parameter;

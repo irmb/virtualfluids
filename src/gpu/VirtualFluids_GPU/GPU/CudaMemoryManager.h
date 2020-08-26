@@ -35,6 +35,7 @@
 
 #include <memory>
 #include "Core/PointerDefinitions.h"
+#include "VirtualFluids_GPU_export.h"
 
 //! \brief Class forwarding for Parameter
 class Parameter;
