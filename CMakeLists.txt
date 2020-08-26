@@ -25,7 +25,7 @@ set(thirdFolder   "3rd")
 #################################################################################
 #  OPTIONS
 #################################################################################
-option(BUILD_VF_CPU "Build VirtualFluids cpu variant" ON)
+option(BUILD_VF_CPU "Build VirtualFluids cpu variant" OFF)
 option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
 
