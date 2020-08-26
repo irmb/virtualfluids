@@ -35,6 +35,7 @@
 
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
+#include "VirtualFluids_GPU_export.h"
 
 //! \brief Class forwarding for CudaMemoryManager and Parameter
 class Parameter;

@@ -12,7 +12,7 @@ set(includeDirectories "${CMAKE_SOURCE_DIR}/src/gpu"
 PROJECT(LidDrivenCavity)
 
 
-vf_add_library(BUILDTYPE binary DEPENDS VirtualFluids_GPU basics GridGenerator GksMeshAdapter GksGpu FILES LidDrivenCavity.cpp)
+vf_add_library(BUILDTYPE binary DEPENDS basics GridGenerator VirtualFluids_GPU GksMeshAdapter GksGpu FILES LidDrivenCavity.cpp)
 
 vf_get_library_name(library_name)
 target_include_directories(${library_name} PRIVATE ${includeDirectories} )

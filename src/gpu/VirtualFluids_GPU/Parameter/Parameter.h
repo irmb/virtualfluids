@@ -36,6 +36,7 @@
 #include "LBM/LB.h"
 #include "Core/PointerDefinitions.h"
 #include "VirtualFluidsDefinitions.h"
+#include "VirtualFluids_GPU_export.h"
 
 //! \struct ParameterStruct
 //! \brief struct holds and manages the LB-parameter of the simulation

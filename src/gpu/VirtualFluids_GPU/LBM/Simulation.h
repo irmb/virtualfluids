@@ -36,6 +36,7 @@
 #include <Core/PointerDefinitions.h>
 #include <VirtualFluidsDefinitions.h>
 #include "Output/LogWriter.hpp"
+#include "VirtualFluids_GPU_export.h"
 
 //! \brief Class forwarding for CudaMemoryManager, Parameter, GridProvider and DataWriter
 class CudaMemoryManager;
