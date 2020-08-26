@@ -7,6 +7,8 @@
 #include "MPIIODataStructures.h"
 #include "UbLogger.h"
 #include "MemoryUtil.h"
+#include "UbFileOutputASCII.h"
+#include "UbFileInputASCII.h"
 
 using namespace MPIIODataStructures;
 
@@ -45,12 +47,42 @@ MPIIOCoProcessor::MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const
 
    MPI_Type_create_struct(2, blocksBlock, offsetsBlock, typesBlock, &block3dType);
    MPI_Type_commit(&block3dType);
+
+   //---------------------------------------
+
+   MPI_Type_contiguous(7, MPI_INT, &dataSetParamType);
+   MPI_Type_commit(&dataSetParamType);
+
+   //-----------------------------------------------------------------------
+
+   MPI_Datatype typesBC[3] = { MPI_LONG_LONG_INT, MPI_FLOAT, MPI_CHAR };
+   int blocksBC[3] = { 5, 38, 1 };
+   MPI_Aint offsetsBC[3], lbBC, extentBC;
+
+   offsetsBC[0] = 0;
+   MPI_Type_get_extent(MPI_LONG_LONG_INT, &lbBC, &extentBC);
+   offsetsBC[1] = blocksBC[0] * extentBC;
+
+   MPI_Type_get_extent(MPI_FLOAT, &lbBC, &extentBC);
+   offsetsBC[2] = offsetsBC[1] + blocksBC[1] * extentBC;
+
+   MPI_Type_create_struct(3, blocksBC, offsetsBC, typesBC, &boundCondType);
+   MPI_Type_commit(&boundCondType);
+
+   //---------------------------------------
+
+   MPI_Type_contiguous(6, MPI_CHAR, &arrayPresenceType);
+   MPI_Type_commit(&arrayPresenceType);
+
 }
 
 MPIIOCoProcessor::~MPIIOCoProcessor()
 {
    MPI_Type_free(&gridParamType);
    MPI_Type_free(&block3dType);
+   MPI_Type_free(&dataSetParamType);
+   MPI_Type_free(&boundCondType);
+   MPI_Type_free(&arrayPresenceType);
 }
 
 void MPIIOCoProcessor::writeBlocks(int step)
@@ -397,7 +429,7 @@ void MPIIOCoProcessor::clearAllFiles(int step)
    MPI_File_set_size(file_handler, new_size);
    MPI_File_close(&file_handler);
 
-   std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC1.bin";
+   /*std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC1.bin";
    int rc10 = MPI_File_open(MPI_COMM_WORLD, filename10.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
    if (rc10 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename10);
    MPI_File_set_size(file_handler, new_size);
@@ -407,5 +439,22 @@ void MPIIOCoProcessor::clearAllFiles(int step)
    int rc11 = MPI_File_open(MPI_COMM_WORLD, filename11.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
    if (rc11 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename11);
    MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
+   MPI_File_close(&file_handler);*/
 }
+
+void MPIIOCoProcessor::writeCpTimeStep(int step)
+{
+   if (comm->isRoot())
+   {
+      UbFileOutputASCII f(path + "/mpi_io_cp/cp.txt");
+      f.writeInteger(step);
+   }
+}
+//////////////////////////////////////////////////////////////////////////
+int MPIIOCoProcessor::readCpTimeStep()
+{
+   UbFileInputASCII f(path + "/mpi_io_cp/cp.txt");
+   int step = f.readInteger();
+   return step;
+}
+//////////////////////////////////////////////////////////////////////////

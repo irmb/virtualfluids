@@ -9,7 +9,6 @@
 #include "CoordinateTransformation3D.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
-#include "Grid3DSystem.h"
 #include "BCArray3D.h"
 #include "Communicator.h"
 #include "WbWriter.h"
@@ -29,11 +28,6 @@ MPIIOMigrationCoProcessor::MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbS
    memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));
 
    //-------------------------   define MPI types  ---------------------------------
-
-   MPI_Type_contiguous(7, MPI_INT, &dataSetParamType);
-   MPI_Type_commit(&dataSetParamType);
-
-   //-----------------------------------------------------------------------
 
    MPI_Datatype typesDataSet[3] = { MPI_DOUBLE, MPI_INT, MPI_CHAR };
    int blocksDataSet[3] = { 2, 2, 2 };
@@ -59,42 +53,19 @@ MPIIOMigrationCoProcessor::MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbS
    MPI_Type_contiguous(4, MPI_INT, &boundCondParamType);
    MPI_Type_commit(&boundCondParamType);
 
-   //-----------------------------------------------------------------------
-
-   MPI_Datatype typesBC[3] = { MPI_LONG_LONG_INT, MPI_FLOAT, MPI_CHAR };
-   int blocksBC[3] = { 5, 38, 1 };
-   MPI_Aint offsetsBC[3], lbBC, extentBC;
-
-   offsetsBC[0] = 0;
-   MPI_Type_get_extent(MPI_LONG_LONG_INT, &lbBC, &extentBC);
-   offsetsBC[1] = blocksBC[0] * extentBC;
-
-   MPI_Type_get_extent(MPI_FLOAT, &lbBC, &extentBC);
-   offsetsBC[2] = offsetsBC[1] + blocksBC[1] * extentBC;
-
-   MPI_Type_create_struct(3, blocksBC, offsetsBC, typesBC, &boundCondType);
-   MPI_Type_commit(&boundCondType);
-
    //---------------------------------------
 
    MPI_Type_contiguous(3, MPI_INT, &boundCondTypeAdd);
    MPI_Type_commit(&boundCondTypeAdd);
-   //---------------------------------------
-
-   MPI_Type_contiguous(6, MPI_CHAR, &arrayPresenceType);
-   MPI_Type_commit(&arrayPresenceType);
 
 }
 //////////////////////////////////////////////////////////////////////////
 MPIIOMigrationCoProcessor::~MPIIOMigrationCoProcessor()
 {
-   MPI_Type_free(&dataSetParamType);
    MPI_Type_free(&dataSetType);
    MPI_Type_free(&dataSetSmallType);
    MPI_Type_free(&boundCondParamType);
-   MPI_Type_free(&boundCondType);
    MPI_Type_free(&boundCondTypeAdd);
-   MPI_Type_free(&arrayPresenceType);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -115,23 +86,24 @@ void MPIIOMigrationCoProcessor::process(double step)
       if (comm->isRoot()) UBLOG(logINFO, "Save check point - end");
    }
 }
-//////////////////////////////////////////////////////////////////////////
-void MPIIOMigrationCoProcessor::writeCpTimeStep(int step)
+
+void MPIIOMigrationCoProcessor::clearAllFiles(int step)
 {
-   if (comm->isRoot())
-   {
-      UbFileOutputASCII f(path + "/mpi_io_cp/cp.txt");
-      f.writeInteger(step);
-   }
+   MPI_File file_handler;
+   MPI_Info info = MPI_INFO_NULL;
+   MPI_Offset new_size = 0;
+
+   MPIIOCoProcessor::clearAllFiles(step);
+   
+   UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
+
+   std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
+   int rc10 = MPI_File_open(MPI_COMM_WORLD, filename10.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+   if (rc10 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename10);
+   MPI_File_set_size(file_handler, new_size);
+   MPI_File_close(&file_handler);
 }
-//////////////////////////////////////////////////////////////////////////
-int MPIIOMigrationCoProcessor::readCpTimeStep()
-{
-   UbFileInputASCII f(path + "/mpi_io_cp/cp.txt");
-   int step = f.readInteger();
-   return step;
-}
-//////////////////////////////////////////////////////////////////////////
+
 void MPIIOMigrationCoProcessor::writeBlocks(int step)
 {
    grid->renumberBlockIDs();
@@ -167,8 +139,13 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
 
    DSArraysPresence arrPresence;
    bool firstBlock = true;
-   int doubleCountInBlock = 0;
+   size_t doubleCountInBlock = 0;
    int ic = 0;
+   SPtr< D3Q27EsoTwist3DSplittedVector > D3Q27EsoTwist3DSplittedVectorPtr;
+   CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
+   CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
+   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions;
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
@@ -180,10 +157,10 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
          dataSetArray[ic].compressible = block->getKernel()->getCompressible();
          dataSetArray[ic].withForcing = block->getKernel()->getWithForcing();
 
-         SPtr< D3Q27EsoTwist3DSplittedVector > D3Q27EsoTwist3DSplittedVectorPtr = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
-         CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getLocalDistributions();
-         CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getNonLocalDistributions();
-         CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getZeroDistributions();
+         D3Q27EsoTwist3DSplittedVectorPtr = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
+         localDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getLocalDistributions();
+         nonLocalDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getNonLocalDistributions();
+         zeroDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getZeroDistributions();
 
          if (firstBlock)// && block->getKernel()) // when first (any) valid block...
          {
@@ -302,7 +279,7 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
    MPI_Offset write_offset;
    size_t sizeofOneDataSet = sizeof(DataSetMigration) + doubleCountInBlock * sizeof(double);
 
-   for (int nb = 0; nb < blocksCount; nb++)
+   for (size_t nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(3 * sizeof(dataSetParam) + dataSetArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetArray[nb], 1, dataSetType, MPI_STATUS_IGNORE);
@@ -311,7 +288,6 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -331,25 +307,272 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
    MPI_File_close(&file_handler1);
 
    if (arrPresence.isAverageDensityArrayPresent)
-      writeAverageDensityArray(step);
+      write4DArray(step, AverageDensity, std::string("/cpAverageDensityArray.bin"));
+   //writeAverageDensityArray(step);
 
    if (arrPresence.isAverageVelocityArrayPresent)
-      writeAverageVelocityArray(step);
+      write4DArray(step, AverageVelocity, std::string("/cpAverageVelocityArray.bin"));
+   //writeAverageVelocityArray(step);
 
    if (arrPresence.isAverageFluktuationsArrayPresent)
-      writeAverageFluktuationsArray(step);
+      write4DArray(step, AverageFluktuations, std::string("/cpAverageFluktuationsArray.bin"));
+   //writeAverageFluktuationsArray(step);
 
    if (arrPresence.isAverageTripleArrayPresent)
-      writeAverageTripleArray(step);
+      write4DArray(step, AverageTriple, std::string("/cpAverageTripleArray.bin"));
+   //writeAverageTripleArray(step);
 
    if (arrPresence.isShearStressValArrayPresent)
-      writeShearStressValArray(step);
+      write4DArray(step, ShearStressVal, std::string("/cpShearStressValArray.bin"));
+   //writeShearStressValArray(step);
 
    if (arrPresence.isRelaxationFactorPresent)
-      writeRelaxationFactor(step);
-
+      write3DArray(step, RelaxationFactor, std::string("/cpRelaxationFactor.bin"));
 }
 
+void MPIIOMigrationCoProcessor::write4DArray(int step, Arrays arrayType, std::string fname)
+{
+   int rank, size;
+   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+   MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+   int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
+
+   std::vector<SPtr<Block3D>> blocksVector[25];
+   int minInitLevel = this->grid->getCoarsestInitializedLevel();
+   int maxInitLevel = this->grid->getFinestInitializedLevel();
+   for (int level = minInitLevel; level <= maxInitLevel; level++)
+   {
+      grid->getBlocks(level, rank, blocksVector[level]);
+      blocksCount += static_cast<int>(blocksVector[level].size());
+   }
+
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
+   std::vector<double> doubleValuesArray; // double-values of the AverageDensityArray in all blocks 
+   dataSetParam dataSetParamStr;
+
+   if (comm->isRoot())
+   {
+      UBLOG(logINFO, "MPIIOMigrationCoProcessor::writeAverageDensityArray start collect data rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
+
+   bool firstBlock = true;
+   size_t doubleCountInBlock = 0;
+   int ic = 0;
+   SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > ___Array;
+
+   for (int level = minInitLevel; level <= maxInitLevel; level++)
+   {
+      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
+      {
+         dataSetSmallArray[ic].globalID = block->getGlobalID();     // id of the block needed to find it while regenerating the grid
+
+         switch (arrayType) {
+         case AverageDensity:
+            ___Array = block->getKernel()->getDataSet()->getAverageDensity();
+            break;
+         case AverageVelocity:
+            ___Array = block->getKernel()->getDataSet()->getAverageVelocity();
+            break;
+         case AverageFluktuations:
+            ___Array = block->getKernel()->getDataSet()->getAverageFluctuations();
+            break;
+         case AverageTriple:
+            ___Array = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
+            break;
+         case ShearStressVal:
+            ___Array = block->getKernel()->getDataSet()->getShearStressValues();
+            break;
+         default:
+            UB_THROW(UbException(UB_EXARGS, "MPIIOMigrationCoProcessor::write4DArray : 4D array type does not exist!"));
+            break;
+         }
+
+         if (firstBlock) // when first (any) valid block...
+         {
+            dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
+            dataSetParamStr.nx[0] = static_cast<int>(___Array->getNX1());
+            dataSetParamStr.nx[1] = static_cast<int>(___Array->getNX2());
+            dataSetParamStr.nx[2] = static_cast<int>(___Array->getNX3());
+            dataSetParamStr.nx[3] = static_cast<int>(___Array->getNX4());
+            doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+
+            firstBlock = false;
+         }
+
+         if (___Array && (dataSetParamStr.nx[0] > 0) && (dataSetParamStr.nx[1] > 0) && (dataSetParamStr.nx[2] > 0) && (dataSetParamStr.nx[3] > 0))
+            doubleValuesArray.insert(doubleValuesArray.end(), ___Array->getDataVector().begin(), ___Array->getDataVector().end());
+
+         ic++;
+      }
+   }
+
+   // register new MPI-types depending on the block-specific information
+   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_commit(&dataSetDoubleType);
+
+   if (comm->isRoot())
+   {
+      UBLOG(logINFO, "MPIIOMigrationCoProcessor::write4DArray start MPI IO rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
+
+   double start, finish;
+   if (comm->isRoot()) start = MPI_Wtime();
+
+   MPI_Info info = MPI_INFO_NULL;
+
+   MPI_File file_handler;
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
+
+   // each process writes common parameters of a dataSet
+   MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
+
+   MPI_Offset write_offset;
+   size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
+
+   for (size_t nb = 0; nb < blocksCount; nb++)
+   {
+      write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
+      MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+   }
+
+   MPI_File_sync(file_handler);
+   MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
+
+   if (comm->isRoot())
+   {
+      finish = MPI_Wtime();
+      UBLOG(logINFO, "MPIIOMigrationCoProcessor::write4DArray time: " << finish - start << " s");
+   }
+
+   delete[] dataSetSmallArray;
+}
+
+void MPIIOMigrationCoProcessor::write3DArray(int step, Arrays arrayType, std::string fname)
+{
+   int rank, size;
+   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+   MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+   int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
+
+   std::vector<SPtr<Block3D>> blocksVector[25];
+   int minInitLevel = this->grid->getCoarsestInitializedLevel();
+   int maxInitLevel = this->grid->getFinestInitializedLevel();
+   for (int level = minInitLevel; level <= maxInitLevel; level++)
+   {
+      grid->getBlocks(level, rank, blocksVector[level]);
+      blocksCount += static_cast<int>(blocksVector[level].size());
+   }
+
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
+   std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
+   dataSetParam dataSetParamStr;
+
+   if (comm->isRoot())
+   {
+      UBLOG(logINFO, "MPIIOMigrationCoProcessor::write3DArray start collect data rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
+
+   bool firstBlock = true;
+   size_t doubleCountInBlock = 0;
+   int ic = 0;
+   SPtr< CbArray3D<LBMReal, IndexerX3X2X1> > ___Array;
+
+   for (int level = minInitLevel; level <= maxInitLevel; level++)
+   {
+      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
+      {
+         dataSetSmallArray[ic].globalID = block->getGlobalID();     // id of the block needed to find it while regenerating the grid
+
+         switch (arrayType) {
+         case RelaxationFactor:
+            ___Array = block->getKernel()->getDataSet()->getRelaxationFactor();
+            break;
+         default:
+            UB_THROW(UbException(UB_EXARGS, "MPIIOMigrationCoProcessor::write3DArray : 3D array type does not exist!"));
+            break;
+         }
+
+         if (firstBlock) // when first (any) valid block...
+         {
+            dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
+            dataSetParamStr.nx[0] = static_cast<int>(___Array->getNX1());
+            dataSetParamStr.nx[1] = static_cast<int>(___Array->getNX2());
+            dataSetParamStr.nx[2] = static_cast<int>(___Array->getNX3());
+            dataSetParamStr.nx[3] = 1;
+            doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+
+            firstBlock = false;
+         }
+
+         if (___Array && (dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0))
+            doubleValuesArray.insert(doubleValuesArray.end(), ___Array->getDataVector().begin(), ___Array->getDataVector().end());
+
+         ic++;
+      }
+   }
+
+   // register new MPI-types depending on the block-specific information
+   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_commit(&dataSetDoubleType);
+
+   if (comm->isRoot())
+   {
+      UBLOG(logINFO, "MPIIOMigrationCoProcessor::write3DArray start MPI IO rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
+
+   double start, finish;
+   if (comm->isRoot()) start = MPI_Wtime();
+
+   MPI_Info info = MPI_INFO_NULL;
+
+#ifdef HLRN_LUSTRE
+   MPI_Info_create(&info);
+   MPI_Info_set(info, "striping_factor", "40");
+   MPI_Info_set(info, "striping_unit", "4M");
+#endif
+
+   MPI_File file_handler;
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
+
+   // each process writes common parameters of a dataSet
+   MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
+
+   size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
+
+   MPI_Offset write_offset;
+   for (size_t nb = 0; nb < blocksCount; nb++)
+   {
+      write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
+      MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+   }
+
+   MPI_File_sync(file_handler);
+   MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
+
+   if (comm->isRoot())
+   {
+      finish = MPI_Wtime();
+      UBLOG(logINFO, "MPIIOMigrationCoProcessor::write3DArray time: " << finish - start << " s");
+   }
+
+   delete[] dataSetSmallArray;
+}
+
+/*
 void MPIIOMigrationCoProcessor::writeAverageDensityArray(int step)
 {
    int rank, size;
@@ -378,7 +601,7 @@ void MPIIOMigrationCoProcessor::writeAverageDensityArray(int step)
    }
 
    bool firstBlock = true;
-   int doubleCountInBlock = 0;
+   size_t doubleCountInBlock = 0;
    int ic = 0;
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -438,7 +661,7 @@ void MPIIOMigrationCoProcessor::writeAverageDensityArray(int step)
    MPI_Offset write_offset;
    size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
-   for (int nb = 0; nb < blocksCount; nb++)
+   for (size_t nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
@@ -447,7 +670,6 @@ void MPIIOMigrationCoProcessor::writeAverageDensityArray(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -487,7 +709,7 @@ void MPIIOMigrationCoProcessor::writeAverageVelocityArray(int step)
    }
 
    bool firstBlock = true;
-   int doubleCountInBlock = 0;
+   size_t doubleCountInBlock = 0;
    int ic = 0;
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -547,7 +769,7 @@ void MPIIOMigrationCoProcessor::writeAverageVelocityArray(int step)
    MPI_Offset write_offset;
    size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
-   for (int nb = 0; nb < blocksCount; nb++)
+   for (size_t nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
@@ -556,7 +778,6 @@ void MPIIOMigrationCoProcessor::writeAverageVelocityArray(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -596,7 +817,7 @@ void MPIIOMigrationCoProcessor::writeAverageFluktuationsArray(int step)
    }
 
    bool firstBlock = true;
-   int doubleCountInBlock = 0;
+   size_t doubleCountInBlock = 0;
    int ic = 0;
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -661,7 +882,7 @@ void MPIIOMigrationCoProcessor::writeAverageFluktuationsArray(int step)
    MPI_Offset write_offset;
    size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
-   for (int nb = 0; nb < blocksCount; nb++)
+   for (size_t nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
@@ -670,7 +891,6 @@ void MPIIOMigrationCoProcessor::writeAverageFluktuationsArray(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -710,7 +930,7 @@ void MPIIOMigrationCoProcessor::writeAverageTripleArray(int step)
    }
 
    bool firstBlock = true;
-   int doubleCountInBlock = 0;
+   size_t doubleCountInBlock = 0;
    int ic = 0;
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -776,7 +996,7 @@ void MPIIOMigrationCoProcessor::writeAverageTripleArray(int step)
    MPI_Offset write_offset;
    size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
-   for (int nb = 0; nb < blocksCount; nb++)
+   for (size_t nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
@@ -785,7 +1005,6 @@ void MPIIOMigrationCoProcessor::writeAverageTripleArray(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -825,7 +1044,7 @@ void MPIIOMigrationCoProcessor::writeShearStressValArray(int step)
    }
 
    bool firstBlock = true;
-   int doubleCountInBlock = 0;
+   size_t doubleCountInBlock = 0;
    int ic = 0;
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -891,7 +1110,7 @@ void MPIIOMigrationCoProcessor::writeShearStressValArray(int step)
    MPI_Offset write_offset;
    size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
-   for (int nb = 0; nb < blocksCount; nb++)
+   for (size_t nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
@@ -900,7 +1119,6 @@ void MPIIOMigrationCoProcessor::writeShearStressValArray(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -940,7 +1158,7 @@ void MPIIOMigrationCoProcessor::writeRelaxationFactor(int step)
    }
 
    bool firstBlock = true;
-   int doubleCountInBlock = 0;
+   size_t doubleCountInBlock = 0;
    int ic = 0;
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -1006,7 +1224,7 @@ void MPIIOMigrationCoProcessor::writeRelaxationFactor(int step)
    MPI_Offset write_offset;
    size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
-   for (int nb = 0; nb < blocksCount; nb++)
+   for (size_t nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
@@ -1015,7 +1233,6 @@ void MPIIOMigrationCoProcessor::writeRelaxationFactor(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -1026,7 +1243,7 @@ void MPIIOMigrationCoProcessor::writeRelaxationFactor(int step)
 
    delete[] dataSetSmallArray;
 }
-
+*/
 void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
 {
    int rank, size;
@@ -1061,11 +1278,13 @@ void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
 
    bool bcindexmatrixCountNotInit = true;
    int ic = 0;
+   SPtr<BCArray3D> bcArr;
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  // all the blocks of the current level
       {
-         SPtr<BCArray3D> bcArr = block->getKernel()->getBCProcessor()->getBCArray();
+         bcArr = block->getKernel()->getBCProcessor()->getBCArray();
 
          bcAddArray[ic].globalID = block->getGlobalID(); // id of the block needed to find it while regenerating the grid
          bcAddArray[ic].boundCond_count = 0;             // how many BoundaryConditions in this block
@@ -1201,7 +1420,6 @@ void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&bcindexmatrixType);
 
    if (comm->isRoot())
@@ -1234,7 +1452,6 @@ void MPIIOMigrationCoProcessor::restart(int step)
    grid->setTimeStep(step);
 
    if (comm->isRoot()) UBLOG(logINFO, "Load check point - end");
-   //this->reconnect(grid);
 }
 
 void MPIIOMigrationCoProcessor::readBlocks(int step)
@@ -1256,7 +1473,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
    double start, finish;
    if (comm->isRoot()) start = MPI_Wtime();
 
-   int blocksCount = 0; // quantity of the blocks, that belong to this process
+   size_t blocksCount = 0; // quantity of the blocks, that belong to this process
    dataSetParam dataSetParamStr1, dataSetParamStr2, dataSetParamStr3;
 
    // read from the grid the blocks, that belong to this process
@@ -1280,7 +1497,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)(sizeof(dataSetParam)), &dataSetParamStr2, 1, dataSetParamType, MPI_STATUS_IGNORE);
    MPI_File_read_at(file_handler, (MPI_Offset)(2 * sizeof(dataSetParam)), &dataSetParamStr3, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   double doubleCountInBlock = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3] +
+   size_t doubleCountInBlock = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3] +
       dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3] +
       dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks 
@@ -1289,7 +1506,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
    MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
-   int ic = 0;
+   size_t ic = 0;
    MPI_Offset read_offset;
    size_t sizeofOneDataSet = size_t(sizeof(DataSetMigration) + doubleCountInBlock * sizeof(double));
 
@@ -1305,6 +1522,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
    }
 
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1343,8 +1561,6 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetArray[n].globalID);
-      //std::cout << "rank="<<rank<<", dataSetArray[n].globalID=" << dataSetArray[n].globalID << std::endl;
-
       this->lbmKernel->setBlock(block);
       SPtr<LBMKernel> kernel = this->lbmKernel->clone();
       kernel->setGhostLayerWidth(dataSetArray[n].ghostLayerWidth);
@@ -1358,7 +1574,6 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
       block->setKernel(kernel);
    }
 
-   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1379,26 +1594,155 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
    MPI_File_close(&file_handler1);
 
    if (arrPresence.isAverageDensityArrayPresent)
-      readAverageDensityArray(step);
+      readArray(step, AverageDensity, std::string("/cpAverageDensityArray.bin"));
+   //readAverageDensityArray(step);
 
    if (arrPresence.isAverageVelocityArrayPresent)
-      readAverageVelocityArray(step);
+      readArray(step, AverageVelocity, std::string("/cpAverageVelocityArray.bin"));
+   //   readAverageVelocityArray(step);
 
    if (arrPresence.isAverageFluktuationsArrayPresent)
-      readAverageFluktuationsArray(step);
+      readArray(step, AverageFluktuations, std::string("/cpAverageFluktuationsArray.bin"));
+   //   readAverageFluktuationsArray(step);
 
    if (arrPresence.isAverageTripleArrayPresent)
-      readAverageTripleArray(step);
+      readArray(step, AverageTriple, std::string("/cpAverageTripleArray.bin"));
+   //  readAverageTripleArray(step);
 
    if (arrPresence.isShearStressValArrayPresent)
-      readShearStressValArray(step);
+      readArray(step, ShearStressVal, std::string("/cpShearStressValArray.bin"));
+   //   readShearStressValArray(step);
 
    if (arrPresence.isRelaxationFactorPresent)
-      readRelaxationFactor(step);
-
+      readArray(step, RelaxationFactor, std::string("/cpRelaxationFactor.bin"));
+   //   readRelaxationFactor(step);
 }
 
-void MPIIOMigrationCoProcessor::readAverageDensityArray(int step)
+void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string fname)
+{
+   int rank, size;
+   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+   MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+   if (comm->isRoot())
+   {
+      UBLOG(logINFO, "MPIIOMigrationCoProcessor::readArray start MPI IO rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
+   double start, finish;
+   if (comm->isRoot()) start = MPI_Wtime();
+
+   MPI_File file_handler;
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
+   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
+
+   size_t blocksCount = 0;
+   dataSetParam dataSetParamStr;
+   memset(&dataSetParamStr, 0, sizeof(dataSetParam));
+
+   // read from the grid the blocks, that belong to this process
+   std::vector<SPtr<Block3D>> blocksVector[25];
+   int minInitLevel = this->grid->getCoarsestInitializedLevel();
+   int maxInitLevel = this->grid->getFinestInitializedLevel();
+   for (int level = minInitLevel; level <= maxInitLevel; level++)
+   {
+      grid->getBlocks(level, rank, blocksVector[level]);
+      blocksCount += static_cast<int>(blocksVector[level].size());
+   }
+
+   MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
+
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
+   size_t doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+   std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
+
+   // define MPI_types depending on the block-specific information
+   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_commit(&dataSetDoubleType);
+
+   size_t ic = 0;
+   MPI_Offset read_offset;
+   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
+
+   for (int level = minInitLevel; level <= maxInitLevel; level++)
+   {
+      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
+      {
+         read_offset = (MPI_Offset)(sizeof(dataSetParam) + block->getGlobalID() * sizeofOneDataSet);
+         MPI_File_read_at(file_handler, read_offset, &dataSetSmallArray[ic], 1, dataSetSmallType, MPI_STATUS_IGNORE);
+         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+         ic++;
+      }
+   }
+
+   MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
+
+   if (comm->isRoot())
+   {
+      finish = MPI_Wtime();
+      UBLOG(logINFO, "MPIIOMigrationCoProcessor::readArray readArray: " << finish - start << " s");
+      UBLOG(logINFO, "MPIIOMigrationCoProcessor::readArray start of restore of data, rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
+
+   //----------------------------- restore data ---------------------------------
+   size_t index = 0;
+   size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+   std::vector<double> vectorsOfValues;
+   for (int n = 0; n < blocksCount; n++)
+   {
+      SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].globalID);
+
+      vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
+      index += nextVectorSize;
+
+      // fill arrays
+      SPtr<CbArray4D<LBMReal, IndexerX4X3X2X1>> ___4DArray;
+      SPtr<CbArray3D<LBMReal, IndexerX3X2X1>> ___3DArray;
+
+      switch (arrType) {
+      case AverageDensity:
+         ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+         block->getKernel()->getDataSet()->setAverageDensity(___4DArray);
+         break;
+      case AverageVelocity:
+         ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+         block->getKernel()->getDataSet()->setAverageVelocity(___4DArray);
+         break;
+      case AverageFluktuations:
+         ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+         block->getKernel()->getDataSet()->setAverageFluctuations(___4DArray);
+         break;
+      case AverageTriple:
+         ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+         block->getKernel()->getDataSet()->setAverageTriplecorrelations(___4DArray);
+         break;
+      case ShearStressVal:
+         ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+         block->getKernel()->getDataSet()->setShearStressValues(___4DArray);
+         break;
+      case RelaxationFactor:
+         ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
+         block->getKernel()->getDataSet()->setRelaxationFactor(___3DArray);
+         break;
+      default:
+         UB_THROW(UbException(UB_EXARGS, "MPIIOMigrationCoProcessor::readArray : array type does not exist!"));
+         break;
+      }
+   }
+
+   if (comm->isRoot())
+   {
+      UBLOG(logINFO, "MPIIOMigrationCoProcessor::readArray end of restore of data, rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
+
+   delete[] dataSetSmallArray;
+}
+
+/*void MPIIOMigrationCoProcessor::readAverageDensityArray(int step)
 {
    int rank, size;
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -1418,7 +1762,7 @@ void MPIIOMigrationCoProcessor::readAverageDensityArray(int step)
    if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
    // read count of blocks
-   int blocksCount = 0;
+   size_t blocksCount = 0;
    dataSetParam dataSetParamStr;
    memset(&dataSetParamStr, 0, sizeof(dataSetParam));
 
@@ -1435,14 +1779,14 @@ void MPIIOMigrationCoProcessor::readAverageDensityArray(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
    DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
-   int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+   size_t doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
    // define MPI_types depending on the block-specific information
    MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
-   int ic = 0;
+   size_t ic = 0;
    MPI_Offset read_offset;
    size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
 
@@ -1458,6 +1802,7 @@ void MPIIOMigrationCoProcessor::readAverageDensityArray(int step)
    }
 
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1488,8 +1833,6 @@ void MPIIOMigrationCoProcessor::readAverageDensityArray(int step)
       block->getKernel()->getDataSet()->setAverageDensity(mAverageDensity);
    }
 
-   MPI_Type_free(&dataSetDoubleType);
-
    if (comm->isRoot())
    {
       UBLOG(logINFO, "MPIIOMigrationCoProcessor::readAverageDensityArray end of restore of data, rank = " << rank);
@@ -1519,7 +1862,7 @@ void MPIIOMigrationCoProcessor::readAverageVelocityArray(int step)
    if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
    // read count of blocks
-   int blocksCount = 0;
+   size_t blocksCount = 0;
    dataSetParam dataSetParamStr;
    memset(&dataSetParamStr, 0, sizeof(dataSetParam));
 
@@ -1536,14 +1879,14 @@ void MPIIOMigrationCoProcessor::readAverageVelocityArray(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
    DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
-   int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+   size_t doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
    // define MPI_types depending on the block-specific information
    MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
-   int ic = 0;
+   size_t ic = 0;
    MPI_Offset read_offset;
    size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
 
@@ -1559,6 +1902,7 @@ void MPIIOMigrationCoProcessor::readAverageVelocityArray(int step)
    }
 
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1587,8 +1931,6 @@ void MPIIOMigrationCoProcessor::readAverageVelocityArray(int step)
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].globalID);
       block->getKernel()->getDataSet()->setAverageVelocity(mAverageVelocity);
    }
-
-   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1619,7 +1961,7 @@ void MPIIOMigrationCoProcessor::readAverageFluktuationsArray(int step)
    if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
    // read count of blocks
-   int blocksCount = 0;
+   size_t blocksCount = 0;
    dataSetParam dataSetParamStr;
    memset(&dataSetParamStr, 0, sizeof(dataSetParam));
 
@@ -1643,7 +1985,7 @@ void MPIIOMigrationCoProcessor::readAverageFluktuationsArray(int step)
    MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
-   int ic = 0;
+   size_t ic = 0;
    MPI_Offset read_offset;
    size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
 
@@ -1659,6 +2001,7 @@ void MPIIOMigrationCoProcessor::readAverageFluktuationsArray(int step)
    }
 
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1687,8 +2030,6 @@ void MPIIOMigrationCoProcessor::readAverageFluktuationsArray(int step)
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].globalID);
       block->getKernel()->getDataSet()->setAverageFluctuations(mAverageFluktuations);
    }
-
-   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1719,7 +2060,7 @@ void MPIIOMigrationCoProcessor::readAverageTripleArray(int step)
    if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
    // read count of blocks
-   int blocksCount = 0;
+   size_t blocksCount = 0;
    dataSetParam dataSetParamStr;
    memset(&dataSetParamStr, 0, sizeof(dataSetParam));
 
@@ -1736,14 +2077,14 @@ void MPIIOMigrationCoProcessor::readAverageTripleArray(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
    DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
-   int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+   size_t doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
    // define MPI_types depending on the block-specific information
    MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
-   int ic = 0;
+   size_t ic = 0;
    MPI_Offset read_offset;
    size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
 
@@ -1759,6 +2100,7 @@ void MPIIOMigrationCoProcessor::readAverageTripleArray(int step)
    }
 
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1787,8 +2129,6 @@ void MPIIOMigrationCoProcessor::readAverageTripleArray(int step)
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].globalID);
       block->getKernel()->getDataSet()->setAverageTriplecorrelations(mAverageTriplecorrelations);
    }
-
-   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1819,7 +2159,7 @@ void MPIIOMigrationCoProcessor::readShearStressValArray(int step)
    if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
    // read count of blocks
-   int blocksCount = 0;
+   size_t blocksCount = 0;
    dataSetParam dataSetParamStr;
    memset(&dataSetParamStr, 0, sizeof(dataSetParam));
 
@@ -1836,14 +2176,14 @@ void MPIIOMigrationCoProcessor::readShearStressValArray(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
    DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
-   int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+   size_t doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
    // define MPI_types depending on the block-specific information
    MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
-   int ic = 0;
+   size_t ic = 0;
    MPI_Offset read_offset;
    size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
 
@@ -1859,6 +2199,7 @@ void MPIIOMigrationCoProcessor::readShearStressValArray(int step)
    }
 
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1887,8 +2228,6 @@ void MPIIOMigrationCoProcessor::readShearStressValArray(int step)
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].globalID);
       block->getKernel()->getDataSet()->setShearStressValues(mShearStressValues);
    }
-
-   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1919,7 +2258,7 @@ void MPIIOMigrationCoProcessor::readRelaxationFactor(int step)
    if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
    // read count of blocks
-   int blocksCount = 0;
+   size_t blocksCount = 0;
    dataSetParam dataSetParamStr;
    memset(&dataSetParamStr, 0, sizeof(dataSetParam));
 
@@ -1936,14 +2275,14 @@ void MPIIOMigrationCoProcessor::readRelaxationFactor(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
    DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
-   int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+   size_t doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
    // define MPI_types depending on the block-specific information
    MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
-   int ic = 0;
+   size_t ic = 0;
    MPI_Offset read_offset;
    size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
 
@@ -1959,6 +2298,7 @@ void MPIIOMigrationCoProcessor::readRelaxationFactor(int step)
    }
 
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1988,8 +2328,6 @@ void MPIIOMigrationCoProcessor::readRelaxationFactor(int step)
       block->getKernel()->getDataSet()->setRelaxationFactor(mRelaxationFactor);
    }
 
-   MPI_Type_free(&dataSetDoubleType);
-
    if (comm->isRoot())
    {
       UBLOG(logINFO, "MPIIOMigrationCoProcessor::readRelaxationFactor end of restore of data, rank = " << rank);
@@ -1998,6 +2336,7 @@ void MPIIOMigrationCoProcessor::readRelaxationFactor(int step)
 
    delete[] dataSetSmallArray;
 }
+*/
 
 void MPIIOMigrationCoProcessor::readBoundaryConds(int step)
 {
@@ -2142,8 +2481,8 @@ void MPIIOMigrationCoProcessor::readBoundaryConds(int step)
          ic++;
       }
    }
-   MPI_File_close(&file_handler);
 
+   MPI_File_close(&file_handler);
    MPI_Type_free(&bcindexmatrixType);
 
    delete nullBouCond;

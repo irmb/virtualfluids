@@ -9,6 +9,7 @@
 #include "CoordinateTransformation3D.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
+#include "Grid3DSystem.h"
 #include "BCArray3D.h"
 #include "Communicator.h"
 #include "WbWriter.h"
@@ -25,52 +26,11 @@
 
 using namespace MPIIODataStructures;
 
-MPIIORestartCoProcessor::MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
-   const std::string& path,
-   SPtr<Communicator> comm) :
-   CoProcessor(grid, s),
-   path(path),
-   comm(comm)
+MPIIORestartCoProcessor::MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm) : MPIIOCoProcessor(grid, s, path, comm)
 {
-   UbSystem::makeDirectory(path + "/mpi_io_cp");
-
    memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));
 
    //-------------------------   define MPI types  ---------------------------------
-
-   MPI_Datatype typesGP[3] = { MPI_DOUBLE, MPI_INT, MPI_CHAR };
-   int blocksGP[3] = { 34, 6, 5 };
-   MPI_Aint offsetsGP[3], lbGP, extentGP;
-
-   offsetsGP[0] = 0;
-   MPI_Type_get_extent(MPI_DOUBLE, &lbGP, &extentGP);
-   offsetsGP[1] = blocksGP[0] * extentGP;
-
-   MPI_Type_get_extent(MPI_INT, &lbGP, &extentGP);
-   offsetsGP[2] = offsetsGP[1] + blocksGP[1] * extentGP;
-
-   MPI_Type_create_struct(3, blocksGP, offsetsGP, typesGP, &gridParamType);
-   MPI_Type_commit(&gridParamType);
-
-   //-----------------------------------------------------------------------
-
-   MPI_Datatype typesBlock[2] = { MPI_INT, MPI_CHAR };
-   int blocksBlock[2] = { 13, 1 };
-   MPI_Aint offsetsBlock[2], lbBlock, extentBlock;
-
-   offsetsBlock[0] = 0;
-   MPI_Type_get_extent(MPI_INT, &lbBlock, &extentBlock);
-   offsetsBlock[1] = blocksBlock[0] * extentBlock;
-
-   MPI_Type_create_struct(2, blocksBlock, offsetsBlock, typesBlock, &block3dType);
-   MPI_Type_commit(&block3dType);
-
-   //-----------------------------------------------------------------------
-
-   MPI_Type_contiguous(7, MPI_INT, &dataSetParamType);
-   MPI_Type_commit(&dataSetParamType);
-
-   //-----------------------------------------------------------------------
 
    MPI_Datatype typesDataSet[3] = { MPI_DOUBLE, MPI_INT, MPI_CHAR };
    int blocksDataSet[3] = { 2, 5, 2 };
@@ -96,22 +56,6 @@ MPIIORestartCoProcessor::MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbSched
    MPI_Type_contiguous(4, MPI_INT, &boundCondParamType);
    MPI_Type_commit(&boundCondParamType);
 
-   //-----------------------------------------------------------------------
-
-   MPI_Datatype typesBC[3] = { MPI_LONG_LONG_INT, MPI_FLOAT, MPI_CHAR };
-   int blocksBC[3] = { 5, 38, 1 };
-   MPI_Aint offsetsBC[3], lbBC, extentBC;
-
-   offsetsBC[0] = 0;
-   MPI_Type_get_extent(MPI_LONG_LONG_INT, &lbBC, &extentBC);
-   offsetsBC[1] = blocksBC[0] * extentBC;
-
-   MPI_Type_get_extent(MPI_FLOAT, &lbBC, &extentBC);
-   offsetsBC[2] = offsetsBC[1] + blocksBC[1] * extentBC;
-
-   MPI_Type_create_struct(3, blocksBC, offsetsBC, typesBC, &boundCondType);
-   MPI_Type_commit(&boundCondType);
-
    //---------------------------------------
 
    MPI_Type_contiguous(BLOCK_SIZE, boundCondType, &boundCondType1000);
@@ -122,25 +66,15 @@ MPIIORestartCoProcessor::MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbSched
    MPI_Type_contiguous(6, MPI_INT, &boundCondTypeAdd);
    MPI_Type_commit(&boundCondTypeAdd);
 
-   //---------------------------------------
-
-   MPI_Type_contiguous(6, MPI_CHAR, &arrayPresenceType);
-   MPI_Type_commit(&arrayPresenceType);
-
 }
 //////////////////////////////////////////////////////////////////////////
 MPIIORestartCoProcessor::~MPIIORestartCoProcessor()
 {
-   MPI_Type_free(&gridParamType);
-   MPI_Type_free(&block3dType);
-   MPI_Type_free(&dataSetParamType);
    MPI_Type_free(&dataSetType);
    MPI_Type_free(&dataSetSmallType);
    MPI_Type_free(&boundCondParamType);
-   MPI_Type_free(&boundCondType);
    MPI_Type_free(&boundCondType1000);
    MPI_Type_free(&boundCondTypeAdd);
-   MPI_Type_free(&arrayPresenceType);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -170,65 +104,7 @@ void MPIIORestartCoProcessor::clearAllFiles(int step)
 
    UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
 
-   std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
-   int rc1 = MPI_File_open(MPI_COMM_WORLD, filename1.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &file_handler);
-   if (rc1 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename1);
-   MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
-
-   std::string filename2 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSet.bin";
-   int rc2 = MPI_File_open(MPI_COMM_WORLD, filename2.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc2 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename2);
-   MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
-
-   std::string filename3 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpArrays.bin";
-   int rc3 = MPI_File_open(MPI_COMM_WORLD, filename3.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc3 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename3);
-   MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
-
-   std::string filename4 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageDensityArray.bin";
-   MPI_File_delete(filename4.c_str(), info);
-   //int rc4 = MPI_File_open(MPI_COMM_WORLD, filename4.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   //if (rc4 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename4);
-   //MPI_File_set_size(file_handler, new_size);
-   //MPI_File_close(&file_handler);
-
-   std::string filename5 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageVelocityArray.bin";
-   MPI_File_delete(filename5.c_str(), info);
-   //int rc5 = MPI_File_open(MPI_COMM_WORLD, filename5.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   //if (rc5 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename5);
-   //MPI_File_set_size(file_handler, new_size);
-   //MPI_File_close(&file_handler);
-
-   std::string filename6 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageFluktuationsArray.bin";
-   MPI_File_delete(filename6.c_str(), info);
-   //int rc6 = MPI_File_open(MPI_COMM_WORLD, filename6.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   //if (rc6 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename6);
-   //MPI_File_set_size(file_handler, new_size);
-   //MPI_File_close(&file_handler);
-
-   std::string filename7 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageTripleArray.bin";
-   MPI_File_delete(filename7.c_str(), info);
-   //int rc7 = MPI_File_open(MPI_COMM_WORLD, filename7.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   //if (rc7 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename7);
-   //MPI_File_set_size(file_handler, new_size);
-   //MPI_File_close(&file_handler);
-
-   std::string filename8 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpShearStressValArray.bin";
-   MPI_File_delete(filename8.c_str(), info);
-   //int rc8 = MPI_File_open(MPI_COMM_WORLD, filename8.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   //if (rc8 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename8);
-   //MPI_File_set_size(file_handler, new_size);
-   //MPI_File_close(&file_handler);
-
-   std::string filename9 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpRelaxationFactor.bin";
-   MPI_File_delete(filename9.c_str(), info);
-   //int rc9 = MPI_File_open(MPI_COMM_WORLD, filename9.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   //if (rc9 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename9);
-   //MPI_File_set_size(file_handler, new_size);
-   //MPI_File_close(&file_handler);
+   MPIIOCoProcessor::clearAllFiles(step);
 
    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
    int rc10 = MPI_File_open(MPI_COMM_WORLD, filename10.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
@@ -237,174 +113,9 @@ void MPIIORestartCoProcessor::clearAllFiles(int step)
    MPI_File_close(&file_handler);
 }
 //////////////////////////////////////////////////////////////////////////
-void MPIIORestartCoProcessor::writeCpTimeStep(int step)
-{
-   if (comm->isRoot())
-   {
-      UbFileOutputASCII f(path + "/mpi_io_cp/cp.txt");
-      f.writeInteger(step);
-   }
-}
-//////////////////////////////////////////////////////////////////////////
-int MPIIORestartCoProcessor::readCpTimeStep()
-{
-   UbFileInputASCII f(path + "/mpi_io_cp/cp.txt");
-   int step = f.readInteger();
-   return step;
-}
-//////////////////////////////////////////////////////////////////////////
 void MPIIORestartCoProcessor::writeBlocks(int step)
 {
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   //MPI_Comm_size(MPI_COMM_WORLD, &size);
-   size = 1;
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIORestartCoProcessor::writeBlocks start collect data rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
-   int minInitLevel = this->grid->getCoarsestInitializedLevel();
-   int maxInitLevel = this->grid->getFinestInitializedLevel();
-
-   std::vector<SPtr<Block3D>> blocksVector[25]; // max 25 levels
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      //grid->getBlocks(level, rank, blockVector[level]);
-      grid->getBlocks(level, blocksVector[level]);
-      blocksCount += static_cast<int>(blocksVector[level].size());
-   }
-
-   GridParam* gridParameters = new GridParam;
-   gridParameters->trafoParams[0] = grid->getCoordinateTransformator()->Tx1;
-   gridParameters->trafoParams[1] = grid->getCoordinateTransformator()->Tx2;
-   gridParameters->trafoParams[2] = grid->getCoordinateTransformator()->Tx3;
-   gridParameters->trafoParams[3] = grid->getCoordinateTransformator()->Sx1;
-   gridParameters->trafoParams[4] = grid->getCoordinateTransformator()->Sx2;
-   gridParameters->trafoParams[5] = grid->getCoordinateTransformator()->Sx3;
-   gridParameters->trafoParams[6] = grid->getCoordinateTransformator()->alpha;
-   gridParameters->trafoParams[7] = grid->getCoordinateTransformator()->beta;
-   gridParameters->trafoParams[8] = grid->getCoordinateTransformator()->gamma;
-
-   gridParameters->trafoParams[9] = grid->getCoordinateTransformator()->toX1factorX1;
-   gridParameters->trafoParams[10] = grid->getCoordinateTransformator()->toX1factorX2;
-   gridParameters->trafoParams[11] = grid->getCoordinateTransformator()->toX1factorX3;
-   gridParameters->trafoParams[12] = grid->getCoordinateTransformator()->toX1delta;
-   gridParameters->trafoParams[13] = grid->getCoordinateTransformator()->toX2factorX1;
-   gridParameters->trafoParams[14] = grid->getCoordinateTransformator()->toX2factorX2;
-   gridParameters->trafoParams[15] = grid->getCoordinateTransformator()->toX2factorX3;
-   gridParameters->trafoParams[16] = grid->getCoordinateTransformator()->toX2delta;
-   gridParameters->trafoParams[17] = grid->getCoordinateTransformator()->toX3factorX1;
-   gridParameters->trafoParams[18] = grid->getCoordinateTransformator()->toX3factorX2;
-   gridParameters->trafoParams[19] = grid->getCoordinateTransformator()->toX3factorX3;
-   gridParameters->trafoParams[20] = grid->getCoordinateTransformator()->toX3delta;
-
-   gridParameters->trafoParams[21] = grid->getCoordinateTransformator()->fromX1factorX1;
-   gridParameters->trafoParams[22] = grid->getCoordinateTransformator()->fromX1factorX2;
-   gridParameters->trafoParams[23] = grid->getCoordinateTransformator()->fromX1factorX3;
-   gridParameters->trafoParams[24] = grid->getCoordinateTransformator()->fromX1delta;
-   gridParameters->trafoParams[25] = grid->getCoordinateTransformator()->fromX2factorX1;
-   gridParameters->trafoParams[26] = grid->getCoordinateTransformator()->fromX2factorX2;
-   gridParameters->trafoParams[27] = grid->getCoordinateTransformator()->fromX2factorX3;
-   gridParameters->trafoParams[28] = grid->getCoordinateTransformator()->fromX2delta;
-   gridParameters->trafoParams[29] = grid->getCoordinateTransformator()->fromX3factorX1;
-   gridParameters->trafoParams[30] = grid->getCoordinateTransformator()->fromX3factorX2;
-   gridParameters->trafoParams[31] = grid->getCoordinateTransformator()->fromX3factorX3;
-   gridParameters->trafoParams[32] = grid->getCoordinateTransformator()->fromX3delta;
-
-   gridParameters->active = grid->getCoordinateTransformator()->active;
-   gridParameters->transformation = grid->getCoordinateTransformator()->transformation;
-
-   gridParameters->deltaX = grid->getDeltaX(minInitLevel);
-   UbTupleInt3 blocknx = grid->getBlockNX();
-   gridParameters->blockNx1 = val<1>(blocknx);
-   gridParameters->blockNx2 = val<2>(blocknx);
-   gridParameters->blockNx3 = val<3>(blocknx);
-   gridParameters->nx1 = grid->getNX1();
-   gridParameters->nx2 = grid->getNX2();
-   gridParameters->nx3 = grid->getNX3();
-   gridParameters->periodicX1 = grid->isPeriodicX1();
-   gridParameters->periodicX2 = grid->isPeriodicX2();
-   gridParameters->periodicX3 = grid->isPeriodicX3();
-
-   //----------------------------------------------------------------------
-
-   Block3d* block3dArray = new Block3d[blocksCount];
-   int ic = 0;
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      for (SPtr<Block3D> block : blocksVector[level])  //	all the blocks of the current level
-      {
-         // save data describing the block
-         block3dArray[ic].x1 = block->getX1();
-         block3dArray[ic].x2 = block->getX2();
-         block3dArray[ic].x3 = block->getX3();
-         block3dArray[ic].bundle = block->getBundle();
-         block3dArray[ic].rank = block->getRank();
-         block3dArray[ic].lrank = block->getLocalRank();
-         block3dArray[ic].part = block->getPart();
-         block3dArray[ic].globalID = block->getGlobalID();
-         block3dArray[ic].localID = block->getLocalID();
-         block3dArray[ic].level = block->getLevel();
-         block3dArray[ic].interpolationFlagCF = block->getCollectionOfInterpolationFlagCF();
-         block3dArray[ic].interpolationFlagFC = block->getCollectionOfInterpolationFlagFC();
-         block3dArray[ic].counter = block->getMaxGlobalID();
-         block3dArray[ic].active = block->isActive();
-
-         ic++;
-      }
-   }
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIORestartCoProcessor::writeBlocks start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   MPI_File file_handler;
-   MPI_Info info = MPI_INFO_NULL;
-   //MPI_Info_create (&info);
-   //MPI_Info_set(info,"romio_cb_write","enable");
-   //MPI_Info_set(info,"cb_buffer_size","4194304");
-   //MPI_Info_set(info,"striping_unit","4194304");
-
-   // if (comm->isRoot())
-   // {
-   UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-   // }
-
-   double start, finish;
-   MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
-
-   if (comm->isRoot())
-   {
-      start = MPI_Wtime();
-
-      // each process writes the quantity of it's blocks
-      MPI_File_write_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
-      // each process writes parameters of the grid
-      MPI_File_write_at(file_handler, write_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
-      // each process writes it's blocks
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(GridParam)), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
-   }
-
-   MPI_File_sync(file_handler);
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIORestartCoProcessor::writeBlocks time: " << finish - start << " s");
-   }
-
-   delete[] block3dArray;
-   delete gridParameters;
+   MPIIOCoProcessor::writeBlocks(step);
 }
 
 void MPIIORestartCoProcessor::writeDataSet(int step)
@@ -438,6 +149,11 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
    bool firstBlock = true;
    int doubleCountInBlock = 0;
    int ic = 0;
+   SPtr< D3Q27EsoTwist3DSplittedVector > D3Q27EsoTwist3DSplittedVectorPtr;
+   CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
+   CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
+   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions;
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
@@ -452,10 +168,10 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
          dataSetArray[ic].compressible = block->getKernel()->getCompressible();
          dataSetArray[ic].withForcing = block->getKernel()->getWithForcing();
 
-         SPtr< D3Q27EsoTwist3DSplittedVector > D3Q27EsoTwist3DSplittedVectorPtr = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
-         CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getLocalDistributions();
-         CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getNonLocalDistributions();
-         CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getZeroDistributions();
+         D3Q27EsoTwist3DSplittedVectorPtr = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
+         localDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getLocalDistributions();
+         nonLocalDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getNonLocalDistributions();
+         zeroDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getZeroDistributions();
 
          if (firstBlock) // when first (any) valid block...
          {
@@ -671,6 +387,8 @@ void MPIIORestartCoProcessor::writeAverageDensityArray(int step)
    bool firstBlock = true;
    int doubleCountInBlock = 0;
    int ic = 0;
+   SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray;
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
@@ -680,26 +398,21 @@ void MPIIORestartCoProcessor::writeAverageDensityArray(int step)
          dataSetSmallArray[ic].x3 = block->getX3();
          dataSetSmallArray[ic].level = block->getLevel();
 
-         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray = block->getKernel()->getDataSet()->getAverageDensity();
+         averageDensityArray = block->getKernel()->getDataSet()->getAverageDensity();
 
          if (firstBlock) // when first (any) valid block...
          {
-            //if (averageDensityArray)
-            //{
             dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
             dataSetParamStr.nx[0] = static_cast<int>(averageDensityArray->getNX1());
             dataSetParamStr.nx[1] = static_cast<int>(averageDensityArray->getNX2());
             dataSetParamStr.nx[2] = static_cast<int>(averageDensityArray->getNX3());
             dataSetParamStr.nx[3] = static_cast<int>(averageDensityArray->getNX4());
             doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-            //}
-            //else
-            //   break;
 
             firstBlock = false;
          }
 
-         if (averageDensityArray && (dataSetParamStr.nx[0] > 0) && (dataSetParamStr.nx[1] > 0) && (dataSetParamStr.nx[2] > 0) && (dataSetParamStr.nx[3] > 0))
+         if ((dataSetParamStr.nx[0] > 0) && (dataSetParamStr.nx[1] > 0) && (dataSetParamStr.nx[2] > 0) && (dataSetParamStr.nx[3] > 0))
             doubleValuesArray.insert(doubleValuesArray.end(), averageDensityArray->getDataVector().begin(), averageDensityArray->getDataVector().end());
 
          ic++;
@@ -766,7 +479,6 @@ void MPIIORestartCoProcessor::writeAverageDensityArray(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -808,6 +520,8 @@ void MPIIORestartCoProcessor::writeAverageVelocityArray(int step)
    bool firstBlock = true;
    int doubleCountInBlock = 0;
    int ic = 0;
+   SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageVelocityArray3DPtr;
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
@@ -817,26 +531,21 @@ void MPIIORestartCoProcessor::writeAverageVelocityArray(int step)
          dataSetSmallArray[ic].x3 = block->getX3();
          dataSetSmallArray[ic].level = block->getLevel();
 
-         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageVelocityArray3DPtr = block->getKernel()->getDataSet()->getAverageVelocity();
+         AverageVelocityArray3DPtr = block->getKernel()->getDataSet()->getAverageVelocity();
 
          if (firstBlock) // when first (any) valid block...
          {
-            //if (AverageVelocityArray3DPtr)
-            //{
             dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
             dataSetParamStr.nx[0] = static_cast<int>(AverageVelocityArray3DPtr->getNX1());
             dataSetParamStr.nx[1] = static_cast<int>(AverageVelocityArray3DPtr->getNX2());
             dataSetParamStr.nx[2] = static_cast<int>(AverageVelocityArray3DPtr->getNX3());
             dataSetParamStr.nx[3] = static_cast<int>(AverageVelocityArray3DPtr->getNX4());
             doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-            //}
-            //else
-            //   break;
 
             firstBlock = false;
          }
 
-         if (AverageVelocityArray3DPtr && (dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0) && (dataSetParamStr.nx[3]>0))
+         if ((dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0) && (dataSetParamStr.nx[3]>0))
             doubleValuesArray.insert(doubleValuesArray.end(), AverageVelocityArray3DPtr->getDataVector().begin(), AverageVelocityArray3DPtr->getDataVector().end());
 
          ic++;
@@ -905,7 +614,6 @@ void MPIIORestartCoProcessor::writeAverageVelocityArray(int step)
    MPI_File_close(&file_handler);
 
    MPI_Type_free(&dataSetDoubleType);
-
    if (comm->isRoot())
    {
       finish = MPI_Wtime();
@@ -945,6 +653,8 @@ void MPIIORestartCoProcessor::writeAverageFluktuationsArray(int step)
    bool firstBlock = true;
    int doubleCountInBlock = 0;
    int ic = 0;
+   SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageFluctArray3DPtr;
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
@@ -954,26 +664,21 @@ void MPIIORestartCoProcessor::writeAverageFluktuationsArray(int step)
          dataSetSmallArray[ic].x3 = block->getX3();
          dataSetSmallArray[ic].level = block->getLevel();
 
-         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageFluctArray3DPtr = block->getKernel()->getDataSet()->getAverageFluctuations();
+         AverageFluctArray3DPtr = block->getKernel()->getDataSet()->getAverageFluctuations();
 
          if (firstBlock) // when first (any) valid block...
          {
-            //if (AverageFluctArray3DPtr)
-            //{
             dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
             dataSetParamStr.nx[0] = static_cast<int>(AverageFluctArray3DPtr->getNX1());
             dataSetParamStr.nx[1] = static_cast<int>(AverageFluctArray3DPtr->getNX2());
             dataSetParamStr.nx[2] = static_cast<int>(AverageFluctArray3DPtr->getNX3());
             dataSetParamStr.nx[3] = static_cast<int>(AverageFluctArray3DPtr->getNX4());
             doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-            //}
-            //else
-            //   break;
 
             firstBlock = false;
          }
 
-         if (AverageFluctArray3DPtr && (dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0) && (dataSetParamStr.nx[3]>0))
+         if ((dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0) && (dataSetParamStr.nx[3]>0))
             doubleValuesArray.insert(doubleValuesArray.end(), AverageFluctArray3DPtr->getDataVector().begin(), AverageFluctArray3DPtr->getDataVector().end());
 
          ic++;
@@ -1040,7 +745,6 @@ void MPIIORestartCoProcessor::writeAverageFluktuationsArray(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -1082,6 +786,8 @@ void MPIIORestartCoProcessor::writeAverageTripleArray(int step)
    bool firstBlock = true;
    int doubleCountInBlock = 0;
    int ic = 0;
+   SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageTripleArray3DPtr;
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
@@ -1091,26 +797,21 @@ void MPIIORestartCoProcessor::writeAverageTripleArray(int step)
          dataSetSmallArray[ic].x3 = block->getX3();
          dataSetSmallArray[ic].level = block->getLevel();
 
-         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageTripleArray3DPtr = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
+         AverageTripleArray3DPtr = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
 
          if (firstBlock) // when first (any) valid block...
          {
-            //if (AverageTripleArray3DPtr)
-            //{
             dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
             dataSetParamStr.nx[0] = static_cast<int>(AverageTripleArray3DPtr->getNX1());
             dataSetParamStr.nx[1] = static_cast<int>(AverageTripleArray3DPtr->getNX2());
             dataSetParamStr.nx[2] = static_cast<int>(AverageTripleArray3DPtr->getNX3());
             dataSetParamStr.nx[3] = static_cast<int>(AverageTripleArray3DPtr->getNX4());
             doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-            //}
-            //else
-            //   break;
 
             firstBlock = false;
          }
 
-         if (AverageTripleArray3DPtr && (dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0) && (dataSetParamStr.nx[3]>0))
+         if ((dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0) && (dataSetParamStr.nx[3]>0))
             doubleValuesArray.insert(doubleValuesArray.end(), AverageTripleArray3DPtr->getDataVector().begin(), AverageTripleArray3DPtr->getDataVector().end());
 
          ic++;
@@ -1177,7 +878,6 @@ void MPIIORestartCoProcessor::writeAverageTripleArray(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -1219,6 +919,8 @@ void MPIIORestartCoProcessor::writeShearStressValArray(int step)
    bool firstBlock = true;
    int doubleCountInBlock = 0;
    int ic = 0;
+   SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > ShearStressValArray3DPtr;
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
@@ -1228,26 +930,21 @@ void MPIIORestartCoProcessor::writeShearStressValArray(int step)
          dataSetSmallArray[ic].x3 = block->getX3();
          dataSetSmallArray[ic].level = block->getLevel();
 
-         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > ShearStressValArray3DPtr = block->getKernel()->getDataSet()->getShearStressValues();
+         ShearStressValArray3DPtr = block->getKernel()->getDataSet()->getShearStressValues();
 
          if (firstBlock) // when first (any) valid block...
          {
-            //if (ShearStressValArray3DPtr)
-            //{
             dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
             dataSetParamStr.nx[0] = static_cast<int>(ShearStressValArray3DPtr->getNX1());
             dataSetParamStr.nx[1] = static_cast<int>(ShearStressValArray3DPtr->getNX2());
             dataSetParamStr.nx[2] = static_cast<int>(ShearStressValArray3DPtr->getNX3());
             dataSetParamStr.nx[3] = static_cast<int>(ShearStressValArray3DPtr->getNX4());
             doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-            //}
-            //else
-            //   break;
 
             firstBlock = false;
          }
 
-         if (ShearStressValArray3DPtr && (dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0) && (dataSetParamStr.nx[3]>0))
+         if ((dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0) && (dataSetParamStr.nx[3]>0))
             doubleValuesArray.insert(doubleValuesArray.end(), ShearStressValArray3DPtr->getDataVector().begin(), ShearStressValArray3DPtr->getDataVector().end());
 
          ic++;
@@ -1314,7 +1011,6 @@ void MPIIORestartCoProcessor::writeShearStressValArray(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -1356,6 +1052,8 @@ void MPIIORestartCoProcessor::writeRelaxationFactor(int step)
    bool firstBlock = true;
    int doubleCountInBlock = 0;
    int ic = 0;
+   SPtr< CbArray3D<LBMReal, IndexerX3X2X1> > RelaxationFactor3DPtr;
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
@@ -1365,26 +1063,21 @@ void MPIIORestartCoProcessor::writeRelaxationFactor(int step)
          dataSetSmallArray[ic].x3 = block->getX3();
          dataSetSmallArray[ic].level = block->getLevel();
 
-         SPtr< CbArray3D<LBMReal, IndexerX3X2X1> > RelaxationFactor3DPtr = block->getKernel()->getDataSet()->getRelaxationFactor();
+         RelaxationFactor3DPtr = block->getKernel()->getDataSet()->getRelaxationFactor();
 
          if (firstBlock) // when first (any) valid block...
          {
-            //if (relaxationFactor3DPtr)
-            //{
             dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
             dataSetParamStr.nx[0] = static_cast<int>(RelaxationFactor3DPtr->getNX1());
             dataSetParamStr.nx[1] = static_cast<int>(RelaxationFactor3DPtr->getNX2());
             dataSetParamStr.nx[2] = static_cast<int>(RelaxationFactor3DPtr->getNX3());
             dataSetParamStr.nx[3] = 1;
             doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-            //}
-            //else
-            //   break;
 
             firstBlock = false;
          }
 
-         if (RelaxationFactor3DPtr && (dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0))
+         if ((dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0))
             doubleValuesArray.insert(doubleValuesArray.end(), RelaxationFactor3DPtr->getDataVector().begin(), RelaxationFactor3DPtr->getDataVector().end());
 
          ic++;
@@ -1451,7 +1144,6 @@ void MPIIORestartCoProcessor::writeRelaxationFactor(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -1494,13 +1186,14 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
    std::vector<int> bcindexmatrixV;
    std::vector<int> indexContainerV;
    bool bcindexmatrixCountNotInit = true;
-
    int ic = 0;
+   SPtr<BCArray3D> bcArr;
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  // all the blocks of the current level
       {
-         SPtr<BCArray3D> bcArr = block->getKernel()->getBCProcessor()->getBCArray();
+         bcArr = block->getKernel()->getBCProcessor()->getBCArray();
 
          bcAddArray[ic].x1 = block->getX1(); // coordinates of the block needed to find it while regenerating the grid
          bcAddArray[ic].x2 = block->getX2();
@@ -1564,7 +1257,6 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
          ic++;
       }
    }
-
 
    MPI_Type_contiguous(boundCondParamStr.bcindexmatrixCount, MPI_INT, &bcindexmatrixType);
    MPI_Type_commit(&bcindexmatrixType);
@@ -1651,7 +1343,6 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
-
    MPI_Type_free(&bcindexmatrixType);
 
    if (comm->isRoot())
@@ -1680,138 +1371,7 @@ void MPIIORestartCoProcessor::restart(int step)
 
 void MPIIORestartCoProcessor::readBlocks(int step)
 {
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   //MPI_Comm_size(MPI_COMM_WORLD, &size);
-   size = 1;
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIORestartCoProcessor::readBlocks start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   double start, finish;
-   if (comm->isRoot()) start = MPI_Wtime();
-
-   MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-
-   // read count of blocks
-   int blocksCount = 0;
-   //MPI_File_read_at(file_handler, rank*sizeof(int), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
-   MPI_File_read_at(file_handler, 0, &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
-   Block3d* block3dArray = new Block3d[blocksCount];
-
-   // calculate the read offset
-   MPI_Offset read_offset = (MPI_Offset)(size * sizeof(int));
-
-   GridParam* gridParameters = new GridParam;
-
-   // read parameters of the grid
-   MPI_File_read_at(file_handler, read_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
-   // read all the blocks
-   if (comm->isRoot())
-      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(GridParam)), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
-
-   MPI_Bcast(block3dArray, blocksCount, block3dType, comm->getRoot(), MPI_COMM_WORLD);
-
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIORestartCoProcessor::readBlocks time: " << finish - start << " s");
-   }
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIORestartCoProcessor::readBlocks start of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   // clear the grid
-   grid->deleteBlocks();
-
-   // restore the grid
-   SPtr<CoordinateTransformation3D> trafo(new CoordinateTransformation3D());
-   trafo->Tx1 = gridParameters->trafoParams[0];
-   trafo->Tx2 = gridParameters->trafoParams[1];
-   trafo->Tx3 = gridParameters->trafoParams[2];
-   trafo->Sx1 = gridParameters->trafoParams[3];
-   trafo->Sx2 = gridParameters->trafoParams[4];
-   trafo->Sx3 = gridParameters->trafoParams[5];
-   trafo->alpha = gridParameters->trafoParams[6];
-   trafo->beta = gridParameters->trafoParams[7];
-   trafo->gamma = gridParameters->trafoParams[8];
-
-   trafo->toX1factorX1 = gridParameters->trafoParams[9];
-   trafo->toX1factorX2 = gridParameters->trafoParams[10];
-   trafo->toX1factorX3 = gridParameters->trafoParams[11];
-   trafo->toX1delta = gridParameters->trafoParams[12];
-   trafo->toX2factorX1 = gridParameters->trafoParams[13];
-   trafo->toX2factorX2 = gridParameters->trafoParams[14];
-   trafo->toX2factorX3 = gridParameters->trafoParams[15];
-   trafo->toX2delta = gridParameters->trafoParams[16];
-   trafo->toX3factorX1 = gridParameters->trafoParams[17];
-   trafo->toX3factorX2 = gridParameters->trafoParams[18];
-   trafo->toX3factorX3 = gridParameters->trafoParams[19];
-   trafo->toX3delta = gridParameters->trafoParams[20];
-
-   trafo->fromX1factorX1 = gridParameters->trafoParams[21];
-   trafo->fromX1factorX2 = gridParameters->trafoParams[22];
-   trafo->fromX1factorX3 = gridParameters->trafoParams[23];
-   trafo->fromX1delta = gridParameters->trafoParams[24];
-   trafo->fromX2factorX1 = gridParameters->trafoParams[25];
-   trafo->fromX2factorX2 = gridParameters->trafoParams[26];
-   trafo->fromX2factorX3 = gridParameters->trafoParams[27];
-   trafo->fromX2delta = gridParameters->trafoParams[28];
-   trafo->fromX3factorX1 = gridParameters->trafoParams[29];
-   trafo->fromX3factorX2 = gridParameters->trafoParams[30];
-   trafo->fromX3factorX3 = gridParameters->trafoParams[31];
-   trafo->fromX3delta = gridParameters->trafoParams[32];
-   trafo->active = gridParameters->active;
-   trafo->transformation = gridParameters->transformation;
-
-   grid->setCoordinateTransformator(trafo);
-
-   grid->setDeltaX(gridParameters->deltaX);
-   grid->setBlockNX(gridParameters->blockNx1, gridParameters->blockNx2, gridParameters->blockNx3);
-   grid->setNX1(gridParameters->nx1);
-   grid->setNX2(gridParameters->nx2);
-   grid->setNX3(gridParameters->nx3);
-   grid->setPeriodicX1(gridParameters->periodicX1);
-   grid->setPeriodicX2(gridParameters->periodicX2);
-   grid->setPeriodicX3(gridParameters->periodicX3);
-
-   // regenerate blocks
-   for (int n = 0; n<blocksCount; n++)
-   {
-      SPtr<Block3D> block(new Block3D(block3dArray[n].x1, block3dArray[n].x2, block3dArray[n].x3, block3dArray[n].level));
-      block->setActive(block3dArray[n].active);
-      block->setBundle(block3dArray[n].bundle);
-      block->setRank(block3dArray[n].rank);
-      block->setLocalRank(block3dArray[n].lrank);
-      block->setGlobalID(block3dArray[n].globalID);
-      block->setLocalID(block3dArray[n].localID);
-      block->setPart(block3dArray[n].part);
-      block->setLevel(block3dArray[n].level);
-      block->setCollectionOfInterpolationFlagCF(block3dArray[n].interpolationFlagCF);
-      block->setCollectionOfInterpolationFlagFC(block3dArray[n].interpolationFlagFC);
-
-      grid->addBlock(block);
-   }
-
-   delete gridParameters;
-   delete[] block3dArray;
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIORestartCoProcessor::readBlocks end of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
+   MPIIOCoProcessor::readBlocks(step);
 }
 
 void MPIIORestartCoProcessor::readDataSet(int step)
@@ -1875,6 +1435,7 @@ void MPIIORestartCoProcessor::readDataSet(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + 3 * sizeof(dataSetParam)), dataSetArray, blocksCount, dataSetType, MPI_STATUS_IGNORE);
    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + 3 * sizeof(dataSetParam) + blocksCount * sizeof(DataSetRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1925,8 +1486,6 @@ void MPIIORestartCoProcessor::readDataSet(int step)
       kernel->setDataSet(dataSetPtr);
       block->setKernel(kernel);
    }
-
-   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2025,6 +1584,7 @@ void MPIIORestartCoProcessor::readAverageDensityArray(int step)
    if (doubleCountInBlock > 0)
       MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2044,17 +1604,12 @@ void MPIIORestartCoProcessor::readAverageDensityArray(int step)
 
       // fill mAverageDensity arrays
       SPtr<AverageValuesArray3D> mAverageDensity;
-      //if ((dataSetParamStr.nx[0]==0)&&(dataSetParamStr.nx[1]==0)&&(dataSetParamStr.nx[2]==0)&&(dataSetParamStr.nx[3]==0))
-      //   mAverageDensity = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr();
-      //else
       mAverageDensity = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
       block->getKernel()->getDataSet()->setAverageDensity(mAverageDensity);
    }
-
-   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2122,6 +1677,7 @@ void MPIIORestartCoProcessor::readAverageVelocityArray(int step)
    if (doubleCountInBlock > 0)
       MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2141,17 +1697,12 @@ void MPIIORestartCoProcessor::readAverageVelocityArray(int step)
 
       // fill mAverageVelocity array
       SPtr<AverageValuesArray3D> mAverageVelocity;
-      //if ((dataSetParamStr.nx[0] == 0) && (dataSetParamStr.nx[1] == 0) && (dataSetParamStr.nx[2] == 0) && (dataSetParamStr.nx[3] == 0))
-      //   mAverageVelocity = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr();
-      //else
       mAverageVelocity = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
       block->getKernel()->getDataSet()->setAverageVelocity(mAverageVelocity);
    }
-
-   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2219,6 +1770,7 @@ void MPIIORestartCoProcessor::readAverageFluktuationsArray(int step)
    if (doubleCountInBlock > 0)
       MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2238,17 +1790,12 @@ void MPIIORestartCoProcessor::readAverageFluktuationsArray(int step)
 
       // fill AverageFluktuations array
       SPtr<AverageValuesArray3D> mAverageFluktuations;
-      //if ((dataSetParamStr.nx[0] == 0) && (dataSetParamStr.nx[1] == 0) && (dataSetParamStr.nx[2] == 0) && (dataSetParamStr.nx[3] == 0))
-      //   mAverageFluktuations = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr();
-      //else
       mAverageFluktuations = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
       block->getKernel()->getDataSet()->setAverageFluctuations(mAverageFluktuations);
    }
-
-   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2316,6 +1863,7 @@ void MPIIORestartCoProcessor::readAverageTripleArray(int step)
    if (doubleCountInBlock > 0)
       MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2335,17 +1883,12 @@ void MPIIORestartCoProcessor::readAverageTripleArray(int step)
 
       // fill AverageTriplecorrelations array
       SPtr<AverageValuesArray3D> mAverageTriplecorrelations;
-      //if ((dataSetParamStr.nx[0] == 0) && (dataSetParamStr.nx[1] == 0) && (dataSetParamStr.nx[2] == 0) && (dataSetParamStr.nx[3] == 0))
-      //   mAverageTriplecorrelations = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr();
-      //else
       mAverageTriplecorrelations = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
       block->getKernel()->getDataSet()->setAverageTriplecorrelations(mAverageTriplecorrelations);
    }
-
-   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2413,6 +1956,7 @@ void MPIIORestartCoProcessor::readShearStressValArray(int step)
    if (doubleCountInBlock > 0)
       MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2432,17 +1976,12 @@ void MPIIORestartCoProcessor::readShearStressValArray(int step)
 
       // fill ShearStressValuesArray array
       SPtr<ShearStressValuesArray3D> mShearStressValues;
-      //if ((dataSetParamStr.nx[0] == 0) && (dataSetParamStr.nx[1] == 0) && (dataSetParamStr.nx[2] == 0) && (dataSetParamStr.nx[3] == 0))
-      //   mShearStressValues = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr();
-      //else
       mShearStressValues = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
       block->getKernel()->getDataSet()->setShearStressValues(mShearStressValues);
    }
-
-   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2510,6 +2049,7 @@ void MPIIORestartCoProcessor::readRelaxationFactor(int step)
    if (doubleCountInBlock > 0)
       MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2529,17 +2069,12 @@ void MPIIORestartCoProcessor::readRelaxationFactor(int step)
 
       // fill RelaxationFactor array
       SPtr<RelaxationFactorArray3D> mRelaxationFactor;
-      //if ((dataSetParamStr.nx[0] == 0) && (dataSetParamStr.nx[1] == 0) && (dataSetParamStr.nx[2] == 0))
-      //   mRelaxationFactor = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr();
-      //else
       mRelaxationFactor = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
       block->getKernel()->getDataSet()->setRelaxationFactor(mRelaxationFactor);
    }
-
-   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -2619,6 +2154,7 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + blocksCount * sizeof(BCAddRestart) + dataCount * sizeof(BoundaryCondition) + blocksCount * boundCondParamStr.bcindexmatrixCount * sizeof(int)), &intArray2[0], dataCount2, MPI_INT, MPI_STATUS_IGNORE);
 
    MPI_File_close(&file_handler);
+   MPI_Type_free(&bcindexmatrixType);
 
    if (comm->isRoot())
    {
@@ -2698,8 +2234,6 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
    delete[] bcAddArray;
    delete[] intArray1;
    delete[] intArray2;
-
-   MPI_Type_free(&bcindexmatrixType);
 
    if (comm->isRoot())
    {
