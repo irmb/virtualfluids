@@ -15,7 +15,7 @@ VirtualFluids has been used on a variety of platforms:
  - C++ compiler with C++11 support, for example gcc 6.3 or Visual C++ 14.0
  - [Paraview](https://www.paraview.org/) (most recent version)
 
-with usage of the gpu:  
+with usage of the GPU:  
  - CUDA [developer.nvidia.com/cuda-zone](https://developer.nvidia.com/cuda-zone):
     * Minimum CUDA Version 9.0
     * Minimum Compute Capability 3.0, because of maximal number of Blocks in x direction
@@ -31,7 +31,7 @@ $ mkdir build
 $ cd build
 ```
 Pass the relevant [options](#options) to cmake.
-E.g. for the cpu part:
+E.g. for the CPU part:
 ```shell
 $ cmake .. -DBUILD_VF_CPU=ON
 $ make
@@ -40,16 +40,16 @@ Alternatively enable the options via the cmake-gui.
 
 ### <a id="options"></a> Options
 - BUILD_VF_CPU
-  - Build VirtualFluids cpu variant
+  - Build VirtualFluids CPU variant
 - BUILD_VF_GPU 
-  - Build VirtualFluids gpu variant
+  - Build VirtualFluids GPU variant
 - BUILD_VF_UNIT_TESTS
   -  Build VirtualFluids unit tests
 - VF_DOUBLE_ACCURACY 
-    - gpu change between Double and Single Precision
+    - GPU change between Double and Single Precision
 
 ### Result Files
-The output files can be found in `<build directory>/bin/output`.
+The output files can be found in `<build directory>/bin/output`. As there is an usually high amount of data, you might want to change the output path in the main function.
 
 The CPU part generates a set of multiple output directories in the prescribed output path. The flow fields can be found in the _mq_ directory. To view the flow fields, it is most conveniant to open the _mq_collection.pvd_ file in Paraview. The _bc_ directory contains the boundary condition information, the _geo_ directory contains information on the geometry of the flow domain and the _blocks_ directory contains the block grid.
 
