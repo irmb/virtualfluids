@@ -95,7 +95,7 @@ int main( int argc, char* argv[])
         //////////////////////////////////////////////////////////////////////////
         // Simulation parameters
         //////////////////////////////////////////////////////////////////////////
-        std::string path("/set/your/outputPath/here");
+        std::string path("./output");
         std::string simulationName("LidDrivenCavity");
 
         const real L  = 1.0;

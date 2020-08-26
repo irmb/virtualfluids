@@ -71,8 +71,8 @@
 #if defined(__unix__) && defined(__CYGWIN__)
    #define UBSYSTEM_CYGWIN
    #include <windows.h>
-#else
-    //#include <sys/syscall.h> // TODO: Did not work on windows!
+#elif defined(__unix__)
+    #include <sys/syscall.h>
 #endif
 
 #if defined(min) || defined(max) //daruch kann man sich spaeter #undef min; #undef max erparen
