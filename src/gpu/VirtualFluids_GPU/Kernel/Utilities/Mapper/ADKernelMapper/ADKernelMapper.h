@@ -4,6 +4,8 @@
 #include "Utilities/EnumMapper/EnumMapperImp.h"
 #include "Kernel//Utilities/KernelType.h"
 
+#include "VirtualFluids_GPU_export.h"
+
 #include <memory>
 #include <string>
 
