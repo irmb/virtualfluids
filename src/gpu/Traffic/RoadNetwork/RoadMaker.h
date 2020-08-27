@@ -5,8 +5,10 @@
 
 #include "Utilities/RandomHelper.h"
 
+#include "Traffic_export.h"
 
-struct VIRTUALFLUIDS_GPU_EXPORT RoadMaker :
+
+struct TRAFFIC_EXPORT RoadMaker :
 	public RoadNetworkData
 {
 public:

@@ -7,6 +7,7 @@
 
 #include <mpi.h>
 
+#include "VirtualFluids_GPU_export.h"
 
 #include "LBM/LB.h"
 

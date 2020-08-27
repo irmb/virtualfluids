@@ -2,7 +2,9 @@
 
 #include "ConcentrationOutwriter.h"
 
-class VIRTUALFLUIDS_GPU_EXPORT ConcBySpeedAndAcceleration :
+#include "Traffic_export.h"
+
+class TRAFFIC_EXPORT ConcBySpeedAndAcceleration :
 	public ConcentrationOutwriter
 {
 public:

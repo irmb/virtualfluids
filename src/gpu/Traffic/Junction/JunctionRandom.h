@@ -6,10 +6,11 @@
 #include "Core/DataTypes.h"
 
 #include "Junction.h"
+#include "Traffic_export.h"
 
 class TrafficMovement;
 
-class VIRTUALFLUIDS_GPU_EXPORT JunctionRandom :
+class TRAFFIC_EXPORT JunctionRandom :
 	public Junction
 {
 

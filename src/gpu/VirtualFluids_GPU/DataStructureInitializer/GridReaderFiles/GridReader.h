@@ -11,6 +11,8 @@
 
 #include "LBM/LB.h"
 
+#include "VirtualFluids_GPU_export.h"
+
 class Parameter;
 class BoundaryValues;
 class BoundaryQs;

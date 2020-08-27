@@ -6,12 +6,14 @@
 #include <vector>
 #include <memory>
 
+#include "Traffic_export.h"
+
 #include "GridGenerator/StreetPointFinder/StreetPointFinder.h"
 
 class TrafficMovement;
 class TrafficLogger;
 
-class VIRTUALFLUIDS_GPU_EXPORT TrafficMovementFactory
+class TRAFFIC_EXPORT TrafficMovementFactory
 {
 public:
 	TrafficMovementFactory();

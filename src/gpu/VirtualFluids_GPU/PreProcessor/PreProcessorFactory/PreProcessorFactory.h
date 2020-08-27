@@ -6,6 +6,8 @@
 #include <memory>
 #include <vector>
 
+#include "VirtualFluids_GPU_export.h"
+
 class PreProcessor;
 class Parameter;
 

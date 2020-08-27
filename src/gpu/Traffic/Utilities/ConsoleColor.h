@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Traffic_export.h"
 
-
-class VIRTUALFLUIDS_GPU_EXPORT ConsoleColor
+class TRAFFIC_EXPORT ConsoleColor
 {
 public:
 	static void setDefaultWhite();

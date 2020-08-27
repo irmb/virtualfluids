@@ -7,7 +7,9 @@
 
 #include "Utilities/RandomHelper.h"
 
-class VIRTUALFLUIDS_GPU_EXPORT SinkRandom:
+#include "Traffic_export.h"
+
+class TRAFFIC_EXPORT SinkRandom:
 	public Sink
 {
 private:

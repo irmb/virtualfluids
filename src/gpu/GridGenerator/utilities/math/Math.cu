@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "VirtualFluidsDefinitions.h"
+
 HOSTDEVICE bool vf::Math::equal(const real& val1, const real& val2, real maxRelDiff)
 {
 	const real diff = std::fabs(val1 - val2);

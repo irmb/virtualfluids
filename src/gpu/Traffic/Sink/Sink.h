@@ -2,7 +2,9 @@
 
 #include "SinkData.h"
 
-class VIRTUALFLUIDS_GPU_EXPORT Sink
+#include "Traffic_export.h"
+
+class TRAFFIC_EXPORT Sink
 {
 public:
 	virtual real getPossibilityBeingBlocked() const = 0;

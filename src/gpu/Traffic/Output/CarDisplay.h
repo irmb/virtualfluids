@@ -8,8 +8,10 @@
 #include "Source/Source.h"
 #include "Junction/Junction.h"
 
+#include "Traffic_export.h"
 
-class VIRTUALFLUIDS_GPU_EXPORT CarDisplay {
+
+class TRAFFIC_EXPORT CarDisplay {
 public:
 	CarDisplay(std::vector<int> **pcurrent, const uint safetyDistance);
 	~CarDisplay() {};

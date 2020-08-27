@@ -8,8 +8,10 @@
 #include "Sink/Sink.h"
 #include "Junction/Junction.h"
 
+#include "Traffic_export.h"
 
-struct VIRTUALFLUIDS_GPU_EXPORT RoadNetworkData
+
+struct TRAFFIC_EXPORT RoadNetworkData
 {
 protected:
 	friend class TrafficMovement;

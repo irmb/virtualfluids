@@ -13,13 +13,14 @@
 #include "Output/ConcentrationOutwriter.h"
 #include "Output/CarDisplay.h"
 
+#include "Traffic_export.h"
 
 class TrafficLogger;
 //class ConcentrationOutwriter;
 //class CarDisplay;
 class TrafficTimestep;
 
-class VIRTUALFLUIDS_GPU_EXPORT TrafficMovement
+class TRAFFIC_EXPORT TrafficMovement
 {
 public:
 	TrafficMovement(std::shared_ptr<RoadNetworkData> road, const real dawdlePossibility);

@@ -10,13 +10,14 @@
 #include <VirtualFluidsDefinitions.h>
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
+#include "Traffic_export.h"
 
 struct RoadNetworkData;
 class Sink;
 class Junction;
 class Source;
 
-class VIRTUALFLUIDS_GPU_EXPORT TrafficTimestep
+class TRAFFIC_EXPORT TrafficTimestep
 {
 private:
 
