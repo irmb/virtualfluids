@@ -26,77 +26,11 @@ using namespace MPIIODataStructures;
 #define MESSAGE_TAG 80
 #define SEND_BLOCK_SIZE 100000
 
-MPIIOMigrationBECoProcessor::MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
-   const std::string& path,
-   SPtr<Communicator> comm) :
-   CoProcessor(grid, s),
-   path(path),
-   comm(comm), 
-   nue(-999.999)
+MPIIOMigrationBECoProcessor::MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm) : MPIIOCoProcessor(grid, s, path, comm), nue(-999.999)
 {
-   UbSystem::makeDirectory(path + "/mpi_io_cp");
-
    memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));
 
    //-------------------------   define MPI types  ---------------------------------
-
-   MPI_Datatype typesGP[3] = { MPI_DOUBLE, MPI_INT, MPI_CHAR };
-   int blocksGP[3] = { 34, 6, 5 };
-   MPI_Aint offsetsGP[3], lbGP, extentGP;
-
-   offsetsGP[0] = 0;
-   MPI_Type_get_extent(MPI_DOUBLE, &lbGP, &extentGP);
-   offsetsGP[1] = blocksGP[0] * extentGP;
-
-   MPI_Type_get_extent(MPI_INT, &lbGP, &extentGP);
-   offsetsGP[2] = offsetsGP[1] + blocksGP[1] * extentGP;
-
-   MPI_Type_create_struct(3, blocksGP, offsetsGP, typesGP, &gridParamType);
-   MPI_Type_commit(&gridParamType);
-
-   //-----------------------------------------------------------------------
-
-   MPI_Datatype typesBlock[2] = { MPI_INT, MPI_CHAR };
-   int blocksBlock[2] = { 13, 1 };
-   MPI_Aint offsetsBlock[2], lbBlock, extentBlock;
-
-   offsetsBlock[0] = 0;
-   MPI_Type_get_extent(MPI_INT, &lbBlock, &extentBlock);
-   offsetsBlock[1] = blocksBlock[0] * extentBlock;
-
-   MPI_Type_create_struct(2, blocksBlock, offsetsBlock, typesBlock, &block3dType);
-   MPI_Type_commit(&block3dType);
-
-   //-----------------------------------------------------------------------
-
-   MPI_Datatype typesBC[3] = { MPI_LONG_LONG_INT, MPI_FLOAT, MPI_CHAR };
-   int blocksBC[3] = { 5, 38, 1 };
-   MPI_Aint offsetsBC[3], lbBC, extentBC;
-
-   offsetsBC[0] = 0;
-   MPI_Type_get_extent(MPI_LONG_LONG_INT, &lbBC, &extentBC);
-   offsetsBC[1] = blocksBC[0] * extentBC;
-
-   MPI_Type_get_extent(MPI_FLOAT, &lbBC, &extentBC);
-   offsetsBC[2] = offsetsBC[1] + blocksBC[1] * extentBC;
-
-   MPI_Type_create_struct(3, blocksBC, offsetsBC, typesBC, &boundCondType);
-   MPI_Type_commit(&boundCondType);
-
-   //-----------------------------------------------------------------------
-
-   MPI_Type_contiguous(7, MPI_INT, &dataSetParamType);
-   MPI_Type_commit(&dataSetParamType);
-
-   //---------------------------------------
-
-   MPI_Type_contiguous(6, MPI_CHAR, &arrayPresenceType);
-   MPI_Type_commit(&arrayPresenceType);
-
-   //-----------------------------------------------------------------------
-
-   MPI_Type_contiguous(SEND_BLOCK_SIZE, MPI_DOUBLE, &sendBlockDoubleType);
-   MPI_Type_commit(&sendBlockDoubleType);
 
    MPI_Type_contiguous(SEND_BLOCK_SIZE, MPI_INT, &sendBlockIntType);
    MPI_Type_commit(&sendBlockIntType);
@@ -106,13 +40,7 @@ MPIIOMigrationBECoProcessor::MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr
 //////////////////////////////////////////////////////////////////////////
 MPIIOMigrationBECoProcessor::~MPIIOMigrationBECoProcessor()
 {
-   MPI_Type_free(&gridParamType);
-   MPI_Type_free(&block3dType);
-   MPI_Type_free(&boundCondType);
-   MPI_Type_free(&dataSetParamType);
-   MPI_Type_free(&sendBlockDoubleType);
    MPI_Type_free(&sendBlockIntType);
-   MPI_Type_free(&arrayPresenceType);
 }
 
 void MPIIOMigrationBECoProcessor::process(double step)
@@ -139,67 +67,9 @@ void MPIIOMigrationBECoProcessor::clearAllFiles(int step)
    MPI_Info info = MPI_INFO_NULL;
    MPI_Offset new_size = 0;
 
+   MPIIOCoProcessor::clearAllFiles(step);
+
    UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
-
-   std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
-   int rc1 = MPI_File_open(MPI_COMM_WORLD, filename1.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &file_handler);
-   if (rc1 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename1);
-   MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
-
-   std::string filename2 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSet.bin";
-   int rc2 = MPI_File_open(MPI_COMM_WORLD, filename2.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc2 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename2);
-   MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
-
-   std::string filename3 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpArrays.bin";
-   int rc3 = MPI_File_open(MPI_COMM_WORLD, filename3.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc3 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename3);
-   MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
-
-   std::string filename4 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageDensityArray.bin";
-   //MPI_File_delete(filename4.c_str(), info);
-   int rc4 = MPI_File_open(MPI_COMM_WORLD, filename4.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc4 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename4);
-   MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
-
-   std::string filename5 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageVelocityArray.bin";
-   //MPI_File_delete(filename5.c_str(), info);
-   int rc5 = MPI_File_open(MPI_COMM_WORLD, filename5.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc5 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename5);
-   MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
-
-   std::string filename6 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageFluktuationsArray.bin";
-   //MPI_File_delete(filename6.c_str(), info);
-   int rc6 = MPI_File_open(MPI_COMM_WORLD, filename6.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc6 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename6);
-   MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
-
-   std::string filename7 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageTripleArray.bin";
-   //MPI_File_delete(filename7.c_str(), info);
-   int rc7 = MPI_File_open(MPI_COMM_WORLD, filename7.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc7 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename7);
-   MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
-
-   std::string filename8 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpShearStressValArray.bin";
-   //MPI_File_delete(filename8.c_str(), info);
-   int rc8 = MPI_File_open(MPI_COMM_WORLD, filename8.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc8 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename8);
-   MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
-
-   std::string filename9 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpRelaxationFactor.bin";
-   //MPI_File_delete(filename9.c_str(), info);
-   int rc9 = MPI_File_open(MPI_COMM_WORLD, filename9.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc9 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename9);
-   MPI_File_set_size(file_handler, new_size);
-   MPI_File_close(&file_handler);
 
    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC1.bin";
    int rc10 = MPI_File_open(MPI_COMM_WORLD, filename10.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
@@ -214,179 +84,13 @@ void MPIIOMigrationBECoProcessor::clearAllFiles(int step)
    MPI_File_close(&file_handler);
 }
 
-void MPIIOMigrationBECoProcessor::writeCpTimeStep(int step)
-{
-   if (comm->isRoot())
-   {
-      UbFileOutputASCII f(path + "/mpi_io_cp/cp.txt");
-      f.writeInteger(step);
-   }
-}
-//////////////////////////////////////////////////////////////////////////
-int MPIIOMigrationBECoProcessor::readCpTimeStep()
-{
-   UbFileInputASCII f(path + "/mpi_io_cp/cp.txt");
-   int step = f.readInteger();
-   return step;
-}
-
 void MPIIOMigrationBECoProcessor::writeBlocks(int step)
 {
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   //MPI_Comm_size(MPI_COMM_WORLD, &size);
-   size = 1;
-
 	grid->deleteBlockIDs();
 	RenumberGridVisitor renumber(comm);
 	grid->accept(renumber);
 
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeBlocks start collect data rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   int blocksCount = 0; // quantity of all the blocks in the grid, max 2147483648 blocks!
-   int minInitLevel = this->grid->getCoarsestInitializedLevel();
-   int maxInitLevel = this->grid->getFinestInitializedLevel();
-
-   std::vector<SPtr<Block3D>> blocksVector[25]; // max 25 levels
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      grid->getBlocks(level, blocksVector[level]);
-      blocksCount += static_cast<int>(blocksVector[level].size());
-   }
-
-   GridParam* gridParameters = new GridParam;
-   gridParameters->trafoParams[0] = grid->getCoordinateTransformator()->Tx1;
-   gridParameters->trafoParams[1] = grid->getCoordinateTransformator()->Tx2;
-   gridParameters->trafoParams[2] = grid->getCoordinateTransformator()->Tx3;
-   gridParameters->trafoParams[3] = grid->getCoordinateTransformator()->Sx1;
-   gridParameters->trafoParams[4] = grid->getCoordinateTransformator()->Sx2;
-   gridParameters->trafoParams[5] = grid->getCoordinateTransformator()->Sx3;
-   gridParameters->trafoParams[6] = grid->getCoordinateTransformator()->alpha;
-   gridParameters->trafoParams[7] = grid->getCoordinateTransformator()->beta;
-   gridParameters->trafoParams[8] = grid->getCoordinateTransformator()->gamma;
-
-   gridParameters->trafoParams[9] = grid->getCoordinateTransformator()->toX1factorX1;
-   gridParameters->trafoParams[10] = grid->getCoordinateTransformator()->toX1factorX2;
-   gridParameters->trafoParams[11] = grid->getCoordinateTransformator()->toX1factorX3;
-   gridParameters->trafoParams[12] = grid->getCoordinateTransformator()->toX1delta;
-   gridParameters->trafoParams[13] = grid->getCoordinateTransformator()->toX2factorX1;
-   gridParameters->trafoParams[14] = grid->getCoordinateTransformator()->toX2factorX2;
-   gridParameters->trafoParams[15] = grid->getCoordinateTransformator()->toX2factorX3;
-   gridParameters->trafoParams[16] = grid->getCoordinateTransformator()->toX2delta;
-   gridParameters->trafoParams[17] = grid->getCoordinateTransformator()->toX3factorX1;
-   gridParameters->trafoParams[18] = grid->getCoordinateTransformator()->toX3factorX2;
-   gridParameters->trafoParams[19] = grid->getCoordinateTransformator()->toX3factorX3;
-   gridParameters->trafoParams[20] = grid->getCoordinateTransformator()->toX3delta;
-
-   gridParameters->trafoParams[21] = grid->getCoordinateTransformator()->fromX1factorX1;
-   gridParameters->trafoParams[22] = grid->getCoordinateTransformator()->fromX1factorX2;
-   gridParameters->trafoParams[23] = grid->getCoordinateTransformator()->fromX1factorX3;
-   gridParameters->trafoParams[24] = grid->getCoordinateTransformator()->fromX1delta;
-   gridParameters->trafoParams[25] = grid->getCoordinateTransformator()->fromX2factorX1;
-   gridParameters->trafoParams[26] = grid->getCoordinateTransformator()->fromX2factorX2;
-   gridParameters->trafoParams[27] = grid->getCoordinateTransformator()->fromX2factorX3;
-   gridParameters->trafoParams[28] = grid->getCoordinateTransformator()->fromX2delta;
-   gridParameters->trafoParams[29] = grid->getCoordinateTransformator()->fromX3factorX1;
-   gridParameters->trafoParams[30] = grid->getCoordinateTransformator()->fromX3factorX2;
-   gridParameters->trafoParams[31] = grid->getCoordinateTransformator()->fromX3factorX3;
-   gridParameters->trafoParams[32] = grid->getCoordinateTransformator()->fromX3delta;
-
-   gridParameters->active = grid->getCoordinateTransformator()->active;
-   gridParameters->transformation = grid->getCoordinateTransformator()->transformation;
-   
-   gridParameters->deltaX = grid->getDeltaX(minInitLevel);
-   UbTupleInt3 blocknx = grid->getBlockNX();
-   gridParameters->blockNx1 = val<1>(blocknx);
-   gridParameters->blockNx2 = val<2>(blocknx);
-   gridParameters->blockNx3 = val<3>(blocknx);
-   gridParameters->nx1 = grid->getNX1();
-   gridParameters->nx2 = grid->getNX2();
-   gridParameters->nx3 = grid->getNX3();
-   gridParameters->periodicX1 = grid->isPeriodicX1();
-   gridParameters->periodicX2 = grid->isPeriodicX2();
-   gridParameters->periodicX3 = grid->isPeriodicX3();
-
-   //----------------------------------------------------------------------
-
-   Block3d* block3dArray = new Block3d[blocksCount];
-   int ic = 0;
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      for (SPtr<Block3D> block : blocksVector[level])  //	all the blocks of the current level
-      {
-         // save data describing the block
-         block3dArray[ic].x1 = block->getX1();
-         block3dArray[ic].x2 = block->getX2();
-         block3dArray[ic].x3 = block->getX3();
-         block3dArray[ic].bundle = block->getBundle();
-         block3dArray[ic].rank = block->getRank();
-         block3dArray[ic].lrank = block->getLocalRank();
-         block3dArray[ic].part = block->getPart();
-         block3dArray[ic].globalID = block->getGlobalID();
-         block3dArray[ic].localID = block->getLocalID();
-         block3dArray[ic].level = block->getLevel();
-         block3dArray[ic].interpolationFlagCF = block->getCollectionOfInterpolationFlagCF();
-         block3dArray[ic].interpolationFlagFC = block->getCollectionOfInterpolationFlagFC();
-         block3dArray[ic].counter = block->getMaxGlobalID();
-         block3dArray[ic].active = block->isActive();
-
-         ic++;
-      }
-   }
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeBlocks start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   // write to the file
-   MPI_File file_handler;
-   MPI_Info info = MPI_INFO_NULL;
-   //MPI_Info_create (&info);
-   //MPI_Info_set(info,"romio_cb_write","enable");
-   //MPI_Info_set(i nfo,"cb_buffer_size","4194304");
-   //MPI_Info_set(info,"striping_unit","4194304");
-
-   // if (comm->isRoot())
-   // {
-   UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-   // }
-
-   double start, finish;
-   //MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
-   MPI_Offset write_offset = (MPI_Offset)(sizeof(int));
-
-   if (comm->isRoot())
-   {
-      start = MPI_Wtime();
-
-      // each process writes the quantity of it's blocks
-      MPI_File_write_at(file_handler, 0, &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
-      // each process writes parameters of the grid
-      MPI_File_write_at(file_handler, write_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
-      // each process writes it's blocks
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(GridParam)), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
-      //MPI_File_sync(file_handler);
-   }
-
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeBlocks time: " << finish - start << " s");
-   }
-
-   delete[] block3dArray;
-   delete gridParameters;
+   MPIIOCoProcessor::writeBlocks(step);
 }
 
 void MPIIOMigrationBECoProcessor::writeDataSet(int step)
@@ -394,9 +98,6 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
    int rank, size;
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-  if (comm->isRoot())
-	std::cout << "size = "<<size<<std::endl;
 
    int blocksCount = 0; // quantity of blocks, that belong to this process 
 
@@ -423,14 +124,19 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
    bool firstBlock = true;
    int doubleCountInBlock = 0;
    int ic = 0;
+   SPtr< D3Q27EsoTwist3DSplittedVector > D3Q27EsoTwist3DSplittedVectorPtr;
+   CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
+   CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
+   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions;
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
       {
-         SPtr< D3Q27EsoTwist3DSplittedVector > D3Q27EsoTwist3DSplittedVectorPtr = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
-         CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getLocalDistributions();
-         CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getNonLocalDistributions();
-         CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getZeroDistributions();
+         D3Q27EsoTwist3DSplittedVectorPtr = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
+         localDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getLocalDistributions();
+         nonLocalDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getNonLocalDistributions();
+         zeroDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getZeroDistributions();
 
          if (firstBlock)// && block->getKernel()) // when first (any) valid block...
          {
@@ -518,6 +224,9 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
       }
    }
 
+   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_commit(&dataSetDoubleType);
+
    if (comm->isRoot())
    {
       UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeDataSet start MPI IO rank = " << rank);
@@ -546,10 +255,11 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
    MPI_File_write_at(file_handler, (MPI_Offset)0, &dataSetParamStr1, 1, dataSetParamType, MPI_STATUS_IGNORE);
    MPI_File_write_at(file_handler, (MPI_Offset)(sizeof(dataSetParam)), &dataSetParamStr2, 1, dataSetParamType, MPI_STATUS_IGNORE);
    MPI_File_write_at(file_handler, (MPI_Offset)(2 * sizeof(dataSetParam)), &dataSetParamStr3, 1, dataSetParamType, MPI_STATUS_IGNORE);
-   MPI_File_write_at(file_handler, write_offset, &doubleValuesArray[0], blocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
+   MPI_File_write_at(file_handler, write_offset, &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -566,26 +276,32 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
    MPI_File_close(&file_handler1);
 
    if (arrPresence.isAverageDensityArrayPresent)
-      writeAverageDensityArray(step);
+      write4DArray(step, AverageDensity, std::string("/cpAverageDensityArray.bin"));
+      //writeAverageDensityArray(step);
 
    if (arrPresence.isAverageVelocityArrayPresent)
-      writeAverageVelocityArray(step);
+      write4DArray(step, AverageVelocity, std::string("/cpAverageVelocityArray.bin"));
+   //writeAverageVelocityArray(step);
 
    if (arrPresence.isAverageFluktuationsArrayPresent)
-      writeAverageFluktuationsArray(step);
+      write4DArray(step, AverageFluktuations, std::string("/cpAverageFluktuationsArray.bin"));
+   //writeAverageFluktuationsArray(step);
 
    if (arrPresence.isAverageTripleArrayPresent)
-      writeAverageTripleArray(step);
+      write4DArray(step, AverageTriple, std::string("/cpAverageTripleArray.bin"));
+   //writeAverageTripleArray(step);
 
    if (arrPresence.isShearStressValArrayPresent)
-      writeShearStressValArray(step);
+      write4DArray(step, ShearStressVal, std::string("/cpShearStressValArray.bin"));
+   //writeShearStressValArray(step);
 
    if (arrPresence.isRelaxationFactorPresent)
-      writeRelaxationFactor(step);
+      write3DArray(step, RelaxationFactor, std::string("/cpRelaxationFactor.bin"));
+   //writeRelaxationFactor(step);
 
 }
 
-void MPIIOMigrationBECoProcessor::writeAverageDensityArray(int step)
+void MPIIOMigrationBECoProcessor::write4DArray(int step, Arrays arrayType, std::string fname)
 {
    int rank, size;
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -603,40 +319,60 @@ void MPIIOMigrationBECoProcessor::writeAverageDensityArray(int step)
    }
 
    int firstGlobalID;
-   std::vector<double> doubleValuesArray; // double-values of the AverageDensityArray in all blocks 
+   std::vector<double> doubleValuesArray; // double-values of the data array in all blocks 
    dataSetParam dataSetParamStr;
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeAverageDensityArray start collect data rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
    bool firstBlock = true;
    int doubleCountInBlock = 0;
    int ic = 0;
+   SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > ___Array;
+
+   if (comm->isRoot())
+   {
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::write4DArray start collect data rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
       {
-         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray = block->getKernel()->getDataSet()->getAverageDensity();
+         switch (arrayType) {
+         case AverageDensity:
+            ___Array = block->getKernel()->getDataSet()->getAverageDensity();
+            break;
+         case AverageVelocity:
+            ___Array = block->getKernel()->getDataSet()->getAverageVelocity();
+            break;
+         case AverageFluktuations:
+            ___Array = block->getKernel()->getDataSet()->getAverageFluctuations();
+            break;
+         case AverageTriple:
+            ___Array = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
+            break;
+         case ShearStressVal:
+            ___Array = block->getKernel()->getDataSet()->getShearStressValues();
+            break;
+         default:
+            UB_THROW(UbException(UB_EXARGS, "MPIIOMigrationBECoProcessor::write4DArray : 4D array type does not exist!"));
+            break;
+         }
 
          if (firstBlock) // when first (any) valid block...
          {
             firstGlobalID = block->getGlobalID();
 
             dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
-            dataSetParamStr.nx[0] = static_cast<int>(averageDensityArray->getNX1());
-            dataSetParamStr.nx[1] = static_cast<int>(averageDensityArray->getNX2());
-            dataSetParamStr.nx[2] = static_cast<int>(averageDensityArray->getNX3());
-            dataSetParamStr.nx[3] = static_cast<int>(averageDensityArray->getNX4());
+            dataSetParamStr.nx[0] = static_cast<int>(___Array->getNX1());
+            dataSetParamStr.nx[1] = static_cast<int>(___Array->getNX2());
+            dataSetParamStr.nx[2] = static_cast<int>(___Array->getNX3());
+            dataSetParamStr.nx[3] = static_cast<int>(___Array->getNX4());
             doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
 
             firstBlock = false;
          }
 
          if ((dataSetParamStr.nx[0] > 0) && (dataSetParamStr.nx[1] > 0) && (dataSetParamStr.nx[2] > 0) && (dataSetParamStr.nx[3] > 0))
-            doubleValuesArray.insert(doubleValuesArray.end(), averageDensityArray->getDataVector().begin(), averageDensityArray->getDataVector().end());
+            doubleValuesArray.insert(doubleValuesArray.end(), ___Array->getDataVector().begin(), ___Array->getDataVector().end());
 
          ic++;
       }
@@ -644,9 +380,13 @@ void MPIIOMigrationBECoProcessor::writeAverageDensityArray(int step)
 
    if (comm->isRoot())
    {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeAverageDensityArray start MPI IO rank = " << rank);
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::write4DArray start MPI IO rank = " << rank);
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }
+
+   // register new MPI-type depending on the block-specific information
+   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_commit(&dataSetDoubleType);
 
    double start, finish;
    if (comm->isRoot()) start = MPI_Wtime();
@@ -654,7 +394,7 @@ void MPIIOMigrationBECoProcessor::writeAverageDensityArray(int step)
    MPI_Info info = MPI_INFO_NULL;
 
    MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageDensityArray.bin";
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
    int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
    if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
@@ -662,19 +402,20 @@ void MPIIOMigrationBECoProcessor::writeAverageDensityArray(int step)
 
    // each process writes common parameters of a dataSet
    MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
-   MPI_File_write_at(file_handler, write_offset, &doubleValuesArray[0], blocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
+   MPI_File_write_at(file_handler, write_offset, &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
       finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeAverageDensityArray time: " << finish - start << " s");
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::write4DArray time: " << finish - start << " s");
    }
 }
 
-void MPIIOMigrationBECoProcessor::writeAverageVelocityArray(int step)
+void MPIIOMigrationBECoProcessor::write3DArray(int step, Arrays arrayType, std::string fname)
 {
    int rank, size;
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -692,408 +433,48 @@ void MPIIOMigrationBECoProcessor::writeAverageVelocityArray(int step)
    }
 
    int firstGlobalID;
-   std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
+   std::vector<double> doubleValuesArray; // double-values of the data array in all blocks 
    dataSetParam dataSetParamStr;
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeAverageVelocityArray start collect data rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
    bool firstBlock = true;
    int doubleCountInBlock = 0;
    int ic = 0;
+   SPtr< CbArray3D<LBMReal, IndexerX3X2X1> > ___Array;
+
+   if (comm->isRoot())
+   {
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::write3DArray start collect data rank = " << rank);
+      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+   }
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
       {
-         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageVelocityArray3DPtr = block->getKernel()->getDataSet()->getAverageVelocity();
-
-         if (firstBlock) // when first (any) valid block...
-         {
-            firstGlobalID = block->getGlobalID();
-
-            dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
-            dataSetParamStr.nx[0] = static_cast<int>(AverageVelocityArray3DPtr->getNX1());
-            dataSetParamStr.nx[1] = static_cast<int>(AverageVelocityArray3DPtr->getNX2());
-            dataSetParamStr.nx[2] = static_cast<int>(AverageVelocityArray3DPtr->getNX3());
-            dataSetParamStr.nx[3] = static_cast<int>(AverageVelocityArray3DPtr->getNX4());
-            doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-
-            firstBlock = false;
+         switch (arrayType) {
+         case RelaxationFactor:
+            ___Array = block->getKernel()->getDataSet()->getRelaxationFactor();
+            break;
+         default:
+            UB_THROW(UbException(UB_EXARGS, "MPIIOMigrationBECoProcessor::write3DArray : 3D array type does not exist!"));
+            break;
          }
 
-         if ((dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0) && (dataSetParamStr.nx[3]>0))
-            doubleValuesArray.insert(doubleValuesArray.end(), AverageVelocityArray3DPtr->getDataVector().begin(), AverageVelocityArray3DPtr->getDataVector().end());
-
-         ic++;
-      }
-   }
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeAverageVelocityArray start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   double start, finish;
-   if (comm->isRoot()) start = MPI_Wtime();
-
-   MPI_Info info = MPI_INFO_NULL;
-
-   MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageVelocityArray.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-
-   MPI_Offset write_offset = (MPI_Offset)(sizeof(dataSetParam)) + (MPI_Offset)(firstGlobalID) * (MPI_Offset)(doubleCountInBlock) * (MPI_Offset)(sizeof(double));
-
-   // each process writes common parameters of a dataSet
-   MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
-   MPI_File_write_at(file_handler, write_offset, &doubleValuesArray[0], blocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
-
-   MPI_File_sync(file_handler);
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeAverageVelocityArray time: " << finish - start << " s");
-   }
-}
-
-void MPIIOMigrationBECoProcessor::writeAverageFluktuationsArray(int step)
-{
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-   int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
-
-   std::vector<SPtr<Block3D>> blocksVector[25];
-   int minInitLevel = this->grid->getCoarsestInitializedLevel();
-   int maxInitLevel = this->grid->getFinestInitializedLevel();
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      grid->getBlocks(level, rank, blocksVector[level]);
-      blocksCount += static_cast<int>(blocksVector[level].size());
-   }
-
-   int firstGlobalID;
-   std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
-   dataSetParam dataSetParamStr;
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeAverageFluktuationsArray start collect data rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   bool firstBlock = true;
-   int doubleCountInBlock = 0;
-   int ic = 0;
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
-      {
-         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageFluctArray3DPtr = block->getKernel()->getDataSet()->getAverageFluctuations();
-
          if (firstBlock) // when first (any) valid block...
          {
             firstGlobalID = block->getGlobalID();
 
             dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
-            dataSetParamStr.nx[0] = static_cast<int>(AverageFluctArray3DPtr->getNX1());
-            dataSetParamStr.nx[1] = static_cast<int>(AverageFluctArray3DPtr->getNX2());
-            dataSetParamStr.nx[2] = static_cast<int>(AverageFluctArray3DPtr->getNX3());
-            dataSetParamStr.nx[3] = static_cast<int>(AverageFluctArray3DPtr->getNX4());
-            doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-
-            firstBlock = false;
-         }
-
-         if ((dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0) && (dataSetParamStr.nx[3]>0))
-            doubleValuesArray.insert(doubleValuesArray.end(), AverageFluctArray3DPtr->getDataVector().begin(), AverageFluctArray3DPtr->getDataVector().end());
-
-         ic++;
-      }
-   }
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeAverageFluktuationsArray start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   double start, finish;
-   if (comm->isRoot()) start = MPI_Wtime();
-
-   MPI_Info info = MPI_INFO_NULL;
-
-   MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageFluktuationsArray.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-
-   MPI_Offset write_offset = (MPI_Offset)(sizeof(dataSetParam)) + (MPI_Offset)(firstGlobalID) * (MPI_Offset)(doubleCountInBlock) * (MPI_Offset)(sizeof(double));
-
-   // each process writes common parameters of a dataSet
-   MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
-   MPI_File_write_at(file_handler, write_offset, &doubleValuesArray[0], blocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
-
-   MPI_File_sync(file_handler);
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeAverageFluktuationsArray time: " << finish - start << " s");
-   }
-}
-
-void MPIIOMigrationBECoProcessor::writeAverageTripleArray(int step)
-{
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-   int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
- 
-   std::vector<SPtr<Block3D>> blocksVector[25];
-   int minInitLevel = this->grid->getCoarsestInitializedLevel();
-   int maxInitLevel = this->grid->getFinestInitializedLevel();
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      grid->getBlocks(level, rank, blocksVector[level]);
-      blocksCount += static_cast<int>(blocksVector[level].size());
-   }
-
-   int firstGlobalID;
-   std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
-   dataSetParam dataSetParamStr;
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationCoProcessor::writeAverageTripleArray start collect data rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   bool firstBlock = true;
-   int doubleCountInBlock = 0;
-   int ic = 0;
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
-      {
-         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageTripleArray3DPtr = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
-
-         if (firstBlock) // when first (any) valid block...
-         {
-            firstGlobalID = block->getGlobalID();
-
-            dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
-            dataSetParamStr.nx[0] = static_cast<int>(AverageTripleArray3DPtr->getNX1());
-            dataSetParamStr.nx[1] = static_cast<int>(AverageTripleArray3DPtr->getNX2());
-            dataSetParamStr.nx[2] = static_cast<int>(AverageTripleArray3DPtr->getNX3());
-            dataSetParamStr.nx[3] = static_cast<int>(AverageTripleArray3DPtr->getNX4());
-            doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-
-            firstBlock = false;
-         }
-
-         if ((dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0) && (dataSetParamStr.nx[3]>0))
-            doubleValuesArray.insert(doubleValuesArray.end(), AverageTripleArray3DPtr->getDataVector().begin(), AverageTripleArray3DPtr->getDataVector().end());
-
-         ic++;
-      }
-   }
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeAverageTripleArray start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   double start, finish;
-   if (comm->isRoot()) start = MPI_Wtime();
-
-   MPI_Info info = MPI_INFO_NULL;
-
-#ifdef HLRN
-   MPI_Info_create(&info);
-   MPI_Info_set(info, "striping_factor", "40");
-   MPI_Info_set(info, "striping_unit", "4M");
-#endif
-
-   MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageTripleArray.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-
-   MPI_Offset write_offset = (MPI_Offset)(sizeof(dataSetParam)) + (MPI_Offset)(firstGlobalID) * (MPI_Offset)(doubleCountInBlock) * (MPI_Offset)(sizeof(double));
-
-   // each process writes common parameters of a dataSet
-   MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
-   MPI_File_write_at(file_handler, write_offset, &doubleValuesArray[0], blocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
-
-   MPI_File_sync(file_handler);
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeAverageTripleArray time: " << finish - start << " s");
-   }
-}
-
-void MPIIOMigrationBECoProcessor::writeShearStressValArray(int step)
-{
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-   int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
-
-   std::vector<SPtr<Block3D>> blocksVector[25];
-   int minInitLevel = this->grid->getCoarsestInitializedLevel();
-   int maxInitLevel = this->grid->getFinestInitializedLevel();
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      grid->getBlocks(level, rank, blocksVector[level]);
-      blocksCount += static_cast<int>(blocksVector[level].size());
-   }
-
-   int firstGlobalID;
-   std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
-   dataSetParam dataSetParamStr;
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeShearStressValArray start collect data rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   bool firstBlock = true;
-   int doubleCountInBlock = 0;
-   int ic = 0;
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
-      {
-         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > ShearStressValArray3DPtr = block->getKernel()->getDataSet()->getShearStressValues();
-
-         if (firstBlock) // when first (any) valid block...
-         {
-            firstGlobalID = block->getGlobalID();
-
-            dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
-            dataSetParamStr.nx[0] = static_cast<int>(ShearStressValArray3DPtr->getNX1());
-            dataSetParamStr.nx[1] = static_cast<int>(ShearStressValArray3DPtr->getNX2());
-            dataSetParamStr.nx[2] = static_cast<int>(ShearStressValArray3DPtr->getNX3());
-            dataSetParamStr.nx[3] = static_cast<int>(ShearStressValArray3DPtr->getNX4());
-            doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-
-            firstBlock = false;
-         }
-
-         if ((dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0) && (dataSetParamStr.nx[3]>0))
-            doubleValuesArray.insert(doubleValuesArray.end(), ShearStressValArray3DPtr->getDataVector().begin(), ShearStressValArray3DPtr->getDataVector().end());
-
-         ic++;
-      }
-   }
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeShearStressValArray start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   double start, finish;
-   if (comm->isRoot()) start = MPI_Wtime();
-
-   MPI_Info info = MPI_INFO_NULL;
-
-#ifdef HLRN
-   MPI_Info_create(&info);
-   MPI_Info_set(info, "striping_factor", "40");
-   MPI_Info_set(info, "striping_unit", "4M");
-#endif
-
-   MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpShearStressValArray.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-
-   MPI_Offset write_offset = (MPI_Offset)(sizeof(dataSetParam)) + (MPI_Offset)(firstGlobalID) * (MPI_Offset)(doubleCountInBlock) * (MPI_Offset)(sizeof(double));
-
-   // each process writes common parameters of a dataSet
-   MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
-   MPI_File_write_at(file_handler, write_offset, &doubleValuesArray[0], blocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
-
-   MPI_File_sync(file_handler);
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeShearStressValArray time: " << finish - start << " s");
-   }
-}
-
-void MPIIOMigrationBECoProcessor::writeRelaxationFactor(int step)
-{
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-   int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
- 
-   std::vector<SPtr<Block3D>> blocksVector[25];
-   int minInitLevel = this->grid->getCoarsestInitializedLevel();
-   int maxInitLevel = this->grid->getFinestInitializedLevel();
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      grid->getBlocks(level, rank, blocksVector[level]);
-      blocksCount += static_cast<int>(blocksVector[level].size());
-   }
-
-   int firstGlobalID;
-   std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
-   dataSetParam dataSetParamStr;
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeRelaxationFactor start collect data rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   bool firstBlock = true;
-   int doubleCountInBlock = 0;
-   int ic = 0;
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
-   {
-      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
-      {
-         SPtr< CbArray3D<LBMReal, IndexerX3X2X1> > relaxationFactor3DPtr = block->getKernel()->getDataSet()->getRelaxationFactor();
-
-         if (firstBlock) // when first (any) valid block...
-         {
-            firstGlobalID = block->getGlobalID();
-
-            dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
-            dataSetParamStr.nx[0] = static_cast<int>(relaxationFactor3DPtr->getNX1());
-            dataSetParamStr.nx[1] = static_cast<int>(relaxationFactor3DPtr->getNX2());
-            dataSetParamStr.nx[2] = static_cast<int>(relaxationFactor3DPtr->getNX3());
+            dataSetParamStr.nx[0] = static_cast<int>(___Array->getNX1());
+            dataSetParamStr.nx[1] = static_cast<int>(___Array->getNX2());
+            dataSetParamStr.nx[2] = static_cast<int>(___Array->getNX3());
             dataSetParamStr.nx[3] = 1;
             doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
 
             firstBlock = false;
          }
 
-         if ((dataSetParamStr.nx[0]>0) && (dataSetParamStr.nx[1]>0) && (dataSetParamStr.nx[2]>0))
-            doubleValuesArray.insert(doubleValuesArray.end(), relaxationFactor3DPtr->getDataVector().begin(), relaxationFactor3DPtr->getDataVector().end());
+         if ((dataSetParamStr.nx[0] > 0) && (dataSetParamStr.nx[1] > 0) && (dataSetParamStr.nx[2] > 0))
+            doubleValuesArray.insert(doubleValuesArray.end(), ___Array->getDataVector().begin(), ___Array->getDataVector().end());
 
          ic++;
       }
@@ -1101,23 +482,21 @@ void MPIIOMigrationBECoProcessor::writeRelaxationFactor(int step)
 
    if (comm->isRoot())
    {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeRelaxationFactor start MPI IO rank = " << rank);
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::write3DArray start MPI IO rank = " << rank);
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }
+
+   // register new MPI-type depending on the block-specific information
+   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_commit(&dataSetDoubleType);
 
    double start, finish;
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_Info info = MPI_INFO_NULL;
 
-#ifdef HLRN
-   MPI_Info_create(&info);
-   MPI_Info_set(info, "striping_factor", "40");
-   MPI_Info_set(info, "striping_unit", "4M");
-#endif
-
    MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpRelaxationFactor.bin";
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
    int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
    if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
@@ -1125,15 +504,16 @@ void MPIIOMigrationBECoProcessor::writeRelaxationFactor(int step)
 
    // each process writes common parameters of a dataSet
    MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
-   MPI_File_write_at(file_handler, write_offset, &doubleValuesArray[0], blocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
+   MPI_File_write_at(file_handler, write_offset, &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
       finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeRelaxationFactor time: " << finish - start << " s");
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::write3DArray time: " << finish - start << " s");
    }
 }
 
@@ -1173,11 +553,13 @@ void MPIIOMigrationBECoProcessor::writeBoundaryConds(int step)
 
    bool bcindexmatrixCountNotInit = true;
    int ic = 0;
+   SPtr<BCArray3D> bcArr;
+
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       for (SPtr<Block3D> block : blocksVector[level])  // all the blocks of the current level
       {
-         SPtr<BCArray3D> bcArr = block->getKernel()->getBCProcessor()->getBCArray();
+         bcArr = block->getKernel()->getBCProcessor()->getBCArray();
 
          bcAddArray[ic].globalID = block->getGlobalID(); // id of the block needed to find it while regenerating the grid
          bcAddArray[ic].boundCond_count = 0;             // how many BoundaryConditions in this block
@@ -1243,6 +625,9 @@ void MPIIOMigrationBECoProcessor::writeBoundaryConds(int step)
       }
    }
 
+   MPI_Type_contiguous(boundCondParamStr.bcindexmatrixCount, MPI_INT, &bcindexmatrixType);
+   MPI_Type_commit(&bcindexmatrixType);
+   
    if (comm->isRoot())
    {
       UBLOG(logINFO, "MPIIOMigrationBECoProcessor::writeBoundaryConds start MPI IO rank = " << rank);
@@ -1259,6 +644,7 @@ void MPIIOMigrationBECoProcessor::writeBoundaryConds(int step)
    //MPI_Info_set(info,"striping_unit","4194304");
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
    MPI_File file_handler;
    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC1.bin";
    int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
@@ -1267,10 +653,11 @@ void MPIIOMigrationBECoProcessor::writeBoundaryConds(int step)
    MPI_Offset write_offset = (MPI_Offset)(sizeof(int)) + (MPI_Offset)(bcAddArray[0].globalID) * (MPI_Offset)(boundCondParamStr.bcindexmatrixCount) * (MPI_Offset)(sizeof(int));
 
    MPI_File_write_at(file_handler, 0, &boundCondParamStr.bcindexmatrixCount, 1, MPI_INT, MPI_STATUS_IGNORE);
-   MPI_File_write_at(file_handler, write_offset, &bcindexmatrixVector[0], blocksCount * boundCondParamStr.bcindexmatrixCount, MPI_INT, MPI_STATUS_IGNORE);
+   MPI_File_write_at(file_handler, write_offset, &bcindexmatrixVector[0], blocksCount, bcindexmatrixType, MPI_STATUS_IGNORE);
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
+   MPI_Type_free(&bcindexmatrixType);
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC2.bin";
@@ -1349,135 +736,7 @@ void MPIIOMigrationBECoProcessor::restart(int step)
 
 void MPIIOMigrationBECoProcessor::readBlocks(int step)
 {
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   //MPI_Comm_size(MPI_COMM_WORLD, &size);
-   size = 1;
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readBlocks start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   double start, finish;
-   if (comm->isRoot()) start = MPI_Wtime();
-
-   MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-
-   // read count of blocks
-   int blocksCount = 0;
-   MPI_File_read_at(file_handler, 0, &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
-   Block3d* block3dArray = new Block3d[blocksCount];
-
-   GridParam* gridParameters = new GridParam;
-
-   // calculate the read offset
-   //MPI_Offset read_offset = (MPI_Offset)(size * sizeof(int));
-   MPI_Offset read_offset = (MPI_Offset)(sizeof(int));
-
-   // read parameters of the grid
-   MPI_File_read_at(file_handler, read_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
-   // read all the blocks
-   if (comm->isRoot())
-      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(GridParam)), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
-
-   MPI_Bcast(block3dArray, blocksCount, block3dType, comm->getRoot(), MPI_COMM_WORLD);
-
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readBlocks time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readBlocks start of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   // clear the grid
-   grid->deleteBlocks();
-
-   // restore the grid
-   SPtr<CoordinateTransformation3D> trafo(new CoordinateTransformation3D());
-   trafo->Tx1 = gridParameters->trafoParams[0];
-   trafo->Tx2 = gridParameters->trafoParams[1];
-   trafo->Tx3 = gridParameters->trafoParams[2];
-   trafo->Sx1 = gridParameters->trafoParams[3];
-   trafo->Sx2 = gridParameters->trafoParams[4];
-   trafo->Sx3 = gridParameters->trafoParams[5];
-   trafo->alpha = gridParameters->trafoParams[6];
-   trafo->beta = gridParameters->trafoParams[7];
-   trafo->gamma = gridParameters->trafoParams[8];
-
-   trafo->toX1factorX1 = gridParameters->trafoParams[9];
-   trafo->toX1factorX2 = gridParameters->trafoParams[10];
-   trafo->toX1factorX3 = gridParameters->trafoParams[11];
-   trafo->toX1delta = gridParameters->trafoParams[12];
-   trafo->toX2factorX1 = gridParameters->trafoParams[13];
-   trafo->toX2factorX2 = gridParameters->trafoParams[14];
-   trafo->toX2factorX3 = gridParameters->trafoParams[15];
-   trafo->toX2delta = gridParameters->trafoParams[16];
-   trafo->toX3factorX1 = gridParameters->trafoParams[17];
-   trafo->toX3factorX2 = gridParameters->trafoParams[18];
-   trafo->toX3factorX3 = gridParameters->trafoParams[19];
-   trafo->toX3delta = gridParameters->trafoParams[20];
-
-   trafo->fromX1factorX1 = gridParameters->trafoParams[21];
-   trafo->fromX1factorX2 = gridParameters->trafoParams[22];
-   trafo->fromX1factorX3 = gridParameters->trafoParams[23];
-   trafo->fromX1delta = gridParameters->trafoParams[24];
-   trafo->fromX2factorX1 = gridParameters->trafoParams[25];
-   trafo->fromX2factorX2 = gridParameters->trafoParams[26];
-   trafo->fromX2factorX3 = gridParameters->trafoParams[27];
-   trafo->fromX2delta = gridParameters->trafoParams[28];
-   trafo->fromX3factorX1 = gridParameters->trafoParams[29];
-   trafo->fromX3factorX2 = gridParameters->trafoParams[30];
-   trafo->fromX3factorX3 = gridParameters->trafoParams[31];
-   trafo->fromX3delta = gridParameters->trafoParams[32];
-
-   trafo->active = gridParameters->active;
-   trafo->transformation = gridParameters->transformation;
-
-   grid->setCoordinateTransformator(trafo);
-
-   grid->setDeltaX(gridParameters->deltaX);
-   grid->setBlockNX(gridParameters->blockNx1, gridParameters->blockNx2, gridParameters->blockNx3);
-   grid->setNX1(gridParameters->nx1);
-   grid->setNX2(gridParameters->nx2);
-   grid->setNX3(gridParameters->nx3);
-   grid->setPeriodicX1(gridParameters->periodicX1);
-   grid->setPeriodicX2(gridParameters->periodicX2);
-   grid->setPeriodicX3(gridParameters->periodicX3);
-
-   // regenerate blocks
-   for (int n = 0; n<blocksCount; n++)
-   {
-      SPtr<Block3D> block(new Block3D(block3dArray[n].x1, block3dArray[n].x2, block3dArray[n].x3, block3dArray[n].level));
-      block->setActive(block3dArray[n].active);
-      block->setBundle(block3dArray[n].bundle);
-      block->setRank(block3dArray[n].rank);
-      block->setLocalRank(block3dArray[n].lrank);
-      block->setGlobalID(block3dArray[n].globalID);
-      block->setLocalID(block3dArray[n].localID);
-      block->setPart(block3dArray[n].part);
-      block->setLevel(block3dArray[n].level);
-      block->setCollectionOfInterpolationFlagCF(block3dArray[n].interpolationFlagCF);
-      block->setCollectionOfInterpolationFlagFC(block3dArray[n].interpolationFlagFC);
-
-      grid->addBlock(block);
-   }
-
-   delete gridParameters;
-   delete[] block3dArray;
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readBlocks end of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
+   MPIIOCoProcessor::readBlocks(step);
 }
 
 void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, int doubleCountInBlock, std::vector<double>& pV, std::vector<double>* rawDataReceive)
@@ -1490,75 +749,125 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
    int indexE = ind2;
    int myBlocksCount = indexE - indexB;
 
+   int* blocksCounterSend = new int[size];
+   int* blocksCounterRec = new int[size];
+  
    std::vector<double>* rawDataSend = new std::vector<double>[size];
    for (int r = 0; r < size; r++)
    {
       rawDataSend[r].resize(0);
-      rawDataSend[r].push_back(0);
+      blocksCounterSend[r] = 0;
+      blocksCounterRec[r] = 0;
    }
 
    SPtr<Block3D> tempBlock;
    int tempRank;
-   for (int ind = indexB - indexB; ind < indexE - indexB; ind++)
+   
+   for(size_t ind = indexB - indexB; ind < indexE - indexB; ind++)
    {
       tempBlock = grid->getBlock(indexB + ind);
       if(!tempBlock)  throw UbException(UB_EXARGS,"MPIIOMigrationBECoProcessor::blocksExchange -- null block pointer!!!" );
 
       tempRank = tempBlock->getRank();
-
+     
       if (tempRank == rank) // no need to send data, the process already has it
       {
-         rawDataReceive[tempRank][0]++;
-         rawDataReceive[tempRank].push_back(double(indexB + ind));
-         rawDataReceive[tempRank].insert(rawDataReceive[tempRank].end(), pV.begin() + ind * doubleCountInBlock,
-            pV.begin() + ind * doubleCountInBlock + doubleCountInBlock);
+		 blocksCounterRec[tempRank]++;
+         rawDataReceive[tempRank].push_back(double(indexB + ind));       
+         rawDataReceive[tempRank].insert(rawDataReceive[tempRank].end(), pV.begin() + ind * size_t(doubleCountInBlock), pV.begin() + ind * size_t(doubleCountInBlock) + size_t(doubleCountInBlock));
       }
       else  // we must send data to other processes
       {
-         rawDataSend[tempRank][0]++;
+		 blocksCounterSend[tempRank]++;
          rawDataSend[tempRank].push_back(double(indexB + ind));
-         rawDataSend[tempRank].insert(rawDataSend[tempRank].end(), pV.begin() + ind * doubleCountInBlock,
-            pV.begin() + ind * doubleCountInBlock + doubleCountInBlock);
-      }
+         rawDataSend[tempRank].insert(rawDataSend[tempRank].end(), pV.begin() + ind * size_t(doubleCountInBlock), pV.begin() + ind * size_t(doubleCountInBlock) + size_t(doubleCountInBlock));
+     }
    }
-
+   
    MPI_Request* requests = new MPI_Request[size * 2]; // send + receive
    int requestCount = 0;
    MPI_Status status;
-   int quant;
-   int doubleBlockCount;
-   int rds;
 
    for (int r = 0; r < size; r++)
    {
       if (r != rank)
       {
-		 rds = rawDataSend[r].size();
-         doubleBlockCount = (int)(rds / SEND_BLOCK_SIZE);
-         if (doubleBlockCount * SEND_BLOCK_SIZE < rds)
-            doubleBlockCount += 1;
-
-	     for (int i = rds; i < doubleBlockCount * SEND_BLOCK_SIZE; i++)
-	         rawDataSend[r].push_back(0);
-
-         MPI_Isend(&rawDataSend[r][0], doubleBlockCount, sendBlockDoubleType, r, tagN, MPI_COMM_WORLD, &requests[requestCount]);
+         MPI_Irecv(&blocksCounterRec[r], 1, MPI_INT, r, tagN, MPI_COMM_WORLD, &requests[requestCount]);
          requestCount++;
       }
    }
-
+  
    for (int r = 0; r < size; r++)
    {
       if (r != rank)
       {
-         MPI_Probe(r, tagN, MPI_COMM_WORLD, &status);
-         MPI_Get_count(&status, sendBlockDoubleType, &quant);
-         rawDataReceive[r].resize(quant * SEND_BLOCK_SIZE);
-         MPI_Irecv(&rawDataReceive[r][0], quant, sendBlockDoubleType, r, tagN, MPI_COMM_WORLD, &requests[requestCount]);
-         requestCount++;
-      }
+        MPI_Isend(&blocksCounterSend[r], 1, MPI_INT, r, tagN, MPI_COMM_WORLD, &requests[requestCount]);
+        requestCount++;
+      } 
    }
 
    MPI_Waitall(requestCount, &requests[0], MPI_STATUSES_IGNORE);
+    
+    MPI_Type_contiguous(doubleCountInBlock + 1, MPI_DOUBLE, &sendBlockDoubleType);
+    MPI_Type_commit(&sendBlockDoubleType);
+
+    for (int r = 0; r < size; r++)
+    {
+      if (r != rank)
+       rawDataReceive[r].resize(size_t(blocksCounterRec[r]) * size_t(doubleCountInBlock + 1));
+    }
+
+	requestCount = 0;
+ 	int sendRecCount = 0;
+	size_t sendRecOffset = 0;
+	const int maxQuant = 400; 
+	int restQuant;
+
+    for (int r = 0; r < size; r++)
+    {
+       if (r != rank)
+       {
+		  sendRecCount = int(blocksCounterRec[r] / maxQuant);
+		  if(sendRecCount * maxQuant < blocksCounterRec[r]) 
+			sendRecCount++;
+		  requests = (MPI_Request*)realloc(requests, (requestCount + sendRecCount) * sizeof(MPI_Request));
+		  
+		  for(int sc = 0; sc < sendRecCount; sc++)
+		  {
+			 restQuant = (sc < sendRecCount - 1) ? maxQuant : blocksCounterRec[r] - sc * maxQuant;
+			 sendRecOffset = size_t(sc) * size_t(maxQuant) * size_t((doubleCountInBlock + 1));
+			 MPI_Irecv(&rawDataReceive[r][sendRecOffset], restQuant, sendBlockDoubleType, r, tagN, MPI_COMM_WORLD, &requests[requestCount]);
+			 requestCount++;
+		  }
+       }
+    }
+
+    for (int r = 0; r < size; r++)
+    {
+      if (r != rank)
+      {
+		 sendRecCount = int(blocksCounterSend[r] / maxQuant);
+		 if(sendRecCount * maxQuant < blocksCounterSend[r]) 
+			sendRecCount++;
+		  requests = (MPI_Request*)realloc(requests, (requestCount + sendRecCount) * sizeof(MPI_Request));
+					 
+		 for(int sc = 0; sc < sendRecCount; sc++)
+		 {
+			restQuant = (sc < sendRecCount - 1) ? maxQuant : blocksCounterSend[r] - sc * maxQuant;
+			sendRecOffset = size_t(sc) * size_t(maxQuant) * size_t((doubleCountInBlock + 1));
+			MPI_Isend(&rawDataSend[r][sendRecOffset], restQuant, sendBlockDoubleType, r, tagN, MPI_COMM_WORLD, &requests[requestCount]);
+			requestCount++;
+		 }
+      }
+    }
+
+	MPI_Waitall(requestCount, &requests[0], MPI_STATUSES_IGNORE);
+
+	delete [] blocksCounterSend;
+	delete [] blocksCounterRec;
+	delete [] rawDataSend;
+	delete [] requests;
+
 }
 
 void MPIIOMigrationBECoProcessor::readDataSet(int step)
@@ -1580,15 +889,12 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }
 
-  if (comm->isRoot())
-	std::cout << "size = "<<size<<std::endl;
-
    dataSetParam dataSetParamStr1, dataSetParamStr2, dataSetParamStr3;
 
    int blocksCountAll = grid->getNumberOfBlocks(); // quantity of all blocks in the grid
    int blocksPerProcess = blocksCountAll / size;   // how many blocks has each process
 
-   int myBlocksCount;
+   size_t myBlocksCount;
    if (rank < (size - 1))
       myBlocksCount = blocksPerProcess;
    else
@@ -1609,15 +915,19 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)(sizeof(dataSetParam)), &dataSetParamStr2, 1, dataSetParamType, MPI_STATUS_IGNORE);
    MPI_File_read_at(file_handler, (MPI_Offset)(2 * sizeof(dataSetParam)), &dataSetParamStr3, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   int doubleCountInBlock = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3] +
+   size_t doubleCountInBlock = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3] +
       dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3] +
       dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
    std::vector<double> doubleValuesArray(myBlocksCount * doubleCountInBlock); // double-values in all blocks 
 
+   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_commit(&dataSetDoubleType);
+
    MPI_Offset read_offset = (MPI_Offset)(3 * sizeof(dataSetParam)) + (MPI_Offset)(indexB * doubleCountInBlock * sizeof(double));
-   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], myBlocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
+   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], myBlocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
@@ -1629,22 +939,18 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
 
    std::vector<double>* rawDataReceive = new std::vector<double>[size];
    for (int r = 0; r < size; r++)
-   {
       rawDataReceive[r].resize(0);
-      rawDataReceive[r].push_back(0);
-   }
 
    blocksExchange(MESSAGE_TAG, indexB, indexE, doubleCountInBlock, doubleValuesArray, rawDataReceive);
-
+   
    if (comm->isRoot())
    {
       finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readDataSet end of exchange of data, rank = " << rank);
       UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readDataSet time: " << finish - start << " s");
       UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readDataSet start of restore of data, rank = " << rank);
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }
-
+     
    //-------------------------------------- restore blocks ---------------------------------
    int blockID;
    std::vector<double> vectorsOfValues1, vectorsOfValues2, vectorsOfValues3;
@@ -1652,12 +958,12 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
    size_t vectorSize1 = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3];
    size_t vectorSize2 = dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3];
    size_t vectorSize3 = dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
-
+ 
    size_t index;
    for (int r = 0; r < size; r++)
    {
-      index = 1;
-      for (int ii = 0; ii < rawDataReceive[r][0]; ii++)
+      index = 0;
+      for (int ii = 0; ii < int(rawDataReceive[r].size() / doubleCountInBlock); ii++)
       {
          blockID = (int)(rawDataReceive[r][index]);
          index += 1;
@@ -1670,9 +976,8 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
 
          vectorsOfValues3.assign(rawDataReceive[r].data() + index, rawDataReceive[r].data() + index + vectorSize3);
          index += vectorSize3;
-
+         
          SPtr<DistributionArray3D> mFdistributions(new D3Q27EsoTwist3DSplittedVector());
-
          dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues1, dataSetParamStr1.nx[0], dataSetParamStr1.nx[1], dataSetParamStr1.nx[2], dataSetParamStr1.nx[3])));
          dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNonLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues2, dataSetParamStr2.nx[0], dataSetParamStr2.nx[1], dataSetParamStr2.nx[2], dataSetParamStr2.nx[3])));
          dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(vectorsOfValues3, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
@@ -1695,7 +1000,6 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
          block->setKernel(kernel);
       }
    }
-
    if (comm->isRoot())
    {
       UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readDataSet end of restore of data, rank = " << rank);
@@ -1714,26 +1018,33 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
    MPI_File_close(&file_handler1);
 
    if (arrPresence.isAverageDensityArrayPresent)
-   readAverageDensityArray(step);
+      readArray(step, AverageDensity, std::string("/cpAverageDensityArray.bin"));
+   //readAverageDensityArray(step);
 
    if (arrPresence.isAverageVelocityArrayPresent)
-   readAverageVelocityArray(step);
+      readArray(step, AverageVelocity, std::string("/cpAverageVelocityArray.bin"));
+   //   readAverageVelocityArray(step);
 
    if (arrPresence.isAverageFluktuationsArrayPresent)
-   readAverageFluktuationsArray(step);
+      readArray(step, AverageFluktuations, std::string("/cpAverageFluktuationsArray.bin"));
+   //   readAverageFluktuationsArray(step);
 
    if (arrPresence.isAverageTripleArrayPresent)
-   readAverageTripleArray(step);
+      readArray(step, AverageTriple, std::string("/cpAverageTripleArray.bin"));
+   //  readAverageTripleArray(step);
 
    if (arrPresence.isShearStressValArrayPresent)
-   readShearStressValArray(step);
+      readArray(step, ShearStressVal, std::string("/cpShearStressValArray.bin"));
+   //   readShearStressValArray(step);
 
    if (arrPresence.isRelaxationFactorPresent)
-   readRelaxationFactor(step);
-
+      readArray(step, RelaxationFactor, std::string("/cpRelaxationFactor.bin"));
+   //   readRelaxationFactor(step);
+   
+   delete [] rawDataReceive;
 }
 
-void MPIIOMigrationBECoProcessor::readAverageDensityArray(int step)
+void MPIIOMigrationBECoProcessor::readArray(int step, Arrays arrType, std::string fname)
 {
    int rank, size;
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -1741,7 +1052,7 @@ void MPIIOMigrationBECoProcessor::readAverageDensityArray(int step)
 
    if (comm->isRoot())
    {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageDensityArray start MPI IO rank = " << rank);
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readArray start MPI IO rank = " << rank);
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }
    double start, finish;
@@ -1753,7 +1064,7 @@ void MPIIOMigrationBECoProcessor::readAverageDensityArray(int step)
    int blocksCountAll = grid->getNumberOfBlocks(); // quantity of all blocks in the grid
    int blocksPerProcess = blocksCountAll / size;   // how many blocks has each process
 
-   int myBlocksCount;
+   size_t myBlocksCount;
    if (rank < (size - 1))
       myBlocksCount = blocksPerProcess;
    else
@@ -1763,43 +1074,44 @@ void MPIIOMigrationBECoProcessor::readAverageDensityArray(int step)
    int indexE = indexB + myBlocksCount;   // the latest "my" block
 
    MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageDensityArray.bin";
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
    int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
    if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
    MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+   size_t doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(myBlocksCount * doubleCountInBlock); // double-values in all blocks
 
+   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_commit(&dataSetDoubleType);
+
    MPI_Offset read_offset = (MPI_Offset)(sizeof(dataSetParam)) + (MPI_Offset)(indexB) * (MPI_Offset)(doubleCountInBlock) * (MPI_Offset)(sizeof(double));
-   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], myBlocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
+   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], myBlocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_close(&file_handler);
+   MPI_Type_free(&dataSetDoubleType);
 
    if (comm->isRoot())
    {
       finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageDensityArray time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageDensityArray start of exchange of data, rank = " << rank);
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readArray time: " << finish - start << " s");
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readArray start of exchange of data, rank = " << rank);
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }
 
    std::vector<double>* rawDataReceive = new std::vector<double>[size];
    for (int r = 0; r < size; r++)
-   {
-      rawDataReceive[r].resize(0);
-      rawDataReceive[r].push_back(0);
-   }
+     rawDataReceive[r].resize(0);
 
-   blocksExchange(MESSAGE_TAG + 1, indexB, indexE, doubleCountInBlock, doubleValuesArray, rawDataReceive);
+   blocksExchange(MESSAGE_TAG + int(arrType), indexB, indexE, doubleCountInBlock, doubleValuesArray, rawDataReceive);
 
    if (comm->isRoot())
    {
       finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageDensityArray end of exchange of data, rank = " << rank);
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageDensityArray time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageDensityArray start of restore of data, rank = " << rank);
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readArray end of exchange of data, rank = " << rank);
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readArray time: " << finish - start << " s");
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readArray start of restore of data, rank = " << rank);
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }
 
@@ -1811,548 +1123,57 @@ void MPIIOMigrationBECoProcessor::readAverageDensityArray(int step)
 
    for (int r = 0; r < size; r++)
    {
-      index = 1;
-      for(int ii = 0; ii < rawDataReceive[r][0]; ii++)
+      index = 0;
+      for (int ii = 0; ii < int(rawDataReceive[r].size() / doubleCountInBlock); ii++)
       {
          blockID = (int)(rawDataReceive[r][index]);
+         SPtr<Block3D> block = grid->getBlock(blockID);
          index += 1;
 
          vectorsOfValues.assign(rawDataReceive[r].data() + index, rawDataReceive[r].data() + index + nextVectorSize);
          index += nextVectorSize;
 
-         // fill mAverageDensity arrays
-         SPtr<AverageValuesArray3D> mAverageDensity;
-         mAverageDensity = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+         // fill arrays
+         SPtr<CbArray4D<LBMReal, IndexerX4X3X2X1>> ___4DArray;
+         SPtr<CbArray3D<LBMReal, IndexerX3X2X1>> ___3DArray;
 
-         // find the nesessary block and fill it
-         SPtr<Block3D> block = grid->getBlock(blockID);
-         block->getKernel()->getDataSet()->setAverageDensity(mAverageDensity);
+         switch (arrType) {
+         case AverageDensity:
+            ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+            block->getKernel()->getDataSet()->setAverageDensity(___4DArray);
+            break;
+         case AverageVelocity:
+            ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+            block->getKernel()->getDataSet()->setAverageVelocity(___4DArray);
+            break;
+         case AverageFluktuations:
+            ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+            block->getKernel()->getDataSet()->setAverageFluctuations(___4DArray);
+            break;
+         case AverageTriple:
+            ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+            block->getKernel()->getDataSet()->setAverageTriplecorrelations(___4DArray);
+            break;
+         case ShearStressVal:
+            ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+            block->getKernel()->getDataSet()->setShearStressValues(___4DArray);
+            break;
+         case RelaxationFactor:
+            ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
+            block->getKernel()->getDataSet()->setRelaxationFactor(___3DArray);
+            break;
+         default:
+            UB_THROW(UbException(UB_EXARGS, "MPIIOMigrationBECoProcessor::readArray : array type does not exist!"));
+            break;
+         }
       }
    }
 
+   delete [] rawDataReceive;
+	
    if (comm->isRoot())
    {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageDensityArray end of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-}
-
-void MPIIOMigrationBECoProcessor::readAverageVelocityArray(int step)
-{
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageVelocityArray start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-   double start, finish;
-   if (comm->isRoot()) start = MPI_Wtime();
-
-   dataSetParam dataSetParamStr;
-   memset(&dataSetParamStr, 0, sizeof(dataSetParam));
-
-   int blocksCountAll = grid->getNumberOfBlocks(); // quantity of all blocks in the grid
-   int blocksPerProcess = blocksCountAll / size;   // how many blocks has each process
-
-   int myBlocksCount;
-   if (rank < (size - 1))
-      myBlocksCount = blocksPerProcess;
-   else
-      myBlocksCount = blocksPerProcess + (blocksCountAll - blocksPerProcess * size);
-
-   int indexB = rank * blocksPerProcess;  // the first "my" block
-   int indexE = indexB + myBlocksCount;   // the latest "my" block
-
-   MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageVelocityArray.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-
-   MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
-
-   int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-   std::vector<double> doubleValuesArray(myBlocksCount * doubleCountInBlock); // double-values in all blocks
-
-   MPI_Offset read_offset = (MPI_Offset)(sizeof(dataSetParam)) + (MPI_Offset)(indexB) * (MPI_Offset)(doubleCountInBlock) * (MPI_Offset)(sizeof(double));
-   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], myBlocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
-
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageVelocityArray time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageVelocityArray start of exchange of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   std::vector<double>* rawDataReceive = new std::vector<double>[size];
-   for (int r = 0; r < size; r++)
-   {
-      rawDataReceive[r].resize(0);
-      rawDataReceive[r].push_back(0);
-   }
-
-   blocksExchange(MESSAGE_TAG + 2, indexB, indexE, doubleCountInBlock, doubleValuesArray, rawDataReceive);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageVelocityArray end of exchange of data, rank = " << rank);
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageVelocityArray time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageVelocityArray start of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   int blockID;
-   std::vector<double> vectorsOfValues;
-
-   size_t index;
-   size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-
-   for (int r = 0; r < size; r++)
-   {
-      index = 1;
-      for(int ii = 0; ii < rawDataReceive[r][0]; ii++)
-      {
-         blockID = (int)(rawDataReceive[r][index]);
-         index += 1;
-
-         vectorsOfValues.assign(rawDataReceive[r].data() + index, rawDataReceive[r].data() + index + nextVectorSize);
-         index += nextVectorSize;
-
-         // fill mAverageVelocity array
-         SPtr<AverageValuesArray3D> mAverageVelocity;
-         mAverageVelocity = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
-
-         // find the nesessary block and fill it
-         SPtr<Block3D> block = grid->getBlock(blockID);
-         block->getKernel()->getDataSet()->setAverageVelocity(mAverageVelocity);
-      }
-   }
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageVelocityArray end of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-}
-
-void MPIIOMigrationBECoProcessor::readAverageFluktuationsArray(int step)
-{
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageFluktuationsArray start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-   double start, finish;
-   if (comm->isRoot()) start = MPI_Wtime();
-
-   dataSetParam dataSetParamStr;
-   memset(&dataSetParamStr, 0, sizeof(dataSetParam));
-
-   int blocksCountAll = grid->getNumberOfBlocks(); // quantity of all blocks in the grid
-   int blocksPerProcess = blocksCountAll / size;   // how many blocks has each process
-
-   int myBlocksCount;
-   if (rank < (size - 1))
-      myBlocksCount = blocksPerProcess;
-   else
-      myBlocksCount = blocksPerProcess + (blocksCountAll - blocksPerProcess * size);
-
-   int indexB = rank * blocksPerProcess;  // the first "my" block
-   int indexE = indexB + myBlocksCount;   // the latest "my" block
-
-   MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageFluktuationsArray.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-
-   MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
-
-   int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-   std::vector<double> doubleValuesArray(myBlocksCount * doubleCountInBlock); // double-values in all blocks
-
-   MPI_Offset read_offset = (MPI_Offset)(sizeof(dataSetParam)) + (MPI_Offset)(indexB) * (MPI_Offset)(doubleCountInBlock) * (MPI_Offset)(sizeof(double));
-   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], myBlocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
-
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageFluktuationsArray time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageFluktuationsArray start of exchange of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   std::vector<double>* rawDataReceive = new std::vector<double>[size];
-   for (int r = 0; r < size; r++)
-   {
-      rawDataReceive[r].resize(0);
-      rawDataReceive[r].push_back(0);
-   }
-
-   blocksExchange(MESSAGE_TAG + 3, indexB, indexE, doubleCountInBlock, doubleValuesArray, rawDataReceive);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageFluktuationsArray end of exchange of data, rank = " << rank);
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageFluktuationsArray time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageFluktuationsArray start of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   int blockID;
-   std::vector<double> vectorsOfValues;
-
-   size_t index;
-   size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-
-   for (int r = 0; r < size; r++)
-   {
-      index = 1;
-      for(int ii = 0; ii < rawDataReceive[r][0]; ii++)
-      {
-         blockID = (int)(rawDataReceive[r][index]);
-         index += 1;
-
-         vectorsOfValues.assign(rawDataReceive[r].data() + index, rawDataReceive[r].data() + index + nextVectorSize);
-         index += nextVectorSize;
-
-         // fill AverageFluktuations array
-         SPtr<AverageValuesArray3D> mAverageFluktuations;
-         mAverageFluktuations = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
-
-         // find the nesessary block and fill it
-         SPtr<Block3D> block = grid->getBlock(blockID);
-         block->getKernel()->getDataSet()->setAverageFluctuations(mAverageFluktuations);
-      }
-   }
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageFluktuationsArray end of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-}
-
-void MPIIOMigrationBECoProcessor::readAverageTripleArray(int step)
-{
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageTripleArray start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-   double start, finish;
-   if (comm->isRoot()) start = MPI_Wtime();
-
-   dataSetParam dataSetParamStr;
-   memset(&dataSetParamStr, 0, sizeof(dataSetParam));
-
-   int myBlocksCount;
-   int blocksCountAll = grid->getNumberOfBlocks(); // quantity of all blocks in the grid
-   int blocksPerProcess = blocksCountAll / size;   // how many blocks has each process
-
-   if (rank < (size - 1))
-      myBlocksCount = blocksPerProcess;
-   else
-      myBlocksCount = blocksPerProcess + (blocksCountAll - blocksPerProcess * size);
-
-   int indexB = rank * blocksPerProcess;  // the first "my" block
-   int indexE = indexB + myBlocksCount;   // the latest "my" block
-
-   MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageTripleArray.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-
-   MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
-
-   int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-   std::vector<double> doubleValuesArray(myBlocksCount * doubleCountInBlock); // double-values in all blocks
-
-   MPI_Offset read_offset = (MPI_Offset)(sizeof(dataSetParam)) + (MPI_Offset)(indexB) * (MPI_Offset)(doubleCountInBlock) * (MPI_Offset)(sizeof(double));
-   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], myBlocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
-
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageTripleArray time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageTripleArray start of exchange of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   std::vector<double>* rawDataReceive = new std::vector<double>[size];
-   for (int r = 0; r < size; r++)
-   {
-      rawDataReceive[r].resize(0);
-      rawDataReceive[r].push_back(0);
-   }
-
-   blocksExchange(MESSAGE_TAG + 4, indexB, indexE, doubleCountInBlock, doubleValuesArray, rawDataReceive);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageTripleArray end of exchange of data, rank = " << rank);
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageTripleArray time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageTripleArray start of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   int blockID;
-   std::vector<double> vectorsOfValues;
-
-   size_t index;
-   size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-
-   for (int r = 0; r < size; r++)
-   {
-      index = 1;
-      for(int ii = 0; ii < rawDataReceive[r][0]; ii++)
-      {
-         blockID = (int)(rawDataReceive[r][index]);
-         index += 1;
-
-         vectorsOfValues.assign(rawDataReceive[r].data() + index, rawDataReceive[r].data() + index + nextVectorSize);
-         index += nextVectorSize;
-
-         // fill AverageTriplecorrelations array
-         SPtr<AverageValuesArray3D> mAverageTriplecorrelations;
-         mAverageTriplecorrelations = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
-
-         // find the nesessary block and fill it
-         SPtr<Block3D> block = grid->getBlock(blockID);
-         block->getKernel()->getDataSet()->setAverageTriplecorrelations(mAverageTriplecorrelations);
-      }
-   }
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readAverageTripleArray end of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-}
-
-void MPIIOMigrationBECoProcessor::readShearStressValArray(int step)
-{
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readShearStressValArray start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-   double start, finish;
-   if (comm->isRoot()) start = MPI_Wtime();
-
-   dataSetParam dataSetParamStr;
-   memset(&dataSetParamStr, 0, sizeof(dataSetParam));
-
-   int blocksCountAll = grid->getNumberOfBlocks(); // quantity of all blocks in the grid
-   int blocksPerProcess = blocksCountAll / size;   // how many blocks has each process
-
-   int myBlocksCount;
-   if (rank < (size - 1))
-      myBlocksCount = blocksPerProcess;
-   else
-      myBlocksCount = blocksPerProcess + (blocksCountAll - blocksPerProcess * size);
-
-   int indexB = rank * blocksPerProcess;  // the first "my" block
-   int indexE = indexB + myBlocksCount;   // the latest "my" block
-
-   MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpShearStressValArray.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-
-   MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
-
-   int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-   std::vector<double> doubleValuesArray(myBlocksCount * doubleCountInBlock); // double-values in all blocks
-
-   MPI_Offset read_offset = (MPI_Offset)(sizeof(dataSetParam)) + (MPI_Offset)(indexB) * (MPI_Offset)(doubleCountInBlock) * (MPI_Offset)(sizeof(double));
-   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], myBlocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
-
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readShearStressValArray time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readShearStressValArray start of exchange of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   std::vector<double>* rawDataReceive = new std::vector<double>[size];
-   for (int r = 0; r < size; r++)
-   {
-      rawDataReceive[r].resize(0);
-      rawDataReceive[r].push_back(0);
-   }
-
-   blocksExchange(MESSAGE_TAG + 5, indexB, indexE, doubleCountInBlock, doubleValuesArray, rawDataReceive);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readShearStressValArray end of exchange of data, rank = " << rank);
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readShearStressValArray time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readShearStressValArray start of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   int blockID;
-   std::vector<double> vectorsOfValues;
-
-   size_t index;
-   size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-
-   for (int r = 0; r < size; r++)
-   {
-      index = 1;
-      for(int ii = 0; ii < rawDataReceive[r][0]; ii++)
-      {
-         blockID = (int)(rawDataReceive[r][index]);
-         index += 1;
-
-         vectorsOfValues.assign(rawDataReceive[r].data() + index, rawDataReceive[r].data() + index + nextVectorSize);
-         index += nextVectorSize;
-
-         // fill ShearStressValuesArray array
-         SPtr<ShearStressValuesArray3D> mShearStressValues;
-         mShearStressValues = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
-
-         // find the nesessary block and fill it
-         SPtr<Block3D> block = grid->getBlock(blockID);
-         block->getKernel()->getDataSet()->setShearStressValues(mShearStressValues);
-      }
-   }
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readShearStressValArray end of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-}
-
-void MPIIOMigrationBECoProcessor::readRelaxationFactor(int step)
-{
-   int rank, size;
-   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readRelaxationFactor start MPI IO rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-   double start, finish;
-   if (comm->isRoot()) start = MPI_Wtime();
-
-   dataSetParam dataSetParamStr;
-   memset(&dataSetParamStr, 0, sizeof(dataSetParam));
-
-   int blocksCountAll = grid->getNumberOfBlocks(); // quantity of all blocks in the grid
-   int blocksPerProcess = blocksCountAll / size;   // how many blocks has each process
-
-   int myBlocksCount;
-   if (rank < (size - 1))
-      myBlocksCount = blocksPerProcess;
-   else
-      myBlocksCount = blocksPerProcess + (blocksCountAll - blocksPerProcess * size);
-
-   int indexB = rank * blocksPerProcess;  // the first "my" block
-   int indexE = indexB + myBlocksCount;   // the latest "my" block
-
-   MPI_File file_handler;
-   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpRelaxationFactor.bin";
-   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
-   if (rc != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename);
-
-   MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
-
-   int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-   std::vector<double> doubleValuesArray(myBlocksCount * doubleCountInBlock); // double-values in all blocks
-
-   MPI_Offset read_offset = (MPI_Offset)(sizeof(dataSetParam)) + (MPI_Offset)(indexB) * (MPI_Offset)(doubleCountInBlock) * (MPI_Offset)(sizeof(double));
-   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], myBlocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
-
-   MPI_File_close(&file_handler);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readRelaxationFactor time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readRelaxationFactor start of exchange of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   std::vector<double>* rawDataReceive = new std::vector<double>[size];
-   for (int r = 0; r < size; r++)
-   {
-      rawDataReceive[r].resize(0);
-      rawDataReceive[r].push_back(0);
-   }
-
-   blocksExchange(MESSAGE_TAG + 6, indexB, indexE, doubleCountInBlock, doubleValuesArray, rawDataReceive);
-
-   if (comm->isRoot())
-   {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readRelaxationFactor end of exchange of data, rank = " << rank);
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readRelaxationFactor time: " << finish - start << " s");
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readRelaxationFactor start of restore of data, rank = " << rank);
-      UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
-   }
-
-   int blockID;
-   std::vector<double> vectorsOfValues;
-
-   size_t index;
-   size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-
-   for (int r = 0; r < size; r++)
-   {
-      index = 1;
-      for(int ii = 0; ii < rawDataReceive[r][0]; ii++)
-      {
-         blockID = (int)(rawDataReceive[r][index]);
-         index += 1;
-
-         vectorsOfValues.assign(rawDataReceive[r].data() + index, rawDataReceive[r].data() + index + nextVectorSize);
-         index += nextVectorSize;
-
-         // fill RelaxationFactor array
-         SPtr<RelaxationFactorArray3D> mRelaxationFactor;
-         mRelaxationFactor = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
-
-         // find the nesessary block and fill it
-         SPtr<Block3D> block = grid->getBlock(blockID);
-         block->getKernel()->getDataSet()->setRelaxationFactor(mRelaxationFactor);
-      }
-   }
-
-   if (comm->isRoot())
-   {
-      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readRelaxationFactor end of restore of data, rank = " << rank);
+      UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readArray end of restore of data, rank = " << rank);
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }
 }
@@ -2373,14 +1194,14 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
    if (comm->isRoot()) start = MPI_Wtime();
 
    int blocksCountAll = grid->getNumberOfBlocks(); // quantity of all blocks in the grid
-   int myBlocksCount;
+   size_t myBlocksCount;
    int blocksPerProcess = blocksCountAll / size;   // how many blocks has each process
    
    if (rank < (size - 1))
       myBlocksCount = blocksPerProcess;
    else
       myBlocksCount = blocksPerProcess + (blocksCountAll - blocksPerProcess * size);
-   
+  
    int indexB = rank * blocksPerProcess;  // the first "my" block
    int indexE = indexB + myBlocksCount;   // the latest "my" block
    
@@ -2395,10 +1216,14 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)0, &sizeOfBIM, 1, MPI_INT, MPI_STATUS_IGNORE);
    bcindexmatrixVAll.resize(myBlocksCount * sizeOfBIM);
    
+   MPI_Type_contiguous(sizeOfBIM, MPI_INT, &bcindexmatrixType);
+   MPI_Type_commit(&bcindexmatrixType);
+
    MPI_Offset read_offset = (MPI_Offset)(sizeof(int)) + (MPI_Offset)(indexB) * (MPI_Offset)(sizeOfBIM) * (MPI_Offset)(sizeof(int));
-   MPI_File_read_at(file_handler, read_offset, &bcindexmatrixVAll[0], myBlocksCount * sizeOfBIM, MPI_INT, MPI_STATUS_IGNORE);
+   MPI_File_read_at(file_handler, read_offset, &bcindexmatrixVAll[0], myBlocksCount, bcindexmatrixType, MPI_STATUS_IGNORE);
 
    MPI_File_close(&file_handler);
+   MPI_Type_free(&bcindexmatrixType);
 
    if (comm->isRoot())
    {
@@ -2440,7 +1265,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
             bcindexmatrixVAll.begin() + ind * sizeOfBIM + sizeOfBIM);
       }
    }
-
+ 
    MPI_Request* requests = new MPI_Request[size * 2]; // send + receive
    int requestCount = 0;
    MPI_Status status;
@@ -2591,6 +1416,10 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
    MPI_File_close(&file_handler);
 
    delete nullBouCond;
+   delete bcArray;
+   delete [] rawDataReceive;
+   delete [] rawDataSend;
+   delete [] requests;
 
    if (comm->isRoot())
    {

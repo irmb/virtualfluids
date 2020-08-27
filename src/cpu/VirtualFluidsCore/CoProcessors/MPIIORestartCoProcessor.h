@@ -2,11 +2,11 @@
 #define _MPIIORestartCoProcessor_H_
 
 #include <mpi.h>
-#include <PointerDefinitions.h>
+//#include <PointerDefinitions.h>
 #include <string>
 
-#include "CoProcessor.h"
 #include "MPIIODataStructures.h"
+#include "MPIIOCoProcessor.h"
 
 class Grid3D;
 class UbScheduler;
@@ -16,9 +16,9 @@ class LBMKernel;
 
 
 
-//! \class MPIWriteBlocksCoProcessor 
+//! \class MPIIORestartCoProcessor 
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating  
-class MPIIORestartCoProcessor : public CoProcessor
+class MPIIORestartCoProcessor : public MPIIOCoProcessor
 {
 public:
    MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm);
@@ -58,19 +58,15 @@ public:
    void setBCProcessor(SPtr<BCProcessor> bcProcessor);
    //!The function truncates the data files
    void clearAllFiles(int step);
-   //!The function write a time step of last check point
-   void writeCpTimeStep(int step);
-   //!The function read a time step of last check point
-   int readCpTimeStep();
 
 protected:
-   std::string path;
-   SPtr<Communicator> comm;
+   //std::string path;
+   //SPtr<Communicator> comm;
 
 private:
-   MPI_Datatype gridParamType, block3dType, arrayPresenceType;
-   MPI_Datatype dataSetParamType, dataSetType, dataSetSmallType, dataSetDoubleType;
-   MPI_Datatype boundCondParamType, boundCondType, boundCondType1000, boundCondTypeAdd, bcindexmatrixType;
+   //MPI_Datatype gridParamType, block3dType;
+   MPI_Datatype dataSetType, dataSetSmallType, dataSetDoubleType;
+   MPI_Datatype boundCondParamType, boundCondType1000, boundCondTypeAdd, bcindexmatrixType;
 
    MPIIODataStructures::boundCondParam boundCondParamStr;
    SPtr<LBMKernel> lbmKernel;

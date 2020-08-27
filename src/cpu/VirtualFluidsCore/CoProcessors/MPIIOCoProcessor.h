@@ -29,10 +29,16 @@ public:
 
    //!The function truncates the data files
    void clearAllFiles(int step);
+
+   //!The function write a time step of last check point
+   void writeCpTimeStep(int step);
+   //!The function read a time step of last check point
+   int readCpTimeStep();
+
 protected:
    std::string path;
    SPtr<Communicator> comm;
-   MPI_Datatype gridParamType, block3dType;
+   MPI_Datatype gridParamType, block3dType, dataSetParamType, boundCondType, arrayPresenceType;
 };
 #endif // ! _MPIIOCoProcessor_H_
 #define _MPIIOCoProcessor_H_
