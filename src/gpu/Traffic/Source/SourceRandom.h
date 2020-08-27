@@ -6,9 +6,9 @@
 #include "Source.h"
 #include "Utilities/RandomHelper.h"
 
+#include "Traffic_export.h"
 
-
-class VIRTUALFLUIDS_GPU_EXPORT SourceRandom:
+class TRAFFIC_EXPORT SourceRandom:
 	public Source
 {
 private:

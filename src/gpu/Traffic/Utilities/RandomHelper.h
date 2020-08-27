@@ -2,8 +2,9 @@
 
 #include <random>
 #include <VirtualFluidsDefinitions.h>
+#include "Traffic_export.h"
 
-class VIRTUALFLUIDS_GPU_EXPORT RandomHelper
+class TRAFFIC_EXPORT RandomHelper
 {
 public:
 	static std::mt19937 make_engine();

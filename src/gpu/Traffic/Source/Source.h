@@ -2,8 +2,9 @@
 #include <VirtualFluidsDefinitions.h>
 
 #include "SourceData.h"
+#include "Traffic_export.h"
 
-class VIRTUALFLUIDS_GPU_EXPORT Source
+class TRAFFIC_EXPORT Source
 {
 public:
 	virtual uint getIndex() const = 0;

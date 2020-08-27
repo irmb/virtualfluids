@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "VirtualFluids_GPU_export.h"
+
 class Kernel;
 class ADKernel;
 class Parameter;

@@ -5,10 +5,11 @@
 #include "Core/DataTypes.h"
 
 #include "JunctionData.h"
+#include "Traffic_export.h"
 
 class TrafficMovement;
 
-class VIRTUALFLUIDS_GPU_EXPORT Junction
+class TRAFFIC_EXPORT Junction
 {
 public:
 	virtual void checkOutCellIndices(const uint roadLength) const = 0;

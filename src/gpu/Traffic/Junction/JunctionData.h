@@ -5,9 +5,10 @@
 #include <memory>
 
 #include "Utilities/RandomHelper.h"
+#include "Traffic_export.h"
 
 
-struct VIRTUALFLUIDS_GPU_EXPORT JunctionData
+struct TRAFFIC_EXPORT JunctionData
 {
 public:
 	std::vector<uint> inCellIndices;

@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include "Core/PointerDefinitions.h"
+#include "VirtualFluids_GPU_export.h"
 
 #include "LBM/LB.h"
 #include "LBM/D3Q27.h"

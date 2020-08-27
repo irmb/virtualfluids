@@ -4,7 +4,9 @@
 // using standard exceptions
 #include <stdexcept>
 
-class VIRTUALFLUIDS_GPU_EXPORT invalidInput_error :
+#include "Traffic_export.h"
+
+class TRAFFIC_EXPORT invalidInput_error :
 	public std::runtime_error
 {
 public:

@@ -101,11 +101,6 @@ enable_language(CUDA)
 
 include(${CMAKE_PATH}/CMakeMacros_old/general/FindCompiler.cmake)
 configure_file(src/gpu/VirtualFluidsDefinitions.in.h VirtualFluidsDefinitions.h)
-if(MSVC)
-    SET( CMAKE_CXX_FLAGS "/FI${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
-ELSE(MSVC)
-    SET( CMAKE_CXX_FLAGS "-include ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
-ENDIF(MSVC)
 
 IF( VF.BUILD_VF_GKS )
     # only use this with device of CC larger than 6.0

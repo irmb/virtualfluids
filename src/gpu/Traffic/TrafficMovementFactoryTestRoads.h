@@ -9,8 +9,10 @@
 #include "Core/DataTypes.h"
 #include "GridGenerator/StreetPointFinder/StreetPointFinder.h"
 
+#include "Traffic_export.h"
 
-class VIRTUALFLUIDS_GPU_EXPORT TrafficMovementFactoryTest :
+
+class TRAFFIC_EXPORT TrafficMovementFactoryTest :
 	public TrafficMovementFactory {
 public:
 	TrafficMovementFactoryTest() {};
