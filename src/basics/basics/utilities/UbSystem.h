@@ -44,6 +44,12 @@
 #endif
 
 
+#if defined(__unix__) && defined(__CYGWIN__)
+   #define UBSYSTEM_CYGWIN
+   #include <windows.h>
+#elif defined(__unix__)
+    #include <sys/syscall.h>
+#endif
 
 #if defined(min) || defined(max) //daruch kann man sich spaeter #undef min; #undef max erparen
 #   error add NOMINMAX to preprocessor defines
