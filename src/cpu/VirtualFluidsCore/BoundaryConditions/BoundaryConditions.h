@@ -47,7 +47,32 @@
 class BoundaryConditions
 {
 public:
-    BoundaryConditions()
+   BoundaryConditions() 
+      : noslipBoundaryFlags(0)		
+      , slipBoundaryFlags(0)		
+      , velocityBoundaryFlags(0)		
+      , densityBoundaryFlags(0)		
+      , wallModelBoundaryFlags(0)
+      , bcVelocityX1(0.0f)
+      , bcVelocityX2(0.0f)
+      , bcVelocityX3(0.0f)
+      , bcDensity(0.0f)
+      //, bcThixotropy(0.0f)
+      , bcLodiDensity(0.0f)
+      , bcLodiVelocityX1(0.0f)
+      , bcLodiVelocityX2(0.0f)
+      , bcLodiVelocityX3(0.0f)
+      , bcLodiLentgh(0.0f)
+      , nx1(0.0f)
+      , nx2(0.0f)
+      , nx3(0.0f)
+      , algorithmType(-1)
+   {
+      //wenn folgendes nicht geht, dann hat man weiter unten bei der bit-geschichte ein ernstes problem!!!
+      UB_STATIC_ASSERT( sizeof(long long) >= 8);
+      //UB_STATIC_ASSERT( sizeof(double) >= 16);
+      //UB_STATIC_ASSERT( sizeof(long long) == 32);
+      UB_STATIC_ASSERT( (sizeof(long long)*8) >= (D3Q27System::FENDDIR+1)*BoundaryConditions::optionDigits );
 
     {
         UB_STATIC_ASSERT(sizeof(long long) >= 8);
@@ -276,17 +301,20 @@ public:
     void setBoundaryDensity(LBMReal density) { this->bcDensity = density; }
     LBMReal getBoundaryDensity() { return this->bcDensity; }
 
-    // Lodi extension
-    void setDensityLodiDensity(const LBMReal &bcLodiDensity) { this->bcLodiDensity = bcLodiDensity; }
-    void setDensityLodiVelocityX1(const LBMReal &bcLodiVelocityX1) { this->bcLodiVelocityX1 = bcLodiVelocityX1; }
-    void setDensityLodiVelocityX2(const LBMReal &bcLodiVelocityX2) { this->bcLodiVelocityX2 = bcLodiVelocityX2; }
-    void setDensityLodiVelocityX3(const LBMReal &bcLodiVelocityX3) { this->bcLodiVelocityX3 = bcLodiVelocityX3; }
-    void setDensityLodiLength(const LBMReal &bcLodiLentgh) { this->bcLodiLentgh = bcLodiLentgh; }
-    LBMReal getDensityLodiDensity() const { return this->bcLodiDensity; }
-    LBMReal getDensityLodiVelocityX1() const { return this->bcLodiVelocityX1; }
-    LBMReal getDensityLodiVelocityX2() const { return this->bcLodiVelocityX2; }
-    LBMReal getDensityLodiVelocityX3() const { return this->bcLodiVelocityX3; }
-    LBMReal getDensityLodiLength() const { return this->bcLodiLentgh; }
+   //void  setBoundaryThixotropy(float thixotropy) { this->bcDensity = thixotropy; }
+   //float getBoundaryThixotropy() { return this->bcThixotropy; }
+
+   ////Lodi extension
+   void  setDensityLodiDensity(const float& bcLodiDensity)       { this->bcLodiDensity    = bcLodiDensity;    } 
+   void  setDensityLodiVelocityX1(const float& bcLodiVelocityX1) { this->bcLodiVelocityX1 = bcLodiVelocityX1; } 
+   void  setDensityLodiVelocityX2(const float& bcLodiVelocityX2) { this->bcLodiVelocityX2 = bcLodiVelocityX2; } 
+   void  setDensityLodiVelocityX3(const float& bcLodiVelocityX3) { this->bcLodiVelocityX3 = bcLodiVelocityX3; } 
+   void  setDensityLodiLength(const float& bcLodiLentgh)         { this->bcLodiLentgh     = bcLodiLentgh;     } 
+   float getDensityLodiDensity() const                           { return this->bcLodiDensity;    } 
+   float getDensityLodiVelocityX1() const                        { return this->bcLodiVelocityX1; }
+   float getDensityLodiVelocityX2() const                        { return this->bcLodiVelocityX2; }
+   float getDensityLodiVelocityX3() const                        { return this->bcLodiVelocityX3; }
+   float getDensityLodiLength() const                            { return this->bcLodiLentgh;     }
 
     LBMReal &densityLodiDensity() { return this->bcLodiDensity; }
     LBMReal &densityLodiVelocityX1() { return this->bcLodiVelocityX1; }

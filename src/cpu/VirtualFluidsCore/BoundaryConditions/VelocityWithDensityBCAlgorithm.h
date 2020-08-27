@@ -1,4 +1,4 @@
-//!  \file NonReflectingVelocityBCAlgorithm.h
+//!  \file VelocityWithDensityBCAlgorithm.h
 //!  \brief Class implements velocity bc for non reflecting pressure bc.
 //!  \author Konstantin Kutscher
 
@@ -22,4 +22,4 @@ public:
     void addDistributions(SPtr<DistributionArray3D> distributions) override;
     void applyBC() override;
 };
-#endif // NonReflectingVelocityBCAlgorithm_h__
+#endif // VelocityWithDensityBCAlgorithm_h__

@@ -13,9 +13,8 @@ using namespace UbMath;
 CompressibleCumulantLBMKernel::CompressibleCumulantLBMKernel()
 {
    this->compressible = true;
-   this->parameter = NORMAL;
+   this->parameter = CompressibleCumulantLBMKernel::NORMAL;
    this->OxyyMxzz = 1.0;
-   this->compressible = true;
    this->bulkOmegaToOmega = false;
    this->OxxPyyPzz = 1.0;
 }
