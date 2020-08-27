@@ -9,7 +9,7 @@
 #  required cmake versions
 #  CMAKE 3.9: CUDA support
 #################################################################################
-cmake_minimum_required(VERSION 3.13..3.17 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13..3.18 FATAL_ERROR)
 
 project(VirtualFluids CXX)
 
@@ -30,6 +30,16 @@ option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
 
 option(BUILD_SHARED_LIBS "" ON)
+
+#################################################################################
+#  CMAKE POLICIES
+#################################################################################
+# CMAKE_CUDA_ARCHITECTURES
+# https://cmake.org/cmake/help/git-stage/policy/CMP0104.htmls
+if(POLICY CMP0104)
+    cmake_policy(SET CMP0104 NEW)
+    set(CMAKE_CUDA_ARCHITECTURES 30)
+endif()
 
 #################################################################################
 #  MACROS
