@@ -1,7 +1,7 @@
-#Ordner für Simulationsergebnisse
+#Ordner fï¿½r Simulationsergebnisse
 path=d:/temp/sphere
 
-#Verfügbare Arbeitsspeicher in Byte
+#Verfï¿½gbare Arbeitsspeicher in Byte
 memory=3e9
 
 #Pfad zum Metafile
@@ -11,12 +11,12 @@ metafile=d:/Data/insituDemo/metafile.csv
 outstep=1
 
 #maximale Anzahl Simulationszeitschritte
-endstep=100000
+endstep=10
 
 #Anzahl von Threads
 threads=1
 
 #max refierment level (1 - 5)
-level=4
+level=1
 
 test = true

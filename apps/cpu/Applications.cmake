@@ -2,7 +2,7 @@
 #add_subdirectory(Applications/gridRf)
 #add_subdirectory(Applications/greenvortex)
 # add_subdirectory(Applications/micropart)
-#add_subdirectory(Applications/sphere)
+add_subdirectory(${APPS_ROOT_CPU}/sphere)
 #add_subdirectory(Applications/vfscript)
 #add_subdirectory(Applications/reefer)
 #add_subdirectory(Applications/bananas)

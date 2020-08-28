@@ -155,7 +155,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
    datanames.push_back("Vy");
    datanames.push_back("Vz");
    //datanames.push_back("Press");
-   //datanames.push_back("Level");
+   datanames.push_back("Level");
    //datanames.push_back("BlockID");
    //datanames.push_back("gamma");
    //datanames.push_back("collFactor");
@@ -170,7 +170,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
    LBMReal vx1,vx2,vx3,rho;
 
    //knotennummerierung faengt immer bei 0 an!
-   unsigned int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
+   int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
 
    if(block->getKernel()->getCompressible())
    {
@@ -198,10 +198,12 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
    //int maxX3 = (int)(distributions->getNX3());
 
    //nummern vergeben und node vector erstellen + daten sammeln
-   CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3,-1);
+   CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3, -1);
    maxX1 -= 2;
    maxX2 -= 2;
    maxX3 -= 2;
+
+   
 
    //D3Q27BoundaryConditionPtr bcPtr;
    int nr = (int)nodes.size();
@@ -226,25 +228,20 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                double press = D3Q27System::getPressure(f); //D3Q27System::calcPress(f,rho,vx1,vx2,vx3);
 
                if (UbMath::isNaN(rho) || UbMath::isInfinity(rho)) 
-                  UB_THROW( UbException(UB_EXARGS,"rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
-                   ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                     //rho=999.0;
+                  //UB_THROW( UbException(UB_EXARGS,"rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                     rho=999.0;
                if (UbMath::isNaN(press) || UbMath::isInfinity(press)) 
-                  UB_THROW( UbException(UB_EXARGS,"press is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
-                  ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                 //press=999.0;
+                  //UB_THROW( UbException(UB_EXARGS,"press is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                 press=999.0;
                if (UbMath::isNaN(vx1) || UbMath::isInfinity(vx1)) 
-                  UB_THROW( UbException(UB_EXARGS,"vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
-                  ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                     //vx1=999.0;
+                  //UB_THROW( UbException(UB_EXARGS,"vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                     vx1=999.0;
                if (UbMath::isNaN(vx2) || UbMath::isInfinity(vx2)) 
-                  UB_THROW( UbException(UB_EXARGS,"vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
-                  ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                     //vx2=999.0;
+                  //UB_THROW( UbException(UB_EXARGS,"vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                     vx2=999.0;
                if (UbMath::isNaN(vx3) || UbMath::isInfinity(vx3)) 
-                  UB_THROW( UbException(UB_EXARGS,"vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+
-                  ", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                     //vx3 = 999.0;
+                  //UB_THROW( UbException(UB_EXARGS,"vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                     vx3 = 999.0;
 
                data[index++].push_back(rho);
                data[index++].push_back(vx1);
@@ -263,43 +260,32 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                //data[index++].push_back(vx2 * conv->getFactorVelocityLbToW());
                //data[index++].push_back(vx3 * conv->getFactorVelocityLbToW());
                //data[index++].push_back((press * conv->getFactorPressureLbToW()) / ((rho+1.0) * conv->getFactorDensityLbToW()));
-               //data[index++].push_back(level);
+               data[index++].push_back(level);
                //data[index++].push_back(blockID);
             }
-        }
-    }
-    maxX1 -= 1;
-    maxX2 -= 1;
-    maxX3 -= 1;
-
-    unsigned int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
-    int  SWBi, SEBi, NEBi, NWBi, SWTi, SETi, NETi, NWTi;
-    // cell vector erstellen
-    for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
-        for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
-            for (int ix1 = minX1; ix1 <= maxX1; ix1++) {
-                if (
-                    (   SWBi = nodeNumbers(ix1, ix2, ix3)) >= 0 
-                    && (SEBi = nodeNumbers(ix1 + 1, ix2, ix3)) >= 0 
-                    && (NEBi = nodeNumbers(ix1 + 1, ix2 + 1, ix3)) >= 0 
-                    && (NWBi = nodeNumbers(ix1, ix2 + 1, ix3)) >= 0 
-                    && (SWTi = nodeNumbers(ix1, ix2, ix3 + 1)) >= 0 
-                    && (SETi = nodeNumbers(ix1 + 1, ix2, ix3 + 1)) >= 0 
-                    && (NETi = nodeNumbers(ix1 + 1, ix2 + 1, ix3 + 1)) >= 0 
-                    && (NWTi = nodeNumbers(ix1, ix2 + 1, ix3 + 1)) >= 0
-                    ) 
-                {
-                    SWB =SWBi;
-                    SEB =SEBi;
-                    NEB =NEBi;
-                    NWB =NWBi;
-                    SWT =SWTi;
-                    SET =SETi;
-                    NET =NETi;
-                    NWT =NWTi;
-
-                    cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
-                }
+         }
+      }
+   }
+   maxX1 -= 1;
+   maxX2 -= 1;
+   maxX3 -= 1;
+   //cell vector erstellen
+   for(int ix3=minX3; ix3<=maxX3; ix3++)
+   {
+      for(int ix2=minX2; ix2<=maxX2; ix2++)
+      {
+         for(int ix1=minX1; ix1<=maxX1; ix1++)
+         {
+            if(   (SWB=nodeNumbers( ix1  , ix2,   ix3   )) >= 0
+               && (SEB=nodeNumbers( ix1+1, ix2,   ix3   )) >= 0
+               && (NEB=nodeNumbers( ix1+1, ix2+1, ix3   )) >= 0
+               && (NWB=nodeNumbers( ix1  , ix2+1, ix3   )) >= 0 
+               && (SWT=nodeNumbers( ix1  , ix2,   ix3+1 )) >= 0
+               && (SET=nodeNumbers( ix1+1, ix2,   ix3+1 )) >= 0
+               && (NET=nodeNumbers( ix1+1, ix2+1, ix3+1 )) >= 0
+               && (NWT=nodeNumbers( ix1  , ix2+1, ix3+1 )) >= 0                )
+            {
+               cells.push_back( makeUbTuple((unsigned int)SWB, (unsigned int)SEB, (unsigned int)NEB, (unsigned int)NWB, (unsigned int)SWT, (unsigned int)SET, (unsigned int)NET, (unsigned int)NWT) );
             }
         }
     }

@@ -5,42 +5,6 @@
 #include <LBMSystem.h>
 #include <UbMath.h>
 
-//namespace Thixotropy
-//{
-//	//////////////////////////////////////////////////////////////////////////
-//	inline LBMReal getBinghamCollFactor(LBMReal omegaInf, LBMReal yieldSterss, LBMReal shearRate, LBMReal drho)
-//	{
-//		LBMReal cs2 = one_over_sqrt3 * one_over_sqrt3;
-//		LBMReal rho = one + drho;
-//		LBMReal omega = omegaInf * (one - (omegaInf * yieldSterss) / (shearRate * cs2 * rho + UbMath::Epsilon<LBMReal>::val()));
-//		return omega;
-//	}
-//	//////////////////////////////////////////////////////////////////////////
-//	inline LBMReal getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal yieldSterss, LBMReal shearRate, LBMReal drho, LBMReal k, LBMReal n)
-//	{
-//		LBMReal cs2 = one_over_sqrt3 * one_over_sqrt3;
-//		LBMReal rho = one + drho;
-//		LBMReal gammaDot = shearRate;
-//		LBMReal tau0 = yieldSterss;
-//		LBMReal omega = omegaInf;
-//		LBMReal epsilon = 1;
-//
-//		while (epsilon > 1e-10)
-//		{
-//			LBMReal omegaOld = omega;
-//			LBMReal gammaDotPowN = std::pow(gammaDot, n);
-//			LBMReal omegaByOmegaInfPowN = std::pow(omega / omegaInf, n);
-//			LBMReal numerator = (2.0 * gammaDotPowN * k * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * (omega - 2.0) * rho + 2.0 * omegaInf * tau0);
-//			LBMReal denominator = (2.0 * k * n * gammaDotPowN * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * rho * omega) + UbMath::Epsilon<LBMReal>::val();
-//			omega = omega - omega * numerator / denominator;
-//			omega = (omega < zeroReal) ? c1o2 * omegaOld : omega;
-//			epsilon = std::abs(omega - omegaOld);
-//		}
-//
-//		return omega;
-//	}
-//}
-
 class Thixotropy
 {
 public:
@@ -58,6 +22,7 @@ public:
 
 	static LBMReal getBinghamCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
 	static LBMReal getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
+	static LBMReal getHerschelBulkleyCollFactorBackward(LBMReal shearRate, LBMReal drho);
 private:
 	Thixotropy();
 	
@@ -99,5 +64,13 @@ inline LBMReal Thixotropy::getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMRea
 
 	return omega;
 }
+//////////////////////////////////////////////////////////////////////////
+inline LBMReal Thixotropy::getHerschelBulkleyCollFactorBackward(LBMReal shearRate, LBMReal drho)
+{
+	LBMReal rho = UbMath::one + drho;
+	LBMReal gamma = shearRate + UbMath::Epsilon<LBMReal>::val();
+	LBMReal cs2 = UbMath::one_over_sqrt3 * UbMath::one_over_sqrt3;
 
+	return 1.0 / ((tau0 + k * std::pow(gamma, n)) / (cs2 * rho * gamma) + UbMath::c1o2);
+}
 #endif

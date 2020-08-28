@@ -21,7 +21,7 @@ void bflow(string configname)
       double          endTime = config.getValue<double>("endTime");
       double          outTime = config.getValue<double>("outTime");
       double          availMem = config.getValue<double>("availMem");
-      //int             refineLevel = config.getValue<int>("refineLevel");
+      int             refineLevel = config.getValue<int>("refineLevel");
       bool            logToFile = config.getValue<bool>("logToFile");
       double          restartStep = config.getValue<double>("restartStep");
       double          deltax = config.getValue<double>("deltax");
@@ -164,6 +164,19 @@ void bflow(string configname)
          GenBlocksGridVisitor genBlocks(gridCube);
          grid->accept(genBlocks);
 
+         if (refineLevel > 0)
+         {
+            GbCuboid3DPtr refCube(new GbCuboid3D(-10, -10, -10, 0, 0, 0));
+            if (myid == 0) GbSystem3D::writeGeoObject(refCube.get(), outputPath + "/geo/refCube", WbWriterVtkXmlASCII::getInstance());
+            
+            if (myid == 0) UBLOG(logINFO, "Refinement - start");
+            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
+            //refineHelper.addGbObject(sphere, refineLevel);
+            refineHelper.addGbObject(refCube, refineLevel);
+            refineHelper.refine();
+            if (myid == 0) UBLOG(logINFO, "Refinement - end");
+         }
+
          //walls
          GbCuboid3DPtr wallZmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_minX3));
          if (myid == 0) GbSystem3D::writeGeoObject(wallZmin.get(), outputPath + "/geo/wallZmin", WbWriterVtkXmlASCII::getInstance());
@@ -206,7 +219,7 @@ void bflow(string configname)
          intHelper.addInteractor(wallYmaxInt);
          intHelper.addInteractor(wallXminInt);
          intHelper.addInteractor(wallXmaxInt);
-         intHelper.addInteractor(sphereInt);
+         //intHelper.addInteractor(sphereInt);
          intHelper.selectBlocks();
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
          //////////////////////////////////////
@@ -242,6 +255,12 @@ void bflow(string configname)
          SetKernelBlockVisitor kernelVisitor(kernel, k, availMem, needMem);
          grid->accept(kernelVisitor);
 
+         if (refineLevel > 0)
+         {
+            SetUndefinedNodesBlockVisitor undefNodesVisitor;
+            grid->accept(undefNodesVisitor);
+         }
+
          //BC
          intHelper.setBC();
 
@@ -261,14 +280,14 @@ void bflow(string configname)
       omp_set_num_threads(numOfThreads);
 
       //set connectors
-      InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+      InterpolationProcessorPtr iProcessor(new ThixotropyInterpolationProcessor());
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, k, iProcessor);
       grid->accept(setConnsVisitor);
 
       grid->accept(bcVisitor);
 
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm);
+      WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, outputPath, WbWriterVtkXmlASCII::getInstance(), comm);
       ppgeo.process(0);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));

@@ -10,7 +10,7 @@
 
 class ThixotropyModelLBMKernel;
 
-//! \brief abstract class for Template Method use Cumulant LBM. 
+//! \brief Base class for model of thixotropy based on K16. Use Template Method design pattern for Implementation of different models. 
 //! \author K. Kutscher, M. Geier
 class ThixotropyModelLBMKernel : public LBMKernel
 {
