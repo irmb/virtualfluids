@@ -1,13 +1,13 @@
 #include <iostream>
 #include <string>
 
-#include "numerics/geometry3d/CoordinateTransformation3D.h"
+#include "geometry3d/CoordinateTransformation3D.h"
 #include "Grid3D.h"
 #include "GenBlocksGridVisitor.h"
-#include "numerics/geometry3d/GbSystem3D.h"
-#include "numerics/geometry3d/GbCuboid3D.h"
-#include "numerics/geometry3d/GbCylinder3D.h"
-#include <numerics/geometry3d/GbSphere3D.h>
+#include "geometry3d/GbSystem3D.h"
+#include "geometry3d/GbCuboid3D.h"
+#include "geometry3d/GbCylinder3D.h"
+#include <geometry3d/GbSphere3D.h>
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include "RefineCrossAndInsideGbObjectBlockVisitor.h"

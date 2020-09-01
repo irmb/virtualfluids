@@ -55,8 +55,6 @@ public:
    bool setDifferencesToGbObject3D(const SPtr<Block3D> block/*, const double& x1, const double& x2, const double& x3, const double& blockLengthX1, const double& blockLengthX2, const double& blockLengthX3, const double& timestep=0*/);
 
    ObObject* clone() { throw UbException(UB_EXARGS,"not implemented");	}
-   ObObjectCreator* getCreator();
-
 
    void writeValidationAVSFile(std::string filename);  
    virtual std::vector< std::pair<GbPoint3D,GbPoint3D> >  getQsLineSet();

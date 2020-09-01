@@ -475,6 +475,26 @@ namespace UbMath
    static const double c56 = 56.0;
    static const double c152 = 152.0;
    static const double c130 = 130.0;
+   static const double one = 1.0;
+   static const double two = 2.0;
+   static const double three = 3.0;
+   static const double four = 4.0;
+   static const double five = 5.0;
+   static const double six = 6.0;
+   static const double seven = 7.0;
+   static const double eight = 8.0;
+   static const double nine = 9.0;
+   static const double fourteen = 14.0;
+   static const double fiveteen = 15.0;
+   static const double sixteen = 16.0;
+   static const double twentyone = 21.0;
+   static const double twentyfour = 24.0;
+   static const double twentyeight = 28.0;
+   static const double twentynine = 29.0;
+   static const double fourtyeight = 48.0;
+   static const double fifty = 50.0;
+   static const double fiftysix = 56.0;
+
 }
 
 #endif

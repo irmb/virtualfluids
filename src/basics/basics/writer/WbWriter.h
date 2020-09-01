@@ -105,7 +105,7 @@ public:
    //   0 ---- 1
    virtual std::string writeOcts(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt8 >& cells){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
    virtual std::string writeOctsWithCellData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& celldata){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
-   virtual std::string writeOctsWithNodeData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
+   virtual std::string writeOctsWithNodeData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleUInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
 
 private:
 

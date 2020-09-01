@@ -1,5 +1,5 @@
-#SUBDIRS(numerics/algebra/examples/tutorial)
-#SUBDIRS(numerics/geometry3d/examples/stl2inp)
+#SUBDIRS(algebra/examples/tutorial)
+#SUBDIRS(geometry3d/examples/stl2inp)
 #SUBDIRS(lbmd2q9/a2pII/testcases/inputfile)
 SUBDIRS(lbmd2q9/a2pII/testcases/SFC_arne)
 IF(NEED_METIS)

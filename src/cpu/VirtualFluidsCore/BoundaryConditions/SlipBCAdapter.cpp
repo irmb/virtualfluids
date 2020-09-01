@@ -1,7 +1,7 @@
 #include "SlipBCAdapter.h"
 #include "D3Q27System.h"
 #include "D3Q27Interactor.h"
-#include "numerics/geometry3d/GbCuboid3D.h"
+#include "geometry3d/GbCuboid3D.h"
 
 
 //*==========================================================*/

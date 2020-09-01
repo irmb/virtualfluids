@@ -120,6 +120,13 @@ private:
    bool   active;
    bool   transformation;
 
+    friend class MPIIOCoProcessor;
+    friend class MPIIORestartCoProcessor;
+    friend class MPIIOMigrationCoProcessor;
+    friend class MPIIOMigrationBECoProcessor;
+    friend class CheckpointConverter;
+
+
 };
 
 #endif //COORDINATETRANSFORMATION3D_H

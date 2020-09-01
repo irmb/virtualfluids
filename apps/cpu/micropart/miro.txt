@@ -6,10 +6,10 @@
 #include "RatioSmoothBlockVisitor.h"
 #include "OverlapBlockVisitor.h"
 #include "SetInterpolationDirsBlockVisitor.h"
-#include "numerics/geometry3d/GbSystem3D.h"
-#include "numerics/geometry3d/GbCuboid3D.h"
-#include "numerics/geometry3d/GbCylinder3D.h"
-#include "numerics/geometry3d/GbSphere3D.h"
+#include "geometry3d/GbSystem3D.h"
+#include "geometry3d/GbCuboid3D.h"
+#include "geometry3d/GbCylinder3D.h"
+#include "geometry3d/GbSphere3D.h"
 #include "BlocksPostprocessor.h"
 #include "Grid3D.h"
 #include "Patch3D.h"
@@ -45,8 +45,8 @@
    //
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include "basics/writer/WbWriterVtkXmlASCII.h"
-#include "numerics/geometry3d/creator/GbTriFaceMesh3DCreator.h"
-#include "numerics/geometry3d/GbTriFaceMesh3D.h"
+#include "geometry3d/creator/GbTriFaceMesh3DCreator.h"
+#include "geometry3d/GbTriFaceMesh3D.h"
 #include "D3Q27System.h"
 #include <basics/transmitter/TbTransmitterMpiPool.h>
 #include "MathUtil.hpp"
@@ -462,7 +462,7 @@ if(myid == 0) UBLOG(logINFO,"line"<<__LINE__);
 
          if(myid == 0)
          {
-            //Abstände "q" als Linien rausschreiben
+            //Abstï¿½nde "q" als Linien rausschreiben
             std::vector< UbTupleFloat3 > nodes;
             std::vector< UbTupleInt2 >   lines;
             geoInt->addQsLineSet(nodes, lines);

@@ -44,7 +44,6 @@ public:
    void setRegardPointInObjectTest( bool opt ) { this->regardPIOTest = opt; }
 
    ObObject*        clone() { throw UbException(UB_EXARGS,"not implemented");	}
-   ObObjectCreator* getCreator();
 
    UbTupleDouble3 getForces();
    UbTupleDouble3 getForcesTriangle();

@@ -4,8 +4,8 @@
 
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-#include <numerics/geometry3d/GbCuboid3D.h>
-#include <numerics/geometry3d/GbLine3D.h>
+#include <geometry3d/GbCuboid3D.h>
+#include <geometry3d/GbLine3D.h>
 #include "Block3D.h"
 #include "Grid3D.h"
 #include "BCArray3D.h"

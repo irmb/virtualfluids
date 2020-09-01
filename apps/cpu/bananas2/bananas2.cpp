@@ -1,13 +1,13 @@
 #include <iostream>
 #include <string>
 
-#include "numerics/geometry3d/CoordinateTransformation3D.h"
+#include "geometry3d/CoordinateTransformation3D.h"
 #include "Grid3D.h"
 #include "GenBlocksGridVisitor.h"
-#include "numerics/geometry3d/GbSystem3D.h"
-#include "numerics/geometry3d/GbCuboid3D.h"
-#include "numerics/geometry3d/GbCylinder3D.h"
-#include <numerics/geometry3d/GbSphere3D.h>
+#include "geometry3d/GbSystem3D.h"
+#include "geometry3d/GbCuboid3D.h"
+#include "geometry3d/GbCylinder3D.h"
+#include <geometry3d/GbSphere3D.h>
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include "RefineCrossAndInsideGbObjectBlockVisitor.h"
@@ -39,14 +39,14 @@
 #include "D3Q27OffsetInterpolationProcessor.h"
 #include "D3Q27CompactInterpolationProcessor.h"
 #include "SyncBcBlockVisitor.h"
-#include "numerics/geometry3d/creator/GbTriFaceMesh3DCreator.h"
-#include "numerics/geometry3d/GbTriFaceMesh3D.h"
+#include "geometry3d/creator/GbTriFaceMesh3DCreator.h"
+#include "geometry3d/GbTriFaceMesh3D.h"
 #include "D3Q27TriFaceMeshInteractor.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 #include "basics/utilities/UbFileInputASCII.h"
 #include "basics/utilities/UbFileInputBinary.h"
 #include "basics/container/CbArray3D.h"
-#include "numerics/geometry3d/GbVoxelMatrix3D.h"
+#include "geometry3d/GbVoxelMatrix3D.h"
 
 
 /* 

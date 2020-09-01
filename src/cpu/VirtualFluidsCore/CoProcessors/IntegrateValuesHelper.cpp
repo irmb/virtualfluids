@@ -1,8 +1,8 @@
 #include "IntegrateValuesHelper.h"
 
 
-#include <numerics/geometry3d/GbCuboid3D.h>
-#include <numerics/geometry3d/CoordinateTransformation3D.h>
+#include <geometry3d/GbCuboid3D.h>
+#include <geometry3d/CoordinateTransformation3D.h>
 #include <vector>
 
 #include "LBMKernel.h"

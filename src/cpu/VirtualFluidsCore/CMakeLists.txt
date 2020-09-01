@@ -99,9 +99,8 @@ vf_add_library(BUILDTYPE static DEPENDS basics MuParser ${CAB_ADDITIONAL_LINK_LI
 
 vf_get_library_name(library_name)
 target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/numerics/geometry3d)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/numerics/geometry3d/Creator)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/numerics/geometry3d/KdTree)
+target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/geometry3d)
+target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/geometry3d/KdTree)
 target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/container)
 target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/memory)
 target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/objects)
