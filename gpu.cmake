@@ -80,9 +80,6 @@ enable_language(CUDA)
 
 #############################################################
 
-include(${CMAKE_PATH}/CMakeMacros_old/general/FindCompiler.cmake)
-configure_file(src/gpu/VirtualFluidsDefinitions.in.h VirtualFluidsDefinitions.h)
-
 
 # only use this with device of CC larger than 6.0
 IF(VF_DOUBLE_ACCURACY)

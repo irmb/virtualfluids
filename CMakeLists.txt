@@ -39,6 +39,8 @@ include("${CMAKE_PATH}/CMakeCABMacros.cmake")
 include("${CMAKE_PATH}/FileUtilities.cmake")
 include("${CMAKE_PATH}/VirtualFluidsMacros.cmake")
 
+include(${CMAKE_PATH}/CMakeMacros_old/general/FindCompiler.cmake)
+configure_file(src/basics/VirtualFluidsDefinitions.in.h VirtualFluidsDefinitions.h)
 
 #################################################################################
 #  COMMON LIBRARIES
