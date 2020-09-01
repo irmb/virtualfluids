@@ -1,14 +1,38 @@
-#include <geometry3d/GbPoint3D.h>
-//#include <geometry3d/GbTriangle3D.h>
-#include <geometry3d/creator/GbPoint3DCreator.h>
-
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GbPoint3D.cpp
+//! \ingroup geometry3d
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
+#include <GbPoint3D.h>
 using namespace std;
 
-/*=======================================================*/
-ObObjectCreator* GbPoint3D::getCreator()
-{
-   return GbPoint3DCreator::getInstance();
-}
 /*=======================================================*/
 GbPoint3D::GbPoint3D()
 { 
@@ -77,7 +101,7 @@ vector<GbTriangle3D*> GbPoint3D::getSurfaceTriangleSet()
    
    //old:
    //to avoid unnecessary exceptions a point will generate a triangle with
-   //three point with same coordinates
+   //c3 point with same coordinates
    //vector<GbTriangle3D*> triangles;
    //GbPoint3D p1(getX1Coordinate(),getX2Coordinate(),getX3Coordinate());
    //triangles.push_back(new GbTriangle3D(new GbPoint3D(p1),new GbPoint3D(p1),new GbPoint3D(p1)));
@@ -95,31 +119,11 @@ string GbPoint3D::toString()
    return((ss.str()).c_str());
 }
 /*=======================================================*/
-void GbPoint3D::write(UbFileOutput* out) 
-{                                      
-   out->writeString(this->getCreator()->getTypeID());
-   out->writeDouble(x1);
-   out->writeDouble(x2);
-   out->writeDouble(x3);
-}
-/*=======================================================*/
-void GbPoint3D::read(UbFileInput* in) 
-{  
-   x1=in->readDouble();
-   x2=in->readDouble();
-   x3=in->readDouble();
-}
-/*=======================================================*/
 void GbPoint3D::translate(const double& dx1, const double& dx2, const double& dx3)
 {  
    this->x1 += dx1;
    this->x2 += dx2;
    this->x3 += dx3;
-  // wenn Notify hier dann nicht im Cuboid oder spher translate ?!
-   //sollte eigentlich!
-   //--> hier muss notify aufgerufen werden udn rekuriv dann z.B. Cuboid, etc 
-   
-   //aber da ist halt einfach daemlich, ich asse es auf gellers way... (erstmal)
    this->notifyObserversObjectChanged(); 
 }
 /*=======================================================*/
