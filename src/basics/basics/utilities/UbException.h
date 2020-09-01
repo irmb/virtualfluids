@@ -1,9 +1,35 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file UbException.h
+//! \ingroup utilities
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef UBEXCEPTION_H
 #define UBEXCEPTION_H
 
@@ -15,25 +41,15 @@
 
 #include "./UbTuple.h"
 
-/*=========================================================================*/
-/*  UbException                                                             */
-/*                                                                         */
-/**
-This Class provides the base for exception handling.
-<BR><BR>
-@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-@version 1.0  - 23.11.04
-@version 1.5  - 14.03.08
-@version 1.6  - 31.03.08 derivation from std::run_time_error
-@version 1.6a - helper marco UB_EXARGS
-*/ 
-
-/*
-usage: UB_THROW( UbException("error message") );
-       UB_THROW( UbException(__FILE__, __LINE__,"error message") );
-       UB_THROW( UbException(__FILE__, __LINE__,UB_FUNCTION,"error message") );
-       UB_THROW( UbException(UB_EXARGS,"error") ); //same as above
-*/
+//=========================================================================
+//
+//! \brief UbException
+//! usage: UB_THROW( UbException("error message") );
+//!        UB_THROW( UbException(__FILE__, __LINE__,"error message") );
+//!        UB_THROW( UbException(__FILE__, __LINE__,UB_FUNCTION,"error message") );
+//!        UB_THROW( UbException(UB_EXARGS,"error") ); //same as above
+//
+//=========================================================================
 
 //Macro UB_FUNCTION: figures out the method/function name (platform dependant)
 #if defined(__GNUC__) || (defined(__MWERKS__) && (__MWERKS__ >= 0x3000)) || (defined(__ICC) && (__ICC >= 600))
@@ -100,7 +116,7 @@ public:
    virtual const char* what() const throw()
    {
       exceptionString = this->toString();
-      return exceptionString.c_str();  //ansonsten ist das Verhalten anschlieﬂend undefiniert!
+      return exceptionString.c_str();  //ansonsten ist das Verhalten anschliessend undefiniert!
    }
    /*==========================================================*/
    virtual void addInfo(const std::string& err_str)	 

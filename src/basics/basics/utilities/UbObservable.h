@@ -1,51 +1,70 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file UbObservable.h
+//! \ingroup utilities
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef UBOBSERVABLE_H
 #define UBOBSERVABLE_H
 
 #include <list>               
 #include <iostream>
 
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
-
 #include <basics/utilities/UbObserver.h>
 
 class UbObserver;
 
-/*=========================================================================*/
-/*  Beobachtbares Objekt                                                   */
-/*                                                                         */
-/**
-  This class provides Observables. The Observeres which observe this
-  Observable are stored in an observerlist.
-  IMPORTANT: objectWillBeDeleted is called at UbObserver::~UbObserver
-             this destructor is called AFTER the destructor of the
-             child classes. if you down_cast the pointer sent with the
-             objectWillBeDeleted(UbObserver* objpointer) then have to go this:
-               
-               if(dynamic_cast<UbObserver*>(observedObj)==objpointer) 
-                     (e.g.) observedObj=NULL;
-   example: see end of file
-
-   a copy of an UbservableObject will NOT copy the observerList
-  <UL>
-    <LI><B>Extending:</B> This UbObservable is the observable object itself. Extending should be used
-	where object types can be extended from UbObservable.
-    <LI><B>Associating:</B> Initialization is done via the constructor <tt>UbObservable(ObservableObject)</tt>.
-	Associating may be used, where object types to be observed could not be extended from UbObservable.
-  </UL>
-  <BR><BR><HR>        
-  @author <A HREF="mailto:geller@cab.bau.tu-bs.de">S. Geller</A>
-  @author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-  @version 1.2 - 13.07.05
-  @see UbObserver
-*/
+//////////////////////////////////////////////////////////////////////////
+//!
+//! \brief Observable object
+//! \details This class provides Observables. The Observeres which observe this
+//!  Observable are stored in an observerlist.
+//!  IMPORTANT: objectWillBeDeleted is called at UbObserver::~UbObserver
+//!             this destructor is called AFTER the destructor of the
+//!             child classes. if you down_cast the pointer sent with the
+//!             objectWillBeDeleted(UbObserver* objpointer) then have to go this:
+//!               
+//!               if(dynamic_cast<UbObserver*>(observedObj)==objpointer) 
+//!                     (e.g.) observedObj=NULL;
+//!   example: see end of file
+//!
+//!   a copy of an UbservableObject will NOT copy the observerList
+//!  <UL>
+//!    <LI><B>Extending:</B> This UbObservable is the observable object itself. Extending should be used
+//!	where object types can be extended from UbObservable.
+//!    <LI><B>Associating:</B> Initialization is done via the constructor <tt>UbObservable(ObservableObject)</tt>.
+//!	Associating may be used, where object types to be observed could not be extended from UbObservable.
+//!  </UL>
+//!
+//! see UbObserver
+//!
+//////////////////////////////////////////////////////////////////////////
 
 class UbObservable 
 {
@@ -95,7 +114,7 @@ public:
    
    /**
    Adds an UbObserver to the observerlist.
-   @param observer the observer to add to this observable (note that an observer may observe one observable more than once)
+   @param observer the observer to add to this observable (note that an observer may observe c1 observable more than once)
    */
    virtual void addObserver(UbObserver* observer)
    {
@@ -163,14 +182,6 @@ public:
    std::list<UbObserver*>* getObserverList() { return &mObserverList;}
 
    virtual std::string toString() { return "UbObservable - toString()"; }
-
-#ifdef CAB_RCF
-   template<typename Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      //do nothing!
-   }
-#endif //CAB_RCF
 
 private:
    /**

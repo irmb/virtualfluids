@@ -1,17 +1,45 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file WbWriterVtkXmlASCII.h
+//! \ingroup writer
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef WBWRITERVTKXMLASCII_H
 #define WBWRITERVTKXMLASCII_H
 
 #include <string>
 
-#include "basics_export.h"
-
 #include <basics/writer/WbWriter.h>
 
-class BASICS_EXPORT WbWriterVtkXmlASCII  : public WbWriter
+class WbWriterVtkXmlASCII  : public WbWriter
 {
 public:
-   OBCREATOR_EXT( WbWriterVtkXmlASCII )
-
    static WbWriterVtkXmlASCII* getInstance()
    {
       static WbWriterVtkXmlASCII instance;
@@ -85,12 +113,10 @@ public:
    //   0 ---- 1
    std::string writeOcts(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt8 >& cells);
    std::string writeOctsWithCellData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt8 >& cells, std::vector< std::string >& datanames, std::vector< std::vector< double > >& celldata);
-   std::string writeOctsWithNodeData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleUInt8 >& cells, std::vector< std::string >& datanames, std::vector< std::vector< double > >& nodedata);
+   std::string writeOctsWithNodeData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt8 >& cells, std::vector< std::string >& datanames, std::vector< std::vector< double > >& nodedata);
 
 private:
 
 };
-
-UB_AUTO_RUN_NAMED(ObFactory<WbWriter>::getInstance()->addObCreator(ObSingletonCreatorImpl<WbWriterVtkXmlASCII ,WbWriter>::getInstance()), CAB_WbWriterVtkXmlASCII);
 
 #endif //WBWRITERVTKXMLASCII_H
