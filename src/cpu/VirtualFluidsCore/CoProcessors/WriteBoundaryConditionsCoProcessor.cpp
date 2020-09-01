@@ -166,7 +166,7 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
    SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
 
    //knotennummerierung faengt immer bei 0 an!
-   int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
+   unsigned int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
 
    int minX1 = 0;
    int minX2 = 0;

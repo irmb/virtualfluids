@@ -168,7 +168,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
    LBMReal vx1,vx2,vx3,drho,press;
 
    //node numbering always starts at 0!
-   int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
+   unsigned int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
 
    if(block->getKernel()->getCompressible())
    {
