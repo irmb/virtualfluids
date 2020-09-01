@@ -10,13 +10,11 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
-
+#include <map>
 
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbMath.h>
 #include <basics/utilities/Vector3D.h>
-
-#include <basics/memory/MbSmartPtr.h>
 
 #include <geometry3d/GbPoint3D.h>
 

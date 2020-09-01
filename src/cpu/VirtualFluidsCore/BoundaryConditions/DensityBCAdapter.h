@@ -37,7 +37,6 @@ public:
 
    //------------- implements D3Q27BoundaryConditionAdapter ----- start
    std::string toString();
-   ObObjectCreator* getCreator();
 
    void init(const D3Q27Interactor* const& interactor, const double& time=0);
    void update(const D3Q27Interactor* const& interactor, const double& time=0);

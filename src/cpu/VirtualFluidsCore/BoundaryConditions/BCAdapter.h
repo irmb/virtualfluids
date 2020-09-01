@@ -11,10 +11,8 @@
 
 #include "BoundaryConditions.h"
 #include "basics/objects/ObObject.h"
-#include "basics/objects/ObObjectCreator.h"
 #include "basics/utilities/UbFileOutput.h"
 #include "basics/utilities/UbFileInput.h"
-#include "basics/utilities/UbAutoRun.hpp"
 #include "BCAlgorithm.h"
 
 

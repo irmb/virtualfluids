@@ -66,7 +66,6 @@ public:
    }
 
    //------------- implements D3Q27BoundaryConditionAdapter ----- start
-   ObObjectCreator* getCreator();
 
    void init(const D3Q27Interactor* const& interactor, const double& timestep=0) {}
    void update(const D3Q27Interactor* const& interactor, const double& timestep=0) {}

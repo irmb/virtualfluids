@@ -1,7 +1,6 @@
 #include "D3Q27TriFaceMeshInteractor.h"
 #include <basics/utilities/UbMath.h>
 #include <basics/utilities/UbLogger.h>
-#include <basics/utilities/UbStaticPathMap.h>
 
 #include <basics/writer/WbWriterVtkBinary.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>

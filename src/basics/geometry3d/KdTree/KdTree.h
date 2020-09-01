@@ -1,7 +1,6 @@
 #ifndef KDTREE_H
 #define KDTREE_H
 
-#include <basics/memory/MbSmartPtr.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <geometry3d/GbTriFaceMesh3D.h>
 #include <basics/utilities/UbKeys.h>
