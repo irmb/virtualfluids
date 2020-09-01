@@ -12,8 +12,6 @@
 class WbWriterAvsASCII : public WbWriter
 {
 public:
-   OBCREATOR_EXT( WbWriterAvsASCII )
-
    static WbWriterAvsASCII* getInstance()
    {
       static WbWriterAvsASCII instance;
@@ -70,7 +68,5 @@ public:
    std::string writeOctsWithCellData(const std::string& filename, std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector< std::vector<double > >& celldata);
    std::string writeOctsWithNodeData(const std::string& filename, std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector< std::vector<double > >& nodedata);
 };
-
-UB_AUTO_RUN_NAMED(ObFactory<WbWriter>::getInstance()->addObCreator(ObSingletonCreatorImpl<WbWriterAvsASCII ,WbWriter>::getInstance()), CAB_WbWriterAvsASCII);
 
 #endif //WBWRITERAVSASCII_H

@@ -95,7 +95,6 @@ public:
    virtual GbLine3D* createClippedLine3D (GbPoint3D &point1,GbPoint3D &point2);
    //virtual std::vector<GbQuad3D*> getSurfaceQuadSet();
 	virtual std::vector<GbTriangle3D*> getSurfaceTriangleSet();
-   virtual ObObjectCreator* getCreator();
 
    virtual void write(UbFileOutput* out) { std::cout<<"GbQuadFaceMesh3D::write - sorry not implemented\n"; }
    virtual void read(UbFileInput* in)    { std::cout<<"GbQuadFaceMesh3D::read  - sorry not implemented\n"; }

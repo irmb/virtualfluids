@@ -12,8 +12,6 @@
 class WbWriterAvsBinary : public WbWriter
 {
 public:
-   OBCREATOR_EXT( WbWriterAvsBinary )
-
    static WbWriterAvsBinary* getInstance()
    {
       static WbWriterAvsBinary instance;
@@ -68,7 +66,5 @@ public:
    std::string writeOctsWithCellData(const std::string& filename, std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector< std::vector<double > >& celldata);
    std::string writeOctsWithNodeData(const std::string& filename, std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector< std::vector<double > >& nodedata);
 };
-
-UB_AUTO_RUN_NAMED(ObFactory<WbWriter>::getInstance()->addObCreator(ObSingletonCreatorImpl<WbWriterAvsBinary ,WbWriter>::getInstance()), CAB_WbWriterAvsBinary);
 
 #endif //WBWRITERAVSBINARY_H

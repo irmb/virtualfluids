@@ -8,10 +8,6 @@
 class WbWriterTecPlotASCII  : public WbWriter
 {
 public:
-   #ifndef SWIG
-   OBCREATOR_EXT( WbWriterTecPlotASCII )
-   #endif
-
    static WbWriterTecPlotASCII* getInstance()
    {
       static WbWriterTecPlotASCII instance;
@@ -87,9 +83,5 @@ public:
    std::string writeOctsWithNodeData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata);
    
 };
-
-#ifndef SWIG
-UB_AUTO_RUN_NAMED(ObFactory<WbWriter>::getInstance()->addObCreator(ObSingletonCreatorImpl<WbWriterTecPlotASCII ,WbWriter>::getInstance()), CAB_WbWriterTecPlotASCII);
-#endif
 
 #endif //WBWRITERTECPLOTASCII_H

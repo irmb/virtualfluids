@@ -1,5 +1,4 @@
 #include <geometry3d/GbTriangularMesh3D.h>
-#include <geometry3d/creator/GbTriangularMesh3DCreator.h>
 
 #include <map>
 
@@ -109,11 +108,6 @@ GbTriangularMesh3D::~GbTriangularMesh3D()
 		for(unsigned u=0; u<triangles->size(); u++)	delete (*triangles)[u];
       delete triangles;
 	}
-}
-/*======================================================================*/
-ObObjectCreator* GbTriangularMesh3D::getCreator()
-{
-   return GbTriangularMesh3DCreator::getInstance();
 }
 /*======================================================================*/
 void GbTriangularMesh3D::deleteRedundantNodes()
@@ -1033,106 +1027,6 @@ void GbTriangularMesh3D::writeMesh(string filename, WbWriter* writer, bool write
       }
       writer->writeLines(filename+"_normals",lineNodes,lines);
    }
-}
-/*======================================================================*/
-void GbTriangularMesh3D::writeAVSMesh(UbFileOutput *out, bool normals) 
-{
-   cout<<" - write_ucd ("<<out->getFileName()<<") -> ";
-   if(!out)
-   {
-      cout<<"GbTriangularMesh3D::writeAVSMesh() - File konnte nicht geschrieben werden: "<<endl;
-      return;
-   }
-   out->writeLine("# UCD-File created by GbTriangularMesh3D");
-   //vector<GbPoint3D*>     *nodes    = this->getNodes();
-   vector<GbTriangle3D*> *triangles = this->getTriangles();
-   //int nodesize     = (int)nodes->size();
-   int trianglesize = (int)triangles->size();
-   int nodesize     = trianglesize*3;
-   if(normals) 
-   {
-      out->writeInteger(nodesize+trianglesize*2);
-      out->writeInteger(trianglesize*2);
-   }
-   else
-   {
-      out->writeInteger(nodesize);
-      out->writeInteger(trianglesize);
-   }
-   out->writeInteger(0);
-   out->writeInteger(0);
-   out->writeInteger(0);
-   out->writeLine();
-   int nr=1;
-   GbPoint3D *node;
-   for(int i=0;i<trianglesize; i++)
-   {
-      node = (*triangles)[i]->getPoint(0); 
-      out->writeInteger(nr++);
-      out->writeDouble(node->getX1Coordinate());
-      out->writeDouble(node->getX2Coordinate());
-      out->writeDouble(node->getX3Coordinate());
-      out->writeLine();
-      node = (GbPoint3D*)(*triangles)[i]->getPoint(1); 
-      out->writeInteger(nr++);
-      out->writeDouble(node->getX1Coordinate());
-      out->writeDouble(node->getX2Coordinate());
-      out->writeDouble(node->getX3Coordinate());
-      out->writeLine();
-      node = (GbPoint3D*)(*triangles)[i]->getPoint(2); 
-      out->writeInteger(nr++);
-      out->writeDouble(node->getX1Coordinate());
-      out->writeDouble(node->getX2Coordinate());
-      out->writeDouble(node->getX3Coordinate());
-      out->writeLine();
-   }
-
-   if(normals) 
-   {
-      for(int i=0;i<trianglesize; i++)
-      {
-         GbVector3D vec = (*triangles)[i]->getNormal();
-         out->writeInteger(nr++);
-         out->writeDouble((*triangles)[i]->getX1Centroid());
-         out->writeDouble((*triangles)[i]->getX2Centroid());
-         out->writeDouble((*triangles)[i]->getX3Centroid());
-         out->writeLine();
-         out->writeInteger(nr++);
-         out->writeDouble((*triangles)[i]->getX1Centroid()+vec.X1());
-         out->writeDouble((*triangles)[i]->getX2Centroid()+vec.X2());
-         out->writeDouble((*triangles)[i]->getX3Centroid()+vec.X3());
-         out->writeLine();
-      }
-   }
-   nr=1;
-   int el=1;
-   for(int i=0;i<trianglesize; i++)
-   {
-      nr = 3*el-2;
-      out->writeInteger(el);
-      out->writeInteger(2);
-      out->writeString("tri");
-      out->writeInteger(nr);
-      out->writeInteger(nr+1);
-      out->writeInteger(nr+2);
-      out->writeLine();
-      el++;
-   }
-   if(normals)
-   {
-      nr = trianglesize*3+1;
-      for(int i=trianglesize;i<2*trianglesize; i++)
-      {
-         out->writeInteger(el);
-         out->writeInteger(2);
-         out->writeString("line");
-         out->writeInteger(nr++);
-         out->writeInteger(nr++);
-         out->writeLine();
-         el++;
-      }
-   }
-   cout<<"done\n";
 }
 
 /*======================================================================*/

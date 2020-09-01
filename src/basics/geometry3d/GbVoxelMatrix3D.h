@@ -7,9 +7,6 @@
 #ifndef GBVOXELMATRIX3D_H
 #define GBVOXELMATRIX3D_H
 
-#ifdef CAB_RCF
-#include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
 
 #include <vector>
 #include <cmath>
@@ -110,10 +107,6 @@ public:
 
    std::string toString();
 
-   ObObjectCreator* getCreator();
-   void write(UbFileOutput* out);
-   void read(UbFileInput* in);
-
    //virtuelle Methoden von UbObserver
    void objectChanged(UbObservable* changedObject) {}
    void objectWillBeDeleted(UbObservable* objectForDeletion) {}
@@ -162,38 +155,6 @@ protected:
 
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere
 
-//#ifdef CAB_RCF
-//   template<class Archive>
-//   void SF_SERIALIZE(Archive & ar)
-//   {
-//      SF_SERIALIZE_PARENT<GbObject3D>(ar, *this);
-//      ar & minX1;
-//      ar & minX2;
-//      ar & minX3;
-//      ar & deltaX1;
-//      ar & deltaX2;
-//      ar & deltaX3;
-//      ar & nodesX1;
-//      ar & nodesX2;
-//      ar & nodesX3;
-//      ar & threshold;
-//      ar & transferViaFilename;
-//      ar & addSurfaceTriangleSetFlag;
-//      if (!transferViaFilename)
-//      {
-//         ar & voxelMatrix;
-//      }
-//      else
-//      {
-//         ar & filename;
-//         if (ArchiveTools::isReading(ar))
-//         {
-//            this->readMatrixFromVtiASCIIFile(filename);
-//         }
-//      }
-//
-//   }
-//#endif //CAB_RCF
 
 protected:
    //for transfer

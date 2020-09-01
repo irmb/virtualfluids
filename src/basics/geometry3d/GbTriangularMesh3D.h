@@ -110,14 +110,8 @@ public:
 
    virtual GbLine3D* createClippedLine3D (GbPoint3D &point1,GbPoint3D &point2);
    virtual std::vector<GbTriangle3D*> getSurfaceTriangleSet();     
-   virtual ObObjectCreator* getCreator();
-
-   virtual void write(UbFileOutput* out) { std::cout<<"GbTriangularMesh3D::write - sorry not implemented\n"; }
-   virtual void read(UbFileInput* in)    { std::cout<<"GbTriangularMesh3D::read  - sorry not implemented\n"; }
 
    void writeMesh(std::string filename, WbWriter* writer, bool writeNormals=false);
-   void writeAVSMesh(UbFileOutput* out, bool normals=false);
-
    /*======================================================================*/
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere
 

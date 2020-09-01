@@ -2,7 +2,6 @@
 
 #include <basics/utilities/UbMath.h>
 #include <basics/utilities/UbFileInputASCII.h>
-#include <geometry3d/creator/GbVoxelMatrix3DCreator.h>
 #include <geometry3d/GbTriangle3D.h>
 #include <basics/utilities/UbFileOutputASCII.h>
 #include <geometry3d/CoordinateTransformation3D.h>
@@ -19,11 +18,6 @@ const float GbVoxelMatrix3D::SOLID = 1.0f;
 const float GbVoxelMatrix3D::FLUID = 0.0f;
 
 
-/*=======================================================*/
-ObObjectCreator* GbVoxelMatrix3D::getCreator()
-{
-   return GbVoxelMatrix3DCreator::getInstance();
-}
 /*=======================================================*/
 // Konstruktor
 GbVoxelMatrix3D::GbVoxelMatrix3D(int nx1, int nx2, int nx3, float initVal, double lowerThreshold, double upperThreshold)
@@ -518,72 +512,6 @@ void GbVoxelMatrix3D::addSurfaceTriangleSet(vector<UbTupleFloat3>& nodes, vector
 string GbVoxelMatrix3D::toString()
 {
    return "GbVoxelMatrix3D";
-}
-/*=======================================================*/
-void GbVoxelMatrix3D::write(UbFileOutput* out)
-{
-   out->writeString(this->getCreator()->getTypeID());
-   out->writeDouble(minX1);
-   out->writeDouble(minX2);
-   out->writeDouble(minX3);
-   out->writeDouble(deltaX1);
-   out->writeDouble(deltaX2);
-   out->writeDouble(deltaX3);
-   out->writeInteger(nodesX1);
-   out->writeInteger(nodesX2);
-   out->writeInteger(nodesX3);
-   out->writeDouble(lowerThreshold);
-   out->writeDouble(upperThreshold);
-   out->writeBool(addSurfaceTriangleSetFlag);
-   out->writeBool(transferViaFilename);
-   if (!transferViaFilename)
-   {
-      throw UbException(UB_EXARGS, "void GbVoxelMatrix3D::write(UbFileOutput* out)  - geht ned");
-   }
-   else
-   {
-      out->writeString(filename);
-   }
-
-
-   //CbUniformMatrix3D<float> voxelMatrix;
-}
-/*=======================================================*/
-void GbVoxelMatrix3D::read(UbFileInput* in)
-{
-#ifdef CAB_RCF
-   try
-   {
-#endif
-      //!!! den string nimmt er vorher um das Object zu erstellen
-      //in->readString();      
-      minX1 = in->readDouble();
-      minX2 = in->readDouble();
-      minX3 = in->readDouble();
-      deltaX1 = in->readDouble();
-      deltaX2 = in->readDouble();
-      deltaX3 = in->readDouble();
-      nodesX1 = in->readInteger();
-      nodesX2 = in->readInteger();
-      nodesX3 = in->readInteger();
-      lowerThreshold = in->readDouble();
-      upperThreshold = in->readDouble();
-      addSurfaceTriangleSetFlag = in->readBool();
-      transferViaFilename = in->readBool();
-      if (!transferViaFilename)
-      {
-         throw UbException(UB_EXARGS, "void GbVoxelMatrix3D::read(UbFileOutput* out)  - geht ned");
-      }
-      else
-      {
-         filename = in->readString();
-         this->readMatrixFromVtiASCIIFile(filename);
-      }
-#ifdef CAB_RCF
-   }
-   catch (std::exception& e) { UBLOGML(logERROR, UB_FUNCTION+(std::string)e.what());        throw RCF::Exception(1002, UB_FUNCTION+(std::string)e.what()); }
-   catch (...) { UBLOGML(logERROR, UB_FUNCTION+(std::string)"unknown error"); throw RCF::Exception(1002, UB_FUNCTION+(std::string)"unknown error"); }
-#endif
 }
 /*=======================================================*/
 void GbVoxelMatrix3D::readMatrixFromVtiASCIIFile(std::string filename)

@@ -4,10 +4,10 @@
 #include <geometry3d/GbCuboid3D.h>
 #include <geometry3d/GbHalfSpace3D.h>
 #include <geometry3d/CoordinateTransformation3D.h>
-#include <geometry3d/creator/GbTriFaceMesh3DCreator.h>
 #include <basics/utilities/UbRandom.h>
 #include <basics/utilities/UbTiming.h>
 #include <basics/utilities/UbLogger.h>
+#include <basics/utilities/UbFileInputASCII.h>
 #include <basics/writer/WbWriter.h>
 
 #include <geometry3d/KdTree/KdTree.h>
@@ -71,11 +71,6 @@ GbTriFaceMesh3D::~GbTriFaceMesh3D()
    if( nodes     ) { delete nodes;     nodes     = NULL; }
    if( triangles ) { delete triangles; triangles = NULL; }
    if( kdTree    ) { delete kdTree;    kdTree    = NULL; }
-}
-/*======================================================================*/
-ObObjectCreator* GbTriFaceMesh3D::getCreator()
-{
-   return GbTriFaceMesh3DCreator::getInstance();
 }
 /*======================================================================*/
 void GbTriFaceMesh3D::init()
@@ -959,101 +954,7 @@ GbLine3D* GbTriFaceMesh3D::createClippedLine3D (GbPoint3D& point1, GbPoint3D& po
 {
    throw UbException(UB_EXARGS,"not implemented");
 }
-/*======================================================================*/
-void GbTriFaceMesh3D::write(UbFileOutput* out)
-{
-   out->writeString(this->getCreator()->getTypeID());
-   out->writeInteger((int)kdtreeSplitAlg);
-   out->writeBool(transferViaFilename);
 
-   if(!transferViaFilename)
-   {
-      //nodes
-      vector<Vertex>& vertices = *nodes;
-      out->writeSize_t( nodes->size() );
-      out->writeLine();
-      for(size_t i=0; i<vertices.size(); i++)
-      {
-         Vertex& v = vertices[i];
-         out->writeFloat(v.x);
-         out->writeFloat(v.y);
-         out->writeFloat(v.z);
-         out->writeLine();
-      }
-      
-      //triangles
-      vector<TriFace>& tris = *triangles;
-      out->writeSize_t( tris.size() );
-      out->writeLine();
-      for(size_t i=0; i<tris.size(); i++)
-      {
-         TriFace& t = tris[i];
-         out->writeInteger(t.v1);
-         out->writeInteger(t.v2);
-         out->writeInteger(t.v3);
-         out->writeLine();
-      }
-   }
-   else
-   {
-      out->writeString(filename);
-      out->writeLine();
-      out->writeDouble(transX1);
-      out->writeDouble(transX2);
-      out->writeDouble(transX3);
-
-   }
-}
-/*======================================================================*/
-void GbTriFaceMesh3D::read(UbFileInput* in)
-{
-   kdtreeSplitAlg =  (KDTREE_SPLITAGORITHM)in->readInteger();
-   transferViaFilename = in->readBool();
-
-   if(!transferViaFilename)
-   {
-      if(!nodes) nodes = new vector<Vertex>;
-      //nodes
-      vector<Vertex>& vertices = *nodes;
-      vertices.resize( in->readSize_t( ) );
-      in->readLine();
-      for(size_t i=0; i<vertices.size(); i++)
-      {
-         Vertex& v = vertices[i];
-         v.x = in->readFloat();
-         v.y = in->readFloat();
-         v.z = in->readFloat();
-         in->readLine();
-      }
-
-      //triangles
-      if(!triangles) triangles = new vector<TriFace>;
-      vector<TriFace>& tris = *triangles;
-      tris.resize( in->readSize_t( ) );
-      in->readLine();
-      for(size_t i=0; i<tris.size(); i++)
-      {
-         TriFace& t = tris[i];
-         t.v1 = in->readInteger();
-         t.v2 = in->readInteger();
-         t.v3 = in->readInteger();
-         in->readLine();
-      }
-
-      this->calculateValues();
-   }
-   else
-   {
-      filename = in->readString();
-      in->readLine();
-      transX1 = in->readDouble();
-      transX2 = in->readDouble();
-      transX3 = in->readDouble();
-
-      this->readMeshFromSTLFile(filename, true);
-      this->translate(transX1,transX2,transX3);
-   }
-}
 /*======================================================================*/
 UbTuple<string, string> GbTriFaceMesh3D::writeMesh(string filename, WbWriter* writer, bool writeNormals, vector< string >* datanames, std::vector< std::vector < double > >* nodedata )
 {

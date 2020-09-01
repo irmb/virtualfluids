@@ -107,18 +107,6 @@ void GbObjectGroup3D::addSurfaceTriangleSet(vector<UbTupleFloat3>& nodes, vector
 {
 }
 /*=======================================================*/
-void GbObjectGroup3D::write(UbFileOutput* out)
-{
-   out->writeString(this->getCreator()->getTypeID());
-   midPoint->write(out);
-   out->writeDouble(radius);
-   out->writeInteger((int)triangulationMode);
-}
-/*=======================================================*/
-void GbObjectGroup3D::read(UbFileInput* in)
-{
-}
-/*=======================================================*/
 bool GbObjectGroup3D::hasIntersectionWithDirectedLine(GbPoint3D origin, GbPoint3D direction)
 {
    return false;

@@ -4,15 +4,8 @@
 #include <geometry3d/GbTriangle3D.h>
 #include <basics/utilities/UbInfinity.h>
 
-#include <geometry3d/creator/GbCylinder3DCreator.h>
-
 using namespace std;
 
-/*=======================================================*/
-ObObjectCreator* GbCylinder3D::getCreator()
-{
-   return GbCylinder3DCreator::getInstance();
-}
 // Konstruktor
 /*==========================================================*/
 GbCylinder3D::GbCylinder3D()
@@ -1049,23 +1042,7 @@ void GbCylinder3D::scale(const double& sx1, const double& sx2, const double& sx3
    this->mLine->scale(sx1,sx2,sx3);
    //notify observer wird automatisch aufgerufen
 }
-/*==========================================================*/
-void GbCylinder3D::write(UbFileOutput* out)
-{
-   out->writeString(this->getCreator()->getTypeID());
-   mLine->write(out);
-   out->writeDouble(mRad);
-   out->writeInteger(cylinderType);
-}
-/*==========================================================*/
-void GbCylinder3D::read(UbFileInput* in)
-{
-   in->readString();
-   mLine = new GbLine3D;
-   mLine->read(in);
-   mRad         = in->readDouble();
-   cylinderType = in->readInteger();
-}
+
 /*==========================================================*/
 double GbCylinder3D::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
 {

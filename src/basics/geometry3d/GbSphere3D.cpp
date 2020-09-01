@@ -4,14 +4,8 @@
 #include <geometry3d/GbLine3D.h>
 #include <geometry3d/GbTriangle3D.h>
 
-#include <geometry3d/creator/GbSphere3DCreator.h>
-
 using namespace std;
 
-ObObjectCreator* GbSphere3D::getCreator()
-{
-   return GbSphere3DCreator::getInstance();
-}
 /*=====================================================*/
 GbSphere3D::GbSphere3D()
   : GbObject3D(), UbObserver()
@@ -557,30 +551,6 @@ void GbSphere3D::transform(const double matrix[4][4])
    midPoint->transform(matrix);
    this->setRadius(this->getRadius()*matrix[0][0]);
    this->notifyObserversObjectChanged();
-}
-/*=======================================================*/
-void GbSphere3D::write(UbFileOutput* out)
-{
-   out->writeString(this->getCreator()->getTypeID());
-   midPoint->write(out);
-   out->writeDouble(radius);
-   out->writeInteger((int)triangulationMode);
-}
-/*=======================================================*/
-void GbSphere3D::read(UbFileInput* in)
-{
-   if(midPoint)
-   {
-      midPoint->removeObserver(this);
-      midPoint->finalize();
-      delete midPoint;
-   }
-   midPoint = new GbPoint3D;
-   in->readString();
-   midPoint->read(in);
-   midPoint->addObserver(this);
-   radius = in->readDouble();
-   triangulationMode = (TRIANGULATIONMODE)in->readInteger();
 }
 /*=======================================================*/
 bool GbSphere3D::hasIntersectionWithDirectedLine(GbPoint3D origin, GbPoint3D direction)

@@ -1,5 +1,4 @@
 #include <geometry3d/GbQuadFaceMesh3D.h>
-#include <geometry3d/creator/GbQuadFaceMesh3DCreator.h>
 
 #include <geometry3d/GbHalfSpace3D.h>
 #include <geometry3d/GbCuboid3D.h>
@@ -39,11 +38,6 @@ GbQuadFaceMesh3D::~GbQuadFaceMesh3D()
    {
       delete quads;
    }
-}
-/*======================================================================*/
-ObObjectCreator* GbQuadFaceMesh3D::getCreator()
-{
-   return GbQuadFaceMesh3DCreator::getInstance();
 }
 /*======================================================================*/
 
@@ -298,65 +292,3 @@ GbLine3D* GbQuadFaceMesh3D::createClippedLine3D (GbPoint3D& point1, GbPoint3D& p
 {
    throw UbException(UB_EXARGS,"not implemented");
 }
-
-/*======================================================================*/
-void GbQuadFaceMesh3D::writeAVSMesh(UbFileOutput *out, bool normals) 
-{
-   cout<<" - write_ucd ("<<out->getFileName()<<") -> ";
-   if(!out)
-   {
-      cout<<"GbQuadFaceMesh3D::writeAVSMesh() - File konnte nicht geschrieben werden: "<<endl;
-      return;
-   }
-   out->writeLine("# UCD-File created by GbQuadFaceMesh3D");
-
-   int quadsize = (int)this->quads->size();
-   int nodesize = (int)this->nodes->size();
-
-   out->writeInteger(nodesize);
-   out->writeInteger(quadsize);
-
-   out->writeInteger(0);
-   out->writeInteger(0);
-   out->writeInteger(0);
-   out->writeLine();
-   int nr=1;
-   Vertex node;
-   QuadFace face;
-   for(int i=0;i<nodesize; i++)
-   {
-    node = (*nodes)[i]; 
-    out->writeInteger(nr++);
-    out->writeDouble(node.x);
-    out->writeDouble(node.y);
-    out->writeDouble(node.z);
-    out->writeLine();
-   }
-
-   nr=1;
-   for(int i=0;i<quadsize; i++)
-   {
-      face = (*quads)[i]; 
-      out->writeInteger(nr++);
-      out->writeInteger(2);
-      out->writeString("quad");
-      out->writeInteger(face.vertex1+1);
-      out->writeInteger(face.vertex2+1);
-      out->writeInteger(face.vertex3+1);
-      out->writeInteger(face.vertex4+1);
-      out->writeLine();
-   }
-
-   //out->writeInteger(0);	out->writeInteger(1);	out->writeLine();
-   //out->writeInteger(1);	out->writeInteger(1);	out->writeLine();
-   //out->writeLine("TEST,no_unit");
-   //nr=1;
-   //for(int i=0;i<quadsize; i++)
-   //{
-   //	out->writeInteger(nr++);
-   //	out->writeInteger(10);
-   //	out->writeLine();
-   //}
-   cout<<"done\n";
-}
-

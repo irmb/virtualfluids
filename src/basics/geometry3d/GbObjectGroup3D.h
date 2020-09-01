@@ -7,9 +7,6 @@
 #ifndef GBOBJECTGROUP3D_H
 #define GBOBJECTGROUP3D_H
 
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
 #ifdef CAB_CTL
    #include <ctl.h>
 #endif //CAB_CTL
@@ -86,9 +83,6 @@ public:
 
 	std::string toString();
 
-   ObObjectCreator* getCreator(){ return NULL; };
-   void write(UbFileOutput* out);
-   void read(UbFileInput* in);       
 
    void translate(const double& x1, const double& x2, const double& x3) 
    {
@@ -116,17 +110,6 @@ public:
 
    std::list< GbObject3D* > getGbObject3DList() { return this->geoobjects; }
 
-#ifdef CAB_RCF
-   template<class Archive>
-   void SF_SERIALIZE(Archive & ar)
-   {
-      SF_SERIALIZE_PARENT<GbObject3D>(ar, *this);
-      ar & midPoint;
-      ar & radius;
-      ar & triangulationMode;
-      ar & geoobjects;
-   }
-#endif //CAB_RCF
 #ifdef CAB_CTL
    ctl::oStream &write(ctl::oStream &os) const
    { 
@@ -147,13 +130,5 @@ private:
 
    std::list< GbObject3D* > geoobjects;
 };
-
-#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-   #if defined(RCF_USE_SF_SERIALIZATION) && (CAB_RCF <= 903) 
-      SF_SERIALIZE_ENUM(GbObjectGroup3D::TRIANGULATIONMODE) //bei klassen ausserhalb der klasse;-)
-   #endif
-   UB_AUTO_RUN_NAMED(   SF::registerType<GbObjectGroup3D>("GbObjectGroup3D")        , SF_GbObjectGroup3D     );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< GbObject3D, GbObjectGroup3D >()), SF_GbObjectGroup3D_BD1 );
-#endif //RCF_USE_SF_SERIALIZATION
 
 #endif //GbObjectGroup3D_H

@@ -11,10 +11,6 @@
 #include <iostream>
 #include <vector>
 
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
-
 
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbMath.h>
@@ -25,6 +21,8 @@
 #include <geometry3d/GbPoint3D.h>
 
 #include <PointerDefinitions.h>
+
+#include <basics_export.h>
 
 namespace Kd 
 { 
@@ -96,14 +94,6 @@ public:
       {
          return(new Vertex(this));
       }
-
-#ifdef CAB_RCF
-      template<class Archive>
-      void SF_SERIALIZE(Archive & ar)
-      {
-         ar & x; ar & y; ar & z;
-      }
-#endif //CAB_RCF
 
    public:
       float x, y, z;
@@ -217,13 +207,6 @@ public:
                      <<"->removeRedunantNodes"<<std::endl;
          }
       }
-   #ifdef CAB_RCF
-      template<class Archive>
-      void SF_SERIALIZE(Archive & ar)
-      {
-         ar & v1; ar & v2; ar & v3;
-      }
-   #endif //CAB_RCF
 
    public:
       int   v1, v2, v3;
@@ -303,11 +286,6 @@ public:
    KDTREE_SPLITAGORITHM getKdTreeSplitAlgorithm() { return this->kdtreeSplitAlg; }
    Kd::Tree<double>* getKdTree() { return this->kdTree; }
 
-   virtual ObObjectCreator* getCreator();
-
-   void write(UbFileOutput* out);
-   void read(UbFileInput* in);  
-
    virtual UbTuple<std::string, std::string> writeMesh(std::string filename, WbWriter* writer, bool writeNormals=false, std::vector< std::string >* datanames=NULL, std::vector< std::vector < double > >* nodedata=NULL );
    void writeMeshPly( const std::string& filename);
 
@@ -316,35 +294,6 @@ public:
 
    bool intersectLine(const double& p1_x1, const double& p1_x2, const double& p1_x3, const double& p2_x1, const double& p2_x2, const double& p2_x3);
 
-
-#ifdef CAB_RCF
-   template<class Archive>
-   void SF_SERIALIZE(Archive & ar)
-   {
-      SF_SERIALIZE_PARENT<GbObject3D>(ar, *this);
-      ar & kdtreeSplitAlg;
-      ar & transferViaFilename;
-      if(!transferViaFilename)
-      {
-         ar & nodes;
-         ar & triangles;
-      }
-      else
-      {
-         ar & filename;
-         ar & transX1;
-         ar & transX2;
-         ar & transX3;
-         if(ArchiveTools::isReading(ar) ) 
-         {
-            this->readMeshFromSTLFile(filename, true);
-            this->translate(transX1,transX2,transX3);
-         }
-      }
-      
-      if(ArchiveTools::isReading(ar)) this->calculateValues();
-   }
-#endif //CAB_RCF
 
 protected:
    KDTREE_SPLITAGORITHM kdtreeSplitAlg;
@@ -377,9 +326,5 @@ protected:
    Kd::Tree< double >* kdTree;
 };
 
-#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-   UB_AUTO_RUN_NAMED(   SF::registerType<GbTriFaceMesh3D  >("GbTriFaceMesh3D  ")     , SF_GbTriFaceMesh3D     );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< GbObject3D, GbTriFaceMesh3D >() ), SF_GbTriFaceMesh3D_BD1 );
-#endif //RCF_USE_SF_SERIALIZATION
 
 #endif //GBTRIFACEMESH3D_H

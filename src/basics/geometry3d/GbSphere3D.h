@@ -7,9 +7,6 @@
 #ifndef GBSPHERE3D_H
 #define GBSPHERE3D_H
 
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
 #ifdef CAB_CTL
    #include <ctl.h>
 #endif //CAB_CTL
@@ -90,10 +87,6 @@ public:
 
 	std::string toString();
 
-   ObObjectCreator* getCreator();
-   void write(UbFileOutput* out);
-   void read(UbFileInput* in);       
-
    void translate(const double& x1, const double& x2, const double& x3) 
    {
       this->midPoint->translate(x1, x2, x3); 
@@ -124,16 +117,6 @@ public:
 
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere, weil man eine
 
-#ifdef CAB_RCF
-   template<class Archive>
-   void SF_SERIALIZE(Archive & ar)
-   {
-      SF_SERIALIZE_PARENT<GbObject3D>(ar, *this);
-      ar & midPoint;
-      ar & radius;
-      ar & triangulationMode;
-   }
-#endif //CAB_RCF
 #ifdef CAB_CTL
    ctl::oStream &write(ctl::oStream &os) const
    { 
@@ -153,12 +136,5 @@ private:
    TRIANGULATIONMODE triangulationMode;
 };
 
-#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-   #if CAB_RCF <= 903 
-      SF_SERIALIZE_ENUM(GbSphere3D::TRIANGULATIONMODE) //bei klassen ausserhalb der klasse;-)
-   #endif
-   UB_AUTO_RUN_NAMED(   SF::registerType<GbSphere3D>("GbSphere3D")             , SF_GbSphere3D     );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< GbObject3D, GbSphere3D >()), SF_GbSphere3D_BD1 );
-#endif //RCF_USE_SF_SERIALIZATION
 
 #endif //GBSPHERE3D_H

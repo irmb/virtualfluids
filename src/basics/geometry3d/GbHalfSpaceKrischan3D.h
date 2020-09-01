@@ -74,7 +74,6 @@ public:
    }
 
    void finalize(){}
-   ObObjectCreator* getCreator(){ return NULL; }
 
    double getX1Centroid(){ return      0.0; }
    double getX1Minimum() { return -99999.0; }
@@ -86,8 +85,6 @@ public:
    double getX3Minimum() { return -99999.0; }
    double getX3Maximum() { return  99999.0; }
 
-   void write(UbFileOutput* out){}
-   void read(UbFileInput* in){}
 
    GbLine3D* createClippedLine3D (GbPoint3D &point1, GbPoint3D &point2)
    {

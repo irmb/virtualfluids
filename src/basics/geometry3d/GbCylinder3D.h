@@ -7,9 +7,6 @@
 #ifndef GBCYLINDER3D_H
 #define GBCYLINDER3D_H
 
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
 
 #include <vector>
 #include <cmath>
@@ -100,27 +97,11 @@ public:
    void addSurfaceTriangleSetSegments(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles, int segmentsRound, int segmentsHeight );
 
 	std::string toString();
-	ObObjectCreator* getCreator();
-	void write(UbFileOutput* out);
-	void read(UbFileInput* in);
 
 	//virtuelle Methoden von UbObserver
 	void objectChanged(UbObservable* changedObject);
 	void objectWillBeDeleted(UbObservable* objectForDeletion);
 
-#ifdef CAB_RCF
-   template<class Archive>
-   void SF_SERIALIZE(Archive & ar)
-   {
-      SF_SERIALIZE_PARENT<GbObject3D>(ar, *this);
-      ar & mLine;
-      ar & mRad;
-      ar & cylinderType;
-      
-      if( ArchiveTools::isReading(ar) )
-         this->calculateValues();
-   }
-#endif //CAB_RCF
    
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere
 
@@ -143,11 +124,5 @@ protected:
    static const int X2PARALLEL         = (1<<2); //4
    static const int X3PARALLEL         = (1<<3); //8
 };
-
-#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-   UB_AUTO_RUN_NAMED(   SF::registerType<GbCylinder3D >("GbCylinder3D")           , SF_GbCylinder3D     );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< GbObject3D, GbCylinder3D >() ), SF_GbCylinder3D_BD1 );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< UbObserver, GbCylinder3D>()  ), SF_GbCylinder3D_BD2 );
-#endif //RCF_USE_SF_SERIALIZATION
 
 #endif   

@@ -12,8 +12,6 @@
 class WbWriterVtkASCII : public WbWriter
 {
 public:
-   OBCREATOR_EXT( WbWriterVtkASCII )
-
    static WbWriterVtkASCII* getInstance()
    {
       static WbWriterVtkASCII instance;
@@ -72,7 +70,5 @@ public:
    std::string writeOctsWithNodeData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata);
 
 };
-
-UB_AUTO_RUN_NAMED(ObFactory<WbWriter>::getInstance()->addObCreator(ObSingletonCreatorImpl<WbWriterVtkASCII,WbWriter>::getInstance()), CAB_WbWriterVtkASCII);
 
 #endif //WBWRITERVTKASCII_H
