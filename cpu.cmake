@@ -20,8 +20,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 #set(CMAKE_CXX_COMPILER mpiCC)
 
 PROJECT(VirtualFluids)
-set (SOURCE_DIR ${PROJECT_SOURCE_DIR})
-set(SOURCE_ROOT ${CMAKE_SOURCE_DIR})
 
 #debug build for unix
 #IF(UNIX)
@@ -165,5 +163,5 @@ add_subdirectory(3rdParty/MuParser)
 add_subdirectory(src/cpu/VirtualFluidsCore)
 #add_subdirectory(VirtualFluidsBasic)
 
-set (APPS_ROOT_CPU "${CMAKE_SOURCE_DIR}/apps/cpu/")
+set (APPS_ROOT_CPU "${VF_ROOT_DIR}/apps/cpu")
 include(${APPS_ROOT_CPU}/Applications.cmake)

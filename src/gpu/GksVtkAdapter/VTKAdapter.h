@@ -20,7 +20,7 @@
 #include <functional>
 #include <string>
 
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 
 #include "VirtualFluidsDefinitions.h"
 

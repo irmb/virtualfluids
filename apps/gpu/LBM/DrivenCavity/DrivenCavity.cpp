@@ -12,7 +12,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 
 #include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"

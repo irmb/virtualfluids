@@ -165,7 +165,7 @@ function(vf_add_library)
 
     target_include_directories(${library_name} PRIVATE ${CMAKE_BINARY_DIR})
     target_include_directories(${library_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src)
+    target_include_directories(${library_name} PRIVATE ${SOURCE_PATH})
 
 
     #status("... configuring target: ${library_name} (type=${ARG_BUILDTYPE}) done")
@@ -215,7 +215,7 @@ function(vf_add_tests)
     # link tested library
     target_include_directories(${library_test_name} PRIVATE ${CMAKE_BINARY_DIR})
     target_include_directories(${library_test_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_include_directories(${library_test_name} PRIVATE ${CMAKE_SOURCE_DIR}/src)
+    target_include_directories(${library_test_name} PRIVATE ${SOURCE_PATH})
 
     # link googlemock
     include(${CMAKE_PATH}/3rd/gmock.cmake)

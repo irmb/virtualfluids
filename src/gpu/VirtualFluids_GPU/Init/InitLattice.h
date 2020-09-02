@@ -1,7 +1,7 @@
 #ifndef INIT_LATTICE_H
 #define INIT_LATTICE_H
 
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 
 class Parameter;
 class PreProcessor;

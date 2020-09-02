@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <vector>
-#include <Core/PointerDefinitions.h>
+#include <PointerDefinitions.h>
 
 #include <VirtualFluidsDefinitions.h>
 

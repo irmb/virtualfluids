@@ -11,7 +11,7 @@
 #include <sstream>
 
 #include "Core/Timer/Timer.h"
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
 #include "Core/Logger/Logger.h"

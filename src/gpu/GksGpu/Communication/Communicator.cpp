@@ -10,7 +10,7 @@
 #include <math.h>
 #include <iostream>
 
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 
 #include "GksMeshAdapter/GksMeshAdapter.h"
 
