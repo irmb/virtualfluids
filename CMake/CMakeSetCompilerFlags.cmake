@@ -38,8 +38,8 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS compiler_type build_type)
    ###############################################################################################################
    ## standard compiler flags
    ###############################################################################################################
-   ELSEIF( EXISTS "${SOURCE_ROOT}/CMake/compilerflags/${CAB_COMPILER}.cmake" )
-	   INCLUDE( ${SOURCE_ROOT}/CMake/compilerflags/${CAB_COMPILER}.cmake)
+   ELSEIF( EXISTS "${CMAKE_PATH}/compilerflags/${CAB_COMPILER}.cmake" )
+	   INCLUDE( ${CMAKE_PATH}/compilerflags/${CAB_COMPILER}.cmake)
 	###############################################################################################################
 	## unknown compiler
 	###############################################################################################################
@@ -47,7 +47,7 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS compiler_type build_type)
 	   #MESSAGE(FATAL_ERROR "CAB_COMPILER=${CAB_COMPILER} seems to be a not supported compiler")
 	   #MESSAGE(WARNING "CAB_COMPILER=${CAB_COMPILER} seems to be a not supported compiler; set to generic")
 	   SET(CAB_COMPILER "gccGeneric")
-	   INCLUDE( ${SOURCE_ROOT}/CMake/compilerflags/${CAB_COMPILER}.cmake)
+	   INCLUDE( ${CMAKE_PATH}/compilerflags/${CAB_COMPILER}.cmake)
 	ENDIF()
    
 

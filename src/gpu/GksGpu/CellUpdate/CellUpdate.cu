@@ -37,7 +37,7 @@
 #include <helper_cuda.h>
 #include <math.h>
 
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 #include "Core/RealConstants.h"
 
 #include "DataBase/DataBaseStruct.h"

@@ -33,7 +33,7 @@
 #ifndef _SIMULATION_H_
 #define _SIMULATION_H_
 
-#include <Core/PointerDefinitions.h>
+#include <PointerDefinitions.h>
 #include <VirtualFluidsDefinitions.h>
 #include "Output/LogWriter.hpp"
 #include "VirtualFluids_GPU_export.h"

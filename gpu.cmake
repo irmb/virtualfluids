@@ -41,7 +41,6 @@ endif()
 
 project(VirtualFluidsGPU)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include_directories(${CMAKE_BINARY_DIR}/gpu)
 #

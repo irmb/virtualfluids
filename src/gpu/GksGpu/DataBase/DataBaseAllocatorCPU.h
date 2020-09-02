@@ -34,7 +34,7 @@
 #define DatabaseAllocatorCPU_H
 
 #include "Core/DataTypes.h"
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 
 #include "DataBaseAllocator.h"
 

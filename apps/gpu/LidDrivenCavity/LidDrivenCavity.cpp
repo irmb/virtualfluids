@@ -43,7 +43,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 #include "Core/LbmOrGks.h"
 #include "Core/VectorTypes.h"
 #include "Core/Logger/Logger.h"
