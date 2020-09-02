@@ -79,7 +79,6 @@ macro(setSourceGroupForFilesIn file package_dir targetName)
 	if(isAllTestSuite)
 		source_group(${targetName}\\${SOURCE_GROUP} FILES ${file})
 	else()
-		#message("SOURCE_GROUP: " ${SOURCE_GROUP} " ,src: " ${file})
 		source_group(${SOURCE_GROUP} FILES ${file})
 	endif()
 #output: -
