@@ -4,6 +4,7 @@ SPtr<Thixotropy> Thixotropy::instance = SPtr<Thixotropy>();
 LBMReal Thixotropy::tau0 = 0;
 LBMReal Thixotropy::k = 0;
 LBMReal Thixotropy::n = 1;
+LBMReal Thixotropy::omegaMin = 0;
 
 //////////////////////////////////////////////////////////////////////////
 SPtr<Thixotropy> Thixotropy::getInstance()
@@ -36,6 +37,15 @@ void Thixotropy::setPowerIndex(LBMReal index)
 LBMReal Thixotropy::getPowerIndex()
 {
 	return n;
+}
+
+void Thixotropy::setOmegaMin(LBMReal omega)
+{
+	omegaMin = omega;
+}
+LBMReal Thixotropy::getOmegaMin()
+{
+	return omegaMin;
 }
 
 Thixotropy::Thixotropy()

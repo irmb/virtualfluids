@@ -42,10 +42,11 @@ class ThixotropyInterpolationProcessor : public InterpolationProcessor
 {
 public:
    ThixotropyInterpolationProcessor();
-   ThixotropyInterpolationProcessor(LBMReal omegaC, LBMReal omegaF);
+   ThixotropyInterpolationProcessor(LBMReal omegaC, LBMReal omegaF, LBMReal omegaMin);
    virtual ~ThixotropyInterpolationProcessor();
    InterpolationProcessorPtr clone();
    void setOmegas(LBMReal omegaC, LBMReal omegaF);
+   void setOmegaMin(LBMReal omegaMin);
    void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF);
    void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, LBMReal xoff, LBMReal yoff, LBMReal zoff);
    void interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC); 
@@ -73,6 +74,8 @@ private:
    
    LBMReal rho;
    LBMReal shearRate;
+
+   LBMReal omegaMin;
 
    void setOffsets(LBMReal xoff, LBMReal yoff, LBMReal zoff);
    void calcMoments(const LBMReal* const f, LBMReal omegaInf, LBMReal& rho, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3,

@@ -20,6 +20,9 @@ public:
 	void setPowerIndex(LBMReal n);
 	LBMReal getPowerIndex();
 
+	void setOmegaMin(LBMReal omegaMin);
+	LBMReal getOmegaMin();
+
 	static LBMReal getBinghamCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
 	static LBMReal getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
 	static LBMReal getHerschelBulkleyCollFactorBackward(LBMReal shearRate, LBMReal drho);
@@ -31,6 +34,7 @@ private:
 	static LBMReal tau0;
 	static LBMReal k;
 	static LBMReal n;
+	static LBMReal omegaMin;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -49,6 +53,7 @@ inline LBMReal Thixotropy::getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMRea
 	LBMReal gammaDot = shearRate;
 	LBMReal omega = omegaInf;
 	LBMReal epsilon = 1;
+	LBMReal omegaMin = 0.7;
 
 	while (epsilon > 1e-10)
 	{
@@ -59,6 +64,7 @@ inline LBMReal Thixotropy::getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMRea
 		LBMReal denominator = (2.0 * k * n * gammaDotPowN * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * rho * omega) + UbMath::Epsilon<LBMReal>::val();
 		omega = omega - omega * numerator / denominator;
 		omega = (omega < UbMath::zeroReal) ? UbMath::c1o2 * omegaOld : omega;
+        //omega = (omega < omegaMin) ? UbMath::c1o2 * (omegaOld-omegaMin)+omegaMin : omega;
 		epsilon = std::abs(omega - omegaOld);
 	}
 

@@ -5,6 +5,7 @@ bin/
 cmake-build-debug/
 MSVC2017/
 VS2017/
+run/
 
 # Python
 _skbuild/
@@ -23,3 +24,4 @@ output/
 
 # MacOS
 .DS_Store
+

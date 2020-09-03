@@ -37,13 +37,13 @@
 
 
 ThixotropyInterpolationProcessor::ThixotropyInterpolationProcessor()
-   : omegaC(0.0), omegaF(0.0)
+   : omegaC(0.0), omegaF(0.0), omegaMin(0.0)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-ThixotropyInterpolationProcessor::ThixotropyInterpolationProcessor(LBMReal omegaC, LBMReal omegaF)
-   : omegaC(omegaC), omegaF(omegaF)
+ThixotropyInterpolationProcessor::ThixotropyInterpolationProcessor(LBMReal omegaC, LBMReal omegaF, LBMReal omegaMin)
+   : omegaC(omegaC), omegaF(omegaF), omegaMin(omegaMin)
 {
 
 }
@@ -55,7 +55,7 @@ ThixotropyInterpolationProcessor::~ThixotropyInterpolationProcessor()
 //////////////////////////////////////////////////////////////////////////
 InterpolationProcessorPtr ThixotropyInterpolationProcessor::clone()
 {
-   InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new ThixotropyInterpolationProcessor(this->omegaC, this->omegaF));
+   InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new ThixotropyInterpolationProcessor(this->omegaC, this->omegaF, this->omegaMin));
    return iproc;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -63,6 +63,11 @@ void ThixotropyInterpolationProcessor::setOmegas( LBMReal omegaC, LBMReal omegaF
 {
    this->omegaC = omegaC;
    this->omegaF = omegaF;
+}
+//////////////////////////////////////////////////////////////////////////
+void ThixotropyInterpolationProcessor::setOmegaMin( LBMReal omegaMin )
+{
+   this->omegaMin = omegaMin;
 }
 //////////////////////////////////////////////////////////////////////////
 void ThixotropyInterpolationProcessor::setOffsets(LBMReal xoff, LBMReal yoff, LBMReal zoff)
@@ -309,8 +314,8 @@ void ThixotropyInterpolationProcessor::calcInterpolatedCoefficiets(const D3Q27IC
 
    LBMReal o = Thixotropy::getHerschelBulkleyCollFactorBackward(shearRate, rho); //omega;
 
-   if (o < 0.5)
-      o = 0.5;
+   if (o < omegaMin)
+      o = omegaMin;
 
    f_E = eps_new*((2*(-2*ax + by + cz-kxxMzzAverage-kxxMyyAverage))/(27.*o));
    f_N = eps_new*((2*(ax - 2*by + cz+2*kxxMyyAverage-kxxMzzAverage))/(27.*o));
@@ -601,8 +606,8 @@ void ThixotropyInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f, LBMRea
 
    LBMReal o = Thixotropy::getHerschelBulkleyCollFactorBackward(shearRate, rho); //omega;
 
-   if (o < 0.5)
-      o = 0.5;
+   if (o < omegaMin)
+      o = omegaMin;
 
    f_E = eps_new*((2*(-2*ax + by + cz-kxxMzzAverage-kxxMyyAverage))/(27.*o));
    f_N = eps_new*((2*(ax - 2*by + cz+2*kxxMyyAverage-kxxMzzAverage))/(27.*o));
