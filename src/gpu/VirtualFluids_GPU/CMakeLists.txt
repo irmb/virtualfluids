@@ -9,13 +9,13 @@ ENDIF(MSVC)
 
 vf_add_library(BUILDTYPE shared DEPENDS ${libsToLink})
 
-include (${CMAKE_PATH}/3rd/cuda.cmake)
+include (${VF_CMAKE_DIR}/3rd/cuda.cmake)
 
 vf_get_library_name(library_name)
-target_include_directories(${library_name} PRIVATE ${SOURCE_PATH}/basics)
-target_include_directories(${library_name} PRIVATE ${SOURCE_PATH}/gpu)
-target_include_directories(${library_name} PRIVATE ${SOURCE_PATH}/gpu/GridGenerator)
-target_include_directories(${library_name} PRIVATE ${SOURCE_PATH}/basics/Core)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/gpu)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/gpu/GridGenerator)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/Core)
 
 
 #SET(TPN_WIN32 "/EHsc")

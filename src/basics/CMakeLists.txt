@@ -15,6 +15,6 @@ IF(MSVC)
     target_compile_definitions(${library_name} PUBLIC NOMINMAX) # Disable Min/Max-Macros
 ENDIF(MSVC)
 
-include (${CMAKE_PATH}/3rd/mpi.cmake)
+include (${VF_CMAKE_DIR}/3rd/mpi.cmake)
 
 vf_add_tests()

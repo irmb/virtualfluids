@@ -1,9 +1,9 @@
 
 vf_add_library(BUILDTYPE shared DEPENDS basics GksMeshAdapter)
 
-include (${CMAKE_PATH}/3rd/cuda.cmake)
-include (${CMAKE_PATH}/3rd/mpi.cmake)
-include (${CMAKE_PATH}/3rd/OpenMP.cmake)
+include (${VF_CMAKE_DIR}/3rd/cuda.cmake)
+include (${VF_CMAKE_DIR}/3rd/mpi.cmake)
+include (${VF_CMAKE_DIR}/3rd/OpenMP.cmake)
 
 vf_get_library_name(library_name)
 target_include_directories(${library_name} PRIVATE "${CMAKE_SOURCE_DIR}/src/basics")

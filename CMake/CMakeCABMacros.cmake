@@ -55,8 +55,8 @@ ENDIF()
 ############################################################################
 # externe (ACHTUNG: die darin enthaltenen benoetigen teils noch macros die 
 # hier im Anschluss folgen
-INCLUDE("${CMAKE_PATH}/CMakeSetCompilerFlags.cmake")
-INCLUDE("${CMAKE_PATH}/CMakeCompilerMacros.cmake")
+INCLUDE("${VF_CMAKE_DIR}/CMakeSetCompilerFlags.cmake")
+INCLUDE("${VF_CMAKE_DIR}/CMakeCompilerMacros.cmake")
 
 ################################################################
 ###               ADD_TARGET_PROPERTIES                      ###
@@ -311,7 +311,7 @@ SET_CAB_COMPILER()
 CHECK_FOR_VARIABLE(CAB_MACHINE "machine name, e.g. ALTIX, ARWEN")
 LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DCAB_MACHINE_${CAB_MACHINE})
 LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DCAB_MACHINE=${CAB_MACHINE})
-SET(CMAKE_CONFIG_FILE "${CMAKE_PATH}/cmake_config_files/${CAB_MACHINE}.config.cmake")
+SET(CMAKE_CONFIG_FILE "${VF_CMAKE_DIR}/cmake_config_files/${CAB_MACHINE}.config.cmake")
 
 IF(NOT EXISTS ${CMAKE_CONFIG_FILE})
   MESSAGE(FATAL_ERROR "${CMAKE_CONFIG_FILE} does not exists... maybe false CAB_MACHINE = ${CAB_MACHINE}")
