@@ -1,4 +1,4 @@
-set(VirtualFluidsCore_source_dir ${SOURCE_PATH}/cpu/VirtualFluidsCore)
+set(VirtualFluidsCore_source_dir ${VF_SRC_DIR}/cpu/VirtualFluidsCore)
 vf_get_library_name(library_name)
 
 INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/BoundaryConditions)
@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/Visitors)
 INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/CoProcessors)
 INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/Utilities)
 
-INCLUDE_DIRECTORIES(${THIRD_PATH})
+INCLUDE_DIRECTORIES(${VF_THIRD_DIR})
 
 IF(${USE_BOOST})
    INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})

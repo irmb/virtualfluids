@@ -2,9 +2,9 @@ PROJECT(GridGeneratorTest)
 
 vf_add_library(BUILDTYPE binary DEPENDS basics VirtualFluids_GPU GridGenerator FILES gridGenerator.cpp)
 
-include (${CMAKE_PATH}/3rd/cuda.cmake)
-include (${CMAKE_PATH}/3rd/mpi.cmake)
-include (${CMAKE_PATH}/3rd/boost.cmake)
+include (${VF_CMAKE_DIR}/3rd/cuda.cmake)
+include (${VF_CMAKE_DIR}/3rd/mpi.cmake)
+include (${VF_CMAKE_DIR}/3rd/boost.cmake)
 linkBoost ("serialization")
 
 vf_get_library_name(library_name)
