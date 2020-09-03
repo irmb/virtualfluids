@@ -1,19 +1,45 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file WbWriterVtkXmlBinary.h
+//! \ingroup writer
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef WBWRITERVTKXMLBINARY_H
 #define WBWRITERVTKXMLBINARY_H
 
 #include <string>
 
-#include "basics_export.h"
-
 #include <basics/writer/WbWriter.h>
 
-class BASICS_EXPORT WbWriterVtkXmlBinary  : public WbWriter
+class WbWriterVtkXmlBinary  : public WbWriter
 {
 public:
-#ifndef SWIG
-   OBCREATOR_EXT( WbWriterVtkXmlBinary )
-#endif
-
    static WbWriterVtkXmlBinary* getInstance()
    {
       static WbWriterVtkXmlBinary instance;
@@ -33,8 +59,6 @@ private:
    static std::string  pvdEndTag;
 public:
    std::string getFileExtension() { return ".bin.vtu";   }
-
-   std::string getHeaderTag();
 
    //write a metafile 
    std::string writeCollection(const std::string& filename, const std::vector<std::string>& filenames, const double& timestep, const bool& sepGroups);
@@ -93,9 +117,5 @@ public:
 private:
 
 };
-
-#ifndef SWIG
-UB_AUTO_RUN_NAMED(ObFactory<WbWriter>::getInstance()->addObCreator(ObSingletonCreatorImpl<WbWriterVtkXmlBinary ,WbWriter>::getInstance()), CAB_WbWriterVtkXmlBinary);
-#endif
 
 #endif //WBWRITERVTKXMLBINARY_H

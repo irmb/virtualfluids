@@ -3,7 +3,7 @@
 #include <cstring>
 
 #include "Core/DataTypes.h"
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 
 #include "GksMeshAdapter/GksMeshAdapter.h"
 

@@ -22,7 +22,7 @@
 //random numbers
 #include <curand.h>
 #include <curand_kernel.h>
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 #include "VirtualFluidsDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 

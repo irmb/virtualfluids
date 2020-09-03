@@ -1,17 +1,16 @@
 #include "D3Q27TriFaceMeshInteractor.h"
 #include <basics/utilities/UbMath.h>
 #include <basics/utilities/UbLogger.h>
-#include <basics/utilities/UbStaticPathMap.h>
 
 #include <basics/writer/WbWriterVtkBinary.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <basics/writer/WbWriterVtkASCII.h>
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 
-#include <numerics/geometry3d/GbSystem3D.h>
-#include <numerics/geometry3d/GbCuboid3D.h>
-#include <numerics/geometry3d/GbHalfSpace3D.h>
-#include <numerics/geometry3d/GbMeshTools3D.h>
+#include <geometry3d/GbSystem3D.h>
+#include <geometry3d/GbCuboid3D.h>
+#include <geometry3d/GbHalfSpace3D.h>
+#include <geometry3d/GbMeshTools3D.h>
 #include "Block3D.h"
 #include "Grid3D.h"
 #include "BCArray3D.h"
@@ -21,7 +20,7 @@
 #include "BCProcessor.h"
 #include "basics/utilities/UbTiming.h"
 
-#include <numerics/geometry3d/GbTriFaceMesh3D.h>
+#include <geometry3d/GbTriFaceMesh3D.h>
 
 //#include <omp.h>
 

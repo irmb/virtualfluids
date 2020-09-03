@@ -4,7 +4,7 @@
 #include "Block3D.h"
 #include "Grid3D.h"
 
-#include <numerics/geometry3d/GbObject3D.h>
+#include <geometry3d/GbObject3D.h>
 
 GenBlocksGridVisitor::GenBlocksGridVisitor(SPtr<GbObject3D> boundingBox) :
    boundingBox(boundingBox)

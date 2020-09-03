@@ -1,9 +1,35 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file UbSystem.h
+//! \ingroup utilities
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef UBSYSTEM_H
 #define UBSYSTEM_H
 
@@ -26,13 +52,12 @@
    #include <sys/syscall.h>
    #include <sys/stat.h>
    #include <unistd.h>
-#elif (defined(__amd64) || defined(__amd64__) || defined(__unix__) || defined(__CYGWIN__)) && !defined(__AIX__)
+#elif (defined(__amd64) || defined(__amd64__) || defined(__unix__)) && !defined(__AIX__)
    #define UBSYSTEM_LINUX
    #include "dirent.h"
-   #include "sys/stat.h"
-   #include <sys/syscall.h>
    #include <sys/stat.h>
    #include <unistd.h>
+   #include <string.h>
 #elif defined(__AIX__)
    #define UBSYSTEM_AIX
    #include "dirent.h"
@@ -42,7 +67,6 @@
 #else
    #error "UbSystem::UnknownMachine"
 #endif
-
 
 #if defined(__unix__) && defined(__CYGWIN__)
    #define UBSYSTEM_CYGWIN
@@ -64,7 +88,6 @@
 #include <typeinfo>
 #include <cctype> //for toupper
 #include <ctime>
-#include <cstring>
 
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbLogger.h>
@@ -98,10 +121,12 @@ namespace UbSystem
    /*==========================================================*/
    inline void sleepMs(const unsigned int& msec)
    {
-      #if defined UBSYSTEM_WINDOWS
+      #if defined(UBSYSTEM_WINDOWS)
          ::Sleep(  (msec==0) ? 1 : msec );  // +1 here causes a context switch if SleepMSec(0) is called
-      #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)
+      #elif (defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)) && !defined(UBSYSTEM_CYGWIN)
          ::usleep(1000*msec);
+      #elif defined(UBSYSTEM_CYGWIN)
+       ::Sleep(  (msec==0) ? 1 : msec );
       #else
          #error "UbSystem::sleepMSec - UnknownMachine"
       #endif
@@ -109,9 +134,9 @@ namespace UbSystem
    /*==========================================================*/
    inline void sleepS(const unsigned int& sec)
    {
-      #if defined UBSYSTEM_WINDOWS
+      #if defined(UBSYSTEM_WINDOWS) || defined(UBSYSTEM_CYGWIN)
          ::Sleep( (sec==0) ? 1 : sec*1000 );  // +1 here causes a context switch if sleepS(0) is called
-      #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)
+      #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX) && !defined(UBSYSTEM_CYGWIN)
          ::sleep(sec);
       #else
          #error "UbSystem::sleepS - UnknownMachine"
@@ -236,7 +261,7 @@ namespace UbSystem
          if( stat(path.c_str(),&stFileInfo) != 0) 
          {
             return false;
-         } 
+         }
       #endif
       
       return true;
@@ -372,8 +397,10 @@ namespace UbSystem
    {
       #if defined UBSYSTEM_WINDOWS
          return (unsigned long)GetCurrentThreadId();
-      #elif defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE)
+      #elif (defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE)) && !defined(UBSYSTEM_CYGWIN)
          return (unsigned long)syscall(SYS_gettid);
+      #elif defined(UBSYSTEM_CYGWIN)
+         return (unsigned long)GetCurrentThreadId();
       #elif defined(UBSYSTEM_AIX)
          return (unsigned long) getpid(); //WORKAROUND for IBM (for get thread id is another function necessary) 
       #else
@@ -432,7 +459,7 @@ namespace UbSystem
       char Name[150];
       int i = 0;
 
-#ifdef UBSYSTEM_WINDOWS
+#if defined(UBSYSTEM_WINDOWS) || defined(UBSYSTEM_CYGWIN)
       TCHAR infoBuf[150];
       DWORD bufCharCount = 150;
       memset(Name, 0, 150);
@@ -447,7 +474,7 @@ namespace UbSystem
       {
          strcpy(Name, "Unknown_Host_Name");
       }
-#else
+#elif (defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)) && !defined(UBSYSTEM_CYGWIN)
       memset(Name, 0, 150);
       gethostname(Name, 150);
 #endif

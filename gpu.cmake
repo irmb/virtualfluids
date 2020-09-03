@@ -27,24 +27,6 @@ if(UNIX)
     set(CMAKE_CXX_STANDARD 14)
 endif()
 
-#############################################################
-###                     ENVIRONMENT                       ###
-#############################################################
-set(cmakeMacroPath "CMakeMacros")
-#include(${cmakeMacroPath}/Environment/environment.cmake)
-
-#CAB
-#include("../CMake/CMakeCABMacros.cmake")
-#include("../CMake/FileUtilities.cmake")
-#include("../CMake/VirtualFluidsMacros.cmake")
-
-#############################################################
-###                   GENERAL MACROS                      ###
-#############################################################
-#include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/BuildTarget.cmake)
-#include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/BuildTargetUtilities.cmake)
-#include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/EndingsToCollect.cmake)
-#include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FileUtilities.cmake)
 
 #############################################################
 ###                   PROJECT SETTINGS                    ###

@@ -10,7 +10,7 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 #include "Core/RealConstants.h"
 #include "Core/Logger/Logger.h"
 

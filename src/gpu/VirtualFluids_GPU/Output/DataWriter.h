@@ -1,7 +1,7 @@
 #ifndef DATA_WRITER_H
 #define DATA_WRITER_H
 
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
 #include "VirtualFluids_GPU_export.h"
 

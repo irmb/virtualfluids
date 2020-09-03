@@ -2,7 +2,7 @@
 
 #include <set>
 
-#include <numerics/geometry3d/CoordinateTransformation3D.h>
+#include <geometry3d/CoordinateTransformation3D.h>
 #include <basics/writer/WbWriterVtkXmlASCII.h>
 
 #include "Grid3DVisitor.h"

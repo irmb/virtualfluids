@@ -1,9 +1,35 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file UbLogger.h
+//! \ingroup utilities
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef UBLOGGER_H
 #define UBLOGGER_H
 
@@ -12,6 +38,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)  || defined(_WIN64)  || defined(__WIN64__)
    #include <windows.h>
 #else
@@ -22,32 +49,62 @@
    #include <boost/thread.hpp>
 #endif // CAB_BOOST
 
-//////////////////////////////////////////////////////////////////////////
-// UbLogger
-// C++ Logger
-// Funktionsweise:
-// pro Logeintrag wird ein UbLogger-Objekt erstellt, der logstring uebergeben und beim "zerstroeren"
-// wird der logstring mittels der entsprechenden policy (=template paramter)  z.B. in eine Datei
-// oder auf dem Bildschirm ausgegeben. Es werden verschiedene LogLevel unterstuetzt 
-//
-// Hilfsmakro:  UBLOG
-// Bsp1:        UBLOG(logINFO) << "Klasse::foo entered"; //endl wir nicht ben�tigt
-//              --> Eintrag:
-//
-// Bsp2: siehe Dateiende!
-//
-//Idee basierend auf: 
-//Artikel von Dr. Dobbs Portal
-//September 05, 2007
-//Logging In C++
-//
-//@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-//@version 1.0 - 12.10.2008
+
 
 enum LogLevel {logERROR, logWARNING, logINFO, logDEBUG, logDEBUG1, logDEBUG2, logDEBUG3, logDEBUG4, logDEBUG5};
 
 //////////////////////////////////////////////////////////////////////////
 // template <typename OutputPolicy> class Log  - declaration
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//!
+//! \brief 
+//! C++ Logger
+//! \details Functionality:
+//! Per logentry an object of type UbLogger is generated, the log string is passed to this object and
+//! upon destruction of the object the string is written to a file or the screen depending on 
+//! the policy (=template paramter). Multiple log level are supported.
+//!
+//! helpermakro:  UBLOG
+//!
+//! Example 1: 
+//! \code
+//! UBLOG(logINFO) << "Klasse::foo entered"; //endl is not required 
+//! \endcode
+//!
+//! Example 2: 
+//! \code
+//! try
+//! {
+//!    UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG3");
+//!    //UbLog::output_policy::setStream(&std::cerr); //<- clog is stdandard
+//!    UbLog::output_policy::setStream("c:/temp/out.txt");  //you can not open these -> error message -> log is output in cerr
+//! 
+//!    int count = 3;
+//!    UBLOG(logINFO, "A loop with " << count << " iterations");
+//!    for (int i = 0; i != count; ++i)
+//!    {
+//!        UBLOG(logERROR , "error  - the counter i = " << i );
+//!        UBLOG(logDEBUG1, "debug1 - the counter i = " << i );
+//!        UBLOG(logDEBUG2, "debug2 - the counter i = " << i );
+//!        UBLOG(logDEBUG3, "debug3 - the counter i = " << i );
+//!        //for MultiLine entries: -> formatting in logfile
+//!        UBLOGML(logDEBUG3, "debug3 - the counter i = "<<endl<<" 2 zeile "<< "3. Zeile" << i);
+//!        UBLOGML(logDEBUG3, "debug3 - the counter i = "<<endl<<" 2 zeile "<< "3. Zeile" << i);
+//!        UBLOG2ML(logDEBUG3,std:cout,"debug3 - the counter i = "<<endl<<" 2 zeile "<< "3. Zeile" << i);
+//!    }
+//!    return 0;
+//! }
+//! catch(const std::exception& e)
+//! {
+//!    UBLOG(logERROR) << e.what();
+//! }
+//! \endcode
+//! Idee based on: 
+//! Paper by Dr. Dobbs Portal,
+//! September 05, 2007,
+//! Logging In C++
+//!
 //////////////////////////////////////////////////////////////////////////
 template <typename OutputPolicy>
 class UbLogger
@@ -59,7 +116,7 @@ public:
     virtual ~UbLogger();
     std::ostringstream& get(const LogLevel& level = logINFO);
 public:
-   //static, weil man so sp�ter die ObjErstellunge ersparen kann,
+   //static, weil man so spaeter die ObjErstellunge ersparen kann,
    //falls level kleiner als Level
    static LogLevel&   reportingLevel();
     
@@ -173,22 +230,18 @@ inline std::string UbLogger<OutputPolicy>::logTimeString()
 
 
 //////////////////////////////////////////////////////////////////////////
-// Output2Stream (=implementation of OutputPolicy)
+//! Implementation of OutputPolicy)
 //////////////////////////////////////////////////////////////////////////
-//Anm: die erste Version mit auto_ptr fuer den stream fuehrte zu
-//     exceptions bei Verwedung vom Logger in dtors stat. globaler
-//     Objekte. Aber auch die Pointer-Lsg. ist noch nicht die 
-//     optimale L�sung
 class Output2Stream // implementation of OutputPolicy
 {
 public:
    static std::ostream*& getStream();
    static void output(const std::string& msg);
    
-   //creates output-file-stream (of file opening fails -> stream is set to std::cerr)
+   //!creates output-file-stream (of file opening fails -> stream is set to std::cerr)
    static void setStream(const std::string& filename);
    
-   //direct set outputstream, gcControl = true -> object will be deleted by Output2Stream 
+   //!direct set outputstream, gcControl = true -> object will be deleted by Output2Stream 
    static void setStream(std::ostream* pStream, const bool& gcControl = false);
 
 protected:
@@ -253,29 +306,18 @@ class UbLog : public UbLogger< Output2Stream >
 
 };
 
-//Makro um compilerseitig maxLevel zu beschr�nken
+//Macro to limit compiler-side maxLevel
 #ifndef UBLOG_MAX_LEVEL
    #define UBLOG_MAX_LEVEL logDEBUG5
 #endif
 
 //////////////////////////////////////////////////////////////////////////
-//Hauptmakro fuers Loggen
 // example UBLOG(logINFO) << "das ist ein log eintrag";
 //////////////////////////////////////////////////////////////////////////
 #define UBLOG(level, logtext) \
    if(level > UBLOG_MAX_LEVEL || level > UbLog::reportingLevel() || !Output2Stream::getStream()) ; \
    else UbLog().get(level) << logtext;                                                             
    
-//wieso dieses Macro (was der der scheaeaeaesss???)
-// z.B. UBLOG(logDEBUG2) << "Ich bin sooo toll " << username;
-//also, was macht der praeprozessor draus?:
-// if(level > UBLOG_MAX_LEVEL || level > UbLog::reportingLevel() || !Output2Stream::getStream()) ;
-// else // Log().Get(logINFO) << "Ich bin sooo toll " << username;
-//Ergo: das prinzip des logging beruht auf: Log-Objekt erstellen und rauschreiben beim zerstoeren
-//    -> ist der zu loggende Level < als der im UBLOG angegebene erspart man sich hier die
-//       Objekt erstellung -> optimale Performance -> laut Petru Marginean (dem Verfasser des
-//       Ursprungslogger ist der Performance Unterschied kaum messbar, wenn NICHT geloggt wird!
-
 //////////////////////////////////////////////////////////////////////////
 //makro 2 fuer korrekten MultiLineOutput (teuer!!)
 // example1: UBLOGML(logINFO, "line1"<<endl<<"line2"<<endl<<"line3" )
@@ -296,7 +338,7 @@ class UbLog : public UbLogger< Output2Stream >
       }                                                                                            \
    }                                                                                          
 //////////////////////////////////////////////////////////////////////////
-//makro3, falls auch bildschirmausgabe erw�nscht
+//makro3, falls auch bildschirmausgabe erwuenscht
 //   -> es wird sowohl ins logfile als auch auf den "stream" geschrieben
 //      wenn reporting level und level passen :D
 //example1: UBLOG2ML(logINFO, std::cout,  "line1"<<endl<<"line2"<<endl<<"line3" ) 

@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "Core/DataTypes.h"
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 
 #include "VirtualFluidsDefinitions.h"
 

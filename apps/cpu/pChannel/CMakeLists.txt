@@ -1,23 +1,5 @@
-########################################################
-## C++ PROJECT                                       ###
-########################################################
+PROJECT(PChannel)
 
 INCLUDE(${APPS_ROOT}/IncludsList.cmake) 
 
-#################################################################
-###   LOCAL FILES                                             ###
-#################################################################
-#FILE(GLOB SPECIFIC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.h
-#                         ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-#                         ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp  )
- 
-#SET(ALL_SOURCES ${ALL_SOURCES} ${SPECIFIC_FILES})
-#SOURCE_GROUP(src FILES ${SPECIFIC_FILES})
-  
-#SET(CAB_ADDITIONAL_LINK_LIBRARIES VirtualFluidsCore VirtualFluidsBasic)
-
-#################################################################
-###   CREATE PROJECT                                          ###
-#################################################################
-#CREATE_CAB_PROJECT(pchannel BINARY)
 vf_add_library(BUILDTYPE binary DEPENDS VirtualFluidsCore VirtualFluidsBasic FILES pChannel.cpp)

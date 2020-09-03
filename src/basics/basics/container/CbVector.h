@@ -1,16 +1,37 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file CbVector.h
+//! \ingroup container
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
 #ifndef CBVECTOR_H
 #define CBVECTOR_H
-
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-   #include <RCF/ByteBuffer.hpp>
-#endif
 
 #include <vector>
 #include <algorithm> //for std::swap
@@ -20,36 +41,23 @@
 #include <basics/utilities/UbSystem.h>
 #include <basics/utilities/UbEqual.h>
 
-/*=========================================================================*/
-/*  CbVector                                                               */
-/*                                                                         */
-/**
-<BR><BR>
-@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-@version 1.0 - 08.11.07
-@version 1.1 - 09.02.08
-@version 1.2 - 23.04.08 - swap added
-@version 1.3 - 08.05.08 - boosting up serialization performance!
-*/
-
-/*
-usage: ...
-Da es Voraussetzun bei doeser Klasse war, dass lediglich der Typ als
-template-parameter miteingeht, muss der allcocator eine abstrakte klasse sein
-ansonsten h�tte sich hier der allokator als zweites argument
-wie beim STL vector angeboten, womit man auch keinen pointer speichern muesste.
-Im letzteren Fall w�rde aber jeweils ein bestimmeter Klassentyp in Abhaengigkeit
-des allokators zur compilezeit erzeugt. Problem wir wollen ein und denselben
-typ benutzen und nur der allokator innerhalb der klasse soll sich unterscheiden
-//
-// Rangecheck aktiv, wenn:
-// -debug  : not defined "NO_CB_RANGECHECK"
-// -release: not defined "NO_CB_RANGECHECK" && defined "CB_RANGECHECK"
-*/
-
 template< typename T > class CbVectorAllocator;
 template< typename T > class CbVectorAllocatorStd;
 
+//=========================================================================
+//! \brief A class implements a container like a vector
+//! \details
+//! For this class it was required to ave only the type as template argument.
+//! Hence, the allocator must be an abstract class. With out this requirement, 
+//! an allocator as second template argument would have been possible, as in the
+//! STL vector. This would lead to the compiler generating two different classes
+//! for the same data type with different allocators during compile time. Here it
+//! is required that the same class can have different allocators.
+//!
+//! Rangecheck active, if:
+//! -debug  : not defined "NO_CB_RANGECHECK"
+//! -release: not defined "NO_CB_RANGECHECK" && defined "CB_RANGECHECK"
+//=========================================================================
 //////////////////////////////////////////////////////////////////////////
 template< typename T >
 class CbVector
@@ -194,43 +202,6 @@ public:
    /*==========================================================*/
    CbVectorAllocator<value_type>* getAllocator() const { return allocator; }
    /*==========================================================*/
-   #ifdef CAB_RCF
-      template<typename Archive>
-      void serialize(Archive & ar, const unsigned int version)
-      {
-         if( ArchiveTools::isWriting(ar) )
-         {
-            ar & allocator;
-            ar & dataSize; //!!!erst hier
-
-            //old:
-            //for(size_type i=0; i<dataSize; i++)
-            // ar & ptrData[i];
-
-            //new and boosting to the sky:
-            RCF::ByteBuffer byteBuffer( (char*) &ptrData[0], dataSize*sizeof(value_type) );
-            ar & byteBuffer;
-         }
-         else
-         {
-            CbVectorAllocator<value_type>* tmpCbVectorAllocator(NULL);
-            size_type tmpInteger;
-            ar & tmpCbVectorAllocator;
-            ar & tmpInteger;
-            this->setAllocator(tmpCbVectorAllocator);
-            allocator->resize(*this,tmpInteger);
-
-            //old:
-            //for(size_type i=0; i<dataSize; i++)
-            // ar & ptrData[i];
-
-            //new and boosting to the sky:
-            RCF::ByteBuffer byteBuffer;
-            ar & byteBuffer;
-            memcpy( (char*)ptrData, byteBuffer.getPtr(), byteBuffer.getLength() ); 
-         }
-      }
-   #endif //CAB_RCF
 
 private:
    value_type* ptrData;
@@ -258,13 +229,6 @@ public:
    virtual bool resize(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type()) = 0;
    virtual bool dealloc(CbVector< value_type >& vec) = 0;
 
-#ifdef CAB_RCF
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-   }
-#endif //CAB_RCF
-
 protected:
    //folgende Methoden ersparen eine friend Deklaierung aller moeglichen Allocatoren
    //denn durch diese beiden Methoden haben sie exklusive Zugriffsrechte!
@@ -281,12 +245,6 @@ protected:
       return vec.dataSize;
    }
 };
-
-#ifdef RCF_USE_SF_SERIALIZATION
-SF_NO_CTOR(CbVectorAllocator<double>);
-SF_NO_CTOR(CbVectorAllocator<float>);
-#endif //RCF_USE_SF_SERIALIZATION
-
 
 //////////////////////////////////////////////////////////////////////////
 // CbVectorAllocatorStd
@@ -342,24 +300,8 @@ public:
       return true;
    }
    /*==========================================================*/
-   #ifdef CAB_RCF
-      template<class Archive>
-      void serialize(Archive & ar, const unsigned int version)
-      {
-         serializeParent< CbVectorAllocator<value_type> >(ar, *this);
-      }
-   #endif //CAB_RCF
 
 private:
 };
-
-
-#ifdef RCF_USE_SF_SERIALIZATION
-   UB_AUTO_RUN_NAMED(   SF::registerType< CbVectorAllocatorStd<double> >(" CbVectorAllocatorStd<double> ")       , SF_CbVectorAllocatorStd_double );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< CbVectorAllocator<double>, CbVectorAllocatorStd<double> >() ), SF_CbVectorAllocatorStd_double_BD1 );
-
-   UB_AUTO_RUN_NAMED(   SF::registerType< CbVectorAllocatorStd<float> >(" CbVectorAllocatorStd<float> "  )       , SF_CbVectorAllocatorStd_float  );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< CbVectorAllocator<float> , CbVectorAllocatorStd<float> >()  ), SF_CbVectorAllocatorStd_float_BD2 );
-#endif //RCF_USE_SF_SERIALIZATION
 
 #endif //CBVECTOR_H

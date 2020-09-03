@@ -22,6 +22,11 @@ set(testFolder    "tests")
 set(appFolder     "apps")
 set(thirdFolder   "3rd")
 
+set (VF_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
+set (VF_THIRD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
+set (VF_SRC_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set (VF_ROOT_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
+
 #################################################################################
 #  OPTIONS
 #################################################################################
@@ -45,13 +50,12 @@ endif()
 #  MACROS
 #################################################################################
 include(CMakePrintHelpers)
-set (CMAKE_PATH "${CMAKE_SOURCE_DIR}/CMake")
-include("${CMAKE_PATH}/CMakeCABMacros.cmake")
-include("${CMAKE_PATH}/FileUtilities.cmake")
-include("${CMAKE_PATH}/VirtualFluidsMacros.cmake")
+include(${VF_CMAKE_DIR}/CMakeCABMacros.cmake)
+include(${VF_CMAKE_DIR}/FileUtilities.cmake)
+include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
 
-include(${CMAKE_PATH}/CMakeMacros_old/general/FindCompiler.cmake)
-configure_file(src/basics/VirtualFluidsDefinitions.in.h VirtualFluidsDefinitions.h)
+include(${VF_CMAKE_DIR}/CMakeMacros_old/general/FindCompiler.cmake)
+configure_file(src/basics/VirtualFluidsDefinitions.in.h ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h)
 
 #################################################################################
 #  COMMON LIBRARIES
@@ -72,5 +76,5 @@ endif()
 #  3rd Party Libraries
 #################################################################################
 if(BUILD_VF_UNIT_TESTS)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/googletest)
+    add_subdirectory(${VF_THIRD_DIR}/googletest)
 endif()

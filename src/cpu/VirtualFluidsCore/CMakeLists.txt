@@ -1,35 +1,9 @@
 
-#################################################################
-###   PACKAGES						                          ###
-#################################################################
-#SET(WITH_SUBFOLDERS_FOR_SG TRUE)
 
-#INCLUDE(${SOURCE_ROOT}/ThirdParty/MuParser/CMakePackage.txt)
 
-#new VirtualFluids
-#sINCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/BoundaryConditions/CMakePackage.txt)
-#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Connectors/CMakePackage.txt)
-#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Data/CMakePackage.txt)
-#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Interactors/CMakePackage.txt)
-#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/LBM/CMakePackage.txt)
-#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Parallel/CMakePackage.txt)
-#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Grid/CMakePackage.txt)
-#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Visitors/CMakePackage.txt)
-#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/CoProcessors/CMakePackage.txt)
-#INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Utilities/CMakePackage.txt)
-
-#old VirtualFluids
-#INCLUDE(${SOURCE_ROOT}/VirtualFluidsBasic/VirtualFluidsBasic.cmake)
-
-#FETOL
 IF(${USE_FETOL})
-INCLUDE(${SOURCE_DIR}/VirtualFluidsCore/FETOL/CMakePackage.txt)
+   # INCLUDE(${SOURCE_DIR}/VirtualFluidsCore/FETOL/CMakePackage.txt) TODO: Did not exists?
 ENDIF()
-
-INCLUDE(${CMAKE_CURRENT_LIST_DIR}/IncludsList.cmake)
-
-#SET(CAB_ADDITIONAL_LINK_LIBRARIES muParserLib ${Boost_LIBRARIES} ${MPI_LIBRARY})
-SET(CAB_ADDITIONAL_LINK_LIBRARIES ${MPI_LIBRARY})
 
 IF(${USE_GCC})
    SET(CAB_ADDITIONAL_LINK_LIBRARIES ${CAB_ADDITIONAL_LINK_LIBRARIES} rt)
@@ -85,26 +59,20 @@ IF(${USE_FETOL})
 ENDIF()
 
 IF(${USE_DEM_COUPLING})
-   INCLUDE(${SOURCE_ROOT}/DemCoupling/DemCoupling.cmake)
+   INCLUDE(${CMAKE_CURRENT_LIST_DIR}/../DemCoupling/DemCoupling.cmake)
 ENDIF()
 
-#message("CAB_ADDITIONAL_LINK_LIBRARIES: " ${CAB_ADDITIONAL_LINK_LIBRARIES})
-#################################################################
-###   CREATE PROJECT                                          ###
-#################################################################
-#CREATE_CAB_PROJECT(VirtualFluids STATIC)
-#include (${CMAKE_SOURCE_DIR}/CMake/VirtualFluidsMacros.cmake)
+INCLUDE(${CMAKE_CURRENT_LIST_DIR}/IncludsList.cmake)
 
-vf_add_library(BUILDTYPE static DEPENDS basics MuParser ${CAB_ADDITIONAL_LINK_LIBRARIES})
+vf_add_library(BUILDTYPE static DEPENDS basics MuParser ${MPI_LIBRARY} ${CAB_ADDITIONAL_LINK_LIBRARIES})
 
 vf_get_library_name(library_name)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/numerics/geometry3d)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/numerics/geometry3d/Creator)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/numerics/geometry3d/KdTree)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/container)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/memory)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/objects)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/transmitter)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/utilities)
-target_include_directories(${library_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/basics/basics/writer)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/geometry3d)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/geometry3d/KdTree)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/basics/container)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/basics/memory)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/basics/objects)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/basics/transmitter)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/basics/utilities)
+target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/basics/writer)

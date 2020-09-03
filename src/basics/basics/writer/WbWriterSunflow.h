@@ -8,8 +8,6 @@
 class WbWriterSunflow  : public WbWriter
 {
 public:
-   OBCREATOR_EXT( WbWriterSunflow )
-
    static WbWriterSunflow* getInstance()
    {
       static WbWriterSunflow instance;
@@ -32,7 +30,5 @@ public:
 
    std::string writeTriangles(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt3 >& triangles);
 };
-
-UB_AUTO_RUN_NAMED(ObFactory<WbWriter>::getInstance()->addObCreator(ObSingletonCreatorImpl<WbWriterSunflow ,WbWriter>::getInstance()), CAB_WbWriterSunflow);
 
 #endif //WbWriterSunflow_H

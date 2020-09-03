@@ -3,7 +3,7 @@
 
 
 #include <fstream>
-#include <numerics/geometry3d/GbCuboid3D.h>
+#include <geometry3d/GbCuboid3D.h>
 #include <basics/utilities/UbMath.h>
 #include <basics/utilities/UbFileOutput.h>
 #include "UbException.h"

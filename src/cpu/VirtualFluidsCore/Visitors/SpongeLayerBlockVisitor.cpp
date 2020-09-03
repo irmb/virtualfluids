@@ -9,7 +9,7 @@
 #include "D3Q27System.h"
 #include "BCArray3D.h"
 #include "BCProcessor.h"
-#include <numerics/geometry3d/GbCuboid3D.h>
+#include <geometry3d/GbCuboid3D.h>
 
 using namespace std;
 

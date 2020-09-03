@@ -8,8 +8,6 @@
 class WbWriterX3D  : public WbWriter
 {
 public:
-   OBCREATOR_EXT( WbWriterX3D )
-
    static WbWriterX3D* getInstance()
    {
       static WbWriterX3D instance;
@@ -32,7 +30,5 @@ public:
 
    std::string writeTriangles(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt3 >& triangles);
 };
-
-UB_AUTO_RUN_NAMED(ObFactory<WbWriter>::getInstance()->addObCreator(ObSingletonCreatorImpl<WbWriterX3D ,WbWriter>::getInstance()), CAB_WbWriterX3D);
 
 #endif //WBWRITERX3D_H

@@ -2,7 +2,7 @@
 
 #include "Core/Timer/Timer.h"
 
-#include "basics/numerics/geometry3d/GbTriFaceMesh3D.h"
+#include "basics/geometry3d/GbTriFaceMesh3D.h"
 
 #include "geometries/TriangularMesh/triangleNeighborFinder/TriangleNeighborFinder.h"
 #include "geometries/TriangularMesh/TriangularMeshStrategy.h"
