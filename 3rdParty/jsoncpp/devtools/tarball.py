@@ -37,13 +37,13 @@ def make_tarball(tarball_path, sources, base_dir, prefix_dir=''):
     with closing(tarfile.TarFile.open(tarball_path, 'w:gz',
             compresslevel=compression)) as tar:
         for source in sources:
-            source_path = source
+            VF_SRC_DIR = source
             if os.path.isdir(source):
-                for dirpath, dirnames, filenames in os.walk(source_path):
+                for dirpath, dirnames, filenames in os.walk(VF_SRC_DIR):
                     visit(tar, dirpath, filenames)
             else:
-                path_in_tar = archive_name(source_path)
-                tar.add(source_path, path_in_tar)      # filename, arcname
+                path_in_tar = archive_name(VF_SRC_DIR)
+                tar.add(VF_SRC_DIR, path_in_tar)      # filename, arcname
 
 def decompress(tarball_path, base_dir):
     """Decompress the gzipped tarball into directory base_dir.

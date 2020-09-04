@@ -1,4 +1,5 @@
 
+function(linkCUDA)
 
     find_path(CUDA_CUT_INCLUDE_DIR
       helper_cuda.h
@@ -11,8 +12,7 @@
     vf_get_library_name(library_name)
     target_include_directories(${library_name} PRIVATE ${CUDA_INCLUDE_DIRS} ${CUDA_CUT_INCLUDE_DIR})
 
-	#set_property(TARGET ${targetName} PROPERTY CUDA_SEPARABLE_COMPILATION ON)
-	#set_property(TARGET ${targetName} PROPERTY CUDA_64_BIT_DEVICE_CODE ON)
-	
-    #set(CUDA_NVCC_FLAGS "-G" CACHE TYPE INTERNAL FORCE)
-    #set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -gencode arch=compute_13,code=sm_13 )
+    # set the following properties only for specific targets
+    # set_property(TARGET ${targetName} PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+    # set_property(TARGET ${targetName} PROPERTY CUDA_64_BIT_DEVICE_CODE ON)
+endfunction()

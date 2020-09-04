@@ -39,7 +39,10 @@ SET(USE_GCC OFF CACHE BOOL "include gcc compiler support") #TODO: why do we need
 SET(USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
 SET(USE_DEM_COUPLING OFF CACHE BOOL "PE plugin")
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature/clean_3rd_cmake_macros
 #CAB
 include("CMake/CMakeCABMacros.cmake") #TODO: Currently we have to include the CABMacros also here, so that the USE_* are defined in the config files for the cpu version
 #include("CMake/FileUtilities.cmake")
@@ -153,9 +156,9 @@ ENDIF()
 #    add_subdirectory(Plugins/dem_coupling)
 #ENDIF()
 
-add_subdirectory(3rdParty/MuParser)
+add_subdirectory(${VF_THIRD_DIR}/MuParser)
 
 add_subdirectory(src/cpu/VirtualFluidsCore)
 
-set (APPS_ROOT_CPU ${VF_ROOT_DIR}/apps/cpu)
+set (APPS_ROOT_CPU "${VF_ROOT_DIR}/apps/cpu/")
 include(${APPS_ROOT_CPU}/Applications.cmake)

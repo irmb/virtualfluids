@@ -11,17 +11,6 @@ endif()
 
 project(VirtualFluidsGPU)
 
-set(libraryFolder    "libs")
-set(gksLibraryFolder "libs/GKS")
-
-set(testFolder "tests")
-
-set(appFolder    "apps")
-set(lbmAppFolder "apps/LBM")
-set(gksAppFolder "apps/GKS")
-
-set(thirdPartyFolder "3rdParty")
-
 IF(MSVC)
     ADD_DEFINITIONS ( "-DNOMINMAX" )                # Disable Min/Max-Macros
     ADD_DEFINITIONS ( "-D_CRT_SECURE_NO_WARNINGS" ) # disable warnings promoting Microsoft's security enhanced CRT
