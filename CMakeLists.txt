@@ -9,7 +9,7 @@
 #  required cmake versions
 #  CMAKE 3.9: CUDA support
 #################################################################################
-cmake_minimum_required(VERSION 3.13..3.17 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13..3.18 FATAL_ERROR)
 
 project(VirtualFluids CXX)
 
@@ -22,6 +22,11 @@ set(testFolder    "tests")
 set(appFolder     "apps")
 set(thirdFolder   "3rd")
 
+set (VF_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
+set (VF_THIRD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
+set (VF_SRC_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set (VF_ROOT_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
+
 #################################################################################
 #  OPTIONS
 #################################################################################
@@ -30,17 +35,27 @@ option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
 
 option(BUILD_SHARED_LIBS "" ON)
+
+#################################################################################
+#  CMAKE POLICIES
+#################################################################################
+# CMAKE_CUDA_ARCHITECTURES
+# https://cmake.org/cmake/help/git-stage/policy/CMP0104.htmls
+if(POLICY CMP0104)
+    cmake_policy(SET CMP0104 NEW)
+    set(CMAKE_CUDA_ARCHITECTURES 30)
+endif()
+
 #################################################################################
 #  MACROS
 #################################################################################
 include(CMakePrintHelpers)
-set (CMAKE_PATH "${CMAKE_SOURCE_DIR}/CMake")
-include("${CMAKE_PATH}/CMakeCABMacros.cmake")
-include("${CMAKE_PATH}/FileUtilities.cmake")
-include("${CMAKE_PATH}/VirtualFluidsMacros.cmake")
+include(${VF_CMAKE_DIR}/CMakeCABMacros.cmake)
+include(${VF_CMAKE_DIR}/FileUtilities.cmake)
+include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
 
-include(${CMAKE_PATH}/CMakeMacros_old/general/FindCompiler.cmake)
-configure_file(src/basics/VirtualFluidsDefinitions.in.h VirtualFluidsDefinitions.h)
+include(${VF_CMAKE_DIR}/CMakeMacros_old/general/FindCompiler.cmake)
+configure_file(src/basics/VirtualFluidsDefinitions.in.h ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h)
 
 #################################################################################
 #  COMMON LIBRARIES
@@ -61,5 +76,5 @@ endif()
 #  3rd Party Libraries
 #################################################################################
 if(BUILD_VF_UNIT_TESTS)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/googletest)
+    add_subdirectory(${VF_THIRD_DIR}/googletest)
 endif()

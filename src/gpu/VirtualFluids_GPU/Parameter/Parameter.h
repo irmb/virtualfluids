@@ -34,7 +34,7 @@
 #define PARAMETER_H
 
 #include "LBM/LB.h"
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 #include "VirtualFluidsDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 

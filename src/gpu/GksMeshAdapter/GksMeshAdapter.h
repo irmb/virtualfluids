@@ -38,7 +38,7 @@
 #include <vector>
 
 #include "Core/DataTypes.h"
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 
 #include "MeshCell.h"
 #include "MeshFace.h"

@@ -37,7 +37,7 @@
 
 #include "VirtualFluidsDefinitions.h"
 
-#include "Core/PointerDefinitions.h"
+#include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
 #include "Core/Timer/Timer.h"
 

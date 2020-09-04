@@ -1,9 +1,13 @@
-.gitignore
-bin/
-binWSL/
+# build directories
 build/
-source/MSVC2015/
-source/Applications/DLR-F16-Solid/f16-solid-coarse.cfg
-.vscode/
+bin/
 MSVC2017/
 VS2017/
+
+# IDE
+.vscode/
+.sync/
+.idea/
+
+# MacOS
+.DS_Store

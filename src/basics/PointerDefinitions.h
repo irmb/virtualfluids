@@ -23,6 +23,6 @@ using RPtr = T*;
 template <class T>
 using enableSharedFromThis = std::enable_shared_from_this<T>;
 
-#define dynamicPointerCast dynamic_pointer_cast
+#define dynamicPointerCast std::dynamic_pointer_cast
 
 #endif

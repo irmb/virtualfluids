@@ -1,18 +1,20 @@
 #directory pathes for header files
 
+set(VirtualFluidsCore_source_dir ${VF_SRC_DIR}/cpu/VirtualFluidsCore)
+vf_get_library_name(library_name)
+
 set (SOURCE_DIR "${CMAKE_SOURCE_DIR}/src/cpu/")
+INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/BoundaryConditions)
+INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/Connectors)
+INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/Data)
+INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/Interactors)
+INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/LBM)
+INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/Parallel)
+INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/Grid)
+INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/Visitors)
+INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/CoProcessors)
+INCLUDE_DIRECTORIES(${VirtualFluidsCore_source_dir}/Utilities)
 
-INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore)
-INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore/BoundaryConditions)
-INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore/Connectors)
-INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore/Data)
-INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore/Interactors)
-INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore/LBM)
-INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore/Parallel)
-INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore/Grid)
-INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore/Visitors)
-INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore/CoProcessors)
-INCLUDE_DIRECTORIES(${SOURCE_DIR}/VirtualFluidsCore/Utilities)
+INCLUDE_DIRECTORIES(${VF_THIRD_DIR})
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/3rdParty)
 
