@@ -70,7 +70,7 @@ bool FileWriter::isPeriodicCell(SPtr<Parameter> para, uint number2, uint number1
 void FileWriter::writeUnstrucuredGridLT(SPtr<Parameter> para, std::vector<std::string >& fname)
 {
     std::vector< UbTupleFloat3 > nodes;
-    std::vector< UbTupleInt8 > cells;
+    std::vector< UbTupleUInt8 > cells;
     std::vector< std::string > nodedatanames;
     nodedatanames.push_back("Press");
     nodedatanames.push_back("DRho");
@@ -79,7 +79,7 @@ void FileWriter::writeUnstrucuredGridLT(SPtr<Parameter> para, std::vector<std::s
     nodedatanames.push_back("Vz");
     nodedatanames.push_back("Geometry");
     unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
-    int dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
+    unsigned int dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
     bool neighborsAreFluid;
     double vxmax = 0;
     unsigned int startpos = 0;
