@@ -1,6 +1,4 @@
 
-INCLUDE(${CMAKE_CURRENT_LIST_DIR}/IncludsList.cmake)
-
 IF(${USE_GCC})
    SET(CAB_ADDITIONAL_LINK_LIBRARIES ${CAB_ADDITIONAL_LINK_LIBRARIES} rt)
    SET(CAB_ADDITIONAL_LINK_LIBRARIES ${CAB_ADDITIONAL_LINK_LIBRARIES} gomp)
@@ -15,12 +13,18 @@ ENDIF()
 vf_add_library(BUILDTYPE static DEPENDS basics MuParser ${CAB_ADDITIONAL_LINK_LIBRARIES})
 
 vf_get_library_name(library_name)
-target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics)
-target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/geometry3d)
-target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/basics/container)
-target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/basics/memory)
-target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/basics/objects)
-target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/basics/transmitter)
-target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/basics/utilities)
-target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/basics/basics/writer)
+
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/BoundaryConditions)
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Connectors)
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Data)
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Interactors)
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/LBM)
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Parallel)
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Grid)
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Visitors)
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/CoProcessors)
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Utilities)
+
+
+target_include_directories(${library_name} PUBLIC ${VF_THIRD_DIR})
 

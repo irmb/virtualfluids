@@ -19,6 +19,8 @@ set (VIRTUAL_FLUIDS_GLOB_FILES
         *.c
         *.h
         *.cu
+        *.cuh
+        *.hpp
         CACHE INTERNAL "File endings to glob for source files" )
 
 
@@ -163,9 +165,11 @@ function(vf_add_library)
       generateExportHeader (${library_name})
     endif()
 
+    target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(${library_name} PRIVATE ${CMAKE_BINARY_DIR})
-    target_include_directories(${library_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR})
+    target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/gpu)
+    target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/cpu)
 
 
     #status("... configuring target: ${library_name} (type=${ARG_BUILDTYPE}) done")
