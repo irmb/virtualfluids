@@ -2,6 +2,7 @@
 #define  FineToCoarse_H
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -10,7 +11,7 @@
 
 namespace GksGpu {
 
-class VIRTUALFLUIDS_GPU_EXPORT Interface
+class GKSGPU_EXPORT Interface
 {
 public:
     static void runFineToCoarse( SPtr<DataBase> dataBase, uint level );

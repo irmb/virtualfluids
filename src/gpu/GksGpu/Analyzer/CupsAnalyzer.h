@@ -4,16 +4,18 @@
 #include <string>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
 #include "Core/Timer/Timer.h"
+#include "GksGpu_export.h"
 
 namespace GksGpu {
 
 struct DataBase;
 
-class VIRTUALFLUIDS_GPU_EXPORT CupsAnalyzer
+class GKSGPU_EXPORT CupsAnalyzer
 {
 private:
     SPtr<Timer> timer;

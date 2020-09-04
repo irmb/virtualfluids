@@ -27,6 +27,8 @@
 #include "DataBase/DataBase.h"
 #include "Parameters/Parameters.h"
 
+#include "GksVtkAdapter_export.h"
+
 typedef vtkSmartPointer<vtkUnstructuredGrid>          vtkGridPtr;
 typedef vtkSmartPointer<vtkPoints>                    vtkPointsPtr;
 typedef vtkSmartPointer<vtkIdList>                    vtkIdListPtr;
@@ -41,31 +43,31 @@ struct rgbColor
     unsigned char b;
 };
 
-vtkGridPtr VIRTUALFLUIDS_GPU_EXPORT getVtkUnstructuredOctGrid( SPtr<GksGpu::DataBase> dataBase, bool excludeGhostCells = false );
+vtkGridPtr GKSVTKADAPTER_EXPORT getVtkUnstructuredOctGrid( SPtr<GksGpu::DataBase> dataBase, bool excludeGhostCells = false );
 
-void VIRTUALFLUIDS_GPU_EXPORT addScalarIntCellData( vtkGridPtr grid,
+void GKSVTKADAPTER_EXPORT addScalarIntCellData( vtkGridPtr grid,
                                      uint numberOfCells, 
                                      std::string name, 
                                      std::function<int(uint)> getData );
 
-void VIRTUALFLUIDS_GPU_EXPORT addScalarRealCellData( vtkGridPtr grid,
+void GKSVTKADAPTER_EXPORT addScalarRealCellData( vtkGridPtr grid,
                                       uint numberOfCells, 
                                       std::string name, 
                                       std::function<real(uint)> getData );
 
-void VIRTUALFLUIDS_GPU_EXPORT addVectorCellData( vtkGridPtr grid,
+void GKSVTKADAPTER_EXPORT addVectorCellData( vtkGridPtr grid,
                                   uint numberOfCells, 
                                   std::string name, 
                                   std::function<Vec3(uint)> getData );
 
-void VIRTUALFLUIDS_GPU_EXPORT addBaseData( vtkGridPtr grid, SPtr<GksGpu::DataBase> dataBase, GksGpu::Parameters parameters );
+void GKSVTKADAPTER_EXPORT addBaseData( vtkGridPtr grid, SPtr<GksGpu::DataBase> dataBase, GksGpu::Parameters parameters );
 
-void VIRTUALFLUIDS_GPU_EXPORT writeVtkUnstructuredGrid( vtkGridPtr grid, int mode, std::string filename );
+void GKSVTKADAPTER_EXPORT writeVtkUnstructuredGrid( vtkGridPtr grid, int mode, std::string filename );
 
-void VIRTUALFLUIDS_GPU_EXPORT writeVtkParallelUnstructuredGridSummaryFile( vtkGridPtr grid, std::string filename, uint mpiWorldSize );
+void GKSVTKADAPTER_EXPORT writeVtkParallelUnstructuredGridSummaryFile( vtkGridPtr grid, std::string filename, uint mpiWorldSize );
 
-rgbColor VIRTUALFLUIDS_GPU_EXPORT colorMapCoolToWarmExtended( double value, double min, double max );
+rgbColor GKSVTKADAPTER_EXPORT colorMapCoolToWarmExtended( double value, double min, double max );
 
-void VIRTUALFLUIDS_GPU_EXPORT writePNG( vtkDataObject* inputData, int nx, int ny, double L, double H, std::string filename );
+void GKSVTKADAPTER_EXPORT writePNG( vtkDataObject* inputData, int nx, int ny, double L, double H, std::string filename );
 
 #endif

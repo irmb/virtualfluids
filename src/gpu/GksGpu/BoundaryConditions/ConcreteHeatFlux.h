@@ -6,6 +6,7 @@
 #include <thrust/device_vector.h>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -39,7 +40,7 @@ struct ConcreteHeatFluxStruct
     real ambientTemperature;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT ConcreteHeatFlux : public BoundaryCondition //, public IsothermalWallStruct
+struct GKSGPU_EXPORT ConcreteHeatFlux : public BoundaryCondition //, public IsothermalWallStruct
 {
     real* temperatures;
 

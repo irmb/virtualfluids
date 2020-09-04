@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -29,7 +30,7 @@ struct IsothermalWallStruct
     bool useSecondCells;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT IsothermalWall : public BoundaryCondition //, public IsothermalWallStruct
+struct GKSGPU_EXPORT IsothermalWall : public BoundaryCondition //, public IsothermalWallStruct
 {
     Vec3 velocity;
     real lambda;

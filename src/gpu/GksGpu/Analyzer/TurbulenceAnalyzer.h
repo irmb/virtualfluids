@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -39,7 +40,7 @@ struct TurbulenceAnalyzerStruct
     real* p ;
 };
 
-class VIRTUALFLUIDS_GPU_EXPORT TurbulenceAnalyzer
+class GKSGPU_EXPORT TurbulenceAnalyzer
 {
 private:
 

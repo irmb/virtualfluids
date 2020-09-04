@@ -6,6 +6,7 @@
 #include <functional>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -16,7 +17,7 @@
 
 namespace GksGpu {
 
-class VIRTUALFLUIDS_GPU_EXPORT Initializer
+class GKSGPU_EXPORT Initializer
 {
 public:
 

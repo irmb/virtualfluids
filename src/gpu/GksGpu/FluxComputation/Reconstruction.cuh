@@ -2,6 +2,7 @@
 #define Reconstruction_CUH
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "Core/DataTypes.h"
 

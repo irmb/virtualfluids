@@ -5,6 +5,7 @@
 #include <string>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -17,7 +18,7 @@ namespace GksGpu {
 
 struct DataBase;
 
-class VIRTUALFLUIDS_GPU_EXPORT EnstrophyAnalyzer
+class GKSGPU_EXPORT EnstrophyAnalyzer
 {
 private:
 

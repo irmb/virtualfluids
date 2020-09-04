@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -13,7 +14,7 @@
 
 namespace GksGpu{
 
-struct VIRTUALFLUIDS_GPU_EXPORT Periodic : public BoundaryCondition
+struct GKSGPU_EXPORT Periodic : public BoundaryCondition
 {
     Periodic( SPtr<DataBase> dataBase ) : BoundaryCondition( dataBase ){}
 

@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "Core/DataTypes.h"
 #include "Core/RealConstants.h"

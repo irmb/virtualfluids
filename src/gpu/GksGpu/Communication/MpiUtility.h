@@ -4,6 +4,7 @@
 #include <mpi.h>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -16,7 +17,7 @@ namespace GksGpu {
 class  DataBaseAllocator;
 struct DataBase;
 
-struct VIRTUALFLUIDS_GPU_EXPORT MpiUtility
+struct GKSGPU_EXPORT MpiUtility
 {
     static int getMpiRankBeforeInit();
 

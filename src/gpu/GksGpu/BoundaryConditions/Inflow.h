@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -30,7 +31,7 @@ struct InflowStruct
     real a0, a1, a2;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT Inflow : public BoundaryCondition //, public IsothermalWallStruct
+struct GKSGPU_EXPORT Inflow : public BoundaryCondition //, public IsothermalWallStruct
 {
     Vec3 velocity;
     real lambda;

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -28,7 +29,7 @@ struct CreepingMassFluxStruct
     real lambda;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT CreepingMassFlux : public BoundaryCondition //, public IsothermalWallStruct
+struct GKSGPU_EXPORT CreepingMassFlux : public BoundaryCondition //, public IsothermalWallStruct
 {
     real rho;
     real velocity;

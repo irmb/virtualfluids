@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -24,7 +25,7 @@ struct SymmetryStruct
     char direction;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT Symmetry : public BoundaryCondition //, public IsothermalWallStruct
+struct GKSGPU_EXPORT Symmetry : public BoundaryCondition //, public IsothermalWallStruct
 {
     char direction;
 

@@ -266,7 +266,7 @@ void writeVtkUnstructuredGrid( vtkGridPtr grid, int mode, std::string filename )
     writer->Write();
 }
 
-void VIRTUALFLUIDS_GPU_EXPORT writeVtkParallelUnstructuredGridSummaryFile(vtkGridPtr grid, std::string filename, uint mpiWorldSize)
+void GKSVTKADAPTER_EXPORT writeVtkParallelUnstructuredGridSummaryFile(vtkGridPtr grid, std::string filename, uint mpiWorldSize)
 {
     uint numberOfArrays = grid->GetCellData()->GetNumberOfArrays();
 
@@ -429,7 +429,7 @@ void writeVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase,
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
-void VIRTUALFLUIDS_GPU_EXPORT writeVtkXMLParallelSummaryFile(std::shared_ptr<GksGpu::DataBase> dataBase, GksGpu::Parameters parameters, std::string filename, uint mpiWorldSize)
+void GKSVTKADAPTER_EXPORT writeVtkXMLParallelSummaryFile(std::shared_ptr<GksGpu::DataBase> dataBase, GksGpu::Parameters parameters, std::string filename, uint mpiWorldSize)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".pvtu" << " ... \n";
 
@@ -534,7 +534,7 @@ void writeTurbulenceVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase,
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
-void VIRTUALFLUIDS_GPU_EXPORT writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<GksGpu::DataBase> dataBase, std::shared_ptr<GksGpu::TurbulenceAnalyzer> turbulenceAnalyzer,GksGpu::Parameters parameters, std::string filename, uint mpiWorldSize)
+void GKSVTKADAPTER_EXPORT writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<GksGpu::DataBase> dataBase, std::shared_ptr<GksGpu::TurbulenceAnalyzer> turbulenceAnalyzer,GksGpu::Parameters parameters, std::string filename, uint mpiWorldSize)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".pvtu" << " ... \n";
 
@@ -712,7 +712,7 @@ void mapFlowField(std::shared_ptr<GksGpu::DataBase> base, std::shared_ptr<GksGpu
     }
 }
 
-void VIRTUALFLUIDS_GPU_EXPORT writeConcreteHeatFluxVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase, std::shared_ptr<GksGpu::ConcreteHeatFlux> bc, GksGpu::Parameters parameters, int mode, std::string filename)
+void GKSVTKADAPTER_EXPORT writeConcreteHeatFluxVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase, std::shared_ptr<GksGpu::ConcreteHeatFlux> bc, GksGpu::Parameters parameters, int mode, std::string filename)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".vtu" << " ... \n";
 

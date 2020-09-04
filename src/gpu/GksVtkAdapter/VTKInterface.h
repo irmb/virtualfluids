@@ -4,6 +4,7 @@
 #include "GksGpu/Parameters/Parameters.h"
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksVtkAdapter_export.h"
 
 namespace GksGpu{ 
 struct DataBase;
@@ -11,30 +12,30 @@ class TurbulenceAnalyzer;
 struct ConcreteHeatFlux;
 }
 
-void VIRTUALFLUIDS_GPU_EXPORT writeVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase,
+void GKSVTKADAPTER_EXPORT writeVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase,
                            GksGpu::Parameters parameters, 
                            int mode, 
                            std::string filename);
 
-void VIRTUALFLUIDS_GPU_EXPORT writeVtkXMLParallelSummaryFile(std::shared_ptr<GksGpu::DataBase> dataBase,
+void GKSVTKADAPTER_EXPORT writeVtkXMLParallelSummaryFile(std::shared_ptr<GksGpu::DataBase> dataBase,
                                               GksGpu::Parameters parameters, 
                                               std::string filename,
                                               uint mpiWorldSize);
 
-void VIRTUALFLUIDS_GPU_EXPORT writeTurbulenceVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase,
+void GKSVTKADAPTER_EXPORT writeTurbulenceVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase,
                                      std::shared_ptr<GksGpu::TurbulenceAnalyzer> turbulenceAnalyzer,
                                      int mode, 
                                      std::string filename);
 
-void VIRTUALFLUIDS_GPU_EXPORT writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<GksGpu::DataBase> dataBase,
+void GKSVTKADAPTER_EXPORT writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<GksGpu::DataBase> dataBase,
                                                         std::shared_ptr<GksGpu::TurbulenceAnalyzer> turbulenceAnalyzer,
                                                         GksGpu::Parameters parameters, 
                                                         std::string filename,
                                                         uint mpiWorldSize);
 
-void VIRTUALFLUIDS_GPU_EXPORT mapFlowField( std::shared_ptr<GksGpu::DataBase> base, std::shared_ptr<GksGpu::DataBase> target );
+void GKSVTKADAPTER_EXPORT mapFlowField( std::shared_ptr<GksGpu::DataBase> base, std::shared_ptr<GksGpu::DataBase> target );
 
-void VIRTUALFLUIDS_GPU_EXPORT writeConcreteHeatFluxVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase,
+void GKSVTKADAPTER_EXPORT writeConcreteHeatFluxVtkXML(std::shared_ptr<GksGpu::DataBase> dataBase,
                                            std::shared_ptr<GksGpu::ConcreteHeatFlux> bc, 
                                            GksGpu::Parameters parameters, 
                                            int mode, 
