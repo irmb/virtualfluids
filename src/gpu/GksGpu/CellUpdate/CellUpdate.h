@@ -2,6 +2,7 @@
 #define  CellUpdate_H
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -11,7 +12,7 @@
 
 namespace GksGpu {
 
-class VIRTUALFLUIDS_GPU_EXPORT CellUpdate
+class GKSGPU_EXPORT CellUpdate
 {
 public:
 

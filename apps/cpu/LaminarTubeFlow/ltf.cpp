@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <omp.h>
+//#include <omp.h>
 
 #include "VirtualFluids.h"
 

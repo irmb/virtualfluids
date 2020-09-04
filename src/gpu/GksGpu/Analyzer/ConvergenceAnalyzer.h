@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -11,11 +12,13 @@
 
 #include "FlowStateData/FlowStateData.cuh"
 
+#include "GksGpu_export.h"
+
 namespace GksGpu {
 
 struct DataBase;
 
-class VIRTUALFLUIDS_GPU_EXPORT ConvergenceAnalyzer
+class GKSGPU_EXPORT ConvergenceAnalyzer
 {
 private:
 

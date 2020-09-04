@@ -1,28 +1,5 @@
 cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 
-if(POLICY CMP0042)
-    CMAKE_POLICY(SET CMP0042 NEW)
-endif()
-if(POLICY CMP0020)
-    CMAKE_POLICY(SET CMP0020 NEW)
-endif()
-if(POLICY CMP0028)
-    CMAKE_POLICY(SET CMP0028 NEW)
-endif()
-if(POLICY CMP0037)
-    CMAKE_POLICY(SET CMP0037 NEW)
-endif()
-if(POLICY CMP0047)
-    CMAKE_POLICY(SET CMP0047 NEW)
-endif()
-if(POLICY CMP0053)
-    CMAKE_POLICY(SET CMP0053 NEW)
-endif()
-if(POLICY CMP0054)
-    CMAKE_POLICY(SET CMP0054 NEW)
-endif()
-
-
 if(UNIX)
     set(CMAKE_CXX_STANDARD 14)
 endif()
@@ -33,10 +10,6 @@ endif()
 #############################################################
 
 project(VirtualFluidsGPU)
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-include_directories(${CMAKE_BINARY_DIR}/gpu)
 
 set(libraryFolder    "libs")
 set(gksLibraryFolder "libs/GKS")
@@ -60,7 +33,6 @@ ENDIF(MSVC)
 #############################################################
 ###                         OPTIONS                       ###
 #############################################################
-option(BUILD_SHARED_LIBS        "Build shared libraries"      ON )
 option(VF.BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
 option(VF.BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF )
 option(VF.BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" ON)
@@ -77,13 +49,12 @@ ENDIF()
 
 enable_language(CUDA)
 
-#sharedLibs()
-
 #############################################################
 
 IF( VF.BUILD_VF_GKS )
     # only use this with device of CC larger than 6.0
-    set(CMAKE_CUDA_FLAGS " -arch=sm_60 -Xptxas=\"-v\"" CACHE STRING "" FORCE)
+    set(CMAKE_CUDA_FLAGS "-Xptxas=\"-v\"" CACHE STRING "" FORCE)
+    set(CMAKE_CUDA_ARCHITECTURES 60)
 ENDIF()
 
 set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
@@ -125,11 +96,12 @@ ENDIF()
 ###                  Virtual Fluids GKS                   ###
 #############################################################
 
-IF (VF.BUILD_VF_GKS)
-    add_subdirectory(targets/libs/GksMeshAdapter)
-    add_subdirectory(targets/libs/GksVtkAdapter)
 
-    add_subdirectory(targets/libs/GksGpu)
+IF (VF.BUILD_VF_GKS)
+    add_subdirectory(src/gpu/GksMeshAdapter)
+    add_subdirectory(src/gpu/GksVtkAdapter)
+
+    add_subdirectory(src/gpu/GksGpu)
 
     #add_subdirectory(targets/apps/GKS/gksTest)
     #add_subdirectory(targets/apps/GKS/ChannelFlow)
@@ -161,13 +133,13 @@ IF (VF.BUILD_VF_GKS)
     #add_subdirectory(targets/apps/GKS/ConcreteHeatFluxBCTest)
 
     #add_subdirectory(targets/apps/GKS/PoolFire)
-    add_subdirectory(targets/apps/GKS/Flame7cm)
-    add_subdirectory(targets/apps/GKS/SandiaFlame_1m)
+    add_subdirectory(apps/gpu/GKS/Flame7cm)
+    #add_subdirectory(targets/apps/GKS/SandiaFlame_1m)
     #add_subdirectory(targets/apps/GKS/Candle)
 
     #add_subdirectory(targets/apps/GKS/MultiGPU)
-    add_subdirectory(targets/apps/GKS/MultiGPU_nD)
-    add_subdirectory(targets/apps/GKS/SingleGPU)
+    #add_subdirectory(targets/apps/GKS/MultiGPU_nD)
+    #add_subdirectory(targets/apps/GKS/SingleGPU)
 ELSE()
     MESSAGE( STATUS "exclude Virtual Fluids GKS." )
 ENDIF()

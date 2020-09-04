@@ -2,6 +2,7 @@
 #define  FluxComputation_H
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -11,7 +12,7 @@
 
 namespace GksGpu {
 
-class VIRTUALFLUIDS_GPU_EXPORT FluxComputation
+class GKSGPU_EXPORT FluxComputation
 {
 public:
 

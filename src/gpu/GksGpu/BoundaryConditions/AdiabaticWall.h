@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -26,7 +27,7 @@ struct AdiabaticWallStruct
     bool useSecondCells;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT AdiabaticWall : public BoundaryCondition //, public IsothermalWallStruct
+struct GKSGPU_EXPORT AdiabaticWall : public BoundaryCondition //, public IsothermalWallStruct
 {
     Vec3 velocity;
 

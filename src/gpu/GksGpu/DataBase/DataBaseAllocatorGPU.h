@@ -7,10 +7,11 @@
 #include "DataBaseAllocator.h"
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 namespace GksGpu {
 
-class VIRTUALFLUIDS_GPU_EXPORT DataBaseAllocatorGPU : public DataBaseAllocator {
+class GKSGPU_EXPORT DataBaseAllocatorGPU : public DataBaseAllocator {
 
 public:
 

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -22,7 +23,7 @@ struct ExtrapolationStruct
     uint* secondCells;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT Extrapolation : public BoundaryCondition //, public IsothermalWallStruct
+struct GKSGPU_EXPORT Extrapolation : public BoundaryCondition //, public IsothermalWallStruct
 {
     Extrapolation( SPtr<DataBase> dataBase );
 

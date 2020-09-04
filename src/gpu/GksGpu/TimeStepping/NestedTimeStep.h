@@ -2,6 +2,7 @@
 #define  NestedTimeStep_H
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -10,7 +11,7 @@
 #include "Parameters/Parameters.h"
 namespace GksGpu{ 
 
-class VIRTUALFLUIDS_GPU_EXPORT TimeStepping
+class GKSGPU_EXPORT TimeStepping
 {
 public:
 

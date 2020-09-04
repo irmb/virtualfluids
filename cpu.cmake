@@ -147,11 +147,6 @@ ENDIF()
 # LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DMPICH_IGNORE_CXX_SEEK)
 # LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DMPICH_SKIP_MPICXX)
 # ENDIF()
-#message("MPI_CXX_LIBRARY: " ${MPI_CXX_LIBRARY})
-#IF(MPI_CXX_LIBRARY)
-#SET(MPI_LIBRARY ${MPI_LIBRARY} ${MPI_CXX_LIBRARY})
-#message("MPI_LIBRARY: " ${MPI_LIBRARY})
-#ENDIF() 
 
 
 #IF(${USE_DEM_COUPLING})
@@ -161,7 +156,6 @@ ENDIF()
 add_subdirectory(3rdParty/MuParser)
 
 add_subdirectory(src/cpu/VirtualFluidsCore)
-#add_subdirectory(VirtualFluidsBasic)
 
-set (APPS_ROOT_CPU "${VF_ROOT_DIR}/apps/cpu")
+set (APPS_ROOT_CPU ${VF_ROOT_DIR}/apps/cpu)
 include(${APPS_ROOT_CPU}/Applications.cmake)

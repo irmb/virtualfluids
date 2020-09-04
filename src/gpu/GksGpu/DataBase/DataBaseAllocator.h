@@ -8,6 +8,7 @@
 #include "PointerDefinitions.h"
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 class  GksMeshAdapter;
 
@@ -17,7 +18,7 @@ struct DataBase;
 struct BoundaryCondition;
 struct Communicator;
 
-class VIRTUALFLUIDS_GPU_EXPORT DataBaseAllocator {
+class GKSGPU_EXPORT DataBaseAllocator {
 
 public:
 

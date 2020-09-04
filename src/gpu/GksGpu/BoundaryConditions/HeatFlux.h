@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -26,7 +27,7 @@ struct HeatFluxStruct
     real HRRPUA;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT HeatFlux : public BoundaryCondition //, public IsothermalWallStruct
+struct GKSGPU_EXPORT HeatFlux : public BoundaryCondition //, public IsothermalWallStruct
 {
     real HRRPUA;
 

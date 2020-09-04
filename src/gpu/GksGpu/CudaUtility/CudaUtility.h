@@ -5,12 +5,13 @@
 #include <cuda_runtime.h>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "Core/DataTypes.h"
 
 namespace GksGpu {
 
-class VIRTUALFLUIDS_GPU_EXPORT CudaUtility
+class GKSGPU_EXPORT CudaUtility
 {
 public:
 

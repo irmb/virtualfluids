@@ -13,9 +13,11 @@
 
 #include "VirtualFluidsDefinitions.h"
 
+#include "GksMeshAdapter_export.h"
+
 class MultipleGridBuilder;
 
-class VIRTUALFLUIDS_GPU_EXPORT GksMeshAdapter{
+class GKSMESHADAPTER_EXPORT GksMeshAdapter{
 
 public:
 

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -32,7 +33,7 @@ struct PassiveScalarDiricletStruct
     real S_2;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT PassiveScalarDiriclet : public BoundaryCondition
+struct GKSGPU_EXPORT PassiveScalarDiriclet : public BoundaryCondition
 {
     real S_1;
     real S_2;

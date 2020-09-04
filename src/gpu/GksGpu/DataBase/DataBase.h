@@ -12,6 +12,7 @@
 #include "Core/ArrayTypes.h"
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "Definitions/AccumulatorDataType.h"
 
@@ -28,7 +29,7 @@ struct PerLevelCounts;
 struct DataBaseStruct;
 struct Communicator;
 
-struct VIRTUALFLUIDS_GPU_EXPORT DataBase : public std::enable_shared_from_this<DataBase>
+struct GKSGPU_EXPORT DataBase : public std::enable_shared_from_this<DataBase>
 {
     //////////////////////////////////////////////////////////////////////////
     // Management
@@ -147,7 +148,7 @@ struct VIRTUALFLUIDS_GPU_EXPORT DataBase : public std::enable_shared_from_this<D
     std::string getDeviceType();
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT PerLevelCounts
+struct GKSGPU_EXPORT PerLevelCounts
 {
     uint numberOfCells;
     uint startOfCells;

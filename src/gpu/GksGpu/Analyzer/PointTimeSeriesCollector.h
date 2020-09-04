@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -20,7 +21,7 @@ class  PointTimeSeriesAnalyzer;
 struct DataBase;
 struct Parameters;
 
-class VIRTUALFLUIDS_GPU_EXPORT PointTimeSeriesCollector
+class GKSGPU_EXPORT PointTimeSeriesCollector
 {
 public:
 

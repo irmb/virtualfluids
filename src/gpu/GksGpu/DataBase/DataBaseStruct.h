@@ -7,7 +7,7 @@
 
 namespace GksGpu{ 
 
-struct VIRTUALFLUIDS_GPU_EXPORT DataBaseStruct
+struct GKSGPU_EXPORT DataBaseStruct
 {
     uint  numberOfCells;
     uint  numberOfFaces;

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -30,7 +31,7 @@ struct BoundaryConditionStruct
     uint* secondCells;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT BoundaryCondition : virtual public BoundaryConditionStruct, public std::enable_shared_from_this<BoundaryCondition>
+struct GKSGPU_EXPORT BoundaryCondition : virtual public BoundaryConditionStruct, public std::enable_shared_from_this<BoundaryCondition>
 {
     SPtr<DataBaseAllocator> myAllocator;
 

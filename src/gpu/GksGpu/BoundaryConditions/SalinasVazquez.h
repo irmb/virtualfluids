@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -29,7 +30,7 @@ struct SalinasVazquezStruct
     bool useSecondCells;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT SalinasVazquez : public BoundaryCondition //, public IsothermalWallStruct
+struct GKSGPU_EXPORT SalinasVazquez : public BoundaryCondition //, public IsothermalWallStruct
 {
     real lambdaMX;
     real lambdaPX;

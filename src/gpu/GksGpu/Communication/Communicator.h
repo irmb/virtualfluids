@@ -7,6 +7,7 @@
 //#include <mutex>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -19,7 +20,7 @@ namespace GksGpu {
 class  DataBaseAllocator;
 struct DataBase;
 
-struct VIRTUALFLUIDS_GPU_EXPORT Communicator : public std::enable_shared_from_this<Communicator>
+struct GKSGPU_EXPORT Communicator : public std::enable_shared_from_this<Communicator>
 {
     SPtr<DataBaseAllocator> myAllocator;
 

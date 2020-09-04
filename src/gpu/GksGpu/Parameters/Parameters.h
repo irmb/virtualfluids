@@ -5,16 +5,17 @@
 #include "Core/VectorTypes.h"
 
 #include <VirtualFluidsDefinitions.h>
+#include "GksGpu_export.h"
 
 namespace GksGpu {
 
-enum class VIRTUALFLUIDS_GPU_EXPORT ViscosityModel{
+enum class GKSGPU_EXPORT ViscosityModel{
     constant,
     sutherlandsLaw,
     sutherlandsLaw2
 };
 
-struct  VIRTUALFLUIDS_GPU_EXPORT Parameters
+struct  GKSGPU_EXPORT Parameters
 {
 
     real mu = real(0.01);

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -31,7 +32,7 @@ struct PressureStruct
     real p0;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT Pressure : public BoundaryCondition
+struct GKSGPU_EXPORT Pressure : public BoundaryCondition
 {
     real p0;
 

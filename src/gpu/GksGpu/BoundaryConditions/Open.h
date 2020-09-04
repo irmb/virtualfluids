@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -28,7 +29,7 @@ struct OpenStruct
     real velocityLimiter;
 };
 
-struct VIRTUALFLUIDS_GPU_EXPORT Open : public BoundaryCondition //, public IsothermalWallStruct
+struct GKSGPU_EXPORT Open : public BoundaryCondition //, public IsothermalWallStruct
 {
     PrimitiveVariables prim;
 

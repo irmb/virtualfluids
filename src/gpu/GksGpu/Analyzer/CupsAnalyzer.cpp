@@ -7,6 +7,7 @@
 #include "Core/Logger/Logger.h"
 
 #include "VirtualFluidsDefinitions.h"
+#include "GksGpu_export.h"
 
 #include "DataBase/DataBase.h"
 
