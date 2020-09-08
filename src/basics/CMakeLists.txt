@@ -1,7 +1,7 @@
 
 include(Core/buildInfo.cmake)
 
-vf_add_library(BUILDTYPE static EXCLUDE buildInfo.in.cpp)
+vf_add_library(BUILDTYPE static EXCLUDE buildInfo.in.cpp VirtualFluidsDefinitions.in.h)
 
 vf_get_library_name (library_name)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Core)
@@ -21,6 +21,7 @@ IF(MSVC)
     target_compile_definitions(${library_name} PUBLIC NOMINMAX) # Disable Min/Max-Macros
 ENDIF(MSVC)
 
-include (${VF_CMAKE_DIR}/3rd/mpi.cmake)
+
+linkMPI()
 
 vf_add_tests()

@@ -222,7 +222,7 @@ function(vf_add_tests)
     target_include_directories(${library_test_name} PRIVATE ${VF_SRC_DIR})
 
     # link googlemock
-    include(${VF_CMAKE_DIR}/3rd/gmock.cmake)
+    linkGMOCK()
 
 endfunction()
 

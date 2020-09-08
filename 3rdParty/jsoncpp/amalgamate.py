@@ -48,13 +48,13 @@ class AmalgamationFile:
         f.close()
 
 def amalgamate_source(source_top_dir=None,
-                       target_source_path=None,
+                       target_VF_SRC_DIR=None,
                        header_include_path=None):
     """Produces amalgated source.
        Parameters:
            source_top_dir: top-directory
-           target_source_path: output .cpp path
-           header_include_path: generated header path relative to target_source_path.
+           target_VF_SRC_DIR: output .cpp path
+           header_include_path: generated header path relative to target_VF_SRC_DIR.
     """
     print("Amalgating header...")
     header = AmalgamationFile(source_top_dir)
@@ -77,7 +77,7 @@ def amalgamate_source(source_top_dir=None,
     header.add_file("include/json/assertions.h")
     header.add_text("#endif //ifndef JSON_AMALGATED_H_INCLUDED")
 
-    target_header_path = os.path.join(os.path.dirname(target_source_path), header_include_path)
+    target_header_path = os.path.join(os.path.dirname(target_VF_SRC_DIR), header_include_path)
     print("Writing amalgated header to %r" % target_header_path)
     header.write_to(target_header_path)
 
@@ -98,7 +98,7 @@ def amalgamate_source(source_top_dir=None,
     header.add_file("include/json/forwards.h")
     header.add_text("#endif //ifndef JSON_FORWARD_AMALGATED_H_INCLUDED")
 
-    target_forward_header_path = os.path.join(os.path.dirname(target_source_path),
+    target_forward_header_path = os.path.join(os.path.dirname(target_VF_SRC_DIR),
                                                forward_header_include_path)
     print("Writing amalgated forward header to %r" % target_forward_header_path)
     header.write_to(target_forward_header_path)
@@ -123,8 +123,8 @@ def amalgamate_source(source_top_dir=None,
     source.add_file(os.path.join(lib_json, "json_value.cpp"))
     source.add_file(os.path.join(lib_json, "json_writer.cpp"))
 
-    print("Writing amalgated source to %r" % target_source_path)
-    source.write_to(target_source_path)
+    print("Writing amalgated source to %r" % target_VF_SRC_DIR)
+    source.write_to(target_VF_SRC_DIR)
 
 def main():
     usage = """%prog [options]
@@ -133,7 +133,7 @@ Generate a single amalgated source and header file from the sources.
     from optparse import OptionParser
     parser = OptionParser(usage=usage)
     parser.allow_interspersed_args = False
-    parser.add_option("-s", "--source", dest="target_source_path", action="store", default="dist/jsoncpp.cpp",
+    parser.add_option("-s", "--source", dest="target_VF_SRC_DIR", action="store", default="dist/jsoncpp.cpp",
         help="""Output .cpp source path. [Default: %default]""")
     parser.add_option("-i", "--include", dest="header_include_path", action="store", default="json/json.h",
         help="""Header include path. Used to include the header from the amalgated source file. [Default: %default]""")
@@ -143,7 +143,7 @@ Generate a single amalgated source and header file from the sources.
     options, args = parser.parse_args()
 
     msg = amalgamate_source(source_top_dir=options.top_dir,
-                             target_source_path=options.target_source_path,
+                             target_VF_SRC_DIR=options.target_VF_SRC_DIR,
                              header_include_path=options.header_include_path)
     if msg:
         sys.stderr.write(msg + "\n")

@@ -2,9 +2,8 @@
 
 vf_add_library(BUILDTYPE shared DEPENDS basics)
 
-include (${VF_CMAKE_DIR}/3rd/cuda.cmake)
-include (${VF_CMAKE_DIR}/3rd/OpenMP.cmake)
+linkCUDA()
+linkOpenMP()
 
 vf_get_library_name(library_name)
-
-set_property(TARGET ${library_name} PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+set_target_properties(${library_name} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)

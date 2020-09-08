@@ -9,10 +9,9 @@ ENDIF(MSVC)
 
 vf_add_library(BUILDTYPE shared DEPENDS ${libsToLink})
 
-include (${VF_CMAKE_DIR}/3rd/cuda.cmake)
-include (${VF_CMAKE_DIR}/3rd/mpi.cmake)
-include (${VF_CMAKE_DIR}/3rd/boost.cmake)
-linkBoost ("serialization")
+linkMPI()
+linkCUDA()
+linkBoost("serialization")
 
 #SET(TPN_WIN32 "/EHsc")
 #https://stackoverflow.com/questions/6832666/lnk2019-when-including-asio-headers-solution-generated-with-cmake
