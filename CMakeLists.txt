@@ -13,7 +13,7 @@ cmake_minimum_required(VERSION 3.13..3.18 FATAL_ERROR)
 
 project(VirtualFluids CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

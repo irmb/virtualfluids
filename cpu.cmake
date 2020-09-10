@@ -1,5 +1,3 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
-
 #workaround for machine with mpi compiler wrapper
 #it most define before project
 
@@ -35,14 +33,11 @@ SET(USE_BOOST OFF CACHE BOOL "include Boost support")
 #SET(USE_PYTHON OFF CACHE BOOL "include Python scripting support")
 #SET(USE_FETOL OFF CACHE BOOL "include FETOL library support")
 SET(USE_INTEL OFF CACHE BOOL "include Intel compiler support")
-SET(USE_GCC OFF CACHE BOOL "include gcc compiler support") #TODO: why do we need to set this manually?
 SET(USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
 SET(USE_DEM_COUPLING OFF CACHE BOOL "PE plugin")
 
 #CAB
 include("CMake/CMakeCABMacros.cmake") #TODO: Currently we have to include the CABMacros also here, so that the USE_* are defined in the config files for the cpu version
-#include("CMake/FileUtilities.cmake")
-#include("CMake/VirtualFluidsMacros.cmake")
 
 #MPI
 IF((NOT ${CMAKE_CXX_COMPILER} MATCHES mpicxx) AND (NOT ${CMAKE_CXX_COMPILER} MATCHES mpiicpc))# OR NOT ${CMAKE_CXX_COMPILER} MATCHES cc OR NOT ${CMAKE_CXX_COMPILER} MATCHES mpiCC)
@@ -107,9 +102,6 @@ ENDIF()
 IF(${USE_MPI})
     LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DVF_MPI)
 ENDIF()
-# IF(${USE_FETOL})
-# LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DVF_FETOL)
-# ENDIF()
 IF(${USE_VTK})
     LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DVF_VTK)
 ENDIF()
@@ -128,6 +120,8 @@ ENDIF()
 IF(${USE_INTEL})
     SET(CAB_ADDITIONAL_LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS} -parallel)
 ENDIF()
+
+message ("GCC IS : " ${USE_GCC})
 
 IF(${USE_GCC})
     SET(CAB_ADDITIONAL_LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS} -lgomp)

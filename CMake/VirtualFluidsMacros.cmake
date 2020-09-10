@@ -46,9 +46,9 @@ endfunction()
 
 #################################################################################
 ## Add a target, link the libraries and add the compiler flags to the target
-## The name of the target is vf_get_library_name().
 ##
 ## parameter:
+## NAME      - Name of the target. If not passed the name is vf_get_library_name().
 ## BUILDTYPE - STATIC; SHARED; EXECUTABLE
 ## DEPENDS   - libraries to link
 ## FILES     - adds these files to the target
@@ -63,10 +63,14 @@ function(vf_add_library)
 
     set( options )
     set( oneValueArgs )
-    set( multiValueArgs BUILDTYPE DEPENDS FILES FOLDER EXCLUDE)
+    set( multiValueArgs NAME BUILDTYPE DEPENDS FILES FOLDER EXCLUDE)
     cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    vf_get_library_name (library_name)
+    if(${ARG_NAME})
+        set(library_name ${ARG_NAME})
+    else()
+        vf_get_library_name (library_name)
+    endif()
     status("Configuring the target: ${library_name} (type=${ARG_BUILDTYPE})...")
 
 

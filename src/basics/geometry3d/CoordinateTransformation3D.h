@@ -120,11 +120,11 @@ private:
    bool   active;
    bool   transformation;
 
-    friend class MPIIOCoProcessor;
-    friend class MPIIORestartCoProcessor;
-    friend class MPIIOMigrationCoProcessor;
-    friend class MPIIOMigrationBECoProcessor;
-    friend class CheckpointConverter;
+   friend class MPIIOCoProcessor;
+   friend class MPIIORestartCoProcessor;
+   friend class MPIIOMigrationCoProcessor;
+   friend class MPIIOMigrationBECoProcessor;
+   friend class CheckpointConverter;
 
 
 };
