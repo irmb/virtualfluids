@@ -56,7 +56,7 @@ IF(${USE_DEM_COUPLING})
    INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/../DemCoupling/DemCoupling.cmake)
 ENDIF()
 
-vf_add_library(BUILDTYPE static DEPENDS basics MuParser ${MPI_LIBRARY} ${CAB_ADDITIONAL_LINK_LIBRARIES})
+vf_add_library(BUILDTYPE static DEPENDS basics muparser ${MPI_LIBRARY} ${CAB_ADDITIONAL_LINK_LIBRARIES})
 
 vf_get_library_name(library_name)
 
@@ -72,7 +72,6 @@ target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Co
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Utilities)
 
 
-target_include_directories(${library_name} PUBLIC ${VF_THIRD_DIR})
 target_include_directories(${library_name} PUBLIC ${METIS_INCLUDEDIR})
 
 

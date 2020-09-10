@@ -2,7 +2,7 @@
 #define MATHUTIL_H
 
 #include <math.h>
-#include "MuParser/include/muParser.h"
+#include "muParser.h"
 
 namespace Utilities
 {

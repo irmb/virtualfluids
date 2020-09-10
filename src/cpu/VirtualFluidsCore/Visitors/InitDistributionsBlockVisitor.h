@@ -6,7 +6,7 @@
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
 
-#include <MuParser/include/muParser.h>
+#include <muParser.h>
 
 /*================================================================================*/
 /*  D3Q27ETInitDistributionsBlockVisitor                                             */

@@ -9,7 +9,7 @@
 
 #include <basics/utilities/UbInfinity.h>
 
-#include <MuParser/include/muParser.h>
+#include <muParser.h>
 
 
 class BCFunction

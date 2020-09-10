@@ -5,7 +5,7 @@
 #include "LBMSystem.h"
 #include "ILBMKernel.h"
 #include <array>
-#include <MuParser/include/muParser.h>
+#include <muParser.h>
 
 class BCProcessor;
 class DataSet3D;

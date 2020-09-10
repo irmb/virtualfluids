@@ -7,7 +7,7 @@
 #include "IntegrateValuesHelper.h"
 #include "LBMUnitConverter.h"
 
-#include "MuParser/include/muParser.h"
+#include "muParser.h"
 
 
 class UbScheduler;

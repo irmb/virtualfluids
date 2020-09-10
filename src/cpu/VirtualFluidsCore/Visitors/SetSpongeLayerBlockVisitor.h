@@ -3,7 +3,7 @@
 
 #include <PointerDefinitions.h>
 
-#include <MuParser/include/muParser.h>
+#include <muParser.h>
 
 #include "Block3DVisitor.h"
 
