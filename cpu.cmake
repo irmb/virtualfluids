@@ -24,20 +24,15 @@ PROJECT(VirtualFluids)
 #SET(CMAKE_BUILD_TYPE DEBUG)
 #ENDIF()
 
-SET(USE_ZOLTAN OFF CACHE BOOL "include Zoltan library support")
 SET(USE_METIS ON CACHE BOOL "include METIS library support")
 SET(USE_MPI ON CACHE BOOL "include MPI library support")
 SET(USE_VTK OFF CACHE BOOL "include VTK library support")
 SET(USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
 SET(USE_BOOST OFF CACHE BOOL "include Boost support")
 #SET(USE_PYTHON OFF CACHE BOOL "include Python scripting support")
-#SET(USE_FETOL OFF CACHE BOOL "include FETOL library support")
-SET(USE_INTEL OFF CACHE BOOL "include Intel compiler support")
+
 SET(USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
 SET(USE_DEM_COUPLING OFF CACHE BOOL "PE plugin")
-
-#CAB
-include("CMake/CMakeCABMacros.cmake") #TODO: Currently we have to include the CABMacros also here, so that the USE_* are defined in the config files for the cpu version
 
 #MPI
 IF((NOT ${CMAKE_CXX_COMPILER} MATCHES mpicxx) AND (NOT ${CMAKE_CXX_COMPILER} MATCHES mpiicpc))# OR NOT ${CMAKE_CXX_COMPILER} MATCHES cc OR NOT ${CMAKE_CXX_COMPILER} MATCHES mpiCC)
@@ -64,14 +59,6 @@ IF(${USE_BOOST})
     FIND_PACKAGE(Boost ${BOOST_VERSION})
 ENDIF()
 
-##################################################################################
-#  Java
-##############################################################################
-### FindJNI.cmake
-# IF(${USE_FETOL})
-# find_package(JNI REQUIRED)
-# ENDIF()
-
 #VTK
 IF(${USE_VTK})
     #find_package(VTK 6.1 NO_MODULE)
@@ -93,9 +80,6 @@ LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DNOMINMAX)
 #LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -noshlib)
 #LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DSINGLEPRECISION)
 
-IF(${USE_ZOLTAN})
-    LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DVF_ZOLTAN)
-ENDIF()
 IF(${USE_METIS})
     LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DVF_METIS)
 ENDIF()
@@ -117,15 +101,14 @@ IF(${USE_HLRN_LUSTRE})
     LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DHLRN_LUSTRE)
 ENDIF()
 
-IF(${USE_INTEL})
+IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
     SET(CAB_ADDITIONAL_LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS} -parallel)
 ENDIF()
 
-message ("GCC IS : " ${USE_GCC})
-
-IF(${USE_GCC})
+IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     SET(CAB_ADDITIONAL_LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS} -lgomp)
 ENDIF()
+
 
 
 # IF(${USE_PYTHON})
@@ -136,7 +119,7 @@ ENDIF()
 # add_subdirectory(python)
 # ENDIF()
 
-# IF(${USE_INTEL})
+# IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
 # LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DMPICH_IGNORE_CXX_SEEK)
 # LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DMPICH_SKIP_MPICXX)
 # ENDIF()

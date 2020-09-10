@@ -8,12 +8,7 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS compiler_type build_type)
    IF(NOT CMAKE_CXX_COMPILER)
       MESSAGE(FATAL_ERROR "before SET_CAB_COMPILER-Macro PROJECT-Macro has to be called")
    ENDIF()
-  
-  OPTION(USE_OPENMP "activate open" ON)
-  
-  IF(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-    SET(USE_OPENMP OFF)
-  ENDIF()
+
   
   ###############################################################################################################
   ## Flags ruecksetzen
@@ -39,6 +34,7 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS compiler_type build_type)
    ## standard compiler flags
    ###############################################################################################################
    ELSEIF( EXISTS "${VF_CMAKE_DIR}/compilerflags/${CAB_COMPILER}.cmake" )
+       message("Load compiler file: " ${CAB_COMPILER}.cmake)
 	   INCLUDE( ${VF_CMAKE_DIR}/compilerflags/${CAB_COMPILER}.cmake)
 	###############################################################################################################
 	## unknown compiler
@@ -74,11 +70,11 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS compiler_type build_type)
    ###############################################################################################################
 	# set flags
    ###############################################################################################################
-IF(USE_64BIT_COMPILER_OPTIONS)
-      SET_COMPILER_SPECIFIC_FLAGS_INTERN( ${build_type} 1)
-else()
-      SET_COMPILER_SPECIFIC_FLAGS_INTERN( ${build_type} 0)
-endif()
+    IF(USE_64BIT_COMPILER_OPTIONS)
+          SET_COMPILER_SPECIFIC_FLAGS_INTERN( ${build_type} 1)
+    else()
+          SET_COMPILER_SPECIFIC_FLAGS_INTERN( ${build_type} 0)
+    endif()
   
 ENDMACRO(SET_COMPILER_SPECIFIC_FLAGS compiler_type build_type)
 

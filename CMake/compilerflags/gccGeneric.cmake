@@ -24,14 +24,6 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS_INTERN build_type use64BitOptions)
    ENDIF()
 
    #############################################################################################################
-   # OpenMP support
-   #############################################################################################################
-   IF(USE_OPENMP)
-     LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-fopenmp")
-     LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-fopenmp")
-   ENDIF()
-
-   #############################################################################################################
    # mt support
    #############################################################################################################
    LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-pthread")

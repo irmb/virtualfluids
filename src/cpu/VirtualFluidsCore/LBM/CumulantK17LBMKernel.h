@@ -55,6 +55,7 @@ public:
    virtual ~CumulantK17LBMKernel(void);
    virtual void calculate(int step);
    virtual SPtr<LBMKernel> clone();
+   virtual double getCalculationTime() { return .0; }
 
 protected:
    inline void forwardInverseChimeraWithK(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K);

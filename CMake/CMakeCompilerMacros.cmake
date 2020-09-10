@@ -1,7 +1,3 @@
-###############################################################
-# Aktivieren von ELSIF in CMake
-###############################################################
-SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
 ###############################################################
 # IS_64BIT_SYSTEM (check put if OS is 64 bit compatible)
@@ -92,7 +88,6 @@ MACRO(SET_CAB_COMPILER)
 
             IF(CMAKE_COMPILER_IS_GNUCXX)
                SET(CAB_COMPILER_NAME "gcc")
-               SET(USE_GCC ON)
             ENDIF()
             
             SET(CAB_COMPILER "${CAB_COMPILER_NAME}${CAB_COMPILER_VERSION_MAJOR}${CAB_COMPILER_VERSION_MINOR}")
