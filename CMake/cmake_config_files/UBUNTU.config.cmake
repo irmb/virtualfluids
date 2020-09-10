@@ -27,20 +27,10 @@ IF(BOOST_VERSION MATCHES "1.47" )
   SET(BOOST_ROOT "/host/tools/boost/boost_1_47_0")
   SET(BOOST_LIBRARYDIR "/host/tools/boost/boost_1_47_0/stageLinux/lib")  
 ENDIF()
-#################################################################################
-#  ZOLTAN  
-#################################################################################
-IF(${USE_ZOLTAN})
-  SET(ZOLTAN_INCLUDEDIR "/home/kostja/tools/Zoltan_v3.5/bin/include")
-  SET(ZOLTAN_DEBUG_LIBRARY "/home/kostja/tools/Zoltan_v3.5/bin/lib/libzoltan.a") 
-  SET(ZOLTAN_RELEASE_LIBRARY "/home/kostja/tools/Zoltan_v3.5/bin/lib/libzoltan.a") 
-ENDIF()
+
 #################################################################################
 #  METIS  
 #################################################################################
-IF(${USE_METIS})
-  SET(METIS_INCLUDEDIR "/home/kostja/tools/metis-5.0.1/include")
-  SET(METIS_DEBUG_LIBRARY "/home/kostja/tools/metis-5.0.1/build/Linux-x86_64/libmetis/libmetis.a") 
-  SET(METIS_RELEASE_LIBRARY "/home/kostja/tools/metis-5.0.1/build/Linux-x86_64/libmetis/libmetis.a") 
-ENDIF()
-set(SOURCE_ROOT "/host/Projects/pFluid/source")  
+SET(METIS_INCLUDEDIR "/home/kostja/tools/metis-5.0.1/include")
+SET(METIS_DEBUG_LIBRARY "/home/kostja/tools/metis-5.0.1/build/Linux-x86_64/libmetis/libmetis.a")
+SET(METIS_RELEASE_LIBRARY "/home/kostja/tools/metis-5.0.1/build/Linux-x86_64/libmetis/libmetis.a")

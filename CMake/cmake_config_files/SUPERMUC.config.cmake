@@ -16,8 +16,6 @@ SET(BOOST_LIBRARYDIR "/lrz/sys/libraries/boost/1.61_icc/lib")
 #################################################################################
 #  METIS  
 #################################################################################
-IF(${USE_METIS})
-  SET(METIS_INCLUDEDIR "/lrz/sys/libraries/metis/5.1.0/i4r4/include")
-  SET(METIS_DEBUG_LIBRARY "/lrz/sys/libraries/metis/5.1.0/i4r4/lib/libmetis.a") 
-  SET(METIS_RELEASE_LIBRARY "/lrz/sys/libraries/metis/5.1.0/i4r4/lib/libmetis.a") 
-ENDIF()
+SET(METIS_INCLUDEDIR "/lrz/sys/libraries/metis/5.1.0/i4r4/include")
+SET(METIS_DEBUG_LIBRARY "/lrz/sys/libraries/metis/5.1.0/i4r4/lib/libmetis.a")
+SET(METIS_RELEASE_LIBRARY "/lrz/sys/libraries/metis/5.1.0/i4r4/lib/libmetis.a")

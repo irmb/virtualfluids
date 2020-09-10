@@ -34,7 +34,7 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS compiler_type build_type)
    ## standard compiler flags
    ###############################################################################################################
    ELSEIF( EXISTS "${VF_CMAKE_DIR}/compilerflags/${CAB_COMPILER}.cmake" )
-       message("Load compiler file: " ${CAB_COMPILER}.cmake)
+       status("Load compiler file: ${CAB_COMPILER}.cmake")
 	   INCLUDE( ${VF_CMAKE_DIR}/compilerflags/${CAB_COMPILER}.cmake)
 	###############################################################################################################
 	## unknown compiler

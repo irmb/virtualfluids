@@ -51,9 +51,9 @@ endif()
 #  MACROS
 #################################################################################
 include(CMakePrintHelpers)
+include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
 include(${VF_CMAKE_DIR}/CMakeCABMacros.cmake)
 include(${VF_CMAKE_DIR}/FileUtilities.cmake)
-include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
 include(${VF_CMAKE_DIR}/3rd.cmake)
 
 include(${VF_CMAKE_DIR}/CMakeMacros_old/general/FindCompiler.cmake)
