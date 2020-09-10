@@ -1,0 +1,22 @@
+image: ubuntu
+
+stages:
+  - build
+
+build:
+  stage: build
+
+  before_script:
+    - export CAB_MACHINE=ELLADAN
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - apt-get install build-essential -y
+    - apt-get install cmake -y
+    - apt-get install ninja-build -y
+    - apt-get install openmpi-bin -y
+    - apt-get install libomp-dev -y
+    - apt-get install nvidia-cuda-dev  nvidia-cuda-toolkit -y
+
+  script:
+    - cmake -S . -B build -DBUILD_VF_CPU:BOOL=ON
+    - cmake --build build --target VirtualFluidsCore
