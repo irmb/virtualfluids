@@ -9,7 +9,7 @@
 #include <array>
 
 #include "VirtualFluids.h"
-#include <MuParser/include/muParser.h>
+#include <muParser.h>
 #include "ForceCalculator.h"
 
 

@@ -14,20 +14,19 @@
 
 #include <basics/PointerDefinitions.h>
 
-#include <MuParser/include/muParser.h>
-#include <MuParser/include/muParserBase.h>
-#include <MuParser/include/muParserBytecode.h>
-#include <MuParser/include/muParserCallback.h>
-#include <MuParser/include/muParserDef.h>
-#include <MuParser/include/muParserDLL.h>
-#include <MuParser/include/muParserError.h>
-#include <MuParser/include/muParserFixes.h>
-#include <MuParser/include/muParserInt.h>
-#include <MuParser/include/muParserStack.h>
-#include <MuParser/include/muParserTemplateMagic.h>
-#include <MuParser/include/muParserTest.h>
-#include <MuParser/include/muParserToken.h>
-#include <MuParser/include/muParserTokenReader.h>
+#include <muParser.h>
+#include <muParserBase.h>
+#include <muParserBytecode.h>
+#include <muParserCallback.h>
+#include <muParserDef.h>
+#include <muParserDLL.h>
+#include <muParserError.h>
+#include <muParserFixes.h>
+#include <muParserInt.h>
+#include <muParserTemplateMagic.h>
+#include <muParserTest.h>
+#include <muParserToken.h>
+#include <muParserTokenReader.h>
 #include <basics/container/CbArray2D.h>
 #include <basics/container/CbArray3D.h>
 #include <basics/container/CbArray4D.h>
