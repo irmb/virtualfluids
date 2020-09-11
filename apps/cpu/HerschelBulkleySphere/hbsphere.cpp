@@ -61,21 +61,21 @@ void bflow(string configname)
 
       //bounding box
 
-      //double g_minX1 = 0;
-      //double g_minX2 = 0;
-      //double g_minX3 = 0;
+      double g_minX1 = 0;
+      double g_minX2 = 0;
+      double g_minX3 = 0;
 
-      //double g_maxX1 = boundingBox[0];
-      //double g_maxX2 = boundingBox[1];
-      //double g_maxX3 = boundingBox[2];
+      double g_maxX1 = boundingBox[0];
+      double g_maxX2 = boundingBox[1];
+      double g_maxX3 = boundingBox[2];
 
-      double g_minX1 = -boundingBox[0]/2.0;
-      double g_minX2 = -boundingBox[1] / 2.0;
-      double g_minX3 = -boundingBox[2]/2.0;
+      //double g_minX1 = -boundingBox[0]/2.0;
+      //double g_minX2 = -boundingBox[1] / 2.0;
+      //double g_minX3 = -boundingBox[2]/2.0;
 
-      double g_maxX1 = boundingBox[0]/2.0;
-      double g_maxX2 = boundingBox[1]/2.0;
-      double g_maxX3 = boundingBox[2]/2.0;
+      //double g_maxX1 = boundingBox[0]/2.0;
+      //double g_maxX2 = boundingBox[1]/2.0;
+      //double g_maxX3 = boundingBox[2]/2.0;
 
       double blockLength = 3.0 * deltax;
 
@@ -84,13 +84,20 @@ void bflow(string configname)
       double Gamma = U / d;
 
       double k = (U * d) / (Re * std::pow(Gamma, n - 1));
-
       double tau0 = Bn * k * std::pow(Gamma, n);
+
+      //double k = 0.05; // (U * d) / (Re * std::pow(Gamma, n - 1));
+      //double tau0 = 3e-6; //Bn * k * std::pow(Gamma, n);
+
+      //double forcing = 8e-7;
+
+      double omegaMin = 1.0e-8;
 
       SPtr<Thixotropy> thix = Thixotropy::getInstance();
       thix->setPowerIndex(n);
       thix->setViscosityParameter(k);
       thix->setYieldStress(tau0);
+      thix->setOmegaMin(omegaMin);
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
       noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new HerschelBulkleyModelNoSlipBCAlgorithm()));
@@ -117,6 +124,8 @@ void bflow(string configname)
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
       kernel->setBCProcessor(bcProc);
+      //kernel->setForcingX1(forcing);
+      //kernel->setWithForcing(true);
 
       SPtr<Grid3D> grid(new Grid3D(comm));
       grid->setPeriodicX1(false);
@@ -129,7 +138,7 @@ void bflow(string configname)
       if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), outputPath + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
       //sphere
-      SPtr<GbObject3D> sphere(new GbSphere3D(0, 0, 0, radius));
+      SPtr<GbObject3D> sphere(new GbSphere3D(75, 25, 25, radius));
       GbSystem3D::writeGeoObject(sphere.get(), outputPath + "/geo/sphere", WbWriterVtkXmlBinary::getInstance());
       SPtr<D3Q27Interactor> sphereInt(new D3Q27Interactor(sphere, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
@@ -147,13 +156,13 @@ void bflow(string configname)
          //UBLOG(logINFO, "forcing = " << forcing);
          UBLOG(logINFO, "rho = " << rhoLB);
          UBLOG(logINFO, "U = " << U);
-         UBLOG(logINFO, "Re = " << Re);
-         UBLOG(logINFO, "Bn = " << Bn);
+         UBLOG(logINFO, "Re = " << (U * d) / (k * std::pow(Gamma, n - 1)));
+         UBLOG(logINFO, "Bn = " << tau0 / k * std::pow(Gamma, n));
          UBLOG(logINFO, "k = " << k);
          UBLOG(logINFO, "n = " << n);
          UBLOG(logINFO, "tau0 = " << tau0);
          UBLOG(logINFO, "deltax = " << deltax);
-         //UBLOG(logINFO, "number of levels = " << refineLevel + 1);
+         UBLOG(logINFO, "number of levels = " << refineLevel + 1);
          UBLOG(logINFO, "number of threads = " << numOfThreads);
          UBLOG(logINFO, "number of processes = " << comm->getNumberOfProcesses());
          UBLOG(logINFO, "Preprozess - start");
@@ -219,7 +228,7 @@ void bflow(string configname)
          intHelper.addInteractor(wallYmaxInt);
          intHelper.addInteractor(wallXminInt);
          intHelper.addInteractor(wallXmaxInt);
-         //intHelper.addInteractor(sphereInt);
+         intHelper.addInteractor(sphereInt);
          intHelper.selectBlocks();
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
          //////////////////////////////////////
@@ -281,6 +290,7 @@ void bflow(string configname)
 
       //set connectors
       InterpolationProcessorPtr iProcessor(new ThixotropyInterpolationProcessor());
+      static_pointer_cast<ThixotropyInterpolationProcessor>(iProcessor)->setOmegaMin(thix->getOmegaMin());
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, k, iProcessor);
       grid->accept(setConnsVisitor);
 
@@ -297,10 +307,10 @@ void bflow(string configname)
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       //SPtr<UbScheduler> visSch(new UbScheduler(10,1));
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlASCII::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
-      writeMQCoProcessor->process(0);
+      //writeMQCoProcessor->process(0);
 
-      double area = 4*UbMath::PI*radius*radius;
-      SPtr<UbScheduler> forceSch(new UbScheduler(1000));
+      double area = UbMath::PI*radius*radius;
+      SPtr<UbScheduler> forceSch(new UbScheduler(100));
       SPtr<CalculateForcesCoProcessor> fp = make_shared<CalculateForcesCoProcessor>(grid, forceSch, outputPath + "/forces/forces.txt", comm, velocity, area);
       fp->addInteractor(sphereInt);
 

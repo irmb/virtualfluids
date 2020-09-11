@@ -18,7 +18,7 @@ void Thixotropy::setYieldStress(LBMReal yieldStress)
 {
 	tau0 = yieldStress;
 }
-LBMReal Thixotropy::getYieldStress()
+LBMReal Thixotropy::getYieldStress() const
 {
 	return tau0;
 }
@@ -26,7 +26,7 @@ void Thixotropy::setViscosityParameter(LBMReal kParameter)
 {
 	k = kParameter;
 }
-LBMReal Thixotropy::getViscosityParameter()
+LBMReal Thixotropy::getViscosityParameter() const
 {
 	return k;
 }
@@ -34,7 +34,7 @@ void Thixotropy::setPowerIndex(LBMReal index)
 {
 	n = index;
 }
-LBMReal Thixotropy::getPowerIndex()
+LBMReal Thixotropy::getPowerIndex() const
 {
 	return n;
 }
@@ -43,7 +43,7 @@ void Thixotropy::setOmegaMin(LBMReal omega)
 {
 	omegaMin = omega;
 }
-LBMReal Thixotropy::getOmegaMin()
+LBMReal Thixotropy::getOmegaMin() const
 {
 	return omegaMin;
 }

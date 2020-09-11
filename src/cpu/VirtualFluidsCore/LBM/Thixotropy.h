@@ -12,16 +12,16 @@ public:
 	Thixotropy& operator=(Thixotropy const&) = delete;
 	static SPtr<Thixotropy> getInstance();
 	void setYieldStress(LBMReal tau0);
-	LBMReal getYieldStress();
+	LBMReal getYieldStress() const;
 	
 	void setViscosityParameter(LBMReal k);
-	LBMReal getViscosityParameter();
+	LBMReal getViscosityParameter() const;
 
 	void setPowerIndex(LBMReal n);
-	LBMReal getPowerIndex();
+	LBMReal getPowerIndex() const;
 
 	void setOmegaMin(LBMReal omegaMin);
-	LBMReal getOmegaMin();
+	LBMReal getOmegaMin() const;
 
 	static LBMReal getBinghamCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
 	static LBMReal getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
@@ -53,7 +53,6 @@ inline LBMReal Thixotropy::getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMRea
 	LBMReal gammaDot = shearRate;
 	LBMReal omega = omegaInf;
 	LBMReal epsilon = 1;
-	LBMReal omegaMin = 0.7;
 
 	while (epsilon > 1e-10)
 	{
