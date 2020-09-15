@@ -1,37 +1,4 @@
 
-###############################################################################################################
-## Flags ruecksetzen
-###############################################################################################################
-SET(CAB_ADDTIONAL_COMPILER_FLAGS)
-
-SET(CAB_ADDITIONAL_LINK_FLAGS)
-SET(CAB_ADDITIONAL_LINK_FLAGS_DEBUG)
-SET(CAB_ADDITIONAL_LINK_FLAGS_RELEASE)
-
-SET(CAB_ADDITIONAL_LINK_LIBRARIES)
-
-
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DSOURCE_ROOT=${VF_ROOT_DIR} )
-
-###############################################################
-# hostename ermitteln -> CAB_MACHINE
-###############################################################
-IF(NOT CAB_MACHINE)
-   SET(CAB_MACHINE $ENV{CAB_MACHINE})
-
-   IF( CAB_MACHINE )
-     STRING(TOUPPER  "${CAB_MACHINE}" CAB_MACHINE)
-   ELSE()
-     EXECUTE_PROCESS( COMMAND hostname OUTPUT_VARIABLE CAB_MACHINE)
-     STRING(REGEX REPLACE "[ ]*([A-Za-z0-9]+).*[\\\\n]*" "\\1" CAB_MACHINE "${CAB_MACHINE}" )
-     STRING(TOUPPER  "${CAB_MACHINE}" CAB_MACHINE)
-   ENDIF()
-ENDIF()
-
-
-INCLUDE(${VF_CMAKE_DIR}/CMakeSetCompilerFlags.cmake)
-INCLUDE(${VF_CMAKE_DIR}/CMakeCompilerMacros.cmake)
-
 ################################################################
 ###               ADD_TARGET_PROPERTIES                      ###
 ################################################################
@@ -65,11 +32,62 @@ MACRO(ADD_TARGET_PROPERTIES target property)
 ENDMACRO(ADD_TARGET_PROPERTIES target property)
 
 
-#################################################################
-# ALLGEMEINGUELTIGER STUFF
-# CAB_COMPILER setzen und machinespecific configfile laden
+
+################################################################
+###               CHECK_FOR_VARIABLE                         ###
+###  checks for a variable (also env-variables)
+###  if not found -> error-message!!!
+###  always: cache-entry update
+################################################################
+MACRO(CHECK_FOR_VARIABLE var)
+    #check ob evtl enviromentvariable gesetzt
+    IF(NOT ${var})  #true if ${var} NOT: empty, 0, N, NO, OFF, FALSE, NOTFOUND, or <variable>-NOTFOUND
+        SET(${var} $ENV{${var}})
+    ENDIF()
+
+    IF(NOT DEFINED ${var})
+        SET(${var} "${var}-NOTFOUND" CACHE STRING "${ARGN}" FORCE)
+    ENDIF(NOT DEFINED ${var})
+
+    IF(NOT ${var})
+        MESSAGE(FATAL_ERROR "CHECK_FOR_VARIABLE - error - set ${var}")
+    ENDIF()
+
+    SET(${var} ${${var}} CACHE STRING "${ARGN}" FORCE)
+ENDMACRO(CHECK_FOR_VARIABLE var)
+
+
+
+INCLUDE(${VF_CMAKE_DIR}/CMakeSetCompilerFlags.cmake)
+
+###############################################################################################################
+# Reset the compiler and linker flags
+###############################################################################################################
+SET(CAB_ADDTIONAL_COMPILER_FLAGS)
+
+SET(CAB_ADDITIONAL_LINK_FLAGS)
+SET(CAB_ADDITIONAL_LINK_FLAGS_DEBUG)
+SET(CAB_ADDITIONAL_LINK_FLAGS_RELEASE)
+
+SET(CAB_ADDITIONAL_LINK_LIBRARIES)
+
+LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DSOURCE_ROOT=${VF_ROOT_DIR} )
+
 ###############################################################
-SET_CAB_COMPILER()
+# set hostname -> CAB_MACHINE and load an optional config file
+###############################################################
+IF(NOT CAB_MACHINE)
+    SET(CAB_MACHINE $ENV{CAB_MACHINE})
+
+    IF( CAB_MACHINE )
+        STRING(TOUPPER  "${CAB_MACHINE}" CAB_MACHINE)
+    ELSE()
+        EXECUTE_PROCESS( COMMAND hostname OUTPUT_VARIABLE CAB_MACHINE)
+        STRING(REGEX REPLACE "[ ]*([A-Za-z0-9]+).*[\\\\n]*" "\\1" CAB_MACHINE "${CAB_MACHINE}" )
+        STRING(TOUPPER  "${CAB_MACHINE}" CAB_MACHINE)
+    ENDIF()
+ENDIF()
+
 CHECK_FOR_VARIABLE(CAB_MACHINE "machine name, e.g. ALTIX, ARWEN")
 LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DCAB_MACHINE_${CAB_MACHINE})
 LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DCAB_MACHINE=${CAB_MACHINE})

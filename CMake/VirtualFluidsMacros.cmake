@@ -131,7 +131,7 @@ function(vf_add_library)
     #################################################################
     ###   COMPILER Flags                                          ###
     #################################################################
-    ADD_COMPILER_FLAGS_TO_PROJECT(${CAB_COMPILER} ${library_name} "CXX" ${ARG_BUILDTYPE})
+    ADD_COMPILER_FLAGS_TO_PROJECT(${library_name})
     status("compiler flags for compiler ${CAB_COMPILER} on machine ${CAB_MACHINE} for project ${project_name} (${ARG_BUILDTYPE}) have been configured")
     status("compiler flags: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS}")
     status("additional compiler flags: ${CAB_ADDTIONAL_COMPILER_FLAGS}")

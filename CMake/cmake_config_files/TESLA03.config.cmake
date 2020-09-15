@@ -1,3 +1,9 @@
+#################################################################################
+# VirtualFluids MACHINE FILE
+# Responsible: Martin Schoenherr
+# OS:          Windows 10
+#################################################################################
+
 #Don't change:
 SET(METIS_ROOT ${CMAKE_SOURCE_DIR}/3rdParty/metis/metis-5.1.0 CACHE PATH "METIS ROOT")
 SET(GMOCK_ROOT ${CMAKE_SOURCE_DIR}/3rdParty/googletest CACHE PATH "GMOCK ROOT")

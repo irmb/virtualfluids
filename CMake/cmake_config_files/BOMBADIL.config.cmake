@@ -1,3 +1,9 @@
+#################################################################################
+# VirtualFluids MACHINE FILE
+# Responsible: Konstantin Kutscher
+# OS:          Windows 10
+#################################################################################
+
 #LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__unix__)
 #LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__UNIX__)
 #LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__APPLE__)

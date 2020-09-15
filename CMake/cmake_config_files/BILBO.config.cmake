@@ -2,7 +2,6 @@
 # VirtualFluids MACHINE FILE
 # Responsible: Soeren Peters
 # OS:          MacOS X
-# Room:        513
 #################################################################################
 
 LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__unix__)

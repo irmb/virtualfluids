@@ -2,7 +2,6 @@
 # VirtualFluids MACHINE FILE
 # Responsible: Soeren Peters
 # OS:          Ubuntu 20.04
-# Room:        VR-Lab
 #################################################################################
 
 LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__unix__)
