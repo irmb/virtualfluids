@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "VirtualFluidsDefinitions.h"
+
 
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"

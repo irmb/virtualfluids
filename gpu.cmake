@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 
 if(UNIX)
     set(CMAKE_CXX_STANDARD 14)
@@ -18,13 +17,6 @@ endif()
 
 project(VirtualFluidsGPU)
 
-IF(MSVC)
-    ADD_DEFINITIONS ( "-DNOMINMAX" )                # Disable Min/Max-Macros
-    ADD_DEFINITIONS ( "-D_CRT_SECURE_NO_WARNINGS" ) # disable warnings promoting Microsoft's security enhanced CRT
-    ADD_DEFINITIONS ( "-D_SCL_SECURE_NO_WARNINGS" ) # disable warnings triggered by Microsoft's checked iterators
-    SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -MP" ) # enable multi-threaded compiling
-    SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /bigobj" ) # enable big object files (fatal error C1128)
-ENDIF(MSVC)
 
 #############################################################
 ###                         OPTIONS                       ###
@@ -38,7 +30,7 @@ option(VF.BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
 option(VF.BUILD_DOUBLE_ACCURACY "Use double accuracy"         OFF )
 
 IF( VF.BUILD_DOUBLE_ACCURACY )
-    SET( VF_DOUBLE_ACCURACY 1 )
+    list(APPEND VF_COMPILER_DEFINITION VF_DOUBLE_ACCURACY)
 ENDIF()
 
 #############################################################

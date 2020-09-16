@@ -43,6 +43,8 @@ IF(APPLE)
     list(APPEND VF_COMPILER_DEFINITION __APPLE__)
 endif()
 
+list(APPEND VF_COMPILER_DEFINITION ${CMAKE_CXX_COMPILER_ID})
+
 #################################################################
 ### load compiler and machine file                          ###
 #################################################################

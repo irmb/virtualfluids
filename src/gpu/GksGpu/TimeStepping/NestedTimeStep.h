@@ -1,7 +1,7 @@
 #ifndef  NestedTimeStep_H
 #define  NestedTimeStep_H
 
-#include "VirtualFluidsDefinitions.h"
+
 #include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"

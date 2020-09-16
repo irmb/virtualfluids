@@ -53,9 +53,6 @@ endif()
 include(CMakePrintHelpers)
 include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
 
-include(${VF_CMAKE_DIR}/CMakeMacros_old/general/FindCompiler.cmake)
-configure_file(src/basics/VirtualFluidsDefinitions.in.h ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h)
-
 #################################################################################
 #  COMMON LIBRARIES
 #################################################################################

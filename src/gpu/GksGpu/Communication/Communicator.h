@@ -6,7 +6,7 @@
 #include <mpi.h>
 //#include <mutex>
 
-#include "VirtualFluidsDefinitions.h"
+
 #include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"

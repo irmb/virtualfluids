@@ -7,7 +7,7 @@
 #define DIMENSION 3
 #define MASTERRANK 0
 
-#include "VirtualFluidsDefinitions.h"
+
 #include "GridGenerator_export.h"
 
 #include "PointerDefinitions.h"

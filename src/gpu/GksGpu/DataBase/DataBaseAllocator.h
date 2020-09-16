@@ -7,7 +7,7 @@
 #include "Core/DataTypes.h"
 #include "PointerDefinitions.h"
 
-#include "VirtualFluidsDefinitions.h"
+
 #include "GksGpu_export.h"
 
 class  GksMeshAdapter;

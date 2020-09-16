@@ -1,7 +1,7 @@
 #ifndef  FluxComputation_H
 #define  FluxComputation_H
 
-#include "VirtualFluidsDefinitions.h"
+
 #include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"

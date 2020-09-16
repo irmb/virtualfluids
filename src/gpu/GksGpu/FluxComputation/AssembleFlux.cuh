@@ -1,7 +1,7 @@
 #ifndef AssembleFlux_CUH
 #define AssembleFlux_CUH
 
-#include "VirtualFluidsDefinitions.h"
+
 #include "GksGpu_export.h"
 
 #include "Core/DataTypes.h"
