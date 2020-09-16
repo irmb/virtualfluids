@@ -4,10 +4,6 @@
 # OS:          MacOS X
 #################################################################################
 
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__unix__)
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__UNIX__)
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__APPLE__)
-
 #################################################################################
 #  METIS
 #################################################################################

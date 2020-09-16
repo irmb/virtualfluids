@@ -4,9 +4,6 @@
 # OS:          Ubuntu 20.04
 #################################################################################
 
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__unix__)
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__UNIX__)
-
 set(NVCUDASAMPLES_ROOT "~/cuda-samples/Common")
 #################################################################################
 #  METIS

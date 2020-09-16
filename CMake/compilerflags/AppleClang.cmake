@@ -9,20 +9,20 @@
 #############################################################################################################
 LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-O3;-fomit-frame-pointer;-finline-functions;-fPIC;-Wbackslash-newline-escape")
 
-LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-O3;-fomit-frame-pointer;-finline-functions;-fPIC")
-
-
 #############################################################################################################
 # mt support
 #############################################################################################################
 LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-pthread")
-LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-pthread")
 
 #############################################################################################################
 # c++ 11 support
 #############################################################################################################
 LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-std=c++11")
-LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-std=c++11")
+
+
+# test
+#LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_RELEASE "-Wall")
+#LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_DEBUG "-Werror")
 
 #############################################################################################################
 # disable warning
@@ -30,8 +30,6 @@ LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-std=c++11")
 LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-deprecated") #deprecated header warning
 #LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wbackslash-newline-escape") #backslash and newline separated by space
 LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wcomment") #'/*' within block comment
-
-LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-Wbackslash-newline-escape") #backslash and newline separated by space
 
 #############################################################################################################
 # c++ 17 support

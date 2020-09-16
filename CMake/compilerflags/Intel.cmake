@@ -14,8 +14,7 @@
 #LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-xHOST -O3 -ip -ipo -fno-alias -mcmodel=medium -qopt-streaming-stores=always")
 
 LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-wd1478") #auto_ptr warning from mu::Parser
-#LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-xHOST -O3 -ip -fno-alias -mcmodel=medium -qopt-streaming-stores=always -xCORE-AVX512 -qopt-zmm-usage=high")
-LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-xHOST -O3 -ip -fno-alias -mcmodel=medium -qopt-streaming-stores=always -xCORE-AVX512 -qopt-zmm-usage=high")
+LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-xHOST;-O3;-ip;-fno-alias;-mcmodel=medium;-qopt-streaming-stores=always;-xCORE-AVX512;-qopt-zmm-usage=high")
 
 #Debug
 #LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-g -traceback")
@@ -31,10 +30,8 @@ ENDIF()
 ## mt support
 ###############################################################################################################
 #LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-pthread")
-#LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-pthread")
 
 #############################################################################################################
 # c++ 11 support
 #############################################################################################################
 LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-std=c++11")
-LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-std=c++11")

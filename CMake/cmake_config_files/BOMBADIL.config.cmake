@@ -4,14 +4,6 @@
 # OS:          Windows 10
 #################################################################################
 
-#LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__unix__)
-#LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__UNIX__)
-#LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__APPLE__)
-
-IF(NOT CMAKE_CXX_COMPILER)
-   MESSAGE(FATAL_ERROR "before cmake-config-file can be included -> project must be extecuted")
-ENDIF()
-  
 #################################################################################
 # MPI
 #################################################################################
@@ -33,14 +25,6 @@ SET(BOOST_LIBRARYDIR ${BOOST_ROOT}"/stageMSVC64/lib")
 #  VTK  
 #################################################################################
 set(VTK_DIR "d:/Tools/VTK/build/VTK-8.0.0")
-#################################################################################
-#  ZOLTAN  
-#################################################################################
-IF(${USE_ZOLTAN})
-  SET(ZOLTAN_INCLUDEDIR "d:/Tools/zoltan/include")
-  SET(ZOLTAN_DEBUG_LIBRARY "d:/Tools/zoltan/lib/Debug/zoltan.lib") 
-  SET(ZOLTAN_RELEASE_LIBRARY "d:/Tools/zoltan/lib/Release/zoltan.lib") 
-ENDIF()
 
 #################################################################################
 #  METIS  

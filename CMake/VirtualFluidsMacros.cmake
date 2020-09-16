@@ -12,6 +12,14 @@ function(status msg)
 endfunction()
 
 #################################################################################
+## include intern macros
+#################################################################################
+include(${VF_CMAKE_DIR}/CMakeCABMacros.cmake)
+include(${VF_CMAKE_DIR}/FileUtilities.cmake)
+include(${VF_CMAKE_DIR}/3rd.cmake)
+
+
+#################################################################################
 ## set global project file endings
 #################################################################################
 set (VIRTUAL_FLUIDS_GLOB_FILES
@@ -22,6 +30,7 @@ set (VIRTUAL_FLUIDS_GLOB_FILES
         *.cuh
         *.hpp
         CACHE INTERNAL "File endings to glob for source files" )
+
 
 
 #################################################################################
@@ -79,18 +88,6 @@ function(vf_add_library)
     includeProductionFiles (${library_name} "${sourceFiles}")
 
 
-
-    #################################################################
-    ###   OS DEFINES                                              ###
-    #################################################################
-    IF(WIN32)
-        LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__WIN__)
-    ELSEIF(APPLE)
-        LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__APPLE__)
-    ELSEIF(UNIX)
-        LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__unix__)
-    ENDIF()
-
     #################################################################
     ###   ADDITIONAL_MAKE_CLEAN_FILES                             ###
     #################################################################
@@ -133,36 +130,20 @@ function(vf_add_library)
     #################################################################
     ADD_COMPILER_FLAGS_TO_PROJECT(${library_name})
     status("compiler flags for compiler ${CAB_COMPILER} on machine ${CAB_MACHINE} for project ${project_name} (${ARG_BUILDTYPE}) have been configured")
-    status("compiler flags: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS}")
-    status("additional compiler flags: ${CAB_ADDTIONAL_COMPILER_FLAGS}")
+    status("compiler flags CXX: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS}")
+    status("additional compiler flags CXX debug: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_DEBUG}")
+    status("additional compiler flags CXX release: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_RELEASE}")
 
-    #MESSAGE (COMPILE FLAGS: ${CAB_ADDTIONAL_COMPILER_FLAGS})
-    IF(CAB_ADDTIONAL_COMPILER_FLAGS)
-        ADD_TARGET_PROPERTIES(${library_name} COMPILE_FLAGS ${CAB_ADDTIONAL_COMPILER_FLAGS})
-    ENDIF()
-    IF(CAB_ADDTIONAL_COMPILER_FLAGS_DEBUG)
-        MESSAGE(FATAL_ERROR "COMPILE_FLAGS_DEBUG_<CONFIG> not supported by cmake yet :-(")
-        ADD_TARGET_PROPERTIES(${library_name} COMPILE_FLAGS_DEBUG ${CAB_ADDTIONAL_COMPILER_FLAGS_DEBUG})
-    ENDIF()
-    IF(CAB_ADDTIONAL_COMPILER_FLAGS_RELEASE)
-        MESSAGE(FATAL_ERROR "COMPILE_FLAGS_<CONFIG> not supported by cmake yet :-(")
-        ADD_TARGET_PROPERTIES(${library_name} COMPILE_FLAGS_RELEASE ${CAB_ADDTIONAL_COMPILER_FLAGS_RELEASE})
-    ENDIF()
+    status("additional compiler definitions: ${VF_COMPILER_DEFINITION}")
+    status("additional linker flags: ${VF_LINK_OPTIONS}")
 
-    #################################################################
-    ###   ADDITIONAL LINK PROPERTIES                              ###
-    #################################################################
-    status("additional linker flags: ${CAB_ADDITIONAL_LINK_FLAGS}")
+    foreach(flag IN LISTS VF_COMPILER_DEFINITION)
+        target_compile_definitions(${library_name} PRIVATE ${flag})
+    endforeach()
 
-    IF(CAB_ADDITIONAL_LINK_FLAGS)
-        ADD_TARGET_PROPERTIES(${library_name} LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS})
-    ENDIF()
-    IF(CAB_ADDITIONAL_LINK_FLAGS_DEBUG)
-        ADD_TARGET_PROPERTIES(${library_name} LINK_FLAGS_DEBUG ${CAB_ADDITIONAL_LINK_FLAGS_DEBUG})
-    ENDIF()
-    IF(CAB_ADDITIONAL_LINK_FLAGS_RELEASE)
-        ADD_TARGET_PROPERTIES(${library_name} LINK_FLAGS_RELEASE ${CAB_ADDITIONAL_LINK_FLAGS_RELEASE})
-    ENDIF()
+    foreach(flag IN LISTS VF_LINK_OPTIONS) #TODO: check what happens when lib is static
+        target_link_options(${library_name} PRIVATE ${flag})
+    endforeach()
 
 
     if (NOT ${ARG_BUILDTYPE} MATCHES binary)

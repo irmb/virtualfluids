@@ -63,15 +63,26 @@ INCLUDE(${VF_CMAKE_DIR}/CMakeSetCompilerFlags.cmake)
 ###############################################################################################################
 # Reset the compiler and linker flags
 ###############################################################################################################
-SET(CAB_ADDTIONAL_COMPILER_FLAGS)
-
-SET(CAB_ADDITIONAL_LINK_FLAGS)
-SET(CAB_ADDITIONAL_LINK_FLAGS_DEBUG)
-SET(CAB_ADDITIONAL_LINK_FLAGS_RELEASE)
+SET(VF_COMPILER_DEFINITION)
+SET(VF_LINK_OPTIONS)
 
 SET(CAB_ADDITIONAL_LINK_LIBRARIES)
 
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DSOURCE_ROOT=${VF_ROOT_DIR} )
+LIST(APPEND VF_COMPILER_DEFINITION SOURCE_ROOT=${VF_ROOT_DIR} )
+
+#################################################################
+###   OS DEFINES                                              ###
+#################################################################
+IF(WIN32)
+    list(APPEND VF_COMPILER_DEFINITION __WIN__)
+ELSEIF(UNIX)
+    list(APPEND VF_COMPILER_DEFINITION __unix__)
+ENDIF()
+IF(APPLE)
+    list(APPEND VF_COMPILER_DEFINITION __APPLE__)
+endif()
+
+
 
 ###############################################################
 # set hostname -> CAB_MACHINE and load an optional config file
@@ -89,8 +100,7 @@ IF(NOT CAB_MACHINE)
 ENDIF()
 
 CHECK_FOR_VARIABLE(CAB_MACHINE "machine name, e.g. ALTIX, ARWEN")
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DCAB_MACHINE_${CAB_MACHINE})
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DCAB_MACHINE=${CAB_MACHINE})
+LIST(APPEND VF_COMPILER_DEFINITION CAB_MACHINE=${CAB_MACHINE})
 SET(CMAKE_CONFIG_FILE "${VF_CMAKE_DIR}/cmake_config_files/${CAB_MACHINE}.config.cmake")
 
 IF(NOT EXISTS ${CMAKE_CONFIG_FILE})

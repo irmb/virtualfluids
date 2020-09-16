@@ -4,9 +4,6 @@
 # OS:          CentOS 7.3
 #################################################################################
 
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__unix__)
-LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__UNIX__)
-
 SET(BOOST_VERSION "1.63.0" CACHE STRING "std: 1.63.0")
 
 #################################################################################
