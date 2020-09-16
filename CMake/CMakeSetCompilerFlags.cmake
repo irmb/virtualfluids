@@ -1,8 +1,39 @@
+
+###############################################################
+# set hostname -> CAB_MACHINE and load an optional config file
+###############################################################
+macro(loadMachineFile)
+
+    IF(NOT CAB_MACHINE)
+        SET(CAB_MACHINE $ENV{CAB_MACHINE})
+
+        IF( CAB_MACHINE )
+            STRING(TOUPPER  "${CAB_MACHINE}" CAB_MACHINE)
+        ELSE()
+            EXECUTE_PROCESS( COMMAND hostname OUTPUT_VARIABLE CAB_MACHINE)
+            STRING(REGEX REPLACE "[ ]*([A-Za-z0-9]+).*[\\\\n]*" "\\1" CAB_MACHINE "${CAB_MACHINE}" )
+            STRING(TOUPPER  "${CAB_MACHINE}" CAB_MACHINE)
+        ENDIF()
+    ENDIF()
+
+    LIST(APPEND VF_COMPILER_DEFINITION CAB_MACHINE=${CAB_MACHINE})
+    SET(CMAKE_CONFIG_FILE "${VF_CMAKE_DIR}/cmake_config_files/${CAB_MACHINE}.config.cmake")
+
+    IF(NOT EXISTS ${CMAKE_CONFIG_FILE})
+        status("No configuration file found.")
+    ELSE()
+        status("Load configuration file ${CAB_MACHINE}.config.cmake")
+        include(${CMAKE_CONFIG_FILE})
+    ENDIF()
+
+endmacro()
+
+
 ################################################################
 ###               SET_COMPILER_SPECIFIC_FLAGS                ###
 ###  determines compiler flags variables                     ###
 ################################################################
-MACRO(LOAD_COMPILER_FLAGS_FROM_FILE)
+macro(loadCompilerFlags)
 
   SET(CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "")
   SET(CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_DEBUG "")
@@ -19,33 +50,40 @@ MACRO(LOAD_COMPILER_FLAGS_FROM_FILE)
 	   MESSAGE(FATAL_ERROR "compiler=${CMAKE_CXX_COMPILER_ID} seems to be a not supported compiler")
 	ENDIF()
 
-ENDMACRO()
+endmacro()
 
 ################################################################
 ###             ADD_COMPILER_FLAGS_TO_PROJECT                ###
 ################################################################
-MACRO(ADD_COMPILER_FLAGS_TO_PROJECT project_name)
+function(addAdditionalFlags project_name)
 
-   LOAD_COMPILER_FLAGS_FROM_FILE()
+    status_lib("additional compiler flags CXX: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS}")
+    status_lib("additional compiler flags CXX debug: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_DEBUG}")
+    status_lib("additional compiler flags CXX release: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_RELEASE}")
+    status_lib("additional compiler definitions: ${VF_COMPILER_DEFINITION}")
+    status_lib("additional linker flags: ${VF_LINK_OPTIONS}")
 
-   #workaround fuer itanium processoren
-   IF(${CMAKE_SYSTEM_PROCESSOR} MATCHES "ia64")
-      LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS -D_M_IA64)
-      LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS   -D_M_IA64)
-   ENDIF()
+    # compile definitions
+    foreach(flag IN LISTS VF_COMPILER_DEFINITION)
+        target_compile_definitions(${library_name} PRIVATE ${flag})
+    endforeach()
 
+    # link options
+    foreach(flag IN LISTS VF_LINK_OPTIONS) #TODO: check what happens when lib is static
+        target_link_options(${library_name} PRIVATE ${flag})
+    endforeach()
 
-   foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS)
-       target_compile_options(${project_name} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${flag}>")
-   endforeach()
+    # compile options
+    foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS)
+        target_compile_options(${project_name} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${flag}>")
+    endforeach()
 
-   foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_DEBUG)
-       target_compile_options(${project_name} PRIVATE "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:${flag}>")
-   endforeach()
+    foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_DEBUG)
+        target_compile_options(${project_name} PRIVATE "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:${flag}>")
+    endforeach()
 
-   foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_RELEASE)
-       target_compile_options(${project_name} PRIVATE "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:${flag}>")
-   endforeach()
+    foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_RELEASE)
+        target_compile_options(${project_name} PRIVATE "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:${flag}>")
+    endforeach()
 
-
-ENDMACRO(ADD_COMPILER_FLAGS_TO_PROJECT project_name)
+endfunction()

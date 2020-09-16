@@ -6,13 +6,6 @@ LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-O3;-fomit-frame-pointer;
 LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-deprecated") #deprecated header warning (jarl benutzt sstream weil schneller und so)
 
 #############################################################################################################
-# OpenMP support
-#############################################################################################################
-IF(USE_OPENMP)
-    LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-fopenmp")
-ENDIF()
-
-#############################################################################################################
 # mt support
 #############################################################################################################
 LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-pthread")
@@ -33,6 +26,5 @@ LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-std=c++11")
 #LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wregister")
 
 
-IF(NOT APPLE)
-    LIST(APPEND CAB_ADDITIONAL_LINK_PROPS "-lrt")
-ENDIF()
+list(APPEND VF_LINK_OPTIONS -lgomp)
+list(APPEND VF_LINK_OPTIONS -lrt)

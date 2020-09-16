@@ -28,7 +28,6 @@ SET(USE_METIS ON CACHE BOOL "include METIS library support")
 SET(USE_MPI ON CACHE BOOL "include MPI library support")
 SET(USE_VTK OFF CACHE BOOL "include VTK library support")
 SET(USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
-SET(USE_BOOST OFF CACHE BOOL "include Boost support")
 #SET(USE_PYTHON OFF CACHE BOOL "include Python scripting support")
 
 SET(USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
@@ -39,25 +38,6 @@ IF((NOT ${CMAKE_CXX_COMPILER} MATCHES mpicxx) AND (NOT ${CMAKE_CXX_COMPILER} MAT
     FIND_PACKAGE(MPI REQUIRED)
 ENDIF()
 #SET(MPI_CXX_LINK_FLAGS -mpe=mpilog)
-
-#SET(BOOST_USE_MULTITHREAD ON)
-#SET(Boost_USE_STATIC_LIBS ON)
-#SET(Boost_DEBUG TRUE)
-
-#SET(bv ${BOOST_VERSION}) #hack for find boost, after next command ${BOOST_VERSION} would be set to 0
-#FIND_PACKAGE(Boost ${bv} COMPONENTS system date_time thread serialization chrono regex)
-#FIND_PACKAGE(Boost ${BOOST_VERSION} COMPONENTS system date_time thread serialization chrono regex)
-#FIND_PACKAGE(Boost ${bv} COMPONENTS system thread serialization date_time)
-#SET(BOOST_VERSION ${bv})
-#IF(${USE_PYTHON})
-#  FIND_PACKAGE(Boost ${BOOST_VERSION} COMPONENTS system date_time thread serialization chrono regex python)
-#ELSE(${USE_PYTHON})
-#    FIND_PACKAGE(Boost ${BOOST_VERSION} COMPONENTS system date_time thread serialization chrono regex)
-#ENDIF()
-
-IF(${USE_BOOST})
-    FIND_PACKAGE(Boost ${BOOST_VERSION})
-ENDIF()
 
 #VTK
 IF(${USE_VTK})
@@ -92,16 +72,10 @@ IF(${USE_HLRN_LUSTRE})
     list(APPEND VF_COMPILER_DEFINITION HLRN_LUSTRE)
 ENDIF()
 
-IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
-    list(APPEND VF_LINK_OPTIONS -parallel)
-    list(APPEND VF_LINK_OPTIONS -irc)
+# workaround itanium processoren
+IF(${CMAKE_SYSTEM_PROCESSOR} MATCHES "ia64")
+    LIST(APPEND VF_COMPILER_DEFINITION _M_IA64)
 ENDIF()
-
-IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    list(APPEND VF_LINK_OPTIONS -lgomp)
-    list(APPEND VF_LINK_OPTIONS -lrt)
-ENDIF()
-
 
 
 # IF(${USE_PYTHON})
