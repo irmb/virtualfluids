@@ -103,9 +103,17 @@ void bflow(string configname)
       noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new HerschelBulkleyModelNoSlipBCAlgorithm()));
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new BinghamModelNoSlipBCAlgorithm()));
 
+      SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
+      slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
+
       mu::Parser fct;
       fct.SetExpr("U");
       fct.DefineConst("U", velocity);
+      //double H = boundingBox[1];
+      //mu::Parser fct;
+      //fct.SetExpr("16*U*x2*x3*(H-x2)*(H-x3)/H^4");
+      //fct.DefineConst("U", U);
+      //fct.DefineConst("H", H);
       SPtr<BCAdapter> velocityBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
       velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
 
@@ -115,9 +123,10 @@ void bflow(string configname)
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
       bcVisitor.addBC(noSlipBCAdapter);
+      bcVisitor.addBC(slipBCAdapter);
       bcVisitor.addBC(velocityBCAdapter);
       bcVisitor.addBC(densityBCAdapter);
-
+      
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
 
@@ -157,7 +166,7 @@ void bflow(string configname)
          UBLOG(logINFO, "rho = " << rhoLB);
          UBLOG(logINFO, "U = " << U);
          UBLOG(logINFO, "Re = " << (U * d) / (k * std::pow(Gamma, n - 1)));
-         UBLOG(logINFO, "Bn = " << tau0 / k * std::pow(Gamma, n));
+         UBLOG(logINFO, "Bn = " << tau0 /(k * std::pow(Gamma, n)));
          UBLOG(logINFO, "k = " << k);
          UBLOG(logINFO, "n = " << n);
          UBLOG(logINFO, "tau0 = " << tau0);
@@ -165,6 +174,7 @@ void bflow(string configname)
          UBLOG(logINFO, "number of levels = " << refineLevel + 1);
          UBLOG(logINFO, "number of threads = " << numOfThreads);
          UBLOG(logINFO, "number of processes = " << comm->getNumberOfProcesses());
+         UBLOG(logINFO, "output path = " << outputPath);
          UBLOG(logINFO, "Preprozess - start");
       }
 
@@ -206,11 +216,11 @@ void bflow(string configname)
          if (myid == 0) GbSystem3D::writeGeoObject(wallXmax.get(), outputPath + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
 
          //wall interactors
-         SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, slipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, slipBCAdapter, Interactor3D::SOLID));
 
-         SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, slipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, slipBCAdapter, Interactor3D::SOLID));
 
          SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, velocityBCAdapter, Interactor3D::SOLID));
          SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, densityBCAdapter, Interactor3D::SOLID));
@@ -306,7 +316,7 @@ void bflow(string configname)
       //write data for visualization of macroscopic quantities
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       //SPtr<UbScheduler> visSch(new UbScheduler(10,1));
-      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlASCII::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
       //writeMQCoProcessor->process(0);
 
       double area = UbMath::PI*radius*radius;

@@ -130,6 +130,7 @@
 #include <BoundaryConditions/ThixotropyNoSlipBCAlgorithm.h>
 #include <BoundaryConditions/BinghamModelNoSlipBCAlgorithm.h>
 #include <BoundaryConditions/HerschelBulkleyModelNoSlipBCAlgorithm.h>
+#include <BoundaryConditions/SimpleSlipBCAlgorithm.h>
 
 #include <Connectors/Block3DConnector.h>
 #include <Connectors/Block3DConnectorFactory.h>

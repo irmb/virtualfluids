@@ -1,40 +1,46 @@
-#include "SlipBCAlgorithm.h"
-#include "BoundaryConditions.h"
+#include "SimpleSlipBCAlgorithm.h"
 #include "DistributionArray3D.h"
+#include "BoundaryConditions.h"
 
-SlipBCAlgorithm::SlipBCAlgorithm()
+SimpleSlipBCAlgorithm::SimpleSlipBCAlgorithm()
 {
-    BCAlgorithm::type         = BCAlgorithm::SlipBCAlgorithm;
-    BCAlgorithm::preCollision = false;
+   BCAlgorithm::type = BCAlgorithm::SimpleSlipBCAlgorithm;
+   BCAlgorithm::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-SlipBCAlgorithm::~SlipBCAlgorithm() = default;
-//////////////////////////////////////////////////////////////////////////
-SPtr<BCAlgorithm> SlipBCAlgorithm::clone()
+SimpleSlipBCAlgorithm::~SimpleSlipBCAlgorithm()
 {
-    SPtr<BCAlgorithm> bc(new SlipBCAlgorithm());
-    return bc;
+
 }
 //////////////////////////////////////////////////////////////////////////
-void SlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions) { this->distributions = distributions; }
-//////////////////////////////////////////////////////////////////////////
-void SlipBCAlgorithm::applyBC()
+SPtr<BCAlgorithm> SimpleSlipBCAlgorithm::clone()
 {
-    LBMReal f[D3Q27System::ENDF + 1];
-    LBMReal feq[D3Q27System::ENDF + 1];
-    distributions->getDistributionInv(f, x1, x2, x3);
-    LBMReal rho, vx1, vx2, vx3, drho;
-    calcMacrosFct(f, drho, vx1, vx2, vx3);
-    calcFeqFct(feq, drho, vx1, vx2, vx3);
+   SPtr<BCAlgorithm> bc(new SimpleSlipBCAlgorithm());
+   return bc;
+}
+//////////////////////////////////////////////////////////////////////////
+void SimpleSlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
+{
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
+void SimpleSlipBCAlgorithm::applyBC()
+{
+   LBMReal f[D3Q27System::ENDF+1];
+   LBMReal feq[D3Q27System::ENDF+1];
+   distributions->getDistributionInv(f, x1, x2, x3);
+   LBMReal rho, vx1, vx2, vx3, drho;
+   calcMacrosFct(f, drho, vx1, vx2, vx3);
+   calcFeqFct(feq, drho, vx1, vx2, vx3);
 
-    UbTupleDouble3 normale = bcPtr->getNormalVector();
-    LBMReal amp            = vx1 * val<1>(normale) + vx2 * val<2>(normale) + vx3 * val<3>(normale);
+   UbTupleFloat3 normale = bcPtr->getNormalVector();
+   LBMReal amp = vx1*val<1>(normale)+vx2*val<2>(normale)+vx3*val<3>(normale);
 
-    vx1 = vx1 - amp * val<1>(normale); // normale zeigt von struktur weg!
-    vx2 = vx2 - amp * val<2>(normale); // normale zeigt von struktur weg!
-    vx3 = vx3 - amp * val<3>(normale); // normale zeigt von struktur weg!
+   vx1 = vx1 - amp * val<1>(normale); //normale zeigt von struktur weg!
+   vx2 = vx2 - amp * val<2>(normale); //normale zeigt von struktur weg!
+   vx3 = vx3 - amp * val<3>(normale); //normale zeigt von struktur weg!
 
-    rho = 1.0 + drho * compressibleFactor;
+   rho = 1.0+drho*compressibleFactor;
 
    for (int fdir = D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
    {
@@ -75,7 +81,7 @@ void SlipBCAlgorithm::applyBC()
          case D3Q27System::TNW: velocity = (UbMath::c1o36*(-vx1+vx2+vx3)); break;
          default: throw UbException(UB_EXARGS, "unknown error");
          }
-         LBMReal fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity*rho)/(1.0+q));
+         LBMReal fReturn = f[invDir] - velocity;;
          distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
       }
    }

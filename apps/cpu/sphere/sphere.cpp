@@ -26,7 +26,7 @@ void run(string configname)
       //int numOfThreads      = config.getValue<int>("threads");
       //const int refineLevel = config.getValue<int>("level");
 
-      string outputPath = "d:/temp/sphereParab4";
+      string outputPath = "d:/temp/sphereBlock_5_SBB";
       double availMem = 8e9;
       double outstep = 10000;
       double endstep = 1e6;
@@ -45,15 +45,17 @@ void run(string configname)
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
       noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+      SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
+      slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
       
       double H = 50;
-      //mu::Parser fct;
-      //fct.SetExpr("U");
-      //fct.DefineConst("U", uLB);
       mu::Parser fct;
-      fct.SetExpr("16*U*x2*x3*(H-x2)*(H-x3)/H^4");
+      fct.SetExpr("U");
       fct.DefineConst("U", uLB);
-      fct.DefineConst("H", H);
+      //mu::Parser fct;
+      //fct.SetExpr("16*U*x2*x3*(H-x2)*(H-x3)/H^4");
+      //fct.DefineConst("U", uLB);
+      //fct.DefineConst("H", H);
       SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
       //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
       velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
@@ -63,6 +65,7 @@ void run(string configname)
 
       BoundaryConditionsBlockVisitor bcVisitor;
       bcVisitor.addBC(noSlipBCAdapter);
+      bcVisitor.addBC(slipBCAdapter);
       bcVisitor.addBC(velBCAdapter);
       bcVisitor.addBC(denBCAdapter);
 
@@ -167,10 +170,10 @@ void run(string configname)
          SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
 
          //walls
-         SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, slipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, slipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, slipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, slipBCAdapter, Interactor3D::SOLID));
 
          mu::Parser fct;
          fct.SetExpr("U");
@@ -285,7 +288,7 @@ void run(string configname)
       SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
       double area = UbMath::PI * radius * radius;
-      SPtr<UbScheduler> forceSch(new UbScheduler(1));
+      SPtr<UbScheduler> forceSch(new UbScheduler(100));
       SPtr<CalculateForcesCoProcessor> fp = make_shared<CalculateForcesCoProcessor>(grid, forceSch, outputPath + "/forces/forces.txt", comm, uLB, area);
       fp->addInteractor(sphereInt);
 

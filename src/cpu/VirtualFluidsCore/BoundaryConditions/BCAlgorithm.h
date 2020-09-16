@@ -64,6 +64,7 @@ public:
    static const char BinghamModelNoSlipBCAlgorithm = 14;
    static const char HerschelBulkleyModelNoSlipBCAlgorithm = 15;
    static const char SimpleVelocityBCAlgorithm = 16;
+   static const char SimpleSlipBCAlgorithm = 17;
    
 
 
