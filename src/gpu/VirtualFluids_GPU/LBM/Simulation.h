@@ -5,7 +5,7 @@
 #include <vector>
 #include <PointerDefinitions.h>
 
-#include <VirtualFluidsDefinitions.h>
+
 
 #include "Output/LogWriter.hpp"
 #include "GPU/KineticEnergyAnalyzer.h"

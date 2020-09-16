@@ -9,7 +9,7 @@
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
 
-#include <VirtualFluidsDefinitions.h>
+
 
 class Grid;
 

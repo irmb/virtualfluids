@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include <VirtualFluidsDefinitions.h>
+
 #include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"

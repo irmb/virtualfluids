@@ -1,6 +1,6 @@
 # pragma once
 
-#include <VirtualFluidsDefinitions.h>
+
 #include "Core/DataTypes.h"
 
 #include <vector>

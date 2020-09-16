@@ -8,7 +8,7 @@
 
 #include "StreetPointFinder.h"
 
-#include <VirtualFluidsDefinitions.h>
+
 
 struct GRIDGENERATOR_EXPORT SourceReaderData {
 	unsigned int sourceIndex;

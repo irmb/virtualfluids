@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-#include <VirtualFluidsDefinitions.h>
+
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 

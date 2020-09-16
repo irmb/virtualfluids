@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <VirtualFluidsDefinitions.h>
+
 
 #include <mpi.h>
 

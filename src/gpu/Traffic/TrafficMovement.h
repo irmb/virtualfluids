@@ -4,7 +4,7 @@
 #include <random> 
 #include <memory>
 
-#include <VirtualFluidsDefinitions.h>
+
 #include "Core/DataTypes.h"
 
 #include "RoadNetwork/RoadNetworkData.h"

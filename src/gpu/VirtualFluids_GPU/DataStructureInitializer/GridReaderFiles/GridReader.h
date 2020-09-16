@@ -1,7 +1,7 @@
 #ifndef GridReaderFiles_H
 #define GridReaderFiles_H
 
-#include <VirtualFluidsDefinitions.h>
+
 
 #include "../GridProvider.h"
 
