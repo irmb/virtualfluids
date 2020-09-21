@@ -10,7 +10,7 @@ function(linkCUDA)
     )
 
     vf_get_library_name(library_name)
-    target_include_directories(${library_name} PRIVATE ${CUDA_INCLUDE_DIRS} ${CUDA_CUT_INCLUDE_DIR})
+    target_include_directories(${library_name} PRIVATE ${CUDA_CUT_INCLUDE_DIR})
 
     # set the following properties only for specific targets
     # set_property(TARGET ${targetName} PROPERTY CUDA_SEPARABLE_COMPILATION ON)

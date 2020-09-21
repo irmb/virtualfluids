@@ -36,7 +36,7 @@
 
 #include <basics/utilities/UbInfinity.h>
 
-#include <MuParser/include/muParser.h>
+#include <muParser.h>
 
 //! A class implements function parcer for boundary conditions  
 class BCFunction

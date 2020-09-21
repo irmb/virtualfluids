@@ -10,7 +10,7 @@ IF(${USE_INTEL})
 ENDIF()
 
 
-vf_add_library(BUILDTYPE static DEPENDS basics MuParser ${CAB_ADDITIONAL_LINK_LIBRARIES})
+vf_add_library(BUILDTYPE static DEPENDS basics muparser ${CAB_ADDITIONAL_LINK_LIBRARIES})
 
 vf_get_library_name(library_name)
 
@@ -24,7 +24,3 @@ target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Gr
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Visitors)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/CoProcessors)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Utilities)
-
-
-target_include_directories(${library_name} PUBLIC ${VF_THIRD_DIR})
-
