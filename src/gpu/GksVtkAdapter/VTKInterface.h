@@ -3,7 +3,7 @@
 
 #include "GksGpu/Parameters/Parameters.h"
 
-#include "VirtualFluidsDefinitions.h"
+
 #include "GksVtkAdapter_export.h"
 
 namespace GksGpu{ 

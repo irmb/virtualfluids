@@ -1,7 +1,7 @@
 #pragma once
 
 #include <random>
-#include <VirtualFluidsDefinitions.h>
+
 #include "Traffic_export.h"
 
 class TRAFFIC_EXPORT RandomHelper

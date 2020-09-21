@@ -13,7 +13,7 @@ cmake_minimum_required(VERSION 3.13..3.18 FATAL_ERROR)
 
 project(VirtualFluids CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -51,13 +51,7 @@ endif()
 #  MACROS
 #################################################################################
 include(CMakePrintHelpers)
-include(${VF_CMAKE_DIR}/CMakeCABMacros.cmake)
-include(${VF_CMAKE_DIR}/FileUtilities.cmake)
 include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
-include(${VF_CMAKE_DIR}/3rd.cmake)
-
-include(${VF_CMAKE_DIR}/CMakeMacros_old/general/FindCompiler.cmake)
-configure_file(src/basics/VirtualFluidsDefinitions.in.h ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h)
 
 #################################################################################
 #  COMMON LIBRARIES

@@ -1,7 +1,7 @@
 #ifndef Moments_CUH
 #define Moments_CUH
 
-#include "VirtualFluidsDefinitions.h"
+
 #include "GksGpu_export.h"
 
 #include "Core/DataTypes.h"

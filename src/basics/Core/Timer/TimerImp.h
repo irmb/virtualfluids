@@ -5,7 +5,6 @@
 
 #include <chrono>
 
-//#include "VirtualFluidsDefinitions.h"
 
 #include "DataTypes.h"
 

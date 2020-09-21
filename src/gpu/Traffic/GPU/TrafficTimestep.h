@@ -7,7 +7,7 @@
 #include <thrust/device_vector.h>
 #include <curand_kernel.h>
 
-#include <VirtualFluidsDefinitions.h>
+
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
 #include "Traffic_export.h"

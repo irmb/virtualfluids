@@ -4,7 +4,7 @@
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
 
-#include <VirtualFluidsDefinitions.h>
+
 #include "GksGpu_export.h"
 
 namespace GksGpu {

@@ -1,6 +1,6 @@
 # pragma once
 
-#include <VirtualFluidsDefinitions.h>
+
 
 #include <vector>
 #include <memory>

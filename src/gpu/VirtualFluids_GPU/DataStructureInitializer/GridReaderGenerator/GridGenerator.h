@@ -2,7 +2,7 @@
 #define GridReaderGenerator_H
 
 #include "../GridProvider.h"
-#include <VirtualFluidsDefinitions.h>
+
 #include <vector>
 #include <string>
 #include <memory>

@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 
-#include <VirtualFluidsDefinitions.h>
+
 
 #include "Source/Source.h"
 #include "Sink/Sink.h"

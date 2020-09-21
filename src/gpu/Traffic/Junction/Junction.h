@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include <VirtualFluidsDefinitions.h>
+
 #include "Core/DataTypes.h"
 
 #include "JunctionData.h"

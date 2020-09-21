@@ -10,7 +10,7 @@
 
 #include "StreetPointFinder.h"
 
-#include <VirtualFluidsDefinitions.h>
+
 
 struct GRIDGENERATOR_EXPORT JunctionReaderData
 {

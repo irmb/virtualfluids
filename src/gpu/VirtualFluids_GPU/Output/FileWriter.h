@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-#include <VirtualFluidsDefinitions.h>
+
 
 #include "DataWriter.h"
 

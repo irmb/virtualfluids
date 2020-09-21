@@ -22,7 +22,7 @@
 
 #include "PointerDefinitions.h"
 
-#include "VirtualFluidsDefinitions.h"
+
 
 #include "DataBase/DataBase.h"
 #include "Parameters/Parameters.h"

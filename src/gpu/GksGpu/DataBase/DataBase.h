@@ -11,7 +11,7 @@
 #include "Core/VectorTypes.h"
 #include "Core/ArrayTypes.h"
 
-#include "VirtualFluidsDefinitions.h"
+
 #include "GksGpu_export.h"
 
 #include "Definitions/AccumulatorDataType.h"

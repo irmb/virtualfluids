@@ -7,7 +7,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 #include "GridGenerator_export.h"
-#include <VirtualFluidsDefinitions.h>
+
 #include "grid/Cell.h"
 #include "global.h"
 

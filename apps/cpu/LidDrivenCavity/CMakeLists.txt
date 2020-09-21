@@ -1,6 +1,4 @@
 
 PROJECT(LidDrivenCavity)
 
-INCLUDE(${APPS_ROOT}/IncludsList.cmake)
-
-vf_add_library(BUILDTYPE binary DEPENDS VirtualFluidsCore VirtualFluidsBasic FILES LidDrivenCavity.cpp)
+vf_add_library(NAME LidDrivenCavityCPU BUILDTYPE binary DEPENDS VirtualFluidsCore basics muparser FILES LidDrivenCavity.cpp)

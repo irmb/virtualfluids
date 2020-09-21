@@ -10,8 +10,8 @@
 //        \    \|    |  |  |         __          __     __     __     ______      _______    
 //         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
 //          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  \   
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can 
 //  redistribute it and/or modify it under the terms of the GNU General Public
@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file ldc.cpp
+//! \file LidDrivenCavity.cpp
 //! \ingroup Applications
 //! \author Konstantin Kutscher
 //=======================================================================================
@@ -44,7 +44,9 @@ int main(int argc, char* argv[])
       //////////////////////////////////////////////////////////////////////////
       // Simulation parameters
       //////////////////////////////////////////////////////////////////////////
-      string path = "d:/temp/LidDrivenCavityClean";
+
+      // set your output path here
+      string path = "./output";
 
       const double L = 1.0;
       const double Re = 1000.0;
@@ -52,11 +54,11 @@ int main(int argc, char* argv[])
       const double dt = 0.5e-3;
       const unsigned int nx = 64;
 
-      const double timeStepOut = 10000;
-      const double timeStepEnd = 250000;
+      const double timeStepOut = 1000;
+      const double timeStepEnd = 25000;
 
       // Number of OpenMP threads
-      int numOfThreads = 1;
+      int numOfThreads = 4;
 
       //////////////////////////////////////////////////////////////////////////
 
@@ -84,13 +86,16 @@ int main(int argc, char* argv[])
       // set grid spacing
       grid->setDeltaX(dx);
       // set block size for three dimensions
-      grid->setBlockNX(64,64,64);
+      int blockSize = nx / 2;
+      grid->setBlockNX(blockSize,blockSize,blockSize);
       
       // Create simulation bounding box
       SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
       GbSystem3D::writeGeoObject(gridCube.get(), path + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
-      UBLOG(logINFO, "Lid Driven Cavity");
+      UBLOG(logINFO, "Lid Driven Cavity:");
+      UBLOG(logINFO, "Domain size = " << nx << " x "<< nx << " x "<< nx);
+      UBLOG(logINFO, "Block size = " << blockSize << " x "<< blockSize << " x "<< blockSize);
       UBLOG(logINFO, "velocity    = " << velocity << " m/s");
       UBLOG(logINFO, "velocityLB  = " << velocityLB);
       UBLOG(logINFO, "viscosityLB = " << viscosityLB);
@@ -209,8 +214,9 @@ int main(int argc, char* argv[])
       SPtr<CoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
       // OpenMP threads control
+#ifdef _OPENMP
       omp_set_num_threads(numOfThreads);
-
+#endif
       // Create simulation
       SPtr<Calculator> calculator(new BasicCalculator(grid, visSch, (int)timeStepEnd));
       // Add coprocessors objects to simulation

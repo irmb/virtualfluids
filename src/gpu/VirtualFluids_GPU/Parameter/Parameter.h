@@ -23,7 +23,7 @@
 #include <curand.h>
 #include <curand_kernel.h>
 #include "PointerDefinitions.h"
-#include "VirtualFluidsDefinitions.h"
+
 #include "VirtualFluids_GPU_export.h"
 
 #include "Kernel/Utilities/KernelType.h"

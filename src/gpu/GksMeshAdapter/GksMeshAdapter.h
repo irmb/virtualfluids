@@ -11,7 +11,7 @@
 #include "MeshCell.h"
 #include "MeshFace.h"
 
-#include "VirtualFluidsDefinitions.h"
+
 
 #include "GksMeshAdapter_export.h"
 

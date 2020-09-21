@@ -6,7 +6,7 @@
 
 #include "DataBaseAllocator.h"
 
-#include "VirtualFluidsDefinitions.h"
+
 #include "GksGpu_export.h"
 
 namespace GksGpu {

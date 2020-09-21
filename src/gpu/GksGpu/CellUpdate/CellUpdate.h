@@ -1,7 +1,7 @@
 #ifndef  CellUpdate_H
 #define  CellUpdate_H
 
-#include "VirtualFluidsDefinitions.h"
+
 #include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"

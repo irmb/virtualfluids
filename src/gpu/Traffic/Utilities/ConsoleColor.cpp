@@ -2,7 +2,7 @@
 
 
 
-#include <VirtualFluidsDefinitions.h>
+
 #include "Core/DataTypes.h"
 
 

@@ -3,7 +3,7 @@
 
 #include "Core/DataTypes.h"
 
-#include <VirtualFluidsDefinitions.h>
+
 
 namespace GksGpu{ 
 

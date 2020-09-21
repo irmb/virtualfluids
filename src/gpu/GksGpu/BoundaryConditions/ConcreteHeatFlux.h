@@ -5,7 +5,7 @@
 
 #include <thrust/device_vector.h>
 
-#include "VirtualFluidsDefinitions.h"
+
 #include "GksGpu_export.h"
 
 #include "PointerDefinitions.h"
