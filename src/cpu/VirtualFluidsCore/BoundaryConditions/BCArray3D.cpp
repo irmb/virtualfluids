@@ -233,3 +233,4 @@ void BCArray3D::deleteBC(std::size_t x1, std::size_t x2, std::size_t x3)
       //"delete" element
       bcvector[index] = SPtr<BoundaryConditions>();
    }
+   

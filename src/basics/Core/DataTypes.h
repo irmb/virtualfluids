@@ -3,7 +3,6 @@
 
 #include <string>
 
-#include "VirtualFluidsDefinitions.h"
 
 #ifdef VF_DOUBLE_ACCURACY
 typedef double real;

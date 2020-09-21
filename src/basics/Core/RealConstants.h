@@ -1,7 +1,7 @@
 #ifndef REAL_CONSTANT_H
 #define REAL_CONSTANT_H
 
-#include "VirtualFluidsDefinitions.h"
+
 
 #ifdef VF_DOUBLE_ACCURACY
 #define c1o2		0.5

@@ -89,4 +89,4 @@ protected:
 };
 
 
-#endif 
+#endif //D3Q27BOUNDARYCONDITIONADAPTER_H

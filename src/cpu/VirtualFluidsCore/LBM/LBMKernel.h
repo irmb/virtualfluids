@@ -39,7 +39,7 @@
 #include "ILBMKernel.h"
 #include <array>
 #include <limits>
-#include <MuParser/include/muParser.h>
+#include <muParser.h>
 
 class BCProcessor;
 class DataSet3D;

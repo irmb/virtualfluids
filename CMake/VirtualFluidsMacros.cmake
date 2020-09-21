@@ -8,8 +8,48 @@
 #################################################################################
 
 function(status msg)
-    message(STATUS "  VF - ${msg}")
+    message(STATUS "  VF: ${msg}")
 endfunction()
+
+function(status_lib msg)
+    message(STATUS "    ${msg}")
+endfunction()
+
+#################################################################################
+## include intern macros
+#################################################################################
+include(${VF_CMAKE_DIR}/CMakeSetCompilerFlags.cmake)
+include(${VF_CMAKE_DIR}/FileUtilities.cmake)
+include(${VF_CMAKE_DIR}/3rd.cmake)
+
+###############################################################################################################
+# Reset the compiler and linker flags
+###############################################################################################################
+SET(VF_COMPILER_DEFINITION)
+SET(VF_LINK_OPTIONS)
+SET(CAB_ADDITIONAL_LINK_LIBRARIES)
+LIST(APPEND VF_COMPILER_DEFINITION SOURCE_ROOT=${VF_ROOT_DIR} )
+
+#################################################################
+###   OS DEFINES                                              ###
+#################################################################
+IF(WIN32)
+    list(APPEND VF_COMPILER_DEFINITION __WIN__)
+ELSEIF(UNIX)
+    list(APPEND VF_COMPILER_DEFINITION __unix__)
+ENDIF()
+
+IF(APPLE)
+    list(APPEND VF_COMPILER_DEFINITION __APPLE__)
+endif()
+
+list(APPEND VF_COMPILER_DEFINITION ${CMAKE_CXX_COMPILER_ID})
+
+#################################################################
+### load compiler and machine file                          ###
+#################################################################
+loadMachineFile()
+loadCompilerFlags()
 
 #################################################################################
 ## set global project file endings
@@ -46,9 +86,9 @@ endfunction()
 
 #################################################################################
 ## Add a target, link the libraries and add the compiler flags to the target
-## The name of the target is vf_get_library_name().
 ##
 ## parameter:
+## NAME      - Name of the target. If not passed the name is vf_get_library_name().
 ## BUILDTYPE - STATIC; SHARED; EXECUTABLE
 ## DEPENDS   - libraries to link
 ## FILES     - adds these files to the target
@@ -63,10 +103,14 @@ function(vf_add_library)
 
     set( options )
     set( oneValueArgs )
-    set( multiValueArgs BUILDTYPE DEPENDS FILES FOLDER EXCLUDE)
+    set( multiValueArgs NAME BUILDTYPE DEPENDS FILES FOLDER EXCLUDE)
     cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    vf_get_library_name (library_name)
+    if(${ARG_NAME})
+        set(library_name ${ARG_NAME})
+    else()
+        vf_get_library_name (library_name)
+    endif()
     status("Configuring the target: ${library_name} (type=${ARG_BUILDTYPE})...")
 
 
@@ -74,23 +118,6 @@ function(vf_add_library)
 
     includeProductionFiles (${library_name} "${sourceFiles}")
 
-
-
-    #################################################################
-    ###   OS DEFINES                                              ###
-    #################################################################
-    IF(WIN32)
-        LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__WIN__)
-    ELSEIF(APPLE)
-        LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__APPLE__)
-    ELSEIF(UNIX)
-        LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__unix__)
-    ENDIF()
-
-    #################################################################
-    ###   ADDITIONAL_MAKE_CLEAN_FILES                             ###
-    #################################################################
-    #SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${GENERATED_FILES}")
 
     #################################################################
     ###   EXCECUTABLE                                             ###
@@ -119,7 +146,7 @@ function(vf_add_library)
     #################################################################
     ###   ADDITIONAL LINK LIBRARIES                               ###
     #################################################################
-    status("Link Depending Libraries: ${ARG_DEPENDS}")
+    status_lib("Link Depending Libraries: ${ARG_DEPENDS}")
     if (ARG_DEPENDS)
         target_link_libraries(${library_name} PRIVATE ${ARG_DEPENDS})
     endif()
@@ -127,38 +154,7 @@ function(vf_add_library)
     #################################################################
     ###   COMPILER Flags                                          ###
     #################################################################
-    ADD_COMPILER_FLAGS_TO_PROJECT(${CAB_COMPILER} ${library_name} "CXX" ${ARG_BUILDTYPE})
-    status("compiler flags for compiler ${CAB_COMPILER} on machine ${CAB_MACHINE} for project ${project_name} (${ARG_BUILDTYPE}) have been configured")
-    status("compiler flags: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS}")
-    status("additional compiler flags: ${CAB_ADDTIONAL_COMPILER_FLAGS}")
-
-    #MESSAGE (COMPILE FLAGS: ${CAB_ADDTIONAL_COMPILER_FLAGS})
-    IF(CAB_ADDTIONAL_COMPILER_FLAGS)
-        ADD_TARGET_PROPERTIES(${library_name} COMPILE_FLAGS ${CAB_ADDTIONAL_COMPILER_FLAGS})
-    ENDIF()
-    IF(CAB_ADDTIONAL_COMPILER_FLAGS_DEBUG)
-        MESSAGE(FATAL_ERROR "COMPILE_FLAGS_DEBUG_<CONFIG> not supported by cmake yet :-(")
-        ADD_TARGET_PROPERTIES(${library_name} COMPILE_FLAGS_DEBUG ${CAB_ADDTIONAL_COMPILER_FLAGS_DEBUG})
-    ENDIF()
-    IF(CAB_ADDTIONAL_COMPILER_FLAGS_RELEASE)
-        MESSAGE(FATAL_ERROR "COMPILE_FLAGS_<CONFIG> not supported by cmake yet :-(")
-        ADD_TARGET_PROPERTIES(${library_name} COMPILE_FLAGS_RELEASE ${CAB_ADDTIONAL_COMPILER_FLAGS_RELEASE})
-    ENDIF()
-
-    #################################################################
-    ###   ADDITIONAL LINK PROPERTIES                              ###
-    #################################################################
-    status("additional linker flags: ${CAB_ADDITIONAL_LINK_FLAGS}")
-
-    IF(CAB_ADDITIONAL_LINK_FLAGS)
-        ADD_TARGET_PROPERTIES(${library_name} LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS})
-    ENDIF()
-    IF(CAB_ADDITIONAL_LINK_FLAGS_DEBUG)
-        ADD_TARGET_PROPERTIES(${library_name} LINK_FLAGS_DEBUG ${CAB_ADDITIONAL_LINK_FLAGS_DEBUG})
-    ENDIF()
-    IF(CAB_ADDITIONAL_LINK_FLAGS_RELEASE)
-        ADD_TARGET_PROPERTIES(${library_name} LINK_FLAGS_RELEASE ${CAB_ADDITIONAL_LINK_FLAGS_RELEASE})
-    ENDIF()
+    addAdditionalFlags(${library_name})
 
 
     if (NOT ${ARG_BUILDTYPE} MATCHES binary)
@@ -172,7 +168,7 @@ function(vf_add_library)
     target_include_directories(${library_name} PRIVATE ${VF_SRC_DIR}/cpu)
 
 
-    #status("... configuring target: ${library_name} (type=${ARG_BUILDTYPE}) done")
+    status("... configuring target: ${library_name} (type=${ARG_BUILDTYPE}) done")
 
 endfunction()
 
