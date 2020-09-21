@@ -33,6 +33,7 @@ void bflow(string configname)
       double          n = config.getValue<double>("n");
       double          Re = config.getValue<double>("Re");
       double          Bn = config.getValue<double>("Bn");
+      vector<double>  sphereCenter = config.getVector<double>("sphereCenter");
 
       SPtr<Communicator> comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -147,7 +148,7 @@ void bflow(string configname)
       if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), outputPath + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
       //sphere
-      SPtr<GbObject3D> sphere(new GbSphere3D(75, 25, 25, radius));
+      SPtr<GbObject3D> sphere(new GbSphere3D(sphereCenter[0], sphereCenter[1], sphereCenter[2], radius));
       GbSystem3D::writeGeoObject(sphere.get(), outputPath + "/geo/sphere", WbWriterVtkXmlBinary::getInstance());
       SPtr<D3Q27Interactor> sphereInt(new D3Q27Interactor(sphere, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
@@ -157,6 +158,7 @@ void bflow(string configname)
       SPtr<MPIIOMigrationBECoProcessor> restartCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, outputPath, comm));
       restartCoProcessor->setLBMKernel(kernel);
       restartCoProcessor->setBCProcessor(bcProc);
+      restartCoProcessor->setNu(k);
       //////////////////////////////////////////////////////////////////////////
 
       if (myid == 0)
@@ -232,12 +234,12 @@ void bflow(string configname)
          /////delete solid blocks
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
          InteractorsHelper intHelper(grid, metisVisitor);
+         intHelper.addInteractor(wallXminInt);
+         intHelper.addInteractor(wallXmaxInt);
          intHelper.addInteractor(wallZminInt);
          intHelper.addInteractor(wallZmaxInt);
          intHelper.addInteractor(wallYminInt);
          intHelper.addInteractor(wallYmaxInt);
-         intHelper.addInteractor(wallXminInt);
-         intHelper.addInteractor(wallXmaxInt);
          intHelper.addInteractor(sphereInt);
          intHelper.selectBlocks();
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
@@ -294,6 +296,9 @@ void bflow(string configname)
       {
          restartCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
+         SetBcBlocksBlockVisitor v(sphereInt);
+         grid->accept(v);
+         sphereInt->initInteractor();
       }
       
       omp_set_num_threads(numOfThreads);
