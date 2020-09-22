@@ -11,6 +11,7 @@
 #include <numeric>
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 #include "ThixotropyExpLBMKernel.h"
+#include "Thixotropy.h"
 
 using namespace std;
 
@@ -119,7 +120,8 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 
 	//Diese Daten werden geschrieben:
 	datanames.resize(0);
-	datanames.push_back("lambda");
+	datanames.push_back("viscosity");
+	//datanames.push_back("lambda");
 	//datanames.push_back("ShearRate");
 	//datanames.push_back("collFactor");
 	//datanames.push_back("Fluxx");
@@ -139,23 +141,23 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
    SPtr<ILBMKernel> kernel = block->getKernel();
    SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
    SPtr<DistributionArray3D> distributionsF = kernel->getDataSet()->getFdistributions(); 
-	SPtr<DistributionArray3D> distributionsH = kernel->getDataSet()->getHdistributions();
+	//SPtr<DistributionArray3D> distributionsH = kernel->getDataSet()->getHdistributions();
 	//LBMReal collFactorF = staticPointerCast<ThixotropyExpLBMKernel>(kernel)->getCollisionFactorF();
 	LBMReal collFactor = kernel->getCollisionFactor();
 	LBMReal f[D3Q27System::ENDF + 1];
-	LBMReal h[D3Q27System::ENDF + 1];
-	LBMReal lambda, gammaDot;
+	//LBMReal h[D3Q27System::ENDF + 1];
+	//LBMReal viscosity=0; // lambda, gammaDot;
 	
 	//knotennummerierung faengt immer bei 0 an!
-	unsigned int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
+	int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
 
 	int minX1 = 0;
 	int minX2 = 0;
 	int minX3 = 0;
 
-	int maxX1 = (int)(distributionsH->getNX1());
-	int maxX2 = (int)(distributionsH->getNX2());
-	int maxX3 = (int)(distributionsH->getNX3());
+	int maxX1 = (int)(distributionsF->getNX1());
+	int maxX2 = (int)(distributionsF->getNX2());
+	int maxX3 = (int)(distributionsF->getNX3());
 
 	//int minX1 = 1;
 	//int minX2 = 1;
@@ -187,25 +189,33 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 						float(val<2>(org) - val<2>(nodeOffset) + ix2*dx),
 						float(val<3>(org) - val<3>(nodeOffset) + ix3*dx)));
 
-					distributionsH->getDistribution(h, ix1, ix2, ix3);
+					//distributionsH->getDistribution(h, ix1, ix2, ix3);
 
-					lambda = D3Q27System::getDensity(h);
+					//lambda = D3Q27System::getDensity(h);
 
-					if (UbMath::isNaN(lambda) || UbMath::isInfinity(lambda) )
-						UB_THROW(UbException(UB_EXARGS, "lambda is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" + block->toString() +
-							", node=" + UbSystem::toString(ix1) + "," + UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+					//if (UbMath::isNaN(lambda) || UbMath::isInfinity(lambda) )
+					//	UB_THROW(UbException(UB_EXARGS, "lambda is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" + block->toString() +
+					//		", node=" + UbSystem::toString(ix1) + "," + UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
 
-					distributionsF->getDistribution(f, ix1, ix2, ix3);
-					LBMReal rho = D3Q27System::getDensity(f);
+					//distributionsF->getDistribution(f, ix1, ix2, ix3);
+					//LBMReal rho = D3Q27System::getDensity(f);
 					
 					//gammaDot = BinghamModel::getShearRate(f, collFactor);
 
 					//LBMReal collFactorF = collFactor - 1e-6 / (gammaDot + one * 1e-9);
 					//collFactorF = (collFactorF < 0.5) ? 0.5 : collFactorF;
 
-					data[index++].push_back(lambda);
+					//data[index++].push_back(lambda);
 					//data[index++].push_back(gammaDot);
 					//data[index++].push_back(collFactorF);
+
+					distributionsF->getDistribution(f, ix1, ix2, ix3);
+					LBMReal rho = D3Q27System::getDensity(f);
+					LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
+					LBMReal omega = Thixotropy::getHerschelBulkleyCollFactor(collFactor, shearRate, rho);
+					LBMReal viscosity = (omega == 0) ? 0 : c1o3 * (c1/omega-c1o2);
+
+					data[index++].push_back(viscosity);
 				}
 			}
 		}
@@ -229,7 +239,7 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 					&& (NET = nodeNumbers(ix1 + 1, ix2 + 1, ix3 + 1)) >= 0
 					&& (NWT = nodeNumbers(ix1, ix2 + 1, ix3 + 1)) >= 0)
 				{
-					cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
+					cells.push_back(makeUbTuple((unsigned int)SWB, (unsigned int)SEB, (unsigned int)NEB, (unsigned int)NWB, (unsigned int)SWT, (unsigned int)SET, (unsigned int)NET, (unsigned int)NWT));
 				}
 			}
 		}

@@ -223,6 +223,7 @@
 #include <LBM/BinghamModelLBMKernel.h>
 #include <LBM/HerschelBulkleyModelLBMKernel.h>
 #include <LBM/ThixotropyInterpolationProcessor.h>
+#include <LBM/RheologyK17LBMKernel.h>
 
 
 #include <geometry3d/CoordinateTransformation3D.h>
