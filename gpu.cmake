@@ -149,8 +149,8 @@ ENDIF()
 if(VF.BUILD_NUMERIC_TESTS)
     add_subdirectory(3rdParty/fftw/fftw-3.3.7)
     add_subdirectory(3rdParty/googletest)
-    add_subdirectory(targets/tests/NumericalTests)
-    add_subdirectory(targets/tests/NumericalTestPostProcessing)
+    add_subdirectory(apps/gpu/tests/NumericalTests)
+    add_subdirectory(apps/gpu/tests/NumericalTestPostProcessing)
 endif()
 
 #############################################################

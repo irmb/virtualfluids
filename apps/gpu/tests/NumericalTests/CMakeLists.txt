@@ -1,14 +1,16 @@
-setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR})
+project(NumericalTestsGPU)
 
-set(linkDirectories "")
-set(libsToLink VirtualFluids_GPU cudart_static VirtualFluidsBasics)
-set(includeDirectories ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/VirtualFluids_GPU ${CMAKE_SOURCE_DIR}/src/VirtualFluidsBasics)
+vf_add_library(BUILDTYPE binary DEPENDS VirtualFluids_GPU GridGenerator basics cudart_static fftw3 gtest gmock gmock_main)
 
-#glob files and save in MY_SRCS
-include(CMakePackage.cmake)
+vf_get_library_name(library_name)
+groupTarget(${library_name} ${testFolder})
 
-buildExe(${targetName} "${MY_SRCS}" "${linkDirectories}" "${libsToLink}" "${includeDirectories}")
-groupTarget(${targetName} ${testFolder})
+if(BUILD_SHARED_LIBS)
+    # add compile option according to
+    # https://github.com/google/googletest/blob/master/googletest/README.md#as-a-shared-library-dll
+    set_target_properties(${library_name}
+            PROPERTIES
+            COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+endif()
 
-#Specify the linking to 3rdParty libs
-include(3rdPartyLinking.cmake)
+linkCUDA()
