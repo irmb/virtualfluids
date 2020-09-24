@@ -107,24 +107,25 @@ void RheologyK17LBMKernel::calculate(int step)
    int maxX2 = bcArrayMaxX2-ghostLayerWidth;
    int maxX3 = bcArrayMaxX3-ghostLayerWidth;
 
-   LBMReal omega = collFactor;
+   //LBMReal omega = collFactor;
 
-   //magic parameter for rheology
-   LBMReal a = 10;
-   OxxPyyPzz = c1 / (a * ((c1 / omega) - c1o2) + c1o2);
+   ////magic parameter for rheology
+   //LBMReal a = 10;
+   //OxxPyyPzz = c1 / (a * ((c1 / omega) - c1o2) + c1o2);
+   //OxxPyyPzz = (OxxPyyPzz > c1) ? c1 : OxxPyyPzz;
 
-   //LBMReal OxyyPxzz  = eight*(-two+omega)*(one+two*omega)/(-eight-fourteen*omega+seven*omega*omega);//one;
-   //LBMReal OxyyMxzz  = eight*(-two+omega)*(-seven+four*omega)/(fiftysix-fifty*omega+nine*omega*omega);//one;
-   //LBMReal Oxyz      = twentyfour*(-two+omega)*(-two-seven*omega+three*omega*omega)/(fourtyeight+c152*omega-c130*omega*omega+twentynine*omega*omega*omega);
-   LBMReal OxyyPxzz  = 8.0*(omega-2.0)*(OxxPyyPzz*(3.0*omega-1.0)-5.0*omega)/(8.0*(5.0-2.0*omega)*omega+OxxPyyPzz*(8.0+omega*(9.0*omega-26.0)));
-   LBMReal OxyyMxzz  = 8.0*(omega-2.0)*(omega+OxxPyyPzz*(3.0*omega-7.0))/(OxxPyyPzz*(56.0-42.0*omega+9.0*omega*omega)-8.0*omega);
-   LBMReal Oxyz      = 24.0*(omega-2.0)*(4.0*omega*omega+omega*OxxPyyPzz*(18.0-13.0*omega)+OxxPyyPzz*OxxPyyPzz*(2.0+omega*(6.0*omega-11.0)))/(16.0*omega*omega*(omega-6.0)-2.0*omega*OxxPyyPzz*(216.0+5.0*omega*(9.0*omega-46.0))+OxxPyyPzz*OxxPyyPzz*(omega*(3.0*omega-10.0)*(15.0*omega-28.0)-48.0));
+   ////LBMReal OxyyPxzz  = eight*(-two+omega)*(one+two*omega)/(-eight-fourteen*omega+seven*omega*omega);//one;
+   ////LBMReal OxyyMxzz  = eight*(-two+omega)*(-seven+four*omega)/(fiftysix-fifty*omega+nine*omega*omega);//one;
+   ////LBMReal Oxyz      = twentyfour*(-two+omega)*(-two-seven*omega+three*omega*omega)/(fourtyeight+c152*omega-c130*omega*omega+twentynine*omega*omega*omega);
+   //LBMReal OxyyPxzz  = 8.0*(omega-2.0)*(OxxPyyPzz*(3.0*omega-1.0)-5.0*omega)/(8.0*(5.0-2.0*omega)*omega+OxxPyyPzz*(8.0+omega*(9.0*omega-26.0)));
+   //LBMReal OxyyMxzz  = 8.0*(omega-2.0)*(omega+OxxPyyPzz*(3.0*omega-7.0))/(OxxPyyPzz*(56.0-42.0*omega+9.0*omega*omega)-8.0*omega);
+   //LBMReal Oxyz      = 24.0*(omega-2.0)*(4.0*omega*omega+omega*OxxPyyPzz*(18.0-13.0*omega)+OxxPyyPzz*OxxPyyPzz*(2.0+omega*(6.0*omega-11.0)))/(16.0*omega*omega*(omega-6.0)-2.0*omega*OxxPyyPzz*(216.0+5.0*omega*(9.0*omega-46.0))+OxxPyyPzz*OxxPyyPzz*(omega*(3.0*omega-10.0)*(15.0*omega-28.0)-48.0));
 
-   //LBMReal A = (four + two*omega - three*omega*omega) / (two - seven*omega + five*omega*omega);
-   //LBMReal B = (four + twentyeight*omega - fourteen*omega*omega) / (six - twentyone*omega + fiveteen*omega*omega);
+   ////LBMReal A = (four + two*omega - three*omega*omega) / (two - seven*omega + five*omega*omega);
+   ////LBMReal B = (four + twentyeight*omega - fourteen*omega*omega) / (six - twentyone*omega + fiveteen*omega*omega);
 
-   LBMReal A = (4.0*omega*omega+2.0*omega*OxxPyyPzz*(omega-6.0)+OxxPyyPzz*OxxPyyPzz*(omega*(10.0-3.0*omega)-4.0))/((omega-OxxPyyPzz)*(OxxPyyPzz*(2.0+3.0*omega)-8.0*omega));
-   LBMReal B = (4.0*omega*OxxPyyPzz*(9.0*omega-16.0)-4.0*omega*omega-2.0*OxxPyyPzz*OxxPyyPzz*(2.0+9.0*omega*(omega-2.0)))/(3.0*(omega-OxxPyyPzz)*(OxxPyyPzz*(2.0+3.0*omega)-8.0*omega));
+   //LBMReal A = (4.0*omega*omega+2.0*omega*OxxPyyPzz*(omega-6.0)+OxxPyyPzz*OxxPyyPzz*(omega*(10.0-3.0*omega)-4.0))/((omega-OxxPyyPzz)*(OxxPyyPzz*(2.0+3.0*omega)-8.0*omega));
+   //LBMReal B = (4.0*omega*OxxPyyPzz*(9.0*omega-16.0)-4.0*omega*omega-2.0*OxxPyyPzz*OxxPyyPzz*(2.0+9.0*omega*(omega-2.0)))/(3.0*(omega-OxxPyyPzz)*(OxxPyyPzz*(2.0+3.0*omega)-8.0*omega));
 
    for (int x3 = minX3; x3 < maxX3; x3++)
    {
@@ -206,7 +207,7 @@ void RheologyK17LBMKernel::calculate(int step)
                   (mfbbc-mfbba))/rho;
                ////////////////////////////////////////////////////////////////////////////////////
 
-               LBMReal collFactorF = collFactor;
+               LBMReal omega = collFactor;
 
                //forcing 
                ///////////////////////////////////////////////////////////////////////////////////////////
@@ -605,7 +606,7 @@ void RheologyK17LBMKernel::calculate(int step)
                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //incl. correction		(hat noch nicht so gut funktioniert...Optimierungsbedarf??)
 
-               LBMReal dxux = c1o2 * (-omega) *(mxxMyy+mxxMzz)+c1o2 *  OxxPyyPzz * (mfaaa-mxxPyyPzz);
+               LBMReal dxux = c1o2 * (-omega) * (mxxMyy + mxxMzz);// +c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
                LBMReal dyuy = dxux+omega * c3o2 * mxxMyy;
                LBMReal dzuz = dxux+omega * c3o2 * mxxMzz;
 
@@ -615,19 +616,42 @@ void RheologyK17LBMKernel::calculate(int step)
 
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //non Newtonian fluid collision factor
-               LBMReal shearRate = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
-               //collFactorF = getThyxotropyCollFactor(collFactorF, shearRate, rho);
-               collFactorF = Thixotropy::getHerschelBulkleyCollFactor(collFactorF, shearRate, drho);
+               LBMReal shearRate = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (drho + c1);
+               //omega = getThyxotropyCollFactor(omega, shearRate, rho);
+               omega = Thixotropy::getHerschelBulkleyCollFactor(omega, shearRate, drho);
+               //omega = Thixotropy::getBinghamCollFactor(omega, shearRate, drho);
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+               mxxMyy += omega * (-mxxMyy) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
+               mxxMzz += omega * (-mxxMzz) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
+
+               mfabb += omega * (-mfabb);
+               mfbab += omega * (-mfbab);
+               mfbba += omega * (-mfbba);
+
+               if(omega < c1) { omega = c1; } //arbitrary limit (24.09.2020)
+
+               //magic parameter for rheology
+               LBMReal a = 10;
+               OxxPyyPzz = c1 / (a * ((c1 / omega) - c1o2) + c1o2);
+               OxxPyyPzz = (OxxPyyPzz > c1) ? c1 : OxxPyyPzz;
+
+               LBMReal OxyyPxzz = 8.0 * (omega - 2.0) * (OxxPyyPzz * (3.0 * omega - 1.0) - 5.0 * omega) / (8.0 * (5.0 - 2.0 * omega) * omega + OxxPyyPzz * (8.0 + omega * (9.0 * omega - 26.0)));
+               LBMReal OxyyMxzz = 8.0 * (omega - 2.0) * (omega + OxxPyyPzz * (3.0 * omega - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * omega + 9.0 * omega * omega) - 8.0 * omega);
+               LBMReal Oxyz = 24.0 * (omega - 2.0) * (4.0 * omega * omega + omega * OxxPyyPzz * (18.0 - 13.0 * omega) + OxxPyyPzz * OxxPyyPzz * (2.0 + omega * (6.0 * omega - 11.0))) / (16.0 * omega * omega * (omega - 6.0) - 2.0 * omega * OxxPyyPzz * (216.0 + 5.0 * omega * (9.0 * omega - 46.0)) + OxxPyyPzz * OxxPyyPzz * (omega * (3.0 * omega - 10.0) * (15.0 * omega - 28.0) - 48.0));
+
+               LBMReal A = (4.0 * omega * omega + 2.0 * omega * OxxPyyPzz * (omega - 6.0) + OxxPyyPzz * OxxPyyPzz * (omega * (10.0 - 3.0 * omega) - 4.0)) / ((omega - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * omega) - 8.0 * omega));
+               LBMReal B = (4.0 * omega * OxxPyyPzz * (9.0 * omega - 16.0) - 4.0 * omega * omega - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * omega * (omega - 2.0))) / (3.0 * (omega - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * omega) - 8.0 * omega));
+
 
                //relax
 
-               wadjust = OxxPyyPzz+(one-OxxPyyPzz)*fabs((mfaaa-mxxPyyPzz))/(fabs((mfaaa-mxxPyyPzz))+qudricLimitD);
-               mxxPyyPzz += wadjust*(mfaaa-mxxPyyPzz)-three * (one-c1o2 * OxxPyyPzz) * (vx2 * dxux+vy2 * dyuy+vz2 * dzuz);
+               //wadjust = OxxPyyPzz+(one-OxxPyyPzz)*fabs((mfaaa-mxxPyyPzz))/(fabs((mfaaa-mxxPyyPzz))+qudricLimitD);
+               //mxxPyyPzz += wadjust*(mfaaa-mxxPyyPzz)-three * (one-c1o2 * OxxPyyPzz) * (vx2 * dxux+vy2 * dyuy+vz2 * dzuz);
+               mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
 
               // mxxPyyPzz += OxxPyyPzz*(mfaaa-mxxPyyPzz)-three * (one-c1o2 * OxxPyyPzz) * (vx2 * dxux+vy2 * dyuy+vz2 * dzuz);//-magicBulk*OxxPyyPzz;
-               mxxMyy += omega * (-mxxMyy)-three * (one+c1o2 * (-omega)) * (vx2 * dxux-vy2 * dyuy);
-               mxxMzz += omega * (-mxxMzz)-three * (one+c1o2 * (-omega)) * (vx2 * dxux-vz2 * dzuz);
+               //mxxMyy += omega * (-mxxMyy)-three * (one+c1o2 * (-omega)) * (vx2 * dxux-vy2 * dyuy);
+               //mxxMzz += omega * (-mxxMzz)-three * (one+c1o2 * (-omega)) * (vx2 * dxux-vz2 * dzuz);
 
                //////////////////////////////////////////////////////////////////////////
                //limiter-Scheise Teil 2
@@ -644,9 +668,9 @@ void RheologyK17LBMKernel::calculate(int step)
             //mxxMyy    += -(-omega) * (-mxxMyy);
             //mxxMzz    += -(-omega) * (-mxxMzz);
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-               mfabb += omega * (-mfabb);
-               mfbab += omega * (-mfbab);
-               mfbba += omega * (-mfbba);
+               //mfabb += omega * (-mfabb);
+               //mfbab += omega * (-mfbab);
+               //mfbba += omega * (-mfbba);
 
                //////////////////////////////////////////////////////////////////////////
                //limiter-Scheise Teil 3

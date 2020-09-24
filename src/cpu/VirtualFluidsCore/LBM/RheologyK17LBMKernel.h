@@ -8,7 +8,7 @@
 #include "basics/container/CbArray4D.h"
 #include "basics/container/CbArray3D.h"
 
-//! \brief   compressible cumulant LBM kernel. 
+//! \brief   compressible cumulant LBM kernel with rheological properties of shear and bulk viscosity for non-Newtonian fluids.
 //! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
 //! \author  K. Kutscher, M. Geier
 class RheologyK17LBMKernel :  public LBMKernel

@@ -101,6 +101,7 @@ void bflow(string configname)
       thix->setOmegaMin(omegaMin);
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
       noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new HerschelBulkleyModelNoSlipBCAlgorithm()));
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new BinghamModelNoSlipBCAlgorithm()));
 
@@ -117,9 +118,12 @@ void bflow(string configname)
       //fct.DefineConst("H", H);
       SPtr<BCAdapter> velocityBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
       velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
+      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
 
       SPtr<BCAdapter> densityBCAdapter(new DensityBCAdapter());
       densityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
+      //densityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
+
 
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
@@ -131,6 +135,8 @@ void bflow(string configname)
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
 
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyK17LBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
@@ -140,8 +146,8 @@ void bflow(string configname)
 
       SPtr<Grid3D> grid(new Grid3D(comm));
       grid->setPeriodicX1(false);
-      grid->setPeriodicX2(false);
-      grid->setPeriodicX3(false);
+      grid->setPeriodicX2(true);
+      grid->setPeriodicX3(true);
       grid->setDeltaX(deltax);
       grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
 
@@ -221,7 +227,7 @@ void bflow(string configname)
          //wall interactors
          SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, slipBCAdapter, Interactor3D::SOLID));
          SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, slipBCAdapter, Interactor3D::SOLID));
-
+                                                                               
          SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, slipBCAdapter, Interactor3D::SOLID));
          SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, slipBCAdapter, Interactor3D::SOLID));
 
@@ -237,10 +243,10 @@ void bflow(string configname)
          InteractorsHelper intHelper(grid, metisVisitor);
          intHelper.addInteractor(wallXminInt);
          intHelper.addInteractor(wallXmaxInt);
-         intHelper.addInteractor(wallZminInt);
-         intHelper.addInteractor(wallZmaxInt);
          intHelper.addInteractor(wallYminInt);
          intHelper.addInteractor(wallYmaxInt);
+         intHelper.addInteractor(wallZminInt);
+         intHelper.addInteractor(wallZmaxInt);
          intHelper.addInteractor(sphereInt);
          intHelper.selectBlocks();
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
