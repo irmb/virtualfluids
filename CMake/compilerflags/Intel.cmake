@@ -24,11 +24,6 @@ LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-xHOST;-O3;-ip;-fno-alias
 ###############################################################################################################
 #LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-pthread")
 
-#############################################################################################################
-# c++ 11 support
-#############################################################################################################
-LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-std=c++11")
-
 list(APPEND VF_LINK_OPTIONS -parallel)
 list(APPEND VF_LINK_OPTIONS -irc)
 

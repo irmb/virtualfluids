@@ -19,6 +19,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <cstring>
 
 std::shared_ptr<LogFileReader> LogFileReader::getInstance()
 {
@@ -42,16 +43,16 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 	std::unique_ptr<input::Input> input = input::Input::makeInput(stream, "config");
 
 	logFileData->setFilePath(filePath);
-	logFileData->setDate(StringUtil::toString(input->getValue("Date")));
-	logFileData->setTime(StringUtil::toString(input->getValue("Time")));
+	logFileData->setDate(input->getValue("Date"));
+	logFileData->setTime(input->getValue("Time"));
 	logFileData->setGpuDevices(StringUtil::toStringVector(input->getValue("GPU_Devices")));
 
-	logFileData->setKernel(StringUtil::toString(input->getValue("Kernel")));
+	logFileData->setKernel(input->getValue("Kernel"));
 	logFileData->setNumberOfTimeSteps(StringUtil::toInt(input->getValue("NumberOfTimeSteps")));
 	logFileData->setViscosity(StringUtil::toDouble(input->getValue("Viscosity")));
 	logFileData->setBasisTimeStepLength(StringUtil::toInt(input->getValue("BasisTimeStepLength")));
 
-	logFileData->setSimName(StringUtil::toString(input->getValue("SimulationName")));
+	logFileData->setSimName(input->getValue("SimulationName"));
 
 
 
@@ -139,10 +140,10 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 		resultsCheckTimeOStringStream << "ResultsCheckTime_" << logFileData->getBasicGridLengths().at(i);
 		testTimeOStringStream << "TestTime_" << logFileData->getBasicGridLengths().at(i);
 		analyticalVTKWritingTimeOStringStream << "AnalyticalVTKFileWritingTime_" << logFileData->getBasicGridLengths().at(i);
-		std::string simTimeString = StringUtil::toString(input->getValue(simTimeOStringStream.str()));
-		std::string resultCheckTimeString = StringUtil::toString(input->getValue(resultsCheckTimeOStringStream.str()));
-		std::string testTimeString = StringUtil::toString(input->getValue(testTimeOStringStream.str()));
-		std::string analyticalVTKWritingTimeString = StringUtil::toString(input->getValue(analyticalVTKWritingTimeOStringStream.str()));
+		std::string simTimeString = input->getValue(simTimeOStringStream.str());
+		std::string resultCheckTimeString = input->getValue(resultsCheckTimeOStringStream.str());
+		std::string testTimeString = input->getValue(testTimeOStringStream.str());
+		std::string analyticalVTKWritingTimeString = input->getValue(analyticalVTKWritingTimeOStringStream.str());
 		simTimeString.erase(simTimeString.end() - 3, simTimeString.end());
 		resultCheckTimeString.erase(resultCheckTimeString.end() - 3, resultCheckTimeString.end());
 		testTimeString.erase(testTimeString.end() - 3, testTimeString.end());
@@ -392,7 +393,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 					std::vector<double> l2NormDivergentKernel;
 					std::vector<double> l2NormBetweenKernels;
 					std::shared_ptr<L2NormBetweenKernelsLogFileDataImp> aL2NormLogFileData = L2NormBetweenKernelsLogFileDataImp::getNewInstance();
-					aL2NormLogFileData->setBasicKernel(StringUtil::toString(input->getValue("BasicKernel_L2Norm_BK")));
+					aL2NormLogFileData->setBasicKernel(input->getValue("BasicKernel_L2Norm_BK"));
 					aL2NormLogFileData->setDivergentKernel(logFileData->getKernel());
 					aL2NormLogFileData->setDataToCalculate(dataToCalc.at(i));
 					aL2NormLogFileData->setTimeStep(timeSteps.at(j));
@@ -492,12 +493,12 @@ LogFileReader::LogFileReader()
 std::vector<std::string> LogFileReader::getAllFilesInDir(const std::string &dirPath, const std::string &fileExtension)
 {
 	std::vector<std::string> listOfFiles;
-	std::experimental::filesystem::path myPath = dirPath;
-	if (std::experimental::filesystem::exists(myPath) && std::experimental::filesystem::is_directory(myPath))
+	std::filesystem::path myPath = dirPath;
+	if (std::filesystem::exists(myPath) && std::filesystem::is_directory(myPath))
 	{
-		for (auto& item : std::experimental::filesystem::recursive_directory_iterator(myPath))
+		for (auto& item : std::filesystem::recursive_directory_iterator(myPath))
 		{
-			if (std::experimental::filesystem::is_regular_file(item.path()) && item.path().extension() == fileExtension)
+			if (std::filesystem::is_regular_file(item.path()) && item.path().extension() == fileExtension)
 				listOfFiles.push_back(item.path().string());
 		}
 	}
@@ -506,7 +507,7 @@ std::vector<std::string> LogFileReader::getAllFilesInDir(const std::string &dirP
 
 std::string LogFileReader::removeCharsFromString(std::string str, char * charsToRemove)
 {
-	for (unsigned int i = 0; i < strlen(charsToRemove); ++i)
+	for (unsigned int i = 0; i < std::strlen(charsToRemove); ++i)
 		str.erase(remove(str.begin(), str.end(), charsToRemove[i]), str.end());
 	return str;
 }

@@ -14,7 +14,7 @@
 #include "Simulations/TaylorGreenVortexUx/SimulationParameter/SimulationParameterTaylorGreenVortexUx.h"
 
 #include "Simulations/TaylorGreenVortexUz/SimulationParameter/SimulationParameterTaylorGreenVortexUz.h"
-#include "Simulations/TaylorGreenVortexUz/LogFileInformation/LogFileInformationTaylorGreenvortexUz.h"
+#include "Simulations/TaylorGreenVortexUz/LogFileInformation/LogFileInformationTaylorGreenVortexUz.h"
 #include "Simulations/TaylorGreenVortexUz/SimulationInfo/SimulationInfoTaylorGreenVortexUz.h"
 #include "Simulations/TaylorGreenVortexUz/AnalyticalResults/AnalyticalResultsTaylorGreenVortexUz.h"
 #include "Simulations/TaylorGreenVortexUz/InitialConditions/InitialConditionTaylorGreenVortexUz.h"

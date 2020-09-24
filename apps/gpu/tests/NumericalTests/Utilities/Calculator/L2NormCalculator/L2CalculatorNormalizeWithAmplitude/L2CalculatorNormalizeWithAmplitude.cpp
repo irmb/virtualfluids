@@ -2,6 +2,8 @@
 
 #include "Utilities/Calculator/FFTCalculator/FFTCalculator.h"
 
+#include <cmath>
+
 std::shared_ptr<L2NormCalculator> L2CalculatorNormalizeWithAmplitude::getInstance()
 {
 	static std::shared_ptr<L2NormCalculator> uniqueInstance;
@@ -17,7 +19,7 @@ double L2CalculatorNormalizeWithAmplitude::calc(std::vector<double> basicData, s
 	if (equalDouble(amplitude, 0.0))
 		return -1.0;
 	double counter = calcCounter(basicData, divergentData, level, lx, lz);
-	return sqrt(counter / (amplitude * amplitude));
+	return std::sqrt(counter / (amplitude * amplitude));
 }
 
 L2CalculatorNormalizeWithAmplitude::L2CalculatorNormalizeWithAmplitude() : L2NormCalculatorImp("Test could not run. Amplitude is zero. Normalization of the data is not possible.")

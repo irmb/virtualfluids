@@ -5,6 +5,7 @@
 #include "TestStatus.h"
 
 #include <vector>
+#include <string>
 
 class Test : public SimulationObserver 
 {

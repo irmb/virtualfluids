@@ -5,6 +5,7 @@
 
 #include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
 
+#include <string>
 #include <fstream>
 
 std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance(const std::string aFilePath)
@@ -130,7 +131,7 @@ std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > ConfigFileRead
 		aParameter->basicTimeStepLength = basisTimeStepLength.at(i);
 		aParameter->l0 = l0;
 		aParameter->rho0 = StringUtil::toDouble(input->getValue("Rho0"));
-		aParameter->vtkFilePath = StringUtil::toString(input->getValue("PathForVTKFileWriting"));
+		aParameter->vtkFilePath = input->getValue("PathForVTKFileWriting");
 		aParameter->dataToCalcTests = StringUtil::toStringVector(input->getValue("DataToCalcTests_TGV_Ux"));
 		parameter.push_back(aParameter);
 	}
@@ -154,7 +155,7 @@ std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct> > ConfigFileRead
 		aParameter->basicTimeStepLength = basisTimeStepLength.at(i);
 		aParameter->l0 = l0;
 		aParameter->rho0 = StringUtil::toDouble(input->getValue("Rho0"));
-		aParameter->vtkFilePath = StringUtil::toString(input->getValue("PathForVTKFileWriting"));
+		aParameter->vtkFilePath = input->getValue("PathForVTKFileWriting");
 		aParameter->dataToCalcTests = StringUtil::toStringVector(input->getValue("DataToCalcTests_TGV_Uz"));
 		parameter.push_back(aParameter);
 	}
@@ -177,7 +178,7 @@ std::vector<std::shared_ptr<ShearWaveParameterStruct> > ConfigFileReader::makeSh
 		aParameter->basicTimeStepLength = basisTimeStepLength.at(i);
 		aParameter->l0 = l0;
 		aParameter->rho0 = StringUtil::toDouble(input->getValue("Rho0"));
-		aParameter->vtkFilePath = StringUtil::toString(input->getValue("PathForVTKFileWriting"));
+		aParameter->vtkFilePath = input->getValue("PathForVTKFileWriting");
 		aParameter->dataToCalcTests = StringUtil::toStringVector(input->getValue("DataToCalcTests_SW"));
 		parameter.push_back(aParameter);
 	}
@@ -238,7 +239,7 @@ std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> ConfigFileReader::makeL
 
 	std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testParameter = std::shared_ptr<L2NormTestBetweenKernelsParameterStruct>(new L2NormTestBetweenKernelsParameterStruct);
 	testParameter->basicTestParameter = basicTestParameter;
-	testParameter->basicKernel = myKernelMapper->getEnum(StringUtil::toString(input->getValue("BasicKernel_L2NormBetweenKernels")));
+	testParameter->basicKernel = myKernelMapper->getEnum(input->getValue("BasicKernel_L2NormBetweenKernels"));
 	testParameter->kernelsToTest = readKernelList(input);
 	testParameter->timeSteps = StringUtil::toIntVector(input->getValue("Timesteps_L2NormBetweenKernels"));
 	testParameter->normalizeData = StringUtil::toStringVector(input->getValue("NormalizeData_L2Norm"));
@@ -324,7 +325,7 @@ std::vector<KernelType> ConfigFileReader::readKernelList(std::shared_ptr<input::
 {
 	if (StringUtil::toBool(input->getValue("L2NormBetweenKernelsTest"))) {
 		std::vector<std::string> kernelList = StringUtil::toStringVector(input->getValue("KernelsToTest"));
-		std::string beginnKernel = StringUtil::toString(input->getValue("BasicKernel_L2NormBetweenKernels"));
+		std::string beginnKernel = input->getValue("BasicKernel_L2NormBetweenKernels");
 		bool basicKernelInKernelList = false;
 		for (int i = 0; i < kernelList.size(); i++) {
 			if (kernelList.at(i) == beginnKernel)

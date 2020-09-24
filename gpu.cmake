@@ -1,8 +1,4 @@
 
-if(UNIX)
-    set(CMAKE_CXX_STANDARD 14)
-endif()
-
 #############################################################
 ###                     CUDAPATH                          ###
 #############################################################
@@ -147,6 +143,8 @@ ENDIF()
 #############################################################
 
 if(VF.BUILD_NUMERIC_TESTS)
+    set(CMAKE_CXX_STANDARD 17)
+
     add_subdirectory(3rdParty/fftw/fftw-3.3.7)
     add_subdirectory(3rdParty/googletest)
     add_subdirectory(apps/gpu/tests/NumericalTests)

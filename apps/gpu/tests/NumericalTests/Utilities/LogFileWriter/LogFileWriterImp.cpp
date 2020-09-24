@@ -12,7 +12,7 @@
 #include <helper_functions.h>
 #include <iomanip>
 #include <ctime>
-#include <experimental/filesystem>
+#include <filesystem>
 
 LogFileWriterImp::LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, KernelType kernel, double viscosity) : viscosity(viscosity)
 {
@@ -60,9 +60,9 @@ std::string LogFileWriterImp::buildFilePath(std::string basicFilePath)
 	std::ostringstream filePath;
 	filePath << basicFilePath << simLogInfo->getFilePathExtension().at(0) << "/viscosity_" << viscosity << "/" << simLogInfo->getFilePathExtension().at(1) << "/" << kernelName;
 	
-	std::experimental::filesystem::path dir(filePath.str());
-	if (!(std::experimental::filesystem::exists(dir)))
-		std::experimental::filesystem::create_directories(dir);
+	std::filesystem::path dir(filePath.str());
+	if (!(std::filesystem::exists(dir)))
+		std::filesystem::create_directories(dir);
 
 	filePath << "/logfile_" << calcDateAndTime() << "_" << kernelName << "_vis_" << viscosity << ".txt";
 	return filePath.str();

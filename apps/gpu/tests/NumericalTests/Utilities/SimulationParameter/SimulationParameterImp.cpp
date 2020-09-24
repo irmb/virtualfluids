@@ -5,7 +5,7 @@
 #include "Utilities/Structs/BasicSimulationParameterStruct.h"
 #include "Utilities/Structs/GridInformationStruct.h"
 
-#include <experimental/filesystem>
+#include <filesystem>
 
 SimulationParameterImp::SimulationParameterImp(KernelType kernel, double viscosity, std::shared_ptr<BasicSimulationParameterStruct> basicSimPara, std::shared_ptr<GridInformationStruct> gridInfo)
 	: viscosity(viscosity)
@@ -25,9 +25,9 @@ SimulationParameterImp::SimulationParameterImp(KernelType kernel, double viscosi
 
 void SimulationParameterImp::generateFileDirectionInMyStystem(std::string filePath)
 {
-	std::experimental::filesystem::path dir(filePath);
-	if (!(std::experimental::filesystem::exists(dir)))
-		std::experimental::filesystem::create_directories(dir);
+	std::filesystem::path dir(filePath);
+	if (!(std::filesystem::exists(dir)))
+		std::filesystem::create_directories(dir);
 }
 
 double SimulationParameterImp::getViscosity()

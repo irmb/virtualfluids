@@ -1,6 +1,6 @@
 #include "MathematicaPointList.h"
 
-#include "Utilities\DataPoint\DataPoint.h"
+#include "Utilities/DataPoint/DataPoint.h"
 
 std::shared_ptr<MathematicaPointList> MathematicaPointList::getNewInstance(std::string listName, std::vector< std::shared_ptr< DataPoint>> plotData)
 {

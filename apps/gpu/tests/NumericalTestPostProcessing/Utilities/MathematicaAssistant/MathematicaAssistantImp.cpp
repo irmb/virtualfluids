@@ -3,6 +3,9 @@
 #include "Utilities/DataPoint/DataPoint.h"
 #include "Utilities/MathematicaFunctionFactory/MathematicaFunctionFactory.h"
 
+#include <cmath>
+
+
 MathematicaAssistantImp::MathematicaAssistantImp()
 {
 }
@@ -137,7 +140,7 @@ void MathematicaAssistantImp::addFourthOrderOfAccuracyRef(std::vector<std::vecto
 	}
 	std::vector<double> fourth = { minData / 10.0 };
 	for (int l = 1; l < x.size(); l++) 
-		fourth.push_back(fourth.at(l - 1) / exp(-4.0 * log(x.at(l - 1) / x.at(l))));
+		fourth.push_back(fourth.at(l - 1) / std::exp(-4.0 * std::log(x.at(l - 1) / x.at(l))));
 
 
 	xAxesData.push_back(x);

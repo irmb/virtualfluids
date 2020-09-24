@@ -1,7 +1,7 @@
 #ifndef MATHEMATICA_PLOT_H
 #define MATHEMATICA_PLOT_H
 
-#include "../MathematicaFunktionImp.h"
+#include "Utilities/MathematicaFunction/MathematicaFunktionImp.h"
 
 #include <memory>
 #include <vector>
