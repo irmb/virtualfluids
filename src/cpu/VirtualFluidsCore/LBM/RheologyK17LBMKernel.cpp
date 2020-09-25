@@ -621,6 +621,15 @@ void RheologyK17LBMKernel::calculate(int step)
                omega = Thixotropy::getHerschelBulkleyCollFactor(omega, shearRate, drho);
                //omega = Thixotropy::getBinghamCollFactor(omega, shearRate, drho);
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+               dxux = c1o2 * (-omega) * (mxxMyy + mxxMzz);// +c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
+               dyuy = dxux + omega * c3o2 * mxxMyy;
+               dzuz = dxux + omega * c3o2 * mxxMzz;
+
+               Dxy = -three * omega * mfbba;
+               Dxz = -three * omega * mfbab;
+               Dyz = -three * omega * mfabb;
+
                mxxMyy += omega * (-mxxMyy) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vy2 * dyuy);
                mxxMzz += omega * (-mxxMzz) - three * (one + c1o2 * (-omega)) * (vx2 * dxux - vz2 * dzuz);
 
