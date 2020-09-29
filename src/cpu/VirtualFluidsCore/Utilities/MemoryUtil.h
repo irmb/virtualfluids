@@ -42,8 +42,13 @@ namespace Utilities
          long long totalPhysMem = memInfo.totalram;
          //Multiply in next statement to avoid int overflow on right hand side...
          totalPhysMem *= memInfo.mem_unit;
-    #elif defined(MEMORYUTIL_APPLE)
-    long long totalPhysMem = 0;
+      #elif defined(MEMORYUTIL_APPLE)
+        int mib [] = { CTL_HW, HW_MEMSIZE };
+        int64_t totalPhysMem;
+        size_t length = sizeof(totalPhysMem);
+
+        if(sysctl(mib, 2, &totalPhysMem, &length, nullptr, 0) == -1)
+            return 0;
       #else
       #error "MemoryUtil::getTotalPhysMem - UnknownMachine"
       #endif
