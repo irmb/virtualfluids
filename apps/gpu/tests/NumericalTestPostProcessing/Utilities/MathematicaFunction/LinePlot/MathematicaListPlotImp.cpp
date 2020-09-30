@@ -1,6 +1,6 @@
 #include "MathematicaListPlotImp.h"
 
-#include "Utilities\MathematicaFunction\PointList\MathematicaPointList.h"
+#include "Utilities/MathematicaFunction/PointList/MathematicaPointList.h"
 
 std::shared_ptr<MathematicaListPlot> MathematicaListPlotImp::getNewInstance(std::vector<std::shared_ptr<MathematicaPointList>> pointList, std::string plotType, std::string xAxes, std::string yAxes)
 {

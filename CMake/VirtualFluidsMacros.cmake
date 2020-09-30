@@ -84,6 +84,8 @@ function (vf_get_library_test_name library_test_name)
 endfunction()
 
 
+
+
 #################################################################################
 ## Add a target, link the libraries and add the compiler flags to the target
 ##
@@ -116,8 +118,7 @@ function(vf_add_library)
 
     collectFiles(sourceFiles "${ARG_FILES}" "${ARG_FOLDER}" "${ARG_EXCLUDE}")
 
-    includeProductionFiles (${library_name} "${sourceFiles}")
-
+	includeProductionFiles(${library_name} "${sourceFiles}")
 
     #################################################################
     ###   EXCECUTABLE                                             ###

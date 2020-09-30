@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
 enum Assistant{Phi, Ny, L2Norm, L2NormBetweenKernels, Time };
 

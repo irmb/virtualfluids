@@ -8,6 +8,7 @@
 #include "Tests/PhiTest/PhiTestParameterStruct.h"
 
 #include <iomanip>
+#include <cmath>
 
 std::shared_ptr<PhiTest> PhiTest::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, double viscosity, std::shared_ptr<PhiTestParameterStruct> testPara, std::string dataToCalculate)
 {
@@ -72,7 +73,7 @@ PhiTest::PhiTest(std::shared_ptr<ColorConsoleOutput> colorOutput, double viscosi
 
 double PhiTest::calcOrderOfAccuracy(std::vector<double> data)
 {
-	double ooa = log(data.at(0) / data.at(1)) / log(lx.at(1) / lx.at(0));
+	double ooa = std::log(data.at(0) / data.at(1)) / std::log(lx.at(1) / lx.at(0));
 	
 	return ooa;
 }

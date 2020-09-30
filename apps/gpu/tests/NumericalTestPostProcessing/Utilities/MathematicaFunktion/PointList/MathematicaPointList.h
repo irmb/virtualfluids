@@ -1,7 +1,7 @@
 #ifndef MATHEMATICA_POINT_LIST_H
 #define MATHEMATICA_POINT_LIST_H
 
-#include "../MathematicaFunktionImp.h"
+#include "Utilities/MathematicaFunction/MathematicaFunktionImp.h"
 
 #include <memory>
 #include <vector>

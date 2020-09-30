@@ -8,6 +8,7 @@
 #include "Tests/NyTest/NyTestParameterStruct.h"
 
 #include <iomanip>
+#include <cmath>
 
 std::shared_ptr<NyTest> NyTest::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, double viscosity, std::shared_ptr<NyTestParameterStruct> testPara, std::string dataToCalculate)
 {
@@ -84,7 +85,7 @@ NyTest::NyTest(std::shared_ptr<ColorConsoleOutput> colorOutput, double viscosity
 
 double NyTest::calcOrderOfAccuracy(std::vector<double> data)
 {
-	double ooa = log(data.at(0) / data.at(1)) / log(lx.at(1) / lx.at(0));
+	double ooa = std::log(data.at(0) / data.at(1)) / std::log(lx.at(1) / lx.at(0));
 	
 	return ooa;
 }

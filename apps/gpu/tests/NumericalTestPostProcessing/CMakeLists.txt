@@ -1,14 +1,6 @@
-setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR})
+project(NumericalTestPostProcessing)
 
-set(linkDirectories "")
-set(libsToLink VirtualFluids_GPU cudart_static VirtualFluidsBasics)
-set(includeDirectories ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/VirtualFluids_GPU ${CMAKE_SOURCE_DIR}/src/VirtualFluidsBasics)
+vf_add_library(BUILDTYPE binary DEPENDS VirtualFluids_GPU basics cudart_static)
 
-#glob files and save in MY_SRCS
-include(CMakePackage.cmake)
-
-buildExe(${targetName} "${MY_SRCS}" "${linkDirectories}" "${libsToLink}" "${includeDirectories}")
-groupTarget(${targetName} ${testFolder})
-
-#Specify the linking to 3rdParty libs
-include(3rdPartyLinking.cmake)
+vf_get_library_name(library_name)
+groupTarget(${library_name} ${testFolder})

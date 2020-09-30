@@ -1,12 +1,12 @@
 ##################################################
 #				 GPU Mapping					 #
 ##################################################
-Devices="1"
+Devices="0"
 
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-KernelsToTest="CumulantAA2016CompSP27"
+KernelsToTest="BGKCompSP27"
 #BGKCompSP27 BGKPlusCompSP27 CumulantAA2016CompSP27 CumulantOneCompSP27 CumulantF3CompSP27 CumulantF32018CompSP27 CumulantAll4CompSP27
 NumberOfTimeSteps=20
 Viscosity="0.001"
@@ -75,7 +75,7 @@ DivergentTimeStep_L2=20
 ##################################################
 L2NormBetweenKernelsTest=false
 
-BasicKernel_L2NormBetweenKernels=CumulantF3CompSP27
+BasicKernel_L2NormBetweenKernels=BGKCompSP27
 Timesteps_L2NormBetweenKernels="0 10 20"
 NormalizeWith=amplitude
 
@@ -105,19 +105,27 @@ ShearWave512=false
 ##################################################
 NumberOfGridLevels=1
 
-GridPath32="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni32x4x48"
-GridPath64="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni64x4x96"
-GridPath128="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni128x4x192"
-GridPath256="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni256x4x384"
-GridPath512="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni512x4x768"
+#GridPath32="C:\Users\Timon\Documents\studienarbeitIRMB\Grids\gridUni32x4x48"
+#GridPath64="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni64x4x96"
+#GridPath128="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni128x4x192"
+#GridPath256="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni256x4x384"
+#GridPath512="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni512x4x768"
+
+GridPath32="C:\Users\Soeren\Documents\testdata\Grids\gridUni32x4x48"
+GridPath64="C:\Users\Soeren\Documents\testdata\Grids\gridUni64x4x96"
+GridPath128="C:\Users\Soeren\Documents\testdata\Grids\gridUni128x4x192"
+GridPath256="C:\Users\Soeren\Documents\testdata\Grids\gridUni256x4x384"
+GridPath512="C:\Users\Soeren\Documents\testdata\Grids\gridUni512x4x768"
 
 ##################################################
 # 			File Writing Information			 #
 ##################################################
 WriteVTKFiles=false
-PathForVTKFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
+#PathForVTKFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
+PathLogFile="C:\Users\Soeren\Documents\testdata\Output"
 StartStepFileWriter=0
 
 WriteAnalyResultsToVTK=true
 
-PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"
+#PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"
+PathLogFile="C:\Users\Soeren\Documents\testdata\logFiles"
