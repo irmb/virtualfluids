@@ -31,7 +31,9 @@ ENDIF()
 
 #############################################################
 
-enable_language(CUDA)
+if(VF.BUILD_NUMERIC_TESTS)
+    set(CMAKE_CXX_STANDARD 17)
+endif()
 
 #############################################################
 
@@ -43,6 +45,9 @@ ENDIF()
 
 set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
 
+#############################################################
+
+enable_language(CUDA)
 
 ##########################################################################################################################
 ###                  Subdirectories                                                                                    ###
@@ -143,8 +148,6 @@ ENDIF()
 #############################################################
 
 if(VF.BUILD_NUMERIC_TESTS)
-    set(CMAKE_CXX_STANDARD 17)
-
     add_subdirectory(3rdParty/fftw/fftw-3.3.7)
     add_subdirectory(3rdParty/googletest)
     add_subdirectory(apps/gpu/tests/NumericalTests)

@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
 enum DataCombination{ EqualSimulationsForDifferentKernels , EqualKernelSimulationsForDifferentViscosities};
 
