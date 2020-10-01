@@ -16,6 +16,9 @@ project(VirtualFluids CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_CUDA_STANDARD 14)
+set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER ".cmake")
 set(libraryFolder "libs")
@@ -45,6 +48,7 @@ option(BUILD_SHARED_LIBS "" ON)
 if(POLICY CMP0104)
     cmake_policy(SET CMP0104 NEW)
     set(CMAKE_CUDA_ARCHITECTURES 30)
+    # with cuda 11 the minimum architecture is 52
 endif()
 
 #################################################################################

@@ -118,7 +118,6 @@ function(vf_add_library)
 
     includeProductionFiles (${library_name} "${sourceFiles}")
 
-
     #################################################################
     ###   EXCECUTABLE                                             ###
     #################################################################

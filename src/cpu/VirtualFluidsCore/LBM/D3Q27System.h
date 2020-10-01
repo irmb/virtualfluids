@@ -282,7 +282,6 @@ namespace D3Q27System
    static LBMReal getCompFeqForDirection(const int& direction, const LBMReal& drho,const LBMReal& vx1,const LBMReal& vx2,const LBMReal& vx3)
    {
       using namespace UbMath;
-
       LBMReal cu_sq=1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       ////-----
