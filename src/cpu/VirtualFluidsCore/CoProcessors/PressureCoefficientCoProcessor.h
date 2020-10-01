@@ -7,6 +7,7 @@
 
 #include "CoProcessor.h"
 #include "LBMSystem.h"
+#include "UbTuple.h"
 
 
 class GbCuboid3D;

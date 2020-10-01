@@ -1,6 +1,8 @@
 #include "D3Q27System.h"
 namespace D3Q27System
 {
+    using namespace UbMath;
+
     //index             0   1   2   3   4   5  6   7   8    9  10  11  12  13  14  15  16  17  18//falsch
     //f:              ZERO, E,  W,  N,  S,  T,  B, NE, SW, SE, NW, TE, BW, BE, TW, TN, BS, BN, TS, TNE TNW TSE TSW BNE BNW BSE BSW
     //const int EX1[] = { 0,  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1 };

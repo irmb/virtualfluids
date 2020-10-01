@@ -1,7 +1,7 @@
 #include "CompressibleOffsetInterpolationProcessor.h"
 #include "D3Q27System.h"
 
-
+using namespace UbMath;
 
 CompressibleOffsetInterpolationProcessor::CompressibleOffsetInterpolationProcessor()
    : omegaC(0.0), omegaF(0.0)

@@ -8,6 +8,8 @@
 
 #define PROOF_CORRECTNESS
 
+using namespace UbMath;
+
 //////////////////////////////////////////////////////////////////////////
 IncompressibleCumulantWithSpongeLayerLBMKernel::IncompressibleCumulantWithSpongeLayerLBMKernel()
 {
@@ -306,7 +308,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate(int step)
                      //muX2 = (double)(x2-1+ix2*maxX2);
                      //muX3 = (double)(x3-1+ix3*maxX3);
                   //}
-                  //spongeFactor ist von Funktion in muSpongeLayer abhängich und variiert zwischen 1 (nix tun) und 0.5 (collFactor etwa auf 1);
+                  //spongeFactor ist von Funktion in muSpongeLayer abhï¿½ngich und variiert zwischen 1 (nix tun) und 0.5 (collFactor etwa auf 1);
                   //lk //LBMReal spongeFactor = muSpongeLayer.Eval();
 
                   //if (spongeFactor == 0.5)

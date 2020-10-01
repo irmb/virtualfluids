@@ -12,6 +12,7 @@
 
 #include "CoProcessor.h"
 #include "LBMSystem.h"
+#include "UbTuple.h"
 
 class Communicator;
 class Grid3D;
