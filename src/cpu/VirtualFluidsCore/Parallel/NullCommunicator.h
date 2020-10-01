@@ -42,7 +42,7 @@
 //! \details NullCommunicator is only a place-holder. It is only one process in shared memory.
 class NullCommunicator : public Communicator
 {
-   private:
+private:
    NullCommunicator();
    NullCommunicator( const NullCommunicator& ){}
 public:

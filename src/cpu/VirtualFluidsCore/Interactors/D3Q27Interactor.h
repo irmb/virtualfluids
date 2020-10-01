@@ -87,7 +87,6 @@ public:
 
    ObObject* clone() { throw UbException(UB_EXARGS,"not implemented");	}
 
-
    void writeValidationAVSFile(std::string filename);  
    virtual std::vector< std::pair<GbPoint3D,GbPoint3D> >  getQsLineSet();
 

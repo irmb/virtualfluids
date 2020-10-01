@@ -46,7 +46,7 @@
    #include "stdlib.h"
    #include "stdio.h"
    #include "string.h"
-#elif (defined(__amd64) || defined(__amd64__) || defined(__unix__)) && !defined(__AIX__)
+#elif (defined(__amd64) || defined(__amd64__) || defined(__unix__) || defined(__CYGWIN__)) && !defined(__AIX__)
    #define MEMORYUTIL_LINUX
    #include "sys/types.h"
    #include "sys/sysinfo.h"
@@ -80,7 +80,12 @@ namespace Utilities
          //Multiply in next statement to avoid int overflow on right hand side...
          totalPhysMem *= memInfo.mem_unit;
       #elif defined(MEMORYUTIL_APPLE)
-         long long totalPhysMem = 0;
+        int mib [] = { CTL_HW, HW_MEMSIZE };
+        int64_t totalPhysMem;
+        size_t length = sizeof(totalPhysMem);
+
+        if(sysctl(mib, 2, &totalPhysMem, &length, nullptr, 0) == -1)
+            return 0;
       #else
          #error "MemoryUtil::getTotalPhysMem - UnknownMachine"
       #endif
@@ -142,12 +147,8 @@ namespace Utilities
          PROCESS_MEMORY_COUNTERS pmc;
          GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
          SIZE_T physMemUsedByMe = pmc.WorkingSetSize;          
-      #elif defined(MEMORYUTIL_LINUX)
+      #elif defined(MEMORYUTIL_LINUX) || defined(MEMORYUTIL_APPLE) || defined(MEMORYUTIL_CYGWIN)
          long long physMemUsedByMe = (long long)getValue() * (long long)1024;
-      #elif defined(MEMORYUTIL_APPLE)
-      long long physMemUsedByMe = 0;
-      #elif defined(MEMORYUTIL_CYGWIN)
-        long long physMemUsedByMe = (long long)getValue() * (long long)1024;
       #else
          #error "MemoryUtil::getPhysMemUsedByMe - UnknownMachine"
       #endif
