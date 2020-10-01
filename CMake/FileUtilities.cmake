@@ -6,16 +6,26 @@
 #################################################################################
 
 macro(includeAllFiles targetName file_path)
-	set(collectTestFiles ON)
-	set(collectProductionFiles ON)
+	if(NOT DEFINED collectTestFiles)
+	    set(collectTestFiles ON)
+	endif()
+	
+	if(NOT DEFINED collectProductionFiles)
+        set(collectProductionFiles ON)
+    endif()
 
 	includeFiles(${targetName} "${file_path}")
 endmacro(includeAllFiles)
 
 
 macro(includeProductionFiles targetName file_path)
-	set(collectTestFiles OFF)
-	set(collectProductionFiles ON)
+	if(NOT DEFINED collectTestFiles)
+	    set(collectTestFiles OFF)
+	endif()
+	
+	if(NOT DEFINED collectProductionFiles)
+        set(collectProductionFiles ON)
+    endif()
 
 	includeFiles(${targetName} "${file_path}")
 endmacro(includeProductionFiles)
@@ -23,8 +33,13 @@ endmacro(includeProductionFiles)
 
 
 macro(includeTestFiles targetName file_paths)
-	set(collectTestFiles ON)
-	set(collectProductionFiles OFF)
+	if(NOT DEFINED collectTestFiles)
+		set(collectTestFiles ON)
+	endif()
+
+	if(NOT DEFINED collectProductionFiles)
+		set(collectProductionFiles OFF)
+	endif()
 
 	includeFiles(${targetName} "${file_paths}")
 endmacro(includeTestFiles)
@@ -46,6 +61,9 @@ macro(includeFiles targetName file_paths)
 		endif()
 
 	endforeach()
+
+	unset(collectTestFiles)
+	unset(collectProductionFiles)
 
 endmacro(includeFiles)
 
