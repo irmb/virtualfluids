@@ -29,6 +29,8 @@ void NonReflectingOutflowBCAlgorithm::addDistributions(SPtr<DistributionArray3D>
 void NonReflectingOutflowBCAlgorithm::applyBC()
 {
    using namespace D3Q27System;
+   using namespace UbMath;
+
    LBMReal f[ENDF+1];
    LBMReal ftemp[ENDF+1];
 

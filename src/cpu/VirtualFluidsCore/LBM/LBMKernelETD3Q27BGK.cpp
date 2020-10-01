@@ -8,6 +8,8 @@
 
 //#define PROOF_CORRECTNESS
 
+using namespace UbMath;
+
 //////////////////////////////////////////////////////////////////////////
 LBMKernelETD3Q27BGK::LBMKernelETD3Q27BGK() 
 {

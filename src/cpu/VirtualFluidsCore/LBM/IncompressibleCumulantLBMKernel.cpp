@@ -8,6 +8,8 @@
 
 #define PROOF_CORRECTNESS
 
+using namespace UbMath;
+
 //////////////////////////////////////////////////////////////////////////
 IncompressibleCumulantLBMKernel::IncompressibleCumulantLBMKernel()
 {

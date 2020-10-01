@@ -4,6 +4,8 @@
 #include "DataSet3D.h"
 #include "BCArray3D.h"
 
+using namespace UbMath;
+
 InitDensityLBMKernel::InitDensityLBMKernel()
 {
    this->compressible = false;

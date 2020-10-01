@@ -42,6 +42,7 @@ SPtr<LBMKernel> BGKLBMKernel::clone()
 void BGKLBMKernel::calculate(int step)
 {
    using namespace D3Q27System;
+   using namespace UbMath;
 
    //initializing of forcing stuff 
    if (withForcing)
