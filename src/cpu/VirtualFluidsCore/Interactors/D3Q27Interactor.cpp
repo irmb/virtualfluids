@@ -129,7 +129,7 @@ void D3Q27Interactor::initInteractor(const double& timeStep)
    //////////////////////////////////////////////////////////////////////////
    //init bcs
    int nofAdapter = (int)bcAdapters.size();
-   if(nofAdapter==0) UBLOG(logWARNING,"WARNING - D3Q27Interactor::initInteractor Warning - no nodeAdapter available");
+   if(nofAdapter==0) { UBLOG(logWARNING,"WARNING - D3Q27Interactor::initInteractor Warning - no nodeAdapter available"); }
    bool needTimeDependence = false;
    for(int pos=0; pos<nofAdapter; ++pos)
    {
@@ -149,7 +149,7 @@ void D3Q27Interactor::updateInteractor(const double& timestep)
    //////////////////////////////////////////////////////////////////////////
    //update bcs
    int nofAdapter = (int)bcAdapters.size();
-   if(nofAdapter==0) UBLOG(logERROR,"WARNING - D3Q27Interactor::updateInteractor Warning - no nodeAdapter available for ");
+   if(nofAdapter==0) { UBLOG(logERROR,"WARNING - D3Q27Interactor::updateInteractor Warning - no nodeAdapter available for "); }
 
    bool needTimeDependence = false;
 
