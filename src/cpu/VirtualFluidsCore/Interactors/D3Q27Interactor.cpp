@@ -220,9 +220,6 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
    double internX1,internX2,internX3;
 
 
-   //width of ghost layer 
-   int gl = kernel->getGhostLayerWidth();
-
    int startIX1 = 0;
    int startIX2 = 0;
    int startIX3 = 0; 
@@ -230,8 +227,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
    int stopIX2  = (int)bcArray->getNX2();
    int stopIX3  = (int)bcArray->getNX3(); 
 
-   double         dx       = grid.lock()->getDeltaX(block);
-   UbTupleDouble3 orgDelta = grid.lock()->getNodeOffset(block);
+   double dx = grid.lock()->getDeltaX(block);
 
    //other boundingRect than in init, because here the boundrect has to be increased by one dx
    GbCuboid3D extendedBoundingGeoOfGeoObject(  geoObject3D->getX1Minimum()-1.02*dx 

@@ -1,9 +1,5 @@
 #include "TimerImp.h"
 
-TimerImp::TimerImp()
-{
-    
-}
 
 void TimerImp::start()
 {

@@ -40,17 +40,17 @@
 class ObObject : public UbObservable
 {
 public:
-   ObObject() : name("") { }
+    ObObject() = default;
    ObObject(const std::string& name) : name(name) { }
 
-   virtual ~ObObject() { }
+   virtual ~ObObject() = default;
 
-   virtual ObObject*   clone()=0;
+   virtual ObObject* clone() = 0;
 
    virtual std::string getName()  { return name; }
-   void setName(std::string name) { this->name=name; }
+   void setName(std::string name) { this->name = name; }
 
-   virtual std::string toString()=0;
+   virtual std::string toString() override = 0;
 
 
 private:

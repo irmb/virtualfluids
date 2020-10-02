@@ -531,8 +531,6 @@ namespace D3Q27System
    static inline void calcDistanceToNeighbors(std::vector<double>& distNeigh, const double& deltaX1,const double& deltaX2,const double& deltaX3)
    {
       //distNeigh.resize(FENDDIR+1, UbMath::sqrt2*deltaX1);
-      double sqrt3 = UbMath::sqrt3;
-      double sqrt2 = UbMath::sqrt2;
       distNeigh[E] = distNeigh[W] =  deltaX1;
       distNeigh[N] = distNeigh[S] =  deltaX2;
       distNeigh[T] = distNeigh[B] = deltaX3;

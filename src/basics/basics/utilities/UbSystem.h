@@ -459,7 +459,6 @@ namespace UbSystem
    inline std::string getMachineName()
    {
       char Name[150];
-      int i = 0;
 
 #if defined(UBSYSTEM_WINDOWS) || defined(UBSYSTEM_CYGWIN)
       TCHAR infoBuf[150];
@@ -467,7 +466,7 @@ namespace UbSystem
       memset(Name, 0, 150);
       if (GetComputerName(infoBuf, &bufCharCount))
       {
-         for (i = 0; i<150; i++)
+         for (int i = 0; i<150; i++)
          {
             Name[i] = infoBuf[i];
          }

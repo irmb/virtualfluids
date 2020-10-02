@@ -79,7 +79,6 @@ private:
    std::vector<std::vector<double> > data;
    std::string path;
    WbWriter* writer;
-   bool bcInformation;
    std::vector<std::vector<SPtr<Block3D> > > blockVector;
    int minInitLevel;
    int maxInitLevel;
