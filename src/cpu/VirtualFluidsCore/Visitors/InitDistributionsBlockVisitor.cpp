@@ -168,10 +168,6 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
 
       LBMReal f[D3Q27System::ENDF+1];
 
-      size_t nx1 = distributions->getNX1();
-      size_t nx2 = distributions->getNX2();
-      size_t nx3 = distributions->getNX3();
-
       for(int ix3=0; ix3<bcArray->getNX3(); ix3++)
          for(int ix2=0; ix2<bcArray->getNX2(); ix2++)
             for(int ix1=0; ix1<bcArray->getNX1(); ix1++)

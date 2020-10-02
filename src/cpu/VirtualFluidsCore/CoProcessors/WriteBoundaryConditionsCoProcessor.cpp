@@ -144,7 +144,6 @@ void WriteBoundaryConditionsCoProcessor::clearData()
 void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
 {
    UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
-   UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
    UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
    double         dx = grid->getDeltaX(block);
 
@@ -181,10 +180,6 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
    maxX1 -= 1;
    maxX2 -= 1;
    maxX3 -= 1;
-
-   int s=0;
-
-   
 
    for (size_t ix3 = minX3; ix3<=maxX3; ix3++)
    {

@@ -238,7 +238,7 @@ void VelocityBCAdapter::init(const D3Q27Interactor* const& interactor, const dou
                vx1BCs[pos].setStartTime( vx1BCs[pos].getStartTime() + timeStep );
                vx1BCs[pos].setEndTime( vx1BCs[pos].getEndTime() + timeStep );
             }
-            if( UbMath::equal(maxEndtime,BCFunction::INFCONST) )
+         if( UbMath::equal(maxEndtime,BCFunction::INFCONST) )
             for(size_t pos=0; pos<vx2BCs.size(); ++pos)
             {
                vx2BCs[pos].setStartTime( vx2BCs[pos].getStartTime() + timeStep );

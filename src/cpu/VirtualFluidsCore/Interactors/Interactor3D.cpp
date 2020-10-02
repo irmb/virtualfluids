@@ -62,8 +62,7 @@ Interactor3D::Interactor3D()
 }
 //////////////////////////////////////////////////////////////////////////
 Interactor3D::Interactor3D(SPtr<Grid3D> grid, int type)
-   :   type(type)
-     , grid(grid)
+   : grid(grid), type(type)
 {
 
 }

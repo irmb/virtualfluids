@@ -113,8 +113,8 @@ public:
    /*
    * Creates a 2D polygon as clone of this 2D polygon.
    */
-   GbPolygon3D* clone() {   return(new GbPolygon3D(this)); }
-   void finalize()
+   GbPolygon3D* clone() override { return(new GbPolygon3D(this)); }
+   void finalize() override
    {
       throw UbException(UB_EXARGS,"toDo");
    }
@@ -197,15 +197,15 @@ public:
    //   if(!this.consistent) this.calculateValues();
    //   return(this.area);
    //}
-   double getX1Centroid();
-   double getX1Minimum();
-   double getX1Maximum();
-   double getX2Centroid();
-   double getX2Minimum();
-   double getX2Maximum();
-   double getX3Centroid();
-   double getX3Minimum();
-   double getX3Maximum();
+   double getX1Centroid() override;
+   double getX1Minimum() override;
+   double getX1Maximum() override;
+   double getX2Centroid() override;
+   double getX2Minimum() override;
+   double getX2Maximum() override;
+   double getX3Centroid() override;
+   double getX3Minimum() override;
+   double getX3Maximum() override;
 
    /*
    * Adds a point to the end of this polygon. Notifies the observers of this 2D polygon.
@@ -243,31 +243,32 @@ public:
    //    }
    //    catch(Exception e){ return(false); }
    // }
-   std::vector<GbTriangle3D*> getSurfaceTriangleSet()
+   std::vector<GbTriangle3D*> getSurfaceTriangleSet() override
    {
       std::cout<<"GbPolygon3D::getSurfaceTriangleSet() - not implemented\n";
       std::vector<GbTriangle3D*> tmp;
       return tmp;
    }
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3)
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3) override
    {
       throw UbException(__FILE__, __LINE__, "GbPolygon3D::isPointInObject3D- not implemented");
    }
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary)
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary) override
    {
       throw UbException(__FILE__, __LINE__, "GbPolygon3D::isPointInObject3D- not implemented");
    }
-   bool isCellInsideGbObject3D(double x11,double x21,double x31,double x12,double x22,double x32) { return false; }
+   bool isCellInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override { return false; }
 
-   GbLine3D* createClippedLine3D (GbPoint3D& point1, GbPoint3D &point2)
+   GbLine3D* createClippedLine3D (GbPoint3D& point1, GbPoint3D &point2) override
    {
       throw UbException(__FILE__, __LINE__, "GbPolygon3D::createClippedLine3D - not implemented");
-   }                        
+   }
+
 /*
    * Returns a string representation of this 2D polygon.
    * @return a string representation of this 2D polygon
    */
-   std::string toString();
+   std::string toString() override;
 
    /*======================================================================*/
    /*  Private Methoden                                                    */

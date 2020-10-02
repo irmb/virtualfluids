@@ -9,7 +9,7 @@
 class BASICS_EXPORT Timer
 {
 public:
-
+    virtual ~Timer() = default;
     static SPtr<Timer> makeStart();
 
     virtual void start() = 0;

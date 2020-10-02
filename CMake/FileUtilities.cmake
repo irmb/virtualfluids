@@ -170,22 +170,23 @@ function(collectFiles source_files ARG_FILES ARG_FOLDER ARG_EXCLUDE)
 		endforeach()
 	endif()
 
-
 	if (NOT ARG_FILES AND NOT ARG_FOLDER)
 		file ( GLOB_RECURSE all_files ${VIRTUAL_FLUIDS_GLOB_FILES} )
 		set(local_source_files ${local_source_files} ${all_files})
 	endif()
-
-
+	
 	if (ARG_EXCLUDE)
 		foreach(file_path ${local_source_files})
+		    set(exclude_file OFF)
 			foreach(file_exclude ${ARG_EXCLUDE})
 				get_filename_component(file_name ${file_path} NAME)
-				if (NOT ${file_name} STREQUAL ${file_exclude})
-					set(new_files ${new_files} ${file_path})
+				if (${file_name} STREQUAL ${file_exclude})
+					set(exclude_file TRUE)
 				endif()
-
 			endforeach()
+			if (NOT ${exclude_file})	
+				set(new_files ${new_files} ${file_path})
+			endif()
 		endforeach()
 		set(local_source_files ${new_files})
 	endif()

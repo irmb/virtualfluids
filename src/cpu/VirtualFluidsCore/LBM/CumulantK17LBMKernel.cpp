@@ -113,10 +113,6 @@ void CumulantK17LBMKernel::calculate(int step)
       muForcingX1.DefineVar("nu", &muNu);
       muForcingX2.DefineVar("nu", &muNu);
       muForcingX3.DefineVar("nu", &muNu);
-
-      LBMReal forcingX1 = 0;
-      LBMReal forcingX2 = 0;
-      LBMReal forcingX3 = 0;
    }
    /////////////////////////////////////
 
@@ -245,9 +241,6 @@ void CumulantK17LBMKernel::calculate(int step)
                   vvy += forcingX2 * deltaT * c1o2; // Y
                   vvz += forcingX3 * deltaT * c1o2; // Z
                }
-               ///////////////////////////////////////////////////////////////////////////////////////////               
-               ////////////////////////////////////////////////////////////////////////////////////
-               LBMReal oMdrho = c1;
 			      ////////////////////////////////////////////////////////////////////////////////////
 			      // calculate the square of velocities for this lattice node
                LBMReal vx2 = vvx * vvx;

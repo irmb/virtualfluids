@@ -66,7 +66,7 @@ Calculator::Calculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayer
    {
       std::vector<SPtr<Block3D>> blockVector;
       grid->getBlocks(level, gridRank, true, blockVector);
-      for (SPtr<Block3D> const block : blockVector)
+      for (const auto& block : blockVector)
          if (block)
             blocks[block->getLevel()].push_back(block);
    }
