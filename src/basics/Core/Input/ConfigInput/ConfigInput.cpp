@@ -218,6 +218,7 @@ namespace input
         bool isComment = false;
 
         while (!(stream.get(ch)).fail())
+        {
             if (isCommentSign(ch))
                 isComment = true;
             else if (isNewLine(ch))
@@ -231,7 +232,8 @@ namespace input
                 stream.putback(ch);
                 return 0;
             }
-            return 0;
+        }
+        return 0;
     }
 
     bool ConfigInput::isRegularChar(bool isComment, char ch)
