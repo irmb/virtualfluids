@@ -43,7 +43,7 @@ class DataSet3D;
 class ILBMKernel
 {
 public:
-    virtual ~ILBMKernel() {};
+    virtual ~ILBMKernel() = default;
 
     virtual void calculate(int step) = 0;
     virtual void swapDistributions() = 0;
