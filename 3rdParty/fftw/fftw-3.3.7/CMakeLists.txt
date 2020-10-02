@@ -10,8 +10,8 @@ if (POLICY CMP0042)
   cmake_policy (SET CMP0042 NEW)
 endif ()
 
-option (BUILD_SHARED_LIBS "Build shared libraries" ON)
-option (BUILD_TESTS "Build tests" OFF)
+#option (BUILD_SHARED_LIBS "Build shared libraries" ON)
+#option (BUILD_TESTS "Build tests" OFF)
 
 option (ENABLE_OPENMP "Use OpenMP for multithreading" OFF)
 option (ENABLE_THREADS "Use pthread for multithreading" OFF)
@@ -335,7 +335,8 @@ if (OPENMP_FOUND)
   target_compile_options (${fftw3_lib}_omp PRIVATE ${OpenMP_C_FLAGS})
 endif ()
 
-groupTarget(${fftw3_lib} ${thirdPartyFolder})
+groupTarget(${fftw3_lib} ${thirdFolder})
+target_include_directories(${fftw3_lib} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/api)
 
 foreach(subtarget ${subtargets})
   set_target_properties (${subtarget} PROPERTIES SOVERSION 3.5.7 VERSION 3)
@@ -344,16 +345,23 @@ foreach(subtarget ${subtargets})
 	  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
           ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endforeach ()
-install(TARGETS ${fftw3_lib}
-          EXPORT FFTW3LibraryDepends
-          RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-          LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+#install(TARGETS ${fftw3_lib}
+#          EXPORT FFTW3LibraryDepends
+#          RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+#          LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-install (FILES api/fftw3.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-if (EXISTS api/fftw3.f)
-  install (FILES api/fftw3.f DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-endif ()
+set_target_properties(${fftw3_lib}
+        PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
+#install (FILES api/fftw3.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+#if (EXISTS api/fftw3.f)
+#  install (FILES api/fftw3.f DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+#endif ()
 
 if (BUILD_TESTS)
 
@@ -380,30 +388,30 @@ if (BUILD_TESTS)
   endif ()
 endif ()
 
-# pkgconfig file
-set (prefix ${CMAKE_INSTALL_PREFIX})
-set (exec_prefix ${CMAKE_INSTALL_PREFIX})
-set (libdir ${CMAKE_INSTALL_FULL_LIBDIR})
-set (includedir ${CMAKE_INSTALL_FULL_INCLUDEDIR})
-set (VERSION ${FFTW_VERSION})
-configure_file (fftw.pc.in fftw${PREC_SUFFIX}.pc @ONLY)
-install (FILES
-          ${CMAKE_CURRENT_BINARY_DIR}/fftw${PREC_SUFFIX}.pc
-         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-         COMPONENT Development)
-
-# cmake file
-set (FFTW3_LIBRARIES "FFTW3::${fftw3_lib}")
-configure_file (FFTW3Config.cmake.in FFTW3${PREC_SUFFIX}Config.cmake @ONLY)
-configure_file (FFTW3ConfigVersion.cmake.in FFTW3${PREC_SUFFIX}ConfigVersion.cmake @ONLY)
-install (FILES
-          ${CMAKE_CURRENT_BINARY_DIR}/FFTW3${PREC_SUFFIX}Config.cmake
-          ${CMAKE_CURRENT_BINARY_DIR}/FFTW3${PREC_SUFFIX}ConfigVersion.cmake
-	  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fftw3${PREC_SUFFIX}
-         COMPONENT Development)
-
-export (TARGETS ${fftw3_lib} NAMESPACE FFTW3:: FILE ${PROJECT_BINARY_DIR}/FFTW3LibraryDepends.cmake)
-install(EXPORT FFTW3LibraryDepends
-        NAMESPACE FFTW3::
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fftw3${PREC_SUFFIX}
-        COMPONENT Development)
+## pkgconfig file
+#set (prefix ${CMAKE_INSTALL_PREFIX})
+#set (exec_prefix ${CMAKE_INSTALL_PREFIX})
+#set (libdir ${CMAKE_INSTALL_FULL_LIBDIR})
+#set (includedir ${CMAKE_INSTALL_FULL_INCLUDEDIR})
+#set (VERSION ${FFTW_VERSION})
+#configure_file (fftw.pc.in fftw${PREC_SUFFIX}.pc @ONLY)
+#install (FILES
+#          ${CMAKE_CURRENT_BINARY_DIR}/fftw${PREC_SUFFIX}.pc
+#         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+#         COMPONENT Development)
+#
+## cmake file
+#set (FFTW3_LIBRARIES "FFTW3::${fftw3_lib}")
+#configure_file (FFTW3Config.cmake.in FFTW3${PREC_SUFFIX}Config.cmake @ONLY)
+#configure_file (FFTW3ConfigVersion.cmake.in FFTW3${PREC_SUFFIX}ConfigVersion.cmake @ONLY)
+#install (FILES
+#          ${CMAKE_CURRENT_BINARY_DIR}/FFTW3${PREC_SUFFIX}Config.cmake
+#          ${CMAKE_CURRENT_BINARY_DIR}/FFTW3${PREC_SUFFIX}ConfigVersion.cmake
+#	  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fftw3${PREC_SUFFIX}
+#         COMPONENT Development)
+#
+#export (TARGETS ${fftw3_lib} NAMESPACE FFTW3:: FILE ${PROJECT_BINARY_DIR}/FFTW3LibraryDepends.cmake)
+#install(EXPORT FFTW3LibraryDepends
+#        NAMESPACE FFTW3::
+#        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fftw3${PREC_SUFFIX}
+#        COMPONENT Development)
