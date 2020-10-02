@@ -444,8 +444,8 @@ namespace UbSystem
    //#define ByteSwap5(x) ByteSwap((unsigned char *) &x,sizeof(x))
    inline void swapByteOrder(unsigned char* toSwap, int length)
    {
-      register int i = 0;
-      register int j = length-1;
+      int i = 0;
+      int j = length-1;
       while(i<j)
       {
          std::swap(toSwap[i], toSwap[j]);
