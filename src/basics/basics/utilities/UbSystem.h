@@ -395,14 +395,14 @@ namespace UbSystem
    /*==========================================================*/
    inline unsigned long getCurrentThreadID()
    {
-      #if defined UBSYSTEM_WINDOWS
+      #if defined UBSYSTEM_WINDOWS || defined(UBSYSTEM_CYGWIN)
          return (unsigned long)GetCurrentThreadId();
-      #elif (defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE)) && !defined(UBSYSTEM_CYGWIN)
+      #elif defined(UBSYSTEM_APPLE)
          uint64_t tid;
          pthread_threadid_np(nullptr, &tid);
          return (unsigned long)tid;
-      #elif defined(UBSYSTEM_CYGWIN)
-         return (unsigned long)GetCurrentThreadId();
+      #elif defined(UBSYSTEM_LINUX)
+         return (unsigned long)syscall(SYS_gettid);
       #elif defined(UBSYSTEM_AIX)
          return (unsigned long) getpid(); //WORKAROUND for IBM (for get thread id is another function necessary) 
       #else
