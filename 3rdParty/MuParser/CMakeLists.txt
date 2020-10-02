@@ -32,6 +32,7 @@ if(MSVC)
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
     endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251 /wd4310 /wd4267") # disable all muparser warnings
 elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     # Update if necessary
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")

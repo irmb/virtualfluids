@@ -473,7 +473,7 @@ namespace UbSystem
       }
       else
       {
-         strcpy(Name, "Unknown_Host_Name");
+         strcpy_s(Name, "Unknown_Host_Name");
       }
 #elif (defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)) && !defined(UBSYSTEM_CYGWIN)
       memset(Name, 0, 150);
