@@ -15,7 +15,7 @@
 #include <basics/utilities/UbException.h>
 #include <MarchingCubes/McTypes.h>
 
-//neu: matrix muss lediglich double operator()(int x1, int x2, int x3) überladen, dann kann man sie verwenden!!
+//neu: matrix muss lediglich double operator()(int x1, int x2, int x3) ueberladen, dann kann man sie verwenden!!
 
 //////////////////////////////////////////////////////////////////////////
 //Matrix3DWrapper-Wrapper
@@ -45,7 +45,7 @@ public:
        , maxX1(-1), maxX2(-1), maxX3(-1)
        , nx1(-1)  , nx2(-1)  , nx3(-1)
    {
-      //wird benötigt, damit MarchingCubes generell eine membervariabel erstellen kann
+      //wird benoetigt, damit MarchingCubes generell eine membervariabel erstellen kann
    }
    /*==========================================================*/
    Matrix3DWrapper( Matrix3D* matrix)
@@ -86,7 +86,7 @@ public:
    }
    /*==========================================================*/
    //wenn man z.B. matrixX1 von[0..10] geht und man nur den bereich 1..9 fuer MC
-   //verwenden möchte -> minX1=1 und maxX2=2
+   //verwenden moechte -> minX1=1 und maxX2=2
    Matrix3DWrapper( Matrix3D* matrix, const int& minX1, const int& minX2, const int& minX3
                                     , const int& maxX1, const int& maxX2, const int& maxX3
                                     , const int& n1   , const int& nx2  , const int& nx3   )
