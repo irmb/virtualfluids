@@ -398,7 +398,9 @@ namespace UbSystem
       #if defined UBSYSTEM_WINDOWS
          return (unsigned long)GetCurrentThreadId();
       #elif (defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE)) && !defined(UBSYSTEM_CYGWIN)
-         return (unsigned long)syscall(SYS_gettid);
+         uint64_t tid;
+         pthread_threadid_np(nullptr, &tid);
+         return (unsigned long)tid;
       #elif defined(UBSYSTEM_CYGWIN)
          return (unsigned long)GetCurrentThreadId();
       #elif defined(UBSYSTEM_AIX)
