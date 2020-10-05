@@ -144,7 +144,7 @@ namespace Grid3DSystem
       default  : return "Cell3DSystem::getDrectionString(...) - unknown dir";
       }
    }
-   static const int&       getInvertDirection(const int& direction);
+   static const int& getInvertDirection(const int& direction);
 
 //////////////////////////////////////////////////////////////////////////
    static inline void setNeighborCoordinatesForDirection(int &x1, int &x2,int &x3, const int& direction)

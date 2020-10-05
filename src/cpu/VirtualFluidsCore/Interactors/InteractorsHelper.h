@@ -60,7 +60,6 @@ private:
    SPtr<Grid3D> grid;
    std::vector<SPtr<Block3D> > solidBlocks;
    SPtr<Grid3DVisitor> visitor;
-   bool deleteBlocks;
 };
 
 #endif

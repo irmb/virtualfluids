@@ -41,10 +41,6 @@ VelocityBCAlgorithm::VelocityBCAlgorithm()
    BCAlgorithm::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-VelocityBCAlgorithm::~VelocityBCAlgorithm()
-{
-}
-//////////////////////////////////////////////////////////////////////////
 SPtr<BCAlgorithm> VelocityBCAlgorithm::clone()
 {
    SPtr<BCAlgorithm> bc(new VelocityBCAlgorithm());
@@ -61,18 +57,18 @@ void VelocityBCAlgorithm::applyBC()
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal feq[D3Q27System::ENDF+1];
    distributions->getDistributionInv(f, x1, x2, x3);
-   LBMReal rho, vx1, vx2, vx3, drho;
+   LBMReal vx1, vx2, vx3, drho;
    calcMacrosFct(f, drho, vx1, vx2, vx3);
    calcFeqFct(feq, drho, vx1, vx2, vx3);
 
-   rho = 1.0+drho*compressibleFactor;
+   //rho = 1.0+drho*compressibleFactor;
 
    for (int fdir = D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
    {
       if (bcPtr->hasVelocityBoundaryFlag(fdir))
       {
          const int invDir = D3Q27System::INVDIR[fdir];
-         LBMReal q = bcPtr->getQ(invDir);
+         //LBMReal q = bcPtr->getQ(invDir);
          LBMReal velocity = bcPtr->getBoundaryVelocity(invDir);
          LBMReal fReturn = f[invDir] - velocity; // TODO: compare with development
          distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);

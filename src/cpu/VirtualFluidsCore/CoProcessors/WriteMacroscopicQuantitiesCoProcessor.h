@@ -88,7 +88,6 @@ private:
    std::string path;
    WbWriter* writer;
    SPtr<LBMUnitConverter> conv;
-   bool bcInformation;
    std::vector<std::vector<SPtr<Block3D> > > blockVector;
    int minInitLevel;
    int maxInitLevel;

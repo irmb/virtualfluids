@@ -9,3 +9,4 @@
 *.hpp text
 *.cuh text
 *.cu text
+*.cmake text

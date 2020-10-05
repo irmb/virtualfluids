@@ -532,82 +532,82 @@ std::string WbWriterVtkXmlASCII::writeLines(const string& filename,vector<UbTupl
    return vtkfilename;
 }
 /*===============================================================================*/
-std::string WbWriterVtkXmlASCII::writeLinesWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleInt2 >& lines, std::vector< std::string >& datanames, std::vector< std::vector< double > >& nodedata)
-{
-   string vtkfilename=filename+getFileExtension();
-   UBLOG(logDEBUG1,"WbWriterVtkXmlASCII::writeLinesWithNodeData to "<<vtkfilename<<" - start");
-
-   std::ofstream out(vtkfilename.c_str());
-   if(!out)
-   { 
-      out.clear(); //flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-      string path = UbSystem::getPathFromString(vtkfilename);
-      if(path.size()>0){UbSystem::makeDirectory(path);out.open(vtkfilename.c_str());}
-      if(!out) throw UbException(UB_EXARGS,"couldn't open file "+vtkfilename);
-   }
-
-   int nofNodes = (int)nodes.size(); 
-   int nofLines = (int)lines.size(); 
-
-   //VTK FILE
-   out<<"<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" >"<<"\n";
-   out<<"   <UnstructuredGrid>"<<"\n";
-   out<<"      <Piece NumberOfPoints=\""<<nofNodes<<"\"	NumberOfCells=\""<<nofLines<<"\">   \n";
-
-   //POINTS SECTION
-   out<<"      <Points>\n"; 
-   out<<"         <DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"ascii\">\n";
-   for(int n=0; n<nofNodes; n++)
-      out<< val<1>(nodes[n]) <<" "<< val<2>(nodes[n]) <<" "<< val<3>(nodes[n]) <<"   ";
-
-   out<<"\n";
-   out<<"         </DataArray>\n";
-   out<<"      </Points>\n";
-
-   //CELLS SECTION
-   out<<"      <Cells>\n";
-   out<<"         <DataArray type=\"Int32\" Name=\"connectivity\" format=\"ascii\">\n";
-
-   for(int c=0; c<nofLines; c++)
-      out<< val<1>(lines[c]) <<" "<< val<2>(lines[c])<<"  ";
-   out<<"\n";
-   out<<"      </DataArray>\n";
-   out<<"         <DataArray type=\"Int32\" Name=\"offsets\" format=\"ascii\">\n";
-   for(int c=1; c<=nofLines; c++)
-      out<<c*2<<" " ;
-
-   out<<"\n";
-   out<<"         </DataArray>\n";
-
-   out<<"      <DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\">\n";
-
-   for(int c=0; c<nofLines; c++)
-      out<<"3 ";
-   out<<"\n";
-   out<<"      </DataArray>\n";
-   out<<"      </Cells>\n";
-
-   //write data section
-   out<<"         <PointData Scalars=\"Scalars\"> \n";
-   for(int s=0; s<(int)datanames.size(); ++s)
-   {
-      out<< "           <DataArray type=\"Float32\" Name=\""<< datanames[s] <<"\" format=\"ascii\"> \n";
-
-      for(int d=0; d<(int)nodedata[s].size(); d++)
-         out<<nodedata[s][d]<<" ";
-
-      out<<"\n          </DataArray>\n";
-   }
-   out<<"         </PointData>\n";
-   out<<"      </Piece>\n";
-   out<<"   </UnstructuredGrid>\n";
-   out<<"</VTKFile>";
-   out<<endl;
-   out.close();
-   UBLOG(logDEBUG1,"WbWriterVtkXmlASCII::writeLinesWithNodeData to "<<vtkfilename<<" - end");
-
-   return vtkfilename;
-}
+//std::string WbWriterVtkXmlASCII::writeLinesWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleInt2 >& lines, std::vector< std::string >& datanames, std::vector< std::vector< double > >& nodedata)
+//{
+//   string vtkfilename=filename+getFileExtension();
+//   UBLOG(logDEBUG1,"WbWriterVtkXmlASCII::writeLinesWithNodeData to "<<vtkfilename<<" - start");
+//
+//   std::ofstream out(vtkfilename.c_str());
+//   if(!out)
+//   {
+//      out.clear(); //flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
+//      string path = UbSystem::getPathFromString(vtkfilename);
+//      if(path.size()>0){UbSystem::makeDirectory(path);out.open(vtkfilename.c_str());}
+//      if(!out) throw UbException(UB_EXARGS,"couldn't open file "+vtkfilename);
+//   }
+//
+//   int nofNodes = (int)nodes.size();
+//   int nofLines = (int)lines.size();
+//
+//   //VTK FILE
+//   out<<"<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" >"<<"\n";
+//   out<<"   <UnstructuredGrid>"<<"\n";
+//   out<<"      <Piece NumberOfPoints=\""<<nofNodes<<"\"	NumberOfCells=\""<<nofLines<<"\">   \n";
+//
+//   //POINTS SECTION
+//   out<<"      <Points>\n";
+//   out<<"         <DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"ascii\">\n";
+//   for(int n=0; n<nofNodes; n++)
+//      out<< val<1>(nodes[n]) <<" "<< val<2>(nodes[n]) <<" "<< val<3>(nodes[n]) <<"   ";
+//
+//   out<<"\n";
+//   out<<"         </DataArray>\n";
+//   out<<"      </Points>\n";
+//
+//   //CELLS SECTION
+//   out<<"      <Cells>\n";
+//   out<<"         <DataArray type=\"Int32\" Name=\"connectivity\" format=\"ascii\">\n";
+//
+//   for(int c=0; c<nofLines; c++)
+//      out<< val<1>(lines[c]) <<" "<< val<2>(lines[c])<<"  ";
+//   out<<"\n";
+//   out<<"      </DataArray>\n";
+//   out<<"         <DataArray type=\"Int32\" Name=\"offsets\" format=\"ascii\">\n";
+//   for(int c=1; c<=nofLines; c++)
+//      out<<c*2<<" " ;
+//
+//   out<<"\n";
+//   out<<"         </DataArray>\n";
+//
+//   out<<"      <DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\">\n";
+//
+//   for(int c=0; c<nofLines; c++)
+//      out<<"3 ";
+//   out<<"\n";
+//   out<<"      </DataArray>\n";
+//   out<<"      </Cells>\n";
+//
+//   //write data section
+//   out<<"         <PointData Scalars=\"Scalars\"> \n";
+//   for(int s=0; s<(int)datanames.size(); ++s)
+//   {
+//      out<< "           <DataArray type=\"Float32\" Name=\""<< datanames[s] <<"\" format=\"ascii\"> \n";
+//
+//      for(int d=0; d<(int)nodedata[s].size(); d++)
+//         out<<nodedata[s][d]<<" ";
+//
+//      out<<"\n          </DataArray>\n";
+//   }
+//   out<<"         </PointData>\n";
+//   out<<"      </Piece>\n";
+//   out<<"   </UnstructuredGrid>\n";
+//   out<<"</VTKFile>";
+//   out<<endl;
+//   out.close();
+//   UBLOG(logDEBUG1,"WbWriterVtkXmlASCII::writeLinesWithNodeData to "<<vtkfilename<<" - end");
+//
+//   return vtkfilename;
+//}
 /*===============================================================================*/
 std::string WbWriterVtkXmlASCII::writeTriangles(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleInt3 >& triangles)
 {

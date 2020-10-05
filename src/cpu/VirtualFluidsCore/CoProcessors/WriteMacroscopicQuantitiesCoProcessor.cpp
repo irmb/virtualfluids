@@ -149,8 +149,6 @@ void WriteMacroscopicQuantitiesCoProcessor::clearData()
 //////////////////////////////////////////////////////////////////////////
 void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
-   double blockID = (double)block->getGlobalID();
-
    //This data is written:
    datanames.resize(0);
    datanames.push_back("DRho");

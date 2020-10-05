@@ -69,7 +69,7 @@ void InteractorsHelper::selectBlocks()
 //////////////////////////////////////////////////////////////////////////
 void InteractorsHelper::setBcBlocks()
 {
-    for(const SPtr<Interactor3D> interactor : interactors)
+    for(const auto& interactor : interactors)
     {
        SetBcBlocksBlockVisitor v(interactor);
        grid->accept(v);

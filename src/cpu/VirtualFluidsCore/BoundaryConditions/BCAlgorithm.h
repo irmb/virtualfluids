@@ -59,7 +59,7 @@ public:
 
 public:
    BCAlgorithm();
-   virtual ~BCAlgorithm() {}
+   virtual ~BCAlgorithm() = default;
    
    virtual void addDistributions(SPtr<DistributionArray3D> distributions) = 0;
    void setNodeIndex(int x1, int x2, int x3);
@@ -89,7 +89,7 @@ protected:
 
    typedef void(*CalcMacrosFct)(const LBMReal* const& /*f[27]*/, LBMReal& /*rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
    typedef LBMReal(*CalcFeqForDirFct)(const int& /*direction*/, const LBMReal& /*(d)rho*/, const LBMReal& /*vx1*/, const LBMReal& /*vx2*/, const LBMReal& /*vx3*/);
-   typedef  void(*CalcFeqFct)(LBMReal* const& /*feq/*[27]*/, const LBMReal& /*rho*/, const LBMReal& /*vx1*/, const LBMReal& /*vx2*/, const LBMReal& /*vx3*/);
+   typedef  void(*CalcFeqFct)(LBMReal* const& /*feq[27]*/, const LBMReal& /*rho*/, const LBMReal& /*vx1*/, const LBMReal& /*vx2*/, const LBMReal& /*vx3*/);
    
    CalcFeqForDirFct calcFeqsForDirFct ;
    CalcMacrosFct    calcMacrosFct;
