@@ -2,13 +2,6 @@ cmake_minimum_required(VERSION 3.0)
 project(METIS C)
 
 set(GKLIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/GKlib")
-#set(SHARED FALSE CACHE BOOL "build a shared library")
-
-#if(MSVC)
-#  set(METIS_INSTALL FALSE)
-#else()
-#  set(METIS_INSTALL TRUE)
-#endif()
 
 # Configure libmetis library.
 if(BUILD_SHARED_LIBS)
