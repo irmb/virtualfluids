@@ -585,7 +585,7 @@ vector<GbTriangle3D*> GbTriFaceMesh3D::getSurfaceTriangleSet()
 /*=======================================================*/
 void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3>& pts, vector<UbTupleInt3>& tris)
 {
-   int nodeNr = pts.size();
+   int nodeNr = int(pts.size());
    for(int i=0; i<(int)this->triangles->size(); i++)
    {
       Vertex& v1 = (*nodes)[(*triangles)[i].v1];
@@ -751,7 +751,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, co
       {
          //UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.INTERSECT_EDGE");
 
-         if (counter>20) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
+         if (counter>20) {return(iSec1&1);  /*UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");*/}
          return this->isPointInGbObject3D(x1, x2, x3,(counter+1)); 
       }
       else if( iSec1 == Kd::Intersection::INTERSECT_EDGE)
@@ -768,7 +768,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, co
          {
             //UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.iSec1&1 != iSec2&1");
 
-            if (counter>20) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
+            if (counter>20) {return(iSec1&1); /* UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");*/}
             return this->isPointInGbObject3D(x1, x2, x3,(counter+1));
          }
          return iSec1&1;

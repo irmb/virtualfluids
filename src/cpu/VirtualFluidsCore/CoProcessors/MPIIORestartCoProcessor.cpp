@@ -1212,24 +1212,24 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
             else
             {
                bouCond->noslipBoundaryFlags = bcArr->bcvector[bc]->getNoSlipBoundary();
-               bouCond->slipBoundaryFlags = bcArr->bcvector[bc]->getSlipBoundary();
+               bouCond->slipBoundaryFlags =  bcArr->bcvector[bc]->getSlipBoundary();
                bouCond->velocityBoundaryFlags = bcArr->bcvector[bc]->getVelocityBoundary();
                bouCond->densityBoundaryFlags = bcArr->bcvector[bc]->getDensityBoundary();
                bouCond->wallModelBoundaryFlags = bcArr->bcvector[bc]->getWallModelBoundary();
-               bouCond->bcVelocityX1 = bcArr->bcvector[bc]->getBoundaryVelocityX1();
-               bouCond->bcVelocityX2 = bcArr->bcvector[bc]->getBoundaryVelocityX2();
-               bouCond->bcVelocityX3 = bcArr->bcvector[bc]->getBoundaryVelocityX3();
-               bouCond->bcDensity = bcArr->bcvector[bc]->getBoundaryDensity();
-               bouCond->bcLodiDensity = bcArr->bcvector[bc]->getDensityLodiDensity();
-               bouCond->bcLodiVelocityX1 = bcArr->bcvector[bc]->getDensityLodiVelocityX1();
-               bouCond->bcLodiVelocityX2 = bcArr->bcvector[bc]->getDensityLodiVelocityX2();
-               bouCond->bcLodiVelocityX3 = bcArr->bcvector[bc]->getDensityLodiVelocityX3();
-               bouCond->bcLodiLentgh = bcArr->bcvector[bc]->getDensityLodiLength();
-               bouCond->nx1 = bcArr->bcvector[bc]->nx1;
-               bouCond->nx2 = bcArr->bcvector[bc]->nx2;
-               bouCond->nx3 = bcArr->bcvector[bc]->nx3;
+               bouCond->bcVelocityX1 = (float) bcArr->bcvector[bc]->getBoundaryVelocityX1();
+               bouCond->bcVelocityX2 = (float) bcArr->bcvector[bc]->getBoundaryVelocityX2();
+               bouCond->bcVelocityX3 = (float) bcArr->bcvector[bc]->getBoundaryVelocityX3();
+               bouCond->bcDensity = (float) bcArr->bcvector[bc]->getBoundaryDensity();
+               bouCond->bcLodiDensity = (float) bcArr->bcvector[bc]->getDensityLodiDensity();
+               bouCond->bcLodiVelocityX1 = (float) bcArr->bcvector[bc]->getDensityLodiVelocityX1();
+               bouCond->bcLodiVelocityX2 = (float) bcArr->bcvector[bc]->getDensityLodiVelocityX2();
+               bouCond->bcLodiVelocityX3 = (float) bcArr->bcvector[bc]->getDensityLodiVelocityX3();
+               bouCond->bcLodiLentgh = (float) bcArr->bcvector[bc]->getDensityLodiLength();
+               bouCond->nx1 = (float) bcArr->bcvector[bc]->nx1;
+               bouCond->nx2 = (float) bcArr->bcvector[bc]->nx2;
+               bouCond->nx3 = (float) bcArr->bcvector[bc]->nx3;
                for (int iq = 0; iq<26; iq++)
-                  bouCond->q[iq] = bcArr->bcvector[bc]->getQ(iq);
+                  bouCond->q[iq] = (float) bcArr->bcvector[bc]->getQ(iq);
                bouCond->algorithmType = bcArr->bcvector[bc]->getBcAlgorithmType();
             }
 
@@ -1410,23 +1410,23 @@ void MPIIORestartCoProcessor::readDataSet(int step)
    double doubleCountInBlock = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3] +
       dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3] +
       dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
-   std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
+   std::vector<double> doubleValuesArray(size_t(blocksCount * doubleCountInBlock)); // double-values in all blocks
 
    //   define MPI_types depending on the block-specific information
-   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
    if (size > 1)
    {
       if (rank == 0)
       {
-         next_read_offset = read_offset + 3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSetRestart) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + 3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSetRestart) + size_t(doubleCountInBlock) * sizeof(double));
          MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_read_offset = read_offset + 3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSetRestart) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + 3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSetRestart) + size_t(doubleCountInBlock) * sizeof(double));
          if (rank < size - 1)
             MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }

@@ -66,7 +66,7 @@ void InitDistributionsWithInterpolationGridVisitor::visit(SPtr<Grid3D> grid)
             Vector3D coords = newGrid->getNodeCoordinates(newBlock, 1, 1, 1);
 
             UbTupleInt3 oldGridBlockIndexes = oldGrid->getBlockIndexes(coords[0], coords[1], coords[2], newlevel-1);
-            SPtr<Block3D> oldBlock = oldGrid->getBlock(val<1>(oldGridBlockIndexes), val<2>(oldGridBlockIndexes), val<3>(oldGridBlockIndexes), newlevel-1);
+            oldBlock = oldGrid->getBlock(val<1>(oldGridBlockIndexes), val<2>(oldGridBlockIndexes), val<3>(oldGridBlockIndexes), newlevel-1);
 
             if (oldBlock)
             {
@@ -84,8 +84,8 @@ void InitDistributionsWithInterpolationGridVisitor::visit(SPtr<Grid3D> grid)
             }
             else
             {
-               UbTupleInt3 oldGridBlockIndexes = oldGrid->getBlockIndexes(coords[0], coords[1], coords[2], newlevel+1);
-               SPtr<Block3D> oldBlock = oldGrid->getBlock(val<1>(oldGridBlockIndexes), val<2>(oldGridBlockIndexes), val<3>(oldGridBlockIndexes), newlevel+1);
+               oldGridBlockIndexes = oldGrid->getBlockIndexes(coords[0], coords[1], coords[2], newlevel+1);
+               oldBlock = oldGrid->getBlock(val<1>(oldGridBlockIndexes), val<2>(oldGridBlockIndexes), val<3>(oldGridBlockIndexes), newlevel+1);
                if (oldBlock)
                {
                   int oldBlockRank = oldBlock->getRank();

@@ -21,7 +21,7 @@ namespace Kd
 
       }
       /* ======================================================================================= */
-      SplitCandidate<T>& operator[] (const int& i) 
+      SplitCandidate<T>& operator[] (const std::size_t& i)
       { 
          #ifdef DEBUG
             return splitCandidatesVec.at(i);

@@ -47,7 +47,7 @@ void ChangeBoundaryDensityBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> b
                   {
                      if (bcPtr->hasDensityBoundary())
                      {
-                        float bcDensity = bcPtr->getBoundaryDensity();
+                        float bcDensity = (float) bcPtr->getBoundaryDensity();
                         if (bcDensity == oldBoundaryDensity)
                         {
                            bcPtr->setBoundaryDensity(newBoundaryDensity);

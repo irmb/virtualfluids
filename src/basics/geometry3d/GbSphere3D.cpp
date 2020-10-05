@@ -415,7 +415,7 @@ void GbSphere3D::addSurfaceTriangleSet(vector<UbTupleFloat3>& nodes, vector<UbTu
       float deltaPhi = (float)UbMath::PI/(float)segments;
       float phiX1a,phiX1b,phiX3a,phiX3b;
       float x1a,x2a,x3a,x1b,x2b,x3b,x1c,x2c,x3c,x1d,x2d,x3d;
-      int nodeNr = nodes.size();
+      int nodeNr = int(nodes.size());
       for(phiX3a=(float)(0.5*UbMath::PI); phiX3a > (float)(-1.5*UbMath::PI); phiX3a-=deltaPhi)
       {
          for(phiX1a=0.0; phiX1a<UbMath::PI; phiX1a+=deltaPhi)

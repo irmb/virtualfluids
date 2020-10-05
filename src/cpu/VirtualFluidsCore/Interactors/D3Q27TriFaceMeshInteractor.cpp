@@ -1399,13 +1399,13 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, double startD
                halfBoxSize[1] = (float)(0.5*(blockMaxX[1]-blockMinX[1]));
                halfBoxSize[2] = (float)(0.5*(blockMaxX[2]-blockMinX[2]));
 
-               GbTriFaceMesh3D::Vertex& v1 = nodes[triangle.v1];
-               GbTriFaceMesh3D::Vertex& v2 = nodes[triangle.v2];
-               GbTriFaceMesh3D::Vertex& v3 = nodes[triangle.v3];
+               GbTriFaceMesh3D::Vertex& v1_ = nodes[triangle.v1];
+               GbTriFaceMesh3D::Vertex& v2_ = nodes[triangle.v2];
+               GbTriFaceMesh3D::Vertex& v3_ = nodes[triangle.v3];
 
-               triPoints[0][0] = v1.x; triPoints[0][1] = v1.y; triPoints[0][2] = v1.z; 
-               triPoints[1][0] = v2.x; triPoints[1][1] = v2.y; triPoints[1][2] = v2.z; 
-               triPoints[2][0] = v3.x; triPoints[2][1] = v3.y; triPoints[2][2] = v3.z; 
+               triPoints[0][0] = v1_.x; triPoints[0][1] = v1_.y; triPoints[0][2] = v1_.z; 
+               triPoints[1][0] = v2_.x; triPoints[1][1] = v2_.y; triPoints[1][2] = v2_.z; 
+               triPoints[2][0] = v3_.x; triPoints[2][1] = v3_.y; triPoints[2][2] = v3_.z; 
 
                //wenn block dreick schneidet, dann muss er verfeinert werden
                if( GbMeshTools3D::triBoxOverlap(boxCenter,halfBoxSize,triPoints) )

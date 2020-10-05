@@ -332,6 +332,7 @@ void CumulantK17LBMKernel::calculate(int step)
 			      //! with simplifications assuming \f$\omega_2 = 1.0\f$ (modify for different bulk viscosity).
 			      //!
 			      LBMReal A = (c4 + c2*omega - c3*omega*omega) / (c2 - c7*omega + c5*omega*omega);
+                  //FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::B' )
 			      LBMReal B = (c4 + c28*omega - c14*omega*omega) / (c6 - c21*omega + c15*omega*omega);
 
 			      ////////////////////////////////////////////////////////////////////////////////////

@@ -245,10 +245,10 @@ void D3Q27ETFCOffVectorConnector< VectorTransmitter>::fillSendVectors()
    ///////////////////////////////////////
    ///DEBUG
 #ifdef _DEBUG
-   if (block.lock()->getGlobalID() == 2558)
-   {
-      int test = 0;
-   }
+   //if (block.lock()->getGlobalID() == 2558)
+   //{
+   //   int test = 0;
+   //}
 #endif
    //////////////
 
@@ -265,10 +265,10 @@ void D3Q27ETFCOffVectorConnector< VectorTransmitter>::fillSendVectors()
       ///////////////////////////////////////
       ///DEBUG
 #ifdef _DEBUG
-      if (block.lock()->getGlobalID() == 2516)
-      {
-         int test = 0;
-      }
+      //if (block.lock()->getGlobalID() == 2516)
+      //{
+      //   int test = 0;
+      //}
 #endif
       //////////////
 		//getLocalMinMax(lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3, none);

@@ -66,10 +66,10 @@ void IntegrateValuesHelper::init(int level)
 
    double numSolids = 0.0;
    double numFluids = 0.0;
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
+   for (int level_it = minInitLevel; level_it <= maxInitLevel; level_it++)
    {
       std::vector<SPtr<Block3D>> blockVector;
-      grid->getBlocks(level, gridRank, blockVector);
+      grid->getBlocks(level_it, gridRank, blockVector);
       for(SPtr<Block3D> block : blockVector)
       {
          CalcNodes cn;

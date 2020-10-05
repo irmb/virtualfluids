@@ -273,35 +273,36 @@ bool GbVoxelMatrix3D::isPointInGbObject3D(const double& x1p, const double& x2p, 
 bool GbVoxelMatrix3D::isCellInsideGbObject3D(const double& x1p1, const double& x2p1, const double& x3p1, const double& x1p2, const double& x2p2, const double& x3p2)
 {
    return false;
-   //dass h�ngt von der Konfigration ab, aber meist ist der Block gr�sser wie etliche Poren ...
+   //FIXME: unreachable cide
+   ////dass haengt von der Konfigration ab, aber meist ist der Block groesser wie etliche Poren ...
 
-      //indizes ermitteln
-   int startix1 = (int)std::floor((x1p1-minX1)/deltaX1+1E-13);
-   int startix2 = (int)std::floor((x2p1-minX2)/deltaX2+1E-13);
-   int startix3 = (int)std::floor((x3p1-minX3)/deltaX3+1E-13);
+   //   //indizes ermitteln
+   //int startix1 = (int)std::floor((x1p1-minX1)/deltaX1+1E-13);
+   //int startix2 = (int)std::floor((x2p1-minX2)/deltaX2+1E-13);
+   //int startix3 = (int)std::floor((x3p1-minX3)/deltaX3+1E-13);
 
-   if (startix1<0) return false;
-   if (startix2<0) return false;
-   if (startix3<0) return false;
+   //if (startix1<0) return false;
+   //if (startix2<0) return false;
+   //if (startix3<0) return false;
 
-   int maxiX1 = (int)voxelMatrix.getNX1()-1;
-   int maxiX2 = (int)voxelMatrix.getNX2()-1;
-   int maxiX3 = (int)voxelMatrix.getNX3()-1;
+   //int maxiX1 = (int)voxelMatrix.getNX1()-1;
+   //int maxiX2 = (int)voxelMatrix.getNX2()-1;
+   //int maxiX3 = (int)voxelMatrix.getNX3()-1;
 
-   int endix1 = (int)std::ceil((x1p2-minX1)/deltaX1-1E-13);
-   int endix2 = (int)std::ceil((x2p2-minX2)/deltaX2-1E-13);
-   int endix3 = (int)std::ceil((x3p2-minX3)/deltaX3-1E-13);
+   //int endix1 = (int)std::ceil((x1p2-minX1)/deltaX1-1E-13);
+   //int endix2 = (int)std::ceil((x2p2-minX2)/deltaX2-1E-13);
+   //int endix3 = (int)std::ceil((x3p2-minX3)/deltaX3-1E-13);
 
-   if (endix1>maxiX1) return false;
-   if (endix2>maxiX2) return false;
-   if (endix3>maxiX3) return false;
+   //if (endix1>maxiX1) return false;
+   //if (endix2>maxiX2) return false;
+   //if (endix3>maxiX3) return false;
 
-   for (int ix3 = startix3; ix3<=endix3; ix3++)
-      for (int ix2 = startix2; ix2<=endix2; ix2++)
-         for (int ix1 = startix1; ix1<=endix1; ix1++)
-            if (UbMath::equal(voxelMatrix(ix1, ix2, ix3), FLUID))
-               return false;
-   return true;
+   //for (int ix3 = startix3; ix3<=endix3; ix3++)
+   //   for (int ix2 = startix2; ix2<=endix2; ix2++)
+   //      for (int ix1 = startix1; ix1<=endix1; ix1++)
+   //         if (UbMath::equal(voxelMatrix(ix1, ix2, ix3), FLUID))
+   //            return false;
+   //return true;
 }
 /*=======================================================*/
 bool GbVoxelMatrix3D::isCellCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b)

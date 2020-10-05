@@ -301,7 +301,7 @@ void run(string configname)
       //omp_set_num_threads(numOfThreads);
       numOfThreads = 1;
       SPtr<UbScheduler> stepGhostLayer(visSch);
-      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, int(endTime)));
       calculator->addCoProcessor(npr);
       calculator->addCoProcessor(pp);
       calculator->addCoProcessor(migCoProcessor);
