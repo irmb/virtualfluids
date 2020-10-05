@@ -85,9 +85,9 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
       muForcingX2.DefineVar("nu", &muNu);
       muForcingX3.DefineVar("nu", &muNu);
 
-      LBMReal forcingX1 = 0;
-      LBMReal forcingX2 = 0;
-      LBMReal forcingX3 = 0;
+//      LBMReal forcingX1 = 0;
+//      LBMReal forcingX2 = 0;
+//      LBMReal forcingX3 = 0;
    }
    /////////////////////////////////////
 

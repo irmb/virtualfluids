@@ -136,14 +136,6 @@ namespace Kd
          const T& n2Y = val<2>(n2);
          const T& n2Z = val<3>(n2);
 
-         double t_nah  = UbMath::max(  ( (n1X <= n2X ? x[0] : x[1]) - n1X) / (n2X - n1X)
-                                     , ( (n1Y <= n2Y ? y[0] : y[1]) - n1Y) / (n2Y - n1Y)
-                                     , ( (n1Z <= n2Z ? z[0] : z[1]) - n1Z) / (n2Z - n1Z) );
-
-         double t_fern = UbMath::min(  ( (n1X >  n2X ? x[0] : x[1]) - n1X) / (n2X - n1X)
-                                     , ( (n1Y >  n2Y ? y[0] : y[1]) - n1Y) / (n2Y - n1Y)
-                                     , ( (n1Z >  n2Z ? z[0] : z[1]) - n1Z) / (n2Z - n1Z) );
-
          if ( UbMath::greater(  UbMath::max(  ( (n1X <= n2X ? x[0] : x[1]) - n1X) / (n2X - n1X)
                                             , ( (n1Y <= n2Y ? y[0] : y[1]) - n1Y) / (n2Y - n1Y)
                                             , ( (n1Z <= n2Z ? z[0] : z[1]) - n1Z) / (n2Z - n1Z) )

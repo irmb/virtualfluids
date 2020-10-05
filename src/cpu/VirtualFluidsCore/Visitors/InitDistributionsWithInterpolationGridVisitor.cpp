@@ -34,7 +34,7 @@ void InitDistributionsWithInterpolationGridVisitor::visit(SPtr<Grid3D> grid)
 
    for (int l = minInitLevel; l<=maxInitLevel; l++)
    {
-      int n = 0;
+//      int n = 0;
       vector<SPtr<Block3D>> blockVector;
       newGrid->getBlocks(l, blockVector);
       vector<SPtr<Block3D>> tBlockID;
@@ -45,7 +45,7 @@ void InitDistributionsWithInterpolationGridVisitor::visit(SPtr<Grid3D> grid)
             UB_THROW(UbException(UB_EXARGS, "block is not exist"));
 
          int newBlockRank = newBlock->getRank();
-         int newBlockLevel = newBlock->getLevel();
+//         int newBlockLevel = newBlock->getLevel();
 
          SPtr<Block3D> oldBlock = oldGrid->getBlock(newBlock->getX1(), newBlock->getX2(), newBlock->getX3(), newBlock->getLevel());
          if (oldBlock)
@@ -71,7 +71,7 @@ void InitDistributionsWithInterpolationGridVisitor::visit(SPtr<Grid3D> grid)
             if (oldBlock)
             {
                int oldBlockRank = oldBlock->getRank();
-               int oldBlockLevel = oldBlock->getLevel();
+//               int oldBlockLevel = oldBlock->getLevel();
 
                if (oldBlockRank == newBlockRank && oldBlock->isActive() && newBlockRank == newGridRank && newBlock->isActive())
                {
@@ -89,7 +89,7 @@ void InitDistributionsWithInterpolationGridVisitor::visit(SPtr<Grid3D> grid)
                if (oldBlock)
                {
                   int oldBlockRank = oldBlock->getRank();
-                  int oldBlockLevel = oldBlock->getLevel();
+//                  int oldBlockLevel = oldBlock->getLevel();
 
                   if (oldBlockRank == newBlockRank && oldBlock->isActive() && newBlockRank == newGridRank && newBlock->isActive())
                   {

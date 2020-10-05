@@ -696,9 +696,8 @@ double GbSphere3D::getCellVolumeInsideGbObject3D(const double& x1a,const double&
 	}
 
 
-	double resultWithOneCell = getCellVolumeInsideGbObject3DHelperFunction( x1a, x2a, x3a, x1b, x2b, x3b );
-
-	//cout << tempResult << " vs. " << resultWithOneCell << endl;
+	// double resultWithOneCell = getCellVolumeInsideGbObject3DHelperFunction( x1a, x2a, x3a, x1b, x2b, x3b );
+	// cout << tempResult << " vs. " << resultWithOneCell << endl;
 
 	return tempResult;
 

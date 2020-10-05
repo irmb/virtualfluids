@@ -480,7 +480,7 @@ std::string WbWriterVtkASCII::writeOctsWithCellData(const string& filename,vecto
    return vtkfilename;
 }
 /*===============================================================================*/
-std::string WbWriterVtkASCII::writeOctsWithNodeData(const string& filename,vector< UbTupleFloat3 >& nodes, vector< UbTupleInt8 >& cells, vector< string >& datanames, vector< vector< double > >& nodedata)
+std::string WbWriterVtkASCII::writeOctsWithNodeData(const string& filename,vector< UbTupleFloat3 >& nodes, vector< UbTupleUInt8 >& cells, vector< string >& datanames, vector< vector< double > >& nodedata)
 {
    string vtkfilename=filename+getFileExtension();
    UBLOG(logDEBUG1,"WbWriterVtkASCII::writeOctsWithNodeData to "<<vtkfilename<<" - start");

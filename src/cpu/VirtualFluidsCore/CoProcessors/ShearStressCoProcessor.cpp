@@ -252,7 +252,7 @@ void ShearStressCoProcessor::addData()
 
    data.resize(datanames.size());
 
-   for(SPtr<D3Q27Interactor> interactor : interactors)
+   for(const auto& interactor : interactors)
    {
       typedef std::map<SPtr<Block3D>, std::set< std::vector<int> > > TransNodeIndicesMap;
       for(TransNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
@@ -261,7 +261,7 @@ void ShearStressCoProcessor::addData()
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
 
          UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
-         UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
+//         UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
          UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
          double         dx           = grid->getDeltaX(block);
 
@@ -280,11 +280,11 @@ void ShearStressCoProcessor::addData()
          int minX3 = ghostLayer;
          int maxX3 = (int)bcArray->getNX3() - 1 - ghostLayer;
 
-         int level=block->getLevel();
-         if(level==1)
-         {
-            int le=0;
-         }
+//         int level=block->getLevel();
+//         if(level==1)
+//         {
+//            int le=0;
+//         }
          for(std::vector<int> node : transNodeIndicesSet)
          {
             int ix1 = node[0];
@@ -362,14 +362,14 @@ void ShearStressCoProcessor::resetData(double step)
 {
    for(int level = minInitLevel; level<=maxInitLevel;level++)
    {
-      for(SPtr<Block3D> block : blockVector[level])
+      for(const auto& block : blockVector[level])
       {
          if (block)
          {
-            UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
-            UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
-            UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
-            double         dx           = grid->getDeltaX(block);
+//            UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
+//            UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
+//            UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
+//            double         dx           = grid->getDeltaX(block);
 
             SPtr<ILBMKernel> kernel = block->getKernel();
             SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
@@ -614,18 +614,18 @@ bool ShearStressCoProcessor::checkUndefindedNodes( SPtr<BCArray3D> bcArray,int i
 //////////////////////////////////////////////////////////////////////////////////////
 void ShearStressCoProcessor::initDistance()
 {
-   for(SPtr<D3Q27Interactor> interactor : interactors)
+   for(const auto& interactor : interactors)
    {
-      typedef std::map<SPtr<Block3D>, std::set< std::vector<int> > > TransNodeIndicesMap;
-      for (TransNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
+//      typedef std::map<SPtr<Block3D>, std::set< std::vector<int> > > TransNodeIndicesMap;
+      for (const auto& t : interactor->getBcNodeIndicesMap())
       {
          SPtr<Block3D> block = t.first;
-         std::set< std::vector<int> >& transNodeIndicesSet = t.second;
+         const std::set< std::vector<int> >& transNodeIndicesSet = t.second;
 
-         UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
-         UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
-         UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
-         double         dx           = grid->getDeltaX(block);
+//         UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
+//         UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
+//         UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
+//         double         dx           = grid->getDeltaX(block);
 
          SPtr<ILBMKernel> kernel = block->getKernel();
          SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
@@ -633,7 +633,7 @@ void ShearStressCoProcessor::initDistance()
          SPtr<ShearStressValuesArray3D> ssv = kernel->getDataSet()->getShearStressValues();
 
          int ghostLayer = kernel->getGhostLayerWidth();
-         LBMReal collFactor = kernel->getCollisionFactor();
+//         LBMReal collFactor = kernel->getCollisionFactor();
 
          int minX1 = ghostLayer;
          int maxX1 = (int)bcArray->getNX1() - 1 - ghostLayer;

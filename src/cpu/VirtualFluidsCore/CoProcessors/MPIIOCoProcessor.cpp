@@ -198,7 +198,7 @@ void MPIIOCoProcessor::writeBlocks(int step)
 
    // write to the file
    MPI_File file_handler;
-   MPI_Info info = MPI_INFO_NULL;
+//   MPI_Info info = MPI_INFO_NULL;
 
    UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";

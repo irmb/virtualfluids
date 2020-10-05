@@ -643,7 +643,7 @@ void CompressibleOffsetInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f
 
    LBMReal eps_new = 2.;
    LBMReal o  = omega;
-   LBMReal op = 1.;
+//   LBMReal op = 1.;
 
    //f_E    = eps_new *((5.*ax*o + 5.*by*o + 5.*cz*o - 8.*ax*op + 4.*by*op + 4.*cz*op)/(54.*o*op));
    //f_N    = f_E + eps_new *((2.*(ax - by))/(9.*o));

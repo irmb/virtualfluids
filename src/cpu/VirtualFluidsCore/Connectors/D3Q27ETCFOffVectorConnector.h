@@ -318,23 +318,23 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::fillSendVectors()
    //int lMinX1_2, lMinX2_2, lMinX3_2, lMaxX1_2, lMaxX2_2, lMaxX3_2;
 
    //for coners
-   int lMinX1W = 1;
-   int lMaxX1W = 2;
-
-   int lMinX1E = maxX1 - 3;
-   int lMaxX1E = maxX1 - 2;
-
-   int lMinX2S = 1;
-   int lMaxX2S = 2;
-
-   int lMinX2N = maxX2 - 3;
-   int lMaxX2N = maxX2 - 2;
-
-   int lMinX3B = 1;
-   int lMaxX3B = 2;
-
-   int lMinX3T = maxX3 - 3;
-   int lMaxX3T = maxX3 - 2;
+//   int lMinX1W = 1;
+//   int lMaxX1W = 2;
+//
+//   int lMinX1E = maxX1 - 3;
+//   int lMaxX1E = maxX1 - 2;
+//
+//   int lMinX2S = 1;
+//   int lMaxX2S = 2;
+//
+//   int lMinX2N = maxX2 - 3;
+//   int lMaxX2N = maxX2 - 2;
+//
+//   int lMinX3B = 1;
+//   int lMaxX3B = 2;
+//
+//   int lMinX3T = maxX3 - 3;
+//   int lMaxX3T = maxX3 - 2;
 
 
    switch (sendDir)
@@ -749,16 +749,15 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::getLocalMinMax(const int& 
       halfOdd = gMax / 2 - 1 + dCoef;
    }
 
-   switch (even)
+   if(even)
    {
-   case true:
-      lMin = gMin + dCoef;
-      lMax = lMin + halfEven - dCoef;
-      break;
-   case false:
-      lMin = gMin + halfOdd;
-      lMax = gMax - 1;
-      break;
+       lMin = gMin + dCoef;
+       lMax = lMin + halfEven - dCoef;
+   }
+   else
+   {
+       lMin = gMin + halfOdd;
+       lMax = gMax - 1;
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -856,23 +855,23 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::distributeReceiveVectors()
    int dummy;
 
    //for coners
-   int lMinX1W = 3;
-   int lMaxX1W = 3;
-
-   int lMinX1E = maxX1 - 3;
-   int lMaxX1E = maxX1 - 2;
-
-   int lMinX2S = 1;
-   int lMaxX2S = 3;
-
-   int lMinX2N = maxX2 - 3;
-   int lMaxX2N = maxX2 - 2;
-
-   int lMinX3B = 1;
-   int lMaxX3B = 3;
-
-   int lMinX3T = maxX3 - 3;
-   int lMaxX3T = maxX3 - 2;
+//   int lMinX1W = 3;
+//   int lMaxX1W = 3;
+//
+//   int lMinX1E = maxX1 - 3;
+//   int lMaxX1E = maxX1 - 2;
+//
+//   int lMinX2S = 1;
+//   int lMaxX2S = 3;
+//
+//   int lMinX2N = maxX2 - 3;
+//   int lMaxX2N = maxX2 - 2;
+//
+//   int lMinX3B = 1;
+//   int lMaxX3B = 3;
+//
+//   int lMinX3T = maxX3 - 3;
+//   int lMaxX3T = maxX3 - 2;
 
    ///////////////////////////////////////
    ///DEBUG

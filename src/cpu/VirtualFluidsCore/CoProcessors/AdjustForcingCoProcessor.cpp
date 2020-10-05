@@ -22,8 +22,7 @@ AdjustForcingCoProcessor::AdjustForcingCoProcessor(SPtr<Grid3D> grid, SPtr<UbSch
    path(path),
    integrateValues(integrateValues),
    comm(comm),
-   vx1Targed(vTarged),
-   forcing(forcing)
+   vx1Targed(vTarged)
 {
    //cnodes = integrateValues->getCNodes();
    root = comm->isRoot();
@@ -75,10 +74,7 @@ AdjustForcingCoProcessor::AdjustForcingCoProcessor(SPtr<Grid3D> grid, SPtr<UbSch
    }
    ////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
-//////////////////////////////////////////////////////////////////////////
-AdjustForcingCoProcessor::~AdjustForcingCoProcessor()
-{
-}
+
 //////////////////////////////////////////////////////////////////////////
 void AdjustForcingCoProcessor::process(double step)
 {

@@ -132,7 +132,7 @@ void WriteMQFromSelectionCoProcessor::clearData()
 void WriteMQFromSelectionCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
    double level = (double)block->getLevel();
-   double blockID = (double)block->getGlobalID();
+//   double blockID = (double)block->getGlobalID();
 
    //Diese Daten werden geschrieben:
    datanames.resize(0);

@@ -72,8 +72,10 @@ protected:
 
 private:
    //MPI_Datatype gridParamType, block3dType;
-   MPI_Datatype dataSetType, dataSetSmallType, dataSetDoubleType;
-   MPI_Datatype boundCondParamType, boundCondTypeAdd, bcindexmatrixType;
+//   MPI_Datatype dataSetType, dataSetSmallType;
+   MPI_Datatype dataSetDoubleType;
+//   MPI_Datatype boundCondParamType, boundCondTypeAdd;
+   MPI_Datatype bcindexmatrixType;
    MPI_Datatype sendBlockDoubleType, sendBlockIntType;
 
    MPIIODataStructures::boundCondParam boundCondParamStr;

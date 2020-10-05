@@ -38,7 +38,7 @@ void MicrophoneArrayCoProcessor::process(double step)
 bool MicrophoneArrayCoProcessor::addMicrophone(Vector3D coords)
 {
    micID++;
-   UbTupleInt3 blockIndexes = grid->getBlockIndexes(coords[0], coords[1], coords[2]);
+//   UbTupleInt3 blockIndexes = grid->getBlockIndexes(coords[0], coords[1], coords[2]);
 
    int minInitLevel = this->grid->getCoarsestInitializedLevel();
    int maxInitLevel = this->grid->getFinestInitializedLevel();

@@ -40,7 +40,7 @@ public:
       mTempNodes   = 0.0;
    }
    /*==========================================================*/
-   void startTiming(double nofNodes)
+   void startNUPSTiming(double nofNodes)
    {
       mTempNodes=nofNodes;
       UbTiming::startTiming();

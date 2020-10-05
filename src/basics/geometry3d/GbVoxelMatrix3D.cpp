@@ -531,7 +531,6 @@ void GbVoxelMatrix3D::readMatrixFromVtiASCIIFile(std::string filename)
 
    //UBLOG(logINFO,"  - init values");
    int val;
-   int u = 0;
    for (int x3 = 0; x3<nodesX3; x3++)
       for (int x2 = 0; x2<nodesX2; x2++)
          for (int x1 = 0; x1<nodesX1; x1++)
@@ -550,15 +549,15 @@ void GbVoxelMatrix3D::readMatrixFromVtiASCIIFile(std::string filename)
 //////////////////////////////////////////////////////////////////////////
 void GbVoxelMatrix3D::rotate90aroundX(double cX1, double cX2, double cX3)
 {
-   double tempMinPunktX1 = minX1-cX1;
+//   double tempMinPunktX1 = minX1-cX1;
    double tempMinPunktX2 = minX2-cX2;
    double tempMinPunktX3 = getX3Maximum()-cX3;
 
-   double tempMinPunktX1tf = tempMinPunktX1;
+//   double tempMinPunktX1tf = tempMinPunktX1;
    double tempMinPunktX2tf = -tempMinPunktX3;
    double tempMinPunktX3tf = tempMinPunktX2;
 
-   double minX1_temp = tempMinPunktX1tf+cX1;
+//   double minX1_temp = tempMinPunktX1tf+cX1;
    double minX2_temp = tempMinPunktX2tf+cX2;
    double minX3_temp = tempMinPunktX3tf+cX3;
 
@@ -602,15 +601,15 @@ void GbVoxelMatrix3D::rotate90aroundX()
 void GbVoxelMatrix3D::rotate90aroundY(double cX1, double cX2, double cX3)
 {
    double tempMinPunktX1 = getX1Maximum()-cX1;
-   double tempMinPunktX2 = minX2-cX2;
+//   double tempMinPunktX2 = minX2-cX2;
    double tempMinPunktX3 = minX3-cX3;
 
    double tempMinPunktX1tf = tempMinPunktX3;
-   double tempMinPunktX2tf = tempMinPunktX2;
+//   double tempMinPunktX2tf = tempMinPunktX2;
    double tempMinPunktX3tf = -tempMinPunktX1;
 
    double minX1_temp = tempMinPunktX1tf+cX1;
-   double minX2_temp = tempMinPunktX2tf+cX2;
+//   double minX2_temp = tempMinPunktX2tf+cX2;
    double minX3_temp = tempMinPunktX3tf+cX3;
 
    minX1 = minX1_temp;
@@ -654,15 +653,15 @@ void GbVoxelMatrix3D::rotate90aroundZ(double cX1, double cX2, double cX3)
 {
    double tempMinPunktX1 = minX1-cX1;
    double tempMinPunktX2 = getX2Maximum()-cX2;
-   double tempMinPunktX3 = minX3-cX3;
+//   double tempMinPunktX3 = minX3-cX3;
 
    double tempMinPunktX1tf = -tempMinPunktX2;
    double tempMinPunktX2tf = tempMinPunktX1;
-   double tempMinPunktX3tf = tempMinPunktX3;
+//   double tempMinPunktX3tf = tempMinPunktX3;
 
    double minX1_temp = tempMinPunktX1tf+cX1;
    double minX2_temp = tempMinPunktX2tf+cX2;
-   double minX3_temp = tempMinPunktX3tf+cX3;
+//   double minX3_temp = tempMinPunktX3tf+cX3;
 
    minX1 = minX1_temp;
    minX2 = minX2_temp;
@@ -766,9 +765,6 @@ void GbVoxelMatrix3D::rotateAroundY(double theta)
 
    GbVoxelMatrix3D::Matrix3D voxelMatrix_temp(nx1, nx2, nx3, FLUID);
 
-   double newMinX1 = cos(theta)*minX1+sin(theta)*minX3;
-   double newMinX3 = -sin(theta)*minX1+cos(theta)*minX3;
-
    for (int x3 = 0; x3<nx3; x3++) {
       for (int x2 = 0; x2<nx2; x2++) {
          for (int x1 = 0; x1<nx1; x1++)
@@ -784,11 +780,6 @@ void GbVoxelMatrix3D::rotateAroundY(double theta)
                int newX1 = UbMath::integerRounding((nrcX1-minX1)/deltaX1);
                int newX2 = x2;
                int newX3 = UbMath::integerRounding((nrcX3-minX3)/deltaX3);
-
-               if (newX1 < 0)
-               {
-                  int test=1;
-               }
 
                if (newX1>0 && newX3>0 && newX1<nx1 && newX3<nx3)
                {

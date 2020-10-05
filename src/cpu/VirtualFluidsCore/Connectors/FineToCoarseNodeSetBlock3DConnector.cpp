@@ -76,10 +76,10 @@ void FineToCoarseNodeSetBlock3DConnector::init()
    //////////////////////////////////////////////////////
    //Debug
    //////////////////////////////////////////////////////
-   if (FineToCoarseBlock3DConnector::block.lock()->getGlobalID() == 2183)
-   {
-      int test = 0;
-   }
+//   if (FineToCoarseBlock3DConnector::block.lock()->getGlobalID() == 2183)
+//   {
+//      int test = 0;
+//   }
 
 
    if (FineToCoarseBlock3DConnector::sender) FineToCoarseBlock3DConnector::sender->getData().resize(iNodeSetSender.size()*iCellSize*sendDataPerNode, initValue);
@@ -93,10 +93,10 @@ void FineToCoarseNodeSetBlock3DConnector::findFCCells(int lMinX1, int lMinX2, in
    //////////////////////////////////////////////////////
    //Debug
    //////////////////////////////////////////////////////
-   if (FineToCoarseBlock3DConnector::block.lock()->getGlobalID() == 2183)
-   {
-      int test = 0;
-   }
+//   if (FineToCoarseBlock3DConnector::block.lock()->getGlobalID() == 2183)
+//   {
+//      int test = 0;
+//   }
 
 
    int ix1, ix2, ix3;
@@ -767,10 +767,10 @@ void FineToCoarseNodeSetBlock3DConnector::findCFCells()
    //////////////////////////////////////////////////////
    //Debug
    //////////////////////////////////////////////////////
-   if (block.lock()->getGlobalID() == 2183)
-   {
-      int test = 0;
-   }
+//   if (block.lock()->getGlobalID() == 2183)
+//   {
+//      int test = 0;
+//   }
 
    switch (sendDir)
    {

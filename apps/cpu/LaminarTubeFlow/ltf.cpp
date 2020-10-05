@@ -60,8 +60,6 @@ void run(string configname)
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
-      const int baseLevel = 0;
-
       //BC Adapter
       //////////////////////////////////////////////////////////////////////////////
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
@@ -179,10 +177,10 @@ void run(string configname)
 
          SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
 
-         double r = dynamicPointerCast<GbCylinder3D>(cylinder)->getRadius();
-         double cx1 = g_minX1;
-         double cx2 = cylinder->getX2Centroid();
-         double cx3 = cylinder->getX3Centroid();
+         //double r = dynamicPointerCast<GbCylinder3D>(cylinder)->getRadius();
+         //double cx1 = g_minX1;
+         //double cx2 = cylinder->getX2Centroid();
+         //double cx3 = cylinder->getX3Centroid();
 
          mu::Parser fct;
          fct.SetExpr("vx1");
@@ -310,7 +308,8 @@ void run(string configname)
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculator->calculate();
-      if (myid == 0) UBLOG(logINFO, "Simulation-end");
+      if (myid == 0)
+          UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)
    {

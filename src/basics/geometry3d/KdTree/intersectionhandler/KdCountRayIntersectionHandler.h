@@ -62,9 +62,9 @@ namespace Kd
       {
          T e1x,e1y,e1z,e2x,e2y,e2z,px,py,pz,a,f,sx,sy,sz,u,qx,qy,qz,v,factor;
 
-         int counter = 0, iSec = 0;
+         int counter = 0;
 
-         for( std::size_t i=0; i<triFaces.size(); i++ )
+         for(std::size_t i=0; i<triFaces.size(); i++ )
          {
             GbTriFaceMesh3D::TriFace& triFace = triFaces[i];
 

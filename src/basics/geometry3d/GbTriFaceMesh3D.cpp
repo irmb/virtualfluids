@@ -140,7 +140,7 @@ void GbTriFaceMesh3D::deleteRedundantNodes()
 
     for(size_t t=0; t<tris.size(); t++)
     {
-       if(t%100==0) UBLOG(logDEBUG5,"GbTriFaceMesh3D::deleteRedundantNodes - tri: "<<(t)<<" von "<<tris.size());
+       if(t%100==0) { UBLOG(logDEBUG5,"GbTriFaceMesh3D::deleteRedundantNodes - tri: "<<(t)<<" von "<<tris.size()); }
        TriFace& tri = tris[t];
        //Knoten bereits in neuem node vector?
        for(int v=0; v<=2; v++)
@@ -781,8 +781,6 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, co
 /*======================================================================*/
 bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, const double& x3)
 {
-  int counter=0;
-
    if( !nodes->empty() )
    {
       //Baum erstellen, wen noch keiner vorhanden

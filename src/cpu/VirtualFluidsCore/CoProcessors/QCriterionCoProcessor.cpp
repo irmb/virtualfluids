@@ -101,7 +101,7 @@ void QCriterionCoProcessor::clearData()
 void QCriterionCoProcessor::addData(const SPtr<Block3D> block)
 {
 	UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
-	UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
+//	UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
 	UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
 	double         dx           = grid->getDeltaX(block);
 
@@ -224,9 +224,9 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 
    bool compressible = block->getKernel()->getCompressible();
 
-	int minX1 = 0;
-	int minX2 = 0;
-	int minX3 = 0;
+//	int minX1 = 0;
+//	int minX2 = 0;
+//	int minX3 = 0;
 
 	int maxX1 = (int)(distributions->getNX1());
 	int maxX2 = (int)(distributions->getNX2());
@@ -239,7 +239,9 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 	bool neighNodeIsBC=false;
 	SPtr<BoundaryConditions> bcPtr;
 
-	int rankSelf= block->getRank(); 
+	int rankSelf= block->getRank();
+
+	// FIXME: logical not is only applied to the left hand side of this comparison
 	if (!(offx+offy+offz)==1) throw UbException(UB_EXARGS,"getNeighborVelocities called for diagonal directions!");
 	//////get neighbor nodes, if existent
 	if ((ix1==0 && offx==1) || (ix2==0 && offy==1) || (ix3==0 && offz==1))
@@ -272,7 +274,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 		{
 			blockNeighW = grid->getBlock( val<1>(blockIndexes), val<2>(blockIndexes),(grid->getNX3()-1), currentLevel);
 		}
-		else neighNodeIsBC;
+		else neighNodeIsBC; // FIXME???
 
 		if(blockNeighW && blockNeighW->isActive())
 		{	     		     

@@ -540,7 +540,7 @@ std::string WbWriterVtkBinary::writeOctsWithCellData(const string& filename,vect
    return vtkfilename;
 }
 /*===============================================================================*/
-std::string WbWriterVtkBinary::writeOctsWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleInt8 >& cells, vector<string >& datanames, vector<vector<double > >& nodedata)
+std::string WbWriterVtkBinary::writeOctsWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleUInt8 >& cells, vector<string >& datanames, vector<vector<double > >& nodedata)
 {
    //HEADER-SECTION
    string vtkfilename = filename + getFileExtension();

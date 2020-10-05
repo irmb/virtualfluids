@@ -94,9 +94,9 @@ void CompressibleCumulantLBMKernel::calculate(int step)
       muForcingX2.DefineVar("nu", &muNu);
       muForcingX3.DefineVar("nu", &muNu);
 
-      LBMReal forcingX1 = 0;
-      LBMReal forcingX2 = 0;
-      LBMReal forcingX3 = 0;
+//      LBMReal forcingX1 = 0;
+//      LBMReal forcingX2 = 0;
+//      LBMReal forcingX3 = 0;
    }
    /////////////////////////////////////
 
@@ -483,7 +483,7 @@ void CompressibleCumulantLBMKernel::calculate(int step)
                   //////////////////////////////
                   LBMReal OxyyPxzz = one;//three  * (two - omega) / (three  - omega);//
                   //LBMReal OxyyMxzz = one;//six    * (two - omega) / (six    - omega);//
-                  LBMReal Oxyz = one;//twelve * (two - omega) / (twelve + omega);//
+//                  LBMReal Oxyz = one;//twelve * (two - omega) / (twelve + omega);//
                   //////////////////////////////
                   //LBMReal OxyyPxzz  = two-omega;//
                   //LBMReal OxyyMxzz  = two-omega;//

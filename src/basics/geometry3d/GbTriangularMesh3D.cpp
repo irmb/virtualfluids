@@ -1248,26 +1248,26 @@ char 	GbTriangularMesh3D::InTri2D( GbVector3D Tp[3], GbVector3D& pp )
    area2 = AreaSign( pp, Tp[2], Tp[0] );
  //  printf("area0=%f  area1=%f  area2=%f\n",area0,area1,area2);
 
-   if ( ( area0 == 0. ) && ( area1 > 0. ) && ( area2 > 0. ) ||
-      ( area1 == 0. ) && ( area0 > 0. ) && ( area2 > 0. ) ||
-      ( area2 == 0. ) && ( area0 > 0. ) && ( area1 > 0. ) ) 
+   if ( (( area0 == 0. ) && ( area1 > 0. ) && ( area2 > 0. )) ||
+           (( area1 == 0. ) && ( area0 > 0. ) && ( area2 > 0. )) ||
+                   (( area2 == 0. ) && ( area0 > 0. ) && ( area1 > 0. )) )
       return 'E';
  
-   if ( ( area0 == 0. ) && ( area1 < 0. ) && ( area2 < 0. ) ||
-      ( area1 == 0. ) && ( area0 < 0. ) && ( area2 < 0. ) ||
-      ( area2 == 0. ) && ( area0 < 0. ) && ( area1 < 0. ) )
+   if ( (( area0 == 0. ) && ( area1 < 0. ) && ( area2 < 0. )) ||
+      (( area1 == 0. ) && ( area0 < 0. ) && ( area2 < 0. )) ||
+      (( area2 == 0. ) && ( area0 < 0. ) && ( area1 < 0. )) )
       return 'E';                 
 
-   if ( ( area0 >  0. ) && ( area1 > 0. ) && ( area2 > 0. ) ||
-      ( area0 <  0. ) && ( area1 < 0. ) && ( area2 < 0. ) )
+   if ( (( area0 >  0. ) && ( area1 > 0. ) && ( area2 > 0. )) ||
+           (( area0 <  0. ) && ( area1 < 0. ) && ( area2 < 0. )) )
       return 'F';
 
    if ( ( area0 == 0.0 ) && ( area1 == 0.0 ) && ( area2 == 0.0 ) )
       fprintf( stderr, "Error in InTriD\n" ), exit(EXIT_FAILURE);
 
-   if ( ( area0 == 0. ) && ( area1 == 0. ) ||
-      ( area0 == 0. ) && ( area2 == 0. ) ||
-      ( area1 == 0. ) && ( area2 == 0. ) )
+   if ( (( area0 == 0. ) && ( area1 == 0. )) ||
+      (( area0 == 0. ) && ( area2 == 0. )) ||
+      (( area1 == 0. ) && ( area2 == 0. )) )
       return 'V';
 
    else  

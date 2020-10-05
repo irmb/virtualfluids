@@ -106,7 +106,7 @@ void ConnectorBlockVisitor::setInterpolationConnectors(SPtr<Grid3D> grid, SPtr<B
       UBLOG(logINFO, block->toString());
    }
    UBLOG(logDEBUG5, "ConnectorBlockVisitor::setInterpolationConnectors() - start");
-   int blockRank = block->getRank();
+//   int blockRank = block->getRank();
 
    //search for all blocks with different ranks
    if (block->hasInterpolationFlagCF() && block->isActive())
@@ -450,8 +450,8 @@ void ConnectorBlockVisitor::createTransmitters(SPtr<Block3D> cBlock, SPtr<Block3
 {
    UBLOG(logDEBUG5, "ConnectorBlockVisitor::createTransmitters(...) - start");
    CreateTransmittersHelper helper;
-   bool MPIpool = true;
-   bool orthogonal = false;
+//   bool MPIpool = true;
+//   bool orthogonal = false;
    int fBlockRank = fBlock->getRank();
    int cBlockRank = cBlock->getRank();
    if (fBlockRank == cBlockRank && fBlockRank == gridRank)

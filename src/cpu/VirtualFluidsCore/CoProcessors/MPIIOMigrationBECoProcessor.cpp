@@ -747,7 +747,7 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
 
    int indexB = ind1;
    int indexE = ind2;
-   int myBlocksCount = indexE - indexB;
+//   int myBlocksCount = indexE - indexB;
 
    int* blocksCounterSend = new int[size];
    int* blocksCounterRec = new int[size];
@@ -786,7 +786,7 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
    
    MPI_Request* requests = new MPI_Request[size * 2]; // send + receive
    int requestCount = 0;
-   MPI_Status status;
+//   MPI_Status status;
 
    for (int r = 0; r < size; r++)
    {

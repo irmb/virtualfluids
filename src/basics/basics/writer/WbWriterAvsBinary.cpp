@@ -863,7 +863,7 @@ std::string WbWriterAvsBinary::writeOctsWithCellData(const string& filename,vect
     return avsfilename;
  }
 /*===============================================================================*/
-std::string WbWriterAvsBinary::writeOctsWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleInt8 >& cells, vector<string >& datanames, vector<vector<double > >& nodedata)
+std::string WbWriterAvsBinary::writeOctsWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleUInt8 >& cells, vector<string >& datanames, vector<vector<double > >& nodedata)
 {
     string avsfilename = filename+getFileExtension();
     UBLOG(logDEBUG1,"WbWriterAvsBinary::writeOctsWithNodeData to "<<avsfilename<<" - start");
