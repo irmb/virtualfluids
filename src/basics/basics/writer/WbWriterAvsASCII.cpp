@@ -660,12 +660,17 @@ std::string WbWriterAvsASCII::writeTrianglesWithNodeData(const std::string& file
    for(int i=0;i<nofNodeData;i++) out.write((char*)&fdummy,sizeof(float)); //max Wert pro Datentyp
 
    //daten ins file schreiben
-   for(int d=0; d<nofNodeData; ++d)
+   for(int d=0; d<nofNodeData; ++d){
       for(int n=0; n<(int)nodedata[d].size(); n++)
-      { fdummy=(float)nodedata[d][n]; out.write((char*)&fdummy,sizeof(float)); }
+      { 
+         fdummy=(float)nodedata[d][n];
+         out.write((char*)&fdummy,sizeof(float));
+      }
+   }
 
       fdummy = 1.;
-      for(int i=0;i<nofNodeData;i++) out.write((char*)&fdummy,sizeof(float)); //max Wert pro Datentyp
+      for(int i=0;i<nofNodeData;i++) 
+         out.write((char*)&fdummy,sizeof(float)); //max Wert pro Datentyp
 
    out.close(); 
    UBLOG(logDEBUG1,"WbWriterAvsASCII::writeTrianglesWithNodeData to "<<avsfilename<<" - end");

@@ -241,8 +241,9 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 
 	int rankSelf= block->getRank();
 
-	// FIXME: logical not is only applied to the left hand side of this comparison
-	if (!(offx+offy+offz)==1) throw UbException(UB_EXARGS,"getNeighborVelocities called for diagonal directions!");
+	if (!(offx+offy+offz)==1)  	// FIXME: logical not is only applied to the left hand side of this comparison
+		throw UbException(UB_EXARGS,"getNeighborVelocities called for diagonal directions!");
+		
 	//////get neighbor nodes, if existent
 	if ((ix1==0 && offx==1) || (ix2==0 && offy==1) || (ix3==0 && offz==1))
 	{

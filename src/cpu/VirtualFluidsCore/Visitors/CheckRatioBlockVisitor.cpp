@@ -19,8 +19,10 @@ void CheckRatioBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
    ix3 = block->getX3();
    level = block->getLevel();
 
-   int nix1, nix2, nix3, nlev;
-   int neighix1, neighix2, neighix3, neighlev;
+//   int nix1, nix2, nix3;
+   int nlev;
+//   int neighix1, neighix2, neighix3,
+   int neighlev;
    std::vector<SPtr<Block3D>> neighbors;
    grid->getAllNeighbors(ix1, ix2, ix3, level, this->levelDepth, neighbors);
 //   bool hasAdded = false;
@@ -29,13 +31,13 @@ void CheckRatioBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
       if ((neighbors[i]->isActive()||includeNotActiveBlocks)
          &&neighbors[i]->getLevel()>level)
       {
-         neighix1 = neighbors[i]->getX1();
-         neighix2 = neighbors[i]->getX2();
-         neighix3 = neighbors[i]->getX3();
+         // neighix1 = neighbors[i]->getX1();
+         // neighix2 = neighbors[i]->getX2();
+         // neighix3 = neighbors[i]->getX3();
          neighlev = neighbors[i]->getLevel();
-         nix1 = neighix1>>1;
-         nix2 = neighix2>>1;
-         nix3 = neighix3>>1;
+         // nix1 = neighix1>>1;
+         // nix2 = neighix2>>1;
+         // nix3 = neighix3>>1;
          nlev = neighlev-1;
 
          if (nlev!=level)

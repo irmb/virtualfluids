@@ -234,9 +234,10 @@ void MPIIOCoProcessor::writeBlocks(int step)
 
 void MPIIOCoProcessor::readBlocks(int step)
 {
-   int rank, size;
+   int rank;
+//   int size;
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   size = 1;
+//   size = 1;
    if (comm->isRoot())
    {
       UBLOG(logINFO, "MPIIOCoProcessor::readBlocks start MPI IO rank = " << rank);

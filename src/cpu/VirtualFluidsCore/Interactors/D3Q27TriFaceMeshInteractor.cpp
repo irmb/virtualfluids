@@ -228,11 +228,11 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
    //bounding cubes des TriFaceMesh ermitteln (pro level)
    //////////////////////////////////////////////////////////////////////////
    //min/max Werte des Dreiecksnetzes holen
-   double geoMinX1(0.0), geoMinX2(0.0), geoMinX3(0.0), geoMaxX1(0.0), geoMaxX2(0.0), geoMaxX3(0.0);
+//   double geoMinX1(0.0), geoMinX2(0.0), geoMinX3(0.0), geoMaxX1(0.0), geoMaxX2(0.0), geoMaxX3(0.0);
 
-   geoMinX1 = this->geoObject3D->getX1Minimum();  geoMaxX1 = this->geoObject3D->getX1Maximum();
-   geoMinX2 = this->geoObject3D->getX2Minimum();  geoMaxX2 = this->geoObject3D->getX2Maximum();
-   geoMinX3 = this->geoObject3D->getX3Minimum();  geoMaxX3 = this->geoObject3D->getX3Maximum();
+//   geoMinX1 = this->geoObject3D->getX1Minimum();  geoMaxX1 = this->geoObject3D->getX1Maximum();
+//   geoMinX2 = this->geoObject3D->getX2Minimum();  geoMaxX2 = this->geoObject3D->getX2Maximum();
+//   geoMinX3 = this->geoObject3D->getX3Minimum();  geoMaxX3 = this->geoObject3D->getX3Maximum();
 
 
    //////////////////////////////////////////////////////////////////////////
@@ -720,7 +720,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
    UbTimer setQTimer; setQTimer.start();
    UBLOG(logDEBUG3, " - setQs for "<<(int)triangles.size()<<" triangles");
 
-   bool solidFromOtherInteractor = false;
+//   bool solidFromOtherInteractor = false;
    float blockMinX[3],blockMaxX[3],boxCenter[3],halfBoxSize[3];
 
    for(size_t t=0; t<triangles.size(); t++)
@@ -872,12 +872,12 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                      //dieser nun uebersprungen wird, dann hat man spaeter beim fuellalgorithmus luecken
                      //in der front und der block wird u.U. faelschlicher weise komplett solid markiert
                      //Lsg: positionen merken und erst Nach dem fuellarlgo wieder auf not active setzen :-)
-                     solidFromOtherInteractor = false;
+//                     solidFromOtherInteractor = false;
                      if(bcMatrix->isSolid(ix1,ix2,ix3))
                      {
                         if(this->reinitWithStoredQsFlag)
                         {
-                           solidFromOtherInteractor = true;   //hier muss man weitermachen
+                           //solidFromOtherInteractor = true;   //hier muss man weitermachen
                            //SG //oje 
                            std::vector<int> p(3);
                            p[0]=ix1; p[1]=ix2; p[2]=ix3;
@@ -890,7 +890,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                            p[0]=ix1; p[1]=ix2; p[2]=ix3;
                            solidsFromOtherInteractors.insert(p);
                            //SG continue;   
-                           solidFromOtherInteractor = true;   
+                           //solidFromOtherInteractor = true;   
                         }
                      }
 

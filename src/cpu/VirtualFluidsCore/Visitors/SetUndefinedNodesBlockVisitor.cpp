@@ -654,14 +654,19 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
       maxX2 = static_cast<int>(bcMatrix->getNX2())-1-gl;
       maxX3 = static_cast<int>(bcMatrix->getNX3())-1-gl;
 
-      for (int ix3=minX3; ix3<=maxX3; ix3++)
-         for (int ix2=minX2; ix2<=maxX2; ix2++)
+      for (int ix3=minX3; ix3<=maxX3; ix3++) {
+         for (int ix2=minX2; ix2<=maxX2; ix2++) {
             for (int ix1=minX1; ix1<=maxX1; ix1++)
             {
-               if(bcMatrix->isUndefined(ix1, ix2, ix3)) bcMatrix->setFluid(ix1, ix2, ix3);
-               else                                    bcMatrix->setUndefined(ix1, ix2, ix3);
+               if(bcMatrix->isUndefined(ix1, ix2, ix3)) 
+                  bcMatrix->setFluid(ix1, ix2, ix3);
+               else                                    
+                  bcMatrix->setUndefined(ix1, ix2, ix3);
             }
-            return;
+         }
+      }
+      
+      return;
    }
 
 }

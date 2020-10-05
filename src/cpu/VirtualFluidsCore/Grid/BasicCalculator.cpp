@@ -69,7 +69,7 @@ void BasicCalculator::calculate()
       int maxInitLevel = maxLevel - minLevel;
       int straightStartLevel = minInitLevel;
       int internalIterations = 1 << (maxInitLevel - minInitLevel);
-      int forwardStartLevel;
+//      int forwardStartLevel;
       int threshold;
 
 #ifdef TIMING
@@ -87,7 +87,7 @@ void BasicCalculator::calculate()
 
          for (int staggeredStep = 1; staggeredStep <= internalIterations; staggeredStep++)
          {
-            forwardStartLevel = straightStartLevel;
+//            forwardStartLevel = straightStartLevel;
             if (staggeredStep == internalIterations) straightStartLevel = minInitLevel;
             else
             {
