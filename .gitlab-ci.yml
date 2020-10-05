@@ -1,22 +1,32 @@
-image: ubuntu
+image: irmb/virtualfluids-deps:latest
 
 stages:
   - build
+  - test
 
 build:
   stage: build
+
+  artifacts:
+    paths:
+      - build/
 
   before_script:
     - export CAB_MACHINE=ELLADAN
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update
-    - apt-get install build-essential -y
-    - apt-get install cmake -y
-    - apt-get install ninja-build -y
-    - apt-get install openmpi-bin -y
-    - apt-get install libomp-dev -y
-    - apt-get install nvidia-cuda-dev  nvidia-cuda-toolkit -y
 
   script:
-    - cmake -S . -B build -DBUILD_VF_CPU:BOOL=ON
+    - cmake -S . -B build -DBUILD_VF_CPU:BOOL=ON -DUSE_GCC:BOOL=ON -DBUILD_VF_UNIT_TESTS:BOOL=ON
     - cmake --build build --target VirtualFluidsCore
+    - cmake --build build --target basicsTests
+
+
+test:
+  stage: test
+
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+
+  script:
+    - build/bin/basicsTests
