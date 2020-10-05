@@ -52,7 +52,6 @@ public:
     typedef std::numeric_limits<LBMReal> LBMRealLim;
 public:
     LBMKernel();
-    virtual ~LBMKernel();
 
     virtual SPtr<LBMKernel> clone() = 0;
 
@@ -62,14 +61,14 @@ public:
     void setBCProcessor(SPtr<BCProcessor> bcp);
     SPtr<BCProcessor> getBCProcessor() const;
 
-    void setCollisionFactor(double collFactor);
-    double getCollisionFactor() const;
+    void setCollisionFactor(double collFactor) override;
+    double getCollisionFactor() const override;
 
     void setGhostLayerWidth(int witdh);
-    int  getGhostLayerWidth() const;
+    int  getGhostLayerWidth() const override;
 
     void setDataSet(SPtr<DataSet3D> dataSet);
-    SPtr<DataSet3D> getDataSet() const;
+    SPtr<DataSet3D> getDataSet() const override;
 
     void setForcingX1(LBMReal forcingX1);
     void setForcingX2(LBMReal forcingX2);
@@ -85,13 +84,13 @@ public:
 
     void setIndex(int x1, int x2, int x3);
 
-    LBMReal getDeltaT() const;
+    LBMReal getDeltaT() const override;
     void setDeltaT(LBMReal dt);
 
-    bool getCompressible() const;
+    bool getCompressible() const override;
     void setCompressible(bool val);
 
-    bool getWithForcing() const;
+    bool getWithForcing() const override;
     void setWithForcing(bool val);
 
     bool getWithSpongeLayer() const;
@@ -103,7 +102,7 @@ public:
     void setBlock(SPtr<Block3D> block);
     SPtr<Block3D> getBlock() const;
 
-    bool isInsideOfDomain(const int &x1, const int &x2, const int &x3) const;
+    bool isInsideOfDomain(const int &x1, const int &x2, const int &x3) const override;
 
     void swapDistributions() override;
 

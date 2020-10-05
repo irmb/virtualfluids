@@ -1248,26 +1248,26 @@ char 	GbTriangularMesh3D::InTri2D( GbVector3D Tp[3], GbVector3D& pp )
    area2 = AreaSign( pp, Tp[2], Tp[0] );
  //  printf("area0=%f  area1=%f  area2=%f\n",area0,area1,area2);
 
-   if ( ( area0 == 0. ) && ( area1 > 0. ) && ( area2 > 0. ) ||
-      ( area1 == 0. ) && ( area0 > 0. ) && ( area2 > 0. ) ||
-      ( area2 == 0. ) && ( area0 > 0. ) && ( area1 > 0. ) ) 
+   if ( (( area0 == 0. ) && ( area1 > 0. ) && ( area2 > 0. )) ||
+           (( area1 == 0. ) && ( area0 > 0. ) && ( area2 > 0. )) ||
+                   (( area2 == 0. ) && ( area0 > 0. ) && ( area1 > 0. )) )
       return 'E';
  
-   if ( ( area0 == 0. ) && ( area1 < 0. ) && ( area2 < 0. ) ||
-      ( area1 == 0. ) && ( area0 < 0. ) && ( area2 < 0. ) ||
-      ( area2 == 0. ) && ( area0 < 0. ) && ( area1 < 0. ) )
+   if ( (( area0 == 0. ) && ( area1 < 0. ) && ( area2 < 0. )) ||
+      (( area1 == 0. ) && ( area0 < 0. ) && ( area2 < 0. )) ||
+      (( area2 == 0. ) && ( area0 < 0. ) && ( area1 < 0. )) )
       return 'E';                 
 
-   if ( ( area0 >  0. ) && ( area1 > 0. ) && ( area2 > 0. ) ||
-      ( area0 <  0. ) && ( area1 < 0. ) && ( area2 < 0. ) )
+   if ( (( area0 >  0. ) && ( area1 > 0. ) && ( area2 > 0. )) ||
+           (( area0 <  0. ) && ( area1 < 0. ) && ( area2 < 0. )) )
       return 'F';
 
    if ( ( area0 == 0.0 ) && ( area1 == 0.0 ) && ( area2 == 0.0 ) )
       fprintf( stderr, "Error in InTriD\n" ), exit(EXIT_FAILURE);
 
-   if ( ( area0 == 0. ) && ( area1 == 0. ) ||
-      ( area0 == 0. ) && ( area2 == 0. ) ||
-      ( area1 == 0. ) && ( area2 == 0. ) )
+   if ( (( area0 == 0. ) && ( area1 == 0. )) ||
+      (( area0 == 0. ) && ( area2 == 0. )) ||
+      (( area1 == 0. ) && ( area2 == 0. )) )
       return 'V';
 
    else  
@@ -1283,9 +1283,10 @@ double GbTriangularMesh3D::AreaSign( GbVector3D& a, GbVector3D& b, GbVector3D& c
 
    return area2;
    /* The area should be an integer. */
-   if      ( area2 >  0.5 ) return  1;
-   else if ( area2 < -0.5 ) return -1;
-   else                     return  0;
+   // FIXME: unrechable code
+   //if      ( area2 >  0.5 ) return  1;
+   //else if ( area2 < -0.5 ) return -1;
+   //else                     return  0;
 }                            
 
 char    GbTriangularMesh3D::SegTriInt( GbTriangle3D* T, GbVector3D& q, GbVector3D& r, GbVector3D& p )
@@ -1402,9 +1403,10 @@ double GbTriangularMesh3D::VolumeSign( GbVector3D& a, GbVector3D& b, GbVector3D&
 
 
    /* The volume should be an integer. */
-   if      ( vol > 0.5 )   return  1;
-   else if ( vol < -0.5 )  return -1;
-   else                    return  0;
+   // FIXME: unreachable code
+   //if      ( vol > 0.5 )   return  1;
+   //else if ( vol < -0.5 )  return -1;
+   //else                    return  0;
 }
 
 bool GbTriangularMesh3D::BoxTest(GbTriangle3D* triangle, GbVector3D& PointQ, GbVector3D& PointR)

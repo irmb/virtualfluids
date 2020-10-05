@@ -41,11 +41,6 @@ NoSlipBCAlgorithm::NoSlipBCAlgorithm()
    BCAlgorithm::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-NoSlipBCAlgorithm::~NoSlipBCAlgorithm()
-{
-
-}
-//////////////////////////////////////////////////////////////////////////
 SPtr<BCAlgorithm> NoSlipBCAlgorithm::clone()
 {
    SPtr<BCAlgorithm> bc(new NoSlipBCAlgorithm());

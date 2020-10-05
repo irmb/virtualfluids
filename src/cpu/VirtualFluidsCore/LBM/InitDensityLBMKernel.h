@@ -19,11 +19,11 @@ public:
 protected:
    void initDataSet();
 private:
-   LBMReal f[D3Q27System::ENDF+1];
+//   LBMReal f[D3Q27System::ENDF+1];
    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
-   LBMReal OxyyMxzz;
+//   LBMReal OxyyMxzz;
    CbArray4D<LBMReal, IndexerX4X3X2X1> v;
 };
 

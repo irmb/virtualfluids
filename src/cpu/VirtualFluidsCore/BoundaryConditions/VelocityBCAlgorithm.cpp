@@ -41,10 +41,6 @@ VelocityBCAlgorithm::VelocityBCAlgorithm()
    BCAlgorithm::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-VelocityBCAlgorithm::~VelocityBCAlgorithm()
-{
-}
-//////////////////////////////////////////////////////////////////////////
 SPtr<BCAlgorithm> VelocityBCAlgorithm::clone()
 {
    SPtr<BCAlgorithm> bc(new VelocityBCAlgorithm());

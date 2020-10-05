@@ -113,10 +113,6 @@ void CumulantK17LBMKernel::calculate(int step)
       muForcingX1.DefineVar("nu", &muNu);
       muForcingX2.DefineVar("nu", &muNu);
       muForcingX3.DefineVar("nu", &muNu);
-
-      LBMReal forcingX1 = 0;
-      LBMReal forcingX2 = 0;
-      LBMReal forcingX3 = 0;
    }
    /////////////////////////////////////
 
@@ -245,9 +241,6 @@ void CumulantK17LBMKernel::calculate(int step)
                   vvy += forcingX2 * deltaT * c1o2; // Y
                   vvz += forcingX3 * deltaT * c1o2; // Z
                }
-               ///////////////////////////////////////////////////////////////////////////////////////////               
-               ////////////////////////////////////////////////////////////////////////////////////
-               LBMReal oMdrho = c1;
 			      ////////////////////////////////////////////////////////////////////////////////////
 			      // calculate the square of velocities for this lattice node
                LBMReal vx2 = vvx * vvx;
@@ -339,6 +332,7 @@ void CumulantK17LBMKernel::calculate(int step)
 			      //! with simplifications assuming \f$\omega_2 = 1.0\f$ (modify for different bulk viscosity).
 			      //!
 			      LBMReal A = (c4 + c2*omega - c3*omega*omega) / (c2 - c7*omega + c5*omega*omega);
+                  //FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::B' )
 			      LBMReal B = (c4 + c28*omega - c14*omega*omega) / (c6 - c21*omega + c15*omega*omega);
 
 			      ////////////////////////////////////////////////////////////////////////////////////

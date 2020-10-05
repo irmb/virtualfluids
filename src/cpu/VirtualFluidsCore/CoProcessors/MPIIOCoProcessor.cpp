@@ -198,7 +198,7 @@ void MPIIOCoProcessor::writeBlocks(int step)
 
    // write to the file
    MPI_File file_handler;
-   MPI_Info info = MPI_INFO_NULL;
+//   MPI_Info info = MPI_INFO_NULL;
 
    UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
@@ -234,9 +234,10 @@ void MPIIOCoProcessor::writeBlocks(int step)
 
 void MPIIOCoProcessor::readBlocks(int step)
 {
-   int rank, size;
+   int rank;
+//   int size;
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   size = 1;
+//   size = 1;
    if (comm->isRoot())
    {
       UBLOG(logINFO, "MPIIOCoProcessor::readBlocks start MPI IO rank = " << rank);

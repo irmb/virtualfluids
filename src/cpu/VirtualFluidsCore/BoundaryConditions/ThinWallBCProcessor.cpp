@@ -4,22 +4,13 @@
 
 #include "LBMKernel.h"
 
-ThinWallBCProcessor::ThinWallBCProcessor()
+//////////////////////////////////////////////////////////////////////////
+ThinWallBCProcessor::ThinWallBCProcessor(SPtr<ILBMKernel> kernel) : BCProcessor(kernel)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-ThinWallBCProcessor::ThinWallBCProcessor(SPtr<LBMKernel> kernel) : BCProcessor(kernel)
-{
-
-}
-//////////////////////////////////////////////////////////////////////////
-ThinWallBCProcessor::~ThinWallBCProcessor()
-{
-
-}
-//////////////////////////////////////////////////////////////////////////
-SPtr<BCProcessor> ThinWallBCProcessor::clone(SPtr<LBMKernel> kernel)
+SPtr<BCProcessor> ThinWallBCProcessor::clone(SPtr<ILBMKernel> kernel)
 {
    SPtr<BCProcessor> bcProcessor(new ThinWallBCProcessor(kernel));
    return bcProcessor;

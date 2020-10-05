@@ -42,7 +42,7 @@ private:
 
    LBMReal kxyAverage, kyzAverage, kxzAverage, kxxMyyAverage, kxxMzzAverage; 
 
-   LBMReal a,b,c;
+//   LBMReal a,b,c;
 
    // bulk viscosity
    bool bulkOmegaToOmega;

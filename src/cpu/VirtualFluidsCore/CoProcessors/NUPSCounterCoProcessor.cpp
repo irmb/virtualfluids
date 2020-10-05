@@ -40,10 +40,10 @@
 NUPSCounterCoProcessor::NUPSCounterCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, int numOfThreads, SPtr<Communicator> comm)
                                                    : CoProcessor(grid, s),
                                                      numOfThreads(numOfThreads),
-                                                     comm(comm),
                                                      nup(0),
                                                      nup_t(0),
-                                                     nupsStep(0.0)
+                                                     nupsStep(0.0),
+                                                     comm(comm)
 {
    if (comm->getProcessID() == comm->getRoot())
    {

@@ -36,7 +36,7 @@ SPtr<LBMKernel> InitDensityLBMKernel::clone()
    kernel->setForcingX3(muForcingX3);
    kernel->setIndex(ix1, ix2, ix3);
    kernel->setDeltaT(deltaT);
-   dynamicPointerCast<InitDensityLBMKernel>(kernel)->OxyyMxzz = 1.0;
+//   dynamicPointerCast<InitDensityLBMKernel>(kernel)->OxyyMxzz = 1.0;
    return kernel;
 }
 

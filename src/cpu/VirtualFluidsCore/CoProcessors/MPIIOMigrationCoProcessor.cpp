@@ -81,7 +81,7 @@ void MPIIOMigrationCoProcessor::process(double step)
       writeDataSet((int)step);
       writeBoundaryConds((int)step);
 
-      writeCpTimeStep(step);
+      writeCpTimeStep((int)step);
 
       if (comm->isRoot()) UBLOG(logINFO, "Save check point - end");
    }
@@ -247,7 +247,7 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
    }
 
    // register new MPI-type depending on the block-specific information
-   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -409,7 +409,7 @@ void MPIIOMigrationCoProcessor::write4DArray(int step, Arrays arrayType, std::st
    }
 
    // register new MPI-types depending on the block-specific information
-   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -521,7 +521,7 @@ void MPIIOMigrationCoProcessor::write3DArray(int step, Arrays arrayType, std::st
    }
 
    // register new MPI-types depending on the block-specific information
-   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
    if (comm->isRoot())
@@ -1308,20 +1308,20 @@ void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
                bouCond->velocityBoundaryFlags = bcArr->bcvector[bc]->getVelocityBoundary();
                bouCond->densityBoundaryFlags = bcArr->bcvector[bc]->getDensityBoundary();
                bouCond->wallModelBoundaryFlags = bcArr->bcvector[bc]->getWallModelBoundary();
-               bouCond->bcVelocityX1 = bcArr->bcvector[bc]->getBoundaryVelocityX1();
-               bouCond->bcVelocityX2 = bcArr->bcvector[bc]->getBoundaryVelocityX2();
-               bouCond->bcVelocityX3 = bcArr->bcvector[bc]->getBoundaryVelocityX3();
-               bouCond->bcDensity = bcArr->bcvector[bc]->getBoundaryDensity();
-               bouCond->bcLodiDensity = bcArr->bcvector[bc]->getDensityLodiDensity();
-               bouCond->bcLodiVelocityX1 = bcArr->bcvector[bc]->getDensityLodiVelocityX1();
-               bouCond->bcLodiVelocityX2 = bcArr->bcvector[bc]->getDensityLodiVelocityX2();
-               bouCond->bcLodiVelocityX3 = bcArr->bcvector[bc]->getDensityLodiVelocityX3();
-               bouCond->bcLodiLentgh = bcArr->bcvector[bc]->getDensityLodiLength();
-               bouCond->nx1 = bcArr->bcvector[bc]->nx1;
-               bouCond->nx2 = bcArr->bcvector[bc]->nx2;
-               bouCond->nx3 = bcArr->bcvector[bc]->nx3;
+               bouCond->bcVelocityX1 = (float) bcArr->bcvector[bc]->getBoundaryVelocityX1();
+               bouCond->bcVelocityX2 = (float) bcArr->bcvector[bc]->getBoundaryVelocityX2();
+               bouCond->bcVelocityX3 = (float) bcArr->bcvector[bc]->getBoundaryVelocityX3();
+               bouCond->bcDensity = (float) bcArr->bcvector[bc]->getBoundaryDensity();
+               bouCond->bcLodiDensity = (float) bcArr->bcvector[bc]->getDensityLodiDensity();
+               bouCond->bcLodiVelocityX1 = (float) bcArr->bcvector[bc]->getDensityLodiVelocityX1();
+               bouCond->bcLodiVelocityX2 = (float) bcArr->bcvector[bc]->getDensityLodiVelocityX2();
+               bouCond->bcLodiVelocityX3 = (float) bcArr->bcvector[bc]->getDensityLodiVelocityX3();
+               bouCond->bcLodiLentgh = (float) bcArr->bcvector[bc]->getDensityLodiLength();
+               bouCond->nx1 = (float) bcArr->bcvector[bc]->nx1;
+               bouCond->nx2 = (float) bcArr->bcvector[bc]->nx2;
+               bouCond->nx3 = (float) bcArr->bcvector[bc]->nx3;
                for (int iq = 0; iq<26; iq++)
-                  bouCond->q[iq] = bcArr->bcvector[bc]->getQ(iq);
+                  bouCond->q[iq] = (float) bcArr->bcvector[bc]->getQ(iq);
                bouCond->algorithmType = bcArr->bcvector[bc]->getBcAlgorithmType();
             }
 
@@ -1503,7 +1503,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks 
 
    // define MPI_types depending on the block-specific information
-   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
    size_t ic = 0;
@@ -1658,7 +1658,7 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
    // define MPI_types depending on the block-specific information
-   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
    size_t ic = 0;

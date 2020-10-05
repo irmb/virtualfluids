@@ -117,10 +117,10 @@ protected:
    bool isBlockInsideGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3, double delta);
    bool isBlockCuttingGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3, double delta);
 
-   int type;
-   
-   WPtr<Grid3D> grid;
+
    SPtr<GbObject3D> geoObject3D;
+    WPtr<Grid3D> grid;
+    int type;
 
    std::vector<SPtr<Block3D> > bcBlocks;
    std::vector<SPtr<Block3D> > solidBlocks;

@@ -1,4 +1,7 @@
+#include "buildInfo.h"
+
 #include "basics_export.h"
+
 
 namespace buildInfo
 {

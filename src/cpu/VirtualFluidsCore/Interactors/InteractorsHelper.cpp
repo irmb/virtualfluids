@@ -98,7 +98,7 @@ void InteractorsHelper::deleteSolidBlocks()
 //////////////////////////////////////////////////////////////////////////
 void InteractorsHelper::setBcBlocks()
 {
-    for(const SPtr<Interactor3D> interactor : interactors)
+    for(const auto& interactor : interactors)
     {
        SetBcBlocksBlockVisitor v(interactor);
        grid->accept(v);
@@ -109,7 +109,7 @@ void InteractorsHelper::updateGrid()
 {
     std::vector<int> ids;
 
-    for(const SPtr<Block3D> block : solidBlocks)
+    for(const auto& block : solidBlocks)
         ids.push_back(block->getGlobalID());
 
     std::vector<int> rids;

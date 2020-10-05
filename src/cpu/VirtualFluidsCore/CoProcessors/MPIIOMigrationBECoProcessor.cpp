@@ -580,20 +580,20 @@ void MPIIOMigrationBECoProcessor::writeBoundaryConds(int step)
                bouCond->velocityBoundaryFlags = bcArr->bcvector[bc]->getVelocityBoundary();
                bouCond->densityBoundaryFlags = bcArr->bcvector[bc]->getDensityBoundary();
                bouCond->wallModelBoundaryFlags = bcArr->bcvector[bc]->getWallModelBoundary();
-               bouCond->bcVelocityX1 = bcArr->bcvector[bc]->getBoundaryVelocityX1();
-               bouCond->bcVelocityX2 = bcArr->bcvector[bc]->getBoundaryVelocityX2();
-               bouCond->bcVelocityX3 = bcArr->bcvector[bc]->getBoundaryVelocityX3();
-               bouCond->bcDensity = bcArr->bcvector[bc]->getBoundaryDensity();
-               bouCond->bcLodiDensity = bcArr->bcvector[bc]->getDensityLodiDensity();
-               bouCond->bcLodiVelocityX1 = bcArr->bcvector[bc]->getDensityLodiVelocityX1();
-               bouCond->bcLodiVelocityX2 = bcArr->bcvector[bc]->getDensityLodiVelocityX2();
-               bouCond->bcLodiVelocityX3 = bcArr->bcvector[bc]->getDensityLodiVelocityX3();
-               bouCond->bcLodiLentgh = bcArr->bcvector[bc]->getDensityLodiLength();
-               bouCond->nx1 = bcArr->bcvector[bc]->nx1;
-               bouCond->nx2 = bcArr->bcvector[bc]->nx2;
-               bouCond->nx3 = bcArr->bcvector[bc]->nx3;
+               bouCond->bcVelocityX1 = (float) bcArr->bcvector[bc]->getBoundaryVelocityX1();
+               bouCond->bcVelocityX2 = (float) bcArr->bcvector[bc]->getBoundaryVelocityX2();
+               bouCond->bcVelocityX3 = (float) bcArr->bcvector[bc]->getBoundaryVelocityX3();
+               bouCond->bcDensity = (float) bcArr->bcvector[bc]->getBoundaryDensity();
+               bouCond->bcLodiDensity = (float) bcArr->bcvector[bc]->getDensityLodiDensity();
+               bouCond->bcLodiVelocityX1 = (float) bcArr->bcvector[bc]->getDensityLodiVelocityX1();
+               bouCond->bcLodiVelocityX2 = (float) bcArr->bcvector[bc]->getDensityLodiVelocityX2();
+               bouCond->bcLodiVelocityX3 = (float) bcArr->bcvector[bc]->getDensityLodiVelocityX3();
+               bouCond->bcLodiLentgh = (float) bcArr->bcvector[bc]->getDensityLodiLength();
+               bouCond->nx1 = (float) bcArr->bcvector[bc]->nx1;
+               bouCond->nx2 = (float) bcArr->bcvector[bc]->nx2;
+               bouCond->nx3 = (float) bcArr->bcvector[bc]->nx3;
                for (int iq = 0; iq<26; iq++)
-                  bouCond->q[iq] = bcArr->bcvector[bc]->getQ(iq);
+                  bouCond->q[iq] = (float) bcArr->bcvector[bc]->getQ(iq);
                bouCond->algorithmType = bcArr->bcvector[bc]->getBcAlgorithmType();
             }
 
@@ -747,7 +747,7 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
 
    int indexB = ind1;
    int indexE = ind2;
-   int myBlocksCount = indexE - indexB;
+//   int myBlocksCount = indexE - indexB;
 
    int* blocksCounterSend = new int[size];
    int* blocksCounterRec = new int[size];
@@ -765,7 +765,7 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
    
    for(size_t ind = indexB - indexB; ind < indexE - indexB; ind++)
    {
-      tempBlock = grid->getBlock(indexB + ind);
+      tempBlock = grid->getBlock(indexB + int(ind));
       if(!tempBlock)  throw UbException(UB_EXARGS,"MPIIOMigrationBECoProcessor::blocksExchange -- null block pointer!!!" );
 
       tempRank = tempBlock->getRank();
@@ -786,7 +786,7 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
    
    MPI_Request* requests = new MPI_Request[size * 2]; // send + receive
    int requestCount = 0;
-   MPI_Status status;
+//   MPI_Status status;
 
    for (int r = 0; r < size; r++)
    {
@@ -901,7 +901,7 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
       myBlocksCount = blocksPerProcess + (blocksCountAll - blocksPerProcess * size);
 
    int indexB = rank * blocksPerProcess;  // the first "my" block
-   int indexE = indexB + myBlocksCount;   // the latest "my" block
+   int indexE = indexB + int(myBlocksCount);   // the latest "my" block
 
    double start, finish;
    if (comm->isRoot()) start = MPI_Wtime();
@@ -920,11 +920,11 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
       dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
    std::vector<double> doubleValuesArray(myBlocksCount * doubleCountInBlock); // double-values in all blocks 
 
-   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
    MPI_Offset read_offset = (MPI_Offset)(3 * sizeof(dataSetParam)) + (MPI_Offset)(indexB * doubleCountInBlock * sizeof(double));
-   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], myBlocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], int(myBlocksCount), dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_close(&file_handler);
    MPI_Type_free(&dataSetDoubleType);
@@ -941,7 +941,7 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
    for (int r = 0; r < size; r++)
       rawDataReceive[r].resize(0);
 
-   blocksExchange(MESSAGE_TAG, indexB, indexE, doubleCountInBlock, doubleValuesArray, rawDataReceive);
+   blocksExchange(MESSAGE_TAG, indexB, indexE, int(doubleCountInBlock), doubleValuesArray, rawDataReceive);
    
    if (comm->isRoot())
    {
@@ -1071,7 +1071,7 @@ void MPIIOMigrationBECoProcessor::readArray(int step, Arrays arrType, std::strin
       myBlocksCount = blocksPerProcess + (blocksCountAll - blocksPerProcess * size);
 
    int indexB = rank * blocksPerProcess;  // the first "my" block
-   int indexE = indexB + myBlocksCount;   // the latest "my" block
+   int indexE = indexB + int(myBlocksCount);   // the latest "my" block
 
    MPI_File file_handler;
    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
@@ -1083,11 +1083,11 @@ void MPIIOMigrationBECoProcessor::readArray(int step, Arrays arrType, std::strin
    size_t doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(myBlocksCount * doubleCountInBlock); // double-values in all blocks
 
-   MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+   MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
    MPI_Type_commit(&dataSetDoubleType);
 
    MPI_Offset read_offset = (MPI_Offset)(sizeof(dataSetParam)) + (MPI_Offset)(indexB) * (MPI_Offset)(doubleCountInBlock) * (MPI_Offset)(sizeof(double));
-   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], myBlocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+   MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], int(myBlocksCount), dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_close(&file_handler);
    MPI_Type_free(&dataSetDoubleType);
@@ -1104,7 +1104,7 @@ void MPIIOMigrationBECoProcessor::readArray(int step, Arrays arrType, std::strin
    for (int r = 0; r < size; r++)
      rawDataReceive[r].resize(0);
 
-   blocksExchange(MESSAGE_TAG + int(arrType), indexB, indexE, doubleCountInBlock, doubleValuesArray, rawDataReceive);
+   blocksExchange(MESSAGE_TAG + int(arrType), indexB, indexE, int(doubleCountInBlock), doubleValuesArray, rawDataReceive);
 
    if (comm->isRoot())
    {
@@ -1203,7 +1203,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
       myBlocksCount = blocksPerProcess + (blocksCountAll - blocksPerProcess * size);
   
    int indexB = rank * blocksPerProcess;  // the first "my" block
-   int indexE = indexB + myBlocksCount;   // the latest "my" block
+   int indexE = indexB + int(myBlocksCount);   // the latest "my" block
    
    std::vector<int> bcindexmatrixVAll;
 
@@ -1220,7 +1220,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
    MPI_Type_commit(&bcindexmatrixType);
 
    MPI_Offset read_offset = (MPI_Offset)(sizeof(int)) + (MPI_Offset)(indexB) * (MPI_Offset)(sizeOfBIM) * (MPI_Offset)(sizeof(int));
-   MPI_File_read_at(file_handler, read_offset, &bcindexmatrixVAll[0], myBlocksCount, bcindexmatrixType, MPI_STATUS_IGNORE);
+   MPI_File_read_at(file_handler, read_offset, &bcindexmatrixVAll[0], int(myBlocksCount), bcindexmatrixType, MPI_STATUS_IGNORE);
 
    MPI_File_close(&file_handler);
    MPI_Type_free(&bcindexmatrixType);
@@ -1277,7 +1277,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
    {
       if (r != rank)
       {
- 		 rds = rawDataSend[r].size();
+ 		 rds = int(rawDataSend[r].size());
          intBlockCount = (int)(rds / SEND_BLOCK_SIZE);
          if (intBlockCount * SEND_BLOCK_SIZE < rds)
             intBlockCount += 1;
@@ -1416,7 +1416,8 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
    MPI_File_close(&file_handler);
 
    delete nullBouCond;
-   delete bcArray;
+   if(bcArray)
+       delete bcArray;
    delete [] rawDataReceive;
    delete [] rawDataSend;
    delete [] requests;

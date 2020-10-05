@@ -61,10 +61,8 @@ class GbObject3DCreator;
 class GbObject3D : public ObObject
 {
 public:
-   virtual ~GbObject3D(){}
-
    //abstract Methods
-   virtual void finalize() =0 ; //detroys also all dynamic objects (e.g. GbPoints in GbLine)
+   virtual void finalize() = 0 ; //destroys also all dynamic objects (e.g. GbPoints in GbLine)
    /**
     * Returns the centroid x1 coordinate of this 3D object.
     * @return the centroid x1 coordinate of this 3D object
@@ -136,7 +134,7 @@ public:
 
    virtual bool isInsideCell(const double& minX1,const double& minX2,const double& minX3,const double& maxX1,const double& maxX2,const double& maxX3);
 
-   virtual GbLine3D* createClippedLine3D (GbPoint3D &point1, GbPoint3D &point2)=0;
+   virtual GbLine3D* createClippedLine3D (GbPoint3D &point1, GbPoint3D &point2) = 0;
    virtual std::vector<GbTriangle3D*> getSurfaceTriangleSet()=0;
 
    virtual void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles) { throw UbException("GbObject3D::addSurfaceTriangleSet - not implemented for "+(std::string)typeid(*this).name()); }

@@ -173,7 +173,7 @@ BASICS_EXPORT std::shared_ptr<ConfigData> ConfigFileReader::readConfigFile(const
 		data->setGeometryFileF(input->getValue("GeometryF"));
 	//////////////////////////////////////////////////////////////////////////
 	if (input->getValue("measureClockCycle") != "")
-		data->setClockCycleForMP(StringUtil::toFloat(input->getValue("measureClockCycle")));
+		data->setClockCycleForMP(StringUtil::toInt(input->getValue("measureClockCycle")));
 
 	if (input->getValue("measureTimestep") != "")
 		data->setTimestepForMP(StringUtil::toInt(input->getValue("measureTimestep")));
@@ -208,10 +208,10 @@ BASICS_EXPORT std::shared_ptr<ConfigData> ConfigFileReader::readConfigFile(const
 		data->setNumberOfParticles(StringUtil::toInt(input->getValue("numberOfParticles")));
 
 	if (input->getValue("startXHotWall") != "")
-		data->setStartXHotWall(StringUtil::toDouble(input->getValue("startXHotWall")));
+		data->setStartXHotWall(real(StringUtil::toDouble(input->getValue("startXHotWall"))));
 
 	if (input->getValue("endXHotWall") != "")
-		data->setEndXHotWall(StringUtil::toDouble(input->getValue("endXHotWall")));
+		data->setEndXHotWall(real(StringUtil::toDouble(input->getValue("endXHotWall"))));
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//Restart
 	if (input->getValue("TimeDoCheckPoint") != "")

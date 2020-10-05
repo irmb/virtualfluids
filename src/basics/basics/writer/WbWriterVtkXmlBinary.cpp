@@ -237,125 +237,125 @@ string WbWriterVtkXmlBinary::writeLines(const string& filename,vector<UbTupleFlo
    return vtkfilename;
 }
 /*===============================================================================*/
-std::string WbWriterVtkXmlBinary::writeLinesWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleInt2 >& lines, std::vector< std::string >& datanames, std::vector< std::vector< double > >& nodedata)
-{
-   string vtkfilename = filename+getFileExtension();
-   UBLOG(logDEBUG1,"WbWriterVtkXmlBinary::writeLinesWithNodeData to "<<vtkfilename<<" - start");
-
-   ofstream out(vtkfilename.c_str(),ios::out | ios::binary);
-   if(!out)
-   { 
-      out.clear(); //flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-      string path = UbSystem::getPathFromString(vtkfilename);
-      if(path.size()>0){ UbSystem::makeDirectory(path); out.open(vtkfilename.c_str(),ios::out | ios::binary);}
-      if(!out) throw UbException(UB_EXARGS,"couldn't open file "+vtkfilename);
-   }
-
-   int nofNodes = (int)nodes.size(); 
-   int nofCells = (int)lines.size(); 
-
-   int bytesPerByteVal      = 4; //==sizeof(int)
-   int bytesPoints          = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
-   int bytesCellConnectivty = 2 /*nodes per line  */ * nofCells * sizeof(int  );
-   int bytesCellOffsets     = 1 /*offset per line */ * nofCells * sizeof(int  );
-   int bytesCellTypes       = 1 /*type of line    */ * nofCells * sizeof(unsigned char);
-   int bytesScalarData      = 1 /*scalar          */ * nofNodes * sizeof(float); 
-
-   int offset = 0;
-   //VTK FILE
-   out<<"<?xml version=\"1.0\"?>\n";
-   out<<"<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" >"<<"\n";
-   out<<"   <UnstructuredGrid>"<<"\n";
-   out<<"      <Piece NumberOfPoints=\""<<nofNodes<<"\" NumberOfCells=\""<<nofCells<<"\">\n";
-
-   //POINTS SECTION
-   out<<"         <Points>\n"; 
-   out<<"            <DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"appended\" offset=\""<< offset <<"\"  />\n";
-   out<<"         </Points>\n";
-   offset += (bytesPerByteVal + bytesPoints);
-
-   //CELLS SECTION
-   out<<"         <Cells>\n";
-   out<<"            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\""<< offset <<"\" />\n";
-   offset += (bytesPerByteVal + bytesCellConnectivty); 
-   out<<"            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\""<< offset <<"\" />\n";
-   offset += (bytesPerByteVal + bytesCellOffsets);
-   out<<"            <DataArray type=\"UInt8\" Name=\"types\" format=\"appended\" offset=\""<< offset <<"\" />\n ";
-   offset += (bytesPerByteVal + bytesCellTypes);
-   out<<"         </Cells>\n";
-
-   //DATA SECTION
-   out<<"         <PointData>\n";
-   for(size_t s=0; s<datanames.size(); ++s)
-   {
-      out<< "            <DataArray type=\"Float32\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
-      offset += (bytesPerByteVal + bytesScalarData);
-   }
-   out<<"         </PointData>\n";
-
-   out<<"      </Piece>\n";
-   out<<"   </UnstructuredGrid>\n";
-
-   // AppendedData SECTION
-   out<<"   <AppendedData encoding=\"raw\">\n";
-   out<<"_";
-
-   //POINTS SECTION
-   out.write((char*)&bytesPoints,bytesPerByteVal);
-   for(int n=0; n<nofNodes; n++)
-   {
-      out.write((char*)&val<1>(nodes[n]),sizeof(float));
-      out.write((char*)&val<2>(nodes[n]),sizeof(float));
-      out.write((char*)&val<3>(nodes[n]),sizeof(float));
-   }
-
-   //CELLS SECTION
-   //cellConnectivity
-   out.write( (char*)&bytesCellConnectivty, bytesPerByteVal );  
-   for(int c=0; c<nofCells; c++) 
-   {
-      out.write( (char*)&val<1>(lines[c]), sizeof(int) );
-      out.write( (char*)&val<2>(lines[c]), sizeof(int) );
-   }
-
-   //cellOffsets
-   out.write( (char*)&bytesCellOffsets, bytesPerByteVal );
-   int itmp;
-   for(int c=1; c<=nofCells; c++)
-   {
-      itmp = 3 * c;    
-      out.write( (char*)&itmp, sizeof(int) );
-   }
-
-   //cellTypes
-   out.write( (char*)&bytesCellTypes, bytesPerByteVal );
-   unsigned char vtkCellType = 5;
-   for(int c=0; c<nofCells; c++)
-   {
-      out.write( (char*)&vtkCellType, sizeof(unsigned char) );
-   }
-
-   //DATA SECTION
-   //scalarData
-   for(size_t s=0; s<datanames.size(); ++s)
-   {
-      out.write((char*)&bytesScalarData,bytesPerByteVal);
-      for(size_t d=0; d<nodedata[s].size(); ++d)
-      {
-         //loake kopie machen, da in nodedata "doubles" sind
-         float tmp = (float)nodedata[s][d];
-         out.write((char*)&tmp,sizeof(float));
-      }
-   }
-   out<<"\n</AppendedData>\n";
-   out<<"</VTKFile>";
-   out<<endl;
-   out.close();
-   UBLOG(logDEBUG1,"WbWriterVtkXmlBinary::writeLinesWithNodeData to "<<vtkfilename<<" - end");
-
-   return vtkfilename;
-
-}
+//std::string WbWriterVtkXmlBinary::writeLinesWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleInt2 >& lines, std::vector< std::string >& datanames, std::vector< std::vector< double > >& nodedata)
+//{
+//   string vtkfilename = filename+getFileExtension();
+//   UBLOG(logDEBUG1,"WbWriterVtkXmlBinary::writeLinesWithNodeData to "<<vtkfilename<<" - start");
+//
+//   ofstream out(vtkfilename.c_str(),ios::out | ios::binary);
+//   if(!out)
+//   {
+//      out.clear(); //flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
+//      string path = UbSystem::getPathFromString(vtkfilename);
+//      if(path.size()>0){ UbSystem::makeDirectory(path); out.open(vtkfilename.c_str(),ios::out | ios::binary);}
+//      if(!out) throw UbException(UB_EXARGS,"couldn't open file "+vtkfilename);
+//   }
+//
+//   int nofNodes = (int)nodes.size();
+//   int nofCells = (int)lines.size();
+//
+//   int bytesPerByteVal      = 4; //==sizeof(int)
+//   int bytesPoints          = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
+//   int bytesCellConnectivty = 2 /*nodes per line  */ * nofCells * sizeof(int  );
+//   int bytesCellOffsets     = 1 /*offset per line */ * nofCells * sizeof(int  );
+//   int bytesCellTypes       = 1 /*type of line    */ * nofCells * sizeof(unsigned char);
+//   int bytesScalarData      = 1 /*scalar          */ * nofNodes * sizeof(float);
+//
+//   int offset = 0;
+//   //VTK FILE
+//   out<<"<?xml version=\"1.0\"?>\n";
+//   out<<"<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" >"<<"\n";
+//   out<<"   <UnstructuredGrid>"<<"\n";
+//   out<<"      <Piece NumberOfPoints=\""<<nofNodes<<"\" NumberOfCells=\""<<nofCells<<"\">\n";
+//
+//   //POINTS SECTION
+//   out<<"         <Points>\n";
+//   out<<"            <DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"appended\" offset=\""<< offset <<"\"  />\n";
+//   out<<"         </Points>\n";
+//   offset += (bytesPerByteVal + bytesPoints);
+//
+//   //CELLS SECTION
+//   out<<"         <Cells>\n";
+//   out<<"            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\""<< offset <<"\" />\n";
+//   offset += (bytesPerByteVal + bytesCellConnectivty);
+//   out<<"            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\""<< offset <<"\" />\n";
+//   offset += (bytesPerByteVal + bytesCellOffsets);
+//   out<<"            <DataArray type=\"UInt8\" Name=\"types\" format=\"appended\" offset=\""<< offset <<"\" />\n ";
+//   offset += (bytesPerByteVal + bytesCellTypes);
+//   out<<"         </Cells>\n";
+//
+//   //DATA SECTION
+//   out<<"         <PointData>\n";
+//   for(size_t s=0; s<datanames.size(); ++s)
+//   {
+//      out<< "            <DataArray type=\"Float32\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
+//      offset += (bytesPerByteVal + bytesScalarData);
+//   }
+//   out<<"         </PointData>\n";
+//
+//   out<<"      </Piece>\n";
+//   out<<"   </UnstructuredGrid>\n";
+//
+//   // AppendedData SECTION
+//   out<<"   <AppendedData encoding=\"raw\">\n";
+//   out<<"_";
+//
+//   //POINTS SECTION
+//   out.write((char*)&bytesPoints,bytesPerByteVal);
+//   for(int n=0; n<nofNodes; n++)
+//   {
+//      out.write((char*)&val<1>(nodes[n]),sizeof(float));
+//      out.write((char*)&val<2>(nodes[n]),sizeof(float));
+//      out.write((char*)&val<3>(nodes[n]),sizeof(float));
+//   }
+//
+//   //CELLS SECTION
+//   //cellConnectivity
+//   out.write( (char*)&bytesCellConnectivty, bytesPerByteVal );
+//   for(int c=0; c<nofCells; c++)
+//   {
+//      out.write( (char*)&val<1>(lines[c]), sizeof(int) );
+//      out.write( (char*)&val<2>(lines[c]), sizeof(int) );
+//   }
+//
+//   //cellOffsets
+//   out.write( (char*)&bytesCellOffsets, bytesPerByteVal );
+//   int itmp;
+//   for(int c=1; c<=nofCells; c++)
+//   {
+//      itmp = 3 * c;
+//      out.write( (char*)&itmp, sizeof(int) );
+//   }
+//
+//   //cellTypes
+//   out.write( (char*)&bytesCellTypes, bytesPerByteVal );
+//   unsigned char vtkCellType = 5;
+//   for(int c=0; c<nofCells; c++)
+//   {
+//      out.write( (char*)&vtkCellType, sizeof(unsigned char) );
+//   }
+//
+//   //DATA SECTION
+//   //scalarData
+//   for(size_t s=0; s<datanames.size(); ++s)
+//   {
+//      out.write((char*)&bytesScalarData,bytesPerByteVal);
+//      for(size_t d=0; d<nodedata[s].size(); ++d)
+//      {
+//         //loake kopie machen, da in nodedata "doubles" sind
+//         float tmp = (float)nodedata[s][d];
+//         out.write((char*)&tmp,sizeof(float));
+//      }
+//   }
+//   out<<"\n</AppendedData>\n";
+//   out<<"</VTKFile>";
+//   out<<endl;
+//   out.close();
+//   UBLOG(logDEBUG1,"WbWriterVtkXmlBinary::writeLinesWithNodeData to "<<vtkfilename<<" - end");
+//
+//   return vtkfilename;
+//
+//}
 /*===============================================================================*/
 string WbWriterVtkXmlBinary::writeTriangles(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleInt3 >& triangles)
 {

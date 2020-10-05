@@ -45,7 +45,7 @@ namespace Kd
                if (i == 0) 
                {
                   sc[i].nl = sc.objects_starting_outside_left + sc.objects_fully_outside_node;
-                  sc[i].nr = node.getTriFaces()->size() - sc[0].np - sc[0].ending;
+                  sc[i].nr = int(node.getTriFaces()->size()) - sc[0].np - sc[0].ending;
                } 
                else 
                {

@@ -22,7 +22,7 @@ void OverlapBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
    int neighix1, neighix2, neighix3, neighlev;
    std::vector<SPtr<Block3D>> neighbors;
    grid->getAllNeighbors(ix1, ix2, ix3, level, this->levelDepth, neighbors);
-   bool hasAdded = false;
+//   bool hasAdded = false;
    for(size_t i=0; i<neighbors.size(); i++)
    {
       if(   ( neighbors[i]->isActive() || includeNotActiveBlocks )
@@ -47,7 +47,7 @@ void OverlapBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
          {
             newBlock = SPtr<Block3D>(new Block3D(nix1,nix2,nix3,nlev));
             grid->addBlock(newBlock);
-            hasAdded=true;
+            // hasAdded=true;
          }
       }
    }

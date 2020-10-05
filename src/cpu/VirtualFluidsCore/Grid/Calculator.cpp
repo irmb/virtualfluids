@@ -66,7 +66,7 @@ Calculator::Calculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayer
    {
       std::vector<SPtr<Block3D>> blockVector;
       grid->getBlocks(level, gridRank, true, blockVector);
-      for (SPtr<Block3D> const block : blockVector)
+      for (const auto& block : blockVector)
          if (block)
             blocks[block->getLevel()].push_back(block);
    }
@@ -140,11 +140,11 @@ void Calculator::initRemoteConnectors()
       grid->getBlocks(l, blockVector);
       for(SPtr<Block3D> block : blockVector)
       {
-         int l = block->getLevel();
-         block->pushBackRemoteSameLevelConnectors(remoteConns[l]);
+         int block_level = block->getLevel();
+         block->pushBackRemoteSameLevelConnectors(remoteConns[block_level]);
 
-         block->pushBackRemoteInterpolationConnectorsCF(remoteInterConnsCF[l]);
-         block->pushBackRemoteInterpolationConnectorsFC(remoteInterConnsFC[l]);
+         block->pushBackRemoteInterpolationConnectorsCF(remoteInterConnsCF[block_level]);
+         block->pushBackRemoteInterpolationConnectorsFC(remoteInterConnsFC[block_level]);
       }
    }
 

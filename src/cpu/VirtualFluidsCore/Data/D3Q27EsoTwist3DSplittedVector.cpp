@@ -194,64 +194,60 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInv(const LBMReal* const f, s
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(const LBMReal* const f, size_t x1, size_t x2, size_t x3, unsigned long int direction)
 {
-   bool directionFlag = false;
    if ((direction & EsoTwistD3Q27System::etE) == EsoTwistD3Q27System::etE)
-      (*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    ) = f[D3Q27System::E]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    ) = f[D3Q27System::E];
    if ((direction & EsoTwistD3Q27System::etW) == EsoTwistD3Q27System::etW)
-      (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::W]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::W];
    if ((direction & EsoTwistD3Q27System::etS) == EsoTwistD3Q27System::etS)
-      (*this->localDistributions)(D3Q27System::ET_N,x1,  x2,  x3) = f[D3Q27System::S]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_N,x1,  x2,  x3) = f[D3Q27System::S];
    if ((direction & EsoTwistD3Q27System::etN) == EsoTwistD3Q27System::etN)
-      (*this->nonLocalDistributions)(D3Q27System::ET_S,x1,  x2+1,x3    ) = f[D3Q27System::N]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_S,x1,  x2+1,x3    ) = f[D3Q27System::N];
    if ((direction & EsoTwistD3Q27System::etB) == EsoTwistD3Q27System::etB)
-      (*this->localDistributions)(D3Q27System::ET_T,x1,  x2,  x3) = f[D3Q27System::B]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_T,x1,  x2,  x3) = f[D3Q27System::B];
    if ((direction & EsoTwistD3Q27System::etT) == EsoTwistD3Q27System::etT)
-      (*this->nonLocalDistributions)(D3Q27System::ET_B,x1,  x2,  x3+1  ) = f[D3Q27System::T]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_B,x1,  x2,  x3+1  ) = f[D3Q27System::T];
    if ((direction & EsoTwistD3Q27System::etSW) == EsoTwistD3Q27System::etSW)
-      (*this->localDistributions)(D3Q27System::ET_NE,x1,  x2,  x3) = f[D3Q27System::SW]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_NE,x1,  x2,  x3) = f[D3Q27System::SW];
    if ((direction & EsoTwistD3Q27System::etNE) == EsoTwistD3Q27System::etNE)
-      (*this->nonLocalDistributions)(D3Q27System::ET_SW,x1+1,x2+1,x3   ) = f[D3Q27System::NE]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_SW,x1+1,x2+1,x3   ) = f[D3Q27System::NE];
    if ((direction & EsoTwistD3Q27System::etNW) == EsoTwistD3Q27System::etNW)
-      (*this->nonLocalDistributions)(D3Q27System::ET_SE,x1,  x2+1,x3   ) = f[D3Q27System::NW]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_SE,x1,  x2+1,x3   ) = f[D3Q27System::NW];
    if ((direction & EsoTwistD3Q27System::etSE) == EsoTwistD3Q27System::etSE)
-      (*this->localDistributions)(D3Q27System::ET_NW,x1+1,x2,  x3) = f[D3Q27System::SE]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_NW,x1+1,x2,  x3) = f[D3Q27System::SE];
    if ((direction & EsoTwistD3Q27System::etBW) == EsoTwistD3Q27System::etBW)
-      (*this->localDistributions)(D3Q27System::ET_TE,x1,  x2,  x3) = f[D3Q27System::BW]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TE,x1,  x2,  x3) = f[D3Q27System::BW];
    if ((direction & EsoTwistD3Q27System::etTE) == EsoTwistD3Q27System::etTE)
-      (*this->nonLocalDistributions)(D3Q27System::ET_BW,x1+1,x2,  x3+1 ) = f[D3Q27System::TE]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_BW,x1+1,x2,  x3+1 ) = f[D3Q27System::TE];
    if ((direction & EsoTwistD3Q27System::etTW) == EsoTwistD3Q27System::etTW)
-      (*this->nonLocalDistributions)(D3Q27System::ET_BE,x1,  x2,  x3+1 ) = f[D3Q27System::TW]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_BE,x1,  x2,  x3+1 ) = f[D3Q27System::TW];
    if ((direction & EsoTwistD3Q27System::etBE) == EsoTwistD3Q27System::etBE)
-      (*this->localDistributions)(D3Q27System::ET_TW,x1+1,x2,  x3) = f[D3Q27System::BE]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TW,x1+1,x2,  x3) = f[D3Q27System::BE];
    if ((direction & EsoTwistD3Q27System::etBS) == EsoTwistD3Q27System::etBS)
-      (*this->localDistributions)(D3Q27System::ET_TN,x1,  x2,  x3) = f[D3Q27System::BS]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TN,x1,  x2,  x3) = f[D3Q27System::BS];
    if ((direction & EsoTwistD3Q27System::etTN) == EsoTwistD3Q27System::etTN)
-      (*this->nonLocalDistributions)(D3Q27System::ET_BS,x1,  x2+1,x3+1 ) = f[D3Q27System::TN]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_BS,x1,  x2+1,x3+1 ) = f[D3Q27System::TN];
    if ((direction & EsoTwistD3Q27System::etTS) == EsoTwistD3Q27System::etTS)
-      (*this->nonLocalDistributions)(D3Q27System::ET_BN,x1,  x2,  x3+1 ) = f[D3Q27System::TS]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_BN,x1,  x2,  x3+1 ) = f[D3Q27System::TS];
    if ((direction & EsoTwistD3Q27System::etBN) == EsoTwistD3Q27System::etBN)
-      (*this->localDistributions)(D3Q27System::ET_TS,x1,  x2+1,x3) = f[D3Q27System::BN]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TS,x1,  x2+1,x3) = f[D3Q27System::BN];
    if ((direction & EsoTwistD3Q27System::etBSW) == EsoTwistD3Q27System::etBSW)
-      (*this->localDistributions)(D3Q27System::ET_TNE,x1,  x2,  x3) = f[D3Q27System::BSW]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TNE,x1,  x2,  x3) = f[D3Q27System::BSW];
    if ((direction & EsoTwistD3Q27System::etTNE) == EsoTwistD3Q27System::etTNE)
-      (*this->nonLocalDistributions)(D3Q27System::ET_BSW,x1+1,x2+1,x3+1) = f[D3Q27System::TNE]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_BSW,x1+1,x2+1,x3+1) = f[D3Q27System::TNE];
    if ((direction & EsoTwistD3Q27System::etBSE) == EsoTwistD3Q27System::etBSE)
-      (*this->localDistributions)(D3Q27System::ET_TNW,x1+1,x2,  x3) = f[D3Q27System::BSE]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TNW,x1+1,x2,  x3) = f[D3Q27System::BSE];
    if ((direction & EsoTwistD3Q27System::etTNW) == EsoTwistD3Q27System::etTNW)
-      (*this->nonLocalDistributions)(D3Q27System::ET_BSE,x1,  x2+1,x3+1) = f[D3Q27System::TNW]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_BSE,x1,  x2+1,x3+1) = f[D3Q27System::TNW];
    if ((direction & EsoTwistD3Q27System::etBNW) == EsoTwistD3Q27System::etBNW)
-      (*this->localDistributions)(D3Q27System::ET_TSE,x1,  x2+1,x3) = f[D3Q27System::BNW]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TSE,x1,  x2+1,x3) = f[D3Q27System::BNW];
    if ((direction & EsoTwistD3Q27System::etTSE) == EsoTwistD3Q27System::etTSE)
-      (*this->nonLocalDistributions)(D3Q27System::ET_BNW,x1+1,x2,  x3+1) = f[D3Q27System::TSE]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_BNW,x1+1,x2,  x3+1) = f[D3Q27System::TSE];
    if ((direction & EsoTwistD3Q27System::etBNE) == EsoTwistD3Q27System::etBNE)
-      (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3) = f[D3Q27System::BNE]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3) = f[D3Q27System::BNE];
    if ((direction & EsoTwistD3Q27System::etTSW) == EsoTwistD3Q27System::etTSW)
-      (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1) = f[D3Q27System::TSW]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1) = f[D3Q27System::TSW];
    if ((direction & EsoTwistD3Q27System::ZERO) == EsoTwistD3Q27System::ZERO)
-      (*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::ZERO]; directionFlag=true;
-#ifdef _DEBUG
-   if(!directionFlag)UB_THROW( UbException(UB_EXARGS, "Direction didn't find") );
-#endif //DEBUG
+      (*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::ZERO];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(LBMReal f, size_t x1, size_t x2, size_t x3, int direction)
@@ -346,64 +342,60 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(LBMReal f, size_
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(const LBMReal* const f, size_t x1, size_t x2, size_t x3, unsigned long int direction)
 {
-   bool directionFlag = false;
    if ((direction & EsoTwistD3Q27System::etE) == EsoTwistD3Q27System::etE)
-       (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::E]; directionFlag=true;
+       (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::E];
    if ((direction & EsoTwistD3Q27System::etW) == EsoTwistD3Q27System::etW)
-      (*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    ) = f[D3Q27System::W]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_W,x1+1,x2,  x3    ) = f[D3Q27System::W];
    if ((direction & EsoTwistD3Q27System::etS) == EsoTwistD3Q27System::etS)
-       (*this->nonLocalDistributions)(D3Q27System::ET_S,x1,  x2+1,x3    ) = f[D3Q27System::S]; directionFlag=true;
+       (*this->nonLocalDistributions)(D3Q27System::ET_S,x1,  x2+1,x3    ) = f[D3Q27System::S];
    if ((direction & EsoTwistD3Q27System::etN) == EsoTwistD3Q27System::etN)
-      (*this->localDistributions)(D3Q27System::ET_N,x1,  x2,  x3) = f[D3Q27System::N]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_N,x1,  x2,  x3) = f[D3Q27System::N];
    if ((direction & EsoTwistD3Q27System::etB) == EsoTwistD3Q27System::etB)
-       (*this->nonLocalDistributions)(D3Q27System::ET_B,x1,  x2,  x3+1  ) = f[D3Q27System::B]; directionFlag=true;
+       (*this->nonLocalDistributions)(D3Q27System::ET_B,x1,  x2,  x3+1  ) = f[D3Q27System::B];
    if ((direction & EsoTwistD3Q27System::etT) == EsoTwistD3Q27System::etT)
-      (*this->localDistributions)(D3Q27System::ET_T,x1,  x2,  x3) = f[D3Q27System::T]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_T,x1,  x2,  x3) = f[D3Q27System::T];
    if ((direction & EsoTwistD3Q27System::etSW) == EsoTwistD3Q27System::etSW)
-       (*this->nonLocalDistributions)(D3Q27System::ET_SW,x1+1,x2+1,x3   ) = f[D3Q27System::SW]; directionFlag=true;
+       (*this->nonLocalDistributions)(D3Q27System::ET_SW,x1+1,x2+1,x3   ) = f[D3Q27System::SW];
    if ((direction & EsoTwistD3Q27System::etNE) == EsoTwistD3Q27System::etNE)
-      (*this->localDistributions)(D3Q27System::ET_NE,x1,  x2,  x3) = f[D3Q27System::NE]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_NE,x1,  x2,  x3) = f[D3Q27System::NE];
    if ((direction & EsoTwistD3Q27System::etNW) == EsoTwistD3Q27System::etNW)
-       (*this->localDistributions)(D3Q27System::ET_NW,x1+1,x2,  x3) = f[D3Q27System::NW]; directionFlag=true;
+       (*this->localDistributions)(D3Q27System::ET_NW,x1+1,x2,  x3) = f[D3Q27System::NW];
    if ((direction & EsoTwistD3Q27System::etSE) == EsoTwistD3Q27System::etSE)
-      (*this->nonLocalDistributions)(D3Q27System::ET_SE,x1,  x2+1,x3   ) = f[D3Q27System::SE]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_SE,x1,  x2+1,x3   ) = f[D3Q27System::SE];
    if ((direction & EsoTwistD3Q27System::etBW) == EsoTwistD3Q27System::etBW)
-       (*this->nonLocalDistributions)(D3Q27System::ET_BW,x1+1,x2,  x3+1 ) = f[D3Q27System::BW]; directionFlag=true;
+       (*this->nonLocalDistributions)(D3Q27System::ET_BW,x1+1,x2,  x3+1 ) = f[D3Q27System::BW];
    if ((direction & EsoTwistD3Q27System::etTE) == EsoTwistD3Q27System::etTE)
-      (*this->localDistributions)(D3Q27System::ET_TE,x1,  x2,  x3) = f[D3Q27System::TE]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TE,x1,  x2,  x3) = f[D3Q27System::TE];
    if ((direction & EsoTwistD3Q27System::etTW) == EsoTwistD3Q27System::etTW)
-       (*this->localDistributions)(D3Q27System::ET_TW,x1+1,x2,  x3) = f[D3Q27System::TW]; directionFlag=true;
+       (*this->localDistributions)(D3Q27System::ET_TW,x1+1,x2,  x3) = f[D3Q27System::TW];
    if ((direction & EsoTwistD3Q27System::etBE) == EsoTwistD3Q27System::etBE)
-      (*this->nonLocalDistributions)(D3Q27System::ET_BE,x1,  x2,  x3+1 ) = f[D3Q27System::BE]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_BE,x1,  x2,  x3+1 ) = f[D3Q27System::BE];
    if ((direction & EsoTwistD3Q27System::etBS) == EsoTwistD3Q27System::etBS)
-       (*this->nonLocalDistributions)(D3Q27System::ET_BS,x1,  x2+1,x3+1 ) = f[D3Q27System::BS]; directionFlag=true;
+       (*this->nonLocalDistributions)(D3Q27System::ET_BS,x1,  x2+1,x3+1 ) = f[D3Q27System::BS];
    if ((direction & EsoTwistD3Q27System::etTN) == EsoTwistD3Q27System::etTN)
-      (*this->localDistributions)(D3Q27System::ET_TN,x1,  x2,  x3) = f[D3Q27System::TN]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TN,x1,  x2,  x3) = f[D3Q27System::TN];
    if ((direction & EsoTwistD3Q27System::etTS) == EsoTwistD3Q27System::etTS)
-       (*this->localDistributions)(D3Q27System::ET_TS,x1,  x2+1,x3) = f[D3Q27System::TS]; directionFlag=true;
+       (*this->localDistributions)(D3Q27System::ET_TS,x1,  x2+1,x3) = f[D3Q27System::TS];
    if ((direction & EsoTwistD3Q27System::etBN) == EsoTwistD3Q27System::etBN)
-      (*this->nonLocalDistributions)(D3Q27System::ET_BN,x1,  x2,  x3+1 ) = f[D3Q27System::BN]; directionFlag=true;
+      (*this->nonLocalDistributions)(D3Q27System::ET_BN,x1,  x2,  x3+1 ) = f[D3Q27System::BN];
    if ((direction & EsoTwistD3Q27System::etBSW) == EsoTwistD3Q27System::etBSW)
-       (*this->nonLocalDistributions)(D3Q27System::ET_BSW,x1+1,x2+1,x3+1) = f[D3Q27System::BSW]; directionFlag=true;
+       (*this->nonLocalDistributions)(D3Q27System::ET_BSW,x1+1,x2+1,x3+1) = f[D3Q27System::BSW];
    if ((direction & EsoTwistD3Q27System::etTNE) == EsoTwistD3Q27System::etTNE)
-      (*this->localDistributions)(D3Q27System::ET_TNE,x1,  x2,  x3) = f[D3Q27System::TNE]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TNE,x1,  x2,  x3) = f[D3Q27System::TNE];
    if ((direction & EsoTwistD3Q27System::etBSE) == EsoTwistD3Q27System::etBSE)
-       (*this->nonLocalDistributions)(D3Q27System::ET_BSE,x1,  x2+1,x3+1) = f[D3Q27System::BSE]; directionFlag=true;
+       (*this->nonLocalDistributions)(D3Q27System::ET_BSE,x1,  x2+1,x3+1) = f[D3Q27System::BSE];
    if ((direction & EsoTwistD3Q27System::etTNW) == EsoTwistD3Q27System::etTNW)
-      (*this->localDistributions)(D3Q27System::ET_TNW,x1+1,x2,  x3) = f[D3Q27System::TNW]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TNW,x1+1,x2,  x3) = f[D3Q27System::TNW];
    if ((direction & EsoTwistD3Q27System::etBNW) == EsoTwistD3Q27System::etBNW)
-       (*this->nonLocalDistributions)(D3Q27System::ET_BNW,x1+1,x2,  x3+1) = f[D3Q27System::BNW]; directionFlag=true;
+       (*this->nonLocalDistributions)(D3Q27System::ET_BNW,x1+1,x2,  x3+1) = f[D3Q27System::BNW];
    if ((direction & EsoTwistD3Q27System::etTSE) == EsoTwistD3Q27System::etTSE)
-      (*this->localDistributions)(D3Q27System::ET_TSE,x1,  x2+1,x3) = f[D3Q27System::TSE]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TSE,x1,  x2+1,x3) = f[D3Q27System::TSE];
    if ((direction & EsoTwistD3Q27System::etBNE) == EsoTwistD3Q27System::etBNE)
-       (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1)= f[D3Q27System::BNE]; directionFlag=true;
+       (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1)= f[D3Q27System::BNE];
    if ((direction & EsoTwistD3Q27System::etTSW) == EsoTwistD3Q27System::etTSW)
-      (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3) = f[D3Q27System::TSW]; directionFlag=true;
+      (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3) = f[D3Q27System::TSW];
    if ((direction & EsoTwistD3Q27System::ZERO) == EsoTwistD3Q27System::ZERO)
-      (*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::ZERO]; directionFlag=true;
-#ifdef _DEBUG
-   if(!directionFlag)UB_THROW( UbException(UB_EXARGS, "Direction didn't find") );
-#endif //DEBUG
+      (*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::ZERO];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(LBMReal f, size_t x1, size_t x2, size_t x3, unsigned long int direction)

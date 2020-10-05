@@ -311,6 +311,9 @@ int MetisPartitioningGridVisitor::getEdgeWeight(int dir)
    {
       return 1;
    }
+
+//    FIXME: non-void function does not return a value in all control paths
+    return 0;
 }
 //////////////////////////////////////////////////////////////////////////
 void MetisPartitioningGridVisitor::setNumberOfProcesses(int np)

@@ -7,7 +7,7 @@
 #
 #################################################################################
 #  required cmake versions
-#  CMAKE 3.9: CUDA support
+#  CMAKE 3.13: target_link_options
 #################################################################################
 cmake_minimum_required(VERSION 3.13..3.18 FATAL_ERROR)
 

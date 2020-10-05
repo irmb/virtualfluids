@@ -13,7 +13,7 @@ class Grid3D;
 class IntegrateValuesHelper;
 
 //! \brief   Computes forcing such that a given velocity (vx1Targed) is reached inside an averaging domain (h1). 
-//! \details Algorithm based on PID controller (proportional–integral–derivative controller). The parameters of PID controller estimation based on Ziegler–Nichols method. 
+//! \details Algorithm based on PID controller (proportional_integral_derivative controller). The parameters of PID controller estimation based on Zieglerï¿½Nichols method.
 //!          Integrate values helper, scheduler must be set in test case.
 //! \author: Konstantin Kutscher
 
@@ -23,7 +23,6 @@ public:
                                    const std::string& path,
                                    SPtr<IntegrateValuesHelper> integrateValues,
                                    double vTarged, SPtr<Communicator> comm);
-	virtual ~AdjustForcingCoProcessor();
 	 //!< calls collect PostprocessData
    void process(double step) override;
 protected:

@@ -11,8 +11,8 @@
 #include "BCArray3D.h"
 
 
-InitDistributionsFromFileBlockVisitor::InitDistributionsFromFileBlockVisitor(LBMReal nu, LBMReal rho, std::string filename)
-   : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), nu(nu), rho(rho)
+InitDistributionsFromFileBlockVisitor::InitDistributionsFromFileBlockVisitor(/*LBMReal nu, */LBMReal rho, std::string filename)
+   : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), /*nu(nu),*/ rho(rho)
 {
    UbFileInputASCII in(filename);
    if (!in)
@@ -39,10 +39,7 @@ InitDistributionsFromFileBlockVisitor::InitDistributionsFromFileBlockVisitor(LBM
             matrix(Vx3, x1, x2, x3) = in.readDouble();
          }
 }
-//////////////////////////////////////////////////////////////////////////
-InitDistributionsFromFileBlockVisitor::~InitDistributionsFromFileBlockVisitor()
-{
-}
+
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsFromFileBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
@@ -50,10 +47,10 @@ void InitDistributionsFromFileBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<
 
    if (!block) UB_THROW(UbException(UB_EXARGS, "block is not exist"));
 
-   UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
-   UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
-   double dx = grid->getDeltaX(block);
-   LBMReal o = LBMSystem::calcCollisionFactor(nu, block->getLevel());
+//   UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
+//   UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
+//   double dx = grid->getDeltaX(block);
+//   LBMReal o = LBMSystem::calcCollisionFactor(nu, block->getLevel());
 
 
    //Funktionszeiger
@@ -76,20 +73,20 @@ void InitDistributionsFromFileBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<
       else
          calcFeqsFct = &D3Q27System::calcIncompFeq;
 
-      UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
+//      UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
 
       SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
       SPtr<EsoTwist3D> distributions = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
 
       LBMReal f[D3Q27System::ENDF+1];
 
-      size_t nx1 = distributions->getNX1();
-      size_t nx2 = distributions->getNX2();
-      size_t nx3 = distributions->getNX3();
+//      size_t nx1 = distributions->getNX1();
+//      size_t nx2 = distributions->getNX2();
+//      size_t nx3 = distributions->getNX3();
 
       int minX1 = 0;
       int minX2 = 0;
-      int minX3 = 0;
+//      int minX3 = 0;
 
       int maxX1 = (int)bcArray->getNX1();
       int maxX2 = (int)bcArray->getNX2();

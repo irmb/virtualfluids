@@ -185,7 +185,7 @@ void Grid3D::addBlock(SPtr<Block3D> block)
    {
       this->blockIdMap.insert(std::make_pair(block->getGlobalID(), block));
       int level = block->getLevel();
-      this->levelSet[level].insert(std::make_pair(Block3DKey(block->getX1(), block->getX2(), block->getX3()), block)).second;
+      this->levelSet[level].insert(std::make_pair(Block3DKey(block->getX1(), block->getX2(), block->getX3()), block));
    }
 }
 //////////////////////////////////////////////////////////////////////////

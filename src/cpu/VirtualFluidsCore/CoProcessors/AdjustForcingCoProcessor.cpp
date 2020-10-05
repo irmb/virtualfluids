@@ -22,8 +22,7 @@ AdjustForcingCoProcessor::AdjustForcingCoProcessor(SPtr<Grid3D> grid, SPtr<UbSch
    path(path),
    integrateValues(integrateValues),
    comm(comm),
-   vx1Targed(vTarged),
-   forcing(forcing)
+   vx1Targed(vTarged)
 {
    //cnodes = integrateValues->getCNodes();
    root = comm->isRoot();
@@ -53,8 +52,8 @@ AdjustForcingCoProcessor::AdjustForcingCoProcessor(SPtr<Grid3D> grid, SPtr<UbSch
       if (!ostr)
       {
          ostr.clear();
-         std::string path = UbSystem::getPathFromString(fname);
-         if (path.size() > 0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app); }
+         std::string file_path = UbSystem::getPathFromString(fname);
+         if (file_path.size() > 0) { UbSystem::makeDirectory(file_path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app); }
          if (!ostr) throw UbException(UB_EXARGS, "couldn't open file " + fname);
       }
       ostr << "step;volume;vx1average;forcing\n";
@@ -75,10 +74,7 @@ AdjustForcingCoProcessor::AdjustForcingCoProcessor(SPtr<Grid3D> grid, SPtr<UbSch
    }
    ////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
-//////////////////////////////////////////////////////////////////////////
-AdjustForcingCoProcessor::~AdjustForcingCoProcessor()
-{
-}
+
 //////////////////////////////////////////////////////////////////////////
 void AdjustForcingCoProcessor::process(double step)
 {

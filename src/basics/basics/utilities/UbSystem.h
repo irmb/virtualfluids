@@ -395,12 +395,14 @@ namespace UbSystem
    /*==========================================================*/
    inline unsigned long getCurrentThreadID()
    {
-      #if defined UBSYSTEM_WINDOWS
+      #if defined UBSYSTEM_WINDOWS || defined(UBSYSTEM_CYGWIN)
          return (unsigned long)GetCurrentThreadId();
-      #elif (defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE)) && !defined(UBSYSTEM_CYGWIN)
+      #elif defined(UBSYSTEM_APPLE)
+         uint64_t tid;
+         pthread_threadid_np(nullptr, &tid);
+         return (unsigned long)tid;
+      #elif defined(UBSYSTEM_LINUX)
          return (unsigned long)syscall(SYS_gettid);
-      #elif defined(UBSYSTEM_CYGWIN)
-         return (unsigned long)GetCurrentThreadId();
       #elif defined(UBSYSTEM_AIX)
          return (unsigned long) getpid(); //WORKAROUND for IBM (for get thread id is another function necessary) 
       #else
@@ -444,8 +446,8 @@ namespace UbSystem
    //#define ByteSwap5(x) ByteSwap((unsigned char *) &x,sizeof(x))
    inline void swapByteOrder(unsigned char* toSwap, int length)
    {
-      register int i = 0;
-      register int j = length-1;
+      int i = 0;
+      int j = length-1;
       while(i<j)
       {
          std::swap(toSwap[i], toSwap[j]);
@@ -457,7 +459,6 @@ namespace UbSystem
    inline std::string getMachineName()
    {
       char Name[150];
-      int i = 0;
 
 #if defined(UBSYSTEM_WINDOWS) || defined(UBSYSTEM_CYGWIN)
       TCHAR infoBuf[150];
@@ -465,14 +466,14 @@ namespace UbSystem
       memset(Name, 0, 150);
       if (GetComputerName(infoBuf, &bufCharCount))
       {
-         for (i = 0; i<150; i++)
+         for (int i = 0; i<150; i++)
          {
             Name[i] = infoBuf[i];
          }
       }
       else
       {
-         strcpy(Name, "Unknown_Host_Name");
+         strcpy_s(Name, "Unknown_Host_Name");
       }
 #elif (defined(UBSYSTEM_LINUX) || defined(UBSYSTEM_APPLE) || defined(UBSYSTEM_AIX)) && !defined(UBSYSTEM_CYGWIN)
       memset(Name, 0, 150);

@@ -67,7 +67,7 @@ void PressureCoefficientCoProcessor::calculateRho()
          SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
          UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
-         UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
+//         UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
          UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
          double         dx           = grid->getDeltaX(block);
 

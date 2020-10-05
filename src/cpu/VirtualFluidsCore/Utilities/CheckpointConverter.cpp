@@ -323,7 +323,7 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
       // read data
       MPI_File_read_at(file_handlerR, (MPI_Offset)(read_offset + 3 * sizeof(dataSetParam)), dataSetReadArray, blocksCount, dataSetTypeRead, MPI_STATUS_IGNORE);
       MPI_File_read_at(file_handlerR, (MPI_Offset)(read_offset + 3 * sizeof(dataSetParam) + blocksCount * sizeof(DataSetRestart)), 
-         &doubleValuesArray[0], blocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
+         &doubleValuesArray[0], int(blocksCount * doubleCountInBlock), MPI_DOUBLE, MPI_STATUS_IGNORE);
 
       // offset to read the data of the next process
       read_offset = read_offset + (MPI_Offset)(3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSetRestart) + doubleCountInBlock * sizeof(double)));
@@ -349,7 +349,7 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
          write_offset = (MPI_Offset)(3 * sizeof(dataSetParam) + dataSetWriteArray[nb].globalID * sizeofOneDataSet);
          MPI_File_write_at(file_handlerW, write_offset, &dataSetWriteArray[nb], 1, dataSetTypeWrite, MPI_STATUS_IGNORE);
          MPI_File_write_at(file_handlerW, (MPI_Offset)(write_offset + sizeof(DataSetMigration)), &doubleValuesArray[nb * doubleCountInBlock],
-            doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
+            int(doubleCountInBlock), MPI_DOUBLE, MPI_STATUS_IGNORE);
       }
 
       delete[] dataSetReadArray;

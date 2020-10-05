@@ -302,7 +302,7 @@ void PbMpi::sendBoolValue(const bool& value,int dest, int tag, PbMpi::Comm comm)
 /*======================================================================*/  
 bool PbMpi::receiveBoolValue(int source, int tag, PbMpi::Comm comm) 
 {
-   short dummy;
+   short dummy {0};
    PbMpi::Recv(comm, &dummy, 1, PbMpi_SHORT, source, tag); 
    //comm.Recv(&dummy, 1, MPI::SHORT, source, tag);
  
@@ -313,8 +313,8 @@ bool PbMpi::receiveBoolValue(int source, int tag, PbMpi::Comm comm)
 void PbMpi::sendStringValue(const std::string& value,int dest, int tag, PbMpi::Comm comm)
 {
    std::vector<char> vec;
-   for(std::size_t i=0; i<value.size(); i++)
-      vec.push_back(value[i]);
+   for(char i : value)
+      vec.push_back(i);
  
    PbMpi::sendVector(vec,PbMpi_CHAR,dest,tag,comm);
 }
@@ -327,8 +327,8 @@ std::string PbMpi::receiveStringValue(int source, int tag, PbMpi::Comm comm)
    PbMpi::receiveVector(vec,PbMpi_CHAR,source,tag,comm);
    
    std::string str;
-   for(std::size_t i=0; i<vec.size(); i++)
-      str+=vec[i];
+   for(char i : vec)
+      str+=i;
 
    return str;
 }
@@ -354,7 +354,7 @@ void PbMpi::sendVector(const std::vector<T>& v, MPI_Datatype datatype, int dest,
 template <class T>
 void PbMpi::receiveVector(std::vector<T>& v, MPI_Datatype datatype, int source, int tag, PbMpi::Comm comm) 
 {
-   int size;
+   int size {0};
 
    PbMpi::Recv(comm, &size, 1, PbMpi_INT, source, tag);
    //comm.Recv(&size, 1, MPI::INT, source, tag); 
@@ -424,7 +424,7 @@ void PbMpi::sendStringVector(const std::vector<std::string>& v, int dest, int ta
 void PbMpi::receiveStringVector(std::vector<std::string>& v, int source, int tag, PbMpi::Comm comm)
 {
    // send size
-   int stringVectorSize;
+   int stringVectorSize {0};
    PbMpi::Recv(comm, &stringVectorSize, 1, PbMpi_INT, source, tag);
    //comm.Recv(&stringVectorSize, 1, MPI::INT, source, tag); 
 

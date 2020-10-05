@@ -313,11 +313,11 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(con
    bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
    cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
 
-   /////////////////////BÖSE!!!
+   /////////////////////Bï¿½SE!!!
    //axx=0;   ayy=0;   azz=0;
    //bxx=0;   byy=0;   bzz=0;
    //cxx=0;   cyy=0;   czz=0;
-   ////////////////////!!!BÖSE
+   ////////////////////!!!Bï¿½SE
 
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //kxyAverage       =(kxyFromfcNEQ_SWB+
@@ -715,7 +715,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNodeFC(LBMReal*
 
    LBMReal eps_new = 2.;
    LBMReal o  = omega;
-   LBMReal op = 1.;
+//   LBMReal op = 1.;
 
    //f_E    = eps_new *((5.*ax*o + 5.*by*o + 5.*cz*o - 8.*ax*op + 4.*by*op + 4.*cz*op)/(54.*o*op));
    //f_N    = f_E + eps_new *((2.*(ax - by))/(9.*o));

@@ -70,13 +70,13 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const SPtr<Block3D> 
    //UBLOG(logINFO, "D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D()");
 
    bcNodeIndicesMap[block] = set< std::vector<int> >();
-   set< std::vector<int> >& transNodeIndices = bcNodeIndicesMap[block];
+//   set< std::vector<int> >& transNodeIndices = bcNodeIndicesMap[block];
    solidNodeIndicesMap[block] = set< UbTupleInt3 >();
    set< UbTupleInt3 >& solidNodeIndices = solidNodeIndicesMap[block];
 
 
    bool oneEntryGotBC = false; //ob ueberhaupt ein eintrag ein BC zugewiesen wurde
-   bool gotQs         = false; //true, wenn "difference" gesetzt wurde
+//   bool gotQs         = false; //true, wenn "difference" gesetzt wurde
    SPtr<BoundaryConditions> bc;
 
    SPtr<ILBMKernel> kernel = block->getKernel();
@@ -87,8 +87,8 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const SPtr<Block3D> 
    int startIX1 = 0, startIX2 = 0, startIX3 = 0; 
    int stopIX1  = (int)bcArray->getNX1(), stopIX2  = (int)bcArray->getNX2(), stopIX3  = (int)bcArray->getNX3(); 
 
-   double         dx       = grid.lock()->getDeltaX(block);
-   UbTupleDouble3 orgDelta = grid.lock()->getNodeOffset(block);
+//   double         dx       = grid.lock()->getDeltaX(block);
+//   UbTupleDouble3 orgDelta = grid.lock()->getNodeOffset(block);
 
    bool pointOnBoundary = false;
 
@@ -228,11 +228,11 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
    //bounding cubes des TriFaceMesh ermitteln (pro level)
    //////////////////////////////////////////////////////////////////////////
    //min/max Werte des Dreiecksnetzes holen
-   double geoMinX1(0.0), geoMinX2(0.0), geoMinX3(0.0), geoMaxX1(0.0), geoMaxX2(0.0), geoMaxX3(0.0);
+//   double geoMinX1(0.0), geoMinX2(0.0), geoMinX3(0.0), geoMaxX1(0.0), geoMaxX2(0.0), geoMaxX3(0.0);
 
-   geoMinX1 = this->geoObject3D->getX1Minimum();  geoMaxX1 = this->geoObject3D->getX1Maximum();
-   geoMinX2 = this->geoObject3D->getX2Minimum();  geoMaxX2 = this->geoObject3D->getX2Maximum();
-   geoMinX3 = this->geoObject3D->getX3Minimum();  geoMaxX3 = this->geoObject3D->getX3Maximum();
+//   geoMinX1 = this->geoObject3D->getX1Minimum();  geoMaxX1 = this->geoObject3D->getX1Maximum();
+//   geoMinX2 = this->geoObject3D->getX2Minimum();  geoMaxX2 = this->geoObject3D->getX2Maximum();
+//   geoMinX3 = this->geoObject3D->getX3Minimum();  geoMaxX3 = this->geoObject3D->getX3Maximum();
 
 
    //////////////////////////////////////////////////////////////////////////
@@ -252,7 +252,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
    UbTimer setQTimer; setQTimer.start();
    UBLOG(logDEBUG3, " - setQs for "<<(int)triangles.size()<<" triangles");
 
-   bool solidFromOtherInteractor = false;
+//   bool solidFromOtherInteractor = false;
    float blockMinX[3],blockMaxX[3],boxCenter[3],halfBoxSize[3];
 
    for(size_t t=0; t<triangles.size(); t++)
@@ -361,7 +361,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
             int indexMaxX3 = (int)bcMatrix->getNX3();
 
             std::set< std::vector<int> >& bcNodeIndices           = this->bcNodeIndicesMap[block];
-            std::set< UbTupleInt3 >& solidsFromOtherInteractors = tmpSolidNodesFromOtherInteractors[block];
+//            std::set< UbTupleInt3 >& solidsFromOtherInteractors = tmpSolidNodesFromOtherInteractors[block];
             double q, distance;
 
             double& nodeDx1 = nodeDeltaToNeigh[level][D3Q27System::E];
@@ -382,9 +382,9 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                      double   internX2 = pointplane1[1];
                      double   internX3 = pointplane1[2];
 
-                     int blx1 = block->getX1();
-                     int blx2 = block->getX2();
-                     int blx3 = block->getX3();
+//                     int blx1 = block->getX1();
+//                     int blx2 = block->getX2();
+//                     int blx3 = block->getX3();
 
                      if(bcMatrix->isSolid(ix1,ix2,ix3) || bcMatrix->isUndefined(ix1,ix2,ix3))
                      {
@@ -720,7 +720,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
    UbTimer setQTimer; setQTimer.start();
    UBLOG(logDEBUG3, " - setQs for "<<(int)triangles.size()<<" triangles");
 
-   bool solidFromOtherInteractor = false;
+//   bool solidFromOtherInteractor = false;
    float blockMinX[3],blockMaxX[3],boxCenter[3],halfBoxSize[3];
 
    for(size_t t=0; t<triangles.size(); t++)
@@ -856,29 +856,28 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                   for(int ix1=indexMinX1; ix1<indexMaxX1; ix1++)
                   {
 					 
-					  int blx1 =block->getX1();
-					  int blx2 = block->getX2();
-					  int blx3 = block->getX3();
+//					  int blx1 =block->getX1();
+//					  int blx2 = block->getX2();
+//					  int blx3 = block->getX3();
 
-					  if (blx1==0&&blx2==1&&blx3==0)
-					  {
-						  //if (ix2==39&&ix3==4)
-							   if (ix2==39&&ix3==4)
-						  {
-							 int seb=0;
-						  }
-
-					  }
+//					  if (blx1==0&&blx2==1&&blx3==0)
+//					  {
+//						  //if (ix2==39&&ix3==4)
+//							   if (ix2==39&&ix3==4)
+//						  {
+//							 int seb=0;
+//						  }
+//					  }
                      //Problem: wenn voher der punkt durch eine andere geo not active gesetzt wird und
                      //dieser nun uebersprungen wird, dann hat man spaeter beim fuellalgorithmus luecken
                      //in der front und der block wird u.U. faelschlicher weise komplett solid markiert
                      //Lsg: positionen merken und erst Nach dem fuellarlgo wieder auf not active setzen :-)
-                     solidFromOtherInteractor = false;
+//                     solidFromOtherInteractor = false;
                      if(bcMatrix->isSolid(ix1,ix2,ix3))
                      {
                         if(this->reinitWithStoredQsFlag)
                         {
-                           solidFromOtherInteractor = true;   //hier muss man weitermachen
+                           //solidFromOtherInteractor = true;   //hier muss man weitermachen
                            //SG //oje 
                            std::vector<int> p(3);
                            p[0]=ix1; p[1]=ix2; p[2]=ix3;
@@ -891,7 +890,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                            p[0]=ix1; p[1]=ix2; p[2]=ix3;
                            solidsFromOtherInteractors.insert(p);
                            //SG continue;   
-                           solidFromOtherInteractor = true;   
+                           //solidFromOtherInteractor = true;   
                         }
                      }
 
@@ -1081,7 +1080,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
    {
       int pointInObjectCounter = 0;
       int scanlineCounter      = 0;
-      int counter              = 0;
+//      int counter              = 0;
 
       //sollte die matrix groesse zu gross sein und der rekursive floodFill mehr speicher
       //benoetigen als der Stack hergibt -> keinen floodFill verwenden!
@@ -1126,9 +1125,9 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
             SPtr<BCArray3D> bcMatrix = kernel->getBCProcessor()->getBCArray();
 
             //            bvd->getTimer().start();
-            int indexMinX1 = 0;
-            int indexMinX2 = 0;
-            int indexMinX3 = 0;
+//            int indexMinX1 = 0;
+//            int indexMinX2 = 0;
+//            int indexMinX3 = 0;
             int indexMaxX1 = (int)bcMatrix->getNX1();
             int indexMaxX2 = (int)bcMatrix->getNX2();
             int indexMaxX3 = (int)bcMatrix->getNX3();
@@ -1168,10 +1167,10 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                   for(int bx1=0; bx1<blocknx1; ++bx1)
                   {
                      
-					  if (bx2==9&&bx3==29)
-					  {
-						  int ride=0;
-					  }
+//					  if (bx2==9&&bx3==29)
+//					  {
+//						  int ride=0;
+//					  }
 					  if( flagField(bx1,bx2,bx3)==UNDEF_FLAG )
                      { 
 						 if( mesh->isPointInGbObject3D(  val<1>(coords) + bx1*nodeDeltaX1 - 0.5*nodeDeltaX1 
@@ -1400,13 +1399,13 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, double startD
                halfBoxSize[1] = (float)(0.5*(blockMaxX[1]-blockMinX[1]));
                halfBoxSize[2] = (float)(0.5*(blockMaxX[2]-blockMinX[2]));
 
-               GbTriFaceMesh3D::Vertex& v1 = nodes[triangle.v1];
-               GbTriFaceMesh3D::Vertex& v2 = nodes[triangle.v2];
-               GbTriFaceMesh3D::Vertex& v3 = nodes[triangle.v3];
+               GbTriFaceMesh3D::Vertex& v1_ = nodes[triangle.v1];
+               GbTriFaceMesh3D::Vertex& v2_ = nodes[triangle.v2];
+               GbTriFaceMesh3D::Vertex& v3_ = nodes[triangle.v3];
 
-               triPoints[0][0] = v1.x; triPoints[0][1] = v1.y; triPoints[0][2] = v1.z; 
-               triPoints[1][0] = v2.x; triPoints[1][1] = v2.y; triPoints[1][2] = v2.z; 
-               triPoints[2][0] = v3.x; triPoints[2][1] = v3.y; triPoints[2][2] = v3.z; 
+               triPoints[0][0] = v1_.x; triPoints[0][1] = v1_.y; triPoints[0][2] = v1_.z; 
+               triPoints[1][0] = v2_.x; triPoints[1][1] = v2_.y; triPoints[1][2] = v2_.z; 
+               triPoints[2][0] = v3_.x; triPoints[2][1] = v3_.y; triPoints[2][2] = v3_.z; 
 
                //wenn block dreick schneidet, dann muss er verfeinert werden
                if( GbMeshTools3D::triBoxOverlap(boxCenter,halfBoxSize,triPoints) )

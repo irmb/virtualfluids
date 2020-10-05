@@ -68,9 +68,9 @@ void VelocityWithDensityBCAlgorithm::applyBC()
          if (bcArray->isSolid(nX1,nX2,nX3))
          {
             const int invDir = D3Q27System::INVDIR[fdir];
-            LBMReal q =1.0;// bcPtr->getQ(invDir);// m+m q=0 stabiler
+//            LBMReal q =1.0;// bcPtr->getQ(invDir);// m+m q=0 stabiler
             LBMReal velocity = bcPtr->getBoundaryVelocity(fdir);
-            //LBMReal fReturn = ((1.0 - q) / (1.0 + q))*((f[fdir] - feq[fdir]*collFactor) / (1.0 - collFactor)) + ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 + q))-drho*D3Q27System::WEIGTH[invDir];
+//            LBMReal fReturn = ((1.0 - q) / (1.0 + q))*((f[fdir] - feq[fdir]*collFactor) / (1.0 - collFactor)) + ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 + q))-drho*D3Q27System::WEIGTH[invDir];
 
             //if q=1
             //LBMReal fReturn = ((q*(f[fdir] + f[invDir]) - velocity*rho) / (1.0 + q))-drho*D3Q27System::WEIGTH[invDir];

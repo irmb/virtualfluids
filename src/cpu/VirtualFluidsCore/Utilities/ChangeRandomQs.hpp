@@ -27,7 +27,7 @@ namespace Utilities
                   if (bc->hasNoSlipBoundaryFlag(fdir))
                   {
                      const int invDir = D3Q27System::INVDIR[fdir];
-                     float q = bc->getQ(invDir);
+                     float q = (float) bc->getQ(invDir);
                      //double r = (double)UbRandom::rand(-50, 50);
                      float r = (float)UbRandom::rand(-10, 10);
                      float q_temp = q + q/r;

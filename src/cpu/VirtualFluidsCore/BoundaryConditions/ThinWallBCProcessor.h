@@ -5,16 +5,15 @@
 
 #include "BCProcessor.h"
 
-class LBMKernel;
+class ILBMKernel;
 
 class ThinWallBCProcessor : public BCProcessor
 {
 public:
-   ThinWallBCProcessor();
-   ThinWallBCProcessor(SPtr<LBMKernel> kernel);
-   ~ThinWallBCProcessor();
-   SPtr<BCProcessor> clone(SPtr<LBMKernel> kernel);
-   void applyPostCollisionBC();
+   ThinWallBCProcessor() = default;
+   explicit ThinWallBCProcessor(SPtr<ILBMKernel> kernel);
+   SPtr<BCProcessor> clone(SPtr<ILBMKernel> kernel) override;
+   void applyPostCollisionBC(); //FIXME: should the base method virtual??
 protected:
 private:
 

@@ -68,9 +68,9 @@ void ForceCalculator::calculateForces(std::vector<SPtr<D3Q27Interactor> > intera
     forceX2global = 0.0;
     forceX3global = 0.0;
 
-    for (const SPtr<D3Q27Interactor> interactor : interactors)
+    for (const auto& interactor : interactors)
     {
-        for (BcNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
+        for (const auto& t : interactor->getBcNodeIndicesMap())
         {
             double forceX1 = 0.0;
             double forceX2 = 0.0;
@@ -82,7 +82,7 @@ void ForceCalculator::calculateForces(std::vector<SPtr<D3Q27Interactor> > intera
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
             distributions->swap();
 
-            std::set< std::vector<int> >& transNodeIndices = t.second;
+            const std::set< std::vector<int> >& transNodeIndices = t.second;
             for (std::vector<int> node : transNodeIndices)
             {
                 int x1 = node[0];

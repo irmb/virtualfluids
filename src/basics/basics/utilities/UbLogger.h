@@ -315,8 +315,10 @@ class UbLog : public UbLogger< Output2Stream >
 // example UBLOG(logINFO) << "das ist ein log eintrag";
 //////////////////////////////////////////////////////////////////////////
 #define UBLOG(level, logtext) \
-   if(level > UBLOG_MAX_LEVEL || level > UbLog::reportingLevel() || !Output2Stream::getStream()) ; \
-   else UbLog().get(level) << logtext;                                                             
+   if(level <= UBLOG_MAX_LEVEL && level <= UbLog::reportingLevel() && Output2Stream::getStream()) \
+   {                                    \
+       UbLog().get(level) << logtext;   \
+   }
    
 //////////////////////////////////////////////////////////////////////////
 //makro 2 fuer korrekten MultiLineOutput (teuer!!)

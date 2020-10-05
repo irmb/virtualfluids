@@ -153,7 +153,10 @@ void GbCylinder3D::finalize()
 /*=======================================================*/
 double GbCylinder3D::getHeight()
 {
-   if(mLine) return mLine->getLength(); return 0.0;
+   if(mLine) 
+      return mLine->getLength();
+   
+   return 0.0;
 }
 /*=======================================================*/
 GbPoint3D* GbCylinder3D::getPoint1()
@@ -453,7 +456,7 @@ GbLine3D* GbCylinder3D::createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2
    double x1a,y1a,z1a,x1b,y1b,z1b, //uebergebene Strecke
           x2a,y2a,x2b,y2b,         //erste "Kreisstrecke"
           x3a,y3a,x3b,y3b,         //zweite "Kreisstrecke"
-          y2m,z2m,y3m,z3m;
+          y2m,/*z2m,*/y3m,z3m;
    double nenner1ab;
 
    if(this->isParallelToX1Axis())
@@ -467,7 +470,7 @@ GbLine3D* GbCylinder3D::createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2
 
       x2a=mLine->getPoint1()->getX1Coordinate();
       y2m=mLine->getPoint1()->getX2Coordinate();
-      z2m=mLine->getPoint1()->getX3Coordinate();
+//      z2m=mLine->getPoint1()->getX3Coordinate();
       y2a=y2m+mRad;
       x2b=mLine->getPoint1()->getX1Coordinate();
       y2b=y2m-mRad;
@@ -490,7 +493,7 @@ GbLine3D* GbCylinder3D::createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2
 
       x2a=mLine->getPoint1()->getX2Coordinate();
       y2m=mLine->getPoint1()->getX3Coordinate();
-      z2m=mLine->getPoint1()->getX1Coordinate();
+//      z2m=mLine->getPoint1()->getX1Coordinate();
       y2a=y2m+mRad;
       x2b=mLine->getPoint1()->getX2Coordinate();
       y2b=y2m-mRad;
@@ -513,7 +516,7 @@ GbLine3D* GbCylinder3D::createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2
 
       x2a=mLine->getPoint1()->getX3Coordinate();
       y2m=mLine->getPoint1()->getX2Coordinate();
-      z2m=mLine->getPoint1()->getX1Coordinate();
+//      z2m=mLine->getPoint1()->getX1Coordinate();
       y2a=y2m+mRad;
       x2b=mLine->getPoint1()->getX3Coordinate();
       y2b=y2m-mRad;

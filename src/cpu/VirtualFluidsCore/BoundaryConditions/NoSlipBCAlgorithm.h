@@ -44,9 +44,8 @@ class NoSlipBCAlgorithm : public BCAlgorithm
 {
 public:
    NoSlipBCAlgorithm();
-   virtual ~NoSlipBCAlgorithm();
-   SPtr<BCAlgorithm> clone();
-   void addDistributions(SPtr<DistributionArray3D> distributions);
+   SPtr<BCAlgorithm> clone() override;
+   void addDistributions(SPtr<DistributionArray3D> distributions) override;
    void applyBC() override;
 private:
 };

@@ -211,8 +211,10 @@ public:
          os<<std::endl;
       }
       os<<"pool"<<std::endl;
-      for(size_type i=0; i<cbPool.pool.size(); i++)
-            os<<cbPool.pool[i]<<","; os<<std::endl;
+      for(size_type i=0; i<cbPool.pool.size(); i++) {
+         os<<cbPool.pool[i]<<",";
+         os<<std::endl;
+      }
 
       return os;
    }

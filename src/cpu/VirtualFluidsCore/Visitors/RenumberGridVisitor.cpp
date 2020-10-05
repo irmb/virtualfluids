@@ -16,7 +16,7 @@ void RenumberGridVisitor::visit(SPtr<Grid3D> grid)
 
    //UBLOG(logDEBUG5, "RenumberGridVisitor::visit() - start");
    std::vector<SPtr<Block3D>> blocks;
-   int gridRank = grid->getRank();
+//   int gridRank = grid->getRank();
    int size;
    //MPI_Comm_size(MPI_COMM_WORLD, &size);
    size = comm->getNumberOfProcesses();

@@ -82,10 +82,10 @@ void CoarseToFineNodeSetBlock3DConnector::init()
    //////////////////////////////////////////////////////
    //Debug
    //////////////////////////////////////////////////////
-   if (block.lock()->getGlobalID() == 2234)
-   {
-      int test = 0;
-   }
+//   if (block.lock()->getGlobalID() == 2234)
+//   {
+//      int test = 0;
+//   }
 
    if (sender00) sender00->getData().resize(iNodeSetSender00.size()*iCellSize*sendDataPerNode, initValue);
    else sender00 = VectorTransmitterPtr(new TbLocalTransmitter< CbVector< LBMReal > >());

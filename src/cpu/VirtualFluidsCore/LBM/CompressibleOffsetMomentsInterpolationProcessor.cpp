@@ -494,7 +494,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(LBM
    //bulk viscosity
    LBMReal oP = OxxPyyPzzF;
 
-   LBMReal rho  = press ;//+ (2.*axx*x+axy*y+axz*z+axyz*y*z+ax + 2.*byy*y+bxy*x+byz*z+bxyz*x*z+by + 2.*czz*z+cxz*x+cyz*y+cxyz*x*y+cz)/3.;
+//   LBMReal rho  = press ;//+ (2.*axx*x+axy*y+axz*z+axyz*y*z+ax + 2.*byy*y+bxy*x+byz*z+bxyz*x*z+by + 2.*czz*z+cxz*x+cyz*y+cxyz*x*y+cz)/3.;
    LBMReal vx1  = a0 + 0.25*( xs*ax + ys*ay + zs*az) + 0.0625*(axx + xs*ys*axy + xs*zs*axz + ayy + ys*zs*ayz + azz) + 0.015625*(xs*ys*zs*axyz);
    LBMReal vx2  = b0 + 0.25*( xs*bx + ys*by + zs*bz) + 0.0625*(bxx + xs*ys*bxy + xs*zs*bxz + byy + ys*zs*byz + bzz) + 0.015625*(xs*ys*zs*bxyz);
    LBMReal vx3  = c0 + 0.25*( xs*cx + ys*cy + zs*cz) + 0.0625*(cxx + xs*ys*cxy + xs*zs*cxz + cyy + ys*zs*cyz + czz) + 0.015625*(xs*ys*zs*cxyz);
@@ -937,7 +937,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(LBM
    LBMReal vx2  = b0;
    LBMReal vx3  = c0;
 
-   LBMReal rho = press ;//+ (ax+by+cz)/3.;
+//   LBMReal rho = press ;//+ (ax+by+cz)/3.;
 
    LBMReal eps_new = 2.;
    LBMReal o  = omega;

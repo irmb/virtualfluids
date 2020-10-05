@@ -4,7 +4,7 @@
 using namespace std;
 
 /*===============================================================================*/
-string WbWriterTecPlotASCII::writeOctsWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleInt8 >& cells, vector<string >& datanames, vector<vector<double > >& nodedata)
+string WbWriterTecPlotASCII::writeOctsWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleUInt8 >& cells, vector<string >& datanames, vector<vector<double > >& nodedata)
 {
    string tecplotfilename = filename+getFileExtension();
    UBLOG(logDEBUG1,"WbWriterTecPlotASCII::writeOctsWithNodeData to "<<tecplotfilename<<" - start");
@@ -42,7 +42,7 @@ string WbWriterTecPlotASCII::writeOctsWithNodeData(const string& filename,vector
 
    for(size_t c=0; c<cells.size(); c++)   
    {
-      UbTupleInt8& cell = cells[c];
+      UbTupleUInt8& cell = cells[c];
       out<<val<1>(cell)<<" "
          <<val<2>(cell)<<" "
          <<val<3>(cell)<<" "
@@ -59,7 +59,7 @@ string WbWriterTecPlotASCII::writeOctsWithNodeData(const string& filename,vector
    return tecplotfilename;
 }
 /*===============================================================================*/
-string WbWriterTecPlotASCII::writeOcts(const string& filename,vector< UbTupleFloat3 >& nodes, vector< UbTupleInt8 >& cells)
+string WbWriterTecPlotASCII::writeOctsU(const string& filename,vector< UbTupleFloat3 >& nodes, vector< UbTupleUInt8 >& cells)
 {
    vector<string > datanames;
    vector<vector<double > > nodedata;
