@@ -1,0 +1,3 @@
+import virtualfluids
+import virtualfluids.geometry
+help(virtualfluids)
