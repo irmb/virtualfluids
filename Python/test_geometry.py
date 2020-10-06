@@ -1,13 +1,41 @@
+import unittest
+
 from pyfluids.geometry import *
 
-point1 = GbPoint3D(1, 2, 3)
-point2 = GbPoint3D(4, 5, 6)
-line = GbLine3D()
-cube: GbCuboid3D = GbCuboid3D()
 
-line.point1 = point1
-line.point2 = point2
+class TestGeometry(unittest.TestCase):
 
-print(point1)
-print(line)
-print("Distance", point1.get_distance(point2))
+    def test_when_setting_point_coordinates_in_constructor__point_should_have_coordinates(self):
+        """
+        WHEN setting point coordinates in constructor THEN point should have coordinates
+        """
+        sut = GbPoint3D(4, 8, 3)
+
+        self.assertEqual(sut.x1, 4)
+        self.assertEqual(sut.x2, 8)
+        self.assertEqual(sut.x3, 3)
+
+    def test_when_setting_point_coordinates__point_should_have_coordinates(self):
+        """
+        WHEN setting point coordinates THEN point should have coordinates
+        """
+        sut = GbPoint3D()
+
+        sut.x1 = 4
+        sut.x2 = 8
+        sut.x3 = 3
+
+        self.assertEqual(sut.x1, 4)
+        self.assertEqual(sut.x2, 8)
+        self.assertEqual(sut.x3, 3)
+
+    def test_when_setting_line_points__line_should_have_points(self):
+        sut = GbLine3D()
+
+        point1 = GbPoint3D()
+        point2 = GbPoint3D()
+        sut.point1 = point1
+        sut.point2 = point2
+
+        self.assertEqual(sut.point1, point1)
+        self.assertEqual(sut.point2, point2)

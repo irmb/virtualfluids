@@ -5,7 +5,7 @@ from pyfluids.kernel import LBMKernel, KernelType
 from pyfluids.writer import Writer, WriterType
 
 
-def simulate_poiseuille_flow(physical_params, grid_params, sim_params):
+def run_simulation(physical_params, grid_params, sim_params):
     simulation = Simulation()
 
     kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)

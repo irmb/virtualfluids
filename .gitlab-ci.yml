@@ -48,8 +48,4 @@ test_python_bindings:
     - source Python/venv/bin/activate
 
   script:
-    - python3 Python/test_geometry.py
-    - python3 Python/test_boundaryconditions.py
-    - python3 Python/test_kernel.py
-    - python3 Python/test_muparser.py
-    - python3 -m unittest Python/test_poiseuille_l2.py
+    - python3 -m unittest discover -s Python -v
