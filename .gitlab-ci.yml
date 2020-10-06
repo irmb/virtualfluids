@@ -12,12 +12,11 @@ build:
       - build/
 
   before_script:
-    - export CAB_MACHINE=ELLADAN
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update
 
   script:
-    - cmake -S . -B build -DBUILD_VF_CPU:BOOL=ON -DUSE_GCC:BOOL=ON -DBUILD_VF_UNIT_TESTS:BOOL=ON
+    - cmake -S . -B build -DBUILD_VF_CPU:BOOL=ON -DBUILD_VF_UNIT_TESTS:BOOL=ON
     - cmake --build build --target VirtualFluidsCore
     - cmake --build build --target basicsTests
 
