@@ -1,13 +1,24 @@
 # build directories
 build/
 bin/
+cmake-build-debug/
 MSVC2017/
 VS2017/
+
+# Python
+_skbuild/
+dist/
+*.egg-info/
+__pycache__/
+.venv/
 
 # IDE
 .vscode/
 .sync/
 .idea/
+
+# Simulation results
+output/
 
 # MacOS
 .DS_Store
