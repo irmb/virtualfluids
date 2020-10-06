@@ -28,11 +28,11 @@
 #include <Visitors/SetConnectorsBlockVisitor.h>
 #include <Visitors/SetKernelBlockVisitor.h>
 
-#include <VirtualFluidsBuilder/SimulationParameters.h>
-#include <VirtualFluidsBuilder/VirtualFluidsBuilder.h>
+#include <simulationconfig/SimulationParameters.h>
+#include <simulationconfig/Simulation.h>
 
 
-VirtualFluidsBuilder::VirtualFluidsBuilder()
+Simulation::Simulation()
 {
     this->communicator = MPICommunicator::getInstance();
     this->grid = SPtr<Grid3D>(new Grid3D(communicator));
@@ -41,24 +41,24 @@ VirtualFluidsBuilder::VirtualFluidsBuilder()
     this->registeredAdapters = std::set<SPtr<BCAdapter>>();
 }
 
-void VirtualFluidsBuilder::setGridParameters(SPtr<GridParameters> parameters)
+void Simulation::setGridParameters(SPtr<GridParameters> parameters)
 {
     this->gridParameters = std::move(parameters);
 }
 
-void VirtualFluidsBuilder::setPhysicalParameters(SPtr<PhysicalParameters> parameters)
+void Simulation::setPhysicalParameters(SPtr<PhysicalParameters> parameters)
 {
     this->physicalParameters = std::move(parameters);
 }
 
-void VirtualFluidsBuilder::setSimulationParameters(SPtr<SimulationParameters> parameters)
+void Simulation::setSimulationParameters(SPtr<SimulationParameters> parameters)
 {
     this->simulationParameters = std::move(parameters);
 }
 
 void
-VirtualFluidsBuilder::addObject(const SPtr<GbObject3D> &object, const SPtr<BCAdapter> &bcAdapter, int state,
-                                const std::string &folderPath)
+Simulation::addObject(const SPtr<GbObject3D> &object, const SPtr<BCAdapter> &bcAdapter, int state,
+                      const std::string &folderPath)
 {
     const bool is_in = registeredAdapters.find(bcAdapter) != registeredAdapters.end();
     if (!is_in) addBCAdapter(bcAdapter);
@@ -66,30 +66,30 @@ VirtualFluidsBuilder::addObject(const SPtr<GbObject3D> &object, const SPtr<BCAda
     GbSystem3D::writeGeoObject(object, writerConfig.outputPath + folderPath, writerConfig.getWriter());
 }
 
-void VirtualFluidsBuilder::addBCAdapter(const SPtr<BCAdapter> &bcAdapter)
+void Simulation::addBCAdapter(const SPtr<BCAdapter> &bcAdapter)
 {
     registeredAdapters.insert(bcAdapter);
     this->bcVisitor.addBC(bcAdapter);
 }
 
-void VirtualFluidsBuilder::setKernelConfig(const SPtr<LBMKernelConfig> &kernel)
+void Simulation::setKernelConfig(const SPtr<LBMKernelConfig> &kernel)
 {
     this->kernelConfig = kernel;
     this->lbmKernel = kernelFactory.makeKernel(kernel->kernelType);
     this->lbmSystem = kernelFactory.makeLBMSystem(kernel->kernelType);
 }
 
-void VirtualFluidsBuilder::setWriterConfig(const WriterConfig &config)
+void Simulation::setWriterConfig(const WriterConfig &config)
 {
     this->writerConfig = config;
 }
 
-WriterConfig &VirtualFluidsBuilder::getWriterConfig()
+WriterConfig &Simulation::getWriterConfig()
 {
     return writerConfig;
 }
 
-void VirtualFluidsBuilder::run()
+void Simulation::run()
 {
     UBLOG(logINFO, "Beginning simulation setup")
     grid->setDeltaX(gridParameters->deltaX);
@@ -169,8 +169,8 @@ void VirtualFluidsBuilder::run()
 }
 
 void
-VirtualFluidsBuilder::setKernelForcing(const SPtr<LBMKernel> &kernel,
-                                       std::shared_ptr<LBMUnitConverter> &converter) const
+Simulation::setKernelForcing(const SPtr<LBMKernel> &kernel,
+                             std::shared_ptr<LBMUnitConverter> &converter) const
 {
     kernel->setWithForcing(kernelConfig->useForcing);
     kernel->setForcingX1(kernelConfig->forcingX1 * converter->getFactorForceWToLb());
@@ -178,14 +178,14 @@ VirtualFluidsBuilder::setKernelForcing(const SPtr<LBMKernel> &kernel,
     kernel->setForcingX3(kernelConfig->forcingX3 * converter->getFactorForceWToLb());
 }
 
-void VirtualFluidsBuilder::logSimulationData(const int &nodesInX1, const int &nodesInX2, const int &nodesInX3) const
+void Simulation::logSimulationData(const int &nodesInX1, const int &nodesInX2, const int &nodesInX3) const
 {
     UBLOG(logINFO, "Domain size = " << nodesInX1 << " x " << nodesInX2 << " x " << nodesInX3)
     UBLOG(logINFO, "dx          = " << gridParameters->deltaX << " m")
     UBLOG(logINFO, "latticeViscosity    = " << physicalParameters->latticeViscosity)
 }
 
-void VirtualFluidsBuilder::generateBlockGrid(const SPtr<GbObject3D> &gridCube) const
+void Simulation::generateBlockGrid(const SPtr<GbObject3D> &gridCube) const
 {
     UBLOG(logINFO, "Generate block grid")
     GenBlocksGridVisitor genBlocks(gridCube);
@@ -193,7 +193,7 @@ void VirtualFluidsBuilder::generateBlockGrid(const SPtr<GbObject3D> &gridCube) c
     writeBlocks();
 }
 
-void VirtualFluidsBuilder::setBoundaryConditionProcessor(const SPtr<LBMKernel> &kernel)
+void Simulation::setBoundaryConditionProcessor(const SPtr<LBMKernel> &kernel)
 {
     UBLOG(logINFO, "Create boundary conditions processor")
     SPtr<BCProcessor> bcProc;
@@ -201,7 +201,7 @@ void VirtualFluidsBuilder::setBoundaryConditionProcessor(const SPtr<LBMKernel> &
     kernel->setBCProcessor(bcProc);
 }
 
-void VirtualFluidsBuilder::setBlockSize(const int &nodesInX1, const int &nodesInX2, const int &nodesInX3) const
+void Simulation::setBlockSize(const int &nodesInX1, const int &nodesInX2, const int &nodesInX3) const
 {
     int blockSizeX1 = nodesInX1 / gridParameters->blocksPerDirection[0];
     int blockSizeX2 = nodesInX2 / gridParameters->blocksPerDirection[1];
@@ -213,14 +213,14 @@ void VirtualFluidsBuilder::setBlockSize(const int &nodesInX1, const int &nodesIn
 }
 
 std::shared_ptr<LBMUnitConverter>
-VirtualFluidsBuilder::makeLBMUnitConverter()
+Simulation::makeLBMUnitConverter()
 {
     return SPtr<LBMUnitConverter>(new LBMUnitConverter());
 }
 
 SPtr<CoProcessor>
-VirtualFluidsBuilder::makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter,
-                                                           const SPtr<UbScheduler> &visSch) const
+Simulation::makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter,
+                                                 const SPtr<UbScheduler> &visSch) const
 {
     SPtr<CoProcessor> mqCoProcessor(
             new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, writerConfig.outputPath, writerConfig.getWriter(),
@@ -230,7 +230,7 @@ VirtualFluidsBuilder::makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr
     return mqCoProcessor;
 }
 
-void VirtualFluidsBuilder::writeBoundaryConditions() const
+void Simulation::writeBoundaryConditions() const
 {
     SPtr<UbScheduler> geoSch(new UbScheduler(1));
     WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, writerConfig.outputPath, writerConfig.getWriter(),
@@ -238,7 +238,7 @@ void VirtualFluidsBuilder::writeBoundaryConditions() const
     ppgeo.process(0);
 }
 
-void VirtualFluidsBuilder::writeBlocks() const
+void Simulation::writeBlocks() const
 {
     UBLOG(logINFO, "Write block grid to VTK-file")
     SPtr<CoProcessor> ppblocks(
@@ -253,8 +253,8 @@ void VirtualFluidsBuilder::writeBlocks() const
 }
 
 SPtr<GbObject3D>
-VirtualFluidsBuilder::makeSimulationBoundingBox(const int &nodesInX1, const int &nodesInX2,
-                                                const int &nodesInX3) const
+Simulation::makeSimulationBoundingBox(const int &nodesInX1, const int &nodesInX2,
+                                      const int &nodesInX3) const
 {
     double minX1 = 0, minX2 = 0, minX3 = 0;
     const double maxX1 = minX1 + gridParameters->deltaX * nodesInX1;
@@ -270,4 +270,4 @@ VirtualFluidsBuilder::makeSimulationBoundingBox(const int &nodesInX1, const int 
     return gridCube;
 }
 
-VirtualFluidsBuilder::~VirtualFluidsBuilder() = default;
+Simulation::~Simulation() = default;

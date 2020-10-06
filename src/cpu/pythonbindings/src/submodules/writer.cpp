@@ -1,5 +1,5 @@
 #include <pybind11/pybind11.h>
-#include <VirtualFluidsBuilder/WriterConfig.h>
+#include <simulationconfig/WriterConfig.h>
 
 namespace py = pybind11;
 

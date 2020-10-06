@@ -1,3 +1,2 @@
-import virtualfluids
-import virtualfluids.geometry
-help(virtualfluids)
+import pyfluids
+help(pyfluids)

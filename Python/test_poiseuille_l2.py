@@ -4,7 +4,7 @@ import pyvista as pv
 from norms import l2_norm
 from poiseuille_analytical import poiseuille_at_heights, PoiseuilleSettings
 from poiseuille_flow import simulate_poiseuille_flow
-from virtualfluids.parameters import PhysicalParameters, GridParameters, SimulationParameters
+from pyfluids.parameters import PhysicalParameters, GridParameters, SimulationParameters
 from vtk_utilities import vertical_column_from_mesh, get_values_from_indices
 
 

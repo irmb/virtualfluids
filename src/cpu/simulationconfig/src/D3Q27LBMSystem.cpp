@@ -1,8 +1,4 @@
-//
-// Created by Sven Marcus on 20.08.20.
-//
-
-#include "VirtualFluidsBuilder/D3Q27LBMSystem.h"
+#include "simulationconfig/D3Q27LBMSystem.h"
 #include <Interactors/D3Q27Interactor.h>
 #include <LBM/D3Q27System.h>
 

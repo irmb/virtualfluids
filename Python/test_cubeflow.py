@@ -2,8 +2,8 @@ from virtualfluids.geometry import GbCuboid3D
 from virtualfluids.boundaryconditions import NoSlipBCAlgorithm, NoSlipBCAdapter, VelocityBCAdapter, DensityBCAdapter, \
     VelocityBCAlgorithm, NonReflectingOutflowBCAlgorithm
 from virtualfluids.parameters import PhysicalParameters, SimulationParameters, GridParameters
-from virtualfluids.kernel import CompressibleCumulantFourthOrderViscosityKernel
-from virtualfluids.builder import VirtualFluidsBuilder
+from virtualfluids.kernel import LBMKernel, KernelType
+from virtualfluids.simulation import Simulation
 from virtualfluids.writer import Writer, WriterType
 from pymuparser import Parser
 
@@ -27,7 +27,7 @@ grid_parameters.periodic_boundary_in_x3 = True
 
 sim_parameters = SimulationParameters()
 sim_parameters.timestep_log_interval = 1000
-sim_parameters.number_of_timesteps = 1000000
+sim_parameters.number_of_timesteps = 1000
 sim_parameters.number_of_threads = 4
 
 wall_thickness = 3 * grid_parameters.delta_x
@@ -67,7 +67,7 @@ velocity_function.expression = "u"
 velocity_bc = VelocityBCAdapter(True, False, False, velocity_function, 0, -10)
 velocity_bc.algorithm = VelocityBCAlgorithm()
 
-kernel = CompressibleCumulantFourthOrderViscosityKernel()
+kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
 # kernel.use_forcing = True
 # kernel.forcing_in_x1 = 3e-6
 
@@ -75,7 +75,7 @@ writer = Writer()
 writer.output_path = "./output"
 writer.type = WriterType.BINARY
 
-builder = VirtualFluidsBuilder(communicator_type="mpi")
+builder = Simulation()
 builder.set_writer(writer)
 
 builder.set_physical_parameters(physical_parameters)
