@@ -75,6 +75,10 @@ IF(${CMAKE_SYSTEM_PROCESSOR} MATCHES "ia64")
     LIST(APPEND VF_COMPILER_DEFINITION _M_IA64)
 ENDIF()
 
+if(${USE_METIS} AND NOT METIS_INCLUDEDIR)
+    add_subdirectory(${VF_THIRD_DIR}/metis/metis-5.1.1)
+endif()
+
 
 add_subdirectory(${VF_THIRD_DIR}/MuParser)
 

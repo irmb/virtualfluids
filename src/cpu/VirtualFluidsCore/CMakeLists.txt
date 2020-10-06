@@ -1,7 +1,9 @@
 
-IF(${USE_METIS})
+IF(${USE_METIS} AND METIS_RELEASE_LIBRARY AND METIS_DEBUG_LIBRARY)
    SET(LINK_LIBRARY optimized ${METIS_RELEASE_LIBRARY} debug ${METIS_DEBUG_LIBRARY})
    SET(CAB_ADDITIONAL_LINK_LIBRARIES ${CAB_ADDITIONAL_LINK_LIBRARIES} ${LINK_LIBRARY})
+ELSE()
+   SET(CAB_ADDITIONAL_LINK_LIBRARIES ${CAB_ADDITIONAL_LINK_LIBRARIES} metis)
 ENDIF()
 
 IF(${USE_VTK})
@@ -37,8 +39,9 @@ target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Co
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Utilities)
 
 
-target_include_directories(${library_name} PUBLIC ${METIS_INCLUDEDIR})
-
+IF(${USE_METIS} AND METIS_INCLUDEDIR)
+   target_include_directories(${library_name} PUBLIC ${METIS_INCLUDEDIR})
+ENDIF()
 
 IF(${USE_BOOST})
    target_include_directories(${library_name} PRIVATE ${Boost_INCLUDE_DIR})
