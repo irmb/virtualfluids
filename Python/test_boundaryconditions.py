@@ -1,4 +1,4 @@
-from virtualfluids.boundaryconditions import *
+from pyfluids.boundaryconditions import *
 
 no_slip_algo = NoSlipBCAlgorithm()
 no_slip_bc_adapter = NoSlipBCAdapter()

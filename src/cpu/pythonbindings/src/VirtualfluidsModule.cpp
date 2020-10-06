@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
 #include "submodules/boundaryconditions.cpp"
-#include "submodules/builder.cpp"
+#include "submodules/simulationconfig.cpp"
 #include "submodules/geometry.cpp"
 #include "submodules/kernel.cpp"
 #include "submodules/simulationparameters.cpp"
@@ -8,10 +8,10 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(virtualfluids, m)
+PYBIND11_MODULE(pyfluids, m)
 {
     makeBoundaryConditionsModule(m);
-    makeBuilderModule(m);
+    makeSimulationModule(m);
     makeGeometryModule(m);
     makeKernelModule(m);
     makeParametersModule(m);

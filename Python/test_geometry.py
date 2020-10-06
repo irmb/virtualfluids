@@ -1,4 +1,4 @@
-from virtualfluids.geometry import *
+from pyfluids.geometry import *
 
 point1 = GbPoint3D(1, 2, 3)
 point2 = GbPoint3D(4, 5, 6)

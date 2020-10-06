@@ -1,4 +1,4 @@
-from virtualfluids.kernel import LBMKernel, KernelType
+from pyfluids.kernel import LBMKernel, KernelType
 
 kernel = LBMKernel(KernelType.BGK)
 kernel.use_forcing = True

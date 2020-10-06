@@ -1,12 +1,12 @@
+from pyfluids import Simulation
+from pyfluids.boundaryconditions import NoSlipBCAdapter, NoSlipBCAlgorithm, VelocityBCAdapter, VelocityBCAlgorithm
+from pyfluids.geometry import GbCuboid3D
+from pyfluids.kernel import LBMKernel, KernelType
+from pyfluids.parameters import GridParameters, PhysicalParameters, SimulationParameters
 from pymuparser import Parser
-from virtualfluids.boundaryconditions import NoSlipBCAdapter, NoSlipBCAlgorithm, VelocityBCAdapter, VelocityBCAlgorithm
-from virtualfluids.builder import VirtualFluidsBuilder
-from virtualfluids.geometry import GbCuboid3D
-from virtualfluids.kernel import CumulantK17LBMKernelConfig
-from virtualfluids.parameters import GridParameters, PhysicalParameters, SimulationParameters
 
-builder = VirtualFluidsBuilder(communicator_type="mpi")
-kernel = CumulantK17LBMKernelConfig()
+builder = Simulation()
+kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
 
 sim_parameters = SimulationParameters()
 sim_parameters.number_of_threads = 4

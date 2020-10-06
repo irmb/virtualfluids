@@ -1,12 +1,8 @@
-//
-// Created by Sven Marcus on 20.08.20.
-//
-
-#include "VirtualFluidsBuilder/KernelFactory.h"
 #include <LBM/LBMKernel.h>
 #include <LBM/CompressibleCumulant4thOrderViscosityLBMKernel.h>
 #include <LBM/BGKLBMKernel.h>
-#include <VirtualFluidsBuilder/D3Q27LBMSystem.h>
+#include <simulationconfig/D3Q27LBMSystem.h>
+#include "simulationconfig/KernelFactory.h"
 
 std::shared_ptr<LBMKernel> KernelFactory::makeKernel(KernelType kernelType)
 {

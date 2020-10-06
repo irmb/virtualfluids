@@ -18,7 +18,7 @@
 #include "WriterConfig.h"
 
 
-class VirtualFluidsBuilder {
+class Simulation {
 private:
     KernelFactory kernelFactory = KernelFactory();
 
@@ -39,9 +39,9 @@ private:
     WriterConfig &writerConfig = *(new WriterConfig());
 
 public:
-    explicit VirtualFluidsBuilder();
+    explicit Simulation();
 
-    ~VirtualFluidsBuilder();
+    ~Simulation();
 
     WriterConfig &getWriterConfig();
 

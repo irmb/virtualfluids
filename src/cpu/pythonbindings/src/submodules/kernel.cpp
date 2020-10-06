@@ -1,7 +1,7 @@
 #include <memory>
 #include <pybind11/pybind11.h>
-#include <VirtualFluidsBuilder/KernelFactory.h>
-#include <VirtualFluidsBuilder/KernelConfigStructs.h>
+#include <simulationconfig/KernelFactory.h>
+#include <simulationconfig/KernelConfigStructs.h>
 
 
 namespace py = pybind11;
