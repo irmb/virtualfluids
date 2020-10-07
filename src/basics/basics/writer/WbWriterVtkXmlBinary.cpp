@@ -38,7 +38,7 @@
 using namespace std;
 
 /*===============================================================================*/
-string WbWriterVtkXmlBinary::pvdEndTag ="   </Collection>\n</VTKFile>";
+const std::string WbWriterVtkXmlBinary::pvdEndTag ="   </Collection>\n</VTKFile>";
 /*===============================================================================*/
 string WbWriterVtkXmlBinary::writeCollection(const string& filename, const vector<string>& filenames, const double& timeStep, const bool& sepGroups)
 {

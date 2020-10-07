@@ -45,6 +45,10 @@ public:
       static WbWriterVtkXmlBinary instance;
       return &instance;
    }
+
+    WbWriterVtkXmlBinary( const WbWriterVtkXmlBinary& ) = delete;
+    const WbWriterVtkXmlBinary& operator=( const WbWriterVtkXmlBinary& ) = delete;
+
 private:
    WbWriterVtkXmlBinary() : WbWriter() 
    {
@@ -53,10 +57,7 @@ private:
       if(sizeof(float)        !=4) throw UbException(UB_EXARGS,"machine error float type mismatch");
    }
 
-   WbWriterVtkXmlBinary( const WbWriterVtkXmlBinary& );                  //no copy allowed 
-   const WbWriterVtkXmlBinary& operator=( const WbWriterVtkXmlBinary& ); //no copy allowed
-
-   static std::string  pvdEndTag;
+   static const std::string  pvdEndTag;
 public:
    std::string getFileExtension() override { return ".bin.vtu";   }
 

@@ -600,11 +600,12 @@ UbTupleDouble3 Grid3D::getBlockWorldCoordinates(int blockX1Index, int blockX2Ind
    double x2 = (double)blockX2Index*c1oShiftedLevel;
    double x3 = (double)blockX3Index*c1oShiftedLevel;
 
-   if (!trafo) return UbTupleDouble3(x1, x2, x3);
+   if (!trafo)
+       return { x1, x2, x3 };
 
-   return UbTupleDouble3(trafo->transformBackwardToX1Coordinate(x1, x2, x3)
+   return {trafo->transformBackwardToX1Coordinate(x1, x2, x3)
       , trafo->transformBackwardToX2Coordinate(x1, x2, x3)
-      , trafo->transformBackwardToX3Coordinate(x1, x2, x3));
+      , trafo->transformBackwardToX3Coordinate(x1, x2, x3) };
 }
 //////////////////////////////////////////////////////////////////////////
 //double Grid3D::getDeltaT(SPtr<Block3D> block) const 

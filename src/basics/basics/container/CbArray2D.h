@@ -163,10 +163,7 @@ public:
          this->data[i] = src.data[i];
    }
    /*=======================================================================*/
-   virtual ~CbArray2D()
-   {
-      //vector wird automatisch zerstoert
-   }
+   virtual ~CbArray2D() = default;
    /*=======================================================================*/
    CbArray2D& operator= (const CbArray2D& rhs)
    {

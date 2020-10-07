@@ -47,7 +47,7 @@ class ILBMKernel;
 class Block3D
 {
 public:
-   Block3D();
+   Block3D() = default;
    Block3D(int x1, int x2, int x3, int level);
    virtual ~Block3D();
    bool operator==(const Block3D& src) const;

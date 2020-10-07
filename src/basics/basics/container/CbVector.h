@@ -63,12 +63,13 @@ template< typename T >
 class CbVector
 {
 public:
-   typedef T           value_type;
+   using value_type = T;
    using pointer = value_type *;
    using size_type = std::size_t;
 
    friend class CbVectorAllocator<value_type>; //um auf ptrData und dataSize zugreifen zu koennen!
 
+    CbVector<value_type>(const CbVector<value_type>& src) = delete;
 public:
    /*==========================================================*/
    CbVector( CbVectorAllocator<value_type>* const& allocator = new CbVectorAllocatorStd<value_type> )
@@ -99,7 +100,8 @@ public:
    /*=======================================================================*/
    CbVector& operator= (const CbVector& src)
    {
-      if(this == &src) return *this;
+      if(this == &src)
+          return *this;
 
       //gespeicherte Datenelemente loeschen
       //Laenge anpassen
@@ -207,7 +209,6 @@ private:
    value_type* ptrData;
    size_type   dataSize{0};
    CbVectorAllocator<value_type>* allocator;
-   CbVector<value_type>(const CbVector<value_type>& src);
    //CbVector<value_type>& operator=(const CbVector<value_type>& src);
 };
 
