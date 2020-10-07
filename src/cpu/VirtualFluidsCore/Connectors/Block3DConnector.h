@@ -46,7 +46,7 @@
 class Block3DConnector
 {
 public:
-   Block3DConnector()  {}
+   Block3DConnector() = default;
    Block3DConnector(const int& sendDir) : sendDir(sendDir) {}
    virtual ~Block3DConnector() = default;
    //!Iniitializes connector

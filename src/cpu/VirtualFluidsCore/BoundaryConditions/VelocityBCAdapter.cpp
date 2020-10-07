@@ -312,7 +312,7 @@ UbTupleDouble3 VelocityBCAdapter::getVelocity(const double& x1, const double& x2
    if(tmpVx2Function) vx2 = tmpVx2Function->Eval();
    if(tmpVx3Function) vx3 = tmpVx3Function->Eval();
     
-   return UbTupleDouble3(vx1,vx2,vx3);
+   return { vx1,vx2,vx3 };
 }
 /*==========================================================*/
 string VelocityBCAdapter::toString()

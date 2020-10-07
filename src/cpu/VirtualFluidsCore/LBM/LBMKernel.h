@@ -49,7 +49,7 @@ class Block3D;
 class LBMKernel : public ILBMKernel, public enableSharedFromThis<LBMKernel>
 {
 public:
-    typedef std::numeric_limits<LBMReal> LBMRealLim;
+    using LBMRealLim = std::numeric_limits<LBMReal>;
 public:
     LBMKernel();
 

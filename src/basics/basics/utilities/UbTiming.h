@@ -176,8 +176,8 @@ protected:
 
 #ifdef UBSYSTEM_APPLE   //Apple hack
    #include <mach/mach_time.h>  
-   #include <time.h>  
-   #include <stdio.h> 
+   #include <ctime>
+   #include <cstdio>
    inline void mach_absolute_difference(const uint64_t& end, const uint64_t& start, struct timespec *tp) 
    {  
          uint64_t difference = end - start;  
@@ -230,8 +230,7 @@ public:
    }
    /*==========================================================*/
    UbTimer(const std::string& name, const bool& storeLapTimes = false) 
-      :  name(name), isMeasuring(false), storeLapTimes(storeLapTimes)
-       , startTime(0.0), totalTime(0.0), lapTime(0.0)
+      :  name(name), storeLapTimes(storeLapTimes)
    {
 
    }
@@ -380,9 +379,9 @@ protected:
 
 class UbProgressTimer : public UbTimer
 {
-private:
-	UbProgressTimer(const UbProgressTimer& rhs);
 public:
+    UbProgressTimer(const UbProgressTimer& rhs) = delete;
+
   explicit UbProgressTimer( std::ostream & os = std::cout )
      : UbTimer(),os(os) 
   {

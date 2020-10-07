@@ -66,11 +66,7 @@ public:
 
    enum WORLD_MATERIAL { WATER  = 0, SEAWWATER  = 1, AIR_20C  = 2, OIL  = 3  }; 
 
-   LBMUnitConverter()  
-                         
-   {
-
-   }
+   LBMUnitConverter() = default;
 
    LBMUnitConverter(   const double& refLengthWorld, const double& csWorld, const double& rhoWorld
       , const double& refLengthLb   , const double& csLb = 1.0/std::sqrt(3.0)  , const double& rhoLb = 1.0   )

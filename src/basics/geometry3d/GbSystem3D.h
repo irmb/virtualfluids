@@ -192,10 +192,7 @@ namespace GbSystem3D
          this->points.resize(0);//, NULL);
          this->add(points);
       };
-      ~OldPointSet3()
-      {
-         //			delete points;
-      };
+      ~OldPointSet3() = default;
       void add(GbPoint3D point)
          {
             if(this->sizet>0 && point.equals(&(this->points)[this->sizet-1])) return;

@@ -58,7 +58,7 @@ public:
    static const char NonReflectingOutflowBCAlgorithm = 8;
 
 public:
-   BCAlgorithm();
+   BCAlgorithm() = default;
    virtual ~BCAlgorithm() = default;
    
    virtual void addDistributions(SPtr<DistributionArray3D> distributions) = 0;

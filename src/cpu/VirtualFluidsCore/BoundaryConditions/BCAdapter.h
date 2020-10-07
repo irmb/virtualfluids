@@ -45,15 +45,11 @@ class D3Q27Interactor;
 class BCAdapter
 {
 public:
-   BCAdapter() 
-       
-   {
-   }
+   BCAdapter() = default;
+
    //! \param secondaryBcOption additional option of boundary conditions
    BCAdapter(const short& secondaryBcOption) 
-      :  secondaryBcOption(secondaryBcOption) 
-       , type(0)
-       , algorithmType(-1)
+      :  secondaryBcOption(secondaryBcOption)
    {
    }
    virtual ~BCAdapter() = default;
