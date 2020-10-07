@@ -243,7 +243,7 @@ namespace UbSystem
       return static_cast<std::string>( str );
    }
    /*==========================================================*/
-   inline bool isDirectory(const std::string& dir, const unsigned& attemptions = 3)
+   inline bool isDirectory(const std::string& dir, const unsigned&  /*attemptions*/ = 3)
    {
       if( dir.empty() ) 
          UB_THROW( UbException(UB_EXARGS,"dir is empty") );

@@ -59,12 +59,12 @@ public:
    using size_type = size_t;
 public:
    inline std::size_t getIndex(  const size_type& x1 , const size_type& x2 , const size_type& x3
-                               , const size_type& nx1, const size_type& nx2, const size_type& nx3 ) const
+                               , const size_type& nx1, const size_type& nx2, const size_type&  /*nx3*/ ) const
    {
       return  nx1 * ( nx2 * x3 + x2) + x1 ;
    }
-   inline std::size_t getStartIndexOfSortedArray(  const size_type& x1 , const size_type& x2 , const size_type& x3
-                                                 , const size_type& nx1, const size_type& nx2, const size_type& nx3 ) const
+   inline std::size_t getStartIndexOfSortedArray(  const size_type&  /*x1*/ , const size_type& x2 , const size_type& x3
+                                                 , const size_type& nx1, const size_type& nx2, const size_type&  /*nx3*/ ) const
    {
       return  nx1 * ( nx2 * x3 + x2);
    }
@@ -83,12 +83,12 @@ public:
    using size_type = size_t;
 public:
    inline std::size_t getIndex(  const size_type& x1 , const size_type& x2 , const size_type& x3
-                               , const size_type& nx1, const size_type& nx2, const size_type& nx3 ) const
+                               , const size_type&  /*nx1*/, const size_type& nx2, const size_type& nx3 ) const
    {
       return  nx3 * ( nx2 * x1 + x2) + x3 ;
    }
-   inline std::size_t getStartIndexOfSortedArray(  const size_type& x1 , const size_type& x2 , const size_type& x3
-                                                 , const size_type& nx1, const size_type& nx2, const size_type& nx3 ) const
+   inline std::size_t getStartIndexOfSortedArray(  const size_type& x1 , const size_type& x2 , const size_type&  /*x3*/
+                                                 , const size_type&  /*nx1*/, const size_type& nx2, const size_type& nx3 ) const
    {
       return  nx3 * ( nx2 * x1 + x2);
    }
@@ -107,12 +107,12 @@ public:
    using size_type = size_t;
 public:
    inline std::size_t getIndex(  const size_type& x1 , const size_type& x2 , const size_type& x3
-                               , const size_type& nx1, const size_type& nx2, const size_type& nx3 ) const
+                               , const size_type& nx1, const size_type&  /*nx2*/, const size_type& nx3 ) const
    {
       return  nx3* ( nx1 * x2 + x1) + x3 ;
    }
-   inline std::size_t getStartIndexOfSortedArray(  const size_type& x1 , const size_type& x2 , const size_type& x3
-                                                 , const size_type& nx1, const size_type& nx2, const size_type& nx3 ) const
+   inline std::size_t getStartIndexOfSortedArray(  const size_type& x1 , const size_type& x2 , const size_type&  /*x3*/
+                                                 , const size_type& nx1, const size_type&  /*nx2*/, const size_type& nx3 ) const
    {
       return  nx3* ( nx1 * x2 + x1);
    }
@@ -199,10 +199,7 @@ public:
          this->data[i] = src.data[i];
    }
    /*=======================================================================*/
-   virtual ~CbArray3D()
-   {
-      //vector wird automatisch zerstoert
-   }
+   virtual ~CbArray3D() = default;
    /*=======================================================================*/
    CbArray3D& operator= (const CbArray3D& rhs)
    {

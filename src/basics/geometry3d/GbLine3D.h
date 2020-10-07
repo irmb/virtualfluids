@@ -101,17 +101,17 @@ public:
    double     getDistance(const double& x1,const double& x2,const double& x3);
 
    std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3) override
+   bool isPointInGbObject3D(const double&  /*x1*/, const double&  /*x2*/, const double&  /*x3*/) override
    {
       throw UbException(UB_EXARGS,"not implemented");
    }
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary) override
+   bool isPointInGbObject3D(const double&  /*x1*/, const double&  /*x2*/, const double&  /*x3*/, bool&  /*pointIsOnBoundary*/) override
    {
       throw UbException(UB_EXARGS,"not implemented");
    }
-   bool isCellInsideGbObject3D(const double& x11,const double& x21,const double& x31,const double& x12,const double& x22,const double& x32) override { return false; }
+   bool isCellInsideGbObject3D(const double&  /*x11*/,const double&  /*x21*/,const double&  /*x31*/,const double&  /*x12*/,const double&  /*x22*/,const double&  /*x32*/) override { return false; }
 
-   GbLine3D* createClippedLine3D (GbPoint3D& point1, GbPoint3D& point2) override
+   GbLine3D* createClippedLine3D (GbPoint3D&  /*point1*/, GbPoint3D&  /*point2*/) override
    {
       throw UbException(UB_EXARGS,"not implemented");
    }

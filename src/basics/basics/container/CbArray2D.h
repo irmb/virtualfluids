@@ -55,11 +55,11 @@ class IndexerX2X1
 public:
    typedef int size_type;
 public:
-   inline std::size_t getIndex(const size_type& x1, const size_type& x2, const size_type& nx1, const size_type& nx2) const
+   inline std::size_t getIndex(const size_type& x1, const size_type& x2, const size_type& nx1, const size_type&  /*nx2*/) const
    {
       return nx1* x2 + x1;
    }
-   inline std::size_t getStartIndexOfSortedArray(const size_type& x1, const size_type& x2, const size_type& nx1, const size_type& nx2) const
+   inline std::size_t getStartIndexOfSortedArray(const size_type&  /*x1*/, const size_type& x2, const size_type& nx1, const size_type&  /*nx2*/) const
    {
       return  nx1* x2;
    }
@@ -76,11 +76,11 @@ class IndexerX1X2
 public:
    using size_type = int;
 public:
-   inline std::size_t getIndex(const size_type& x1, const size_type& x2, const size_type& nx1,const size_type& nx2) const
+   inline std::size_t getIndex(const size_type& x1, const size_type& x2, const size_type&  /*nx1*/,const size_type& nx2) const
    {
       return nx2* x1+ x2;
    }
-   inline std::size_t getStartIndexOfSortedArray(const size_type& x1, const size_type& x2, const size_type& nx1, const size_type& nx2) const
+   inline std::size_t getStartIndexOfSortedArray(const size_type& x1, const size_type&  /*x2*/, const size_type&  /*nx1*/, const size_type& nx2) const
    {
       return  nx2* x1;
    }

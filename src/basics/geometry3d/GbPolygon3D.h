@@ -249,17 +249,17 @@ public:
       std::vector<GbTriangle3D*> tmp;
       return tmp;
    }
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3) override
+   bool isPointInGbObject3D(const double&  /*x1*/, const double&  /*x2*/, const double&  /*x3*/) override
    {
       throw UbException(__FILE__, __LINE__, "GbPolygon3D::isPointInObject3D- not implemented");
    }
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary) override
+   bool isPointInGbObject3D(const double&  /*x1*/, const double&  /*x2*/, const double&  /*x3*/, bool&  /*pointIsOnBoundary*/) override
    {
       throw UbException(__FILE__, __LINE__, "GbPolygon3D::isPointInObject3D- not implemented");
    }
-   bool isCellInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override { return false; }
+   bool isCellInsideGbObject3D(const double&  /*x1a*/,const double&  /*x2a*/,const double&  /*x3a*/,const double&  /*x1b*/,const double&  /*x2b*/,const double&  /*x3b*/) override { return false; }
 
-   GbLine3D* createClippedLine3D (GbPoint3D& point1, GbPoint3D &point2) override
+   GbLine3D* createClippedLine3D (GbPoint3D&  /*point1*/, GbPoint3D & /*point2*/) override
    {
       throw UbException(__FILE__, __LINE__, "GbPolygon3D::createClippedLine3D - not implemented");
    }

@@ -326,7 +326,7 @@ bool Interactor3D::isActive()
    return active;
 }
 //////////////////////////////////////////////////////////////////////////
-void Interactor3D::initInteractor(const double& timeStep)
+void Interactor3D::initInteractor(const double&  /*timeStep*/)
 {
    //UBLOG(logINFO, "transBlocks.size = "<<transBlocks.size());
 
@@ -336,7 +336,7 @@ void Interactor3D::initInteractor(const double& timeStep)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Interactor3D::updateInteractor(const double& timeStep)
+void Interactor3D::updateInteractor(const double&  /*timeStep*/)
 {
    UB_THROW( UbException("Interactor3D::updateInteractor - toDo") );
 }

@@ -90,7 +90,7 @@ public:
    bool equals(const GbPoint3D* point) const;
    bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary) override;
    bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3) override;
-   bool isCellInsideGbObject3D(const double& x11,const double& x21,const double& x31,const double& x12,const double& x22,const double& x23) override { return false; }
+   bool isCellInsideGbObject3D(const double&  /*x11*/,const double&  /*x21*/,const double&  /*x31*/,const double&  /*x12*/,const double&  /*x22*/,const double&  /*x23*/) override { return false; }
 
    std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
    GbLine3D* createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2) override;

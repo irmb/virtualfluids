@@ -167,7 +167,7 @@ public:
       return out.str();
    }
 
-   void init(  const double& refLengthWorld, const double& csWorld, const double& rhoWorld, const double& vWorld, 
+   void init(  const double& refLengthWorld, const double&  /*csWorld*/, const double& rhoWorld, const double& vWorld, 
                const double& refLengthLb, const double& rhoLb, const double& vLb  )
    {
       factorLengthLbToW = refLengthWorld / refLengthLb;

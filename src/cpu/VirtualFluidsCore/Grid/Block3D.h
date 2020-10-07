@@ -135,7 +135,7 @@ public:
    std::string toString() ;
 
    static int getMaxGlobalID() { return counter; }
-   static void setMaxGlobalID(int c) { counter = 0; }
+   static void setMaxGlobalID(int  /*c*/) { counter = 0; } // FIXME ???
 
 private:
   int   x1{0};

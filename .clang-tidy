@@ -46,7 +46,8 @@ cppcoreguidelines-special-member-functions,
 
 -cppcoreguidelines-init-variables,
 -cppcoreguidelines-pro-type-member-init,
--cppcoreguidelines-owning-memory
+-cppcoreguidelines-owning-memory,
+-cppcoreguidelines-special-member-functions
 
 '
 HeaderFilterRegex: '\.h$'

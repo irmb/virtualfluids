@@ -103,20 +103,20 @@ public:
 
    //bool equals(GbObject3D *object)
    std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3) override   
+   bool isPointInGbObject3D(const double&  /*x1*/, const double&  /*x2*/, const double&  /*x3*/) override   
    {
       //der einfachheit halber ... 
       return false;
       //throw UbException(__FILE__, __LINE__, "GbTriangle3D::isPointInObject3D- not implemented");
    }
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary) override   
+   bool isPointInGbObject3D(const double&  /*x1*/, const double&  /*x2*/, const double&  /*x3*/, bool& pointIsOnBoundary) override   
    {
       //der einfachheit halber ... 
       pointIsOnBoundary = false;
       return false;
       //throw UbException(__FILE__, __LINE__, "GbTriangle3D::isPointInObject3D- not implemented");
    }
-   bool isCellInsideGbObject3D(const double& x11,const double& x21,const double& x31,const double& x12,const double& x22,const double& x23) override { return false; }
+   bool isCellInsideGbObject3D(const double&  /*x11*/,const double&  /*x21*/,const double&  /*x31*/,const double&  /*x12*/,const double&  /*x22*/,const double&  /*x23*/) override { return false; }
 
 
    // get distance from a point to the triangle

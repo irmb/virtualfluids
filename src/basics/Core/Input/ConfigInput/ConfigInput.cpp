@@ -1,5 +1,5 @@
 #include "ConfigInput.h"
-#include <errno.h>
+#include <cerrno>
 #include <algorithm>
 #include <sstream>
 #include <iostream>

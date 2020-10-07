@@ -59,12 +59,12 @@ public:
    using size_type = int;
 public:
    inline std::size_t getIndex( const size_type& x1 , const size_type& x2 , const size_type& x3 , const size_type& x4
-                            , const size_type& nx1, const size_type& nx2, const size_type& nx3, const size_type& nx4 )  const
+                            , const size_type&  /*nx1*/, const size_type& nx2, const size_type& nx3, const size_type& nx4 )  const
    {
       return nx4*(nx3*(nx2*x1+ x2)+x3)+x4 ;
    }
-   inline std::size_t getStartIndexOfSortedArray(  const size_type& x1 , const size_type& x2 , const size_type& x3 , const size_type& x4
-                                               , const size_type& nx1, const size_type& nx2, const size_type& nx3, const size_type& nx4 )  const
+   inline std::size_t getStartIndexOfSortedArray(  const size_type& x1 , const size_type& x2 , const size_type& x3 , const size_type&  /*x4*/
+                                               , const size_type&  /*nx1*/, const size_type& nx2, const size_type& nx3, const size_type& nx4 )  const
    {
       return  nx4*(nx3*(nx2*x1+ x2)+x3);
    }
@@ -85,12 +85,12 @@ public:
    using size_type = size_t;
 public:
    inline std::size_t getIndex( const size_type& x1 , const size_type& x2 , const size_type& x3 , const size_type& x4
-      , const size_type& nx1, const size_type& nx2, const size_type& nx3, const size_type& nx4 )  const
+      , const size_type& nx1, const size_type& nx2, const size_type& nx3, const size_type&  /*nx4*/ )  const
    {
       return nx1*(nx2*(nx3*x4+ x3)+x2)+x1;
    }
-   inline std::size_t getStartIndexOfSortedArray(  const size_type& x1 , const size_type& x2 , const size_type& x3 , const size_type& x4
-      , const size_type& nx1, const size_type& nx2, const size_type& nx3, const size_type& nx4 )  const
+   inline std::size_t getStartIndexOfSortedArray(  const size_type&  /*x1*/ , const size_type& x2 , const size_type& x3 , const size_type& x4
+      , const size_type& nx1, const size_type& nx2, const size_type& nx3, const size_type&  /*nx4*/ )  const
    {
       return  nx1*(nx2*(nx3*x4+ x3)+x2);
    }
@@ -175,10 +175,7 @@ public:
          this->data[i] = src.data[i];
    }
    /*=======================================================================*/
-   virtual ~CbArray4D()
-   {
-      //vector wird automatisch zerstoert
-   }
+   virtual ~CbArray4D()= default;
    /*=======================================================================*/
    CbArray4D& operator= (const CbArray4D& rhs)
    {
