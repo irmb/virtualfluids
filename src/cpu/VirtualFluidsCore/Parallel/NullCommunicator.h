@@ -46,13 +46,13 @@ private:
    NullCommunicator();
    NullCommunicator( const NullCommunicator& ){}
 public:
-   ~NullCommunicator();
+   ~NullCommunicator() override;
    static SPtr<Communicator> getInstance();
-   int getProcessID();
-   int getNumberOfProcesses();
-   bool isRoot();
-   int getRoot();
-   int getProcessRoot();
+   int getProcessID() override;
+   int getNumberOfProcesses() override;
+   bool isRoot() override;
+   int getRoot() override;
+   int getProcessRoot() override;
 protected:
 private:
 };

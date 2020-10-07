@@ -32,6 +32,8 @@
 //=======================================================================================
 
 #include "SetKernelBlockVisitor.h"
+
+#include <utility>
 #include "Grid3DSystem.h"
 #include "LBMSystem.h"
 #include "DataSet3D.h"
@@ -41,7 +43,7 @@
 #include "LBMKernel.h"
 
 //////////////////////////////////////////////////////////////////////////
-SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, SetKernelBlockVisitor::Action action) : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nue(nue), action(action), dataSetFlag(true)
+SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, SetKernelBlockVisitor::Action action) : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(std::move(kernel)), nue(nue), action(action), dataSetFlag(true)
 {
 
 }

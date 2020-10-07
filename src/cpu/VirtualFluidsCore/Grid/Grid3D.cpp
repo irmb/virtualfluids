@@ -49,51 +49,21 @@
 
 using namespace std;
 
-Grid3D::Grid3D() :
-   rank(0),
-   bundle(0),
-   orgDeltaX(1.0),
-   periodicX1(false),
-   periodicX2(false),
-   periodicX3(false),
-   timeStep(0.0),
-   blockNx1(0),
-   blockNx2(0),
-   blockNx3(0),
-   nx1(0),
-   nx2(0),
-   nx3(0)
+Grid3D::Grid3D() 
+   
 {
    levelSet.resize(Grid3DSystem::MAXLEVEL+1);
 }
 //////////////////////////////////////////////////////////////////////////
-Grid3D::Grid3D(SPtr<Communicator> comm) :
-   rank(0),
-   bundle(0),
-   orgDeltaX(1.0),
-   periodicX1(false),
-   periodicX2(false),
-   periodicX3(false),
-   timeStep(0.0),
-   blockNx1(0),
-   blockNx2(0),
-   blockNx3(0),
-   nx1(0),
-   nx2(0),
-   nx3(0)
+Grid3D::Grid3D(SPtr<Communicator> comm) 
+   
 {
    levelSet.resize(Grid3DSystem::MAXLEVEL+1);
    rank = comm->getProcessID();
 }
 //////////////////////////////////////////////////////////////////////////
 Grid3D::Grid3D(SPtr<Communicator> comm, int blockNx1, int blockNx2, int blockNx3, int gridNx1, int gridNx2, int gridNx3) :
-   rank(0),
-   bundle(0),
-   orgDeltaX(1.0),
-   periodicX1(false),
-   periodicX2(false),
-   periodicX3(false),
-   timeStep(0.0),
+   
    blockNx1(blockNx1),
    blockNx2(blockNx2),
    blockNx3(blockNx2),
@@ -103,7 +73,7 @@ Grid3D::Grid3D(SPtr<Communicator> comm, int blockNx1, int blockNx2, int blockNx3
 {
    levelSet.resize(Grid3DSystem::MAXLEVEL+1);
    rank = comm->getProcessID();
-   trafo = SPtr<CoordinateTransformation3D>(new CoordinateTransformation3D(0.0, 0.0, 0.0, (double)blockNx1, (double)blockNx2, (double)blockNx3));
+   trafo = std::make_shared<CoordinateTransformation3D>(0.0, 0.0, 0.0, (double)blockNx1, (double)blockNx2, (double)blockNx3);
    UbTupleInt3 minInd(0, 0, 0);
    UbTupleInt3 maxInd(gridNx1, gridNx2, gridNx3);
    this->fillExtentWithBlocks(minInd, maxInd);
@@ -334,14 +304,14 @@ bool Grid3D::expandBlock(int ix1, int ix2, int ix3, int level)
    int bottom = ix3<<1;
    int top    = bottom+1;
 
-   SPtr<Block3D> blockBSW = SPtr<Block3D>(new Block3D(west, south, bottom, l));
-   SPtr<Block3D> blockBSE = SPtr<Block3D>(new Block3D(east, south, bottom, l));
-   SPtr<Block3D> blockBNW = SPtr<Block3D>(new Block3D(west, north, bottom, l));
-   SPtr<Block3D> blockBNE = SPtr<Block3D>(new Block3D(east, north, bottom, l));
-   SPtr<Block3D> blockTSW = SPtr<Block3D>(new Block3D(west, south, top, l));
-   SPtr<Block3D> blockTSE = SPtr<Block3D>(new Block3D(east, south, top, l));
-   SPtr<Block3D> blockTNW = SPtr<Block3D>(new Block3D(west, north, top, l));
-   SPtr<Block3D> blockTNE = SPtr<Block3D>(new Block3D(east, north, top, l));
+   auto blockBSW = std::make_shared<Block3D>(west, south, bottom, l);
+   auto blockBSE = std::make_shared<Block3D>(east, south, bottom, l);
+   auto blockBNW = std::make_shared<Block3D>(west, north, bottom, l);
+   auto blockBNE = std::make_shared<Block3D>(east, north, bottom, l);
+   auto blockTSW = std::make_shared<Block3D>(west, south, top, l);
+   auto blockTSE = std::make_shared<Block3D>(east, south, top, l);
+   auto blockTNW = std::make_shared<Block3D>(west, north, top, l);
+   auto blockTNE = std::make_shared<Block3D>(east, north, top, l);
 
    if (!this->deleteBlock(ix1, ix2, ix3, level))
       throw UbException(UB_EXARGS, "could not delete block");
@@ -409,7 +379,7 @@ SPtr<Block3D> Grid3D::collapseBlock(int fix1, int fix2, int fix3, int flevel, in
    /*TNE*/fineBlocks[6] = this->getBlock(fx1[1], fx2[1], fx3[1], flevel);
    /*TNW*/fineBlocks[7] = this->getBlock(fx1[0], fx2[1], fx3[1], flevel);
 
-   SPtr<Block3D> cblock = SPtr<Block3D>(new Block3D(cix1, cix2, cix3, clevel));
+   auto cblock = std::make_shared<Block3D>(cix1, cix2, cix3, clevel);
 
    for (int i=0; i<2; i++)
       for (int k=0; k<2; k++)
@@ -630,11 +600,12 @@ UbTupleDouble3 Grid3D::getBlockWorldCoordinates(int blockX1Index, int blockX2Ind
    double x2 = (double)blockX2Index*c1oShiftedLevel;
    double x3 = (double)blockX3Index*c1oShiftedLevel;
 
-   if (!trafo) return UbTupleDouble3(x1, x2, x3);
+   if (!trafo)
+       return { x1, x2, x3 };
 
-   return UbTupleDouble3(trafo->transformBackwardToX1Coordinate(x1, x2, x3)
+   return {trafo->transformBackwardToX1Coordinate(x1, x2, x3)
       , trafo->transformBackwardToX2Coordinate(x1, x2, x3)
-      , trafo->transformBackwardToX3Coordinate(x1, x2, x3));
+      , trafo->transformBackwardToX3Coordinate(x1, x2, x3) };
 }
 //////////////////////////////////////////////////////////////////////////
 //double Grid3D::getDeltaT(SPtr<Block3D> block) const 

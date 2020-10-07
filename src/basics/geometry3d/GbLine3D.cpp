@@ -139,7 +139,7 @@ string GbLine3D::toString()
    return(ss.str());
 }
 /*=======================================================*/
-GbPoint3D* GbLine3D::calculateIntersectionPoint3D(GbLine3D* line)
+GbPoint3D* GbLine3D::calculateIntersectionPoint3D(GbLine3D*  /*line*/)
 {
    throw UbException(UB_EXARGS," not implemented");
    //return(GbSystem::calculateIntersectionPoint3D(*this->p1, *this->p2, *line->p1, *line->p2));

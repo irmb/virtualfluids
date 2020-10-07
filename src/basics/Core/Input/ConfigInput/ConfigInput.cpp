@@ -1,5 +1,5 @@
 #include "ConfigInput.h"
-#include <errno.h>
+#include <cerrno>
 #include <algorithm>
 #include <sstream>
 #include <iostream>
@@ -37,9 +37,7 @@ namespace input
     }
 
     ConfigInput::~ConfigInput()
-    {
-
-    }
+    = default;
 
     bool ConfigInput::hasValue(const std::string &key) const
     {
@@ -67,7 +65,7 @@ namespace input
 
     void ConfigInput::makeLower(std::string &value) const
     {
-        for (unsigned i = 0; i < value.size(); i++)
+        for (size_t i = 0; i < value.size(); i++)
             value[i] = tolower(value[i]);
     }
 

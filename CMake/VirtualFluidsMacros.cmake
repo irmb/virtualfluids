@@ -101,6 +101,12 @@ endfunction()
 #################################################################################
 function(vf_add_library)
 
+    # enable clang tidy for this target
+    if(BUILD_VF_CLANG_TIDY)
+        find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
+        set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
+    endif()
+
     set( options )
     set( oneValueArgs )
     set( multiValueArgs NAME BUILDTYPE DEPENDS FILES FOLDER EXCLUDE)
@@ -169,6 +175,7 @@ function(vf_add_library)
 
     status("... configuring target: ${library_name} (type=${ARG_BUILDTYPE}) done")
 
+    unset(CMAKE_CXX_CLANG_TIDY)
 endfunction()
 
 

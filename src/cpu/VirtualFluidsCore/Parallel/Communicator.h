@@ -43,7 +43,7 @@
 class Communicator
 {
 public:
-   virtual ~Communicator(){}
+   virtual ~Communicator()= default;
    static SPtr<Communicator> getInstance();
    virtual int getProcessID() = 0;
    virtual int getNumberOfProcesses() = 0;
@@ -51,8 +51,8 @@ public:
    virtual int getRoot() = 0;
    virtual int getProcessRoot() = 0;
 protected:
-   Communicator(){}
-   Communicator( const Communicator& ){}
+   Communicator()= default;
+   Communicator( const Communicator& )= default;
    static SPtr<Communicator> instance;
 };
 

@@ -37,7 +37,7 @@
 
 using namespace std;
 
-int main(int argc, char* argv[])
+int main(int  /*argc*/, char*  /*argv*/[])
 {
    try
    {
@@ -110,13 +110,13 @@ int main(int argc, char* argv[])
       grid->accept(genBlocks);
 
       // Write block grid to VTK-file
-      SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), path, WbWriterVtkXmlBinary::getInstance(), comm));
+      auto ppblocks = std::make_shared<WriteBlocksCoProcessor>(grid, SPtr<UbScheduler>(new UbScheduler(1)), path, WbWriterVtkXmlBinary::getInstance(), comm);
       ppblocks->process(0);
       ppblocks.reset();
 
       // Create LBM kernel
 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel());
+      auto kernel = std::make_shared<CumulantK17LBMKernel>();
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new LBMKernelETD3Q27BGK());
 
@@ -125,16 +125,16 @@ int main(int argc, char* argv[])
       // Create boundary conditions (BC)
       //////////////////////////////////////////////////////////////////////////     
       // Create no-slip BC
-      SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+      auto noSlipBCAdapter = std::make_shared<NoSlipBCAdapter>();
+      noSlipBCAdapter->setBcAlgorithm(std::make_shared<NoSlipBCAlgorithm>());
       
       // Velocity BC
       mu::Parser fct;
       fct.SetExpr("u");
       fct.DefineConst("u", u);
       // Set the same velocity in x and y-direction
-      SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, true, false, fct, 0, BCFunction::INFCONST));
-      velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+      auto velBCAdapter = std::make_shared<VelocityBCAdapter>(true, true, false, fct, 0, BCFunction::INFCONST);
+      velBCAdapter->setBcAlgorithm(std::make_shared<VelocityBCAlgorithm>());
 
       // Add velocity boundary condition to visitor. No-slip boundary   
       BoundaryConditionsBlockVisitor bcVisitor;
@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
 
       // Create boundary conditions processor
       SPtr<BCProcessor> bcProc;
-      bcProc = SPtr<BCProcessor>(new BCProcessor());
+      bcProc = std::make_shared<BCProcessor>();
       kernel->setBCProcessor(bcProc);
 
       // Create boundary conditions geometry

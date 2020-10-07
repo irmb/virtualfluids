@@ -66,13 +66,7 @@ public:
 
    enum WORLD_MATERIAL { WATER  = 0, SEAWWATER  = 1, AIR_20C  = 2, OIL  = 3  }; 
 
-   LBMUnitConverter() :  factorLengthLbToW(1.0),
-                         factorTimeLbToW(1.0),
-                         factorMassLbToW(1.0), 
-                         refRhoLb(1.0)
-   {
-
-   }
+   LBMUnitConverter() = default;
 
    LBMUnitConverter(   const double& refLengthWorld, const double& csWorld, const double& rhoWorld
       , const double& refLengthLb   , const double& csLb = 1.0/std::sqrt(3.0)  , const double& rhoLb = 1.0   )
@@ -97,7 +91,7 @@ public:
 
    }
 
-   virtual ~LBMUnitConverter() {}
+   virtual ~LBMUnitConverter() = default;
 
    double  getRefRhoLb()             { return refRhoLb; }
 
@@ -169,7 +163,7 @@ public:
       return out.str();
    }
 
-   void init(  const double& refLengthWorld, const double& csWorld, const double& rhoWorld, const double& vWorld, 
+   void init(  const double& refLengthWorld, const double&  /*csWorld*/, const double& rhoWorld, const double& vWorld, 
                const double& refLengthLb, const double& rhoLb, const double& vLb  )
    {
       factorLengthLbToW = refLengthWorld / refLengthLb;
@@ -180,10 +174,10 @@ public:
    }
 
    protected:
-   double factorLengthLbToW;
-   double factorTimeLbToW;
-   double factorMassLbToW;
-   double refRhoLb;
+   double factorLengthLbToW{1.0};
+   double factorTimeLbToW{1.0};
+   double factorMassLbToW{1.0};
+   double refRhoLb{1.0};
    double factorTimeWithoutDx;
 };
 

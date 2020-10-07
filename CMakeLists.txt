@@ -36,7 +36,9 @@ set (VF_ROOT_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
 #################################################################################
 option(BUILD_VF_CPU "Build VirtualFluids cpu variant" OFF)
 option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
+
 option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
+option(BUILD_VF_CLANG_TIDY "Add the clang tidy checks to the targets" OFF)
 
 option(BUILD_SHARED_LIBS "" ON)
 

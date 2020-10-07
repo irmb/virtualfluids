@@ -77,17 +77,16 @@ protected:
      Usually this constructor is used in extended classes.
    */
    UbObservable()
-   {
-   }
+   = default;
    
-   UbObservable(const UbObservable& src)
+   UbObservable(const UbObservable&  /*src*/)
    {
       //no copy of observers !!!
    }
    
    //falls irgendein schlaumeier den =operator von UbObservable aufrufen sollte,
    //dann macht diesr auch keine kopie! (Allg: zuweisungsoperatoren werden nie vererbt
-   UbObservable& operator=(const UbObservable& src)
+   UbObservable& operator=(const UbObservable&  /*src*/)
    {
       return *this;
    }

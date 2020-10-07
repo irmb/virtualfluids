@@ -47,9 +47,7 @@
 #include "BCArray3D.h"
 
 WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                                                                  const std::string& path, WbWriter* const writer, 
@@ -151,11 +149,11 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
    //This data is written:
    datanames.resize(0);
-   datanames.push_back("DRho");
-   datanames.push_back("Press");
-   datanames.push_back("Vx");
-   datanames.push_back("Vy");
-   datanames.push_back("Vz");
+   datanames.emplace_back("DRho");
+   datanames.emplace_back("Press");
+   datanames.emplace_back("Vx");
+   datanames.emplace_back("Vy");
+   datanames.emplace_back("Vz");
    
    data.resize(datanames.size());
 
@@ -204,9 +202,9 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                int index = 0;
                nodeNumbers(ix1,ix2,ix3) = nr++;
                Vector3D worldCoordinates = grid->getNodeCoordinates(block, ix1, ix2, ix3);
-               nodes.push_back( UbTupleFloat3(float(worldCoordinates[0]),
+               nodes.emplace_back(float(worldCoordinates[0]),
                                               float(worldCoordinates[1]),
-                                              float(worldCoordinates[2]) ));
+                                              float(worldCoordinates[2]) );
 
                distributions->getDistribution(f, ix1, ix2, ix3);
                calcMacros(f,drho,vx1,vx2,vx3);

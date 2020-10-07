@@ -46,9 +46,9 @@
 class Block3DConnector
 {
 public:
-   Block3DConnector() : sendDir(-1) {}
+   Block3DConnector() = default;
    Block3DConnector(const int& sendDir) : sendDir(sendDir) {}
-   virtual ~Block3DConnector() {}
+   virtual ~Block3DConnector() = default;
    //!Iniitializes connector
    virtual void init()=0;
    //!Synchronizes the send-buffer length
@@ -76,7 +76,7 @@ public:
    virtual int getSendDir() const { return sendDir; } 
 
 protected:
-   int  sendDir;
+   int  sendDir{-1};
 };
 
 #endif //BLOCK3DCONNECTOR_H

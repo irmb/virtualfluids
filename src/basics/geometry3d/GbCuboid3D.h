@@ -45,7 +45,7 @@ class GbObject3DCreator;
 
 #include <PointerDefinitions.h>
 class GbCuboid3D;
-typedef SPtr<GbCuboid3D> GbCuboid3DPtr;
+using GbCuboid3DPtr = SPtr<GbCuboid3D>;
 
 //! \brief This Class provides basic 3D box objects.
 class GbCuboid3D : public GbObject3D, public UbObserver
@@ -55,10 +55,10 @@ public:
    GbCuboid3D(const double& minX1,const double& minX2, const double& minX3, const double& maxX1,const double& maxX2, const double& maxX3);
    GbCuboid3D(GbPoint3D *p1, GbPoint3D *p2);
    GbCuboid3D(GbCuboid3D *cuboid);
-   ~GbCuboid3D();   
+   ~GbCuboid3D() override;   
 
-   GbCuboid3D* clone()    { return new GbCuboid3D(this); }
-   void finalize();
+   GbCuboid3D* clone() override    { return new GbCuboid3D(this); }
+   void finalize() override;
 
    GbPoint3D* getPoint1() { return this->p1; }
    GbPoint3D* getPoint2() { return this->p2; }
@@ -67,42 +67,42 @@ public:
    void setPoint2(GbPoint3D* point2);
    void setPoints(GbPoint3D* point1, GbPoint3D* point2);
 
-   double getX1Centroid();
-   double getX1Minimum();
-   double getX1Maximum();
-   double getX2Centroid();
-   double getX2Minimum();
-   double getX2Maximum();
-   double getX3Centroid();
-   double getX3Minimum();
-   double getX3Maximum();
-   void setCenterCoordinates(const double& x1, const double& x2, const double& x3);
+   double getX1Centroid() override;
+   double getX1Minimum() override;
+   double getX1Maximum() override;
+   double getX2Centroid() override;
+   double getX2Minimum() override;
+   double getX2Maximum() override;
+   double getX3Centroid() override;
+   double getX3Minimum() override;
+   double getX3Maximum() override;
+   void setCenterCoordinates(const double& x1, const double& x2, const double& x3) override;
 
-   void translate(const double& x1, const double& x2, const double& x3);
-   void rotate(const double& rx1, const double& rx2, const double& rx3) {}
-   void scale(const double& sx1, const double& sx2, const double& sx3);
+   void translate(const double& x1, const double& x2, const double& x3) override;
+   void rotate(const double& rx1, const double& rx2, const double& rx3) override {}
+   void scale(const double& sx1, const double& sx2, const double& sx3) override;
 
    double getLengthX1();
    double getLengthX2();
    double getLengthX3();
 
-   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool& pointIsOnBoundary);
-   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p); 
-   bool isCellInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
-   bool isCellCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
-   bool isCellInsideOrCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
-   double getCellVolumeInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
+   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool& pointIsOnBoundary) override;
+   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p) override; 
+   bool isCellInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override;
+   bool isCellCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override;
+   bool isCellInsideOrCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override;
+   double getCellVolumeInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override;
 
    GbPoint3D*  calculateInterSectionPoint3D(GbPoint3D& point1, GbPoint3D &point2);
    //GbCuboid3D* createClippedRectangle3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
-   GbLine3D*   createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2);
+   GbLine3D*   createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2) override;
 
-   std::vector<GbTriangle3D*> getSurfaceTriangleSet();
-   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles);
+   std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
+   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles) override;
 
-   bool hasRaytracing() { return true; }
+   bool hasRaytracing() override { return true; }
    /*|r| must be 1! einheitsvector!!*/
-   double getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3);
+   double getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3) override;
 
 
    double getDistance(GbPoint3D* p)
@@ -128,11 +128,11 @@ public:
       }
    }
 
-   std::string toString();
+   std::string toString() override;
 
    //virtuelle Methoden von UbObserver
-   void objectChanged(UbObservable* changedObject);
-   void objectWillBeDeleted(UbObservable* objectForDeletion);
+   void objectChanged(UbObservable* changedObject) override;
+   void objectWillBeDeleted(UbObservable* objectForDeletion) override;
 
 
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere

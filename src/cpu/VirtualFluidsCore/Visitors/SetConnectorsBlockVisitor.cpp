@@ -42,8 +42,7 @@ SetConnectorsBlockVisitor::SetConnectorsBlockVisitor(SPtr<Communicator> comm, bo
 }
 //////////////////////////////////////////////////////////////////////////
 SetConnectorsBlockVisitor::~SetConnectorsBlockVisitor(void)
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void SetConnectorsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {

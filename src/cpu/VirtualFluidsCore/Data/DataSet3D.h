@@ -40,9 +40,9 @@
 #include "basics/container/CbArray3D.h"
 #include "DistributionArray3D.h"
 
-typedef CbArray4D<LBMReal,IndexerX4X3X2X1> AverageValuesArray3D;
-typedef CbArray4D<LBMReal,IndexerX4X3X2X1> ShearStressValuesArray3D;
-typedef CbArray3D<LBMReal, IndexerX3X2X1> RelaxationFactorArray3D;
+using AverageValuesArray3D = CbArray4D<LBMReal, IndexerX4X3X2X1>;
+using ShearStressValuesArray3D = CbArray4D<LBMReal, IndexerX4X3X2X1>;
+using RelaxationFactorArray3D = CbArray3D<LBMReal, IndexerX3X2X1>;
 
 //! A class provides an interface for data structures in the kernel.
 class DataSet3D
