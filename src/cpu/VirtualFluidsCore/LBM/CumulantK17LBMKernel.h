@@ -52,7 +52,7 @@ class CumulantK17LBMKernel : public LBMKernel
 {
 public:
    CumulantK17LBMKernel();
-   ~CumulantK17LBMKernel(void) override;
+   ~CumulantK17LBMKernel() override;
    void calculate(int step) override;
    SPtr<LBMKernel> clone() override;
 

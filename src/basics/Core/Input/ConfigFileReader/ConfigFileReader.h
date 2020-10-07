@@ -11,7 +11,7 @@ class  ConfigFileReader
 {
 public:
     BASICS_EXPORT static std::shared_ptr<ConfigFileReader> getNewInstance();
-    BASICS_EXPORT virtual ~ConfigFileReader(void);
+    BASICS_EXPORT virtual ~ConfigFileReader();
 
     BASICS_EXPORT std::shared_ptr<ConfigData> readConfigFile(const std::string &filePath) const;
 

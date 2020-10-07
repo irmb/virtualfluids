@@ -16,7 +16,7 @@ namespace input
     {
     public:
         BASICS_EXPORT ConfigInput(std::istream &stream);
-        BASICS_EXPORT ~ConfigInput(void) override;
+        BASICS_EXPORT ~ConfigInput() override;
    
         BASICS_EXPORT bool hasValue(const std::string &key) const override;
         BASICS_EXPORT std::string getValue(const std::string &key) override;
