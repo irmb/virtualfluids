@@ -40,7 +40,7 @@ const int BCArray3D::INTERFACEFC = -4;
 const int BCArray3D::UNDEFINED = -5;
 
 //////////////////////////////////////////////////////////////////////////
-BCArray3D::BCArray3D() {}
+BCArray3D::BCArray3D() = default;
 //////////////////////////////////////////////////////////////////////////
 BCArray3D::BCArray3D(std::size_t nx1, std::size_t nx2, std::size_t nx3)
 {
@@ -52,7 +52,7 @@ BCArray3D::BCArray3D(std::size_t nx1, std::size_t nx2, std::size_t nx3, int val)
    bcindexmatrix.resize(nx1, nx2, nx3, val);
 }
 //////////////////////////////////////////////////////////////////////////
-BCArray3D::~BCArray3D() {}
+BCArray3D::~BCArray3D() = default;
 //////////////////////////////////////////////////////////////////////////
 void BCArray3D::resize(std::size_t nx1, std::size_t nx2, std::size_t nx3)
 {

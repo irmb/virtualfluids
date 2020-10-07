@@ -50,11 +50,11 @@ class UbObserver
 {
 protected:
 
-   UbObserver(){}
+   UbObserver()= default;
 
 public:
 
-   virtual ~UbObserver(){}
+   virtual ~UbObserver()= default;
 
    /*======================================================================*/
    /*  Methods                                                           */

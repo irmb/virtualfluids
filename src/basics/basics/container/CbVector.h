@@ -222,8 +222,8 @@ public:
    using size_type = typename CbVector<value_type>::size_type;
 
 public:
-   CbVectorAllocator() {}
-   virtual ~CbVectorAllocator() {}
+   CbVectorAllocator() = default;
+   virtual ~CbVectorAllocator() = default;
 
    virtual bool alloc(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type()) = 0;
    virtual bool resize(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type()) = 0;

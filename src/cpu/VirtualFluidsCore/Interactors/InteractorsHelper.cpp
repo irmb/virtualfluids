@@ -47,9 +47,7 @@ InteractorsHelper::InteractorsHelper(SPtr<Grid3D> grid) :grid(grid)
 }
 //////////////////////////////////////////////////////////////////////////
 InteractorsHelper::~InteractorsHelper()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void InteractorsHelper::addInteractor( SPtr<Interactor3D> interactor )
 {

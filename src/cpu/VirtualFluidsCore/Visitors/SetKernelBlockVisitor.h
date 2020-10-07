@@ -50,7 +50,7 @@ public:
    enum Action { NewKernel, ChangeKernel, ChangeKernelWithData};
 
    SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, SetKernelBlockVisitor::Action action = SetKernelBlockVisitor::NewKernel);
-   ~SetKernelBlockVisitor() override {}
+   ~SetKernelBlockVisitor() override = default;
 
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 

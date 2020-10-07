@@ -58,7 +58,7 @@ public:
        , algorithmType(-1)
    {
    }
-   virtual ~BCAdapter() {}
+   virtual ~BCAdapter() = default;
 
    //methods
    bool isTimeDependent() { return((this->type & TIMEDEPENDENT) ==  TIMEDEPENDENT); }

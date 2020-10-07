@@ -138,8 +138,7 @@ private:
 //////////////////////////////////////////////////////////////////////////
 template <typename OutputPolicy>
 UbLogger<OutputPolicy>::UbLogger()
-{
-}
+= default;
 /*==========================================================*/
 template <typename OutputPolicy>
 std::ostringstream& UbLogger<OutputPolicy>::get(const LogLevel& level) 

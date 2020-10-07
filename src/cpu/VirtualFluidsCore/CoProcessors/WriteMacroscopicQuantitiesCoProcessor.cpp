@@ -47,9 +47,7 @@
 #include "BCArray3D.h"
 
 WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                                                                  const std::string& path, WbWriter* const writer, 

@@ -40,8 +40,8 @@
 class DistributionArray3D
 {
 public:
-   DistributionArray3D() {};
-   virtual ~DistributionArray3D(){};
+   DistributionArray3D() = default;;
+   virtual ~DistributionArray3D()= default;;
    //! get number of nodes for x1 direction
    virtual size_t getNX1() const = 0;
    //! get number of nodes for x2 direction

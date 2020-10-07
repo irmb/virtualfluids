@@ -61,7 +61,7 @@ public:
    //! \param writer is WbWriter object
    //! \param comm is Communicator object
    WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<Communicator> comm);
-   ~WriteBoundaryConditionsCoProcessor() override {}
+   ~WriteBoundaryConditionsCoProcessor() override = default;
 
    void process(double step) override;
 

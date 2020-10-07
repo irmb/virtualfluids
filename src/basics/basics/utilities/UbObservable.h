@@ -77,8 +77,7 @@ protected:
      Usually this constructor is used in extended classes.
    */
    UbObservable()
-   {
-   }
+   = default;
    
    UbObservable(const UbObservable& src)
    {

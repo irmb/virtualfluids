@@ -52,8 +52,7 @@ public:
    }
 
 	virtual ~Block3DVisitor()
-   {
-   }
+   = default;
 	
    virtual void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) = 0;
    

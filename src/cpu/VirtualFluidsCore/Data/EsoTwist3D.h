@@ -45,8 +45,8 @@
 class EsoTwist3D : public DistributionArray3D
 {
 public:
-   EsoTwist3D(){};
-   ~EsoTwist3D() override{};
+   EsoTwist3D()= default;;
+   ~EsoTwist3D() override= default;;
    //////////////////////////////////////////////////////////////////////////
    void swap() override = 0;
    //////////////////////////////////////////////////////////////////////////

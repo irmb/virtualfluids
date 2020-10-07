@@ -35,8 +35,7 @@
 #include "EsoTwistD3Q27System.h"
 
 D3Q27EsoTwist3DSplittedVector::D3Q27EsoTwist3DSplittedVector()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 D3Q27EsoTwist3DSplittedVector::D3Q27EsoTwist3DSplittedVector( size_t nx1, size_t nx2, size_t nx3, LBMReal value )
 {
@@ -51,9 +50,7 @@ D3Q27EsoTwist3DSplittedVector::D3Q27EsoTwist3DSplittedVector( size_t nx1, size_t
 }
 //////////////////////////////////////////////////////////////////////////
 D3Q27EsoTwist3DSplittedVector::~D3Q27EsoTwist3DSplittedVector()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::swap()
 {

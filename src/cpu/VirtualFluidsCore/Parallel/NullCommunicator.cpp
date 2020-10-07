@@ -34,12 +34,10 @@
 #include "NullCommunicator.h"
 
 NullCommunicator::NullCommunicator()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 NullCommunicator::~NullCommunicator()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 SPtr<Communicator> NullCommunicator::getInstance()
 {

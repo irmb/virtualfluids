@@ -49,7 +49,7 @@ public:
    {
 
    }
-   ~LocalBlock3DConnector() override {}
+   ~LocalBlock3DConnector() override = default;
    void sendTransmitterDataSize() override {}
    void receiveTransmitterDataSize() override {}
    void init() override = 0;

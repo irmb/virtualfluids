@@ -64,7 +64,7 @@ public:
       this->name        = name;
    }
    /*==========================================================*/
-   virtual ~UbTiming() {}  
+   virtual ~UbTiming() = default;  
    /*==========================================================*/
    virtual void initTiming()
    {
@@ -236,7 +236,7 @@ public:
 
    }
    /*==========================================================*/
-   virtual ~UbTimer() {}  
+   virtual ~UbTimer() = default;  
    /*==========================================================*/
    double              getLapTime() const               { return this->lapTime;  }
    std::vector<double> getLapTimes() const              { return this->lapTimes; }

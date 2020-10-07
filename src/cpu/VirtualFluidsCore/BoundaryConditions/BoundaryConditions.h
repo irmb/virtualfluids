@@ -73,7 +73,7 @@ public:
       for(int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++) 
          q[fdir] = -999.; 
    }
-   virtual ~BoundaryConditions() {}
+   virtual ~BoundaryConditions() = default;
 
    virtual bool isEmpty() { return (noslipBoundaryFlags&slipBoundaryFlags&velocityBoundaryFlags&densityBoundaryFlags)==0;}
    virtual bool hasBoundaryCondition()

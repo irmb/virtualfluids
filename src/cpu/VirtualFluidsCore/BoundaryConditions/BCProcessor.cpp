@@ -39,9 +39,7 @@
 #include "BCAlgorithm.h"
 
 BCProcessor::BCProcessor()
-{
-   
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 BCProcessor::BCProcessor(SPtr<ILBMKernel> kernel)
 {
@@ -50,9 +48,7 @@ BCProcessor::BCProcessor(SPtr<ILBMKernel> kernel)
 }
 //////////////////////////////////////////////////////////////////////////
 BCProcessor::~BCProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 SPtr<BCProcessor> BCProcessor::clone(SPtr<ILBMKernel> kernel)
 {

@@ -50,9 +50,7 @@
 using namespace std;
 
 WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
    const std::string& path, WbWriter* const writer, SPtr<Communicator> comm)

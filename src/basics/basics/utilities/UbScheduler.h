@@ -100,7 +100,7 @@ public:
       this->addSchedule(schedule);
    }
    /*==========================================================*/
-   virtual ~UbScheduler() {}
+   virtual ~UbScheduler() = default;
    /*==========================================================*/
    inline void addSchedule(const UbSchedule& schedule)
    {

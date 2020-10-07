@@ -37,8 +37,7 @@
 #include "UbScheduler.h"
 
 CoProcessor::CoProcessor()
-{
-}
+= default;
 
 CoProcessor::CoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s): grid(grid), scheduler(s)
 {
@@ -46,7 +45,5 @@ CoProcessor::CoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s): grid(grid), sc
 }
 
 CoProcessor::~CoProcessor()
-{
-
-}
+= default;
 

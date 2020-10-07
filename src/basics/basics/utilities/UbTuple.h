@@ -467,7 +467,7 @@ public:
    using BaseT = UbDuo<P1, typename UbTuple<P2, P3, P4, P5, P6, P7, P8, UbNullT>::BaseT>;
 
    // constructor:
-   UbTuple() {}
+   UbTuple() = default;
    UbTuple( typename UbTypeOp<P1>::RefConstT a1,
             typename UbTypeOp<P2>::RefConstT a2,
             typename UbTypeOp<P3>::RefConstT a3 = UbNullT(),
@@ -497,7 +497,7 @@ public:
    using BaseT = UbDuo<P1, P2>;
    
    // constructor:
-   UbTuple() {}
+   UbTuple() = default;
    UbTuple( typename UbTypeOp<P1>::RefConstT a1,
             typename UbTypeOp<P2>::RefConstT a2,
             typename UbTypeOp<UbNullT>::RefConstT = UbNullT(),
@@ -528,7 +528,7 @@ public:
    using BaseT = UbDuo<P1, void>;
 
    // constructor:
-   UbTuple() {}
+   UbTuple() = default;
    UbTuple( typename UbTypeOp<P1>::RefConstT a1,
             typename UbTypeOp<UbNullT>::RefConstT = UbNullT(),
             typename UbTypeOp<UbNullT>::RefConstT = UbNullT(),

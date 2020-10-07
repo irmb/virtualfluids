@@ -52,8 +52,7 @@ WriteBlocksCoProcessor::WriteBlocksCoProcessor(SPtr<Grid3D> grid, SPtr<UbSchedul
 }
 //////////////////////////////////////////////////////////////////////////
 WriteBlocksCoProcessor::~WriteBlocksCoProcessor() 
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void WriteBlocksCoProcessor::process(double step)
 {

@@ -49,9 +49,7 @@ Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
 }
 //////////////////////////////////////////////////////////////////////////
 BoundaryConditionsBlockVisitor::~BoundaryConditionsBlockVisitor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {

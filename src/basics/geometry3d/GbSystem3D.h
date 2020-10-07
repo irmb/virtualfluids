@@ -112,7 +112,7 @@ namespace GbSystem3D
    public:
       PointSet3(int n);
       PointSet3(const std::vector<GbPoint3D>& points);
-      ~PointSet3(){}
+      ~PointSet3()= default;
       void   add(const GbPoint3D& point);
       void   addUnequal(const GbPoint3D& point);
       void   add(const std::vector<GbPoint3D>& p);

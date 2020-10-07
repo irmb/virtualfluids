@@ -47,7 +47,7 @@ class SetSolidBlocksBlockVisitor : public Block3DVisitor
 {
 public:
    SetSolidBlocksBlockVisitor(SPtr<Interactor3D> interactor);
-   ~SetSolidBlocksBlockVisitor() override {}
+   ~SetSolidBlocksBlockVisitor() override = default;
 
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 

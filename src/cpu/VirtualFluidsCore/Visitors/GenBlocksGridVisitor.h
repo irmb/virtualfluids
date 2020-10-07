@@ -48,7 +48,7 @@ class GenBlocksGridVisitor : public Grid3DVisitor
 {
 public:
    GenBlocksGridVisitor(SPtr<GbObject3D> boundingBox);
-   ~GenBlocksGridVisitor() override{}
+   ~GenBlocksGridVisitor() override= default;
 
    void visit(SPtr<Grid3D> grid) override;
 

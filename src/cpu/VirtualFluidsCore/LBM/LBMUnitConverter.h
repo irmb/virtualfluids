@@ -97,7 +97,7 @@ public:
 
    }
 
-   virtual ~LBMUnitConverter() {}
+   virtual ~LBMUnitConverter() = default;
 
    double  getRefRhoLb()             { return refRhoLb; }
 

@@ -37,9 +37,7 @@ namespace input
     }
 
     ConfigInput::~ConfigInput()
-    {
-
-    }
+    = default;
 
     bool ConfigInput::hasValue(const std::string &key) const
     {

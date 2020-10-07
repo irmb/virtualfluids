@@ -50,7 +50,7 @@ public:
    GbPoint3D();
    GbPoint3D(const double& x1, const double& x2, const double& x3);
    GbPoint3D(GbPoint3D *point);                
-   ~GbPoint3D() override {}
+   ~GbPoint3D() override = default;
 
    GbPoint3D* clone() override {return new GbPoint3D(this);}
    void finalize() override {}

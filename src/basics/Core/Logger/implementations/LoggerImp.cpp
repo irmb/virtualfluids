@@ -17,9 +17,7 @@ logging::LoggerImp::LoggerImp(std::ostream* stream) : logging::Logger(stream)
 }
 
 logging::LoggerImp::~LoggerImp()
-{
-
-}
+= default;
 
 logging::Logger& logging::LoggerImp::operator<<(const Level &level)
 {
