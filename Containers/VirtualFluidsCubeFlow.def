@@ -1,0 +1,22 @@
+BootStrap: docker
+From: irmb/virtualfluids-python-deps-mpich
+
+%files
+    3rdParty /3rdParty
+    apps /apps
+    Python /Python
+    src /src
+    CMakeLists.txt /CMakeLists.txt
+    setup.py /setup.py
+    pyproject.toml /pyproject.toml
+
+
+%post
+    export PYTHONPATH=Python
+    python3 setup.py install
+
+%environment
+    export PYTHONPATH=Python
+
+%runscript
+    python3 Python/test_cubeflow.py
