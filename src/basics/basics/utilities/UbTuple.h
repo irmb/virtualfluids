@@ -78,12 +78,12 @@ template <typename T>
 class UbTypeOp    // primary template
 {           
 public:
-   typedef T         ArgT;
-   typedef T         BareT;
-   typedef T const   ConstT;
-   typedef T &       RefT;
-   typedef T &       RefBareT;
-   typedef T const & RefConstT;
+   using ArgT = T;
+   using BareT = T;
+   using ConstT = const T;
+   using RefT = T &;
+   using RefBareT = T &;
+   using RefConstT = const T &;
 };
 /**** end of typeop1.hpp ****/
 
@@ -95,12 +95,12 @@ template <typename T>
 class UbTypeOp <T const>  // partial specialization for const types
 {
  public:
-   typedef T const   ArgT;
-   typedef T         BareT;
-   typedef T const   ConstT;
-   typedef T const & RefT;
-   typedef T &       RefBareT;
-   typedef T const & RefConstT;
+   using ArgT = const T;
+   using BareT = T;
+   using ConstT = const T;
+   using RefT = const T &;
+   using RefBareT = T &;
+   using RefConstT = const T &;
 };
 /**** end of typeop2.hpp ****/
 
@@ -112,12 +112,12 @@ template <typename T>
 class UbTypeOp <T&>        // partial specialization for references
 {
 public:
-   typedef T &                           ArgT;
-   typedef typename UbTypeOp<T>::BareT   BareT;
-   typedef T const                       ConstT;
-   typedef T &                           RefT;
-   typedef typename UbTypeOp<T>::BareT & RefBareT;
-   typedef T const &                     RefConstT;
+   using ArgT = T &;
+   using BareT = typename UbTypeOp<T>::BareT;
+   using ConstT = const T;
+   using RefT = T &;
+   using RefBareT = typename UbTypeOp<T>::BareT &;
+   using RefConstT = const T &;
 };
 /**** end of typeop3.hpp ****/
 
@@ -129,12 +129,12 @@ template<>
 class UbTypeOp <void>      // full specialization for void
 {
 public:
-   typedef void       ArgT;
-   typedef void       BareT;
-   typedef void const ConstT;
-   typedef void       RefT;
-   typedef void       RefBareT;
-   typedef void       RefConstT;
+   using ArgT = void;
+   using BareT = void;
+   using ConstT = const void;
+   using RefT = void;
+   using RefBareT = void;
+   using RefConstT = void;
 };
 /**** end of typeop4.hpp ****/
 
@@ -149,8 +149,8 @@ template <typename T1, typename T2>
 class UbDuo 
 {
 public:
-   typedef T1 Type1;  // type of first field
-   typedef T2 Type2;  // type of second field
+   using Type1 = T1;  // type of first field
+   using Type2 = T2;  // type of second field
    enum { N = 2 };    // number of fields
 
 public:
@@ -224,8 +224,8 @@ template <typename A, typename B, typename C>
 class UbDuo<A, UbDuo<B,C> > 
 {
 public:
-   typedef A          T1;           // type of first field
-   typedef UbDuo<B,C> T2;           // type of second field
+   using T1 = A;           // type of first field
+   using T2 = UbDuo<B, C>;           // type of second field
    enum { N = UbDuo<B,C>::N + 1 };  // number of fields
  
 public:
@@ -264,7 +264,7 @@ template <int N, typename T>
 class UbDuoT 
 {
 public:
-   typedef void ResultT;    // in general, the result type is void
+   using ResultT = void;    // in general, the result type is void
 };
 
 // specialization for 1st field of a plain duo
@@ -272,7 +272,7 @@ template <typename A, typename B>
 class UbDuoT<1, UbDuo<A,B> > 
 {
 public:
-   typedef A ResultT;
+   using ResultT = A;
 };
 
 // specialization for 2nd field of a plain duo
@@ -280,7 +280,7 @@ template <typename A, typename B>
 class UbDuoT<2, UbDuo<A,B> > 
 {
 public:
-   typedef B ResultT;
+   using ResultT = B;
 };
 
 // specialization for Nth field of a recursive duo
@@ -288,7 +288,7 @@ template <int N, typename A, typename B, typename C>
 class UbDuoT<N, UbDuo<A, UbDuo<B,C> > > 
 {
 public:
-   typedef typename UbDuoT<N-1, UbDuo<B,C> >::ResultT ResultT;
+   using ResultT = typename UbDuoT<N - 1, UbDuo<B, C> >::ResultT;
 };
 
 // specialization for 1st field of a recursive duo
@@ -296,7 +296,7 @@ template <typename A, typename B, typename C>
 class UbDuoT<1, UbDuo<A, UbDuo<B,C> > > 
 {
 public:
-   typedef A ResultT;
+   using ResultT = A;
 };
 
 // specialization for 2nd field of a recursive duo
@@ -304,7 +304,7 @@ template <typename A, typename B, typename C>
 class UbDuoT<2, UbDuo<A, UbDuo<B,C> > > 
 {
 public:
-   typedef B ResultT;
+   using ResultT = B;
 };
 
 //duo4.hpp
@@ -388,8 +388,8 @@ template <typename A>
 struct UbDuo<A,void> 
 {
 public:
-   typedef A    T1;  // type of first field
-   typedef void T2;  // type of second field
+   using T1 = A;  // type of first field
+   using T2 = void;  // type of second field
    enum { N = 1 };   // number of fields
 
 private:
@@ -464,7 +464,7 @@ template <typename P1,
 class UbTuple : public UbDuo<P1, typename UbTuple<P2,P3,P4,P5,P6,P7,P8,UbNullT>::BaseT> 
 {
 public:
-   typedef UbDuo<P1, typename UbTuple<P2,P3,P4,P5,P6,P7,P8,UbNullT>::BaseT>  BaseT;
+   using BaseT = UbDuo<P1, typename UbTuple<P2, P3, P4, P5, P6, P7, P8, UbNullT>::BaseT>;
 
    // constructor:
    UbTuple() {}
@@ -494,7 +494,7 @@ public:
 template <typename P1, typename P2>
 class UbTuple<P1,P2,UbNullT,UbNullT,UbNullT,UbNullT,UbNullT,UbNullT> : public UbDuo<P1,P2> {
 public:
-   typedef UbDuo<P1,P2> BaseT;
+   using BaseT = UbDuo<P1, P2>;
    
    // constructor:
    UbTuple() {}
@@ -525,7 +525,7 @@ template <typename P1>
 class UbTuple<P1,UbNullT,UbNullT,UbNullT,UbNullT,UbNullT,UbNullT,UbNullT> : public UbDuo<P1,void>
 {
 public:
-   typedef UbDuo<P1,void> BaseT;
+   using BaseT = UbDuo<P1, void>;
 
    // constructor:
    UbTuple() {}
@@ -608,26 +608,26 @@ inline UbTuple<T1,T2,T3,T4,T5,T6,T7,T8> makeUbTuple(T1 const &a1, T2 const &a2,T
 }
 
 //some typedefs
-typedef UbTuple<float,float>                               UbTupleFloat2;
-typedef UbTuple<float,float,float>                         UbTupleFloat3;
-typedef UbTuple<int,int>                                   UbTupleInt2;
-typedef UbTuple<int,int,int>                               UbTupleInt3;
-typedef UbTuple<int,int,int,int>                           UbTupleInt4;
-typedef UbTuple<int,int,int,int,int>                       UbTupleInt5;
-typedef UbTuple<int,int,int,int,int,int>                   UbTupleInt6;
-typedef UbTuple<int,int,int,int,int,int,int,int>           UbTupleInt8;
-typedef UbTuple<unsigned int,unsigned int,unsigned int,unsigned int,unsigned int,unsigned int,unsigned int,unsigned int> UbTupleUInt8;
-typedef UbTuple<double,double>                             UbTupleDouble2;
-typedef UbTuple<double,double,double>                      UbTupleDouble3;
-typedef UbTuple<double,double,double,double>               UbTupleDouble4;
-typedef UbTuple<double,double,double,double,double,double> UbTupleDouble6;
-typedef UbTuple<std::string,double,double>                 UbTupleStringDouble2;
-typedef UbTuple<std::string,double,double,double>          UbTupleStringDouble3;
-typedef UbTuple<std::string,int,int,int>                   UbTupleStringInt3;
-typedef UbTuple<short,short,short,short>                   UbTupleShort4;
-typedef UbTuple<bool,bool,bool>                            UbTupleBool3;
-typedef UbTuple<int,double,double>                         UbTupleIntDouble2;
-typedef UbTuple<int, bool>                                 UbTupleIntBool;
+using UbTupleFloat2 = UbTuple<float, float>;
+using UbTupleFloat3 = UbTuple<float, float, float>;
+using UbTupleInt2 = UbTuple<int, int>;
+using UbTupleInt3 = UbTuple<int, int, int>;
+using UbTupleInt4 = UbTuple<int, int, int, int>;
+using UbTupleInt5 = UbTuple<int, int, int, int, int>;
+using UbTupleInt6 = UbTuple<int, int, int, int, int, int>;
+using UbTupleInt8 = UbTuple<int, int, int, int, int, int, int, int>;
+using UbTupleUInt8 = UbTuple<unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int>;
+using UbTupleDouble2 = UbTuple<double, double>;
+using UbTupleDouble3 = UbTuple<double, double, double>;
+using UbTupleDouble4 = UbTuple<double, double, double, double>;
+using UbTupleDouble6 = UbTuple<double, double, double, double, double, double>;
+using UbTupleStringDouble2 = UbTuple<std::string, double, double>;
+using UbTupleStringDouble3 = UbTuple<std::string, double, double, double>;
+using UbTupleStringInt3 = UbTuple<std::string, int, int, int>;
+using UbTupleShort4 = UbTuple<short, short, short, short>;
+using UbTupleBool3 = UbTuple<bool, bool, bool>;
+using UbTupleIntDouble2 = UbTuple<int, double, double>;
+using UbTupleIntBool = UbTuple<int, bool>;
 
 
 #endif //UBTUPLE_H

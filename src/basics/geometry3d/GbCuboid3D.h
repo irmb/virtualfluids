@@ -45,7 +45,7 @@ class GbObject3DCreator;
 
 #include <PointerDefinitions.h>
 class GbCuboid3D;
-typedef SPtr<GbCuboid3D> GbCuboid3DPtr;
+using GbCuboid3DPtr = SPtr<GbCuboid3D>;
 
 //! \brief This Class provides basic 3D box objects.
 class GbCuboid3D : public GbObject3D, public UbObserver

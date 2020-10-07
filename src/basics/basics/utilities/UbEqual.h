@@ -56,54 +56,54 @@
 template < typename T1, typename T2 >
 struct UbEqualTrait
 {
-   typedef T1 High;
-   typedef T1 Low;
+   using High = T1;
+   using Low = T1;
 };
 
 //std-trait, fuer gleiche T
 template < typename T >
 struct UbEqualTrait< T, T >
 {
-   typedef T High;
-   typedef T Low;
+   using High = T;
+   using Low = T;
 };
 
 //spezialisierung fuer diverse Typen-Tuples
-template<> struct UbEqualTrait< short, int >          { typedef int         High; typedef short  Low; };
-template<> struct UbEqualTrait< short, long >         { typedef long        High; typedef short  Low; };
-template<> struct UbEqualTrait< short, float >        { typedef float       High; typedef short  Low; };
-template<> struct UbEqualTrait< short, double >       { typedef double      High; typedef short  Low; };
-template<> struct UbEqualTrait< short, long double >  { typedef long double High; typedef short  Low; };
+template<> struct UbEqualTrait< short, int >          { using High = int; using Low = short; };
+template<> struct UbEqualTrait< short, long >         { using High = long; using Low = short; };
+template<> struct UbEqualTrait< short, float >        { using High = float; using Low = short; };
+template<> struct UbEqualTrait< short, double >       { using High = double; using Low = short; };
+template<> struct UbEqualTrait< short, long double >  { using High = long double; using Low = short; };
 
-template<> struct UbEqualTrait< int, short >          { typedef int         High; typedef short  Low; };
-template<> struct UbEqualTrait< int, long >           { typedef long        High; typedef int    Low; };
-template<> struct UbEqualTrait< int, float >          { typedef float       High; typedef int    Low; };
-template<> struct UbEqualTrait< int, double >         { typedef double      High; typedef int    Low; };
-template<> struct UbEqualTrait< int, long double >    { typedef long double High; typedef int    Low; };
+template<> struct UbEqualTrait< int, short >          { using High = int; using Low = short; };
+template<> struct UbEqualTrait< int, long >           { using High = long; using Low = int; };
+template<> struct UbEqualTrait< int, float >          { using High = float; using Low = int; };
+template<> struct UbEqualTrait< int, double >         { using High = double; using Low = int; };
+template<> struct UbEqualTrait< int, long double >    { using High = long double; using Low = int; };
 
-template<> struct UbEqualTrait< long, short >         { typedef long        High; typedef short  Low; };
-template<> struct UbEqualTrait< long, int >           { typedef long        High; typedef int    Low; };
-template<> struct UbEqualTrait< long, float >         { typedef float       High; typedef long   Low; };
-template<> struct UbEqualTrait< long, double >        { typedef double      High; typedef long   Low; };
-template<> struct UbEqualTrait< long, long double >   { typedef long double High; typedef long   Low; };
+template<> struct UbEqualTrait< long, short >         { using High = long; using Low = short; };
+template<> struct UbEqualTrait< long, int >           { using High = long; using Low = int; };
+template<> struct UbEqualTrait< long, float >         { using High = float; using Low = long; };
+template<> struct UbEqualTrait< long, double >        { using High = double; using Low = long; };
+template<> struct UbEqualTrait< long, long double >   { using High = long double; using Low = long; };
 
-template<> struct UbEqualTrait< float, short >        { typedef float       High; typedef short  Low; };
-template<> struct UbEqualTrait< float, int >          { typedef float       High; typedef int    Low; };
-template<> struct UbEqualTrait< float, long >         { typedef float       High; typedef long   Low; };
-template<> struct UbEqualTrait< float, double >       { typedef double      High; typedef float  Low; };
-template<> struct UbEqualTrait< float, long double >  { typedef long double High; typedef float  Low; };
+template<> struct UbEqualTrait< float, short >        { using High = float; using Low = short; };
+template<> struct UbEqualTrait< float, int >          { using High = float; using Low = int; };
+template<> struct UbEqualTrait< float, long >         { using High = float; using Low = long; };
+template<> struct UbEqualTrait< float, double >       { using High = double; using Low = float; };
+template<> struct UbEqualTrait< float, long double >  { using High = long double; using Low = float; };
 
-template<> struct UbEqualTrait< double, short >       { typedef double      High; typedef short  Low; };
-template<> struct UbEqualTrait< double, int >         { typedef double      High; typedef int    Low; };
-template<> struct UbEqualTrait< double, long >        { typedef double      High; typedef long   Low; };
-template<> struct UbEqualTrait< double, float >       { typedef double      High; typedef float  Low; };
-template<> struct UbEqualTrait< double, long double > { typedef long double High; typedef double Low; };
+template<> struct UbEqualTrait< double, short >       { using High = double; using Low = short; };
+template<> struct UbEqualTrait< double, int >         { using High = double; using Low = int; };
+template<> struct UbEqualTrait< double, long >        { using High = double; using Low = long; };
+template<> struct UbEqualTrait< double, float >       { using High = double; using Low = float; };
+template<> struct UbEqualTrait< double, long double > { using High = long double; using Low = double; };
 
-template<> struct UbEqualTrait< long double, short >  { typedef long double High; typedef short  Low; };
-template<> struct UbEqualTrait< long double, int >    { typedef long double High; typedef int    Low; };
-template<> struct UbEqualTrait< long double, long >   { typedef long double High; typedef long   Low; };
-template<> struct UbEqualTrait< long double, float >  { typedef long double High; typedef float  Low; };
-template<> struct UbEqualTrait< long double, double > { typedef long double High; typedef double Low; };
+template<> struct UbEqualTrait< long double, short >  { using High = long double; using Low = short; };
+template<> struct UbEqualTrait< long double, int >    { using High = long double; using Low = int; };
+template<> struct UbEqualTrait< long double, long >   { using High = long double; using Low = long; };
+template<> struct UbEqualTrait< long double, float >  { using High = long double; using Low = float; };
+template<> struct UbEqualTrait< long double, double > { using High = long double; using Low = double; };
 
 //////////////////////////////////////////////////////////////////////////
 //fuer Allgmeine-Typen ( operator== ):
@@ -127,7 +127,7 @@ inline bool specific_equal< long double, long double >(const long double& a, con
 template< typename T1, typename T2 >
 inline bool isUbEqual(const T1& a, const T2& b)
 {
-   typedef typename UbEqualTrait<T1,T2>::Low Low;
+   using Low = typename UbEqualTrait<T1, T2>::Low;
    return specific_equal< Low, Low >(static_cast< Low >( a ),static_cast< Low >( b ));
 };
 

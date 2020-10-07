@@ -7,10 +7,10 @@
 #ifdef VF_DOUBLE_ACCURACY
 typedef double real;
 #else
-typedef float  real;
+using real = float;
 #endif
 
-typedef unsigned int uint;
+using uint = unsigned int;
 #define INVALID_INDEX 4294967295 //max uint
 
 #endif

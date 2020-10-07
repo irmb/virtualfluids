@@ -64,8 +64,8 @@ class CbVector
 {
 public:
    typedef T           value_type;
-   typedef value_type* pointer;
-   typedef std::size_t size_type;
+   using pointer = value_type *;
+   using size_type = std::size_t;
 
    friend class CbVectorAllocator<value_type>; //um auf ptrData und dataSize zugreifen zu koennen!
 
@@ -218,8 +218,8 @@ template< typename T >
 class CbVectorAllocator
 {
 public:
-   typedef typename CbVector<T>::value_type          value_type;
-   typedef typename CbVector<value_type>::size_type  size_type;
+   using value_type = typename CbVector<T>::value_type;
+   using size_type = typename CbVector<value_type>::size_type;
 
 public:
    CbVectorAllocator() {}
@@ -254,8 +254,8 @@ class CbVectorAllocatorStd : public CbVectorAllocator<T>
 {
 public:
    //typedefs wiederholen, da Basisklasse = template -> "Dependent-Base"-Problem
-   typedef typename CbVector<T>::value_type          value_type;
-   typedef typename CbVector<value_type>::size_type  size_type;
+   using value_type = typename CbVector<T>::value_type;
+   using size_type = typename CbVector<value_type>::size_type;
 
 public:
    CbVectorAllocatorStd() : CbVectorAllocator<value_type>()

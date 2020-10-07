@@ -56,7 +56,7 @@
 class IndexerX3X2X1// FunctorX1SortedForX1X2Plane
 {
 public:
-   typedef size_t size_type;
+   using size_type = size_t;
 public:
    inline std::size_t getIndex(  const size_type& x1 , const size_type& x2 , const size_type& x3
                                , const size_type& nx1, const size_type& nx2, const size_type& nx3 ) const
@@ -80,7 +80,7 @@ public:
 class IndexerX1X2X3 //FunctorX3SortedForX3X2Plane
 {
 public:
-   typedef size_t size_type;
+   using size_type = size_t;
 public:
    inline std::size_t getIndex(  const size_type& x1 , const size_type& x2 , const size_type& x3
                                , const size_type& nx1, const size_type& nx2, const size_type& nx3 ) const
@@ -104,7 +104,7 @@ public:
 class IndexerX2X1X3
 {
 public:
-   typedef size_t size_type;
+   using size_type = size_t;
 public:
    inline std::size_t getIndex(  const size_type& x1 , const size_type& x2 , const size_type& x3
                                , const size_type& nx1, const size_type& nx2, const size_type& nx3 ) const
@@ -136,15 +136,15 @@ template<typename T, typename IndexClass = IndexerX3X2X1>
 class CbArray3D
 {
 public:
-   typedef SPtr< CbArray3D <T,IndexClass> > CbArray3DPtr;
+   using CbArray3DPtr = SPtr<CbArray3D<T, IndexClass> >;
 
-   typedef T                                                   value_type;
-   typedef IndexClass                                          indexer_type;
-   typedef typename IndexClass::size_type                      size_type;
-   typedef typename std::vector< value_type >::reference       reference;
-   typedef typename std::vector< value_type >::const_reference const_reference;
-   typedef typename std::vector< value_type >::pointer         pointer;
-   typedef typename std::vector< value_type >::const_pointer   const_pointer;
+   using value_type = T;
+   using indexer_type = IndexClass;
+   using size_type = typename IndexClass::size_type;
+   using reference = typename std::vector<value_type>::reference;
+   using const_reference = typename std::vector<value_type>::const_reference;
+   using pointer = typename std::vector<value_type>::pointer;
+   using const_pointer = typename std::vector<value_type>::const_pointer;
 
 private:
    template< typename value_type2, typename IndexClass2 > friend class CbArray3D;

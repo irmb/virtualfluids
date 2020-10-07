@@ -59,17 +59,17 @@ class Interactor3D;
 class Grid3D : public enableSharedFromThis<Grid3D>
 {
 public:
-   typedef UbKeys::Key3<int>                  Block3DKey;
-   typedef std::map< Block3DKey, SPtr<Block3D> > Block3DMap;
-   typedef std::map< int, SPtr<Block3D> >    BlockIDMap;
-   typedef std::vector<Block3DMap>        LevelSet;
-   typedef std::vector<SPtr<Interactor3D> >   Interactor3DSet;
+   using Block3DKey = UbKeys::Key3<int>;
+   using Block3DMap = std::map<Block3DKey, SPtr<Block3D> >;
+   using BlockIDMap = std::map<int, SPtr<Block3D> >;
+   using LevelSet = std::vector<Block3DMap>;
+   using Interactor3DSet = std::vector<SPtr<Interactor3D> >;
 
 public:
    Grid3D();
    Grid3D(SPtr<Communicator> comm);
    Grid3D(SPtr<Communicator> comm, int blockNx1, int blockNx2, int blockNx3, int gridNx1, int gridNx2, int gridNx3);
-   virtual ~Grid3D(){}
+   virtual ~Grid3D() = default;
    //////////////////////////////////////////////////////////////////////////
    //blocks control
    void addBlock(SPtr<Block3D> block);

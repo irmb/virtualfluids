@@ -176,7 +176,7 @@ namespace UbMath
    template<typename T1, typename T2>
    inline bool equal(const T1& value, const T2& reference) 
    { 
-      typedef typename UbEqualTrait<T1,T2>::High High;
+      using High = typename UbEqualTrait<T1, T2>::High;
       return std::fabs(value-reference) < Epsilon<High>::val(); 
    }
    /*=======================================================*/
@@ -189,28 +189,28 @@ namespace UbMath
    template<typename T1, typename T2>
    inline bool less(const T1& value, const T2& reference)   
    { 
-      typedef typename UbEqualTrait<T1,T2>::High High;
+      using High = typename UbEqualTrait<T1, T2>::High;
       return value < reference - Epsilon<High>::val(); 
    }
    /*=======================================================*/
    template<typename T1, typename T2>
    inline bool lessEqual(const T1& value, const T2& reference) 
    { 
-      typedef typename UbEqualTrait<T1,T2>::High High;
+      using High = typename UbEqualTrait<T1, T2>::High;
       return value <= reference + Epsilon<High>::val();
    }
    /*=======================================================*/
    template<typename T1, typename T2>
    inline bool greater(const T1& value, const T2& reference)      
    { 
-      typedef typename UbEqualTrait<T1,T2>::High High;
+      using High = typename UbEqualTrait<T1, T2>::High;
       return value > reference + Epsilon<High>::val();  
    }
    /*=======================================================*/
    template<typename T1, typename T2>
    inline bool greaterEqual(const T1& value, const T2& reference) 
    { 
-      typedef typename UbEqualTrait<T1,T2>::High High;
+      using High = typename UbEqualTrait<T1, T2>::High;
       return value >= reference - Epsilon<High>::val(); 
    }
    /*=======================================================*/

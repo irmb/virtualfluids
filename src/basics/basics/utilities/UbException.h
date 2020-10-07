@@ -80,7 +80,7 @@
 class UbException : public std::runtime_error
 {
 public:
-   typedef UbTuple< std::string, int, std::string, std::string > ExceptionData;
+   using ExceptionData = UbTuple<std::string, int, std::string, std::string>;
 public:
    //////////////////////////////////////////////////////////////////////////
    //constructors

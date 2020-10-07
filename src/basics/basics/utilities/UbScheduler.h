@@ -318,7 +318,7 @@ protected:
    std::vector<UbSchedule> schedules;
 };
 
-typedef UbScheduler::UbSchedule UbSchedule;
+using UbSchedule = UbScheduler::UbSchedule;
 
 #endif //UBSCHEDULER_H
 
