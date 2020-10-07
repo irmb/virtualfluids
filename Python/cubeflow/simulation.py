@@ -7,6 +7,8 @@ from pyfluids.parameters import PhysicalParameters, SimulationParameters, GridPa
 from pyfluids.writer import Writer, WriterType
 from pymuparser import Parser
 
+import os
+
 
 def get_max_length(number_of_nodes_per_direction, delta_x):
     return (number_of_nodes_per_direction[0] * delta_x,
@@ -27,8 +29,8 @@ grid_params.periodic_boundary_in_x3 = True
 
 sim_params = SimulationParameters()
 sim_params.timestep_log_interval = 1000
-sim_params.number_of_timesteps = 1000
-sim_params.number_of_threads = 4
+sim_params.number_of_timesteps = 50000
+sim_params.number_of_threads = os.environ.get("OMP_NUM_THREADS", 4)
 
 
 def run_simulation(physical_parameters=physical_params, grid_parameters=grid_params,
@@ -99,3 +101,7 @@ def run_simulation(physical_parameters=physical_params, grid_parameters=grid_par
     builder.add_object(velocity_boundary, velocity_bc, 1, "/geo/velocityBoundary")
 
     builder.run_simulation()
+
+
+if __name__ == "__main__":
+    run_simulation()
