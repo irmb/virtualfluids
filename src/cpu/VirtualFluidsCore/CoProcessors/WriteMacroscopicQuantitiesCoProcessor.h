@@ -66,7 +66,7 @@ public:
    WriteMacroscopicQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                            const std::string& path, WbWriter* const writer, 
                                            SPtr<LBMUnitConverter> conv, SPtr<Communicator> comm);
-   ~WriteMacroscopicQuantitiesCoProcessor(){}
+   ~WriteMacroscopicQuantitiesCoProcessor() override{}
 
    void process(double step) override;
 

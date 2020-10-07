@@ -66,7 +66,7 @@ public:
    D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter,  int type);
    D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter,  int type, Interactor3D::Accuracy a);
 
-   virtual ~D3Q27Interactor();
+   ~D3Q27Interactor() override;
 
    void setRelevantForForces(const bool& value) {  this->relevantForForces = value; }
    bool isRelevantForForces() { return this->relevantForForces; }
@@ -75,15 +75,15 @@ public:
    void deleteBCAdapter() { bcAdapters.clear(); }
 
  
-   virtual void initInteractor(const double& timeStep=0);
-   void updateInteractor(const double& timestep=0); 
+   void initInteractor(const double& timeStep=0) override;
+   void updateInteractor(const double& timestep=0) override; 
 
    void setReinitWithStoredQs(bool reinitWithStoredQsFlag) { this->reinitWithStoredQsFlag = reinitWithStoredQsFlag; }
    
-   void removeSolidBlocks() { Interactor3D::removeSolidBlocks(); solidNodeIndicesMap.clear(); }
-   void removeBcBlocks() { Interactor3D::removeBcBlocks(); bcNodeIndicesMap.clear(); }
+   void removeSolidBlocks() override { Interactor3D::removeSolidBlocks(); solidNodeIndicesMap.clear(); }
+   void removeBcBlocks() override { Interactor3D::removeBcBlocks(); bcNodeIndicesMap.clear(); }
 
-   bool setDifferencesToGbObject3D(const SPtr<Block3D> block);
+   bool setDifferencesToGbObject3D(const SPtr<Block3D> block) override;
 
    ObObject* clone() { throw UbException(UB_EXARGS,"not implemented");	}
 

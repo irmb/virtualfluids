@@ -63,12 +63,12 @@ public:
    GbTriangle3D();
    GbTriangle3D(GbPoint3D* point1, GbPoint3D* point2, GbPoint3D* point3);
    GbTriangle3D(GbTriangle3D* triangle);
-   ~GbTriangle3D();
+   ~GbTriangle3D() override;
    /*======================================================================*/
    /*  Methoden                                                            */
    /*                                                                      */
-   GbTriangle3D* clone();
-   void finalize()
+   GbTriangle3D* clone() override;
+   void finalize() override
    {
       this->deletePoints();
    }
@@ -87,51 +87,51 @@ public:
    GbPoint3D* getPoint(const int& index);
    std::vector<GbPoint3D> getPoints();
    double getArea();
-   double getX1Centroid();
-   double getX1Minimum();
-   double getX1Maximum();           
-   double getX2Centroid();
-   double getX2Minimum();
-   double getX2Maximum();
-   double getX3Centroid();
-   double getX3Minimum();
-   double getX3Maximum();
+   double getX1Centroid() override;
+   double getX1Minimum() override;
+   double getX1Maximum() override;           
+   double getX2Centroid() override;
+   double getX2Minimum() override;
+   double getX2Maximum() override;
+   double getX3Centroid() override;
+   double getX3Minimum() override;
+   double getX3Maximum() override;
 
    void setInconsistent() { this->consistent = false;}
 
    void setPoint(GbPoint3D *point, int index);
 
    //bool equals(GbObject3D *object)
-   std::vector<GbTriangle3D*> getSurfaceTriangleSet();
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3)   
+   std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3) override   
    {
       //der einfachheit halber ... 
       return false;
       //throw UbException(__FILE__, __LINE__, "GbTriangle3D::isPointInObject3D- not implemented");
    }
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary)   
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary) override   
    {
       //der einfachheit halber ... 
       pointIsOnBoundary = false;
       return false;
       //throw UbException(__FILE__, __LINE__, "GbTriangle3D::isPointInObject3D- not implemented");
    }
-   bool isCellInsideGbObject3D(const double& x11,const double& x21,const double& x31,const double& x12,const double& x22,const double& x23) { return false; }
+   bool isCellInsideGbObject3D(const double& x11,const double& x21,const double& x31,const double& x12,const double& x22,const double& x23) override { return false; }
 
 
    // get distance from a point to the triangle
    //todo CHANGE...
    double getDistanceFromPoint(GbVector3D punct);
 
-   std::string toString();
+   std::string toString() override;
 
    /*======================================================================*/
    /*  Calculation                                                         */
    /*                                                                      */
 //   std::vector<GbPoint3D> calculateIntersectionPoints3D(GbLine3D *line);
-   bool hasRaytracing() { return true; }
+   bool hasRaytracing() override { return true; }
    /*|r| must be 1! einheitsvector!!*/
-   double getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3);
+   double getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3) override;
 //   bool isPointOnEdge(GbVector3D& q);
    
    GbPoint3D* calculateIntersectionPoints3D(GbLine3D* line);
@@ -142,7 +142,7 @@ public:
 
    bool enclosesPoint2D(double x1, double x2);
    GbPolygon3D* createClippedPolygon3D(GbCuboid3D* cube);   
-   GbLine3D* createClippedLine3D (GbPoint3D& point1, GbPoint3D& point2);
+   GbLine3D* createClippedLine3D (GbPoint3D& point1, GbPoint3D& point2) override;
    //public GbPolygon2D createClippedPolygon2D(GbPoint2D p1, GbPoint2D p2);
    GbPolygon3D* createClippedPolygon3D(const double& p1x1, const double& p1x2, const double& p1x3, const double& p2x1, const double& p2x2, const double& p2x3);
    //bool enclosesRectangle2D(GbRectangle2D *rectangle);
@@ -163,7 +163,7 @@ public:
 
    //virtuelle Methoden von UbObserver
    //!! quick and dirty von sirann !!
-   void objectChanged(UbObservable* changedObject)
+   void objectChanged(UbObservable* changedObject) override
    {
       GbPoint3D* point = dynamic_cast<GbPoint3D*>(changedObject);
       if(!point || (  this->points[0]!=point && this->points[1]!=point && this->points[2]!=point) ) 
@@ -171,7 +171,7 @@ public:
       
       this->consistent = false;
    }
-   void objectWillBeDeleted(UbObservable* objectForDeletion)
+   void objectWillBeDeleted(UbObservable* objectForDeletion) override
    {
       if(this->points[0])
       {

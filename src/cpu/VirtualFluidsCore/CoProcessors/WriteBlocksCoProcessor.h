@@ -57,7 +57,7 @@ public:
    //! \param writer is WbWriter object
    //! \param comm is Communicator object
    WriteBlocksCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<Communicator> comm);
-   virtual ~WriteBlocksCoProcessor();
+   ~WriteBlocksCoProcessor() override;
 
    void process(double step) override;
 

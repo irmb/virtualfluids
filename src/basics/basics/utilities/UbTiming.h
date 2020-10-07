@@ -389,7 +389,7 @@ public:
   	  this->start();
   }
   /*==========================================================*/
-  ~UbProgressTimer()
+  ~UbProgressTimer() override
   {
   //  A) Throwing an exception from a destructor is a Bad Thing.
   //  B) The progress_timer destructor does output which may throw.

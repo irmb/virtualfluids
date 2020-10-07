@@ -49,22 +49,22 @@ public:
    {
 
    }
-   virtual ~LocalBlock3DConnector() {}
-   void sendTransmitterDataSize() {}
-   void receiveTransmitterDataSize() {}
-   virtual void init() = 0;
-   void prepareForReceive() {}
-   void prepareForSend() {}
-   void fillSendVectors() {}
-   virtual void sendVectors()=0;
-   void receiveVectors() {}
+   ~LocalBlock3DConnector() override {}
+   void sendTransmitterDataSize() override {}
+   void receiveTransmitterDataSize() override {}
+   void init() override = 0;
+   void prepareForReceive() override {}
+   void prepareForSend() override {}
+   void fillSendVectors() override {}
+   void sendVectors() override =0;
+   void receiveVectors() override {}
 
-   void distributeReceiveVectors() {}
+   void distributeReceiveVectors() override {}
 
-   bool isLocalConnector() { return true; }
-   bool isRemoteConnector() { return false; }
-   bool isInterpolationConnectorCF() { return false; }
-   bool isInterpolationConnectorFC() { return false; }
+   bool isLocalConnector() override { return true; }
+   bool isRemoteConnector() override { return false; }
+   bool isInterpolationConnectorCF() override { return false; }
+   bool isInterpolationConnectorFC() override { return false; }
 
 protected:
    WPtr<Block3D> from;

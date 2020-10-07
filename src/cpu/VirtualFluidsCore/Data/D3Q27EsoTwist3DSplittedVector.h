@@ -51,35 +51,35 @@ public:
    //! \param value initialisation value
    D3Q27EsoTwist3DSplittedVector(size_t nx1, size_t nx2, size_t nx3, LBMReal value);
    //////////////////////////////////////////////////////////////////////////
-   ~D3Q27EsoTwist3DSplittedVector();
+   ~D3Q27EsoTwist3DSplittedVector() override;
    //////////////////////////////////////////////////////////////////////////
-   void swap();
+   void swap() override;
    //////////////////////////////////////////////////////////////////////////
-   virtual void getDistribution( LBMReal* const f, size_t x1, size_t x2, size_t x3);
+   void getDistribution( LBMReal* const f, size_t x1, size_t x2, size_t x3) override;
    //////////////////////////////////////////////////////////////////////////
-   virtual void setDistribution(const LBMReal* const f, size_t x1, size_t x2, size_t x3);
+   void setDistribution(const LBMReal* const f, size_t x1, size_t x2, size_t x3) override;
    ////////////////////////////////////////////////////////////////////////
-   virtual void getDistributionInv( LBMReal* const f, size_t x1, size_t x2, size_t x3);
+   void getDistributionInv( LBMReal* const f, size_t x1, size_t x2, size_t x3) override;
    //////////////////////////////////////////////////////////////////////////
-   virtual void setDistributionInv(const LBMReal* const f, size_t x1, size_t x2, size_t x3);
+   void setDistributionInv(const LBMReal* const f, size_t x1, size_t x2, size_t x3) override;
    //////////////////////////////////////////////////////////////////////////
-   virtual void setDistributionForDirection(const LBMReal* const f, size_t x1, size_t x2, size_t x3, unsigned long int direction);
+   void setDistributionForDirection(const LBMReal* const f, size_t x1, size_t x2, size_t x3, unsigned long int direction) override;
    //////////////////////////////////////////////////////////////////////////
-   virtual void setDistributionForDirection(LBMReal f, size_t x1, size_t x2, size_t x3, int direction);
+   void setDistributionForDirection(LBMReal f, size_t x1, size_t x2, size_t x3, int direction) override;
    //////////////////////////////////////////////////////////////////////////
-   virtual LBMReal getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction);
+   LBMReal getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction) override;
    //////////////////////////////////////////////////////////////////////////
-   virtual void setDistributionInvForDirection(const LBMReal* const f, size_t x1, size_t x2, size_t x3, unsigned long int direction);
+   void setDistributionInvForDirection(const LBMReal* const f, size_t x1, size_t x2, size_t x3, unsigned long int direction) override;
    //////////////////////////////////////////////////////////////////////////
-   virtual void setDistributionInvForDirection(LBMReal f, size_t x1, size_t x2, size_t x3, unsigned long int direction);
+   void setDistributionInvForDirection(LBMReal f, size_t x1, size_t x2, size_t x3, unsigned long int direction) override;
    //////////////////////////////////////////////////////////////////////////
-   virtual LBMReal getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction);
+   LBMReal getDistributionForDirection(size_t x1, size_t x2, size_t x3, int direction) override;
    //////////////////////////////////////////////////////////////////////////
-   size_t getNX1() const;
+   size_t getNX1() const override;
    //////////////////////////////////////////////////////////////////////////
-   size_t getNX2() const;
+   size_t getNX2() const override;
    //////////////////////////////////////////////////////////////////////////
-   size_t getNX3() const;
+   size_t getNX3() const override;
    //////////////////////////////////////////////////////////////////////////
    CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr getLocalDistributions();
    //////////////////////////////////////////////////////////////////////////

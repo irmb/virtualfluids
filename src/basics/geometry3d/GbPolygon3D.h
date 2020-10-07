@@ -102,7 +102,7 @@ public:
    */
    GbPolygon3D(GbPolygon3D *polygon);
 
-   ~GbPolygon3D();
+   ~GbPolygon3D() override;
 
    /*======================================================================*/
 

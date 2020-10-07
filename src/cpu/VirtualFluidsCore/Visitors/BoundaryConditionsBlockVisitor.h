@@ -50,7 +50,7 @@ class BoundaryConditionsBlockVisitor : public Block3DVisitor
 {
 public:
    BoundaryConditionsBlockVisitor();
-   virtual ~BoundaryConditionsBlockVisitor();
+   ~BoundaryConditionsBlockVisitor() override;
    
       void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
    void addBC(SPtr<BCAdapter> bc);

@@ -55,7 +55,7 @@ public:
    //! \param numOfThreads is number of threads
    //! \param comm is Communicator object
    NUPSCounterCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, int numOfThreads, SPtr<Communicator> comm);
-   virtual ~NUPSCounterCoProcessor();
+   ~NUPSCounterCoProcessor() override;
 
    void process(double step)override;
 
