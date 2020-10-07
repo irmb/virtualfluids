@@ -100,9 +100,12 @@ endfunction()
 ##
 #################################################################################
 function(vf_add_library)
+
     # enable clang tidy for this target
-    find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
-    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
+    if(BUILD_VF_CLANG_TIDY)
+        find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
+        set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
+    endif()
 
     set( options )
     set( oneValueArgs )
