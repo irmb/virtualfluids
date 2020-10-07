@@ -30,6 +30,9 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual(sut.x3, 3)
 
     def test_when_setting_line_points__line_should_have_points(self):
+        """
+        WHEN setting line points THEN line should have points
+        """
         sut = GbLine3D()
 
         point1 = GbPoint3D()
