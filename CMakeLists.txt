@@ -57,6 +57,9 @@ endif()
 include(CMakePrintHelpers)
 include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
 
+find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
+set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
+
 #################################################################################
 #  COMMON LIBRARIES
 #################################################################################
