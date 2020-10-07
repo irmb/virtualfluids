@@ -8,6 +8,7 @@ bugprone-*,
 -bugprone-macro-parentheses,
 
 misc-*,
+-misc-non-private-member-variables-in-classes,
 
 modernize-*,
 -modernize-avoid-c-arrays,
