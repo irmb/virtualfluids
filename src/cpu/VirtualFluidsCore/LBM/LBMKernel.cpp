@@ -43,7 +43,7 @@ LBMKernel::LBMKernel()
    this->setForcingX1(0.0);
    this->setForcingX2(0.0);
    this->setForcingX3(0.0);
-   dataSet = SPtr<DataSet3D>(new DataSet3D());
+   dataSet = std::make_shared<DataSet3D>();
    this->nx[0] = 0;
    this->nx[1] = 0;
    this->nx[2] = 0;

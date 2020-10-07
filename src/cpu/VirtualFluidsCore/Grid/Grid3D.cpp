@@ -73,7 +73,7 @@ Grid3D::Grid3D(SPtr<Communicator> comm, int blockNx1, int blockNx2, int blockNx3
 {
    levelSet.resize(Grid3DSystem::MAXLEVEL+1);
    rank = comm->getProcessID();
-   trafo = SPtr<CoordinateTransformation3D>(new CoordinateTransformation3D(0.0, 0.0, 0.0, (double)blockNx1, (double)blockNx2, (double)blockNx3));
+   trafo = std::make_shared<CoordinateTransformation3D>(0.0, 0.0, 0.0, (double)blockNx1, (double)blockNx2, (double)blockNx3);
    UbTupleInt3 minInd(0, 0, 0);
    UbTupleInt3 maxInd(gridNx1, gridNx2, gridNx3);
    this->fillExtentWithBlocks(minInd, maxInd);
@@ -304,14 +304,14 @@ bool Grid3D::expandBlock(int ix1, int ix2, int ix3, int level)
    int bottom = ix3<<1;
    int top    = bottom+1;
 
-   SPtr<Block3D> blockBSW = SPtr<Block3D>(new Block3D(west, south, bottom, l));
-   SPtr<Block3D> blockBSE = SPtr<Block3D>(new Block3D(east, south, bottom, l));
-   SPtr<Block3D> blockBNW = SPtr<Block3D>(new Block3D(west, north, bottom, l));
-   SPtr<Block3D> blockBNE = SPtr<Block3D>(new Block3D(east, north, bottom, l));
-   SPtr<Block3D> blockTSW = SPtr<Block3D>(new Block3D(west, south, top, l));
-   SPtr<Block3D> blockTSE = SPtr<Block3D>(new Block3D(east, south, top, l));
-   SPtr<Block3D> blockTNW = SPtr<Block3D>(new Block3D(west, north, top, l));
-   SPtr<Block3D> blockTNE = SPtr<Block3D>(new Block3D(east, north, top, l));
+   auto blockBSW = std::make_shared<Block3D>(west, south, bottom, l);
+   auto blockBSE = std::make_shared<Block3D>(east, south, bottom, l);
+   auto blockBNW = std::make_shared<Block3D>(west, north, bottom, l);
+   auto blockBNE = std::make_shared<Block3D>(east, north, bottom, l);
+   auto blockTSW = std::make_shared<Block3D>(west, south, top, l);
+   auto blockTSE = std::make_shared<Block3D>(east, south, top, l);
+   auto blockTNW = std::make_shared<Block3D>(west, north, top, l);
+   auto blockTNE = std::make_shared<Block3D>(east, north, top, l);
 
    if (!this->deleteBlock(ix1, ix2, ix3, level))
       throw UbException(UB_EXARGS, "could not delete block");
@@ -379,7 +379,7 @@ SPtr<Block3D> Grid3D::collapseBlock(int fix1, int fix2, int fix3, int flevel, in
    /*TNE*/fineBlocks[6] = this->getBlock(fx1[1], fx2[1], fx3[1], flevel);
    /*TNW*/fineBlocks[7] = this->getBlock(fx1[0], fx2[1], fx3[1], flevel);
 
-   SPtr<Block3D> cblock = SPtr<Block3D>(new Block3D(cix1, cix2, cix3, clevel));
+   auto cblock = std::make_shared<Block3D>(cix1, cix2, cix3, clevel);
 
    for (int i=0; i<2; i++)
       for (int k=0; k<2; k++)

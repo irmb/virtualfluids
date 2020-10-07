@@ -53,7 +53,7 @@
 class IndexerX2X1
 {
 public:
-   typedef int size_type;
+   using size_type = int;
 public:
    inline std::size_t getIndex(const size_type& x1, const size_type& x2, const size_type& nx1, const size_type&  /*nx2*/) const
    {

@@ -65,7 +65,7 @@ namespace input
 
     void ConfigInput::makeLower(std::string &value) const
     {
-        for (unsigned i = 0; i < value.size(); i++)
+        for (size_t i = 0; i < value.size(); i++)
             value[i] = tolower(value[i]);
     }
 

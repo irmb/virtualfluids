@@ -41,7 +41,7 @@ namespace input
 
     protected:
         std::istream &stream;
-        typedef std::pair <std::string, std::string> String_Pair;
+        using String_Pair = std::pair <std::string, std::string>;
         std::map<std::string, std::string> configEntries;
     };
 }

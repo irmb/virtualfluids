@@ -57,7 +57,7 @@
    #include "dirent.h"
    #include <sys/stat.h>
    #include <unistd.h>
-   #include <string.h>
+   #include <cstring>
 #elif defined(__AIX__)
    #define UBSYSTEM_AIX
    #include "dirent.h"
@@ -493,7 +493,7 @@ namespace UbSystem
    template<typename Ta, typename Tb>
    class IfThenElse<true, Ta, Tb> {
    public:
-      typedef Ta ResultT;
+      using ResultT = Ta;
    };
 
    // partial specialization: false yields third argument

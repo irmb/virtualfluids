@@ -53,7 +53,7 @@ class Block3D;
 class Grid3D;
 class GbObject3D;
 
-typedef std::map<SPtr<Block3D>, std::set< std::vector<int> > > BcNodeIndicesMap;
+using BcNodeIndicesMap = std::map<SPtr<Block3D>, std::set< std::vector<int> > >;
 using SolidNodeIndicesMap = std::map<SPtr<Block3D>, std::set<UbTupleInt3> >;
 
 //! \brief A specialized class for grid generation.

@@ -54,9 +54,6 @@ BasicCalculator::BasicCalculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additional
 
 }
 //////////////////////////////////////////////////////////////////////////
-BasicCalculator::~BasicCalculator()
-= default;
-//////////////////////////////////////////////////////////////////////////
 void BasicCalculator::calculate()
 {
    UBLOG(logDEBUG1, "BasicCalculator::calculate() - started");

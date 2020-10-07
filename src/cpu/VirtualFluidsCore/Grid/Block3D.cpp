@@ -495,7 +495,7 @@ void Block3D::addWeight( int rank, int weight )
 //////////////////////////////////////////////////////////////////////////
 void Block3D::addWeightForAll( int weight )
 {
-   typedef std::map<int, int> wMap;
+   using wMap = std::map<int, int>;
    for (wMap::value_type &w : this->weight)
    {
       w.second += weight;

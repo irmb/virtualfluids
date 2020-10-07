@@ -44,7 +44,7 @@ BCProcessor::BCProcessor()
 BCProcessor::BCProcessor(SPtr<ILBMKernel> kernel)
 {
    SPtr<DistributionArray3D> distributions = std::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
-   bcArray = SPtr<BCArray3D>(new BCArray3D( distributions->getNX1(), distributions->getNX2(), distributions->getNX3(), BCArray3D::FLUID));
+   bcArray = std::make_shared<BCArray3D>(distributions->getNX1(), distributions->getNX2(), distributions->getNX3(), BCArray3D::FLUID);
 }
 //////////////////////////////////////////////////////////////////////////
 BCProcessor::~BCProcessor()
