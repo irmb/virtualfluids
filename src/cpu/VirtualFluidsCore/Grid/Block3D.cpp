@@ -45,16 +45,10 @@ Block3D::Block3D()
 }
 //////////////////////////////////////////////////////////////////////////
 Block3D::Block3D(int x1, int x2, int x3, int level)
-               : x1(x1), x2(x2), x3(x3)
-               ,active(true)
-               ,globalID(-1)
-               ,rank(0),part(0)
-               ,interpolationFlagCF(0)
-               ,interpolationFlagFC(0)
-               ,level(level)
-               ,bundle(0)
-               ,lrank(-1)
-               ,localID(-1)
+               : x1(x1), x2(x2), x3(x3),
+               rank(0),part(0),
+               level(level), bundle(0)
+               
 {
    globalID = counter++;
 }

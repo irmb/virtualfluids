@@ -81,8 +81,8 @@ public:
    /*==========================================================*/
    CbVector( const size_type size, CbVectorAllocator<value_type>* const& allocator = new CbVectorAllocatorStd<value_type>, const value_type& value=value_type() )
       :  ptrData(NULL)
-       , dataSize(0)
-       , allocator(allocator)
+       , 
+        allocator(allocator)
    {
       this->allocator->alloc(*this,size,value);
    }

@@ -55,33 +55,15 @@ Grid3D::Grid3D()
    levelSet.resize(Grid3DSystem::MAXLEVEL+1);
 }
 //////////////////////////////////////////////////////////////////////////
-Grid3D::Grid3D(SPtr<Communicator> comm) :
-   rank(0),
-   bundle(0),
-   orgDeltaX(1.0),
-   periodicX1(false),
-   periodicX2(false),
-   periodicX3(false),
-   timeStep(0.0),
-   blockNx1(0),
-   blockNx2(0),
-   blockNx3(0),
-   nx1(0),
-   nx2(0),
-   nx3(0)
+Grid3D::Grid3D(SPtr<Communicator> comm) 
+   
 {
    levelSet.resize(Grid3DSystem::MAXLEVEL+1);
    rank = comm->getProcessID();
 }
 //////////////////////////////////////////////////////////////////////////
 Grid3D::Grid3D(SPtr<Communicator> comm, int blockNx1, int blockNx2, int blockNx3, int gridNx1, int gridNx2, int gridNx3) :
-   rank(0),
-   bundle(0),
-   orgDeltaX(1.0),
-   periodicX1(false),
-   periodicX2(false),
-   periodicX3(false),
-   timeStep(0.0),
+   
    blockNx1(blockNx1),
    blockNx2(blockNx2),
    blockNx3(blockNx2),
