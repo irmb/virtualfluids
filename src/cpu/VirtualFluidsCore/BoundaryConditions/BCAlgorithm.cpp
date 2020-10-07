@@ -38,7 +38,7 @@
 #include "BCArray3D.h"
 
 
-BCAlgorithm::BCAlgorithm() : compressible(false)
+BCAlgorithm::BCAlgorithm()  
 {
 
 }

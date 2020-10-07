@@ -40,16 +40,7 @@
 
 int Block3D::counter = 0;
 //////////////////////////////////////////////////////////////////////////
-Block3D::Block3D() : x1(0),x2(0),x3(0)
-                     ,active(true)
-                     ,globalID(-1)
-                     ,rank(-1),part(-1)
-                     ,interpolationFlagCF(0)
-                     ,interpolationFlagFC(0)
-                     ,level(-1)
-                     ,bundle(-1)
-                     ,lrank(-1)
-                     ,localID(-1)
+Block3D::Block3D() 
 {
 }
 //////////////////////////////////////////////////////////////////////////

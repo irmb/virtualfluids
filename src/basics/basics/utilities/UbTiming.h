@@ -223,8 +223,8 @@ class UbTimer
 {
 public:
    UbTimer(const bool& storeLapTimes = false) 
-      :  name("unamed"), isMeasuring(false), storeLapTimes(storeLapTimes)
-       , startTime(0.0), totalTime(0.0), lapTime(0.0)
+      :  name("unamed"),  storeLapTimes(storeLapTimes)
+        
    {
 
    }
@@ -355,12 +355,12 @@ public:
 
 protected:
    std::string name;
-   bool        isMeasuring;
+   bool        isMeasuring{false};
    bool        storeLapTimes;
 
-   double      startTime;
-   double      totalTime;
-   double      lapTime;
+   double      startTime{0.0};
+   double      totalTime{0.0};
+   double      lapTime{0.0};
    
    std::vector<double> lapTimes;
 };

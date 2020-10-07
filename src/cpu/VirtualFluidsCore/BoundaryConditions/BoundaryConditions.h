@@ -48,24 +48,7 @@ class BoundaryConditions
 {
 public:
    BoundaryConditions() 
-      : noslipBoundaryFlags(0)		
-      , slipBoundaryFlags(0)		
-      , velocityBoundaryFlags(0)		
-      , densityBoundaryFlags(0)		
-      , wallModelBoundaryFlags(0)
-      , bcVelocityX1(0.0f)
-      , bcVelocityX2(0.0f)
-      , bcVelocityX3(0.0f)
-      , bcDensity(0.0f)
-      , bcLodiDensity(0.0f)
-      , bcLodiVelocityX1(0.0f)
-      , bcLodiVelocityX2(0.0f)
-      , bcLodiVelocityX3(0.0f)
-      , bcLodiLentgh(0.0f)
-      , nx1(0.0f)
-      , nx2(0.0f)
-      , nx3(0.0f)
-      , algorithmType(-1)
+       
    {
       UB_STATIC_ASSERT( sizeof(long long) >= 8);
       UB_STATIC_ASSERT( (sizeof(long long)*8) >= (D3Q27System::FENDDIR+1)*BoundaryConditions::optionDigits );
@@ -258,26 +241,26 @@ public:
 protected:
    LBMReal q[D3Q27System::FENDDIR+1];
 
-   long long noslipBoundaryFlags;		
-   long long slipBoundaryFlags;		
-   long long velocityBoundaryFlags;		
-   long long densityBoundaryFlags;		
-   long long wallModelBoundaryFlags;
+   long long noslipBoundaryFlags{0};		
+   long long slipBoundaryFlags{0};		
+   long long velocityBoundaryFlags{0};		
+   long long densityBoundaryFlags{0};		
+   long long wallModelBoundaryFlags{0};
 
-   LBMReal  bcVelocityX1;
-   LBMReal  bcVelocityX2;
-   LBMReal  bcVelocityX3;
-   LBMReal  bcDensity;
+   LBMReal  bcVelocityX1{0.0f};
+   LBMReal  bcVelocityX2{0.0f};
+   LBMReal  bcVelocityX3{0.0f};
+   LBMReal  bcDensity{0.0f};
 
-   LBMReal  bcLodiDensity;
-   LBMReal  bcLodiVelocityX1;
-   LBMReal  bcLodiVelocityX2;
-   LBMReal  bcLodiVelocityX3;
-   LBMReal  bcLodiLentgh;
+   LBMReal  bcLodiDensity{0.0f};
+   LBMReal  bcLodiVelocityX1{0.0f};
+   LBMReal  bcLodiVelocityX2{0.0f};
+   LBMReal  bcLodiVelocityX3{0.0f};
+   LBMReal  bcLodiLentgh{0.0f};
 
-   LBMReal  nx1,nx2,nx3;
+   LBMReal  nx1{0.0f},nx2{0.0f},nx3{0.0f};
 
-   char algorithmType;
+   char algorithmType{-1};
 };
 
 #endif

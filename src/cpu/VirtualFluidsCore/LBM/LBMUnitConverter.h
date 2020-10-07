@@ -66,10 +66,8 @@ public:
 
    enum WORLD_MATERIAL { WATER  = 0, SEAWWATER  = 1, AIR_20C  = 2, OIL  = 3  }; 
 
-   LBMUnitConverter() :  factorLengthLbToW(1.0),
-                         factorTimeLbToW(1.0),
-                         factorMassLbToW(1.0), 
-                         refRhoLb(1.0)
+   LBMUnitConverter()  
+                         
    {
 
    }
@@ -180,10 +178,10 @@ public:
    }
 
    protected:
-   double factorLengthLbToW;
-   double factorTimeLbToW;
-   double factorMassLbToW;
-   double refRhoLb;
+   double factorLengthLbToW{1.0};
+   double factorTimeLbToW{1.0};
+   double factorMassLbToW{1.0};
+   double refRhoLb{1.0};
    double factorTimeWithoutDx;
 };
 

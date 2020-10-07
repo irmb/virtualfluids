@@ -43,7 +43,7 @@ class Grid3D;
 class Block3DVisitor
 {
 public:
-   Block3DVisitor() : startLevel(-1), stopLevel(-1)
+   Block3DVisitor()  
    {
    }
 
@@ -62,8 +62,8 @@ public:
    void setStopLevel(int level);
 
 private:
-   int  startLevel;
-   int  stopLevel;
+   int  startLevel{-1};
+   int  stopLevel{-1};
 };
 //////////////////////////////////////////////////////////////////////////
 inline int  Block3DVisitor::getStartLevel() const

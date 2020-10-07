@@ -73,8 +73,8 @@ public:
    /*==========================================================*/
    CbVector( CbVectorAllocator<value_type>* const& allocator = new CbVectorAllocatorStd<value_type> )
       :  ptrData(NULL)
-       , dataSize(0)
-       , allocator(allocator)
+       , 
+        allocator(allocator)
    {
       this->allocator->alloc(*this,0,value_type());
    }
@@ -205,7 +205,7 @@ public:
 
 private:
    value_type* ptrData;
-   size_type   dataSize;
+   size_type   dataSize{0};
    CbVectorAllocator<value_type>* allocator;
    CbVector<value_type>(const CbVector<value_type>& src);
    //CbVector<value_type>& operator=(const CbVector<value_type>& src);

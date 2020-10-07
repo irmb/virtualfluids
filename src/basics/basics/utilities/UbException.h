@@ -109,11 +109,11 @@ public:
    }
    //////////////////////////////////////////////////////////////////////////
    //destructor
-   ~UbException() throw() override = default;
+   ~UbException() noexcept override = default;
    //////////////////////////////////////////////////////////////////////////
    //virtual public methods
    //returns  exception-string
-   const char* what() const throw() override
+   const char* what() const noexcept override
    {
       exceptionString = this->toString();
       return exceptionString.c_str();  //ansonsten ist das Verhalten anschliessend undefiniert!

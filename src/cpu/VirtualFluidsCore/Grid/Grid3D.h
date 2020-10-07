@@ -249,25 +249,25 @@ private:
    BlockIDMap blockIdMap;
    Interactor3DSet interactors;
 
-   int rank;
-   int bundle;
+   int rank{0};
+   int bundle{0};
    
-   bool periodicX1;
-   bool periodicX2;
-   bool periodicX3;
+   bool periodicX1{false};
+   bool periodicX2{false};
+   bool periodicX3{false};
 
-   int blockNx1;    
-   int blockNx2;    
-   int blockNx3; 
+   int blockNx1{0};    
+   int blockNx2{0};    
+   int blockNx3{0}; 
 
-   int nx1;    
-   int nx2;    
-   int nx3;    
+   int nx1{0};    
+   int nx2{0};    
+   int nx3{0};    
 
    SPtr<CoordinateTransformation3D> trafo;
-   double orgDeltaX;
+   double orgDeltaX{1.0};
 
-   double timeStep;
+   double timeStep{0.0};
    
 };
 

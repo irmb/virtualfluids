@@ -49,20 +49,8 @@
 
 using namespace std;
 
-Grid3D::Grid3D() :
-   rank(0),
-   bundle(0),
-   orgDeltaX(1.0),
-   periodicX1(false),
-   periodicX2(false),
-   periodicX3(false),
-   timeStep(0.0),
-   blockNx1(0),
-   blockNx2(0),
-   blockNx3(0),
-   nx1(0),
-   nx2(0),
-   nx3(0)
+Grid3D::Grid3D() 
+   
 {
    levelSet.resize(Grid3DSystem::MAXLEVEL+1);
 }

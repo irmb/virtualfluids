@@ -37,11 +37,8 @@
 #include "Block3D.h"
 #include "BCArray3D.h"
 
-LBMKernel::LBMKernel() : ghostLayerWidth(1),
-                             deltaT(1.0),
-                             withForcing(false),
-                             withSpongeLayer(false),
-                             compressible(false)
+LBMKernel::LBMKernel() 
+                             
 {
    this->setForcingX1(0.0);
    this->setForcingX2(0.0);

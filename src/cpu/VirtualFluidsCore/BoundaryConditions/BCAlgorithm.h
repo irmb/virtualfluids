@@ -74,7 +74,7 @@ public:
    virtual void applyBC() = 0;
 
 protected:
-   bool compressible;
+   bool compressible{false};
    char type;
    bool preCollision;
 

@@ -138,26 +138,26 @@ public:
    static void setMaxGlobalID(int c) { counter = 0; }
 
 private:
-  int   x1;
-  int   x2;
-  int   x3;
+  int   x1{0};
+  int   x2{0};
+  int   x3{0};
 
-  bool active;
+  bool active{true};
 
-  int interpolationFlagCF;
-  int interpolationFlagFC;
+  int interpolationFlagCF{0};
+  int interpolationFlagFC{0};
 
   SPtr<LBMKernel> kernel;
   std::vector<SPtr<Block3DConnector> > connectors;
   std::map<int, int> weight;
 
-  int bundle;
-  int rank;
-  int lrank;
-  int globalID;
-  int localID;
-  int part;
-  int level;
+  int bundle{-1};
+  int rank{-1};
+  int lrank{-1};
+  int globalID{-1};
+  int localID{-1};
+  int part{-1};
+  int level{-1};
   static int counter;
 
 };
