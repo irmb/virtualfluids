@@ -210,10 +210,10 @@ public:
    virtual std::vector< std::string > getBCNames()
    {
       std::vector< std::string > tmp;
-      tmp.push_back( "NoSlipBC"   );
-      tmp.push_back( "SlipBC"     );
-      tmp.push_back( "VelocityBC" );
-      tmp.push_back( "DensityBC"  );
+      tmp.emplace_back("NoSlipBC"   );
+      tmp.emplace_back("SlipBC"     );
+      tmp.emplace_back("VelocityBC" );
+      tmp.emplace_back("DensityBC"  );
       return tmp;
    }
    virtual std::vector< long long > getBCFlags()

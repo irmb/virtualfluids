@@ -136,7 +136,7 @@ public:
       }
 
       //nu aber:
-      schedules.push_back(UbSchedule(step, begin, end));
+      schedules.emplace_back(step, begin, end);
 
       if( end>maxT ) maxT = end;
 

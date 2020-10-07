@@ -49,25 +49,25 @@ VelocityBCAdapter::VelocityBCAdapter(const bool& vx1, const bool& vx2, const boo
 /*==========================================================*/
 VelocityBCAdapter::VelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function, const double& startTime, const double& endTime )
 {
-   if(vx1) this->vx1BCs.push_back(BCFunction(function,startTime,endTime));
-   if(vx2) this->vx2BCs.push_back(BCFunction(function,startTime,endTime));
-   if(vx3) this->vx3BCs.push_back(BCFunction(function,startTime,endTime));
+   if(vx1) this->vx1BCs.emplace_back(function,startTime,endTime);
+   if(vx2) this->vx2BCs.emplace_back(function,startTime,endTime);
+   if(vx3) this->vx3BCs.emplace_back(function,startTime,endTime);
    this->init();
 }
 /*==========================================================*/
 VelocityBCAdapter::VelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function1, const mu::Parser& function2, const mu::Parser& function3, const double& startTime, const double& endTime )
 {
-   if(vx1) this->vx1BCs.push_back(BCFunction(function1,startTime,endTime));
-   if(vx2) this->vx2BCs.push_back(BCFunction(function2,startTime,endTime));
-   if(vx3) this->vx3BCs.push_back(BCFunction(function3,startTime,endTime));
+   if(vx1) this->vx1BCs.emplace_back(function1,startTime,endTime);
+   if(vx2) this->vx2BCs.emplace_back(function2,startTime,endTime);
+   if(vx3) this->vx3BCs.emplace_back(function3,startTime,endTime);
    this->init();
 }
 /*==========================================================*/
 VelocityBCAdapter::VelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const string& functionstring, const double& startTime, const double& endTime )
 {
-   if(vx1) this->vx1BCs.push_back(BCFunction(functionstring,startTime,endTime));
-   if(vx2) this->vx2BCs.push_back(BCFunction(functionstring,startTime,endTime));
-   if(vx3) this->vx3BCs.push_back(BCFunction(functionstring,startTime,endTime));
+   if(vx1) this->vx1BCs.emplace_back(functionstring,startTime,endTime);
+   if(vx2) this->vx2BCs.emplace_back(functionstring,startTime,endTime);
+   if(vx3) this->vx3BCs.emplace_back(functionstring,startTime,endTime);
    this->init();
 }
 /*==========================================================*/
@@ -99,9 +99,9 @@ VelocityBCAdapter::VelocityBCAdapter(const double& vx1, const double& vx1StartTi
                                                const double& vx2, const double& vx2StartTime, const double& vx2EndTime,
                                                const double& vx3, const double& vx3StartTime, const double& vx3EndTime )
 {
-   this->vx1BCs.push_back(BCFunction(vx1,vx1StartTime,vx1EndTime));
-   this->vx2BCs.push_back(BCFunction(vx2,vx2StartTime,vx2EndTime));
-   this->vx3BCs.push_back(BCFunction(vx3,vx3StartTime,vx3EndTime));
+   this->vx1BCs.emplace_back(vx1,vx1StartTime,vx1EndTime);
+   this->vx2BCs.emplace_back(vx2,vx2StartTime,vx2EndTime);
+   this->vx3BCs.emplace_back(vx3,vx3StartTime,vx3EndTime);
    this->init();
 }
 /*==========================================================*/
@@ -109,9 +109,9 @@ VelocityBCAdapter::VelocityBCAdapter(const string& vx1Function, const double& vx
                                                const string& vx2Function, const double& vx2StartTime, const double& vx2EndTime,
                                                const string& vx3Function, const double& vx3StartTime, const double& vx3EndTime ) 
 {
-   if(vx1Function.size()) this->vx1BCs.push_back(BCFunction(vx1Function,vx1StartTime,vx1EndTime));
-   if(vx2Function.size()) this->vx2BCs.push_back(BCFunction(vx2Function,vx2StartTime,vx2EndTime));
-   if(vx3Function.size()) this->vx3BCs.push_back(BCFunction(vx3Function,vx3StartTime,vx3EndTime));
+   if(vx1Function.size()) this->vx1BCs.emplace_back(vx1Function,vx1StartTime,vx1EndTime);
+   if(vx2Function.size()) this->vx2BCs.emplace_back(vx2Function,vx2StartTime,vx2EndTime);
+   if(vx3Function.size()) this->vx3BCs.emplace_back(vx3Function,vx3StartTime,vx3EndTime);
    this->init();
 }
 /*==========================================================*/
@@ -120,9 +120,9 @@ void VelocityBCAdapter::setNewVelocities(const double& vx1, const double& vx1Sta
                                               const double& vx3, const double& vx3StartTime, const double& vx3EndTime )
 {
    this->clear();
-   this->vx1BCs.push_back(BCFunction(vx1,vx1StartTime,vx1EndTime));
-   this->vx2BCs.push_back(BCFunction(vx2,vx2StartTime,vx2EndTime));
-   this->vx3BCs.push_back(BCFunction(vx3,vx3StartTime,vx3EndTime));
+   this->vx1BCs.emplace_back(vx1,vx1StartTime,vx1EndTime);
+   this->vx2BCs.emplace_back(vx2,vx2StartTime,vx2EndTime);
+   this->vx3BCs.emplace_back(vx3,vx3StartTime,vx3EndTime);
    this->init();
 }
 /*==========================================================*/
