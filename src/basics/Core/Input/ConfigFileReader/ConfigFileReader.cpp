@@ -13,14 +13,10 @@ BASICS_EXPORT std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance
 }
 
 ConfigFileReader::ConfigFileReader()
-{
-
-}
+= default;
 
 BASICS_EXPORT ConfigFileReader::~ConfigFileReader()
-{
-
-}
+= default;
 
 BASICS_EXPORT std::shared_ptr<ConfigData> ConfigFileReader::readConfigFile(const std::string &filePath) const
 {

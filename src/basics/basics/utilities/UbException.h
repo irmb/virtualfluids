@@ -80,7 +80,7 @@
 class UbException : public std::runtime_error
 {
 public:
-   typedef UbTuple< std::string, int, std::string, std::string > ExceptionData;
+   using ExceptionData = UbTuple<std::string, int, std::string, std::string>;
 public:
    //////////////////////////////////////////////////////////////////////////
    //constructors
@@ -109,11 +109,11 @@ public:
    }
    //////////////////////////////////////////////////////////////////////////
    //destructor
-   virtual ~UbException() throw() { }
+   ~UbException() noexcept override = default;
    //////////////////////////////////////////////////////////////////////////
    //virtual public methods
    //returns  exception-string
-   virtual const char* what() const throw()
+   const char* what() const noexcept override
    {
       exceptionString = this->toString();
       return exceptionString.c_str();  //ansonsten ist das Verhalten anschliessend undefiniert!

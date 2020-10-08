@@ -63,26 +63,27 @@ template< typename T >
 class CbVector
 {
 public:
-   typedef T           value_type;
-   typedef value_type* pointer;
-   typedef std::size_t size_type;
+   using value_type = T;
+   using pointer = value_type *;
+   using size_type = std::size_t;
 
    friend class CbVectorAllocator<value_type>; //um auf ptrData und dataSize zugreifen zu koennen!
 
+    CbVector<value_type>(const CbVector<value_type>& src) = delete;
 public:
    /*==========================================================*/
    CbVector( CbVectorAllocator<value_type>* const& allocator = new CbVectorAllocatorStd<value_type> )
       :  ptrData(NULL)
-       , dataSize(0)
-       , allocator(allocator)
+       , 
+        allocator(allocator)
    {
       this->allocator->alloc(*this,0,value_type());
    }
    /*==========================================================*/
    CbVector( const size_type size, CbVectorAllocator<value_type>* const& allocator = new CbVectorAllocatorStd<value_type>, const value_type& value=value_type() )
       :  ptrData(NULL)
-       , dataSize(0)
-       , allocator(allocator)
+       , 
+        allocator(allocator)
    {
       this->allocator->alloc(*this,size,value);
    }
@@ -99,7 +100,8 @@ public:
    /*=======================================================================*/
    CbVector& operator= (const CbVector& src)
    {
-      if(this == &src) return *this;
+      if(this == &src)
+          return *this;
 
       //gespeicherte Datenelemente loeschen
       //Laenge anpassen
@@ -205,9 +207,8 @@ public:
 
 private:
    value_type* ptrData;
-   size_type   dataSize;
+   size_type   dataSize{0};
    CbVectorAllocator<value_type>* allocator;
-   CbVector<value_type>(const CbVector<value_type>& src);
    //CbVector<value_type>& operator=(const CbVector<value_type>& src);
 };
 
@@ -218,12 +219,12 @@ template< typename T >
 class CbVectorAllocator
 {
 public:
-   typedef typename CbVector<T>::value_type          value_type;
-   typedef typename CbVector<value_type>::size_type  size_type;
+   using value_type = typename CbVector<T>::value_type;
+   using size_type = typename CbVector<value_type>::size_type;
 
 public:
-   CbVectorAllocator() {}
-   virtual ~CbVectorAllocator() {}
+   CbVectorAllocator() = default;
+   virtual ~CbVectorAllocator() = default;
 
    virtual bool alloc(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type()) = 0;
    virtual bool resize(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type()) = 0;
@@ -254,8 +255,8 @@ class CbVectorAllocatorStd : public CbVectorAllocator<T>
 {
 public:
    //typedefs wiederholen, da Basisklasse = template -> "Dependent-Base"-Problem
-   typedef typename CbVector<T>::value_type          value_type;
-   typedef typename CbVector<value_type>::size_type  size_type;
+   using value_type = typename CbVector<T>::value_type;
+   using size_type = typename CbVector<value_type>::size_type;
 
 public:
    CbVectorAllocatorStd() : CbVectorAllocator<value_type>()

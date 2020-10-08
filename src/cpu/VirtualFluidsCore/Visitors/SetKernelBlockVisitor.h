@@ -62,10 +62,9 @@ public:
     SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, int &numberOfProcesses,
                           SetKernelBlockVisitor::Action action = SetKernelBlockVisitor::NewKernel);
 
-    virtual ~SetKernelBlockVisitor()
-    {}
+    ~SetKernelBlockVisitor() override = default;
 
-    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block);
 
     void setNoDataSetFlag(bool flag);
 

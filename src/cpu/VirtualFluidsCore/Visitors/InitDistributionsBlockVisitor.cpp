@@ -139,9 +139,8 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
    this->muVx3.DefineVar("x1",&x1); this->muVx3.DefineVar("x2",&x2); this->muVx3.DefineVar("x3",&x3);
    this->muRho.DefineVar("x1",&x1); this->muRho.DefineVar("x2",&x2); this->muRho.DefineVar("x3",&x3);
 
-   //Funktionszeiger
-   typedef void (*CalcFeqsFct)(LBMReal* const& /*feq[27]*/,const LBMReal& /*(d)rho*/,const LBMReal& /*vx1*/,const LBMReal& /*vx2*/,const LBMReal& /*vx3*/);
-   CalcFeqsFct   calcFeqsFct   = NULL;
+   using CalcFeqsFct = void (*)(LBMReal* const& /*feq[27]*/,const LBMReal& /*(d)rho*/,const LBMReal& /*vx1*/,const LBMReal& /*vx2*/,const LBMReal& /*vx3*/);
+   CalcFeqsFct calcFeqsFct   = NULL;
    
    LBMReal vx1,vx2,vx3,rho;
 
@@ -168,9 +167,9 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
 
       LBMReal f[D3Q27System::ENDF+1];
 
-      for(int ix3=0; ix3<bcArray->getNX3(); ix3++)
-         for(int ix2=0; ix2<bcArray->getNX2(); ix2++)
-            for(int ix1=0; ix1<bcArray->getNX1(); ix1++)
+      for(size_t ix3=0; ix3<bcArray->getNX3(); ix3++)
+         for(size_t ix2=0; ix2<bcArray->getNX2(); ix2++)
+            for(size_t ix1=0; ix1<bcArray->getNX1(); ix1++)
             {
                Vector3D coords = grid->getNodeCoordinates(block, ix1, ix2, ix3);
                x1 = coords[0];

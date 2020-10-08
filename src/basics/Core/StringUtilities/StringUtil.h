@@ -37,9 +37,9 @@ public:
     static BASICS_EXPORT bool endsWith(const std::string &input, const std::string &end);
 
 private:
-    StringUtil() {};
-    StringUtil(const StringUtil&) {};
-    virtual ~StringUtil() {};
+    StringUtil() = default;;
+    StringUtil(const StringUtil&) = default;;
+    virtual ~StringUtil() = default;;
 
     static bool toBool(bool &t, const std::string &input, std::ios_base &(*f)(std::ios_base&));
 };

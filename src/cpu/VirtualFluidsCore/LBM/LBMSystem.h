@@ -49,7 +49,7 @@ namespace LBMSystem
    typedef float real;
    #define REAL_CAST(x) ( (LBMSystem::real)(x) )
 #else
-   typedef double real;
+   using real = double;
    #define REAL_CAST(x) ( x )
 #endif
 
@@ -89,7 +89,7 @@ namespace LBMSystem
 }
 
 //some typedefs for global namespace
-typedef LBMSystem::real LBMReal;
+using LBMReal = LBMSystem::real;
 
 #endif
 

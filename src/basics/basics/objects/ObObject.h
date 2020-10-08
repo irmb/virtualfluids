@@ -43,14 +43,14 @@ public:
     ObObject() = default;
    ObObject(const std::string& name) : name(name) { }
 
-   virtual ~ObObject() = default;
+   ~ObObject() override = default;
 
    virtual ObObject* clone() = 0;
 
    virtual std::string getName()  { return name; }
    void setName(std::string name) { this->name = name; }
 
-   virtual std::string toString() override = 0;
+   std::string toString() override = 0;
 
 
 private:

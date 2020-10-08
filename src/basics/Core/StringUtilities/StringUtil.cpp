@@ -74,7 +74,7 @@ double StringUtil::toDouble(const std::string &input)
 
 bool StringUtil::toBool(const std::string &input)
 {
-    bool b = 0;
+    bool b {false};
     std::string trimmedInput = trim(input);
     if (!toBool(b, trimmedInput, std::boolalpha))
         throw "StringUtils::toBool() - Not a bool: " + trimmedInput;
@@ -143,7 +143,7 @@ std::vector<bool> StringUtil::toBoolVector(const std::string & input)
     inputEntries = split(input, " \n\t");
 	for(std::string entry : inputEntries)
 	{
-		bool b = 0;
+		bool b {false};
 		std::string trimmedInput = trim(input);
 		if (toBool(b, trimmedInput, std::noboolalpha))
 			v.push_back(b);

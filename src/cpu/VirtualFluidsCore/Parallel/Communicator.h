@@ -43,7 +43,7 @@
 class Communicator
 {
 public:
-   virtual ~Communicator(){}
+   virtual ~Communicator()= default;
    static SPtr<Communicator> getInstance();
    virtual int getBundleID() = 0;
    virtual int getNumberOfBundles() = 0;
@@ -83,8 +83,8 @@ public:
    virtual void broadcast(std::vector<double>& values) = 0;
    virtual void broadcast(std::vector<long int>& values) = 0;
 protected:
-   Communicator(){}
-   Communicator( const Communicator& ){}
+   Communicator()= default;
+   Communicator( const Communicator& )= default;
    static SPtr<Communicator> instance;
 };
 

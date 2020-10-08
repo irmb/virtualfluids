@@ -100,7 +100,7 @@ public:
       this->addSchedule(schedule);
    }
    /*==========================================================*/
-   virtual ~UbScheduler() {}
+   virtual ~UbScheduler() = default;
    /*==========================================================*/
    inline void addSchedule(const UbSchedule& schedule)
    {
@@ -136,7 +136,7 @@ public:
       }
 
       //nu aber:
-      schedules.push_back(UbSchedule(step, begin, end));
+      schedules.emplace_back(step, begin, end);
 
       if( end>maxT ) maxT = end;
 
@@ -318,7 +318,7 @@ protected:
    std::vector<UbSchedule> schedules;
 };
 
-typedef UbScheduler::UbSchedule UbSchedule;
+using UbSchedule = UbScheduler::UbSchedule;
 
 #endif //UBSCHEDULER_H
 

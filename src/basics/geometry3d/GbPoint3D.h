@@ -50,10 +50,10 @@ public:
    GbPoint3D();
    GbPoint3D(const double& x1, const double& x2, const double& x3);
    GbPoint3D(GbPoint3D *point);                
-   ~GbPoint3D() {}
+   ~GbPoint3D() override = default;
 
-   GbPoint3D* clone() {return new GbPoint3D(this);}
-   void finalize() {}
+   GbPoint3D* clone() override {return new GbPoint3D(this);}
+   void finalize() override {}
 
    void setCoordinates(const double& x1, const double& x2, const double& x3)
    {
@@ -72,29 +72,29 @@ public:
 
    void transform(const double matrix[4][4]);
  
-   double getX1Centroid()  { return this->x1; }
-   double getX1Minimum()   { return this->x1; }
-   double getX1Maximum()   { return this->x1; }
-   double getX2Centroid()  { return this->x2; }
-   double getX2Minimum()   { return this->x2; }
-   double getX2Maximum()   { return this->x2; }
-   double getX3Centroid()  { return this->x3; }
-   double getX3Minimum()   { return this->x3; }
-   double getX3Maximum()   { return this->x3; }        
+   double getX1Centroid() override  { return this->x1; }
+   double getX1Minimum() override   { return this->x1; }
+   double getX1Maximum() override   { return this->x1; }
+   double getX2Centroid() override  { return this->x2; }
+   double getX2Minimum() override   { return this->x2; }
+   double getX2Maximum() override   { return this->x2; }
+   double getX3Centroid() override  { return this->x3; }
+   double getX3Minimum() override   { return this->x3; }
+   double getX3Maximum() override   { return this->x3; }        
  
-   void translate(const double& x1, const double& x2, const double& x3);
-   void rotate(const double& rx1, const double& rx2, const double& rx3);
-   void scale(const double& sx1, const double& sx2, const double& sx3);
+   void translate(const double& x1, const double& x2, const double& x3) override;
+   void rotate(const double& rx1, const double& rx2, const double& rx3) override;
+   void scale(const double& sx1, const double& sx2, const double& sx3) override;
 
    double getDistance(GbPoint3D *p);
    bool equals(const GbPoint3D* point) const;
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary);
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3);
-   bool isCellInsideGbObject3D(const double& x11,const double& x21,const double& x31,const double& x12,const double& x22,const double& x23) { return false; }
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary) override;
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3) override;
+   bool isCellInsideGbObject3D(const double&  /*x11*/,const double&  /*x21*/,const double&  /*x31*/,const double&  /*x12*/,const double&  /*x22*/,const double&  /*x23*/) override { return false; }
 
-   std::vector<GbTriangle3D*> getSurfaceTriangleSet();
-   GbLine3D* createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2);
-   virtual std::string toString();
+   std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
+   GbLine3D* createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2) override;
+   std::string toString() override;
 
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren
                                           //, welche sonst hier "ueberdeckt" waere,da es dieselbe methode mit anderen args gibt!

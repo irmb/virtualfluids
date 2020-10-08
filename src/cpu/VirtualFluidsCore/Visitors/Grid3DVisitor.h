@@ -43,8 +43,8 @@ class Grid3D;
 class Grid3DVisitor
 {
 public:
-   Grid3DVisitor() {}
-   virtual ~Grid3DVisitor() {}
+   Grid3DVisitor() = default;
+   virtual ~Grid3DVisitor() = default;
 
    virtual void visit(SPtr<Grid3D> grid) = 0;
 };

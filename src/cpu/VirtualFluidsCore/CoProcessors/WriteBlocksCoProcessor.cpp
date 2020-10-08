@@ -52,8 +52,7 @@ WriteBlocksCoProcessor::WriteBlocksCoProcessor(SPtr<Grid3D> grid, SPtr<UbSchedul
 }
 //////////////////////////////////////////////////////////////////////////
 WriteBlocksCoProcessor::~WriteBlocksCoProcessor() 
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void WriteBlocksCoProcessor::process(double step)
 {
@@ -71,12 +70,12 @@ void WriteBlocksCoProcessor::collectData(double step)
       std::vector< UbTupleInt8 > cells;
       std::vector<std::string> celldatanames;
 
-      celldatanames.push_back("isActive");
-      celldatanames.push_back("rank");
-      celldatanames.push_back("interface");
-      celldatanames.push_back("ID");
-      celldatanames.push_back("part");
-      celldatanames.push_back("level");
+      celldatanames.emplace_back("isActive");
+      celldatanames.emplace_back("rank");
+      celldatanames.emplace_back("interface");
+      celldatanames.emplace_back("ID");
+      celldatanames.emplace_back("part");
+      celldatanames.emplace_back("level");
       //celldatanames.push_back("connectorCF");
       //celldatanames.push_back("connectorFC");
 #if defined VF_FETOL

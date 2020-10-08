@@ -86,8 +86,7 @@ Interactor3D::Interactor3D(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, int 
 }
 //////////////////////////////////////////////////////////////////////////
 Interactor3D::~Interactor3D()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 bool Interactor3D::arePointsInsideGeoObject(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3, double delta)
 {
@@ -327,7 +326,7 @@ bool Interactor3D::isActive()
    return active;
 }
 //////////////////////////////////////////////////////////////////////////
-void Interactor3D::initInteractor(const double& timeStep)
+void Interactor3D::initInteractor(const double&  /*timeStep*/)
 {
    //UBLOG(logINFO, "transBlocks.size = "<<transBlocks.size());
 
@@ -337,7 +336,7 @@ void Interactor3D::initInteractor(const double& timeStep)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Interactor3D::updateInteractor(const double& timeStep)
+void Interactor3D::updateInteractor(const double&  /*timeStep*/)
 {
    UB_THROW( UbException("Interactor3D::updateInteractor - toDo") );
 }

@@ -87,10 +87,6 @@ ConfigDataImp::ConfigDataImp()
 
 }
 
-ConfigDataImp::~ConfigDataImp(void)
-{
-}
-
 real ConfigDataImp::getViscosity()
 {
 	return this->viscosity;

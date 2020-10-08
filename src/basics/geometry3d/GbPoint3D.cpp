@@ -107,7 +107,7 @@ vector<GbTriangle3D*> GbPoint3D::getSurfaceTriangleSet()
    //triangles.push_back(new GbTriangle3D(new GbPoint3D(p1),new GbPoint3D(p1),new GbPoint3D(p1)));
 }
 /*=======================================================*/
-GbLine3D* GbPoint3D::createClippedLine3D (GbPoint3D& point1, GbPoint3D& point2)
+GbLine3D* GbPoint3D::createClippedLine3D (GbPoint3D&  /*point1*/, GbPoint3D&  /*point2*/)
 {
    throw UbException(UB_EXARGS,"not implemented");
 } 

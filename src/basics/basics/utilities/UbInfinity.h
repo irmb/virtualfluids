@@ -69,7 +69,7 @@ class UbNegInfinity
       return UbLimits<T>::ninf() == rhs;
    }
  protected:
-    inline UbNegInfinity() {}
+    inline UbNegInfinity() = default;
 
  private:
    UbNegInfinity( const UbNegInfinity& ninf );             //copy constructor (private & undefined)

@@ -47,8 +47,8 @@ class D3Q27ETFullDirectConnector : public LocalBlock3DConnector
 {
 public:
    D3Q27ETFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
-   void init();
-   void sendVectors();
+   void init() override;
+   void sendVectors() override;
 
 protected:
    inline void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To);

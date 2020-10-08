@@ -16,7 +16,7 @@ namespace logging
     {
     public:
         LoggerImp(std::ostream* stream);
-        virtual ~LoggerImp();
+        ~LoggerImp() override;
 
         Logger& operator<<(const Level &level) override;
         Logger& operator<<(const std::string &message) override;

@@ -49,7 +49,7 @@ class Block3D;
 class LBMKernel : public ILBMKernel, public enableSharedFromThis<LBMKernel>
 {
 public:
-    typedef std::numeric_limits<LBMReal> LBMRealLim;
+    using LBMRealLim = std::numeric_limits<LBMReal>;
 public:
     LBMKernel();
 
@@ -113,19 +113,19 @@ protected:
     SPtr<DataSet3D> dataSet;
     SPtr<BCProcessor> bcProcessor;
     LBMReal collFactor;
-    int ghostLayerWidth;
-    bool compressible;
+    int ghostLayerWidth{1};
+    bool compressible{false};
 
     //forcing 
-    bool withForcing;
+    bool withForcing{false};
     mu::Parser muForcingX1;
     mu::Parser muForcingX2;
     mu::Parser muForcingX3;
     int ix1, ix2, ix3;
-    LBMReal deltaT;
+    LBMReal deltaT{1.0};
 
     //sponge layer
-    bool withSpongeLayer;
+    bool withSpongeLayer{false};
     mu::Parser muSpongeLayer;
 
     WPtr<Block3D> block;

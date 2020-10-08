@@ -38,10 +38,6 @@
 #include "BCArray3D.h"
 
 
-BCAlgorithm::BCAlgorithm() : compressible(false)
-{
-
-}
 //////////////////////////////////////////////////////////////////////////
 void BCAlgorithm::setNodeIndex(int x1, int x2, int x3)
 {

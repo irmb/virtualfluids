@@ -54,8 +54,7 @@ Block3DVisitor(0, Grid3DSystem::MAXLEVEL),
 }
 //////////////////////////////////////////////////////////////////////////
 SetConnectorsBlockVisitor::~SetConnectorsBlockVisitor(void)
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void SetConnectorsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
