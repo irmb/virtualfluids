@@ -3,6 +3,7 @@ from pyfluids.boundaryconditions import NoSlipBCAdapter, NoSlipBCAlgorithm, Velo
 from pyfluids.geometry import GbCuboid3D
 from pyfluids.kernel import LBMKernel, KernelType
 from pyfluids.parameters import GridParameters, PhysicalParameters, SimulationParameters
+from pyfluids.writer import Writer, WriterType
 from pymuparser import Parser
 
 sim_params = SimulationParameters()
@@ -23,11 +24,15 @@ def run_simulation(physical_params=physical_params, grid_params=grid_params, sim
     simulation = Simulation()
     kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
 
-    simulation.output_path = "./output"
+    writer = Writer()
+    writer.type = WriterType.BINARY
+    writer.output_path = "./output"
+
     simulation.set_grid_parameters(grid_params)
     simulation.set_physical_parameters(physical_params)
     simulation.set_simulation_parameters(sim_params)
     simulation.set_kernel_config(kernel)
+    simulation.set_writer(writer)
 
     no_slip_bc_adapter = NoSlipBCAdapter()
     no_slip_bc_adapter.algorithm = NoSlipBCAlgorithm()
@@ -60,3 +65,7 @@ def run_simulation(physical_params=physical_params, grid_params=grid_params, sim
     simulation.add_object(wall_z_max, velocity_bc_adapter, 1, "/geo/wallZmax")
 
     simulation.run_simulation()
+
+
+if __name__ == "__main__":
+    run_simulation()
