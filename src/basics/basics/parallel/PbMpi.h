@@ -15,7 +15,9 @@
 #endif
 
 // As we doing a lot of const-cast here we define PbMpi.h to system_header to mute clang-tidy
+#ifdef __clang__
 #pragma clang system_header
+#endif
 
 //#undef SEEK_SET
 //#undef SEEK_CUR

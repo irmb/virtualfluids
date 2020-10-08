@@ -29,7 +29,9 @@
 #ifndef MU_PARSER_BASE_H
 #define MU_PARSER_BASE_H
 
+#ifdef __clang__
 #pragma clang system_header
+#endif
 
 //--- Standard includes ------------------------------------------------------------------------
 #include <cmath>

@@ -9,7 +9,10 @@
 
 #include <basics/memory/MbSmartPtrBase.h>
 
+#ifdef __clang__
 #pragma clang system_header
+#endif
+
 
 //=====================================================
 // Globale Funktion, um das Loeschen des referenzierten
