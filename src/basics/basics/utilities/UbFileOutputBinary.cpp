@@ -64,22 +64,22 @@ bool UbFileOutputBinary::open(const string& filename, UbFileOutput::CREATEOPTION
    return outfile.is_open();
 }
 /*==========================================================*/
-void UbFileOutputBinary::writeBool(const bool& value, const int& width)				
+void UbFileOutputBinary::writeBool(const bool& value, const int&  /*width*/)				
 {
    outfile.write((char*)&value,sizeof(bool));
 }
 /*==========================================================*/
-void UbFileOutputBinary::writeDouble(const double& value, const int& width)				
+void UbFileOutputBinary::writeDouble(const double& value, const int&  /*width*/)				
 {
    outfile.write((char*)&value,sizeof(double));
 }
 /*==========================================================*/
-void UbFileOutputBinary::writeFloat(const float& value, const int& width)				
+void UbFileOutputBinary::writeFloat(const float& value, const int&  /*width*/)				
 {
 	outfile.write((char*)&value,sizeof(float));
 }
 /*==========================================================*/
-void UbFileOutputBinary::setPrecision(const int& precision)				
+void UbFileOutputBinary::setPrecision(const int&  /*precision*/)				
 {
    UB_THROW( UbException(UB_EXARGS,"no way") );
 }
@@ -89,22 +89,22 @@ int UbFileOutputBinary::getPrecision()
    UB_THROW( UbException(UB_EXARGS,"no way") );
 }
 /*==========================================================*/
-void UbFileOutputBinary::writeInteger(const int& value, const int& width)				
+void UbFileOutputBinary::writeInteger(const int& value, const int&  /*width*/)				
 {
    outfile.write((char*)&value,sizeof(value));
 }
 /*==========================================================*/
-void UbFileOutputBinary::writeSize_t(const std::size_t& value, const int& width)
+void UbFileOutputBinary::writeSize_t(const std::size_t& value, const int&  /*width*/)
 {
    outfile.write((char*)&value,sizeof(value));
 }
 /*==========================================================*/
-void UbFileOutputBinary::writeChar(const char& value, const int& width)				
+void UbFileOutputBinary::writeChar(const char& value, const int&  /*width*/)				
 {
    outfile.write((char*)&value,sizeof(value));
 }
 /*==========================================================*/
-void UbFileOutputBinary::writeString(const string& value, const int& width)				
+void UbFileOutputBinary::writeString(const string& value, const int&  /*width*/)				
 {
    char c='\0';
    unsigned int length = (unsigned)value.length();
@@ -131,12 +131,12 @@ void UbFileOutputBinary::writeString(const string& value, const int& width)
    }
 }
 /*==========================================================*/
-void UbFileOutputBinary::writeStringOnly(const string& value)				
+void UbFileOutputBinary::writeStringOnly(const string&  /*value*/)				
 {
    UbException(UB_EXARGS,"no way... causes to many errors");
 }
 /*==========================================================*/
-void UbFileOutputBinary::writeLine(const std::string& value, const int& width)				
+void UbFileOutputBinary::writeLine(const std::string& value, const int&  /*width*/)				
 {
    this->writeString(value);
    char c='\n';

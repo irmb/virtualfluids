@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 class IncompressibleOffsetInterpolationProcessor;
-typedef SPtr<IncompressibleOffsetInterpolationProcessor> D3Q27IncompressibleOffsetInterpolationProcessorPtr;
+using D3Q27IncompressibleOffsetInterpolationProcessorPtr = SPtr<IncompressibleOffsetInterpolationProcessor>;
 
 class IncompressibleOffsetInterpolationProcessor : public InterpolationProcessor
 {

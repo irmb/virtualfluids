@@ -32,9 +32,9 @@ template<typename T>
 class TbLocalTransmitter : public TbTransmitter<T>
 {
 public:
-   typedef SPtr< TbLocalTransmitter<T> > TbLocalTransmitterPtr;
+   using TbLocalTransmitterPtr = SPtr<TbLocalTransmitter<T> >;
 
-   typedef T value_type;
+   using value_type = T;
 
 public:
    TbLocalTransmitter() : TbTransmitter<T>() 
@@ -62,7 +62,7 @@ template<typename T>
 class TbVectorReceiverLocal : public TbTransmitter<T>
 {
 public:
-   typedef T value_type;
+   using value_type = T;
 
 public:
    TbVectorReceiverLocal() : TbTransmitter<value_type>() 
@@ -89,7 +89,7 @@ template<typename T>
 class TbVectorSenderLocal : public TbTransmitter<T>
 {
 public:
-   typedef T value_type;
+   using value_type = T;
 
 public:
    TbVectorSenderLocal(SPtr< TbVectorReceiverLocal< value_type > > receiver) 

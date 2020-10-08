@@ -33,8 +33,8 @@ public:
    void fillSendVectors() override;
    void distributeReceiveVectors() override;
 protected:
-   typedef std::vector< int > INodeVector;
-   typedef std::vector < INodeVector > INodeSet;
+   using INodeVector = std::vector<int>;
+   using INodeSet = std::vector<INodeVector>;
    INodeSet  iNodeSetSender;
    INodeSet  iNodeSetReceiver;
 

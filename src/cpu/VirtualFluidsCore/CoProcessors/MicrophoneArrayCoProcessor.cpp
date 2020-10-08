@@ -105,7 +105,7 @@ void MicrophoneArrayCoProcessor::collectData(double step)
    }
 }
 
-void MicrophoneArrayCoProcessor::writeFile(double step)
+void MicrophoneArrayCoProcessor::writeFile(double  /*step*/)
 {
    for (int i = 0; i < microphones.size(); i++)
    {

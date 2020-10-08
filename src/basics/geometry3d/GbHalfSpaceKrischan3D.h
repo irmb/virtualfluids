@@ -68,7 +68,7 @@ public:
    }
    /*=====================================================*/
    //true, wenn 'in Object' oder 'auf Boundary'!
-   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool& pointIsOnBoundary) override
+   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool&  /*pointIsOnBoundary*/) override
    {
       return (ptInside(x1p,x2p,x3p));
    }
@@ -141,7 +141,7 @@ public:
       n3 = this->Normal[2];
    }
 
-   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles) override
+   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>&  /*nodes*/, std::vector<UbTupleInt3>&  /*triangles*/) override
    {
 	   std::cout << " addSurfaceTriangleSet(): TO BE DONE AND CHECKED ... " << std::endl;
    }
@@ -158,7 +158,7 @@ public:
       return triangles;
    }
 
-   void objectChanged(UbObservable* changedObject) override
+   void objectChanged(UbObservable*  /*changedObject*/) override
    {
       return;
       
@@ -167,7 +167,7 @@ public:
       //this->notifyObserversObjectChanged();
    }
    /*==========================================================*/
-   void objectWillBeDeleted(UbObservable* objectForDeletion) override
+   void objectWillBeDeleted(UbObservable*  /*objectForDeletion*/) override
    {
       return;
       //if(this->mLine)

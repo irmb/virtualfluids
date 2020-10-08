@@ -41,7 +41,7 @@ SPtr<LBMKernel> LBMKernelETD3Q27BGK::clone()
    return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernelETD3Q27BGK::calculate(int step)
+void LBMKernelETD3Q27BGK::calculate(int  /*step*/)
 {
    using namespace D3Q27System;
 

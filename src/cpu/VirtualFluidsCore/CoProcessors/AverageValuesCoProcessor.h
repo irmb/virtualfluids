@@ -68,7 +68,7 @@ private:
    //you need to calculate a square root before plotting RMS
 	enum Values{AvVx = 0, AvVy = 1, AvVz = 2, AvVxx = 3, AvVyy = 4, AvVzz = 5, AvVxy = 6, AvVxz = 7, AvVyz = 8, AvP = 9, AvPrms = 10}; 
 
-   typedef void (*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/,LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
+   using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
    CalcMacrosFct calcMacros;
 };
 #endif

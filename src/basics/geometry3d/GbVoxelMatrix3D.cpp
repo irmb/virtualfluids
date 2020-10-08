@@ -270,7 +270,7 @@ bool GbVoxelMatrix3D::isPointInGbObject3D(const double& x1p, const double& x2p, 
    return isPointInGbObject3D(x1p, x2p, x3p);
 }
 /*=======================================================*/
-bool GbVoxelMatrix3D::isCellInsideGbObject3D(const double& x1p1, const double& x2p1, const double& x3p1, const double& x1p2, const double& x2p2, const double& x3p2)
+bool GbVoxelMatrix3D::isCellInsideGbObject3D(const double&  /*x1p1*/, const double&  /*x2p1*/, const double&  /*x3p1*/, const double&  /*x1p2*/, const double&  /*x2p2*/, const double&  /*x3p2*/)
 {
    return false;
    //FIXME: unreachable cide
@@ -395,7 +395,7 @@ vector<GbTriangle3D*> GbVoxelMatrix3D::getSurfaceTriangleSet()
    return triangles;
 }
 /*=======================================================*/
-void GbVoxelMatrix3D::addSurfaceTriangleSet(vector<UbTupleFloat3>& nodes, vector<UbTupleInt3>& triangles)
+void GbVoxelMatrix3D::addSurfaceTriangleSet(vector<UbTupleFloat3>&  /*nodes*/, vector<UbTupleInt3>&  /*triangles*/)
 {
    UBLOG(logINFO, " GbVoxelMatrix3D addSurfaceTriangleSet start")
       if (!this->addSurfaceTriangleSetFlag)
@@ -548,7 +548,7 @@ void GbVoxelMatrix3D::readMatrixFromVtiASCIIFile(std::string filename)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void GbVoxelMatrix3D::rotate90aroundX(double cX1, double cX2, double cX3)
+void GbVoxelMatrix3D::rotate90aroundX(double  /*cX1*/, double cX2, double cX3)
 {
 //   double tempMinPunktX1 = minX1-cX1;
    double tempMinPunktX2 = minX2-cX2;
@@ -599,7 +599,7 @@ void GbVoxelMatrix3D::rotate90aroundX()
    rotate90aroundX(cX1, cX2, cX3);
 }
 //////////////////////////////////////////////////////////////////////////
-void GbVoxelMatrix3D::rotate90aroundY(double cX1, double cX2, double cX3)
+void GbVoxelMatrix3D::rotate90aroundY(double cX1, double  /*cX2*/, double cX3)
 {
    double tempMinPunktX1 = getX1Maximum()-cX1;
 //   double tempMinPunktX2 = minX2-cX2;
@@ -650,7 +650,7 @@ void GbVoxelMatrix3D::rotate90aroundY()
    rotate90aroundY(cX1, cX2, cX3);
 }
 //////////////////////////////////////////////////////////////////////////
-void GbVoxelMatrix3D::rotate90aroundZ(double cX1, double cX2, double cX3)
+void GbVoxelMatrix3D::rotate90aroundZ(double cX1, double cX2, double  /*cX3*/)
 {
    double tempMinPunktX1 = minX1-cX1;
    double tempMinPunktX2 = getX2Maximum()-cX2;

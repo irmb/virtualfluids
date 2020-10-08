@@ -49,7 +49,7 @@ void EmergencyExitCoProcessor::collectData( double step )
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void EmergencyExitCoProcessor::writeMetafile(int status )
+void EmergencyExitCoProcessor::writeMetafile(int  /*status*/ )
 {
    UbFileOutputASCII out(metafile);
    out.writeBool(false);

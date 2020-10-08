@@ -254,7 +254,7 @@ void ShearStressCoProcessor::addData()
 
    for(const auto& interactor : interactors)
    {
-      typedef std::map<SPtr<Block3D>, std::set< std::vector<int> > > TransNodeIndicesMap;
+      using TransNodeIndicesMap = std::map<SPtr<Block3D>, std::set<std::vector<int> > >;
       for(TransNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
       {
          SPtr<Block3D> block = t.first;
@@ -358,7 +358,7 @@ void ShearStressCoProcessor::reset(double step)
    UBLOG(logDEBUG3, "resetCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void ShearStressCoProcessor::resetData(double step)
+void ShearStressCoProcessor::resetData(double  /*step*/)
 {
    for(int level = minInitLevel; level<=maxInitLevel;level++)
    {

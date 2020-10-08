@@ -30,7 +30,7 @@ template<typename T>
 class TbTransmitter
 {
 public:
-   typedef T value_type;
+   using value_type = T;
 
 public:
    TbTransmitter() {}

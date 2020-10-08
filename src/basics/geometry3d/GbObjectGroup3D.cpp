@@ -21,50 +21,50 @@ void GbObjectGroup3D::finalize()
    throw UbException(UB_EXARGS,"not implemented.");
 }
 /*=======================================================*/
-void GbObjectGroup3D::setCenterCoordinates(const double& x1, const double& x2, const double& x3)
+void GbObjectGroup3D::setCenterCoordinates(const double&  /*x1*/, const double&  /*x2*/, const double&  /*x3*/)
 {
    throw UbException(UB_EXARGS,"not implemented.");
 }
 /*=====================================================*/
-double GbObjectGroup3D::getDistance(GbPoint3D* p)
+double GbObjectGroup3D::getDistance(GbPoint3D*  /*p*/)
 {
    throw UbException(UB_EXARGS,"not implemented.");
 }
 /*=====================================================*/
 
-void GbObjectGroup3D::setCenterX1Coordinate(const double& value)
+void GbObjectGroup3D::setCenterX1Coordinate(const double&  /*value*/)
 {
    throw UbException(UB_EXARGS,"not implemented.");
 }
 /*=====================================================*/
-void GbObjectGroup3D::setCenterX2Coordinate(const double& value)
+void GbObjectGroup3D::setCenterX2Coordinate(const double&  /*value*/)
 {
    throw UbException(UB_EXARGS,"not implemented.");
 }
 /*=====================================================*/
-void GbObjectGroup3D::setCenterX3Coordinate(const double& value)
+void GbObjectGroup3D::setCenterX3Coordinate(const double&  /*value*/)
 {
    throw UbException(UB_EXARGS,"not implemented.");
 }
 /*=====================================================*/
-void GbObjectGroup3D::setRadius(const double& radius)
+void GbObjectGroup3D::setRadius(const double&  /*radius*/)
 {
    throw UbException(UB_EXARGS,"not implemented.");
 }
 /*=====================================================*/
-double GbObjectGroup3D::getDistance(const double& x1p, const double& x2p, const double& x3p)
+double GbObjectGroup3D::getDistance(const double&  /*x1p*/, const double&  /*x2p*/, const double&  /*x3p*/)
 {
    throw UbException(UB_EXARGS,"not implemented.");
 }
 /*=====================================================*/
 //true, wenn 'in Object' oder 'auf Boundary'!
-bool GbObjectGroup3D::isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p)
+bool GbObjectGroup3D::isPointInGbObject3D(const double&  /*x1p*/, const double&  /*x2p*/, const double&  /*x3p*/)
 {
    return false;
 }
 /*=====================================================*/
 //true, wenn 'in Object' oder 'auf Boundary'!
-bool GbObjectGroup3D::isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool& pointIsOnBoundary)
+bool GbObjectGroup3D::isPointInGbObject3D(const double&  /*x1p*/, const double&  /*x2p*/, const double&  /*x3p*/, bool&  /*pointIsOnBoundary*/)
 {
    return false;
 }
@@ -77,7 +77,7 @@ string GbObjectGroup3D::toString()
 	return ss.str();
 }
 /*=====================================================*/
-GbLine3D* GbObjectGroup3D::createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2)
+GbLine3D* GbObjectGroup3D::createClippedLine3D(GbPoint3D&  /*point1*/, GbPoint3D&  /*point2*/)
 {
    return NULL;
 }
@@ -107,27 +107,27 @@ void GbObjectGroup3D::addSurfaceTriangleSet(vector<UbTupleFloat3>& nodes, vector
 {
 }
 /*=======================================================*/
-bool GbObjectGroup3D::hasIntersectionWithDirectedLine(GbPoint3D origin, GbPoint3D direction)
+bool GbObjectGroup3D::hasIntersectionWithDirectedLine(GbPoint3D  /*origin*/, GbPoint3D  /*direction*/)
 {
    return false;
 }
 /*=======================================================*/
-bool GbObjectGroup3D::isCellCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b)
+bool GbObjectGroup3D::isCellCuttingGbObject3D(const double&  /*x1a*/,const double&  /*x2a*/,const double&  /*x3a*/,const double&  /*x1b*/,const double&  /*x2b*/,const double&  /*x3b*/)
 {
    return false;
 }
 /*=======================================================*/
-bool GbObjectGroup3D::isCellInsideOrCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b)
+bool GbObjectGroup3D::isCellInsideOrCuttingGbObject3D(const double&  /*x1a*/,const double&  /*x2a*/,const double&  /*x3a*/,const double&  /*x1b*/,const double&  /*x2b*/,const double&  /*x3b*/)
 {
    return false;
 }
 /*==========================================================*/
-double GbObjectGroup3D::getCellVolumeInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b)
+double GbObjectGroup3D::getCellVolumeInsideGbObject3D(const double&  /*x1a*/,const double&  /*x2a*/,const double&  /*x3a*/,const double&  /*x1b*/,const double&  /*x2b*/,const double&  /*x3b*/)
 {
    return 0.0;
 }
 /*==========================================================*/
-double GbObjectGroup3D::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
+double GbObjectGroup3D::getIntersectionRaytraceFactor(const double&  /*x1*/, const double&  /*x2*/, const double&  /*x3*/, const double&  /*rx1*/, const double&  /*rx2*/, const double&  /*rx3*/)
 {
    return 0.0;
 }

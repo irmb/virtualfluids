@@ -8,9 +8,9 @@
 #include <PointerDefinitions.h>
 
 
-typedef TbTransmitter< CbVector< LBMReal > > VectorTransmitter;
-typedef VectorTransmitter::value_type  vector_type;
-typedef SPtr< TbTransmitter< CbVector< LBMReal > > > VectorTransmitterPtr;
+using VectorTransmitter = TbTransmitter<CbVector<LBMReal> >;
+using vector_type = VectorTransmitter::value_type;
+using VectorTransmitterPtr = SPtr<TbTransmitter<CbVector<LBMReal> > >;
 
 #endif // TransmitterType_h__
 

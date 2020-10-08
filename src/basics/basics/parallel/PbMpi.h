@@ -139,10 +139,10 @@ namespace PbMpi
    //////////////////////////////////////////////////////////////////////////
    namespace PbMpi
    {
-      typedef MPI_Comm    Comm;
-      typedef MPI_Group   Group;
-      typedef MPI_Request Request;
-      typedef MPI_Status  Status;
+      using Comm = MPI_Comm;
+      using Group = MPI_Group;
+      using Request = MPI_Request;
+      using Status = MPI_Status;
    }
 
    #define PbMpi_COMM_WORLD ((PbMpi::Comm)MPI_COMM_WORLD)

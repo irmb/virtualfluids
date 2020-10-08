@@ -507,7 +507,7 @@ void D3Q27EsoTwist3DSoA::setDistributionInvForDirection(LBMReal f, size_t x1, si
    //}
 }
 //////////////////////////////////////////////////////////////////////////
-LBMReal D3Q27EsoTwist3DSoA::getDistributionInvForDirection(size_t x1, size_t x2, size_t x3, int direction)
+LBMReal D3Q27EsoTwist3DSoA::getDistributionInvForDirection(size_t  /*x1*/, size_t  /*x2*/, size_t  /*x3*/, int  /*direction*/)
 {
    //switch (direction)
    //{

@@ -93,7 +93,7 @@ public:
       this->notifyObserversObjectChanged();
    }
    void rotate(const double& rx1, const double& rx2, const double& rx3) override {/* rotation makes no sense*/ }
-   void scale(const double& sx1, const double& sx2, const double& sx3) override 
+   void scale(const double& sx1, const double&  /*sx2*/, const double&  /*sx3*/) override 
    { 
       this->radius *= sx1; 
       this->notifyObserversObjectChanged();
@@ -105,12 +105,12 @@ public:
    void setTriangulationMode(TRIANGULATIONMODE mode) { this->triangulationMode = mode; }
    
    //virtuelle Methoden von UbObserver
-   void objectChanged(UbObservable* changedObject) override
+   void objectChanged(UbObservable*  /*changedObject*/) override
    {
       this->notifyObserversObjectChanged();
       //std::cout<<"GbSphere:objectChanged() - toDo-);";
    }
-   void objectWillBeDeleted(UbObservable* objectForDeletion) override
+   void objectWillBeDeleted(UbObservable*  /*objectForDeletion*/) override
    {
 	   throw UbException(UB_EXARGS,"not implemented");
    }

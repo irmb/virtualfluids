@@ -948,7 +948,7 @@ bool GbTriFaceMesh3D::intersectLine(const double& p1_x1, const double& p1_x2, co
     return (iSec != Kd::Intersection::NO_INTERSECTION);
 }
 /*======================================================================*/
-GbLine3D* GbTriFaceMesh3D::createClippedLine3D (GbPoint3D& point1, GbPoint3D& point2)
+GbLine3D* GbTriFaceMesh3D::createClippedLine3D (GbPoint3D&  /*point1*/, GbPoint3D&  /*point2*/)
 {
    throw UbException(UB_EXARGS,"not implemented");
 }

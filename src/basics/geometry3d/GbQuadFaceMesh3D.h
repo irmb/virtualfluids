@@ -96,8 +96,8 @@ public:
    //virtual std::vector<GbQuad3D*> getSurfaceQuadSet();
 	std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
 
-   virtual void write(UbFileOutput* out) { std::cout<<"GbQuadFaceMesh3D::write - sorry not implemented\n"; }
-   virtual void read(UbFileInput* in)    { std::cout<<"GbQuadFaceMesh3D::read  - sorry not implemented\n"; }
+   virtual void write(UbFileOutput*  /*out*/) { std::cout<<"GbQuadFaceMesh3D::write - sorry not implemented\n"; }
+   virtual void read(UbFileInput*  /*in*/)    { std::cout<<"GbQuadFaceMesh3D::read  - sorry not implemented\n"; }
 
    void writeAVSMesh(UbFileOutput *out, bool normals=false);
 

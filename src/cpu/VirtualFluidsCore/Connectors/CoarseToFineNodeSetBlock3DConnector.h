@@ -57,7 +57,7 @@ public:
 
 protected:
    typedef std::vector< int > INodeVector;
-   typedef std::vector < INodeVector > INodeSet;
+   using INodeSet = std::vector<INodeVector>;
    INodeSet  iNodeSetSender00;
    INodeSet  iNodeSetSender01;
    INodeSet  iNodeSetSender10;

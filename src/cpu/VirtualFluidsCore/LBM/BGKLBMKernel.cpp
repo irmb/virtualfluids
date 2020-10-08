@@ -39,7 +39,7 @@ SPtr<LBMKernel> BGKLBMKernel::clone()
    return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
-void BGKLBMKernel::calculate(int step)
+void BGKLBMKernel::calculate(int  /*step*/)
 {
    using namespace D3Q27System;
    using namespace UbMath;

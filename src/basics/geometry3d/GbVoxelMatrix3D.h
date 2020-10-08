@@ -24,7 +24,7 @@ class GbObject3DCreator;
 class GbVoxelMatrix3D : public GbObject3D, public UbObserver
 {
 public:
-   typedef CbArray3D<float> Matrix3D;
+   using Matrix3D = CbArray3D<float>;
    static const float SOLID;
    static const float FLUID;
    enum  Endian { BigEndian, LittleEndian };
@@ -95,8 +95,8 @@ public:
    bool isCellInsideOrCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b) override;
    //double getCellVolumeInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
 
-   GbPoint3D*  calculateInterSectionPoint3D(GbPoint3D& point1, GbPoint3D &point2) { throw UbException(__FILE__, __LINE__, UB_FUNCTION, "not implemented"); }
-   GbLine3D*   createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2) override { throw UbException(__FILE__, __LINE__, UB_FUNCTION, "not implemented"); }
+   GbPoint3D*  calculateInterSectionPoint3D(GbPoint3D&  /*point1*/, GbPoint3D & /*point2*/) { throw UbException(__FILE__, __LINE__, UB_FUNCTION, "not implemented"); }
+   GbLine3D*   createClippedLine3D(GbPoint3D&  /*point1*/, GbPoint3D&  /*point2*/) override { throw UbException(__FILE__, __LINE__, UB_FUNCTION, "not implemented"); }
 
    std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
    void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles) override;

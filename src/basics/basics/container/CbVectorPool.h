@@ -66,13 +66,13 @@ template<typename T>
 class CbVectorPool
 {
 public:
-   typedef typename CbVector<T>::value_type value_type;
-   typedef typename CbVector<T>::size_type  size_type;
-   typedef std::vector< value_type >        Pool;
+   using value_type = typename CbVector<T>::value_type;
+   using size_type = typename CbVector<T>::size_type;
+   using Pool = std::vector<value_type>;
 
-   typedef std::string CbVectorKey;
-   typedef std::map< CbVectorKey, CbVector< value_type >* /*ptrVector*/  > CbVectorMap;
-   typedef typename CbVectorMap::iterator CbVectorMapIter;
+   using CbVectorKey = std::string;
+   using CbVectorMap = std::map<CbVectorKey, CbVector<value_type> *>;
+   using CbVectorMapIter = typename CbVectorMap::iterator;
 
 public:
    //////////////////////////////////////////////////////////////////////////
@@ -401,8 +401,8 @@ class CbVectorAllocatorPool : public CbVectorAllocator<T>
 {
 public:
    //typedefs wiederholen, da Basisklasse = template -> "Dependent-Base"-Problem
-   typedef typename CbVector<T>::value_type          value_type;
-   typedef typename CbVector<value_type>::size_type  size_type;
+   using value_type = typename CbVector<T>::value_type;
+   using size_type = typename CbVector<value_type>::size_type;
 
    friend class CbVectorPool< value_type >;
 

@@ -559,7 +559,7 @@ UbTupleDouble6 GbTriangularMesh3D::calculateMomentOfInertia(double rhoP)
   * @return the volume of this triangular mesh within the specified rectangle
   * @exception NullPointerException if no triangles are found within the specified rectangle
   */
-double GbTriangularMesh3D::getVolumeForRectangle(const double& p1x1, const double& p1x2, const double& p2x1, const double& p2x2) 
+double GbTriangularMesh3D::getVolumeForRectangle(const double&  /*p1x1*/, const double&  /*p1x2*/, const double&  /*p2x1*/, const double&  /*p2x2*/) 
 {
 	throw UbException(UB_EXARGS,"not yet implemented");
   //    GbPolygon2D polygon;
@@ -620,7 +620,7 @@ double GbTriangularMesh3D::getVolumeForRectangle(const double& p1x1, const doubl
  * @param p2x2 the 2nd x2 coordinate of the rectangle
  * @return the triangles of this triangular mesh located within the specified rectangle
  */
-vector<GbTriangle3D*>* GbTriangularMesh3D::getTrianglesForRectangle(const double& p1x1, const double& p1x2, const double& p2x1, const double& p2x2)
+vector<GbTriangle3D*>* GbTriangularMesh3D::getTrianglesForRectangle(const double&  /*p1x1*/, const double&  /*p1x2*/, const double&  /*p2x1*/, const double&  /*p2x2*/)
 {
 	throw UbException(UB_EXARGS,"not yet implemented");
   //    QbList      triangleList = new QbList(GbTriangle3D.class);
@@ -668,7 +668,7 @@ vector<GbTriangle3D*>* GbTriangularMesh3D::getTrianglesForRectangle(const double
  * @param p2x2 the 2nd x2 coordinate of the rectangle
  * @return the nodes of this triangular mesh located within the specified rectangle
  */
-vector<GbPoint3D*>* GbTriangularMesh3D::getNodesForRectangle(const double& p1x1, const double& p1x2, const double& p2x1, const double& p2x2)
+vector<GbPoint3D*>* GbTriangularMesh3D::getNodesForRectangle(const double&  /*p1x1*/, const double&  /*p1x2*/, const double&  /*p2x1*/, const double&  /*p2x2*/)
 {
 	throw UbException(UB_EXARGS,"not implemented");
 //   QbList nodeList = new QbList(GbPoint3D.class);
@@ -693,7 +693,7 @@ vector<GbPoint3D*>* GbTriangularMesh3D::getNodesForRectangle(const double& p1x1,
  * @return the difference of maximum and minimum x3 coordinates of this triangular mesh within the specified rectangle
  * @exception NullPointerException if no triangles are found within the specified rectangle
  */
-double GbTriangularMesh3D::getX3RangeForRectangle(const double& p1x1, const double& p1x2, const double& p2x1, const double& p2x2) 
+double GbTriangularMesh3D::getX3RangeForRectangle(const double&  /*p1x1*/, const double&  /*p1x2*/, const double&  /*p2x1*/, const double&  /*p2x2*/) 
 {
 	throw UbException(UB_EXARGS,"not implemented");
  //     GbPolygon3D polygon;
@@ -766,7 +766,7 @@ double GbTriangularMesh3D::getX3RangeForRectangle(const double& p1x1, const doub
  * @return the minimum x3 coordinates of this triangular mesh within the specified rectangle
  * @exception NullPointerException if no triangles are found within the specified rectangle
  */
-double GbTriangularMesh3D::getX3MinimumForRectangle(const double& p1x1, const double& p1x2, const double& p2x1, const double& p2x2) 
+double GbTriangularMesh3D::getX3MinimumForRectangle(const double&  /*p1x1*/, const double&  /*p1x2*/, const double&  /*p2x1*/, const double&  /*p2x2*/) 
 {
 	throw UbException(UB_EXARGS,"not implemented");
   //    GbPolygon3D polygon;
@@ -834,7 +834,7 @@ double GbTriangularMesh3D::getX3MinimumForRectangle(const double& p1x1, const do
  * @return the maximum x3 coordinates of this triangular mesh within the specified rectangle
  * @exception NullPointerException if no triangles are found within the specified rectangle
  */
-double GbTriangularMesh3D::getX3MaximumForRectangle(const double& p1x1, const double& p1x2, const double& p2x1, const double& p2x2) 
+double GbTriangularMesh3D::getX3MaximumForRectangle(const double&  /*p1x1*/, const double&  /*p1x2*/, const double&  /*p2x1*/, const double&  /*p2x2*/) 
 {
    throw UbException(UB_EXARGS,"not implemented");
   //    GbPolygon3D polygon;
@@ -939,7 +939,7 @@ bool GbTriangularMesh3D::isPointInObject3DHalfSpace(const double& xp, const doub
    return true;
 }
 /*======================================================================*/
-bool GbTriangularMesh3D::isPointInObject3DRayCrossing(const double& xp, const double& yp, const double& zp, int radius, int numVertices, int numTriangles)
+bool GbTriangularMesh3D::isPointInObject3DRayCrossing(const double& xp, const double& yp, const double& zp, int radius, int  /*numVertices*/, int numTriangles)
 {
    GbVector3D point(xp,yp,zp);
 
@@ -973,12 +973,12 @@ bool GbTriangularMesh3D::isPointInGbObject3D(const double& x1, const double& x2,
    else throw UbException(UB_EXARGS,"no ptInObjTest");
 }
 /*======================================================================*/
-bool GbTriangularMesh3D::isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary)
+bool GbTriangularMesh3D::isPointInGbObject3D(const double&  /*x1*/, const double&  /*x2*/, const double&  /*x3*/, bool&  /*pointIsOnBoundary*/)
 {
     throw UbException(UB_EXARGS,"not implemented");
 }
 /*======================================================================*/
-GbLine3D* GbTriangularMesh3D::createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2)
+GbLine3D* GbTriangularMesh3D::createClippedLine3D(GbPoint3D&  /*point1*/, GbPoint3D&  /*point2*/)
 {
    throw UbException(UB_EXARGS,"not implemented");
 }
@@ -1193,7 +1193,7 @@ Returns a char:
 '0': the query point p does not intersect (misses) triangle T.
 */
 
-char 	GbTriangularMesh3D::InTri3D( GbTriangle3D* T, int m, GbVector3D& p )
+char 	GbTriangularMesh3D::InTri3D( GbTriangle3D* T, int m, GbVector3D&  /*p*/ )
 {
 //   int i;           /* Index for X,Y,Z           */
    int j;           /* Index for X,Y             */
@@ -1305,7 +1305,7 @@ char    GbTriangularMesh3D::SegTriInt( GbTriangle3D* T, GbVector3D& q, GbVector3
    else /* Error */        return code;
 }
 
-char	GbTriangularMesh3D::InPlane( GbTriangle3D* T, int m, GbVector3D& q, GbVector3D& r, GbVector3D& p)
+char	GbTriangularMesh3D::InPlane( GbTriangle3D*  /*T*/, int  /*m*/, GbVector3D&  /*q*/, GbVector3D&  /*r*/, GbVector3D&  /*p*/)
 {
   // cout<<"inplane\n";
    /* NOT IMPLEMENTED */

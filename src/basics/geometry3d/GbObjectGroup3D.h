@@ -32,7 +32,7 @@ public:
    //////////////////////////////////////////////////////////////////////////
    // Konstruktoren
    GbObjectGroup3D(); 
-   GbObjectGroup3D(GbObjectGroup3D *group){}; 
+   GbObjectGroup3D(GbObjectGroup3D * /*group*/){}; 
    ~GbObjectGroup3D() override;
 
    GbObjectGroup3D* clone() override {return new GbObjectGroup3D(this);}
@@ -90,18 +90,18 @@ public:
       this->notifyObserversObjectChanged();
    }
    void rotate(const double& rx1, const double& rx2, const double& rx3) override {/* rotation makes no sense*/ }
-   void scale(const double& sx1, const double& sx2, const double& sx3) override { this->radius *= sx1; }
+   void scale(const double& sx1, const double&  /*sx2*/, const double&  /*sx3*/) override { this->radius *= sx1; }
 
    TRIANGULATIONMODE getTriangulationMode() {return triangulationMode;}
    void setTriangulationMode(TRIANGULATIONMODE mode) { this->triangulationMode = mode; }
    
    //virtuelle Methoden von UbObserver
-   void objectChanged(UbObservable* changedObject) override
+   void objectChanged(UbObservable*  /*changedObject*/) override
    {
       this->notifyObserversObjectChanged();
       //std::cout<<"GbSphere:objectChanged() - toDo-);";
    }
-   void objectWillBeDeleted(UbObservable* objectForDeletion) override
+   void objectWillBeDeleted(UbObservable*  /*objectForDeletion*/) override
    {
 	   std::cout<<"throw UbException(-GbObjectGroup3D::finalize() - toDo-);";
    }

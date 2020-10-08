@@ -21,8 +21,8 @@ public:
    //! Switch between MPI and BOND Transmitters
    enum TransmitterType {MPI, BOND, MPI2BOND};
 public:
-   typedef CbVector <LBMReal> DataType;
-   typedef SPtr< TbTransmitter< DataType > > TransmitterPtr;
+   using DataType = CbVector<LBMReal>;
+   using TransmitterPtr = SPtr<TbTransmitter<DataType> >;
 public:
    CreateTransmittersHelper();
    void createTransmitters(const SPtr<Block3D> sblock, const SPtr<Block3D> tblock, int dir, IBlock ib,

@@ -35,7 +35,7 @@ D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor()
    this->stressMode = STRESSNORMAL;
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(SPtr<Grid3D> grid, std::string name)
+D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(SPtr<Grid3D>  /*grid*/, std::string  /*name*/)
 {
    this->stressMode = STRESSNORMAL;
 }
@@ -1744,7 +1744,7 @@ string D3Q27TriFaceMeshInteractor::toString()
    return ss.str();
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
+void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double&  /*timeStep*/ )
 {
    //alle solid Bloecke wieder solid setzen
    std::vector<SPtr<Block3D>>& solidBlocks = this->getSolidBlockSet();
@@ -1825,7 +1825,7 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27TriFaceMeshInteractor::updateInteractor( const double& timestep/*=0*/ )
+void D3Q27TriFaceMeshInteractor::updateInteractor( const double&  /*timestep*//*=0*/ )
 {
    UB_THROW( UbException("D3Q27TriFaceMeshInteractor::updateInteractor - toDo") );
 }

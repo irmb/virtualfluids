@@ -23,7 +23,7 @@ class GbObject3DCreator;
 
 #include <PointerDefinitions.h>
 class GbCylinder3D;
-typedef SPtr<GbCylinder3D> GbCylinder3DPtr;
+using GbCylinder3DPtr = SPtr<GbCylinder3D>;
 
 
 class GbCylinder3D : public GbObject3D , public UbObserver 

@@ -132,7 +132,7 @@ void SetConnectorsBlockVisitor::setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<B
    UBLOG(logDEBUG5, "D3Q27SetConnectorsBlockVisitor::setSameLevelConnectors() - end");
 }
 //////////////////////////////////////////////////////////////////////////
-void SetConnectorsBlockVisitor::setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir, bool fullConnector)
+void SetConnectorsBlockVisitor::setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir, bool  /*fullConnector*/)
 {
    UBLOG(logDEBUG5, "D3Q27SetConnectorsBlockVisitor::setRemoteConnectors() - start");
 	CreateTransmittersHelper helper;

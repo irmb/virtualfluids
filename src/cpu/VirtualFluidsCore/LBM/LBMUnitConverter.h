@@ -58,7 +58,7 @@ public:
 
    }
 
-   LBMUnitConverter(int dummy, double uReal, double uLB, double nuReal, double nuLB) 
+   LBMUnitConverter(int  /*dummy*/, double uReal, double uLB, double nuReal, double nuLB) 
    {
       factorVelocityLbToW = uReal/uLB;
       factorViscosityLbToW = nuReal/nuLB;

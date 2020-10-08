@@ -108,7 +108,7 @@ private:
    int iMinC;
    int iMaxC;
 
-   typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
+   using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
    CalcMacrosFct calcMacros;
 
    bool planarAveraging;

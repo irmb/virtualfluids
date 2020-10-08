@@ -44,17 +44,17 @@ public:
    typedef SPtr< TbCbVectorMpiPool< T > > MpiPoolPtr;
 
    //////////////////////////////////////////////////////////////////////////
-   typedef std::map<std::string, MpiPoolPtr >      MpiPoolPtrMap;
-   typedef typename MpiPoolPtrMap::iterator MpiPoolPtrMapIter;
+   using MpiPoolPtrMap = std::map<std::string, MpiPoolPtr>;
+   using MpiPoolPtrMapIter = typename MpiPoolPtrMap::iterator;
 
    //da BasisKlasse templateKlasse ist MUSS man hier die typedefs nochmal wiederholen!
-   typedef typename CbVector<T>::value_type value_type;
-   typedef typename CbVector<T>::size_type  size_type;
-   typedef std::vector< value_type >        Pool;
+   using value_type = typename CbVector<T>::value_type;
+   using size_type = typename CbVector<T>::size_type;
+   using Pool = std::vector<value_type>;
 
-   typedef std::string CbVectorKey;
-   typedef std::map< CbVectorKey, CbVector< value_type >* /*ptrVector*/  > CbVectorMap;
-   typedef typename CbVectorMap::iterator CbVectorMapIter;
+   using CbVectorKey = std::string;
+   using CbVectorMap = std::map<CbVectorKey, CbVector<value_type> *>;
+   using CbVectorMapIter = typename CbVectorMap::iterator;
 
    //////////////////////////////////////////////////////////////////////////
    friend class TbCbVectorSenderMpiPool< T >; 
@@ -447,7 +447,7 @@ template<typename T>
 class TbCbVectorSenderMpiPool : public TbTransmitter< CbVector< T >  >
 {
 public:
-   typedef CbVector< T > value_type;
+   using value_type = CbVector<T>;
 
 public:
    TbCbVectorSenderMpiPool(std::string cbVectorKey, TbCbVectorMpiPool< T >* mpiVectorPool)
@@ -490,7 +490,7 @@ template<typename T>
 class TbCbVectorReceiverMpiPool : public TbTransmitter< CbVector< T >  >
 {
 public:
-   typedef CbVector< T > value_type;   
+   using value_type = CbVector<T>;   
 
 public:
    TbCbVectorReceiverMpiPool(std::string cbVectorKey, TbCbVectorMpiPool< T >* mpiVectorPool)

@@ -45,7 +45,7 @@ class D3Q27ETCFOffVectorConnector : public Block3DConnector
 {
 public:
    typedef typename VectorTransmitter::value_type  vector_type;
-   typedef SPtr< VectorTransmitter > VectorTransmitterPtr;
+   using VectorTransmitterPtr = SPtr<VectorTransmitter>;
 public:
    D3Q27ETCFOffVectorConnector(SPtr<Block3D> block,
       VectorTransmitterPtr senderEvenEvenSW, VectorTransmitterPtr receiverEvenEvenSW,
@@ -1708,7 +1708,7 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::getLocalMinMax(int& minX1,
 }
 //////////////////////////////////////////////////////////////////////////
 template< typename VectorTransmitter >
-void D3Q27ETCFOffVectorConnector< VectorTransmitter>::getLocalMinMax(int& minX1, int& minX2, int& minX3, int& maxX1, int& maxX2, int& maxX3, CFconnectorType connType)
+void D3Q27ETCFOffVectorConnector< VectorTransmitter>::getLocalMinMax(int& minX1, int& minX2, int& minX3, int& maxX1, int& maxX2, int& maxX3, CFconnectorType  /*connType*/)
 {
    using namespace D3Q27System;
    int TminX1 = minX1; int TminX2 = minX2; int TminX3 = minX3; int TmaxX1 = maxX1; int TmaxX2 = maxX2; int TmaxX3 = maxX3;
