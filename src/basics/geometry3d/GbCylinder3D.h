@@ -112,9 +112,9 @@ protected:
    GbLine3D* mLine;
 	double    mRad;
 
-   double minX1, minX2, minX3;
-   double maxX1, maxX2, maxX3;
-   double centerX1, centerX2, centerX3;
+   double minX1{0.0}, minX2{0.0}, minX3{0.0};
+   double maxX1{0.0}, maxX2{0.0}, maxX3{0.0};
+   double centerX1{0.0}, centerX2{0.0}, centerX3{0.0};
 
 	int cylinderType;
 

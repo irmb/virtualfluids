@@ -30,7 +30,7 @@
 using namespace std;
 
 D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor()
-: D3Q27Interactor(), forceshift(0.0), velocityshift(0.0), forceshiftpolicy(false), velocityshiftpolicy(false), useHalfSpace(true), regardPIOTest(true)
+: D3Q27Interactor() 
 {
    this->stressMode = STRESSNORMAL;
 }

@@ -46,7 +46,7 @@ public:
    class Vertex
    {
    public:
-      Vertex() : x(0.0), y(0.0), z(0.0) { }
+      Vertex()  { }
       Vertex(const float& x, const float& y, const float& z) : x(x), y(y),z(z) { }
       Vertex(Vertex* vert)
       {
@@ -94,14 +94,14 @@ public:
       }
 
    public:
-      float x, y, z;
+      float x{0.0}, y{0.0}, z{0.0};
    };
    //////////////////////////////////////////////////////////////////////////
    class TriFace
    {
    public:
       TriFace()
-         : v1(-1), v2(-1), v3(-1), nx(0.0), ny(0.0), nz(0.0)
+          
       {
 
       }
@@ -207,8 +207,8 @@ public:
       }
 
    public:
-      int   v1, v2, v3;
-      float nx, ny, nz;
+      int   v1{-1}, v2{-1}, v3{-1};
+      float nx{0.0}, ny{0.0}, nz{0.0};
    };
 
 public:
@@ -301,10 +301,10 @@ protected:
    std::vector<TriFace>* triangles;
    //for transfer
    std::string filename;
-   bool transferViaFilename;
-   double transX1;
-   double transX2;
-   double transX3;
+   bool transferViaFilename{false};
+   double transX1{0.0};
+   double transX2{0.0};
+   double transX3{0.0};
 
    double x1min;
    double x1max;
@@ -318,7 +318,7 @@ protected:
 
    bool   consistent;
 
-   bool buildVertTriRelationMap;
+   bool buildVertTriRelationMap{false};
    std::multimap<Vertex*,TriFace*> relationVertTris;
 
    Kd::Tree< double >* kdTree;

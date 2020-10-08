@@ -27,7 +27,7 @@ public:
    //LBMReal forcingC, forcingF;
 protected:   
 private:
-   LBMReal omegaC, omegaF;
+   LBMReal omegaC{0.0}, omegaF{0.0};
    LBMReal a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz, axyz, bxyz, cxyz;
    LBMReal xoff,    yoff,    zoff;
    LBMReal xoff_sq, yoff_sq, zoff_sq;

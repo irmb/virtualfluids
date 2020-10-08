@@ -10,16 +10,11 @@ namespace Kd
    {
    public:
       SplitCandidate() 
-         :  axis(0)
-          , position(0.0)
-          , starting(0)
-          , ending(0)
-          , np_left(false)
-          , np_right(false)
-          , Cn(0.0)
-          , nr(0)
-          , nl(0)  
-          , isValid(false)
+         :  
+           position(0.0)
+          , 
+           Cn(0.0)
+           
       {
 
       }
@@ -51,17 +46,17 @@ namespace Kd
       /* ======================================================================================= */
 
    public:
-      int     axis;
+      int     axis{0};
       T       Cn;
       T       position;
-      int     nl;
-      int     nr;
+      int     nl{0};
+      int     nr{0};
       int     np;
-      int     starting;
-      int     ending;
-      bool    np_left;
-      bool    np_right;
-      bool    isValid;
+      int     starting{0};
+      int     ending{0};
+      bool    np_left{false};
+      bool    np_right{false};
+      bool    isValid{false};
    };
 }
 

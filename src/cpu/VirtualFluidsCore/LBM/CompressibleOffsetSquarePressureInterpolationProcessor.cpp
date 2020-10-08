@@ -4,7 +4,7 @@
 using namespace UbMath;
 
 CompressibleOffsetSquarePressureInterpolationProcessor::CompressibleOffsetSquarePressureInterpolationProcessor()
-   : omegaC(0.0), omegaF(0.0)
+    
 {
    this->bulkOmegaToOmega = false;
    this->OxxPyyPzzC = one;

@@ -36,7 +36,7 @@ public:
    enum FILETYPE {ASCII, BINARY};      
 
 public:
-   UbFileInput() : filename(""), commentindicator('C') { }
+   UbFileInput() : filename("") { }
    virtual ~UbFileInput() { infile.close(); }
 
    virtual bool        operator!() { return !(infile); }
@@ -89,7 +89,7 @@ public:
 protected:
    std::ifstream infile;
    std::string   filename;
-   char          commentindicator;
+   char          commentindicator{'C'};
 };
 
 #endif //UBFILEINPUT_H

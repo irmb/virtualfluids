@@ -27,7 +27,7 @@ public:
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 protected:
     SPtr<GbObject3D> geoObject;
-   bool notActive;
+   bool notActive{true};
 };
 
 #endif 

@@ -42,19 +42,7 @@ GbVoxelMatrix3D::GbVoxelMatrix3D(int nx1, int nx2, int nx3, float initVal, doubl
 /*=======================================================*/
 GbVoxelMatrix3D::GbVoxelMatrix3D()
    : GbObject3D()
-   , minX1(0.0)
-   , minX2(0.0)
-   , minX3(0.0)
-   , nodesX1(0)
-   , nodesX2(0)
-   , nodesX3(0)
-   , lowerThreshold(0.0)
-   , upperThreshold(0.0)
-   , deltaX1(1.0)
-   , deltaX2(1.0)
-   , deltaX3(1.0)
-   , transferViaFilename(false)
-   , addSurfaceTriangleSetFlag(true)
+    
 {
    this->setName("VoxelMatrix3D");
 }

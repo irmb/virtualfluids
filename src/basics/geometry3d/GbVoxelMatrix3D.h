@@ -159,21 +159,21 @@ protected:
 protected:
    //for transfer
    std::string filename;
-   bool transferViaFilename;
+   bool transferViaFilename{false};
 
-   bool addSurfaceTriangleSetFlag;
+   bool addSurfaceTriangleSetFlag{true};
 
-   int nodesX1;
-   int nodesX2;
-   int nodesX3;
-   double lowerThreshold, upperThreshold;
+   int nodesX1{0};
+   int nodesX2{0};
+   int nodesX3{0};
+   double lowerThreshold{0.0}, upperThreshold{0.0};
 
-   double minX1;
-   double minX2;
-   double minX3;
-   double deltaX1;
-   double deltaX2;
-   double deltaX3;
+   double minX1{0.0};
+   double minX2{0.0};
+   double minX3{0.0};
+   double deltaX1{1.0};
+   double deltaX2{1.0};
+   double deltaX3{1.0};
 
    Matrix3D voxelMatrix;
 

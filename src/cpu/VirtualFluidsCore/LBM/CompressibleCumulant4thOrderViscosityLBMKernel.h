@@ -18,7 +18,7 @@ public:
    enum Parameter{NORMAL, MAGIC};
 public:
    CompressibleCumulant4thOrderViscosityLBMKernel();
-   ~CompressibleCumulant4thOrderViscosityLBMKernel(void) override;
+   ~CompressibleCumulant4thOrderViscosityLBMKernel() override;
    void calculate(int step) override;
    SPtr<LBMKernel> clone() override;
    double getCalculationTime() override;

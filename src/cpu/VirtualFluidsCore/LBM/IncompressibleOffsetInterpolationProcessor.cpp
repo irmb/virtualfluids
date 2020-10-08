@@ -4,7 +4,7 @@
 
 
 IncompressibleOffsetInterpolationProcessor::IncompressibleOffsetInterpolationProcessor()
-   : omegaC(0.0), omegaF(0.0)
+    
 {
    //forcingC = 0; //9.99685e-7;
    //forcingF = 0; //forcingC*0.5;

@@ -6,7 +6,7 @@
 
 
 RefineCrossAndInsideGbObjectBlockVisitor::RefineCrossAndInsideGbObjectBlockVisitor()
-:  Block3DVisitor() , notActive(true)
+:  Block3DVisitor()  
 {
 }
 //////////////////////////////////////////////////////////////////////////

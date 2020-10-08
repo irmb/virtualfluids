@@ -21,7 +21,7 @@ class IncompressibleCumulantWithSpongeLayerLBMKernel :  public IncompressibleCum
 {
 public:
    IncompressibleCumulantWithSpongeLayerLBMKernel();
-   ~IncompressibleCumulantWithSpongeLayerLBMKernel(void) override;
+   ~IncompressibleCumulantWithSpongeLayerLBMKernel() override;
    SPtr<LBMKernel> clone() override;
    void calculate(int step) override;
    void initRelaxFactor(int vdir, double vL1, double vdx, double vSP);

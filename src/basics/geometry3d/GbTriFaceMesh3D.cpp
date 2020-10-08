@@ -22,12 +22,9 @@ using namespace std;
 
 GbTriFaceMesh3D::GbTriFaceMesh3D() 
    :   GbObject3D()
-     , buildVertTriRelationMap(false)
-     , kdTree(NULL)
-     , transX1(0.0)
-     , transX2(0.0)
-     , transX3(0.0)
-     , transferViaFilename(false)
+     , 
+      kdTree(NULL)
+      
 
 {
    this->setName("CAB_GbTriFaceMesh3D");

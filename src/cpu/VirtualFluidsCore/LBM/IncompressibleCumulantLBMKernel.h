@@ -20,7 +20,7 @@ public:
    enum Parameter{NORMAL, MAGIC};
 public:
    IncompressibleCumulantLBMKernel();
-   ~IncompressibleCumulantLBMKernel(void) override;
+   ~IncompressibleCumulantLBMKernel() override;
    void calculate(int step) override;
    SPtr<LBMKernel> clone() override;
    double getCalculationTime() override;

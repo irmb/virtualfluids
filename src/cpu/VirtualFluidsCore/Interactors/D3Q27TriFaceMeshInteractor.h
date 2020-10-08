@@ -80,12 +80,12 @@ public:
 protected:
    int    stressMode;
 
-   double forceshift;       
-   double velocityshift;
-   bool   forceshiftpolicy;
-   bool   velocityshiftpolicy;
-   bool   useHalfSpace;
-   bool   regardPIOTest;
+   double forceshift{0.0};       
+   double velocityshift{0.0};
+   bool   forceshiftpolicy{false};
+   bool   velocityshiftpolicy{false};
+   bool   useHalfSpace{true};
+   bool   regardPIOTest{true};
 
    void reinitWithStoredQs(const double& timeStep);
    //   bool reinitWithStoredQsFlag;

@@ -18,7 +18,7 @@ public:
    enum Parameter{NORMAL, MAGIC};
 public:
    CompressibleCumulantLBMKernel();
-   ~CompressibleCumulantLBMKernel(void) override;
+   ~CompressibleCumulantLBMKernel() override;
    void calculate(int step) override;
    SPtr<LBMKernel> clone() override;
    double getCalculationTime() override;

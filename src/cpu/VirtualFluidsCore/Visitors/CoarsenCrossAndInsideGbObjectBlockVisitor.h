@@ -26,7 +26,7 @@ public:
    //////////////////////////////////////////////////////////////////////////
 protected:
     SPtr<GbObject3D> geoObject;
-   bool notActive;
+   bool notActive{true};
    int coarseLevel;
 };
 

@@ -10,6 +10,8 @@
 #ifndef _METIS_H_
 #define _METIS_H_ 
 
+#pragma clang system_header
+
 /****************************************************************************
 * A set of defines that can be modified by the user
 *****************************************************************************/

@@ -35,7 +35,7 @@ public:
    enum FILETYPE {ASCII, BINARY};      
 
 public:
-   UbFileOutput() : filename(""), commentindicator('C') {  }
+   UbFileOutput() : filename("") {  }
    UbFileOutput(const std::string& filename)  : filename(filename), commentindicator('C') { }             
    virtual ~UbFileOutput() { outfile.flush();outfile.close(); }
 
@@ -87,7 +87,7 @@ public:
 protected:
    std::ofstream outfile;
    std::string   filename; 
-   char          commentindicator; 
+   char          commentindicator{'C'}; 
 };
 
 #endif //UBFILEOUTPUT_H

@@ -9,9 +9,7 @@ using namespace std;
 // Konstruktor
 /*==========================================================*/
 GbCylinder3D::GbCylinder3D()
-   : minX1(0.0)   , minX2(0.0)   , minX3(0.0)
-   , maxX1(0.0)   , maxX2(0.0)   , maxX3(0.0)
-   , centerX1(0.0), centerX2(0.0), centerX3(0.0)
+    
 {
    this->setName("cylinder");
    GbPoint3D* p1 = new GbPoint3D();

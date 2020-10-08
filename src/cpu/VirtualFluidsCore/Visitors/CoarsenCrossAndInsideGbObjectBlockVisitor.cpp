@@ -4,7 +4,7 @@
 #include <geometry3d/GbObject3D.h>
 
 CoarsenCrossAndInsideGbObjectBlockVisitor::CoarsenCrossAndInsideGbObjectBlockVisitor()
-   : Block3DVisitor(), notActive(true)
+   : Block3DVisitor() 
 {
 }
 //////////////////////////////////////////////////////////////////////////

@@ -44,7 +44,7 @@ template< typename VectorTransmitter >
 class D3Q27ETCFOffVectorConnector : public Block3DConnector
 {
 public:
-   typedef typename VectorTransmitter::value_type  vector_type;
+   using vector_type = typename VectorTransmitter::value_type;
    using VectorTransmitterPtr = SPtr<VectorTransmitter>;
 public:
    D3Q27ETCFOffVectorConnector(SPtr<Block3D> block,
