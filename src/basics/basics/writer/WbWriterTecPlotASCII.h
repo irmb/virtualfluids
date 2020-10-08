@@ -13,6 +13,10 @@ public:
       static WbWriterTecPlotASCII instance;
       return &instance;
    }
+
+    WbWriterTecPlotASCII( const WbWriterTecPlotASCII& ) = delete;
+    const WbWriterTecPlotASCII& operator=( const WbWriterTecPlotASCII& ) = delete;
+
 private:
    WbWriterTecPlotASCII() : WbWriter() 
    {
@@ -20,9 +24,6 @@ private:
       if(sizeof(int)          !=4) throw UbException(UB_EXARGS,"machine error int   type mismatch");
       if(sizeof(float)        !=4) throw UbException(UB_EXARGS,"machine error float type mismatch");
    }
-
-   WbWriterTecPlotASCII( const WbWriterTecPlotASCII& ) = delete;                  //no copy allowed 
-   const WbWriterTecPlotASCII& operator=( const WbWriterTecPlotASCII& ) = delete; //no copy allowed
 
    static std::string  pvdEndTag;
 public:

@@ -36,8 +36,8 @@ public:
 
 public:
    UbFileOutput() : filename("") {  }
-   UbFileOutput(const std::string& filename)  : filename(filename), commentindicator('C') { }             
-   virtual ~UbFileOutput() { outfile.flush();outfile.close(); }
+   UbFileOutput(const std::string& filename)  : filename(filename) { }
+   virtual ~UbFileOutput() { outfile.flush(); }
 
    virtual bool open(const std::string& filename, CREATEOPTION opt=OUTFILE) = 0;
 

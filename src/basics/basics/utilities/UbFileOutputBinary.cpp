@@ -133,7 +133,7 @@ void UbFileOutputBinary::writeString(const string& value, const int&  /*width*/)
 /*==========================================================*/
 void UbFileOutputBinary::writeStringOnly(const string&  /*value*/)				
 {
-   UbException(UB_EXARGS,"no way... causes to many errors");
+   throw UbException(UB_EXARGS,"no way... causes to many errors"); // TODO: WTF?
 }
 /*==========================================================*/
 void UbFileOutputBinary::writeLine(const std::string& value, const int&  /*width*/)				

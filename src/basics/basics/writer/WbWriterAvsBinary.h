@@ -17,10 +17,11 @@ public:
       static WbWriterAvsBinary instance;
       return &instance;
    }
+
+    WbWriterAvsBinary( const WbWriterAvsBinary& ) = delete;
+    const WbWriterAvsBinary& operator=( const WbWriterAvsBinary& ) = delete;
 private:
-   WbWriterAvsBinary() : WbWriter() {}                             
-   WbWriterAvsBinary( const WbWriterAvsBinary& ) = delete;                  //no copy allowed 
-   const WbWriterAvsBinary& operator=( const WbWriterAvsBinary& ) = delete; //no copy allowed
+   WbWriterAvsBinary() = default;
 
 public:
    std::string getFileExtension() override { return ".bin.inp"; }

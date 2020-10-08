@@ -13,6 +13,9 @@ public:
       static WbWriterX3D instance;
       return &instance;
    }
+
+    WbWriterX3D( const WbWriterX3D& ) = delete;
+    const WbWriterX3D& operator=( const WbWriterX3D& ) = delete;
 private:
    WbWriterX3D() : WbWriter() 
    {
@@ -20,8 +23,6 @@ private:
       if(sizeof(int)          !=4) throw UbException(UB_EXARGS,"error int   type mismatch");
       if(sizeof(float)        !=4) throw UbException(UB_EXARGS,"error float type mismatch");
    }
-   WbWriterX3D( const WbWriterX3D& ) = delete;                  //no copy allowed 
-   const WbWriterX3D& operator=( const WbWriterX3D& ) = delete; //no copy allowed
 
    static std::string  pvdEndTag;
 

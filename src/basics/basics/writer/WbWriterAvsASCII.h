@@ -18,10 +18,10 @@ public:
       return &instance;
    }
 
+    WbWriterAvsASCII( const WbWriterAvsASCII& ) = delete;
+    const WbWriterAvsASCII& operator=( const WbWriterAvsASCII& ) = delete;
 private:
-   WbWriterAvsASCII() : WbWriter() {}                            
-   WbWriterAvsASCII( const WbWriterAvsASCII& ) = delete;                  //no copy allowed 
-   const WbWriterAvsASCII& operator=( const WbWriterAvsASCII& ) = delete; //no copy allowed
+   WbWriterAvsASCII() = default;
 
 public:
    std::string getFileExtension() override { return ".ascii.inp"; }

@@ -17,10 +17,11 @@ public:
       static WbWriterVtkBinary instance;
       return &instance;
    }
+
+    WbWriterVtkBinary( const WbWriterVtkBinary& ) = delete;
+    const WbWriterVtkBinary& operator=( const WbWriterVtkBinary& ) = delete;
 private:
-   WbWriterVtkBinary() : WbWriter() {}                             
-   WbWriterVtkBinary( const WbWriterVtkBinary& ) = delete;                  //no copy allowed 
-   const WbWriterVtkBinary& operator=( const WbWriterVtkBinary& ) = delete; //no copy allowed
+   WbWriterVtkBinary() = default;
 
 public:
    std::string getFileExtension() override { return ".bin.vtk"; }

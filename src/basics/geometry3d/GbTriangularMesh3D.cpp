@@ -547,7 +547,7 @@ UbTupleDouble6 GbTriangularMesh3D::calculateMomentOfInertia(double rhoP)
    cout<<" top11:"<<top11<<" top22:"<<top22<<" top33:"<<top33<<endl;
    cout<<" top12:"<<top12<<" top23:"<<top23<<" top13:"<<top13<<endl;
 
-   return UbTupleDouble6(top11,top22,top33,top12,top23,top13);
+   return {top11,top22,top33,top12,top23,top13};
 }
 
  /**
@@ -1294,7 +1294,7 @@ char    GbTriangularMesh3D::SegTriInt( GbTriangle3D* T, GbVector3D& q, GbVector3
    int code = '?';
    int m = -1;
 
-   code = SegPlaneInt( T, q, r, p, &m );
+   code = (unsigned char)SegPlaneInt( T, q, r, p, &m );
    //  printf("SegPlaneInt code=%c, m=%d; p=(%lf,%lf,%lf)\n", code,m,p[0],p[1],p[2]);
 
    if      ( code == '0')  return '0';
