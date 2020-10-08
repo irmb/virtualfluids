@@ -30,7 +30,7 @@ grid_params.periodic_boundary_in_x3 = True
 sim_params = SimulationParameters()
 sim_params.timestep_log_interval = 1000
 sim_params.number_of_timesteps = 50000
-sim_params.number_of_threads = os.environ.get("OMP_NUM_THREADS", 4)
+sim_params.number_of_threads = int(os.environ.get("OMP_NUM_THREADS", 4))
 
 
 def run_simulation(physical_parameters=physical_params, grid_parameters=grid_params,
