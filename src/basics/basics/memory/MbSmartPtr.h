@@ -66,7 +66,7 @@ public:
 	template<class ParamType>
 	const MbSmartPtr<ObjType>& operator =(const MbSmartPtr<ParamType>& ptr)
 	{
-   	init(ptr.get());
+   	    init(ptr.get());
 		return *this;
 	}
 	const MbSmartPtr<ObjType>& operator =(const MbSmartPtr<ObjType>& ptr)
@@ -102,26 +102,6 @@ public:
    {
       return MbSmartPtrBase::removeFromGC(mpPtr);
    }
-
-#ifdef CAB_RCF
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      if(ArchiveTools::isWriting(ar))
-      {
-         ar & mpPtr;
-      }
-      else
-      {
-         ObjType* ptr;
-         ar & ptr;
-
-         mpPtr=NULL;
-         init(ptr);
-      }
-   }
-#endif //CAB_RCF
-
 private:
    void init(const ObjType* pPtr)
 	{

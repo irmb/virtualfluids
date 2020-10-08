@@ -104,7 +104,7 @@ public:
           
       = default;
       TriFace(const int& v1, const int& v2, const int& v3)
-         : v1(v1), v2(v2), v3(v3), nx(0.0), ny(0.0), nz(0.0)
+         : v1(v1), v2(v2), v3(v3)
       {
       }
 
@@ -314,12 +314,12 @@ protected:
    double x2center;
    double x3center;
 
-   bool   consistent;
+   bool consistent {false};
 
    bool buildVertTriRelationMap{false};
    std::multimap<Vertex*,TriFace*> relationVertTris;
 
-   Kd::Tree< double >* kdTree;
+   Kd::Tree< double >* kdTree = nullptr;
 };
 
 

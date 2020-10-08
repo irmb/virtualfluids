@@ -52,7 +52,7 @@ namespace Kd
       }
       else throw UbException(UB_EXARGS,"unknown axis");
       
-      std::sort( projection.begin(), projection.end(), std::less<double>() );
+      std::sort( projection.begin(), projection.end(), std::less<>() );
    }
    /* ======================================================================================= */
    template< typename T>

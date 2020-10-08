@@ -9,28 +9,15 @@ namespace Kd
    class SplitCandidate   
    {
    public:
-      SplitCandidate() 
-         :  
-           position(0.0)
-          , 
-           Cn(0.0)
-           
-      {
-
-      }
+      SplitCandidate() = default;
       /* ======================================================================================= */
-      SplitCandidate(const int& axis, const T& position, const int& starting, const int& ending, const int& insidePlane)
-         : np_left(false)
-         , np_right(false)
-         , axis(axis)
+      SplitCandidate(const int& axis, const T& position, const int& starting, const int& ending, const int& insidePlane) :
+           axis(axis)
          , position(position)
          , starting(starting)
          , ending(ending)
          , np(insidePlane)
-         , Cn(0.0) 
-         , nr(0)  
-         , nl(0)  
-         , isValid(true)
+         , isValid(true) //FIXME: isValid default false is correct?
       {
       }
       /* ======================================================================================= */
@@ -47,8 +34,8 @@ namespace Kd
 
    public:
       int     axis{0};
-      T       Cn;
-      T       position;
+      T       Cn {0.0};
+      T       position {0.0};
       int     nl{0};
       int     nr{0};
       int     np;

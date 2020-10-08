@@ -22,10 +22,6 @@ using namespace std;
 
 GbTriFaceMesh3D::GbTriFaceMesh3D() 
    :   GbObject3D()
-     , 
-      kdTree(NULL)
-      
-
 {
    this->setName("CAB_GbTriFaceMesh3D");
    this->nodes          = new vector<Vertex>;
@@ -38,14 +34,7 @@ GbTriFaceMesh3D::GbTriFaceMesh3D(string name, vector<Vertex>* nodes, vector<TriF
    :  GbObject3D()
     , nodes(nodes)
     , triangles(triangles)
-    , buildVertTriRelationMap(false)
-    , consistent(false)
-    , kdTree(NULL)
     , kdtreeSplitAlg(splitAlg)
-    , transX1(0.0)
-    , transX2(0.0)
-    , transX3(0.0)
-    , transferViaFilename(false)
 {
    if( name.empty() ) throw UbException(UB_EXARGS,"no name specified");
    if( !nodes       ) throw UbException(UB_EXARGS,"no nodes specified");
@@ -330,7 +319,7 @@ UbTupleDouble3 GbTriFaceMesh3D::calculateCenterOfGravity()
    rSP2 = rSP2/(24.0*volume);
    rSP3 = rSP3/(24.0*volume);
 
-   return UbTupleDouble3(rSP1, rSP2, rSP3);
+   return  {rSP1, rSP2, rSP3};
 }
 /*===============================================*/
 UbTupleDouble6 GbTriFaceMesh3D::calculateMomentOfInertia(double rhoP)
@@ -406,7 +395,7 @@ UbTupleDouble6 GbTriFaceMesh3D::calculateMomentOfInertia(double rhoP)
    cout<<" top11:"<<top11<<" top22:"<<top22<<" top33:"<<top33<<endl;
    cout<<" top12:"<<top12<<" top23:"<<top23<<" top13:"<<top13<<endl;
 
-   return UbTupleDouble6(top11,top22,top33,top12,top23,top13);
+   return {top11,top22,top33,top12,top23,top13};
 }
 /*==============================================================*/
 void GbTriFaceMesh3D::calculateValues()
