@@ -16,9 +16,7 @@
 using namespace std;
 
 AverageValuesCoProcessor::AverageValuesCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 AverageValuesCoProcessor::AverageValuesCoProcessor(SPtr<Grid3D> grid, const std::string& path,	WbWriter* const writer, 
    SPtr<UbScheduler> s, SPtr<UbScheduler> Avs, SPtr<UbScheduler> rsMeans, SPtr<UbScheduler> rsRMS, bool restart)

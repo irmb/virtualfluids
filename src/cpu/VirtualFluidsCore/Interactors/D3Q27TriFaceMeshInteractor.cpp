@@ -53,9 +53,7 @@ D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> tri
 }
 //////////////////////////////////////////////////////////////////////////
 D3Q27TriFaceMeshInteractor::~D3Q27TriFaceMeshInteractor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void D3Q27TriFaceMeshInteractor::initInteractor(const double& timeStep)
 {

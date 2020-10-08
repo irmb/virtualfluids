@@ -3,8 +3,7 @@
 #include "EsoTwistD3Q27System.h"
 
 D3Q27EsoTwist3DSoA::D3Q27EsoTwist3DSoA()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 D3Q27EsoTwist3DSoA::D3Q27EsoTwist3DSoA( const size_t& nx1, const size_t& nx2, const size_t& nx3, LBMReal value )
 {
@@ -42,9 +41,7 @@ D3Q27EsoTwist3DSoA::D3Q27EsoTwist3DSoA( const size_t& nx1, const size_t& nx2, co
 }
 //////////////////////////////////////////////////////////////////////////
 D3Q27EsoTwist3DSoA::~D3Q27EsoTwist3DSoA()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSoA::swap()
 {

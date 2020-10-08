@@ -13,8 +13,7 @@ GbObjectGroup3D::GbObjectGroup3D()
 }
 /*=====================================================*/
 GbObjectGroup3D::~GbObjectGroup3D()
-{
-}
+= default;
 /*=====================================================*/
 void GbObjectGroup3D::finalize()
 {

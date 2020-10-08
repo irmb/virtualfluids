@@ -19,7 +19,7 @@ public:
 
    SetForcingBlockVisitor(const std::string& sForcingX1, const std::string& sForcingX2, const std::string& sForcingX3);
 
-   ~SetForcingBlockVisitor() override {}
+   ~SetForcingBlockVisitor() override = default;
 
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 

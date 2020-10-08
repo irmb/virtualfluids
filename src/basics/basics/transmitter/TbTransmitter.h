@@ -33,7 +33,7 @@ public:
    using value_type = T;
 
 public:
-   TbTransmitter() {}
+   TbTransmitter() = default;
    virtual ~TbTransmitter()  {  /*std::cout<<typeid(*this).name()<<" dtor"<<std::endl;*/  }
 
    virtual bool isLocalTransmitter()  const = 0;

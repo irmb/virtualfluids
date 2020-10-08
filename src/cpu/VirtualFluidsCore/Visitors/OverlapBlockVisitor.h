@@ -14,7 +14,7 @@ class OverlapBlockVisitor : public Block3DVisitor
 public:
    OverlapBlockVisitor(int levelDepth, bool includeNotActiveBlocks = true);
    
-   ~OverlapBlockVisitor() override{}
+   ~OverlapBlockVisitor() override= default;
 
    bool isIterative()   { return false; }
 

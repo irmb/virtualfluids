@@ -14,7 +14,7 @@ class SetUndefinedNodesBlockVisitor : public Block3DVisitor
 public:
    SetUndefinedNodesBlockVisitor(bool twoTypeOfConnectorsCheck=true);
 
-   ~SetUndefinedNodesBlockVisitor() override {}
+   ~SetUndefinedNodesBlockVisitor() override = default;
 
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 protected:

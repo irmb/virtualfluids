@@ -12,8 +12,7 @@ InitDensityLBMKernel::InitDensityLBMKernel()
 }
 
 InitDensityLBMKernel::~InitDensityLBMKernel()
-{
-}
+= default;
 
 void InitDensityLBMKernel::initDataSet()
 {

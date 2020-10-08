@@ -28,7 +28,7 @@ class MbSmartPtrBase
    class MbSmartPtrBaseMap
    {
    private:
-      MbSmartPtrBaseMap() { }
+      MbSmartPtrBaseMap() = default;
       MbSmartPtrBaseMap( const MbSmartPtrBaseMap& );                  //no copy allowed
       const MbSmartPtrBaseMap& operator=( const MbSmartPtrBaseMap& ); //no copy allowed
 
@@ -39,8 +39,8 @@ class MbSmartPtrBase
    };
 
 protected:
-   MbSmartPtrBase() {}
-   virtual ~MbSmartPtrBase() {}
+   MbSmartPtrBase() = default;
+   virtual ~MbSmartPtrBase() = default;
    bool addRef(void* p);
 	bool releaseRef(void* p);
    bool removeFromGC(void* ptr) const;

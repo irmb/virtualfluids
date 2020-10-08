@@ -15,9 +15,7 @@
 
 
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string& path, WbWriter* const writer,
    SPtr<UbScheduler> s, SPtr<Communicator> comm, int options)

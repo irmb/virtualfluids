@@ -26,9 +26,7 @@ EmergencyExitCoProcessor::EmergencyExitCoProcessor( SPtr<Grid3D> grid, SPtr<UbSc
 }
 //////////////////////////////////////////////////////////////////////////
 EmergencyExitCoProcessor::~EmergencyExitCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void EmergencyExitCoProcessor::process( double step )
 {

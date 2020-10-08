@@ -20,9 +20,7 @@ CompressibleCumulant4thOrderViscosityLBMKernel::CompressibleCumulant4thOrderVisc
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleCumulant4thOrderViscosityLBMKernel::~CompressibleCumulant4thOrderViscosityLBMKernel(void)
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void CompressibleCumulant4thOrderViscosityLBMKernel::initDataSet()
 {

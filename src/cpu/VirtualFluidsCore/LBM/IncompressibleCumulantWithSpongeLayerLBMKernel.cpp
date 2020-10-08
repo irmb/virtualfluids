@@ -12,14 +12,10 @@ using namespace UbMath;
 
 //////////////////////////////////////////////////////////////////////////
 IncompressibleCumulantWithSpongeLayerLBMKernel::IncompressibleCumulantWithSpongeLayerLBMKernel()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 IncompressibleCumulantWithSpongeLayerLBMKernel::~IncompressibleCumulantWithSpongeLayerLBMKernel(void)
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleCumulantWithSpongeLayerLBMKernel::initDataSet()
 {

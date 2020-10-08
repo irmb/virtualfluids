@@ -22,9 +22,7 @@ CompressibleCumulantLBMKernel::CompressibleCumulantLBMKernel()
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleCumulantLBMKernel::~CompressibleCumulantLBMKernel(void)
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void CompressibleCumulantLBMKernel::initDataSet()
 {

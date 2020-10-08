@@ -21,7 +21,7 @@ class RenumberGridVisitor : public Grid3DVisitor
 public:
    RenumberGridVisitor(SPtr<Communicator> com);
 
-   ~RenumberGridVisitor() override {}
+   ~RenumberGridVisitor() override = default;
 
    void visit(SPtr<Grid3D> grid) override;
 

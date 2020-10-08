@@ -49,7 +49,7 @@ public:
       VectorTransmitterPtr sender11, VectorTransmitterPtr receiver11,
       int sendDir, InterpolationProcessorPtr iprocessor);
 
-   ~CoarseToFineBlock3DConnector() override {}
+   ~CoarseToFineBlock3DConnector() override = default;
 
    bool isLocalConnector() override;
    bool isRemoteConnector() override;

@@ -22,9 +22,7 @@ CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterp
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleOffsetMomentsInterpolationProcessor::~CompressibleOffsetMomentsInterpolationProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 InterpolationProcessorPtr CompressibleOffsetMomentsInterpolationProcessor::clone()
 {

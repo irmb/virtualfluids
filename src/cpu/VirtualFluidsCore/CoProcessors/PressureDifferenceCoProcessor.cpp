@@ -51,8 +51,7 @@ PressureDifferenceCoProcessor::PressureDifferenceCoProcessor(SPtr<Grid3D> grid, 
 }
 //////////////////////////////////////////////////////////////////////////
 PressureDifferenceCoProcessor::~PressureDifferenceCoProcessor() 
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void PressureDifferenceCoProcessor::process(double step)
 {

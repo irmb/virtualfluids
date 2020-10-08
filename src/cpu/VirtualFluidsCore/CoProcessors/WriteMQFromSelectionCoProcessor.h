@@ -27,7 +27,7 @@ public:
                                            SPtr<GbObject3D> gbObject,
                                            const std::string& path, WbWriter* const writer, 
                                            SPtr<LBMUnitConverter> conv, SPtr<Communicator> comm);
-   ~WriteMQFromSelectionCoProcessor() override{}
+   ~WriteMQFromSelectionCoProcessor() override= default;
 
    void process(double step) override;
 

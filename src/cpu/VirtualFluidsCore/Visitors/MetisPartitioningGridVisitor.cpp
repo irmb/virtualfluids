@@ -22,9 +22,7 @@ MetisPartitioningGridVisitor::MetisPartitioningGridVisitor(SPtr<Communicator> co
 }
 //////////////////////////////////////////////////////////////////////////
 MetisPartitioningGridVisitor::~MetisPartitioningGridVisitor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void MetisPartitioningGridVisitor::visit(SPtr<Grid3D> grid)
 {

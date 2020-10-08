@@ -14,7 +14,7 @@ class ViscosityBlockVisitor : public Block3DVisitor
 public:
    ViscosityBlockVisitor(LBMReal nu);
 
-   ~ViscosityBlockVisitor() override {}
+   ~ViscosityBlockVisitor() override = default;
 
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 

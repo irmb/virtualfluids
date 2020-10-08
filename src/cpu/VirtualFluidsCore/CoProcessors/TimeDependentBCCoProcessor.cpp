@@ -10,9 +10,7 @@ TimeDependentBCCoProcessor::TimeDependentBCCoProcessor(SPtr<Grid3D> grid, SPtr<U
 }
 //////////////////////////////////////////////////////////////////////////
 TimeDependentBCCoProcessor::~TimeDependentBCCoProcessor() 
-{
-	
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void TimeDependentBCCoProcessor::process(double step)
 {

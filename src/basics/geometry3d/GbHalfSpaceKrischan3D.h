@@ -40,7 +40,7 @@ public:
                  , const double& p3x, const double& p3y, const double& p3z );
 
    /*=======================================================*/
-   ~GbHalfSpaceKrischan3D() override { }
+   ~GbHalfSpaceKrischan3D() override = default;
    /*=======================================================*/
    std::string getTypeID() {return "GbHalfSpaceKrischan3D"; }
    /*=============================================*/

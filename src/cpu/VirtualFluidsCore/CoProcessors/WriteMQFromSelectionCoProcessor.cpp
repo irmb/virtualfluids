@@ -15,9 +15,7 @@
 #include "GbObject3D.h"
 
 WriteMQFromSelectionCoProcessor::WriteMQFromSelectionCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 WriteMQFromSelectionCoProcessor::WriteMQFromSelectionCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                                                                  SPtr<GbObject3D> gbObject,

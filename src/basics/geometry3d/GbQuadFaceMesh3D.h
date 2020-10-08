@@ -33,7 +33,7 @@ public:
    class Vertex
    {
    public:
-      Vertex(){}
+      Vertex()= default;
       Vertex(float x, float y, float z)
       {
          this->x=x;
@@ -46,7 +46,7 @@ public:
    class QuadFace
    {
    public:
-      QuadFace() {}
+      QuadFace() = default;
       QuadFace(int v1, int v2, int v3, int v4)
       {
          this->vertex1=v1;

@@ -32,7 +32,7 @@ public:
    GbVoxelMatrix3D();
    GbVoxelMatrix3D(int nx1, int nx2, int nx3, float initVal, double lowerThreshold = 0, double upperThreshold = 0);
    GbVoxelMatrix3D(const Matrix3D& voxelMatrix, double lowerThreshold = 0, double upperThreshold = 0);
-   ~GbVoxelMatrix3D() override {}
+   ~GbVoxelMatrix3D() override = default;
 
    void finalize() override {};
    GbVoxelMatrix3D* clone() override;

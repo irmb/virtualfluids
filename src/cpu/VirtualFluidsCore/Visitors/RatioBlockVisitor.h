@@ -14,7 +14,7 @@ class RatioBlockVisitor : public Block3DVisitor
 public:
    RatioBlockVisitor(int levelDepth, bool includeNotActiveBlocks = false);
 
-   ~RatioBlockVisitor() override {}
+   ~RatioBlockVisitor() override = default;
 
    bool expandsByAdaptation() { return this->expandBlocks; }
 

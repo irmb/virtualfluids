@@ -19,8 +19,7 @@ MicrophoneArrayCoProcessor::MicrophoneArrayCoProcessor(SPtr<Grid3D> grid, SPtr<U
 }
 
 MicrophoneArrayCoProcessor::~MicrophoneArrayCoProcessor()
-{
-}
+= default;
 
 void MicrophoneArrayCoProcessor::process(double step)
 {

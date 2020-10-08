@@ -15,8 +15,7 @@ CoarsenCrossAndInsideGbObjectBlockVisitor::CoarsenCrossAndInsideGbObjectBlockVis
 }
 //////////////////////////////////////////////////////////////////////////
 CoarsenCrossAndInsideGbObjectBlockVisitor::~CoarsenCrossAndInsideGbObjectBlockVisitor()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void CoarsenCrossAndInsideGbObjectBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block)
 {

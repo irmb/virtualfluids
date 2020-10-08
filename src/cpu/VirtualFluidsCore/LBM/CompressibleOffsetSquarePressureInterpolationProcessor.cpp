@@ -20,9 +20,7 @@ CompressibleOffsetSquarePressureInterpolationProcessor::CompressibleOffsetSquare
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleOffsetSquarePressureInterpolationProcessor::~CompressibleOffsetSquarePressureInterpolationProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 InterpolationProcessorPtr CompressibleOffsetSquarePressureInterpolationProcessor::clone()
 {

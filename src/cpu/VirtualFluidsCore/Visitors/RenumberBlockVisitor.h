@@ -21,7 +21,7 @@ class RenumberBlockVisitor : public Block3DVisitor
 public:
    RenumberBlockVisitor();
 
-   ~RenumberBlockVisitor() override {}
+   ~RenumberBlockVisitor() override = default;
 
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 

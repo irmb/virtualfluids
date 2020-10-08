@@ -17,9 +17,7 @@ CompressibleOffsetInterpolationProcessor::CompressibleOffsetInterpolationProcess
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleOffsetInterpolationProcessor::~CompressibleOffsetInterpolationProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 InterpolationProcessorPtr CompressibleOffsetInterpolationProcessor::clone()
 {

@@ -17,9 +17,7 @@ IncompressibleOffsetInterpolationProcessor::IncompressibleOffsetInterpolationPro
 }
 //////////////////////////////////////////////////////////////////////////
 IncompressibleOffsetInterpolationProcessor::~IncompressibleOffsetInterpolationProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 InterpolationProcessorPtr IncompressibleOffsetInterpolationProcessor::clone()
 {

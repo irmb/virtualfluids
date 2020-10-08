@@ -14,7 +14,7 @@ class CheckRatioBlockVisitor : public Block3DVisitor
 public:
    CheckRatioBlockVisitor(int levelDepth, bool includeNotActiveBlocks = true);
 
-   ~CheckRatioBlockVisitor() override {}
+   ~CheckRatioBlockVisitor() override = default;
 
    bool getState();
    void resetState();

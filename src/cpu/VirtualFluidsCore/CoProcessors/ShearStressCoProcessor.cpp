@@ -42,9 +42,7 @@ ShearStressCoProcessor::ShearStressCoProcessor(SPtr<Grid3D> grid, const std::str
 }
 //////////////////////////////////////////////////////////////////////////
 ShearStressCoProcessor::~ShearStressCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void ShearStressCoProcessor::process( double step )
 {

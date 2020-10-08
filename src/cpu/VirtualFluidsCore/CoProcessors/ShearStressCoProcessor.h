@@ -25,7 +25,7 @@ class ShearStressCoProcessor: public CoProcessor
 {
 public:
    //! Default constructor
-   ShearStressCoProcessor(){}
+   ShearStressCoProcessor()= default;
    //! Constructor
    ShearStressCoProcessor(SPtr<Grid3D> grid, const std::string& path, WbWriter* const writer,
        SPtr<UbScheduler> s, SPtr<UbScheduler> rs);

@@ -25,9 +25,7 @@ PressureCoefficientCoProcessor::PressureCoefficientCoProcessor(SPtr<Grid3D> grid
 }
 //////////////////////////////////////////////////////////////////////////
 PressureCoefficientCoProcessor::~PressureCoefficientCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void PressureCoefficientCoProcessor::process(double step)
 {

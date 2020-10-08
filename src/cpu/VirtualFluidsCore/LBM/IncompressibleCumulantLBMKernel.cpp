@@ -19,9 +19,7 @@ IncompressibleCumulantLBMKernel::IncompressibleCumulantLBMKernel()
 }
 //////////////////////////////////////////////////////////////////////////
 IncompressibleCumulantLBMKernel::~IncompressibleCumulantLBMKernel(void)
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleCumulantLBMKernel::initDataSet()
 {

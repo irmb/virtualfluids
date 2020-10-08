@@ -29,8 +29,7 @@ DecreaseViscosityCoProcessor::DecreaseViscosityCoProcessor(SPtr<Grid3D> grid, SP
 }
 //////////////////////////////////////////////////////////////////////////
 DecreaseViscosityCoProcessor::~DecreaseViscosityCoProcessor() 
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void DecreaseViscosityCoProcessor::process(double step)
 {

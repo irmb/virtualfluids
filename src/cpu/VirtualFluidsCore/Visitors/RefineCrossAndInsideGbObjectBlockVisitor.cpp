@@ -17,8 +17,7 @@ RefineCrossAndInsideGbObjectBlockVisitor::RefineCrossAndInsideGbObjectBlockVisit
 }
 //////////////////////////////////////////////////////////////////////////
 RefineCrossAndInsideGbObjectBlockVisitor::~RefineCrossAndInsideGbObjectBlockVisitor()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void RefineCrossAndInsideGbObjectBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
