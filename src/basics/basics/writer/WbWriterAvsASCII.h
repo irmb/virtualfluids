@@ -20,8 +20,8 @@ public:
 
 private:
    WbWriterAvsASCII() : WbWriter() {}                            
-   WbWriterAvsASCII( const WbWriterAvsASCII& );                  //no copy allowed 
-   const WbWriterAvsASCII& operator=( const WbWriterAvsASCII& ); //no copy allowed
+   WbWriterAvsASCII( const WbWriterAvsASCII& ) = delete;                  //no copy allowed 
+   const WbWriterAvsASCII& operator=( const WbWriterAvsASCII& ) = delete; //no copy allowed
 
 public:
    std::string getFileExtension() override { return ".ascii.inp"; }

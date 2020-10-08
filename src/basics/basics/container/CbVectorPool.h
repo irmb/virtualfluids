@@ -459,8 +459,8 @@ private:
 
    CbVectorPool< value_type >* ptrVectorPool;
 
-   CbVectorAllocatorPool( const CbVectorAllocatorPool& );                 //no copy allowed
-   const CbVectorAllocatorPool& operator=( const CbVectorAllocatorPool& );//no copy allowed
+   CbVectorAllocatorPool( const CbVectorAllocatorPool& ) = delete;                 //no copy allowed
+   const CbVectorAllocatorPool& operator=( const CbVectorAllocatorPool& ) = delete;//no copy allowed
 };
 
 

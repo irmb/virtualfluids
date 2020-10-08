@@ -19,8 +19,8 @@ public:
    }
 private:
    WbWriterAvsBinary() : WbWriter() {}                             
-   WbWriterAvsBinary( const WbWriterAvsBinary& );                  //no copy allowed 
-   const WbWriterAvsBinary& operator=( const WbWriterAvsBinary& ); //no copy allowed
+   WbWriterAvsBinary( const WbWriterAvsBinary& ) = delete;                  //no copy allowed 
+   const WbWriterAvsBinary& operator=( const WbWriterAvsBinary& ) = delete; //no copy allowed
 
 public:
    std::string getFileExtension() override { return ".bin.inp"; }

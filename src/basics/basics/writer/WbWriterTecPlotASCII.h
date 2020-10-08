@@ -21,8 +21,8 @@ private:
       if(sizeof(float)        !=4) throw UbException(UB_EXARGS,"machine error float type mismatch");
    }
 
-   WbWriterTecPlotASCII( const WbWriterTecPlotASCII& );                  //no copy allowed 
-   const WbWriterTecPlotASCII& operator=( const WbWriterTecPlotASCII& ); //no copy allowed
+   WbWriterTecPlotASCII( const WbWriterTecPlotASCII& ) = delete;                  //no copy allowed 
+   const WbWriterTecPlotASCII& operator=( const WbWriterTecPlotASCII& ) = delete; //no copy allowed
 
    static std::string  pvdEndTag;
 public:

@@ -23,9 +23,6 @@ GbCylinder3D::GbCylinder3D()
 }
 /*=======================================================*/
 GbCylinder3D::GbCylinder3D(GbCylinder3D* cylinder)
-   : minX1(0.0)   , minX2(0.0)   , minX3(0.0)
-   , maxX1(0.0)   , maxX2(0.0)   , maxX3(0.0)
-   , centerX1(0.0), centerX2(0.0), centerX3(0.0)
 {
    this->setName("cylinder");
    mRad         = cylinder->getRadius();
@@ -37,9 +34,6 @@ GbCylinder3D::GbCylinder3D(GbCylinder3D* cylinder)
 }
 /*==========================================================*/
 GbCylinder3D::GbCylinder3D(const double& x1a,const double& x2a, const double& x3a, const double& x1b,const double& x2b, const double& x3b, const double& rad)
-   : minX1(0.0)   , minX2(0.0)   , minX3(0.0)
-   , maxX1(0.0)   , maxX2(0.0)   , maxX3(0.0)
-   , centerX1(0.0), centerX2(0.0), centerX3(0.0)
 {
    this->setName("cylinder");
    mLine = new GbLine3D;
@@ -56,9 +50,6 @@ GbCylinder3D::GbCylinder3D(const double& x1a,const double& x2a, const double& x3
 }
 /*==========================================================*/
 GbCylinder3D::GbCylinder3D(GbPoint3D* p1, GbPoint3D* p2, const double& rad)
-   : minX1(0.0), minX2(0.0), minX3(0.0)
-   , maxX1(0.0), maxX2(0.0), maxX3(0.0)
-   , centerX1(0.0), centerX2(0.0), centerX3(0.0)
 {
    this->setName("cylinder");
    mRad = rad;
@@ -69,9 +60,6 @@ GbCylinder3D::GbCylinder3D(GbPoint3D* p1, GbPoint3D* p2, const double& rad)
 }
 /*==========================================================*/
 GbCylinder3D::GbCylinder3D(GbLine3D* line, const double& rad)
-   : minX1(0.0), minX2(0.0), minX3(0.0)
-   , maxX1(0.0), maxX2(0.0), maxX3(0.0)
-   , centerX1(0.0), centerX2(0.0), centerX3(0.0)
 {
    this->setName("cylinder");
    mRad = rad;

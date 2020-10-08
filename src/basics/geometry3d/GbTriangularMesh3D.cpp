@@ -462,7 +462,7 @@ UbTupleDouble3 GbTriangularMesh3D::calculateCenterOfGravity()
    rSP2 = rSP2/(24.0*volume);
    rSP3 = rSP3/(24.0*volume);
 
-   return UbTupleDouble3(rSP1, rSP2, rSP3);
+   return {rSP1, rSP2, rSP3};
 }
 /*===============================================*/
 UbTupleDouble6 GbTriangularMesh3D::calculateMomentOfInertia(double rhoP)
