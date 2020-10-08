@@ -37,7 +37,7 @@ public:
 
 public:
    UbFileInput() : filename("") { }
-   virtual ~UbFileInput() { infile.close(); }
+   virtual ~UbFileInput() = default;
 
    virtual bool        operator!() { return !(infile); }
    virtual bool        isOpen()    { return !(!(infile)); }
