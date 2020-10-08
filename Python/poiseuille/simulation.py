@@ -2,10 +2,26 @@ from pyfluids import Simulation
 from pyfluids.boundaryconditions import NoSlipBCAdapter, NoSlipBCAlgorithm
 from pyfluids.geometry import GbCuboid3D
 from pyfluids.kernel import LBMKernel, KernelType
+from pyfluids.parameters import SimulationParameters, GridParameters, PhysicalParameters
 from pyfluids.writer import Writer, WriterType
 
+grid_params = GridParameters()
+grid_params.delta_x = 1
+grid_params.number_of_nodes_per_direction = [2, 2, 10]
+grid_params.blocks_per_direction = [1, 1, 1]
+grid_params.periodic_boundary_in_x1 = True
+grid_params.periodic_boundary_in_x2 = True
 
-def run_simulation(physical_params, grid_params, sim_params):
+physical_params = PhysicalParameters()
+physical_params.lattice_viscosity = 0.005
+
+sim_params = SimulationParameters()
+sim_params.number_of_threads = 4
+sim_params.number_of_timesteps = 10000
+sim_params.timestep_log_interval = 1000
+
+
+def run_simulation(physical_params=physical_params, grid_params=grid_params, sim_params=sim_params):
     simulation = Simulation()
 
     kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
@@ -53,3 +69,7 @@ def run_simulation(physical_params, grid_params, sim_params):
         1, "/geo/addWallZMax")
 
     simulation.run_simulation()
+
+
+if __name__ == "__main__":
+    run_simulation()

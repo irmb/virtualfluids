@@ -22,4 +22,4 @@ From: irmb/virtualfluids-python-deps-mpich
     export PYTHONPATH=/Python
 
 %runscript
-    python3 /Python/cubeflow/simulation.py
+    python3 /Python/liddrivencavity/simulation.py
