@@ -134,12 +134,12 @@ void WriteMQFromSelectionCoProcessor::addDataMQ(SPtr<Block3D> block)
 
    //Diese Daten werden geschrieben:
    datanames.resize(0);
-   datanames.push_back("Rho");
-   datanames.push_back("Vx");
-   datanames.push_back("Vy");
-   datanames.push_back("Vz");
+   datanames.emplace_back("Rho");
+   datanames.emplace_back("Vx");
+   datanames.emplace_back("Vy");
+   datanames.emplace_back("Vz");
    //datanames.push_back("Press");
-   datanames.push_back("Level");
+   datanames.emplace_back("Level");
    //datanames.push_back("BlockID");
 
      
@@ -200,9 +200,9 @@ void WriteMQFromSelectionCoProcessor::addDataMQ(SPtr<Block3D> block)
                   int index = 0;
                   nodeNumbers(ix1, ix2, ix3) = nr++;
 
-                  nodes.push_back(UbTupleFloat3(float(worldCoordinates[0]),
+                  nodes.emplace_back(float(worldCoordinates[0]),
                      float(worldCoordinates[1]),
-                     float(worldCoordinates[2])));
+                     float(worldCoordinates[2]));
 
                   distributions->getDistribution(f, ix1, ix2, ix3);
                   calcMacros(f, rho, vx1, vx2, vx3);

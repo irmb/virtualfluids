@@ -46,7 +46,7 @@ public:
    class Vertex
    {
    public:
-      Vertex()  { }
+      Vertex()  = default;
       Vertex(const float& x, const float& y, const float& z) : x(x), y(y),z(z) { }
       Vertex(Vertex* vert)
       {
@@ -102,9 +102,7 @@ public:
    public:
       TriFace()
           
-      {
-
-      }
+      = default;
       TriFace(const int& v1, const int& v2, const int& v3)
          : v1(v1), v2(v2), v3(v3), nx(0.0), ny(0.0), nz(0.0)
       {

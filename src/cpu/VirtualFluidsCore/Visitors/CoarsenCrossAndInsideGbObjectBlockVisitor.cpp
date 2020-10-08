@@ -9,7 +9,7 @@ CoarsenCrossAndInsideGbObjectBlockVisitor::CoarsenCrossAndInsideGbObjectBlockVis
 }
 //////////////////////////////////////////////////////////////////////////
 CoarsenCrossAndInsideGbObjectBlockVisitor::CoarsenCrossAndInsideGbObjectBlockVisitor(SPtr<GbObject3D> geoObject, int fineLevel, int coarseLevel)
-   : Block3DVisitor(fineLevel, fineLevel), geoObject(geoObject), notActive(true), coarseLevel(coarseLevel)
+   : Block3DVisitor(fineLevel, fineLevel), geoObject(geoObject), coarseLevel(coarseLevel)
 {
 
 }

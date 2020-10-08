@@ -244,8 +244,8 @@ void ShearStressCoProcessor::addData()
 {
    //Diese Daten werden geschrieben:
    datanames.resize(0);
-   datanames.push_back("y^plus");
-   datanames.push_back("u_tau");
+   datanames.emplace_back("y^plus");
+   datanames.emplace_back("u_tau");
    //datanames.push_back("yPlusFD");
 
    data.resize(datanames.size());

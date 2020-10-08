@@ -250,17 +250,17 @@ void AverageValuesCoProcessor::addData(const SPtr<Block3D> block)
 
 	//Diese Daten werden geschrieben:
 	datanames.resize(0);
-	datanames.push_back("AvVx");
-   datanames.push_back("AvVy");
-   datanames.push_back("AvVz");
-	datanames.push_back("AvVxx");
-	datanames.push_back("AvVyy");
-	datanames.push_back("AvVzz");
-   datanames.push_back("AvVxy");
-   datanames.push_back("AvVxz");
-   datanames.push_back("AvVyz");
-   datanames.push_back("AvP");
-   datanames.push_back("AvPrms");
+	datanames.emplace_back("AvVx");
+   datanames.emplace_back("AvVy");
+   datanames.emplace_back("AvVz");
+	datanames.emplace_back("AvVxx");
+	datanames.emplace_back("AvVyy");
+	datanames.emplace_back("AvVzz");
+   datanames.emplace_back("AvVxy");
+   datanames.emplace_back("AvVxz");
+   datanames.emplace_back("AvVyz");
+   datanames.emplace_back("AvP");
+   datanames.emplace_back("AvPrms");
 
 
 	data.resize(datanames.size());

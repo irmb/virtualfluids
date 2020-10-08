@@ -139,7 +139,7 @@ void PressureCoefficientCoProcessor::writeValues(int step)
    if (comm->getProcessID() == comm->getRoot())
    {
       datanames.resize(0);
-      datanames.push_back("rho");
+      datanames.emplace_back("rho");
       data.resize(datanames.size());
 
       std::ofstream ostr;

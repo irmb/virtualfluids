@@ -6,7 +6,7 @@ using namespace std;
 /*==========================================================*/
 DensityBCAdapter::DensityBCAdapter(const double& dens, const double& startTime, const double& endTime )
 {
-   this->densBCs.push_back( BCFunction(dens,startTime,endTime) );
+   this->densBCs.emplace_back(dens,startTime,endTime );
    this->init();
 }
 /*==========================================================*/
@@ -24,7 +24,7 @@ DensityBCAdapter::DensityBCAdapter(const std::vector< BCFunction >& densBCs)
 /*==========================================================*/
 DensityBCAdapter::DensityBCAdapter(const mu::Parser& function, const double& startTime, const double& endTime )
 {
-   this->densBCs.push_back(BCFunction(function,startTime,endTime));
+   this->densBCs.emplace_back(function,startTime,endTime);
    this->init();
 }
 /*==========================================================*/

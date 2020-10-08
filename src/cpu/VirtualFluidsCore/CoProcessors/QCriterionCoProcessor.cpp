@@ -107,8 +107,8 @@ void QCriterionCoProcessor::addData(const SPtr<Block3D> block)
 
 	//Diese Daten werden geschrieben:
 	datanames.resize(0);
-	datanames.push_back("q");
-	datanames.push_back("scaleFactor");
+	datanames.emplace_back("q");
+	datanames.emplace_back("scaleFactor");
 	data.resize(datanames.size());
 
 

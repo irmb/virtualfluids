@@ -16,9 +16,7 @@ namespace Kd
    public:
       SplitCandidateManager()
           
-      {
-
-      }
+      = default;
       /* ======================================================================================= */
       SplitCandidate<T>& operator[] (const std::size_t& i)
       { 
