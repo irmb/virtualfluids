@@ -299,7 +299,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 		///////////////////////////////////////
 		////compute distribution at neighboring nodes from neighboring blocks
 
-		if (checkInterpolation==false || neighNodeIsBC)
+		if (!checkInterpolation || neighNodeIsBC)
 		{
 			SPtr<ILBMKernel> kernelW = blockNeighW->getKernel();
 			SPtr<BCArray3D> bcArrayW = kernelW->getBCProcessor()->getBCArray();          
@@ -362,7 +362,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 		computeVelocity(fW,vW,compressible);
 
 	}
-	if (checkInterpolation==true)
+	if (checkInterpolation)
 	{
 		//in plus-direction data is available in current block because of ghost layers
 		LBMReal fE[27];

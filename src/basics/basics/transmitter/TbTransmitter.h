@@ -34,7 +34,7 @@ public:
 
 public:
    TbTransmitter() = default;
-   virtual ~TbTransmitter()  {  /*std::cout<<typeid(*this).name()<<" dtor"<<std::endl;*/  }
+   virtual ~TbTransmitter() = default;
 
    virtual bool isLocalTransmitter()  const = 0;
    virtual bool isRemoteTransmitter() const = 0;

@@ -83,7 +83,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = 0;
    }
    //GoEast
-   else if(inRange(x1+2,x2,x3) && !iCellHasSolid(bcArray, x1+1,x2,x3)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1+2,x2,x3) && !iCellHasSolid(bcArray, x1+1,x2,x3)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1+1,x2,x3);
       xoff = -1;
@@ -99,7 +99,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = 0;
    }
    //GoNorth
-   else if(inRange(x1,x2+2,x3) && !iCellHasSolid(bcArray, x1,x2+1,x3)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1,x2+2,x3) && !iCellHasSolid(bcArray, x1,x2+1,x3)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1,x2+1,x3);
       xoff = 0;
@@ -115,7 +115,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = 1;
    }
    //GoTop
-   else if(inRange(x1,x2,x3+2) && !iCellHasSolid(bcArray, x1,x2,x3+1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1,x2,x3+2) && !iCellHasSolid(bcArray, x1,x2,x3+1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1,x2,x3+1);
       xoff = 0;
@@ -123,7 +123,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = -1;
    }
    //GoNW
-   else if(inRange(x1-1,x2+2,x3) && !iCellHasSolid(bcArray, x1-1,x2+1,x3)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1-1,x2+2,x3) && !iCellHasSolid(bcArray, x1-1,x2+1,x3)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1-1,x2+1,x3);
       xoff = 1;
@@ -131,7 +131,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = 0;
    }
    //GoNE
-   else if(inRange(x1+2,x2+2,x3) && !iCellHasSolid(bcArray, x1+1,x2+1,x3)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1+2,x2+2,x3) && !iCellHasSolid(bcArray, x1+1,x2+1,x3)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1+1,x2+1,x3);
       xoff = -1;
@@ -139,7 +139,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = 0;
    }
    //GoSW
-   else if(inRange(x1-1,x2-1,x3) && !iCellHasSolid(bcArray, x1-1,x2-1,x3)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1-1,x2-1,x3) && !iCellHasSolid(bcArray, x1-1,x2-1,x3)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1-1,x2-1,x3);
       xoff = 1;
@@ -147,7 +147,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = 0;
    }
    //GoSE
-   else if(inRange(x1+2,x2-1,x3) && !iCellHasSolid(bcArray, x1+1,x2-1,x3)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1+2,x2-1,x3) && !iCellHasSolid(bcArray, x1+1,x2-1,x3)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1+1,x2-1,x3);
       xoff = -1;
@@ -163,7 +163,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = 1;
    }
    //GoBE
-   else if(inRange(x1+2,x2,x3-1) && !iCellHasSolid(bcArray, x1+1,x2,x3-1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1+2,x2,x3-1) && !iCellHasSolid(bcArray, x1+1,x2,x3-1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1+1,x2,x3-1);
       xoff = -1;
@@ -179,7 +179,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = 1;
    }
    //GoBN
-   else if(inRange(x1,x2+2,x3-1) && !iCellHasSolid(bcArray, x1,x2+1,x3-1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1,x2+2,x3-1) && !iCellHasSolid(bcArray, x1,x2+1,x3-1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1,x2+1,x3-1);
       xoff = 0;
@@ -195,7 +195,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = -1;
    }
    //GoTE
-   else if(inRange(x1+2,x2,x3+2) && !iCellHasSolid(bcArray, x1+1,x2,x3+1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1+2,x2,x3+2) && !iCellHasSolid(bcArray, x1+1,x2,x3+1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1+1,x2,x3+1);
       xoff = -1;
@@ -211,7 +211,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = -1;
    }
    //GoTN
-   else if(inRange(x1,x2+2,x3+2) && !iCellHasSolid(bcArray, x1,x2+1,x3+1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1,x2+2,x3+2) && !iCellHasSolid(bcArray, x1,x2+1,x3+1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1,x2+1,x3+1);
       xoff = 0;
@@ -219,7 +219,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = -1;
    }
    //GoTNW
-   else if(inRange(x1-1,x2+2,x3+2) && !iCellHasSolid(bcArray, x1-1,x2+1,x3+1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1-1,x2+2,x3+2) && !iCellHasSolid(bcArray, x1-1,x2+1,x3+1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1-1,x2+1,x3+1);
       xoff = 1;
@@ -227,7 +227,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = -1;
    }
    //GoTNE
-   else if(inRange(x1+2,x2+2,x3+2) && !iCellHasSolid(bcArray, x1+1,x2+1,x3+1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1+2,x2+2,x3+2) && !iCellHasSolid(bcArray, x1+1,x2+1,x3+1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1+1,x2+1,x3+1);
       xoff = -1;
@@ -235,7 +235,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = -1;
    }
    //GoTSE
-   else if(inRange(x1+2,x2-1,x3+2) && !iCellHasSolid(bcArray, x1+1,x2-1,x3+1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1+2,x2-1,x3+2) && !iCellHasSolid(bcArray, x1+1,x2-1,x3+1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1+1,x2-1,x3+1);
       xoff = -1;
@@ -243,7 +243,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = -1;
    }
    //GoTSW
-   else if(inRange(x1-1,x2-1,x3+2) && !iCellHasSolid(bcArray, x1-1,x2-1,x3+1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1-1,x2-1,x3+2) && !iCellHasSolid(bcArray, x1-1,x2-1,x3+1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1-1,x2-1,x3+1);
       xoff =  1;
@@ -251,7 +251,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff = -1;
    }
    //GoBNW
-   else if(inRange(x1-1,x2+2,x3-1) && !iCellHasSolid(bcArray, x1-1,x2+1,x3-1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1-1,x2+2,x3-1) && !iCellHasSolid(bcArray, x1-1,x2+1,x3-1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1-1,x2+1,x3-1);
       xoff =  1;
@@ -259,7 +259,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff =  1;
    }
    //GoBNE
-   else if(inRange(x1+2,x2+2,x3-1) && !iCellHasSolid(bcArray, x1+1,x2+1,x3-1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1+2,x2+2,x3-1) && !iCellHasSolid(bcArray, x1+1,x2+1,x3-1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1+1,x2+1,x3-1);
       xoff = -1;
@@ -267,7 +267,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff =  1;
    }
    //GoBSE
-   else if(inRange(x1+2,x2-1,x3-1) && !iCellHasSolid(bcArray, x1+1,x2-1,x3-1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1+2,x2-1,x3-1) && !iCellHasSolid(bcArray, x1+1,x2-1,x3-1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1+1,x2-1,x3-1);
       xoff = -1;
@@ -275,7 +275,7 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       zoff =  1;
    }
    //GoBSW
-   else if(inRange(x1-1,x2-1,x3-1) && !iCellHasSolid(bcArray, x1-1,x2-1,x3-1)) // ist übernächster Knoten auch im Gebiet (Grundknoten bei 0,0,0
+   else if(inRange(x1-1,x2-1,x3-1) && !iCellHasSolid(bcArray, x1-1,x2-1,x3-1)) // ist ï¿½bernï¿½chster Knoten auch im Gebiet (Grundknoten bei 0,0,0
    {
       readICell(f,icell,x1-1,x2-1,x3-1);
       xoff =  1;
@@ -290,9 +290,9 @@ bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SP
       //                  " by using in: "+(std::string)typeid(*this).name()+ 
       //                  " or maybe you have a solid on the block boundary";
       //UB_THROW(UbException(UB_EXARGS, err));
-      return 0;
+      return false;
    }
-   return 1;
+   return true;
 }
 //////////////////////////////////////////////////////////////////////////
 int InterpolationProcessor::iCellHowManySolids( const SPtr<BCArray3D> bcArray, int x1, int x2, int x3 )

@@ -9,9 +9,7 @@
 
 #include <basics/memory/MbSmartPtrBase.h>
 
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif
+#pragma clang system_header
 
 //=====================================================
 // Globale Funktion, um das Loeschen des referenzierten

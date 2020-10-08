@@ -15,9 +15,9 @@ using D3Q27IncompressibleOffsetInterpolationProcessorPtr = SPtr<IncompressibleOf
 class IncompressibleOffsetInterpolationProcessor : public InterpolationProcessor
 {
 public:
-   IncompressibleOffsetInterpolationProcessor();
+   IncompressibleOffsetInterpolationProcessor() = default;
    IncompressibleOffsetInterpolationProcessor(LBMReal omegaC, LBMReal omegaF);
-   ~IncompressibleOffsetInterpolationProcessor() override;
+   ~IncompressibleOffsetInterpolationProcessor() override = default;
    InterpolationProcessorPtr clone() override;
    void setOmegas(LBMReal omegaC, LBMReal omegaF) override;
    void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF) override;

@@ -41,7 +41,7 @@ template<typename T>
 class TbCbVectorMpiPool : public CbVectorPool<T>
 {
 public:
-   typedef SPtr< TbCbVectorMpiPool< T > > MpiPoolPtr;
+   using MpiPoolPtr = SPtr< TbCbVectorMpiPool< T > >;
 
    //////////////////////////////////////////////////////////////////////////
    using MpiPoolPtrMap = std::map<std::string, MpiPoolPtr>;

@@ -2,7 +2,7 @@
 #include "D3Q27System.h"
 #include "InterpolationProcessor.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
-#include <math.h>
+#include <cmath>
 #include "DataSet3D.h"
 #include "LBMKernel.h"
 #include "Block3D.h"

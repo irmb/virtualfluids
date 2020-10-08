@@ -6,7 +6,7 @@
 #include "Grid3D.h"
 #include "Communicator.h"
 #include "CoordinateTransformation3D.h"
-#include <stdio.h>
+#include <cstdio>
 
 #define BLOCK_SIZE 1024
 

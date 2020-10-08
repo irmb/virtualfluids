@@ -3,21 +3,13 @@
 
 using namespace UbMath;
 
-CompressibleOffsetInterpolationProcessor::CompressibleOffsetInterpolationProcessor()
-    
-{
-   //forcingC = 0; //9.99685e-7;
-   //forcingF = 0; //forcingC*0.5;
-}
 //////////////////////////////////////////////////////////////////////////
 CompressibleOffsetInterpolationProcessor::CompressibleOffsetInterpolationProcessor(LBMReal omegaC, LBMReal omegaF)
    : omegaC(omegaC), omegaF(omegaF)
 {
 
 }
-//////////////////////////////////////////////////////////////////////////
-CompressibleOffsetInterpolationProcessor::~CompressibleOffsetInterpolationProcessor()
-= default;
+
 //////////////////////////////////////////////////////////////////////////
 InterpolationProcessorPtr CompressibleOffsetInterpolationProcessor::clone()
 {

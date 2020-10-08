@@ -11,7 +11,7 @@ RefineCrossAndInsideGbObjectBlockVisitor::RefineCrossAndInsideGbObjectBlockVisit
 }
 //////////////////////////////////////////////////////////////////////////
 RefineCrossAndInsideGbObjectBlockVisitor::RefineCrossAndInsideGbObjectBlockVisitor(SPtr<GbObject3D> geoObject, int refineLevel)
-   : Block3DVisitor(0,refineLevel-1), geoObject(geoObject), notActive(true)
+   : Block3DVisitor(0,refineLevel-1), geoObject(geoObject)
 {
 
 }

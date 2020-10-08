@@ -3,21 +3,13 @@
 
 
 
-IncompressibleOffsetInterpolationProcessor::IncompressibleOffsetInterpolationProcessor()
-    
-{
-   //forcingC = 0; //9.99685e-7;
-   //forcingF = 0; //forcingC*0.5;
-}
 //////////////////////////////////////////////////////////////////////////
 IncompressibleOffsetInterpolationProcessor::IncompressibleOffsetInterpolationProcessor(LBMReal omegaC, LBMReal omegaF)
    : omegaC(omegaC), omegaF(omegaF)
 {
 
 }
-//////////////////////////////////////////////////////////////////////////
-IncompressibleOffsetInterpolationProcessor::~IncompressibleOffsetInterpolationProcessor()
-= default;
+
 //////////////////////////////////////////////////////////////////////////
 InterpolationProcessorPtr IncompressibleOffsetInterpolationProcessor::clone()
 {

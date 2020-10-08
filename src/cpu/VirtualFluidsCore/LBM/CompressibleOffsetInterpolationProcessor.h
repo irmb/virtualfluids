@@ -14,9 +14,10 @@ class CompressibleOffsetInterpolationProcessor;
 class CompressibleOffsetInterpolationProcessor : public InterpolationProcessor
 {
 public:
-   CompressibleOffsetInterpolationProcessor();
+   CompressibleOffsetInterpolationProcessor() = default;
    CompressibleOffsetInterpolationProcessor(LBMReal omegaC, LBMReal omegaF);
-   ~CompressibleOffsetInterpolationProcessor() override;
+   ~CompressibleOffsetInterpolationProcessor() override = default;
+
    InterpolationProcessorPtr clone() override;
    void setOmegas(LBMReal omegaC, LBMReal omegaF) override;
    void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF) override;

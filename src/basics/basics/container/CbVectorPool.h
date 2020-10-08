@@ -406,6 +406,8 @@ public:
 
    friend class CbVectorPool< value_type >;
 
+    CbVectorAllocatorPool( const CbVectorAllocatorPool& ) = delete;
+    const CbVectorAllocatorPool& operator=( const CbVectorAllocatorPool& ) = delete;
 public:
    /*==========================================================*/
    CbVectorAllocatorPool(const typename CbVectorPool< value_type >::CbVectorKey& key, CbVectorPool<value_type>* const& ptrVectorPool)
@@ -458,9 +460,6 @@ private:
    typename CbVectorPool< value_type >::Pool::size_type startIndexInPool;
 
    CbVectorPool< value_type >* ptrVectorPool;
-
-   CbVectorAllocatorPool( const CbVectorAllocatorPool& ) = delete;                 //no copy allowed
-   const CbVectorAllocatorPool& operator=( const CbVectorAllocatorPool& ) = delete;//no copy allowed
 };
 
 

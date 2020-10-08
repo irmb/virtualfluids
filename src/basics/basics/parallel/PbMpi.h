@@ -14,6 +14,9 @@
 #  error VF_MPI has to be defined
 #endif
 
+// As we doing a lot of const-cast here we define PbMpi.h to system_header to mute clang-tidy
+#pragma clang system_header
+
 //#undef SEEK_SET
 //#undef SEEK_CUR
 //#undef SEEK_END

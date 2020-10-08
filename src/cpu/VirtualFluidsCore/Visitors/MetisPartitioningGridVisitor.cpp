@@ -1,7 +1,7 @@
 #if defined VF_METIS && defined VF_MPI
 
 #include "MetisPartitioningGridVisitor.h"
-#include <math.h>
+#include <cmath>
 #include "Block3D.h"
 #include "Grid3D.h"
 #include "Communicator.h"

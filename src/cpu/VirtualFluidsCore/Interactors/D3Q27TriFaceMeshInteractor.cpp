@@ -41,13 +41,13 @@ D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(SPtr<Grid3D>  /*grid*/, s
 }
 //////////////////////////////////////////////////////////////////////////
 D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter, int type)
-: D3Q27Interactor(triFaceMesh, grid, bcAdapter, type), forceshift(0.0), velocityshift(0.0), forceshiftpolicy(false), velocityshiftpolicy(false), useHalfSpace(true), regardPIOTest(true)
+: D3Q27Interactor(triFaceMesh, grid, bcAdapter, type)
 {
    this->stressMode = STRESSNORMAL;
 }
 //////////////////////////////////////////////////////////////////////////
 D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter, int type, Interactor3D::Accuracy a)
-   : D3Q27Interactor(triFaceMesh, grid, bcAdapter, type, a), forceshift(0.0), velocityshift(0.0), forceshiftpolicy(false), velocityshiftpolicy(false), useHalfSpace(true), regardPIOTest(true)
+   : D3Q27Interactor(triFaceMesh, grid, bcAdapter, type, a)
 {
    this->stressMode = STRESSNORMAL;
 }
@@ -57,7 +57,7 @@ D3Q27TriFaceMeshInteractor::~D3Q27TriFaceMeshInteractor()
 //////////////////////////////////////////////////////////////////////////
 void D3Q27TriFaceMeshInteractor::initInteractor(const double& timeStep)
 {
-   Interactor3D::initInteractor(timeStep);
+   Interactor3D::initInteractor(timeStep); // FIXME: refers to a member overridden in subclass
    setQs(timeStep);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1497,7 +1497,7 @@ UbTupleDouble3 D3Q27TriFaceMeshInteractor::getForces()
    //   forceX2 += attribut.getFY()*area;
    //   forceX3 += attribut.getFZ()*area;
    //}
-   return UbTupleDouble3(forceX1,forceX2,forceX3);
+   return {forceX1,forceX2,forceX3};
 }
 //////////////////////////////////////////////////////////////////////////
 UbTupleDouble3 D3Q27TriFaceMeshInteractor::getForcesTriangle()
@@ -1635,7 +1635,7 @@ UbTupleDouble3 D3Q27TriFaceMeshInteractor::getForcesTriangle()
    ////   forceX2 += Fy1;
    ////   forceX3 += Fz1;
    ////}
-   return UbTupleDouble3(forceX1,forceX2,forceX3);
+   return {forceX1,forceX2,forceX3};
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27TriFaceMeshInteractor::calculateForces()
