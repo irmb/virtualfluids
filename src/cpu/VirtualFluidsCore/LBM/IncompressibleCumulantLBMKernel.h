@@ -20,10 +20,10 @@ public:
    enum Parameter{NORMAL, MAGIC};
 public:
    IncompressibleCumulantLBMKernel();
-   virtual ~IncompressibleCumulantLBMKernel(void);
-   virtual void calculate(int step);
-   virtual SPtr<LBMKernel> clone();
-   double getCalculationTime();
+   ~IncompressibleCumulantLBMKernel(void) override;
+   void calculate(int step) override;
+   SPtr<LBMKernel> clone() override;
+   double getCalculationTime() override;
    void setRelaxationParameter(Parameter p);
 protected:
    virtual void initDataSet();

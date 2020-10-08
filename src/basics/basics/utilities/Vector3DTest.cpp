@@ -11,7 +11,7 @@ public:
     Vector3D vec1;
     Vector3D vec2;
 
-    void SetUp() 
+    void SetUp() override 
 	{
         vec1[0] = vec1[1] = vec1[2] = 4.0f;
         vec2[0] = 0.0f; vec2[0] = 2.4f; vec2[0] = -1.3f;

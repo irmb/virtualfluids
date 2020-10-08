@@ -21,7 +21,7 @@ class PressureCoefficientCoProcessor: public CoProcessor
 public:
    PressureCoefficientCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
        SPtr<GbCuboid3D> plane, const std::string& path, SPtr<Communicator> comm);
-   ~PressureCoefficientCoProcessor();
+   ~PressureCoefficientCoProcessor() override;
 
    void process(double step) override;
 

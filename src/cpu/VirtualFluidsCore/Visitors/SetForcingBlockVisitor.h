@@ -19,9 +19,9 @@ public:
 
    SetForcingBlockVisitor(const std::string& sForcingX1, const std::string& sForcingX2, const std::string& sForcingX3);
 
-   virtual ~SetForcingBlockVisitor() {}
+   ~SetForcingBlockVisitor() override {}
 
-   virtual void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 private:
    int ftype;

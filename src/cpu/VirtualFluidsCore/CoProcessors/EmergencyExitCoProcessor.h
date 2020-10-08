@@ -22,7 +22,7 @@ class EmergencyExitCoProcessor : public CoProcessor
 {
 public:
     EmergencyExitCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<MPIIORestartCoProcessor> rp, SPtr<Communicator> comm);
-    virtual ~EmergencyExitCoProcessor();
+    ~EmergencyExitCoProcessor() override;
 
     void process(double step) override;
 

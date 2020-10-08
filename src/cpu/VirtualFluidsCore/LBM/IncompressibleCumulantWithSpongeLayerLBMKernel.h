@@ -21,9 +21,9 @@ class IncompressibleCumulantWithSpongeLayerLBMKernel :  public IncompressibleCum
 {
 public:
    IncompressibleCumulantWithSpongeLayerLBMKernel();
-   virtual ~IncompressibleCumulantWithSpongeLayerLBMKernel(void);
-   SPtr<LBMKernel> clone();
-   void calculate(int step);
+   ~IncompressibleCumulantWithSpongeLayerLBMKernel(void) override;
+   SPtr<LBMKernel> clone() override;
+   void calculate(int step) override;
    void initRelaxFactor(int vdir, double vL1, double vdx, double vSP);
    //! \param vdir where the sponge layer is placed
    //! \param vL1 length of simulation domain
@@ -31,7 +31,7 @@ public:
    //! \param vSP length of sponge layer
    void setRelaxFactorParam(int vdir, double vL1, double vdx, double vSP);
 protected:
-  void initDataSet();
+  void initDataSet() override;
   LBMReal OxyyMxzz;
   int direction;
   double L1;

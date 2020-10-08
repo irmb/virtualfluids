@@ -52,7 +52,7 @@ class CumulantK17LBMKernel : public LBMKernel
 {
 public:
    CumulantK17LBMKernel();
-   virtual ~CumulantK17LBMKernel() override;
+   ~CumulantK17LBMKernel() override;
    void calculate(int step) override;
    SPtr<LBMKernel> clone() override;
    double getCalculationTime() override { return .0; }

@@ -22,45 +22,45 @@ private:
    MPICommunicator();
    MPICommunicator( const MPICommunicator& ){}
 public:
-   ~MPICommunicator();
+   ~MPICommunicator() override;
    static SPtr<Communicator> getInstance();
-   int getBundleID();
-   int getNumberOfBundles();
-   int getProcessID();
-   int getProcessID(int bundle, int rank);
-   int getNumberOfProcesses();
-   void* getNativeCommunicator();
-   int getRoot();
-   int getBundleRoot();
-   int getProcessRoot();
-   int getNumberOfProcessesInBundle(int bundle);
-   bool isRoot();
-   void abort(int errorcode);
+   int getBundleID() override;
+   int getNumberOfBundles() override;
+   int getProcessID() override;
+   int getProcessID(int bundle, int rank) override;
+   int getNumberOfProcesses() override;
+   void* getNativeCommunicator() override;
+   int getRoot() override;
+   int getBundleRoot() override;
+   int getProcessRoot() override;
+   int getNumberOfProcessesInBundle(int bundle) override;
+   bool isRoot() override;
+   void abort(int errorcode) override;
 
-   void sendSerializedObject(std::stringstream& ss, int target);
-   void receiveSerializedObject(std::stringstream& ss, int source);
+   void sendSerializedObject(std::stringstream& ss, int target) override;
+   void receiveSerializedObject(std::stringstream& ss, int source) override;
 
-   void barrier();
+   void barrier() override;
 
-   std::vector<std::string> gather(const std::string& str);
-   std::vector<int> gather(std::vector<int>& values);
-   std::vector<float> gather(std::vector<float>& values);
-   std::vector<double> gather(std::vector<double>& values);
-   std::vector<unsigned long long> gather(std::vector<unsigned long long>& values);
+   std::vector<std::string> gather(const std::string& str) override;
+   std::vector<int> gather(std::vector<int>& values) override;
+   std::vector<float> gather(std::vector<float>& values) override;
+   std::vector<double> gather(std::vector<double>& values) override;
+   std::vector<unsigned long long> gather(std::vector<unsigned long long>& values) override;
 
-   void allGather(std::vector<int>& svalues, std::vector<int>& rvalues);
-   void allGather(std::vector<float>& svalues, std::vector<float>& rvalues);
-   void allGather(std::vector<double>& svalues, std::vector<double>& rvalues);
-   void allGather(std::vector<unsigned long long>& svalues, std::vector<unsigned long long>& rvalues);
+   void allGather(std::vector<int>& svalues, std::vector<int>& rvalues) override;
+   void allGather(std::vector<float>& svalues, std::vector<float>& rvalues) override;
+   void allGather(std::vector<double>& svalues, std::vector<double>& rvalues) override;
+   void allGather(std::vector<unsigned long long>& svalues, std::vector<unsigned long long>& rvalues) override;
 
-   void broadcast(int& value);
-   void broadcast(float& value);
-   void broadcast(double& value);
-   void broadcast(long int& value);
-   void broadcast(std::vector<int>& values);
-   void broadcast(std::vector<float>& values);
-   void broadcast(std::vector<double>& values);
-   void broadcast(std::vector<long int>& values);
+   void broadcast(int& value) override;
+   void broadcast(float& value) override;
+   void broadcast(double& value) override;
+   void broadcast(long int& value) override;
+   void broadcast(std::vector<int>& values) override;
+   void broadcast(std::vector<float>& values) override;
+   void broadcast(std::vector<double>& values) override;
+   void broadcast(std::vector<long int>& values) override;
 
    template <class T>
    std::vector<T> gather(std::vector<T>& values);

@@ -47,40 +47,40 @@ public:
 public:
    FineToCoarseBlock3DConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
 
-   bool isLocalConnector();
-   bool isRemoteConnector();
+   bool isLocalConnector() override;
+   bool isRemoteConnector() override;
    
-   void sendTransmitterDataSize();
-   void receiveTransmitterDataSize();
+   void sendTransmitterDataSize() override;
+   void receiveTransmitterDataSize() override;
 
-   void prepareForSend();
-   void sendVectors();
+   void prepareForSend() override;
+   void sendVectors() override;
 
-   void prepareForReceive();
-   void receiveVectors();
+   void prepareForReceive() override;
+   void receiveVectors() override;
 
-   virtual void init()=0;
-   virtual void fillSendVectors()=0;
-   virtual void distributeReceiveVectors()=0;
+   void init() override =0;
+   void fillSendVectors() override =0;
+   void distributeReceiveVectors() override =0;
 
-   bool isInterpolationConnectorCF() { return false; }
-   bool isInterpolationConnectorFC() { return true; }
+   bool isInterpolationConnectorCF() override { return false; }
+   bool isInterpolationConnectorFC() override { return true; }
 
-   void prepareForSendX1() {}
-   void prepareForSendX2() {}
-   void prepareForSendX3() {}
+   void prepareForSendX1() override {}
+   void prepareForSendX2() override {}
+   void prepareForSendX3() override {}
 
-   void sendVectorsX1() {}
-   void sendVectorsX2() {}
-   void sendVectorsX3() {}
+   void sendVectorsX1() override {}
+   void sendVectorsX2() override {}
+   void sendVectorsX3() override {}
 
-   void prepareForReceiveX1() {}
-   void prepareForReceiveX2() {}
-   void prepareForReceiveX3() {}
+   void prepareForReceiveX1() override {}
+   void prepareForReceiveX2() override {}
+   void prepareForReceiveX3() override {}
 
-   void receiveVectorsX1() {}
-   void receiveVectorsX2() {}
-   void receiveVectorsX3() {}
+   void receiveVectorsX1() override {}
+   void receiveVectorsX2() override {}
+   void receiveVectorsX3() override {}
 
 protected:
    WPtr<Block3D> block; 

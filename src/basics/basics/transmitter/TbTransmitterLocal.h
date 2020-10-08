@@ -42,18 +42,18 @@ public:
 
    }
    
-   bool isLocalTransmitter()  const { return true;                         }
-   bool isRemoteTransmitter() const { return !this->isLocalTransmitter();  }
+   bool isLocalTransmitter()  const override { return true;                         }
+   bool isRemoteTransmitter() const override { return !this->isLocalTransmitter();  }
 
    //send buffer wird autom resized
-   void sendDataSize()    { }
+   void sendDataSize() override    { }
    //reiceive braucht nichts machen, da send==receive buffer ;-)
-   void receiveDataSize() { } 
+   void receiveDataSize() override { } 
 
-   void        sendData()    { }
-   value_type& receiveData() { return this->data; }
+   void        sendData() override    { }
+   value_type& receiveData() override { return this->data; }
 
-   std::string toString()  const { return "TbLocalTransmitter"+(std::string)typeid(T).name(); }
+   std::string toString()  const override { return "TbLocalTransmitter"+(std::string)typeid(T).name(); }
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -50,10 +50,10 @@ public:
       VectorTransmitterPtr sender11, VectorTransmitterPtr receiver11,
       int sendDir, InterpolationProcessorPtr iprocessor);
 
-   void init();
+   void init() override;
 
-   void fillSendVectors();
-   void distributeReceiveVectors();
+   void fillSendVectors() override;
+   void distributeReceiveVectors() override;
 
 protected:
    typedef std::vector< int > INodeVector;

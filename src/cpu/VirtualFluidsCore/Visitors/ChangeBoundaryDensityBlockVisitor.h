@@ -13,7 +13,7 @@ class ChangeBoundaryDensityBlockVisitor : public Block3DVisitor
 {
 public:
    ChangeBoundaryDensityBlockVisitor(float oldBoundaryDensity, float newBoundaryDensity);
-   virtual ~ChangeBoundaryDensityBlockVisitor();
+   ~ChangeBoundaryDensityBlockVisitor() override;
 
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 private:

@@ -62,27 +62,27 @@ public:
 public:
    GbQuadFaceMesh3D();
 	GbQuadFaceMesh3D(std::string name, std::vector<Vertex> *nodes, std::vector<QuadFace> *quads);
-	virtual ~GbQuadFaceMesh3D();   
-   GbQuadFaceMesh3D* clone() { throw UbException(UB_EXARGS,"clone() - not implemented"); }
-   void finalize()           { throw UbException(UB_EXARGS,"finalize() - not implemented");}
+	~GbQuadFaceMesh3D() override;   
+   GbQuadFaceMesh3D* clone() override { throw UbException(UB_EXARGS,"clone() - not implemented"); }
+   void finalize() override           { throw UbException(UB_EXARGS,"finalize() - not implemented");}
 
-   std::string toString();
-   std::string getName();
+   std::string toString() override;
+   std::string getName() override;
    std::vector<Vertex>*  getNodes();
    std::vector<QuadFace>* getQuads();
-   double getX1Centroid();
-   double getX2Centroid();
-   double getX3Centroid();
-   double getX1Minimum();
-   double getX1Maximum();
-   double getX2Minimum();
-   double getX2Maximum();
-   double getX3Minimum();
-   double getX3Maximum();
+   double getX1Centroid() override;
+   double getX2Centroid() override;
+   double getX3Centroid() override;
+   double getX1Minimum() override;
+   double getX1Maximum() override;
+   double getX2Minimum() override;
+   double getX2Maximum() override;
+   double getX3Minimum() override;
+   double getX3Maximum() override;
    void calculateValues();
 
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3);
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary);
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3) override;
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary) override;
 
    bool isPointInObject3DHalfSpace(const double& xp, const double& yp, const double& zp);    //based on Halfspace algorithm
    //bool isPointInObject3DSpherical(const double& xp, const double& yp, const double& zp, int numQuads);    //based on Spherical polygon area method        
@@ -92,9 +92,9 @@ public:
    //char SegQuadCross(GbQuad3D *quad, GbVector3D  &PointQ, GbVector3D &PointR);
    //till here !!!
 
-   virtual GbLine3D* createClippedLine3D (GbPoint3D &point1,GbPoint3D &point2);
+   GbLine3D* createClippedLine3D (GbPoint3D &point1,GbPoint3D &point2) override;
    //virtual std::vector<GbQuad3D*> getSurfaceQuadSet();
-	virtual std::vector<GbTriangle3D*> getSurfaceTriangleSet();
+	std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
 
    virtual void write(UbFileOutput* out) { std::cout<<"GbQuadFaceMesh3D::write - sorry not implemented\n"; }
    virtual void read(UbFileInput* in)    { std::cout<<"GbQuadFaceMesh3D::read  - sorry not implemented\n"; }

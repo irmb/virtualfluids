@@ -44,42 +44,42 @@ public:
    D3Q27ETFCOffVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, 
       InterpolationProcessorPtr iprocessor, CFconnectorType connType);
 
-	bool isLocalConnector();
-	bool isRemoteConnector();
-	void init();
+	bool isLocalConnector() override;
+	bool isRemoteConnector() override;
+	void init() override;
 
-	void sendTransmitterDataSize();
-	void receiveTransmitterDataSize();
+	void sendTransmitterDataSize() override;
+	void receiveTransmitterDataSize() override;
 
-	void prepareForSend();
-	void sendVectors();
+	void prepareForSend() override;
+	void sendVectors() override;
 
-	void prepareForReceive();
-	void receiveVectors();
+	void prepareForReceive() override;
+	void receiveVectors() override;
 
-	void fillSendVectors();
-	void distributeReceiveVectors();
+	void fillSendVectors() override;
+	void distributeReceiveVectors() override;
 
-	bool isInterpolationConnectorCF() { return false; }
-	bool isInterpolationConnectorFC() { return true; }
+	bool isInterpolationConnectorCF() override { return false; }
+	bool isInterpolationConnectorFC() override { return true; }
 
 	double getSendRecieveTime();
 
-	void prepareForSendX1() {}
-	void prepareForSendX2() {}
-	void prepareForSendX3() {}
+	void prepareForSendX1() override {}
+	void prepareForSendX2() override {}
+	void prepareForSendX3() override {}
 
-	void sendVectorsX1(){}
-	void sendVectorsX2(){}
-	void sendVectorsX3(){}
+	void sendVectorsX1() override{}
+	void sendVectorsX2() override{}
+	void sendVectorsX3() override{}
 
-	void prepareForReceiveX1() {}
-	void prepareForReceiveX2() {}
-	void prepareForReceiveX3() {}
+	void prepareForReceiveX1() override {}
+	void prepareForReceiveX2() override {}
+	void prepareForReceiveX3() override {}
 
-	void receiveVectorsX1() {}
-	void receiveVectorsX2() {}
-	void receiveVectorsX3() {}
+	void receiveVectorsX1() override {}
+	void receiveVectorsX2() override {}
+	void receiveVectorsX3() override {}
 
 protected:
 	WPtr<Block3D> block; //dieser nvd sendet daten und die empfangenen werden diesem nvd zugeordnet

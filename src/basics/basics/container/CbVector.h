@@ -264,12 +264,12 @@ public:
 
    }
    /*==========================================================*/
-   bool alloc(CbVector< value_type >& src, const size_type& dataSize, const value_type& value=value_type())
+   bool alloc(CbVector< value_type >& src, const size_type& dataSize, const value_type& value=value_type()) override
    {
       return this->resize(src,dataSize,value);
    }
    /*==========================================================*/
-   bool resize(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type())
+   bool resize(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type()) override
    {
       if( CbVectorAllocatorStd< value_type >::dataSizeOf(vec) == dataSize) return false;
 
@@ -290,7 +290,7 @@ public:
       return true;
    }
    /*==========================================================*/
-   bool dealloc(CbVector< value_type >& vec)
+   bool dealloc(CbVector< value_type >& vec) override
    {
       if( this->ptrDataOf(vec) )
       {

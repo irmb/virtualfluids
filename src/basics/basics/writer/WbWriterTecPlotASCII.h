@@ -26,7 +26,7 @@ private:
 
    static std::string  pvdEndTag;
 public:
-   std::string getFileExtension() { return ".ascii.dat";   }
+   std::string getFileExtension() override { return ".ascii.dat";   }
 
    //write a metafile 
 //    std::string writeCollection(const std::string& filename, const std::vector<std::string>& filenames, const double& timestep, const bool& sepGroups);

@@ -26,9 +26,9 @@ private:
    static std::string  pvdEndTag;
 
 public:
-   std::string getFileExtension()  { return "ascii.sunflow"; }
+   std::string getFileExtension() override  { return "ascii.sunflow"; }
 
-   std::string writeTriangles(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt3 >& triangles);
+   std::string writeTriangles(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt3 >& triangles) override;
 };
 
 #endif //WbWriterSunflow_H

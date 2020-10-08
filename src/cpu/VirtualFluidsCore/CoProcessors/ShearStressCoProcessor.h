@@ -29,7 +29,7 @@ public:
    //! Constructor
    ShearStressCoProcessor(SPtr<Grid3D> grid, const std::string& path, WbWriter* const writer,
        SPtr<UbScheduler> s, SPtr<UbScheduler> rs);
-   virtual ~ShearStressCoProcessor(); 
+   ~ShearStressCoProcessor() override; 
     
    void process(double step) override; 
 

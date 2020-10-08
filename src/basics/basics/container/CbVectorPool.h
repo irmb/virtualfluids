@@ -427,19 +427,19 @@ public:
       key = ptrVectorPool->getNextCbVectorKey();
    }
    /*==========================================================*/
-   bool alloc(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type())
+   bool alloc(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type()) override
    {
       if(!ptrVectorPool) UB_THROW( UbException(UB_EXARGS,"vectorPool seems to be destroyed, ptrVectorPool==NULL") );
       return ptrVectorPool->allocVectorData(vec, dataSize, value);
    }
    /*==========================================================*/
-   bool resize(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type())
+   bool resize(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type()) override
    {
       if(!ptrVectorPool) UB_THROW( UbException(UB_EXARGS,"vectorPool seems to be destroyed, ptrVectorPool==NULL") );
       return ptrVectorPool->resizeVectorData(vec, dataSize, value);
    }
    /*==========================================================*/
-   bool dealloc(CbVector< value_type >& vec)
+   bool dealloc(CbVector< value_type >& vec) override
    {
       if(ptrVectorPool) return this->ptrVectorPool->deallocVectorData(vec);
       //wenn kein ptrVectorPool -> wurde bereits deallokiert

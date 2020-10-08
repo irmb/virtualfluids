@@ -217,14 +217,14 @@ public:
 public:
    GbTriFaceMesh3D();
    GbTriFaceMesh3D(std::string name, std::vector<Vertex>* nodes, std::vector<TriFace>* triangles, KDTREE_SPLITAGORITHM splitAlg = KDTREE_SAHPLIT, bool removeRedundantNodes=true);
-	~GbTriFaceMesh3D();
+	~GbTriFaceMesh3D() override;
 
-   GbTriFaceMesh3D* clone();// { throw UbException(UB_EXARGS,"not implemented"); }
-   void finalize() {}
+   GbTriFaceMesh3D* clone() override;// { throw UbException(UB_EXARGS,"not implemented"); }
+   void finalize() override {}
 
    //void setRegardPointInPolyhedronTest(bool value) { this->regardPiO=value; }
 
-   std::string toString();
+   std::string toString() override;
 
    //std::string getName();
    std::vector<Vertex>*  getNodes();
@@ -240,17 +240,17 @@ public:
    }
    void readMeshFromSTLFile(std::string filename, bool removeRedundantNodes);
 
-   double getX1Minimum()  { if(!this->consistent) this->calculateValues(); return this->x1min;    }
-   double getX1Maximum()  { if(!this->consistent) this->calculateValues(); return this->x1max;    }
-   double getX1Centroid() { if(!this->consistent) this->calculateValues(); return this->x1center; }
+   double getX1Minimum() override  { if(!this->consistent) this->calculateValues(); return this->x1min;    }
+   double getX1Maximum() override  { if(!this->consistent) this->calculateValues(); return this->x1max;    }
+   double getX1Centroid() override { if(!this->consistent) this->calculateValues(); return this->x1center; }
 
-   double getX2Minimum()  { if(!this->consistent) this->calculateValues(); return this->x2min;    }
-   double getX2Maximum()  { if(!this->consistent) this->calculateValues(); return this->x2max;    }
-   double getX2Centroid() { if(!this->consistent) this->calculateValues(); return this->x2center; }
+   double getX2Minimum() override  { if(!this->consistent) this->calculateValues(); return this->x2min;    }
+   double getX2Maximum() override  { if(!this->consistent) this->calculateValues(); return this->x2max;    }
+   double getX2Centroid() override { if(!this->consistent) this->calculateValues(); return this->x2center; }
    
-   double getX3Minimum()  { if(!this->consistent) this->calculateValues(); return this->x3min;    }
-   double getX3Centroid() { if(!this->consistent) this->calculateValues(); return this->x3center; }
-   double getX3Maximum()  { if(!this->consistent) this->calculateValues(); return this->x3max;    }
+   double getX3Minimum() override  { if(!this->consistent) this->calculateValues(); return this->x3min;    }
+   double getX3Centroid() override { if(!this->consistent) this->calculateValues(); return this->x3center; }
+   double getX3Maximum() override  { if(!this->consistent) this->calculateValues(); return this->x3max;    }
 
    void   calculateValues();
 
@@ -260,23 +260,23 @@ public:
    UbTupleDouble6 calculateMomentOfInertia(double rhoP);
    UbTupleDouble3 calculateCenterOfGravity();
 
-   void setCenterCoordinates(const double& x1, const double& x2, const double& x3);
+   void setCenterCoordinates(const double& x1, const double& x2, const double& x3) override;
 
 
-   void scale(const double& sx1, const double& sx2, const double& sx3);
-   void rotate(const double& alpha, const double& beta, const double& gamma);
+   void scale(const double& sx1, const double& sx2, const double& sx3) override;
+   void rotate(const double& alpha, const double& beta, const double& gamma) override;
    void rotateAroundPoint(const double& px1, const double& px2, const double& px3, const double& alpha, const double& beta, const double& gamma);
-   void translate(const double& x1, const double& x2, const double& x3);
+   void translate(const double& x1, const double& x2, const double& x3) override;
    void reflectAcrossXYLine(const double& alpha);
 
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3);
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3) override;
    bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, int counter);
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary);
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary) override;
 
-   virtual GbLine3D* createClippedLine3D (GbPoint3D &point1,GbPoint3D &point2);
+   GbLine3D* createClippedLine3D (GbPoint3D &point1,GbPoint3D &point2) override;
 
-   virtual std::vector<GbTriangle3D*> getSurfaceTriangleSet();
-   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles);
+   std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
+   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles) override;
 
    std::vector<GbTriFaceMesh3D::TriFace*> getTrianglesForVertex(Vertex* vertex);
 

@@ -18,7 +18,7 @@ namespace Kd
    class CountRayIntersectionHandler : public RayIntersectionHandler<T> 
    {
    public:
-      int intersectRay(const Ray<T>& ray, Node<T>& parent, Node<T>*& child1, Node<T>*& child2, std::set< UbKeys::Key3<int> >& mailbox) const
+      int intersectRay(const Ray<T>& ray, Node<T>& parent, Node<T>*& child1, Node<T>*& child2, std::set< UbKeys::Key3<int> >& mailbox) const override
       {
          if( parent.intersectRayBoundingBox(ray)  == Intersection::INTERSECTION)
          {

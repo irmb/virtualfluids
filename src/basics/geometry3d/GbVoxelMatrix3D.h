@@ -32,10 +32,10 @@ public:
    GbVoxelMatrix3D();
    GbVoxelMatrix3D(int nx1, int nx2, int nx3, float initVal, double lowerThreshold = 0, double upperThreshold = 0);
    GbVoxelMatrix3D(const Matrix3D& voxelMatrix, double lowerThreshold = 0, double upperThreshold = 0);
-   ~GbVoxelMatrix3D() {}
+   ~GbVoxelMatrix3D() override {}
 
-   void finalize() {};
-   GbVoxelMatrix3D* clone();
+   void finalize() override {};
+   GbVoxelMatrix3D* clone() override;
 
    /*=======================================================================*/
    Matrix3D::reference operator() (const Matrix3D::size_type& x1, const Matrix3D::size_type& x2, const Matrix3D::size_type& x3)
@@ -69,47 +69,47 @@ public:
    void setVoxelMatrixDeltaX3(double deltaX3) { this->deltaX3 = deltaX3; }
 
    /*=======================================================================*/
-   double getX1Centroid() { return 0.5 * (minX1+this->getX1Maximum()); }
-   double getX1Minimum() { return minX1; }
-   double getX1Maximum() { return minX1+deltaX1*voxelMatrix.getNX1(); }
+   double getX1Centroid() override { return 0.5 * (minX1+this->getX1Maximum()); }
+   double getX1Minimum() override { return minX1; }
+   double getX1Maximum() override { return minX1+deltaX1*voxelMatrix.getNX1(); }
 
-   double getX2Centroid() { return 0.5 * (minX2+this->getX2Maximum()); }
-   double getX2Minimum() { return minX2; }
-   double getX2Maximum() { return minX2+deltaX2*voxelMatrix.getNX2(); }
+   double getX2Centroid() override { return 0.5 * (minX2+this->getX2Maximum()); }
+   double getX2Minimum() override { return minX2; }
+   double getX2Maximum() override { return minX2+deltaX2*voxelMatrix.getNX2(); }
 
-   double getX3Centroid() { return 0.5 * (this->getX3Minimum()+this->getX3Maximum()); }
-   double getX3Minimum() { return minX3; }
-   double getX3Maximum() { return minX3+deltaX3*voxelMatrix.getNX3(); }
+   double getX3Centroid() override { return 0.5 * (this->getX3Minimum()+this->getX3Maximum()); }
+   double getX3Minimum() override { return minX3; }
+   double getX3Maximum() override { return minX3+deltaX3*voxelMatrix.getNX3(); }
 
    double getLengthX1() { return this->getX1Maximum()-minX1; }
    double getLengthX2() { return this->getX2Maximum()-minX2; }
    double getLengthX3() { return this->getX3Maximum()-minX3; }
 
-   void setCenterCoordinates(const double& x1, const double& x2, const double& x3);
-   void translate(const double& tx1, const double& tx2, const double& tx3);
+   void setCenterCoordinates(const double& x1, const double& x2, const double& x3) override;
+   void translate(const double& tx1, const double& tx2, const double& tx3) override;
 
-   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool& pointIsOnBoundary);
-   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p);
-   bool isCellInsideGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b);
-   bool isCellCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b);
-   bool isCellInsideOrCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b);
+   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool& pointIsOnBoundary) override;
+   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p) override;
+   bool isCellInsideGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b) override;
+   bool isCellCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b) override;
+   bool isCellInsideOrCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b) override;
    //double getCellVolumeInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
 
    GbPoint3D*  calculateInterSectionPoint3D(GbPoint3D& point1, GbPoint3D &point2) { throw UbException(__FILE__, __LINE__, UB_FUNCTION, "not implemented"); }
-   GbLine3D*   createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2) { throw UbException(__FILE__, __LINE__, UB_FUNCTION, "not implemented"); }
+   GbLine3D*   createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2) override { throw UbException(__FILE__, __LINE__, UB_FUNCTION, "not implemented"); }
 
-   std::vector<GbTriangle3D*> getSurfaceTriangleSet();
-   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles);
+   std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
+   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles) override;
 
-   bool hasRaytracing() { return true; }
+   bool hasRaytracing() override { return true; }
    /*|r| must be 1! einheitsvector!!*/
-   double getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3);
+   double getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3) override;
 
-   std::string toString();
+   std::string toString() override;
 
    //virtuelle Methoden von UbObserver
-   void objectChanged(UbObservable* changedObject) {}
-   void objectWillBeDeleted(UbObservable* objectForDeletion) {}
+   void objectChanged(UbObservable* changedObject) override {}
+   void objectWillBeDeleted(UbObservable* objectForDeletion) override {}
 
    template <class T>
    void readMatrixFromRawFile(std::string filename, GbVoxelMatrix3D::Endian endian);

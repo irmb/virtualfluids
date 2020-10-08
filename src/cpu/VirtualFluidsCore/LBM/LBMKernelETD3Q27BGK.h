@@ -11,7 +11,7 @@ class LBMKernelETD3Q27BGK :  public LBMKernel
 {
 public:
    LBMKernelETD3Q27BGK();
-   ~LBMKernelETD3Q27BGK(void);
+   ~LBMKernelETD3Q27BGK(void) override;
    void calculate(int step)override;
    SPtr<LBMKernel> clone()override;
    double getCalculationTime() override;

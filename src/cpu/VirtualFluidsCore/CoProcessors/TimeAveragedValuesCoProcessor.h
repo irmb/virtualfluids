@@ -44,7 +44,7 @@ public:
    TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string& path, WbWriter* const writer,
        SPtr<UbScheduler> s, SPtr<Communicator> comm, int options, std::vector<int> levels, std::vector<double>& levelCoords, std::vector<double>& bounds, bool timeAveraging = true);
    //! Make update
-   void process(double step);
+   void process(double step) override;
    //! Computes subtotal of velocity , fluctuations and triple correlations
    void calculateSubtotal(double step);
    void addLevelCoordinate(double c);

@@ -37,29 +37,29 @@ public:
    UbFileOutputASCII(const std::string& filename, const bool& createPath=true,  const int& precision=15);             
    UbFileOutputASCII(const std::string& filename, CREATEOPTION opt, const bool& createPath=true, const int& precision=15);
    
-   bool open(const std::string& filename, CREATEOPTION opt=OUTFILE);
+   bool open(const std::string& filename, CREATEOPTION opt=OUTFILE) override;
    
-   void writeBool(const bool& value, const int& width=0);
-   void writeDouble(const double& value, const int& width=0);
-	void writeFloat(const float& value, const int& width=0);
-	void writeInteger(const int& value, const int& width=0);
-   void writeSize_t(const std::size_t& value, const int& width=0);
-   void writeChar(const char& value, const int& width=0);
-   void writeString(const std::string& value, const int& width=0);
-   void writeStringOnly(const std::string& value);
-   void writeLine(const std::string& value, const int& width=0);
-   void writeLine();
+   void writeBool(const bool& value, const int& width=0) override;
+   void writeDouble(const double& value, const int& width=0) override;
+	void writeFloat(const float& value, const int& width=0) override;
+	void writeInteger(const int& value, const int& width=0) override;
+   void writeSize_t(const std::size_t& value, const int& width=0) override;
+   void writeChar(const char& value, const int& width=0) override;
+   void writeString(const std::string& value, const int& width=0) override;
+   void writeStringOnly(const std::string& value) override;
+   void writeLine(const std::string& value, const int& width=0) override;
+   void writeLine() override;
   
-   void setPrecision(const int& precision);
-   int  getPrecision() { return (int)outfile.precision(); }
+   void setPrecision(const int& precision) override;
+   int  getPrecision() override { return (int)outfile.precision(); }
 
-   void setCommentIndicator(char commentindicator) {this->commentindicator = commentindicator;} 
+   void setCommentIndicator(char commentindicator) override {this->commentindicator = commentindicator;} 
    
-   void writeCommentLine(const std::string& line);
-   void writeCommentLine(char indicator, const std::string& line);
-   void writeCopyOfFile(const std::string& filename);
+   void writeCommentLine(const std::string& line) override;
+   void writeCommentLine(char indicator, const std::string& line) override;
+   void writeCopyOfFile(const std::string& filename) override;
 
-   FILETYPE getFileType() { return ASCII; }
+   FILETYPE getFileType() override { return ASCII; }
 
    template< typename T >
    friend inline UbFileOutputASCII& operator<<(UbFileOutputASCII& file, const T& data) 

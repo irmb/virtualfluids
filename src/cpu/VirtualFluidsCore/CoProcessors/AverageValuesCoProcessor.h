@@ -27,7 +27,7 @@ public:
    AverageValuesCoProcessor(SPtr<Grid3D> grid, const std::string& path, WbWriter* const writer,
        SPtr<UbScheduler> s, SPtr<UbScheduler> Avs, SPtr<UbScheduler> rsMeans, SPtr<UbScheduler> rsRMS, bool restart);
 	//! Make update
-	void process(double step); 
+	void process(double step) override; 
 	//! Resets averaged velocity and RMS-values according to ResetSceduler
 	void reset(double step); 
 protected:

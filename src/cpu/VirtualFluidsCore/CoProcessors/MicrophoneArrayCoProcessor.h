@@ -23,7 +23,7 @@ class MicrophoneArrayCoProcessor : public CoProcessor
 {
 public:
    MicrophoneArrayCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm);
-   virtual ~MicrophoneArrayCoProcessor();
+   ~MicrophoneArrayCoProcessor() override;
 
    //! calls collectData.
    void process(double step) override;

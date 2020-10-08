@@ -50,7 +50,7 @@ public:
 		init(ptr.get());
 	}
 	// Destruktor
-   ~MbSmartPtr<ObjType>()
+   ~MbSmartPtr<ObjType>() override
 	{
       init(NULL);
 	}

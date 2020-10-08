@@ -16,10 +16,10 @@ class MPIIOCoProcessor : public CoProcessor
 {
 public:
    MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm); 
-   virtual ~MPIIOCoProcessor();
+   ~MPIIOCoProcessor() override;
 
    //! Each timestep writes the grid into the files
-   virtual void process(double step) = 0;
+   void process(double step) override = 0;
 
    //! Writes the blocks of the grid into the file cpBlocks.bin
    void writeBlocks(int step);

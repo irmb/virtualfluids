@@ -22,9 +22,9 @@ public:
    enum Arrays { AverageDensity = 1, AverageVelocity = 2, AverageFluktuations = 3, AverageTriple = 4, ShearStressVal = 5, RelaxationFactor = 6 };
 
    MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm);
-   virtual ~MPIIOMigrationCoProcessor();
+   ~MPIIOMigrationCoProcessor() override;
    //! Each timestep writes the grid into the files
-   void process(double step);
+   void process(double step) override;
    //! Reads the grid from the files before grid reconstruction
    void restart(int step);
    //! Writes the blocks of the grid into the file cpBlocks.bin

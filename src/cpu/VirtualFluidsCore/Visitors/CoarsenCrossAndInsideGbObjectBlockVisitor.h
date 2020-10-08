@@ -21,7 +21,7 @@ public:
    //! \param geoObject a smart pointer to bounding box
    //! \param refineLevel an integer for refine on this level
    CoarsenCrossAndInsideGbObjectBlockVisitor(SPtr<GbObject3D> geoObject, int fineLevel, int coarseLevel);
-   virtual ~CoarsenCrossAndInsideGbObjectBlockVisitor();
+   ~CoarsenCrossAndInsideGbObjectBlockVisitor() override;
       void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
    //////////////////////////////////////////////////////////////////////////
 protected:

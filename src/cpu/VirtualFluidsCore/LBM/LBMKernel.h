@@ -55,11 +55,11 @@ public:
 
     virtual SPtr<LBMKernel> clone() = 0;
 
-    virtual void calculate(int step) = 0;
-    virtual double getCalculationTime() = 0;
+    void calculate(int step) override = 0;
+    double getCalculationTime() override = 0;
 
-    void setBCProcessor(SPtr<BCProcessor> bcp);
-    SPtr<BCProcessor> getBCProcessor() const;
+    void setBCProcessor(SPtr<BCProcessor> bcp) override;
+    SPtr<BCProcessor> getBCProcessor() const override;
 
     void setCollisionFactor(double collFactor) override;
     double getCollisionFactor() const override;

@@ -64,7 +64,7 @@ public:
 
     ~SetKernelBlockVisitor() override = default;
 
-    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block);
+    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
     void setNoDataSetFlag(bool flag);
 
