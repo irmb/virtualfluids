@@ -48,24 +48,7 @@ class BoundaryConditions
 {
 public:
    BoundaryConditions() 
-      : noslipBoundaryFlags(0)		
-      , slipBoundaryFlags(0)		
-      , velocityBoundaryFlags(0)		
-      , densityBoundaryFlags(0)		
-      , wallModelBoundaryFlags(0)
-      , bcVelocityX1(0.0f)
-      , bcVelocityX2(0.0f)
-      , bcVelocityX3(0.0f)
-      , bcDensity(0.0f)
-      , bcLodiDensity(0.0f)
-      , bcLodiVelocityX1(0.0f)
-      , bcLodiVelocityX2(0.0f)
-      , bcLodiVelocityX3(0.0f)
-      , bcLodiLentgh(0.0f)
-      , nx1(0.0f)
-      , nx2(0.0f)
-      , nx3(0.0f)
-      , algorithmType(-1)
+       
    {
       UB_STATIC_ASSERT( sizeof(long long) >= 8);
       UB_STATIC_ASSERT( (sizeof(long long)*8) >= (D3Q27System::FENDDIR+1)*BoundaryConditions::optionDigits );
@@ -73,7 +56,7 @@ public:
       for(int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++) 
          q[fdir] = -999.; 
    }
-   virtual ~BoundaryConditions() {}
+   virtual ~BoundaryConditions() = default;
 
    virtual bool isEmpty() { return (noslipBoundaryFlags&slipBoundaryFlags&velocityBoundaryFlags&densityBoundaryFlags)==0;}
    virtual bool hasBoundaryCondition()
@@ -227,10 +210,10 @@ public:
    virtual std::vector< std::string > getBCNames()
    {
       std::vector< std::string > tmp;
-      tmp.push_back( "NoSlipBC"   );
-      tmp.push_back( "SlipBC"     );
-      tmp.push_back( "VelocityBC" );
-      tmp.push_back( "DensityBC"  );
+      tmp.emplace_back("NoSlipBC"   );
+      tmp.emplace_back("SlipBC"     );
+      tmp.emplace_back("VelocityBC" );
+      tmp.emplace_back("DensityBC"  );
       return tmp;
    }
    virtual std::vector< long long > getBCFlags()
@@ -258,26 +241,26 @@ public:
 protected:
    LBMReal q[D3Q27System::FENDDIR+1];
 
-   long long noslipBoundaryFlags;		
-   long long slipBoundaryFlags;		
-   long long velocityBoundaryFlags;		
-   long long densityBoundaryFlags;		
-   long long wallModelBoundaryFlags;
+   long long noslipBoundaryFlags{0};		
+   long long slipBoundaryFlags{0};		
+   long long velocityBoundaryFlags{0};		
+   long long densityBoundaryFlags{0};		
+   long long wallModelBoundaryFlags{0};
 
-   LBMReal  bcVelocityX1;
-   LBMReal  bcVelocityX2;
-   LBMReal  bcVelocityX3;
-   LBMReal  bcDensity;
+   LBMReal  bcVelocityX1{0.0f};
+   LBMReal  bcVelocityX2{0.0f};
+   LBMReal  bcVelocityX3{0.0f};
+   LBMReal  bcDensity{0.0f};
 
-   LBMReal  bcLodiDensity;
-   LBMReal  bcLodiVelocityX1;
-   LBMReal  bcLodiVelocityX2;
-   LBMReal  bcLodiVelocityX3;
-   LBMReal  bcLodiLentgh;
+   LBMReal  bcLodiDensity{0.0f};
+   LBMReal  bcLodiVelocityX1{0.0f};
+   LBMReal  bcLodiVelocityX2{0.0f};
+   LBMReal  bcLodiVelocityX3{0.0f};
+   LBMReal  bcLodiLentgh{0.0f};
 
-   LBMReal  nx1,nx2,nx3;
+   LBMReal  nx1{0.0f},nx2{0.0f},nx3{0.0f};
 
-   char algorithmType;
+   char algorithmType{-1};
 
   private:
    friend class MPIIORestartCoProcessor;

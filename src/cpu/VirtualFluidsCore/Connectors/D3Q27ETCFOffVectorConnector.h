@@ -44,8 +44,8 @@ template< typename VectorTransmitter >
 class D3Q27ETCFOffVectorConnector : public Block3DConnector
 {
 public:
-   typedef typename VectorTransmitter::value_type  vector_type;
-   typedef SPtr< VectorTransmitter > VectorTransmitterPtr;
+   using vector_type = typename VectorTransmitter::value_type;
+   using VectorTransmitterPtr = SPtr<VectorTransmitter>;
 public:
    D3Q27ETCFOffVectorConnector(SPtr<Block3D> block,
       VectorTransmitterPtr senderEvenEvenSW, VectorTransmitterPtr receiverEvenEvenSW,
@@ -54,42 +54,42 @@ public:
       VectorTransmitterPtr senderOddOddNE, VectorTransmitterPtr receiverOddOddNE,
       int sendDir, InterpolationProcessorPtr iprocessor);
 
-   bool isLocalConnector();
-   bool isRemoteConnector();
-   void init();
+   bool isLocalConnector() override;
+   bool isRemoteConnector() override;
+   void init() override;
 
-   void sendTransmitterDataSize();
-   void receiveTransmitterDataSize();
+   void sendTransmitterDataSize() override;
+   void receiveTransmitterDataSize() override;
 
-   void prepareForSend();
-   void sendVectors();
+   void prepareForSend() override;
+   void sendVectors() override;
 
-   void prepareForReceive();
-   void receiveVectors();
+   void prepareForReceive() override;
+   void receiveVectors() override;
 
-   void fillSendVectors();
-   void distributeReceiveVectors();
+   void fillSendVectors() override;
+   void distributeReceiveVectors() override;
 
-   bool isInterpolationConnectorCF() { return true; }
-   bool isInterpolationConnectorFC() { return false; }
+   bool isInterpolationConnectorCF() override { return true; }
+   bool isInterpolationConnectorFC() override { return false; }
 
    double getSendRecieveTime();
 
-   void prepareForSendX1() {}
-   void prepareForSendX2() {}
-   void prepareForSendX3() {}
+   void prepareForSendX1() override {}
+   void prepareForSendX2() override {}
+   void prepareForSendX3() override {}
 
-   void sendVectorsX1() {}
-   void sendVectorsX2() {}
-   void sendVectorsX3() {}
+   void sendVectorsX1() override {}
+   void sendVectorsX2() override {}
+   void sendVectorsX3() override {}
 
-   void prepareForReceiveX1() {}
-   void prepareForReceiveX2() {}
-   void prepareForReceiveX3() {}
+   void prepareForReceiveX1() override {}
+   void prepareForReceiveX2() override {}
+   void prepareForReceiveX3() override {}
 
-   void receiveVectorsX1() {}
-   void receiveVectorsX2() {}
-   void receiveVectorsX3() {}
+   void receiveVectorsX1() override {}
+   void receiveVectorsX2() override {}
+   void receiveVectorsX3() override {}
 
 protected:
    WPtr<Block3D> block; //dieser nvd sendet daten und die empfangenen werden diesem nvd zugeordnet
@@ -1708,7 +1708,7 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::getLocalMinMax(int& minX1,
 }
 //////////////////////////////////////////////////////////////////////////
 template< typename VectorTransmitter >
-void D3Q27ETCFOffVectorConnector< VectorTransmitter>::getLocalMinMax(int& minX1, int& minX2, int& minX3, int& maxX1, int& maxX2, int& maxX3, CFconnectorType connType)
+void D3Q27ETCFOffVectorConnector< VectorTransmitter>::getLocalMinMax(int& minX1, int& minX2, int& minX3, int& maxX1, int& maxX2, int& maxX3, CFconnectorType  /*connType*/)
 {
    using namespace D3Q27System;
    int TminX1 = minX1; int TminX2 = minX2; int TminX3 = minX3; int TmaxX1 = maxX1; int TmaxX2 = maxX2; int TmaxX3 = maxX3;

@@ -19,7 +19,7 @@ namespace Kd
    {
    public:
       virtual bool intersectLine(const UbTuple<T,T,T>& n1, const UbTuple<T,T,T>& n2, Node<T>& parent, Node<T>*& child1, Node<T>*& child2) const = 0;
-      virtual ~LineIntersectionHandler() {}
+      virtual ~LineIntersectionHandler() = default;
    };
 }
 

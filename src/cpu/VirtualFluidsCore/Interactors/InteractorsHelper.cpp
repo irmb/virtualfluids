@@ -49,9 +49,7 @@ InteractorsHelper::InteractorsHelper(SPtr<Grid3D> grid, SPtr<Grid3DVisitor> visi
 }
 //////////////////////////////////////////////////////////////////////////
 InteractorsHelper::~InteractorsHelper()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void InteractorsHelper::addInteractor( SPtr<Interactor3D> interactor )
 {

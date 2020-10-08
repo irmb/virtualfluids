@@ -28,19 +28,20 @@ class MbSmartPtrBase
    class MbSmartPtrBaseMap
    {
    private:
-      MbSmartPtrBaseMap() { }
-      MbSmartPtrBaseMap( const MbSmartPtrBaseMap& );                  //no copy allowed
-      const MbSmartPtrBaseMap& operator=( const MbSmartPtrBaseMap& ); //no copy allowed
+      MbSmartPtrBaseMap() = default;
 
       std::map<void*,int> mpCntrMap;
    public:
+       MbSmartPtrBaseMap( const MbSmartPtrBaseMap& ) = delete;
+       const MbSmartPtrBaseMap& operator=( const MbSmartPtrBaseMap& ) = delete;
+
       static MbSmartPtrBaseMap* getInstance() { static MbSmartPtrBaseMap instance; return &instance; }
       std::map<void*,int>& getMap()           { return mpCntrMap;                                    }
    };
 
 protected:
-   MbSmartPtrBase() {}
-   virtual ~MbSmartPtrBase() {}
+   MbSmartPtrBase() = default;
+   virtual ~MbSmartPtrBase() = default;
    bool addRef(void* p);
 	bool releaseRef(void* p);
    bool removeFromGC(void* ptr) const;

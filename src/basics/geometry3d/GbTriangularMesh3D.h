@@ -41,9 +41,9 @@ public:
 	GbTriangularMesh3D(std::string name, std::vector<GbPoint3D*> *nodes, std::vector<GbTriangle3D*> *triangles);
    GbTriangularMesh3D(std::string name, std::vector<GbTriangle3D*> *triangles);
    GbTriangularMesh3D(std::string name, std::vector<GbPoint3D*> *nodes, std::vector<GbLine3D*> *edges, std::vector<GbTriangle3D*> *triangles);
-	~GbTriangularMesh3D();   
-   GbTriangularMesh3D* clone() { throw UbException(UB_EXARGS,"not implemented"); }
-   void finalize()
+	~GbTriangularMesh3D() override;   
+   GbTriangularMesh3D* clone() override { throw UbException(UB_EXARGS,"not implemented"); }
+   void finalize() override
    {
       throw UbException("GbTriangularMesh3D::finalize() - toDo");
    }
@@ -51,22 +51,22 @@ public:
 
    std::string getClassName() {return "GbTriangularMesh3D"; }
 
-   std::string toString();
+   std::string toString() override;
    //std::string getName();
    std::vector<GbPoint3D*>*    getNodes();
    std::vector<GbTriangle3D*>* getTriangles();
-   double getX1Centroid();
-   double getX2Centroid();
-	double getX3Centroid();
-   double getX1Minimum();
-   double getX1Maximum();
-   double getX2Minimum();
-   double getX2Maximum();
-   double getX3Minimum();
-   double getX3Maximum();
+   double getX1Centroid() override;
+   double getX2Centroid() override;
+	double getX3Centroid() override;
+   double getX1Minimum() override;
+   double getX1Maximum() override;
+   double getX2Minimum() override;
+   double getX2Maximum() override;
+   double getX3Minimum() override;
+   double getX3Maximum() override;
 
-   void rotate(const double& alpha, const double& beta, const double& gamma);
-   void translate(const double& x1, const double& x2, const double& x3);
+   void rotate(const double& alpha, const double& beta, const double& gamma) override;
+   void translate(const double& x1, const double& x2, const double& x3) override;
 
    void calculateValues();
    void deleteRedundantNodes();
@@ -83,9 +83,9 @@ public:
    double getX3MinimumForRectangle(const double& p1x1, const double& p1x2, const double& p2x1, const double& p2x2);
    double getX3MaximumForRectangle(const double& p1x1, const double& p1x2, const double& p2x1, const double& p2x2); 
 
-   virtual bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3);
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3) override;
 
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary);
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary) override;
 
    bool isPointInObject3DHalfSpace(const double& xp, const double& yp, const double& zp);    //based on Halfspace algorithm
    bool isPointInObject3DSpherical(const double& xp, const double& yp, const double& zp, int numTriangles);    //based on Spherical polygon area method        
@@ -108,8 +108,8 @@ public:
    //till here !!!
 
 
-   virtual GbLine3D* createClippedLine3D (GbPoint3D &point1,GbPoint3D &point2);
-   virtual std::vector<GbTriangle3D*> getSurfaceTriangleSet();     
+   GbLine3D* createClippedLine3D (GbPoint3D &point1,GbPoint3D &point2) override;
+   std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;     
 
    void writeMesh(std::string filename, WbWriter* writer, bool writeNormals=false);
    /*======================================================================*/

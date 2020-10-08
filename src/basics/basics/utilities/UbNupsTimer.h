@@ -32,7 +32,7 @@ public:
       mTempNodes = 0.0;
    }
    /*==========================================================*/
-   void initTiming()
+   void initTiming() override
    {
       UbTiming::initTiming();
       mNofNodes.resize(0);
@@ -46,7 +46,7 @@ public:
       UbTiming::startTiming();
    }
    /*==========================================================*/
-   void endTiming()
+   void endTiming() override
    {
       UbTiming::endTiming();
       //save #node and time informations

@@ -4,7 +4,7 @@
 using namespace UbMath;
 
 CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterpolationProcessor()
-   : omegaC(0.0), omegaF(0.0)
+    
 {
    this->bulkViscosity = 0.0;
    this->shearViscosity = 0.0;
@@ -22,9 +22,7 @@ CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterp
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleOffsetMomentsInterpolationProcessor::~CompressibleOffsetMomentsInterpolationProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 InterpolationProcessorPtr CompressibleOffsetMomentsInterpolationProcessor::clone()
 {

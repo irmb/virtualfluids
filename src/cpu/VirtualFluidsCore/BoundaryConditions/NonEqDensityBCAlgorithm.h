@@ -10,9 +10,9 @@ class NonEqDensityBCAlgorithm : public BCAlgorithm
 {
 public:
    NonEqDensityBCAlgorithm();
-   ~NonEqDensityBCAlgorithm();
-   SPtr<BCAlgorithm> clone();
-   void addDistributions(SPtr<DistributionArray3D> distributions);
+   ~NonEqDensityBCAlgorithm() override;
+   SPtr<BCAlgorithm> clone() override;
+   void addDistributions(SPtr<DistributionArray3D> distributions) override;
    void applyBC() override;
 };
 #endif // NonEqDensityBCAlgorithm_h__

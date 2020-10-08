@@ -6,7 +6,7 @@ using namespace std;
 /*==========================================================*/
 DensityBCAdapter::DensityBCAdapter(const double& dens, const double& startTime, const double& endTime )
 {
-   this->densBCs.push_back( BCFunction(dens,startTime,endTime) );
+   this->densBCs.emplace_back(dens,startTime,endTime );
    this->init();
 }
 /*==========================================================*/
@@ -24,7 +24,7 @@ DensityBCAdapter::DensityBCAdapter(const std::vector< BCFunction >& densBCs)
 /*==========================================================*/
 DensityBCAdapter::DensityBCAdapter(const mu::Parser& function, const double& startTime, const double& endTime )
 {
-   this->densBCs.push_back(BCFunction(function,startTime,endTime));
+   this->densBCs.emplace_back(function,startTime,endTime);
    this->init();
 }
 /*==========================================================*/
@@ -61,7 +61,7 @@ void DensityBCAdapter::init()
    catch(...)                          { throw UbException(UB_EXARGS,"unknown exception" );                       }
 }
 /*==========================================================*/
-void DensityBCAdapter::init(const D3Q27Interactor* const& interactor, const double& time)
+void DensityBCAdapter::init(const D3Q27Interactor* const&  /*interactor*/, const double& time)
 {
    this->timeStep           = time;
    this->tmpDensityFunction = NULL;
@@ -99,7 +99,7 @@ void DensityBCAdapter::update( const D3Q27Interactor* const& interactor, const d
    this->init(interactor,time);
 }
 /*==========================================================*/
-void DensityBCAdapter::adaptBCForDirection( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& q, const int& fdirection, const double& time )
+void DensityBCAdapter::adaptBCForDirection( const D3Q27Interactor&  /*interactor*/, SPtr<BoundaryConditions> bc, const double&  /*worldX1*/, const double&  /*worldX2*/, const double&  /*worldX3*/, const double& q, const int& fdirection, const double&  /*time*/ )
 {
    bc->setDensityBoundaryFlag(D3Q27System::INVDIR[fdirection],secondaryBcOption);
    bc->setQ((float)q,fdirection);
@@ -111,7 +111,7 @@ void DensityBCAdapter::adaptBC( const D3Q27Interactor& interactor, SPtr<Boundary
    bc->setBcAlgorithmType(algorithmType);
 }
 /*==========================================================*/
-void DensityBCAdapter::setNodeDensity( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep) 
+void DensityBCAdapter::setNodeDensity( const D3Q27Interactor&  /*interactor*/, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep) 
 {
    //Geschwindigkeiten setzen
    try

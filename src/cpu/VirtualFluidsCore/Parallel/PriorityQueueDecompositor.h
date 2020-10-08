@@ -36,9 +36,7 @@ public:
       }
    }
    virtual ~PriorityQueueDecompositor()
-   {
-
-   }
+   = default;
    void getDecomposition(std::vector< std::vector<T> >& prts)
    {
       for( itOb=objects.begin() ; itOb != objects.end(); itOb++)

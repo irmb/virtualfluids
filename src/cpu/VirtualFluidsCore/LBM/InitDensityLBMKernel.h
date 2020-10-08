@@ -11,11 +11,11 @@ class InitDensityLBMKernel :  public LBMKernel
 {
 public:
    InitDensityLBMKernel();
-   ~InitDensityLBMKernel();
-   void calculate(int step);
-   SPtr<LBMKernel> clone();
+   ~InitDensityLBMKernel() override;
+   void calculate(int step) override;
+   SPtr<LBMKernel> clone() override;
    void setVelocity(int x1, int x2, int x3, LBMReal vvx, LBMReal vvy, LBMReal vvz);
-   double getCalculationTime();
+   double getCalculationTime() override;
 protected:
    void initDataSet();
 private:

@@ -27,7 +27,7 @@ class TimeseriesCoProcessor : public CoProcessor
 {
 public:
     TimeseriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<IntegrateValuesHelper> h1, const std::string& path, SPtr<Communicator> comm);
-    virtual ~TimeseriesCoProcessor();
+    ~TimeseriesCoProcessor() override;
 
     //! calls collectData.
     void process(double step) override;

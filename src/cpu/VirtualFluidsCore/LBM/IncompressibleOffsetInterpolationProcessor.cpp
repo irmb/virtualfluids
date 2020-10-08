@@ -3,23 +3,13 @@
 
 
 
-IncompressibleOffsetInterpolationProcessor::IncompressibleOffsetInterpolationProcessor()
-   : omegaC(0.0), omegaF(0.0)
-{
-   //forcingC = 0; //9.99685e-7;
-   //forcingF = 0; //forcingC*0.5;
-}
 //////////////////////////////////////////////////////////////////////////
 IncompressibleOffsetInterpolationProcessor::IncompressibleOffsetInterpolationProcessor(LBMReal omegaC, LBMReal omegaF)
    : omegaC(omegaC), omegaF(omegaF)
 {
 
 }
-//////////////////////////////////////////////////////////////////////////
-IncompressibleOffsetInterpolationProcessor::~IncompressibleOffsetInterpolationProcessor()
-{
 
-}
 //////////////////////////////////////////////////////////////////////////
 InterpolationProcessorPtr IncompressibleOffsetInterpolationProcessor::clone()
 {
@@ -536,7 +526,7 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(con
    yz_TNW =   0.0625*eps_new *((                bxyz +     cxyz)/(72.*o));
 }
 //////////////////////////////////////////////////////////////////////////
-void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNode(LBMReal* f, LBMReal omega, LBMReal x, LBMReal y, LBMReal z, LBMReal press, LBMReal xs, LBMReal ys, LBMReal zs)
+void IncompressibleOffsetInterpolationProcessor::calcInterpolatedNode(LBMReal* f, LBMReal  /*omega*/, LBMReal  /*x*/, LBMReal  /*y*/, LBMReal  /*z*/, LBMReal press, LBMReal xs, LBMReal ys, LBMReal zs)
 {
    using namespace D3Q27System;
 

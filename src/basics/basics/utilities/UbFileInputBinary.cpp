@@ -109,7 +109,7 @@ string UbFileInputBinary::readStringLine()
    return dummy;
 }
 /*==========================================================*/
-string UbFileInputBinary::readLineTill(char stop)				
+string UbFileInputBinary::readLineTill(char  /*stop*/)				
 {
    UB_THROW( UbException(UB_EXARGS,"method makes no sense for binary streams") );
 }
@@ -119,32 +119,32 @@ string UbFileInputBinary::parseString()
    UB_THROW( UbException(UB_EXARGS,"method makes no sense for binary streams") );
 }
 /*==========================================================*/
-bool UbFileInputBinary::containsString(const string& var)
+bool UbFileInputBinary::containsString(const string&  /*var*/)
 {
    UB_THROW( UbException(UB_EXARGS,"method makes no sense for binary streams") );
 }
 /*==========================================================*/
-void UbFileInputBinary::setPosAfterLineWithString(const string& var)
+void UbFileInputBinary::setPosAfterLineWithString(const string&  /*var*/)
 {
    UB_THROW( UbException(UB_EXARGS,"method makes no sense for binary streams") );
 }
 /*==========================================================*/
-int UbFileInputBinary::readIntegerAfterString(const string& var)
+int UbFileInputBinary::readIntegerAfterString(const string&  /*var*/)
 {
    UB_THROW( UbException(UB_EXARGS,"method makes no sense for binary streams") );
 }
 /*==========================================================*/
-double UbFileInputBinary::readDoubleAfterString(const string& var)	
+double UbFileInputBinary::readDoubleAfterString(const string&  /*var*/)	
 {
    UB_THROW( UbException(UB_EXARGS,"method makes no sense for binary streams") );
 }
 /*==========================================================*/
-string UbFileInputBinary::readStringAfterString(const string& var)	
+string UbFileInputBinary::readStringAfterString(const string&  /*var*/)	
 {
    UB_THROW( UbException(UB_EXARGS,"method makes no sense for binary streams") );
 }
 /*==========================================================*/
-bool UbFileInputBinary::readBoolAfterString(const string& var)	
+bool UbFileInputBinary::readBoolAfterString(const string&  /*var*/)	
 {
    UB_THROW( UbException(UB_EXARGS,"method makes no sense for binary streams") );
 }

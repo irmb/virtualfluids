@@ -16,10 +16,10 @@ namespace input
     {
     public:
         BASICS_EXPORT ConfigInput(std::istream &stream);
-        BASICS_EXPORT virtual ~ConfigInput(void);
+        BASICS_EXPORT ~ConfigInput() override;
    
-        BASICS_EXPORT bool hasValue(const std::string &key) const;
-        BASICS_EXPORT std::string getValue(const std::string &key);
+        BASICS_EXPORT bool hasValue(const std::string &key) const override;
+        BASICS_EXPORT std::string getValue(const std::string &key) override;
 
     protected:
         virtual void setTokenValuePair();
@@ -41,7 +41,7 @@ namespace input
 
     protected:
         std::istream &stream;
-        typedef std::pair <std::string, std::string> String_Pair;
+        using String_Pair = std::pair <std::string, std::string>;
         std::map<std::string, std::string> configEntries;
     };
 }

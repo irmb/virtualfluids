@@ -12,9 +12,7 @@ SetSpongeLayerBlockVisitor::SetSpongeLayerBlockVisitor( const mu::Parser& sponge
 }
 //////////////////////////////////////////////////////////////////////////
 SetSpongeLayerBlockVisitor::~SetSpongeLayerBlockVisitor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void SetSpongeLayerBlockVisitor::visit( SPtr<Grid3D> grid, SPtr<Block3D> block )
 {

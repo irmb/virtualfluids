@@ -32,9 +32,9 @@ class DecreaseViscosityCoProcessor: public CoProcessor
 public:
    DecreaseViscosityCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
       mu::Parser* nueFunc, SPtr<Communicator> comm);
-   virtual ~DecreaseViscosityCoProcessor();
+   ~DecreaseViscosityCoProcessor() override;
    //! calls collect PostprocessData.
-   void process(double step); 
+   void process(double step) override; 
 protected:
    //! resets the collision factor depending on the current timestep.
    void setViscosity(double step);  

@@ -45,8 +45,8 @@ namespace UbComparators
    template <typename T, typename C> 
    struct MemberInfo<T C::*> 
    { 
-      typedef T type; 
-      typedef C class_type; 
+      using type = T; 
+      using class_type = C; 
 
       static       T& apply(       C& c, T C::* ptr ) { return c.*ptr; } 
       static const T& apply( const C& c, T C::* ptr ) { return c.*ptr; } 
@@ -56,8 +56,8 @@ namespace UbComparators
    template <typename T, typename C> 
    struct MemberInfo<T (C::*)()> 
    { 
-      typedef T type; 
-      typedef C class_type; 
+      using type = T; 
+      using class_type = C; 
 
       static T apply( C& c, T (C::*ptr)() ) { return (c.*ptr)(); } 
    }; 
@@ -66,8 +66,8 @@ namespace UbComparators
    template <typename T, typename C> 
    struct MemberInfo<T (C::*)() const> 
    { 
-      typedef T type; 
-      typedef C class_type; 
+      using type = T; 
+      using class_type = C; 
 
       static T apply( const C& c, T (C::*ptr)() const ) { return (c.*ptr)(); } 
    }; 
@@ -77,7 +77,7 @@ namespace UbComparators
    class MemComp 
       : private Comp  // -> usage of Empty Base Class Optimization (EBCO) 
    { 
-      typedef typename MemberInfo<Ptr>::class_type C; 
+      using C = typename MemberInfo<Ptr>::class_type; 
 
    public: 
       MemComp( Ptr ptr, Comp c = Comp() ) 

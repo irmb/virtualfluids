@@ -3,7 +3,7 @@
 #include "InterpolationProcessor.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "DataSet3D.h"
-#include <math.h>
+#include <cmath>
 #include "Block3D.h"
 
 #define PROOF_CORRECTNESS
@@ -19,9 +19,7 @@ IncompressibleCumulantLBMKernel::IncompressibleCumulantLBMKernel()
 }
 //////////////////////////////////////////////////////////////////////////
 IncompressibleCumulantLBMKernel::~IncompressibleCumulantLBMKernel(void)
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleCumulantLBMKernel::initDataSet()
 {

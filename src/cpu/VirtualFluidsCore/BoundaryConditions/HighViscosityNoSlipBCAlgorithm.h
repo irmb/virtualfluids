@@ -10,9 +10,9 @@ class HighViscosityNoSlipBCAlgorithm : public BCAlgorithm
 {
 public:
    HighViscosityNoSlipBCAlgorithm();
-   ~HighViscosityNoSlipBCAlgorithm();
-   SPtr<BCAlgorithm> clone();
-   void addDistributions(SPtr<DistributionArray3D> distributions);
+   ~HighViscosityNoSlipBCAlgorithm() override;
+   SPtr<BCAlgorithm> clone() override;
+   void addDistributions(SPtr<DistributionArray3D> distributions) override;
    void applyBC() override;
 };
 #endif // HighViscosityNoSlipBCAlgorithm_h__

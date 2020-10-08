@@ -18,7 +18,7 @@ namespace Kd
    public:
       virtual SplitCandidate<T> findBestSplitCandidate(const int& level, const int& maxLevel, Node<T>& node ) const = 0;
       virtual void distributeTriFaces(const SplitCandidate<T>& candidate, std::vector<GbTriFaceMesh3D::TriFace>& triFacesForChild1, std::vector<GbTriFaceMesh3D::TriFace>& triFacesForChild2, Node<T>& node) const=0;
-      virtual ~SplitAlgorithm() {}
+      virtual ~SplitAlgorithm() = default;
    };
 }
 

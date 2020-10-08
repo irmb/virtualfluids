@@ -31,8 +31,8 @@ public:
    //! \param a - area of object in LB units
    CalculateForcesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
        SPtr<Communicator> comm, double v, double a);
-	virtual ~CalculateForcesCoProcessor();             
-	void process(double step); 
+	~CalculateForcesCoProcessor() override;             
+	void process(double step) override; 
    void addInteractor(SPtr<D3Q27Interactor> interactor);
 protected:
 	void collectData(double step);

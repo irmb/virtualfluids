@@ -11,6 +11,7 @@
 #include <geometry3d/KdTree/splitalgorithms/KdSplitAlgorithm.h>
 
 #include <string>
+#include <cmath>
 
 namespace Kd
 {
@@ -66,8 +67,8 @@ namespace Kd
           
          // create a copy of triangles 
          MbSmartPtr< std::vector<GbTriFaceMesh3D::TriFace> > triFaces(new std::vector<GbTriFaceMesh3D::TriFace>(*mesh.getTriangles() ) );
-         
-         int maxLevel = (int)(8.0 + 1.3 * std::log( (double)triFaces->size() ) + 0.5);
+
+         const int maxLevel = static_cast<int>(lround(8.0 + 1.3 * std::log( (double)triFaces->size() ))); //TODO: remove magic numbers
 
          rootNode = new Node<T>(   T( mesh.getX1Minimum() )
                                  , T( mesh.getX2Minimum() )

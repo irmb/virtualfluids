@@ -45,8 +45,7 @@ TimeseriesCoProcessor::TimeseriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler
 }
 //////////////////////////////////////////////////////////////////////////
 TimeseriesCoProcessor::~TimeseriesCoProcessor() 
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void TimeseriesCoProcessor::process(double step)
 {

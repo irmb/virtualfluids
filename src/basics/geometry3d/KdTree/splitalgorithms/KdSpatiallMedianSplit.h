@@ -12,7 +12,7 @@ namespace Kd
    class SpatialMedianSplit : public SplitAlgorithm<T> 
    {
       /* ======================================================================================= */
-      SplitCandidate<T> findBestSplitCandidate(const int& level, const int& maxLevel, Node<T>& node )  const
+      SplitCandidate<T> findBestSplitCandidate(const int& level, const int& maxLevel, Node<T>& node )  const override
       {
          if(   node.getTriFaces()->size() <= 24 //max triangles in node 
             || level >= maxLevel        )
@@ -31,7 +31,7 @@ namespace Kd
 
       }
       /* ======================================================================================= */
-      void distributeTriFaces(const SplitCandidate<T>& candidate, std::vector<GbTriFaceMesh3D::TriFace>& primitives_child1, std::vector<GbTriFaceMesh3D::TriFace>& primitives_child2, Node<T>& node) const
+      void distributeTriFaces(const SplitCandidate<T>& candidate, std::vector<GbTriFaceMesh3D::TriFace>& primitives_child1, std::vector<GbTriFaceMesh3D::TriFace>& primitives_child2, Node<T>& node) const override
       {
          if( !node.getTriFaces() )  throw UbException(UB_EXARGS, "null pointer");
 

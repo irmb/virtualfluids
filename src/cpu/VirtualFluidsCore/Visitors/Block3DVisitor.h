@@ -43,17 +43,13 @@ class Grid3D;
 class Block3DVisitor
 {
 public:
-   Block3DVisitor() : startLevel(-1), stopLevel(-1)
-   {
-   }
+   Block3DVisitor() = default;
 
    Block3DVisitor(int startLevel, int stopLevel) : startLevel(startLevel), stopLevel(stopLevel)
    {
    }
 
-	virtual ~Block3DVisitor()
-   {
-   }
+	virtual ~Block3DVisitor() = default;
 	
    virtual void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) = 0;
    
@@ -63,8 +59,8 @@ public:
    void setStopLevel(int level);
 
 private:
-   int  startLevel;
-   int  stopLevel;
+   int  startLevel{-1};
+   int  stopLevel{-1};
 };
 //////////////////////////////////////////////////////////////////////////
 inline int  Block3DVisitor::getStartLevel() const

@@ -76,9 +76,7 @@ Calculator::Calculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayer
 }
 //////////////////////////////////////////////////////////////////////////
 Calculator::~Calculator()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void Calculator::addCoProcessor(SPtr<CoProcessor> coProcessor)
 {
@@ -154,9 +152,9 @@ void Calculator::initRemoteConnectors()
       initConnectors(remoteConns[l]);
       if (l != maxLevel)
       {
-		 for(int i = 0; i < remoteInterConnsCF[l].size(); i++)
+		 for(size_t i = 0; i < remoteInterConnsCF[l].size(); i++)
 			remoteInterConns[l].push_back(remoteInterConnsCF[l][i]);
-		 for(int i = 0; i < remoteInterConnsFC[l+1].size(); i++)
+		 for(size_t i = 0; i < remoteInterConnsFC[l+1].size(); i++)
 	      remoteInterConns[l].push_back(remoteInterConnsFC[l+1][i]);
       }
    }

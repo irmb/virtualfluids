@@ -23,9 +23,7 @@ namespace logging {
     }
 
     logging::Logger::~Logger()
-    {
-
-    }
+    = default;
 
     void Logger::addStreamToList(std::ostream* stream)
     {

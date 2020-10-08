@@ -107,7 +107,7 @@ int MPICommunicator::getProcessID()
    return PID;
 }
 //////////////////////////////////////////////////////////////////////////
-int MPICommunicator::getProcessID(int bundle, int rank)
+int MPICommunicator::getProcessID(int  /*bundle*/, int  /*rank*/)
 {
    return PID;
 }
@@ -147,7 +147,7 @@ int MPICommunicator::getProcessRoot()
    return 0;
 }
 //////////////////////////////////////////////////////////////////////////
-int MPICommunicator::getNumberOfProcessesInBundle(int bundle)
+int MPICommunicator::getNumberOfProcessesInBundle(int  /*bundle*/)
 {
    return numprocs;
 }

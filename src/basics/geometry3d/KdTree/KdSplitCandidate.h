@@ -9,33 +9,15 @@ namespace Kd
    class SplitCandidate   
    {
    public:
-      SplitCandidate() 
-         :  axis(0)
-          , position(0.0)
-          , starting(0)
-          , ending(0)
-          , np_left(false)
-          , np_right(false)
-          , Cn(0.0)
-          , nr(0)
-          , nl(0)  
-          , isValid(false)
-      {
-
-      }
+      SplitCandidate() = default;
       /* ======================================================================================= */
-      SplitCandidate(const int& axis, const T& position, const int& starting, const int& ending, const int& insidePlane)
-         : np_left(false)
-         , np_right(false)
-         , axis(axis)
+      SplitCandidate(const int& axis, const T& position, const int& starting, const int& ending, const int& insidePlane) :
+           axis(axis)
          , position(position)
          , starting(starting)
          , ending(ending)
          , np(insidePlane)
-         , Cn(0.0) 
-         , nr(0)  
-         , nl(0)  
-         , isValid(true)
+         , isValid(true) //FIXME: isValid default false is correct?
       {
       }
       /* ======================================================================================= */
@@ -51,17 +33,17 @@ namespace Kd
       /* ======================================================================================= */
 
    public:
-      int     axis;
-      T       Cn;
-      T       position;
-      int     nl;
-      int     nr;
+      int     axis{0};
+      T       Cn {0.0};
+      T       position {0.0};
+      int     nl{0};
+      int     nr{0};
       int     np;
-      int     starting;
-      int     ending;
-      bool    np_left;
-      bool    np_right;
-      bool    isValid;
+      int     starting{0};
+      int     ending{0};
+      bool    np_left{false};
+      bool    np_right{false};
+      bool    isValid{false};
    };
 }
 

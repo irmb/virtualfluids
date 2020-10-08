@@ -29,12 +29,12 @@ class FineToCoarseNodeSetBlock3DConnector : public FineToCoarseBlock3DConnector
 {
 public:
    FineToCoarseNodeSetBlock3DConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
-   void init();
-   void fillSendVectors();
-   void distributeReceiveVectors();
+   void init() override;
+   void fillSendVectors() override;
+   void distributeReceiveVectors() override;
 protected:
-   typedef std::vector< int > INodeVector;
-   typedef std::vector < INodeVector > INodeSet;
+   using INodeVector = std::vector<int>;
+   using INodeSet = std::vector<INodeVector>;
    INodeSet  iNodeSetSender;
    INodeSet  iNodeSetReceiver;
 

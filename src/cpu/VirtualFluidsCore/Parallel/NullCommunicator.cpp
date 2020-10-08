@@ -35,12 +35,10 @@
 
 
 NullCommunicator::NullCommunicator()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 NullCommunicator::~NullCommunicator()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 int NullCommunicator::getBundleID() 
 {
@@ -82,12 +80,12 @@ int NullCommunicator::getProcessRoot()
    return 0;
 }
 //////////////////////////////////////////////////////////////////////////
-std::vector<std::string> NullCommunicator::gather(const std::string& str)
+std::vector<std::string> NullCommunicator::gather(const std::string&  /*str*/)
 {
    return std::vector<std::string>();
 }
 //////////////////////////////////////////////////////////////////////////
-std::vector<double> NullCommunicator::gatherDoubles(std::vector<double>& values) 
+std::vector<double> NullCommunicator::gatherDoubles(std::vector<double>&  /*values*/) 
 {
    return std::vector<double>();
 }

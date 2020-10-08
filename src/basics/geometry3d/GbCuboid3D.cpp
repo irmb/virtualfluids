@@ -405,7 +405,7 @@ string GbCuboid3D::toString()
    return ss.str();
 }
 /*=======================================================*/
-GbPoint3D* GbCuboid3D::calculateInterSectionPoint3D(GbPoint3D& point1, GbPoint3D& point2)
+GbPoint3D* GbCuboid3D::calculateInterSectionPoint3D(GbPoint3D&  /*point1*/, GbPoint3D&  /*point2*/)
 {
    throw UbException(UB_EXARGS,"not correct implemented");
 }

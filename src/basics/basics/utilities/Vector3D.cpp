@@ -128,6 +128,9 @@ double& Vector3D::X3()
 /*=======================================================*/
 Vector3D& Vector3D::operator=(const Vector3D& rkV)
 {
+    if(this == &rkV)
+        return *this;
+
    m_afTuple[0] = rkV.m_afTuple[0];
    m_afTuple[1] = rkV.m_afTuple[1];
    m_afTuple[2] = rkV.m_afTuple[2];

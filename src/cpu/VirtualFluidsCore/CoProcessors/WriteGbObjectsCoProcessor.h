@@ -21,7 +21,7 @@ class WriteGbObjectsCoProcessor :public CoProcessor
 {
 public:
    WriteGbObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<Communicator> comm);
-   virtual ~WriteGbObjectsCoProcessor();
+   ~WriteGbObjectsCoProcessor() override;
    //! calls collectData.
    void process(double step) override;
    //! adds geometry object

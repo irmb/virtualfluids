@@ -46,8 +46,8 @@ class BasicCalculator : public Calculator
 {
 public:
    BasicCalculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayerUpdateScheduler, int numberOfTimeSteps);
-   virtual ~BasicCalculator();
-   virtual void calculate();
+   ~BasicCalculator() override = default;
+   void calculate() override;
 
 protected:
    void calculateBlocks(int startLevel, int maxInitLevel, int calcStep);

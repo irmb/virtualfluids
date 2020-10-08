@@ -20,7 +20,7 @@ public:
    //! \param startDistance start distance from geometry for refinement
    //! \param stopDistance stop distance from geometry for refinement
    RefineAroundGbObjectHelper(SPtr<Grid3D> grid, int maxRefineLevel, SPtr<D3Q27TriFaceMeshInteractor> objectIter, double startDistance, double stopDistance, SPtr<Communicator> comm);
-   virtual ~RefineAroundGbObjectHelper(void);
+   virtual ~RefineAroundGbObjectHelper();
    //! start refinement
    void refine();
 private:

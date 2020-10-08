@@ -763,7 +763,7 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
    SPtr<Block3D> tempBlock;
    int tempRank;
    
-   for(size_t ind = indexB - indexB; ind < indexE - indexB; ind++)
+   for(size_t ind = indexB - indexB; ind < indexE - indexB; ind++) // FIXME: both sides of operator are equivalent
    {
       tempBlock = grid->getBlock(indexB + int(ind));
       if(!tempBlock)  throw UbException(UB_EXARGS,"MPIIOMigrationBECoProcessor::blocksExchange -- null block pointer!!!" );
@@ -1245,7 +1245,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
 
    SPtr<Block3D> tempBlock;
    int tempRank;
-   for (int ind = indexB - indexB; ind < indexE - indexB; ind++)
+   for (int ind = indexB - indexB; ind < indexE - indexB; ind++) // FIXME: both sides of operator are equivalent
    {
       tempBlock = grid->getBlock(indexB + ind);
       tempRank = tempBlock->getRank();

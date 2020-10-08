@@ -8,11 +8,9 @@ InterpolationHelper::InterpolationHelper(InterpolationProcessorPtr iProcessor) :
 }
 //////////////////////////////////////////////////////////////////////////
 InterpolationHelper::~InterpolationHelper()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
-void InterpolationHelper::interpolate8to1( D3Q27ICell& icellF, LBMReal* icellC, double x1, double x2, double x3, LBMReal omega )
+void InterpolationHelper::interpolate8to1( D3Q27ICell& icellF, LBMReal* icellC, double  /*x1*/, double  /*x2*/, double  /*x3*/, LBMReal omega )
 {
    iProcessor->calcInterpolatedCoefficiets(icellF, omega, 1.0);
    iProcessor->calcInterpolatedNodeFC(icellC, omega);

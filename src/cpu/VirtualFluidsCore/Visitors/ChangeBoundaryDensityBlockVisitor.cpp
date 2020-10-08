@@ -16,9 +16,7 @@ newBoundaryDensity(newBoundaryDensity)
 }
 //////////////////////////////////////////////////////////////////////////
 ChangeBoundaryDensityBlockVisitor::~ChangeBoundaryDensityBlockVisitor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void ChangeBoundaryDensityBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {

@@ -12,7 +12,7 @@
 class BASICS_EXPORT TimerImp : public Timer
 {
 public:
-    typedef std::chrono::high_resolution_clock::time_point timePoint;
+    using timePoint = std::chrono::high_resolution_clock::time_point;
 
     void start() override;
     void end() override;

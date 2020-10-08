@@ -21,7 +21,7 @@ struct D3Q27ICell
 };
 
 class InterpolationProcessor;
-typedef SPtr<InterpolationProcessor> InterpolationProcessorPtr;
+using InterpolationProcessorPtr = SPtr<InterpolationProcessor>;
 
 #include "InterpolationHelper.h"
 

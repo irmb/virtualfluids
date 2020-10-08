@@ -113,7 +113,7 @@ void TurbulenceIntensityCoProcessor::addData(const SPtr<Block3D> block)
 
    //Diese Daten werden geschrieben:
    datanames.resize(0);
-   datanames.push_back("TI");
+   datanames.emplace_back("TI");
 
    data.resize(datanames.size());
 

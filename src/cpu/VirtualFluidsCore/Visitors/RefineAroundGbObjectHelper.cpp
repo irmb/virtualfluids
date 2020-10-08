@@ -19,8 +19,7 @@ RefineAroundGbObjectHelper::RefineAroundGbObjectHelper(SPtr<Grid3D> grid, int re
 }
 //////////////////////////////////////////////////////////////////////////
 RefineAroundGbObjectHelper::~RefineAroundGbObjectHelper(void)
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void RefineAroundGbObjectHelper::refine()
 {

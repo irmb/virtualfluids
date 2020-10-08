@@ -233,7 +233,7 @@ vector<GbTriangle3D*> GbQuadFaceMesh3D::getSurfaceTriangleSet()
 * @param zp the z-coordinate of the point
 * @return true if point is inside else return false
 */
-bool GbQuadFaceMesh3D::isPointInObject3DHalfSpace(const double& xp, const double& yp, const double& zp)
+bool GbQuadFaceMesh3D::isPointInObject3DHalfSpace(const double&  /*xp*/, const double&  /*yp*/, const double&  /*zp*/)
 { 
    throw UbException(UB_EXARGS,"not implemented"); 
    //vector<GbQuadangle3D*> *Quadangles = this->quads;
@@ -283,12 +283,12 @@ bool GbQuadFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, c
       return false;
 }
 /*======================================================================*/
-bool GbQuadFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary)
+bool GbQuadFaceMesh3D::isPointInGbObject3D(const double&  /*x1*/, const double&  /*x2*/, const double&  /*x3*/, bool&  /*pointIsOnBoundary*/)
 {
     throw UbException(UB_EXARGS,"not implemented");
 }
 /*======================================================================*/
-GbLine3D* GbQuadFaceMesh3D::createClippedLine3D (GbPoint3D& point1, GbPoint3D& point2)
+GbLine3D* GbQuadFaceMesh3D::createClippedLine3D (GbPoint3D&  /*point1*/, GbPoint3D&  /*point2*/)
 {
    throw UbException(UB_EXARGS,"not implemented");
 }

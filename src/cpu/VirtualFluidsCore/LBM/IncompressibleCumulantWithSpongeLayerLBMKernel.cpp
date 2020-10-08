@@ -1,7 +1,7 @@
 #include "IncompressibleCumulantWithSpongeLayerLBMKernel.h"
 #include "D3Q27System.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
-#include <math.h>
+#include <cmath>
 #include "DataSet3D.h"
 #include "BCArray3D.h"
 #include "Block3D.h"
@@ -12,14 +12,10 @@ using namespace UbMath;
 
 //////////////////////////////////////////////////////////////////////////
 IncompressibleCumulantWithSpongeLayerLBMKernel::IncompressibleCumulantWithSpongeLayerLBMKernel()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 IncompressibleCumulantWithSpongeLayerLBMKernel::~IncompressibleCumulantWithSpongeLayerLBMKernel(void)
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleCumulantWithSpongeLayerLBMKernel::initDataSet()
 {

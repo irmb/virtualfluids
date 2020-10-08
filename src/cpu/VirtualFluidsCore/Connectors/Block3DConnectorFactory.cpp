@@ -5,12 +5,10 @@
 #include "FineToCoarseNodeSetBlock3DConnector.h"
 
 Block3DConnectorFactory::Block3DConnectorFactory()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 Block3DConnectorFactory::~Block3DConnectorFactory()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 SPtr<Block3DConnector> Block3DConnectorFactory::createSameLevelDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir)
 {

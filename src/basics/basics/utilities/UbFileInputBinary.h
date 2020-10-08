@@ -34,29 +34,29 @@ public:
    UbFileInputBinary() : UbFileInput() {  }
    UbFileInputBinary(std::string filename);
 	
-	bool        open(std::string filename);
+	bool        open(std::string filename) override;
 
-   void	      skipLine();					   // Springt zur naechsten Zeile
-	void        readLine();		 
-   std::string readStringLine();				
-   std::size_t readSize_t();				
-   int		   readInteger();				   // Liest einen Int-Wert ein
-	double	   readDouble();				   // Liest einen double-Wert ein
-	float 	   readFloat();				   // Liest einen float-Wert ein
-	bool  	   readBool();				      // Liest einen bool-Wert ein
-   char        readChar();                // Liest einen char-Wert ein
-   std::string	readString();				   // Liest ein Wort ein
-	std::string	readLineTill(char stop);	// Liest gesamte Zeile ein bis zu einem bestimmten Zeichen
-	std::string	parseString();	// Liest 
+   void	      skipLine() override;					   // Springt zur naechsten Zeile
+	void        readLine() override;		 
+   std::string readStringLine() override;				
+   std::size_t readSize_t() override;				
+   int		   readInteger() override;				   // Liest einen Int-Wert ein
+	double	   readDouble() override;				   // Liest einen double-Wert ein
+	float 	   readFloat() override;				   // Liest einen float-Wert ein
+	bool  	   readBool() override;				      // Liest einen bool-Wert ein
+   char        readChar() override;                // Liest einen char-Wert ein
+   std::string	readString() override;				   // Liest ein Wort ein
+	std::string	readLineTill(char stop) override;	// Liest gesamte Zeile ein bis zu einem bestimmten Zeichen
+	std::string	parseString() override;	// Liest 
 
-   bool        containsString(const std::string& var);
-   void        setPosAfterLineWithString(const std::string& var);
-   int		   readIntegerAfterString(const std::string& var);
-   double	   readDoubleAfterString(const std::string& var);
-   bool        readBoolAfterString(const std::string& var);
-   std::string readStringAfterString(const std::string& var);
+   bool        containsString(const std::string& var) override;
+   void        setPosAfterLineWithString(const std::string& var) override;
+   int		   readIntegerAfterString(const std::string& var) override;
+   double	   readDoubleAfterString(const std::string& var) override;
+   bool        readBoolAfterString(const std::string& var) override;
+   std::string readStringAfterString(const std::string& var) override;
 
-   FILETYPE getFileType() { return BINARY; }
+   FILETYPE getFileType() override { return BINARY; }
 
    template< typename T >
    friend inline UbFileInputBinary& operator>>(UbFileInputBinary& file, T& data) 

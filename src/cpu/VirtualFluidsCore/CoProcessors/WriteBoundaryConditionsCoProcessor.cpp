@@ -50,9 +50,7 @@
 using namespace std;
 
 WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
    const std::string& path, WbWriter* const writer, SPtr<Communicator> comm)
@@ -151,10 +149,10 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
 
    //Diese Daten werden geschrieben:
    datanames.resize(0);
-   datanames.push_back("Boundary Conditions");
-   datanames.push_back("Geometry");
-   datanames.push_back("Level");
-   //datanames.push_back("Interface CF");
+   datanames.emplace_back("Boundary Conditions");
+   datanames.emplace_back("Geometry");
+   datanames.emplace_back("Level");
+   //datanames.emplace_back("Interface CF");
 
    data.resize(datanames.size());
 

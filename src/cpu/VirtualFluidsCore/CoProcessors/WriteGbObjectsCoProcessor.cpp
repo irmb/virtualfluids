@@ -11,9 +11,7 @@ WriteGbObjectsCoProcessor::WriteGbObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbS
 }
 //////////////////////////////////////////////////////////////////////////
 WriteGbObjectsCoProcessor::~WriteGbObjectsCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void WriteGbObjectsCoProcessor::process(double step)
 {

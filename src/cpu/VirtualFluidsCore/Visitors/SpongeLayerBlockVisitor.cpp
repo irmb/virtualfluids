@@ -24,9 +24,7 @@ SpongeLayerBlockVisitor::SpongeLayerBlockVisitor(SPtr<GbCuboid3D> boundingBox, S
 }
 //////////////////////////////////////////////////////////////////////////
 SpongeLayerBlockVisitor::~SpongeLayerBlockVisitor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {

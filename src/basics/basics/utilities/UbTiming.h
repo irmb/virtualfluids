@@ -64,7 +64,7 @@ public:
       this->name        = name;
    }
    /*==========================================================*/
-   virtual ~UbTiming() {}  
+   virtual ~UbTiming() = default;  
    /*==========================================================*/
    virtual void initTiming()
    {
@@ -176,8 +176,8 @@ protected:
 
 #ifdef UBSYSTEM_APPLE   //Apple hack
    #include <mach/mach_time.h>  
-   #include <time.h>  
-   #include <stdio.h> 
+   #include <ctime>
+   #include <cstdio>
    inline void mach_absolute_difference(const uint64_t& end, const uint64_t& start, struct timespec *tp) 
    {  
          uint64_t difference = end - start;  
@@ -223,20 +223,19 @@ class UbTimer
 {
 public:
    UbTimer(const bool& storeLapTimes = false) 
-      :  name("unamed"), isMeasuring(false), storeLapTimes(storeLapTimes)
-       , startTime(0.0), totalTime(0.0), lapTime(0.0)
+      :  name("unamed"),  storeLapTimes(storeLapTimes)
+        
    {
 
    }
    /*==========================================================*/
    UbTimer(const std::string& name, const bool& storeLapTimes = false) 
-      :  name(name), isMeasuring(false), storeLapTimes(storeLapTimes)
-       , startTime(0.0), totalTime(0.0), lapTime(0.0)
+      :  name(name), storeLapTimes(storeLapTimes)
    {
 
    }
    /*==========================================================*/
-   virtual ~UbTimer() {}  
+   virtual ~UbTimer() = default;  
    /*==========================================================*/
    double              getLapTime() const               { return this->lapTime;  }
    std::vector<double> getLapTimes() const              { return this->lapTimes; }
@@ -355,12 +354,12 @@ public:
 
 protected:
    std::string name;
-   bool        isMeasuring;
+   bool        isMeasuring{false};
    bool        storeLapTimes;
 
-   double      startTime;
-   double      totalTime;
-   double      lapTime;
+   double      startTime{0.0};
+   double      totalTime{0.0};
+   double      lapTime{0.0};
    
    std::vector<double> lapTimes;
 };
@@ -380,16 +379,16 @@ protected:
 
 class UbProgressTimer : public UbTimer
 {
-private:
-	UbProgressTimer(const UbProgressTimer& rhs);
 public:
+    UbProgressTimer(const UbProgressTimer& rhs) = delete;
+
   explicit UbProgressTimer( std::ostream & os = std::cout )
      : UbTimer(),os(os) 
   {
   	  this->start();
   }
   /*==========================================================*/
-  ~UbProgressTimer()
+  ~UbProgressTimer() override
   {
   //  A) Throwing an exception from a destructor is a Bad Thing.
   //  B) The progress_timer destructor does output which may throw.
