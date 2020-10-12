@@ -23,7 +23,7 @@ class GbObject3DCreator;
 
 #include <PointerDefinitions.h>
 class GbCylinder3D;
-typedef SPtr<GbCylinder3D> GbCylinder3DPtr;
+using GbCylinder3DPtr = SPtr<GbCylinder3D>;
 
 
 class GbCylinder3D : public GbObject3D , public UbObserver 
@@ -34,10 +34,10 @@ public:
 	GbCylinder3D(GbPoint3D* p1, GbPoint3D* p2, const double& radius);
 	GbCylinder3D(GbLine3D* line, const double& rad);
 	GbCylinder3D(GbCylinder3D* cylinder);
-	~GbCylinder3D();    
+	~GbCylinder3D() override;    
 
-	GbCylinder3D* clone() { return new GbCylinder3D(this); }
-	void finalize();
+	GbCylinder3D* clone() override { return new GbCylinder3D(this); }
+	void finalize() override;
 
 	double     getRadius() { return this->mRad; };
 	GbLine3D*  getLine() {return mLine;}
@@ -56,51 +56,51 @@ public:
 
 	double getHeight(); 
 
-	void scale(const double& sx1, const double& sx2, const double& sx3);
+	void scale(const double& sx1, const double& sx2, const double& sx3) override;
 
-   void translate(const double& x1, const double& x2, const double& x3) 
+   void translate(const double& x1, const double& x2, const double& x3) override 
    {
       this->mLine->translate( x1, x2, x3 );
       this->calculateValues();
       //this->notifyObserversObjectChanged();
    }
 
-   double getX1Centroid() { return centerX1; }
-   double getX1Minimum()  { return minX1;    }
-	double getX1Maximum()  { return maxX1;    }
-	double getX2Centroid() { return centerX2; }
-	double getX2Minimum()  { return minX2;    }
-	double getX2Maximum()  { return maxX2;    }
-	double getX3Centroid() { return centerX3; }
-	double getX3Minimum()  { return minX3;    }
-	double getX3Maximum()  { return maxX3;    }
+   double getX1Centroid() override { return centerX1; }
+   double getX1Minimum() override  { return minX1;    }
+	double getX1Maximum() override  { return maxX1;    }
+	double getX2Centroid() override { return centerX2; }
+	double getX2Minimum() override  { return minX2;    }
+	double getX2Maximum() override  { return maxX2;    }
+	double getX3Centroid() override { return centerX3; }
+	double getX3Minimum() override  { return minX3;    }
+	double getX3Maximum() override  { return maxX3;    }
 
-	bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p); 
-	bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool& pointIsOnBoundary); 
-   bool isCellInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
-   bool isCellCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
-   bool isCellInsideOrCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
+	bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p) override; 
+	bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool& pointIsOnBoundary) override; 
+   bool isCellInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override;
+   bool isCellCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override;
+   bool isCellInsideOrCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override;
 
-	GbLine3D* createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2);
+	GbLine3D* createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2) override;
    
    //SG ausdokumentieren, da der nur unendlcihe Zylinder macht ...
    //bool hasRaytracing() { return true; }
-   bool hasRaytracing() { return false; }
-   bool raytracingSupportsPointsInside() { return true; }
+   bool hasRaytracing() override { return false; }
+   bool raytracingSupportsPointsInside() override { return true; }
    
    
    /*|r| must be 1! einheitsvector!!*/
-   double getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3);
+   double getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3) override;
 
-	std::vector<GbTriangle3D*> getSurfaceTriangleSet();
-   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles);
+	std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
+   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles) override;
    void addSurfaceTriangleSetSegments(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles, int segmentsRound, int segmentsHeight );
 
-	std::string toString();
+	std::string toString() override;
 
 	//virtuelle Methoden von UbObserver
-	void objectChanged(UbObservable* changedObject);
-	void objectWillBeDeleted(UbObservable* objectForDeletion);
+	void objectChanged(UbObservable* changedObject) override;
+	void objectWillBeDeleted(UbObservable* objectForDeletion) override;
 
    
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere
@@ -112,9 +112,9 @@ protected:
    GbLine3D* mLine;
 	double    mRad;
 
-   double minX1, minX2, minX3;
-   double maxX1, maxX2, maxX3;
-   double centerX1, centerX2, centerX3;
+   double minX1{0.0}, minX2{0.0}, minX3{0.0};
+   double maxX1{0.0}, maxX2{0.0}, maxX3{0.0};
+   double centerX1{0.0}, centerX2{0.0}, centerX3{0.0};
 
 	int cylinderType;
 

@@ -30,11 +30,11 @@ template<typename T>
 class TbTransmitter
 {
 public:
-   typedef T value_type;
+   using value_type = T;
 
 public:
-   TbTransmitter() {}
-   virtual ~TbTransmitter()  {  /*std::cout<<typeid(*this).name()<<" dtor"<<std::endl;*/  }
+   TbTransmitter() = default;
+   virtual ~TbTransmitter() = default;
 
    virtual bool isLocalTransmitter()  const = 0;
    virtual bool isRemoteTransmitter() const = 0;

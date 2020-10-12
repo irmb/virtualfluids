@@ -19,8 +19,7 @@ RefineCrossAndInsideGbObjectHelper::RefineCrossAndInsideGbObjectHelper(SPtr<Grid
 }
 //////////////////////////////////////////////////////////////////////////
 RefineCrossAndInsideGbObjectHelper::~RefineCrossAndInsideGbObjectHelper(void)
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void RefineCrossAndInsideGbObjectHelper::refine()
 {

@@ -28,24 +28,24 @@ public:
    D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter, int type, Interactor3D::Accuracy a);
    //D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, D3Q27BoundaryConditionAdapterPtr bcAdapter, int type, std::string name="D3Q27TriFaceMeshInteractor");
 
-   ~D3Q27TriFaceMeshInteractor();
+   ~D3Q27TriFaceMeshInteractor() override;
 
-   virtual void initInteractor(const double& timeStep=0);
+   void initInteractor(const double& timeStep=0) override;
    virtual void initInteractor2(const double& timeStep=0);
 
-   void updateInteractor(const double& timestep=0);
+   void updateInteractor(const double& timestep=0) override;
 
    void updateMovedGeometry(const double& timeStep=0);
    void setQs(const double& timeStep);
    void refineBlockGridToLevel(int level, double startDistance, double stopDistance);
 
-   bool setDifferencesToGbObject3D(const SPtr<Block3D> block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep=0*/);
+   bool setDifferencesToGbObject3D(const SPtr<Block3D> block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep=0*/) override;
 
    void setRegardPointInObjectTest( bool opt ) { this->regardPIOTest = opt; }
 
    ObObject*        clone() { throw UbException(UB_EXARGS,"not implemented");	}
 
-   UbTupleDouble3 getForces();
+   UbTupleDouble3 getForces() override;
    UbTupleDouble3 getForcesTriangle();
 
    void setStressMode(int stressMode)                      { this->stressMode = stressMode;                         }
@@ -80,12 +80,12 @@ public:
 protected:
    int    stressMode;
 
-   double forceshift;       
-   double velocityshift;
-   bool   forceshiftpolicy;
-   bool   velocityshiftpolicy;
-   bool   useHalfSpace;
-   bool   regardPIOTest;
+   double forceshift{0.0};       
+   double velocityshift{0.0};
+   bool   forceshiftpolicy{false};
+   bool   velocityshiftpolicy{false};
+   bool   useHalfSpace{true};
+   bool   regardPIOTest{true};
 
    void reinitWithStoredQs(const double& timeStep);
    //   bool reinitWithStoredQsFlag;

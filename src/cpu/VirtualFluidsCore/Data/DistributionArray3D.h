@@ -6,8 +6,9 @@
 class DistributionArray3D
 {
 public:
-   DistributionArray3D() {};
-   virtual ~DistributionArray3D(){};
+   DistributionArray3D() = default;;
+   virtual ~DistributionArray3D()= default;;
+
    virtual size_t getNX1() const = 0;
    virtual size_t getNX2() const = 0;
    virtual size_t getNX3() const = 0;

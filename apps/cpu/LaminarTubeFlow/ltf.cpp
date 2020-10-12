@@ -325,7 +325,7 @@ void run(string configname)
    }
 
 }
-int main(int argc, char* argv[])
+int main(int  /*argc*/, char* argv[])
 {
    if (argv != NULL)
    {

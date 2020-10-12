@@ -29,6 +29,10 @@
 #ifndef MU_PARSER_DLL_H
 #define MU_PARSER_DLL_H
 
+#ifdef __clang__
+#pragma clang system_header
+#endif
+
 #include "muParserFixes.h"
 
 #ifdef __cplusplus

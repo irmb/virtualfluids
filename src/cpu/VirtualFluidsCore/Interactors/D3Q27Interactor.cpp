@@ -84,9 +84,7 @@ D3Q27Interactor::D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid
 }
 //////////////////////////////////////////////////////////////////////////
 D3Q27Interactor::~D3Q27Interactor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void D3Q27Interactor::initRayVectors()
 {
@@ -324,7 +322,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                            bc = bcArray->getBC(ix1,ix2,ix3);
                            if(!bc)
                            {
-                              bc = SPtr<BoundaryConditions>(new BoundaryConditions);
+                              bc = std::make_shared<BoundaryConditions>();
                               bcArray->setBC(ix1,ix2,ix3,bc);
                            }
 
@@ -469,7 +467,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                               bc = bcArray->getBC(ix1,ix2,ix3);
                               if(!bc)
                               {
-                                 bc = SPtr<BoundaryConditions>(new BoundaryConditions);
+                                 bc = std::make_shared<BoundaryConditions>();
                                  bcArray->setBC(ix1,ix2,ix3,bc);
                               }
                               for(int index=(int)bcAdapters.size()-1; index>=0; --index)

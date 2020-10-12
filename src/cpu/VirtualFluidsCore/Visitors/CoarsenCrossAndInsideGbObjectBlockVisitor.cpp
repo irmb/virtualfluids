@@ -4,19 +4,18 @@
 #include <geometry3d/GbObject3D.h>
 
 CoarsenCrossAndInsideGbObjectBlockVisitor::CoarsenCrossAndInsideGbObjectBlockVisitor()
-   : Block3DVisitor(), notActive(true)
+   : Block3DVisitor() 
 {
 }
 //////////////////////////////////////////////////////////////////////////
 CoarsenCrossAndInsideGbObjectBlockVisitor::CoarsenCrossAndInsideGbObjectBlockVisitor(SPtr<GbObject3D> geoObject, int fineLevel, int coarseLevel)
-   : Block3DVisitor(fineLevel, fineLevel), geoObject(geoObject), notActive(true), coarseLevel(coarseLevel)
+   : Block3DVisitor(fineLevel, fineLevel), geoObject(geoObject), coarseLevel(coarseLevel)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
 CoarsenCrossAndInsideGbObjectBlockVisitor::~CoarsenCrossAndInsideGbObjectBlockVisitor()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void CoarsenCrossAndInsideGbObjectBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block)
 {

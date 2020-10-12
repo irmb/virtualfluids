@@ -57,7 +57,7 @@
    #include "dirent.h"
    #include <sys/stat.h>
    #include <unistd.h>
-   #include <string.h>
+   #include <cstring>
 #elif defined(__AIX__)
    #define UBSYSTEM_AIX
    #include "dirent.h"
@@ -243,7 +243,7 @@ namespace UbSystem
       return static_cast<std::string>( str );
    }
    /*==========================================================*/
-   inline bool isDirectory(const std::string& dir, const unsigned& attemptions = 3)
+   inline bool isDirectory(const std::string& dir, const unsigned&  /*attemptions*/ = 3)
    {
       if( dir.empty() ) 
          UB_THROW( UbException(UB_EXARGS,"dir is empty") );
@@ -493,14 +493,14 @@ namespace UbSystem
    template<typename Ta, typename Tb>
    class IfThenElse<true, Ta, Tb> {
    public:
-      typedef Ta ResultT;
+      using ResultT = Ta;
    };
 
    // partial specialization: false yields third argument
    template<typename Ta, typename Tb>
    class IfThenElse<false, Ta, Tb> {
    public:
-      typedef Tb ResultT;
+      using ResultT = Tb;
    };
    //////////////////////////////////////////////////////////////////////////
    // generic IfThenElse - end
@@ -512,7 +512,7 @@ namespace UbSystem
    template< typename T>
    struct type2type
    {
-      typedef T type;
+      using type = T;
    };
 
 
@@ -522,8 +522,8 @@ namespace UbSystem
    template <typename Pair>
    struct select1st
    {
-      typedef Pair argument_type ;
-      typedef typename Pair::first_type result_type ;
+      using argument_type = Pair ;
+      using result_type = typename Pair::first_type ;
 
       const result_type&  operator()(const argument_type &p) const
       {
@@ -534,8 +534,8 @@ namespace UbSystem
    template <typename Pair>
    struct select2nd
    {
-      typedef Pair argument_type ;
-      typedef typename Pair::second_type result_type ;
+      using argument_type = Pair ;
+      using result_type = typename Pair::second_type ;
 
       const result_type& operator()(const argument_type &p) const
       {

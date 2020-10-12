@@ -10,9 +10,9 @@ class ThinWallNoSlipBCAlgorithm : public BCAlgorithm
 {
 public:
    ThinWallNoSlipBCAlgorithm();
-   virtual ~ThinWallNoSlipBCAlgorithm();
-   SPtr<BCAlgorithm> clone();
-   void addDistributions(SPtr<DistributionArray3D> distributions);
+   ~ThinWallNoSlipBCAlgorithm() override;
+   SPtr<BCAlgorithm> clone() override;
+   void addDistributions(SPtr<DistributionArray3D> distributions) override;
    void setPass(int pass);
    void applyBC() override;
 

@@ -14,6 +14,11 @@
 #  error VF_MPI has to be defined
 #endif
 
+// As we doing a lot of const-cast here we define PbMpi.h to system_header to mute clang-tidy
+#ifdef __clang__
+#pragma clang system_header
+#endif
+
 //#undef SEEK_SET
 //#undef SEEK_CUR
 //#undef SEEK_END
@@ -139,10 +144,10 @@ namespace PbMpi
    //////////////////////////////////////////////////////////////////////////
    namespace PbMpi
    {
-      typedef MPI_Comm    Comm;
-      typedef MPI_Group   Group;
-      typedef MPI_Request Request;
-      typedef MPI_Status  Status;
+      using Comm = MPI_Comm;
+      using Group = MPI_Group;
+      using Request = MPI_Request;
+      using Status = MPI_Status;
    }
 
    #define PbMpi_COMM_WORLD ((PbMpi::Comm)MPI_COMM_WORLD)

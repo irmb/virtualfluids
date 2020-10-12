@@ -6,19 +6,18 @@
 
 
 RefineCrossAndInsideGbObjectBlockVisitor::RefineCrossAndInsideGbObjectBlockVisitor()
-:  Block3DVisitor() , notActive(true)
+:  Block3DVisitor()  
 {
 }
 //////////////////////////////////////////////////////////////////////////
 RefineCrossAndInsideGbObjectBlockVisitor::RefineCrossAndInsideGbObjectBlockVisitor(SPtr<GbObject3D> geoObject, int refineLevel)
-   : Block3DVisitor(0,refineLevel-1), geoObject(geoObject), notActive(true)
+   : Block3DVisitor(0,refineLevel-1), geoObject(geoObject)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
 RefineCrossAndInsideGbObjectBlockVisitor::~RefineCrossAndInsideGbObjectBlockVisitor()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void RefineCrossAndInsideGbObjectBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block)
 {

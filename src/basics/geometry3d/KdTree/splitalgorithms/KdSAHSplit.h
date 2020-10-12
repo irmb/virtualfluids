@@ -21,7 +21,7 @@ namespace Kd
    {
    public:
       /* ======================================================================================= */
-      SplitCandidate<T> findBestSplitCandidate(const int& level, const int& maxLevel, Node<T>& node ) const
+      SplitCandidate<T> findBestSplitCandidate(const int& level, const int& maxLevel, Node<T>& node ) const override
       {
          if( !node.getTriFaces() )  throw UbException(UB_EXARGS, "triFace NULL pointer");
 
@@ -72,7 +72,7 @@ namespace Kd
          return bestSplitCandidate;
       }
       /* ======================================================================================= */
-      void distributeTriFaces(const SplitCandidate<T>& candidate, std::vector<GbTriFaceMesh3D::TriFace>& triFacesForChild1, std::vector<GbTriFaceMesh3D::TriFace>& triFacesForChild2, Node<T>& node) const
+      void distributeTriFaces(const SplitCandidate<T>& candidate, std::vector<GbTriFaceMesh3D::TriFace>& triFacesForChild1, std::vector<GbTriFaceMesh3D::TriFace>& triFacesForChild2, Node<T>& node) const override
       {  
          if( !node.getTriFaces() )  throw UbException(UB_EXARGS, "null pointer at triface list");
 

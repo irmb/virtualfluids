@@ -13,6 +13,9 @@ public:
       static WbWriterSunflow instance;
       return &instance;
    }
+
+    WbWriterSunflow( const WbWriterSunflow& ) = delete;
+    const WbWriterSunflow& operator=( const WbWriterSunflow& ) = delete;
 private:
    WbWriterSunflow() : WbWriter() 
    {
@@ -20,15 +23,13 @@ private:
       if(sizeof(int)          !=4) throw UbException(UB_EXARGS,"error int   type mismatch");
       if(sizeof(float)        !=4) throw UbException(UB_EXARGS,"error float type mismatch");
    }
-   WbWriterSunflow( const WbWriterSunflow& );                  //no copy allowed 
-   const WbWriterSunflow& operator=( const WbWriterSunflow& ); //no copy allowed
 
    static std::string  pvdEndTag;
 
 public:
-   std::string getFileExtension()  { return "ascii.sunflow"; }
+   std::string getFileExtension() override  { return "ascii.sunflow"; }
 
-   std::string writeTriangles(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt3 >& triangles);
+   std::string writeTriangles(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt3 >& triangles) override;
 };
 
 #endif //WbWriterSunflow_H

@@ -16,7 +16,7 @@ class TimeDependentBCCoProcessor : public CoProcessor
 {
 public:
 	TimeDependentBCCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s);
-	virtual ~TimeDependentBCCoProcessor();
+	~TimeDependentBCCoProcessor() override;
 
 	void process(double step) override;
 

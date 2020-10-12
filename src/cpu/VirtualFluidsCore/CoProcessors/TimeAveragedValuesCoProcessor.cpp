@@ -15,9 +15,7 @@
 
 
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string& path, WbWriter* const writer,
    SPtr<UbScheduler> s, SPtr<Communicator> comm, int options)
@@ -227,45 +225,45 @@ void TimeAveragedValuesCoProcessor::addData(const SPtr<Block3D> block)
    //Diese Daten werden geschrieben:
    datanames.resize(0);
 
-   datanames.push_back("level");
-   datanames.push_back("Rho");
+   datanames.emplace_back("level");
+   datanames.emplace_back("Rho");
 
    if ((options&Density) == Density)
    {
-      datanames.push_back("taRho");
-      datanames.push_back("taRhoF");
+      datanames.emplace_back("taRho");
+      datanames.emplace_back("taRhoF");
    }
 
    if ((options&Velocity) == Velocity)
    {
-      datanames.push_back("taVx");
-      datanames.push_back("taVy");
-      datanames.push_back("taVz");
+      datanames.emplace_back("taVx");
+      datanames.emplace_back("taVy");
+      datanames.emplace_back("taVz");
    }
 
    if ((options&Fluctuations) == Fluctuations)
    {
-      datanames.push_back("taVxx");
-      datanames.push_back("taVyy");
-      datanames.push_back("taVzz");
-      datanames.push_back("taVxy");
-      datanames.push_back("taVxz");
-      datanames.push_back("taVyz");
-      datanames.push_back("taVyz");
+      datanames.emplace_back("taVxx");
+      datanames.emplace_back("taVyy");
+      datanames.emplace_back("taVzz");
+      datanames.emplace_back("taVxy");
+      datanames.emplace_back("taVxz");
+      datanames.emplace_back("taVyz");
+      datanames.emplace_back("taVyz");
    }
 
    if ((options&Triplecorrelations) == Triplecorrelations)
    {
-      datanames.push_back("taVxxx");
-      datanames.push_back("taVxxy");
-      datanames.push_back("taVxxz");
-      datanames.push_back("taVyyy");
-      datanames.push_back("taVyyx");
-      datanames.push_back("taVyyz");
-      datanames.push_back("taVzzz");
-      datanames.push_back("taVzzx");
-      datanames.push_back("taVzzy");
-      datanames.push_back("taVxyz");
+      datanames.emplace_back("taVxxx");
+      datanames.emplace_back("taVxxy");
+      datanames.emplace_back("taVxxz");
+      datanames.emplace_back("taVyyy");
+      datanames.emplace_back("taVyyx");
+      datanames.emplace_back("taVyyz");
+      datanames.emplace_back("taVzzz");
+      datanames.emplace_back("taVzzx");
+      datanames.emplace_back("taVzzy");
+      datanames.emplace_back("taVxyz");
    }
 
 

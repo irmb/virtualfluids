@@ -14,8 +14,8 @@ class InitDistributionsWithInterpolationGridVisitor : public Grid3DVisitor
 {
 public:
    InitDistributionsWithInterpolationGridVisitor(SPtr<Grid3D> oldGrid, SPtr<InterpolationProcessor> iProcessor, LBMReal nu);
-   ~InitDistributionsWithInterpolationGridVisitor();
-   void visit(SPtr<Grid3D> grid);
+   ~InitDistributionsWithInterpolationGridVisitor() override;
+   void visit(SPtr<Grid3D> grid) override;
 private:
    void copyLocalBlock(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock);
    void copyRemoteBlock(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock);

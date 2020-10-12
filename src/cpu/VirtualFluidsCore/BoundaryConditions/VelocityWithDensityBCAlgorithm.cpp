@@ -9,9 +9,7 @@ VelocityWithDensityBCAlgorithm::VelocityWithDensityBCAlgorithm()
 }
 //////////////////////////////////////////////////////////////////////////
 VelocityWithDensityBCAlgorithm::~VelocityWithDensityBCAlgorithm()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 SPtr<BCAlgorithm> VelocityWithDensityBCAlgorithm::clone()
 {

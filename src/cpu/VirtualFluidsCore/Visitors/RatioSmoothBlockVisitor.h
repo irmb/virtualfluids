@@ -13,7 +13,7 @@ class RatioSmoothBlockVisitor : public Block3DVisitor
 public:
    RatioSmoothBlockVisitor(int levelDepth, bool includeNotActiveBlocks = false);
 
-   virtual ~RatioSmoothBlockVisitor() {}
+   ~RatioSmoothBlockVisitor() override = default;
 
    bool expandsByAdaptation() { return this->expandBlocks; }
 

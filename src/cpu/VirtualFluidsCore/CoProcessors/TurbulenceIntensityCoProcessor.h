@@ -19,7 +19,7 @@ class TurbulenceIntensityCoProcessor : public CoProcessor
 public:
    TurbulenceIntensityCoProcessor(SPtr<Grid3D> grid, const std::string& path, WbWriter* const writer,
        SPtr<UbScheduler> s, SPtr<Communicator> comm);
-   void process(double step);
+   void process(double step) override;
 protected:
    void collectData(double step);
    void addData(const SPtr<Block3D> block);

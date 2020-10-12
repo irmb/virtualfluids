@@ -10,9 +10,9 @@ class NonReflectingOutflowBCAlgorithm : public BCAlgorithm
 {
 public:
    NonReflectingOutflowBCAlgorithm();
-   ~NonReflectingOutflowBCAlgorithm();
-   SPtr<BCAlgorithm> clone();
-   void addDistributions(SPtr<DistributionArray3D> distributions);
+   ~NonReflectingOutflowBCAlgorithm() override;
+   SPtr<BCAlgorithm> clone() override;
+   void addDistributions(SPtr<DistributionArray3D> distributions) override;
    void applyBC() override;
 };
 #endif // NonReflectingDensityBCAlgorithm_h__

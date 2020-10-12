@@ -15,11 +15,8 @@ namespace Kd
    {
    public:
       SplitCandidateManager()
-         : objects_starting_outside_left(0)
-         , objects_fully_outside_node(0)
-      {
-
-      }
+          
+      = default;
       /* ======================================================================================= */
       SplitCandidate<T>& operator[] (const std::size_t& i)
       { 
@@ -63,8 +60,8 @@ namespace Kd
       /* ======================================================================================= */
 
    public:
-      int objects_starting_outside_left;
-      int objects_fully_outside_node;
+      int objects_starting_outside_left{0};
+      int objects_fully_outside_node{0};
 
    private:
       std::map<T, SplitCandidate<T> > splitCandidates;

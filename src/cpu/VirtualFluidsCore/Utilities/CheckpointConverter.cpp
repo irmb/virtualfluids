@@ -6,7 +6,7 @@
 #include "Grid3D.h"
 #include "Communicator.h"
 #include "CoordinateTransformation3D.h"
-#include <stdio.h>
+#include <cstdio>
 
 #define BLOCK_SIZE 1024
 
@@ -403,7 +403,7 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
 
 }
 
-void CheckpointConverter::convert___Array(int step, int procCount, std::string filenameR, std::string filenameW)
+void CheckpointConverter::convert___Array(int  /*step*/, int procCount, std::string filenameR, std::string filenameW)
 {
    double start, finish;
    if (comm->isRoot()) start = MPI_Wtime();

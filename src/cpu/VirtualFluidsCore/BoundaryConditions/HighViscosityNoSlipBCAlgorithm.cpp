@@ -9,8 +9,7 @@ HighViscosityNoSlipBCAlgorithm::HighViscosityNoSlipBCAlgorithm()
 }
 //////////////////////////////////////////////////////////////////////////
 HighViscosityNoSlipBCAlgorithm::~HighViscosityNoSlipBCAlgorithm()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 SPtr<BCAlgorithm> HighViscosityNoSlipBCAlgorithm::clone()
 {

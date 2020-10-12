@@ -41,20 +41,20 @@ template<typename T>
 class TbCbVectorMpiPool : public CbVectorPool<T>
 {
 public:
-   typedef SPtr< TbCbVectorMpiPool< T > > MpiPoolPtr;
+   using MpiPoolPtr = SPtr< TbCbVectorMpiPool< T > >;
 
    //////////////////////////////////////////////////////////////////////////
-   typedef std::map<std::string, MpiPoolPtr >      MpiPoolPtrMap;
-   typedef typename MpiPoolPtrMap::iterator MpiPoolPtrMapIter;
+   using MpiPoolPtrMap = std::map<std::string, MpiPoolPtr>;
+   using MpiPoolPtrMapIter = typename MpiPoolPtrMap::iterator;
 
    //da BasisKlasse templateKlasse ist MUSS man hier die typedefs nochmal wiederholen!
-   typedef typename CbVector<T>::value_type value_type;
-   typedef typename CbVector<T>::size_type  size_type;
-   typedef std::vector< value_type >        Pool;
+   using value_type = typename CbVector<T>::value_type;
+   using size_type = typename CbVector<T>::size_type;
+   using Pool = std::vector<value_type>;
 
-   typedef std::string CbVectorKey;
-   typedef std::map< CbVectorKey, CbVector< value_type >* /*ptrVector*/  > CbVectorMap;
-   typedef typename CbVectorMap::iterator CbVectorMapIter;
+   using CbVectorKey = std::string;
+   using CbVectorMap = std::map<CbVectorKey, CbVector<value_type> *>;
+   using CbVectorMapIter = typename CbVectorMap::iterator;
 
    //////////////////////////////////////////////////////////////////////////
    friend class TbCbVectorSenderMpiPool< T >; 
@@ -447,7 +447,7 @@ template<typename T>
 class TbCbVectorSenderMpiPool : public TbTransmitter< CbVector< T >  >
 {
 public:
-   typedef CbVector< T > value_type;
+   using value_type = CbVector<T>;
 
 public:
    TbCbVectorSenderMpiPool(std::string cbVectorKey, TbCbVectorMpiPool< T >* mpiVectorPool)
@@ -455,7 +455,7 @@ public:
    { 
       this->getData().setAllocator( new CbVectorAllocatorPool<T>(cbVectorKey,this->mpiVectorPool) );
    }
-   ~TbCbVectorSenderMpiPool()
+   ~TbCbVectorSenderMpiPool() override
    {
       if( this->mpiVectorPool->getNofStoredVectors()==1 ) //last entry!
       {
@@ -463,22 +463,22 @@ public:
       }
    }
 
-   bool isLocalTransmitter()  const { return false;                        }
-   bool isRemoteTransmitter() const { return !this->isLocalTransmitter();  }
+   bool isLocalTransmitter()  const override { return false;                        }
+   bool isRemoteTransmitter() const override { return !this->isLocalTransmitter();  }
 
-   void sendDataSize()          { this->mpiVectorPool->sendDataOrder(); }
-   void receiveDataSize()       { throw UbException(UB_EXARGS,"TbMpiPoolSender sends only");  }   
-   CbVector< T >& receiveData() { throw UbException(UB_EXARGS,"TbMpiPoolSender sends only");  }
-   void prepareForSend()        { this->mpiVectorPool->prepareForSendData(); }
-   void sendData()              { this->mpiVectorPool->sendData(); }
+   void sendDataSize() override          { this->mpiVectorPool->sendDataOrder(); }
+   void receiveDataSize() override       { throw UbException(UB_EXARGS,"TbMpiPoolSender sends only");  }   
+   CbVector< T >& receiveData() override { throw UbException(UB_EXARGS,"TbMpiPoolSender sends only");  }
+   void prepareForSend() override        { this->mpiVectorPool->prepareForSendData(); }
+   void sendData() override              { this->mpiVectorPool->sendData(); }
 
    //info-section (usable for remote transmitter)
    int  getSendTbRank()   const { return  this->mpiVectorPool->getRemoteRank(); }
    int  getSendTbTag()    const { return  this->mpiVectorPool->getRemoteTag();  }
-   int  getRecvFromRank() const { throw UbException(UB_EXARGS,"TbCbVectorSenderMpiPool sends only"); }
-   int  getRecvFromTag()  const { throw UbException(UB_EXARGS,"TbCbVectorSenderMpiPool sends only"); }
+   int  getRecvFromRank() const override { throw UbException(UB_EXARGS,"TbCbVectorSenderMpiPool sends only"); }
+   int  getRecvFromTag()  const override { throw UbException(UB_EXARGS,"TbCbVectorSenderMpiPool sends only"); }
 
-   std::string toString() const { return "TbCbVectorSenderMpiPool<"+(std::string)typeid(T).name()+" to rank (tag)"+UbSystem::toString(getSendTbRank())+"("+UbSystem::toString(getSendTbTag())+")"; }
+   std::string toString() const override { return "TbCbVectorSenderMpiPool<"+(std::string)typeid(T).name()+" to rank (tag)"+UbSystem::toString(getSendTbRank())+"("+UbSystem::toString(getSendTbTag())+")"; }
 
 protected:
    TbCbVectorMpiPool<T>* mpiVectorPool;
@@ -490,7 +490,7 @@ template<typename T>
 class TbCbVectorReceiverMpiPool : public TbTransmitter< CbVector< T >  >
 {
 public:
-   typedef CbVector< T > value_type;   
+   using value_type = CbVector<T>;   
 
 public:
    TbCbVectorReceiverMpiPool(std::string cbVectorKey, TbCbVectorMpiPool< T >* mpiVectorPool)
@@ -498,21 +498,21 @@ public:
    { 
       this->getData().setAllocator( new CbVectorAllocatorPool<T>(cbVectorKey, this->mpiVectorPool) );
    }
-   ~TbCbVectorReceiverMpiPool()
+   ~TbCbVectorReceiverMpiPool() override
    {
       if( this->mpiVectorPool->getNofStoredVectors()==1 ) //last entry!
       {
          TbCbVectorMpiPool< T >::deleteTbCbVectorMpiPool(this->mpiVectorPool->getPoolKey());  
       }
    }
-   bool isLocalTransmitter()  const { return false;                        }
-   bool isRemoteTransmitter() const { return !this->isLocalTransmitter();  }
+   bool isLocalTransmitter()  const override { return false;                        }
+   bool isRemoteTransmitter() const override { return !this->isLocalTransmitter();  }
 
-   void sendDataSize()      { throw UbException(UB_EXARGS,"TbCbVectorReceiverMpiPool receives only");  }   
-   void receiveDataSize()   { this->mpiVectorPool->receiveDataOrder(); }  
-   void sendData()          { throw UbException(UB_EXARGS,"TbCbVectorReceiverMpiPool receives only"); }
-   void prepareForReceive() { this->mpiVectorPool->prepareForReceiveData(); }
-   CbVector< T >& receiveData()
+   void sendDataSize() override      { throw UbException(UB_EXARGS,"TbCbVectorReceiverMpiPool receives only");  }   
+   void receiveDataSize() override   { this->mpiVectorPool->receiveDataOrder(); }  
+   void sendData() override          { throw UbException(UB_EXARGS,"TbCbVectorReceiverMpiPool receives only"); }
+   void prepareForReceive() override { this->mpiVectorPool->prepareForReceiveData(); }
+   CbVector< T >& receiveData() override
    { 
       this->mpiVectorPool->receiveData();
       return this->getData();
@@ -521,10 +521,10 @@ public:
    //info-section (usable for remote transmitter)
    int  getSendTbRank()   const { throw UbException(UB_EXARGS,"TbCbVectorReceiverMpiPool receives only"); }
    int  getSendTbTag()    const { throw UbException(UB_EXARGS,"TbCbVectorReceiverMpiPool receives only"); }
-   int  getRecvFromRank() const { return  this->mpiVectorPool->getRemoteRank();  }
-   int  getRecvFromTag()  const { return  this->mpiVectorPool->getRemoteTag();  }
+   int  getRecvFromRank() const override { return  this->mpiVectorPool->getRemoteRank();  }
+   int  getRecvFromTag()  const override { return  this->mpiVectorPool->getRemoteTag();  }
 
-   std::string toString() const { return "TbCbVectorReceiverMpiPool<"+(std::string)typeid(T).name()+" to rank (tag)"+UbSystem::toString(getRecvFromRank())+"("+UbSystem::toString(getRecvFromTag())+")"; }
+   std::string toString() const override { return "TbCbVectorReceiverMpiPool<"+(std::string)typeid(T).name()+" to rank (tag)"+UbSystem::toString(getRecvFromRank())+"("+UbSystem::toString(getRecvFromTag())+")"; }
 
 protected:
    TbCbVectorMpiPool<T>* mpiVectorPool;

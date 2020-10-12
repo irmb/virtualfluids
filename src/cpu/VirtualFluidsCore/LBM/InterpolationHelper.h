@@ -4,7 +4,7 @@
 #include "InterpolationProcessor.h"
 
 class InterpolationHelper;
-typedef SPtr<InterpolationHelper> InterpolationHelperPtr;
+using InterpolationHelperPtr = SPtr<InterpolationHelper>;
 
 class InterpolationHelper
 {

@@ -28,7 +28,7 @@ GbSphere3D::GbSphere3D(const double& x1,const double& x2, const double& x3, cons
 }
 /*=====================================================*/
 GbSphere3D::GbSphere3D(const GbSphere3D& sphere)
-  : GbObject3D(), UbObserver()
+  : GbObject3D(sphere), UbObserver()
 {
    this->setName("sphere");
 

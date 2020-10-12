@@ -48,9 +48,9 @@ class GenBlocksGridVisitor : public Grid3DVisitor
 {
 public:
    GenBlocksGridVisitor(SPtr<GbObject3D> boundingBox);
-   virtual ~GenBlocksGridVisitor(){}
+   ~GenBlocksGridVisitor() override= default;
 
-   void visit(SPtr<Grid3D> grid);
+   void visit(SPtr<Grid3D> grid) override;
 
 private:
    UbTupleInt3 minInd, maxInd;

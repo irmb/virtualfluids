@@ -32,9 +32,9 @@ template<typename T>
 class TbLocalTransmitter : public TbTransmitter<T>
 {
 public:
-   typedef SPtr< TbLocalTransmitter<T> > TbLocalTransmitterPtr;
+   using TbLocalTransmitterPtr = SPtr<TbLocalTransmitter<T> >;
 
-   typedef T value_type;
+   using value_type = T;
 
 public:
    TbLocalTransmitter() : TbTransmitter<T>() 
@@ -42,18 +42,18 @@ public:
 
    }
    
-   bool isLocalTransmitter()  const { return true;                         }
-   bool isRemoteTransmitter() const { return !this->isLocalTransmitter();  }
+   bool isLocalTransmitter()  const override { return true;                         }
+   bool isRemoteTransmitter() const override { return !this->isLocalTransmitter();  }
 
    //send buffer wird autom resized
-   void sendDataSize()    { }
+   void sendDataSize() override    { }
    //reiceive braucht nichts machen, da send==receive buffer ;-)
-   void receiveDataSize() { } 
+   void receiveDataSize() override { } 
 
-   void        sendData()    { }
-   value_type& receiveData() { return this->data; }
+   void        sendData() override    { }
+   value_type& receiveData() override { return this->data; }
 
-   std::string toString()  const { return "TbLocalTransmitter"+(std::string)typeid(T).name(); }
+   std::string toString()  const override { return "TbLocalTransmitter"+(std::string)typeid(T).name(); }
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ template<typename T>
 class TbVectorReceiverLocal : public TbTransmitter<T>
 {
 public:
-   typedef T value_type;
+   using value_type = T;
 
 public:
    TbVectorReceiverLocal() : TbTransmitter<value_type>() 
@@ -89,7 +89,7 @@ template<typename T>
 class TbVectorSenderLocal : public TbTransmitter<T>
 {
 public:
-   typedef T value_type;
+   using value_type = T;
 
 public:
    TbVectorSenderLocal(SPtr< TbVectorReceiverLocal< value_type > > receiver) 

@@ -44,20 +44,20 @@ class NullCommunicator : public Communicator
 {
 public:
    NullCommunicator();
-   ~NullCommunicator();
-   int getBundleID();
-   int getNumberOfBundles();
-   int getProcessID();
-   int getNumberOfProcesses();
-   void* getNativeCommunicator();
-   int getRoot();
-   int getBundleRoot();
-   int getProcessRoot();
-   std::vector<std::string> gather(const std::string& str);
+   ~NullCommunicator() override;
+   int getBundleID() override;
+   int getNumberOfBundles() override;
+   int getProcessID() override;
+   int getNumberOfProcesses() override;
+   void* getNativeCommunicator() override;
+   int getRoot() override;
+   int getBundleRoot() override;
+   int getProcessRoot() override;
+   std::vector<std::string> gather(const std::string& str) override;
    std::vector<double> gatherDoubles(std::vector<double>& values); 
    void allGatherInts(std::vector<int>& svalues, std::vector<int>& rvalues);
-   void sendSerializedObject(std::stringstream& ss, int target);
-   void receiveSerializedObject(std::stringstream& ss, int source);
+   void sendSerializedObject(std::stringstream& ss, int target) override;
+   void receiveSerializedObject(std::stringstream& ss, int source) override;
 protected:
 private:
 };

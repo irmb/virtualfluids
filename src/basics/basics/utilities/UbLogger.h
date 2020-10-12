@@ -110,7 +110,7 @@ template <typename OutputPolicy>
 class UbLogger
 {   
 public:
-   typedef OutputPolicy output_policy;
+   using output_policy = OutputPolicy;
 public:
     UbLogger();
     virtual ~UbLogger();
@@ -138,8 +138,7 @@ private:
 //////////////////////////////////////////////////////////////////////////
 template <typename OutputPolicy>
 UbLogger<OutputPolicy>::UbLogger()
-{
-}
+= default;
 /*==========================================================*/
 template <typename OutputPolicy>
 std::ostringstream& UbLogger<OutputPolicy>::get(const LogLevel& level) 

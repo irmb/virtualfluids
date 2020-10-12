@@ -16,9 +16,9 @@ class VelocityWithDensityBCAlgorithm : public BCAlgorithm
 {
 public:
    VelocityWithDensityBCAlgorithm();
-   ~VelocityWithDensityBCAlgorithm();
-   SPtr<BCAlgorithm> clone();
-   void addDistributions(SPtr<DistributionArray3D> distributions);
-   void applyBC();
+   ~VelocityWithDensityBCAlgorithm() override;
+   SPtr<BCAlgorithm> clone() override;
+   void addDistributions(SPtr<DistributionArray3D> distributions) override;
+   void applyBC() override;
 };
 #endif // NonReflectingVelocityBCAlgorithm_h__

@@ -39,38 +39,19 @@
 
 
 int Block3D::counter = 0;
-//////////////////////////////////////////////////////////////////////////
-Block3D::Block3D() : x1(0),x2(0),x3(0)
-                     ,active(true)
-                     ,globalID(-1)
-                     ,rank(-1),part(-1)
-                     ,interpolationFlagCF(0)
-                     ,interpolationFlagFC(0)
-                     ,level(-1)
-                     ,bundle(-1)
-                     ,lrank(-1)
-                     ,localID(-1)
-{
-}
+
 //////////////////////////////////////////////////////////////////////////
 Block3D::Block3D(int x1, int x2, int x3, int level)
-               : x1(x1), x2(x2), x3(x3)
-               ,active(true)
-               ,globalID(-1)
-               ,rank(0),part(0)
-               ,interpolationFlagCF(0)
-               ,interpolationFlagFC(0)
-               ,level(level)
-               ,bundle(0)
-               ,lrank(-1)
-               ,localID(-1)
+               : x1(x1), x2(x2), x3(x3),
+               rank(0),part(0),
+               level(level), bundle(0)
+               
 {
    globalID = counter++;
 }
 //////////////////////////////////////////////////////////////////////////
 Block3D::~Block3D()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 bool Block3D::operator==(const Block3D& src) const
 {
@@ -521,7 +502,7 @@ void Block3D::addWeight( int rank, int weight )
 //////////////////////////////////////////////////////////////////////////
 void Block3D::addWeightForAll( int weight )
 {
-   typedef std::map<int, int> wMap;
+   using wMap = std::map<int, int>;
    for (wMap::value_type &w : this->weight)
    {
       w.second += weight;

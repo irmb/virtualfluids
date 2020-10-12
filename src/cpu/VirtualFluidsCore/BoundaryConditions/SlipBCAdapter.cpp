@@ -15,7 +15,7 @@
 //   return D3Q27SlipBCAdapterCreator::getInstance();
 //}
 //*==========================================================*/
-void SlipBCAdapter::adaptBC(const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& time)
+void SlipBCAdapter::adaptBC(const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double&  /*worldX1*/, const double&  /*worldX2*/, const double&  /*worldX3*/, const double&  /*time*/)
 {
    //////////////////////////////////////////////////////////////////////////
    //>>> nur workaround! -> Hendrick nach normalen berechnung aus qs fragen

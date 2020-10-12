@@ -9,6 +9,8 @@
 class ConfigData
 {
 public:
+    virtual ~ConfigData() = default;
+
 	virtual real getViscosity() = 0;
 	virtual uint getNumberOfDevices() = 0;
 	virtual std::vector<uint> getDevices() = 0;

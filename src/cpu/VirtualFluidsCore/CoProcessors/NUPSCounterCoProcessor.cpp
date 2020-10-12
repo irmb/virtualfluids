@@ -66,8 +66,7 @@ NUPSCounterCoProcessor::NUPSCounterCoProcessor(SPtr<Grid3D> grid, SPtr<UbSchedul
 }
 //////////////////////////////////////////////////////////////////////////
 NUPSCounterCoProcessor::~NUPSCounterCoProcessor() 
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void NUPSCounterCoProcessor::process(double step)
 {

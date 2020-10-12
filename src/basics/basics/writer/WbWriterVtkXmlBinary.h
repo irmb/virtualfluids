@@ -45,6 +45,10 @@ public:
       static WbWriterVtkXmlBinary instance;
       return &instance;
    }
+
+    WbWriterVtkXmlBinary( const WbWriterVtkXmlBinary& ) = delete;
+    const WbWriterVtkXmlBinary& operator=( const WbWriterVtkXmlBinary& ) = delete;
+
 private:
    WbWriterVtkXmlBinary() : WbWriter() 
    {
@@ -53,12 +57,9 @@ private:
       if(sizeof(float)        !=4) throw UbException(UB_EXARGS,"machine error float type mismatch");
    }
 
-   WbWriterVtkXmlBinary( const WbWriterVtkXmlBinary& );                  //no copy allowed 
-   const WbWriterVtkXmlBinary& operator=( const WbWriterVtkXmlBinary& ); //no copy allowed
-
-   static std::string  pvdEndTag;
+   static const std::string  pvdEndTag;
 public:
-   std::string getFileExtension() { return ".bin.vtu";   }
+   std::string getFileExtension() override { return ".bin.vtu";   }
 
    //write a metafile 
    std::string writeCollection(const std::string& filename, const std::vector<std::string>& filenames, const double& timestep, const bool& sepGroups);
@@ -67,14 +68,14 @@ public:
 
    //////////////////////////////////////////////////////////////////////////
    //nodes
-   std::string writeNodes(const std::string& filename,std::vector< UbTupleFloat3 >& nodes);
-   std::string writeNodesWithNodeData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata);
+   std::string writeNodes(const std::string& filename,std::vector< UbTupleFloat3 >& nodes) override;
+   std::string writeNodesWithNodeData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata) override;
 
    //////////////////////////////////////////////////////////////////////////
    //lines
    //     0 ---- 1
    //nodenumbering must start with 0!
-   std::string writeLines(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt2 >& lines);
+   std::string writeLines(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt2 >& lines) override;
     //std::string writeLinesWithNodeData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt2 >& lines, std::vector< std::string >& datanames, std::vector< std::vector< double > >& nodedata);
     // FIXME: hides function in base class
 
@@ -84,8 +85,8 @@ public:
    //                     
    //                  0---1
    //nodenumbering must start with 0!
-   std::string writeTriangles(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt3 >& triangles);
-   std::string writeTrianglesWithNodeData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt3 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata);
+   std::string writeTriangles(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt3 >& triangles) override;
+   std::string writeTrianglesWithNodeData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt3 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata) override;
 
    //////////////////////////////////////////////////////////////////////////
    //2D
@@ -95,12 +96,12 @@ public:
    //                  0---1
    //nodenumbering must start with 0!
 
-   std::string writeQuads(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt4 >& cells);
-   std::string writeQuadsWithNodeData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt4 >& cells, std::vector< std::string >& datanames, std::vector< std::vector< double > >& nodedata);
-   std::string writeQuadsWithCellData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt4 >& cells, std::vector< std::string >& datanames, std::vector< std::vector< double > >& celldata);
+   std::string writeQuads(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt4 >& cells) override;
+   std::string writeQuadsWithNodeData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt4 >& cells, std::vector< std::string >& datanames, std::vector< std::vector< double > >& nodedata) override;
+   std::string writeQuadsWithCellData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt4 >& cells, std::vector< std::string >& datanames, std::vector< std::vector< double > >& celldata) override;
    std::string writeQuadsWithNodeAndCellData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt4 >& cells, 
                                              std::vector< std::string >& nodedatanames, std::vector< std::vector< double > >& nodedata, std::vector< std::string >& celldatanames,
-                                             std::vector< std::vector< double > >& celldata                                                                    );
+                                             std::vector< std::vector< double > >& celldata                                                                    ) override;
    
    //////////////////////////////////////////////////////////////////////////
    //octs
@@ -111,9 +112,9 @@ public:
    //   | 3 ---+ 2
    //   |/     |/
    //   0 ---- 1
-   std::string writeOcts(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt8 >& cells);
-   std::string writeOctsWithCellData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& celldata);
-   std::string writeOctsWithNodeData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleUInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata);
+   std::string writeOcts(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt8 >& cells) override;
+   std::string writeOctsWithCellData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& celldata) override;
+   std::string writeOctsWithNodeData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleUInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata) override;
    
 private:
 

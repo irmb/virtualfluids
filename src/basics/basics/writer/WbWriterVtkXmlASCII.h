@@ -45,6 +45,10 @@ public:
       static WbWriterVtkXmlASCII instance;
       return &instance;
    }
+
+   WbWriterVtkXmlASCII( const WbWriterVtkXmlASCII& ) = delete;
+   const WbWriterVtkXmlASCII& operator=( const WbWriterVtkXmlASCII& ) = delete;
+
 private:
    WbWriterVtkXmlASCII() : WbWriter() 
    {
@@ -52,8 +56,6 @@ private:
       if(sizeof(int)          !=4) throw UbException(UB_EXARGS,"error int   type mismatch");
       if(sizeof(float)        !=4) throw UbException(UB_EXARGS,"error float type mismatch");
    }
-   WbWriterVtkXmlASCII( const WbWriterVtkXmlASCII& );                  //no copy allowed 
-   const WbWriterVtkXmlASCII& operator=( const WbWriterVtkXmlASCII& ); //no copy allowed
 
    static std::string  pvdEndTag;
 

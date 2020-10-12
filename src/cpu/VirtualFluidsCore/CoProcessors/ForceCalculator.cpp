@@ -19,9 +19,7 @@ ForceCalculator::ForceCalculator(SPtr<Communicator> comm) : comm(comm), forceX1g
 }
 
 ForceCalculator::~ForceCalculator()
-{
-
-}
+= default;
 
 
 

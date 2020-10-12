@@ -18,7 +18,7 @@ struct ICell3D
    std::vector<LBMReal> BSE;
 };
 
-ICell3D::ICell3D(int size)
+inline ICell3D::ICell3D(int size)
 {
    TSW.resize(size); 
    TNW.resize(size);

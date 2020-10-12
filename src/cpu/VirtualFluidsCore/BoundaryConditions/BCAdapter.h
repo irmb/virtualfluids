@@ -45,20 +45,14 @@ class D3Q27Interactor;
 class BCAdapter
 {
 public:
-   BCAdapter() 
-      :  secondaryBcOption(0)
-       , type(0)
-       , algorithmType(-1)
-   {
-   }
+   BCAdapter() = default;
+
    //! \param secondaryBcOption additional option of boundary conditions
    BCAdapter(const short& secondaryBcOption) 
-      :  secondaryBcOption(secondaryBcOption) 
-       , type(0)
-       , algorithmType(-1)
+      :  secondaryBcOption(secondaryBcOption)
    {
    }
-   virtual ~BCAdapter() {}
+   virtual ~BCAdapter() = default;
 
    //methods
    bool isTimeDependent() { return((this->type & TIMEDEPENDENT) ==  TIMEDEPENDENT); }
@@ -77,12 +71,12 @@ public:
    char getBcAlgorithmType() {return algorithmType;}
 
 protected:
-   short secondaryBcOption;
+   short secondaryBcOption{0};
 
-   char  type;
+   char  type{0};
 
    SPtr<BCAlgorithm> algorithm;
-   char algorithmType;
+   char algorithmType{-1};
 
    static const char   TIMEDEPENDENT = 1<<0;//'1';
    static const char   TIMEPERIODIC  = 1<<1;//'2';

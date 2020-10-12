@@ -21,7 +21,7 @@ class PressureCoefficientCoProcessor: public CoProcessor
 public:
    PressureCoefficientCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
        SPtr<GbCuboid3D> plane, const std::string& path, SPtr<Communicator> comm);
-   ~PressureCoefficientCoProcessor();
+   ~PressureCoefficientCoProcessor() override;
 
    void process(double step) override;
 
@@ -47,7 +47,7 @@ private:
 
    std::vector<double> outValues;
 
-   typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
+   using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
    CalcMacrosFct calcMacros;
 };
 

@@ -23,7 +23,7 @@ class MicrophoneArrayCoProcessor : public CoProcessor
 {
 public:
    MicrophoneArrayCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm);
-   virtual ~MicrophoneArrayCoProcessor();
+   ~MicrophoneArrayCoProcessor() override;
 
    //! calls collectData.
    void process(double step) override;
@@ -50,7 +50,7 @@ private:
    int count;
    int micID;
 
-   typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
+   using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
    CalcMacrosFct calcMacros;
 };
 

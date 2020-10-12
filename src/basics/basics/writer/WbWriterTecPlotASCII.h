@@ -13,6 +13,10 @@ public:
       static WbWriterTecPlotASCII instance;
       return &instance;
    }
+
+    WbWriterTecPlotASCII( const WbWriterTecPlotASCII& ) = delete;
+    const WbWriterTecPlotASCII& operator=( const WbWriterTecPlotASCII& ) = delete;
+
 private:
    WbWriterTecPlotASCII() : WbWriter() 
    {
@@ -21,12 +25,9 @@ private:
       if(sizeof(float)        !=4) throw UbException(UB_EXARGS,"machine error float type mismatch");
    }
 
-   WbWriterTecPlotASCII( const WbWriterTecPlotASCII& );                  //no copy allowed 
-   const WbWriterTecPlotASCII& operator=( const WbWriterTecPlotASCII& ); //no copy allowed
-
    static std::string  pvdEndTag;
 public:
-   std::string getFileExtension() { return ".ascii.dat";   }
+   std::string getFileExtension() override { return ".ascii.dat";   }
 
    //write a metafile 
 //    std::string writeCollection(const std::string& filename, const std::vector<std::string>& filenames, const double& timestep, const bool& sepGroups);

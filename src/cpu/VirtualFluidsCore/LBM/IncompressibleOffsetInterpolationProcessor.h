@@ -10,24 +10,24 @@
 //////////////////////////////////////////////////////////////////////////
 
 class IncompressibleOffsetInterpolationProcessor;
-typedef SPtr<IncompressibleOffsetInterpolationProcessor> D3Q27IncompressibleOffsetInterpolationProcessorPtr;
+using D3Q27IncompressibleOffsetInterpolationProcessorPtr = SPtr<IncompressibleOffsetInterpolationProcessor>;
 
 class IncompressibleOffsetInterpolationProcessor : public InterpolationProcessor
 {
 public:
-   IncompressibleOffsetInterpolationProcessor();
+   IncompressibleOffsetInterpolationProcessor() = default;
    IncompressibleOffsetInterpolationProcessor(LBMReal omegaC, LBMReal omegaF);
-   virtual ~IncompressibleOffsetInterpolationProcessor();
-   InterpolationProcessorPtr clone();
-   void setOmegas(LBMReal omegaC, LBMReal omegaF);
-   void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF);
-   void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, LBMReal xoff, LBMReal yoff, LBMReal zoff);
-   void interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC); 
-   void interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC, LBMReal xoff, LBMReal yoff, LBMReal zoff); 
+   ~IncompressibleOffsetInterpolationProcessor() override = default;
+   InterpolationProcessorPtr clone() override;
+   void setOmegas(LBMReal omegaC, LBMReal omegaF) override;
+   void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF) override;
+   void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, LBMReal xoff, LBMReal yoff, LBMReal zoff) override;
+   void interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC) override; 
+   void interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC, LBMReal xoff, LBMReal yoff, LBMReal zoff) override; 
    //LBMReal forcingC, forcingF;
 protected:   
 private:
-   LBMReal omegaC, omegaF;
+   LBMReal omegaC{0.0}, omegaF{0.0};
    LBMReal a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz, axyz, bxyz, cxyz;
    LBMReal xoff,    yoff,    zoff;
    LBMReal xoff_sq, yoff_sq, zoff_sq;
@@ -45,10 +45,10 @@ private:
 
 //   LBMReal a,b,c;
 
-   void setOffsets(LBMReal xoff, LBMReal yoff, LBMReal zoff);
+   void setOffsets(LBMReal xoff, LBMReal yoff, LBMReal zoff) override;
    void calcMoments(const LBMReal* const f, LBMReal omega, LBMReal& rho, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3, 
       LBMReal& kxy, LBMReal& kyz, LBMReal& kxz, LBMReal& kxxMyy, LBMReal& kxxMzz);
-   void calcInterpolatedCoefficiets(const D3Q27ICell& icell, LBMReal omega, LBMReal eps_new);
+   void calcInterpolatedCoefficiets(const D3Q27ICell& icell, LBMReal omega, LBMReal eps_new) override;
    void calcInterpolatedNode(LBMReal* f, LBMReal omega, LBMReal x, LBMReal y, LBMReal z, LBMReal press, LBMReal xs, LBMReal ys, LBMReal zs);
    LBMReal calcPressBSW();
    LBMReal calcPressTSW();
@@ -58,9 +58,9 @@ private:
    LBMReal calcPressTNW();
    LBMReal calcPressTNE();
    LBMReal calcPressBNE();
-   void calcInterpolatedNodeFC(LBMReal* f, LBMReal omega);
-   void calcInterpolatedVelocity(LBMReal x, LBMReal y, LBMReal z,LBMReal& vx1, LBMReal& vx2, LBMReal& vx3);
-   void calcInterpolatedShearStress(LBMReal x, LBMReal y, LBMReal z,LBMReal& tauxx, LBMReal& tauyy, LBMReal& tauzz,LBMReal& tauxy, LBMReal& tauxz, LBMReal& tauyz);
+   void calcInterpolatedNodeFC(LBMReal* f, LBMReal omega) override;
+   void calcInterpolatedVelocity(LBMReal x, LBMReal y, LBMReal z,LBMReal& vx1, LBMReal& vx2, LBMReal& vx3) override;
+   void calcInterpolatedShearStress(LBMReal x, LBMReal y, LBMReal z,LBMReal& tauxx, LBMReal& tauyy, LBMReal& tauzz,LBMReal& tauxy, LBMReal& tauxz, LBMReal& tauyz) override;
 };
 
 //////////////////////////////////////////////////////////////////////////

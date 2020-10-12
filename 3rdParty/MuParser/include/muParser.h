@@ -29,6 +29,10 @@
 #ifndef MU_PARSER_H
 #define MU_PARSER_H
 
+#ifdef __clang__
+#pragma clang system_header
+#endif
+
 //--- Standard includes ------------------------------------------------------------------------
 #include <vector>
 

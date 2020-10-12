@@ -66,13 +66,13 @@ template<typename T>
 class CbVectorPool
 {
 public:
-   typedef typename CbVector<T>::value_type value_type;
-   typedef typename CbVector<T>::size_type  size_type;
-   typedef std::vector< value_type >        Pool;
+   using value_type = typename CbVector<T>::value_type;
+   using size_type = typename CbVector<T>::size_type;
+   using Pool = std::vector<value_type>;
 
-   typedef std::string CbVectorKey;
-   typedef std::map< CbVectorKey, CbVector< value_type >* /*ptrVector*/  > CbVectorMap;
-   typedef typename CbVectorMap::iterator CbVectorMapIter;
+   using CbVectorKey = std::string;
+   using CbVectorMap = std::map<CbVectorKey, CbVector<value_type> *>;
+   using CbVectorMapIter = typename CbVectorMap::iterator;
 
 public:
    //////////////////////////////////////////////////////////////////////////
@@ -401,11 +401,13 @@ class CbVectorAllocatorPool : public CbVectorAllocator<T>
 {
 public:
    //typedefs wiederholen, da Basisklasse = template -> "Dependent-Base"-Problem
-   typedef typename CbVector<T>::value_type          value_type;
-   typedef typename CbVector<value_type>::size_type  size_type;
+   using value_type = typename CbVector<T>::value_type;
+   using size_type = typename CbVector<value_type>::size_type;
 
    friend class CbVectorPool< value_type >;
 
+    CbVectorAllocatorPool( const CbVectorAllocatorPool& ) = delete;
+    const CbVectorAllocatorPool& operator=( const CbVectorAllocatorPool& ) = delete;
 public:
    /*==========================================================*/
    CbVectorAllocatorPool(const typename CbVectorPool< value_type >::CbVectorKey& key, CbVectorPool<value_type>* const& ptrVectorPool)
@@ -427,19 +429,19 @@ public:
       key = ptrVectorPool->getNextCbVectorKey();
    }
    /*==========================================================*/
-   bool alloc(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type())
+   bool alloc(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type()) override
    {
       if(!ptrVectorPool) UB_THROW( UbException(UB_EXARGS,"vectorPool seems to be destroyed, ptrVectorPool==NULL") );
       return ptrVectorPool->allocVectorData(vec, dataSize, value);
    }
    /*==========================================================*/
-   bool resize(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type())
+   bool resize(CbVector< value_type >& vec, const size_type& dataSize, const value_type& value=value_type()) override
    {
       if(!ptrVectorPool) UB_THROW( UbException(UB_EXARGS,"vectorPool seems to be destroyed, ptrVectorPool==NULL") );
       return ptrVectorPool->resizeVectorData(vec, dataSize, value);
    }
    /*==========================================================*/
-   bool dealloc(CbVector< value_type >& vec)
+   bool dealloc(CbVector< value_type >& vec) override
    {
       if(ptrVectorPool) return this->ptrVectorPool->deallocVectorData(vec);
       //wenn kein ptrVectorPool -> wurde bereits deallokiert
@@ -458,9 +460,6 @@ private:
    typename CbVectorPool< value_type >::Pool::size_type startIndexInPool;
 
    CbVectorPool< value_type >* ptrVectorPool;
-
-   CbVectorAllocatorPool( const CbVectorAllocatorPool& );                 //no copy allowed
-   const CbVectorAllocatorPool& operator=( const CbVectorAllocatorPool& );//no copy allowed
 };
 
 

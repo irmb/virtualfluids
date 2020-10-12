@@ -22,12 +22,12 @@ public:
    //! \param geoObject a smart pointer to bounding box
    //! \param refineLevel an integer for refine on this level
    RefineCrossAndInsideGbObjectBlockVisitor(SPtr<GbObject3D> geoObject, int refineLevel);
-   virtual ~RefineCrossAndInsideGbObjectBlockVisitor();
+   ~RefineCrossAndInsideGbObjectBlockVisitor() override;
 
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 protected:
     SPtr<GbObject3D> geoObject;
-   bool notActive;
+   bool notActive{true};
 };
 
 #endif 

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-UbFileOutputASCII::UbFileOutputASCII(const string& filename, const bool& createPath, const int& precision)
+UbFileOutputASCII::UbFileOutputASCII(const string& filename, const bool& createPath, const int&  /*precision*/)
    : UbFileOutput(filename)
 {
 	this->commentindicator = 'C'; 

@@ -34,7 +34,7 @@ public:
    //! \param threads - on/off decomposition for threads
    //! \param numberOfThreads - number of threads
    MetisPartitioningGridVisitor(SPtr<Communicator> comm, GraphType graphType, int numOfDirs, MetisPartitioner::PartType partType = MetisPartitioner::KWAY, bool threads = false, int numberOfThreads = 0);
-   virtual ~MetisPartitioningGridVisitor();
+   ~MetisPartitioningGridVisitor() override;
    void visit(SPtr<Grid3D> grid) override;
    void setNumberOfProcesses(int np);
 

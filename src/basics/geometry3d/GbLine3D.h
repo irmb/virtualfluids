@@ -60,10 +60,10 @@ public:
    GbLine3D();
 	GbLine3D(GbPoint3D* point1, GbPoint3D* point2);
 	GbLine3D(GbLine3D* line);
-   ~GbLine3D(); 
+   ~GbLine3D() override; 
 
-   GbLine3D* clone() { return new GbLine3D(this); }
-   void finalize();
+   GbLine3D* clone() override { return new GbLine3D(this); }
+   void finalize() override;
 
    void setPoint1(GbPoint3D* point1);
    void setPoint2(GbPoint3D* point2);
@@ -78,20 +78,20 @@ public:
    
    double getLength()     { return(this->length); }
 	
-   double getX1Centroid() { return((this->p1->x1+this->p2->x1)*0.5);}
-   double getX2Centroid() { return((this->p1->x2+this->p2->x2)*0.5); };
-   double getX3Centroid() { return((this->p1->x3+this->p2->x3)*0.5); }
+   double getX1Centroid() override { return((this->p1->x1+this->p2->x1)*0.5);}
+   double getX2Centroid() override { return((this->p1->x2+this->p2->x2)*0.5); };
+   double getX3Centroid() override { return((this->p1->x3+this->p2->x3)*0.5); }
    
-   double getX1Minimum()  { return(this->p1->x1 < this->p2->x1 ? this->p1->x1 : this->p2->x1); }
-   double getX2Minimum()  { return(this->p1->x2 < this->p2->x2 ? this->p1->x2 : this->p2->x2); }
-   double getX3Minimum()  { return(this->p1->x3 < this->p2->x3 ? this->p1->x3 : this->p2->x3); }
+   double getX1Minimum() override  { return(this->p1->x1 < this->p2->x1 ? this->p1->x1 : this->p2->x1); }
+   double getX2Minimum() override  { return(this->p1->x2 < this->p2->x2 ? this->p1->x2 : this->p2->x2); }
+   double getX3Minimum() override  { return(this->p1->x3 < this->p2->x3 ? this->p1->x3 : this->p2->x3); }
    
-   double getX1Maximum()  { return(this->p1->x1 > this->p2->x1 ? this->p1->x1 : this->p2->x1); }
-   double getX2Maximum()  { return(this->p1->x2 > this->p2->x2 ? this->p1->x2 : this->p2->x2); }
-   double getX3Maximum()  { return(this->p1->x3 > this->p2->x3 ? this->p1->x3 : this->p2->x3); }
+   double getX1Maximum() override  { return(this->p1->x1 > this->p2->x1 ? this->p1->x1 : this->p2->x1); }
+   double getX2Maximum() override  { return(this->p1->x2 > this->p2->x2 ? this->p1->x2 : this->p2->x2); }
+   double getX3Maximum() override  { return(this->p1->x3 > this->p2->x3 ? this->p1->x3 : this->p2->x3); }
 	                                               
-   void scale(const double& sx1, const double& sx2, const double& sx3);
-   void translate(const double& tx1, const double& tx2, const double& tx3);
+   void scale(const double& sx1, const double& sx2, const double& sx3) override;
+   void translate(const double& tx1, const double& tx2, const double& tx3) override;
 
    GbPoint3D* calculateIntersectionPoint3D(GbLine3D* line);
    GbLine3D*  createClippedLine3D(GbCuboid3D* cuboid);
@@ -100,27 +100,27 @@ public:
    double     getDistance(const GbPoint3D& point);
    double     getDistance(const double& x1,const double& x2,const double& x3);
 
-   std::vector<GbTriangle3D*> getSurfaceTriangleSet();
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3)
+   std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
+   bool isPointInGbObject3D(const double&  /*x1*/, const double&  /*x2*/, const double&  /*x3*/) override
    {
       throw UbException(UB_EXARGS,"not implemented");
    }
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary)
+   bool isPointInGbObject3D(const double&  /*x1*/, const double&  /*x2*/, const double&  /*x3*/, bool&  /*pointIsOnBoundary*/) override
    {
       throw UbException(UB_EXARGS,"not implemented");
    }
-   bool isCellInsideGbObject3D(const double& x11,const double& x21,const double& x31,const double& x12,const double& x22,const double& x32) { return false; }
+   bool isCellInsideGbObject3D(const double&  /*x11*/,const double&  /*x21*/,const double&  /*x31*/,const double&  /*x12*/,const double&  /*x22*/,const double&  /*x32*/) override { return false; }
 
-   GbLine3D* createClippedLine3D (GbPoint3D& point1, GbPoint3D& point2)
+   GbLine3D* createClippedLine3D (GbPoint3D&  /*point1*/, GbPoint3D&  /*point2*/) override
    {
       throw UbException(UB_EXARGS,"not implemented");
    }
 
    //virtuelle Methoden von UbObserver
-   void objectChanged(UbObservable* changedObject);
-   void objectWillBeDeleted(UbObservable* objectForDeletion);
+   void objectChanged(UbObservable* changedObject) override;
+   void objectWillBeDeleted(UbObservable* objectForDeletion) override;
 
-   std::string toString();
+   std::string toString() override;
 
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere
 protected:

@@ -43,16 +43,16 @@
 #define MEMORYUTIL_APPLE
    #include "sys/types.h"
    #include "sys/sysctl.h"
-   #include "stdlib.h"
-   #include "stdio.h"
-   #include "string.h"
+   #include <cstdlib>
+   #include <cstdio>
+   #include <cstring>
 #elif (defined(__amd64) || defined(__amd64__) || defined(__unix__) || defined(__CYGWIN__)) && !defined(__AIX__)
    #define MEMORYUTIL_LINUX
    #include "sys/types.h"
    #include "sys/sysinfo.h"
-   #include "stdlib.h"
-   #include "stdio.h"
-   #include "string.h"
+   #include "cstdlib"
+   #include "cstdio"
+   #include "cstring"
 #else
    #error "MemoryUtil::UnknownMachine"
 #endif

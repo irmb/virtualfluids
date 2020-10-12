@@ -43,8 +43,7 @@ IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, SPtr<Communicato
 }
 //////////////////////////////////////////////////////////////////////////
 IntegrateValuesHelper::~IntegrateValuesHelper()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void IntegrateValuesHelper::init(int level)
 {
@@ -103,7 +102,7 @@ void IntegrateValuesHelper::init(int level)
                   {
                      if (!bcArray->isSolid(ix1, ix2, ix3) && !bcArray->isUndefined(ix1, ix2, ix3))
                      {
-                        cn.nodes.push_back(UbTupleInt3(ix1, ix2, ix3));
+                        cn.nodes.emplace_back(ix1, ix2, ix3);
                         numFluids++;
                      }
                      else if (bcArray->isSolid(ix1, ix2, ix3))

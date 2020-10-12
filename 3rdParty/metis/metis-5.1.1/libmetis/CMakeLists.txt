@@ -8,6 +8,10 @@ if(UNIX)
   target_link_libraries(metis m)
 endif()
 
+if(MSVC)
+   target_compile_options(metis PRIVATE "/w")
+endif()
+
 if(METIS_INSTALL)
   install(TARGETS metis
     LIBRARY DESTINATION lib

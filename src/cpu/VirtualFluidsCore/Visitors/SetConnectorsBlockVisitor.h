@@ -51,7 +51,7 @@ class SetConnectorsBlockVisitor : public Block3DVisitor
 {
 public:
 	SetConnectorsBlockVisitor(SPtr<Communicator> comm, bool fullConnector, int dirs, LBMReal nue, SPtr<InterpolationProcessor> iProcessor);
-	virtual ~SetConnectorsBlockVisitor();
+	~SetConnectorsBlockVisitor() override;
 	void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 	//////////////////////////////////////////////////////////////////////////
 protected:

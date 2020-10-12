@@ -36,26 +36,26 @@ public:
    UbFileOutputBinary(const std::string& filename, const bool& createPath=true);
    UbFileOutputBinary(const std::string& filename, UbFileOutput::CREATEOPTION opt, const bool& createPath);
    
-   bool open(const std::string& filename, UbFileOutput::CREATEOPTION opt=OUTFILE);
+   bool open(const std::string& filename, UbFileOutput::CREATEOPTION opt=OUTFILE) override;
 
-   void writeInteger(const int& value, const int& width=0);
-   void writeDouble(const double& value, const int& width=0);
-	void writeFloat(const float& value, const int& width=0);
-	void writeBool(const bool& value, const int& width=0);
-   void writeChar(const char& value, const int& width=0);
-   void writeSize_t(const std::size_t& value, const int& width=0);
-   void writeString(const std::string& value, const int& width=0);
-   void writeStringOnly(const std::string& value);
-   void writeLine(const std::string& value, const int& width=0);
-   void writeLine();
-   void writeCommentLine(const std::string& line);
-   void writeCommentLine(char indicator, const std::string& line);
-   void writeCopyOfFile(const std::string& filename);
+   void writeInteger(const int& value, const int& width=0) override;
+   void writeDouble(const double& value, const int& width=0) override;
+	void writeFloat(const float& value, const int& width=0) override;
+	void writeBool(const bool& value, const int& width=0) override;
+   void writeChar(const char& value, const int& width=0) override;
+   void writeSize_t(const std::size_t& value, const int& width=0) override;
+   void writeString(const std::string& value, const int& width=0) override;
+   void writeStringOnly(const std::string& value) override;
+   void writeLine(const std::string& value, const int& width=0) override;
+   void writeLine() override;
+   void writeCommentLine(const std::string& line) override;
+   void writeCommentLine(char indicator, const std::string& line) override;
+   void writeCopyOfFile(const std::string& filename) override;
 
-   void setPrecision(const int& precision);
-   int  getPrecision();
+   void setPrecision(const int& precision) override;
+   int  getPrecision() override;
 
-   FILETYPE getFileType() { return BINARY; }
+   FILETYPE getFileType() override { return BINARY; }
 
    template< typename T >
    friend inline UbFileOutputBinary& operator<<(UbFileOutputBinary& file, const T& data) 

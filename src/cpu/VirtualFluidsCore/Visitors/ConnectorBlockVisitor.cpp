@@ -15,8 +15,7 @@ ConnectorBlockVisitor::ConnectorBlockVisitor(SPtr<Communicator> comm, LBMReal nu
 }
 //////////////////////////////////////////////////////////////////////////
 ConnectorBlockVisitor::~ConnectorBlockVisitor(void)
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void ConnectorBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {

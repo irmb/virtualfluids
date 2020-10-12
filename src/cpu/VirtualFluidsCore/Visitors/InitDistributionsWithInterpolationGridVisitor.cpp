@@ -22,8 +22,7 @@ InitDistributionsWithInterpolationGridVisitor::InitDistributionsWithInterpolatio
 }
 //////////////////////////////////////////////////////////////////////////
 InitDistributionsWithInterpolationGridVisitor::~InitDistributionsWithInterpolationGridVisitor()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void InitDistributionsWithInterpolationGridVisitor::visit(SPtr<Grid3D> grid)
 {

@@ -49,25 +49,25 @@ VelocityBCAdapter::VelocityBCAdapter(const bool& vx1, const bool& vx2, const boo
 /*==========================================================*/
 VelocityBCAdapter::VelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function, const double& startTime, const double& endTime )
 {
-   if(vx1) this->vx1BCs.push_back(BCFunction(function,startTime,endTime));
-   if(vx2) this->vx2BCs.push_back(BCFunction(function,startTime,endTime));
-   if(vx3) this->vx3BCs.push_back(BCFunction(function,startTime,endTime));
+   if(vx1) this->vx1BCs.emplace_back(function,startTime,endTime);
+   if(vx2) this->vx2BCs.emplace_back(function,startTime,endTime);
+   if(vx3) this->vx3BCs.emplace_back(function,startTime,endTime);
    this->init();
 }
 /*==========================================================*/
 VelocityBCAdapter::VelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function1, const mu::Parser& function2, const mu::Parser& function3, const double& startTime, const double& endTime )
 {
-   if(vx1) this->vx1BCs.push_back(BCFunction(function1,startTime,endTime));
-   if(vx2) this->vx2BCs.push_back(BCFunction(function2,startTime,endTime));
-   if(vx3) this->vx3BCs.push_back(BCFunction(function3,startTime,endTime));
+   if(vx1) this->vx1BCs.emplace_back(function1,startTime,endTime);
+   if(vx2) this->vx2BCs.emplace_back(function2,startTime,endTime);
+   if(vx3) this->vx3BCs.emplace_back(function3,startTime,endTime);
    this->init();
 }
 /*==========================================================*/
 VelocityBCAdapter::VelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const string& functionstring, const double& startTime, const double& endTime )
 {
-   if(vx1) this->vx1BCs.push_back(BCFunction(functionstring,startTime,endTime));
-   if(vx2) this->vx2BCs.push_back(BCFunction(functionstring,startTime,endTime));
-   if(vx3) this->vx3BCs.push_back(BCFunction(functionstring,startTime,endTime));
+   if(vx1) this->vx1BCs.emplace_back(functionstring,startTime,endTime);
+   if(vx2) this->vx2BCs.emplace_back(functionstring,startTime,endTime);
+   if(vx3) this->vx3BCs.emplace_back(functionstring,startTime,endTime);
    this->init();
 }
 /*==========================================================*/
@@ -99,9 +99,9 @@ VelocityBCAdapter::VelocityBCAdapter(const double& vx1, const double& vx1StartTi
                                                const double& vx2, const double& vx2StartTime, const double& vx2EndTime,
                                                const double& vx3, const double& vx3StartTime, const double& vx3EndTime )
 {
-   this->vx1BCs.push_back(BCFunction(vx1,vx1StartTime,vx1EndTime));
-   this->vx2BCs.push_back(BCFunction(vx2,vx2StartTime,vx2EndTime));
-   this->vx3BCs.push_back(BCFunction(vx3,vx3StartTime,vx3EndTime));
+   this->vx1BCs.emplace_back(vx1,vx1StartTime,vx1EndTime);
+   this->vx2BCs.emplace_back(vx2,vx2StartTime,vx2EndTime);
+   this->vx3BCs.emplace_back(vx3,vx3StartTime,vx3EndTime);
    this->init();
 }
 /*==========================================================*/
@@ -109,9 +109,9 @@ VelocityBCAdapter::VelocityBCAdapter(const string& vx1Function, const double& vx
                                                const string& vx2Function, const double& vx2StartTime, const double& vx2EndTime,
                                                const string& vx3Function, const double& vx3StartTime, const double& vx3EndTime ) 
 {
-   if(vx1Function.size()) this->vx1BCs.push_back(BCFunction(vx1Function,vx1StartTime,vx1EndTime));
-   if(vx2Function.size()) this->vx2BCs.push_back(BCFunction(vx2Function,vx2StartTime,vx2EndTime));
-   if(vx3Function.size()) this->vx3BCs.push_back(BCFunction(vx3Function,vx3StartTime,vx3EndTime));
+   if(vx1Function.size()) this->vx1BCs.emplace_back(vx1Function,vx1StartTime,vx1EndTime);
+   if(vx2Function.size()) this->vx2BCs.emplace_back(vx2Function,vx2StartTime,vx2EndTime);
+   if(vx3Function.size()) this->vx3BCs.emplace_back(vx3Function,vx3StartTime,vx3EndTime);
    this->init();
 }
 /*==========================================================*/
@@ -120,9 +120,9 @@ void VelocityBCAdapter::setNewVelocities(const double& vx1, const double& vx1Sta
                                               const double& vx3, const double& vx3StartTime, const double& vx3EndTime )
 {
    this->clear();
-   this->vx1BCs.push_back(BCFunction(vx1,vx1StartTime,vx1EndTime));
-   this->vx2BCs.push_back(BCFunction(vx2,vx2StartTime,vx2EndTime));
-   this->vx3BCs.push_back(BCFunction(vx3,vx3StartTime,vx3EndTime));
+   this->vx1BCs.emplace_back(vx1,vx1StartTime,vx1EndTime);
+   this->vx2BCs.emplace_back(vx2,vx2StartTime,vx2EndTime);
+   this->vx3BCs.emplace_back(vx3,vx3StartTime,vx3EndTime);
    this->init();
 }
 /*==========================================================*/
@@ -266,7 +266,7 @@ void VelocityBCAdapter::update( const D3Q27Interactor* const& interactor, const 
    this->init(interactor,time);
 }
 /*==========================================================*/
-void VelocityBCAdapter::adaptBCForDirection( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& q, const int& fdirection, const double& time )
+void VelocityBCAdapter::adaptBCForDirection( const D3Q27Interactor&  /*interactor*/, SPtr<BoundaryConditions> bc, const double&  /*worldX1*/, const double&  /*worldX2*/, const double&  /*worldX3*/, const double& q, const int& fdirection, const double&  /*time*/ )
 {
    bc->setVelocityBoundaryFlag(D3Q27System::INVDIR[fdirection],secondaryBcOption);
    bc->setQ((float)q,fdirection);
@@ -278,7 +278,7 @@ void VelocityBCAdapter::adaptBC( const D3Q27Interactor& interactor, SPtr<Boundar
    bc->setBcAlgorithmType(algorithmType);
 }
 /*==========================================================*/
-void VelocityBCAdapter::setNodeVelocity( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep) 
+void VelocityBCAdapter::setNodeVelocity( const D3Q27Interactor&  /*interactor*/, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep) 
 {
    //Geschwindigkeiten setzen
    try
@@ -312,7 +312,7 @@ UbTupleDouble3 VelocityBCAdapter::getVelocity(const double& x1, const double& x2
    if(tmpVx2Function) vx2 = tmpVx2Function->Eval();
    if(tmpVx3Function) vx3 = tmpVx3Function->Eval();
     
-   return UbTupleDouble3(vx1,vx2,vx3);
+   return { vx1,vx2,vx3 };
 }
 /*==========================================================*/
 string VelocityBCAdapter::toString()

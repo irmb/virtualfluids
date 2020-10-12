@@ -16,7 +16,7 @@ class ConnectorBlockVisitor : public Block3DVisitor
 {
 public:
    ConnectorBlockVisitor(SPtr<Communicator> comm, LBMReal nu, SPtr<InterpolationProcessor> iProcessor, SPtr<ConnectorFactory> cFactory);
-   virtual ~ConnectorBlockVisitor();
+   ~ConnectorBlockVisitor() override;
       void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
    //////////////////////////////////////////////////////////////////////////
 protected:

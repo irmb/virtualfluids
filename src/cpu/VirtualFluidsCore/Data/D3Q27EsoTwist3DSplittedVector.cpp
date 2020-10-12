@@ -35,8 +35,7 @@
 #include "EsoTwistD3Q27System.h"
 
 D3Q27EsoTwist3DSplittedVector::D3Q27EsoTwist3DSplittedVector()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 D3Q27EsoTwist3DSplittedVector::D3Q27EsoTwist3DSplittedVector( size_t nx1, size_t nx2, size_t nx3, LBMReal value )
 {
@@ -44,16 +43,14 @@ D3Q27EsoTwist3DSplittedVector::D3Q27EsoTwist3DSplittedVector( size_t nx1, size_t
    this->NX2 = nx2;
    this->NX3 = nx3;
 
-   this->localDistributions    = CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal,IndexerX4X3X2X1>(13, nx1+1, nx2+1, nx3+1, value));
-   this->nonLocalDistributions = CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal,IndexerX4X3X2X1>(13, nx1+1, nx2+1, nx3+1, value));
+   this->localDistributions    = std::make_shared<CbArray4D<LBMReal, IndexerX4X3X2X1> >(13, nx1+1, nx2+1, nx3+1, value);
+   this->nonLocalDistributions = std::make_shared<CbArray4D<LBMReal, IndexerX4X3X2X1> >(13, nx1+1, nx2+1, nx3+1, value);
 
-   this->zeroDistributions     = CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal,IndexerX3X2X1>(nx1, nx2, nx3, value));
+   this->zeroDistributions     = std::make_shared<CbArray3D<LBMReal, IndexerX3X2X1> >(nx1, nx2, nx3, value);
 }
 //////////////////////////////////////////////////////////////////////////
 D3Q27EsoTwist3DSplittedVector::~D3Q27EsoTwist3DSplittedVector()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::swap()
 {

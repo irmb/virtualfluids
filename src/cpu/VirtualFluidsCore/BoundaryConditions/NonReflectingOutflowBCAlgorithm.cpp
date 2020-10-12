@@ -12,8 +12,7 @@ NonReflectingOutflowBCAlgorithm::NonReflectingOutflowBCAlgorithm()
 }
 //////////////////////////////////////////////////////////////////////////
 NonReflectingOutflowBCAlgorithm::~NonReflectingOutflowBCAlgorithm()
-{
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 SPtr<BCAlgorithm> NonReflectingOutflowBCAlgorithm::clone()
 {

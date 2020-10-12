@@ -33,6 +33,8 @@
 //=======================================================================================
 
 #include "SetKernelBlockVisitor.h"
+
+#include <utility>
 #include "Grid3DSystem.h"
 #include "LBMSystem.h"
 #include "DataSet3D.h"
@@ -45,7 +47,7 @@
 SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, double availMem, double needMem,
                                              SetKernelBlockVisitor::Action action) : Block3DVisitor(0,
                                                                                                     Grid3DSystem::MAXLEVEL),
-                                                                                     kernel(kernel), nue(nue),
+                                                                                     kernel(std::move(kernel)), nue(nue),
                                                                                      action(action), dataSetFlag(true)
 {
     if (needMem > availMem)

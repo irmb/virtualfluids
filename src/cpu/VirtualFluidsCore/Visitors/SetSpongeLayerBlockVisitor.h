@@ -17,7 +17,7 @@ class SetSpongeLayerBlockVisitor : public Block3DVisitor
 {
 public:
    SetSpongeLayerBlockVisitor(const mu::Parser& spongeLayer);
-   virtual ~SetSpongeLayerBlockVisitor();
+   ~SetSpongeLayerBlockVisitor() override;
 
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 protected:

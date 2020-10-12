@@ -18,7 +18,7 @@ namespace Kd
    class CountLineIntersectionHandler : public LineIntersectionHandler<T> 
    {
    public:
-      bool intersectLine(const UbTuple<T,T,T>& n1, const UbTuple<T,T,T>& n2, Node<T>& parent, Node<T>*& child1, Node<T>*& child2) const
+      bool intersectLine(const UbTuple<T,T,T>& n1, const UbTuple<T,T,T>& n2, Node<T>& parent, Node<T>*& child1, Node<T>*& child2) const override
       {
          if( parent.intersectLineBoundingBox(n1, n2)  == Intersection::INTERSECTION)
          {

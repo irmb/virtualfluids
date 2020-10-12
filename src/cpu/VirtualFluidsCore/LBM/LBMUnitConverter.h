@@ -33,17 +33,7 @@ public:
 
    enum WORLD_MATERIAL { WATER  = 0, SEAWWATER  = 1, AIR_20C  = 2, OIL  = 3  }; 
 
-   LBMUnitConverter() :  factorLengthLbToW(1.0),
-                         factorTimeLbToW(1.0),
-                         factorMassLbToW(1.0), 
-                         refRhoLb(1.0),
-                         factorVelocityLbToW(1.0), 
-                         factorViscosityLbToW(1.0),
-                         factorDensityLbToW(1.0),
-                         factorPressureLbToW(1.0)
-   {
-
-   }
+   LBMUnitConverter() = default;
 
    LBMUnitConverter(   const double& refLengthWorld, const double& csWorld, const double& rhoWorld
       , const double& refLengthLb   , const double& csLb = 1.0/std::sqrt(3.0)  , const double& rhoLb = 1.0   )
@@ -68,7 +58,7 @@ public:
 
    }
 
-   LBMUnitConverter(int dummy, double uReal, double uLB, double nuReal, double nuLB) 
+   LBMUnitConverter(int  /*dummy*/, double uReal, double uLB, double nuReal, double nuLB) 
    {
       factorVelocityLbToW = uReal/uLB;
       factorViscosityLbToW = nuReal/nuLB;
@@ -76,7 +66,7 @@ public:
       factorPressureLbToW = factorDensityLbToW;
    }
 
-   virtual ~LBMUnitConverter() {}
+   virtual ~LBMUnitConverter() = default;
 
    double  getRefRhoLb()             { return refRhoLb; }
 
@@ -170,7 +160,7 @@ public:
 
 
 
-   void init(  const double& refLengthWorld, const double& csWorld, const double& rhoWorld, const double& vWorld, 
+   void init(  const double& refLengthWorld, const double&  /*csWorld*/, const double& rhoWorld, const double& vWorld, 
                const double& refLengthLb, const double& rhoLb, const double& vLb  )
    {
       factorLengthLbToW = refLengthWorld / refLengthLb;
@@ -180,16 +170,16 @@ public:
       this->refRhoLb = rhoLb;
    }
    protected:
-   double factorLengthLbToW;
-   double factorTimeLbToW;
-   double factorMassLbToW;
-   double refRhoLb;
-   double factorTimeWithoutDx;
+   double factorLengthLbToW{1.0};
+   double factorTimeLbToW{1.0};
+   double factorMassLbToW{1.0};
+   double refRhoLb{1.0};
+   double factorTimeWithoutDx{0.0};
    
-   double factorVelocityLbToW;
-   double factorViscosityLbToW;
-   double factorDensityLbToW;
-   double factorPressureLbToW;
+   double factorVelocityLbToW{1.0};
+   double factorViscosityLbToW{1.0};
+   double factorDensityLbToW{1.0};
+   double factorPressureLbToW{1.0};
 
 };
 

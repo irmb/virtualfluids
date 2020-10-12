@@ -13,6 +13,9 @@ public:
       static WbWriterX3D instance;
       return &instance;
    }
+
+    WbWriterX3D( const WbWriterX3D& ) = delete;
+    const WbWriterX3D& operator=( const WbWriterX3D& ) = delete;
 private:
    WbWriterX3D() : WbWriter() 
    {
@@ -20,15 +23,13 @@ private:
       if(sizeof(int)          !=4) throw UbException(UB_EXARGS,"error int   type mismatch");
       if(sizeof(float)        !=4) throw UbException(UB_EXARGS,"error float type mismatch");
    }
-   WbWriterX3D( const WbWriterX3D& );                  //no copy allowed 
-   const WbWriterX3D& operator=( const WbWriterX3D& ); //no copy allowed
 
    static std::string  pvdEndTag;
 
 public:
-   std::string getFileExtension()  { return "ascii.X3D"; }
+   std::string getFileExtension() override  { return "ascii.X3D"; }
 
-   std::string writeTriangles(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt3 >& triangles);
+   std::string writeTriangles(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt3 >& triangles) override;
 };
 
 #endif //WBWRITERX3D_H

@@ -53,9 +53,7 @@ CalculateForcesCoProcessor::CalculateForcesCoProcessor( SPtr<Grid3D> grid, SPtr<
 }
 //////////////////////////////////////////////////////////////////////////
 CalculateForcesCoProcessor::~CalculateForcesCoProcessor()
-{
-
-}
+= default;
 //////////////////////////////////////////////////////////////////////////
 void CalculateForcesCoProcessor::process( double step )
 {

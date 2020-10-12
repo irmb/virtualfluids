@@ -26,7 +26,7 @@ public:
 enum Direction {X1, X2, X3};
 public:
    LineTimeSeriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<GbLine3D> line, int level,SPtr<Communicator> comm);
-   ~LineTimeSeriesCoProcessor(){}
+   ~LineTimeSeriesCoProcessor() override= default;
 
    void process(double step) override;
    void writeLine(const std::string& path);
@@ -39,7 +39,7 @@ private:
    bool root;
    SPtr<GbLine3D> line;
    //function pointer
-   typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
+   using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
    CalcMacrosFct calcMacros;
    int blocknx;
    int blockix1;

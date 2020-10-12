@@ -25,10 +25,10 @@ public:
       , VectorTransmitterPtr receiver
       , int sendDir);
 
-   void init();
+   void init() override;
 
-   void fillSendVectors();
-   void distributeReceiveVectors();
+   void fillSendVectors() override;
+   void distributeReceiveVectors() override;
 
 protected:
    inline void fillData(vector_type& sdata, int& index, int x1, int x2, int x3);

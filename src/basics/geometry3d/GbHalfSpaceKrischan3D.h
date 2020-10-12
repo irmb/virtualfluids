@@ -40,7 +40,7 @@ public:
                  , const double& p3x, const double& p3y, const double& p3z );
 
    /*=======================================================*/
-   virtual ~GbHalfSpaceKrischan3D() { }
+   ~GbHalfSpaceKrischan3D() override = default;
    /*=======================================================*/
    std::string getTypeID() {return "GbHalfSpaceKrischan3D"; }
    /*=============================================*/
@@ -62,31 +62,31 @@ public:
 
    /*=====================================================*/
    //true, wenn 'in Object' oder 'auf Boundary'!
-   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p)
+   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p) override
    {
       return (ptInside(x1p,x2p,x3p));
    }
    /*=====================================================*/
    //true, wenn 'in Object' oder 'auf Boundary'!
-   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool& pointIsOnBoundary)
+   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool&  /*pointIsOnBoundary*/) override
    {
       return (ptInside(x1p,x2p,x3p));
    }
 
-   void finalize(){}
+   void finalize() override{}
 
-   double getX1Centroid(){ return      0.0; }
-   double getX1Minimum() { return -99999.0; }
-   double getX1Maximum() { return  99999.0; }
-   double getX2Centroid(){ return      0.0; }
-   double getX2Minimum() { return -99999.0; }
-   double getX2Maximum() { return  99999.0; }
-   double getX3Centroid(){ return      0.0; }
-   double getX3Minimum() { return -99999.0; }
-   double getX3Maximum() { return  99999.0; }
+   double getX1Centroid() override{ return      0.0; }
+   double getX1Minimum() override { return -99999.0; }
+   double getX1Maximum() override { return  99999.0; }
+   double getX2Centroid() override{ return      0.0; }
+   double getX2Minimum() override { return -99999.0; }
+   double getX2Maximum() override { return  99999.0; }
+   double getX3Centroid() override{ return      0.0; }
+   double getX3Minimum() override { return -99999.0; }
+   double getX3Maximum() override { return  99999.0; }
 
 
-   GbLine3D* createClippedLine3D (GbPoint3D &point1, GbPoint3D &point2)
+   GbLine3D* createClippedLine3D (GbPoint3D &point1, GbPoint3D &point2) override
    {
 	   GbPoint3D *p1 = new GbPoint3D(point1);
 	   GbPoint3D *p2 = new GbPoint3D(point2);
@@ -127,7 +127,7 @@ public:
    }
  
 
-   double getCellVolumeInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
+   double getCellVolumeInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override;
 
    double getDistance(const double& x1p, const double& x2p, const double& x3p)
    {
@@ -141,12 +141,12 @@ public:
       n3 = this->Normal[2];
    }
 
-   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles)
+   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>&  /*nodes*/, std::vector<UbTupleInt3>&  /*triangles*/) override
    {
 	   std::cout << " addSurfaceTriangleSet(): TO BE DONE AND CHECKED ... " << std::endl;
    }
 
-   std::vector<GbTriangle3D*> getSurfaceTriangleSet()
+   std::vector<GbTriangle3D*> getSurfaceTriangleSet() override
    {
       std::vector<GbTriangle3D*> triangles;
       GbPoint3D p1( 0.0,0.0,0.0 );
@@ -158,7 +158,7 @@ public:
       return triangles;
    }
 
-   void objectChanged(UbObservable* changedObject)
+   void objectChanged(UbObservable*  /*changedObject*/) override
    {
       return;
       
@@ -167,7 +167,7 @@ public:
       //this->notifyObserversObjectChanged();
    }
    /*==========================================================*/
-   void objectWillBeDeleted(UbObservable* objectForDeletion)
+   void objectWillBeDeleted(UbObservable*  /*objectForDeletion*/) override
    {
       return;
       //if(this->mLine)
@@ -177,9 +177,9 @@ public:
       //}
    }
 
-   ObObject*   clone(){ return NULL; };
+   ObObject*   clone() override{ return NULL; };
 
-   std::string toString()
+   std::string toString() override
    { 
 	   std::stringstream temp;
 

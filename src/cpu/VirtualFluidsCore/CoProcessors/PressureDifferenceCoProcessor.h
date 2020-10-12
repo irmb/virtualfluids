@@ -26,7 +26,7 @@ public:
         SPtr<IntegrateValuesHelper> h1, SPtr<IntegrateValuesHelper> h2,
                                    LBMReal rhoReal, LBMReal uReal, LBMReal uLB,
                                    /*const SPtr<LBMUnitConverter> conv,*/ SPtr<Communicator> comm);
-	virtual ~PressureDifferenceCoProcessor();
+	~PressureDifferenceCoProcessor() override;
 
 	void process(double step) override;
 

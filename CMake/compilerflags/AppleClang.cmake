@@ -20,7 +20,3 @@ list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wunreachable-code")
 
 list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-unused-function")
 list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-reorder-ctor")
-
-# temp:
-list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-sometimes-uninitialized")
-list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-inconsistent-missing-override")
