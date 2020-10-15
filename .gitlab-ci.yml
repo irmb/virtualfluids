@@ -63,3 +63,4 @@ create_release:
   release:
     tag_name: $CI_COMMIT_TAG
     name: "VirtualFluids $CI_COMMIT_TAG"
+    description: "VirtualFluids CFD Simulator"
