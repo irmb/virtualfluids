@@ -26,6 +26,17 @@ build:
     - python3 setup.py install
 
 
+build_singularity_image:
+  stage: build
+
+  artifacts:
+    paths:
+      - Containers/VirtualFluidsOpenMPI.sif
+
+  script:
+    - singularity build Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
+
+
 virtual_fluids_basics_test:
   stage: test
 
