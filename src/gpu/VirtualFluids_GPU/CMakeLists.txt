@@ -7,7 +7,7 @@ ELSE(MSVC)
 ENDIF(MSVC)
 
 
-vf_add_library(BUILDTYPE shared DEPENDS ${libsToLink})
+vf_add_library(BUILDTYPE shared PRIVATE_LINK ${libsToLink})
 
 linkMPI()
 linkCUDA()
