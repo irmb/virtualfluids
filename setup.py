@@ -4,7 +4,7 @@ cmake_args = ["-DBUILD_VF_CPU:BOOL=ON", "-DUSE_METIS=ON", "-DUSE_MPI=ON", "-DBUI
               "-DBUILD_VF_UNIT_TESTS:BOOL=ON"]
 
 setup(
-    name="virtualfluids",
+    name="pyfluids",
     version="0.0.1",
     author="Sven Marcus",
     author_email="sven.marcus@tu-braunschweig.de",
