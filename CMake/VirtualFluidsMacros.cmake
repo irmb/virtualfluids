@@ -90,7 +90,8 @@ endfunction()
 ## parameter:
 ## NAME      - Name of the target. If not passed the name is vf_get_library_name().
 ## BUILDTYPE - STATIC; SHARED; EXECUTABLE
-## DEPENDS   - libraries to link
+## PUBLIC_LINK  - public libraries to link
+## PRIVATE_LINK - private libraries to link
 ## FILES     - adds these files to the target
 ## FOLDER    - adds all files in these folders to the targets
 ## EXCLUDE   - excludes these files from the target
@@ -109,7 +110,7 @@ function(vf_add_library)
 
     set( options )
     set( oneValueArgs )
-    set( multiValueArgs NAME BUILDTYPE DEPENDS FILES FOLDER EXCLUDE)
+    set( multiValueArgs NAME BUILDTYPE PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE)
     cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     if(${ARG_NAME})
@@ -151,9 +152,13 @@ function(vf_add_library)
     #################################################################
     ###   ADDITIONAL LINK LIBRARIES                               ###
     #################################################################
-    status_lib("Link Depending Libraries: ${ARG_DEPENDS}")
-    if (ARG_DEPENDS)
-        target_link_libraries(${library_name} PRIVATE ${ARG_DEPENDS})
+    status_lib("Link Depending Libraries: ${ARG_PUBLIC_LINK}")
+    status_lib("Link Depending Libraries: ${ARG_PRIVATE_LINK}")
+    if (ARG_PUBLIC_LINK)
+        target_link_libraries(${library_name} PUBLIC ${ARG_PUBLIC_LINK})
+    endif()
+    if (ARG_PRIVATE_LINK)
+        target_link_libraries(${library_name} PRIVATE ${ARG_PRIVATE_LINK})
     endif()
 
     #################################################################

@@ -1,6 +1,6 @@
 
 
-vf_add_library(BUILDTYPE shared DEPENDS basics)
+vf_add_library(BUILDTYPE shared PRIVATE_LINK basics)
 
 linkCUDA()
 linkOpenMP()

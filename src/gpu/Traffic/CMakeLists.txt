@@ -1,5 +1,5 @@
 
 
-vf_add_library(BUILDTYPE shared DEPENDS GridGenerator basics)
+vf_add_library(BUILDTYPE shared PRIVATE_LINK GridGenerator basics)
 
 linkCUDA()
