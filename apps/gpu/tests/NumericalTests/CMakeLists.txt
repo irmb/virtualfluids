@@ -1,6 +1,6 @@
 project(NumericalTestsGPU)
 set(collectTestFiles ON)
-vf_add_library(BUILDTYPE binary DEPENDS VirtualFluids_GPU GridGenerator basics fftw3 gtest gmock gmock_main cudart_static)
+vf_add_library(BUILDTYPE binary PRIVATE_LINK VirtualFluids_GPU GridGenerator basics fftw3 gtest gmock gmock_main cudart_static)
 
 vf_get_library_name(library_name)
 groupTarget(${library_name} ${testFolder})
