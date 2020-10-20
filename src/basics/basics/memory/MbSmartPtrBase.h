@@ -18,34 +18,39 @@
 //
 class MbSmartPtrBase
 {
-   //Ursprung:
-   // mpCntrMap ist ein Pointer, weil sichergestellt sein muss, dass die
-   // Map existiert, wenn das erste mal darauf zugegriffen wird.
-   // Ein Zugriff zwischen zwei statischen Objekten kann zum Fehler fuehren, da
-   // die Reihenfolge der Konstruktorenaufrufe dann vom Linker bestimmt wird.
+    // Ursprung:
+    // mpCntrMap ist ein Pointer, weil sichergestellt sein muss, dass die
+    // Map existiert, wenn das erste mal darauf zugegriffen wird.
+    // Ein Zugriff zwischen zwei statischen Objekten kann zum Fehler fuehren, da
+    // die Reihenfolge der Konstruktorenaufrufe dann vom Linker bestimmt wird.
 
-   //Anpassung a la UbWriter mit SingletonMap
-   class MbSmartPtrBaseMap
-   {
-   private:
-      MbSmartPtrBaseMap() = default;
+    // Anpassung a la UbWriter mit SingletonMap
+    class MbSmartPtrBaseMap
+    {
+    private:
+        MbSmartPtrBaseMap() = default;
 
-      std::map<void*,int> mpCntrMap;
-   public:
-       MbSmartPtrBaseMap( const MbSmartPtrBaseMap& ) = delete;
-       const MbSmartPtrBaseMap& operator=( const MbSmartPtrBaseMap& ) = delete;
+        std::map<void *, int> mpCntrMap;
 
-      static MbSmartPtrBaseMap* getInstance() { static MbSmartPtrBaseMap instance; return &instance; }
-      std::map<void*,int>& getMap()           { return mpCntrMap;                                    }
-   };
+    public:
+        MbSmartPtrBaseMap(const MbSmartPtrBaseMap &) = delete;
+        const MbSmartPtrBaseMap &operator=(const MbSmartPtrBaseMap &) = delete;
+
+        static MbSmartPtrBaseMap *getInstance()
+        {
+            static MbSmartPtrBaseMap instance;
+            return &instance;
+        }
+        std::map<void *, int> &getMap() { return mpCntrMap; }
+    };
 
 protected:
-   MbSmartPtrBase() = default;
-   virtual ~MbSmartPtrBase() = default;
-   bool addRef(void* p);
-	bool releaseRef(void* p);
-   bool removeFromGC(void* ptr) const;
-   int  ref_count(void* ptr) const;
+    MbSmartPtrBase()          = default;
+    virtual ~MbSmartPtrBase() = default;
+    bool addRef(void *p);
+    bool releaseRef(void *p);
+    bool removeFromGC(void *ptr) const;
+    int ref_count(void *ptr) const;
 };
 
-#endif //MBSMARTPTRBASE_H
+#endif // MBSMARTPTRBASE_H

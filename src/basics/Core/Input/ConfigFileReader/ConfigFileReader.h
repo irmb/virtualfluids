@@ -7,7 +7,7 @@
 
 class ConfigData;
 
-class  ConfigFileReader
+class ConfigFileReader
 {
 public:
     BASICS_EXPORT static std::shared_ptr<ConfigFileReader> getNewInstance();
@@ -16,6 +16,6 @@ public:
     BASICS_EXPORT std::shared_ptr<ConfigData> readConfigFile(const std::string &filePath) const;
 
 private:
-	ConfigFileReader();
+    ConfigFileReader();
 };
 #endif

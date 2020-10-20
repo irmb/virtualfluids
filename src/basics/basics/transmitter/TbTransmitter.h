@@ -17,52 +17,52 @@ This Class provides the base for sending and receiving of data.
 <BR><BR>
 @author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
 @version 1.0 - 08.11.07
-*/ 
+*/
 
 /*
 usage: ...
 */
 
 //////////////////////////////////////////////////////////////////////////
-// Transmitter 
+// Transmitter
 // macht nichts ausser daten senden und empfangen
-template<typename T>
+template <typename T>
 class TbTransmitter
 {
 public:
-   using value_type = T;
+    using value_type = T;
 
 public:
-   TbTransmitter() = default;
-   virtual ~TbTransmitter() = default;
+    TbTransmitter()          = default;
+    virtual ~TbTransmitter() = default;
 
-   virtual bool isLocalTransmitter()  const = 0;
-   virtual bool isRemoteTransmitter() const = 0;
+    virtual bool isLocalTransmitter() const  = 0;
+    virtual bool isRemoteTransmitter() const = 0;
 
-   //preprocess (e.g. synchronizing send-/receive-buffer)
-   virtual void sendDataSize()   = 0;
-   virtual void receiveDataSize()= 0; 
-   
-   //calculation
-   virtual void        prepareForSend() {}
-   virtual void        sendData()=0;
-   virtual void        prepareForReceive() {}
-   virtual value_type& receiveData()=0;
+    // preprocess (e.g. synchronizing send-/receive-buffer)
+    virtual void sendDataSize()    = 0;
+    virtual void receiveDataSize() = 0;
 
-   //data-access
-   inline value_type&       getData()       { return this->data; }
-   inline const value_type& getData() const { return this->data; }
+    // calculation
+    virtual void prepareForSend() {}
+    virtual void sendData() = 0;
+    virtual void prepareForReceive() {}
+    virtual value_type &receiveData() = 0;
 
-   //info-section (usable for remote transmitter)
-   virtual int  getSendToRank()   const { return  -1; }
-   virtual int  getSendToTag()    const { return  -1; }
-   virtual int  getRecvFromRank() const { return  -1; }
-   virtual int  getRecvFromTag()  const { return  -1; }
+    // data-access
+    inline value_type &getData() { return this->data; }
+    inline const value_type &getData() const { return this->data; }
 
-   virtual std::string toString() const = 0;
+    // info-section (usable for remote transmitter)
+    virtual int getSendToRank() const { return -1; }
+    virtual int getSendToTag() const { return -1; }
+    virtual int getRecvFromRank() const { return -1; }
+    virtual int getRecvFromTag() const { return -1; }
+
+    virtual std::string toString() const = 0;
 
 protected:
-   value_type data;
+    value_type data;
 };
 
-#endif //TBTRANSMITTER_H 
+#endif // TBTRANSMITTER_H

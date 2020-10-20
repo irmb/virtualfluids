@@ -5,9 +5,7 @@
 
 #include <chrono>
 
-
 #include "DataTypes.h"
-
 
 class BASICS_EXPORT TimerImp : public Timer
 {
@@ -26,4 +24,3 @@ private:
 };
 
 #endif
-

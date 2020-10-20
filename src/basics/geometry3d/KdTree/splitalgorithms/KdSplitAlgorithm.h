@@ -9,18 +9,19 @@
 
 namespace Kd
 {
-   template< typename T >
-   class Node;
+template <typename T>
+class Node;
 
-   template< typename T >
-   class SplitAlgorithm 
-   {
-   public:
-      virtual SplitCandidate<T> findBestSplitCandidate(const int& level, const int& maxLevel, Node<T>& node ) const = 0;
-      virtual void distributeTriFaces(const SplitCandidate<T>& candidate, std::vector<GbTriFaceMesh3D::TriFace>& triFacesForChild1, std::vector<GbTriFaceMesh3D::TriFace>& triFacesForChild2, Node<T>& node) const=0;
-      virtual ~SplitAlgorithm() = default;
-   };
-}
+template <typename T>
+class SplitAlgorithm
+{
+public:
+    virtual SplitCandidate<T> findBestSplitCandidate(const int &level, const int &maxLevel, Node<T> &node) const   = 0;
+    virtual void distributeTriFaces(const SplitCandidate<T> &candidate,
+                                    std::vector<GbTriFaceMesh3D::TriFace> &triFacesForChild1,
+                                    std::vector<GbTriFaceMesh3D::TriFace> &triFacesForChild2, Node<T> &node) const = 0;
+    virtual ~SplitAlgorithm() = default;
+};
+} // namespace Kd
 
-
-#endif  //KDSPLITALGORITHM_H
+#endif // KDSPLITALGORITHM_H
