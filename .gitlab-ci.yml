@@ -63,6 +63,7 @@ build_singularity_image:
 
   script:
     - singularity build Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
+    - ls -sh Containers/VirtualFluidsOpenMPI.sif
 
 create_release:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
