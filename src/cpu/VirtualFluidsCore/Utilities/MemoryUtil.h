@@ -36,8 +36,8 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #define MEMORYUTIL_WINDOWS
-#include "psapi.h"
 #include "windows.h"
+#include "psapi.h"
 #pragma comment(lib, "psapi.lib")
 #elif defined __APPLE__
 #define MEMORYUTIL_APPLE
