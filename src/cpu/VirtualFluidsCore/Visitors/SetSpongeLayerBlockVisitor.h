@@ -11,18 +11,19 @@ class Grid3D;
 class Block3D;
 
 //! \brief Set sponge layer for all kernels of grid
-//! \details This visitor is useful if you need to set or reset sponge layer in kernels (e.g. after restart because sponge layer is not serializable). 
-//! \author K. Kucher
+//! \details This visitor is useful if you need to set or reset sponge layer in kernels (e.g. after restart because
+//! sponge layer is not serializable). \author K. Kucher
 class SetSpongeLayerBlockVisitor : public Block3DVisitor
 {
 public:
-   SetSpongeLayerBlockVisitor(const mu::Parser& spongeLayer);
-   ~SetSpongeLayerBlockVisitor() override;
+    SetSpongeLayerBlockVisitor(const mu::Parser &spongeLayer);
+    ~SetSpongeLayerBlockVisitor() override;
 
-   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+
 protected:
 private:
-   mu::Parser spongeLayer;
+    mu::Parser spongeLayer;
 };
 
 #endif // SetSpongeLayerBlockVisitor_h__

@@ -9,15 +9,13 @@
 class BlocksDistributor
 {
 public:
-   BlocksDistributor(SPtr<Grid3D> grid, SPtr<Communicator> comm);
-   ~BlocksDistributor();
+    BlocksDistributor(SPtr<Grid3D> grid, SPtr<Communicator> comm);
+    ~BlocksDistributor();
 
 protected:
 private:
-   SPtr<Grid3D> grid;
-   SPtr<Communicator> comm;
+    SPtr<Grid3D> grid;
+    SPtr<Communicator> comm;
 };
 
 #endif
-
-

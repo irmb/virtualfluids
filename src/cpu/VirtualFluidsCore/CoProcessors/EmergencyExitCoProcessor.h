@@ -21,7 +21,8 @@ class UbScheduler;
 class EmergencyExitCoProcessor : public CoProcessor
 {
 public:
-    EmergencyExitCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<MPIIORestartCoProcessor> rp, SPtr<Communicator> comm);
+    EmergencyExitCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
+                             SPtr<MPIIORestartCoProcessor> rp, SPtr<Communicator> comm);
     ~EmergencyExitCoProcessor() override;
 
     void process(double step) override;
@@ -38,6 +39,5 @@ private:
     SPtr<MPIIORestartCoProcessor> rp;
     std::string metafile;
 };
-
 
 #endif /* EmergencyExitCoProcessor_H */

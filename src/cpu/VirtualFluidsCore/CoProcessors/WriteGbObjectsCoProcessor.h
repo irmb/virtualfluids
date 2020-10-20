@@ -17,22 +17,25 @@ class WbWriter;
 //! \author    Konstantin Kutscher
 //! \date      December 2018
 
-class WriteGbObjectsCoProcessor :public CoProcessor
+class WriteGbObjectsCoProcessor : public CoProcessor
 {
 public:
-   WriteGbObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<Communicator> comm);
-   ~WriteGbObjectsCoProcessor() override;
-   //! calls collectData.
-   void process(double step) override;
-   //! adds geometry object
-   void addGbObject(SPtr<GbObject3D> object);
+    WriteGbObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, WbWriter *const writer,
+                              SPtr<Communicator> comm);
+    ~WriteGbObjectsCoProcessor() override;
+    //! calls collectData.
+    void process(double step) override;
+    //! adds geometry object
+    void addGbObject(SPtr<GbObject3D> object);
+
 protected:
-   void collectData(double step);
+    void collectData(double step);
+
 private:
-   std::vector< SPtr<GbObject3D> > objects;
-   std::string path;
-   WbWriter* writer;
-   SPtr<Communicator> comm;
+    std::vector<SPtr<GbObject3D>> objects;
+    std::string path;
+    WbWriter *writer;
+    SPtr<Communicator> comm;
 };
 
 #endif // WriteGbObjectsCoProcessor_h__

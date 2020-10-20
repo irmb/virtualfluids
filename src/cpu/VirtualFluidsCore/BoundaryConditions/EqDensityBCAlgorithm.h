@@ -9,10 +9,10 @@ class DistributionArray3D;
 class EqDensityBCAlgorithm : public BCAlgorithm
 {
 public:
-   EqDensityBCAlgorithm();
-   ~EqDensityBCAlgorithm() override;
-   SPtr<BCAlgorithm> clone() override;
-   void addDistributions(SPtr<DistributionArray3D> distributions) override;
-   void applyBC() override;
+    EqDensityBCAlgorithm();
+    ~EqDensityBCAlgorithm() override;
+    SPtr<BCAlgorithm> clone() override;
+    void addDistributions(SPtr<DistributionArray3D> distributions) override;
+    void applyBC() override;
 };
 #endif // EqDensityBCAlgorithm_h__

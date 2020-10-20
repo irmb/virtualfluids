@@ -5,15 +5,15 @@
 //#include "D3Q27ETFCVectorConnector.h"
 //#include "FineToCoarseBlock3DConnector.h"
 //
-//D3Q27ETOffConnectorFactory::D3Q27ETOffConnectorFactory()
+// D3Q27ETOffConnectorFactory::D3Q27ETOffConnectorFactory()
 //{
 //}
 ////////////////////////////////////////////////////////////////////////////
-//D3Q27ETOffConnectorFactory::~D3Q27ETOffConnectorFactory()
+// D3Q27ETOffConnectorFactory::~D3Q27ETOffConnectorFactory()
 //{
 //}
 ////////////////////////////////////////////////////////////////////////////
-//SPtr<Block3DConnector> D3Q27ETOffConnectorFactory::createCoarseToFineConnector(SPtr<Block3D> block,
+// SPtr<Block3DConnector> D3Q27ETOffConnectorFactory::createCoarseToFineConnector(SPtr<Block3D> block,
 //   VectorTransmitterPtr sender00, VectorTransmitterPtr receiver00,
 //   VectorTransmitterPtr sender01, VectorTransmitterPtr receiver01,
 //   VectorTransmitterPtr sender10, VectorTransmitterPtr receiver10,
@@ -26,7 +26,7 @@
 //      sendDir, iprocessor));
 //}
 ////////////////////////////////////////////////////////////////////////////
-//SPtr<Block3DConnector> D3Q27ETOffConnectorFactory::createFineToCoarseConnector(SPtr<Block3D> block,
+// SPtr<Block3DConnector> D3Q27ETOffConnectorFactory::createFineToCoarseConnector(SPtr<Block3D> block,
 //   VectorTransmitterPtr sender,
 //   VectorTransmitterPtr receiver,
 //   int sendDir,

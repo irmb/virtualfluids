@@ -1,8 +1,8 @@
 #ifndef CheckRatioBlockVisitor_H
 #define CheckRatioBlockVisitor_H
 
-#include <string>
 #include <PointerDefinitions.h>
+#include <string>
 
 #include "Block3DVisitor.h"
 
@@ -12,22 +12,21 @@ class Block3D;
 class CheckRatioBlockVisitor : public Block3DVisitor
 {
 public:
-   CheckRatioBlockVisitor(int levelDepth, bool includeNotActiveBlocks = true);
+    CheckRatioBlockVisitor(int levelDepth, bool includeNotActiveBlocks = true);
 
-   ~CheckRatioBlockVisitor() override = default;
+    ~CheckRatioBlockVisitor() override = default;
 
-   bool getState();
-   void resetState();
-   std::string getStateString();
+    bool getState();
+    void resetState();
+    std::string getStateString();
 
-      void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 private:
-   int  levelDepth;
-   bool includeNotActiveBlocks;
-   bool state;
-   SPtr<Block3D> falseBlock;
+    int levelDepth;
+    bool includeNotActiveBlocks;
+    bool state;
+    SPtr<Block3D> falseBlock;
 };
 
-#endif //OverlapBlockVisitor_H
-
+#endif // OverlapBlockVisitor_H

@@ -1,8 +1,8 @@
 #ifndef OverlapBlockVisitor_H
 #define OverlapBlockVisitor_H
 
-#include <string>
 #include <PointerDefinitions.h>
+#include <string>
 
 #include "Block3DVisitor.h"
 
@@ -12,20 +12,19 @@ class Block3D;
 class OverlapBlockVisitor : public Block3DVisitor
 {
 public:
-   OverlapBlockVisitor(int levelDepth, bool includeNotActiveBlocks = true);
-   
-   ~OverlapBlockVisitor() override= default;
+    OverlapBlockVisitor(int levelDepth, bool includeNotActiveBlocks = true);
 
-   bool isIterative()   { return false; }
+    ~OverlapBlockVisitor() override = default;
 
-   std::string getSpecificDescription();
+    bool isIterative() { return false; }
 
-   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+    std::string getSpecificDescription();
 
+    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 private:
-   int  levelDepth;
-   bool includeNotActiveBlocks;
+    int levelDepth;
+    bool includeNotActiveBlocks;
 };
 
-#endif //OverlapBlockVisitor_H
+#endif // OverlapBlockVisitor_H

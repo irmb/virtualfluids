@@ -1,15 +1,17 @@
 #include "EquilibriumReconstructor.h"
 
-#include "ILBMKernel.h"
+#include "BCArray3D.h"
+#include "BCProcessor.h"
 #include "D3Q27System.h"
 #include "DataSet3D.h"
-#include "BCProcessor.h"
-#include "BCArray3D.h"
+#include "ILBMKernel.h"
 
 #include "PhysicsEngineGeometryAdapter.h"
 
-void EquilibriumReconstructor::reconstructNode(const int& x1, const int& x2, const int& x3,
-                                               const Vector3D& worldCoordinates, std::shared_ptr<PhysicsEngineGeometryAdapter> physicsEngineGeometry, std::shared_ptr<ILBMKernel> kernel) const
+void EquilibriumReconstructor::reconstructNode(const int &x1, const int &x2, const int &x3,
+                                               const Vector3D &worldCoordinates,
+                                               std::shared_ptr<PhysicsEngineGeometryAdapter> physicsEngineGeometry,
+                                               std::shared_ptr<ILBMKernel> kernel) const
 {
     const double averageDensity = this->getLocalAverageDensity(x1, x2, x3, kernel);
     LBMReal feq[27];
@@ -20,16 +22,15 @@ void EquilibriumReconstructor::reconstructNode(const int& x1, const int& x2, con
     else
         D3Q27System::calcIncompFeq(feq, averageDensity, boundaryVelocity[0], boundaryVelocity[1], boundaryVelocity[2]);
 
-
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-    //distributions->setDistribution(feq, x1, x2, x3);
+    // distributions->setDistribution(feq, x1, x2, x3);
     distributions->setDistributionInv(feq, x1, x2, x3);
 }
 
-
-double EquilibriumReconstructor::getLocalAverageDensity(const int &x1, const int &x2, const int &x3, std::shared_ptr<ILBMKernel> kernel) const
+double EquilibriumReconstructor::getLocalAverageDensity(const int &x1, const int &x2, const int &x3,
+                                                        std::shared_ptr<ILBMKernel> kernel) const
 {
-    int nAverage = 0;
+    int nAverage          = 0;
     double averageDensity = 0.0;
 
     SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
@@ -38,14 +39,12 @@ double EquilibriumReconstructor::getLocalAverageDensity(const int &x1, const int
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
     int neighborX1, neighborX2, neighborX3;
-    for (int fDir = D3Q27System::FSTARTDIR; fDir <= D3Q27System::FENDDIR; fDir++)
-    {
+    for (int fDir = D3Q27System::FSTARTDIR; fDir <= D3Q27System::FENDDIR; fDir++) {
         neighborX1 = x1 + D3Q27System::DX1[fDir];
         neighborX2 = x2 + D3Q27System::DX2[fDir];
         neighborX3 = x3 + D3Q27System::DX3[fDir];
 
-        if (bcArray->isFluid(neighborX1, neighborX2, neighborX3))
-        {
+        if (bcArray->isFluid(neighborX1, neighborX2, neighborX3)) {
             distributions->getDistribution(f, neighborX1, neighborX2, neighborX3);
             averageDensity += D3Q27System::getDensity(f);
             ++nAverage;
@@ -53,4 +52,3 @@ double EquilibriumReconstructor::getLocalAverageDensity(const int &x1, const int
     }
     return (nAverage > 0) ? averageDensity / nAverage : 0.0;
 }
-
