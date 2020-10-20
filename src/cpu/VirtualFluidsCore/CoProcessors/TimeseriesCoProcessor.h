@@ -26,7 +26,8 @@ class IntegrateValuesHelper;
 class TimeseriesCoProcessor : public CoProcessor
 {
 public:
-    TimeseriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<IntegrateValuesHelper> h1, const std::string& path, SPtr<Communicator> comm);
+    TimeseriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<IntegrateValuesHelper> h1,
+                          const std::string &path, SPtr<Communicator> comm);
     ~TimeseriesCoProcessor() override;
 
     //! calls collectData.
@@ -43,6 +44,5 @@ private:
     std::string path; //! output filename, e.g.  pathname + "/steps/timeseries"
     std::string fname;
 };
-
 
 #endif /* TimeseriesCoProcessor_H */

@@ -8,32 +8,26 @@
 class Block3DConnectorFactory : public ConnectorFactory
 {
 public:
-   Block3DConnectorFactory();
-   ~Block3DConnectorFactory() override;
+    Block3DConnectorFactory();
+    ~Block3DConnectorFactory() override;
 
-   SPtr<Block3DConnector> createSameLevelDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir) override;
+    SPtr<Block3DConnector> createSameLevelDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir) override;
 
-   SPtr<Block3DConnector> createSameLevelVectorConnector(SPtr<Block3D> block,
-      VectorTransmitterPtr sender,
-      VectorTransmitterPtr receiver,
-      int sendDir) override;
+    SPtr<Block3DConnector> createSameLevelVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender,
+                                                          VectorTransmitterPtr receiver, int sendDir) override;
 
-   SPtr<Block3DConnector> createCoarseToFineConnector(SPtr<Block3D> block,
-      VectorTransmitterPtr sender00, VectorTransmitterPtr receiver00,
-      VectorTransmitterPtr sender01, VectorTransmitterPtr receiver01,
-      VectorTransmitterPtr sender10, VectorTransmitterPtr receiver10,
-      VectorTransmitterPtr sender11, VectorTransmitterPtr receiver11,
-      int sendDir, InterpolationProcessorPtr iprocessor) override;
+    SPtr<Block3DConnector> createCoarseToFineConnector(SPtr<Block3D> block, VectorTransmitterPtr sender00,
+                                                       VectorTransmitterPtr receiver00, VectorTransmitterPtr sender01,
+                                                       VectorTransmitterPtr receiver01, VectorTransmitterPtr sender10,
+                                                       VectorTransmitterPtr receiver10, VectorTransmitterPtr sender11,
+                                                       VectorTransmitterPtr receiver11, int sendDir,
+                                                       InterpolationProcessorPtr iprocessor) override;
 
-   SPtr<Block3DConnector> createFineToCoarseConnector(SPtr<Block3D> block,
-      VectorTransmitterPtr sender,
-      VectorTransmitterPtr receiver,
-      int sendDir,
-      InterpolationProcessorPtr iprocessor,
-      FineToCoarseBlock3DConnector::CFconnectorType connType) override;
+    SPtr<Block3DConnector> createFineToCoarseConnector(SPtr<Block3D> block, VectorTransmitterPtr sender,
+                                                       VectorTransmitterPtr receiver, int sendDir,
+                                                       InterpolationProcessorPtr iprocessor,
+                                                       FineToCoarseBlock3DConnector::CFconnectorType connType) override;
 
 private:
-
 };
 #endif // Block3DConnectorFactory_h__
-

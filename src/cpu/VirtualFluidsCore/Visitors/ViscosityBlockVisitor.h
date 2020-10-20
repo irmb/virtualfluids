@@ -12,14 +12,14 @@ class Block3D;
 class ViscosityBlockVisitor : public Block3DVisitor
 {
 public:
-   ViscosityBlockVisitor(LBMReal nu);
+    ViscosityBlockVisitor(LBMReal nu);
 
-   ~ViscosityBlockVisitor() override = default;
+    ~ViscosityBlockVisitor() override = default;
 
-   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 private:
-   LBMReal nu;
+    LBMReal nu;
 };
 
 #endif

@@ -2,11 +2,11 @@
 #define MicrophoneArrayCoProcessor_h__
 
 #include "CoProcessor.h"
+#include "LBMSystem.h"
+#include "UbTuple.h"
+#include <array>
 #include <string>
 #include <vector>
-#include <array>
-#include "UbTuple.h"
-#include "LBMSystem.h"
 
 class Communicator;
 class Grid3D;
@@ -22,36 +22,38 @@ class DistributionArray3D;
 class MicrophoneArrayCoProcessor : public CoProcessor
 {
 public:
-   MicrophoneArrayCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm);
-   ~MicrophoneArrayCoProcessor() override;
+    MicrophoneArrayCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
+                               SPtr<Communicator> comm);
+    ~MicrophoneArrayCoProcessor() override;
 
-   //! calls collectData.
-   void process(double step) override;
+    //! calls collectData.
+    void process(double step) override;
 
-   //! add microphone
-   bool addMicrophone(Vector3D coords);
+    //! add microphone
+    bool addMicrophone(Vector3D coords);
+
 protected:
-   void collectData(double step);
-   void writeFile(double step);
+    void collectData(double step);
+    void writeFile(double step);
+
 private:
-   std::string path; 
-   SPtr<Communicator> comm;
+    std::string path;
+    SPtr<Communicator> comm;
 
-   struct Mic
-   {
-      unsigned int id;
-      SPtr<DistributionArray3D> distridution;
-      UbTupleInt3 nodeIndexes;
-   };
-   std::vector< SPtr<Mic> > microphones;
+    struct Mic {
+        unsigned int id;
+        SPtr<DistributionArray3D> distridution;
+        UbTupleInt3 nodeIndexes;
+    };
+    std::vector<SPtr<Mic>> microphones;
 
-   std::vector< SPtr<std::stringstream> > strVector;
+    std::vector<SPtr<std::stringstream>> strVector;
 
-   int count;
-   int micID;
+    int count;
+    int micID;
 
-   using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
-   CalcMacrosFct calcMacros;
+    using CalcMacrosFct = void (*)(const LBMReal *const &, LBMReal &, LBMReal &, LBMReal &, LBMReal &);
+    CalcMacrosFct calcMacros;
 };
 
 #endif // MicrophoneArrayCoProcessor_h__

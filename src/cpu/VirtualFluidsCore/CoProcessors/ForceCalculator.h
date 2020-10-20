@@ -8,8 +8,8 @@
 #ifndef ForceCalculator_H
 #define ForceCalculator_H
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 #include "Vector3D.h"
 
@@ -24,8 +24,10 @@ public:
     ForceCalculator(std::shared_ptr<Communicator> comm);
     virtual ~ForceCalculator();
 
-    void calculateForces(std::vector<std::shared_ptr<D3Q27Interactor> > interactors);
-    Vector3D getForces(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc, const Vector3D& boundaryVelocity = Vector3D(0.0, 0.0, 0.0)) const;
+    void calculateForces(std::vector<std::shared_ptr<D3Q27Interactor>> interactors);
+    Vector3D getForces(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions,
+                       std::shared_ptr<BoundaryConditions> bc,
+                       const Vector3D &boundaryVelocity = Vector3D(0.0, 0.0, 0.0)) const;
 
     Vector3D getGlobalForces() const;
 
@@ -39,5 +41,4 @@ private:
     double forceX3global;
 };
 
-
-#endif 
+#endif

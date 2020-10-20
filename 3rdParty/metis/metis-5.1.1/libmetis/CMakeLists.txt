@@ -6,6 +6,8 @@ file(GLOB metis_sources *.c)
 add_library(metis ${METIS_LIBRARY_TYPE} ${GKlib_sources} ${metis_sources})
 if(UNIX)
   target_link_libraries(metis m)
+
+  target_compile_options(metis PRIVATE "-Wno-format")
 endif()
 
 if(MSVC)

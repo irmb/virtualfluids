@@ -1,20 +1,22 @@
-#include "gmock/gmock.h"
 #include "Vector3D.h"
+#include "gmock/gmock.h"
 
 #include <cmath>
 
 using namespace testing;
 
-class Vector3DTest : public Test 
+class Vector3DTest : public Test
 {
 public:
     Vector3D vec1;
     Vector3D vec2;
 
-    void SetUp() override 
-	{
+    void SetUp() override
+    {
         vec1[0] = vec1[1] = vec1[2] = 4.0f;
-        vec2[0] = 0.0f; vec2[0] = 2.4f; vec2[0] = -1.3f;
+        vec2[0]                     = 0.0f;
+        vec2[0]                     = 2.4f;
+        vec2[0]                     = -1.3f;
     }
 };
 
@@ -85,14 +87,14 @@ TEST_F(Vector3DTest, compareTwoVectors)
     ASSERT_TRUE(v == vec1);
 }
 //
-//TEST_F(Vector3DTest, checkEuclideanDistance)
+// TEST_F(Vector3DTest, checkEuclideanDistance)
 //{
 //    Vector3D v = Vector3D(3, 3, 3);
 //
 //    ASSERT_FLOAT_EQ(v.getEuclideanDistanceTo(vec1), (float)sqrt(3));
 //}
 //
-//TEST_F(Vector3DTest, checkEuclideanDistanceWithNullVector_ExpectNull)
+// TEST_F(Vector3DTest, checkEuclideanDistanceWithNullVector_ExpectNull)
 //{
 //    Vector3D v1 = Vector3D(0.0, 0.0, 0.0);
 //    Vector3D v2 = Vector3D(0.0, 0.0, 0.0);
@@ -100,7 +102,7 @@ TEST_F(Vector3DTest, compareTwoVectors)
 //    ASSERT_THAT((double)v1.getEuclideanDistanceTo(v2), DoubleEq(0.0));
 //}
 //
-//TEST(Vector3DAngleTest, checkInnerAngleBetweenToVectors_ExpectRightAngle)
+// TEST(Vector3DAngleTest, checkInnerAngleBetweenToVectors_ExpectRightAngle)
 //{
 //    Vector3D v1 = Vector3D(1.0, 4.0, -2.0);
 //    Vector3D v2 = Vector3D(-3.0, 3.0, 1);
@@ -108,7 +110,7 @@ TEST_F(Vector3DTest, compareTwoVectors)
 //    ASSERT_THAT((int)floor(v1.getInnerAngle(v2)), Eq(69));
 //}
 //
-//TEST(Vector3DAngleTest, checkInnerAngleBetweenSameVectors_ExpectNull)
+// TEST(Vector3DAngleTest, checkInnerAngleBetweenSameVectors_ExpectNull)
 //{
 //    Vector3D v1 = Vector3D(1.0, 4.0, -2.0);
 //    Vector3D v2 = Vector3D(1.0, 4.0, -2.0);
@@ -116,7 +118,7 @@ TEST_F(Vector3DTest, compareTwoVectors)
 //    ASSERT_THAT((int)floor(v1.getInnerAngle(v2)), Eq(0.0));
 //}
 //
-//TEST(Vector3DAngleTest, checkInnerAngleBetweenNullVectors_ExpectNull)
+// TEST(Vector3DAngleTest, checkInnerAngleBetweenNullVectors_ExpectNull)
 //{
 //    Vector3D v1 = Vector3D(0.0, 0.0, 0.0);
 //    Vector3D v2 = Vector3D(0.0, 0.0, 0.0);
@@ -125,7 +127,7 @@ TEST_F(Vector3DTest, compareTwoVectors)
 //}
 //
 //
-//TEST(Vector3DAngleTest, checkInnerAngleBetweenSecondNullVectors_ExpectNull)
+// TEST(Vector3DAngleTest, checkInnerAngleBetweenSecondNullVectors_ExpectNull)
 //{
 //    Vector3D v1 = Vector3D(1.0, 0.0, 0.0);
 //    Vector3D v2 = Vector3D(0.0, 0.0, 0.0);
@@ -133,7 +135,7 @@ TEST_F(Vector3DTest, compareTwoVectors)
 //    ASSERT_THAT((int)floor(v1.getInnerAngle(v2)), Eq(0.0));
 //}
 //
-//TEST(Vector3DAngleTest, checkInnerAngleBetweenFirstNullVectors_ExpectNull)
+// TEST(Vector3DAngleTest, checkInnerAngleBetweenFirstNullVectors_ExpectNull)
 //{
 //    Vector3D v1 = Vector3D(0.0, 0.0, 0.0);
 //    Vector3D v2 = Vector3D(2.0, 0.0, 0.0);
@@ -141,13 +143,12 @@ TEST_F(Vector3DTest, compareTwoVectors)
 //    ASSERT_THAT((int)floor(v1.getInnerAngle(v2)), Eq(0.0));
 //}
 
-
 TEST_F(Vector3DTest, crossProductBetweenTwoVectors)
 {
     Vector3D v1 = Vector3D(-5.0, -5.0, 0.0);
     Vector3D v2 = Vector3D(5.0, 0.0, 10);
 
-    Vector3D crossProd = Vector3D(-50.0, 50.0, 25.0);
+    Vector3D crossProd        = Vector3D(-50.0, 50.0, 25.0);
     Vector3D testCrossProduct = v1.Cross(v2);
 
     EXPECT_THAT(testCrossProduct[0], DoubleEq(crossProd[0]));

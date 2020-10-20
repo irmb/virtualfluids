@@ -13,22 +13,24 @@ class D3Q27TriFaceMeshInteractor;
 class RefineAroundGbObjectHelper
 {
 public:
-   //! Constructor
-   //! \param grid a smart pointer to the grid object
-   //! \param maxRefineLevel an integer for maximal refinement level
-   //! \param objectIter a D3Q27TriFaceMeshInteractor object - represent geometry which should be refinement
-   //! \param startDistance start distance from geometry for refinement
-   //! \param stopDistance stop distance from geometry for refinement
-   RefineAroundGbObjectHelper(SPtr<Grid3D> grid, int maxRefineLevel, SPtr<D3Q27TriFaceMeshInteractor> objectIter, double startDistance, double stopDistance, SPtr<Communicator> comm);
-   virtual ~RefineAroundGbObjectHelper();
-   //! start refinement
-   void refine();
+    //! Constructor
+    //! \param grid a smart pointer to the grid object
+    //! \param maxRefineLevel an integer for maximal refinement level
+    //! \param objectIter a D3Q27TriFaceMeshInteractor object - represent geometry which should be refinement
+    //! \param startDistance start distance from geometry for refinement
+    //! \param stopDistance stop distance from geometry for refinement
+    RefineAroundGbObjectHelper(SPtr<Grid3D> grid, int maxRefineLevel, SPtr<D3Q27TriFaceMeshInteractor> objectIter,
+                               double startDistance, double stopDistance, SPtr<Communicator> comm);
+    virtual ~RefineAroundGbObjectHelper();
+    //! start refinement
+    void refine();
+
 private:
     SPtr<Grid3D> grid;
     SPtr<D3Q27TriFaceMeshInteractor> objectIter;
-   int refineLevel;
-   double startDistance, stopDistance;
-   SPtr<Communicator> comm;
+    int refineLevel;
+    double startDistance, stopDistance;
+    SPtr<Communicator> comm;
 };
 
-#endif 
+#endif

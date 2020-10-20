@@ -9,10 +9,10 @@ class DistributionArray3D;
 class SlipBCAlgorithm : public BCAlgorithm
 {
 public:
-   SlipBCAlgorithm();
-   ~SlipBCAlgorithm() override;
-   SPtr<BCAlgorithm> clone() override;
-   void addDistributions(SPtr<DistributionArray3D> distributions) override;
-   void applyBC() override;
+    SlipBCAlgorithm();
+    ~SlipBCAlgorithm() override;
+    SPtr<BCAlgorithm> clone() override;
+    void addDistributions(SPtr<DistributionArray3D> distributions) override;
+    void applyBC() override;
 };
 #endif // SlipBCAlgorithm_h__

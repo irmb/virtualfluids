@@ -6,13 +6,13 @@
 class VoidLBMKernel : public LBMKernel
 {
 public:
-   VoidLBMKernel();
-   ~VoidLBMKernel() override;
-   SPtr<LBMKernel> clone() override;
-   void calculate(int step) override;
-   double getCalculationTime() override;
-   void initDataSet();
-protected:
+    VoidLBMKernel();
+    ~VoidLBMKernel() override;
+    SPtr<LBMKernel> clone() override;
+    void calculate(int step) override;
+    double getCalculationTime() override;
+    void initDataSet();
 
+protected:
 };
 #endif // VoidLBMKernel_h__

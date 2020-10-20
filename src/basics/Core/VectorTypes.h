@@ -16,21 +16,19 @@
 #include "RealConstants.h"
 
 struct BASICS_EXPORT Vec3 {
-    real x{c0o1}, y{c0o1}, z{c0o1}; 
+    real x{ c0o1 }, y{ c0o1 }, z{ c0o1 };
 
     __host__ __device__ Vec3(real x, real y, real z) : x(x), y(y), z(z) {}
-    __host__ __device__ Vec3()  = default;
+    __host__ __device__ Vec3() = default;
 
-    __host__ __device__ real length() {
-        return std::sqrt( x*x + y*y + z*z );
-    }
+    __host__ __device__ real length() { return std::sqrt(x * x + y * y + z * z); }
 
-    Vec3 operator+( Vec3& right );
-    Vec3 operator-( Vec3& right );
+    Vec3 operator+(Vec3 &right);
+    Vec3 operator-(Vec3 &right);
 };
 
-//BASICS_EXPORT Vec3 operator+( Vec3& left, Vec3& right );
-//BASICS_EXPORT Vec3 operator-( Vec3& left, Vec3& right );
-BASICS_EXPORT Vec3 operator*( real scalar, Vec3& vec );
+// BASICS_EXPORT Vec3 operator+( Vec3& left, Vec3& right );
+// BASICS_EXPORT Vec3 operator-( Vec3& left, Vec3& right );
+BASICS_EXPORT Vec3 operator*(real scalar, Vec3 &vec);
 
 #endif

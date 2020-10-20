@@ -8,14 +8,14 @@
 #define GBOBJECTGROUP3D_H
 
 #ifdef CAB_CTL
-   #include <ctl.h>
-#endif //CAB_CTL
+#include <ctl.h>
+#endif // CAB_CTL
 
-#include <vector>
 #include <cmath>
+#include <vector>
 
-#include <geometry3d/GbObject3D.h>
 #include <basics/utilities/UbObserver.h>
+#include <geometry3d/GbObject3D.h>
 #include <geometry3d/GbPoint3D.h>
 
 #include <PointerDefinitions.h>
@@ -25,110 +25,113 @@ class GbTriangle3D;
 class GbObject3DCreator;
 
 class GbObjectGroup3D : public GbObject3D, public UbObserver
-{                                              
+{
 public:
-   enum TRIANGULATIONMODE { CUBOIDPROJECTION ,RAYPROJECTION };
-   
-   //////////////////////////////////////////////////////////////////////////
-   // Konstruktoren
-   GbObjectGroup3D(); 
-   GbObjectGroup3D(GbObjectGroup3D * /*group*/){}; 
-   ~GbObjectGroup3D() override;
+    enum TRIANGULATIONMODE { CUBOIDPROJECTION, RAYPROJECTION };
 
-   GbObjectGroup3D* clone() override {return new GbObjectGroup3D(this);}
-   void finalize() override;
+    //////////////////////////////////////////////////////////////////////////
+    // Konstruktoren
+    GbObjectGroup3D();
+    GbObjectGroup3D(GbObjectGroup3D * /*group*/){};
+    ~GbObjectGroup3D() override;
 
-   void addGbObject(GbObject3D* object)
-   {
-      this->geoobjects.push_back(object);
-   }
+    GbObjectGroup3D *clone() override { return new GbObjectGroup3D(this); }
+    void finalize() override;
 
-   double getRadius() const	{	return this->radius;	}
+    void addGbObject(GbObject3D *object) { this->geoobjects.push_back(object); }
 
-   double getX1Centroid() override  { return midPoint->getX1Coordinate();}
-   double getX1Minimum() override   { return midPoint->getX1Coordinate()-radius;}
-   double getX1Maximum() override   { return midPoint->getX1Coordinate()+radius;}
-   double getX2Centroid() override  { return midPoint->getX2Coordinate();}
-   double getX2Minimum() override   { return midPoint->getX2Coordinate()-radius;}
-   double getX2Maximum() override   { return midPoint->getX2Coordinate()+radius;}
-   double getX3Centroid() override  { return midPoint->getX3Coordinate();}
-   double getX3Minimum() override   { return midPoint->getX3Coordinate()-radius;}
-   double getX3Maximum() override   { return midPoint->getX3Coordinate()+radius;}
+    double getRadius() const { return this->radius; }
 
-   void setCenterX1Coordinate(const double& value) override;
-   void setCenterX2Coordinate(const double& value) override;
-   void setCenterX3Coordinate(const double& value) override;
-   void setCenterCoordinates(const double& x1, const double& x2, const double& x3) override;
-   void setRadius(const double& radius);
+    double getX1Centroid() override { return midPoint->getX1Coordinate(); }
+    double getX1Minimum() override { return midPoint->getX1Coordinate() - radius; }
+    double getX1Maximum() override { return midPoint->getX1Coordinate() + radius; }
+    double getX2Centroid() override { return midPoint->getX2Coordinate(); }
+    double getX2Minimum() override { return midPoint->getX2Coordinate() - radius; }
+    double getX2Maximum() override { return midPoint->getX2Coordinate() + radius; }
+    double getX3Centroid() override { return midPoint->getX3Coordinate(); }
+    double getX3Minimum() override { return midPoint->getX3Coordinate() - radius; }
+    double getX3Maximum() override { return midPoint->getX3Coordinate() + radius; }
 
-   GbLine3D* createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2) override;
-   double getDistance(GbPoint3D* p); 
-   double getDistance(const double& x1p, const double& x2p, const double& x3p);
+    void setCenterX1Coordinate(const double &value) override;
+    void setCenterX2Coordinate(const double &value) override;
+    void setCenterX3Coordinate(const double &value) override;
+    void setCenterCoordinates(const double &x1, const double &x2, const double &x3) override;
+    void setRadius(const double &radius);
 
-   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3) override;
-   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool& pointIsOnBoundary) override;
+    GbLine3D *createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2) override;
+    double getDistance(GbPoint3D *p);
+    double getDistance(const double &x1p, const double &x2p, const double &x3p);
 
-   bool isCellCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override;
-   bool isCellInsideOrCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override;
-   double getCellVolumeInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b) override;
-   
-   std::vector<GbTriangle3D*> getSurfaceTriangleSet() override;
-   void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles) override;
-                                
-   bool hasRaytracing() override { return true; }
-   /*|r| must be 1! einheitsvector!!*/
-   double getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3) override;
+    bool isPointInGbObject3D(const double &x1, const double &x2, const double &x3) override;
+    bool isPointInGbObject3D(const double &x1p, const double &x2p, const double &x3p, bool &pointIsOnBoundary) override;
 
-   bool hasIntersectionWithDirectedLine(GbPoint3D origin, GbPoint3D direction);
+    bool isCellCuttingGbObject3D(const double &x1a, const double &x2a, const double &x3a, const double &x1b,
+                                 const double &x2b, const double &x3b) override;
+    bool isCellInsideOrCuttingGbObject3D(const double &x1a, const double &x2a, const double &x3a, const double &x1b,
+                                         const double &x2b, const double &x3b) override;
+    double getCellVolumeInsideGbObject3D(const double &x1a, const double &x2a, const double &x3a, const double &x1b,
+                                         const double &x2b, const double &x3b) override;
 
-	std::string toString() override;
+    std::vector<GbTriangle3D *> getSurfaceTriangleSet() override;
+    void addSurfaceTriangleSet(std::vector<UbTupleFloat3> &nodes, std::vector<UbTupleInt3> &triangles) override;
 
+    bool hasRaytracing() override { return true; }
+    /*|r| must be 1! einheitsvector!!*/
+    double getIntersectionRaytraceFactor(const double &x1, const double &x2, const double &x3, const double &rx1,
+                                         const double &rx2, const double &rx3) override;
 
-   void translate(const double& x1, const double& x2, const double& x3) override 
-   {
-      this->midPoint->translate(x1, x2, x3); 
-      this->notifyObserversObjectChanged();
-   }
-   void rotate(const double& rx1, const double& rx2, const double& rx3) override {/* rotation makes no sense*/ }
-   void scale(const double& sx1, const double&  /*sx2*/, const double&  /*sx3*/) override { this->radius *= sx1; }
+    bool hasIntersectionWithDirectedLine(GbPoint3D origin, GbPoint3D direction);
 
-   TRIANGULATIONMODE getTriangulationMode() {return triangulationMode;}
-   void setTriangulationMode(TRIANGULATIONMODE mode) { this->triangulationMode = mode; }
-   
-   //virtuelle Methoden von UbObserver
-   void objectChanged(UbObservable*  /*changedObject*/) override
-   {
-      this->notifyObserversObjectChanged();
-      //std::cout<<"GbSphere:objectChanged() - toDo-);";
-   }
-   void objectWillBeDeleted(UbObservable*  /*objectForDeletion*/) override
-   {
-	   std::cout<<"throw UbException(-GbObjectGroup3D::finalize() - toDo-);";
-   }
+    std::string toString() override;
 
-   using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere, weil man eine
+    void translate(const double &x1, const double &x2, const double &x3) override
+    {
+        this->midPoint->translate(x1, x2, x3);
+        this->notifyObserversObjectChanged();
+    }
+    void rotate(const double &rx1, const double &rx2, const double &rx3) override
+    { /* rotation makes no sense*/
+    }
+    void scale(const double &sx1, const double & /*sx2*/, const double & /*sx3*/) override { this->radius *= sx1; }
 
-   std::list< GbObject3D* > getGbObject3DList() { return this->geoobjects; }
+    TRIANGULATIONMODE getTriangulationMode() { return triangulationMode; }
+    void setTriangulationMode(TRIANGULATIONMODE mode) { this->triangulationMode = mode; }
+
+    // virtuelle Methoden von UbObserver
+    void objectChanged(UbObservable * /*changedObject*/) override
+    {
+        this->notifyObserversObjectChanged();
+        // std::cout<<"GbSphere:objectChanged() - toDo-);";
+    }
+    void objectWillBeDeleted(UbObservable * /*objectForDeletion*/) override
+    {
+        std::cout << "throw UbException(-GbObjectGroup3D::finalize() - toDo-);";
+    }
+
+    using GbObject3D::isPointInGbObject3D; // Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht
+                                           // ausprogrammieren, welche sonst hier "ueberdeckt" waere, weil man eine
+
+    std::list<GbObject3D *> getGbObject3DList() { return this->geoobjects; }
 
 #ifdef CAB_CTL
-   ctl::oStream &write(ctl::oStream &os) const
-   { 
-      midPoint->write(os);
-      return os<<radius; 
-   }
-   ctl::iStream &read(ctl::iStream &is) 
-   { 
-      midPoint->read(is);
-      return is>>radius;
-   }
-#endif //CAB_CTL
+    ctl::oStream &write(ctl::oStream &os) const
+    {
+        midPoint->write(os);
+        return os << radius;
+    }
+    ctl::iStream &read(ctl::iStream &is)
+    {
+        midPoint->read(is);
+        return is >> radius;
+    }
+#endif // CAB_CTL
 
 private:
-   GbPoint3D* midPoint;
-   double radius;  // Radius des Kreises
-   TRIANGULATIONMODE triangulationMode;
+    GbPoint3D *midPoint;
+    double radius; // Radius des Kreises
+    TRIANGULATIONMODE triangulationMode;
 
-   std::list< GbObject3D* > geoobjects;
+    std::list<GbObject3D *> geoobjects;
 };
 
-#endif //GbObjectGroup3D_H
+#endif // GbObjectGroup3D_H

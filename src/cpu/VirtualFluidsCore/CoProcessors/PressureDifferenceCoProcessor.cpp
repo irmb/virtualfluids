@@ -9,93 +9,113 @@
 
 #include <fstream>
 
+#include "Communicator.h"
+#include "Grid3D.h"
 #include "IntegrateValuesHelper.h"
 #include "LBMUnitConverter.h"
-#include "Communicator.h"
 #include "UbScheduler.h"
-#include "Grid3D.h"
 
+PressureDifferenceCoProcessor::PressureDifferenceCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
+                                                             const std::string &path, SPtr<IntegrateValuesHelper> h1,
+                                                             SPtr<IntegrateValuesHelper> h2, LBMReal rhoReal,
+                                                             LBMReal uReal, LBMReal uLB, SPtr<Communicator> comm)
 
-PressureDifferenceCoProcessor::PressureDifferenceCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path,
-                                                                 SPtr<IntegrateValuesHelper> h1, SPtr<IntegrateValuesHelper> h2, 
-                                                                 LBMReal rhoReal, LBMReal uReal, LBMReal uLB,
-                                                                 SPtr<Communicator> comm)
-
-                                                : CoProcessor(grid, s)
-                                                , path(path)
-																, h1(h1)
-																, h2(h2)
-                                                ,comm(comm)
+    : CoProcessor(grid, s), path(path), h1(h1), h2(h2), comm(comm)
 {
-   if (comm->getProcessID() == comm->getRoot())
-   {
-      std::ofstream ostr;
-      std::string fname = path;
-      ostr.open(fname.c_str(), std::ios_base::out);
-      if(!ostr)
-      { 
-         ostr.clear();
-         std::string file_path = UbSystem::getPathFromString(fname);
-         if(file_path.size()>0){ UbSystem::makeDirectory(file_path); ostr.open(fname.c_str(), std::ios_base::out);}
-         if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
-      }
-      ostr << "step" << "\t" << "nodes1" << "\t" << "nodes2" << "\t";
-      ostr << "sRho1" << "\t" << "p1_1"  << "\t" << "sRho2" << "\t" << "p1_2" << "\t" << "deltaP1"<< "\t";
-      ostr << "sPress1" << "\t" << "p2_1" << "\t" << "sPress2" << "\t" << "p2_2" << "\t" << "deltaP2";
-      ostr << std::endl;
-      ostr.close();
+    if (comm->getProcessID() == comm->getRoot()) {
+        std::ofstream ostr;
+        std::string fname = path;
+        ostr.open(fname.c_str(), std::ios_base::out);
+        if (!ostr) {
+            ostr.clear();
+            std::string file_path = UbSystem::getPathFromString(fname);
+            if (file_path.size() > 0) {
+                UbSystem::makeDirectory(file_path);
+                ostr.open(fname.c_str(), std::ios_base::out);
+            }
+            if (!ostr)
+                throw UbException(UB_EXARGS, "couldn't open file " + fname);
+        }
+        ostr << "step"
+             << "\t"
+             << "nodes1"
+             << "\t"
+             << "nodes2"
+             << "\t";
+        ostr << "sRho1"
+             << "\t"
+             << "p1_1"
+             << "\t"
+             << "sRho2"
+             << "\t"
+             << "p1_2"
+             << "\t"
+             << "deltaP1"
+             << "\t";
+        ostr << "sPress1"
+             << "\t"
+             << "p2_1"
+             << "\t"
+             << "sPress2"
+             << "\t"
+             << "p2_2"
+             << "\t"
+             << "deltaP2";
+        ostr << std::endl;
+        ostr.close();
 
-      factor1 = (1.0/3.0)*rhoReal*(uReal/uLB)*(uReal/uLB);
-      factor2 = rhoReal*(uReal/uLB)*(uReal/uLB);
-   }
+        factor1 = (1.0 / 3.0) * rhoReal * (uReal / uLB) * (uReal / uLB);
+        factor2 = rhoReal * (uReal / uLB) * (uReal / uLB);
+    }
 }
 //////////////////////////////////////////////////////////////////////////
-PressureDifferenceCoProcessor::~PressureDifferenceCoProcessor() 
-= default;
+PressureDifferenceCoProcessor::~PressureDifferenceCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
 void PressureDifferenceCoProcessor::process(double step)
 {
-   if(scheduler->isDue(step) )
-      collectData(step);
+    if (scheduler->isDue(step))
+        collectData(step);
 }
 //////////////////////////////////////////////////////////////////////////
 void PressureDifferenceCoProcessor::collectData(double step)
 {
-   h1->calculateMQ();
-   h2->calculateMQ();
-   
-   if (comm->getProcessID() == comm->getRoot())
-   {
-      int istep = static_cast<int>(step);
-      std::ofstream ostr;
-      double nn1 = h1->getNumberOfFluidsNodes();
-      double nn2 = h2->getNumberOfFluidsNodes();
-      double rho1 = h1->getRho();
-      double rho2 = h2->getRho();
-      double p1_1 = (rho1/nn1) * factor1;
-      double p1_2 = (rho2/nn2) * factor1;
-      double dp1 = p1_1 - p1_2;
+    h1->calculateMQ();
+    h2->calculateMQ();
 
-      //double press1 = h1->getPress();
-      //double press2 = h2->getPress();
-      //double p2_1 = (press1/nn1) * factor2;
-      //double p2_2 = (press2/nn2) * factor2;
-      //double dp2 = p2_1 - p2_2;
+    if (comm->getProcessID() == comm->getRoot()) {
+        int istep = static_cast<int>(step);
+        std::ofstream ostr;
+        double nn1  = h1->getNumberOfFluidsNodes();
+        double nn2  = h2->getNumberOfFluidsNodes();
+        double rho1 = h1->getRho();
+        double rho2 = h2->getRho();
+        double p1_1 = (rho1 / nn1) * factor1;
+        double p1_2 = (rho2 / nn2) * factor1;
+        double dp1  = p1_1 - p1_2;
 
-      std::string fname = path;
-      ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
-      if(!ostr)
-      { 
-         ostr.clear();
-         std::string path = UbSystem::getPathFromString(fname);
-         if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);}
-         if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
-      }
+        // double press1 = h1->getPress();
+        // double press2 = h2->getPress();
+        // double p2_1 = (press1/nn1) * factor2;
+        // double p2_2 = (press2/nn2) * factor2;
+        // double dp2 = p2_1 - p2_2;
 
-      ostr << istep << "\t" << nn1 << "\t"  << nn2 << "\t"; 
-      ostr << rho1 << "\t" << p1_1 << "\t" << rho2 << "\t" << p1_2 << "\t" << dp1 << "\t";
-      //ostr << press1 << "\t" << p2_1 << "\t" << press2 << "\t" << p2_2 << "\t" << dp2;
-      ostr << std::endl;
-      ostr.close();
-   }
+        std::string fname = path;
+        ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
+        if (!ostr) {
+            ostr.clear();
+            std::string path = UbSystem::getPathFromString(fname);
+            if (path.size() > 0) {
+                UbSystem::makeDirectory(path);
+                ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
+            }
+            if (!ostr)
+                throw UbException(UB_EXARGS, "couldn't open file " + fname);
+        }
+
+        ostr << istep << "\t" << nn1 << "\t" << nn2 << "\t";
+        ostr << rho1 << "\t" << p1_1 << "\t" << rho2 << "\t" << p1_2 << "\t" << dp1 << "\t";
+        // ostr << press1 << "\t" << p2_1 << "\t" << press2 << "\t" << p2_2 << "\t" << dp2;
+        ostr << std::endl;
+        ostr.close();
+    }
 }

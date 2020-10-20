@@ -12,13 +12,14 @@ class BoundaryConditions;
 class ChangeBoundaryDensityBlockVisitor : public Block3DVisitor
 {
 public:
-   ChangeBoundaryDensityBlockVisitor(float oldBoundaryDensity, float newBoundaryDensity);
-   ~ChangeBoundaryDensityBlockVisitor() override;
+    ChangeBoundaryDensityBlockVisitor(float oldBoundaryDensity, float newBoundaryDensity);
+    ~ChangeBoundaryDensityBlockVisitor() override;
 
-   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+
 private:
-   float oldBoundaryDensity; 
-   float newBoundaryDensity;
-   SPtr<BoundaryConditions> bcPtr;
+    float oldBoundaryDensity;
+    float newBoundaryDensity;
+    SPtr<BoundaryConditions> bcPtr;
 };
 #endif // ChangeBoundaryDensityBlockVisitor_h__

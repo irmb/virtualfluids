@@ -4,12 +4,12 @@
 //#include "Block3DConnectorFactory.h"
 //
 //#include <PointerDefinitions.h>
-//class D3Q27ETOffConnectorFactory;
-//typedef SPtr<D3Q27ETOffConnectorFactory> D3Q27ETOffSPtr<ConnectorFactory>;
+// class D3Q27ETOffConnectorFactory;
+// typedef SPtr<D3Q27ETOffConnectorFactory> D3Q27ETOffSPtr<ConnectorFactory>;
 //
-//class D3Q27ETOffConnectorFactory : public Block3DConnectorFactory
+// class D3Q27ETOffConnectorFactory : public Block3DConnectorFactory
 //{
-//public:
+// public:
 //   D3Q27ETOffConnectorFactory();
 //   virtual ~D3Q27ETOffConnectorFactory();
 //
@@ -27,8 +27,7 @@
 //      D3Q27InterpolationProcessorPtr iprocessor,
 //      FineToCoarseBlock3DConnector::CFconnectorType connType);
 //
-//private:
+// private:
 //
 //};
 //#endif // D3Q27ETOffConnectorFactory_h__
-

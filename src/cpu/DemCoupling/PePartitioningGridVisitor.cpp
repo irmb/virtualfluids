@@ -1,70 +1,64 @@
 #if defined VF_METIS && defined VF_MPI
 
-#include <shared_mutex>
 #include "PePartitioningGridVisitor.h"
-#include <math.h>
 #include "Block3D.h"
-#include "Grid3D.h"
 #include "Communicator.h"
-#include "UbLogger.h"
 #include "CoordinateTransformation3D.h"
+#include "Grid3D.h"
+#include "UbLogger.h"
+#include <math.h>
+#include <shared_mutex>
 
 #include "DemCoProcessor.h"
 
 using namespace std;
 
 PePartitioningGridVisitor::PePartitioningGridVisitor(SPtr<Communicator> comm, std::shared_ptr<DemCoProcessor> dem)
-   : Grid3DVisitor(),
-   comm(comm),
-   dem(dem)
+    : Grid3DVisitor(), comm(comm), dem(dem)
 {
-   forest = dynamicPointerCast<PePhysicsEngineSolverAdapter>(dem->getPhysicsEngineSolver())->getForest();
+    forest = dynamicPointerCast<PePhysicsEngineSolverAdapter>(dem->getPhysicsEngineSolver())->getForest();
 }
 //////////////////////////////////////////////////////////////////////////
-PePartitioningGridVisitor::~PePartitioningGridVisitor()
-{
-
-}
+PePartitioningGridVisitor::~PePartitioningGridVisitor() {}
 //////////////////////////////////////////////////////////////////////////
 void PePartitioningGridVisitor::visit(SPtr<Grid3D> grid)
 {
-   UBLOG(logDEBUG1, "PePartitioningGridVisitor::visit() - start");
+    UBLOG(logDEBUG1, "PePartitioningGridVisitor::visit() - start");
 
-   collectData(grid);
-   distributePartitionData(grid);
+    collectData(grid);
+    distributePartitionData(grid);
 
-   UBLOG(logDEBUG1, "PePartitioningGridVisitor::visit() - end");
+    UBLOG(logDEBUG1, "PePartitioningGridVisitor::visit() - end");
 }
 //////////////////////////////////////////////////////////////////////////
 void PePartitioningGridVisitor::collectData(SPtr<Grid3D> grid)
 {
-   //int minInitLevel = grid->getCoarsestInitializedLevel();
-   //int maxInitLevel = grid->getFinestInitializedLevel();
+    // int minInitLevel = grid->getCoarsestInitializedLevel();
+    // int maxInitLevel = grid->getFinestInitializedLevel();
 
-   walberla::uint_t peRank;
+    walberla::uint_t peRank;
 
-   for (auto blockIt = forest->begin(); blockIt != forest->end(); ++blockIt)
-   {
-      forest->getProcessRank(peRank, blockIt->getId());
-      vector<SPtr<Block3D>> blocks;
-      walberla::AABB aabb = blockIt->getAABB();
+    for (auto blockIt = forest->begin(); blockIt != forest->end(); ++blockIt) {
+        forest->getProcessRank(peRank, blockIt->getId());
+        vector<SPtr<Block3D>> blocks;
+        walberla::AABB aabb = blockIt->getAABB();
 
-      //getBlocksByCuboid((double)aabb.xMin(), (double)aabb.yMin(), (double)aabb.zMin(), (double)aabb.xMax(), (double)aabb.yMax(), (double)aabb.zMax(), blocks, grid);
-      //for (SPtr<Block3D> block : blocks)
-      //{
-      //   ids.push_back(block->getGlobalID());
-      //   ranks.push_back((int)peRank);
-      //}
-      SPtr<Block3D> block = getBlockByMinUniform((double)aabb.xMin(), (double)aabb.yMin(), (double)aabb.zMin(), grid);
-      if (block)
-      {
-         ids.push_back(block->getGlobalID());
-         ranks.push_back((int)peRank);
-      }
-   }
+        // getBlocksByCuboid((double)aabb.xMin(), (double)aabb.yMin(), (double)aabb.zMin(), (double)aabb.xMax(),
+        // (double)aabb.yMax(), (double)aabb.zMax(), blocks, grid); for (SPtr<Block3D> block : blocks)
+        //{
+        //   ids.push_back(block->getGlobalID());
+        //   ranks.push_back((int)peRank);
+        //}
+        SPtr<Block3D> block = getBlockByMinUniform((double)aabb.xMin(), (double)aabb.yMin(), (double)aabb.zMin(), grid);
+        if (block) {
+            ids.push_back(block->getGlobalID());
+            ranks.push_back((int)peRank);
+        }
+    }
 }
 //////////////////////////////////////////////////////////////////////////
-//void PePartitioningGridVisitor::getBlocksByCuboid(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3, std::vector<SPtr<Block3D>>& blocks, SPtr<Grid3D> grid)
+// void PePartitioningGridVisitor::getBlocksByCuboid(double minX1, double minX2, double minX3, double maxX1, double
+// maxX2, double maxX3, std::vector<SPtr<Block3D>>& blocks, SPtr<Grid3D> grid)
 //{
 //   int coarsestLevel = grid->getCoarsestInitializedLevel();
 //   int finestLevel   = grid->getFinestInitializedLevel();
@@ -73,7 +67,7 @@ void PePartitioningGridVisitor::collectData(SPtr<Grid3D> grid)
 //
 //   //////////////////////////////////////////////////////////////////////////
 //   //MINIMALE BLOCK-INDIZES BESTIMMEN
-//   //  
+//   //
 //   //min:
 //   double dMinX1 = trafo->transformForwardToX1Coordinate(minX1, minX2, minX3)*(1<<finestLevel);
 //   double dMinX2 = trafo->transformForwardToX2Coordinate(minX1, minX2, minX3)*(1<<finestLevel);
@@ -118,39 +112,37 @@ void PePartitioningGridVisitor::collectData(SPtr<Grid3D> grid)
 //   std::copy(blockset.begin(), blockset.end(), blocks.begin());
 //}
 
-SPtr<Block3D> PePartitioningGridVisitor::getBlockByMinUniform(double minX1, double minX2, double minX3, SPtr<Grid3D> grid)
+SPtr<Block3D> PePartitioningGridVisitor::getBlockByMinUniform(double minX1, double minX2, double minX3,
+                                                              SPtr<Grid3D> grid)
 {
-   SPtr<CoordinateTransformation3D> trafo = grid->getCoordinateTransformator();
+    SPtr<CoordinateTransformation3D> trafo = grid->getCoordinateTransformator();
 
-   int ix1 = (int)trafo->transformForwardToX1Coordinate(minX1, minX2, minX3);
-   int ix2 = (int)trafo->transformForwardToX2Coordinate(minX1, minX2, minX3);
-   int ix3 = (int)trafo->transformForwardToX3Coordinate(minX1, minX2, minX3);
+    int ix1 = (int)trafo->transformForwardToX1Coordinate(minX1, minX2, minX3);
+    int ix2 = (int)trafo->transformForwardToX2Coordinate(minX1, minX2, minX3);
+    int ix3 = (int)trafo->transformForwardToX3Coordinate(minX1, minX2, minX3);
 
-   return grid->getBlock(ix1, ix2, ix3, 0);
+    return grid->getBlock(ix1, ix2, ix3, 0);
 }
 
 //////////////////////////////////////////////////////////////////////////
 void PePartitioningGridVisitor::distributePartitionData(SPtr<Grid3D> grid)
 {
-   std::vector<int> totalIDs;
-   std::vector<int> totalRanks;
+    std::vector<int> totalIDs;
+    std::vector<int> totalRanks;
 
-   assert(ids.size() != 0);
-   assert(ranks.size() != 0);
+    assert(ids.size() != 0);
+    assert(ranks.size() != 0);
 
-   comm->allGather(ids, totalIDs);
-   comm->allGather(ranks, totalRanks);
+    comm->allGather(ids, totalIDs);
+    comm->allGather(ranks, totalRanks);
 
-
-   assert(totalIDs.size() == totalRanks.size());
-   for (int i = 0; i < totalIDs.size(); i++)
-   {
-      SPtr<Block3D> block = grid->getBlock(totalIDs[i]);
-      if (block) block->setRank(totalRanks[i]);
-   }
+    assert(totalIDs.size() == totalRanks.size());
+    for (int i = 0; i < totalIDs.size(); i++) {
+        SPtr<Block3D> block = grid->getBlock(totalIDs[i]);
+        if (block)
+            block->setRank(totalRanks[i]);
+    }
 }
 //////////////////////////////////////////////////////////////////////////
 
-
-
-#endif  //VF_METIS
+#endif // VF_METIS

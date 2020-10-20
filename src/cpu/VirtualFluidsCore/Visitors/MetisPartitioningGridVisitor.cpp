@@ -1,28 +1,24 @@
 #if defined VF_METIS && defined VF_MPI
 
 #include "MetisPartitioningGridVisitor.h"
-#include <cmath>
 #include "Block3D.h"
-#include "Grid3D.h"
 #include "Communicator.h"
 #include "D3Q27System.h"
+#include "Grid3D.h"
+#include <cmath>
 
 using namespace std;
 
-MetisPartitioningGridVisitor::MetisPartitioningGridVisitor(SPtr<Communicator> comm, GraphType graphType, int numOfDirs, MetisPartitioner::PartType partType, bool threads, int numberOfThreads)
-    :  Grid3DVisitor(),
-       numberOfThreads(numberOfThreads),
-       numOfDirs(numOfDirs),
-       comm(comm),
-       threads(threads),
-       graphType(graphType),
-       partType(partType)
-{  
-   numberOfProcesses = comm->getNumberOfProcesses();
+MetisPartitioningGridVisitor::MetisPartitioningGridVisitor(SPtr<Communicator> comm, GraphType graphType, int numOfDirs,
+                                                           MetisPartitioner::PartType partType, bool threads,
+                                                           int numberOfThreads)
+    : Grid3DVisitor(), numberOfThreads(numberOfThreads), numOfDirs(numOfDirs), comm(comm), threads(threads),
+      graphType(graphType), partType(partType)
+{
+    numberOfProcesses = comm->getNumberOfProcesses();
 }
 //////////////////////////////////////////////////////////////////////////
-MetisPartitioningGridVisitor::~MetisPartitioningGridVisitor()
-= default;
+MetisPartitioningGridVisitor::~MetisPartitioningGridVisitor() = default;
 //////////////////////////////////////////////////////////////////////////
 void MetisPartitioningGridVisitor::visit(SPtr<Grid3D> grid)
 {
@@ -30,11 +26,10 @@ void MetisPartitioningGridVisitor::visit(SPtr<Grid3D> grid)
 
     this->clear();
 
-    bundleRoot = comm->getBundleRoot();
-    bundleID = comm->getBundleID();
+    bundleRoot      = comm->getBundleRoot();
+    bundleID        = comm->getBundleID();
     numberOfBundles = comm->getNumberOfBundles();
-    if (numberOfBundles > 1)
-    {
+    if (numberOfBundles > 1) {
         if (bundleRoot == bundleID && processRoot == processID)
             collectData(grid, numberOfBundles, BUNDLE);
         comm->broadcast(blockID);
@@ -44,32 +39,27 @@ void MetisPartitioningGridVisitor::visit(SPtr<Grid3D> grid)
     }
 
     processRoot = comm->getProcessRoot();
-    processID = comm->getProcessID();
+    processID   = comm->getProcessID();
     /*int numberOfProcesses = comm->getNumberOfProcesses();*/
-    if (numberOfProcesses > 1)
-    {
-       int temp = bundleID;
-       for (int i = 0; i < numberOfBundles; i++)
-       {
-          if (bundleRoot == bundleID && processRoot == processID)
-          {
-             bundleID = i;
-             //numberOfProcesses = comm->getNumberOfProcessesInBundle(i);
-             collectData(grid, numberOfProcesses, PROCESS);
-             bundleID = temp;
-          }
-          comm->broadcast(blockID);
-          //UBLOG(logINFO, "blockID="<<blockID.size());
-          comm->broadcast(parts);
-          //UBLOG(logINFO, "parts="<<parts.size());
-          distributePartitionData(grid, PROCESS);
-       }
+    if (numberOfProcesses > 1) {
+        int temp = bundleID;
+        for (int i = 0; i < numberOfBundles; i++) {
+            if (bundleRoot == bundleID && processRoot == processID) {
+                bundleID = i;
+                // numberOfProcesses = comm->getNumberOfProcessesInBundle(i);
+                collectData(grid, numberOfProcesses, PROCESS);
+                bundleID = temp;
+            }
+            comm->broadcast(blockID);
+            // UBLOG(logINFO, "blockID="<<blockID.size());
+            comm->broadcast(parts);
+            // UBLOG(logINFO, "parts="<<parts.size());
+            distributePartitionData(grid, PROCESS);
+        }
     }
 
-    if (threads)
-    {
-        if (numberOfThreads > 1)
-        {
+    if (threads) {
+        if (numberOfThreads > 1) {
             collectData(grid, numberOfThreads, THREAD);
             distributePartitionData(grid, THREAD);
         }
@@ -81,14 +71,13 @@ void MetisPartitioningGridVisitor::collectData(SPtr<Grid3D> grid, int nofSegment
 {
     clear();
 
-    switch (graphType)
-    {
-    case LevelIntersected: 
-      buildMetisGraphLevelIntersected(grid, nofSegments, level);
-    	break;
-    case LevelBased: 
-      buildMetisGraphLevelBased(grid, nofSegments, level);
-      break;
+    switch (graphType) {
+        case LevelIntersected:
+            buildMetisGraphLevelIntersected(grid, nofSegments, level);
+            break;
+        case LevelBased:
+            buildMetisGraphLevelBased(grid, nofSegments, level);
+            break;
     }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -96,30 +85,24 @@ void MetisPartitioningGridVisitor::distributePartitionData(SPtr<Grid3D> grid, Pa
 {
     SPtr<Block3D> block;
 
-    for(size_t p=0; p<parts.size(); p++)
-    {
+    for (size_t p = 0; p < parts.size(); p++) {
         block = grid->getBlock(blockID[p]);
-        if (block)
-        {
-            switch (level)
-            {
-            case BUNDLE:
-                block->setBundle(parts[p]);
-                break;
-            case PROCESS:
-                if (numberOfBundles == 1)
-                {
-                   block->setRank(parts[p]);
-                } 
-                else
-                {
-                   block->setLocalRank(parts[p]);
-                   block->setRank(comm->getProcessID(block->getBundle(),parts[p]));
-                }
-                break;
-            case THREAD:
-                block->setPart(parts[p]);
-                break;
+        if (block) {
+            switch (level) {
+                case BUNDLE:
+                    block->setBundle(parts[p]);
+                    break;
+                case PROCESS:
+                    if (numberOfBundles == 1) {
+                        block->setRank(parts[p]);
+                    } else {
+                        block->setLocalRank(parts[p]);
+                        block->setRank(comm->getProcessID(block->getBundle(), parts[p]));
+                    }
+                    break;
+                case THREAD:
+                    block->setPart(parts[p]);
+                    break;
             }
         }
     }
@@ -127,16 +110,14 @@ void MetisPartitioningGridVisitor::distributePartitionData(SPtr<Grid3D> grid, Pa
 //////////////////////////////////////////////////////////////////////////
 void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(SPtr<Grid3D> grid, int nofSegments, PartLevel level)
 {
-    int edges = 0;
-    const int edgeWeight= 1;
+    int edges                       = 0;
+    const int edgeWeight            = 1;
     const int edgeWeightChildFactor = 8;
-    int n = 0;
+    int n                           = 0;
 
-    for(Grid3D::BlockIDMap::value_type b :  grid->getBlockIDs())
-    { 
+    for (Grid3D::BlockIDMap::value_type b : grid->getBlockIDs()) {
         SPtr<Block3D> block = b.second;
-        if (this->getPartitionCondition(block, level))
-        {
+        if (this->getPartitionCondition(block, level)) {
             block->setLocalID(n);
             blockID.push_back(block->getGlobalID());
             n++;
@@ -145,22 +126,17 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(SPtr<Grid3D> 
 
     MetisPartitioner metis;
 
-    for(Grid3D::BlockIDMap::value_type b :  grid->getBlockIDs())
-    { 
+    for (Grid3D::BlockIDMap::value_type b : grid->getBlockIDs()) {
         const SPtr<Block3D> block = b.second;
-        if (this->getPartitionCondition(block, level))
-        {
-           metis.xadj.push_back(edges);
-            //the weights of the vertices are 2^level of grid (1, 2, 4, 8 .....) 1<<level 
-            metis.vwgt.push_back((idx_t)(1<<block->getLevel())); 
+        if (this->getPartitionCondition(block, level)) {
+            metis.xadj.push_back(edges);
+            // the weights of the vertices are 2^level of grid (1, 2, 4, 8 .....) 1<<level
+            metis.vwgt.push_back((idx_t)(1 << block->getLevel()));
 
-            for( int dir = 0; dir <= numOfDirs; dir++)
-            {
+            for (int dir = 0; dir <= numOfDirs; dir++) {
                 SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, block);
-                if(neighBlock)
-                {
-                    if (this->getPartitionCondition(neighBlock, level))
-                    {
+                if (neighBlock) {
+                    if (this->getPartitionCondition(neighBlock, level)) {
                         edges++;
                         metis.adjwgt.push_back(edgeWeight);
                         metis.adjncy.push_back(neighBlock->getLocalID());
@@ -169,14 +145,11 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(SPtr<Grid3D> 
             }
             vector<SPtr<Block3D>> subBlocks;
             grid->getSubBlocks(block, 1, subBlocks);
-            for(SPtr<Block3D> subBlock : subBlocks)
-            {
-                if (subBlock)
-                {
-                    if (this->getPartitionCondition(subBlock, level))
-                    {
+            for (SPtr<Block3D> subBlock : subBlocks) {
+                if (subBlock) {
+                    if (this->getPartitionCondition(subBlock, level)) {
                         edges++;
-                        metis.adjwgt.push_back(edgeWeight*edgeWeightChildFactor);
+                        metis.adjwgt.push_back(edgeWeight * edgeWeightChildFactor);
                         metis.adjncy.push_back(subBlock->getLocalID());
                     }
                 }
@@ -185,10 +158,11 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(SPtr<Grid3D> 
     }
 
     metis.xadj.push_back(static_cast<idx_t>(metis.adjncy.size()));
-    if ((metis.adjncy.size()%2)!=0)
-        throw UbException(UB_EXARGS,"number of edges is odd - probable adjncy-vector doesn't contain all pairs (A->B) and (B->A)!!!" );
+    if ((metis.adjncy.size() % 2) != 0)
+        throw UbException(
+            UB_EXARGS,
+            "number of edges is odd - probable adjncy-vector doesn't contain all pairs (A->B) and (B->A)!!!");
 
-    
     metis.partition(nofSegments, partType);
     parts = metis.part;
 }
@@ -198,17 +172,14 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(SPtr<Grid3D> grid, 
     int minInitLevel = grid->getCoarsestInitializedLevel();
     int maxInitLevel = grid->getFinestInitializedLevel();
 
-    for(int l = minInitLevel; l<=maxInitLevel;l++)
-    {
+    for (int l = minInitLevel; l <= maxInitLevel; l++) {
         int n = 0;
         vector<SPtr<Block3D>> blockVector;
         grid->getBlocks(l, blockVector);
         vector<SPtr<Block3D>> tBlockID;
 
-        for(SPtr<Block3D> block : blockVector)
-        { 
-            if (this->getPartitionCondition(block, level))
-            {
+        for (SPtr<Block3D> block : blockVector) {
+            if (this->getPartitionCondition(block, level)) {
                 block->setLocalID(n);
                 blockID.push_back(block->getGlobalID());
                 tBlockID.push_back(block);
@@ -216,28 +187,23 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(SPtr<Grid3D> grid, 
             }
         }
 
-        if (tBlockID.size() == 0)
-        {
-           UB_THROW(UbException(UB_EXARGS,"Blocks for decomposition don't exist!"));
+        if (tBlockID.size() == 0) {
+            UB_THROW(UbException(UB_EXARGS, "Blocks for decomposition don't exist!"));
         }
 
         MetisPartitioner metis;
 
         const int vertexWeight = 1;
-        int edges = 0;
+        int edges              = 0;
 
-        for(SPtr<Block3D> block : tBlockID)
-        {
+        for (SPtr<Block3D> block : tBlockID) {
             metis.xadj.push_back(edges);
             metis.vwgt.push_back(vertexWeight);
 
-            for( int dir = 0; dir <= numOfDirs; dir++)
-            {
+            for (int dir = 0; dir <= numOfDirs; dir++) {
                 SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, block);
-                if(neighBlock)
-                {
-                    if (this->getPartitionCondition(neighBlock, level))
-                    {
+                if (neighBlock) {
+                    if (this->getPartitionCondition(neighBlock, level)) {
                         edges++;
                         metis.adjwgt.push_back(getEdgeWeight(dir));
                         metis.adjncy.push_back(neighBlock->getLocalID());
@@ -246,19 +212,19 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(SPtr<Grid3D> grid, 
             }
         }
         metis.xadj.push_back(static_cast<idx_t>(metis.adjncy.size()));
-        if ((metis.adjncy.size()%2)!=0)
-            throw UbException(UB_EXARGS,"number of edges is odd - probable adjncy-vector doesn't contain all pairs (A->B) and (B->A)!!!" );
+        if ((metis.adjncy.size() % 2) != 0)
+            throw UbException(
+                UB_EXARGS,
+                "number of edges is odd - probable adjncy-vector doesn't contain all pairs (A->B) and (B->A)!!!");
 
-        int nofBlocks = grid->getNumberOfBlocks(l);
+        int nofBlocks    = grid->getNumberOfBlocks(l);
         int tnofSegments = nofSegments;
-        if (nofBlocks < nofSegments)
-        {
-           tnofSegments = nofBlocks;
+        if (nofBlocks < nofSegments) {
+            tnofSegments = nofBlocks;
         }
         metis.partition(tnofSegments, partType);
 
-        for(idx_t p : metis.part)
-        {
+        for (idx_t p : metis.part) {
             parts.push_back(p);
         }
     }
@@ -266,23 +232,16 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(SPtr<Grid3D> grid, 
 //////////////////////////////////////////////////////////////////////////
 bool MetisPartitioningGridVisitor::getPartitionCondition(SPtr<Block3D> block, PartLevel level)
 {
-    if (level == BUNDLE)
-    {
-       return true;
-    }
-    else if(level == PROCESS)
-    {
-       if (block->getBundle() == bundleID)
-       {
-          return true;
-       }
-    }
-    else if(level == THREAD)
-    {
-      if (block->getBundle() == bundleID && block->getRank() == processID)
-      {
-         return true;
-      }
+    if (level == BUNDLE) {
+        return true;
+    } else if (level == PROCESS) {
+        if (block->getBundle() == bundleID) {
+            return true;
+        }
+    } else if (level == THREAD) {
+        if (block->getBundle() == bundleID && block->getRank() == processID) {
+            return true;
+        }
     }
 
     return false;
@@ -296,28 +255,19 @@ void MetisPartitioningGridVisitor::clear()
 //////////////////////////////////////////////////////////////////////////
 int MetisPartitioningGridVisitor::getEdgeWeight(int dir)
 {
-   using namespace D3Q27System;
-   if (dir <= B)
-   {
-      return 100;
-   } 
-   else if (dir >= NE && dir <= TS)
-   {
-      return 10;
-   }
-   else if (dir >= TNE)
-   {
-      return 1;
-   }
+    using namespace D3Q27System;
+    if (dir <= B) {
+        return 100;
+    } else if (dir >= NE && dir <= TS) {
+        return 10;
+    } else if (dir >= TNE) {
+        return 1;
+    }
 
-//    FIXME: non-void function does not return a value in all control paths
+    //    FIXME: non-void function does not return a value in all control paths
     return 0;
 }
 //////////////////////////////////////////////////////////////////////////
-void MetisPartitioningGridVisitor::setNumberOfProcesses(int np)
-{
-   numberOfProcesses = np;
-}
+void MetisPartitioningGridVisitor::setNumberOfProcesses(int np) { numberOfProcesses = np; }
 
-
-#endif  //VF_METIS
+#endif // VF_METIS

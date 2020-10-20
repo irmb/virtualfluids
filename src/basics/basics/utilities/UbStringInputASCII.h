@@ -16,9 +16,9 @@
 //
 //#include <basics/utilities/UbFileInputASCII.h>
 //
-//class UbStringInputASCII : public UbFileInputASCII
+// class UbStringInputASCII : public UbFileInputASCII
 //{
-//public:
+// public:
 //	UbStringInputASCII(std::string inputString);
 //
 //	std::string getFileName();
@@ -45,7 +45,7 @@
 //
 //   FILETYPE getFileType() { return ASCII; }
 //
-//private:
+// private:
 //	std::istringstream instream;
 //};
 //

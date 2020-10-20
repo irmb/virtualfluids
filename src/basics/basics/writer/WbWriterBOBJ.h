@@ -1,40 +1,47 @@
 #ifdef CAB_ZLIB
-   #ifndef WBWRITERBOBJ_H
-   #define WBWRITERBOBJ_H
+#ifndef WBWRITERBOBJ_H
+#define WBWRITERBOBJ_H
 
-   #include <string>
-   #include <basics/writer/WbWriter.h>
+#include <basics/writer/WbWriter.h>
+#include <string>
 
-   class WbWriterBOBJ  : public WbWriter
-   {
-   public:
-      OBCREATOR_EXT( WbWriterBOBJ )
+class WbWriterBOBJ : public WbWriter
+{
+public:
+    OBCREATOR_EXT(WbWriterBOBJ)
 
-         static WbWriterBOBJ* getInstance()
-      {
-         static WbWriterBOBJ instance;
-         return &instance;
-      }
-   private:
-      WbWriterBOBJ() : WbWriter() 
-      {
-         if(sizeof(unsigned char)!=1) throw UbException(UB_EXARGS,"error char  type mismatch");
-         if(sizeof(int)          !=4) throw UbException(UB_EXARGS,"error int   type mismatch");
-         if(sizeof(float)        !=4) throw UbException(UB_EXARGS,"error float type mismatch");
-      }
-      WbWriterBOBJ( const WbWriterBOBJ& );                  //no copy allowed 
-      const WbWriterBOBJ& operator=( const WbWriterBOBJ& ); //no copy allowed
+    static WbWriterBOBJ *getInstance()
+    {
+        static WbWriterBOBJ instance;
+        return &instance;
+    }
 
-      static std::string  pvdEndTag;
+private:
+    WbWriterBOBJ() : WbWriter()
+    {
+        if (sizeof(unsigned char) != 1)
+            throw UbException(UB_EXARGS, "error char  type mismatch");
+        if (sizeof(int) != 4)
+            throw UbException(UB_EXARGS, "error int   type mismatch");
+        if (sizeof(float) != 4)
+            throw UbException(UB_EXARGS, "error float type mismatch");
+    }
+    WbWriterBOBJ(const WbWriterBOBJ &);                  // no copy allowed
+    const WbWriterBOBJ &operator=(const WbWriterBOBJ &); // no copy allowed
 
-   public:
-      std::string getFileExtension()  { return "BOBJ.gz"; }
+    static std::string pvdEndTag;
 
-      std::string writeTriangles(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt3 >& triangles);
-   };
+public:
+    std::string getFileExtension() { return "BOBJ.gz"; }
 
-   UB_AUTO_RUN_NAMED(ObFactory<WbWriter>::getInstance()->addObCreator(ObSingletonCreatorImpl<WbWriterBOBJ ,WbWriter>::getInstance()), CAB_WbWriterVtkXmlASCII);
+    std::string writeTriangles(const std::string &filename, std::vector<UbTupleFloat3> &nodes,
+                               std::vector<UbTupleInt3> &triangles);
+};
 
-   #endif //WBWRITERBOBJ_H
+UB_AUTO_RUN_NAMED(
+    ObFactory<WbWriter>::getInstance()->addObCreator(ObSingletonCreatorImpl<WbWriterBOBJ, WbWriter>::getInstance()),
+    CAB_WbWriterVtkXmlASCII);
 
-#endif //CAB_ZLIB
+#endif // WBWRITERBOBJ_H
+
+#endif // CAB_ZLIB

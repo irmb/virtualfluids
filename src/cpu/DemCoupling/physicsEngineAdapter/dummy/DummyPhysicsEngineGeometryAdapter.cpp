@@ -1,79 +1,31 @@
 #include "DummyPhysicsEngineGeometryAdapter.h"
 
+void DummyPhysicsEngineGeometryAdapter::addForce(const Vector3D &force) {}
 
+void DummyPhysicsEngineGeometryAdapter::addTorque(const Vector3D &torque) {}
 
-void DummyPhysicsEngineGeometryAdapter::addForce(const Vector3D& force)
-{
+void DummyPhysicsEngineGeometryAdapter::setForce(const Vector3D &force) {}
 
-}
+void DummyPhysicsEngineGeometryAdapter::setTorque(const Vector3D &torque) {}
 
-void DummyPhysicsEngineGeometryAdapter::addTorque(const Vector3D& torque)
-{
+void DummyPhysicsEngineGeometryAdapter::addForceAtPosition(const Vector3D &force, const Vector3D &position) {}
 
-}
+void DummyPhysicsEngineGeometryAdapter::setLinearVelolocity(const Vector3D &velocity) { this->velocity = velocity; }
 
-void DummyPhysicsEngineGeometryAdapter::setForce(const Vector3D& force)
-{
+void DummyPhysicsEngineGeometryAdapter::setAngularVelocity(const Vector3D &velocity) {}
 
-}
+void DummyPhysicsEngineGeometryAdapter::resetForceAndTorque() {}
 
-void DummyPhysicsEngineGeometryAdapter::setTorque(const Vector3D& torque)
-{
+Vector3D DummyPhysicsEngineGeometryAdapter::getVelocityAtPosition(const Vector3D &position) const { return velocity; }
 
-}
+Vector3D DummyPhysicsEngineGeometryAdapter::getLinearVelocity() const { return Vector3D(); }
 
-void DummyPhysicsEngineGeometryAdapter::addForceAtPosition(const Vector3D& force, const Vector3D& position)
-{
+Vector3D DummyPhysicsEngineGeometryAdapter::getAngularVelocity() const { return Vector3D(); }
 
-}
+Vector3D DummyPhysicsEngineGeometryAdapter::getPosition() const { return Vector3D(); }
 
-void DummyPhysicsEngineGeometryAdapter::setLinearVelolocity(const Vector3D& velocity)
-{
-    this->velocity = velocity;
-}
+Vector3D DummyPhysicsEngineGeometryAdapter::getForce() const { return Vector3D(); }
 
-void DummyPhysicsEngineGeometryAdapter::setAngularVelocity(const Vector3D& velocity)
-{
+Vector3D DummyPhysicsEngineGeometryAdapter::getTorque() const { return Vector3D(); }
 
-}
-
-void DummyPhysicsEngineGeometryAdapter::resetForceAndTorque()
-{
-
-}
-
-Vector3D DummyPhysicsEngineGeometryAdapter::getVelocityAtPosition(const Vector3D& position) const
-{
-    return velocity;
-}
-
-Vector3D DummyPhysicsEngineGeometryAdapter::getLinearVelocity() const
-{
-    return Vector3D();
-}
-
-Vector3D DummyPhysicsEngineGeometryAdapter::getAngularVelocity() const
-{
-    return Vector3D();
-}
-
-Vector3D DummyPhysicsEngineGeometryAdapter::getPosition() const
-{
-    return Vector3D();
-}
-
-Vector3D DummyPhysicsEngineGeometryAdapter::getForce() const
-{
-    return Vector3D();
-}
-
-Vector3D DummyPhysicsEngineGeometryAdapter::getTorque() const
-{
-    return Vector3D();
-}
-
-void DummyPhysicsEngineGeometryAdapter::changeState(State state)
-{
-
-}
-
+void DummyPhysicsEngineGeometryAdapter::changeState(State state) {}
