@@ -3,6 +3,7 @@ image: irmb/virtualfluids-deps:latest
 stages:
   - build
   - test
+  - deploy
 
 build:
   stage: build
@@ -29,3 +30,40 @@ test:
 
   script:
     - build/bin/basicsTests
+
+
+
+benchmark_ClangBuildAnalyzer:
+  stage: deploy
+
+  only:
+    variables:
+      - $ENABLE_BENCHMARKS
+
+  tags:
+    - docker-benchmark
+
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - cmake --version
+    - ccache --version
+    - mpirun --version
+    - export CC=clang
+    - export CXX=clang++
+    - $CXX --version
+    - cd /tmp
+    - git clone https://github.com/aras-p/ClangBuildAnalyzer.git
+    - cd ClangBuildAnalyzer
+    - cmake .
+    - make
+    - export PATH+=:$(pwd)
+
+  script:
+    - mkdir $CI_PROJECT_DIR/build
+    - cd $CI_PROJECT_DIR/build
+    - cmake .. -DBUILD_VF_CPU=ON -DUSE_OPENMP=OFF -DCMAKE_CXX_FLAGS=-ftime-trace
+    - ClangBuildAnalyzer --start .
+    - make
+    - ClangBuildAnalyzer --stop . CBA
+    - ClangBuildAnalyzer --analyze CBA
