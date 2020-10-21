@@ -36,9 +36,6 @@ test:
 benchmark_ClangBuildAnalyzer:
   stage: deploy
 
-  tags:
-    - docker-benchmark
-
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update
