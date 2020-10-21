@@ -27,6 +27,8 @@ vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser ${CAB_ADDITIONAL_LIN
 
 vf_get_library_name(library_name)
 
+linkOpenMP(${library_name})
+
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/BoundaryConditions)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Connectors)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Data)

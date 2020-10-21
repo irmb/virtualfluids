@@ -14,14 +14,8 @@ set(MUPARSER_VERSION ${MUPARSER_VERSION_MAJOR}.${MUPARSER_VERSION_MINOR}.${MUPAR
 
 # Build options
 option(ENABLE_SAMPLES "Build the samples" OFF)
-option(ENABLE_OPENMP "Enable OpenMP for multithreading" ON)
+#option(ENABLE_OPENMP "Enable OpenMP for multithreading" ON)
 #option(BUILD_SHARED_LIBS "Build shared/static libs" ON)
-
-if(ENABLE_OPENMP)
-    find_package(OpenMP REQUIRED)
-    set(CMAKE_CXX_FLAGS "${OpenMP_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
-    set(CMAKE_SHARED_LIBRARY_CXX_FLAGS "${OpenMP_CXX_FLAGS} ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-endif()
 
 
 # Credit: https://stackoverflow.com/questions/2368811/how-to-set-warning-level-in-cmake/3818084
@@ -50,7 +44,7 @@ add_library(muparser
         src/muParserTokenReader.cpp
         )
 
-target_link_libraries(muparser PUBLIC OpenMP::OpenMP_CXX)
+linkOpenMP(muparser)
 target_include_directories(muparser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # this compiles the "DLL" interface (C API)
@@ -66,7 +60,7 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
     target_compile_definitions(muparser PRIVATE _DEBUG)
 endif ()
 
-if(ENABLE_OPENMP)
+if(USE_OPENMP)
     target_compile_definitions(muparser PRIVATE MUP_USE_OPENMP)
 endif()
 set_target_properties(muparser PROPERTIES
