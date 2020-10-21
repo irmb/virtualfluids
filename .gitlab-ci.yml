@@ -36,10 +36,6 @@ test:
 benchmark_ClangBuildAnalyzer:
   stage: deploy
 
-  only:
-    variables:
-      - $ENABLE_BENCHMARKS
-
   tags:
     - docker-benchmark
 
