@@ -40,7 +40,6 @@ benchmark_ClangBuildAnalyzer:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update
     - cmake --version
-    - ccache --version
     - mpirun --version
     - export CC=clang
     - export CXX=clang++
