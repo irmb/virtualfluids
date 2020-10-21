@@ -42,6 +42,8 @@ option(BUILD_VF_CLANG_TIDY "Add the clang tidy checks to the targets" OFF)
 
 option(BUILD_SHARED_LIBS "" ON)
 
+option(USE_OPENMP "Include OpenMP support" ON)
+
 #################################################################################
 #  CMAKE POLICIES
 #################################################################################
