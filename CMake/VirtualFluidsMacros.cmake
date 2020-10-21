@@ -105,6 +105,11 @@ function(vf_add_library)
     # enable clang tidy for this target
     if(BUILD_VF_CLANG_TIDY)
         find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
+
+        if(NOT CLANG_TIDY_COMMAND)
+            message(FATAL_ERROR "Clang-tidy command not found.")
+        endif()
+
         set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
     endif()
 
