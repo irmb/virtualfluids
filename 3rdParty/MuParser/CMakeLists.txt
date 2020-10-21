@@ -14,7 +14,7 @@ set(MUPARSER_VERSION ${MUPARSER_VERSION_MAJOR}.${MUPARSER_VERSION_MINOR}.${MUPAR
 
 # Build options
 option(ENABLE_SAMPLES "Build the samples" OFF)
-option(ENABLE_OPENMP "Enable OpenMP for multithreading" ON)
+#option(ENABLE_OPENMP "Enable OpenMP for multithreading" ON)
 #option(BUILD_SHARED_LIBS "Build shared/static libs" ON)
 
 
@@ -60,7 +60,7 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
     target_compile_definitions(muparser PRIVATE _DEBUG)
 endif ()
 
-if(ENABLE_OPENMP)
+if(USE_OPENMP)
     target_compile_definitions(muparser PRIVATE MUP_USE_OPENMP)
 endif()
 set_target_properties(muparser PROPERTIES
