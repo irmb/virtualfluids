@@ -68,6 +68,7 @@ test_python_bindings:
 
 deploy_to_phoenix:
   stage: deploy
+  needs: ["build"]
 
   before_script:
     - pip3 install ansible
