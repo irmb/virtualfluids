@@ -73,7 +73,7 @@ deploy_to_phoenix:
     - pip3 install ansible
 
   script:
-    - ansible-playbook -i ansible/hosts.txt ansible/playbook.yml
+    - ansible-playbook -i ansible/hosts.cfg ansible/playbook.yml
 
 create_release:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
