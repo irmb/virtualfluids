@@ -75,7 +75,8 @@ deploy_to_phoenix:
 
   script:
     - ls -l /root/.ssh
-    - chmod 700 /root/.ssh
+    - chmod 600 /root/.ssh/config
+    - chown root /root/.ssh/config
     - ls -l /root/.ssh
     - ansible-playbook -i ansible/hosts.cfg ansible/playbook.yml
 
