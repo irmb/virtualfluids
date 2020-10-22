@@ -3,6 +3,6 @@
   tasks:
     - name: Copy VirtualFluids_dev folder
       copy:
-        src: /VirtualFluids_dev
+        src: .
         dest: ~/VirtualFluids_dev
 
