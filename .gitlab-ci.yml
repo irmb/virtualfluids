@@ -3,6 +3,7 @@ image: irmb/virtualfluids-python-deps
 stages:
   - build
   - test
+  - deploy
   - release
 
 build:
@@ -24,6 +25,20 @@ build:
 
   script:
     - python3 setup.py install
+
+
+build_singularity_image:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_TAG
+
+  artifacts:
+    paths:
+      - Containers/VirtualFluidsOpenMPI.sif
+
+  script:
+    - singularity build Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
+    - ls -sh Containers/VirtualFluidsOpenMPI.sif
 
 
 virtual_fluids_basics_test:
@@ -51,19 +66,14 @@ test_python_bindings:
   script:
     - python3 -m unittest discover -s Python -v
 
+deploy_to_phoenix:
+  stage: deploy
 
-build_singularity_image:
-  stage: build
-  rules:
-    - if: $CI_COMMIT_TAG
-
-  artifacts:
-    paths:
-      - Containers/VirtualFluidsOpenMPI.sif
+  before_script:
+    - pip3 install ansible
 
   script:
-    - singularity build Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
-    - ls -sh Containers/VirtualFluidsOpenMPI.sif
+    - ansible-playbook -i ansible/hosts.txt ansible/playbook.yml
 
 create_release:
   image: registry.gitlab.com/gitlab-org/release-cli:latest

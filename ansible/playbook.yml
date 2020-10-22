@@ -1,0 +1,7 @@
+- hosts: targets
+  tasks:
+    - name: Copy VirtualFluids_dev folder
+      copy:
+        src: /VirtualFluids_dev
+        dest: ~/VirtualFluids_dev
+
