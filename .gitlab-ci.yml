@@ -74,6 +74,9 @@ deploy_to_phoenix:
     - pip3 install ansible
 
   script:
+    - ls -l /root/.ssh
+    - chmod 700 /root/.ssh
+    - ls -l /root/.ssh
     - ansible-playbook -i ansible/hosts.cfg ansible/playbook.yml
 
 create_release:
