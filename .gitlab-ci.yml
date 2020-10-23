@@ -83,3 +83,16 @@ benchmark_Include_what_you_use:
     - rm -r ./*
     - cmake .. -DBUILD_VF_CPU=ON -DUSE_OPENMP=OFF -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
     - make
+
+
+benchmark_cppcheck:
+  stage: deploy
+
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - apt-get install cppcheck
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - cppcheck src --enable=all
