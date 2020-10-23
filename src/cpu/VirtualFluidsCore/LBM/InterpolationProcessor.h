@@ -1,10 +1,9 @@
-#ifndef D3Q27INTRPOLATIOPROCESSOR_H_
-#define D3Q27INTRPOLATIOPROCESSOR_H_
+#ifndef INTERPOLATIONPROCESSOR_H
+#define INTERPOLATIONPROCESSOR_H
 
 #include "BCArray3D.h"
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
-#include "InterpolationProcessor.h"
 #include "LBMSystem.h"
 
 struct D3Q27ICell {

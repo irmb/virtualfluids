@@ -11,8 +11,10 @@ list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_RELEASE "-O3") # optimizat
 
 # all
 list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-fPIC") # position independent code for shared libraries
-LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-funroll-all-loops")
 
+if(NOT BUILD_VF_INCLUDE_WHAT_YOU_USE) # optimization flag '-funroll-all-loops' is not supported for IWYU
+    LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-funroll-all-loops")
+endif()
 
 #############################################################################################################
 # warnings
