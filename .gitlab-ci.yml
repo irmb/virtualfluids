@@ -78,7 +78,13 @@ deploy_to_phoenix:
     - chmod 600 /root/.ssh/config
     - chown root /root/.ssh/config
     - ls -l /root/.ssh
-    - ansible-playbook -i ansible/hosts.cfg ansible/playbook.yml
+    - ansible-playbook -i ansible/hosts.cfg ansible/playbook.yml -u $REMOTE_USER
+
+  parallel:
+    matrix:
+      - ANSIBLE_MATRIX: 0
+        REMOTE_USER:
+          - y0054816
 
 create_release:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
