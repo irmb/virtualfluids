@@ -84,7 +84,7 @@ deploy_to_phoenix:
     matrix:
       - ANSIBLE_MATRIX: 0
         REMOTE_USER:
-          - y0054816
+          - marcus
 
 create_release:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
