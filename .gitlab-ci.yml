@@ -73,13 +73,11 @@ deploy_to_phoenix:
   needs: ["build"]
 
   before_script:
+    - eval "$(ssh-agent -s)"
+    - ssh-add $SSH_PRIVATE_KEY
     - pip3 install ansible
 
   script:
-    - ls -l /root/.ssh
-    - chmod 600 /root/.ssh/config
-    - chown root /root/.ssh/config
-    - ls -l /root/.ssh
     - ansible-playbook -i ansible/hosts.cfg ansible/playbook.yml -u $REMOTE_USER
 
   parallel:
