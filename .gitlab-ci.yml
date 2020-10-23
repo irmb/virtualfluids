@@ -72,7 +72,7 @@ deploy_to_phoenix:
 
   before_script:
     - eval "$(ssh-agent -s)"
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - echo $SSH_PRIVATE_KEY | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - pip3 install ansible
