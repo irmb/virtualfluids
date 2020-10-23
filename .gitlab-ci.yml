@@ -52,8 +52,8 @@ benchmark_ClangBuildAnalyzer:
     - export PATH+=:$(pwd)
 
   script:
-    - mkdir $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
+    - rm -r ./*
     - cmake .. -DBUILD_VF_CPU=ON -DUSE_OPENMP=OFF -DCMAKE_CXX_FLAGS=-ftime-trace
     - ClangBuildAnalyzer --start .
     - make
