@@ -70,7 +70,6 @@ benchmark_Include_what_you_use:
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update
-    - $CXX --version
     - cd /tmp
     - git clone https://github.com/include-what-you-use/include-what-you-use.git
     - cd include-what-you-use
