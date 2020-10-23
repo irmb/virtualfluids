@@ -102,17 +102,6 @@ endfunction()
 #################################################################################
 function(vf_add_library)
 
-    # enable clang tidy for this target
-    if(BUILD_VF_CLANG_TIDY)
-        find_program(CLANG_TIDY_COMMAND NAMES clang-tidy)
-
-        if(NOT CLANG_TIDY_COMMAND)
-            message(FATAL_ERROR "Clang-tidy command not found.")
-        endif()
-
-        set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
-    endif()
-
     set( options )
     set( oneValueArgs )
     set( multiValueArgs NAME BUILDTYPE PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE)
@@ -131,7 +120,7 @@ function(vf_add_library)
     includeProductionFiles (${library_name} "${sourceFiles}")
 
     #################################################################
-    ###   EXCECUTABLE                                             ###
+    ###   ADD TARGET                                              ###
     #################################################################
     IF(${ARG_BUILDTYPE} MATCHES binary)
         ADD_EXECUTABLE(${library_name} ${MY_SRCS} )
@@ -154,11 +143,41 @@ function(vf_add_library)
             ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
             PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
+    # clang-tidy
+    if(BUILD_VF_CLANG_TIDY)
+        find_program(CLANG_TIDY_PROGRAM NAMES clang-tidy)
+
+        if(NOT CLANG_TIDY_PROGRAM)
+            message(FATAL_ERROR "Could not find the program clang-tidy.")
+        endif()
+
+        set_target_properties(${library_name}
+                PROPERTIES
+                CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
+
+        status_lib("clang-tidy enabled")
+    endif()
+
+    # include-what-you-use
+    if(BUILD_VF_INCLUDE_WHAT_YOU_USE)
+        find_program(IWYU_PROGRAM NAMES include-what-you-use iwyu)
+
+        if(NOT IWYU_PROGRAM)
+            message(FATAL_ERROR "Could not find the program include-what-you-use")
+        endif()
+
+        set_target_properties(${library_name}
+                PROPERTIES
+                CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PROGRAM})
+
+        status_lib("include-what-you-use enabled")
+    endif()
+
     #################################################################
     ###   ADDITIONAL LINK LIBRARIES                               ###
     #################################################################
-    status_lib("Link Depending Libraries: ${ARG_PUBLIC_LINK}")
-    status_lib("Link Depending Libraries: ${ARG_PRIVATE_LINK}")
+    status_lib("Link Depending public libraries: ${ARG_PUBLIC_LINK}")
+    status_lib("Link Depending private libraries: ${ARG_PRIVATE_LINK}")
     if (ARG_PUBLIC_LINK)
         target_link_libraries(${library_name} PUBLIC ${ARG_PUBLIC_LINK})
     endif()
