@@ -62,3 +62,25 @@ benchmark_ClangBuildAnalyzer:
     - make
     - ClangBuildAnalyzer --stop . CBA
     - ClangBuildAnalyzer --analyze CBA
+
+
+benchmark_Include_what_you_use:
+  stage: deploy
+
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - $CXX --version
+    - cd /tmp
+    - git clone https://github.com/include-what-you-use/include-what-you-use.git
+    - cd include-what-you-use
+    - git checkout clang_10
+    - cmake . -DCMAKE_PREFIX_PATH=/usr/lib/llvm-10
+    - make
+    - export PATH+=:$(pwd)/bin
+
+  script:
+    - cd $CI_PROJECT_DIR/build
+    - rm -r ./*
+    - cmake .. -DBUILD_VF_CPU=ON -DUSE_OPENMP=OFF -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
+    - make
