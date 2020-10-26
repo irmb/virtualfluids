@@ -72,6 +72,7 @@ deploy_to_phoenix:
 
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - apt-get install -y rsync
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - eval $(ssh-agent -s)
