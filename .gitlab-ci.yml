@@ -77,6 +77,7 @@ deploy_to_phoenix:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - echo $SSH_PRIVATE_KEY >> ansible/private_key
+    - ssh-keyscan -t rsa phoenix.hlr.rz.tu-bs.de >> ~/.ssh/known_hosts
     - pip3 install ansible
 
   script:
