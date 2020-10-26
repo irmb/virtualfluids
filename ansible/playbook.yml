@@ -1,0 +1,30 @@
+- hosts: gitlab_ci_deploy_targets
+  tasks:
+    - name: Create remote VirtualFluids_dev dir
+      command: mkdir ~/VirtualFluids_dev
+      ignore_errors: yes
+
+    - name: Synchronize VirtualFluids_dev with remote
+      synchronize:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        rsync_opts:
+          - "--exclude=.venv"
+          - "--exclude=__pycache__"
+      loop:
+        - { src: '../3rdParty', dest: '~/VirtualFluids_dev/3rdParty' }
+        - { src: '../apps', dest: '~/VirtualFluids_dev/apps' }
+        - { src: '../CMake', dest: '~/VirtualFluids_dev/CMake' }
+        - { src: '../Containers', dest: '~/VirtualFluids_dev/Containers' }
+        - { src: '../Python', dest: '~/VirtualFluids_dev/Python' }
+        - { src: '../src', dest: '~/VirtualFluids_dev/src' }
+        - { src: '../.clang-format', dest: '~/VirtualFluids_dev/.clang-format' }
+        - { src: '../.clang-tidy', dest: '~/VirtualFluids_dev/.clang-tidy' }
+        - { src: '../CMakeLists.txt', dest: '~/VirtualFluids_dev/CMakeLists.txt' }
+        - { src: '../cpu.cmake', dest: '~/VirtualFluids_dev/cpu.cmake' }
+        - { src: '../gpu.cmake', dest: '~/VirtualFluids_dev/gpu.cmake' }
+        - { src: '../pyproject.toml', dest: '~/VirtualFluids_dev/pyproject.toml' }
+        - { src: '../setup.py', dest: '~/VirtualFluids_dev/setup.py' }
+
+
+

@@ -1,31 +1,107 @@
-image: irmb/virtualfluids-deps:latest
+image: irmb/virtualfluids-python-deps
 
 stages:
   - build
   - test
+  - deploy
+  - release
 
 build:
   stage: build
 
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - _skbuild
+
   artifacts:
     paths:
-      - build/
+      - _skbuild/
+      - Python/venv
 
   before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
+    - python3 -m venv --system-site-packages Python/venv
+    - source Python/venv/bin/activate
 
   script:
-    - cmake -S . -B build -DBUILD_VF_CPU:BOOL=ON -DBUILD_VF_UNIT_TESTS:BOOL=ON
-    - cmake --build build --target VirtualFluidsCore
-    - cmake --build build --target basicsTests
+    - python3 setup.py install
 
 
-test:
+build_singularity_image:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_TAG
+
+  artifacts:
+    paths:
+      - Containers/VirtualFluidsOpenMPI.sif
+
+  script:
+    - singularity build Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
+    - ls -sh Containers/VirtualFluidsOpenMPI.sif
+
+
+virtual_fluids_basics_test:
   stage: test
 
   before_script:
-    - export DEBIAN_FRONTEND=noninteractive
+    - export VF_UNITTESTS=$(find _skbuild -name basicsTests)
 
   script:
-    - build/bin/basicsTests
+    - $VF_UNITTESTS
+
+
+test_python_bindings:
+  stage: test
+
+  artifacts:
+    when: on_failure
+    paths:
+      - output/mq/mq10000/
+
+  before_script:
+    - export PYTHONPATH="Python"
+    - source Python/venv/bin/activate
+
+  script:
+    - python3 -m unittest discover -s Python -v
+
+deploy_to_phoenix:
+  stage: deploy
+  needs: ["build"]
+
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - apt-get install -y rsync
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - echo $SSH_PRIVATE_KEY >> ansible/private_key
+    - ssh-keyscan -t rsa phoenix.hlr.rz.tu-bs.de >> ~/.ssh/known_hosts
+    - pip3 install ansible
+
+  script:
+    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook.yml
+
+  parallel:
+    matrix:
+      - ANSIBLE_MATRIX: 0
+        REMOTE_USER:
+          - y0054816
+
+create_release:
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  stage: release
+  needs: ["build_singularity_image"]
+  rules:
+    - if: $CI_COMMIT_TAG
+
+  script:
+    - echo "Creating release with tag $CI_COMMIT_TAG"
+    - release-cli create --name "VirtualFluids $CI_COMMIT_TAG" \
+      --description "VirtualFluids CFD Simulator" \
+      --tag-name "$CI_COMMIT_TAG" \
+      --ref "$CI_COMMIT_SHA" \
+      --job-token "$CI_JOB_TOKEN" \
+      --assets-link="{'name':'VirtualFluidsSingularityImage_OpenMPI','url':'','type':'other','filepath':'Containers/VirtualFluidsOpenMPI.sif'}"
