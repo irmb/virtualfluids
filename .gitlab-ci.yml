@@ -71,14 +71,14 @@ deploy_to_phoenix:
   needs: ["build"]
 
   before_script:
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - pip3 install ansible
 
   script:
-    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook.yml -vvv
+    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook.yml -vvvv
 
   parallel:
     matrix:
