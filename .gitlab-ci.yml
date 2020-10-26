@@ -75,10 +75,11 @@ deploy_to_phoenix:
     - chmod 700 ~/.ssh
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - echo $SSH_PRIVATE_KEY >> ansible/private_key
     - pip3 install ansible
 
   script:
-    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook.yml -vvvv
+    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook.yml
 
   parallel:
     matrix:
