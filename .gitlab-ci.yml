@@ -67,6 +67,9 @@ benchmark_ClangBuildAnalyzer:
 benchmark_Include_what_you_use:
   stage: deploy
 
+  rules:
+    - when: manual
+
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update
@@ -98,4 +101,9 @@ benchmark_cppcheck:
     - cppcheck --version
     - cppcheck src --enable=all --xml 2> report.xml
     - cppcheck-htmlreport --file=report.xml --report-dir=html_report --source-dir=.
+
+  artifacts:
+    paths:
+      - html_report/
+
 
