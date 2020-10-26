@@ -1,0 +1,10 @@
+- hosts: gitlab_ci_deploy_cppcheck
+  tasks:
+    - name: Create remote cppcheck dir
+      command: mkdir ~/cppcheck
+      ignore_errors: yes
+
+    - name: Synchronize cppcheck with remote
+      synchronize:
+        src: "../html_report"
+        dest: "~/cppcheck/html_report"

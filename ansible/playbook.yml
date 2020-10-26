@@ -25,6 +25,3 @@
         - { src: '../gpu.cmake', dest: '~/VirtualFluids_dev/gpu.cmake' }
         - { src: '../pyproject.toml', dest: '~/VirtualFluids_dev/pyproject.toml' }
         - { src: '../setup.py', dest: '~/VirtualFluids_dev/setup.py' }
-
-
-

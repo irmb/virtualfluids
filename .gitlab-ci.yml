@@ -188,3 +188,19 @@ cppcheck:
       - html_report/
 
 
+deploy_cppcheck_to_elladan:
+  stage: deploy
+  needs: ["cppcheck"]
+
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - apt-get install -y rsync
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "SSH_PRIVATE_KEY_ELLADAN" | tr -d '\r' | ssh-add -
+    - ssh-keyscan -t rsa elladan.irmb.bau.tu-bs.de >> ~/.ssh/known_hosts
+    - pip3 install ansible
+
+  script:
+    - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_cppcheck.yml
