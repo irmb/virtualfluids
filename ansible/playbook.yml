@@ -6,7 +6,7 @@
 
     - name: Synchronize VirtualFluids_dev with remote
       synchronize:
-        src: "{{ item. src }}"
+        src: "{{ item.src }}"
         dest: "{{ item.dest }}"
         rsync_opts:
           - "--exclude=.venv"
