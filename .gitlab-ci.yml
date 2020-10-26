@@ -198,7 +198,7 @@ deploy_cppcheck_to_elladan:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - eval $(ssh-agent -s)
-    - echo "SSH_PRIVATE_KEY_ELLADAN" | tr -d '\r' | ssh-add -
+    - echo "$SSH_PRIVATE_KEY_ELLADAN" | tr -d '\r' | ssh-add -
     - ssh-keyscan -t rsa elladan.irmb.bau.tu-bs.de >> ~/.ssh/known_hosts
     - pip3 install ansible
 
