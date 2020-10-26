@@ -95,4 +95,7 @@ benchmark_cppcheck:
 
   script:
     - cd $CI_PROJECT_DIR
-    - cppcheck src --enable=all
+    - cppcheck --version
+    - cppcheck src --enable=all --xml 2> report.xml
+    - cppcheck-htmlreport --file=report.xml --report-dir=html_report --source-dir=.
+
