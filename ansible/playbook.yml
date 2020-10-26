@@ -1,4 +1,5 @@
 - hosts: targets
+  remote_user: y0054816
   tasks:
     - name: Create remote VirtualFluids_dev dir
       command: mkdir ~/VirtualFluids_dev
