@@ -173,6 +173,21 @@ function(vf_add_library)
         status_lib("include-what-you-use enabled")
     endif()
 
+    # cppcheck
+    if(BUILD_VF_CPPCHECK)
+        find_program(CPPCHECK_PROGRAM NAMES cppcheck)
+
+        if(NOT CPPCHECK_PROGRAM)
+            message(FATAL_ERROR "Could not find the program cppcheck")
+        endif()
+
+        set_target_properties(${library_name}
+                PROPERTIES
+                CXX_CPPCHECK "${CPPCHECK_PROGRAM};--enable=all")
+
+        status_lib("cppcheck enabled")
+    endif()
+
     #################################################################
     ###   ADDITIONAL LINK LIBRARIES                               ###
     #################################################################

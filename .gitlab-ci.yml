@@ -105,3 +105,86 @@ create_release:
       --ref "$CI_COMMIT_SHA" \
       --job-token "$CI_JOB_TOKEN" \
       --assets-link="{'name':'VirtualFluidsSingularityImage_OpenMPI','url':'','type':'other','filepath':'Containers/VirtualFluidsOpenMPI.sif'}"
+    - build/bin/basicsTests
+
+
+###############################################################################
+##                                                                           ##
+##    Deploy: Code analysis                                                  ##
+##                                                                           ##
+###############################################################################
+
+clangBuildAnalyzer:
+  stage: test
+
+  rules:
+    - when: manual
+
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - cmake --version
+    - mpirun --version
+    - export CC=clang
+    - export CXX=clang++
+    - $CXX --version
+    - cd /tmp
+    - git clone https://github.com/aras-p/ClangBuildAnalyzer.git
+    - cd ClangBuildAnalyzer
+    - cmake .
+    - make
+    - export PATH+=:$(pwd)
+
+  script:
+    - mkdir $CI_PROJECT_DIR/build
+    - cd $CI_PROJECT_DIR/build
+    - cmake .. -DBUILD_VF_CPU=ON -DUSE_OPENMP=OFF -DCMAKE_CXX_FLAGS=-ftime-trace
+    - ClangBuildAnalyzer --start .
+    - make
+    - ClangBuildAnalyzer --stop . CBA
+    - ClangBuildAnalyzer --analyze CBA
+
+
+include_what_you_use:
+  stage: test
+
+  rules:
+    - when: manual
+
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - cd /tmp
+    - git clone https://github.com/include-what-you-use/include-what-you-use.git
+    - cd include-what-you-use
+    - git checkout clang_10
+    - cmake . -DCMAKE_PREFIX_PATH=/usr/lib/llvm-10
+    - make
+    - export PATH+=:$(pwd)/bin
+
+  script:
+    - mkdir $CI_PROJECT_DIR/build
+    - cd $CI_PROJECT_DIR/build
+    - cmake .. -DBUILD_VF_CPU=ON -DUSE_OPENMP=OFF -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
+    - make
+
+
+cppcheck:
+  stage: test
+
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - apt-get install -y cppcheck
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - cppcheck --version
+    - cppcheck src --enable=all --xml 2> report.xml
+    - cppcheck-htmlreport --file=report.xml --report-dir=html_report --source-dir=.
+
+  artifacts:
+    paths:
+      - html_report/
+
+

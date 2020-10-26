@@ -40,6 +40,7 @@ option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
 option(BUILD_VF_CLANG_TIDY "Add the clang tidy checks to the targets" OFF)
 option(BUILD_VF_INCLUDE_WHAT_YOU_USE "Add IWYU to the targets" OFF)
+option(BUILD_VF_CPPCHECK "Add cppcheck to the targets" OFF)
 
 option(BUILD_SHARED_LIBS "" ON)
 
