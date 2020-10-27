@@ -221,5 +221,8 @@ lizard:
 
   script:
     - cd $CI_PROJECT_DIR
-    - lizard -l cpp apps/cpu/LaminarTubeFlow
-    - ls -la
+    - lizard -l cpp src/cpu/VirtualFluids.h> lizard.txt
+
+  artifacts:
+    paths:
+      - lizard.txt
