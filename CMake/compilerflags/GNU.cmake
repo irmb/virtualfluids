@@ -16,6 +16,12 @@ if(NOT BUILD_VF_INCLUDE_WHAT_YOU_USE) # optimization flag '-funroll-all-loops' i
     LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-funroll-all-loops")
 endif()
 
+# gcov
+if (BUILD_VF_COVERAGE)
+    list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "--coverage")
+    set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} " --coverage")
+endif()
+
 #############################################################################################################
 # warnings
 #############################################################################################################
