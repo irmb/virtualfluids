@@ -247,8 +247,8 @@ gcov:
     - mkdir coverage
     - gcovr -r $CI_PROJECT_DIR -k build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
 
-artifacts:
-  paths:
-    - coverage/
-  reports:
-    cobertura: coverage/coverage.xml
+  artifacts:
+    paths:
+      - coverage/
+    reports:
+      cobertura: coverage/coverage.xml
