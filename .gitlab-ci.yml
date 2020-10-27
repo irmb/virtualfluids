@@ -231,6 +231,8 @@ lizard:
 gcov:
   stage: test
 
+  only: ["schedules"]
+
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update
