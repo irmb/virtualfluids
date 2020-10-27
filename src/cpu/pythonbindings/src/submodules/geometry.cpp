@@ -3,6 +3,7 @@
 #include <geometry3d/GbObject3D.h>
 #include <geometry3d/GbCuboid3D.h>
 #include <geometry3d/GbLine3D.h>
+#include <Interactors/Interactor3D.h>
 
 
 namespace py = pybind11;
@@ -63,4 +64,13 @@ void makeGeometryModule(py::module &parentModule)
                        << "point2: " << GbPoint3D_repr_(instance.getPoint2()) << ">";
                 return stream.str();
             });
+
+
+    py::class_<Interactor3D, std::shared_ptr<Interactor3D>>(geometry, "State")
+            .def_readonly_static("SOLID", &Interactor3D::SOLID)
+            .def_readonly_static("INVERSESOLID", &Interactor3D::INVERSESOLID)
+            .def_readonly_static("TIMEDEPENDENT", &Interactor3D::TIMEDEPENDENT)
+            .def_readonly_static("FLUID", &Interactor3D::FLUID)
+            .def_readonly_static("MOVEABLE", &Interactor3D::MOVEABLE)
+            .def_readonly_static("CHANGENOTNECESSARY", &Interactor3D::CHANGENOTNECESSARY);
 }
