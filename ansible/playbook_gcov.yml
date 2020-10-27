@@ -6,5 +6,5 @@
 
     - name: Synchronize gcov with remote
       synchronize:
-        src: "../gcov"
-        dest: "~/coverage"
+        src: "../coverage"
+        dest: "~/gcov"
