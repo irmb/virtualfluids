@@ -117,8 +117,7 @@ create_release:
 clangBuildAnalyzer:
   stage: test
 
-  rules:
-    - when: manual
+  only: schedules
 
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
@@ -148,8 +147,7 @@ clangBuildAnalyzer:
 include_what_you_use:
   stage: test
 
-  rules:
-    - when: manual
+  only: schedules
 
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
