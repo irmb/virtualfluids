@@ -1,10 +1,10 @@
 - hosts: gitlab_ci_deploy_gcov
   tasks:
     - name: Create remote gcov dir
-      command: mkdir ~/coverage
+      command: mkdir ~/gcov
       ignore_errors: yes
 
     - name: Synchronize gcov with remote
       synchronize:
-        src: "../coverage"
-        dest: "~/coverage/html_report"
+        src: "../gcov"
+        dest: "~/coverage"
