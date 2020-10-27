@@ -7,4 +7,4 @@
     - name: Synchronize cppcheck with remote
       synchronize:
         src: "../html_report"
-        dest: "~/cppcheck/html_report"
+        dest: "~/cppcheck"

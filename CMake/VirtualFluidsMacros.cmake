@@ -267,6 +267,9 @@ function(vf_add_tests)
     target_include_directories(${library_test_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(${library_test_name} PRIVATE ${VF_SRC_DIR})
 
+    # flags
+    addAdditionalFlags(${library_test_name})
+
     # link googlemock
     linkGMOCK()
 

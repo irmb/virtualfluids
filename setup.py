@@ -1,6 +1,6 @@
 from skbuild import setup
 
-cmake_args = ["-DBUILD_VF_CPU:BOOL=ON", "-DUSE_METIS=ON", "-DUSE_MPI=ON", "-DBUILD_SHARED_LIBS=OFF",
+cmake_args = ["-DBUILD_VF_CPU:BOOL=ON", "-DUSE_METIS=ON", "-DUSE_MPI=ON", "-DBUILD_SHARED_LIBS=OFF", "-DBUILD_VF_PYTHON_BINDINGS=ON",
               "-DBUILD_VF_UNIT_TESTS:BOOL=ON"]
 
 setup(

@@ -85,8 +85,11 @@ add_subdirectory(${VF_THIRD_DIR}/MuParser)
 add_subdirectory(${VF_THIRD_DIR}/pybind11/pybind11-2.5.0)
 
 add_subdirectory(src/cpu/VirtualFluidsCore)
-add_subdirectory(src/cpu/simulationconfig)
-add_subdirectory(src/cpu/pythonbindings)
+
+if(BUILD_VF_PYTHON_BINDINGS)
+    add_subdirectory(src/cpu/simulationconfig)
+    add_subdirectory(src/cpu/pythonbindings)
+endif()
 
 set (APPS_ROOT_CPU "${VF_ROOT_DIR}/apps/cpu/")
 include(${APPS_ROOT_CPU}/Applications.cmake)
