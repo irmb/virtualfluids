@@ -258,6 +258,9 @@ gcov:
 
 deploy_gcov_to_elladan:
   stage: deploy
+
+  only: ["schedules"]
+
   needs: ["gcov"]
 
   before_script:
