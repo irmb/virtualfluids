@@ -226,3 +226,29 @@ lizard:
   artifacts:
     paths:
       - lizard.txt
+
+# code coverage
+gcov:
+  stage: test
+
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - pip3 install gcovr
+    - gcovr --version
+
+  script:
+    - mkdir $CI_PROJECT_DIR/build
+    - cd $CI_PROJECT_DIR/build
+    - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_COVERAGE=ON -DBUILD_VF_UNIT_TESTS=ON
+    - make -j4
+    - ./bin/basicsTests
+    - cd ..
+    - mkdir coverage
+    - gcovr -r $CI_PROJECT_DIR -k build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
+
+artifacts:
+  paths:
+    - coverage/
+  reports:
+    cobertura: coverage/coverage.xml
