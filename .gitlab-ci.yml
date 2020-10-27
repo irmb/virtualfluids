@@ -223,7 +223,3 @@ lizard:
     - cd $CI_PROJECT_DIR
     - lizard -l cpp src/
     - ls -la
-
-  artifacts:
-    paths:
-      - $CI_PROJECT_DIR/lizard.txt
