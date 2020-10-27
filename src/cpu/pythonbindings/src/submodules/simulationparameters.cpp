@@ -30,4 +30,5 @@ void makeParametersModule(py::module &parentModule)
             .def_readwrite("number_of_timesteps", &SimulationParameters::numberOfTimeSteps)
             .def_readwrite("timestep_log_interval", &SimulationParameters::timeStepLogInterval)
             .def_readwrite("number_of_threads", &SimulationParameters::numberOfThreads);
+
 }

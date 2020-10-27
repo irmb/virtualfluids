@@ -1,6 +1,6 @@
 from pyfluids import Simulation
 from pyfluids.boundaryconditions import NoSlipBCAdapter, NoSlipBCAlgorithm
-from pyfluids.geometry import GbCuboid3D
+from pyfluids.geometry import GbCuboid3D, State
 from pyfluids.kernel import LBMKernel, KernelType
 from pyfluids.parameters import SimulationParameters, GridParameters, PhysicalParameters
 from pyfluids.writer import Writer, WriterType
@@ -56,7 +56,7 @@ def run_simulation(physical_params=physical_params, grid_params=grid_params, sim
                    g_max_x2 + block_length,
                    g_min_x3),
         no_slip_adapter,
-        1, "/geo/addWallZMin")
+        State.SOLID, "/geo/addWallZMin")
 
     simulation.add_object(
         GbCuboid3D(g_min_x1 - block_length,
@@ -66,7 +66,7 @@ def run_simulation(physical_params=physical_params, grid_params=grid_params, sim
                    g_max_x2 + block_length,
                    g_max_x3 + block_length),
         no_slip_adapter,
-        1, "/geo/addWallZMax")
+        State.SOLID, "/geo/addWallZMax")
 
     simulation.run_simulation()
 
