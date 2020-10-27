@@ -221,5 +221,5 @@ lizard:
 
   script:
     - cd $CI_PROJECT_DIR
-    - lizard -l cpp src/
+  #  - lizard -l cpp src/
     - ls -la
