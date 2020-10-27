@@ -215,7 +215,7 @@ lizard:
     - cd /tmp
     - git clone https://github.com/terryyin/lizard.git
     - cd lizard
-    - python setup.py install
+    - python3 setup.py install
     - which lizard
     - lizard --version
 
