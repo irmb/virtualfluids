@@ -204,3 +204,27 @@ deploy_cppcheck_to_elladan:
 
   script:
     - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_cppcheck.yml
+
+
+# lizard - Cyclomatic Complexity Analyzer
+# Ignore warnings is manually set to 191. This job will fail when new warnings are added.
+lizard:
+  stage: test
+
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - cd /tmp
+    - git clone https://github.com/terryyin/lizard.git
+    - cd lizard
+    - python3 setup.py install
+    - which lizard
+    - lizard --version
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - lizard -l cpp src/ > lizard.txt --ignore_warnings 191
+
+  artifacts:
+    paths:
+      - lizard.txt
