@@ -20,7 +20,7 @@ macro(loadMachineFile)
     SET(CMAKE_CONFIG_FILE "${VF_CMAKE_DIR}/cmake_config_files/${CAB_MACHINE}.config.cmake")
 
     IF(NOT EXISTS ${CMAKE_CONFIG_FILE})
-        status("No configuration file found.")
+        status("No configuration file found for machine: ${CAB_MACHINE}.")
     ELSE()
         status("Load configuration file ${CAB_MACHINE}.config.cmake")
         include(${CMAKE_CONFIG_FILE})
