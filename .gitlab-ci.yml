@@ -231,8 +231,6 @@ lizard:
 gcov:
   stage: test
 
-  only: ["schedules"]
-
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update
@@ -240,9 +238,9 @@ gcov:
     - gcovr --version
 
   script:
-    - mkdir $CI_PROJECT_DIR/build
-    - cd $CI_PROJECT_DIR/build
-    - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_COVERAGE=ON -DBUILD_VF_UNIT_TESTS=ON
+    - mkdir $CI_PROJECT_DIR/gcov_build
+    - cd $CI_PROJECT_DIR/gcov_build
+    - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON -DBUILD_VF_COVERAGE=ON -DBUILD_VF_UNIT_TESTS=ON
     - make -j4
     - ./bin/basicsTests
     - cd ..
@@ -252,6 +250,8 @@ gcov:
   artifacts:
     paths:
       - coverage/
+      - gcov_build/
+
     reports:
       cobertura: coverage/coverage.xml
 
