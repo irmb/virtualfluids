@@ -242,6 +242,7 @@ gcov:
     - wget https://github.com/NVIDIA/cuda-samples/archive/10.1.2.zip
     - unzip 10.1.2.zip
     - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
+    - printenv
 
   script:
     - mkdir $CI_PROJECT_DIR/gcov_build
