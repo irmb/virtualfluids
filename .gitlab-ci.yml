@@ -237,6 +237,11 @@ gcov:
     - pip3 install gcovr
     - gcovr --version
     - apt-get install -y libboost-serialization-dev
+    - cd /tmp
+    - apt-get install unzip
+    - wget https://github.com/NVIDIA/cuda-samples/archive/10.1.2.zip
+    - unzip 10.1.2.zip
+    - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
 
   script:
     - mkdir $CI_PROJECT_DIR/gcov_build
