@@ -236,6 +236,7 @@ gcov:
     - apt-get update
     - pip3 install gcovr
     - gcovr --version
+    - apt-get install -y libboost-serialization-dev
 
   script:
     - mkdir $CI_PROJECT_DIR/gcov_build
