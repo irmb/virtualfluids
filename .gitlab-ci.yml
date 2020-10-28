@@ -252,7 +252,7 @@ gcov:
     - ./bin/basicsTests
     - cd ..
     - mkdir coverage
-    - gcovr -r $CI_PROJECT_DIR -k build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
+    - gcovr -r $CI_PROJECT_DIR -k gcov_build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
 
   artifacts:
     paths:
