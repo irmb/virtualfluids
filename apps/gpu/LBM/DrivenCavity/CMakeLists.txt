@@ -4,4 +4,6 @@ PROJECT(DrivenCavity)
 
 vf_add_library(BUILDTYPE binary PRIVATE_LINK VirtualFluids_GPU basics GridGenerator FILES DrivenCavity.cpp )
 
+set_source_files_properties(DrivenCavity.cpp PROPERTIES LANGUAGE CUDA)
+
 linkCUDA()
