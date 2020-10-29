@@ -295,6 +295,7 @@ windows:
 
   before_script:
     - git --version
+    - $env:Path += ";C:\Program Files\CMake\bin\"
     - cmake --version
 
   script:
