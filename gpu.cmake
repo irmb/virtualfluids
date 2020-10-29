@@ -8,13 +8,6 @@
 #SET(CUDA_SAMPLE_INCLUDE_DIR "/cluster/cuda/9.0/samples/common/inc" CACHE PATH "CUDA_CUT_INCLUDE_DIR")
 
 #############################################################
-###                   PROJECT SETTINGS                    ###
-#############################################################
-
-project(VirtualFluidsGPU)
-
-
-#############################################################
 ###                         OPTIONS                       ###
 #############################################################
 option(VF.BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )

@@ -17,8 +17,6 @@
 #set(CMAKE_C_COMPILER mpicc)
 #set(CMAKE_CXX_COMPILER mpiCC)
 
-PROJECT(VirtualFluids)
-
 #debug build for unix
 #IF(UNIX)
 #SET(CMAKE_BUILD_TYPE DEBUG)
