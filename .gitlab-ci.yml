@@ -306,8 +306,8 @@ windows:
     - cd build
     - cmake .. -DBUILD_VF_CPU=OFF -DBUILD_VF_GPU=ON -DBUILD_VF_UNIT_TESTS=ON -G "$env:CMAKE_GENERATOR" ..
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
-    - echo $env:CMAKE_GENERATOR"
-    - .\bin\"$env:BUILD_CONFIGURATION"\basicsTests.exe
+    - echo $env:CMAKE_GENERATOR
+    - .\bin\$env:BUILD_CONFIGURATION\basicsTests.exe
 
   variables:
     CMAKE_GENERATOR: "Visual Studio 16 2019"
