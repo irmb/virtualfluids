@@ -300,4 +300,4 @@ windows:
 
   script:
     - cd $CI_PROJECT_DIR
-    - ls -la
+    - dir
