@@ -284,3 +284,18 @@ deploy_gcov_to_elladan:
 
   script:
     - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_gcov.yml
+
+
+# windows
+windows:
+  stage: build
+
+  tags:
+    - windows10
+
+  before_script:
+    - git --version
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - ls -la
