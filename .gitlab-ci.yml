@@ -295,6 +295,7 @@ windows:
 
   before_script:
     - git --version
+    - cmake --version
 
   script:
     - cd $CI_PROJECT_DIR
