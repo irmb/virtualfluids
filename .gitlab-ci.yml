@@ -244,7 +244,7 @@ gcov:
     - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
 
   script:
-    - mkdir $CI_PROJECT_DIR/gcov_build
+    - mkdir -p $CI_PROJECT_DIR/gcov_build
     - cd $CI_PROJECT_DIR/gcov_build
     - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON -DBUILD_VF_COVERAGE=ON -DBUILD_VF_UNIT_TESTS=ON
     - make -j4
@@ -302,7 +302,7 @@ windows:
 
   script:
     - cd $CI_PROJECT_DIR
-    - mkdir build
+    - md -force build
     - cd build
     - cmake .. -DBUILD_VF_CPU=OFF -DBUILD_VF_GPU=ON -DBUILD_VF_UNIT_TESTS=ON -G "$CMAKE_GENERATOR" ..
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
