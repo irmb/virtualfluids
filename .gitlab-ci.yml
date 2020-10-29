@@ -306,4 +306,4 @@ windows:
     #- MSBuild.exe walberla.sln /property:Configuration=$BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
 
   variables:
-    CMAKE_GENERATOR: "Visual Studio 16 2019 Win64"
+    CMAKE_GENERATOR: "Visual Studio 16 2019"
