@@ -242,7 +242,6 @@ gcov:
     - wget https://github.com/NVIDIA/cuda-samples/archive/10.1.2.zip
     - unzip 10.1.2.zip
     - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
-    - printenv
 
   script:
     - mkdir $CI_PROJECT_DIR/gcov_build
@@ -261,6 +260,11 @@ gcov:
 
     reports:
       cobertura: coverage/coverage.xml
+
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-gcov"
+    paths:
+      - gcov_build/
 
 
 deploy_gcov_to_elladan:
