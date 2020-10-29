@@ -244,7 +244,7 @@ gcov:
     - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
 
   script:
-    - mkdir $CI_PROJECT_DIR/gcov_build
+    - mkdir -p $CI_PROJECT_DIR/gcov_build
     - cd $CI_PROJECT_DIR/gcov_build
     - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON -DBUILD_VF_COVERAGE=ON -DBUILD_VF_UNIT_TESTS=ON
     - make -j4
@@ -284,3 +284,35 @@ deploy_gcov_to_elladan:
 
   script:
     - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_gcov.yml
+
+
+# windows
+windows:
+  stage: build
+
+  tags:
+    - windows10
+
+  before_script:
+    - git --version
+    - $env:Path += ";C:\Program Files\CMake\bin\"
+    - cmake --version
+    - $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin"
+    - MSBuild.exe -version
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - md -force build
+    - cd build
+    - cmake .. -DBUILD_VF_CPU=OFF -DBUILD_VF_GPU=ON -DBUILD_VF_UNIT_TESTS=ON -G "$env:CMAKE_GENERATOR" ..
+    - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
+    - . ".\bin\$env:BUILD_CONFIGURATION\basicsTests.exe"
+
+  variables:
+    CMAKE_GENERATOR: "Visual Studio 16 2019"
+    BUILD_CONFIGURATION: "Release"
+
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-windows"
+    paths:
+      - $CI_PROJECT_DIR/build/
