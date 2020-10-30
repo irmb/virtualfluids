@@ -283,6 +283,7 @@ clang-tidy:
     - mkdir -p build_clang_tidy
     - cd build_clang_tidy
     - cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=OFF
+    - ./utilities/filterCompileCommands.py compile_commands.json
     - run-clang-tidy -quiet > clang-tidy-results.txt
 
   artifacts:

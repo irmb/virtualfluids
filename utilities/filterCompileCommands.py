@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+
+import json
+import sys
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("usage: ./filterCompileCommands.py compile_commands.json")
+        exit(-1)
+
+    filename = sys.argv[1]
+    print("loading compile commands file: {}".format(filename))
+
+    fin = open(filename, "r")
+    cc = json.load(fin)
+    fin.close()
+
+    print("compile commands read: {}".format(len(cc)))
