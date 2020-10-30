@@ -286,13 +286,24 @@ deploy_gcov_to_elladan:
     - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_gcov.yml
 
 
-# windows
-windows:
+# windows build
+msvc_16_0:
   stage: build
 
   tags:
-    - windows10
+    - win
+    - gpu
 
+  variables:
+    CMAKE_GENERATOR: "Visual Studio 16 2019"
+    BUILD_CONFIGURATION: "Release"
+    BUILD_FOLDER: "build"
+    BUILD_VF_CPU: "ON"
+    BUILD_VF_GPU: "ON"
+    BUILD_VF_UNIT_TESTS: "ON"
+
+  # add cmake and MSBuild.exe to the path.
+  # This Needs to be adapted when moved to a new build machine.
   before_script:
     - git --version
     - $env:Path += ";C:\Program Files\CMake\bin\"
@@ -302,17 +313,14 @@ windows:
 
   script:
     - cd $CI_PROJECT_DIR
-    - md -force build
-    - cd build
-    - cmake .. -DBUILD_VF_CPU=OFF -DBUILD_VF_GPU=ON -DBUILD_VF_UNIT_TESTS=ON -G "$env:CMAKE_GENERATOR" ..
+    - md -force $env:BUILD_FOLDER
+    - cd $env:BUILD_FOLDER
+    - cmake .. -DBUILD_VF_CPU=$env:BUILD_VF_CPU -DBUILD_VF_GPU=$env:BUILD_VF_GPU -DBUILD_VF_UNIT_TESTS=$env:BUILD_VF_UNIT_TESTS -G "$env:CMAKE_GENERATOR" ..
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
     - . ".\bin\$env:BUILD_CONFIGURATION\basicsTests.exe"
 
-  variables:
-    CMAKE_GENERATOR: "Visual Studio 16 2019"
-    BUILD_CONFIGURATION: "Release"
 
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-windows"
     paths:
-      - $CI_PROJECT_DIR/build/
+      - $CI_PROJECT_DIR/$env:BUILD_FOLDER/
