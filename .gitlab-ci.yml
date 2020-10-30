@@ -3,10 +3,15 @@ image: irmb/virtualfluids-python-deps
 stages:
   - build
   - test
+  - analyze
   - deploy
   - release
 
-build:
+
+###############################################################################
+##                                Builds                                     ##
+###############################################################################
+gcc_9_python:
   stage: build
 
   cache:
@@ -27,6 +32,47 @@ build:
     - python3 setup.py install
 
 
+msvc_16:
+  stage: build
+
+  tags:
+    - win
+    - gpu
+
+  variables:
+    CMAKE_GENERATOR: "Visual Studio 16 2019"
+    BUILD_CONFIGURATION: "Release"
+    BUILD_FOLDER: "build"
+    BUILD_VF_CPU: "ON"
+    BUILD_VF_GPU: "ON"
+    BUILD_VF_UNIT_TESTS: "ON"
+
+  # add cmake and MSBuild.exe to the path.
+  # This Needs to be adapted when moved to a new build machine.
+  before_script:
+    - git --version
+    - $env:Path += ";C:\Program Files\CMake\bin\"
+    - cmake --version
+    - $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin"
+    - MSBuild.exe -version
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - md -force $env:BUILD_FOLDER
+    - cd $env:BUILD_FOLDER
+    - cmake .. -DBUILD_VF_CPU=$env:BUILD_VF_CPU -DBUILD_VF_GPU=$env:BUILD_VF_GPU -DBUILD_VF_UNIT_TESTS=$env:BUILD_VF_UNIT_TESTS -G "$env:CMAKE_GENERATOR" ..
+    - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
+
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-windows"
+    paths:
+      - $CI_PROJECT_DIR/$env:BUILD_FOLDER/
+
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/$env:BUILD_FOLDER/
+
+
 build_singularity_image:
   stage: build
   rules:
@@ -40,9 +86,13 @@ build_singularity_image:
     - singularity build Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
     - ls -sh Containers/VirtualFluidsOpenMPI.sif
 
-
-virtual_fluids_basics_test:
+###############################################################################
+##                                Tests                                      ##
+###############################################################################
+gcc_9_python_unit_tests:
   stage: test
+
+  needs: ["gcc_9_python"]
 
   before_script:
     - export VF_UNITTESTS=$(find _skbuild -name basicsTests)
@@ -50,9 +100,21 @@ virtual_fluids_basics_test:
   script:
     - $VF_UNITTESTS
 
-
-test_python_bindings:
+msvc_16_unit_tests:
   stage: test
+
+  needs: ["msvc_16"]
+
+  before_script:
+    - cd $CI_PROJECT_DIR/build
+
+  script:
+    - . ".\bin\$env:BUILD_CONFIGURATION\basicsTests.exe"
+
+gcc_9_python_bindings_test:
+  stage: test
+
+  needs: ["gcc_9_python"]
 
   artifacts:
     when: on_failure
@@ -66,56 +128,12 @@ test_python_bindings:
   script:
     - python3 -m unittest discover -s Python -v
 
-deploy_to_phoenix:
-  stage: deploy
-  needs: ["build"]
-
-  before_script:
-    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-    - apt-get install -y rsync
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - echo $SSH_PRIVATE_KEY >> ansible/private_key
-    - ssh-keyscan -t rsa phoenix.hlr.rz.tu-bs.de >> ~/.ssh/known_hosts
-    - pip3 install ansible
-
-  script:
-    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook.yml
-
-  parallel:
-    matrix:
-      - ANSIBLE_MATRIX: 0
-        REMOTE_USER:
-          - y0054816
-
-create_release:
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
-  stage: release
-  needs: ["build_singularity_image"]
-  rules:
-    - if: $CI_COMMIT_TAG
-
-  script:
-    - echo "Creating release with tag $CI_COMMIT_TAG"
-    - release-cli create --name "VirtualFluids $CI_COMMIT_TAG" \
-      --description "VirtualFluids CFD Simulator" \
-      --tag-name "$CI_COMMIT_TAG" \
-      --ref "$CI_COMMIT_SHA" \
-      --job-token "$CI_JOB_TOKEN" \
-      --assets-link="{'name':'VirtualFluidsSingularityImage_OpenMPI','url':'','type':'other','filepath':'Containers/VirtualFluidsOpenMPI.sif'}"
-    - build/bin/basicsTests
-
 
 ###############################################################################
-##                                                                           ##
-##    Deploy: Code analysis                                                  ##
-##                                                                           ##
+##                        Code analysis                                      ##
 ###############################################################################
-
-clangBuildAnalyzer:
-  stage: test
+clang_build_analyzer_clang_10:
+  stage: analyze
 
   only: ["schedules"]
 
@@ -135,7 +153,8 @@ clangBuildAnalyzer:
     - export PATH+=:$(pwd)
 
   script:
-    - mkdir $CI_PROJECT_DIR/build
+    - mkdir -p $CI_PROJECT_DIR/build
+    - rm -r ./*
     - cd $CI_PROJECT_DIR/build
     - cmake .. -DBUILD_VF_CPU=ON -DUSE_OPENMP=OFF -DCMAKE_CXX_FLAGS=-ftime-trace
     - ClangBuildAnalyzer --start .
@@ -144,8 +163,8 @@ clangBuildAnalyzer:
     - ClangBuildAnalyzer --analyze CBA
 
 
-include_what_you_use:
-  stage: test
+include_what_you_use_gcc_9:
+  stage: analyze
 
   only: ["schedules"]
 
@@ -161,14 +180,15 @@ include_what_you_use:
     - export PATH+=:$(pwd)/bin
 
   script:
-    - mkdir $CI_PROJECT_DIR/build
+    - mkdir -p $CI_PROJECT_DIR/build
+    - rm -r ./*
     - cd $CI_PROJECT_DIR/build
     - cmake .. -DBUILD_VF_CPU=ON -DUSE_OPENMP=OFF -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
     - make
 
 
-cppcheck:
-  stage: test
+cppcheck_gcc_9:
+  stage: analyze
 
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
@@ -185,29 +205,10 @@ cppcheck:
     paths:
       - html_report/
 
-
-deploy_cppcheck_to_elladan:
-  stage: deploy
-  needs: ["cppcheck"]
-
-  before_script:
-    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-    - apt-get install -y rsync
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY_ELLADAN" | tr -d '\r' | ssh-add -
-    - ssh-keyscan -t rsa elladan.irmb.bau.tu-bs.de >> ~/.ssh/known_hosts
-    - pip3 install ansible
-
-  script:
-    - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_cppcheck.yml
-
-
 # lizard - Cyclomatic Complexity Analyzer
 # Ignore warnings is manually set to 191. This job will fail when new warnings are added.
 lizard:
-  stage: test
+  stage: analyze
 
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
@@ -267,7 +268,53 @@ gcov:
       - gcov_build/
 
 
-deploy_gcov_to_elladan:
+###############################################################################
+##                               Deploy                                      ##
+###############################################################################
+vf_to_phoenix:
+  stage: deploy
+  needs: ["build"]
+
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - apt-get install -y rsync
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - echo $SSH_PRIVATE_KEY >> ansible/private_key
+    - ssh-keyscan -t rsa phoenix.hlr.rz.tu-bs.de >> ~/.ssh/known_hosts
+    - pip3 install ansible
+
+  script:
+    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook.yml
+
+  parallel:
+    matrix:
+      - ANSIBLE_MATRIX: 0
+        REMOTE_USER:
+          - y0054816
+
+
+cppcheck_to_elladan:
+  stage: deploy
+  needs: ["cppcheck"]
+
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - apt-get install -y rsync
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY_ELLADAN" | tr -d '\r' | ssh-add -
+    - ssh-keyscan -t rsa elladan.irmb.bau.tu-bs.de >> ~/.ssh/known_hosts
+    - pip3 install ansible
+
+  script:
+    - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_cppcheck.yml
+
+
+gcov_to_elladan:
   stage: deploy
 
   needs: ["gcov"]
@@ -286,41 +333,22 @@ deploy_gcov_to_elladan:
     - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_gcov.yml
 
 
-# windows build
-msvc_16_0:
-  stage: build
-
-  tags:
-    - win
-    - gpu
-
-  variables:
-    CMAKE_GENERATOR: "Visual Studio 16 2019"
-    BUILD_CONFIGURATION: "Release"
-    BUILD_FOLDER: "build"
-    BUILD_VF_CPU: "ON"
-    BUILD_VF_GPU: "ON"
-    BUILD_VF_UNIT_TESTS: "ON"
-
-  # add cmake and MSBuild.exe to the path.
-  # This Needs to be adapted when moved to a new build machine.
-  before_script:
-    - git --version
-    - $env:Path += ";C:\Program Files\CMake\bin\"
-    - cmake --version
-    - $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin"
-    - MSBuild.exe -version
+###############################################################################
+##                              Release                                      ##
+###############################################################################
+create_release:
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  stage: release
+  needs: ["build_singularity_image"]
+  rules:
+    - if: $CI_COMMIT_TAG
 
   script:
-    - cd $CI_PROJECT_DIR
-    - md -force $env:BUILD_FOLDER
-    - cd $env:BUILD_FOLDER
-    - cmake .. -DBUILD_VF_CPU=$env:BUILD_VF_CPU -DBUILD_VF_GPU=$env:BUILD_VF_GPU -DBUILD_VF_UNIT_TESTS=$env:BUILD_VF_UNIT_TESTS -G "$env:CMAKE_GENERATOR" ..
-    - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
-    - . ".\bin\$env:BUILD_CONFIGURATION\basicsTests.exe"
-
-
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-windows"
-    paths:
-      - $CI_PROJECT_DIR/$env:BUILD_FOLDER/
+    - echo "Creating release with tag $CI_COMMIT_TAG"
+    - release-cli create --name "VirtualFluids $CI_COMMIT_TAG" \
+      --description "VirtualFluids CFD Simulator" \
+      --tag-name "$CI_COMMIT_TAG" \
+      --ref "$CI_COMMIT_SHA" \
+      --job-token "$CI_JOB_TOKEN" \
+      --assets-link="{'name':'VirtualFluidsSingularityImage_OpenMPI','url':'','type':'other','filepath':'Containers/VirtualFluidsOpenMPI.sif'}"
+    - build/bin/basicsTests
