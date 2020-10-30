@@ -36,6 +36,7 @@ gcc_9:
 
   tags:
     - gpu
+    - linux
 
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-gcc9-hybrid"
@@ -68,6 +69,7 @@ clang_10:
 
   tags:
     - gpu
+    - linux
 
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-clang10-hybrid"
