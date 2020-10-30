@@ -3,8 +3,10 @@
 import json
 import sys
 
-def compileCommandSelector(x):
-    return not (("3rdParty" in x["file"]))
+
+def compile_command_selector(x):
+    return not ("3rdParty" in x["file"])
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -20,7 +22,7 @@ if __name__ == "__main__":
 
     print("compile commands read: {}".format(len(cc)))
 
-    cc_filtered = list(filter(compileCommandSelector, cc))
+    cc_filtered = list(filter(compile_command_selector, cc))
 
     print("compile commands filtered: {}".format(len(cc_filtered)))
 

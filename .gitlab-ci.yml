@@ -31,6 +31,72 @@ gcc_9_python:
   script:
     - python3 setup.py install
 
+gcc_9:
+  stage: build
+
+  tags:
+    - gpu
+
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-gcc9-hybrid"
+    paths:
+      - build_gcc9
+
+  artifacts:
+    paths:
+      - build_gcc9
+
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - apt-get install -y libboost-serialization-dev
+    - cd /tmp
+    - apt-get install unzip
+    - wget https://github.com/NVIDIA/cuda-samples/archive/10.1.2.zip
+    - unzip 10.1.2.zip
+    - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - mkdir -p build_gcc9
+    - cd build_gcc9
+    - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON
+    - make -j4
+
+clang_10:
+  stage: build
+
+  tags:
+    - gpu
+
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-clang10-hybrid"
+    paths:
+      - build_clang10
+
+  artifacts:
+    paths:
+      - build_clang10
+
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - export CC=clang
+    - export CXX=clang++
+    - $CXX --version
+    - apt-get install -y libboost-serialization-dev
+    - cd /tmp
+    - apt-get install unzip
+    - wget https://github.com/NVIDIA/cuda-samples/archive/10.1.2.zip
+    - unzip 10.1.2.zip
+    - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - mkdir -p build_gcc9
+    - cd build_gcc9
+    - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON
+    - make -j4
 
 msvc_16:
   stage: build
@@ -288,7 +354,6 @@ clang-tidy:
 
   artifacts:
     paths:
-      - clang-tidy-results.txt
       - build_clang_tidy/clang-tidy-results.txt
 
 ###############################################################################
