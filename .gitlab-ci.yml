@@ -109,7 +109,7 @@ msvc_16_unit_tests:
     - cd $CI_PROJECT_DIR/build
 
   script:
-    - . ".\bin\$env:BUILD_CONFIGURATION\basicsTests.exe"
+    - . ".\bin\Release\basicsTests.exe"
 
 gcc_9_python_bindings_test:
   stage: test
