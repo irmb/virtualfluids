@@ -187,7 +187,7 @@ include_what_you_use_gcc_9:
     - make
 
 
-cppcheck_gcc_9:
+cppcheck:
   stage: analyze
 
   before_script:
@@ -229,7 +229,7 @@ lizard:
       - lizard.txt
 
 # code coverage
-gcov:
+gcov_gcc_9:
   stage: test
 
   before_script:
@@ -273,7 +273,7 @@ gcov:
 ###############################################################################
 vf_to_phoenix:
   stage: deploy
-  needs: ["build"]
+  needs: ["gcc_9_python"]
 
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -317,7 +317,7 @@ cppcheck_to_elladan:
 gcov_to_elladan:
   stage: deploy
 
-  needs: ["gcov"]
+  needs: ["gcov_gcc_9"]
 
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
