@@ -102,6 +102,10 @@ gcc_9_python_unit_tests:
 
 msvc_16_unit_tests:
   stage: test
+  
+  tags:
+    - win
+    - gpu
 
   needs: ["msvc_16"]
 
