@@ -102,7 +102,7 @@ gcc_9_python_unit_tests:
 
 msvc_16_unit_tests:
   stage: test
-  
+
   tags:
     - win
     - gpu
@@ -271,6 +271,23 @@ gcov_gcc_9:
     paths:
       - gcov_build/
 
+
+clang-tidy:
+  stage: analyze
+
+  before_script:
+    - run-clang-tidy -h
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - mkdir -p build_clang_tidy
+    - cd build_clang_tidy
+    - cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=OFF
+    - run-clang-tidy -quiet > clang-tidy-results.txt
+
+  artifacts:
+    paths:
+      - clang-tidy-results.txt
 
 ###############################################################################
 ##                               Deploy                                      ##
