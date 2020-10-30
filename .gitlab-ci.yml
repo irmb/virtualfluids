@@ -230,7 +230,7 @@ lizard:
 
 # code coverage
 gcov_gcc_9:
-  stage: test
+  stage: analyze
 
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
