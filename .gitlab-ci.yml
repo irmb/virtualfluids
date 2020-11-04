@@ -366,11 +366,11 @@ clang-tidy:
     - cd build_clang_tidy
     - cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=OFF
     - python3 ../utilities/filterCompileCommands.py compile_commands.json
-    - run-clang-tidy -quiet > clang-tidy-results.txt
+    - run-clang-tidy -quiet > clangtidy.txt
 
   artifacts:
     paths:
-      - build_clang_tidy/clang-tidy-results.txt
+      - build_clang_tidy/clangtidy.txt
 
 ###############################################################################
 ##                               Deploy                                      ##
@@ -437,6 +437,29 @@ gcov_to_elladan:
   script:
     - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_gcov.yml
 
+# sonar-scanner runs sonar-project.properties
+# the reports ins this file needs to match the artifacts.
+sonar-scanner:
+  stage: deploy
+  variables:
+    SONAR_HOST_URL: "http://finrod.irmb.bau.tu-bs.de:9000"
+
+  before_script:
+    - cd /tmp
+    - apt-get install unzip
+    - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-macosx.zip
+    - unzip sonar-scanner-cli-4.0.0.1744-macosx.zip
+    - cd sonar-scanner-4.0.0.1744-macosx/
+    - echo 'sonar.host.url=$SONAR_HOST_URL' >> conf/sonar-scanner.properties
+    - echo 'sonar.sourceEncoding=UTF-8' >> conf/sonar-scanner.properties
+    - cat conf/sonar-scanner.properties
+    - export PATH+=:$(pwd)/bin
+    - echo $PATH
+    - sonar-scanner -v
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - sonar-scanner
 
 ###############################################################################
 ##                              Release                                      ##
