@@ -95,8 +95,8 @@ clang_10:
 
   script:
     - cd $CI_PROJECT_DIR
-    - mkdir -p build_gcc9
-    - cd build_gcc9
+    - mkdir -p build_clang10
+    - cd build_clang10
     - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON
     - make -j4
 
@@ -254,6 +254,7 @@ include_what_you_use_gcc_9:
     - cmake . -DCMAKE_PREFIX_PATH=/usr/lib/llvm-10
     - make
     - export PATH+=:$(pwd)/bin
+    - echo $PATH
 
   script:
     - mkdir -p $CI_PROJECT_DIR/build
@@ -276,12 +277,13 @@ cppcheck:
   script:
     - cd $CI_PROJECT_DIR
     - cppcheck --version
-    - cppcheck src --enable=all --xml 2> report.xml
-    - cppcheck-htmlreport --file=report.xml --report-dir=html_report --source-dir=.
+    - cppcheck src --enable=all --xml 2> cppcheck.xml
+    - cppcheck-htmlreport --file=cppcheck.xml --report-dir=html_report --source-dir=.
 
   artifacts:
     paths:
       - html_report/
+      - cppcheck.xml
 
 # lizard - Cyclomatic Complexity Analyzer
 # Ignore warnings is manually set to 191. This job will fail when new warnings are added.
@@ -352,6 +354,8 @@ gcov_gcc_9:
 
 clang-tidy:
   stage: analyze
+
+  needs: []
 
   before_script:
     - run-clang-tidy -h

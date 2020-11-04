@@ -39,19 +39,19 @@
 /*
 Durch Verwendung eines CbVectors in Verbindung mit einem CbVectorAllocatorPool
 wird der Datenvector nicht direkt im CbVector gehalten, sondern ist ein Teil
-des Datenvectors des �bergabe-CbVectorPools.
+des Datenvectors des Uebergabe-CbVectorPools.
 Die Methoden der von CbVectors funktionieren fehlerfrei
-Es mss einem jedoch bewu�t sein, dass die "resize"-Methoden l�nger ben�tigen, da
+Es mss einem jedoch bewusst sein, dass die "resize"-Methoden l�nger ben�tigen, da
 u.U. viele Elemente im Speicher verschoeben werden muessen.
 Der Poolvector enthaelt KEINE gaps, so dass er z.B. gut zur �bertragung via MPI
 geeignet ist...
 
-Verhaltensweise bei Zerst�ren des Pools:
+Verhaltensweise bei Zerstoeren des Pools:
 wird der Pool zerst�rt bevor man die CbVectoren zerst�rt, so wird beim n�chsten
 Datenzugriffsversuch eine entsprechende Exception geworfen, denn alle DatenElemente
 des CbVEctors werden restet und der Pool dort zu NULL gesetzt.
 
-Verhaltensweise bei Zerst�ren eines CbVectors:
+Verhaltensweise bei Zerstoeren eines CbVectors:
 hier ganz normal der Datenspeicher wieder freigegen und der Poolvektor verk�rzt
 */
 
