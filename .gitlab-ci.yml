@@ -441,8 +441,11 @@ gcov_to_elladan:
 # the reports ins this file needs to match the artifacts.
 sonar-scanner:
   stage: deploy
+
   variables:
     SONAR_HOST_URL: "http://finrod.irmb.bau.tu-bs.de/sonarqube"
+
+  needs: ["cppcheck","clang-tidy"]
 
   before_script:
     - cd /tmp
