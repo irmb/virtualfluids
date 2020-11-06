@@ -445,7 +445,7 @@ sonar-scanner:
   variables:
     SONAR_HOST_URL: "http://finrod.irmb.bau.tu-bs.de/sonarqube"
 
-  needs: ["cppcheck","clang-tidy"]
+  needs: ["cppcheck","clang-tidy","gcov_gcc_9"]
 
   before_script:
     - cd /tmp
