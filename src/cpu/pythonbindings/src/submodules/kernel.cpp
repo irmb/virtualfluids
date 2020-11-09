@@ -7,7 +7,7 @@
 namespace py = pybind11;
 
 
-void makeKernelModule(py::module &parentModule)
+void makeKernelModule(py::module_ &parentModule)
 {
     using namespace pybind11::literals;
 

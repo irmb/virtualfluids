@@ -84,7 +84,7 @@ add_subdirectory(${VF_THIRD_DIR}/MuParser)
 add_subdirectory(src/cpu/VirtualFluidsCore)
 
 if(BUILD_VF_PYTHON_BINDINGS)
-    add_subdirectory(${VF_THIRD_DIR}/pybind11/pybind11-2.5.0)
+    add_subdirectory(${VF_THIRD_DIR}/pybind11/pybind11-2.6.0)
     add_subdirectory(src/cpu/simulationconfig)
     add_subdirectory(src/cpu/pythonbindings)
 endif()

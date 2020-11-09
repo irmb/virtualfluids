@@ -4,7 +4,7 @@
 
 namespace py = pybind11;
 
-void makeParametersModule(py::module &parentModule)
+void makeParametersModule(py::module_ &parentModule)
 {
     py::module parametersModule = parentModule.def_submodule("parameters");
 
