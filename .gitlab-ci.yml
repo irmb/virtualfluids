@@ -62,6 +62,7 @@ gcc_9:
     - mkdir -p build_gcc9
     - cd build_gcc9
     - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON
+    - cmake . -LAH
     - make -j4
 
 clang_10:
