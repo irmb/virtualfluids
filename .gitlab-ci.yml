@@ -154,6 +154,39 @@ build_singularity_image:
     - singularity build Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
     - ls -sh Containers/VirtualFluidsOpenMPI.sif
 
+
+
+gcc_9_rebuild:
+  stage: build
+
+  #only: ["schedules"]
+
+  tags:
+    - gpu
+    - linux
+
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - apt-get install -y libboost-serialization-dev
+    - cd /tmp
+    - apt-get install unzip
+    - wget https://github.com/NVIDIA/cuda-samples/archive/10.1.2.zip
+    - unzip 10.1.2.zip
+    - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - mkdir -p build_gcc_rebuild
+    - cd build_gcc_rebuild
+    - rm -r -f ./*
+    - cmake -E env CXXFLAGS="-fdiagnostics-show-option" cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON
+    - make -j4  >&1 | tee gcc_warnings.txt
+
+  artifacts:
+    paths:
+      - build_gcc_rebuild/gcc_warnings.txt
+
 ###############################################################################
 ##                                Tests                                      ##
 ###############################################################################
@@ -228,8 +261,8 @@ clang_build_analyzer_clang_10:
 
   script:
     - mkdir -p $CI_PROJECT_DIR/build
-    - rm -r ./*
     - cd $CI_PROJECT_DIR/build
+    - rm -r -f ./*
     - cmake .. -DBUILD_VF_CPU=ON -DUSE_OPENMP=OFF -DCMAKE_CXX_FLAGS=-ftime-trace
     - ClangBuildAnalyzer --start .
     - make
@@ -258,8 +291,8 @@ include_what_you_use_gcc_9:
 
   script:
     - mkdir -p $CI_PROJECT_DIR/build
-    - rm -r ./*
     - cd $CI_PROJECT_DIR/build
+    - rm -r -f ./*
     - cmake .. -DBUILD_VF_CPU=ON -DUSE_OPENMP=OFF -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
     - make
 
@@ -311,7 +344,6 @@ lizard:
       - lizard.txt
 
 # code coverage
-# this job also produces a compile commands json file.
 gcov_gcc_9:
   stage: analyze
 
@@ -332,7 +364,7 @@ gcov_gcc_9:
   script:
     - mkdir -p $CI_PROJECT_DIR/gcov_build
     - cd $CI_PROJECT_DIR/gcov_build
-    - cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON -DBUILD_VF_COVERAGE=ON -DBUILD_VF_UNIT_TESTS=ON
+    - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON -DBUILD_VF_COVERAGE=ON -DBUILD_VF_UNIT_TESTS=ON
     - make -j4
     - ./bin/basicsTests
     - cd ..
@@ -343,7 +375,6 @@ gcov_gcc_9:
     paths:
       - coverage/
       - gcov_build/
-      - gcov_build/compile_commands.json
 
     reports:
       cobertura: coverage/coverage.xml
@@ -353,7 +384,7 @@ gcov_gcc_9:
     paths:
       - gcov_build
 
-
+# this job also produces a compile commands json file.
 clang-tidy:
   stage: analyze
 
@@ -373,6 +404,7 @@ clang-tidy:
   artifacts:
     paths:
       - build_clang_tidy/clangtidy.txt
+      - build_clang_tidy/compile_commands.json
 
 ###############################################################################
 ##                               Deploy                                      ##
