@@ -3,7 +3,7 @@
 
 namespace py = pybind11;
 
-void makeWriterModule(py::module &parentModule)
+void makeWriterModule(py::module_ &parentModule)
 {
     py::module writerModule = parentModule.def_submodule("writer");
 

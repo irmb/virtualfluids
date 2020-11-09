@@ -10,7 +10,7 @@
 
 namespace py = pybind11;
 
-void makeBoundaryConditionsModule(py::module &parentModule)
+void makeBoundaryConditionsModule(py::module_ &parentModule)
 {
     py::module bcModule = parentModule.def_submodule("boundaryconditions");
 
