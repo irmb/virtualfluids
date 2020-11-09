@@ -3,7 +3,7 @@
 
 namespace py = pybind11;
 
-void makeSimulationModule(py::module &parentModule)
+void makeSimulationModule(py::module_ &parentModule)
 {
     using namespace pybind11::literals;
 

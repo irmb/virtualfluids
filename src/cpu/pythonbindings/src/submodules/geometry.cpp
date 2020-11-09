@@ -19,7 +19,7 @@ std::string GbPoint3D_repr_(const GbPoint3D &instance)
     return stream.str();
 }
 
-void makeGeometryModule(py::module &parentModule)
+void makeGeometryModule(py::module_ &parentModule)
 {
 
     py::module geometry = parentModule.def_submodule("geometry");
