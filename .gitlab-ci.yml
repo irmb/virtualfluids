@@ -160,8 +160,6 @@ build_singularity_image:
 gcc_9_rebuild:
   stage: build
 
-  #only: ["schedules"]
-
   tags:
     - gpu
     - linux
@@ -186,7 +184,7 @@ gcc_9_rebuild:
     - mkdir -p build_gcc_rebuild
     - cd build_gcc_rebuild
     - rm -r -f ./*
-    - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=OFF
+    - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
     - make -j4  2>&1 | tee gcc_warnings.txt
     - ccache -s
 
@@ -492,7 +490,7 @@ sonar-scanner:
   variables:
     SONAR_HOST_URL: "http://finrod.irmb.bau.tu-bs.de/sonarqube"
 
-  needs: ["cppcheck","clang-tidy","gcov_gcc_9"]
+  needs: ["cppcheck","clang-tidy","gcov_gcc_9","gcc_9_rebuild"]
 
   before_script:
     - cd /tmp
