@@ -171,22 +171,34 @@ gcc_9_rebuild:
     - apt-get update
     - apt-get install -y libboost-serialization-dev
     - cd /tmp
-    - apt-get install unzip
+    - apt-get install -y unzip
     - wget https://github.com/NVIDIA/cuda-samples/archive/10.1.2.zip
     - unzip 10.1.2.zip
     - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
+    - apt-get install -y ccache
+    - ccache --version
+    - export CCACHE_BASEDIR=$CI_PROJECT_DIR
+    - export CCACHE_DIR=$CI_PROJECT_DIR/cache
+    - ccache -s
 
   script:
     - cd $CI_PROJECT_DIR
     - mkdir -p build_gcc_rebuild
     - cd build_gcc_rebuild
     - rm -r -f ./*
-    - cmake -E env CXXFLAGS="-fdiagnostics-show-option" cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON
-    - make -j4  >&1 | tee gcc_warnings.txt
+    - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=OFF
+    - make -j4  2>&1 | tee gcc_warnings.txt
+    - ccache -s
 
   artifacts:
     paths:
       - build_gcc_rebuild/gcc_warnings.txt
+
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - $CI_PROJECT_DIR/cache
+
 
 ###############################################################################
 ##                                Tests                                      ##
