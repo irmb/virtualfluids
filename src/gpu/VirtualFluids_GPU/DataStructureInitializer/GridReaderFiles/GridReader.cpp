@@ -66,12 +66,12 @@ void GridReader::allocArrays_CoordNeighborGeo()
 	neighZ = std::shared_ptr<CoordNeighborGeoV>(new CoordNeighborGeoV(para->getneighborZ(), binaer, false));
 	CoordNeighborGeoV geoV(para->getgeoVec(), binaer, false);
 
-	int maxLevel = coordX.getLevel();
+	uint maxLevel = coordX.getLevel();
 	std::cout << "Number of Level: " << maxLevel + 1 << std::endl;
-	int numberOfNodesGlobal = 0;
+	uint numberOfNodesGlobal = 0;
 	std::cout << "Number of Nodes: " << std::endl;
 
-	for (int level = 0; level <= maxLevel; level++) 
+	for (uint level = 0; level <= maxLevel; level++) 
 	{		
 		int numberOfNodesPerLevel = coordX.getSize(level) + 1;
 		numberOfNodesGlobal += numberOfNodesPerLevel;
@@ -81,15 +81,9 @@ void GridReader::allocArrays_CoordNeighborGeo()
 
         cudaMemoryManager->cudaAllocCoord(level);
 		cudaMemoryManager->cudaAllocSP(level);
+        cudaMemoryManager->cudaAllocF3SP(level);
+        cudaMemoryManager->cudaAllocNeighborWSB(level);
 
-        ///////////////////////////
-        //F3
-		cudaMemoryManager->cudaAllocF3SP(level);
-        ///////////////////////////
-        if (para->getCalcMedian())
-			cudaMemoryManager->cudaAllocMedianSP(level);
-        if (para->getCalcParticle() || para->getUseWale())
-			cudaMemoryManager->cudaAllocNeighborWSB(level);
         if (para->getUseWale())
 			cudaMemoryManager->cudaAllocTurbulentViscosity(level);
 
@@ -103,6 +97,7 @@ void GridReader::allocArrays_CoordNeighborGeo()
         rearrangeGeometry(para.get(), level);
 		setInitalNodeValues(numberOfNodesPerLevel, level);
 
+        cudaMemoryManager->cudaCopyNeighborWSB(level);
         cudaMemoryManager->cudaCopySP(level);
         cudaMemoryManager->cudaCopyCoord(level);
 	}
@@ -118,7 +113,7 @@ void GridReader::allocArrays_BoundaryValues()
 	this->setChannelBoundaryCondition();
 	int level = BC_Values[0]->getLevel();
 
-    for (int i = 0; i < channelBoundaryConditions.size(); i++)
+    for (uint i = 0; i < channelBoundaryConditions.size(); i++)
     {
         setVelocityValues(i);
         setPressureValues(i);
@@ -259,12 +254,12 @@ void GridReader::setVelocity(int level, int sizePerLevel, int channelSide) const
 
 	for (int index = 0; index < sizePerLevel; index++)
 	{
-		//para->getParH(i)->Qinflow.Vx[m] = para->getParH(i)->Qinflow.Vx[m] / para->getVelocityRatio();
-		//para->getParH(i)->Qinflow.Vy[m] = para->getParH(i)->Qinflow.Vy[m] / para->getVelocityRatio();
-		//para->getParH(i)->Qinflow.Vz[m] = para->getParH(i)->Qinflow.Vz[m] / para->getVelocityRatio();
-		para->getParH(level)->Qinflow.Vx[index] = para->getVelocity();//0.035;
-		para->getParH(level)->Qinflow.Vy[index] = 0.0;//para->getVelocity();//0.0;
-		para->getParH(level)->Qinflow.Vz[index] = 0.0;
+		para->getParH(level)->Qinflow.Vx[index] = para->getParH(level)->Qinflow.Vx[index] / para->getVelocityRatio();
+		para->getParH(level)->Qinflow.Vy[index] = para->getParH(level)->Qinflow.Vy[index] / para->getVelocityRatio();
+		para->getParH(level)->Qinflow.Vz[index] = para->getParH(level)->Qinflow.Vz[index] / para->getVelocityRatio();
+		//para->getParH(level)->Qinflow.Vx[index] = para->getVelocity();//0.035;
+		//para->getParH(level)->Qinflow.Vy[index] = 0.0;//para->getVelocity();//0.0;
+		//para->getParH(level)->Qinflow.Vz[index] = 0.0;
 	}
 }
 

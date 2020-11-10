@@ -1,8 +1,6 @@
 #ifndef GridReaderFiles_H
 #define GridReaderFiles_H
 
-
-
 #include "../GridProvider.h"
 
 #include <vector>
@@ -11,7 +9,7 @@
 
 #include "LBM/LB.h"
 
-#include "VirtualFluids_GPU_export.h"
+//#include "VirtualFluids_GPU_export.h"
 
 class Parameter;
 class BoundaryValues;

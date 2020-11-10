@@ -4,7 +4,7 @@
 #include <string>
 
 #ifdef VF_DOUBLE_ACCURACY
-typedef double real;
+using real = double;
 #else
 using real = float;
 #endif
