@@ -16,21 +16,16 @@ gcc_9_python:
   stage: build
 
   cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    key: "Python-GCC9-$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
-      - _skbuild
+      - build
 
   artifacts:
     paths:
-      - _skbuild/
-      - Python/venv
-
-  before_script:
-    - python3 -m venv --system-site-packages Python/venv
-    - source Python/venv/bin/activate
+      - dist/
 
   script:
-    - python3 setup.py install
+    - python3 setup.py bdist_wheel
 
 ###############################################################################
 .gnu_build_template:
@@ -179,13 +174,13 @@ build_singularity_image:
 ###############################################################################
 ##                                Tests                                      ##
 ###############################################################################
-gcc_9_python_unit_tests:
+gcc_9_unit_tests:
   stage: test
 
-  needs: ["gcc_9_python"]
+  needs: ["gcc_9"]
 
   before_script:
-    - export VF_UNITTESTS=$(find _skbuild -name basicsTests)
+    - export VF_UNITTESTS=$(find build_gcc9 -name basicsTests)
 
   script:
     - $VF_UNITTESTS
@@ -212,14 +207,10 @@ gcc_9_python_bindings_test:
 
   needs: ["gcc_9_python"]
 
-  artifacts:
-    when: on_failure
-    paths:
-      - output/mq/mq10000/
-
   before_script:
     - export PYTHONPATH="Python"
-    - source Python/venv/bin/activate
+    - export VF_WHEEL=$(find -f dist/*.whl)
+    - pip3 install $VF_WHEEL
 
   script:
     - python3 -m unittest discover -s Python -v
