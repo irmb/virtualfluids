@@ -12,15 +12,9 @@
 #############################################################
 option(VF.BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
 option(VF.BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF )
-option(VF.BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" ON)
+option(VF.BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" OFF)
 option(VF.BUILD_JSONCPP         "Builds json cpp "            OFF)
 option(VF.BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
-
-option(VF.BUILD_DOUBLE_ACCURACY "Use double accuracy"         OFF )
-
-IF( VF.BUILD_DOUBLE_ACCURACY )
-    list(APPEND VF_COMPILER_DEFINITION VF_DOUBLE_ACCURACY)
-ENDIF()
 
 #############################################################
 
