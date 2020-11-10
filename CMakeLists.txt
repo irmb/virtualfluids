@@ -49,6 +49,8 @@ option(USE_OPENMP "Include OpenMP support" ON)
 
 option(BUILD_VF_PYTHON_BINDINGS "" OFF)
 
+option(BUILD_VF_DOUBLE_ACCURACY "Use double accuracy" OFF)
+
 #################################################################################
 #  CMAKE POLICIES
 #################################################################################
@@ -65,6 +67,10 @@ endif()
 #################################################################################
 include(CMakePrintHelpers)
 include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
+
+IF( BUILD_VF_DOUBLE_ACCURACY )
+    list(APPEND VF_COMPILER_DEFINITION VF_DOUBLE_ACCURACY)
+ENDIF()
 
 #################################################################################
 #  COMMON LIBRARIES

@@ -8,9 +8,7 @@ groupTarget(${library_name} ${testFolder})
 if(BUILD_SHARED_LIBS)
     # add compile option according to
     # https://github.com/google/googletest/blob/master/googletest/README.md#as-a-shared-library-dll
-    set_target_properties(${library_name}
-            PROPERTIES
-            COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+    target_compile_definitions (${library_name} PRIVATE "GTEST_LINKED_AS_SHARED_LIBRARY=1")
 endif()
 
 linkCUDA()
