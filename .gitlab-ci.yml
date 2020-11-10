@@ -219,7 +219,7 @@ gcc_9_python_bindings_test:
 
   before_script:
     - export PYTHONPATH="Python"
-    - export VF_WHEEL=$(find -f dist/*.whl)
+    - export VF_WHEEL=$(find dist/*.whl)
     - pip3 install $VF_WHEEL
 
   script:
