@@ -72,7 +72,7 @@ clang_10:
     - gpu
     - linux
 
-  image: virtualfluids-deps-ubuntu20.04
+  image: irmb/virtualfluids-deps-ubuntu20.04
 
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-clang10-hybrid"
