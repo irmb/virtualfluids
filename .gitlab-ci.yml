@@ -89,12 +89,6 @@ clang_10:
     - export CC=clang
     - export CXX=clang++
     - $CXX --version
-    - apt-get install -y libboost-serialization-dev
-    - cd /tmp
-    - apt-get install unzip
-    - wget https://github.com/NVIDIA/cuda-samples/archive/10.1.2.zip
-    - unzip 10.1.2.zip
-    - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
 
   script:
     - cd $CI_PROJECT_DIR
