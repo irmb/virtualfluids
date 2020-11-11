@@ -4,6 +4,7 @@
 #include <PointerDefinitions.h>
 #include <LBMSystem.h>
 #include <UbMath.h>
+#include <math.h> 
 
 class Thixotropy
 {
@@ -23,9 +24,19 @@ public:
 	void setOmegaMin(LBMReal omegaMin);
 	LBMReal getOmegaMin() const;
 
+	void setBeta(LBMReal PowellEyringBeta);
+	LBMReal getBeta() const;
+
+	void setC(LBMReal PowellEyringC);
+	LBMReal getC() const;
+
+	void setMu0(LBMReal mu);
+	LBMReal getMu0() const;
+
 	static LBMReal getBinghamCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
 	static LBMReal getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
 	static LBMReal getHerschelBulkleyCollFactorBackward(LBMReal shearRate, LBMReal drho);
+	static LBMReal getPowellEyringCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
 private:
 	Thixotropy();
 	
@@ -35,6 +46,9 @@ private:
 	static LBMReal k;
 	static LBMReal n;
 	static LBMReal omegaMin;
+	static LBMReal beta;
+	static LBMReal c;
+	static LBMReal mu0;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -53,12 +67,19 @@ inline LBMReal Thixotropy::getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMRea
 	LBMReal gammaDot = shearRate;
 	LBMReal omega = omegaInf;
 	LBMReal epsilon = 1;
+	LBMReal gammaDotPowN = std::pow(gammaDot, n);
 
 	while (epsilon > 1e-10)
 	{
 		LBMReal omegaOld = omega;
-		LBMReal gammaDotPowN = std::pow(gammaDot, n);
-		LBMReal omegaByOmegaInfPowN = std::pow(omega / omegaInf, n);
+		LBMReal omegaByOmegaInfPowN = std::pow(omega / omegaInf, n);/*
+		LBMReal gammaDotPowOneMinusN = std::pow(gammaDot,1- n);
+		LBMReal omegaByOmegaInfPowOneMinusN = std::pow(omega / omegaInf, 1-n);
+		LBMReal numeratorA = (2.0* k *  omegaInf + cs2 * gammaDotPowOneMinusN * omegaByOmegaInfPowOneMinusN *omegaInf* rho );
+		LBMReal numeratorB = ( cs2 * gammaDot * ( - 2.0) * rho + 2.0 * omegaInf * tau0);
+		LBMReal denominatorA = (2.0 * k * n * omegaInf + cs2 * gammaDot * rho * omegaInf* gammaDotPowOneMinusN * omegaByOmegaInfPowOneMinusN) + UbMath::Epsilon<LBMReal>::val();
+		LBMReal denominatorB = (2.0 * k * n * gammaDotPowN * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * rho * omega) + UbMath::Epsilon<LBMReal>::val();
+		omega = omega - omega *( numeratorA / denominatorA+ numeratorB / denominatorB);*/
 		LBMReal numerator = (2.0 * gammaDotPowN * k * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * (omega - 2.0) * rho + 2.0 * omegaInf * tau0);
 		LBMReal denominator = (2.0 * k * n * gammaDotPowN * omegaByOmegaInfPowN * omegaInf + cs2 * gammaDot * rho * omega) + UbMath::Epsilon<LBMReal>::val();
 		omega = omega - omega * numerator / denominator;
@@ -77,5 +98,31 @@ inline LBMReal Thixotropy::getHerschelBulkleyCollFactorBackward(LBMReal shearRat
 	LBMReal cs2 = UbMath::one_over_sqrt3 * UbMath::one_over_sqrt3;
 
 	return 1.0 / ((tau0 + k * std::pow(gamma, n)) / (cs2 * rho * gamma) + UbMath::c1o2);
+}
+//////////////////////////////////////////////////////////////////////////
+inline LBMReal Thixotropy::getPowellEyringCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
+{
+	using namespace UbMath;
+	LBMReal cs2 = c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;
+	LBMReal rho = c1 + drho;
+	LBMReal gammaDot = shearRate;
+	LBMReal omega = omegaInf;
+	LBMReal epsilon = 1;
+
+	while (epsilon > 1e-10)
+	{
+		LBMReal omegaOld = omega;
+		epsilon = std::abs(omega - omegaOld);
+
+		LBMReal numerator = c*sqrt(c1+(gammaDot*gammaDot*omega*omega)/(c*c*omegaInf*omegaInf))*(beta*(c2*gammaDot*mu0*omega+cs2*gammaDot*(omega-c2)*rho+c2*omegaInf*tau0)+c2*omegaInf*(asinh((gammaDot*omega)/(c*omegaInf))));
+
+		LBMReal denominator = gammaDot*(c2+beta*c*sqrt(c1+(gammaDot*gammaDot*omega*omega)/(c*c*omegaInf*omegaInf))*(c2*mu0+cs2*rho)) + UbMath::Epsilon<LBMReal>::val();
+
+		omega = omega - numerator / denominator;
+
+		omega = (omega < UbMath::zeroReal) ? UbMath::c1o2 * omegaOld : omega;
+	}
+
+	return omega;
 }
 #endif

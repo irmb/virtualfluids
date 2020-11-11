@@ -65,4 +65,6 @@ add_subdirectory(${APPS_ROOT_CPU}/LaminarTubeFlow)
 #add_subdirectory(Applications/OrganPipe)
 #add_subdirectory(Applications/LidDrivenCavity)
 add_subdirectory(${APPS_ROOT_CPU}/HerschelBulkleySphere)
+add_subdirectory(${APPS_ROOT_CPU}/HerschelBulkleyModel)
+add_subdirectory(${APPS_ROOT_CPU}/rheometer)
 

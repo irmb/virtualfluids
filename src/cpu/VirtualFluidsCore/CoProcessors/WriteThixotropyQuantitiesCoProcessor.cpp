@@ -212,7 +212,8 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 					distributionsF->getDistribution(f, ix1, ix2, ix3);
 					LBMReal rho = D3Q27System::getDensity(f);
 					LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
-					LBMReal omega = Thixotropy::getHerschelBulkleyCollFactor(collFactor, shearRate, rho);
+					//LBMReal omega = Thixotropy::getHerschelBulkleyCollFactor(collFactor, shearRate, rho);
+					LBMReal omega = Thixotropy::getPowellEyringCollFactor(collFactor, shearRate, rho);
 					LBMReal viscosity = (omega == 0) ? 0 : c1o3 * (c1/omega-c1o2);
 
 					data[index++].push_back(viscosity);

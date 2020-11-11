@@ -5,6 +5,9 @@ LBMReal Thixotropy::tau0 = 0;
 LBMReal Thixotropy::k = 0;
 LBMReal Thixotropy::n = 1;
 LBMReal Thixotropy::omegaMin = 0;
+LBMReal Thixotropy::beta = 0;
+LBMReal Thixotropy::c = 0;
+LBMReal Thixotropy::mu0 = 0;
 
 //////////////////////////////////////////////////////////////////////////
 SPtr<Thixotropy> Thixotropy::getInstance()
@@ -46,6 +49,36 @@ void Thixotropy::setOmegaMin(LBMReal omega)
 LBMReal Thixotropy::getOmegaMin() const
 {
 	return omegaMin;
+}
+
+void Thixotropy::setBeta(LBMReal PowellEyringBeta)
+{
+	beta = PowellEyringBeta;
+}
+
+LBMReal Thixotropy::getBeta() const
+{
+	return beta;
+}
+
+void Thixotropy::setC(LBMReal PowellEyringC)
+{
+	c = PowellEyringC;
+}
+
+LBMReal Thixotropy::getC() const
+{
+	return c;
+}
+
+void Thixotropy::setMu0(LBMReal mu)
+{
+	mu0 = mu;
+}
+
+LBMReal Thixotropy::getMu0() const
+{
+	return mu0;
 }
 
 Thixotropy::Thixotropy()

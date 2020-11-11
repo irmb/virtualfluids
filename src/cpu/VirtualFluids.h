@@ -131,6 +131,7 @@
 #include <BoundaryConditions/BinghamModelNoSlipBCAlgorithm.h>
 #include <BoundaryConditions/HerschelBulkleyModelNoSlipBCAlgorithm.h>
 #include <BoundaryConditions/SimpleSlipBCAlgorithm.h>
+#include <BoundaryConditions/PowellEyringModelNoSlipBCAlgorithm.h>
 
 #include <Connectors/Block3DConnector.h>
 #include <Connectors/Block3DConnectorFactory.h>
@@ -224,6 +225,8 @@
 #include <LBM/HerschelBulkleyModelLBMKernel.h>
 #include <LBM/ThixotropyInterpolationProcessor.h>
 #include <LBM/RheologyK17LBMKernel.h>
+#include <LBM/PowellEyringModelLBMKernel.h>
+
 
 
 #include <geometry3d/CoordinateTransformation3D.h>
