@@ -50,6 +50,10 @@ gcc_9_python:
     paths:
       - $BUILD_FOLDER
 
+  before_script:
+    - export CC=gcc
+    - export CXX=g++
+
   script:
     - $CXX --version
     - $CC --version
