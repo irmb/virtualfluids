@@ -5,7 +5,7 @@ import sys
 
 
 def compile_command_selector(x):
-    return not ("3rdParty" in x["file"])
+    return not ("3rdParty" in x["file"]) or not (".cu" in x["file"])
 
 
 if __name__ == "__main__":
