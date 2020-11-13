@@ -413,10 +413,8 @@ clang-tidy:
 ###############################################################################
 ##                               Deploy                                      ##
 ###############################################################################
-vf_to_phoenix:
+.deploy_template:
   stage: deploy
-  
-  needs: ["gcc_9_python"]
 
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -424,10 +422,24 @@ vf_to_phoenix:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - echo $SSH_PRIVATE_KEY >> ansible/private_key
-    - ssh-keyscan -t rsa phoenix.hlr.rz.tu-bs.de >> ~/.ssh/known_hosts
+    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+    - echo $SSH_KEY >> ansible/private_key
+    - ssh-keyscan -t rsa $HOST >> ~/.ssh/known_hosts
     - pip3 install ansible
+
+  variables:
+    SSH_KEY: ""
+    HOST: ""
+
+###############################################################################
+vf_to_phoenix:
+  extends: .deploy_template
+  stage: deploy
+  needs: ["gcc_9_python"]
+
+  variables:
+    SSH_KEY: "$SSH_PRIVATE_KEY"
+    HOST: "phoenix.hlr.rz.tu-bs.de"
 
   script:
     - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook.yml
@@ -440,37 +452,26 @@ vf_to_phoenix:
 
 ###############################################################################
 cppcheck_to_elladan:
+  extends: .deploy_template
   stage: deploy
   needs: ["cppcheck"]
 
-  before_script:
-    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-    - apt-get install -y rsync
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY_ELLADAN" | tr -d '\r' | ssh-add -
-    - ssh-keyscan -t rsa elladan.irmb.bau.tu-bs.de >> ~/.ssh/known_hosts
-    - pip3 install ansible
+  variables:
+    SSH_KEY: "$SSH_PRIVATE_KEY_ELLADAN"
+    HOST: "elladan.irmb.bau.tu-bs.de"
 
   script:
     - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_cppcheck.yml
 
 ###############################################################################
 gcov_to_elladan:
+  extends: .deploy_template
   stage: deploy
-
   needs: ["gcov_gcc_9"]
 
-  before_script:
-    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-    - apt-get install -y rsync
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY_ELLADAN" | tr -d '\r' | ssh-add -
-    - ssh-keyscan -t rsa elladan.irmb.bau.tu-bs.de >> ~/.ssh/known_hosts
-    - pip3 install ansible
+  variables:
+    SSH_KEY: "$SSH_PRIVATE_KEY_ELLADAN"
+    HOST: "elladan.irmb.bau.tu-bs.de"
 
   script:
     - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_gcov.yml
