@@ -403,7 +403,7 @@ clang-tidy:
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=ON
     - python3 ../utilities/filterCompileCommands.py compile_commands.json
-    - run-clang-tidy -quiet > clangtidy.txt
+    - run-clang-tidy -extra-arg='--cuda-host-only' -quiet > clangtidy.txt
 
   artifacts:
     paths:
