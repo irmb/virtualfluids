@@ -403,7 +403,7 @@ void Simulation::run()
    //turning Ship
    real Pi = (real)3.14159265358979323846;
    real delta_x_F = (real)0.1;
-   real delta_t_F = (real)(para->getVelocity() * delta_x_F / 3.75); 
+   real delta_t_F = (real)((double)para->getVelocity() * (double)delta_x_F / (double)3.75); 
    real delta_t_C = (real)(delta_t_F * pow(2.,para->getMaxLevel()));
    real timesteps_C = (real)(12.5 / delta_t_C);
    real AngularVelocity = (real)(12.5 / timesteps_C * Pi / 180.);

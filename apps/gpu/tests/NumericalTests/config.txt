@@ -6,7 +6,7 @@ Devices="0"
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-KernelsToTest="BGKCompSP27"
+KernelsToTest="BGKPlusCompSP27"
 #BGKCompSP27 BGKPlusCompSP27 CumulantAA2016CompSP27 CumulantOneCompSP27 CumulantF3CompSP27 CumulantF32018CompSP27 CumulantAll4CompSP27
 NumberOfTimeSteps=20
 Viscosity="0.001"
@@ -53,7 +53,7 @@ EndTimeStepCalculation_Phi=20
 ##################################################
 #			Ny Test Parameter					 #
 ##################################################
-NyTest=false
+NyTest=true
 
 MinOrderOfAccuracy_Ny=1.95
 StartTimeStepCalculation_Ny=11
@@ -84,9 +84,9 @@ NormalizeWith=amplitude
 ##################################################
 TaylorGreenVortexUx32=true
 TaylorGreenVortexUx64=true
-TaylorGreenVortexUx128=false
-TaylorGreenVortexUx256=false
-TaylorGreenVortexUx512=false
+TaylorGreenVortexUx128=true
+TaylorGreenVortexUx256=true
+TaylorGreenVortexUx512=true
 
 TaylorGreenVortexUz32=false
 TaylorGreenVortexUz64=false
@@ -94,38 +94,30 @@ TaylorGreenVortexUz128=false
 TaylorGreenVortexUz256=false
 TaylorGreenVortexUz512=false
 
-ShearWave32=false
-ShearWave64=false
-ShearWave128=false
-ShearWave256=false
-ShearWave512=false
+ShearWave32=true
+ShearWave64=true
+ShearWave128=true
+ShearWave256=true
+ShearWave512=true
 
 ##################################################
 #				Grid Information				 #
 ##################################################
 NumberOfGridLevels=1
 
-#GridPath32="C:\Users\Timon\Documents\studienarbeitIRMB\Grids\gridUni32x4x48"
-#GridPath64="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni64x4x96"
-#GridPath128="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni128x4x192"
-#GridPath256="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni256x4x384"
-#GridPath512="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni512x4x768"
-
-GridPath32="C:\Users\Soeren\Documents\testdata\Grids\gridUni32x4x48"
-GridPath64="C:\Users\Soeren\Documents\testdata\Grids\gridUni64x4x96"
-GridPath128="C:\Users\Soeren\Documents\testdata\Grids\gridUni128x4x192"
-GridPath256="C:\Users\Soeren\Documents\testdata\Grids\gridUni256x4x384"
-GridPath512="C:\Users\Soeren\Documents\testdata\Grids\gridUni512x4x768"
+GridPath32="E:\temp\numericalTests\grids\gridUni32x4x48"
+GridPath64="E:\temp\numericalTests\grids\gridUni64x4x96"
+GridPath128="E:\temp\numericalTests\grids\gridUni128x4x192"
+GridPath256="E:\temp\numericalTests\grids\gridUni256x4x384"
+GridPath512="E:\temp\numericalTests\grids\gridUni512x4x768"
 
 ##################################################
 # 			File Writing Information			 #
 ##################################################
 WriteVTKFiles=false
-#PathForVTKFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
-PathLogFile="C:\Users\Soeren\Documents\testdata\Output"
+PathForVTKFileWriting="E:\temp\numericalTests\Output"
 StartStepFileWriter=0
 
 WriteAnalyResultsToVTK=true
 
-#PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"
-PathLogFile="C:\Users\Soeren\Documents\testdata\logFiles"
+PathLogFile="E:\temp\numericalTests\logFiles"
