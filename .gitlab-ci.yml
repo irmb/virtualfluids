@@ -440,6 +440,7 @@ vf_wheel_to_jupyterhub:
     HOST: "finrod.irmb.bau.tu-bs.de"
     SSH_KEY: "$SSH_PRIVATE_KEY_JUPYTER_HOST_AT_FINROD"
     REMOTE_USER: "jupyter_host"
+    jupyter_host: "jupyter_host"
 
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
