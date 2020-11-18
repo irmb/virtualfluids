@@ -1,4 +1,4 @@
-- hosts: local
+- hosts: gitlab_ci_deploy_wheel
   vars:
     host_home: "/home/{{ lookup('env', 'jupyter_host') }}"
 
