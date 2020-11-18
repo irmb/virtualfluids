@@ -160,6 +160,11 @@ msvc_16:
 ###############################################################################
 build_singularity_image:
   stage: build
+
+  tags:
+    - priviliged
+    - linux
+
   rules:
     - if: $CI_COMMIT_TAG
 
@@ -502,7 +507,7 @@ vf_to_phoenix:
     HOST: "phoenix.hlr.rz.tu-bs.de"
 
   script:
-    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook.yml
+    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook_vf_deploy.yml
 
   parallel:
     matrix:
