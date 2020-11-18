@@ -1,0 +1,51 @@
+- hosts: local
+  vars:
+    host_home: "/home/{{ lookup('env', 'jupyter_host') }}"
+
+  tasks:
+
+    - name: Find container IDs with image name
+      become: yes
+      shell: docker ps -a --format {% raw %}'{{.ID}} {{.Image}}'{% endraw %} | grep pyfluids-jupyter | awk '{ print $1 }'
+      register: container_ids
+
+    - name: Stop and remove docker spawner containers
+      become: yes
+      community.general.docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ container_ids.stdout_lines }}"
+
+    - name: Remove old docker spawner image
+      become: yes
+      community.general.docker_image:
+        name: pyfluids-jupyter
+        state: absent
+
+    - name: Find pyfluids wheel
+      find:
+        path: "{{ host_home }}/jupyterhub/DockerSpawnerImage/wheels/"
+        patterns: pyfluids*.whl
+      register: find_pyfluids
+
+    - name: Remove old pyfluids wheel
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ find_pyfluids.files }}"
+
+    - name: Copy new wheels to docker spawner image
+      synchronize:
+        src: ../dist/
+        dest: "{{ host_home }}/jupyterhub/DockerSpawnerImage/wheels/"
+        rsync_opts:
+          - "--include='*.whl'"
+
+    - name: Build docker spawner image again
+      become: yes
+      community.general.docker_image:
+        name: pyfluids-jupyter
+        source: build
+        build:
+          dockerfile: "{{ host_home }}/jupyterhub/DockerSpawnerImage/Dockerfile"
+          path: "{{ host_home }}/jupyterhub/DockerSpawnerImage/"
