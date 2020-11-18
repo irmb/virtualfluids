@@ -431,6 +431,29 @@ vf_to_phoenix:
         REMOTE_USER:
           - y0054816
 
+vf_wheel_to_jupyterhub:
+  stage: deploy
+
+  needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
+
+  variables:
+    HOST: "finrod.irmb.bau.tu-bs.de"
+    SSH_KEY: "$SSH_PRIVATE_KEY_JUPYTER_HOST_AT_FINROD"
+    REMOTE_USER: "jupyter_host"
+
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - apt-get install -y rsync
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+    - echo $SSH_KEY >> ansible/private_key
+    - ssh-keyscan -t rsa $HOST >> ~/.ssh/known_hosts
+    - pip3 install ansible
+
+  script:
+    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook_jupyter_update.yml
 
 cppcheck_to_elladan:
   stage: deploy
