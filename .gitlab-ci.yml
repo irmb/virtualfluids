@@ -434,6 +434,8 @@ vf_to_phoenix:
 vf_wheel_to_jupyterhub:
   stage: deploy
 
+  only: ["schedules"]
+
   needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
 
   variables:
