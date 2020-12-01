@@ -1,7 +1,7 @@
 ##################################################
 #				 GPU Mapping					 #
 ##################################################
-Devices="0"
+Devices="1"
 
 ##################################################
 #	       Basic Simulation Parameter			 #
@@ -10,7 +10,7 @@ KernelsToTest="CumulantK15Comp"
 #CumulantK17Comp
 #BGKCompSP27 BGKPlusCompSP27 CumulantAA2016CompSP27 CumulantOneCompSP27 CumulantF3CompSP27 CumulantF32018CompSP27 CumulantAll4CompSP27
 NumberOfTimeSteps=20
-Viscosity="0.001"
+Viscosity="0.00001"
 Rho0=1.0
 
 ##################################################
