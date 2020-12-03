@@ -401,7 +401,7 @@ clang-tidy:
     - cmake ..
       -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       -DBUILD_VF_CPU=ON
-      -DBUILD_VF_GPU=ON
+      -DBUILD_VF_GPU=OFF
     - python3 ../utilities/filterCompileCommands.py compile_commands.json
     - run-clang-tidy -quiet > clangtidy.txt
 
