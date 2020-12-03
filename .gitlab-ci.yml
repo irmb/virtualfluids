@@ -31,76 +31,96 @@ gcc_9_python:
   script:
     - python3 setup.py install
 
-gcc_9:
+###############################################################################
+.gnu_build_template:
   stage: build
+
+  image: irmb/virtualfluids-deps-ubuntu20.04
 
   tags:
     - gpu
     - linux
 
   cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-gcc9-hybrid"
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
-      - build_gcc9
+      - $BUILD_FOLDER
 
   artifacts:
     paths:
-      - build_gcc9
+      - $BUILD_FOLDER
 
   before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
-    - apt-get install -y libboost-serialization-dev
-    - cd /tmp
-    - apt-get install unzip
-    - wget https://github.com/NVIDIA/cuda-samples/archive/10.1.2.zip
-    - unzip 10.1.2.zip
-    - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
+    - export CC=gcc
+    - export CXX=g++
 
   script:
-    - cd $CI_PROJECT_DIR
-    - mkdir -p build_gcc9
-    - cd build_gcc9
-    - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON
+    - $CXX --version
+    - $CC --version
+    - cmake --version
+    - mpirun --version
+    - mkdir -p $CI_PROJECT_DIR/$BUILD_FOLDER
+    - cd $CI_PROJECT_DIR/$BUILD_FOLDER
+    - cmake ..
+      -DBUILD_VF_CPU=ON
+      -DBUILD_VF_GPU=ON
     - cmake . -LAH
     - make -j4
 
+  variables:
+    BUILD_FOLDER: "build"
+
+###############################################################################
+gcc_9:
+  extends: .gnu_build_template
+
+###############################################################################
 clang_10:
+  extends: .gnu_build_template
+
+  before_script:
+    - export CC=clang
+    - export CXX=clang++
+
+
+###############################################################################
+gcc_9_rebuild:
   stage: build
+
+  image: irmb/virtualfluids-deps-ubuntu20.04
 
   tags:
     - gpu
     - linux
 
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-clang10-hybrid"
-    paths:
-      - build_clang10
+  before_script:
+    - export CCACHE_BASEDIR=$CI_PROJECT_DIR
+    - export CCACHE_DIR=$CI_PROJECT_DIR/cache
+    - ccache -s
+
+  script:
+    - mkdir -p $CI_PROJECT_DIR/build
+    - cd $CI_PROJECT_DIR/build
+    - rm -r -f ./*
+    - cmake ..
+      -DBUILD_VF_CPU=ON
+      -DBUILD_VF_GPU=ON
+      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+      -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache
+      -DCMAKE_C_COMPILER_LAUNCHER=ccache
+    - make -j4  2>&1 | tee gcc_warnings.txt
+    - ccache -s
 
   artifacts:
     paths:
-      - build_clang10
+      - build/gcc_warnings.txt
 
-  before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
-    - export CC=clang
-    - export CXX=clang++
-    - $CXX --version
-    - apt-get install -y libboost-serialization-dev
-    - cd /tmp
-    - apt-get install unzip
-    - wget https://github.com/NVIDIA/cuda-samples/archive/10.1.2.zip
-    - unzip 10.1.2.zip
-    - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - $CI_PROJECT_DIR/cache
 
-  script:
-    - cd $CI_PROJECT_DIR
-    - mkdir -p build_clang10
-    - cd build_clang10
-    - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON
-    - make -j4
-
+###############################################################################
 msvc_16:
   stage: build
 
@@ -133,7 +153,7 @@ msvc_16:
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
 
   cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-windows"
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
       - $CI_PROJECT_DIR/$env:BUILD_FOLDER/
 
@@ -141,7 +161,7 @@ msvc_16:
     paths:
       - $CI_PROJECT_DIR/$env:BUILD_FOLDER/
 
-
+###############################################################################
 build_singularity_image:
   stage: build
   rules:
@@ -154,39 +174,6 @@ build_singularity_image:
   script:
     - singularity build Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
     - ls -sh Containers/VirtualFluidsOpenMPI.sif
-
-
-
-gcc_9_rebuild:
-  stage: build
-
-  #only: ["schedules"]
-
-  tags:
-    - gpu
-    - linux
-
-  before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
-    - apt-get install -y libboost-serialization-dev
-    - cd /tmp
-    - apt-get install unzip
-    - wget https://github.com/NVIDIA/cuda-samples/archive/10.1.2.zip
-    - unzip 10.1.2.zip
-    - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
-
-  script:
-    - cd $CI_PROJECT_DIR
-    - mkdir -p build_gcc_rebuild
-    - cd build_gcc_rebuild
-    - rm -r -f ./*
-    - cmake -E env CXXFLAGS="-fdiagnostics-show-option" cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON
-    - make -j4  >&1 | tee gcc_warnings.txt
-
-  artifacts:
-    paths:
-      - build_gcc_rebuild/gcc_warnings.txt
 
 ###############################################################################
 ##                                Tests                                      ##
@@ -202,6 +189,7 @@ gcc_9_python_unit_tests:
   script:
     - $VF_UNITTESTS
 
+###############################################################################
 msvc_16_unit_tests:
   stage: test
 
@@ -217,6 +205,7 @@ msvc_16_unit_tests:
   script:
     - .\bin\Release\basicsTests.exe
 
+###############################################################################
 gcc_9_python_bindings_test:
   stage: test
 
@@ -241,15 +230,13 @@ gcc_9_python_bindings_test:
 clang_build_analyzer_clang_10:
   stage: analyze
 
+  image: irmb/virtualfluids-deps-ubuntu20.04
+
   only: ["schedules"]
 
   needs: []
 
   before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
-    - cmake --version
-    - mpirun --version
     - export CC=clang
     - export CXX=clang++
     - $CXX --version
@@ -263,24 +250,30 @@ clang_build_analyzer_clang_10:
   script:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
-    - rm -r -f ./*
-    - cmake .. -DBUILD_VF_CPU=ON -DUSE_OPENMP=OFF -DCMAKE_CXX_FLAGS=-ftime-trace
+    - cmake ..
+      -DBUILD_VF_CPU=ON
+      -DBUILD_VF_GPU=ON
+      -DUSE_OPENMP=OFF
+      -DCMAKE_CXX_FLAGS=-ftime-trace
     - ClangBuildAnalyzer --start .
     - make
     - ClangBuildAnalyzer --stop . CBA
     - ClangBuildAnalyzer --analyze CBA
 
-
-include_what_you_use_gcc_9:
+###############################################################################
+include_what_you_use_clang_10:
   stage: analyze
+
+  image: irmb/virtualfluids-deps-ubuntu20.04
 
   only: ["schedules"]
 
   needs: []
 
   before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
+    - export CC=clang
+    - export CXX=clang++
+    - $CXX --version
     - cd /tmp
     - git clone https://github.com/include-what-you-use/include-what-you-use.git
     - cd include-what-you-use
@@ -288,18 +281,22 @@ include_what_you_use_gcc_9:
     - cmake . -DCMAKE_PREFIX_PATH=/usr/lib/llvm-10
     - make
     - export PATH+=:$(pwd)/bin
-    - echo $PATH
 
   script:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
-    - rm -r -f ./*
-    - cmake .. -DBUILD_VF_CPU=ON -DUSE_OPENMP=OFF -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
+    - cmake ..
+      -DBUILD_VF_CPU=ON
+      -DBUILD_VF_GPU=ON
+      -DUSE_OPENMP=OFF
+      -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
     - make
 
-
+###############################################################################
 cppcheck:
   stage: analyze
+
+  image: irmb/virtualfluids-deps-ubuntu20.04
 
   needs: []
 
@@ -319,21 +316,21 @@ cppcheck:
       - html_report/
       - cppcheck.xml
 
+###############################################################################
 # lizard - Cyclomatic Complexity Analyzer
 # Ignore warnings is manually set to 191. This job will fail when new warnings are added.
 lizard:
   stage: analyze
 
+  image: irmb/virtualfluids-python-deps-ubuntu20.04
+
   needs: []
 
   before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
     - cd /tmp
     - git clone https://github.com/terryyin/lizard.git
     - cd lizard
     - python3 setup.py install
-    - which lizard
     - lizard --version
 
   script:
@@ -344,9 +341,12 @@ lizard:
     paths:
       - lizard.txt
 
+###############################################################################
 # code coverage
 gcov_gcc_9:
   stage: analyze
+
+  image: irmb/virtualfluids-python-deps-ubuntu20.04
 
   needs: []
 
@@ -355,39 +355,40 @@ gcov_gcc_9:
     - apt-get update
     - pip3 install gcovr
     - gcovr --version
-    - apt-get install -y libboost-serialization-dev
-    - cd /tmp
-    - apt-get install unzip
-    - wget https://github.com/NVIDIA/cuda-samples/archive/10.1.2.zip
-    - unzip 10.1.2.zip
-    - export NVCUDASAMPLES_ROOT=$(pwd)/cuda-samples-10.1.2
 
   script:
-    - mkdir -p $CI_PROJECT_DIR/gcov_build
-    - cd $CI_PROJECT_DIR/gcov_build
-    - cmake .. -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=ON -DBUILD_VF_COVERAGE=ON -DBUILD_VF_UNIT_TESTS=ON
+    - mkdir -p $CI_PROJECT_DIR/build
+    - cd $CI_PROJECT_DIR/build
+    - cmake ..
+      -DBUILD_VF_CPU=ON
+      -DBUILD_VF_GPU=ON
+      -DBUILD_VF_COVERAGE=ON
+      -DBUILD_VF_UNIT_TESTS=ON
     - make -j4
     - ./bin/basicsTests
     - cd ..
     - mkdir coverage
-    - gcovr -r $CI_PROJECT_DIR -k gcov_build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
+    - gcovr -r $CI_PROJECT_DIR -k build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
 
   artifacts:
     paths:
       - coverage/
-      - gcov_build/
+      - build/
 
     reports:
       cobertura: coverage/coverage.xml
 
   cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-gcov"
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
-      - gcov_build
+      - build
 
+###############################################################################
 # this job also produces a compile commands json file.
 clang-tidy:
   stage: analyze
+
+  image: irmb/virtualfluids-python-deps-ubuntu20.04
 
   needs: []
 
@@ -395,25 +396,25 @@ clang-tidy:
     - run-clang-tidy -h
 
   script:
-    - cd $CI_PROJECT_DIR
-    - mkdir -p build_clang_tidy
-    - cd build_clang_tidy
-    - cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_VF_CPU=ON -DBUILD_VF_GPU=OFF
+    - mkdir -p $CI_PROJECT_DIR/build
+    - cd $CI_PROJECT_DIR/build
+    - cmake ..
+      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      -DBUILD_VF_CPU=ON
+      -DBUILD_VF_GPU=OFF
     - python3 ../utilities/filterCompileCommands.py compile_commands.json
     - run-clang-tidy -quiet > clangtidy.txt
 
   artifacts:
     paths:
-      - build_clang_tidy/clangtidy.txt
-      - build_clang_tidy/compile_commands.json
+      - build/clangtidy.txt
+      - build/compile_commands.json
 
 ###############################################################################
 ##                               Deploy                                      ##
 ###############################################################################
-vf_to_phoenix:
+.deploy_template:
   stage: deploy
-  
-  needs: ["gcc_9_python"]
 
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -421,10 +422,24 @@ vf_to_phoenix:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - echo $SSH_PRIVATE_KEY >> ansible/private_key
-    - ssh-keyscan -t rsa phoenix.hlr.rz.tu-bs.de >> ~/.ssh/known_hosts
+    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+    - echo $SSH_KEY >> ansible/private_key
+    - ssh-keyscan -t rsa $HOST >> ~/.ssh/known_hosts
     - pip3 install ansible
+
+  variables:
+    SSH_KEY: ""
+    HOST: ""
+
+###############################################################################
+vf_to_phoenix:
+  extends: .deploy_template
+  stage: deploy
+  needs: ["gcc_9_python"]
+
+  variables:
+    SSH_KEY: "$SSH_PRIVATE_KEY"
+    HOST: "phoenix.hlr.rz.tu-bs.de"
 
   script:
     - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook.yml
@@ -435,52 +450,45 @@ vf_to_phoenix:
         REMOTE_USER:
           - y0054816
 
-
+###############################################################################
 cppcheck_to_elladan:
+  extends: .deploy_template
   stage: deploy
   needs: ["cppcheck"]
 
-  before_script:
-    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-    - apt-get install -y rsync
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY_ELLADAN" | tr -d '\r' | ssh-add -
-    - ssh-keyscan -t rsa elladan.irmb.bau.tu-bs.de >> ~/.ssh/known_hosts
-    - pip3 install ansible
+  variables:
+    SSH_KEY: "$SSH_PRIVATE_KEY_ELLADAN"
+    HOST: "elladan.irmb.bau.tu-bs.de"
 
   script:
     - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_cppcheck.yml
 
-
+###############################################################################
 gcov_to_elladan:
+  extends: .deploy_template
   stage: deploy
-
   needs: ["gcov_gcc_9"]
 
-  before_script:
-    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-    - apt-get install -y rsync
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY_ELLADAN" | tr -d '\r' | ssh-add -
-    - ssh-keyscan -t rsa elladan.irmb.bau.tu-bs.de >> ~/.ssh/known_hosts
-    - pip3 install ansible
+  variables:
+    SSH_KEY: "$SSH_PRIVATE_KEY_ELLADAN"
+    HOST: "elladan.irmb.bau.tu-bs.de"
 
   script:
     - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_gcov.yml
 
+###############################################################################
 # sonar-scanner runs sonar-project.properties
-# the reports ins this file needs to match the artifacts.
+# the reports in this file needs to match the artifacts.
 sonar-scanner:
   stage: deploy
+  only:
+    refs:
+      - develop
 
   variables:
     SONAR_HOST_URL: "http://finrod.irmb.bau.tu-bs.de/sonarqube"
 
-  needs: ["cppcheck","clang-tidy","gcov_gcc_9"]
+  needs: ["cppcheck","clang-tidy","gcov_gcc_9","gcc_9_rebuild"]
 
   before_script:
     - cd /tmp
@@ -492,7 +500,6 @@ sonar-scanner:
     - echo 'sonar.sourceEncoding=UTF-8' >> conf/sonar-scanner.properties
     - cat conf/sonar-scanner.properties
     - export PATH+=:$(pwd)/bin
-    - echo $PATH
     - sonar-scanner -v
 
   script:
