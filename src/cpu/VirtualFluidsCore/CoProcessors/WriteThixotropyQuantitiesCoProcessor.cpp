@@ -123,7 +123,7 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 	datanames.push_back("viscosity");
 	//datanames.push_back("lambda");
 	//datanames.push_back("ShearRate");
-	//datanames.push_back("collFactor");
+	datanames.push_back("omega");
 	//datanames.push_back("Fluxx");
 	//datanames.push_back("Fluxy");
 	//datanames.push_back("Fluxz");
@@ -200,10 +200,12 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 					//distributionsF->getDistribution(f, ix1, ix2, ix3);
 					//LBMReal rho = D3Q27System::getDensity(f);
 					
-					//gammaDot = BinghamModel::getShearRate(f, collFactor);
+					//LBMReal gammaDot = D3Q27System::getShearRate(f, collFactor);
 
 					//LBMReal collFactorF = collFactor - 1e-6 / (gammaDot + one * 1e-9);
 					//collFactorF = (collFactorF < 0.5) ? 0.5 : collFactorF;
+
+					//LBMReal collFactorF = Thixotropy::getBinghamCollFactor(collFactor, gammaDot, rho);
 
 					//data[index++].push_back(lambda);
 					//data[index++].push_back(gammaDot);
@@ -213,10 +215,13 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 					LBMReal rho = D3Q27System::getDensity(f);
 					LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
 					//LBMReal omega = Thixotropy::getHerschelBulkleyCollFactor(collFactor, shearRate, rho);
-					LBMReal omega = Thixotropy::getPowellEyringCollFactor(collFactor, shearRate, rho);
+					//LBMReal omega = Thixotropy::getPowellEyringCollFactor(collFactor, shearRate, rho);
+					LBMReal omega = Thixotropy::getBinghamCollFactor(collFactor, shearRate, rho);
 					LBMReal viscosity = (omega == 0) ? 0 : c1o3 * (c1/omega-c1o2);
 
+					
 					data[index++].push_back(viscosity);
+					data[index++].push_back(omega);
 				}
 			}
 		}

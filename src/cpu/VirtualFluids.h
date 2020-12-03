@@ -168,7 +168,9 @@
 
 #include <CoProcessors/AdjustForcingCoProcessor.h>
 #include <CoProcessors/CalculateForcesCoProcessor.h>
-#include <CoProcessors/WriteBlocksCoProcessor.h>
+#include <CoProcessors/CalculateTorqueCoProcessor.h>
+#include <CoProcessors/WriteMacroscopicQuantitiesCoProcessor.h>
+#include <CoProcessors/WriteMQFromSelectionCoProcessor.h>
 #include <CoProcessors/WriteBoundaryConditionsCoProcessor.h>
 #include <CoProcessors/WriteMQFromSelectionCoProcessor.h>
 #include <CoProcessors/WriteMacroscopicQuantitiesCoProcessor.h>
@@ -221,6 +223,7 @@
 #include <LBM/ThixotropyExpLBMKernel.h>
 #include <LBM/CumulantLBMKernel.h>
 #include <LBM/ThixotropyModelLBMKernel.h>
+#include <LBM/ThixotropyModelLBMKernel2.h>
 #include <LBM/BinghamModelLBMKernel.h>
 #include <LBM/HerschelBulkleyModelLBMKernel.h>
 #include <LBM/ThixotropyInterpolationProcessor.h>

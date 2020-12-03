@@ -33,6 +33,7 @@ public:
 	void setMu0(LBMReal mu);
 	LBMReal getMu0() const;
 
+	static LBMReal getBinghamCollFactorOld(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
 	static LBMReal getBinghamCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
 	static LBMReal getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
 	static LBMReal getHerschelBulkleyCollFactorBackward(LBMReal shearRate, LBMReal drho);
@@ -56,8 +57,41 @@ inline LBMReal Thixotropy::getBinghamCollFactor(LBMReal omegaInf, LBMReal shearR
 {
 	LBMReal cs2 = UbMath::one_over_sqrt3 * UbMath::one_over_sqrt3;
 	LBMReal rho = UbMath::one + drho;
-	LBMReal omega = omegaInf * (UbMath::one - (omegaInf * tau0) / (shearRate * cs2 * rho + UbMath::Epsilon<LBMReal>::val()));
+	//LBMReal omega = omegaInf * (UbMath::one - (omegaInf * tau0) / (shearRate * cs2 * rho + UbMath::Epsilon<LBMReal>::val()));
+	
+	//LBMReal omega = cs2 * cs2 * shearRate * shearRate * omegaInf * rho * rho / (cs2 * cs2 * shearRate * shearRate * rho * rho + cs2 * shearRate * omegaInf * rho * tau0+omegaInf*omegaInf*tau0*tau0);
+	
+	LBMReal a = omegaInf * tau0 / (cs2 * shearRate * rho);
+	//10 iterations
+	//LBMReal omega = omegaInf / (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a))))))))));
+	
+	//20 iterations
+	LBMReal omega = omegaInf / (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a))))))))))))))))))));
+	
+	//LBMReal omega = omegaInf*cs2 * shearRate * rho / (cs2 * shearRate * rho + omegaInf * tau0);
+	//LBMReal shearRateNew = shearRate * (omega / omegaInf);
+
+	//for (int i = 0; i < 20; i++)
+	//{
+	//	omega = omegaInf * cs2 * shearRateNew * rho / (cs2 * shearRateNew * rho + omegaInf * tau0);
+	//	shearRateNew = shearRate * (omega / omegaInf);
+	//}
+	//omega = omegaInf * cs2 * shearRateNew * rho / (cs2 * shearRateNew * rho + omegaInf * tau0);
+	
+	//if (omega < 0.2)
+	//	omega = 0.2;
 	return omega;
+}
+
+inline LBMReal Thixotropy::getBinghamCollFactorOld(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
+{
+	const LBMReal cs2 = UbMath::c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;
+	LBMReal rho = UbMath::one + drho;
+
+	if (rho * cs2 * (UbMath::c1 / omegaInf - UbMath::c1o2) * shearRate < tau0)
+		return 0.0;
+	else
+		return omegaInf;
 }
 //////////////////////////////////////////////////////////////////////////
 inline LBMReal Thixotropy::getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)

@@ -1171,6 +1171,8 @@ usage: ...
          LBMReal Dxz = -three * collFactorF * mfbab;
          LBMReal Dyz = -three * collFactorF * mfabb;
 
+         
+         //TODO: may be factor 2
          return sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
       }
    }

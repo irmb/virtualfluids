@@ -29,10 +29,11 @@ void bflow(string configname)
       double          cpStep = config.getValue<double>("cpStep");
       double          cpStart = config.getValue<double>("cpStart");
       bool            newStart = config.getValue<bool>("newStart");
-      double          velocity = config.getValue<double>("velocity");
+      double          uLB = config.getValue<double>("uLB");
       double          n = config.getValue<double>("n");
       double          Re = config.getValue<double>("Re");
       double          Bn = config.getValue<double>("Bn");
+      double          N = config.getValue<double>("N");
       vector<double>  sphereCenter = config.getVector<double>("sphereCenter");
 
       SPtr<Communicator> comm = MPICommunicator::getInstance();
@@ -58,7 +59,13 @@ void bflow(string configname)
 
       LBMReal rhoLB = 0.0;
 
-      SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
+      //SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
+      double uWorld = (N * PI) / 30.0; //0.0037699111843
+      double rhoWorld = 2350.0; //kg/m^3
+      double R0 = boundingBox[0] * 0.5;
+
+      SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter(deltax, uWorld*R0, rhoWorld, 1.0, uLB));
+      UBLOG(logINFO, conv->toString());
 
       //bounding box
 
@@ -81,13 +88,15 @@ void bflow(string configname)
       double blockLength = 3.0 * deltax;
 
       double d = 2.0 * radius;
-      double U = velocity;
+      double U = uLB;
       double Gamma = U / d;
 
-      double k = (U * d) / (Re);
+      double muWorld = 20; //Pa*s
+      double k = 0.0015; // muWorld / rhoWorld * conv->getFactorViscosityWToLb(); //(U * d) / (Re);
 
       //double k = (U * d) / (Re * std::pow(Gamma, n - 1));
-      double tau0 = Bn * k * std::pow(Gamma, n);
+      double yielStressWorld = 20; //Pa
+      double tau0 = 1e-6;// 3e-6;//yielStressWorld * conv->getFactorPressureWToLb(); //Bn * k * std::pow(Gamma, n);
 
       //double k = 0.05; // (U * d) / (Re * std::pow(Gamma, n - 1));
       //double tau0 = 3e-6; //Bn * k * std::pow(Gamma, n);
@@ -103,27 +112,31 @@ void bflow(string configname)
       thix->setOmegaMin(omegaMin);
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new HerschelBulkleyModelNoSlipBCAlgorithm()));
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new BinghamModelNoSlipBCAlgorithm()));
+      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new BinghamModelNoSlipBCAlgorithm()));
 
       //SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
       //slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
 
       mu::Parser fctVx;
-      fctVx.SetExpr("omega*(r-x2)");
-      fctVx.DefineConst("omega", velocity);
+      //fctVx.SetExpr("omega*(r-x2)");
+      fctVx.SetExpr("-Omega*(x2-r)");
+      fctVx.DefineConst("Omega", uLB);
+      //fctVx.DefineConst("r", R0);
       fctVx.DefineConst("r", g_maxX1*0.5);
 
       mu::Parser fctVy;
-      fctVy.SetExpr("omega*(x1-k)");
-      fctVy.DefineConst("omega", velocity);
-      fctVy.DefineConst("k", g_maxX1 * 0.5);
+      fctVy.SetExpr("Omega*(x1-r)");
+      fctVy.DefineConst("Omega", uLB);
+      //fctVy.DefineConst("r", R0);
+      fctVy.DefineConst("r", g_maxX2 * 0.5);
 
       mu::Parser fctVz;
       fctVz.SetExpr("0.0");
 
       SPtr<BCAdapter> velocityBCAdapter(new VelocityBCAdapter(true, true, true, fctVx, fctVy, fctVz, 0, BCFunction::INFCONST));
+      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
       velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
       //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
 
@@ -142,11 +155,11 @@ void bflow(string configname)
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyK17LBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
       kernel->setBCProcessor(bcProc);
       //kernel->setForcingX1(forcing);
       //kernel->setWithForcing(true);
@@ -174,6 +187,18 @@ void bflow(string configname)
       restartCoProcessor->setBCProcessor(bcProc);
       //restartCoProcessor->setNu(k);
       //////////////////////////////////////////////////////////////////////////
+
+      ////stator
+      SPtr<GbObject3D> stator(new GbCylinder3D(0.5 * g_maxX1, 0.5 * g_maxX2, g_minX3-2.0*deltax, 0.5 * g_maxX1, 0.5 * g_maxX2, g_maxX3+ 2.0 * deltax, 0.5 * g_maxX1));
+      GbSystem3D::writeGeoObject(stator.get(), outputPath + "/geo/stator", WbWriterVtkXmlBinary::getInstance());
+
+      SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, velocityBCAdapter, Interactor3D::INVERSESOLID));
+
+      ////rotor (cylinder)
+      SPtr<GbObject3D> rotor(new GbCylinder3D(0.5 * g_maxX1, 0.5 * g_maxX2, g_minX3- 2.0 * deltax, 0.5 * g_maxX1, 0.5 * g_maxX2, g_maxX3+ 2.0 * deltax, 0.25 * g_maxX1));
+      GbSystem3D::writeGeoObject(rotor.get(), outputPath + "/geo/rotor", WbWriterVtkXmlBinary::getInstance());
+
+      SPtr<D3Q27Interactor> rotorInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(rotor, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
       if (myid == 0)
       {
@@ -215,17 +240,6 @@ void bflow(string configname)
             if (myid == 0) UBLOG(logINFO, "Refinement - end");
          }
 
-         ////stator
-         SPtr<GbObject3D> stator(new GbCylinder3D(0.5*g_maxX1, 0.5 * g_maxX2, g_minX3-deltax, 0.5 * g_maxX1, 0.5 * g_maxX2, g_maxX3+deltax, 0.5 * g_maxX1));
-         GbSystem3D::writeGeoObject(stator.get(), outputPath + "/geo/stator", WbWriterVtkXmlBinary::getInstance());
-
-         SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, velocityBCAdapter, Interactor3D::INVERSESOLID));
-
-         ////rotor (cylinder)
-         SPtr<GbObject3D> rotor(new GbCylinder3D(0.5 * g_maxX1, 0.5 * g_maxX2, g_minX3 - deltax, 0.5 * g_maxX1, 0.5 * g_maxX2, g_maxX3 + deltax, 0.25 * g_maxX1));
-         GbSystem3D::writeGeoObject(rotor.get(), outputPath + "/geo/rotor", WbWriterVtkXmlBinary::getInstance());
-
-         SPtr<D3Q27Interactor> rotorInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(rotor, grid, velocityBCAdapter, Interactor3D::SOLID));
 
          //walls
          GbCuboid3DPtr wallZmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_minX3));
@@ -326,9 +340,12 @@ void bflow(string configname)
       {
          restartCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
-         //SetBcBlocksBlockVisitor v(sphereInt);
-         //grid->accept(v);
-         //sphereInt->initInteractor();
+         SetBcBlocksBlockVisitor v1(rotorInt);
+         grid->accept(v1);
+         rotorInt->initInteractor();
+         SetBcBlocksBlockVisitor v2(statorInt);
+         grid->accept(v2);
+         statorInt->initInteractor();
       }
       
       omp_set_num_threads(numOfThreads);
@@ -354,19 +371,21 @@ void bflow(string configname)
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
       //writeMQCoProcessor->process(0);
 
-      //double area = UbMath::PI*radius*radius;
-      //SPtr<UbScheduler> forceSch(new UbScheduler(100));
-      //SPtr<CalculateForcesCoProcessor> fp = make_shared<CalculateForcesCoProcessor>(grid, forceSch, outputPath + "/forces/forces.txt", comm, velocity, area);
-      //fp->addInteractor(sphereInt);
+      SPtr<UbScheduler> forceSch(new UbScheduler(100));
+      SPtr<CalculateTorqueCoProcessor> fp = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueRotor.txt", comm);
+      fp->addInteractor(rotorInt);
+      SPtr<CalculateTorqueCoProcessor> fp2 = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueStator.txt", comm);
+      fp2->addInteractor(statorInt);
 
       SPtr<WriteThixotropyQuantitiesCoProcessor> writeThixotropicMQCoProcessor(new WriteThixotropyQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(npr);
-      //calculator->addCoProcessor(fp);
+      calculator->addCoProcessor(fp);
+      calculator->addCoProcessor(fp2);
       calculator->addCoProcessor(writeMQCoProcessor);
-      //calculator->addCoProcessor(writeThixotropicMQCoProcessor);
+      calculator->addCoProcessor(writeThixotropicMQCoProcessor);
       calculator->addCoProcessor(restartCoProcessor);
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");

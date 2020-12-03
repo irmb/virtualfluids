@@ -94,7 +94,7 @@ void bflow(string configname)
       double Gamma = U / d;
 
       double k = 0.05; // (U * d) / (Re * std::pow(Gamma, n - 1));
-      double tau0 = 3e-6;// Bn* k* std::pow(Gamma, n);
+      double tau0 = 1e-6;// Bn* k* std::pow(Gamma, n);
 
       double beta = 14;
       double c = 10; // 1.0 / 6.0;
