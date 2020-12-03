@@ -478,9 +478,12 @@ gcov_to_elladan:
 
 ###############################################################################
 # sonar-scanner runs sonar-project.properties
-# the reports ins this file needs to match the artifacts.
+# the reports in this file needs to match the artifacts.
 sonar-scanner:
   stage: deploy
+  only:
+    refs:
+      - develop
 
   variables:
     SONAR_HOST_URL: "http://finrod.irmb.bau.tu-bs.de/sonarqube"
@@ -497,7 +500,6 @@ sonar-scanner:
     - echo 'sonar.sourceEncoding=UTF-8' >> conf/sonar-scanner.properties
     - cat conf/sonar-scanner.properties
     - export PATH+=:$(pwd)/bin
-    - echo $PATH
     - sonar-scanner -v
 
   script:
