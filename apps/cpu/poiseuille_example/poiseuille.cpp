@@ -27,9 +27,8 @@ int main()
 
     const auto communicator = MPICommunicator::getInstance();
     const auto kernel = std::make_shared<CompressibleCumulant4thOrderViscosityLBMKernel>();
+    kernel->setBCProcessor(std::make_shared<BCProcessor>());
     kernel->setForcingX1(1e-6 * lbmUnitConverter->getFactorForceWToLb());
-
-    BoundaryConditionsBlockVisitor boundaryConditionsBlockVisitor{};
 
     auto grid = std::make_shared<Grid3D>();
     grid->setDeltaX(deltaX);
@@ -48,8 +47,6 @@ int main()
     auto ppblocks = std::make_shared<WriteBlocksCoProcessor>(grid, scheduler, outputPath, writer, communicator);
     ppblocks->process(0);
     ppblocks.reset();
-
-    kernel->setBCProcessor(std::make_shared<BCProcessor>());
 
     const auto metisVisitor(std::make_shared<MetisPartitioningGridVisitor>(communicator,
                                                                            MetisPartitioningGridVisitor::LevelBased,
@@ -93,6 +90,7 @@ int main()
 
 
     InitDistributionsBlockVisitor initVisitor{};
+    BoundaryConditionsBlockVisitor boundaryConditionsBlockVisitor{};
     grid->accept(initVisitor);
     grid->accept(setConnsVisitor);
     grid->accept(boundaryConditionsBlockVisitor);
