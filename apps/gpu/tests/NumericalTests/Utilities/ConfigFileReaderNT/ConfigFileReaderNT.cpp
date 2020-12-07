@@ -8,6 +8,10 @@
 #include <string>
 #include <fstream>
 
+#define VAL(str) #str
+#define TOSTRING(str) VAL(str)
+
+
 std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance(const std::string aFilePath)
 {
 	return std::shared_ptr<ConfigFileReader>(new ConfigFileReader(aFilePath));
@@ -32,7 +36,7 @@ void ConfigFileReader::readConfigFile()
 	configData->kernelsToTest = readKernelList(input);
 	configData->writeAnalyticalToVTK = StringUtil::toBool(input->getValue("WriteAnalyResultsToVTK"));
 	configData->ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));;
-	configData->logFilePath = input->getValue("PathLogFile");
+    configData->logFilePath         = TOSTRING(PATH_NUMERICAL_TESTS) + input->getValue("FolderLogFile");
 	configData->numberOfSimulations = calcNumberOfSimulations(input);
 
 	std::shared_ptr<BasicSimulationParameterStruct> basicSimPara = makeBasicSimulationParameter(input);
@@ -131,7 +135,7 @@ std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > ConfigFileRead
 		aParameter->basicTimeStepLength = basisTimeStepLength.at(i);
 		aParameter->l0 = l0;
 		aParameter->rho0 = StringUtil::toDouble(input->getValue("Rho0"));
-		aParameter->vtkFilePath = input->getValue("PathForVTKFileWriting");
+        aParameter->vtkFilePath         = TOSTRING(PATH_NUMERICAL_TESTS) + input->getValue("FolderForVTKFileWriting");
 		aParameter->dataToCalcTests = StringUtil::toStringVector(input->getValue("DataToCalcTests_TGV_Ux"));
 		parameter.push_back(aParameter);
 	}
@@ -155,7 +159,7 @@ std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct> > ConfigFileRead
 		aParameter->basicTimeStepLength = basisTimeStepLength.at(i);
 		aParameter->l0 = l0;
 		aParameter->rho0 = StringUtil::toDouble(input->getValue("Rho0"));
-		aParameter->vtkFilePath = input->getValue("PathForVTKFileWriting");
+        aParameter->vtkFilePath              = TOSTRING(PATH_NUMERICAL_TESTS) + input->getValue("FolderForVTKFileWriting");
 		aParameter->dataToCalcTests = StringUtil::toStringVector(input->getValue("DataToCalcTests_TGV_Uz"));
 		parameter.push_back(aParameter);
 	}
@@ -178,7 +182,7 @@ std::vector<std::shared_ptr<ShearWaveParameterStruct> > ConfigFileReader::makeSh
 		aParameter->basicTimeStepLength = basisTimeStepLength.at(i);
 		aParameter->l0 = l0;
 		aParameter->rho0 = StringUtil::toDouble(input->getValue("Rho0"));
-		aParameter->vtkFilePath = input->getValue("PathForVTKFileWriting");
+        aParameter->vtkFilePath     = TOSTRING(PATH_NUMERICAL_TESTS) + input->getValue("FolderForVTKFileWriting");
 		aParameter->dataToCalcTests = StringUtil::toStringVector(input->getValue("DataToCalcTests_SW"));
 		parameter.push_back(aParameter);
 	}
@@ -283,7 +287,7 @@ std::vector<std::shared_ptr<GridInformationStruct> > ConfigFileReader::makeGridI
 		if (StringUtil::toBool(input->getValue(valueNames.at(i)))) {
 			lx.push_back(nextNumber);
 			lz.push_back(nextNumber * 3.0 / 2.0);
-			gridPath.push_back(input->getValue(gridPaths.at(i)));
+            gridPath.push_back(TOSTRING(PATH_NUMERICAL_TESTS) + input->getValue(gridPaths.at(i)));
 			nextNumber *= 2;
 		}
 	}

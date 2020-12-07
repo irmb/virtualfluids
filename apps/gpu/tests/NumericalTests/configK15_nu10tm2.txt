@@ -1,7 +1,7 @@
 ##################################################
 #				 GPU Mapping					 #
 ##################################################
-Devices="0"
+Devices="1"
 
 ##################################################
 #	       Basic Simulation Parameter			 #
@@ -10,7 +10,7 @@ KernelsToTest="CumulantK15Comp"
 #CumulantK17Comp
 #BGKCompSP27 BGKPlusCompSP27 CumulantAA2016CompSP27 CumulantOneCompSP27 CumulantF3CompSP27 CumulantF32018CompSP27 CumulantAll4CompSP27
 NumberOfTimeSteps=20
-Viscosity="0.001"
+Viscosity="0.01"
 Rho0=1.0
 
 ##################################################
@@ -106,19 +106,19 @@ ShearWave512=true
 ##################################################
 NumberOfGridLevels=1
 
-GridPath32="E:\temp\numericalTests\grids\gridUni32x4x48"
-GridPath64="E:\temp\numericalTests\grids\gridUni64x4x96"
-GridPath128="E:\temp\numericalTests\grids\gridUni128x4x192"
-GridPath256="E:\temp\numericalTests\grids\gridUni256x4x384"
-GridPath512="E:\temp\numericalTests\grids\gridUni512x4x768"
+GridPath32="grids/gridUni32x4x48"
+GridPath64="grids/gridUni64x4x96"
+GridPath128="grids/gridUni128x4x192"
+GridPath256="grids/gridUni256x4x384"
+GridPath512="grids/gridUni512x4x768"
 
 ##################################################
 # 			File Writing Information			 #
 ##################################################
 WriteVTKFiles=false
-PathForVTKFileWriting="E:\temp\numericalTests\Output"
+FolderForVTKFileWriting="Output"
 StartStepFileWriter=0
 
 WriteAnalyResultsToVTK=true
 
-PathLogFile="E:\temp\numericalTests\logFiles"
+FolderLogFile="logFiles"
