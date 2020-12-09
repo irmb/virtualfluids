@@ -7,20 +7,19 @@
 struct PhysicalParameters {
     double latticeViscosity{};
     double bulkViscosityFactor{1};
-    double latticeDensity{};
 };
 
 struct GridParameters {
     std::array<int, 3> numberOfNodesPerDirection{1, 1, 1};
     std::array<int, 3> blocksPerDirection{1, 1, 1};
     int referenceDirectionIndex{};
-    double deltaX{1};
+    double nodeDistance{1};
     bool periodicBoundaryInX1{};
     bool periodicBoundaryInX2{};
     bool periodicBoundaryInX3{};
 };
 
-struct SimulationParameters {
+struct RuntimeParameters {
     int numberOfTimeSteps{};
     int timeStepLogInterval{};
     int numberOfThreads{};

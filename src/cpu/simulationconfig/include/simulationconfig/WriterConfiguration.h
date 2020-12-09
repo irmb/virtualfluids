@@ -6,18 +6,18 @@
 #include <basics/writer/WbWriterVtkXmlASCII.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-enum WriterType {
+enum OutputFormat {
     ASCII, BINARY
 };
 
-struct WriterConfig {
-    WriterType writerType{};
+struct WriterConfiguration {
+    OutputFormat outputFormat{};
     std::string outputPath{"./output"};
 
     WbWriter *getWriter()
     {
-        if (writerType == ASCII) return WbWriterVtkXmlASCII::getInstance();
-        if (writerType == BINARY) return WbWriterVtkXmlBinary::getInstance();
+        if (outputFormat == ASCII) return WbWriterVtkXmlASCII::getInstance();
+        if (outputFormat == BINARY) return WbWriterVtkXmlBinary::getInstance();
         return nullptr;
     }
 };

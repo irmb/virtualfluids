@@ -12,12 +12,11 @@ void makeParametersModule(py::module_ &parentModule)
             .def(py::init())
             .def_readwrite("bulk_viscosity_factor", &PhysicalParameters::bulkViscosityFactor,
                            "The viscosity of the fluid will be multiplied with this factor to calculate its bulk viscosity. Default is 1.0")
-            .def_readwrite("lattice_viscosity", &PhysicalParameters::latticeViscosity, "Lattice viscosity")
-            .def_readwrite("lattice_density", &PhysicalParameters::latticeDensity, "Lattice Density");
+            .def_readwrite("lattice_viscosity", &PhysicalParameters::latticeViscosity, "Lattice viscosity");
 
     py::class_<GridParameters, std::shared_ptr<GridParameters>>(parametersModule, "GridParameters")
             .def(py::init())
-            .def_readwrite("delta_x", &GridParameters::deltaX)
+            .def_readwrite("node_distance", &GridParameters::nodeDistance)
             .def_readwrite("reference_direction_index", &GridParameters::referenceDirectionIndex)
             .def_readwrite("number_of_nodes_per_direction", &GridParameters::numberOfNodesPerDirection)
             .def_readwrite("blocks_per_direction", &GridParameters::blocksPerDirection)
@@ -25,10 +24,10 @@ void makeParametersModule(py::module_ &parentModule)
             .def_readwrite("periodic_boundary_in_x2", &GridParameters::periodicBoundaryInX2)
             .def_readwrite("periodic_boundary_in_x3", &GridParameters::periodicBoundaryInX3);
 
-    py::class_<SimulationParameters, std::shared_ptr<SimulationParameters>>(parametersModule, "SimulationParameters")
+    py::class_<RuntimeParameters, std::shared_ptr<RuntimeParameters>>(parametersModule, "RuntimeParameters")
             .def(py::init())
-            .def_readwrite("number_of_timesteps", &SimulationParameters::numberOfTimeSteps)
-            .def_readwrite("timestep_log_interval", &SimulationParameters::timeStepLogInterval)
-            .def_readwrite("number_of_threads", &SimulationParameters::numberOfThreads);
+            .def_readwrite("number_of_timesteps", &RuntimeParameters::numberOfTimeSteps)
+            .def_readwrite("timestep_log_interval", &RuntimeParameters::timeStepLogInterval)
+            .def_readwrite("number_of_threads", &RuntimeParameters::numberOfThreads);
 
 }
