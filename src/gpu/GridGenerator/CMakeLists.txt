@@ -1,6 +1,6 @@
 
 
-vf_add_library(BUILDTYPE shared PRIVATE_LINK basics)
+vf_add_library(PRIVATE_LINK basics)
 vf_get_library_name(library_name)
 
 linkCUDA()
