@@ -3,7 +3,10 @@ project(simulationconfig)
 
 set(VFBUILDER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-file(GLOB HEADERS ${VFBUILDER_INCLUDE_DIR}/simulationconfig/*.h)
+file(GLOB HEADERS
+        ${VFBUILDER_INCLUDE_DIR}/simulationconfig/*.h
+        ${VFBUILDER_INCLUDE_DIR}/simulationconfig/boundaryconditions/*.h)
+
 file(GLOB SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 add_library(simulationconfig STATIC ${SRC} ${HEADERS})

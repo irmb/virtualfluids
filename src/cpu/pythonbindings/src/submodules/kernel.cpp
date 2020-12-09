@@ -9,8 +9,6 @@ namespace py = pybind11;
 
 void makeKernelModule(py::module_ &parentModule)
 {
-    using namespace pybind11::literals;
-
     py::module kernelModule = parentModule.def_submodule("kernel");
 
     py::enum_<KernelFactory::KernelType>(kernelModule, "KernelType")
@@ -19,18 +17,18 @@ void makeKernelModule(py::module_ &parentModule)
                    KernelFactory::COMPRESSIBLE_CUMULANT_4TH_ORDER_VISCOSITY);
 
 
-    py::class_<LBMKernelConfig, std::shared_ptr<LBMKernelConfig>>(kernelModule, "LBMKernel")
+    py::class_<LBMKernelConfiguration, std::shared_ptr<LBMKernelConfiguration>>(kernelModule, "LBMKernel")
             .def(py::init<KernelFactory::KernelType>())
-            .def_readwrite("use_forcing", &LBMKernelConfig::useForcing)
-            .def_readwrite("forcing_in_x1", &LBMKernelConfig::forcingX1)
-            .def_readwrite("forcing_in_x2", &LBMKernelConfig::forcingX2)
-            .def_readwrite("forcing_in_x3", &LBMKernelConfig::forcingX3)
-            .def("set_forcing", [](LBMKernelConfig &kernelConfig, double x1, double x2, double x3) {
+            .def_readwrite("use_forcing", &LBMKernelConfiguration::useForcing)
+            .def_readwrite("forcing_in_x1", &LBMKernelConfiguration::forcingX1)
+            .def_readwrite("forcing_in_x2", &LBMKernelConfiguration::forcingX2)
+            .def_readwrite("forcing_in_x3", &LBMKernelConfiguration::forcingX3)
+            .def("set_forcing", [](LBMKernelConfiguration &kernelConfig, double x1, double x2, double x3) {
                 kernelConfig.forcingX1 = x1;
                 kernelConfig.forcingX2 = x2;
                 kernelConfig.forcingX3 = x3;
             })
-            .def("__repr__", [](LBMKernelConfig &kernelConfig) {
+            .def("__repr__", [](LBMKernelConfiguration &kernelConfig) {
                 std::ostringstream stream;
                 stream << "<" << kernelConfig.kernelType << std::endl
                        << "Use forcing: " << kernelConfig.useForcing << std::endl

@@ -9,42 +9,54 @@
 #include <BoundaryConditions/VelocityBCAlgorithm.h>
 
 namespace py = pybind11;
+using namespace py::literals;
+
+template<class Adapter>
+using py_bc_class = py::class_<Adapter, BCAdapter, std::shared_ptr<Adapter>>;
+
+template<class Adapter, class Algorithm, typename ...Args>
+std::shared_ptr<Adapter> create(Args... args)
+{
+    auto adapter = std::make_shared<Adapter>(args...);
+    adapter->setBcAlgorithm(std::make_shared<Algorithm>());
+    return adapter;
+}
+
+template<class Algorithm>
+void add_constructors_to_velocity_bc(py_bc_class<VelocityBCAdapter> &cls)
+{
+    auto firstConstructor = &create<VelocityBCAdapter, Algorithm, bool &, bool &, bool &, mu::Parser &, double &, double &>;
+    auto secondConstructor = &create<VelocityBCAdapter, Algorithm,
+            bool &, bool &, bool &, mu::Parser &, mu::Parser &, mu::Parser &, double &, double &>;
+    auto thirdConstructor = &create<VelocityBCAdapter, Algorithm,
+            double &, double &, double &, double &, double &, double &, double &, double &, double &>;
+
+    cls.def(py::init(&create<VelocityBCAdapter, Algorithm>))
+            .def(py::init(firstConstructor),
+                 "vx1"_a, "vx2"_a, "vx3"_a, "function"_a, "start_time"_a, "end_time"_a)
+            .def(py::init(secondConstructor),
+                 "vx1"_a, "vx2"_a, "vx3"_a,
+                 "function_vx1"_a, "function_vx2"_a, "function_vx2"_a,
+                 "start_time"_a, "end_time"_a)
+            .def(py::init(thirdConstructor),
+                 "vx1"_a, "vx1_start_time"_a, "vx1_end_time"_a,
+                 "vx2"_a, "vx2_start_time"_a, "vx2_end_time"_a,
+                 "vx3"_a, "vx3_start_time"_a, "vx3_end_time"_a);
+}
 
 void makeBoundaryConditionsModule(py::module_ &parentModule)
 {
-    py::module bcModule = parentModule.def_submodule("boundaryconditions");
+    py::module_ bcModule = parentModule.def_submodule("boundaryconditions");
 
-    py::class_<BCAdapter, std::shared_ptr<BCAdapter>>(bcModule, "BCAdapter")
-            .def_property("algorithm", &BCAdapter::getAlgorithm, &BCAdapter::setBcAlgorithm);
+    py::class_<BCAdapter, std::shared_ptr<BCAdapter>>(bcModule, "BCAdapter");
 
-    py::class_<NoSlipBCAdapter, BCAdapter, std::shared_ptr<NoSlipBCAdapter>>(bcModule, "NoSlipBCAdapter")
-            .def(py::init());
+    py_bc_class<NoSlipBCAdapter>(bcModule, "NoSlipBoundaryCondition")
+            .def(py::init(&create<NoSlipBCAdapter, NoSlipBCAlgorithm>));
 
-    py::class_<VelocityBCAdapter, BCAdapter, std::shared_ptr<VelocityBCAdapter>>(bcModule, "VelocityBCAdapter")
-            .def(py::init())
-            .def(py::init<bool &, bool &, bool &, mu::Parser &, double &, double &>())
-            .def(py::init<bool &, bool &, bool &, mu::Parser &, mu::Parser &, mu::Parser &, double &, double &>())
-            .def(py::init<bool &, bool &, bool &, std::string &, double &, double &>())
-            .def(py::init<BCFunction &, bool, bool, bool>())
-            .def(py::init<BCFunction &, BCFunction &, BCFunction &>())
-            .def(py::init<std::vector<BCFunction> &, std::vector<BCFunction> &, std::vector<BCFunction> &>())
-            .def(py::init<double &, double &, double &, double &, double &, double &, double &, double &, double &>())
-            .def(py::init<std::string &, double &, double &, std::string &, double &, double &, std::string &, double &, double &>());
+    auto velocityBoundaryCondition = py_bc_class<VelocityBCAdapter>(bcModule, "VelocityBoundaryCondition");
+    add_constructors_to_velocity_bc<VelocityBCAlgorithm>(velocityBoundaryCondition);
 
-    py::class_<DensityBCAdapter, BCAdapter, std::shared_ptr<DensityBCAdapter>>(bcModule, "DensityBCAdapter")
-            .def(py::init());
-
-
-    py::class_<BCAlgorithm, std::shared_ptr<BCAlgorithm>>(bcModule, "BCAlgorithm");
-
-    py::class_<NoSlipBCAlgorithm, BCAlgorithm, std::shared_ptr<NoSlipBCAlgorithm>>(bcModule, "NoSlipBCAlgorithm")
-            .def(py::init());
-
-    py::class_<VelocityBCAlgorithm, BCAlgorithm, std::shared_ptr<VelocityBCAlgorithm>>(bcModule, "VelocityBCAlgorithm")
-            .def(py::init());
-
-    py::class_<NonReflectingOutflowBCAlgorithm, BCAlgorithm, std::shared_ptr<NonReflectingOutflowBCAlgorithm>>(bcModule,
-                                                                                                               "NonReflectingOutflowBCAlgorithm")
-            .def(py::init());
+    py_bc_class<DensityBCAdapter>(bcModule, "DensityBoundaryCondition")
+            .def(py::init(&create<DensityBCAdapter, NonReflectingOutflowBCAlgorithm>));
 }
 

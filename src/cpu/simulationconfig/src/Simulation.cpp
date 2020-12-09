@@ -1,3 +1,4 @@
+#include <memory>
 #include <string>
 #include <set>
 #include <utility>
@@ -35,29 +36,29 @@
 Simulation::Simulation()
 {
     this->communicator = MPICommunicator::getInstance();
-    this->grid = SPtr<Grid3D>(new Grid3D(communicator));
-    this->interactors = std::vector<SPtr<Interactor3D>>();
+    this->grid = std::shared_ptr<Grid3D>(new Grid3D(communicator));
+    this->interactors = std::vector<std::shared_ptr<Interactor3D>>();
     this->bcVisitor = BoundaryConditionsBlockVisitor();
-    this->registeredAdapters = std::set<SPtr<BCAdapter>>();
+    this->registeredAdapters = std::set<std::shared_ptr<BCAdapter>>();
 }
 
-void Simulation::setGridParameters(SPtr<GridParameters> parameters)
+void Simulation::setGridParameters(std::shared_ptr<GridParameters> parameters)
 {
     this->gridParameters = std::move(parameters);
 }
 
-void Simulation::setPhysicalParameters(SPtr<PhysicalParameters> parameters)
+void Simulation::setPhysicalParameters(std::shared_ptr<PhysicalParameters> parameters)
 {
     this->physicalParameters = std::move(parameters);
 }
 
-void Simulation::setSimulationParameters(SPtr<SimulationParameters> parameters)
+void Simulation::setSimulationParameters(std::shared_ptr<RuntimeParameters> parameters)
 {
     this->simulationParameters = std::move(parameters);
 }
 
 void
-Simulation::addObject(const SPtr<GbObject3D> &object, const SPtr<BCAdapter> &bcAdapter, int state,
+Simulation::addObject(const std::shared_ptr<GbObject3D> &object, const std::shared_ptr<BCAdapter> &bcAdapter, int state,
                       const std::string &folderPath)
 {
     const bool is_in = registeredAdapters.find(bcAdapter) != registeredAdapters.end();
@@ -66,25 +67,25 @@ Simulation::addObject(const SPtr<GbObject3D> &object, const SPtr<BCAdapter> &bcA
     GbSystem3D::writeGeoObject(object, writerConfig.outputPath + folderPath, writerConfig.getWriter());
 }
 
-void Simulation::addBCAdapter(const SPtr<BCAdapter> &bcAdapter)
+void Simulation::addBCAdapter(const std::shared_ptr<BCAdapter> &bcAdapter)
 {
     registeredAdapters.insert(bcAdapter);
     this->bcVisitor.addBC(bcAdapter);
 }
 
-void Simulation::setKernelConfig(const SPtr<LBMKernelConfig> &kernel)
+void Simulation::setKernelConfig(const std::shared_ptr<LBMKernelConfiguration> &kernel)
 {
     this->kernelConfig = kernel;
     this->lbmKernel = kernelFactory.makeKernel(kernel->kernelType);
     this->lbmSystem = kernelFactory.makeLBMSystem(kernel->kernelType);
 }
 
-void Simulation::setWriterConfig(const WriterConfig &config)
+void Simulation::setWriterConfig(const WriterConfiguration &config)
 {
     this->writerConfig = config;
 }
 
-WriterConfig &Simulation::getWriterConfig()
+WriterConfiguration &Simulation::getWriterConfig()
 {
     return writerConfig;
 }
@@ -92,7 +93,7 @@ WriterConfig &Simulation::getWriterConfig()
 void Simulation::run()
 {
     UBLOG(logINFO, "Beginning simulation setup")
-    grid->setDeltaX(gridParameters->deltaX);
+    grid->setDeltaX(gridParameters->nodeDistance);
     grid->setPeriodicX1(gridParameters->periodicBoundaryInX1);
     grid->setPeriodicX2(gridParameters->periodicBoundaryInX2);
     grid->setPeriodicX3(gridParameters->periodicBoundaryInX3);
@@ -106,14 +107,14 @@ void Simulation::run()
     logSimulationData(nodesInX1, nodesInX2, nodesInX3);
 
     setBlockSize(nodesInX1, nodesInX2, nodesInX3);
-    SPtr<GbObject3D> gridCube = makeSimulationBoundingBox(nodesInX1, nodesInX2, nodesInX3);
+    std::shared_ptr<GbObject3D> gridCube = makeSimulationBoundingBox(nodesInX1, nodesInX2, nodesInX3);
 
     generateBlockGrid(gridCube);
 
     setKernelForcing(lbmKernel, converter);
     setBoundaryConditionProcessor(lbmKernel);
 
-    SPtr<Grid3DVisitor> metisVisitor(
+    std::shared_ptr<Grid3DVisitor> metisVisitor(
             new MetisPartitioningGridVisitor(communicator,
                                              MetisPartitioningGridVisitor::LevelBased,
                                              D3Q27System::B));
@@ -130,7 +131,7 @@ void Simulation::run()
     grid->accept(kernelVisitor);
     intHelper.setBC();
 
-    SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+    std::shared_ptr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
     dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkViscosity(
             physicalParameters->latticeViscosity,
             physicalParameters->latticeViscosity * physicalParameters->bulkViscosityFactor);
@@ -146,11 +147,12 @@ void Simulation::run()
 
     writeBoundaryConditions();
 
-    SPtr<UbScheduler> visualizationScheduler(new UbScheduler(simulationParameters->timeStepLogInterval));
-    SPtr<CoProcessor> mqCoProcessor = makeMacroscopicQuantitiesCoProcessor(converter, visualizationScheduler);
+    std::shared_ptr<UbScheduler> visualizationScheduler(new UbScheduler(simulationParameters->timeStepLogInterval));
+    std::shared_ptr<CoProcessor> mqCoProcessor = makeMacroscopicQuantitiesCoProcessor(converter,
+                                                                                      visualizationScheduler);
 
-    SPtr<UbScheduler> nupsScheduler(new UbScheduler(100, 100));
-    SPtr<CoProcessor> nupsCoProcessor(
+    std::shared_ptr<UbScheduler> nupsScheduler(new UbScheduler(100, 100));
+    std::shared_ptr<CoProcessor> nupsCoProcessor(
             new NUPSCounterCoProcessor(grid, nupsScheduler, simulationParameters->numberOfThreads, communicator));
 
 
@@ -158,7 +160,7 @@ void Simulation::run()
     omp_set_num_threads(simulationParameters->numberOfThreads);
 #endif
 
-    SPtr<Calculator> calculator(
+    std::shared_ptr<Calculator> calculator(
             new BasicCalculator(grid, visualizationScheduler, simulationParameters->numberOfTimeSteps));
     calculator->addCoProcessor(nupsCoProcessor);
     calculator->addCoProcessor(mqCoProcessor);
@@ -169,7 +171,7 @@ void Simulation::run()
 }
 
 void
-Simulation::setKernelForcing(const SPtr<LBMKernel> &kernel,
+Simulation::setKernelForcing(const std::shared_ptr<LBMKernel> &kernel,
                              std::shared_ptr<LBMUnitConverter> &converter) const
 {
     kernel->setWithForcing(kernelConfig->useForcing);
@@ -181,11 +183,11 @@ Simulation::setKernelForcing(const SPtr<LBMKernel> &kernel,
 void Simulation::logSimulationData(const int &nodesInX1, const int &nodesInX2, const int &nodesInX3) const
 {
     UBLOG(logINFO, "Domain size = " << nodesInX1 << " x " << nodesInX2 << " x " << nodesInX3)
-    UBLOG(logINFO, "dx          = " << gridParameters->deltaX << " m")
+    UBLOG(logINFO, "dx          = " << gridParameters->nodeDistance << " m")
     UBLOG(logINFO, "latticeViscosity    = " << physicalParameters->latticeViscosity)
 }
 
-void Simulation::generateBlockGrid(const SPtr<GbObject3D> &gridCube) const
+void Simulation::generateBlockGrid(const std::shared_ptr<GbObject3D> &gridCube) const
 {
     UBLOG(logINFO, "Generate block grid")
     GenBlocksGridVisitor genBlocks(gridCube);
@@ -193,11 +195,11 @@ void Simulation::generateBlockGrid(const SPtr<GbObject3D> &gridCube) const
     writeBlocks();
 }
 
-void Simulation::setBoundaryConditionProcessor(const SPtr<LBMKernel> &kernel)
+void Simulation::setBoundaryConditionProcessor(const std::shared_ptr<LBMKernel> &kernel)
 {
     UBLOG(logINFO, "Create boundary conditions processor")
-    SPtr<BCProcessor> bcProc;
-    bcProc = SPtr<BCProcessor>(new BCProcessor());
+    std::shared_ptr<BCProcessor> bcProc;
+    bcProc = std::shared_ptr<BCProcessor>(new BCProcessor());
     kernel->setBCProcessor(bcProc);
 }
 
@@ -215,14 +217,14 @@ void Simulation::setBlockSize(const int &nodesInX1, const int &nodesInX2, const 
 std::shared_ptr<LBMUnitConverter>
 Simulation::makeLBMUnitConverter()
 {
-    return SPtr<LBMUnitConverter>(new LBMUnitConverter());
+    return std::shared_ptr<LBMUnitConverter>(new LBMUnitConverter());
 }
 
-SPtr<CoProcessor>
+std::shared_ptr<CoProcessor>
 Simulation::makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter,
-                                                 const SPtr<UbScheduler> &visSch) const
+                                                 const std::shared_ptr<UbScheduler> &visSch) const
 {
-    SPtr<CoProcessor> mqCoProcessor(
+    std::shared_ptr<CoProcessor> mqCoProcessor(
             new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, writerConfig.outputPath, writerConfig.getWriter(),
                                                       converter,
                                                       communicator));
@@ -232,7 +234,7 @@ Simulation::makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitCo
 
 void Simulation::writeBoundaryConditions() const
 {
-    SPtr<UbScheduler> geoSch(new UbScheduler(1));
+    std::shared_ptr<UbScheduler> geoSch(new UbScheduler(1));
     WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, writerConfig.outputPath, writerConfig.getWriter(),
                                              communicator);
     ppgeo.process(0);
@@ -241,9 +243,9 @@ void Simulation::writeBoundaryConditions() const
 void Simulation::writeBlocks() const
 {
     UBLOG(logINFO, "Write block grid to VTK-file")
-    SPtr<CoProcessor> ppblocks(
+    std::shared_ptr<CoProcessor> ppblocks(
             new WriteBlocksCoProcessor(grid,
-                                       SPtr<UbScheduler>(new UbScheduler(1)),
+                                       std::shared_ptr<UbScheduler>(new UbScheduler(1)),
                                        writerConfig.outputPath,
                                        writerConfig.getWriter(),
                                        communicator));
@@ -252,20 +254,20 @@ void Simulation::writeBlocks() const
     ppblocks.reset();
 }
 
-SPtr<GbObject3D>
+std::shared_ptr<GbObject3D>
 Simulation::makeSimulationBoundingBox(const int &nodesInX1, const int &nodesInX2,
                                       const int &nodesInX3) const
 {
     double minX1 = 0, minX2 = 0, minX3 = 0;
-    const double maxX1 = minX1 + gridParameters->deltaX * nodesInX1;
-    const double maxX2 = minX2 + gridParameters->deltaX * nodesInX2;
-    const double maxX3 = minX3 + gridParameters->deltaX * nodesInX3;
+    const double maxX1 = minX1 + gridParameters->nodeDistance * nodesInX1;
+    const double maxX2 = minX2 + gridParameters->nodeDistance * nodesInX2;
+    const double maxX3 = minX3 + gridParameters->nodeDistance * nodesInX3;
     UBLOG(logINFO, "Bounding box dimensions = [("
             << minX1 << ", " << minX2 << ", " << minX3 << "); ("
             << maxX1 << ", " << maxX2 << ", " << maxX3 << ")]")
 
 
-    SPtr<GbObject3D> gridCube(new GbCuboid3D(minX1, minX2, minX3, maxX1, maxX2, maxX3));
+    std::shared_ptr<GbObject3D> gridCube(new GbCuboid3D(minX1, minX2, minX3, maxX1, maxX2, maxX3));
     GbSystem3D::writeGeoObject(gridCube.get(), writerConfig.outputPath + "/geo/gridCube", writerConfig.getWriter());
     return gridCube;
 }
