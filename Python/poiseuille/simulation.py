@@ -28,10 +28,11 @@ def run_simulation(physical_params=physical_params, grid_params=grid_params, run
     kernel.use_forcing = True
     kernel.forcing_in_x1 = 1e-6
 
-    g_min_x1, g_min_x2, g_min_x3 = 0, 0, 0
-    g_max_x1 = (grid_params.number_of_nodes_per_direction[0]) * grid_params.node_distance
-    g_max_x2 = (grid_params.number_of_nodes_per_direction[1]) * grid_params.node_distance
-    g_max_x3 = (grid_params.number_of_nodes_per_direction[2]) * grid_params.node_distance
+    node_distance = grid_params.node_distance
+    min_x1, min_x2, min_x3 = 0, 0, 0
+    max_x1 = grid_params.number_of_nodes_per_direction[0] * node_distance
+    max_x2 = grid_params.number_of_nodes_per_direction[1] * node_distance
+    max_x3 = grid_params.number_of_nodes_per_direction[2] * node_distance
 
     writer = Writer()
     writer.output_path = "./output"
@@ -40,30 +41,30 @@ def run_simulation(physical_params=physical_params, grid_params=grid_params, run
     simulation.set_kernel_config(kernel)
     simulation.set_physical_parameters(physical_params)
     simulation.set_grid_parameters(grid_params)
-    simulation.set_simulation_parameters(runtime_params)
+    simulation.set_runtime_parameters(runtime_params)
     simulation.set_writer(writer)
 
-    no_slip_adapter = NoSlipBoundaryCondition()
+    no_slip_bc = NoSlipBoundaryCondition()
 
-    block_length = 3 * grid_params.node_distance
+    block_width = 3 * node_distance
     simulation.add_object(
-        GbCuboid3D(g_min_x1 - block_length,
-                   g_min_x2 - block_length,
-                   g_min_x3 - block_length,
-                   g_max_x1 + block_length,
-                   g_max_x2 + block_length,
-                   g_min_x3),
-        no_slip_adapter,
+        GbCuboid3D(min_x1 - block_width,
+                   min_x2 - block_width,
+                   min_x3 - block_width,
+                   max_x1 + block_width,
+                   max_x2 + block_width,
+                   min_x3),
+        no_slip_bc,
         State.SOLID, "/geo/addWallZMin")
 
     simulation.add_object(
-        GbCuboid3D(g_min_x1 - block_length,
-                   g_min_x2 - block_length,
-                   g_max_x3,
-                   g_max_x1 + block_length,
-                   g_max_x2 + block_length,
-                   g_max_x3 + block_length),
-        no_slip_adapter,
+        GbCuboid3D(min_x1 - block_width,
+                   min_x2 - block_width,
+                   max_x3,
+                   max_x1 + block_width,
+                   max_x2 + block_width,
+                   max_x3 + block_width),
+        no_slip_bc,
         State.SOLID, "/geo/addWallZMax")
 
     simulation.run_simulation()

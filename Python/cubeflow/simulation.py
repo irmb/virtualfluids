@@ -78,25 +78,25 @@ def run_simulation(physical_parameters=physical_params, grid_parameters=grid_par
     writer.output_path = "./output"
     writer.output_format = OutputFormat.BINARY
 
-    builder = Simulation()
-    builder.set_writer(writer)
+    simulation = Simulation()
+    simulation.set_writer(writer)
 
-    builder.set_physical_parameters(physical_parameters)
-    builder.set_grid_parameters(grid_parameters)
-    builder.set_simulation_parameters(runtime_parameters)
-    builder.set_kernel_config(kernel)
+    simulation.set_physical_parameters(physical_parameters)
+    simulation.set_grid_parameters(grid_parameters)
+    simulation.set_runtime_parameters(runtime_parameters)
+    simulation.set_kernel_config(kernel)
 
-    # builder.add_object(bottom_wall, no_slip_bc, 1, "/geo/bottomWall")
-    # builder.add_object(top_wall, no_slip_bc, 1, "/geo/topWall")
-    # builder.add_object(left_wall, no_slip_bc, 1, "/geo/leftWall")
-    # builder.add_object(right_wall, no_slip_bc, 1, "/geo/rightWall")
+    # simulation.add_object(bottom_wall, no_slip_bc, 1, "/geo/bottomWall")
+    # simulation.add_object(top_wall, no_slip_bc, 1, "/geo/topWall")
+    # simulation.add_object(left_wall, no_slip_bc, 1, "/geo/leftWall")
+    # simulation.add_object(right_wall, no_slip_bc, 1, "/geo/rightWall")
 
-    builder.add_object(obstacle, no_slip_bc, 1, "/geo/obstacle")
+    simulation.add_object(obstacle, no_slip_bc, 1, "/geo/obstacle")
 
-    builder.add_object(outflow_boundary, outflow_bc, 1, "/geo/outflow")
-    builder.add_object(velocity_boundary, velocity_bc, 1, "/geo/velocityBoundary")
+    simulation.add_object(outflow_boundary, outflow_bc, 1, "/geo/outflow")
+    simulation.add_object(velocity_boundary, velocity_bc, 1, "/geo/velocityBoundary")
 
-    builder.run_simulation()
+    simulation.run_simulation()
 
 
 if __name__ == "__main__":
