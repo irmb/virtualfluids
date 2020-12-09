@@ -30,7 +30,7 @@ def run_simulation(physical_params=physical_params, grid_params=grid_params, run
 
     simulation.set_grid_parameters(grid_params)
     simulation.set_physical_parameters(physical_params)
-    simulation.set_simulation_parameters(runtime_params)
+    simulation.set_runtime_parameters(runtime_params)
     simulation.set_kernel_config(kernel)
     simulation.set_writer(writer)
 
