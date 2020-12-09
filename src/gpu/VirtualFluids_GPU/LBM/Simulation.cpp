@@ -19,7 +19,7 @@
 #include "Output/VeloASCIIWriter.hpp"
 //////////////////////////////////////////////////////////////////////////
 #include "Utilities/Buffer2D.hpp"
-#include "Utilities/StringUtil.hpp"
+#include "Core/StringUtilities/StringUtil.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Init/InitLattice.h"
 #include "Init/DefineGrid.h"

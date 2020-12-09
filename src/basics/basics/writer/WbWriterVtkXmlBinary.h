@@ -37,7 +37,9 @@
 
 #include <basics/writer/WbWriter.h>
 
-class WbWriterVtkXmlBinary : public WbWriter
+#include "basics_export.h"
+
+class BASICS_EXPORT WbWriterVtkXmlBinary : public WbWriter
 {
 public:
     static WbWriterVtkXmlBinary *getInstance()

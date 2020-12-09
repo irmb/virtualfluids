@@ -1,9 +1,11 @@
 #ifndef CONFIGFILEREADER_H
 #define CONFIGFILEREADER_H
 
-#include "../Input.h"
 
 #include <memory>
+#include <string>
+
+#include "basics_export.h"
 
 class ConfigData;
 
@@ -11,11 +13,10 @@ class ConfigFileReader
 {
 public:
     BASICS_EXPORT static std::shared_ptr<ConfigFileReader> getNewInstance();
-    BASICS_EXPORT virtual ~ConfigFileReader();
 
-    BASICS_EXPORT std::shared_ptr<ConfigData> readConfigFile(const std::string &filePath) const;
+    BASICS_EXPORT std::shared_ptr<ConfigData> readConfigFile(const char* filePath) const;
 
 private:
-    ConfigFileReader();
+    ConfigFileReader() = default;
 };
 #endif

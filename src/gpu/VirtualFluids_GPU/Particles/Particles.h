@@ -4,7 +4,7 @@
 #include "LBM/LB.h"
 #include "GPU/GPU_Interface.h"
 #include "GPU/CudaMemoryManager.h"
-#include "Utilities/StringUtil.hpp"
+#include "Core/StringUtilities/StringUtil.h"
 #include "Parameter/Parameter.h"
 
 //extern "C" void calcDragLift(Parameter* para, int lev);

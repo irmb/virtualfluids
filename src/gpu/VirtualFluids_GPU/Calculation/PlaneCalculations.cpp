@@ -9,6 +9,7 @@
 #include <sstream>
 //using namespace std;
 //////////////////////////////////////////////////////////////////////////
+#include "Core/StringUtilities/StringUtil.h"
 
 void setSizeOfPlane(Parameter* para, int lev, unsigned int z)
 {

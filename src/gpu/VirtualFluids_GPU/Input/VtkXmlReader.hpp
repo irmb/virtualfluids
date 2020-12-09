@@ -10,13 +10,14 @@
 #ifndef VTK_XML_READER_H
 #define VTK_XML_READER_H
 
-#include "Utilities/StringUtil.hpp"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 #include <vector>
 #include <iostream>
+
+#include "Core/StringUtilities/StringUtil.h"
 
 namespace vtk_xml_reader
 {

@@ -9,6 +9,8 @@
 #include <exception>
 #include <memory>
 
+#include "mpi.h"
+
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
@@ -122,7 +124,9 @@ void multipleLevel(const std::string& configPath)
     
 	Communicator* comm = Communicator::getInstanz();
 	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
-	SPtr<ConfigData> configData = configReader->readConfigFile(configPath);
+
+    std::cout << configPath << std::endl;
+	SPtr<ConfigData> configData = configReader->readConfigFile(configPath.c_str());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -350,11 +354,9 @@ int main( int argc, char* argv[])
 
 			targetPath = __FILE__;
 
-#ifdef _WIN32
-			targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
-#else
 			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
-#endif
+
+
 
 			std::cout << targetPath << std::endl;
 
