@@ -480,22 +480,30 @@ void ThixotropyModelLBMKernel2::calculate(int step)
 						LBMReal Dyz = -three * collFactorF * mfabb;
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 						//non Newtonian fluid collision factor
-						LBMReal shearRate = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
-						//collFactorF = getThyxotropyCollFactor(collFactorF, shearRate, rho);
+						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+						collFactorF = getThyxotropyCollFactor(collFactorF, shearRate, rho);
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 						//relax
-						mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
-						
-						LBMReal collFactorFyy = getThyxotropyCollFactor(collFactorF, std::sqrt(dxux*dxux + dyuy*dyuy) / (rho + one), rho);
-						mxxMyy += collFactorFyy * (-mxxMyy) - 3. * (1. - c1o2 * collFactorFyy) * (vx2 * dxux - vy2 * dyuy);
-						
-						LBMReal collFactorFzz = getThyxotropyCollFactor(collFactorF, std::sqrt(dxux*dxux + dzuz*dzuz) / (rho + one), rho);
-						mxxMzz += collFactorFzz * (-mxxMzz) - 3. * (1. - c1o2 * collFactorFzz) * (vx2 * dxux - vz2 * dzuz);
+						//mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+						//
+						//LBMReal collFactorFyy = getThyxotropyCollFactor(collFactorF, std::sqrt(dxux*dxux + dyuy*dyuy) / (rho + one), rho);
+						//mxxMyy += collFactorFyy * (-mxxMyy) - 3. * (1. - c1o2 * collFactorFyy) * (vx2 * dxux - vy2 * dyuy);
+						//
+						//LBMReal collFactorFzz = getThyxotropyCollFactor(collFactorF, std::sqrt(dxux*dxux + dzuz*dzuz) / (rho + one), rho);
+						//mxxMzz += collFactorFzz * (-mxxMzz) - 3. * (1. - c1o2 * collFactorFzz) * (vx2 * dxux - vz2 * dzuz);
 
-						mfabb += getThyxotropyCollFactor(collFactorF, std::abs(Dyz) / (rho + one), rho) * (-mfabb);
-						mfbab += getThyxotropyCollFactor(collFactorF, std::abs(Dxz) / (rho + one), rho) * (-mfbab);
-						mfbba += getThyxotropyCollFactor(collFactorF, std::abs(Dxy) / (rho + one), rho) * (-mfbba);
+						//mfabb += getThyxotropyCollFactor(collFactorF, std::abs(Dyz) / (rho + one), rho) * (-mfabb);
+						//mfbab += getThyxotropyCollFactor(collFactorF, std::abs(Dxz) / (rho + one), rho) * (-mfbab);
+						//mfbba += getThyxotropyCollFactor(collFactorF, std::abs(Dxy) / (rho + one), rho) * (-mfbba);
+
+						mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+						mxxMyy += collFactorF * (-mxxMyy) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vy2 * dyuy);
+						mxxMzz += collFactorF * (-mxxMzz) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vz2 * dzuz);
+
+						mfabb += collFactorF * (-mfabb);
+						mfbab += collFactorF * (-mfbab);
+						mfbba += collFactorF * (-mfbba);
 
 						// linear combinations back
 						mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);

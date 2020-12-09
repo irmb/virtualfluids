@@ -31,7 +31,6 @@
 //! \author Konstantin Kutscher, Sebastian Geller, Soeren Freudiger
 //=======================================================================================
 
-
 #ifndef D3Q27SYSTEM_H
 #define D3Q27SYSTEM_H
 
@@ -1174,7 +1173,7 @@ usage: ...
 
          
          //TODO: may be factor 2
-         return sqrt(c2 * dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+         return sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
       }
    }
 #endif
