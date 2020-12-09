@@ -49,6 +49,8 @@ class GbObject3DCreator;
 
 #include <PointerDefinitions.h>
 
+#include "basics_export.h"
+
 //////////////////////////////////////////////////////////////////////////
 //!
 //! \class GbObject3D
@@ -57,7 +59,7 @@ class GbObject3DCreator;
 //!
 //////////////////////////////////////////////////////////////////////////
 
-class GbObject3D : public ObObject
+class BASICS_EXPORT GbObject3D : public ObObject
 {
 public:
     // abstract Methods

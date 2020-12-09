@@ -112,6 +112,15 @@ function(vf_add_library)
     else()
         vf_get_library_name (library_name)
     endif()
+
+    if(NOT DEFINED ARG_BUILDTYPE)
+        if(BUILD_SHARED_LIBS)
+            set(ARG_BUILDTYPE "shared")
+        else()
+            set(ARG_BUILDTYPE "static")
+        endif()
+    endif()
+
     status("Configuring the target: ${library_name} (type=${ARG_BUILDTYPE})...")
 
 

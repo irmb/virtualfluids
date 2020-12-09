@@ -3,7 +3,6 @@
 
 #include "LBM/LB.h"
 #include "GPU/GPU_Interface.h"
-#include "Utilities/StringUtil.hpp"
 #include "Parameter/Parameter.h"
 #include "GPU/CudaMemoryManager.h"
 
