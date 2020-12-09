@@ -52,7 +52,7 @@ void Simulation::setPhysicalParameters(std::shared_ptr<PhysicalParameters> param
     this->physicalParameters = std::move(parameters);
 }
 
-void Simulation::setSimulationParameters(std::shared_ptr<RuntimeParameters> parameters)
+void Simulation::setRuntimeParameters(std::shared_ptr<RuntimeParameters> parameters)
 {
     this->simulationParameters = std::move(parameters);
 }
@@ -73,14 +73,14 @@ void Simulation::addBCAdapter(const std::shared_ptr<BCAdapter> &bcAdapter)
     this->bcVisitor.addBC(bcAdapter);
 }
 
-void Simulation::setKernelConfig(const std::shared_ptr<LBMKernelConfiguration> &kernel)
+void Simulation::setKernelConfiguration(const std::shared_ptr<LBMKernelConfiguration> &kernel)
 {
     this->kernelConfig = kernel;
     this->lbmKernel = kernelFactory.makeKernel(kernel->kernelType);
     this->lbmSystem = kernelFactory.makeLBMSystem(kernel->kernelType);
 }
 
-void Simulation::setWriterConfig(const WriterConfiguration &config)
+void Simulation::setWriterConfiguration(const WriterConfiguration &config)
 {
     this->writerConfig = config;
 }

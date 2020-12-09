@@ -45,15 +45,15 @@ public:
 
     WriterConfiguration &getWriterConfig();
 
-    void setWriterConfig(const WriterConfiguration &config);
+    void setWriterConfiguration(const WriterConfiguration &config);
 
     void setGridParameters(std::shared_ptr<GridParameters> parameters);
 
     void setPhysicalParameters(std::shared_ptr<PhysicalParameters> parameters);
 
-    void setSimulationParameters(std::shared_ptr<RuntimeParameters> parameters);
+    void setRuntimeParameters(std::shared_ptr<RuntimeParameters> parameters);
 
-    void setKernelConfig(const std::shared_ptr<LBMKernelConfiguration> &kernel);
+    void setKernelConfiguration(const std::shared_ptr<LBMKernelConfiguration> &kernel);
 
     void addObject(const std::shared_ptr<GbObject3D> &object, const std::shared_ptr<BCAdapter> &bcAdapter, int state,
                    const std::string &folderPath);
