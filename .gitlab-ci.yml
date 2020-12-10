@@ -200,6 +200,7 @@ msvc_16_unit_tests:
     - gpu
 
   needs: ["msvc_16"]
+  when: manual
 
   before_script:
     - cd $CI_PROJECT_DIR/build
