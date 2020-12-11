@@ -258,10 +258,12 @@ std::shared_ptr<GbObject3D>
 Simulation::makeSimulationBoundingBox(const int &nodesInX1, const int &nodesInX2,
                                       const int &nodesInX3) const
 {
-    double minX1 = 0, minX2 = 0, minX3 = 0;
-    const double maxX1 = minX1 + gridParameters->nodeDistance * nodesInX1;
-    const double maxX2 = minX2 + gridParameters->nodeDistance * nodesInX2;
-    const double maxX3 = minX3 + gridParameters->nodeDistance * nodesInX3;
+
+    double halfDx = -gridParameters->nodeDistance / 2.0;
+    double minX1 = halfDx, minX2 = halfDx, minX3 = halfDx;
+    const double maxX1 = minX1 + gridParameters->nodeDistance * (nodesInX1 - 1) + halfDx;
+    const double maxX2 = minX2 + gridParameters->nodeDistance * (nodesInX2 - 1) + halfDx;
+    const double maxX3 = minX3 + gridParameters->nodeDistance * (nodesInX3 - 1) + halfDx;
     UBLOG(logINFO, "Bounding box dimensions = [("
             << minX1 << ", " << minX2 << ", " << minX3 << "); ("
             << maxX1 << ", " << maxX2 << ", " << maxX3 << ")]")
