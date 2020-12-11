@@ -7,7 +7,7 @@ from pyfluids.writer import Writer, OutputFormat
 
 grid_params = GridParameters()
 grid_params.node_distance = 1
-grid_params.number_of_nodes_per_direction = [2, 2, 10]
+grid_params.number_of_nodes_per_direction = [1, 1, 10]
 grid_params.blocks_per_direction = [1, 1, 1]
 grid_params.periodic_boundary_in_x1 = True
 grid_params.periodic_boundary_in_x2 = True
