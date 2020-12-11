@@ -17,7 +17,7 @@ void bflow(string configname)
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
       vector<double>  boundingBox = config.getVector<double>("boundingBox");
-      //double          nuLB = config.getValue<double>("nuLB");
+      double          nuLB = 1.5e-3;//config.getValue<double>("nuLB");
       double          endTime = config.getValue<double>("endTime");
       double          outTime = config.getValue<double>("outTime");
       double          availMem = config.getValue<double>("availMem");
@@ -25,16 +25,18 @@ void bflow(string configname)
       bool            logToFile = config.getValue<bool>("logToFile");
       double          restartStep = config.getValue<double>("restartStep");
       double          deltax = config.getValue<double>("deltax");
-      double          radius = config.getValue<double>("radius");
+      // double          radius = config.getValue<double>("radius");
       double          cpStep = config.getValue<double>("cpStep");
       double          cpStart = config.getValue<double>("cpStart");
       bool            newStart = config.getValue<bool>("newStart");
       double          uLB = config.getValue<double>("uLB");
-      double          n = config.getValue<double>("n");
-      double          Re = config.getValue<double>("Re");
-      double          Bn = config.getValue<double>("Bn");
-      double          N = config.getValue<double>("N");
-      vector<double>  sphereCenter = config.getVector<double>("sphereCenter");
+      //double          nuLB = config.getValue<double>("nuLB");
+      double          tau0 = config.getValue<double>("tau0");
+      double          scaleFactor = config.getValue<double>("scaleFactor");
+      // double          N = config.getValue<double>("N");
+      //vector<double>  sphereCenter = config.getVector<double>("sphereCenter");
+
+      outputPath = outputPath + "3";
 
       SPtr<Communicator> comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -59,13 +61,21 @@ void bflow(string configname)
 
       LBMReal rhoLB = 0.0;
 
-      //SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
-      double uWorld = (N * PI) / 30.0; //0.0037699111843
-      double rhoWorld = 2350.0; //kg/m^3
-      double R0 = boundingBox[0] * 0.5;
+      uLB /= scaleFactor;
+      tau0 /= scaleFactor;
+      
+      endTime *= scaleFactor;
+      outTime = endTime;
+      cpStart = endTime;
+      cpStep  = endTime;
 
-      SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter(deltax, uWorld*R0, rhoWorld, 1.0, uLB));
-      UBLOG(logINFO, conv->toString());
+      SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
+      // double uWorld = (N * PI) / 30.0; //0.0037699111843
+      // double rhoWorld = 2350.0; //kg/m^3
+      //double R0 = boundingBox[0] * 0.5;
+
+      //SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter(deltax, uWorld*R0, rhoWorld, 1.0, uLB));
+      //if (myid == 0) UBLOG(logINFO, conv->toString());
 
       //bounding box
 
@@ -87,29 +97,29 @@ void bflow(string configname)
 
       double blockLength = 3.0 * deltax;
 
-      double d = 2.0 * radius;
-      double U = uLB;
-      double Gamma = U / d;
+      // double d = 2.0 * radius;
+      // double U = uLB;
+      // double Gamma = U / d;
 
-      double muWorld = 20; //Pa*s
-      double k = 0.0015; // muWorld / rhoWorld * conv->getFactorViscosityWToLb(); //(U * d) / (Re);
+      // double muWorld = 20; //Pa*s
+      // double k = 0.0015; // muWorld / rhoWorld * conv->getFactorViscosityWToLb(); //(U * d) / (Re);
 
-      //double k = (U * d) / (Re * std::pow(Gamma, n - 1));
-      double yielStressWorld = 20; //Pa
-      double tau0 = 1e-6;// 3e-6;//yielStressWorld * conv->getFactorPressureWToLb(); //Bn * k * std::pow(Gamma, n);
+      // //double k = (U * d) / (Re * std::pow(Gamma, n - 1));
+      // double yielStressWorld = 20; //Pa
+      // double tau0 = 1e-6;// 3e-6;//yielStressWorld * conv->getFactorPressureWToLb(); //Bn * k * std::pow(Gamma, n);
 
       //double k = 0.05; // (U * d) / (Re * std::pow(Gamma, n - 1));
       //double tau0 = 3e-6; //Bn * k * std::pow(Gamma, n);
 
       //double forcing = 8e-7;
 
-      double omegaMin = 1.0e-8;
+      //double omegaMin = 1.0e-8;
 
       SPtr<Thixotropy> thix = Thixotropy::getInstance();
-      thix->setPowerIndex(n);
-      thix->setViscosityParameter(k);
+      //thix->setPowerIndex(n);
+      //thix->setViscosityParameter(k);
       thix->setYieldStress(tau0);
-      thix->setOmegaMin(omegaMin);
+      //thix->setOmegaMin(omegaMin);
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
@@ -205,19 +215,21 @@ void bflow(string configname)
          UBLOG(logINFO, "Parameters:");
          //UBLOG(logINFO, "forcing = " << forcing);
          UBLOG(logINFO, "rho = " << rhoLB);
-         UBLOG(logINFO, "U = " << U);
-         UBLOG(logINFO, "Re = " << (U * d) / (k * std::pow(Gamma, n - 1)));
-         UBLOG(logINFO, "Bn = " << tau0 /(k * std::pow(Gamma, n)));
-         UBLOG(logINFO, "k = " << k);
-         UBLOG(logINFO, "n = " << n);
+         UBLOG(logINFO, "uLB = " << uLB);
+         UBLOG(logINFO, "nuLB = " << nuLB);
+         // UBLOG(logINFO, "Re = " << (U * d) / (k * std::pow(Gamma, n - 1)));
+         // UBLOG(logINFO, "Bn = " << tau0 /(k * std::pow(Gamma, n)));
+         // UBLOG(logINFO, "k = " << k);
+         // UBLOG(logINFO, "n = " << n);
          UBLOG(logINFO, "tau0 = " << tau0);
+         UBLOG(logINFO, "scaleFactor = " << scaleFactor);
          UBLOG(logINFO, "deltax = " << deltax);
          UBLOG(logINFO, "number of levels = " << refineLevel + 1);
          UBLOG(logINFO, "number of threads = " << numOfThreads);
          UBLOG(logINFO, "number of processes = " << comm->getNumberOfProcesses());
          UBLOG(logINFO, "blocknx = " << blocknx[0] << " " << blocknx[1] << " " << blocknx[2]);
          UBLOG(logINFO, "boundingBox = " << boundingBox[0] << " " << boundingBox[1] << " " << boundingBox[2]);
-         UBLOG(logINFO, "sphereCenter = " << sphereCenter[0] << " " << sphereCenter[1] << " " << sphereCenter[2]);
+         // UBLOG(logINFO, "sphereCenter = " << sphereCenter[0] << " " << sphereCenter[1] << " " << sphereCenter[2]);
          UBLOG(logINFO, "output path = " << outputPath);
          UBLOG(logINFO, "Preprozess - start");
       }
@@ -317,7 +329,7 @@ void bflow(string configname)
             UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
          }
 
-         SetKernelBlockVisitor kernelVisitor(kernel, k, availMem, needMem);
+         SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
          grid->accept(kernelVisitor);
 
          if (refineLevel > 0)
@@ -353,7 +365,7 @@ void bflow(string configname)
       //set connectors
       InterpolationProcessorPtr iProcessor(new ThixotropyInterpolationProcessor());
       static_pointer_cast<ThixotropyInterpolationProcessor>(iProcessor)->setOmegaMin(thix->getOmegaMin());
-      SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, k, iProcessor);
+      SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
       grid->accept(setConnsVisitor);
 
       grid->accept(bcVisitor);
