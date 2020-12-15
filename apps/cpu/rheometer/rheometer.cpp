@@ -14,10 +14,11 @@ void bflow(string configname)
       config.load(configname);
 
       string          outputPath = config.getValue<string>("outputPath");
+      string          viscosityPath = config.getValue<string>("viscosityPath");
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
-      vector<double>  boundingBox = config.getVector<double>("boundingBox");
-      double          nuLB = 1.5e-3;//config.getValue<double>("nuLB");
+      //vector<double>  boundingBox = config.getVector<double>("boundingBox");
+      //double          nuLB = 1.5e-3;//config.getValue<double>("nuLB");
       double          endTime = config.getValue<double>("endTime");
       double          outTime = config.getValue<double>("outTime");
       double          availMem = config.getValue<double>("availMem");
@@ -25,18 +26,19 @@ void bflow(string configname)
       bool            logToFile = config.getValue<bool>("logToFile");
       double          restartStep = config.getValue<double>("restartStep");
       double          deltax = config.getValue<double>("deltax");
-      // double          radius = config.getValue<double>("radius");
       double          cpStep = config.getValue<double>("cpStep");
       double          cpStart = config.getValue<double>("cpStart");
       bool            newStart = config.getValue<bool>("newStart");
-      double          uLB = config.getValue<double>("uLB");
-      //double          nuLB = config.getValue<double>("nuLB");
+      double          OmegaLB = config.getValue<double>("OmegaLB");
       double          tau0 = config.getValue<double>("tau0");
       double          scaleFactor = config.getValue<double>("scaleFactor");
-      // double          N = config.getValue<double>("N");
-      //vector<double>  sphereCenter = config.getVector<double>("sphereCenter");
+      double          resolution = config.getValue<double>("resolution");
 
-      outputPath = outputPath + "3";
+      ConfigurationFile   viscosity;
+      viscosity.load(viscosityPath + "/viscosity.cfg");
+      double nuLB = viscosity.getValue<double>("nuLB");
+
+      outputPath = outputPath + "/rheometerBingham_" + config.getValue<string>("resolution") + "_" + config.getValue<string>("OmegaLB");
 
       SPtr<Communicator> comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -61,7 +63,7 @@ void bflow(string configname)
 
       LBMReal rhoLB = 0.0;
 
-      uLB /= scaleFactor;
+      OmegaLB /= scaleFactor;
       tau0 /= scaleFactor;
       
       endTime *= scaleFactor;
@@ -83,9 +85,9 @@ void bflow(string configname)
       double g_minX2 = 0;
       double g_minX3 = 0;
 
-      double g_maxX1 = boundingBox[0];
-      double g_maxX2 = boundingBox[1];
-      double g_maxX3 = boundingBox[2];
+      double g_maxX1 = resolution;// boundingBox[0];
+      double g_maxX2 = resolution;// boundingBox[1];
+      double g_maxX3 = 1.0; // boundingBox[2];
 
       //double g_minX1 = -boundingBox[0]/2.0;
       //double g_minX2 = -boundingBox[1] / 2.0;
@@ -132,13 +134,13 @@ void bflow(string configname)
       mu::Parser fctVx;
       //fctVx.SetExpr("omega*(r-x2)");
       fctVx.SetExpr("-Omega*(x2-r)");
-      fctVx.DefineConst("Omega", uLB);
+      fctVx.DefineConst("Omega", OmegaLB);
       //fctVx.DefineConst("r", R0);
       fctVx.DefineConst("r", g_maxX1*0.5);
 
       mu::Parser fctVy;
       fctVy.SetExpr("Omega*(x1-r)");
-      fctVy.DefineConst("Omega", uLB);
+      fctVy.DefineConst("Omega", OmegaLB);
       //fctVy.DefineConst("r", R0);
       fctVy.DefineConst("r", g_maxX2 * 0.5);
 
@@ -157,7 +159,7 @@ void bflow(string configname)
 
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipBCAdapter);
+      //bcVisitor.addBC(noSlipBCAdapter);
       //bcVisitor.addBC(slipBCAdapter);
       bcVisitor.addBC(velocityBCAdapter);
       //bcVisitor.addBC(densityBCAdapter);
@@ -183,11 +185,6 @@ void bflow(string configname)
 
       SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
       if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), outputPath + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
-
-      //sphere
-      //SPtr<GbObject3D> sphere(new GbSphere3D(sphereCenter[0], sphereCenter[1], sphereCenter[2], radius));
-      //GbSystem3D::writeGeoObject(sphere.get(), outputPath + "/geo/sphere", WbWriterVtkXmlBinary::getInstance());
-      //SPtr<D3Q27Interactor> sphereInt(new D3Q27Interactor(sphere, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
       //////////////////////////////////////////////////////////////////////////
       //restart
@@ -215,7 +212,7 @@ void bflow(string configname)
          UBLOG(logINFO, "Parameters:");
          //UBLOG(logINFO, "forcing = " << forcing);
          UBLOG(logINFO, "rho = " << rhoLB);
-         UBLOG(logINFO, "uLB = " << uLB);
+         UBLOG(logINFO, "uLB = " << OmegaLB);
          UBLOG(logINFO, "nuLB = " << nuLB);
          // UBLOG(logINFO, "Re = " << (U * d) / (k * std::pow(Gamma, n - 1)));
          // UBLOG(logINFO, "Bn = " << tau0 /(k * std::pow(Gamma, n)));
@@ -228,7 +225,8 @@ void bflow(string configname)
          UBLOG(logINFO, "number of threads = " << numOfThreads);
          UBLOG(logINFO, "number of processes = " << comm->getNumberOfProcesses());
          UBLOG(logINFO, "blocknx = " << blocknx[0] << " " << blocknx[1] << " " << blocknx[2]);
-         UBLOG(logINFO, "boundingBox = " << boundingBox[0] << " " << boundingBox[1] << " " << boundingBox[2]);
+         UBLOG(logINFO, "resolution = " << resolution);
+         // UBLOG(logINFO, "boundingBox = " << boundingBox[0] << " " << boundingBox[1] << " " << boundingBox[2]);
          // UBLOG(logINFO, "sphereCenter = " << sphereCenter[0] << " " << sphereCenter[1] << " " << sphereCenter[2]);
          UBLOG(logINFO, "output path = " << outputPath);
          UBLOG(logINFO, "Preprozess - start");
@@ -254,33 +252,15 @@ void bflow(string configname)
 
 
          //walls
-         GbCuboid3DPtr wallZmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_minX3));
-         if (myid == 0) GbSystem3D::writeGeoObject(wallZmin.get(), outputPath + "/geo/wallZmin", WbWriterVtkXmlASCII::getInstance());
+         //GbCuboid3DPtr wallZmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_minX3));
+         //if (myid == 0) GbSystem3D::writeGeoObject(wallZmin.get(), outputPath + "/geo/wallZmin", WbWriterVtkXmlASCII::getInstance());
 
-         GbCuboid3DPtr wallZmax(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_maxX3, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
-         if (myid == 0) GbSystem3D::writeGeoObject(wallZmax.get(), outputPath + "/geo/wallZmax", WbWriterVtkXmlASCII::getInstance());
+         //GbCuboid3DPtr wallZmax(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_maxX3, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
+         //if (myid == 0) GbSystem3D::writeGeoObject(wallZmax.get(), outputPath + "/geo/wallZmax", WbWriterVtkXmlASCII::getInstance());
 
-         //GbCuboid3DPtr wallYmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_minX2, g_maxX3 + blockLength));
-         //if (myid == 0) GbSystem3D::writeGeoObject(wallYmin.get(), outputPath + "/geo/wallYmin", WbWriterVtkXmlASCII::getInstance());
-
-         //GbCuboid3DPtr wallYmax(new GbCuboid3D(g_minX1 - blockLength, g_maxX2, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
-         //if (myid == 0) GbSystem3D::writeGeoObject(wallYmax.get(), outputPath + "/geo/wallYmax", WbWriterVtkXmlASCII::getInstance());
-
-         //GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_minX1, g_maxX2 + blockLength, g_maxX3 + blockLength));
-         //if (myid == 0) GbSystem3D::writeGeoObject(wallXmin.get(), outputPath + "/geo/wallXmin", WbWriterVtkXmlASCII::getInstance());
-
-         //GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
-         //if (myid == 0) GbSystem3D::writeGeoObject(wallXmax.get(), outputPath + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
-
-         //wall interactors
-         SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
-                                                                               
-         //SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, slipBCAdapter, Interactor3D::SOLID));
-         //SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, slipBCAdapter, Interactor3D::SOLID));
-
-         //SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, velocityBCAdapter, Interactor3D::SOLID));
-         //SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, densityBCAdapter, Interactor3D::SOLID));
+         ////wall interactors
+         //SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         //SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
          ////////////////////////////////////////////
          //METIS
@@ -289,10 +269,6 @@ void bflow(string configname)
          /////delete solid blocks
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
          InteractorsHelper intHelper(grid, metisVisitor);
-         //intHelper.addInteractor(wallXminInt);
-         //intHelper.addInteractor(wallXmaxInt);
-         //intHelper.addInteractor(wallYminInt);
-         //intHelper.addInteractor(wallYmaxInt);
          //intHelper.addInteractor(wallZminInt);
          //intHelper.addInteractor(wallZmaxInt);
          intHelper.addInteractor(statorInt);

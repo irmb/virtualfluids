@@ -5,6 +5,7 @@
 #include <math.h>
 #include "DataSet3D.h"
 #include "LBMKernel.h"
+#include "Thixotropy.h"
 
 #define PROOF_CORRECTNESS
 
@@ -480,8 +481,11 @@ void ThixotropyModelLBMKernel2::calculate(int step)
 						LBMReal Dyz = -three * collFactorF * mfabb;
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 						//non Newtonian fluid collision factor
-						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
-						collFactorF = getThyxotropyCollFactor(collFactorF, shearRate, rho);
+						//LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+
+						LBMReal shearFactor = sqrt(c1o2 * ((mfcaa - mfaaa * c1o3) * (mfcaa - mfaaa * c1o3) + (mfaca - mfaaa * c1o3) * (mfaca - mfaaa * c1o3) + (mfaac - mfaaa * c1o3) * (mfaac - mfaaa * c1o3)) + mfbba * mfbba + mfbab * mfbab + mfabb * mfabb) + UbMath::Epsilon<LBMReal>::val();
+
+						//collFactorF = getThyxotropyCollFactor(collFactorF, shearRate, rho);
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 						//relax
@@ -497,13 +501,16 @@ void ThixotropyModelLBMKernel2::calculate(int step)
 						//mfbab += getThyxotropyCollFactor(collFactorF, std::abs(Dxz) / (rho + one), rho) * (-mfbab);
 						//mfbba += getThyxotropyCollFactor(collFactorF, std::abs(Dxy) / (rho + one), rho) * (-mfbba);
 
-						mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
-						mxxMyy += collFactorF * (-mxxMyy) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vy2 * dyuy);
-						mxxMzz += collFactorF * (-mxxMzz) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vz2 * dzuz);
+						SPtr<Thixotropy> thix = Thixotropy::getInstance();
+						LBMReal tau0 = thix->getYieldStress();
 
-						mfabb += collFactorF * (-mfabb);
-						mfbab += collFactorF * (-mfbab);
-						mfbba += collFactorF * (-mfbba);
+						mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz + ((mxxPyyPzz-mfaaa)/shearFactor*tau0)) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+						mxxMyy += collFactorF * (-mxxMyy + mxxMyy/shearFactor*tau0) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vy2 * dyuy);
+						mxxMzz += collFactorF * (-mxxMzz + mxxMzz/shearFactor*tau0) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vz2 * dzuz);
+
+						mfabb += collFactorF * (-mfabb + mfabb/shearFactor*tau0);
+						mfbab += collFactorF * (-mfbab + mfbab/shearFactor*tau0);
+						mfbba += collFactorF * (-mfbba + mfbba/shearFactor*tau0);
 
 						// linear combinations back
 						mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
