@@ -255,9 +255,9 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 				(mfbbc - mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
-			real fx = forces[0] / (pow(c2o1, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
-			real fy = forces[1] / (pow(c2o1, level)); //zero;
-			real fz = forces[2] / (pow(c2o1, level)); //zero;
+			real fx = forces[0] / (pow((double)c2o1, (double)level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
+			real fy = forces[1] / (pow((double)c2o1, (double)level)); //zero;
+			real fz = forces[2] / (pow((double)c2o1, (double)level)); //zero;
 			vvx += fx*c1o2;
 			vvy += fy*c1o2;
 			vvz += fz*c1o2;
@@ -1170,9 +1170,9 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 				(mfbbc - mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
-			real fx = forces[0] / (pow(c2o1, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
-			real fy = forces[1] / (pow(c2o1, level)); //zero;
-			real fz = forces[2] / (pow(c2o1, level)); //zero;
+			real fx = forces[0] / (pow((double)c2o1, (double)level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
+			real fy = forces[1] / (pow((double)c2o1, (double)level)); //zero;
+			real fz = forces[2] / (pow((double)c2o1, (double)level)); //zero;
 			vvx += fx*c1o2;
 			vvy += fy*c1o2;
 			vvz += fz*c1o2;
@@ -1943,9 +1943,9 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 				(mfbbc - mfbba)) * OOrho;
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
-			real fx = forces[0] / (pow(c2o1, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
-			real fy = forces[1] / (pow(c2o1, level)); //zero;
-			real fz = forces[2] / (pow(c2o1, level)); //zero;
+			real fx = forces[0] / (pow((double)c2o1, (double)level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
+			real fy = forces[1] / (pow((double)c2o1, (double)level)); //zero;
+			real fz = forces[2] / (pow((double)c2o1, (double)level)); //zero;
 			vvx += fx*c1o2;
 			vvy += fy*c1o2;
 			vvz += fz*c1o2;
