@@ -93,8 +93,25 @@ void bflow(string configname)
       double U = velocity;
       double Gamma = U / d;
 
-      double k = 0.05; // (U * d) / (Re * std::pow(Gamma, n - 1));
-      double tau0 = 3e-6;// Bn* k* std::pow(Gamma, n);
+      double scaleFactor = 4.0;
+
+      // Diffusive Scaling
+
+      //double k = 0.005; // (U * d) / (Re * std::pow(Gamma, n - 1));
+      //double tau0 = 3e-5 / (scaleFactor * scaleFactor);// *4.0);//*4.0);// Bn* k* std::pow(Gamma, n);
+      //forcing /= scaleFactor * scaleFactor * scaleFactor; 
+      //endTime *= scaleFactor * scaleFactor;
+      //deltax /= scaleFactor;
+
+      // Acoustic Scaling
+
+      double k = 0.005 * scaleFactor;
+      double tau0 = 3e-5; 
+      forcing /= scaleFactor;
+      endTime *= scaleFactor;
+      deltax /= scaleFactor;
+
+      outTime = endTime;
 
       double beta = 14;
       double c = 10; // 1.0 / 6.0;
@@ -123,8 +140,8 @@ void bflow(string configname)
       bcProc = SPtr<BCProcessor>(new BCProcessor());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new PowellEyringModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyK17LBMKernel());
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyK17LBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
       kernel->setForcingX1(forcing);
       kernel->setWithForcing(true);
       kernel->setBCProcessor(bcProc);

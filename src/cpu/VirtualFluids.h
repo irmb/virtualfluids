@@ -132,6 +132,7 @@
 #include <BoundaryConditions/HerschelBulkleyModelNoSlipBCAlgorithm.h>
 #include <BoundaryConditions/SimpleSlipBCAlgorithm.h>
 #include <BoundaryConditions/PowellEyringModelNoSlipBCAlgorithm.h>
+#include <BoundaryConditions/BinghamModelVelocityBCAlgorithm.h>
 
 #include <Connectors/Block3DConnector.h>
 #include <Connectors/Block3DConnectorFactory.h>

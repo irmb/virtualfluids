@@ -63,13 +63,21 @@ void bflow(string configname)
 
       LBMReal rhoLB = 0.0;
 
-      OmegaLB /= scaleFactor;
-      tau0 /= scaleFactor;
-      
-      endTime *= scaleFactor;
-      outTime = endTime;
-      cpStart = endTime;
-      cpStep  = endTime;
+      //akoustic
+       OmegaLB /= scaleFactor;
+       nuLB *=scaleFactor;
+       endTime *= scaleFactor;
+       outTime = endTime;
+       cpStart = endTime;
+       cpStep  = endTime;
+
+//diffusive
+      //OmegaLB /= scaleFactor * scaleFactor;
+      //tau0 /= scaleFactor * scaleFactor;
+      //endTime *= scaleFactor * scaleFactor;
+      //outTime = endTime;
+      //cpStart = endTime;
+      //cpStep = endTime;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
       // double uWorld = (N * PI) / 30.0; //0.0037699111843
@@ -149,8 +157,9 @@ void bflow(string configname)
 
       SPtr<BCAdapter> velocityBCAdapter(new VelocityBCAdapter(true, true, true, fctVx, fctVy, fctVz, 0, BCFunction::INFCONST));
       //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
+      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
       //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
+      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new BinghamModelVelocityBCAlgorithm()));
 
       //SPtr<BCAdapter> densityBCAdapter(new DensityBCAdapter());
       //densityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
@@ -159,7 +168,7 @@ void bflow(string configname)
 
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
-      //bcVisitor.addBC(noSlipBCAdapter);
+      bcVisitor.addBC(noSlipBCAdapter);
       //bcVisitor.addBC(slipBCAdapter);
       bcVisitor.addBC(velocityBCAdapter);
       //bcVisitor.addBC(densityBCAdapter);
@@ -169,9 +178,9 @@ void bflow(string configname)
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyK17LBMKernel());
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyK17LBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
       kernel->setBCProcessor(bcProc);
       //kernel->setForcingX1(forcing);
       //kernel->setWithForcing(true);

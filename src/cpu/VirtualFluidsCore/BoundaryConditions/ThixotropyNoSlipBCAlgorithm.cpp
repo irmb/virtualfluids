@@ -24,13 +24,13 @@ void ThixotropyNoSlipBCAlgorithm::applyBC()
    calcMacrosFct(f, rho, vx1, vx2, vx3);
    calcFeqFct(feq, rho, vx1, vx2, vx3);
 
+   LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
+   LBMReal collFactorF = getThyxotropyCollFactor(collFactor, shearRate, rho);
+
    for (int fDir = D3Q27System::FSTARTDIR; fDir <= D3Q27System::FENDDIR; fDir++)
    {
       if (bcPtr->hasNoSlipBoundaryFlag(fDir))
       {
-         LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
-         LBMReal collFactorF = getThyxotropyCollFactor(collFactor, shearRate, rho);
-
          //quadratic bounce back
          const int invDir = D3Q27System::INVDIR[fDir];
          LBMReal q = bcPtr->getQ(invDir);

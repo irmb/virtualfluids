@@ -481,7 +481,7 @@ void ThixotropyModelLBMKernel2::calculate(int step)
 						LBMReal Dyz = -three * collFactorF * mfabb;
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 						//non Newtonian fluid collision factor
-						//LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
 
 						LBMReal shearFactor = sqrt(c1o2 * ((mfcaa - mfaaa * c1o3) * (mfcaa - mfaaa * c1o3) + (mfaca - mfaaa * c1o3) * (mfaca - mfaaa * c1o3) + (mfaac - mfaaa * c1o3) * (mfaac - mfaaa * c1o3)) + mfbba * mfbba + mfbab * mfbab + mfabb * mfabb) + UbMath::Epsilon<LBMReal>::val();
 
@@ -504,13 +504,24 @@ void ThixotropyModelLBMKernel2::calculate(int step)
 						SPtr<Thixotropy> thix = Thixotropy::getInstance();
 						LBMReal tau0 = thix->getYieldStress();
 
-						mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz + ((mxxPyyPzz-mfaaa)/shearFactor*tau0)) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
-						mxxMyy += collFactorF * (-mxxMyy + mxxMyy/shearFactor*tau0) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vy2 * dyuy);
-						mxxMzz += collFactorF * (-mxxMzz + mxxMzz/shearFactor*tau0) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vz2 * dzuz);
+						mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz /*+ ((mxxPyyPzz-mfaaa)/shearFactor*tau0)*/) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+						//mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+						//mxxMyy += collFactorF * (-mxxMyy + mxxMyy/shearFactor*tau0) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vy2 * dyuy);
+						//mxxMzz += collFactorF * (-mxxMzz + mxxMzz/shearFactor*tau0) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vz2 * dzuz);
 
-						mfabb += collFactorF * (-mfabb + mfabb/shearFactor*tau0);
-						mfbab += collFactorF * (-mfbab + mfbab/shearFactor*tau0);
-						mfbba += collFactorF * (-mfbba + mfbba/shearFactor*tau0);
+						//mfabb += collFactorF * (-mfabb + mfabb/shearFactor*tau0);
+						//mfbab += collFactorF * (-mfbab + mfbab/shearFactor*tau0);
+						//mfbba += collFactorF * (-mfbba + mfbba/shearFactor*tau0);
+
+						collFactorF = collFactor * (c1 - tau0 / shearFactor);
+
+						mxxMyy += collFactorF * (-mxxMyy/* + mxxMyy / shearFactor * tau0*/) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vy2 * dyuy);
+						mxxMzz += collFactorF * (-mxxMzz/* + mxxMzz / shearFactor * tau0*/) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vz2 * dzuz);
+
+						mfabb += collFactorF * (-mfabb/* + mfabb / shearFactor * tau0*/);
+						mfbab += collFactorF * (-mfbab/* + mfbab / shearFactor * tau0*/);
+						mfbba += collFactorF * (-mfbba/* + mfbba / shearFactor * tau0*/);
+
 
 						// linear combinations back
 						mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);

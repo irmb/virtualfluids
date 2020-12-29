@@ -1,12 +1,12 @@
 #ifndef BinghamModelLBMKernel_H
 #define BinghamModelLBMKernel_H
 
-#include "ThixotropyModelLBMKernel2.h"
+#include "ThixotropyModelLBMKernel.h"
 #include "Thixotropy.h"
 
 //! \brief    Cumulant LBM kernel + Bingham plastic model 
 //! \author K. Kutscher, M. Geier
-class BinghamModelLBMKernel : public ThixotropyModelLBMKernel2
+class BinghamModelLBMKernel : public ThixotropyModelLBMKernel
 {
 public:
 	BinghamModelLBMKernel() {};

@@ -66,17 +66,17 @@ inline LBMReal Thixotropy::getBinghamCollFactor(LBMReal omegaInf, LBMReal shearR
 	//LBMReal omega = omegaInf / (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a))))))))));
 	
 	//20 iterations
-	LBMReal omega = omegaInf / (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a))))))))))))))))))));
+	//LBMReal omega = omegaInf / (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a))))))))))))))))))));
 	
-	//LBMReal omega = omegaInf*cs2 * shearRate * rho / (cs2 * shearRate * rho + omegaInf * tau0);
-	//LBMReal shearRateNew = shearRate * (omega / omegaInf);
+	LBMReal omega = omegaInf*cs2 * shearRate * rho / (cs2 * shearRate * rho + omegaInf * tau0);
+	LBMReal shearRateNew = shearRate * (omega / omegaInf);
 
-	//for (int i = 0; i < 20; i++)
-	//{
-	//	omega = omegaInf * cs2 * shearRateNew * rho / (cs2 * shearRateNew * rho + omegaInf * tau0);
-	//	shearRateNew = shearRate * (omega / omegaInf);
-	//}
-	//omega = omegaInf * cs2 * shearRateNew * rho / (cs2 * shearRateNew * rho + omegaInf * tau0);
+	for (int i = 0; i < 3; i++)
+	{
+		omega = omegaInf * cs2 * shearRateNew * rho / (cs2 * shearRateNew * rho + omegaInf * tau0);
+		shearRateNew = shearRate * (omega / omegaInf);
+	}
+	omega = omegaInf * cs2 * shearRateNew * rho / (cs2 * shearRateNew * rho + omegaInf * tau0);
 	
 	//if (omega < 0.2)
 	//	omega = 0.2;
