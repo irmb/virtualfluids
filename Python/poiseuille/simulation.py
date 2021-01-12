@@ -30,9 +30,10 @@ def run_simulation(physical_params=physical_params, grid_params=grid_params, run
 
     node_distance = grid_params.node_distance
     min_x1, min_x2, min_x3 = 0, 0, 0
-    max_x1 = grid_params.number_of_nodes_per_direction[0] * node_distance
-    max_x2 = grid_params.number_of_nodes_per_direction[1] * node_distance
-    max_x3 = grid_params.number_of_nodes_per_direction[2] * node_distance
+    max_x1, max_x2, max_x3 = tuple(map(
+        lambda n: n * node_distance,
+        grid_params.number_of_nodes_per_direction
+    ))
 
     writer = Writer()
     writer.output_path = "./output"
