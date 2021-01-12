@@ -23,3 +23,10 @@ From: irmb/virtualfluids-python-deps-mpich
 
 %runscript
     python3 /Python/liddrivencavity/simulation.py
+
+%appenv poiseuille
+    export PYTHONPATH=Python
+
+%apprun poisueille
+    python3 /Python/poiseuille/poiseuille_hpc.py
+
