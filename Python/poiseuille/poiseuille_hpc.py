@@ -2,7 +2,7 @@ from poiseuille.simulation import run_simulation
 from pyfluids.parameters import *
 
 grid_parameters = GridParameters()
-grid_parameters.number_of_nodes_per_direction = [32, 32, 128]
+grid_parameters.number_of_nodes_per_direction = [64, 64, 512]
 grid_parameters.node_distance = 1
 grid_parameters.blocks_per_direction = [1, 1, 2]
 
