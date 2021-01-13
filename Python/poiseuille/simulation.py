@@ -17,8 +17,8 @@ physical_params.lattice_viscosity = 0.005
 
 runtime_params = RuntimeParameters()
 runtime_params.number_of_threads = 4
-runtime_params.number_of_timesteps = 10000
-runtime_params.timestep_log_interval = 1000
+runtime_params.number_of_timesteps = 1000
+runtime_params.timestep_log_interval = 100
 
 
 def run_simulation(physical_params=physical_params, grid_params=grid_params, runtime_params=runtime_params):
