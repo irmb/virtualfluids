@@ -4,6 +4,7 @@
 #include <utility>
 #include <cmath>
 #include <omp.h>
+#include <mpi.h>
 
 #include <basics/utilities/UbScheduler.h>
 #include <geometry3d/GbCuboid3D.h>
@@ -92,7 +93,7 @@ WriterConfiguration &Simulation::getWriterConfig()
 
 void Simulation::run()
 {
-    UBLOG(logINFO, "Beginning simulation setup")
+    UBLOG(logINFO, "Beginning simulation setup for " << communicator->getProcessID())
     grid->setDeltaX(gridParameters->nodeDistance);
     grid->setPeriodicX1(gridParameters->periodicBoundaryInX1);
     grid->setPeriodicX2(gridParameters->periodicBoundaryInX2);
@@ -258,18 +259,15 @@ std::shared_ptr<GbObject3D>
 Simulation::makeSimulationBoundingBox(const int &nodesInX1, const int &nodesInX2,
                                       const int &nodesInX3) const
 {
-
-    double halfDx = -gridParameters->nodeDistance / 2.0;
-    double minX1 = halfDx, minX2 = halfDx, minX3 = halfDx;
-    const double maxX1 = minX1 + gridParameters->nodeDistance * (nodesInX1 - 1) + halfDx;
-    const double maxX2 = minX2 + gridParameters->nodeDistance * (nodesInX2 - 1) + halfDx;
-    const double maxX3 = minX3 + gridParameters->nodeDistance * (nodesInX3 - 1) + halfDx;
+    double minX1 = 0, minX2 = 0, minX3 = 0;
+    const double maxX1 = minX1 + gridParameters->nodeDistance * nodesInX1;
+    const double maxX2 = minX2 + gridParameters->nodeDistance * nodesInX2;
+    const double maxX3 = minX3 + gridParameters->nodeDistance * nodesInX3;
     UBLOG(logINFO, "Bounding box dimensions = [("
             << minX1 << ", " << minX2 << ", " << minX3 << "); ("
             << maxX1 << ", " << maxX2 << ", " << maxX3 << ")]")
 
-
-    std::shared_ptr<GbObject3D> gridCube(new GbCuboid3D(minX1, minX2, minX3, maxX1, maxX2, maxX3));
+    auto gridCube = std::make_shared<GbCuboid3D>(minX1, minX2, minX3, maxX1, maxX2, maxX3);
     GbSystem3D::writeGeoObject(gridCube.get(), writerConfig.outputPath + "/geo/gridCube", writerConfig.getWriter());
     return gridCube;
 }
