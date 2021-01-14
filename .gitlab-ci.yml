@@ -254,7 +254,7 @@ gpu_numerical_tests:
     - cd $CI_PROJECT_DIR/build
     - rm -r -f ./*
     - cmake ..
-      -DBUILD_VF_CPU=ON
+      -DBUILD_VF_CPU=OFF
       -DBUILD_VF_GPU=ON
       -DBUILD_NUMERIC_TESTS=ON
       -DCMAKE_CXX_COMPILER_LAUNCHER=ccache

@@ -10,13 +10,13 @@
 
 #############################################################
 
-if(VF.BUILD_NUMERIC_TESTS)
+if(BUILD_NUMERIC_TESTS)
     set(CMAKE_CXX_STANDARD 17)
 endif()
 
 #############################################################
 
-IF( VF.BUILD_VF_GKS )
+IF( BUILD_VF_GKS )
     # only use this with device of CC larger than 6.0
     set(CMAKE_CUDA_FLAGS "-Xptxas=\"-v\"" CACHE STRING "" FORCE)
     set(CMAKE_CUDA_ARCHITECTURES 60)
@@ -43,7 +43,7 @@ add_subdirectory(src/gpu/GridGenerator)
 ###                  Virtual Fluids GPU                   ###
 #############################################################
 
-IF (VF.BUILD_VF_GPU)
+IF (BUILD_VF_GPU)
     add_subdirectory(src/gpu/VirtualFluids_GPU)
 
     #add_subdirectory(targets/apps/LBM/lbmTest)
@@ -65,7 +65,7 @@ ENDIF()
 #############################################################
 
 
-IF (VF.BUILD_VF_GKS)
+IF (BUILD_VF_GKS)
     add_subdirectory(src/gpu/GksMeshAdapter)
     add_subdirectory(src/gpu/GksVtkAdapter)
 
@@ -115,7 +115,7 @@ ENDIF()
 #############################################################
 ###                     JSONCPP                           ###
 #############################################################
-IF (NOT VF.BUILD_JSONCPP)
+IF (NOT BUILD_JSONCPP)
     MESSAGE( STATUS "Build Input Project without JsonCpp." )
 ELSE()
     add_subdirectory(3rdParty/jsoncpp)
@@ -126,7 +126,7 @@ ENDIF()
 ###                   Numeric Tests                       ###
 #############################################################
 
-if(VF.BUILD_NUMERIC_TESTS)
+if(BUILD_NUMERIC_TESTS)
 
     # PATH_NUMERICAL_TESTS can be passed to cmake e.g. cmake .. -DPATH_NUMERICAL_TESTS=/data/
     if(PATH_NUMERICAL_TESTS)
@@ -143,7 +143,7 @@ endif()
 ###					Annas Traffic Sim				      ###
 #############################################################
 
-if(VF.BUILD_VF_TRAFFIC)
+if(BUILD_VF_TRAFFIC)
     add_subdirectory(src/gpu/Traffic)
     add_subdirectory(apps/gpu/LBM/TrafficTest)
 endif()
