@@ -266,7 +266,7 @@ gpu_numerical_tests:
   script:
     - cd $CI_PROJECT_DIR
     - ls -la ./build/bin
-    - ./build/bin/NumericalTestsGPU $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt
+    - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt
 
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
