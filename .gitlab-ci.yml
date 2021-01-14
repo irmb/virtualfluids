@@ -3,6 +3,7 @@ image: irmb/virtualfluids-python-deps
 stages:
   - build
   - test
+  - benchmark
   - analyze
   - deploy
   - release
@@ -225,6 +226,49 @@ gcc_9_python_bindings_test:
 
   script:
     - python3 -m unittest discover -s Python -v
+
+###############################################################################
+##                            Benchmark                                      ##
+###############################################################################
+gpu_numerical_tests:
+  stage: benchmark
+
+  image: irmb/virtualfluids-deps-ubuntu20.04
+
+  when: manual
+
+  needs: []
+
+  tags:
+    - gpu
+    - linux
+
+  before_script:
+    - export CCACHE_BASEDIR=$CI_PROJECT_DIR
+    - export CCACHE_DIR=$CI_PROJECT_DIR/cache
+    - ccache -s
+    - mkdir -p $CI_PROJECT_DIR/build
+    - cd $CI_PROJECT_DIR/build
+    - rm -r -f ./*
+    - cmake ..
+      -DBUILD_VF_CPU=ON
+      -DBUILD_VF_GPU=ON
+      -DVF.BUILD_NUMERIC_TESTS=ON
+      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+      -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache
+      -DCMAKE_C_COMPILER_LAUNCHER=ccache
+    - make -j4  2>&1 | tee gcc_warnings.txt
+    - ccache -s
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - ls -la ./build/bin
+    - ./build/bin/NumericalTestsGPU $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt
+
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - $CI_PROJECT_DIR/cache
 
 
 ###############################################################################
