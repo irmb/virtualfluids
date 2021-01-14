@@ -7,14 +7,6 @@
 #SET(CUDA_CUT_INCLUDE_DIR    "/cluster/cuda/9.0/include;/cluster/cuda/9.0/samples/common/inc" CACHE PATH "CUDA_CUT_INCLUDE_DIR")
 #SET(CUDA_SAMPLE_INCLUDE_DIR "/cluster/cuda/9.0/samples/common/inc" CACHE PATH "CUDA_CUT_INCLUDE_DIR")
 
-#############################################################
-###                         OPTIONS                       ###
-#############################################################
-option(VF.BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
-option(VF.BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF )
-option(VF.BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" OFF)
-option(VF.BUILD_JSONCPP         "Builds json cpp "            OFF)
-option(VF.BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
 
 #############################################################
 
@@ -135,6 +127,12 @@ ENDIF()
 #############################################################
 
 if(VF.BUILD_NUMERIC_TESTS)
+
+    # PATH_NUMERICAL_TESTS can be passed to cmake e.g. cmake .. -DPATH_NUMERICAL_TESTS=/data/
+    if(PATH_NUMERICAL_TESTS)
+        LIST(APPEND VF_COMPILER_DEFINITION "PATH_NUMERICAL_TESTS=${PATH_NUMERICAL_TESTS}")
+    endif()
+
     add_subdirectory(3rdParty/fftw/fftw-3.3.7)
     add_subdirectory(3rdParty/googletest)
     add_subdirectory(apps/gpu/tests/NumericalTests)

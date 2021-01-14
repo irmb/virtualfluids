@@ -23,9 +23,9 @@ ConfigFileReader::ConfigFileReader(const std::string aFilePath) : myFilePath(aFi
     // If PATH_NUMERICAL_TESTS is not defined, the grid definitions for the tests needs to be placed in the project root
     // directories.
 #ifdef PATH_NUMERICAL_TESTS
-    pathNumericalTests = TOSTRING(PATH_NUMERICAL_TESTS);
+    pathNumericalTests = TOSTRING(PATH_NUMERICAL_TESTS) + std::string("/");
 #else
-    pathNumericalTests = "./";
+    pathNumericalTests = TOSTRING(SOURCE_ROOT) + std::string("/");
 #endif
     std::cout << pathNumericalTests << "\n";
 }
@@ -413,21 +413,21 @@ int ConfigFileReader::calcNumberOfSimulations(std::shared_ptr<input::Input> inpu
     int counter = 0;
 
     int tgvCounterU0 = calcNumberOfSimulationGroup(input, "TaylorGreenVortexUx");
-    tgvCounterU0 *= StringUtil::toDoubleVector(input->getValue("ux_TGV_Ux")).size();
+    tgvCounterU0 *= int(StringUtil::toDoubleVector(input->getValue("ux_TGV_Ux")).size());
     counter += tgvCounterU0;
 
     int tgvCounterV0 = calcNumberOfSimulationGroup(input, "TaylorGreenVortexUz");
     ;
-    tgvCounterV0 *= StringUtil::toDoubleVector(input->getValue("uz_TGV_Uz")).size();
+    tgvCounterV0 *= int(StringUtil::toDoubleVector(input->getValue("uz_TGV_Uz")).size());
     counter += tgvCounterV0;
 
     int swCounter = calcNumberOfSimulationGroup(input, "ShearWave");
     ;
-    swCounter *= StringUtil::toDoubleVector(input->getValue("u0_SW")).size();
+    swCounter *= int(StringUtil::toDoubleVector(input->getValue("u0_SW")).size());
     counter += swCounter;
 
-    counter *= StringUtil::toDoubleVector(input->getValue("Viscosity")).size();
-    counter *= configData->kernelsToTest.size();
+    counter *= int(StringUtil::toDoubleVector(input->getValue("Viscosity")).size());
+    counter *= int(configData->kernelsToTest.size());
 
     return counter;
 }
