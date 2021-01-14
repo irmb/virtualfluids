@@ -246,6 +246,7 @@ gpu_numerical_tests:
   before_script:
     - mkdir /testdata && cd /testdata
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.rz.tu-bs.de/iRMB/VirtualFluids_dev.git
+    - ls -la VirtualFluids_dev/
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
     - ccache -s
@@ -255,7 +256,7 @@ gpu_numerical_tests:
     - cmake ..
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=ON
-      -BUILD_NUMERIC_TESTS=ON
+      -DBUILD_NUMERIC_TESTS=ON
       -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache
       -DCMAKE_C_COMPILER_LAUNCHER=ccache
