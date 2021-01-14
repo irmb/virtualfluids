@@ -65,12 +65,12 @@ public:
 private:
     std::shared_ptr<GbObject3D> makeSimulationBoundingBox(const int &nodesInX1, const int &nodesInX2, const int &nodesInX3) const;
 
-    void writeBlocks() const;
+    void writeBlocksToFile() const;
 
     void writeBoundaryConditions() const;
 
     std::shared_ptr<CoProcessor> makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter,
-                                                           const std::shared_ptr<UbScheduler> &visSch) const;
+                                                           const std::shared_ptr<UbScheduler> &visualizationScheduler) const;
 
     static std::shared_ptr<LBMUnitConverter> makeLBMUnitConverter();
 

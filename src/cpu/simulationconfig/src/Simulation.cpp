@@ -93,7 +93,7 @@ WriterConfiguration &Simulation::getWriterConfig()
 
 void Simulation::run()
 {
-    UBLOG(logINFO, "Beginning simulation setup for " << communicator->getProcessID())
+    UBLOG(logINFO, "Beginning simulation setup for MPI rank " << communicator->getProcessID())
     grid->setDeltaX(gridParameters->nodeDistance);
     grid->setPeriodicX1(gridParameters->periodicBoundaryInX1);
     grid->setPeriodicX2(gridParameters->periodicBoundaryInX2);
@@ -108,17 +108,16 @@ void Simulation::run()
     logSimulationData(nodesInX1, nodesInX2, nodesInX3);
 
     setBlockSize(nodesInX1, nodesInX2, nodesInX3);
-    std::shared_ptr<GbObject3D> gridCube = makeSimulationBoundingBox(nodesInX1, nodesInX2, nodesInX3);
+    auto gridCube = makeSimulationBoundingBox(nodesInX1, nodesInX2, nodesInX3);
 
     generateBlockGrid(gridCube);
 
     setKernelForcing(lbmKernel, converter);
     setBoundaryConditionProcessor(lbmKernel);
 
-    std::shared_ptr<Grid3DVisitor> metisVisitor(
-            new MetisPartitioningGridVisitor(communicator,
-                                             MetisPartitioningGridVisitor::LevelBased,
-                                             D3Q27System::B));
+    auto metisVisitor = std::make_shared<MetisPartitioningGridVisitor>(communicator,
+                                                                       MetisPartitioningGridVisitor::LevelBased,
+                                                                       D3Q27System::B);
 
     InteractorsHelper intHelper(grid, metisVisitor);
     for (auto const &interactor : interactors)
@@ -126,13 +125,15 @@ void Simulation::run()
 
     intHelper.selectBlocks();
 
+    // important: run this after metis & intHelper.selectBlocks()
+    writeBlocksToFile();
     int numberOfProcesses = communicator->getNumberOfProcesses();
     SetKernelBlockVisitor kernelVisitor(lbmKernel, physicalParameters->latticeViscosity,
                                         numberOfProcesses);
     grid->accept(kernelVisitor);
     intHelper.setBC();
 
-    std::shared_ptr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+    auto iProcessor = std::make_shared<CompressibleOffsetMomentsInterpolationProcessor>();
     dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkViscosity(
             physicalParameters->latticeViscosity,
             physicalParameters->latticeViscosity * physicalParameters->bulkViscosityFactor);
@@ -148,9 +149,9 @@ void Simulation::run()
 
     writeBoundaryConditions();
 
-    std::shared_ptr<UbScheduler> visualizationScheduler(new UbScheduler(simulationParameters->timeStepLogInterval));
-    std::shared_ptr<CoProcessor> mqCoProcessor = makeMacroscopicQuantitiesCoProcessor(converter,
-                                                                                      visualizationScheduler);
+    auto visualizationScheduler = std::make_shared<UbScheduler>(simulationParameters->timeStepLogInterval);
+    auto mqCoProcessor = makeMacroscopicQuantitiesCoProcessor(converter,
+                                                              visualizationScheduler);
 
     std::shared_ptr<UbScheduler> nupsScheduler(new UbScheduler(100, 100));
     std::shared_ptr<CoProcessor> nupsCoProcessor(
@@ -159,10 +160,11 @@ void Simulation::run()
 
 #ifdef _OPENMP
     omp_set_num_threads(simulationParameters->numberOfThreads);
+    UBLOG(logINFO, "OpenMP is set to run with " << omp_get_num_threads() << " threads")
 #endif
 
-    std::shared_ptr<Calculator> calculator(
-            new BasicCalculator(grid, visualizationScheduler, simulationParameters->numberOfTimeSteps));
+    auto calculator = std::make_shared<BasicCalculator>(grid, visualizationScheduler,
+                                                        simulationParameters->numberOfTimeSteps);
     calculator->addCoProcessor(nupsCoProcessor);
     calculator->addCoProcessor(mqCoProcessor);
 
@@ -193,14 +195,12 @@ void Simulation::generateBlockGrid(const std::shared_ptr<GbObject3D> &gridCube) 
     UBLOG(logINFO, "Generate block grid")
     GenBlocksGridVisitor genBlocks(gridCube);
     grid->accept(genBlocks);
-    writeBlocks();
 }
 
 void Simulation::setBoundaryConditionProcessor(const std::shared_ptr<LBMKernel> &kernel)
 {
     UBLOG(logINFO, "Create boundary conditions processor")
-    std::shared_ptr<BCProcessor> bcProc;
-    bcProc = std::shared_ptr<BCProcessor>(new BCProcessor());
+    auto bcProc = std::make_shared<BCProcessor>();
     kernel->setBCProcessor(bcProc);
 }
 
@@ -218,39 +218,38 @@ void Simulation::setBlockSize(const int &nodesInX1, const int &nodesInX2, const 
 std::shared_ptr<LBMUnitConverter>
 Simulation::makeLBMUnitConverter()
 {
-    return std::shared_ptr<LBMUnitConverter>(new LBMUnitConverter());
+    return std::make_shared<LBMUnitConverter>();
 }
 
 std::shared_ptr<CoProcessor>
 Simulation::makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter,
-                                                 const std::shared_ptr<UbScheduler> &visSch) const
+                                                 const std::shared_ptr<UbScheduler> &visualizationScheduler) const
 {
-    std::shared_ptr<CoProcessor> mqCoProcessor(
-            new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, writerConfig.outputPath, writerConfig.getWriter(),
-                                                      converter,
-                                                      communicator));
+    auto mqCoProcessor = std::make_shared<WriteMacroscopicQuantitiesCoProcessor>(grid, visualizationScheduler,
+                                                                                 writerConfig.outputPath,
+                                                                                 writerConfig.getWriter(),
+                                                                                 converter,
+                                                                                 communicator);
     mqCoProcessor->process(0);
     return mqCoProcessor;
 }
 
 void Simulation::writeBoundaryConditions() const
 {
-    std::shared_ptr<UbScheduler> geoSch(new UbScheduler(1));
+    auto geoSch = std::make_shared<UbScheduler>(1);
     WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, writerConfig.outputPath, writerConfig.getWriter(),
                                              communicator);
     ppgeo.process(0);
 }
 
-void Simulation::writeBlocks() const
+void Simulation::writeBlocksToFile() const
 {
     UBLOG(logINFO, "Write block grid to VTK-file")
-    std::shared_ptr<CoProcessor> ppblocks(
-            new WriteBlocksCoProcessor(grid,
-                                       std::shared_ptr<UbScheduler>(new UbScheduler(1)),
-                                       writerConfig.outputPath,
-                                       writerConfig.getWriter(),
-                                       communicator));
-
+    auto ppblocks = std::make_shared<WriteBlocksCoProcessor>(grid,
+                                                             std::make_shared<UbScheduler>(1),
+                                                             writerConfig.outputPath,
+                                                             writerConfig.getWriter(),
+                                                             communicator);
     ppblocks->process(0);
     ppblocks.reset();
 }
