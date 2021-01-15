@@ -230,6 +230,22 @@ gcc_9_python_bindings_test:
 ###############################################################################
 ##                            Benchmark                                      ##
 ###############################################################################
+nvidia_test:
+  stage: benchmark
+
+  needs: []
+
+  tags:
+    - gpu
+    - linux
+
+  image: "nvidia/cuda:11.1.1-devel-ubuntu16.04"
+
+  script:
+  - echo NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+  - nvidia-smi
+
+
 gpu_numerical_tests:
   stage: benchmark
 
