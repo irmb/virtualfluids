@@ -86,8 +86,8 @@ NormalizeWith=amplitude
 TaylorGreenVortexUx32=true
 TaylorGreenVortexUx64=true
 TaylorGreenVortexUx128=true
-TaylorGreenVortexUx256=true
-TaylorGreenVortexUx512=true
+TaylorGreenVortexUx256=false
+TaylorGreenVortexUx512=false
 
 TaylorGreenVortexUz32=false
 TaylorGreenVortexUz64=false
