@@ -263,6 +263,9 @@ gpu_numerical_tests:
     - mkdir /tmp && cd /tmp
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.rz.tu-bs.de/irmb/test_data.git
     - ls -la test_data/
+    - ls -la /tmp/test_data/
+    - ls -la /tmp/test_data/numerical_tests_gpu
+    - ls -la /tmp/test_data/numerical_tests_gpu/grids
     - ls -la /tmp/test_data/numerical_tests_gpu/grids/gridUni32x4x48/
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
