@@ -283,6 +283,7 @@ gpu_numerical_tests:
   script:
     - cd $CI_PROJECT_DIR
     - ls -la ./build/bin
+    - ls -la /tmp/test_data/numerical_tests_gpu/grids/gridUni32x4x48/
     - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt 2>&1 | tee -a numerical_tests_gpu_results.txt
 
   cache:
