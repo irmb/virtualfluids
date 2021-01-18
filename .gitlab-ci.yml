@@ -260,7 +260,7 @@ gpu_numerical_tests:
     - linux
 
   before_script:
-    - mkdir /tmp && cd /tmp
+    - cd /tmp
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.rz.tu-bs.de/irmb/test_data.git
     - ls -la test_data/
     - ls -la /tmp/test_data/
