@@ -13,6 +13,8 @@ function(linkCUDA)
     target_include_directories(${library_name} PRIVATE ${CUDA_CUT_INCLUDE_DIR})
     target_include_directories(${library_name} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
+    message("CUDA INCLUDE PATH: ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
+
     # set the following properties only for specific targets
     # set_property(TARGET ${targetName} PROPERTY CUDA_SEPARABLE_COMPILATION ON)
     # set_property(TARGET ${targetName} PROPERTY CUDA_64_BIT_DEVICE_CODE ON)
