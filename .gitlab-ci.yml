@@ -260,9 +260,9 @@ gpu_numerical_tests:
     - linux
 
   before_script:
-    - mkdir /testdata && cd /testdata
-    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.rz.tu-bs.de/iRMB/VirtualFluids_dev.git
-    - ls -la VirtualFluids_dev/
+    - mkdir /tmp && cd /tmp
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.rz.tu-bs.de/irmb/test_data.git
+    - ls -la test_data/
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
     - ccache -s
@@ -273,21 +273,26 @@ gpu_numerical_tests:
       -DBUILD_VF_CPU=OFF
       -DBUILD_VF_GPU=ON
       -DBUILD_NUMERIC_TESTS=ON
+      -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu/
       -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache
       -DCMAKE_C_COMPILER_LAUNCHER=ccache
-    - make -j4  2>&1 | tee gcc_warnings.txt
+    - make -j4
     - ccache -s
 
   script:
     - cd $CI_PROJECT_DIR
     - ls -la ./build/bin
-    - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt
+    - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt 2>&1 | tee -a numerical_tests_gpu_results.txt
 
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
       - $CI_PROJECT_DIR/cache
+
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/numerical_tests_gpu_results.txt
 
 
 ###############################################################################
