@@ -273,7 +273,7 @@ gpu_numerical_tests:
       -DBUILD_VF_CPU=OFF
       -DBUILD_VF_GPU=ON
       -DBUILD_NUMERIC_TESTS=ON
-      -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu/
+      -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu
       -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache
       -DCMAKE_C_COMPILER_LAUNCHER=ccache
