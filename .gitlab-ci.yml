@@ -281,6 +281,7 @@ gpu_numerical_tests:
     - ccache -s
 
   script:
+    - cd $CI_PROJECT_DIR
     - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt 2>&1 | tee -a numerical_tests_gpu_results.txt
 
   cache:
