@@ -95,11 +95,11 @@ TaylorGreenVortexUz128=false
 TaylorGreenVortexUz256=false
 TaylorGreenVortexUz512=false
 
-ShearWave32=true
-ShearWave64=true
-ShearWave128=true
-ShearWave256=true
-ShearWave512=true
+ShearWave32=false
+ShearWave64=false
+ShearWave128=false
+ShearWave256=false
+ShearWave512=false
 
 ##################################################
 #				Grid Information				 #
