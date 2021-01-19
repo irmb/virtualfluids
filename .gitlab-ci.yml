@@ -125,8 +125,6 @@ gcc_9_rebuild:
 msvc_16:
   stage: build
 
-  when: manual
-
   tags:
     - win
     - gpu
@@ -201,7 +199,6 @@ msvc_16_unit_tests:
     - gpu
 
   needs: ["msvc_16"]
-  when: manual
 
   before_script:
     - cd $CI_PROJECT_DIR/build
