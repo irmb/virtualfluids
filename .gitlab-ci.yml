@@ -3,6 +3,7 @@ image: irmb/virtualfluids-python-deps
 stages:
   - build
   - test
+  - benchmark
   - analyze
   - deploy
   - release
@@ -124,8 +125,6 @@ gcc_9_rebuild:
 msvc_16:
   stage: build
 
-  when: manual
-
   tags:
     - win
     - gpu
@@ -200,7 +199,6 @@ msvc_16_unit_tests:
     - gpu
 
   needs: ["msvc_16"]
-  when: manual
 
   before_script:
     - cd $CI_PROJECT_DIR/build
@@ -225,6 +223,72 @@ gcc_9_python_bindings_test:
 
   script:
     - python3 -m unittest discover -s Python -v
+
+###############################################################################
+##                            Benchmark                                      ##
+###############################################################################
+nvidia_test:
+  stage: benchmark
+
+  needs: []
+
+  tags:
+    - gpu
+    - linux
+
+  image: nvidia/cuda:11.1.1-devel-ubuntu20.04
+
+  script:
+  - echo NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+  - nvidia-smi
+
+###############################################################################
+gpu_numerical_tests:
+  stage: benchmark
+
+  image: irmb/virtualfluids-deps-ubuntu20.04
+
+  when: manual
+
+  needs: []
+
+  tags:
+    - gpu
+    - linux
+
+  before_script:
+    - cd /tmp
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.rz.tu-bs.de/irmb/test_data.git
+    - export CCACHE_BASEDIR=$CI_PROJECT_DIR
+    - export CCACHE_DIR=$CI_PROJECT_DIR/cache
+    - ccache -s
+    - mkdir -p $CI_PROJECT_DIR/build
+    - cd $CI_PROJECT_DIR/build
+    - rm -r -f ./*
+    - cmake ..
+      -DBUILD_VF_CPU=OFF
+      -DBUILD_VF_GPU=ON
+      -DBUILD_VF_DOUBLE_ACCURACY=ON
+      -DBUILD_NUMERIC_TESTS=ON
+      -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu
+      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+      -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache
+      -DCMAKE_C_COMPILER_LAUNCHER=ccache
+    - make -j4
+    - ccache -s
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt 2>&1 | tee -a numerical_tests_gpu_results.txt
+
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - $CI_PROJECT_DIR/cache
+
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/numerical_tests_gpu_results.txt
 
 
 ###############################################################################
