@@ -570,10 +570,8 @@ sonar-scanner:
     - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
     - unzip sonar-scanner-cli-4.0.0.1744-linux.zip
     - cd sonar-scanner-4.0.0.1744-linux/
-    - echo 'sonar.projectKey=$SONARQUBE_PROJECT_KEY_DEVELOP' >> $CI_PROJECT_DIR/sonar-project.properties
-    - cat $CI_PROJECT_DIR/sonar-project.properties
-    - echo 'sonar.host.url=$SONAR_HOST_URL' >> conf/sonar-scanner.properties
-    - echo 'sonar.sourceEncoding=UTF-8' >> conf/sonar-scanner.properties
+    - echo "sonar.host.url=$SONAR_HOST_URL" >> conf/sonar-scanner.properties
+    - echo "sonar.sourceEncoding=UTF-8" >> conf/sonar-scanner.properties
     - cat conf/sonar-scanner.properties
     - export PATH+=:$(pwd)/bin
     - sonar-scanner -v
