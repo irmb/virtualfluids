@@ -110,7 +110,7 @@ std::vector<double> NyTest::calcNyDiff(std::vector<double> ny)
 {
 	std::vector<double> results;
 	for (int i = 0; i < ny.size(); i++)
-		results.push_back(abs((ny.at(i) - viscosity) / viscosity));
+		results.push_back(std::fabs((ny.at(i) - viscosity) / viscosity));
 	return results;
 }
 
