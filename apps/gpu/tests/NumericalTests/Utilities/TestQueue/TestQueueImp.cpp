@@ -12,6 +12,8 @@ void TestQueueImp::makeFinalOutput()
 	colorOutput->makeFinalTestOutputFoot(numberOfTests, numberOfExecutedTest, numberOfPassedTest, numberOfFailedTest, numberOfErrorTest, numberOfNotExecutedTest);
 }
 
+int TestQueueImp::getNumberOfFailedTests() const noexcept { return numberOfFailedTest; }
+
 std::shared_ptr<TestQueueImp> TestQueueImp::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput)
 {
 	return std::shared_ptr<TestQueueImp>(new TestQueueImp(colorOutput));

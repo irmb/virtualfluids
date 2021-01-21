@@ -101,7 +101,7 @@ static void validateTestSuite()
 }
 
 
-static void startNumericalTests(const std::string &configFile)
+static bool startNumericalTests(const std::string &configFile)
 {
 	std::shared_ptr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance(configFile);
 	configReader->readConfigFile();
@@ -120,6 +120,8 @@ static void startNumericalTests(const std::string &configFile)
 
 	testQueue->makeFinalOutput();
 	logFileQueue->writeLogFiles();
+
+	return testQueue->getNumberOfFailedTests() > 0;
 }
 
 int main(int argc, char **argv)
@@ -128,12 +130,14 @@ int main(int argc, char **argv)
 
 	//validateTestSuite();
 
+	bool tests_passed{false};
+
 	if (argc > 1)
-		startNumericalTests(argv[1]);
+        tests_passed = startNumericalTests(argv[1]);
 	else
 		std::cout << "Configuration file must be set!: lbmgm <config file>" << std::endl << std::flush;
 
     MPI_Finalize();
 
-	return 0;
+	return tests_passed;
 }

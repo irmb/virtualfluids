@@ -18,7 +18,8 @@ std::string BasicSimulationInfo::getOutput()
 	return oss.str();
 }
 
-BasicSimulationInfo::BasicSimulationInfo(int numberOfTimeSteps, double viscosity, int basicTimeStepLength, KernelType kernel):numberOfTimeSteps(numberOfTimeSteps), viscosity(viscosity), basicTimeStepLength(basicTimeStepLength), kernelName(kernelName)
+BasicSimulationInfo::BasicSimulationInfo(int numberOfTimeSteps, double viscosity, int basicTimeStepLength, KernelType kernel)
+  : numberOfTimeSteps(numberOfTimeSteps), viscosity(viscosity), basicTimeStepLength(basicTimeStepLength)
 {
 	std::shared_ptr<KernelMapper> myKernelMapper = KernelMapper::getInstance();
 	kernelName = myKernelMapper->getString(kernel);

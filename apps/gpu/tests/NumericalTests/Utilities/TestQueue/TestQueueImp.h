@@ -14,6 +14,8 @@ class TestQueueImp : public TestQueue
 public:
 	void makeFinalOutput();
 
+	int getNumberOfFailedTests() const noexcept override;
+
 	static std::shared_ptr<TestQueueImp> getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput);
 	void addTest(std::shared_ptr<Test> test);
 

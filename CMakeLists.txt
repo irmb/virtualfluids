@@ -38,6 +38,13 @@ set (VF_ROOT_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
 option(BUILD_VF_CPU "Build VirtualFluids cpu variant" OFF)
 option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 
+# vf gpu
+option(BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
+option(BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF )
+option(BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" OFF)
+option(BUILD_JSONCPP         "Builds json cpp "            OFF)
+option(BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
+
 option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
 option(BUILD_VF_CLANG_TIDY "Add the clang tidy checks to the targets" OFF)
 option(BUILD_VF_INCLUDE_WHAT_YOU_USE "Add IWYU to the targets" OFF)
@@ -99,5 +106,7 @@ endif()
 #  3rd Party Libraries
 #################################################################################
 if(BUILD_VF_UNIT_TESTS)
-    add_subdirectory(${VF_THIRD_DIR}/googletest)
+    if(NOT BUILD_NUMERIC_TESTS) # in this case googletest is already included.
+        add_subdirectory(${VF_THIRD_DIR}/googletest)
+    endif()
 endif()
