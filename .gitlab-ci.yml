@@ -574,7 +574,7 @@ sonar-scanner:
     - echo "sonar.sourceEncoding=UTF-8" >> conf/sonar-scanner.properties
     - cat conf/sonar-scanner.properties
     - export PATH+=:$(pwd)/bin
-    - sonar-scanner -v -Dsonar.login=$SONAR_SECURITY_TOKEN
+    - sonar-scanner -v -Dsonar.login=4b9061814e767fb7d0f3feb4b48ef2c9a48adc30
 
   script:
     - cd $CI_PROJECT_DIR
