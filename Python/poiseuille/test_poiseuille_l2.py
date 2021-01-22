@@ -30,13 +30,15 @@ class TestPoiseuilleFlow(unittest.TestCase):
         grid_params = create_grid_params_with_nodes_in_column(nodes_in_column=5, height=10)
         l2_norm_result_100 = get_l2_norm_for_simulation(grid_params, physical_params, runtime_params, 11)
 
-        runtime_params.number_of_timesteps = 20000
+        runtime_params.number_of_timesteps *= 2
+        physical_params.lattice_viscosity *= 2
         grid_params = create_grid_params_with_nodes_in_column(nodes_in_column=10, height=10)
         l2_norm_result_200 = get_l2_norm_for_simulation(grid_params, physical_params, runtime_params, 11)
 
-        # runtime_params.number_of_timesteps = 40000
-        # grid_params = create_grid_params_with_nodes_in_column(nodes_in_column=20, height=10)
-        # l2_norm_result_400 = get_l2_norm_for_simulation(grid_params, physical_params, runtime_params, 11)
+        runtime_params.number_of_timesteps *= 2
+        physical_params.lattice_viscosity *= 2
+        grid_params = create_grid_params_with_nodes_in_column(nodes_in_column=20, height=10)
+        l2_norm_result_400 = get_l2_norm_for_simulation(grid_params, physical_params, runtime_params, 11)
 
         # nodes = [5, 10, 20]
         # l2_norms = [l2_norm_result_100, l2_norm_result_200, l2_norm_result_400]

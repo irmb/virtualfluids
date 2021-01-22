@@ -11,22 +11,6 @@ stages:
 ###############################################################################
 ##                                Builds                                     ##
 ###############################################################################
-gcc_9_python:
-  stage: build
-
-  cache:
-    key: "Python-GCC9-$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - build
-
-  artifacts:
-    paths:
-      - dist/
-
-  script:
-    - python3 setup.py bdist_wheel
-
-###############################################################################
 .gnu_build_template:
   stage: build
 
@@ -70,6 +54,22 @@ gcc_9:
   extends: .gnu_build_template
 
 ###############################################################################
+
+gcc_9_python:
+  stage: build
+
+  needs: ["gcc_9"]
+
+  artifacts:
+    paths:
+      - build/
+      - dist/
+
+  script:
+    - python3 setup.py bdist_wheel
+
+###############################################################################
+
 clang_10:
   extends: .gnu_build_template
 
@@ -174,7 +174,7 @@ build_singularity_image:
       - Containers/VirtualFluidsOpenMPI.sif
 
   script:
-    - singularity build Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
+    - singularity build --fakeroot Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
     - ls -sh Containers/VirtualFluidsOpenMPI.sif
 
 ###############################################################################
