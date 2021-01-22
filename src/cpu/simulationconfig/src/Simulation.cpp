@@ -108,7 +108,7 @@ void Simulation::run()
     logSimulationData(nodesInX1, nodesInX2, nodesInX3);
 
     setBlockSize(nodesInX1, nodesInX2, nodesInX3);
-    auto gridCube = makeSimulationBoundingBox(nodesInX1, nodesInX2, nodesInX3);
+    auto gridCube = makeSimulationBoundingBox();
 
     generateBlockGrid(gridCube);
 
@@ -254,18 +254,15 @@ void Simulation::writeBlocksToFile() const
 }
 
 std::shared_ptr<GbObject3D>
-Simulation::makeSimulationBoundingBox(const int &nodesInX1, const int &nodesInX2,
-                                      const int &nodesInX3) const
+Simulation::makeSimulationBoundingBox() const
 {
-    double minX1 = 0, minX2 = 0, minX3 = 0;
-    const double maxX1 = minX1 + gridParameters->nodeDistance * nodesInX1;
-    const double maxX2 = minX2 + gridParameters->nodeDistance * nodesInX2;
-    const double maxX3 = minX3 + gridParameters->nodeDistance * nodesInX3;
-    UBLOG(logINFO, "Bounding box dimensions = [("
-            << minX1 << ", " << minX2 << ", " << minX3 << "); ("
-            << maxX1 << ", " << maxX2 << ", " << maxX3 << ")]")
+    auto box = gridParameters->boundingBox();
 
-    auto gridCube = std::make_shared<GbCuboid3D>(minX1, minX2, minX3, maxX1, maxX2, maxX3);
+    UBLOG(logINFO, "Bounding box dimensions = [("
+            << box->minX1 << ", " << box->minX2 << ", " << box->minX3 << "); ("
+            << box->maxX1 << ", " << box->maxX2 << ", " << box->maxX3 << ")]")
+
+    auto gridCube = std::make_shared<GbCuboid3D>(box->minX1, box->minX2, box->minX3, box->maxX1, box->maxX2, box->maxX3);
     GbSystem3D::writeGeoObject(gridCube.get(), writerConfig.outputPath + "/geo/gridCube", writerConfig.getWriter());
     return gridCube;
 }
