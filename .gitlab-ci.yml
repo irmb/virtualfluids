@@ -2,6 +2,7 @@ image: irmb/virtualfluids-python-deps
 
 stages:
   - build
+  - build_python
   - test
   - benchmark
   - analyze
@@ -53,21 +54,6 @@ stages:
 ###############################################################################
 gcc_9:
   extends: .gnu_build_template
-
-###############################################################################
-
-gcc_9_python:
-  stage: build
-
-  needs: ["gcc_9"]
-
-  artifacts:
-    paths:
-      - build/
-      - dist/
-
-  script:
-    - python3 setup.py bdist_wheel
 
 ###############################################################################
 
@@ -175,6 +161,24 @@ build_singularity_image:
   script:
     - singularity build --fakeroot Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
     - ls -sh Containers/VirtualFluidsOpenMPI.sif
+
+
+###############################################################################
+##                             Build Python                                  ##
+###############################################################################
+
+gcc_9_python:
+  stage: build_python
+
+  needs: ["gcc_9"]
+
+  artifacts:
+    paths:
+      - build/
+      - dist/
+
+  script:
+    - python3 setup.py bdist_wheel
 
 ###############################################################################
 ##                                Tests                                      ##
