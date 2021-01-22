@@ -30,7 +30,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 {
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
-	const unsigned  y = blockIdx.x;   // Globaler y-Index 
+	const unsigned  y = blockIdx.x;   // Globaler y-Index
 	const unsigned  z = blockIdx.y;   // Globaler z-Index 
 
 	const unsigned nx = blockDim.x;
@@ -214,9 +214,9 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 				(mfbbc - mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
-			real fx = forces[0] / (pow(c2o1, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
-			real fy = forces[1] / (pow(c2o1, level)); //zero;
-			real fz = forces[2] / (pow(c2o1, level)); //zero;
+			real fx = forces[0] / (pow((double)c2o1, (double)level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
+            real fy = forces[1] / (pow((double)c2o1, (double)level)); // zero;
+            real fz = forces[2] / (pow((double)c2o1, (double)level)); // zero;
 			vvx += fx;
 			vvy += fy;
 			vvz += fz;

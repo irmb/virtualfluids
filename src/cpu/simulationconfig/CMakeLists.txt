@@ -16,5 +16,5 @@ set_target_properties(simulationconfig PROPERTIES CXX_STANDARD 14 POSITION_INDEP
 target_include_directories(simulationconfig PUBLIC ${VFBUILDER_INCLUDE_DIR})
 target_link_libraries(simulationconfig PRIVATE VirtualFluidsCore basics muparser)
 target_compile_definitions(simulationconfig PRIVATE VF_METIS VF_MPI)
-
+target_include_directories(simulationconfig PUBLIC ${CMAKE_BINARY_DIR})
 

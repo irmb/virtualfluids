@@ -110,9 +110,9 @@ extern "C" __global__ void InitParticles( real* coordX,
 		}
 
 
-		real localX = randArray[k] / (real)(pow(c2o1,level));
-		real localY = randArray[k] / (real)(pow(c2o1,level));
-		real localZ = randArray[k] / (real)(pow(c2o1,level));
+		real localX = randArray[k] / (real)(pow((double)c2o1, (double)level));
+        real localY = randArray[k] / (real)(pow((double)c2o1, (double)level));
+        real localZ = randArray[k] / (real)(pow((double)c2o1, (double)level));
 
 		real globalX = coordinateX + localX;
 		real globalY = coordinateY + localY;
@@ -878,9 +878,9 @@ extern "C" __global__ void MoveParticles( real* coordX,
 			  real localY = coordParticleYlocal[kTimeStepOld];
 			  real localZ = coordParticleZlocal[kTimeStepOld];
 
-			  x = (localX * (real)(pow(c2o1,level))) - c1o2; //-c1o4;
-			  y = (localY * (real)(pow(c2o1,level))) - c1o2; //-c1o4;
-			  z = (localZ * (real)(pow(c2o1,level))) - c1o2; //-c1o4;
+			  x = (localX * (real)(pow((double)c2o1, (double)level))) - c1o2; //-c1o4;
+              y = (localY * (real)(pow((double)c2o1, (double)level))) - c1o2; //-c1o4;
+              z = (localZ * (real)(pow((double)c2o1, (double)level))) - c1o2; //-c1o4;
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			  press = d0 + x*dx + y*dy + z*dz + x*y*dxy + x*z*dxz + y*z*dyz + x*y*z*dxyz;
 			  vx1 = (a0 + x*ax + y*ay + z*az + x*x*axx + y*y*ayy + z*z*azz + x*y*axy + x*z*axz + y*z*ayz + x*y*z*axyz);
@@ -961,9 +961,9 @@ extern "C" __global__ void MoveParticles( real* coordX,
 			  y = tempY;
 			  z = tempZ;
 
-			  localX = (x + c1o2) / (real)(pow(c2o1,level));
-			  localY = (y + c1o2) / (real)(pow(c2o1,level));
-			  localZ = (z + c1o2) / (real)(pow(c2o1,level));
+			  localX                         = (x + c1o2) / (real)(pow((double)c2o1, (double)level));
+              localY                         = (y + c1o2) / (real)(pow((double)c2o1, (double)level));
+              localZ                         = (z + c1o2) / (real)(pow((double)c2o1, (double)level));
 			  coordParticleXlocal[kTimeStep] = localX;
 			  coordParticleYlocal[kTimeStep] = localY;
 			  coordParticleZlocal[kTimeStep] = localZ;
@@ -1743,9 +1743,9 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
 			  real localY = coordParticleYlocal[kTimeStepOld];
 			  real localZ = coordParticleZlocal[kTimeStepOld];
 
-			  x = (localX * (real)(pow(c2o1,level))) - c1o2; //-c1o4;
-			  y = (localY * (real)(pow(c2o1,level))) - c1o2; //-c1o4;
-			  z = (localZ * (real)(pow(c2o1,level))) - c1o2; //-c1o4;
+			  x = (localX * (real)(pow((double)c2o1, (double)level))) - c1o2; //-c1o4;
+              y = (localY * (real)(pow((double)c2o1, (double)level))) - c1o2; //-c1o4;
+              z = (localZ * (real)(pow((double)c2o1, (double)level))) - c1o2; //-c1o4;
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			  press = d0 + x*dx + y*dy + z*dz + x*y*dxy + x*z*dxz + y*z*dyz + x*y*z*dxyz;
 			  vx1 = (a0 + x*ax + y*ay + z*az + x*x*axx + y*y*ayy + z*z*azz + x*y*axy + x*z*axz + y*z*ayz + x*y*z*axyz);
@@ -1826,9 +1826,9 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
 			  y = tempY;
 			  z = tempZ;
 
-			  localX = (x + c1o2) / (real)(pow(c2o1,level));
-			  localY = (y + c1o2) / (real)(pow(c2o1,level));
-			  localZ = (z + c1o2) / (real)(pow(c2o1,level));
+			  localX                         = (x + c1o2) / (real)(pow((double)c2o1, (double)level));
+              localY                         = (y + c1o2) / (real)(pow((double)c2o1, (double)level));
+              localZ                         = (z + c1o2) / (real)(pow((double)c2o1, (double)level));
 			  coordParticleXlocal[kTimeStep] = localX;
 			  coordParticleYlocal[kTimeStep] = localY;
 			  coordParticleZlocal[kTimeStep] = localZ;

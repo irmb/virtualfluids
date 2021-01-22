@@ -1,10 +1,11 @@
 #include "ConfigFile.h"
-#include "Utilities/StringUtil.hpp"
 #include <errno.h>
 #include <algorithm>
 #include <sstream>
 #include <iostream>
 #include <string>
+
+#include "Core/StringUtilities/StringUtil.h"
 
 
 ConfigFile::ConfigFile( const char *strConfigFile ) 

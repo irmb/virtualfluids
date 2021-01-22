@@ -8,8 +8,9 @@
 #################################################################################
 #  required cmake versions
 #  CMAKE 3.13: target_link_options
+#  CMAKE 3.15: CMAKE_MSVC_RUNTIME_LIBRARY
 #################################################################################
-cmake_minimum_required(VERSION 3.13..3.18 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15..3.18 FATAL_ERROR)
 
 project(VirtualFluids CXX)
 
@@ -43,7 +44,14 @@ option(BUILD_VF_INCLUDE_WHAT_YOU_USE "Add IWYU to the targets" OFF)
 option(BUILD_VF_CPPCHECK "Add cppcheck to the targets" OFF)
 option(BUILD_VF_COVERAGE "Add the -coverage compiler flag." OFF)
 
-option(BUILD_SHARED_LIBS "" ON)
+option(BUILD_SHARED_LIBS "" OFF)
+
+# windows: use multi-threaded dynamically-linked runtime library
+if(BUILD_SHARED_LIBS)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+else()
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
 
 option(USE_OPENMP "Include OpenMP support" ON)
 

@@ -119,6 +119,8 @@ gcc_9_rebuild:
 msvc_16:
   stage: build
 
+  when: manual
+
   tags:
     - win
     - gpu
@@ -198,6 +200,7 @@ msvc_16_unit_tests:
     - gpu
 
   needs: ["msvc_16"]
+  when: manual
 
   before_script:
     - cd $CI_PROJECT_DIR/build
@@ -433,6 +436,8 @@ vf_to_phoenix:
   stage: deploy
   needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
 
+  when: manual
+
   variables:
     SSH_KEY: "$SSH_PRIVATE_KEY"
     HOST: "phoenix.hlr.rz.tu-bs.de"
@@ -469,6 +474,8 @@ cppcheck_to_elladan:
   stage: deploy
   needs: ["cppcheck"]
 
+  when: manual
+
   variables:
     SSH_KEY: "$SSH_PRIVATE_KEY_ELLADAN"
     HOST: "elladan.irmb.bau.tu-bs.de"
@@ -481,6 +488,8 @@ gcov_to_elladan:
   extends: .deploy_template
   stage: deploy
   needs: ["gcov_gcc_9"]
+
+  when: manual
 
   variables:
     SSH_KEY: "$SSH_PRIVATE_KEY_ELLADAN"
@@ -497,6 +506,8 @@ sonar-scanner:
   only:
     refs:
       - develop
+
+  when: manual
 
   variables:
     SONAR_HOST_URL: "http://finrod.irmb.bau.tu-bs.de/sonarqube"

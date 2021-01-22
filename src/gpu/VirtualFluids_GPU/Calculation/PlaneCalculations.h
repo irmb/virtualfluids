@@ -3,7 +3,6 @@
 
 #include "Parameter/Parameter.h"
 #include "GPU/CudaMemoryManager.h"
-#include "Utilities/StringUtil.hpp"
 #include "basics/utilities/UbSystem.h"
 
 #include <iostream>

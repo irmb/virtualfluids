@@ -36,6 +36,16 @@ public:
 
     static BASICS_EXPORT bool endsWith(const std::string &input, const std::string &end);
 
+
+   template<class T>
+   static T fromString(const std::string& s)
+   {
+      std::istringstream stream (s);
+      T t;
+      stream >> t;
+      return t;
+   }
+
 private:
     StringUtil() = default;
     ;

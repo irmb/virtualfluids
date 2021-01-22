@@ -10,7 +10,7 @@
 #include "LBM/D3Q27.h"
 #include "Parameter/Parameter.h"
 #include "basics/utilities/UbSystem.h"
-#include "Utilities/StringUtil.hpp"
+#include "Core/StringUtilities/StringUtil.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
 

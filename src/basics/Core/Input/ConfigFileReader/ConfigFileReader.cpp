@@ -6,20 +6,17 @@
 #include <fstream>
 #include <iostream>
 
-BASICS_EXPORT std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance()
+std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance()
 {
     return std::shared_ptr<ConfigFileReader>(new ConfigFileReader());
 }
 
-ConfigFileReader::ConfigFileReader() = default;
-
-BASICS_EXPORT ConfigFileReader::~ConfigFileReader() = default;
-
-BASICS_EXPORT std::shared_ptr<ConfigData> ConfigFileReader::readConfigFile(const std::string &filePath) const
+std::shared_ptr<ConfigData> ConfigFileReader::readConfigFile(const char* filePath) const
 {
+    std::cout << filePath << std::endl;
     std::shared_ptr<ConfigDataImp> data = ConfigDataImp::getNewInstance();
     std::ifstream stream;
-    stream.open(filePath.c_str(), std::ios::in);
+    stream.open(filePath, std::ios::in);
     if (stream.fail())
         throw std::runtime_error("can not open config file!");
     std::unique_ptr<input::Input> input = input::Input::makeInput(stream, "config");
