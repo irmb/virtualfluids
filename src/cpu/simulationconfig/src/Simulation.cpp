@@ -133,10 +133,9 @@ void Simulation::run()
     grid->accept(kernelVisitor);
     intHelper.setBC();
 
+    double bulkViscosity = physicalParameters->latticeViscosity * physicalParameters->bulkViscosityFactor;
     auto iProcessor = std::make_shared<CompressibleOffsetMomentsInterpolationProcessor>();
-    dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkViscosity(
-            physicalParameters->latticeViscosity,
-            physicalParameters->latticeViscosity * physicalParameters->bulkViscosityFactor);
+    iProcessor->setBulkViscosity(physicalParameters->latticeViscosity, bulkViscosity);
 
     SetConnectorsBlockVisitor setConnsVisitor(communicator, true,
                                               lbmSystem->getNumberOfDirections(),
