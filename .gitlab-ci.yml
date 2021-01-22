@@ -44,7 +44,7 @@ stages:
     - cd $CI_PROJECT_DIR/$BUILD_FOLDER
     - cmake ..
       -DBUILD_VF_CPU=ON
-      -DBUILD_VF_GPU=ON
+      -DBUILD_VF_GPU=OFF
     - cmake . -LAH
     - make -j4
 
