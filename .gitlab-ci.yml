@@ -222,6 +222,7 @@ gcc_9_python_bindings_test:
     - export PYTHONPATH="Python"
     - export VF_WHEEL=$(find dist/*.whl)
     - pip3 install $VF_WHEEL
+    - pip3 install -r Python/requirements.txt
 
   script:
     - python3 -m unittest discover -s Python -v

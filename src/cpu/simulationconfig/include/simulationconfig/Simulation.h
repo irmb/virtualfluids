@@ -63,7 +63,7 @@ public:
     void run();
 
 private:
-    std::shared_ptr<GbObject3D> makeSimulationBoundingBox(const int &nodesInX1, const int &nodesInX2, const int &nodesInX3) const;
+    std::shared_ptr<GbObject3D> makeSimulationBoundingBox() const;
 
     void writeBlocksToFile() const;
 

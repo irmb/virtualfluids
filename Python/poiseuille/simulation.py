@@ -5,35 +5,30 @@ from pyfluids.kernel import LBMKernel, KernelType
 from pyfluids.parameters import RuntimeParameters, GridParameters, PhysicalParameters
 from pyfluids.writer import Writer, OutputFormat
 
-grid_params = GridParameters()
-grid_params.node_distance = 1
-grid_params.number_of_nodes_per_direction = [1, 1, 10]
-grid_params.blocks_per_direction = [1, 1, 1]
-grid_params.periodic_boundary_in_x1 = True
-grid_params.periodic_boundary_in_x2 = True
+default_grid_params = GridParameters()
+default_grid_params.node_distance = 1
+default_grid_params.number_of_nodes_per_direction = [1, 1, 10]
+default_grid_params.blocks_per_direction = [1, 1, 1]
+default_grid_params.periodic_boundary_in_x1 = True
+default_grid_params.periodic_boundary_in_x2 = True
 
-physical_params = PhysicalParameters()
-physical_params.lattice_viscosity = 0.005
+default_physical_params = PhysicalParameters()
+default_physical_params.lattice_viscosity = 0.005
 
-runtime_params = RuntimeParameters()
-runtime_params.number_of_threads = 4
-runtime_params.number_of_timesteps = 1000
-runtime_params.timestep_log_interval = 100
+default_runtime_params = RuntimeParameters()
+default_runtime_params.number_of_threads = 4
+default_runtime_params.number_of_timesteps = 1000
+default_runtime_params.timestep_log_interval = 100
 
 
-def run_simulation(physical_params=physical_params, grid_params=grid_params, runtime_params=runtime_params):
+def run_simulation(physical_params=default_physical_params,
+                   grid_params=default_grid_params,
+                   runtime_params=default_runtime_params):
     simulation = Simulation()
 
     kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
     kernel.use_forcing = True
     kernel.forcing_in_x1 = 1e-6
-
-    node_distance = grid_params.node_distance
-    min_x1, min_x2, min_x3 = 0, 0, 0
-    max_x1, max_x2, max_x3 = tuple(map(
-        lambda n: n * node_distance,
-        grid_params.number_of_nodes_per_direction
-    ))
 
     writer = Writer()
     writer.output_path = "./output"
@@ -47,24 +42,26 @@ def run_simulation(physical_params=physical_params, grid_params=grid_params, run
 
     no_slip_bc = NoSlipBoundaryCondition()
 
-    block_width = 3 * node_distance
+    block_width = 3 * grid_params.node_distance
     simulation.add_object(
-        GbCuboid3D(min_x1 - block_width,
-                   min_x2 - block_width,
-                   min_x3 - block_width,
-                   max_x1 + block_width,
-                   max_x2 + block_width,
-                   min_x3),
+        GbCuboid3D(
+            grid_params.bounding_box.min_x1 - block_width,
+            grid_params.bounding_box.min_x2 - block_width,
+            grid_params.bounding_box.min_x3 - block_width,
+            grid_params.bounding_box.max_x1 + block_width,
+            grid_params.bounding_box.max_x2 + block_width,
+            grid_params.bounding_box.min_x3),
         no_slip_bc,
         State.SOLID, "/geo/addWallZMin")
 
     simulation.add_object(
-        GbCuboid3D(min_x1 - block_width,
-                   min_x2 - block_width,
-                   max_x3,
-                   max_x1 + block_width,
-                   max_x2 + block_width,
-                   max_x3 + block_width),
+        GbCuboid3D(
+            grid_params.bounding_box.min_x1 - block_width,
+            grid_params.bounding_box.min_x2 - block_width,
+            grid_params.bounding_box.max_x3,
+            grid_params.bounding_box.max_x1 + block_width,
+            grid_params.bounding_box.max_x2 + block_width,
+            grid_params.bounding_box.max_x3 + block_width),
         no_slip_bc,
         State.SOLID, "/geo/addWallZMax")
 
