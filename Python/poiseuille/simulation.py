@@ -6,9 +6,9 @@ from pyfluids.parameters import RuntimeParameters, GridParameters, PhysicalParam
 from pyfluids.writer import Writer, OutputFormat
 
 default_grid_params = GridParameters()
-default_grid_params.node_distance = 1
-default_grid_params.number_of_nodes_per_direction = [1, 1, 10]
-default_grid_params.blocks_per_direction = [1, 1, 1]
+default_grid_params.node_distance = 10 / 32
+default_grid_params.number_of_nodes_per_direction = [8, 8, 32]
+default_grid_params.blocks_per_direction = [1, 1, 4]
 default_grid_params.periodic_boundary_in_x1 = True
 default_grid_params.periodic_boundary_in_x2 = True
 
@@ -17,8 +17,8 @@ default_physical_params.lattice_viscosity = 0.005
 
 default_runtime_params = RuntimeParameters()
 default_runtime_params.number_of_threads = 4
-default_runtime_params.number_of_timesteps = 1000
-default_runtime_params.timestep_log_interval = 100
+default_runtime_params.number_of_timesteps = 100000
+default_runtime_params.timestep_log_interval = 10000
 
 
 def run_simulation(physical_params=default_physical_params,
@@ -28,7 +28,7 @@ def run_simulation(physical_params=default_physical_params,
 
     kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
     kernel.use_forcing = True
-    kernel.forcing_in_x1 = 1e-6
+    kernel.forcing_in_x1 = 1e-8
 
     writer = Writer()
     writer.output_path = "./output"

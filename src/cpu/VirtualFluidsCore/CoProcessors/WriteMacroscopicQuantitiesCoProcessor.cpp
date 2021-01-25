@@ -47,26 +47,31 @@
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 
 WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor() = default;
+
 //////////////////////////////////////////////////////////////////////////
 WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                                                              const std::string &path,
                                                                              WbWriter *const writer,
                                                                              SPtr<LBMUnitConverter> conv,
                                                                              SPtr<Communicator> comm)
-    : CoProcessor(grid, s), path(path), writer(writer), conv(conv), comm(comm)
+        : CoProcessor(grid, s), path(path), writer(writer), conv(conv), comm(comm)
 {
-    gridRank     = comm->getProcessID();
+    gridRank = comm->getProcessID();
     minInitLevel = this->grid->getCoarsestInitializedLevel();
     maxInitLevel = this->grid->getFinestInitializedLevel();
 
     blockVector.resize(maxInitLevel + 1);
 
-    for (int level = minInitLevel; level <= maxInitLevel; level++) {
+    for (int level = minInitLevel; level <= maxInitLevel; level++)
+    {
         grid->getBlocks(level, gridRank, true, blockVector[level]);
     }
 }
+
 //////////////////////////////////////////////////////////////////////////
-void WriteMacroscopicQuantitiesCoProcessor::init() {}
+void WriteMacroscopicQuantitiesCoProcessor::init()
+{}
+
 //////////////////////////////////////////////////////////////////////////
 void WriteMacroscopicQuantitiesCoProcessor::process(double step)
 {
@@ -75,14 +80,18 @@ void WriteMacroscopicQuantitiesCoProcessor::process(double step)
 
     UBLOG(logDEBUG3, "WriteMacroscopicQuantitiesCoProcessor::update:" << step);
 }
+
 //////////////////////////////////////////////////////////////////////////
 void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
 {
     int istep = static_cast<int>(step);
 
-    for (int level = minInitLevel; level <= maxInitLevel; level++) {
-        for (SPtr<Block3D> block : blockVector[level]) {
-            if (block) {
+    for (int level = minInitLevel; level <= maxInitLevel; level++)
+    {
+        for (SPtr<Block3D> block : blockVector[level])
+        {
+            if (block)
+            {
                 addDataMQ(block);
             }
         }
@@ -93,26 +102,29 @@ void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
     subfolder = "mq" + UbSystem::toString(istep);
     pfilePath = path + "/mq/" + subfolder;
     cfilePath = path + "/mq/mq_collection";
-    partPath  = pfilePath + "/mq" + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep);
+    partPath = pfilePath + "/mq" + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep);
 
     std::string partName = writer->writeOctsWithNodeData(partPath, nodes, cells, datanames, data);
-    size_t found         = partName.find_last_of("/");
-    std::string piece    = partName.substr(found + 1);
-    piece                = subfolder + "/" + piece;
+    size_t found = partName.find_last_of("/");
+    std::string piece = partName.substr(found + 1);
+    piece = subfolder + "/" + piece;
 
     std::vector<std::string> cellDataNames;
     std::vector<std::string> pieces = comm->gather(piece);
-    if (comm->getProcessID() == comm->getRoot()) {
+    if (comm->getProcessID() == comm->getRoot())
+    {
         std::string pname =
-            WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath, pieces, datanames, cellDataNames);
+                WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath, pieces, datanames, cellDataNames);
         found = pname.find_last_of("/");
         piece = pname.substr(found + 1);
 
         std::vector<std::string> filenames;
         filenames.push_back(piece);
-        if (step == CoProcessor::scheduler->getMinBegin()) {
+        if (step == CoProcessor::scheduler->getMinBegin())
+        {
             WbWriterVtkXmlASCII::getInstance()->writeCollection(cfilePath, filenames, istep, false);
-        } else {
+        } else
+        {
             WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(cfilePath, filenames, istep, false);
         }
         UBLOG(logINFO, "WriteMacroscopicQuantitiesCoProcessor step: " << istep);
@@ -120,6 +132,7 @@ void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
 
     clearData();
 }
+
 //////////////////////////////////////////////////////////////////////////
 void WriteMacroscopicQuantitiesCoProcessor::clearData()
 {
@@ -128,10 +141,11 @@ void WriteMacroscopicQuantitiesCoProcessor::clearData()
     datanames.clear();
     data.clear();
 }
+
 //////////////////////////////////////////////////////////////////////////
 void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
-    double level = (double)block->getLevel();
+    double level = (double) block->getLevel();
     //   double blockID = (double)block->getGlobalID();
 
     // Diese Daten werden geschrieben:
@@ -146,18 +160,20 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 
     data.resize(datanames.size());
 
-    SPtr<ILBMKernel> kernel                 = block->getKernel();
-    SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
+    SPtr<ILBMKernel> kernel = block->getKernel();
+    SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
     LBMReal f[D3Q27System::ENDF + 1];
     LBMReal vx1, vx2, vx3, rho;
 
     // knotennummerierung faengt immer bei 0 an!
-    unsigned int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
+    int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
 
-    if (block->getKernel()->getCompressible()) {
+    if (block->getKernel()->getCompressible())
+    {
         calcMacros = &D3Q27System::calcCompMacroscopicValues;
-    } else {
+    } else
+    {
         calcMacros = &D3Q27System::calcIncompMacroscopicValues;
     }
 
@@ -165,9 +181,9 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     int minX2 = 0;
     int minX3 = 0;
 
-    int maxX1 = (int)(distributions->getNX1());
-    int maxX2 = (int)(distributions->getNX2());
-    int maxX3 = (int)(distributions->getNX3());
+    int maxX1 = (int) (distributions->getNX1());
+    int maxX2 = (int) (distributions->getNX2());
+    int maxX3 = (int) (distributions->getNX3());
 
     // int minX1 = 1;
     // int minX2 = 1;
@@ -178,21 +194,25 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     // int maxX3 = (int)(distributions->getNX3());
 
     // nummern vergeben und node vector erstellen + daten sammeln
-    CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3, -1);
+    CbArray3D<int> nodeNumbers((int) maxX1, (int) maxX2, (int) maxX3, -1);
     maxX1 -= 2;
     maxX2 -= 2;
     maxX3 -= 2;
 
     // D3Q27BoundaryConditionPtr bcPtr;
-    int nr = (int)nodes.size();
+    int nr = (int) nodes.size();
 
-    for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
-        for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
-            for (int ix1 = minX1; ix1 <= maxX1; ix1++) {
-                if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
-                    int index                  = 0;
+    for (int ix3 = minX3; ix3 <= maxX3; ix3++)
+    {
+        for (int ix2 = minX2; ix2 <= maxX2; ix2++)
+        {
+            for (int ix1 = minX1; ix1 <= maxX1; ix1++)
+            {
+                if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3))
+                {
+                    int index = 0;
                     nodeNumbers(ix1, ix2, ix3) = nr++;
-                    Vector3D worldCoordinates  = grid->getNodeCoordinates(block, ix1, ix2, ix3);
+                    Vector3D worldCoordinates = grid->getNodeCoordinates(block, ix1, ix2, ix3);
                     nodes.emplace_back(float(worldCoordinates[0]), float(worldCoordinates[1]),
                                        float(worldCoordinates[2]));
 
@@ -202,7 +222,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 
                     if (UbMath::isNaN(rho) || UbMath::isInfinity(rho))
                         UB_THROW(UbException(
-                            UB_EXARGS, "rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
+                                UB_EXARGS, "rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
                                            block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
                                            UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
                     // rho=999.0;
@@ -213,19 +233,19 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     // press=999.0;
                     if (UbMath::isNaN(vx1) || UbMath::isInfinity(vx1))
                         UB_THROW(UbException(
-                            UB_EXARGS, "vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
+                                UB_EXARGS, "vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
                                            block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
                                            UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
                     // vx1=999.0;
                     if (UbMath::isNaN(vx2) || UbMath::isInfinity(vx2))
                         UB_THROW(UbException(
-                            UB_EXARGS, "vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
+                                UB_EXARGS, "vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
                                            block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
                                            UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
                     // vx2=999.0;
                     if (UbMath::isNaN(vx3) || UbMath::isInfinity(vx3))
                         UB_THROW(UbException(
-                            UB_EXARGS, "vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
+                                UB_EXARGS, "vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
                                            block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
                                            UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
 

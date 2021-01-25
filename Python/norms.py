@@ -15,7 +15,6 @@ def root_mean_squared_error(real_values, numerical_values):
         raise ValueError("Real and numerical value lists must be same length")
 
     sum_of_squared_distances = get_sum_of_squared_distances(real_values, numerical_values)
-    sum_of_squared_real_values = sum(real_value ** 2 for real_value in real_values)
 
     return math.sqrt(sum_of_squared_distances / num_values)
 
@@ -41,3 +40,10 @@ def mean_squared_error(real_values, numerical_values):
     sum_of_squared_distances = get_sum_of_squared_distances(real_values, numerical_values)
 
     return sum_of_squared_distances / num_values
+
+
+def l2_norm_error(real_values, numerical_values):
+    sum_of_squared_distances = get_sum_of_squared_distances(real_values, numerical_values)
+    sum_of_squared_real_values = sum(real_value ** 2 for real_value in real_values)
+
+    return math.sqrt(sum_of_squared_distances / sum_of_squared_real_values)
