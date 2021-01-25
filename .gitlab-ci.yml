@@ -555,6 +555,9 @@ gcov_to_elladan:
 # This job only run on the development branch of the parent repository, not on forks!
 sonar-scanner:
   stage: deploy
+  tags:
+    - linux
+
   only:
     - develop
     #- develop@irmb/VirtualFluids_dev
