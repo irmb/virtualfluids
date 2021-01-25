@@ -556,7 +556,8 @@ gcov_to_elladan:
 sonar-scanner:
   stage: deploy
   only:
-    - develop@irmb/VirtualFluids_dev
+    - develop
+    #- develop@irmb/VirtualFluids_dev
 
   variables:
     SONAR_HOST_URL: "http://gitlab-runner01.irmb.bau.tu-bs.de/sonarqube/"
@@ -577,7 +578,7 @@ sonar-scanner:
 
   script:
     - cd $CI_PROJECT_DIR
-    - sonar-scanner -Dsonar.login=$SONAR_SECURITY_TOKEN
+    - sonar-scanner -X -Dsonar.verbose=true -Dsonar.login=$SONAR_SECURITY_TOKEN
 
 ###############################################################################
 ##                              Release                                      ##
