@@ -1,13 +1,11 @@
 import shutil
 import unittest
 
-import math
-import pyvista as pv
 import matplotlib.pyplot as plt
-
+import pyvista as pv
 from pyfluids.parameters import GridParameters, PhysicalParameters, RuntimeParameters
 
-from norms import root_mean_squared_error, l2_norm_error
+from norms import l2_norm_error
 from poiseuille.analytical import poiseuille_at_heights, PoiseuilleSettings
 from poiseuille.simulation import run_simulation
 from vtk_utilities import vertical_column_from_mesh, get_values_from_indices
@@ -20,47 +18,33 @@ class TestPoiseuilleFlow(unittest.TestCase):
         WHEN comparing the simulation results to the analytical solution THEN the L2-Norm should be less than 1e-4
         """
         # self.skipTest("Skipping test! This test is not implemented correctly")
+        plt.ion()
 
         channel_height = 10
+        number_of_nodes = [8, 16, 32]
+        number_of_timesteps = [10_000, 20_000, 40_000]
+        viscosities = [5e-3, 1e-2, 2e-2]
+        l2_norm_results = []
 
         physical_params = PhysicalParameters()
-        physical_params.lattice_viscosity = 0.005
 
         runtime_params = RuntimeParameters()
         runtime_params.number_of_threads = 4
         runtime_params.timestep_log_interval = 1000
-        runtime_params.number_of_timesteps = 10000
 
-        nodes_in_column = 8
-        grid_params = create_grid_params_with_nodes_in_column(nodes_in_column,
-                                                              delta_x=channel_height / nodes_in_column)
-        l2_norm_result_100 = get_l2_norm_for_simulation(grid_params, physical_params, runtime_params)
+        for test_number, nodes_in_column in enumerate(number_of_nodes):
+            runtime_params.number_of_timesteps = number_of_timesteps[test_number]
+            physical_params.lattice_viscosity = viscosities[test_number]
+            delta_x = channel_height / nodes_in_column
+            grid_params = create_grid_params_with_nodes_in_column(nodes_in_column, delta_x)
+            l2_norm_result = get_l2_norm_for_simulation(grid_params, physical_params, runtime_params)
+            l2_norm_results.append(l2_norm_result)
 
-        runtime_params.number_of_timesteps *= 2
-        physical_params.lattice_viscosity *= 2
-        nodes_in_column *= 2
-        grid_params = create_grid_params_with_nodes_in_column(nodes_in_column,
-                                                              delta_x=channel_height / nodes_in_column)
-        l2_norm_result_200 = get_l2_norm_for_simulation(grid_params, physical_params, runtime_params)
-
-        runtime_params.number_of_timesteps *= 12
-        physical_params.lattice_viscosity *= 2
-        nodes_in_column *= 2
-        grid_params = create_grid_params_with_nodes_in_column(nodes_in_column,
-                                                              delta_x=channel_height / nodes_in_column)
-        l2_norm_result_400 = get_l2_norm_for_simulation(grid_params, physical_params, runtime_params)
-
-        nodes = [8, 16, 32]
-        l2_results = [l2_norm_result_100, l2_norm_result_200, l2_norm_result_400]
-        plt.plot(nodes, l2_results)
+        plt.plot(number_of_nodes, l2_norm_results)
         plt.show()
 
-        self.assertTrue(l2_norm_result_200 <= l2_norm_result_100)
-        self.assertTrue(l2_norm_result_400 <= l2_norm_result_200)
-
-
-def get_delta_x(number_of_nodes, height):
-    return height / number_of_nodes
+        self.assertTrue(l2_norm_results[1] <= l2_norm_results[0])
+        self.assertTrue(l2_norm_results[2] <= l2_norm_results[1])
 
 
 def run_simulation_with_settings(grid_params, physical_params, runtime_params, output_folder):
