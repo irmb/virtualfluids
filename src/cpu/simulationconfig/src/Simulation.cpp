@@ -117,7 +117,7 @@ void Simulation::run()
 
     auto metisVisitor = std::make_shared<MetisPartitioningGridVisitor>(communicator,
                                                                        MetisPartitioningGridVisitor::LevelBased,
-                                                                       D3Q27System::B);
+                                                                       D3Q27System::B, MetisPartitioner::RECURSIVE);
 
     InteractorsHelper intHelper(grid, metisVisitor);
     for (auto const &interactor : interactors)
@@ -125,8 +125,7 @@ void Simulation::run()
 
     intHelper.selectBlocks();
 
-    // important: run this after metis & intHelper.selectBlocks()
-    writeBlocksToFile();
+
     int numberOfProcesses = communicator->getNumberOfProcesses();
     SetKernelBlockVisitor kernelVisitor(lbmKernel, physicalParameters->latticeViscosity,
                                         numberOfProcesses);
@@ -147,6 +146,8 @@ void Simulation::run()
     grid->accept(bcVisitor);
 
     writeBoundaryConditions();
+    // important: run this after metis & intHelper.selectBlocks()
+    writeBlocksToFile();
 
     auto visualizationScheduler = std::make_shared<UbScheduler>(simulationParameters->timeStepLogInterval);
     auto mqCoProcessor = makeMacroscopicQuantitiesCoProcessor(converter,
