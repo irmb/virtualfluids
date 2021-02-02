@@ -616,7 +616,7 @@ void RheologyK17LBMKernel::calculate(int step)
 
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //non Newtonian fluid collision factor
-               LBMReal shearRate = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (drho + c1);
+               LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (drho + c1);
                //omega = getThyxotropyCollFactor(omega, shearRate, rho);
                //omega = Thixotropy::getHerschelBulkleyCollFactor(omega, shearRate, drho);
                omega = Thixotropy::getBinghamCollFactor(omega, shearRate, drho);
@@ -639,7 +639,7 @@ void RheologyK17LBMKernel::calculate(int step)
 
                if(omega < c1) { omega = c1; } //arbitrary limit (24.09.2020)
 
-               omega = collFactor;
+               //omega = collFactor;
 
                //magic parameter for rheology
                LBMReal a = 10;

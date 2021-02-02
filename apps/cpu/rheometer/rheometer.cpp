@@ -67,7 +67,7 @@ void bflow(string configname)
        OmegaLB /= scaleFactor;
        nuLB *=scaleFactor;
        endTime *= scaleFactor;
-       outTime = endTime;
+       //outTime = endTime;
        cpStart = endTime;
        cpStep  = endTime;
 

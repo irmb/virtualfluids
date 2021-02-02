@@ -17,7 +17,7 @@ void bflow(string configname)
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
       vector<double>  boundingBox = config.getVector<double>("boundingBox");
-      //double          nuLB = config.getValue<double>("nuLB");
+      double          nuLB = config.getValue<double>("nuLB");
       double          endTime = config.getValue<double>("endTime");
       double          outTime = config.getValue<double>("outTime");
       double          availMem = config.getValue<double>("availMem");
@@ -31,11 +31,12 @@ void bflow(string configname)
       double          forcing = config.getValue<double>("forcing");
       //double          n = config.getValue<double>("n");
       //double          k = config.getValue<double>("k");
-      //double          tau0 = config.getValue<double>("tau0");
+      double          tau0 = config.getValue<double>("tau0");
       double          velocity = config.getValue<double>("velocity");
       double          n = config.getValue<double>("n");
       double          Re = config.getValue<double>("Re");
       double          Bn = config.getValue<double>("Bn");
+      double          scaleFactor = config.getValue<double>("scaleFactor");
 
       SPtr<Communicator> comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -63,13 +64,13 @@ void bflow(string configname)
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
       //bounding box
-      //double g_minX1 = 0;
-      //double g_minX2 = 0;
-      //double g_minX3 = 0;
+      //double g_minX1 = -0.707107+1.0;
+      //double g_minX2 = -1.41421+1.0;
+      //double g_minX3 = 1.0;
 
       //double g_maxX1 = boundingBox[0];
       //double g_maxX2 = boundingBox[1];
-      //double g_maxX3 = boundingBox[2];
+      //double g_maxX3 = boundingBox[2]+1.0;
 
       double g_minX1 = 0.0;
       double g_minX2 = -boundingBox[1]/2.0;
@@ -78,6 +79,8 @@ void bflow(string configname)
       double g_maxX1 = boundingBox[0];
       double g_maxX2 = boundingBox[1]/2.0;
       double g_maxX3 = boundingBox[2]/2.0;
+
+      
 
       double blockLength = 3.0 * deltax;
 
@@ -93,7 +96,7 @@ void bflow(string configname)
       double U = velocity;
       double Gamma = U / d;
 
-      double scaleFactor = 4.0;
+      //double scaleFactor = 2.0;
 
       // Diffusive Scaling
 
@@ -105,13 +108,13 @@ void bflow(string configname)
 
       // Acoustic Scaling
 
-      double k = 0.005 * scaleFactor;
-      double tau0 = 3e-5; 
+      double k = nuLB * scaleFactor;
+      //double tau0 = 3e-5; 
       forcing /= scaleFactor;
       endTime *= scaleFactor;
       deltax /= scaleFactor;
 
-      outTime = endTime;
+      //outTime = endTime;
 
       double beta = 14;
       double c = 10; // 1.0 / 6.0;
@@ -130,11 +133,11 @@ void bflow(string configname)
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new HerschelBulkleyModelNoSlipBCAlgorithm()));
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new PowellEyringModelNoSlipBCAlgorithm()));
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new BinghamModelNoSlipBCAlgorithm()));
+      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new BinghamModelNoSlipBCAlgorithm()));
 
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
-      bcVisitor.addBC(noSlipBCAdapter);
+      //bcVisitor.addBC(noSlipBCAdapter);
 
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
@@ -142,6 +145,11 @@ void bflow(string configname)
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyK17LBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      
+      //double forcingXY = forcing / sqrt(2.0);
+      //kernel->setForcingX1(forcingXY);
+      //kernel->setForcingX2(forcingXY);
       kernel->setForcingX1(forcing);
       kernel->setWithForcing(true);
       kernel->setBCProcessor(bcProc);
@@ -192,6 +200,13 @@ void bflow(string configname)
       GbCuboid3DPtr addWallYmax(new GbCuboid3D(g_minX1 - blockLength, g_maxX2, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
       if (myid == 0) GbSystem3D::writeGeoObject(addWallYmax.get(), pathname + "/geo/addWallYmax", WbWriterVtkXmlASCII::getInstance());
 
+      //GbCuboid3DPtr addWallXY(new GbCuboid3D(g_minX1 - 0.5*deltax, g_minX2 - 0.5 * deltax, g_minX3 - 0.5 * deltax, g_maxX1 + 0.5 * deltax, g_maxX2 + 0.5 * deltax, g_maxX3 + 0.5 * deltax));
+      //if (myid == 0) GbSystem3D::writeGeoObject(addWallXY.get(), pathname + "/geo/addWallXY", WbWriterVtkXmlASCII::getInstance());
+
+      //SPtr<GbTriFaceMesh3D> wall45(new GbTriFaceMesh3D());
+      //wall45->readMeshFromSTLFile("d:/Projects/TRR277/Project/WP1/PF45/Geo/wall45_ASCII.stl", true);
+
+
       //wall interactors
       //SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
       //SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
@@ -199,9 +214,11 @@ void bflow(string configname)
       SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
       SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
+      //SPtr<D3Q27TriFaceMeshInteractor> wall45Int(new D3Q27TriFaceMeshInteractor(wall45, grid, noSlipBCAdapter, Interactor3D::SOLID));
+
       ////////////////////////////////////////////
       //METIS
-      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
       ////////////////////////////////////////////
       /////delete solid blocks
       if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
@@ -210,6 +227,7 @@ void bflow(string configname)
       //intHelper.addInteractor(addWallZmaxInt);
       intHelper.addInteractor(addWallYminInt);
       intHelper.addInteractor(addWallYmaxInt);
+      //intHelper.addInteractor(wall45Int);
       intHelper.selectBlocks();
       if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
       //////////////////////////////////////
