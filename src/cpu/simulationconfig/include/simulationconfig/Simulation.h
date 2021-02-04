@@ -15,7 +15,7 @@
 #include "AbstractLBMSystem.h"
 #include "KernelConfigStructs.h"
 #include "SimulationParameters.h"
-#include "WriterConfig.h"
+#include "WriterConfiguration.h"
 
 
 class Simulation {
@@ -26,64 +26,64 @@ private:
     std::shared_ptr<AbstractLBMSystem> lbmSystem;
     std::shared_ptr<Communicator> communicator;
 
-    SPtr<Grid3D> grid;
-    std::vector<SPtr<Interactor3D>> interactors;
+    std::shared_ptr<Grid3D> grid;
+    std::vector<std::shared_ptr<Interactor3D>> interactors;
     BoundaryConditionsBlockVisitor bcVisitor;
-    std::set<SPtr<BCAdapter>> registeredAdapters;
+    std::set<std::shared_ptr<BCAdapter>> registeredAdapters;
 
-    SPtr<LBMKernelConfig> kernelConfig;
-    SPtr<SimulationParameters> simulationParameters;
-    SPtr<GridParameters> gridParameters;
-    SPtr<PhysicalParameters> physicalParameters;
+    std::shared_ptr<LBMKernelConfiguration> kernelConfig;
+    std::shared_ptr<RuntimeParameters> simulationParameters;
+    std::shared_ptr<GridParameters> gridParameters;
+    std::shared_ptr<PhysicalParameters> physicalParameters;
 
-    WriterConfig &writerConfig = *(new WriterConfig());
+    WriterConfiguration &writerConfig = *(new WriterConfiguration());
 
 public:
     explicit Simulation();
 
     ~Simulation();
 
-    WriterConfig &getWriterConfig();
+    WriterConfiguration &getWriterConfig();
 
-    void setWriterConfig(const WriterConfig &config);
+    void setWriterConfiguration(const WriterConfiguration &config);
 
-    void setGridParameters(SPtr<GridParameters> parameters);
+    void setGridParameters(std::shared_ptr<GridParameters> parameters);
 
-    void setPhysicalParameters(SPtr<PhysicalParameters> parameters);
+    void setPhysicalParameters(std::shared_ptr<PhysicalParameters> parameters);
 
-    void setSimulationParameters(SPtr<SimulationParameters> parameters);
+    void setRuntimeParameters(std::shared_ptr<RuntimeParameters> parameters);
 
-    void setKernelConfig(const SPtr<LBMKernelConfig> &kernel);
+    void setKernelConfiguration(const std::shared_ptr<LBMKernelConfiguration> &kernel);
 
-    void addObject(const SPtr<GbObject3D> &object, const SPtr<BCAdapter> &bcAdapter, int state,
+    void addObject(const std::shared_ptr<GbObject3D> &object, const std::shared_ptr<BCAdapter> &bcAdapter, int state,
                    const std::string &folderPath);
 
-    void addBCAdapter(const SPtr<BCAdapter> &bcAdapter);
+    void addBCAdapter(const std::shared_ptr<BCAdapter> &bcAdapter);
 
     void run();
 
 private:
-    SPtr<GbObject3D> makeSimulationBoundingBox(const int &nodesInX1, const int &nodesInX2, const int &nodesInX3) const;
+    std::shared_ptr<GbObject3D> makeSimulationBoundingBox() const;
 
-    void writeBlocks() const;
+    void writeBlocksToFile() const;
 
     void writeBoundaryConditions() const;
 
-    SPtr<CoProcessor> makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter,
-                                                           const SPtr<UbScheduler> &visSch) const;
+    std::shared_ptr<CoProcessor> makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter,
+                                                           const std::shared_ptr<UbScheduler> &visualizationScheduler) const;
 
     static std::shared_ptr<LBMUnitConverter> makeLBMUnitConverter();
 
     void setBlockSize(const int &nodesInX1, const int &nodesInX2, const int &nodesInX3) const;
 
-    static void setBoundaryConditionProcessor(const SPtr<LBMKernel> &kernel);
+    static void setBoundaryConditionProcessor(const std::shared_ptr<LBMKernel> &kernel);
 
-    void generateBlockGrid(const SPtr<GbObject3D> &gridCube) const;
+    void generateBlockGrid(const std::shared_ptr<GbObject3D> &gridCube) const;
 
     void logSimulationData(const int &nodesInX1, const int &nodesInX2, const int &nodesInX3) const;
 
 
-    void setKernelForcing(const SPtr<LBMKernel> &kernel, std::shared_ptr<LBMUnitConverter> &converter) const;
+    void setKernelForcing(const std::shared_ptr<LBMKernel> &kernel, std::shared_ptr<LBMUnitConverter> &converter) const;
 };
 
 #endif
