@@ -2,6 +2,7 @@ image: irmb/virtualfluids-python-deps
 
 stages:
   - build
+  - build_python
   - test
   - benchmark
   - analyze
@@ -11,27 +12,6 @@ stages:
 
 ###############################################################################
 ##                                Builds                                     ##
-###############################################################################
-gcc_9_python:
-  stage: build
-
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - _skbuild
-
-  artifacts:
-    paths:
-      - _skbuild/
-      - Python/venv
-
-  before_script:
-    - python3 -m venv --system-site-packages Python/venv
-    - source Python/venv/bin/activate
-
-  script:
-    - python3 setup.py install
-
 ###############################################################################
 .gnu_build_template:
   stage: build
@@ -76,6 +56,7 @@ gcc_9:
   extends: .gnu_build_template
 
 ###############################################################################
+
 clang_10:
   extends: .gnu_build_template
 
@@ -165,6 +146,11 @@ msvc_16:
 ###############################################################################
 build_singularity_image:
   stage: build
+
+  tags:
+    - priviliged
+    - linux
+
   rules:
     - if: $CI_COMMIT_TAG
 
@@ -173,19 +159,42 @@ build_singularity_image:
       - Containers/VirtualFluidsOpenMPI.sif
 
   script:
-    - singularity build Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
+    - singularity build --fakeroot Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
     - ls -sh Containers/VirtualFluidsOpenMPI.sif
+
+
+###############################################################################
+##                             Build Python                                  ##
+###############################################################################
+
+gcc_9_python:
+  stage: build_python
+
+  needs: ["gcc_9"]
+
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - $BUILD_FOLDER
+
+  artifacts:
+    paths:
+      - build/
+      - dist/
+
+  script:
+    - python3 setup.py bdist_wheel
 
 ###############################################################################
 ##                                Tests                                      ##
 ###############################################################################
-gcc_9_python_unit_tests:
+gcc_9_unit_tests:
   stage: test
 
-  needs: ["gcc_9_python"]
+  needs: ["gcc_9"]
 
   before_script:
-    - export VF_UNITTESTS=$(find _skbuild -name basicsTests)
+    - export VF_UNITTESTS=$(find build_gcc9 -name basicsTests)
 
   script:
     - $VF_UNITTESTS
@@ -212,14 +221,12 @@ gcc_9_python_bindings_test:
 
   needs: ["gcc_9_python"]
 
-  artifacts:
-    when: on_failure
-    paths:
-      - output/mq/mq10000/
-
   before_script:
     - export PYTHONPATH="Python"
-    - source Python/venv/bin/activate
+    - export VF_WHEEL=$(find dist/*.whl)
+    - apt-get update && apt-get install -y libglx0
+    - pip3 install $VF_WHEEL
+    - pip3 install -r Python/requirements.txt
 
   script:
     - python3 -m unittest discover -s Python -v
@@ -502,7 +509,7 @@ clang-tidy:
 vf_to_phoenix:
   extends: .deploy_template
   stage: deploy
-  needs: ["gcc_9_python"]
+  needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
 
   when: manual
 
@@ -511,7 +518,7 @@ vf_to_phoenix:
     HOST: "phoenix.hlr.rz.tu-bs.de"
 
   script:
-    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook.yml
+    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook_vf_deploy.yml
 
   parallel:
     matrix:
@@ -520,6 +527,26 @@ vf_to_phoenix:
           - y0054816
 
 ###############################################################################
+
+vf_wheel_to_jupyterhub:
+  extends: .deploy_template
+  stage: deploy
+
+  only: ["manual"]
+
+  needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
+
+  variables:
+    HOST: "finrod.irmb.bau.tu-bs.de"
+    SSH_KEY: "$SSH_PRIVATE_KEY_JUPYTER_HOST_AT_FINROD"
+    REMOTE_USER: "jupyter_host"
+    jupyter_host: "jupyter_host"
+
+  script:
+    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook_jupyter_update.yml
+
+###############################################################################
+
 cppcheck_to_elladan:
   extends: .deploy_template
   stage: deploy

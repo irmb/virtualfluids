@@ -4,14 +4,14 @@
 #include <string>
 #include <LBM/LBMSystem.h>
 
-struct LBMKernelConfig {
+struct LBMKernelConfiguration {
     KernelFactory::KernelType kernelType;
     bool useForcing = false;
     LBMReal forcingX1{};
     LBMReal forcingX2{};
     LBMReal forcingX3{};
 
-    explicit LBMKernelConfig(KernelFactory::KernelType kernelType) : kernelType(kernelType)
+    explicit LBMKernelConfiguration(KernelFactory::KernelType kernelType) : kernelType(kernelType)
     {
     }
 };

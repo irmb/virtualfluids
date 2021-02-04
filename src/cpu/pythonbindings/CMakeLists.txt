@@ -1,7 +1,5 @@
 project(VirtualFluidsPython)
 
-file(GLOB SUBMODULE_SOURCES src/submodules/*.cpp)
-
 pybind11_add_module(pyfluids src/VirtualfluidsModule.cpp)
 pybind11_add_module(pymuparser src/muParser.cpp)
 
@@ -14,6 +12,4 @@ target_compile_definitions(pymuparser PRIVATE VF_METIS VF_MPI)
 target_link_libraries(pyfluids PRIVATE simulationconfig VirtualFluidsCore muparser basics)
 target_link_libraries(pymuparser PRIVATE muparser)
 
-install(TARGETS pyfluids DESTINATION .)
-install(TARGETS pymuparser DESTINATION .)
 

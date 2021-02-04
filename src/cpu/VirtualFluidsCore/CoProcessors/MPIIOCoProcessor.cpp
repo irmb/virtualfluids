@@ -91,7 +91,7 @@ void MPIIOCoProcessor::writeBlocks(int step)
     size = 1;
 
     if (comm->isRoot()) {
-        UBLOG(logINFO, "MPIIOCoProcessor::writeBlocks start collect data rank = " << rank);
+        UBLOG(logINFO, "MPIIOCoProcessor::writeBlocksToFile start collect data rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: "
                            << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
@@ -187,7 +187,7 @@ void MPIIOCoProcessor::writeBlocks(int step)
     }
 
     if (comm->isRoot()) {
-        UBLOG(logINFO, "MPIIOCoProcessor::writeBlocks start MPI IO rank = " << rank);
+        UBLOG(logINFO, "MPIIOCoProcessor::writeBlocksToFile start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: "
                            << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
@@ -222,7 +222,7 @@ void MPIIOCoProcessor::writeBlocks(int step)
 
     if (comm->isRoot()) {
         finish = MPI_Wtime();
-        UBLOG(logINFO, "MPIIOCoProcessor::writeBlocks time: " << finish - start << " s");
+        UBLOG(logINFO, "MPIIOCoProcessor::writeBlocksToFile time: " << finish - start << " s");
     }
 
     delete[] block3dArray;
