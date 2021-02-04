@@ -248,15 +248,31 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     maxX1 -= 1;
     maxX2 -= 1;
     maxX3 -= 1;
+    int  SWBi, SEBi, NEBi, NWBi, SWTi, SETi, NETi, NWTi;
     // cell vector erstellen
     for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
         for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
             for (int ix1 = minX1; ix1 <= maxX1; ix1++) {
-                if ((SWB = nodeNumbers(ix1, ix2, ix3)) >= 0 && (SEB = nodeNumbers(ix1 + 1, ix2, ix3)) >= 0 &&
-                    (NEB = nodeNumbers(ix1 + 1, ix2 + 1, ix3)) >= 0 && (NWB = nodeNumbers(ix1, ix2 + 1, ix3)) >= 0 &&
-                    (SWT = nodeNumbers(ix1, ix2, ix3 + 1)) >= 0 && (SET = nodeNumbers(ix1 + 1, ix2, ix3 + 1)) >= 0 &&
-                    (NET = nodeNumbers(ix1 + 1, ix2 + 1, ix3 + 1)) >= 0 &&
-                    (NWT = nodeNumbers(ix1, ix2 + 1, ix3 + 1)) >= 0) {
+                if (
+                    (   SWBi = nodeNumbers(ix1, ix2, ix3)) >= 0 
+                    && (SEBi = nodeNumbers(ix1 + 1, ix2, ix3)) >= 0 
+                    && (NEBi = nodeNumbers(ix1 + 1, ix2 + 1, ix3)) >= 0 
+                    && (NWBi = nodeNumbers(ix1, ix2 + 1, ix3)) >= 0 
+                    && (SWTi = nodeNumbers(ix1, ix2, ix3 + 1)) >= 0 
+                    && (SETi = nodeNumbers(ix1 + 1, ix2, ix3 + 1)) >= 0 
+                    && (NETi = nodeNumbers(ix1 + 1, ix2 + 1, ix3 + 1)) >= 0 
+                    && (NWTi = nodeNumbers(ix1, ix2 + 1, ix3 + 1)) >= 0
+                    ) 
+                {
+                    SWB =SWBi;
+                    SEB =SEBi;
+                    NEB =NEBi;
+                    NWB =NWBi;
+                    SWT =SWTi;
+                    SET =SETi;
+                    NET =NETi;
+                    NWT =NWTi;
+
                     cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
                 }
             }
