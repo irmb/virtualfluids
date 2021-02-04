@@ -45,6 +45,7 @@ stages:
     - cmake ..
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=ON
+      -DCMAKE_CUDA_ARCHITECTURES=60
     - cmake . -LAH
     - make -j4
 
@@ -87,6 +88,7 @@ gcc_9_rebuild:
     - cmake ..
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=ON
+      -DCMAKE_CUDA_ARCHITECTURES=60
       -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache
       -DCMAKE_C_COMPILER_LAUNCHER=ccache
@@ -275,6 +277,7 @@ gpu_numerical_tests:
     - cmake ..
       -DBUILD_VF_CPU=OFF
       -DBUILD_VF_GPU=ON
+      -DCMAKE_CUDA_ARCHITECTURES=60
       -DBUILD_VF_DOUBLE_ACCURACY=ON
       -DBUILD_NUMERIC_TESTS=ON
       -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu
@@ -327,6 +330,7 @@ clang_build_analyzer_clang_10:
     - cmake ..
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=ON
+      -DCMAKE_CUDA_ARCHITECTURES=60
       -DUSE_OPENMP=OFF
       -DCMAKE_CXX_FLAGS=-ftime-trace
     - ClangBuildAnalyzer --start .
@@ -362,6 +366,7 @@ include_what_you_use_clang_10:
     - cmake ..
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=ON
+      -DCMAKE_CUDA_ARCHITECTURES=60
       -DUSE_OPENMP=OFF
       -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
     - make
@@ -436,6 +441,7 @@ gcov_gcc_9:
     - cmake ..
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=ON
+      -DCMAKE_CUDA_ARCHITECTURES=60
       -DBUILD_VF_COVERAGE=ON
       -DBUILD_VF_UNIT_TESTS=ON
     - make -j4
@@ -582,8 +588,12 @@ gcov_to_elladan:
 # This job only run on the development branch of the parent repository, not on forks!
 sonar-scanner:
   stage: deploy
+  tags:
+    - linux
+
   only:
-    - develop@irmb/VirtualFluids_dev
+    - develop
+    #- develop@irmb/VirtualFluids_dev
 
   variables:
     SONAR_HOST_URL: "http://gitlab-runner01.irmb.bau.tu-bs.de/sonarqube/"
@@ -604,7 +614,7 @@ sonar-scanner:
 
   script:
     - cd $CI_PROJECT_DIR
-    - sonar-scanner -Dsonar.login=$SONAR_SECURITY_TOKEN
+    - sonar-scanner -X -Dsonar.verbose=true -Dsonar.login=$SONAR_SECURITY_TOKEN
 
 ###############################################################################
 ##                              Release                                      ##
