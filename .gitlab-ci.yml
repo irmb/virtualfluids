@@ -43,8 +43,7 @@ stages:
     - mkdir -p $CI_PROJECT_DIR/$BUILD_FOLDER
     - cd $CI_PROJECT_DIR/$BUILD_FOLDER
     - cmake ..
-      -DBUILD_VF_CPU=ON
-      -DBUILD_VF_GPU=ON
+      --preset=all_make
       -DCMAKE_CUDA_ARCHITECTURES=60
     - cmake . -LAH
     - make -j4
@@ -86,12 +85,8 @@ gcc_9_rebuild:
     - cd $CI_PROJECT_DIR/build
     - rm -r -f ./*
     - cmake ..
-      -DBUILD_VF_CPU=ON
-      -DBUILD_VF_GPU=ON
+      --preset=all_make_ccache
       -DCMAKE_CUDA_ARCHITECTURES=60
-      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-      -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache
-      -DCMAKE_C_COMPILER_LAUNCHER=ccache
     - make -j4  2>&1 | tee gcc_warnings.txt
     - ccache -s
 
@@ -113,12 +108,8 @@ msvc_16:
     - gpu
 
   variables:
-    CMAKE_GENERATOR: "Visual Studio 16 2019"
     BUILD_CONFIGURATION: "Release"
     BUILD_FOLDER: "build"
-    BUILD_VF_CPU: "ON"
-    BUILD_VF_GPU: "ON"
-    BUILD_VF_UNIT_TESTS: "ON"
 
   # add cmake and MSBuild.exe to the path.
   # This Needs to be adapted when moved to a new build machine.
@@ -133,7 +124,7 @@ msvc_16:
     - cd $CI_PROJECT_DIR
     - md -force $env:BUILD_FOLDER
     - cd $env:BUILD_FOLDER
-    - cmake .. -DBUILD_VF_CPU=$env:BUILD_VF_CPU -DBUILD_VF_GPU=$env:BUILD_VF_GPU -DBUILD_VF_UNIT_TESTS=$env:BUILD_VF_UNIT_TESTS -G "$env:CMAKE_GENERATOR" ..
+    - cmake .. --preset=all_msvc
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
 
   cache:
@@ -275,15 +266,9 @@ gpu_numerical_tests:
     - cd $CI_PROJECT_DIR/build
     - rm -r -f ./*
     - cmake ..
-      -DBUILD_VF_CPU=OFF
-      -DBUILD_VF_GPU=ON
+      --preset=gpu_numerical_tests_ccache_make
       -DCMAKE_CUDA_ARCHITECTURES=60
-      -DBUILD_VF_DOUBLE_ACCURACY=ON
-      -DBUILD_NUMERIC_TESTS=ON
       -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu
-      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-      -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache
-      -DCMAKE_C_COMPILER_LAUNCHER=ccache
     - make -j4
     - ccache -s
 
@@ -439,11 +424,9 @@ gcov_gcc_9:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      -DBUILD_VF_CPU=ON
-      -DBUILD_VF_GPU=ON
+      --preset=all_make
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DBUILD_VF_COVERAGE=ON
-      -DBUILD_VF_UNIT_TESTS=ON
     - make -j4
     - ./bin/basicsTests
     - cd ..
@@ -533,7 +516,6 @@ vf_to_phoenix:
           - y0054816
 
 ###############################################################################
-
 vf_wheel_to_jupyterhub:
   extends: .deploy_template
   stage: deploy
@@ -552,37 +534,6 @@ vf_wheel_to_jupyterhub:
     - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook_jupyter_update.yml
 
 ###############################################################################
-
-cppcheck_to_elladan:
-  extends: .deploy_template
-  stage: deploy
-  needs: ["cppcheck"]
-
-  when: manual
-
-  variables:
-    SSH_KEY: "$SSH_PRIVATE_KEY_ELLADAN"
-    HOST: "elladan.irmb.bau.tu-bs.de"
-
-  script:
-    - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_cppcheck.yml
-
-###############################################################################
-gcov_to_elladan:
-  extends: .deploy_template
-  stage: deploy
-  needs: ["gcov_gcc_9"]
-
-  when: manual
-
-  variables:
-    SSH_KEY: "$SSH_PRIVATE_KEY_ELLADAN"
-    HOST: "elladan.irmb.bau.tu-bs.de"
-
-  script:
-    - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_gcov.yml
-
-###############################################################################
 # sonar-scanner runs sonar-project.properties
 # the reports in this file needs to match the artifacts.
 # This job only run on the development branch of the parent repository, not on forks!
@@ -592,8 +543,8 @@ sonar-scanner:
     - linux
 
   only:
-    - develop
-    #- develop@irmb/VirtualFluids_dev
+    #- develop
+    - develop@irmb/VirtualFluids_dev
 
   variables:
     SONAR_HOST_URL: "http://gitlab-runner01.irmb.bau.tu-bs.de/sonarqube/"
