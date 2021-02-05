@@ -1,4 +1,2 @@
 # 3rd party cuda
-The file helper_cuda.h added from here https://github.com/NVIDIA/cuda-samples/blob/v11.2/Common/helper_cuda.h
-To prevent the environment from providing this file and to eliminating the source of error of not finding this file,
-the header was added in this repository.
+The files in this folder are added from here https://github.com/NVIDIA/cuda-samples/blob/v11.2/Common/.
