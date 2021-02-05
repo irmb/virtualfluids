@@ -1,7 +1,7 @@
 
 function(linkCUDA)
 
-    set(CUDA_CUT_INCLUDE_DIR "${VF_THIRD_DIR}/cuda/")
+    set(CUDA_CUT_INCLUDE_DIR "${VF_THIRD_DIR}/cuda_samples/")
 
     vf_get_library_name(library_name)
     target_include_directories(${library_name} PRIVATE ${CUDA_CUT_INCLUDE_DIR})
