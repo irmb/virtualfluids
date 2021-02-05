@@ -149,4 +149,3 @@ Exception<Std_Exception>::~Exception() throw() {}
 // functions, exported
 
 #endif  // COMMON_EXCEPTION_H_
-#endif  // COMMON_EXCEPTION_H_
