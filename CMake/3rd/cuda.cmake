@@ -1,19 +1,11 @@
 
 function(linkCUDA)
 
-    find_path(CUDA_CUT_INCLUDE_DIR
-      helper_cuda.h
-      PATHS "$ENV{NVCUDASAMPLES_ROOT}" "${NVCUDASAMPLES_ROOT}"
-      PATH_SUFFIXES "common/inc" "Common"
-      DOC "Location of helper_cuda.h"
-      NO_DEFAULT_PATH
-    )
+    set(CUDA_CUT_INCLUDE_DIR "${VF_THIRD_DIR}/cuda_samples/")
 
     vf_get_library_name(library_name)
     target_include_directories(${library_name} PRIVATE ${CUDA_CUT_INCLUDE_DIR})
     target_include_directories(${library_name} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-
-    message("CUDA INCLUDE PATH: ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
 
     # set the following properties only for specific targets
     # set_property(TARGET ${targetName} PROPERTY CUDA_SEPARABLE_COMPILATION ON)

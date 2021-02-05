@@ -359,6 +359,9 @@ include_what_you_use_clang_10:
 cppcheck:
   stage: analyze
 
+  only:
+    - develop@irmb/VirtualFluids_dev
+
   image: irmb/virtualfluids-deps-ubuntu20.04
 
   needs: []
@@ -385,6 +388,9 @@ cppcheck:
 lizard:
   stage: analyze
 
+  only:
+    - develop@irmb/VirtualFluids_dev
+
   image: irmb/virtualfluids-python-deps-ubuntu20.04
 
   needs: []
@@ -408,6 +414,9 @@ lizard:
 # code coverage
 gcov_gcc_9:
   stage: analyze
+
+  only:
+    - develop@irmb/VirtualFluids_dev
 
   image: irmb/virtualfluids-python-deps-ubuntu20.04
 
@@ -449,6 +458,9 @@ gcov_gcc_9:
 # this job also produces a compile commands json file.
 clang-tidy:
   stage: analyze
+
+  only:
+    - develop@irmb/VirtualFluids_dev
 
   image: irmb/virtualfluids-python-deps-ubuntu20.04
 

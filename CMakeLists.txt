@@ -101,7 +101,6 @@ if(BUILD_VF_GPU)
         set(CMAKE_CUDA_ARCHITECTURES 30)
     endif()
 
-    message("CUDA Compiler: ${CMAKE_CUDA_COMPILER}")
     message("CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
 
     include (gpu.cmake)
