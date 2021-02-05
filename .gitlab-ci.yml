@@ -217,7 +217,7 @@ gcc_9_python_bindings_test:
   before_script:
     - export PYTHONPATH="Python"
     - export VF_WHEEL=$(find dist/*.whl)
-    - apt-get update && apt-get install -y libglx0
+    - apt-get update && apt-get install -y libglx-mesa0
     - pip3 install $VF_WHEEL
     - pip3 install -r Python/requirements.txt
 
