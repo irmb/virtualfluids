@@ -224,7 +224,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 
     int rankSelf = block->getRank();
 
-    if (!(offx + offy + offz) == 1) // FIXME: logical not is only applied to the left hand side of this comparison
+    if (offx + offy + offz != 1) 
         throw UbException(UB_EXARGS, "getNeighborVelocities called for diagonal directions!");
 
     //////get neighbor nodes, if existent
@@ -254,8 +254,8 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
         } else if (offz == 1 && grid->isPeriodicX1()) {
             blockNeighW =
                 grid->getBlock(val<1>(blockIndexes), val<2>(blockIndexes), (grid->getNX3() - 1), currentLevel);
-        } else
-            neighNodeIsBC; // FIXME???
+        } //else
+            //neighNodeIsBC;
 
         if (blockNeighW && blockNeighW->isActive()) {
             RankNeighborW = blockNeighW->getRank();

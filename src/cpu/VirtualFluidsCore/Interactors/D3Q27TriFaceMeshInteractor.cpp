@@ -54,7 +54,7 @@ D3Q27TriFaceMeshInteractor::~D3Q27TriFaceMeshInteractor() = default;
 //////////////////////////////////////////////////////////////////////////
 void D3Q27TriFaceMeshInteractor::initInteractor(const double &timeStep)
 {
-    Interactor3D::initInteractor(timeStep); // FIXME: refers to a member overridden in subclass
+    updateBlocks(); 
     setQs(timeStep);
 }
 //////////////////////////////////////////////////////////////////////////

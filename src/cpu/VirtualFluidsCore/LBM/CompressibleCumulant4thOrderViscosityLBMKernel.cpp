@@ -59,7 +59,6 @@ SPtr<LBMKernel> CompressibleCumulant4thOrderViscosityLBMKernel::clone()
 //////////////////////////////////////////////////////////////////////////
 void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
 {
-   using namespace D3Q27System;
    using namespace std;
    
    //timer.resetAndStart();

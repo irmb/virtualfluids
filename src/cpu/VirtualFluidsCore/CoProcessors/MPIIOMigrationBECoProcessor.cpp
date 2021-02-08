@@ -1320,7 +1320,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
 
     SPtr<Block3D> tempBlock;
     int tempRank;
-    for (int ind = indexB - indexB; ind < indexE - indexB; ind++) // FIXME: both sides of operator are equivalent
+    for (int ind = 0; ind < indexE - indexB; ind++) 
     {
         tempBlock = grid->getBlock(indexB + ind);
         tempRank  = tempBlock->getRank();

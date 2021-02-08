@@ -219,7 +219,7 @@ void D3Q27Interactor::initInteractor(const double &timeStep)
     else
         this->unsetTimeDependent();
 
-    Interactor3D::initInteractor(timeStep);
+    updateBlocks();
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27Interactor::updateInteractor(const double &timestep)

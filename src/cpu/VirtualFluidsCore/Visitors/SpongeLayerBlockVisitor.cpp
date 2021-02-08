@@ -92,7 +92,8 @@ void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
                 int ibMax     = val<3>(ixMax) - val<3>(ixMin) + 1;
                 double index  = (double)(ibX3 - val<3>(ixMin) + 1);
                 newCollFactor = (oldCollFactor - 1.0) / (double)(ibMax)*index;
-            }
+            } else
+                UB_THROW(UbException(UB_EXARGS, "Problem: no orthogonal sponge layer!"));
 
             newKernel->setCollisionFactor(newCollFactor);
             block->setKernel(newKernel);

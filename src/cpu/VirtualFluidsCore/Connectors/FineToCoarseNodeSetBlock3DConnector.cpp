@@ -146,9 +146,9 @@ void FineToCoarseNodeSetBlock3DConnector::findFCCells()
 {
     using namespace D3Q27System;
 
-    int lMin1X1, lMin1X2, lMin1X3, lMax1X1, lMax1X2, lMax1X3;
-    int lMin2X1, lMin2X2, lMin2X3, lMax2X1, lMax2X2, lMax2X3;
-    int lMin3X1, lMin3X2, lMin3X3, lMax3X1, lMax3X2, lMax3X3;
+    int lMin1X1 = 0, lMin1X2 = 0, lMin1X3 = 0, lMax1X1 = 0, lMax1X2 = 0, lMax1X3 = 0;
+    int lMin2X1 = 0, lMin2X2 = 0, lMin2X3 = 0, lMax2X1 = 0, lMax2X2 = 0, lMax2X3 = 0;
+    int lMin3X1 = 0, lMin3X2 = 0, lMin3X3 = 0, lMax3X1 = 0, lMax3X2 = 0, lMax3X3 = 0;
 
     // lMin1X1 = minX1+1; lMin1X2 = minX2+1; lMin1X3 = minX3+1;
     // lMax1X1 = maxX1-1; lMax1X2 = maxX2-1; lMax1X3 = maxX3-1;
@@ -692,7 +692,7 @@ void FineToCoarseNodeSetBlock3DConnector::findCFCells()
 {
     using namespace D3Q27System;
 
-    int lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3;
+    int lMinX1 = 0, lMinX2 = 0, lMinX3 = 0, lMaxX1 = 0, lMaxX2 = 0, lMaxX3 = 0;
 
     //////////////////////////////////////////////////////
     // Debug

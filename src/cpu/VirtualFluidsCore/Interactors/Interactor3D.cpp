@@ -290,11 +290,10 @@ void Interactor3D::setInactive() { active = false; }
 //////////////////////////////////////////////////////////////////////////
 bool Interactor3D::isActive() { return active; }
 //////////////////////////////////////////////////////////////////////////
-void Interactor3D::initInteractor(const double & /*timeStep*/)
+void Interactor3D::updateBlocks()
 {
-    // UBLOG(logINFO, "transBlocks.size = "<<transBlocks.size());
-
-    for (SPtr<Block3D> block : bcBlocks) {
+    for (SPtr<Block3D> block : bcBlocks) 
+    {
         this->setDifferencesToGbObject3D(block);
     }
 }
