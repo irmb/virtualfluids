@@ -10,15 +10,12 @@
 #  CMAKE 3.13: target_link_options
 #  CMAKE 3.15: CMAKE_MSVC_RUNTIME_LIBRARY
 #################################################################################
-cmake_minimum_required(VERSION 3.15..3.18 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15..3.19 FATAL_ERROR)
 
 project(VirtualFluids CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(CMAKE_CUDA_STANDARD 14)
-set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER ".cmake")
@@ -37,6 +34,13 @@ set (VF_ROOT_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
 #################################################################################
 option(BUILD_VF_CPU "Build VirtualFluids cpu variant" OFF)
 option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
+
+# vf gpu
+option(BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
+option(BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF )
+option(BUILD_VF_TRAFFIC      "Build VirtualFluids Traffic" OFF)
+option(BUILD_JSONCPP         "Builds json cpp "            OFF)
+option(BUILD_NUMERIC_TESTS   "Build numeric tests"         OFF)
 
 option(BUILD_VF_UNIT_TESTS "Build VirtualFluids unit tests" OFF)
 option(BUILD_VF_CLANG_TIDY "Add the clang tidy checks to the targets" OFF)
@@ -60,17 +64,6 @@ option(BUILD_VF_PYTHON_BINDINGS "" OFF)
 option(BUILD_VF_DOUBLE_ACCURACY "Use double accuracy" OFF)
 
 #################################################################################
-#  CMAKE POLICIES
-#################################################################################
-# CMAKE_CUDA_ARCHITECTURES
-# https://cmake.org/cmake/help/git-stage/policy/CMP0104.htmls
-if(POLICY CMP0104)
-    cmake_policy(SET CMP0104 NEW)
-    set(CMAKE_CUDA_ARCHITECTURES 30)
-    # with cuda 11 the minimum architecture is 52
-endif()
-
-#################################################################################
 #  MACROS
 #################################################################################
 include(CMakePrintHelpers)
@@ -92,6 +85,24 @@ if (BUILD_VF_CPU)
     include (cpu.cmake)
 endif()
 if(BUILD_VF_GPU)
+
+    include(CheckLanguage)
+    check_language(CUDA)
+
+    if(NOT CMAKE_CUDA_COMPILER)
+        message(FATAL_ERROR "CUDA Compiler was requested but is not found on the system.")
+    endif()
+
+    set(CMAKE_CUDA_STANDARD 11)
+    set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
+
+    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+        message(WARNING "CMAKE_CUDA_ARCHITECTURES was not defined and is set to 30 (CUDA support until 10.1 only).")
+        set(CMAKE_CUDA_ARCHITECTURES 30)
+    endif()
+
+    message("CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
+
     include (gpu.cmake)
 endif()
 
@@ -99,5 +110,7 @@ endif()
 #  3rd Party Libraries
 #################################################################################
 if(BUILD_VF_UNIT_TESTS)
-    add_subdirectory(${VF_THIRD_DIR}/googletest)
+    if(NOT BUILD_NUMERIC_TESTS) # in this case googletest is already included.
+        add_subdirectory(${VF_THIRD_DIR}/googletest)
+    endif()
 endif()

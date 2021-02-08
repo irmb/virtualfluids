@@ -43,4 +43,6 @@ SET(BOOST_LIBRARYDIR  "/cluster/lib/boost/1.63.0/gcc/lib"  CACHE PATH "BOOST_LIB
 #SET(VTK_DIR "/home/irmb/tools/VTK/build/VTK-8.2.0" CACHE PATH "VTK directory override" FORCE)
 #SET(VTK_DIR "/home/stelenz/software/vtk/VTK-8.1.0/build" CACHE PATH "VTK directory override" FORCE)
 
+## nvidia
 set(NVCUDASAMPLES_ROOT "/cluster/cuda/11.0/samples")
+set(CMAKE_CUDA_ARCHITECTURES 60) # NVIDIA Tesla P100

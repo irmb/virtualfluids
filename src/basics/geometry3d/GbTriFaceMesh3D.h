@@ -270,6 +270,7 @@ public:
         this->transX3             = transX3;
     }
     void readMeshFromSTLFile(std::string filename, bool removeRedundantNodes);
+    void readMeshFromSTLFileBinary(std::string filename, bool removeRedundantNodes);
 
     double getX1Minimum() override
     {

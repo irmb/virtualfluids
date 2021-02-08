@@ -1,8 +1,10 @@
-image: irmb/virtualfluids-python-deps
+image: irmb/virtualfluids-python-deps:latest
 
 stages:
   - build
+  - build_python
   - test
+  - benchmark
   - analyze
   - deploy
   - release
@@ -10,27 +12,6 @@ stages:
 
 ###############################################################################
 ##                                Builds                                     ##
-###############################################################################
-gcc_9_python:
-  stage: build
-
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - _skbuild
-
-  artifacts:
-    paths:
-      - _skbuild/
-      - Python/venv
-
-  before_script:
-    - python3 -m venv --system-site-packages Python/venv
-    - source Python/venv/bin/activate
-
-  script:
-    - python3 setup.py install
-
 ###############################################################################
 .gnu_build_template:
   stage: build
@@ -62,8 +43,8 @@ gcc_9_python:
     - mkdir -p $CI_PROJECT_DIR/$BUILD_FOLDER
     - cd $CI_PROJECT_DIR/$BUILD_FOLDER
     - cmake ..
-      -DBUILD_VF_CPU=ON
-      -DBUILD_VF_GPU=ON
+      --preset=all_make
+      -DCMAKE_CUDA_ARCHITECTURES=60
     - cmake . -LAH
     - make -j4
 
@@ -75,6 +56,7 @@ gcc_9:
   extends: .gnu_build_template
 
 ###############################################################################
+
 clang_10:
   extends: .gnu_build_template
 
@@ -103,11 +85,8 @@ gcc_9_rebuild:
     - cd $CI_PROJECT_DIR/build
     - rm -r -f ./*
     - cmake ..
-      -DBUILD_VF_CPU=ON
-      -DBUILD_VF_GPU=ON
-      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-      -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache
-      -DCMAKE_C_COMPILER_LAUNCHER=ccache
+      --preset=all_make_ccache
+      -DCMAKE_CUDA_ARCHITECTURES=60
     - make -j4  2>&1 | tee gcc_warnings.txt
     - ccache -s
 
@@ -124,19 +103,13 @@ gcc_9_rebuild:
 msvc_16:
   stage: build
 
-  when: manual
-
   tags:
     - win
     - gpu
 
   variables:
-    CMAKE_GENERATOR: "Visual Studio 16 2019"
     BUILD_CONFIGURATION: "Release"
     BUILD_FOLDER: "build"
-    BUILD_VF_CPU: "ON"
-    BUILD_VF_GPU: "ON"
-    BUILD_VF_UNIT_TESTS: "ON"
 
   # add cmake and MSBuild.exe to the path.
   # This Needs to be adapted when moved to a new build machine.
@@ -151,7 +124,7 @@ msvc_16:
     - cd $CI_PROJECT_DIR
     - md -force $env:BUILD_FOLDER
     - cd $env:BUILD_FOLDER
-    - cmake .. -DBUILD_VF_CPU=$env:BUILD_VF_CPU -DBUILD_VF_GPU=$env:BUILD_VF_GPU -DBUILD_VF_UNIT_TESTS=$env:BUILD_VF_UNIT_TESTS -G "$env:CMAKE_GENERATOR" ..
+    - cmake .. --preset=all_msvc
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
 
   cache:
@@ -166,6 +139,11 @@ msvc_16:
 ###############################################################################
 build_singularity_image:
   stage: build
+
+  tags:
+    - priviliged
+    - linux
+
   rules:
     - if: $CI_COMMIT_TAG
 
@@ -174,19 +152,42 @@ build_singularity_image:
       - Containers/VirtualFluidsOpenMPI.sif
 
   script:
-    - singularity build Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
+    - singularity build --fakeroot Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
     - ls -sh Containers/VirtualFluidsOpenMPI.sif
+
+
+###############################################################################
+##                             Build Python                                  ##
+###############################################################################
+
+gcc_9_python:
+  stage: build_python
+
+  needs: ["gcc_9"]
+
+  cache:
+    key: "gcc_9-$CI_COMMIT_REF_SLUG"
+    paths:
+      - $BUILD_FOLDER
+
+  artifacts:
+    paths:
+      - build/
+      - dist/
+
+  script:
+    - python3 setup.py bdist_wheel
 
 ###############################################################################
 ##                                Tests                                      ##
 ###############################################################################
-gcc_9_python_unit_tests:
+gcc_9_unit_tests:
   stage: test
 
-  needs: ["gcc_9_python"]
+  needs: ["gcc_9"]
 
   before_script:
-    - export VF_UNITTESTS=$(find _skbuild -name basicsTests)
+    - export VF_UNITTESTS=$(find build_gcc9 -name basicsTests)
 
   script:
     - $VF_UNITTESTS
@@ -200,7 +201,6 @@ msvc_16_unit_tests:
     - gpu
 
   needs: ["msvc_16"]
-  when: manual
 
   before_script:
     - cd $CI_PROJECT_DIR/build
@@ -214,17 +214,75 @@ gcc_9_python_bindings_test:
 
   needs: ["gcc_9_python"]
 
-  artifacts:
-    when: on_failure
-    paths:
-      - output/mq/mq10000/
-
   before_script:
     - export PYTHONPATH="Python"
-    - source Python/venv/bin/activate
+    - export VF_WHEEL=$(find dist/*.whl)
+    - pip3 install $VF_WHEEL
+    - pip3 install -r Python/requirements.txt
 
   script:
     - python3 -m unittest discover -s Python -v
+
+###############################################################################
+##                            Benchmark                                      ##
+###############################################################################
+nvidia_test:
+  stage: benchmark
+
+  needs: []
+
+  tags:
+    - gpu
+    - linux
+
+  image: nvidia/cuda:11.1.1-devel-ubuntu20.04
+
+  script:
+  - echo NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+  - nvidia-smi
+
+###############################################################################
+gpu_numerical_tests:
+  stage: benchmark
+
+  image: irmb/virtualfluids-deps-ubuntu20.04
+
+  when: manual
+
+  needs: []
+
+  tags:
+    - gpu
+    - linux
+
+  before_script:
+    - cd /tmp
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@git.rz.tu-bs.de/irmb/test_data.git
+    - export CCACHE_BASEDIR=$CI_PROJECT_DIR
+    - export CCACHE_DIR=$CI_PROJECT_DIR/cache
+    - ccache -s
+    - mkdir -p $CI_PROJECT_DIR/build
+    - cd $CI_PROJECT_DIR/build
+    - rm -r -f ./*
+    - cmake ..
+      --preset=gpu_numerical_tests_ccache_make
+      -DCMAKE_CUDA_ARCHITECTURES=60
+      -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu
+    - make -j4
+    - ccache -s
+
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./build/bin/NumericalTests $CI_PROJECT_DIR/apps/gpu/tests/NumericalTests/configK15_nu10tm2.txt 2>&1 | tee -a numerical_tests_gpu_results.txt
+
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - $CI_PROJECT_DIR/cache
+
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/numerical_tests_gpu_results.txt
 
 
 ###############################################################################
@@ -256,6 +314,7 @@ clang_build_analyzer_clang_10:
     - cmake ..
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=ON
+      -DCMAKE_CUDA_ARCHITECTURES=60
       -DUSE_OPENMP=OFF
       -DCMAKE_CXX_FLAGS=-ftime-trace
     - ClangBuildAnalyzer --start .
@@ -291,6 +350,7 @@ include_what_you_use_clang_10:
     - cmake ..
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=ON
+      -DCMAKE_CUDA_ARCHITECTURES=60
       -DUSE_OPENMP=OFF
       -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
     - make
@@ -298,6 +358,9 @@ include_what_you_use_clang_10:
 ###############################################################################
 cppcheck:
   stage: analyze
+
+  only:
+    - develop@irmb/VirtualFluids_dev
 
   image: irmb/virtualfluids-deps-ubuntu20.04
 
@@ -325,6 +388,9 @@ cppcheck:
 lizard:
   stage: analyze
 
+  only:
+    - develop@irmb/VirtualFluids_dev
+
   image: irmb/virtualfluids-python-deps-ubuntu20.04
 
   needs: []
@@ -349,6 +415,9 @@ lizard:
 gcov_gcc_9:
   stage: analyze
 
+  only:
+    - develop@irmb/VirtualFluids_dev
+
   image: irmb/virtualfluids-python-deps-ubuntu20.04
 
   needs: []
@@ -363,10 +432,9 @@ gcov_gcc_9:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      -DBUILD_VF_CPU=ON
-      -DBUILD_VF_GPU=ON
+      --preset=all_make
+      -DCMAKE_CUDA_ARCHITECTURES=60
       -DBUILD_VF_COVERAGE=ON
-      -DBUILD_VF_UNIT_TESTS=ON
     - make -j4
     - ./bin/basicsTests
     - cd ..
@@ -390,6 +458,9 @@ gcov_gcc_9:
 # this job also produces a compile commands json file.
 clang-tidy:
   stage: analyze
+
+  only:
+    - develop@irmb/VirtualFluids_dev
 
   image: irmb/virtualfluids-python-deps-ubuntu20.04
 
@@ -438,7 +509,7 @@ clang-tidy:
 vf_to_phoenix:
   extends: .deploy_template
   stage: deploy
-  needs: ["gcc_9_python"]
+  needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
 
   when: manual
 
@@ -447,7 +518,7 @@ vf_to_phoenix:
     HOST: "phoenix.hlr.rz.tu-bs.de"
 
   script:
-    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook.yml
+    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook_vf_deploy.yml
 
   parallel:
     matrix:
@@ -456,48 +527,38 @@ vf_to_phoenix:
           - y0054816
 
 ###############################################################################
-cppcheck_to_elladan:
+vf_wheel_to_jupyterhub:
   extends: .deploy_template
   stage: deploy
-  needs: ["cppcheck"]
 
-  when: manual
+  only: ["manual"]
 
-  variables:
-    SSH_KEY: "$SSH_PRIVATE_KEY_ELLADAN"
-    HOST: "elladan.irmb.bau.tu-bs.de"
-
-  script:
-    - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_cppcheck.yml
-
-###############################################################################
-gcov_to_elladan:
-  extends: .deploy_template
-  stage: deploy
-  needs: ["gcov_gcc_9"]
-
-  when: manual
+  needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
 
   variables:
-    SSH_KEY: "$SSH_PRIVATE_KEY_ELLADAN"
-    HOST: "elladan.irmb.bau.tu-bs.de"
+    HOST: "finrod.irmb.bau.tu-bs.de"
+    SSH_KEY: "$SSH_PRIVATE_KEY_JUPYTER_HOST_AT_FINROD"
+    REMOTE_USER: "jupyter_host"
+    jupyter_host: "jupyter_host"
 
   script:
-    - ansible-playbook -i ansible/hosts.cfg -u public_pages ansible/playbook_gcov.yml
+    - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook_jupyter_update.yml
 
 ###############################################################################
 # sonar-scanner runs sonar-project.properties
 # the reports in this file needs to match the artifacts.
+# This job only run on the development branch of the parent repository, not on forks!
 sonar-scanner:
   stage: deploy
-  only:
-    refs:
-      - develop
+  tags:
+    - linux
 
-  when: manual
+  only:
+    #- develop
+    - develop@irmb/VirtualFluids_dev
 
   variables:
-    SONAR_HOST_URL: "http://finrod.irmb.bau.tu-bs.de/sonarqube"
+    SONAR_HOST_URL: "http://gitlab-runner01.irmb.bau.tu-bs.de/sonarqube/"
 
   needs: ["cppcheck","clang-tidy","gcov_gcc_9","gcc_9_rebuild"]
 
@@ -507,15 +568,15 @@ sonar-scanner:
     - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
     - unzip sonar-scanner-cli-4.0.0.1744-linux.zip
     - cd sonar-scanner-4.0.0.1744-linux/
-    - echo 'sonar.host.url=http://finrod.irmb.bau.tu-bs.de/sonarqube' >> conf/sonar-scanner.properties
-    - echo 'sonar.sourceEncoding=UTF-8' >> conf/sonar-scanner.properties
+    - echo "sonar.host.url=$SONAR_HOST_URL" >> conf/sonar-scanner.properties
+    - echo "sonar.sourceEncoding=UTF-8" >> conf/sonar-scanner.properties
     - cat conf/sonar-scanner.properties
     - export PATH+=:$(pwd)/bin
     - sonar-scanner -v
 
   script:
     - cd $CI_PROJECT_DIR
-    - sonar-scanner
+    - sonar-scanner -X -Dsonar.verbose=true -Dsonar.login=$SONAR_SECURITY_TOKEN
 
 ###############################################################################
 ##                              Release                                      ##

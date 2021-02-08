@@ -1,7 +1,7 @@
 ##################################################
 #				 GPU Mapping					 #
 ##################################################
-Devices="1"
+Devices="0"
 
 ##################################################
 #	       Basic Simulation Parameter			 #
@@ -86,8 +86,8 @@ NormalizeWith=amplitude
 TaylorGreenVortexUx32=true
 TaylorGreenVortexUx64=true
 TaylorGreenVortexUx128=true
-TaylorGreenVortexUx256=true
-TaylorGreenVortexUx512=true
+TaylorGreenVortexUx256=false
+TaylorGreenVortexUx512=false
 
 TaylorGreenVortexUz32=false
 TaylorGreenVortexUz64=false
@@ -95,11 +95,11 @@ TaylorGreenVortexUz128=false
 TaylorGreenVortexUz256=false
 TaylorGreenVortexUz512=false
 
-ShearWave32=true
-ShearWave64=true
-ShearWave128=true
-ShearWave256=true
-ShearWave512=true
+ShearWave32=false
+ShearWave64=false
+ShearWave128=false
+ShearWave256=false
+ShearWave512=false
 
 ##################################################
 #				Grid Information				 #
