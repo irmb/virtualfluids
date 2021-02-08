@@ -11,7 +11,7 @@ vf_add_library(PRIVATE_LINK ${libsToLink})
 
 linkMPI()
 linkCUDA()
-linkBoost("serialization")
+linkBoost(COMPONENTS "serialization")
 
 #SET(TPN_WIN32 "/EHsc")
 #https://stackoverflow.com/questions/6832666/lnk2019-when-including-asio-headers-solution-generated-with-cmake
