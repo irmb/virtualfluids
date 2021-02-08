@@ -35,7 +35,7 @@ set (VF_ROOT_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
 option(BUILD_VF_CPU "Build VirtualFluids cpu variant" OFF)
 option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 
-option(BUILD_USE_OPENMP "Build VirtualFluids with openmp" OFF)
+option(BUILD_USE_OPENMP "Build VirtualFluids with openmp" ON)
 
 # vf gpu
 option(BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
