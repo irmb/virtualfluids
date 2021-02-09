@@ -141,20 +141,14 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
     datanames.emplace_back("Boundary Conditions");
     datanames.emplace_back("Geometry");
     datanames.emplace_back("Level");
-    // datanames.emplace_back("Interface CF");
 
     data.resize(datanames.size());
 
     SPtr<ILBMKernel> kernel = block->getKernel();
     SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
 
-<<<<<<< HEAD
     // knotennummerierung faengt immer bei 0 an!
-    unsigned int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
-=======
-   //knotennummerierung faengt immer bei 0 an!
-   int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
->>>>>>> add grid refinement for thixotropic fluid
+    int SWB = 0, SEB = 0, NEB = 0, NWB = 0, SWT = 0, SET = 0, NET = 0, NWT = 0;
 
     int minX1 = 0;
     int minX2 = 0;
@@ -203,42 +197,28 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
                     }
 
                     data[2].push_back(level);
-
-                    // if (bcArray->isInterfaceCF(ix1, ix2, ix3))
-                    //{
-                    //   data[3].push_back(1.0);
-                    //}
-                    // else
-                    //{
-                    //   data[3].push_back(0.0);
-                    //}
                 }
             }
-         }
-      }
-   }
+        }
+    }
 
-   maxX1 -= 1;
-   maxX2 -= 1;
-   maxX3 -= 1;
+    maxX1 -= 1;
+    maxX2 -= 1;
+    maxX3 -= 1;
 
-   //cell vector erstellen
-   for (int ix3 = minX3; ix3<=maxX3; ix3++)
-   {
-      for (int ix2 = minX2; ix2<=maxX2; ix2++)
-      {
-         for (int ix1 = minX1; ix1<=maxX1; ix1++)
-         {
-            if ((SWB = nodeNumbers(ix1, ix2, ix3))>=0
-               &&(SEB = nodeNumbers(ix1+1, ix2, ix3))>=0
-               &&(NEB = nodeNumbers(ix1+1, ix2+1, ix3))>=0
-               &&(NWB = nodeNumbers(ix1, ix2+1, ix3))>=0
-               &&(SWT = nodeNumbers(ix1, ix2, ix3+1))>=0
-               &&(SET = nodeNumbers(ix1+1, ix2, ix3+1))>=0
-               &&(NET = nodeNumbers(ix1+1, ix2+1, ix3+1))>=0
-               &&(NWT = nodeNumbers(ix1, ix2+1, ix3+1))>=0)
-            {
-               cells.push_back(makeUbTuple((unsigned int)SWB, (unsigned int)SEB, (unsigned int)NEB, (unsigned int)NWB, (unsigned int)SWT, (unsigned int)SET, (unsigned int)NET, (unsigned int)NWT));
+    // cell vector erstellen
+    for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
+        for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
+            for (int ix1 = minX1; ix1 <= maxX1; ix1++) {
+                if ((SWB = nodeNumbers(ix1, ix2, ix3)) >= 0 && (SEB = nodeNumbers(ix1 + 1, ix2, ix3)) >= 0 &&
+                    (NEB = nodeNumbers(ix1 + 1, ix2 + 1, ix3)) >= 0 && (NWB = nodeNumbers(ix1, ix2 + 1, ix3)) >= 0 &&
+                    (SWT = nodeNumbers(ix1, ix2, ix3 + 1)) >= 0 && (SET = nodeNumbers(ix1 + 1, ix2, ix3 + 1)) >= 0 &&
+                    (NET = nodeNumbers(ix1 + 1, ix2 + 1, ix3 + 1)) >= 0 &&
+                    (NWT = nodeNumbers(ix1, ix2 + 1, ix3 + 1)) >= 0) {
+                    cells.push_back(makeUbTuple((unsigned int)SWB, (unsigned int)SEB, (unsigned int)NEB,
+                                                (unsigned int)NWB, (unsigned int)SWT, (unsigned int)SET,
+                                                (unsigned int)NET, (unsigned int)NWT));
+                }
             }
         }
     }

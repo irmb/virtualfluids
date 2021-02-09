@@ -35,10 +35,6 @@ void VelocityWithDensityBCAlgorithm::applyBC()
 
    for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++)
    {
-      int nX1 = x1 + D3Q27System::DX1[fdir];
-      int nX2 = x2 + D3Q27System::DX2[fdir];
-      int nX3 = x3 + D3Q27System::DX3[fdir];
-
         int nX1 = x1 + D3Q27System::DX1[fdir];
         int nX2 = x2 + D3Q27System::DX2[fdir];
         int nX3 = x3 + D3Q27System::DX3[fdir];

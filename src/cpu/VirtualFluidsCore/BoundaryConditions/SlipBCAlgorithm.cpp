@@ -27,7 +27,7 @@ void SlipBCAlgorithm::applyBC()
     calcMacrosFct(f, drho, vx1, vx2, vx3);
     calcFeqFct(feq, drho, vx1, vx2, vx3);
 
-    UbTupleDouble3 normale = bcPtr->getNormalVector();
+    UbTupleFloat3 normale = bcPtr->getNormalVector();
     LBMReal amp            = vx1 * val<1>(normale) + vx2 * val<2>(normale) + vx3 * val<3>(normale);
 
     vx1 = vx1 - amp * val<1>(normale); // normale zeigt von struktur weg!

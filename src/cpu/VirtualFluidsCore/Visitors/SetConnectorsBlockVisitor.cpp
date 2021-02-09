@@ -89,12 +89,6 @@ void SetConnectorsBlockVisitor::setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<B
 		int ix2 = block->getX2();
 		int ix3 = block->getX3();
 		int level = block->getLevel();
-		//grid->getAllNeighbors(ix1, ix2, ix3, level, level, neighbors);
-
-      //if (block->getGlobalID()==2512)
-      //{
-      //   int test = 0;
-      //}
 
 		for( int dir = 0; dir < dirs; dir++)
 		{
@@ -124,11 +118,6 @@ void SetConnectorsBlockVisitor::setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<B
 			}
 		}
       
-      //if (block->getGlobalID()==2794)
-      //{
-      //   UBLOG(logINFO, block->toString());
-      //}
-		
       int weight = block->getNumberOfLocalConnectorsForSurfaces();
 		weight = 6 - weight;
 		block->addWeightForAll(weight);
