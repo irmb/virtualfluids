@@ -121,6 +121,18 @@
 #include <BoundaryConditions/VelocityBCAdapter.h>
 #include <BoundaryConditions/VelocityBCAlgorithm.h>
 #include <BoundaryConditions/VelocityWithDensityBCAlgorithm.h>
+#include <BoundaryConditions/DensityAndThixotropyBCAlgorithm.h>
+#include <BoundaryConditions/NoSlipAndThixotropyBCAlgorithm.h>
+#include <BoundaryConditions/VelocityAndThixotropyBCAlgorithm.h>
+#include <BoundaryConditions/NonReflectingOutflowAndThixotropyBCAlgorithm.h>
+#include <BoundaryConditions/VelocityWithDensityAndThixotropyBCAlgorithm.h>
+#include <BoundaryConditions/SimpleVelocityBCAlgorithm.h>
+#include <BoundaryConditions/ThixotropyNoSlipBCAlgorithm.h>
+#include <BoundaryConditions/BinghamModelNoSlipBCAlgorithm.h>
+#include <BoundaryConditions/HerschelBulkleyModelNoSlipBCAlgorithm.h>
+#include <BoundaryConditions/SimpleSlipBCAlgorithm.h>
+#include <BoundaryConditions/PowellEyringModelNoSlipBCAlgorithm.h>
+#include <BoundaryConditions/BinghamModelVelocityBCAlgorithm.h>
 
 #include <Connectors/Block3DConnector.h>
 #include <Connectors/Block3DConnectorFactory.h>
@@ -157,10 +169,13 @@
 
 #include <CoProcessors/AdjustForcingCoProcessor.h>
 #include <CoProcessors/CalculateForcesCoProcessor.h>
-#include <CoProcessors/WriteBlocksCoProcessor.h>
+#include <CoProcessors/CalculateTorqueCoProcessor.h>
+#include <CoProcessors/WriteMacroscopicQuantitiesCoProcessor.h>
+#include <CoProcessors/WriteMQFromSelectionCoProcessor.h>
 #include <CoProcessors/WriteBoundaryConditionsCoProcessor.h>
 #include <CoProcessors/WriteMQFromSelectionCoProcessor.h>
 #include <CoProcessors/WriteMacroscopicQuantitiesCoProcessor.h>
+#include <WriteBlocksCoProcessor.h>
 //#include <CoProcessors/PathLineCoProcessor.h>
 //#include <CoProcessors/PathLineCoProcessorMcpart.h>
 #include <CoProcessors/EmergencyExitCoProcessor.h>
@@ -182,8 +197,7 @@
 #include <CoProcessors/MPIIOMigrationCoProcessor.h>
 #include <CoProcessors/MPIIORestartCoProcessor.h>
 #include <CoProcessors/MicrophoneArrayCoProcessor.h>
-#include <CoProcessors/PressureCoefficientCoProcessor.h>
-#include <CoProcessors/TimeAveragedValuesCoProcessor.h>
+#include <WriteThixotropyQuantitiesCoProcessor.h>
 
 #include <IntegrateValuesHelper.h>
 //#include <LBM/D3Q27CompactInterpolationProcessor.h>
@@ -206,7 +220,19 @@
 #include <LBM/LBMKernelETD3Q27BGK.h>
 #include <LBM/LBMSystem.h>
 #include <LBM/LBMUnitConverter.h>
-#include <LBM/VoidLBMKernel.h>
+//#include <LBM/BGKLBMKernel.h>
+#include <LBM/ThixotropyLBMKernel.h>
+#include <LBM/ThixotropyExpLBMKernel.h>
+#include <LBM/CumulantLBMKernel.h>
+#include <LBM/ThixotropyModelLBMKernel.h>
+#include <LBM/ThixotropyModelLBMKernel2.h>
+#include <LBM/BinghamModelLBMKernel.h>
+#include <LBM/HerschelBulkleyModelLBMKernel.h>
+#include <LBM/ThixotropyInterpolationProcessor.h>
+#include <LBM/RheologyK17LBMKernel.h>
+#include <LBM/PowellEyringModelLBMKernel.h>
+
+
 
 #include <geometry3d/CoordinateTransformation3D.h>
 #include <geometry3d/GbCuboid3D.h>
@@ -287,6 +313,14 @@
 #include <Visitors/SetSpongeLayerBlockVisitor.h>
 #include <Visitors/SetUndefinedNodesBlockVisitor.h>
 #include <Visitors/ViscosityBlockVisitor.h>
+#include <Visitors/BoundaryConditionsBlockVisitor.h>
+#include <Visitors/BoundaryConditionsBlockVisitor.h>
+#include <Visitors/ChangeBoundaryDensityBlockVisitor.h>
+#include <InitDistributionsFromFileBlockVisitor.h>
+#include <InitDistributionsWithInterpolationGridVisitor.h>
+#include <InitThixotropyBlockVisitor.h>
+#include <CheckRatioBlockVisitor.h>
+#include <SpongeLayerBlockVisitor.h>
 #include <ZoltanPartitioningGridVisitor.h>
 
 #include <RefineAroundGbObjectHelper.h>

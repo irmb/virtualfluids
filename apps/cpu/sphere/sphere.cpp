@@ -9,110 +9,94 @@ void run(string configname)
 {
    try
    {
-
-      //Sleep(30000);
-
-      string machine = QUOTEME(CAB_MACHINE);
-
       SPtr<Communicator> comm = MPICommunicator::getInstance();
 
       int myid = comm->getProcessID();
       int mybundle = comm->getBundleID();
       int root = comm->getRoot();
 
-      //ConfigFileReader cf(cstr);
-      //if ( !cf.read() )
-      //{
-      //   std::string exceptionText = "Unable to read configuration file\n";
-      //   throw exceptionText;
-      //}
+      //ConfigurationFile config;
+      //config.load(configname);
 
-      //pathname = cf.getValue("path");
-      //availMem = UbSystem::stringTo<double>(cf.getValue("memory"));
-      //string metafile = cf.getValue("metafile");
-      //double outstep = UbSystem::stringTo<double>(cf.getValue("outstep"));
-      //double endstep = UbSystem::stringTo<double>(cf.getValue("endstep"));
-      //int numOfThreads = UbSystem::stringTo<int>(cf.getValue("threads"));
+      //string pathname = config.getValue<string>("path");
+      //double availMem = config.getValue<double>("memory");
+      //string metafile = config.getValue<string>("metafile");
+      //double outstep  = config.getValue<double>("outstep");
+      //double endstep        = config.getValue<double>("endstep");
+      //int numOfThreads      = config.getValue<int>("threads");
+      //const int refineLevel = config.getValue<int>("level");
 
-      ConfigurationFile   config;
-      config.load(configname);
+      string outputPath = "d:/temp/sphereBlock_5_SBB";
+      double availMem = 8e9;
+      double outstep = 10000;
+      double endstep = 1e6;
+      int numOfThreads = 4;
+      omp_set_num_threads(numOfThreads);
+      int refineLevel = 0;
 
-      string pathname = config.getValue<string>("path");
-      double availMem = config.getValue<double>("memory");
-      string metafile = config.getValue<string>("metafile");
-      double outstep  = config.getValue<double>("outstep");
-      double endstep        = config.getValue<double>("endstep");
-      int numOfThreads      = config.getValue<int>("threads");
-      const int refineLevel = config.getValue<int>("level");
-
-      bool test = config.getValue<bool>("test");
-
-      LBMReal radius = 4;
-      LBMReal uLB = 0.1;
+      LBMReal radius = 5;
+      LBMReal uLB = 1e-3;
       LBMReal Re = 1;
       LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = (uLB*2.0*radius)/Re;
-      //LBMReal nuLB = (uLB*L2)/Re;
-      LBMReal nuLB = 0.168666666667/100;
+      LBMReal nuLB = (uLB*2.0*radius)/Re;
 
       double dp_LB = 1e-6;
       double rhoLBinflow = dp_LB*3.0;
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
       noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+      SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
+      slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
       
+      double H = 50;
       mu::Parser fct;
       fct.SetExpr("U");
       fct.DefineConst("U", uLB);
+      //mu::Parser fct;
+      //fct.SetExpr("16*U*x2*x3*(H-x2)*(H-x3)/H^4");
+      //fct.DefineConst("U", uLB);
+      //fct.DefineConst("H", H);
       SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-      velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+      //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+      velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
 
       SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
       denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
 
       BoundaryConditionsBlockVisitor bcVisitor;
       bcVisitor.addBC(noSlipBCAdapter);
+      bcVisitor.addBC(slipBCAdapter);
       bcVisitor.addBC(velBCAdapter);
       bcVisitor.addBC(denBCAdapter);
 
-      SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
-
       double dx = 1;
 
-      const int blocknx1 = 8;
-      const int blocknx2 = 8;
-      const int blocknx3 = 8;
+      const int blocknx1 = 50;
+      const int blocknx2 = 50;
+      const int blocknx3 = 50;
 
-      const int gridNx1 = 4;//18;
-      const int gridNx2 = 4;// 11;
-      const int gridNx3 = 4;// 11;
+      const int gridNx1 = 150;
+      const int gridNx2 = H;
+      const int gridNx3 = H;
 
-      //const int blocknx1 = 40;
-      //const int blocknx2 = 40;
-      //const int blocknx3 = 40;
+      double L1, L2, L3;
+      L1 = gridNx1;
+      L2 = gridNx2;
+      L3 = gridNx3;
 
-      //const int gridNx1 = 2;
-      //const int gridNx2 = 2;
-      //const int gridNx3 = 2;
-
-      double L1 = gridNx1*blocknx1;
-      double L2, L3;
-      L2 = gridNx2*blocknx1;
-      L3 = gridNx3*blocknx1;
-
-
+      SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
       SPtr<Grid3D> grid(new Grid3D(comm));
       grid->setDeltaX(dx);
       grid->setBlockNX(blocknx1, blocknx2, blocknx3);
 
-      //////////////////////////////////////////////////////////////////////////
-      //restart
-      SPtr<UbScheduler> restartSch(new UbScheduler(100000, 100000, 100000));
-      RestartCoProcessor rp(grid, restartSch, comm, pathname, RestartCoProcessor::BINARY);
-      //////////////////////////////////////////////////////////////////////////
+      //sphere
+      //SPtr<GbObject3D> sphere(new GbSphere3D(L1 * 0.5, L2 * 0.5, L3 * 0.5, radius));
+      SPtr<GbObject3D> sphere(new GbSphere3D(75, 25, 25, radius));
+      GbSystem3D::writeGeoObject(sphere.get(), outputPath + "/geo/sphere", WbWriterVtkXmlBinary::getInstance());
+      SPtr<D3Q27Interactor> sphereInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(sphere, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
-      if (grid->getTimeStep() == 0)
+      if (true)
       {
 
          const int baseLevel = 0;
@@ -142,70 +126,54 @@ void run(string configname)
          }
 
          SPtr<GbObject3D> gridCube(new GbCuboid3D(d_minX1, d_minX2, d_minX3, d_maxX1, d_maxX2, d_maxX3));
-         if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), outputPath + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
          GenBlocksGridVisitor genBlocks(gridCube);
          grid->accept(genBlocks);
 
-         //sphere
-         //SPtr<GbObject3D> sphereRef(new GbSphere3D(L1/4.0, L2*0.5, L3*0.5, radius+1.0));
-         //GbSystem3D::writeGeoObject(sphereRef.get(),pathname + "/geo/sphereRef", WbWriterVtkXmlBinary::getInstance());
-
-         
-         //sphere
-         SPtr<GbObject3D> sphere(new GbSphere3D(L1 / 2.0, L2*0.5, L3*0.5, radius));
-         //SPtr<GbObject3D> sphere(new GbSphere3D(L1/2.0-4.0, L2*0.5+4.0, L3*0.5+4.0, radius));
-         //SPtr<GbObject3D> sphere(new GbCuboid3D(L1/4.0-radius, L2/2.0-radius, L3/2.0-radius, L1/4.0+radius, L2/2.0+radius, L3/2.0+radius));
-         GbSystem3D::writeGeoObject(sphere.get(), pathname + "/geo/sphere", WbWriterVtkXmlBinary::getInstance());
-
          double off = 0.0;
          SPtr<GbObject3D> refCube(new GbCuboid3D(sphere->getX1Minimum() - off, sphere->getX2Minimum() - off, sphere->getX3Minimum(),
             sphere->getX1Maximum() + off, sphere->getX2Maximum() + off, sphere->getX3Maximum()));
-         if (myid == 0) GbSystem3D::writeGeoObject(refCube.get(), pathname + "/geo/refCube", WbWriterVtkXmlBinary::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(refCube.get(), outputPath + "/geo/refCube", WbWriterVtkXmlBinary::getInstance());
 
          if (refineLevel > 0)
          {
             if (myid == 0) UBLOG(logINFO, "Refinement - start");
             RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
-            refineHelper.addGbObject(sphere, refineLevel);
-            //refineHelper.addGbObject(refCube, refineLevel);
+            //refineHelper.addGbObject(sphere, refineLevel);
+            refineHelper.addGbObject(refCube, refineLevel);
             refineHelper.refine();
             if (myid == 0) UBLOG(logINFO, "Refinement - end");
          }
 
          //walls
          GbCuboid3DPtr addWallYmin(new GbCuboid3D(d_minX1 - 4.0*blockLength, d_minX2 - 4.0*blockLength, d_minX3 - 4.0*blockLength, d_maxX1 + 4.0*blockLength, d_minX2, d_maxX3 + 4.0*blockLength));
-         if (myid == 0) GbSystem3D::writeGeoObject(addWallYmin.get(), pathname + "/geo/addWallYmin", WbWriterVtkXmlASCII::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(addWallYmin.get(), outputPath + "/geo/addWallYmin", WbWriterVtkXmlASCII::getInstance());
 
          GbCuboid3DPtr addWallZmin(new GbCuboid3D(d_minX1 - 4.0*blockLength, d_minX2 - 4.0*blockLength, d_minX3 - 4.0*blockLength, d_maxX1 + 4.0*blockLength, d_maxX2 + 4.0*blockLength, d_minX3));
-         if (myid == 0) GbSystem3D::writeGeoObject(addWallZmin.get(), pathname + "/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(addWallZmin.get(), outputPath + "/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
 
          GbCuboid3DPtr addWallYmax(new GbCuboid3D(d_minX1 - 4.0*blockLength, d_maxX2, d_minX3 - 4.0*blockLength, d_maxX1 + 4.0*blockLength, d_maxX2 + 4.0*blockLength, d_maxX3 + 4.0*blockLength));
-         if (myid == 0) GbSystem3D::writeGeoObject(addWallYmax.get(), pathname + "/geo/addWallYmax", WbWriterVtkXmlASCII::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(addWallYmax.get(), outputPath + "/geo/addWallYmax", WbWriterVtkXmlASCII::getInstance());
 
          GbCuboid3DPtr addWallZmax(new GbCuboid3D(d_minX1 - 4.0*blockLength, d_minX2 - 4.0*blockLength, d_maxX3, d_maxX1 + 4.0*blockLength, d_maxX2 + 4.0*blockLength, d_maxX3 + 4.0*blockLength));
-         if (myid == 0) GbSystem3D::writeGeoObject(addWallZmax.get(), pathname + "/geo/addWallZmax", WbWriterVtkXmlASCII::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(addWallZmax.get(), outputPath + "/geo/addWallZmax", WbWriterVtkXmlASCII::getInstance());
 
          //inflow
          GbCuboid3DPtr geoInflow(new GbCuboid3D(d_minX1 - 4.0*blockLength, d_minX2 - 4.0*blockLength, d_minX3 - 4.0*blockLength, d_minX1, d_maxX2 + 4.0*blockLength, d_maxX3 + 4.0*blockLength));
-         if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), outputPath + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
 
          //outflow
          GbCuboid3DPtr geoOutflow(new GbCuboid3D(d_maxX1, d_minX2 - 4.0*blockLength, d_minX3 - 4.0*blockLength, d_maxX1 + 4.0*blockLength, d_maxX2 + 4.0*blockLength, d_maxX3 + 4.0*blockLength));
-         if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), outputPath + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
-         WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-
-
-
-         //sphere
-         SPtr<D3Q27Interactor> sphereInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(sphere, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
 
          //walls
-         SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, slipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, slipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, slipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, slipBCAdapter, Interactor3D::SOLID));
 
          mu::Parser fct;
          fct.SetExpr("U");
@@ -223,7 +191,7 @@ void run(string configname)
 
          SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
          InteractorsHelper intHelper(grid, metisVisitor);
-         //intHelper.addInteractor(sphereInt);
+         intHelper.addInteractor(sphereInt);
          intHelper.addInteractor(addWallYminInt);
          intHelper.addInteractor(addWallZminInt);
          intHelper.addInteractor(addWallYmaxInt);
@@ -232,19 +200,9 @@ void run(string configname)
          intHelper.addInteractor(outflowInt);
          intHelper.selectBlocks();
 
-         //domain decomposition for threads
-         PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-         grid->accept(pqPartVisitor);
-
-
-         //set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-         grid->accept(setConnsVisitor);
-
-         //Block3DSPtr<ConnectorFactory> factory(new Block3DConnectorFactory());
-         //ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
-         //grid->accept(setConnsVisitor);
+         ////domain decomposition for threads
+         //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
+         //grid->accept(pqPartVisitor);
 
          ppblocks->process(0);
          ppblocks.reset();
@@ -265,7 +223,8 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
          }
 
-         SPtr<LBMKernel> kernel(new IncompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, IncompressibleCumulantLBMKernel::NORMAL));
+         SPtr<LBMKernel> kernel(new IncompressibleCumulantLBMKernel());
+         //SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel());
 
          SPtr<BCProcessor> bcProcessor(new BCProcessor());
 
@@ -292,51 +251,57 @@ void run(string configname)
          fctRoh.DefineConst("l", d_maxX1 - d_minX1);
 
          //initialization of distributions
-         InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
+         InitDistributionsBlockVisitor initVisitor;
          initVisitor.setVx1(fct);
          //initVisitor.setRho(fctRoh);
          grid->accept(initVisitor);
 
          //Postrozess
          SPtr<UbScheduler> geoSch(new UbScheduler(1));
-         WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
-            new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+         SPtr<CoProcessor> ppgeo(
+            new WriteBoundaryConditionsCoProcessor(grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm));
          ppgeo->process(0);
-         ppgeo.reset();;
+         ppgeo.reset();
 
          if (myid == 0) UBLOG(logINFO, "Preprozess - end");
       }
       else
       {
          UBLOG(logINFO, "SetConnectors - start, id=" << myid);
-
-         //set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-         //D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-         SPtr<ConnectorFactory> cFactory(new Block3DConnectorFactory());
-         ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, cFactory);
-         grid->accept(setConnsVisitor);
-
-         UBLOG(logINFO, "SetConnectors - end, id=" << myid);
       }
+
+      
+
+      UBLOG(logINFO, "SetConnectors - start, id=" << myid);
+      //set connectors
+      SPtr<InterpolationProcessor> iProcessor(new  IncompressibleOffsetInterpolationProcessor());
+      //SPtr<CompressibleOffsetMomentsInterpolationProcessor> iProcessor(new  CompressibleOffsetMomentsInterpolationProcessor());
+      SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+      grid->accept(setConnsVisitor);
+      UBLOG(logINFO, "SetConnectors - end, id=" << myid);
 
       SPtr<UbScheduler> stepSch(new UbScheduler(outstep));
       //stepSch->addSchedule(10000, 0, 1000000);
-      WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv,comm);
+      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, outputPath, WbWriterVtkXmlBinary::getInstance(), conv,comm));
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
+      SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
-      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endstep, calculatorFactory, CalculatorType::HYBRID));
+      double area = UbMath::PI * radius * radius;
+      SPtr<UbScheduler> forceSch(new UbScheduler(100));
+      SPtr<CalculateForcesCoProcessor> fp = make_shared<CalculateForcesCoProcessor>(grid, forceSch, outputPath + "/forces/forces.txt", comm, uLB, area);
+      fp->addInteractor(sphereInt);
 
-      if (myid == 0)
-         UBLOG(logINFO, "Simulation-start");
+      SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endstep));
+      calculator->addCoProcessor(npr);
+      calculator->addCoProcessor(fp);
+      calculator->addCoProcessor(writeMQCoProcessor);
 
-      calculation->calculate();
 
-      if (myid == 0)
-         UBLOG(logINFO, "Simulation-end");
+      if (myid == 0) UBLOG(logINFO, "Simulation-start");
+      calculator->calculate();
+      if (myid == 0) UBLOG(logINFO, "Simulation-end");
 
    }
    catch (std::exception& e)
@@ -359,14 +324,15 @@ int main(int argc, char* argv[])
 {
    if (argv != NULL)
    {
-      if (argv[1] != NULL)
-      {
-         run(string(argv[1]));
-      }
-      else
-      {
-         cout << "Configuration file is missing!" << endl;
-      }
+      //if (argv[1] != NULL)
+      //{
+      //   run(string(argv[1]));
+      //}
+      //else
+      //{
+      //   cout << "Configuration file is missing!" << endl;
+      //}
+      run("sphere");
    }
 }
 

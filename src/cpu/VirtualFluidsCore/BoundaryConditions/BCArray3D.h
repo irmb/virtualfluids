@@ -35,7 +35,7 @@
 #define BCArray_H
 
 #include "BoundaryConditions.h"
-#include "basics/container/CbArray3D.h"
+#include "CbArray3D.h"
 
 #include <typeinfo>
 

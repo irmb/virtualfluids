@@ -141,7 +141,6 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
     datanames.emplace_back("Boundary Conditions");
     datanames.emplace_back("Geometry");
     datanames.emplace_back("Level");
-    // datanames.emplace_back("Interface CF");
 
     data.resize(datanames.size());
 
@@ -149,7 +148,7 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
     SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
 
     // knotennummerierung faengt immer bei 0 an!
-    unsigned int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
+    int SWB = 0, SEB = 0, NEB = 0, NWB = 0, SWT = 0, SET = 0, NET = 0, NWT = 0;
 
     int minX1 = 0;
     int minX2 = 0;
@@ -198,15 +197,6 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
                     }
 
                     data[2].push_back(level);
-
-                    // if (bcArray->isInterfaceCF(ix1, ix2, ix3))
-                    //{
-                    //   data[3].push_back(1.0);
-                    //}
-                    // else
-                    //{
-                    //   data[3].push_back(0.0);
-                    //}
                 }
             }
         }
@@ -225,7 +215,9 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
                     (SWT = nodeNumbers(ix1, ix2, ix3 + 1)) >= 0 && (SET = nodeNumbers(ix1 + 1, ix2, ix3 + 1)) >= 0 &&
                     (NET = nodeNumbers(ix1 + 1, ix2 + 1, ix3 + 1)) >= 0 &&
                     (NWT = nodeNumbers(ix1, ix2 + 1, ix3 + 1)) >= 0) {
-                    cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
+                    cells.push_back(makeUbTuple((unsigned int)SWB, (unsigned int)SEB, (unsigned int)NEB,
+                                                (unsigned int)NWB, (unsigned int)SWT, (unsigned int)SET,
+                                                (unsigned int)NET, (unsigned int)NWT));
                 }
             }
         }

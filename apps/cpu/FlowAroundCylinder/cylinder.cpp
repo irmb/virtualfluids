@@ -259,9 +259,9 @@ void run(string configname)
 
          intHelper.setBC();
 
-         //domain decomposition
-         PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-         grid->accept(pqPartVisitor);
+         ////domain decomposition
+         //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
+         //grid->accept(pqPartVisitor);
 
          //initialization of distributions
          InitDistributionsBlockVisitor initVisitor;
@@ -297,10 +297,11 @@ void run(string configname)
 
 	  SPtr<CoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
-      //double area = (2.0*radius*H)/(dx*dx);
-      //double v    = 4.0*uLB/9.0;
-      //CalculateForcesCoProcessor fp(grid, stepSch, pathOut + "/results/forces.txt", comm, v, area);
-      //fp.addInteractor(cylinderInt);
+      double area = (2.0*radius*H)/(dx*dx);
+      double v    = 4.0*uLB/9.0;
+      SPtr<UbScheduler> forceSch(new UbScheduler(100));
+      SPtr<CalculateForcesCoProcessor> fp = make_shared<CalculateForcesCoProcessor>(grid, forceSch, pathOut + "/results/forces.txt", comm, v, area);
+      fp->addInteractor(cylinderInt);
 
 	  SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
 	  std::shared_ptr<CoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
@@ -309,7 +310,9 @@ void run(string configname)
 	  SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
 	  SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
 	  calculator->addCoProcessor(nupsCoProcessor);
-	  calculator->addCoProcessor(writeMQCoProcessor);
+     calculator->addCoProcessor(fp);
+     calculator->addCoProcessor(writeMQCoProcessor);
+
       if(myid == 0) UBLOG(logINFO,"Simulation-start");
 	  calculator->calculate();
       if(myid == 0) UBLOG(logINFO,"Simulation-end");

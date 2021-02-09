@@ -40,7 +40,17 @@
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "Grid3DSystem.h"
-#include "LBMKernel.h"
+#include "BCAdapter.h"
+#include "Block3D.h"
+#include "BCArray3D.h"
+#include "ILBMKernel.h"
+
+#include "DensityAndThixotropyBCAlgorithm.h"
+#include "VelocityAndThixotropyBCAlgorithm.h"
+#include "NoSlipAndThixotropyBCAlgorithm.h"
+#include "NonReflectingOutflowAndThixotropyBCAlgorithm.h"
+#include "VelocityWithDensityAndThixotropyBCAlgorithm.h"
+
 
 BoundaryConditionsBlockVisitor::BoundaryConditionsBlockVisitor() : Block3DVisitor(0, Grid3DSystem::MAXLEVEL) {}
 //////////////////////////////////////////////////////////////////////////
@@ -91,6 +101,23 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
                                 bca->setNodeIndex(x1, x2, x3);
                                 bca->setBcPointer(bcPtr);
                                 bca->addDistributions(distributions);
+
+                                if (alg == BCAlgorithm::VelocityAndThixotropyBCAlgorithm)
+                                    std::static_pointer_cast<VelocityAndThixotropyBCAlgorithm>(bca)->addDistributionsH(
+                                        kernel->getDataSet()->getHdistributions());
+                                if (alg == BCAlgorithm::DensityAndThixotropyBCAlgorithm)
+                                    std::static_pointer_cast<DensityAndThixotropyBCAlgorithm>(bca)->addDistributionsH(
+                                        kernel->getDataSet()->getHdistributions());
+                                if (alg == BCAlgorithm::NoSlipAndThixotropyBCAlgorithm)
+                                    std::static_pointer_cast<NoSlipAndThixotropyBCAlgorithm>(bca)->addDistributionsH(
+                                        kernel->getDataSet()->getHdistributions());
+                                if (alg == BCAlgorithm::NonReflectingOutflowAndThixotropyBCAlgorithm)
+                                    std::static_pointer_cast<NonReflectingOutflowAndThixotropyBCAlgorithm>(bca)
+                                        ->addDistributionsH(kernel->getDataSet()->getHdistributions());
+                                if (alg == BCAlgorithm::VelocityWithDensityAndThixotropyBCAlgorithm)
+                                    std::static_pointer_cast<VelocityWithDensityAndThixotropyBCAlgorithm>(bca)
+                                        ->addDistributionsH(kernel->getDataSet()->getHdistributions());
+
                                 bca->setCollFactor(collFactor);
                                 bca->setCompressible(compressible);
                                 bca->setBcArray(bcArray);

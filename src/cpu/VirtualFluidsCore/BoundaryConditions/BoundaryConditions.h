@@ -46,17 +46,28 @@
 //! Difenition of baundary conditions in grid generation
 class BoundaryConditions
 {
+    // public:
+    //   enum BcAlgorithm{VelocityBC, SlipBC, NoSlipBC, ThinWallNoSlipBC, HighViscosityNoSlipBC, EqDensityBC,
+    //   NonEqDensityBC, NonReflectingVelocityBC, NonReflectingDensityBC};
 public:
     BoundaryConditions()
-
+        : noslipBoundaryFlags(0), slipBoundaryFlags(0), velocityBoundaryFlags(0), densityBoundaryFlags(0),
+          wallModelBoundaryFlags(0), bcVelocityX1(0.0f), bcVelocityX2(0.0f), bcVelocityX3(0.0f), bcDensity(0.0f)
+          //, bcThixotropy(0.0f)
+          ,
+          bcLodiDensity(0.0f), bcLodiVelocityX1(0.0f), bcLodiVelocityX2(0.0f), bcLodiVelocityX3(0.0f),
+          bcLodiLentgh(0.0f), nx1(0.0f), nx2(0.0f), nx3(0.0f), algorithmType(-1)
     {
+        // wenn folgendes nicht geht, dann hat man weiter unten bei der bit-geschichte ein ernstes problem!!!
         UB_STATIC_ASSERT(sizeof(long long) >= 8);
+        // UB_STATIC_ASSERT( sizeof(double) >= 16);
+        // UB_STATIC_ASSERT( sizeof(long long) == 32);
         UB_STATIC_ASSERT((sizeof(long long) * 8) >= (D3Q27System::FENDDIR + 1) * BoundaryConditions::optionDigits);
 
         for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++)
             q[fdir] = -999.;
     }
-    virtual ~BoundaryConditions() = default;
+    virtual ~BoundaryConditions() {}
 
     virtual bool isEmpty()
     {
@@ -83,9 +94,9 @@ protected:
         if ((secOpt + 1) > maxOptionVal)
             throw UbException(UB_EXARGS, "error: option > " + UbSystem::toString(maxOptionVal - 1));
 
-        // all digits at the respective positions to "0"
+        // alle digits an den betreffenden postionen auf "0"
         flag &= ~(maxOptionVal << (direction * optionDigits));
-        // set all digits according to the flag at the respective positions
+        // alle digitsan den betreffenden postionen entsprechend der marke setzen
         flag |= ((long long)(secOpt + 1) << (direction * optionDigits));
     }
 
@@ -150,13 +161,13 @@ public:
     {
         return (short)(((slipBoundaryFlags >> (optionDigits * direction)) & maxOptionVal) - 1);
     }
-    void setNormalVector(const LBMReal &nx1, const LBMReal &nx2, const LBMReal &nx3)
+    void setNormalVector(const float &nx1, const float &nx2, const float &nx3)
     {
         this->nx1 = nx1;
         this->nx2 = nx2;
         this->nx3 = nx3;
     }
-    UbTupleDouble3 getNormalVector() { return makeUbTuple(nx1, nx2, nx3); }
+    UbTupleFloat3 getNormalVector() { return makeUbTuple(nx1, nx2, nx3); }
 
     /*============== Velocity Boundary ========================*/
     void setVelocityBoundaryFlag(const int &direction, const short &secOpt = 0)
@@ -181,72 +192,73 @@ public:
 
     void setBoundaryVelocity(const Vector3D &vx)
     {
-        setBoundaryVelocityX1((LBMReal)vx[0]);
-        setBoundaryVelocityX2((LBMReal)vx[1]);
-        setBoundaryVelocityX3((LBMReal)vx[2]);
+        setBoundaryVelocityX1((float)vx[0]);
+        setBoundaryVelocityX2((float)vx[1]);
+        setBoundaryVelocityX3((float)vx[2]);
     }
-    void setBoundaryVelocityX1(const LBMReal &vx1) { this->bcVelocityX1 = vx1; }
-    void setBoundaryVelocityX2(const LBMReal &vx2) { this->bcVelocityX2 = vx2; }
-    void setBoundaryVelocityX3(const LBMReal &vx3) { this->bcVelocityX3 = vx3; }
-    LBMReal getBoundaryVelocityX1() { return this->bcVelocityX1; }
-    LBMReal getBoundaryVelocityX2() { return this->bcVelocityX2; }
-    LBMReal getBoundaryVelocityX3() { return this->bcVelocityX3; }
-    LBMReal getBoundaryVelocity(const int &direction)
+    void setBoundaryVelocityX1(const float &vx1) { this->bcVelocityX1 = vx1; }
+    void setBoundaryVelocityX2(const float &vx2) { this->bcVelocityX2 = vx2; }
+    void setBoundaryVelocityX3(const float &vx3) { this->bcVelocityX3 = vx3; }
+    float getBoundaryVelocityX1() { return this->bcVelocityX1; }
+    float getBoundaryVelocityX2() { return this->bcVelocityX2; }
+    float getBoundaryVelocityX3() { return this->bcVelocityX3; }
+    float getBoundaryVelocity(const int &direction)
     {
         switch (direction) {
             case D3Q27System::E:
-                return (LBMReal)(UbMath::c4o9 *
-                                 (+bcVelocityX1)); //(2/cs^2)(=6)*rho_0(=1 for incompressible)*wi*u*ei with cs=1/sqrt(3)
+                return (float)(UbMath::c4o9 *
+                               (+bcVelocityX1)); //(2/cs^2)(=6)*rho_0(=1 bei inkompr)*wi*u*ei mit cs=1/sqrt(3)
             case D3Q27System::W:
-                return (LBMReal)(UbMath::c4o9 * (-bcVelocityX1));
+                return (float)(UbMath::c4o9 *
+                               (-bcVelocityX1)); // z.B. aus paper manfred MRT LB models in three dimensions (2002)
             case D3Q27System::N:
-                return (LBMReal)(UbMath::c4o9 * (+bcVelocityX2));
+                return (float)(UbMath::c4o9 * (+bcVelocityX2));
             case D3Q27System::S:
-                return (LBMReal)(UbMath::c4o9 * (-bcVelocityX2));
+                return (float)(UbMath::c4o9 * (-bcVelocityX2));
             case D3Q27System::T:
-                return (LBMReal)(UbMath::c4o9 * (+bcVelocityX3));
+                return (float)(UbMath::c4o9 * (+bcVelocityX3));
             case D3Q27System::B:
-                return (LBMReal)(UbMath::c4o9 * (-bcVelocityX3));
+                return (float)(UbMath::c4o9 * (-bcVelocityX3));
             case D3Q27System::NE:
-                return (LBMReal)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX2));
+                return (float)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX2));
             case D3Q27System::SW:
-                return (LBMReal)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX2));
+                return (float)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX2));
             case D3Q27System::SE:
-                return (LBMReal)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX2));
+                return (float)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX2));
             case D3Q27System::NW:
-                return (LBMReal)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX2));
+                return (float)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX2));
             case D3Q27System::TE:
-                return (LBMReal)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX3));
+                return (float)(UbMath::c1o9 * (+bcVelocityX1 + bcVelocityX3));
             case D3Q27System::BW:
-                return (LBMReal)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX3));
+                return (float)(UbMath::c1o9 * (-bcVelocityX1 - bcVelocityX3));
             case D3Q27System::BE:
-                return (LBMReal)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX3));
+                return (float)(UbMath::c1o9 * (+bcVelocityX1 - bcVelocityX3));
             case D3Q27System::TW:
-                return (LBMReal)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX3));
+                return (float)(UbMath::c1o9 * (-bcVelocityX1 + bcVelocityX3));
             case D3Q27System::TN:
-                return (LBMReal)(UbMath::c1o9 * (+bcVelocityX2 + bcVelocityX3));
+                return (float)(UbMath::c1o9 * (+bcVelocityX2 + bcVelocityX3));
             case D3Q27System::BS:
-                return (LBMReal)(UbMath::c1o9 * (-bcVelocityX2 - bcVelocityX3));
+                return (float)(UbMath::c1o9 * (-bcVelocityX2 - bcVelocityX3));
             case D3Q27System::BN:
-                return (LBMReal)(UbMath::c1o9 * (+bcVelocityX2 - bcVelocityX3));
+                return (float)(UbMath::c1o9 * (+bcVelocityX2 - bcVelocityX3));
             case D3Q27System::TS:
-                return (LBMReal)(UbMath::c1o9 * (-bcVelocityX2 + bcVelocityX3));
+                return (float)(UbMath::c1o9 * (-bcVelocityX2 + bcVelocityX3));
             case D3Q27System::TNE:
-                return (LBMReal)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
+                return (float)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
             case D3Q27System::BSW:
-                return (LBMReal)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
+                return (float)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
             case D3Q27System::BNE:
-                return (LBMReal)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
+                return (float)(UbMath::c1o36 * (+bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
             case D3Q27System::TSW:
-                return (LBMReal)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
+                return (float)(UbMath::c1o36 * (-bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
             case D3Q27System::TSE:
-                return (LBMReal)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
+                return (float)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 + bcVelocityX3));
             case D3Q27System::BNW:
-                return (LBMReal)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
+                return (float)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 - bcVelocityX3));
             case D3Q27System::BSE:
-                return (LBMReal)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
+                return (float)(UbMath::c1o36 * (+bcVelocityX1 - bcVelocityX2 - bcVelocityX3));
             case D3Q27System::TNW:
-                return (LBMReal)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
+                return (float)(UbMath::c1o36 * (-bcVelocityX1 + bcVelocityX2 + bcVelocityX3));
             default:
                 throw UbException(UB_EXARGS, "unknown error");
         }
@@ -273,44 +285,44 @@ public:
         return (short)(((densityBoundaryFlags >> (optionDigits * direction)) & maxOptionVal) - 1);
     }
 
-    void setBoundaryDensity(LBMReal density) { this->bcDensity = density; }
-    LBMReal getBoundaryDensity() { return this->bcDensity; }
+    void setBoundaryDensity(float density) { this->bcDensity = density; }
+    float getBoundaryDensity() { return this->bcDensity; }
 
-    // Lodi extension
-    void setDensityLodiDensity(const LBMReal &bcLodiDensity) { this->bcLodiDensity = bcLodiDensity; }
-    void setDensityLodiVelocityX1(const LBMReal &bcLodiVelocityX1) { this->bcLodiVelocityX1 = bcLodiVelocityX1; }
-    void setDensityLodiVelocityX2(const LBMReal &bcLodiVelocityX2) { this->bcLodiVelocityX2 = bcLodiVelocityX2; }
-    void setDensityLodiVelocityX3(const LBMReal &bcLodiVelocityX3) { this->bcLodiVelocityX3 = bcLodiVelocityX3; }
-    void setDensityLodiLength(const LBMReal &bcLodiLentgh) { this->bcLodiLentgh = bcLodiLentgh; }
-    LBMReal getDensityLodiDensity() const { return this->bcLodiDensity; }
-    LBMReal getDensityLodiVelocityX1() const { return this->bcLodiVelocityX1; }
-    LBMReal getDensityLodiVelocityX2() const { return this->bcLodiVelocityX2; }
-    LBMReal getDensityLodiVelocityX3() const { return this->bcLodiVelocityX3; }
-    LBMReal getDensityLodiLength() const { return this->bcLodiLentgh; }
+    ////Lodi extension
+    void setDensityLodiDensity(const float &bcLodiDensity) { this->bcLodiDensity = bcLodiDensity; }
+    void setDensityLodiVelocityX1(const float &bcLodiVelocityX1) { this->bcLodiVelocityX1 = bcLodiVelocityX1; }
+    void setDensityLodiVelocityX2(const float &bcLodiVelocityX2) { this->bcLodiVelocityX2 = bcLodiVelocityX2; }
+    void setDensityLodiVelocityX3(const float &bcLodiVelocityX3) { this->bcLodiVelocityX3 = bcLodiVelocityX3; }
+    void setDensityLodiLength(const float &bcLodiLentgh) { this->bcLodiLentgh = bcLodiLentgh; }
+    float getDensityLodiDensity() const { return this->bcLodiDensity; }
+    float getDensityLodiVelocityX1() const { return this->bcLodiVelocityX1; }
+    float getDensityLodiVelocityX2() const { return this->bcLodiVelocityX2; }
+    float getDensityLodiVelocityX3() const { return this->bcLodiVelocityX3; }
+    float getDensityLodiLength() const { return this->bcLodiLentgh; }
 
-    LBMReal &densityLodiDensity() { return this->bcLodiDensity; }
-    LBMReal &densityLodiVelocityX1() { return this->bcLodiVelocityX1; }
-    LBMReal &densityLodiVelocityX2() { return this->bcLodiVelocityX2; }
-    LBMReal &densityLodiVelocityX3() { return this->bcLodiVelocityX3; }
-    LBMReal &densityLodiLentgh() { return this->bcLodiLentgh; }
+    float &densityLodiDensity() { return this->bcLodiDensity; }
+    float &densityLodiVelocityX1() { return this->bcLodiVelocityX1; }
+    float &densityLodiVelocityX2() { return this->bcLodiVelocityX2; }
+    float &densityLodiVelocityX3() { return this->bcLodiVelocityX3; }
+    float &densityLodiLentgh() { return this->bcLodiLentgh; }
 
-    const LBMReal &densityLodiDensity() const { return this->bcLodiDensity; }
-    const LBMReal &densityLodiVelocityX1() const { return this->bcLodiVelocityX1; }
-    const LBMReal &densityLodiVelocityX2() const { return this->bcLodiVelocityX2; }
-    const LBMReal &densityLodiVelocityX3() const { return this->bcLodiVelocityX3; }
-    const LBMReal &densityLodiLentgh() const { return this->bcLodiLentgh; }
+    const float &densityLodiDensity() const { return this->bcLodiDensity; }
+    const float &densityLodiVelocityX1() const { return this->bcLodiVelocityX1; }
+    const float &densityLodiVelocityX2() const { return this->bcLodiVelocityX2; }
+    const float &densityLodiVelocityX3() const { return this->bcLodiVelocityX3; }
+    const float &densityLodiLentgh() const { return this->bcLodiLentgh; }
 
     /*======================= Qs =============================*/
-    void setQ(const LBMReal &val, const int &direction) { q[direction] = val; }
-    LBMReal getQ(const int &direction) { return q[direction]; }
+    void setQ(const float &val, const int &direction) { q[direction] = val; }
+    float getQ(const int &direction) { return q[direction]; }
 
     virtual std::vector<std::string> getBCNames()
     {
         std::vector<std::string> tmp;
-        tmp.emplace_back("NoSlipBC");
-        tmp.emplace_back("SlipBC");
-        tmp.emplace_back("VelocityBC");
-        tmp.emplace_back("DensityBC");
+        tmp.push_back("NoSlipBC");
+        tmp.push_back("SlipBC");
+        tmp.push_back("VelocityBC");
+        tmp.push_back("DensityBC");
         return tmp;
     }
     virtual std::vector<long long> getBCFlags()
@@ -332,37 +344,41 @@ public:
     char getBcAlgorithmType() { return algorithmType; }
 
 public:
-    static const int optionDigits = 2;   //--> 2 bits for secondary Option --> maxOptionVal = 7
+    static const int optionDigits =
+        2; //--> 3 bits fr secondary Option --> maxOptionVal = 7, da man mit drei Digits max die 7 darstellen kann
     static const long long maxOptionVal; // = ( 1<<optionDigits ) - 1; //2^3-1 -> 7
 
 protected:
-    LBMReal q[D3Q27System::FENDDIR + 1];
+    float q[D3Q27System::FENDDIR + 1];
+    // float q[D3Q27System::STARTF+1];
 
-    long long noslipBoundaryFlags{ 0 };
-    long long slipBoundaryFlags{ 0 };
-    long long velocityBoundaryFlags{ 0 };
-    long long densityBoundaryFlags{ 0 };
-    long long wallModelBoundaryFlags{ 0 };
+    long long noslipBoundaryFlags;
+    long long slipBoundaryFlags;
+    long long velocityBoundaryFlags;
+    long long densityBoundaryFlags;
+    long long wallModelBoundaryFlags;
 
-    LBMReal bcVelocityX1{ 0.0f };
-    LBMReal bcVelocityX2{ 0.0f };
-    LBMReal bcVelocityX3{ 0.0f };
-    LBMReal bcDensity{ 0.0f };
+    float bcVelocityX1;
+    float bcVelocityX2;
+    float bcVelocityX3;
+    float bcDensity;
+    // float  bcThixotropy;
 
-    LBMReal bcLodiDensity{ 0.0f };
-    LBMReal bcLodiVelocityX1{ 0.0f };
-    LBMReal bcLodiVelocityX2{ 0.0f };
-    LBMReal bcLodiVelocityX3{ 0.0f };
-    LBMReal bcLodiLentgh{ 0.0f };
+    float bcLodiDensity;
+    float bcLodiVelocityX1;
+    float bcLodiVelocityX2;
+    float bcLodiVelocityX3;
+    float bcLodiLentgh;
 
-    LBMReal nx1{ 0.0f }, nx2{ 0.0f }, nx3{ 0.0f };
+    float nx1, nx2, nx3;
 
-    char algorithmType{ -1 };
+    char algorithmType;
 
 private:
     friend class MPIIORestartCoProcessor;
     friend class MPIIOMigrationCoProcessor;
     friend class MPIIOMigrationBECoProcessor;
 };
+
 
 #endif

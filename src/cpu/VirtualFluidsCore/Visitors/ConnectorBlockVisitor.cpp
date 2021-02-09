@@ -1,3 +1,36 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file SetConnectorsBlockVisitor.cpp
+//! \ingroup Visitors
+//! \author Konstantin Kutscher
+//=======================================================================================
+
 #include "ConnectorBlockVisitor.h"
 #include "Communicator.h"
 #include "ConnectorFactory.h"
@@ -29,18 +62,11 @@ void ConnectorBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
     if (grid->getFinestInitializedLevel() > grid->getCoarsestInitializedLevel())
         setInterpolationConnectors(grid, block);
 
-    if (block->getGlobalID() == 2234) {
-        UBLOG(logINFO, block->toString());
-    }
-
     UBLOG(logDEBUG5, "ConnectorBlockVisitor::visit() - end");
 }
 //////////////////////////////////////////////////////////////////////////
 void ConnectorBlockVisitor::setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
-    if (block->getGlobalID() == 2234) {
-        UBLOG(logINFO, block->toString());
-    }
     UBLOG(logDEBUG5, "ConnectorBlockVisitor::setSameLevelConnectors() - start");
     int blockRank = block->getRank();
     if (gridRank == blockRank && block->isActive()) {
@@ -67,9 +93,6 @@ void ConnectorBlockVisitor::setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<Block
         }
     }
     UBLOG(logDEBUG5, "ConnectorBlockVisitor::setSameLevelConnectors() - end");
-    if (block->getGlobalID() == 2234) {
-        UBLOG(logINFO, block->toString());
-    }
 }
 //////////////////////////////////////////////////////////////////////////
 void ConnectorBlockVisitor::setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir)
@@ -88,9 +111,6 @@ void ConnectorBlockVisitor::setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block
 //////////////////////////////////////////////////////////////////////////
 void ConnectorBlockVisitor::setInterpolationConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
-    if (block->getGlobalID() == 2234) {
-        UBLOG(logINFO, block->toString());
-    }
     UBLOG(logDEBUG5, "ConnectorBlockVisitor::setInterpolationConnectors() - start");
     //   int blockRank = block->getRank();
 

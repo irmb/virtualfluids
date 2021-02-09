@@ -1,5 +1,6 @@
 #include "StringUtil.h"
 
+#include <string.h>
 #include <regex>
 #include <sstream>
 
