@@ -1,9 +1,9 @@
+project(GridGenerator LANGUAGES CUDA CXX)
 
 
 vf_add_library(PRIVATE_LINK basics)
 vf_get_library_name(library_name)
 
-linkCUDA()
 linkOpenMP(${library_name})
 
 

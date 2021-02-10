@@ -1,3 +1,4 @@
+project(VirtualFluids_GPU LANGUAGES CUDA CXX)
 
 IF(MSVC)
     set(libsToLink ws2_32 GridGenerator basics Traffic) # ws_32 throws an error on Phoenix
@@ -10,7 +11,6 @@ ENDIF(MSVC)
 vf_add_library(PRIVATE_LINK ${libsToLink})
 
 linkMPI()
-linkCUDA()
 linkBoost(COMPONENTS "serialization")
 
 #SET(TPN_WIN32 "/EHsc")

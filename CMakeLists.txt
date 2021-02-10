@@ -106,6 +106,10 @@ if(BUILD_VF_GPU)
 
     message("CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
 
+    set(CUDA_CUT_INCLUDE_DIR "${VF_THIRD_DIR}/cuda_samples/")
+    include_directories(${CUDA_CUT_INCLUDE_DIR})
+    include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+
     include (gpu.cmake)
 endif()
 
