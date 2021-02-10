@@ -706,15 +706,14 @@ usage: ...
       static inline void calcDistanceToNeighbors(std::vector<double>& distNeigh, const double& deltaX1)
       {
          //distNeigh.resize(FENDDIR+1, UbMath::sqrt2*deltaX1);
-         double sqrt3 = UbMath::sqrt3;
-         double sqrt2 = UbMath::sqrt2;
+
          distNeigh[E] = distNeigh[W] = distNeigh[N] = deltaX1;
          distNeigh[S] = distNeigh[T] = distNeigh[B] = deltaX1;
-         distNeigh[NE] = distNeigh[NW] = distNeigh[SW] = distNeigh[SE] = sqrt2 * deltaX1;
-         distNeigh[TE] = distNeigh[TN] = distNeigh[TW] = distNeigh[TS] = sqrt2 * deltaX1;
-         distNeigh[BE] = distNeigh[BN] = distNeigh[BW] = distNeigh[BS] = sqrt2 * deltaX1;
-         distNeigh[TNE] = distNeigh[TNW] = distNeigh[TSE] = distNeigh[TSW] = sqrt3 * deltaX1;
-         distNeigh[BNE] = distNeigh[BNW] = distNeigh[BSE] = distNeigh[BSW] = sqrt3 * deltaX1;
+         distNeigh[NE] = distNeigh[NW] = distNeigh[SW] = distNeigh[SE] = UbMath::sqrt2 * deltaX1;
+         distNeigh[TE] = distNeigh[TN] = distNeigh[TW] = distNeigh[TS] = UbMath::sqrt2 * deltaX1;
+         distNeigh[BE] = distNeigh[BN] = distNeigh[BW] = distNeigh[BS] = UbMath::sqrt2 * deltaX1;
+         distNeigh[TNE] = distNeigh[TNW] = distNeigh[TSE] = distNeigh[TSW] = UbMath::sqrt3 * deltaX1;
+         distNeigh[BNE] = distNeigh[BNW] = distNeigh[BSE] = distNeigh[BSW] = UbMath::sqrt3 * deltaX1;
       }
       //////////////////////////////////////////////////////////////////////////
       static inline void calcDistanceToNeighbors(std::vector<double>& distNeigh, const double& deltaX1, const double& deltaX2, const double& deltaX3)
