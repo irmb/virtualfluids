@@ -66,7 +66,7 @@ void ThixotropyFullDirectConnector::sendVectors()
 	nonLocalDistributionsToh = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hTo)->getNonLocalDistributions();
 	zeroDistributionsToh = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hTo)->getZeroDistributions();
 
-	bool con = /*(from.lock()->getGlobalID()==11) &&*/ (to.lock()->getGlobalID() == 1);
+	//bool con = /*(from.lock()->getGlobalID()==11) &&*/ (to.lock()->getGlobalID() == 1);
 
 	//EAST
 	if (sendDir == D3Q27System::E)

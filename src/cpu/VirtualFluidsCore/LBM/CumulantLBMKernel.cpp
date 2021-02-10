@@ -20,11 +20,6 @@ CumulantLBMKernel::CumulantLBMKernel()
    this->OxxPyyPzz = 1.0;
 }
 //////////////////////////////////////////////////////////////////////////
-CumulantLBMKernel::~CumulantLBMKernel(void)
-{
-
-}
-//////////////////////////////////////////////////////////////////////////
 void CumulantLBMKernel::initDataSet()
 {
    SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9));
@@ -1069,10 +1064,6 @@ void CumulantLBMKernel::initData()
       muForcingX1.DefineVar("nu", &muNu);
       muForcingX2.DefineVar("nu", &muNu);
       muForcingX3.DefineVar("nu", &muNu);
-
-      LBMReal forcingX1 = 0;
-      LBMReal forcingX2 = 0;
-      LBMReal forcingX3 = 0;
    }
    localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
    nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
@@ -1431,7 +1422,7 @@ void CumulantLBMKernel::nodeCollision(int step, int x1, int x2, int x3)
    //////////////////////////////
    LBMReal OxyyPxzz = one;//three  * (two - omega) / (three  - omega);//
    //LBMReal OxyyMxzz = one;//six    * (two - omega) / (six    - omega);//
-   LBMReal Oxyz = one;//twelve * (two - omega) / (twelve + omega);//
+   //LBMReal Oxyz = one;//twelve * (two - omega) / (twelve + omega);//
    //////////////////////////////
    //LBMReal OxyyPxzz  = two-omega;//
    //LBMReal OxyyMxzz  = two-omega;//

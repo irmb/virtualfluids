@@ -72,7 +72,6 @@ void SimpleVelocityBCAlgorithm::applyBC()
       if (bcPtr->hasVelocityBoundaryFlag(fdir))
       {
          const int invDir = D3Q27System::INVDIR[fdir];
-         LBMReal q = bcPtr->getQ(invDir);
          LBMReal velocity = bcPtr->getBoundaryVelocity(invDir);
          LBMReal fReturn = f[invDir] - velocity;
          distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);

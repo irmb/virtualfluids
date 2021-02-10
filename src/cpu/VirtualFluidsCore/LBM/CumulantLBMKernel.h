@@ -18,10 +18,10 @@ public:
    enum Parameter { NORMAL, MAGIC };
 public:
    CumulantLBMKernel();
-   virtual ~CumulantLBMKernel(void);
+   virtual ~CumulantLBMKernel() = default;
    //virtual void calculate(int step);
-   SPtr<LBMKernel> clone();
-   double getCalculationTime();
+   SPtr<LBMKernel> clone() override;
+   double getCalculationTime() override;
    void setBulkOmegaToOmega(bool value);
    void setRelaxationParameter(Parameter p);
 protected:

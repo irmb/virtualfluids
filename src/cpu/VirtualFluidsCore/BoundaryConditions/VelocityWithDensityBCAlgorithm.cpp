@@ -25,7 +25,7 @@ void VelocityWithDensityBCAlgorithm::applyBC()
 {
    //velocity bc for non reflecting pressure bc
    LBMReal f[D3Q27System::ENDF+1];
-   LBMReal feq[D3Q27System::ENDF+1];
+   //LBMReal feq[D3Q27System::ENDF+1];
    distributions->getDistributionInv(f, x1, x2, x3);
    LBMReal rho, vx1, vx2, vx3, drho;
    calcMacrosFct(f, drho, vx1, vx2, vx3);

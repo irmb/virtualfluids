@@ -19,8 +19,8 @@ public:
 public:
    RheologyK17LBMKernel();
    virtual ~RheologyK17LBMKernel(void);
-   virtual void calculate(int step);
-   virtual SPtr<LBMKernel> clone();
+   virtual void calculate(int step) override;
+   virtual SPtr<LBMKernel> clone() override;
    double getCalculationTime() override;
    //! The value should not be equal to a shear viscosity
    void setBulkViscosity(LBMReal value);

@@ -110,13 +110,12 @@ void WriteThixotropyQuantitiesCoProcessor::clearData()
 //////////////////////////////////////////////////////////////////////////
 void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
-	UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
-	UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
+	UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);;
 	UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
 	double         dx = grid->getDeltaX(block);
 
-	double level = (double)block->getLevel();
-	double blockID = (double)block->getGlobalID();
+	//double level = (double)block->getLevel();
+	//double blockID = (double)block->getGlobalID();
 
 	//Diese Daten werden geschrieben:
 	datanames.resize(0);

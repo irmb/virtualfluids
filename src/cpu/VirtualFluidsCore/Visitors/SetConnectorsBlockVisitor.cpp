@@ -143,11 +143,6 @@ void SetConnectorsBlockVisitor::setRemoteConnectors(SPtr<Block3D> sblock, SPtr<B
 void SetConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    UBLOG(logDEBUG5, "D3Q27SetConnectorsBlockVisitor::setInterpolationConnectors() - start");
-	int blockRank = block->getRank();
-	if (block->getGlobalID()==394)
-	{
-		int test=0;
-	}
 
 	//search for all blocks with different ranks
 	if (block->hasInterpolationFlagCF() && block->isActive())
@@ -490,8 +485,6 @@ void SetConnectorsBlockVisitor::createTransmitters(SPtr<Block3D> cBlock, SPtr<Bl
 {
    UBLOG(logDEBUG5, "D3Q27SetConnectorsBlockVisitor::createTransmitters(...) - start");
 	CreateTransmittersHelper helper;
-	bool MPIpool = true;
-	bool orthogonal = false;
 	int fBlockRank = fBlock->getRank();
 	int cBlockRank = cBlock->getRank();
 	if(fBlockRank == cBlockRank && fBlockRank == gridRank)

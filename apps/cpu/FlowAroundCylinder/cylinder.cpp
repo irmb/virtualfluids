@@ -73,7 +73,7 @@ void run(string configname)
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
-      const int baseLevel = 0;
+//      const int baseLevel = 0;
 
       SPtr<Grid3D> grid(new Grid3D(comm));
 

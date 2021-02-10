@@ -49,10 +49,6 @@ void BasicLBMKernel::calculate(int step)
          {
             if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3))
             {
-               int x1p = x1 + 1;
-               int x2p = x2 + 1;
-               int x3p = x3 + 1;
-
                nodeCollision(step, x1, x2, x3);
             }
          }

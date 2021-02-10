@@ -1,4 +1,4 @@
-#ifndef BasicLBMKernell_h__
+#ifndef BasicLBMKernel_h__
 #define BasicLBMKernel_h__
 
 #include "LBMKernel.h"

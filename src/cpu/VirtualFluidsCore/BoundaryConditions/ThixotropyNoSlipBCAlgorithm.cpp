@@ -2,13 +2,6 @@
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
 
-ThixotropyNoSlipBCAlgorithm::ThixotropyNoSlipBCAlgorithm()
-{
-}
-//////////////////////////////////////////////////////////////////////////
-ThixotropyNoSlipBCAlgorithm::~ThixotropyNoSlipBCAlgorithm()
-{
-}
 //////////////////////////////////////////////////////////////////////////
 void ThixotropyNoSlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {

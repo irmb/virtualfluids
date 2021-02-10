@@ -12,8 +12,6 @@ void run(string configname)
       SPtr<Communicator> comm = MPICommunicator::getInstance();
 
       int myid = comm->getProcessID();
-      int mybundle = comm->getBundleID();
-      int root = comm->getRoot();
 
       //ConfigurationFile config;
       //config.load(configname);
@@ -41,7 +39,7 @@ void run(string configname)
       LBMReal nuLB = (uLB*2.0*radius)/Re;
 
       double dp_LB = 1e-6;
-      double rhoLBinflow = dp_LB*3.0;
+//      double rhoLBinflow = dp_LB*3.0;
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
       noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
@@ -98,9 +96,6 @@ void run(string configname)
 
       if (true)
       {
-
-         const int baseLevel = 0;
-
          //bounding box
          double d_minX1 = 0.0;
          double d_minX2 = 0.0;

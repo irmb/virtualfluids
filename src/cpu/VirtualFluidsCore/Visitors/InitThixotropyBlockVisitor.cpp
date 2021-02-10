@@ -221,7 +221,7 @@ void InitThixotropyBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> bl
 
    if(!block) UB_THROW( UbException(UB_EXARGS,"block is not exist") );
 
-   double dx = grid->getDeltaX(block);
+//   double dx = grid->getDeltaX(block);
 
    //define vars for functions
    mu::value_type x1,x2,x3;
@@ -235,8 +235,6 @@ void InitThixotropyBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> bl
    //Funktionszeiger
    typedef void (*CalcFeqsFct)(LBMReal* const& /*feq[27]*/,const LBMReal& /*(d)rho*/,const LBMReal& /*vx1*/,const LBMReal& /*vx2*/,const LBMReal& /*vx3*/);
    CalcFeqsFct   calcFeqsFct   = NULL;
-   
-   LBMReal vx1,vx2,vx3,rho;
 
    int gridRank = grid->getRank();
    int blockRank = block->getRank();
@@ -255,13 +253,7 @@ void InitThixotropyBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> bl
       SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
       SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getHdistributions();  
 
-      LBMReal o  = kernel->getCollisionFactor();
-
       LBMReal h[D3Q27System::ENDF+1];
-
-      size_t nx1 = distributions->getNX1();
-      size_t nx2 = distributions->getNX2();
-      size_t nx3 = distributions->getNX3();
 
       for(int ix3=0; ix3<bcArray->getNX3(); ix3++)
          for(int ix2=0; ix2<bcArray->getNX2(); ix2++)

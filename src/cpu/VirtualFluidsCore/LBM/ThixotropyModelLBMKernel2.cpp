@@ -131,9 +131,9 @@ void ThixotropyModelLBMKernel2::calculate(int step)
 
 						LBMReal m0, m1, m2;
 
-						LBMReal rho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
-							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
-							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
+//						LBMReal rho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+//							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
+//							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
 						LBMReal vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 							(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
@@ -479,12 +479,12 @@ void ThixotropyModelLBMKernel2::calculate(int step)
 						LBMReal dyuy = dxux + collFactorF * c3o2 * mxxMyy;
 						LBMReal dzuz = dxux + collFactorF * c3o2 * mxxMzz;
 
-						LBMReal Dxy = -three * collFactorF * mfbba;
-						LBMReal Dxz = -three * collFactorF * mfbab;
-						LBMReal Dyz = -three * collFactorF * mfabb;
+//						LBMReal Dxy = -three * collFactorF * mfbba;
+//						LBMReal Dxz = -three * collFactorF * mfbab;
+//						LBMReal Dyz = -three * collFactorF * mfabb;
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 						//non Newtonian fluid collision factor
-						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+//						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
 
 						LBMReal shearFactor = sqrt(c1o2 * ((mfcaa - mfaaa * c1o3) * (mfcaa - mfaaa * c1o3) + (mfaca - mfaaa * c1o3) * (mfaca - mfaaa * c1o3) + (mfaac - mfaaa * c1o3) * (mfaac - mfaaa * c1o3)) + mfbba * mfbba + mfbab * mfbab + mfabb * mfabb) + UbMath::Epsilon<LBMReal>::val();
 

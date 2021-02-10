@@ -13,7 +13,7 @@ class WriteThixotropyQuantitiesCoProcessor : public  CoProcessor
 public:
 	WriteThixotropyQuantitiesCoProcessor();
 	WriteThixotropyQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, SPtr<Communicator> comm);
-	~WriteThixotropyQuantitiesCoProcessor() {}
+	~WriteThixotropyQuantitiesCoProcessor() = default;
 
    void process(double step) override;
 
@@ -31,12 +31,12 @@ private:
    std::string path;
    WbWriter* writer;
    SPtr<LBMUnitConverter> conv;
-   bool bcInformation;
+//   bool bcInformation;
    std::vector<std::vector<SPtr<Block3D> > > blockVector;
    int minInitLevel;
    int maxInitLevel;
    int gridRank;
    SPtr<Communicator> comm;
-	double ConcentrationSum;
+//	double ConcentrationSum;
 };
 #endif

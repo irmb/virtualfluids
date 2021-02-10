@@ -26,9 +26,6 @@ void RheologicalVelocityBCAlgorithm::applyBC()
    calcMacrosFct(f, drho, vx1, vx2, vx3);
    calcFeqFct(feq, drho, vx1, vx2, vx3);
 
-   LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
-   LBMReal collFactorF = getThyxotropyCollFactor(collFactor, shearRate, drho);
-
    rho = 1.0+drho*compressibleFactor;
 
    for (int fdir = D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)

@@ -81,7 +81,6 @@ void VelocityWithDensityAndThixotropyBCAlgorithm::applyBC()
          if (bcArray->isSolid(nX1,nX2,nX3))
          {
             const int invDir = D3Q27System::INVDIR[fdir];
-            LBMReal q =1.0;// bcPtr->getQ(invDir);// m+m q=0 stabiler
             LBMReal velocity = bcPtr->getBoundaryVelocity(fdir);
 
             LBMReal fReturn = (f[fdir] + f[invDir] - velocity*rho) / 2.0 - drho*D3Q27System::WEIGTH[invDir];
@@ -91,7 +90,6 @@ void VelocityWithDensityAndThixotropyBCAlgorithm::applyBC()
       
       if (bcPtr->hasVelocityBoundaryFlag(fdir))
       {
-         const int invDir = D3Q27System::INVDIR[fdir];
          LBMReal htemp = D3Q27System::getCompFeqForDirection(fdir, lambda, vx1, vx2, vx3);
          htemp = D3Q27System::getCompFeqForDirection(fdir, lambdaBC, vx1, vx2, vx3) + h[fdir] - htemp;
          distributionsH->setDistributionForDirection(htemp, nx1, nx2, nx3, fdir);
