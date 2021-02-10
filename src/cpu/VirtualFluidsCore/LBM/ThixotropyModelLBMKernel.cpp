@@ -8,6 +8,8 @@
 
 #define PROOF_CORRECTNESS
 
+using namespace UbMath;
+
 ThixotropyModelLBMKernel::ThixotropyModelLBMKernel() : forcingX1(0), forcingX2(0), forcingX3(0)
 {
    compressible = false;

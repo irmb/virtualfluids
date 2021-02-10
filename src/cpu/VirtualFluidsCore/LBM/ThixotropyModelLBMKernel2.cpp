@@ -7,7 +7,10 @@
 #include "LBMKernel.h"
 #include "Thixotropy.h"
 
-#define PROOF_CORRECTNESS
+#define PROOF_CORRECTNES
+
+using namespace UbMath;
+
 
 ThixotropyModelLBMKernel2::ThixotropyModelLBMKernel2() : forcingX1(0), forcingX2(0), forcingX3(0)
 {

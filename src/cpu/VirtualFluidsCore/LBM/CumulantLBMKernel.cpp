@@ -8,6 +8,8 @@
 
 #define PROOF_CORRECTNESS
 
+using namespace UbMath;
+
 //////////////////////////////////////////////////////////////////////////
 CumulantLBMKernel::CumulantLBMKernel()
 {
@@ -60,7 +62,7 @@ SPtr<LBMKernel> CumulantLBMKernel::clone()
    }
    else
    {
-      dynamicPointerCast<CumulantLBMKernel>(kernel)->OxxPyyPzz = one;
+      dynamicPointerCast<CumulantLBMKernel>(kernel)->OxxPyyPzz = UbMath::one;
    }
    return kernel;
 }
@@ -1139,7 +1141,7 @@ void CumulantLBMKernel::nodeCollision(int step, int x1, int x2, int x3)
       (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
       ((mfabb + mfcbb) + (mfbab + mfbcb)) + (mfbba + mfbbc)) + mfbbb;
 
-   LBMReal rho = one + drho;
+   LBMReal rho = UbMath::one + drho;
    ////////////////////////////////////////////////////////////////////////////////////
    LBMReal vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
       (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +

@@ -10,6 +10,8 @@
 
 #define PROOF_CORRECTNESS
 
+using namespace UbMath;
+
 //////////////////////////////////////////////////////////////////////////
 RheologyK17LBMKernel::RheologyK17LBMKernel()
 {
