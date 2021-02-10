@@ -229,7 +229,7 @@ function(vf_add_library)
         target_include_directories(${library_name} PRIVATE "${VF_THIRD_DIR}/cuda_samples/")
         target_include_directories(${library_name} PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
     endif()
-    
+
     status("... configuring target: ${library_name} (type=${ARG_BUILDTYPE}) done")
 
     unset(CMAKE_CXX_CLANG_TIDY)

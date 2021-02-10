@@ -37,6 +37,7 @@ option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 
 option(BUILD_USE_OPENMP "Build VirtualFluids with openmp" ON)
 
+
 # vf gpu
 option(BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
 option(BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF )
@@ -60,11 +61,10 @@ else()
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
-option(USE_OPENMP "Include OpenMP support" ON)
-
 option(BUILD_VF_PYTHON_BINDINGS "" OFF)
 
 option(BUILD_VF_DOUBLE_ACCURACY "Use double accuracy" OFF)
+
 
 #################################################################################
 #  MACROS
@@ -79,6 +79,13 @@ ENDIF()
 #################################################################################
 #  COMMON LIBRARIES
 #################################################################################
+if(BUILD_USE_OPENMP)
+    find_package(OpenMP REQUIRED)
+endif()
+
+find_package(MPI REQUIRED)
+
+
 add_subdirectory(src/basics)
 
 #################################################################################

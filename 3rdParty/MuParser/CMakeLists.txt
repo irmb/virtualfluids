@@ -44,7 +44,9 @@ add_library(muparser
         src/muParserTokenReader.cpp
         )
 
-linkOpenMP(muparser)
+if(BUILD_USE_OPENMP)
+   target_link_libraries(muparser PUBLIC OpenMP::OpenMP_CXX)
+endif()
 target_include_directories(muparser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # this compiles the "DLL" interface (C API)
@@ -60,7 +62,7 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
     target_compile_definitions(muparser PRIVATE _DEBUG)
 endif ()
 
-if(USE_OPENMP)
+if(BUILD_USE_OPENMP)
     target_compile_definitions(muparser PRIVATE MUP_USE_OPENMP)
 endif()
 set_target_properties(muparser PROPERTIES
