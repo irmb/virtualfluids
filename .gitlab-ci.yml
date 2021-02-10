@@ -315,7 +315,6 @@ clang_build_analyzer_clang_10:
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=ON
       -DCMAKE_CUDA_ARCHITECTURES=60
-      -DUSE_OPENMP=OFF
       -DCMAKE_CXX_FLAGS=-ftime-trace
     - ClangBuildAnalyzer --start .
     - make
@@ -351,7 +350,6 @@ include_what_you_use_clang_10:
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=ON
       -DCMAKE_CUDA_ARCHITECTURES=60
-      -DUSE_OPENMP=OFF
       -DBUILD_VF_INCLUDE_WHAT_YOU_USE=ON
     - make
 
