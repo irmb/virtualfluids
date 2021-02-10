@@ -173,8 +173,6 @@ usage: ...
       extern const int DX3[ENDDIR + 1];
       extern const double WEIGTH[ENDDIR + 1];
 
-      extern const double cNorm[3][ENDDIR];
-
       //static const int ZERO /*f0 */ = 0;
       //static const int E    /*f1 */ = 1;
       //static const int W    /*f2 */ = 2;
@@ -286,30 +284,6 @@ usage: ...
       static const int ET_BNW = 11;
       static const int ET_TSW = 12;
       static const int ET_BNE = 12;
-
-      static const int M_RHO = 0;
-      static const int M_EN = 1;
-      static const int M_EPS = 2;
-      static const int M_JX1 = 3;
-      static const int M_QX1 = 4;
-      static const int M_JX2 = 5;
-      static const int M_QX2 = 6;
-      static const int M_JX3 = 7;
-      static const int M_QX3 = 8;
-      static const int M_3PX1X1 = 9;
-      static const int M_3PIX1X1 = 10;
-      static const int M_PWW = 11;
-      static const int M_PIWW = 12;
-      static const int M_PX1X2 = 13;
-      static const int M_PX2X3 = 14;
-      static const int M_PX1X3 = 15;
-      static const int M_MX1 = 16;
-      static const int M_MX2 = 17;
-      static const int M_MX3 = 18;
-
-      static const int STARTM = 0;
-      static const int ENDM = 18;   //D3Q27
-
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -751,8 +725,6 @@ usage: ...
       static inline void calcDistanceToNeighbors(std::vector<double>& distNeigh, const double& deltaX1, const double& deltaX2, const double& deltaX3)
       {
          //distNeigh.resize(FENDDIR+1, UbMath::sqrt2*deltaX1);
-         double sqrt3 = UbMath::sqrt3;
-         double sqrt2 = UbMath::sqrt2;
          distNeigh[E] = distNeigh[W] = deltaX1;
          distNeigh[N] = distNeigh[S] = deltaX2;
          distNeigh[T] = distNeigh[B] = deltaX3;
@@ -888,8 +860,6 @@ usage: ...
          vx2 = vvx * vvx;
          vy2 = vvy * vvy;
          vz2 = vvz * vvz;
-         ////////////////////////////////////////////////////////////////////////////////////
-         LBMReal qudricLimit = 0.01;
          ////////////////////////////////////////////////////////////////////////////////////
          //Hin
          ////////////////////////////////////////////////////////////////////////////////////
@@ -1121,42 +1091,39 @@ usage: ...
          // Cumulants
          ////////////////////////////////////////////////////////////////////////////////////
          LBMReal OxxPyyPzz = 1.; //omega2 or bulk viscosity
-         LBMReal OxyyPxzz = 1.;//-s9;//2+s9;//
-                          //LBMReal OxyyMxzz  = 1.;//2+s9;//
-         LBMReal O4 = 1.;
-         LBMReal O5 = 1.;
-         LBMReal O6 = 1.;
+         // LBMReal OxyyPxzz = 1.;//-s9;//2+s9;//
+         // LBMReal OxyyMxzz  = 1.;//2+s9;//
 
          //Cum 4.
          //LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + 2. * mfbba * mfbab); // till 18.05.2015
          //LBMReal CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + 2. * mfbba * mfabb); // till 18.05.2015
          //LBMReal CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + 2. * mfbab * mfabb); // till 18.05.2015
 
-         LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + 2. * mfbba * mfbab);
-         LBMReal CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
-         LBMReal CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
+         // LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + 2. * mfbba * mfbab);
+         // LBMReal CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
+         // LBMReal CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
 
-         LBMReal CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
-         LBMReal CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
-         LBMReal CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
+         // LBMReal CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
+         // LBMReal CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
+         // LBMReal CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
 
          //Cum 5.
-         LBMReal CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
-         LBMReal CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
-         LBMReal CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
+         // LBMReal CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
+         // LBMReal CUMcbc = mfcbc - (mfaac * mfcba + mfcaa * mfabc + 4. * mfbab * mfbbb + 2. * (mfabb * mfcab + mfbba * mfbac)) - c1o3 * (mfcba + mfabc) * oMdrho;
+         // LBMReal CUMccb = mfccb - (mfcaa * mfacb + mfaca * mfcab + 4. * mfbba * mfbbb + 2. * (mfbab * mfbca + mfabb * mfcba)) - c1o3 * (mfacb + mfcab) * oMdrho;
 
          //Cum 6.
-         LBMReal CUMccc = mfccc + ((-4. * mfbbb * mfbbb
-            - (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-            - 4. * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-            - 2. * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
-            + (4. * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-               + 2. * (mfcaa * mfaca * mfaac)
-               + 16. * mfbba * mfbab * mfabb)
-            - c1o3 * (mfacc + mfcac + mfcca) * oMdrho - c1o9 * oMdrho * oMdrho
-            - c1o9 * (mfcaa + mfaca + mfaac) * oMdrho * (1. - 2. * oMdrho) - c1o27 * oMdrho * oMdrho * (-2. * oMdrho)
-            + (2. * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
-               + (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa)) * c2o3 * oMdrho) + c1o27 * oMdrho;
+//         LBMReal CUMccc = mfccc + ((-4. * mfbbb * mfbbb
+//            - (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
+//            - 4. * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+//            - 2. * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb))
+//            + (4. * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+//               + 2. * (mfcaa * mfaca * mfaac)
+//               + 16. * mfbba * mfbab * mfabb)
+//            - c1o3 * (mfacc + mfcac + mfcca) * oMdrho - c1o9 * oMdrho * oMdrho
+//            - c1o9 * (mfcaa + mfaca + mfaac) * oMdrho * (1. - 2. * oMdrho) - c1o27 * oMdrho * oMdrho * (-2. * oMdrho)
+//            + (2. * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+//               + (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa)) * c2o3 * oMdrho) + c1o27 * oMdrho;
 
 
          LBMReal mxxPyyPzz = mfcaa + mfaca + mfaac;
