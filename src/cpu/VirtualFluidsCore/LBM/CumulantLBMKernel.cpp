@@ -8,6 +8,8 @@
 
 #define PROOF_CORRECTNESS
 
+using namespace UbMath;
+
 //////////////////////////////////////////////////////////////////////////
 CumulantLBMKernel::CumulantLBMKernel()
 {
@@ -16,11 +18,6 @@ CumulantLBMKernel::CumulantLBMKernel()
    this->OxyyMxzz = 1.0;
    this->bulkOmegaToOmega = false;
    this->OxxPyyPzz = 1.0;
-}
-//////////////////////////////////////////////////////////////////////////
-CumulantLBMKernel::~CumulantLBMKernel(void)
-{
-
 }
 //////////////////////////////////////////////////////////////////////////
 void CumulantLBMKernel::initDataSet()
@@ -60,7 +57,7 @@ SPtr<LBMKernel> CumulantLBMKernel::clone()
    }
    else
    {
-      dynamicPointerCast<CumulantLBMKernel>(kernel)->OxxPyyPzz = one;
+      dynamicPointerCast<CumulantLBMKernel>(kernel)->OxxPyyPzz = UbMath::one;
    }
    return kernel;
 }
@@ -1067,10 +1064,6 @@ void CumulantLBMKernel::initData()
       muForcingX1.DefineVar("nu", &muNu);
       muForcingX2.DefineVar("nu", &muNu);
       muForcingX3.DefineVar("nu", &muNu);
-
-      LBMReal forcingX1 = 0;
-      LBMReal forcingX2 = 0;
-      LBMReal forcingX3 = 0;
    }
    localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
    nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
@@ -1139,7 +1132,7 @@ void CumulantLBMKernel::nodeCollision(int step, int x1, int x2, int x3)
       (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
       ((mfabb + mfcbb) + (mfbab + mfbcb)) + (mfbba + mfbbc)) + mfbbb;
 
-   LBMReal rho = one + drho;
+   LBMReal rho = UbMath::one + drho;
    ////////////////////////////////////////////////////////////////////////////////////
    LBMReal vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
       (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
@@ -1429,7 +1422,7 @@ void CumulantLBMKernel::nodeCollision(int step, int x1, int x2, int x3)
    //////////////////////////////
    LBMReal OxyyPxzz = one;//three  * (two - omega) / (three  - omega);//
    //LBMReal OxyyMxzz = one;//six    * (two - omega) / (six    - omega);//
-   LBMReal Oxyz = one;//twelve * (two - omega) / (twelve + omega);//
+   //LBMReal Oxyz = one;//twelve * (two - omega) / (twelve + omega);//
    //////////////////////////////
    //LBMReal OxyyPxzz  = two-omega;//
    //LBMReal OxyyMxzz  = two-omega;//

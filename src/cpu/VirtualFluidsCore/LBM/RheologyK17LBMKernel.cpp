@@ -10,6 +10,8 @@
 
 #define PROOF_CORRECTNESS
 
+using namespace UbMath;
+
 //////////////////////////////////////////////////////////////////////////
 RheologyK17LBMKernel::RheologyK17LBMKernel()
 {
@@ -83,10 +85,6 @@ void RheologyK17LBMKernel::calculate(int step)
       muForcingX1.DefineVar("nu", &muNu);
       muForcingX2.DefineVar("nu", &muNu);
       muForcingX3.DefineVar("nu", &muNu);
-
-      LBMReal forcingX1 = 0;
-      LBMReal forcingX2 = 0;
-      LBMReal forcingX3 = 0;
    }
    /////////////////////////////////////
 

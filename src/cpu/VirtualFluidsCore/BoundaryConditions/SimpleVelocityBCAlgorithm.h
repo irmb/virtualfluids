@@ -45,8 +45,8 @@ class SimpleVelocityBCAlgorithm : public BCAlgorithm
 public:
    SimpleVelocityBCAlgorithm();
    ~SimpleVelocityBCAlgorithm();
-   SPtr<BCAlgorithm> clone();
-   void addDistributions(SPtr<DistributionArray3D> distributions);
+   SPtr<BCAlgorithm> clone() override;
+   void addDistributions(SPtr<DistributionArray3D> distributions) override;
    void applyBC() override;
 };
 

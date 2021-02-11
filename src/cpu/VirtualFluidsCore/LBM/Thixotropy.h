@@ -61,7 +61,7 @@ inline LBMReal Thixotropy::getBinghamCollFactor(LBMReal omegaInf, LBMReal shearR
 	
 	//LBMReal omega = cs2 * cs2 * shearRate * shearRate * omegaInf * rho * rho / (cs2 * cs2 * shearRate * shearRate * rho * rho + cs2 * shearRate * omegaInf * rho * tau0+omegaInf*omegaInf*tau0*tau0);
 	
-	LBMReal a = omegaInf * tau0 / (cs2 * shearRate * rho);
+	// LBMReal a = omegaInf * tau0 / (cs2 * shearRate * rho);
 	//10 iterations
 	//LBMReal omega = omegaInf / (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a))))))))));
 	

@@ -70,8 +70,6 @@ private:
 
    LBMReal kxyAverage, kyzAverage, kxzAverage, kxxMyyAverage, kxxMzzAverage; 
 
-   LBMReal a,b,c;
-   
    LBMReal rho;
    LBMReal shearRate;
 
@@ -80,7 +78,7 @@ private:
    void setOffsets(LBMReal xoff, LBMReal yoff, LBMReal zoff);
    void calcMoments(const LBMReal* const f, LBMReal omegaInf, LBMReal& rho, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3,
       LBMReal& kxy, LBMReal& kyz, LBMReal& kxz, LBMReal& kxxMyy, LBMReal& kxxMzz);
-   void calcInterpolatedCoefficiets(const D3Q27ICell& icell, LBMReal omega, LBMReal eps_new, LBMReal x, LBMReal y, LBMReal z, LBMReal xs, LBMReal ys, LBMReal zs);
+   void calcInterpolatedCoefficiets_intern(const D3Q27ICell& icell, LBMReal omega, LBMReal eps_new, LBMReal x, LBMReal y, LBMReal z, LBMReal xs, LBMReal ys, LBMReal zs);
    void calcInterpolatedNode(LBMReal* f, /*LBMReal omega,*/ LBMReal x, LBMReal y, LBMReal z, LBMReal press, LBMReal xs, LBMReal ys, LBMReal zs);
    LBMReal calcPressBSW();
    LBMReal calcPressTSW();

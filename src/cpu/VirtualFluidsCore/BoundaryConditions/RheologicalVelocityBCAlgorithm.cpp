@@ -26,10 +26,10 @@ void RheologicalVelocityBCAlgorithm::applyBC()
    calcMacrosFct(f, drho, vx1, vx2, vx3);
    calcFeqFct(feq, drho, vx1, vx2, vx3);
 
-   LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
-   LBMReal collFactorF = getThyxotropyCollFactor(collFactor, shearRate, drho);
+    LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
+    LBMReal collFactorF = getThyxotropyCollFactor(collFactor, shearRate, drho);
 
-   rho = 1.0+drho*compressibleFactor;
+    rho = 1.0+drho*compressibleFactor;
 
    for (int fdir = D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
    {
@@ -38,7 +38,7 @@ void RheologicalVelocityBCAlgorithm::applyBC()
          const int invDir = D3Q27System::INVDIR[fdir];
          LBMReal q = bcPtr->getQ(invDir);// m+m q=0 stabiler
          LBMReal velocity = bcPtr->getBoundaryVelocity(invDir);
-         LBMReal fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity*rho)/(1.0+q));
+         LBMReal fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactorF)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity*rho)/(1.0+q));
          distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
       }
    }

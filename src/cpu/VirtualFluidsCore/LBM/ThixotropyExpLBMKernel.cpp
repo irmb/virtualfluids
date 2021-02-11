@@ -8,6 +8,8 @@
 
 #define PROOF_CORRECTNESS
 
+using namespace UbMath;
+
 //////////////////////////////////////////////////////////////////////////
 ThixotropyExpLBMKernel::ThixotropyExpLBMKernel()
 {
@@ -84,10 +86,6 @@ void ThixotropyExpLBMKernel::calculate(int step)
 		muForcingX1.DefineVar("nu", &muNu);
 		muForcingX2.DefineVar("nu", &muNu);
 		muForcingX3.DefineVar("nu", &muNu);
-
-		LBMReal forcingX1 = 0;
-		LBMReal forcingX2 = 0;
-		LBMReal forcingX3 = 0;
 	}
 	/////////////////////////////////////
 
@@ -233,8 +231,8 @@ void ThixotropyExpLBMKernel::calculate(int step)
 							(mfbbc - mfbba));
 						
 
-						LBMReal eta0 = (1/collFactor-c1o2)*c1o3;
-						LBMReal eta = (1 + lambda)* eta0;
+//						LBMReal eta0 = (1/collFactor-c1o2)*c1o3;
+//						LBMReal eta = (1 + lambda)* eta0;
 						//collFactorF = one/(3*eta/(rho+one)+c1o2);
 						collFactorF = collFactor;
 
@@ -1761,9 +1759,9 @@ void ThixotropyExpLBMKernel::calculate(int step)
 						//proof correctness
 						//////////////////////////////////////////////////////////////////////////
 //#ifdef  PROOF_CORRECTNESS
-						LBMReal drho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
-							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
-							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
+//						LBMReal drho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+//							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
+//							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 						//UBLOG(logINFO, "lambda ="<<drho_post);
 //						//LBMReal dif = fabs(rho - rho_post);
 //						dif = drho - drho_post;

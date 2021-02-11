@@ -110,13 +110,12 @@ void WriteThixotropyQuantitiesCoProcessor::clearData()
 //////////////////////////////////////////////////////////////////////////
 void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
-	UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
-	UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
+	UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);;
 	UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
 	double         dx = grid->getDeltaX(block);
 
-	double level = (double)block->getLevel();
-	double blockID = (double)block->getGlobalID();
+	//double level = (double)block->getLevel();
+	//double blockID = (double)block->getGlobalID();
 
 	//Diese Daten werden geschrieben:
 	datanames.resize(0);
@@ -217,7 +216,7 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 					//LBMReal omega = Thixotropy::getHerschelBulkleyCollFactor(collFactor, shearRate, rho);
 					//LBMReal omega = Thixotropy::getPowellEyringCollFactor(collFactor, shearRate, rho);
 					LBMReal omega = Thixotropy::getBinghamCollFactor(collFactor, shearRate, rho);
-					LBMReal viscosity = (omega == 0) ? 0 : c1o3 * (c1/omega-c1o2);
+					LBMReal viscosity = (omega == 0) ? 0 : UbMath::c1o3 * (UbMath::c1/omega-UbMath::c1o2);
 
 					
 					data[index++].push_back(viscosity);

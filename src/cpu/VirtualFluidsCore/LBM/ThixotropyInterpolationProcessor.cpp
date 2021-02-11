@@ -82,29 +82,29 @@ void ThixotropyInterpolationProcessor::setOffsets(LBMReal xoff, LBMReal yoff, LB
 //////////////////////////////////////////////////////////////////////////
 void ThixotropyInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, LBMReal xoff, LBMReal yoff, LBMReal zoff)
 {
-   setOffsets(xoff, yoff, zoff);
-   calcInterpolatedCoefficiets(icellC, omegaC, 0.5, 0.25, -0.25, -0.25, -1, -1, -1);
-   calcInterpolatedNode(icellF.BSW, /*omegaF,*/ -0.25, -0.25, -0.25, calcPressBSW(), -1, -1, -1);
-   calcInterpolatedCoefficiets(icellC, omegaC, 0.5, 0.25, 0.25, -0.25, 1, 1, -1);
-   calcInterpolatedNode(icellF.BNE, /*omegaF,*/  0.25,  0.25, -0.25, calcPressBNE(),  1,  1, -1);
-   calcInterpolatedCoefficiets(icellC, omegaC, 0.5, -0.25, 0.25, 0.25, -1, 1, 1);
-   calcInterpolatedNode(icellF.TNW, /*omegaF,*/ -0.25,  0.25,  0.25, calcPressTNW(), -1,  1,  1);
-   calcInterpolatedCoefficiets(icellC, omegaC, 0.5, 0.25, -0.25, 0.25, 1, -1, 1);
-   calcInterpolatedNode(icellF.TSE, /*omegaF,*/  0.25, -0.25,  0.25, calcPressTSE(),  1, -1,  1);
-   calcInterpolatedCoefficiets(icellC, omegaC, 0.5, -0.25, 0.25, -0.25, -1, 1, -1);
-   calcInterpolatedNode(icellF.BNW, /*omegaF,*/ -0.25,  0.25, -0.25, calcPressBNW(), -1,  1, -1);
-   calcInterpolatedCoefficiets(icellC, omegaC, 0.5, 0.25, -0.25, -0.25, 1, -1, -1);
-   calcInterpolatedNode(icellF.BSE, /*omegaF,*/  0.25, -0.25, -0.25, calcPressBSE(),  1, -1, -1);
-   calcInterpolatedCoefficiets(icellC, omegaC, 0.5, -0.25, -0.25, 0.25, -1, -1, 1);
-   calcInterpolatedNode(icellF.TSW, /*omegaF,*/ -0.25, -0.25,  0.25, calcPressTSW(), -1, -1,  1);
-   calcInterpolatedCoefficiets(icellC, omegaC, 0.5, 0.25, 0.25, 0.25, 1, 1, 1);
-   calcInterpolatedNode(icellF.TNE, /*omegaF,*/  0.25,  0.25,  0.25, calcPressTNE(),  1,  1,  1);
+    setOffsets(xoff, yoff, zoff);
+    calcInterpolatedCoefficiets_intern(icellC, omegaC, 0.5, 0.25, -0.25, -0.25, -1, -1, -1);
+    calcInterpolatedNode(icellF.BSW, /*omegaF,*/ -0.25, -0.25, -0.25, calcPressBSW(), -1, -1, -1);
+    calcInterpolatedCoefficiets_intern(icellC, omegaC, 0.5, 0.25, 0.25, -0.25, 1, 1, -1);
+    calcInterpolatedNode(icellF.BNE, /*omegaF,*/  0.25,  0.25, -0.25, calcPressBNE(),  1,  1, -1);
+    calcInterpolatedCoefficiets_intern(icellC, omegaC, 0.5, -0.25, 0.25, 0.25, -1, 1, 1);
+    calcInterpolatedNode(icellF.TNW, /*omegaF,*/ -0.25,  0.25,  0.25, calcPressTNW(), -1,  1,  1);
+    calcInterpolatedCoefficiets_intern(icellC, omegaC, 0.5, 0.25, -0.25, 0.25, 1, -1, 1);
+    calcInterpolatedNode(icellF.TSE, /*omegaF,*/  0.25, -0.25,  0.25, calcPressTSE(),  1, -1,  1);
+    calcInterpolatedCoefficiets_intern(icellC, omegaC, 0.5, -0.25, 0.25, -0.25, -1, 1, -1);
+    calcInterpolatedNode(icellF.BNW, /*omegaF,*/ -0.25,  0.25, -0.25, calcPressBNW(), -1,  1, -1);
+    calcInterpolatedCoefficiets_intern(icellC, omegaC, 0.5, 0.25, -0.25, -0.25, 1, -1, -1);
+    calcInterpolatedNode(icellF.BSE, /*omegaF,*/  0.25, -0.25, -0.25, calcPressBSE(),  1, -1, -1);
+    calcInterpolatedCoefficiets_intern(icellC, omegaC, 0.5, -0.25, -0.25, 0.25, -1, -1, 1);
+    calcInterpolatedNode(icellF.TSW, /*omegaF,*/ -0.25, -0.25,  0.25, calcPressTSW(), -1, -1,  1);
+    calcInterpolatedCoefficiets_intern(icellC, omegaC, 0.5, 0.25, 0.25, 0.25, 1, 1, 1);
+    calcInterpolatedNode(icellF.TNE, /*omegaF,*/  0.25,  0.25,  0.25, calcPressTNE(),  1,  1,  1);
 }
 //////////////////////////////////////////////////////////////////////////
 void ThixotropyInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC, LBMReal xoff, LBMReal yoff, LBMReal zoff)
 {
    setOffsets(xoff, yoff, zoff);
-   calcInterpolatedCoefficiets(icellF, omegaF, 2.0, 0, 0, 0, 0, 0, 0);
+    calcInterpolatedCoefficiets_intern(icellF, omegaF, 2.0, 0, 0, 0, 0, 0, 0);
    calcInterpolatedNodeFC(icellC, omegaC);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -128,7 +128,15 @@ void ThixotropyInterpolationProcessor::calcMoments(const LBMReal* const f, LBMRe
    kxxMzz = -3./2.*omega*((((f[NW]+f[SE])-(f[BS]+f[TN]))+((f[SW]+f[NE])-(f[TS]+f[BN])))+((f[W]+f[E])-(f[B]+f[T]))-(vx1*vx1-vx3*vx3));
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyInterpolationProcessor::calcInterpolatedCoefficiets(const D3Q27ICell& icell, LBMReal omega, LBMReal eps_new, LBMReal x, LBMReal y, LBMReal z, LBMReal xs, LBMReal ys, LBMReal zs)
+void ThixotropyInterpolationProcessor::calcInterpolatedCoefficiets_intern(const D3Q27ICell& icell,
+                                                                          LBMReal omega,
+                                                                          LBMReal eps_new,
+                                                                          LBMReal x,
+                                                                          LBMReal y,
+                                                                          LBMReal z,
+                                                                          LBMReal xs,
+                                                                          LBMReal ys,
+                                                                          LBMReal zs)
 {
    LBMReal        vx1_SWT,vx2_SWT,vx3_SWT;
    LBMReal        vx1_NWT,vx2_NWT,vx3_NWT;

@@ -9,6 +9,9 @@
 
 #define PROOF_CORRECTNESS
 
+using namespace UbMath;
+
+
 ThixotropyModelLBMKernel2::ThixotropyModelLBMKernel2() : forcingX1(0), forcingX2(0), forcingX3(0)
 {
    compressible = false;
@@ -476,12 +479,12 @@ void ThixotropyModelLBMKernel2::calculate(int step)
 						LBMReal dyuy = dxux + collFactorF * c3o2 * mxxMyy;
 						LBMReal dzuz = dxux + collFactorF * c3o2 * mxxMzz;
 
-						LBMReal Dxy = -three * collFactorF * mfbba;
-						LBMReal Dxz = -three * collFactorF * mfbab;
-						LBMReal Dyz = -three * collFactorF * mfabb;
+//						LBMReal Dxy = -three * collFactorF * mfbba;
+//						LBMReal Dxz = -three * collFactorF * mfbab;
+//						LBMReal Dyz = -three * collFactorF * mfabb;
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 						//non Newtonian fluid collision factor
-						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+//						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
 
 						LBMReal shearFactor = sqrt(c1o2 * ((mfcaa - mfaaa * c1o3) * (mfcaa - mfaaa * c1o3) + (mfaca - mfaaa * c1o3) * (mfaca - mfaaa * c1o3) + (mfaac - mfaaa * c1o3) * (mfaac - mfaaa * c1o3)) + mfbba * mfbba + mfbab * mfbab + mfabb * mfabb) + UbMath::Epsilon<LBMReal>::val();
 

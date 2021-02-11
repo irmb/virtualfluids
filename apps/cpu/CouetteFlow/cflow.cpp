@@ -34,8 +34,8 @@ void bflow(string configname)
       //double          tau0 = config.getValue<double>("tau0");
       double          velocity = config.getValue<double>("velocity");
       double          n = config.getValue<double>("n");
-      double          Re = config.getValue<double>("Re");
-      double          Bn = config.getValue<double>("Bn");
+//      double          Re = config.getValue<double>("Re");
+//      double          Bn = config.getValue<double>("Bn");
 
       SPtr<Communicator> comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -81,8 +81,8 @@ void bflow(string configname)
 
       double blockLength = 3.0 * deltax;
 
-      double h = (g_maxX2) / 2.0;
-      double dex = g_maxX1;
+//      double h = (g_maxX2) / 2.0;
+//      double dex = g_maxX1;
 
       //LBMReal tau0 = 1.2e-7;
       //LBMReal k = nuLB;

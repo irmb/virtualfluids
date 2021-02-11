@@ -105,7 +105,7 @@ void bflow(string configname)
       //double g_maxX2 = boundingBox[1]/2.0;
       //double g_maxX3 = boundingBox[2]/2.0;
 
-      double blockLength = 3.0 * deltax;
+//      double blockLength = 3.0 * deltax;
 
       // double d = 2.0 * radius;
       // double U = uLB;

@@ -86,7 +86,6 @@ void CalculateTorqueCoProcessor::calculateForces()
    forceX1global = 0.0;
    forceX2global = 0.0;
    forceX3global = 0.0;
-   int counter = 0;
 
    for(SPtr<D3Q27Interactor> interactor : interactors)
    {

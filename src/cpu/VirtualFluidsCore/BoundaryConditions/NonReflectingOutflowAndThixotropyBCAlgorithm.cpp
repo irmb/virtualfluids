@@ -64,15 +64,15 @@ void NonReflectingOutflowAndThixotropyBCAlgorithm::applyBC()
    switch (direction)
    {
    case E:
-      f[E] = ftemp[E] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[E];
-      f[NE] = ftemp[NE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[NE];
-      f[SE] = ftemp[SE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[SE];
-      f[TE] = ftemp[TE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[TE];
-      f[BE] = ftemp[BE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[BE];
-      f[TNE] = ftemp[TNE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[TNE];
-      f[TSE] = ftemp[TSE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[TSE];
-      f[BNE] = ftemp[BNE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[BNE];
-      f[BSE] = ftemp[BSE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * f[BSE];
+      f[E] = ftemp[E] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * f[E];
+      f[NE] = ftemp[NE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * f[NE];
+      f[SE] = ftemp[SE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * f[SE];
+      f[TE] = ftemp[TE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * f[TE];
+      f[BE] = ftemp[BE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * f[BE];
+      f[TNE] = ftemp[TNE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * f[TNE];
+      f[TSE] = ftemp[TSE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * f[TSE];
+      f[BNE] = ftemp[BNE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * f[BNE];
+      f[BSE] = ftemp[BSE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * f[BSE];
 
       distributions->setDistributionInvForDirection(f[E], x1 + DX1[W], x2 + DX2[W], x3 + DX3[W], W);
       distributions->setDistributionInvForDirection(f[NE], x1 + DX1[SW], x2 + DX2[SW], x3 + DX3[SW], SW);
@@ -85,15 +85,15 @@ void NonReflectingOutflowAndThixotropyBCAlgorithm::applyBC()
       distributions->setDistributionInvForDirection(f[BSE], x1 + DX1[TNW], x2 + DX2[TNW], x3 + DX3[TNW], TNW);
       break;
    case W:
-      f[W] = ftemp[W] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[W];
-      f[NW] = ftemp[NW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[NW];
-      f[SW] = ftemp[SW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[SW];
-      f[TW] = ftemp[TW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[TW];
-      f[BW] = ftemp[BW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[BW];
-      f[TNW] = ftemp[TNW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[TNW];
-      f[TSW] = ftemp[TSW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[TSW];
-      f[BNW] = ftemp[BNW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[BNW];
-      f[BSW] = ftemp[BSW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * f[BSW];
+      f[W] = ftemp[W] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * f[W];
+      f[NW] = ftemp[NW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * f[NW];
+      f[SW] = ftemp[SW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * f[SW];
+      f[TW] = ftemp[TW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * f[TW];
+      f[BW] = ftemp[BW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * f[BW];
+      f[TNW] = ftemp[TNW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * f[TNW];
+      f[TSW] = ftemp[TSW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * f[TSW];
+      f[BNW] = ftemp[BNW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * f[BNW];
+      f[BSW] = ftemp[BSW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * f[BSW];
 
       distributions->setDistributionInvForDirection(f[W], x1 + DX1[E], x2 + DX2[E], x3 + DX3[E], E);
       distributions->setDistributionInvForDirection(f[NW], x1 + DX1[SE], x2 + DX2[SE], x3 + DX3[SE], SE);
@@ -106,15 +106,15 @@ void NonReflectingOutflowAndThixotropyBCAlgorithm::applyBC()
       distributions->setDistributionInvForDirection(f[BSW], x1 + DX1[TNE], x2 + DX2[TNE], x3 + DX3[TNE], TNE);
       break;
    case N:
-      f[N] = ftemp[N] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[N];
-      f[NE] = ftemp[NE] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[NE];
-      f[NW] = ftemp[NW] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[NW];
-      f[TN] = ftemp[TN] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[TN];
-      f[BN] = ftemp[BN] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[BN];
-      f[TNE] = ftemp[TNE] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[TNE];
-      f[TNW] = ftemp[TNW] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[TNW];
-      f[BNE] = ftemp[BNE] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[BNE];
-      f[BNW] = ftemp[BNW] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * f[BNW];
+      f[N] = ftemp[N] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * f[N];
+      f[NE] = ftemp[NE] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * f[NE];
+      f[NW] = ftemp[NW] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * f[NW];
+      f[TN] = ftemp[TN] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * f[TN];
+      f[BN] = ftemp[BN] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * f[BN];
+      f[TNE] = ftemp[TNE] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * f[TNE];
+      f[TNW] = ftemp[TNW] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * f[TNW];
+      f[BNE] = ftemp[BNE] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * f[BNE];
+      f[BNW] = ftemp[BNW] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * f[BNW];
 
       distributions->setDistributionInvForDirection(f[N], x1 + DX1[S], x2 + DX2[S], x3 + DX3[S], S);
       distributions->setDistributionInvForDirection(f[NE], x1 + DX1[SW], x2 + DX2[SW], x3 + DX3[SW], SW);
@@ -127,15 +127,15 @@ void NonReflectingOutflowAndThixotropyBCAlgorithm::applyBC()
       distributions->setDistributionInvForDirection(f[BNW], x1 + DX1[TSE], x2 + DX2[TSE], x3 + DX3[TSE], TSE);
       break;
    case S:
-      f[S] = ftemp[S] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[S];
-      f[SE] = ftemp[SE] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[SE];
-      f[SW] = ftemp[SW] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[SW];
-      f[TS] = ftemp[TS] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[TS];
-      f[BS] = ftemp[BS] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[BS];
-      f[TSE] = ftemp[TSE] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[TSE];
-      f[TSW] = ftemp[TSW] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[TSW];
-      f[BSE] = ftemp[BSE] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[BSE];
-      f[BSW] = ftemp[BSW] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * f[BSW];
+      f[S] = ftemp[S] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * f[S];
+      f[SE] = ftemp[SE] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * f[SE];
+      f[SW] = ftemp[SW] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * f[SW];
+      f[TS] = ftemp[TS] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * f[TS];
+      f[BS] = ftemp[BS] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * f[BS];
+      f[TSE] = ftemp[TSE] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * f[TSE];
+      f[TSW] = ftemp[TSW] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * f[TSW];
+      f[BSE] = ftemp[BSE] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * f[BSE];
+      f[BSW] = ftemp[BSW] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * f[BSW];
 
       distributions->setDistributionInvForDirection(f[S], x1 + DX1[N], x2 + DX2[N], x3 + DX3[N], N);
       distributions->setDistributionInvForDirection(f[SE], x1 + DX1[NW], x2 + DX2[NW], x3 + DX3[NW], NW);
@@ -148,15 +148,15 @@ void NonReflectingOutflowAndThixotropyBCAlgorithm::applyBC()
       distributions->setDistributionInvForDirection(f[BSW], x1 + DX1[TNE], x2 + DX2[TNE], x3 + DX3[TNE], TNE);
       break;
    case T:
-      f[T] = ftemp[T] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[T];
-      f[TE] = ftemp[TE] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[TE];
-      f[TW] = ftemp[TW] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[TW];
-      f[TN] = ftemp[TN] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[TN];
-      f[TS] = ftemp[TS] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[TS];
-      f[TNE] = ftemp[TNE] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[TNE];
-      f[TNW] = ftemp[TNW] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[TNW];
-      f[TSE] = ftemp[TSE] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[TSE];
-      f[TSW] = ftemp[TSW] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * f[TSW];
+      f[T] = ftemp[T] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * f[T];
+      f[TE] = ftemp[TE] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * f[TE];
+      f[TW] = ftemp[TW] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * f[TW];
+      f[TN] = ftemp[TN] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * f[TN];
+      f[TS] = ftemp[TS] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * f[TS];
+      f[TNE] = ftemp[TNE] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * f[TNE];
+      f[TNW] = ftemp[TNW] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * f[TNW];
+      f[TSE] = ftemp[TSE] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * f[TSE];
+      f[TSW] = ftemp[TSW] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * f[TSW];
 
       distributions->setDistributionInvForDirection(f[T], x1 + DX1[B], x2 + DX2[B], x3 + DX3[B], B);
       distributions->setDistributionInvForDirection(f[TE], x1 + DX1[BW], x2 + DX2[BW], x3 + DX3[BW], BW);
@@ -169,15 +169,15 @@ void NonReflectingOutflowAndThixotropyBCAlgorithm::applyBC()
       distributions->setDistributionInvForDirection(f[TSW], x1 + DX1[BNE], x2 + DX2[BNE], x3 + DX3[BNE], BNE);
       break;
    case B:
-      f[B] = ftemp[B] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[B];
-      f[BE] = ftemp[BE] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[BE];
-      f[BW] = ftemp[BW] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[BW];
-      f[BN] = ftemp[BN] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[BN];
-      f[BS] = ftemp[BS] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[BS];
-      f[BNE] = ftemp[BNE] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[BNE];
-      f[BNW] = ftemp[BNW] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[BNW];
-      f[BSE] = ftemp[BSE] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[BSE];
-      f[BSW] = ftemp[BSW] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * f[BSW];
+      f[B] = ftemp[B] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * f[B];
+      f[BE] = ftemp[BE] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * f[BE];
+      f[BW] = ftemp[BW] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * f[BW];
+      f[BN] = ftemp[BN] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * f[BN];
+      f[BS] = ftemp[BS] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * f[BS];
+      f[BNE] = ftemp[BNE] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * f[BNE];
+      f[BNW] = ftemp[BNW] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * f[BNW];
+      f[BSE] = ftemp[BSE] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * f[BSE];
+      f[BSW] = ftemp[BSW] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * f[BSW];
 
       distributions->setDistributionInvForDirection(f[B], x1 + DX1[T], x2 + DX2[T], x3 + DX3[T], T);
       distributions->setDistributionInvForDirection(f[BE], x1 + DX1[TW], x2 + DX2[TW], x3 + DX3[TW], TW);
@@ -208,15 +208,15 @@ void NonReflectingOutflowAndThixotropyBCAlgorithm::applyBC()
    switch (direction)
    {
    case E:
-      h[E]  = htemp[E] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h[E];
-      h[NE] = htemp[NE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h[NE];
-      h[SE] = htemp[SE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h[SE];
-      h[TE] = htemp[TE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h[TE];
-      h[BE] = htemp[BE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h[BE];
-      h[TNE] = htemp[TNE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h[TNE];
-      h[TSE] = htemp[TSE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h[TSE];
-      h[BNE] = htemp[BNE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h[BNE];
-      h[BSE] = htemp[BSE] * (one_over_sqrt3 + vx1) + (1.0 - one_over_sqrt3 - vx1) * h[BSE];
+      h[E]  = htemp[E] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * h[E];
+      h[NE] = htemp[NE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * h[NE];
+      h[SE] = htemp[SE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * h[SE];
+      h[TE] = htemp[TE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * h[TE];
+      h[BE] = htemp[BE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * h[BE];
+      h[TNE] = htemp[TNE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * h[TNE];
+      h[TSE] = htemp[TSE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * h[TSE];
+      h[BNE] = htemp[BNE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * h[BNE];
+      h[BSE] = htemp[BSE] * (UbMath::one_over_sqrt3 + vx1) + (1.0 - UbMath::one_over_sqrt3 - vx1) * h[BSE];
 
       distributionsH->setDistributionInvForDirection(h[E], x1 + DX1[W], x2 + DX2[W], x3 + DX3[W], W);
       distributionsH->setDistributionInvForDirection(h[NE], x1 + DX1[SW], x2 + DX2[SW], x3 + DX3[SW], SW);
@@ -229,15 +229,15 @@ void NonReflectingOutflowAndThixotropyBCAlgorithm::applyBC()
       distributionsH->setDistributionInvForDirection(h[BSE], x1 + DX1[TNW], x2 + DX2[TNW], x3 + DX3[TNW], TNW);
       break;
    case W:
-      h[W] = htemp[W] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[W];
-      h[NW] = htemp[NW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[NW];
-      h[SW] = htemp[SW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[SW];
-      h[TW] = htemp[TW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[TW];
-      h[BW] = htemp[BW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[BW];
-      h[TNW] = htemp[TNW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[TNW];
-      h[TSW] = htemp[TSW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[TSW];
-      h[BNW] = htemp[BNW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[BNW];
-      h[BSW] = htemp[BSW] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1) * h[BSW];
+      h[W] = htemp[W] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * h[W];
+      h[NW] = htemp[NW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * h[NW];
+      h[SW] = htemp[SW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * h[SW];
+      h[TW] = htemp[TW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * h[TW];
+      h[BW] = htemp[BW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * h[BW];
+      h[TNW] = htemp[TNW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * h[TNW];
+      h[TSW] = htemp[TSW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * h[TSW];
+      h[BNW] = htemp[BNW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * h[BNW];
+      h[BSW] = htemp[BSW] * (UbMath::one_over_sqrt3 - vx1) + (1.0 - UbMath::one_over_sqrt3 + vx1) * h[BSW];
 
       distributionsH->setDistributionInvForDirection(h[W], x1 + DX1[E], x2 + DX2[E], x3 + DX3[E], E);
       distributionsH->setDistributionInvForDirection(h[NW], x1 + DX1[SE], x2 + DX2[SE], x3 + DX3[SE], SE);
@@ -250,15 +250,15 @@ void NonReflectingOutflowAndThixotropyBCAlgorithm::applyBC()
       distributionsH->setDistributionInvForDirection(h[BSW], x1 + DX1[TNE], x2 + DX2[TNE], x3 + DX3[TNE], TNE);
       break;
    case N:
-      h[N] = htemp[N] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h[N];
-      h[NE] = htemp[NE] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h[NE];
-      h[NW] = htemp[NW] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h[NW];
-      h[TN] = htemp[TN] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h[TN];
-      h[BN] = htemp[BN] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h[BN];
-      h[TNE] = htemp[TNE] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h[TNE];
-      h[TNW] = htemp[TNW] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h[TNW];
-      h[BNE] = htemp[BNE] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h[BNE];
-      h[BNW] = htemp[BNW] * (one_over_sqrt3 + vx2) + (1.0 - one_over_sqrt3 - vx2) * h[BNW];
+      h[N] = htemp[N] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * h[N];
+      h[NE] = htemp[NE] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * h[NE];
+      h[NW] = htemp[NW] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * h[NW];
+      h[TN] = htemp[TN] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * h[TN];
+      h[BN] = htemp[BN] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * h[BN];
+      h[TNE] = htemp[TNE] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * h[TNE];
+      h[TNW] = htemp[TNW] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * h[TNW];
+      h[BNE] = htemp[BNE] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * h[BNE];
+      h[BNW] = htemp[BNW] * (UbMath::one_over_sqrt3 + vx2) + (1.0 - UbMath::one_over_sqrt3 - vx2) * h[BNW];
 
       distributionsH->setDistributionInvForDirection(h[N], x1 + DX1[S], x2 + DX2[S], x3 + DX3[S], S);
       distributionsH->setDistributionInvForDirection(h[NE], x1 + DX1[SW], x2 + DX2[SW], x3 + DX3[SW], SW);
@@ -271,15 +271,15 @@ void NonReflectingOutflowAndThixotropyBCAlgorithm::applyBC()
       distributionsH->setDistributionInvForDirection(h[BNW], x1 + DX1[TSE], x2 + DX2[TSE], x3 + DX3[TSE], TSE);
       break;
    case S:
-      h[S] = htemp[S] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h[S];
-      h[SE] = htemp[SE] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h[SE];
-      h[SW] = htemp[SW] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h[SW];
-      h[TS] = htemp[TS] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h[TS];
-      h[BS] = htemp[BS] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h[BS];
-      h[TSE] = htemp[TSE] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h[TSE];
-      h[TSW] = htemp[TSW] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h[TSW];
-      h[BSE] = htemp[BSE] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h[BSE];
-      h[BSW] = htemp[BSW] * (one_over_sqrt3 - vx2) + (1.0 - one_over_sqrt3 + vx2) * h[BSW];
+      h[S] = htemp[S] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * h[S];
+      h[SE] = htemp[SE] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * h[SE];
+      h[SW] = htemp[SW] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * h[SW];
+      h[TS] = htemp[TS] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * h[TS];
+      h[BS] = htemp[BS] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * h[BS];
+      h[TSE] = htemp[TSE] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * h[TSE];
+      h[TSW] = htemp[TSW] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * h[TSW];
+      h[BSE] = htemp[BSE] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * h[BSE];
+      h[BSW] = htemp[BSW] * (UbMath::one_over_sqrt3 - vx2) + (1.0 - UbMath::one_over_sqrt3 + vx2) * h[BSW];
 
       distributionsH->setDistributionInvForDirection(h[S], x1 + DX1[N], x2 + DX2[N], x3 + DX3[N], N);
       distributionsH->setDistributionInvForDirection(h[SE], x1 + DX1[NW], x2 + DX2[NW], x3 + DX3[NW], NW);
@@ -292,15 +292,15 @@ void NonReflectingOutflowAndThixotropyBCAlgorithm::applyBC()
       distributionsH->setDistributionInvForDirection(h[BSW], x1 + DX1[TNE], x2 + DX2[TNE], x3 + DX3[TNE], TNE);
       break;
    case T:
-      h[T] = htemp[T] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h[T];
-      h[TE] = htemp[TE] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h[TE];
-      h[TW] = htemp[TW] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h[TW];
-      h[TN] = htemp[TN] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h[TN];
-      h[TS] = htemp[TS] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h[TS];
-      h[TNE] = htemp[TNE] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h[TNE];
-      h[TNW] = htemp[TNW] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h[TNW];
-      h[TSE] = htemp[TSE] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h[TSE];
-      h[TSW] = htemp[TSW] * (one_over_sqrt3 + vx3) + (1.0 - one_over_sqrt3 - vx3) * h[TSW];
+      h[T] = htemp[T] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * h[T];
+      h[TE] = htemp[TE] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * h[TE];
+      h[TW] = htemp[TW] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * h[TW];
+      h[TN] = htemp[TN] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * h[TN];
+      h[TS] = htemp[TS] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * h[TS];
+      h[TNE] = htemp[TNE] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * h[TNE];
+      h[TNW] = htemp[TNW] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * h[TNW];
+      h[TSE] = htemp[TSE] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * h[TSE];
+      h[TSW] = htemp[TSW] * (UbMath::one_over_sqrt3 + vx3) + (1.0 - UbMath::one_over_sqrt3 - vx3) * h[TSW];
 
       distributionsH->setDistributionInvForDirection(h[T], x1 + DX1[B], x2 + DX2[B], x3 + DX3[B], B);
       distributionsH->setDistributionInvForDirection(h[TE], x1 + DX1[BW], x2 + DX2[BW], x3 + DX3[BW], BW);
@@ -313,15 +313,15 @@ void NonReflectingOutflowAndThixotropyBCAlgorithm::applyBC()
       distributionsH->setDistributionInvForDirection(h[TSW], x1 + DX1[BNE], x2 + DX2[BNE], x3 + DX3[BNE], BNE);
       break;
    case B:
-      h[B] = htemp[B] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h[B];
-      h[BE] = htemp[BE] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h[BE];
-      h[BW] = htemp[BW] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h[BW];
-      h[BN] = htemp[BN] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h[BN];
-      h[BS] = htemp[BS] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h[BS];
-      h[BNE] = htemp[BNE] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h[BNE];
-      h[BNW] = htemp[BNW] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h[BNW];
-      h[BSE] = htemp[BSE] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h[BSE];
-      h[BSW] = htemp[BSW] * (one_over_sqrt3 - vx3) + (1.0 - one_over_sqrt3 + vx3) * h[BSW];
+      h[B] = htemp[B] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * h[B];
+      h[BE] = htemp[BE] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * h[BE];
+      h[BW] = htemp[BW] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * h[BW];
+      h[BN] = htemp[BN] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * h[BN];
+      h[BS] = htemp[BS] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * h[BS];
+      h[BNE] = htemp[BNE] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * h[BNE];
+      h[BNW] = htemp[BNW] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * h[BNW];
+      h[BSE] = htemp[BSE] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * h[BSE];
+      h[BSW] = htemp[BSW] * (UbMath::one_over_sqrt3 - vx3) + (1.0 - UbMath::one_over_sqrt3 + vx3) * h[BSW];
 
       distributionsH->setDistributionInvForDirection(h[B], x1 + DX1[T], x2 + DX2[T], x3 + DX3[T], T);
       distributionsH->setDistributionInvForDirection(h[BE], x1 + DX1[TW], x2 + DX2[TW], x3 + DX3[TW], TW);
