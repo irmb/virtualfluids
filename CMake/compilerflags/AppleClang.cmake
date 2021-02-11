@@ -16,7 +16,10 @@ list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-fPIC") # position indepe
 # warnings
 #############################################################################################################
 list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wall")
-list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wunreachable-code")
+list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wextra")
+list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-pedantic")
+
+#list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wunreachable-code")
 
 list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-unused-function")
 list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-reorder")
