@@ -14,12 +14,11 @@ from vtk_utilities import vertical_column_from_mesh, get_values_from_indices
 class TestPoiseuilleFlow(unittest.TestCase):
 
     def test_poiseuille_flow(self):
-        self.skipTest("Skipping test! This test has not been implemented correctly yet")
         plt.ion()
 
         channel_height = 10
-        number_of_nodes = [8, 16, 32]
-        number_of_timesteps = [10_000, 20_000, 40_000]
+        number_of_nodes = [16, 32, 64]
+        number_of_timesteps = [40_000, 80_000, 160_000]
         viscosities = [5e-3, 1e-2, 2e-2]
         l2_norm_results = []
 
@@ -40,8 +39,8 @@ class TestPoiseuilleFlow(unittest.TestCase):
         plt.plot(number_of_nodes, l2_norm_results)
         plt.show()
 
-        self.assertTrue(l2_norm_results[1] <= l2_norm_results[0])
-        self.assertTrue(l2_norm_results[2] <= l2_norm_results[1])
+        self.assertLessEqual(l2_norm_results[1], l2_norm_results[0] / 2)
+        self.assertLessEqual(l2_norm_results[2], l2_norm_results[1] / 2)
 
 
 def run_simulation_with_settings(grid_params, physical_params, runtime_params, output_folder):
@@ -54,7 +53,7 @@ def get_l2_norm_for_simulation(grid_params, physical_params, runtime_params):
     run_simulation_with_settings(grid_params, physical_params, runtime_params, output_folder)
     heights = get_heights(output_folder, runtime_params)
 
-    numerical_results = get_numerical_results(runtime_params, output_folder, heights)
+    numerical_results = get_numerical_results(runtime_params, output_folder)
     analytical_results = get_analytical_results(physical_params, heights, grid_params.number_of_nodes_per_direction[2])
 
     plt.plot(heights, numerical_results)
@@ -72,7 +71,7 @@ def get_heights(output_folder, runtime_params):
     return heights
 
 
-def get_numerical_results(runtime_params, output_folder, heights):
+def get_numerical_results(runtime_params, output_folder):
     mesh_of_last_timestep = get_mesh_for_last_timestep(output_folder, runtime_params)
     velocities_in_x_direction = mesh_of_last_timestep.get_array("Vx")
     column_indices = vertical_column_from_mesh(mesh_of_last_timestep)
@@ -130,8 +129,8 @@ def get_heights_from_indices(mesh, indices):
 def create_grid_params_with_nodes_in_column(nodes_in_column, delta_x):
     grid_params = GridParameters()
     grid_params.node_distance = delta_x
-    grid_params.number_of_nodes_per_direction = [2, 2, nodes_in_column]
-    grid_params.blocks_per_direction = [1, 1, 6]
+    grid_params.number_of_nodes_per_direction = [1, 1, nodes_in_column]
+    grid_params.blocks_per_direction = [1, 1, 8]
     grid_params.periodic_boundary_in_x1 = True
     grid_params.periodic_boundary_in_x2 = True
     grid_params.periodic_boundary_in_x3 = False
