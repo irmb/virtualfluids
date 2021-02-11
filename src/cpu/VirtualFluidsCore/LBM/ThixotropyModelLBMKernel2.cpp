@@ -7,7 +7,7 @@
 #include "LBMKernel.h"
 #include "Thixotropy.h"
 
-#define PROOF_CORRECTNES
+#define PROOF_CORRECTNESS
 
 using namespace UbMath;
 
