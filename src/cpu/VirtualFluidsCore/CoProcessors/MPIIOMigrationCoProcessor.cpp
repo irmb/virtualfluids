@@ -1779,7 +1779,7 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
     size_t nextVectorSize =
         dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
     std::vector<double> vectorsOfValues;
-    for (int n = 0; n < blocksCount; n++) {
+    for (std::size_t n = 0; n < blocksCount; n++) {
         SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].globalID);
 
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
