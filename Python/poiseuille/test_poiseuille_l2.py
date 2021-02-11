@@ -33,6 +33,12 @@ class TestPoiseuilleFlow(unittest.TestCase):
         self.skipTest("This test is not implemented correctly yet")
         plt.ion()
 
+        channel_height = 10
+        number_of_nodes = [8, 16, 32]
+        number_of_timesteps = [10_000, 20_000, 40_000]
+        viscosities = [5e-3, 1e-2, 2e-2]
+        l2_norm_results = []
+
         physical_params = PhysicalParameters()
 
         runtime_params = RuntimeParameters()
