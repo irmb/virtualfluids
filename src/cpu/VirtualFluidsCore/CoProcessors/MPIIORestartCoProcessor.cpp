@@ -1243,7 +1243,7 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
             bcAddArray[ic].boundCond_count      = 0; // how many BoundaryConditions in this block
             bcAddArray[ic].indexContainer_count = 0; // how many indexContainer-values in this block
 
-            for (int bc = 0; bc < bcArr->getBCVectorSize(); bc++) {
+            for (std::size_t bc = 0; bc < bcArr->getBCVectorSize(); bc++) {
                 BoundaryCondition *bouCond = new BoundaryCondition();
                 if (bcArr->bcvector[bc] == NULL) {
                     memset(bouCond, 0, sizeof(BoundaryCondition));
@@ -1301,7 +1301,7 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
 
     // how many "big blocks" of BLOCK_SIZE size can by formed
     int bcBlockCount = (int)(count_boundCond / BLOCK_SIZE);
-    if (bcBlockCount * BLOCK_SIZE < count_boundCond)
+    if (bcBlockCount * BLOCK_SIZE < (int)count_boundCond)
         bcBlockCount += 1;
     for (int i = (int)count_boundCond; i < bcBlockCount * BLOCK_SIZE; i++) {
         BoundaryCondition *bouCond = new BoundaryCondition();
@@ -2294,12 +2294,12 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
     std::vector<int> bcindexmatrixV;
     std::vector<int> indexContainerV;
 
-    for (size_t n = 0; n < blocksCount; n++) {
+    for (int n = 0; n < blocksCount; n++) {
         bcVector.resize(0);
         bcindexmatrixV.resize(0);
         indexContainerV.resize(0);
 
-        for (size_t ibc = 0; ibc < bcAddArray[n].boundCond_count; ibc++) {
+        for (int ibc = 0; ibc < bcAddArray[n].boundCond_count; ibc++) {
             SPtr<BoundaryConditions> bc;
             if (memcmp(&bcArray[index], nullBouCond, sizeof(BoundaryCondition)) == 0)
                 bc = SPtr<BoundaryConditions>();

@@ -91,7 +91,7 @@ bool MicrophoneArrayCoProcessor::addMicrophone(Vector3D coords)
 
 void MicrophoneArrayCoProcessor::collectData(double step)
 {
-    for (int i = 0; i < microphones.size(); i++) {
+    for (std::size_t i = 0; i < microphones.size(); i++) {
         LBMReal f[D3Q27System::ENDF + 1];
         microphones[i]->distridution->getDistribution(f, val<1>(microphones[i]->nodeIndexes),
                                                       val<2>(microphones[i]->nodeIndexes),
@@ -104,7 +104,7 @@ void MicrophoneArrayCoProcessor::collectData(double step)
 
 void MicrophoneArrayCoProcessor::writeFile(double /*step*/)
 {
-    for (int i = 0; i < microphones.size(); i++) {
+    for (std::size_t i = 0; i < microphones.size(); i++) {
         std::string fname = path + "/mic/mic_" + UbSystem::toString(microphones[i]->id) + ".csv";
         std::ofstream ostr;
         ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);

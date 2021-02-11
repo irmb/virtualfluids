@@ -355,11 +355,12 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
 {
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
         int i;
+        const int block_size = (int) blockVector[level].size();
         //#ifdef _OPENMP
         //   #pragma omp parallel for
         //#endif
         // for(SPtr<Block3D> block : blockVector[level])
-        for (i = 0; i < blockVector[level].size(); i++) {
+        for (i = 0; i < block_size; i++) {
             SPtr<Block3D> block = blockVector[level][i];
             if (block) {
                 SPtr<ILBMKernel> kernel                 = block->getKernel();
@@ -476,11 +477,12 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
         {
             for (int level = minInitLevel; level <= maxInitLevel; level++) {
                 int i;
+                const int block_size = (int) blockVector[level].size();
                 //#ifdef _OPENMP
                 //#pragma omp for schedule(dynamic)
                 //#endif
                 // for(SPtr<Block3D> block : blockVector[level])
-                for (i = 0; i < blockVector[level].size(); i++) {
+                for (i = 0; i < block_size; i++) {
                     SPtr<Block3D> block = blockVector[level][i];
                     if (block) {
                         SPtr<ILBMKernel> kernel                 = block->getKernel();
