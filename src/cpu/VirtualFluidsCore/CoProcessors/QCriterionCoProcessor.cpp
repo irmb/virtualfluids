@@ -104,8 +104,6 @@ void QCriterionCoProcessor::addData(const SPtr<Block3D> block)
     SPtr<BCArray3D> bcArray                 = kernel->getBCProcessor()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
-    unsigned int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
-
     int minX1 = 0;
     int minX2 = 0;
     int minX3 = 0;
@@ -179,6 +177,9 @@ void QCriterionCoProcessor::addData(const SPtr<Block3D> block)
     maxX1 -= 1;
     maxX2 -= 1;
     maxX3 -= 1;
+
+    int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
+
     // cell vector erstellen
     for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
         for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
@@ -189,7 +190,9 @@ void QCriterionCoProcessor::addData(const SPtr<Block3D> block)
                     (NET = nodeNumbers(ix1 + 1, ix2 + 1, ix3 + 1)) >= 0 &&
                     (NWT = nodeNumbers(ix1, ix2 + 1, ix3 + 1)) >= 0) {
                     // for valid points: neighbors are added to cells-vector
-                    cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
+                    cells.push_back(makeUbTuple((unsigned int)SWB, (unsigned int)SEB, (unsigned int)NEB,
+                                                (unsigned int)NWB, (unsigned int)SWT, (unsigned int)SET,
+                                                (unsigned int)NET, (unsigned int)NWT));
                 }
             }
         }

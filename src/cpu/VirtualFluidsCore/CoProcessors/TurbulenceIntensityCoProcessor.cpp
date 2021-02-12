@@ -114,9 +114,6 @@ void TurbulenceIntensityCoProcessor::addData(const SPtr<Block3D> block)
     SPtr<AverageValuesArray3D> av           = kernel->getDataSet()->getAverageValues();
     // int ghostLayerWidth = kernel->getGhostLayerWidth();
 
-    // knotennummerierung faengt immer bei 0 an!
-    unsigned int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
-
     int minX1 = 0;
     int minX2 = 0;
     int minX3 = 0;
@@ -161,6 +158,9 @@ void TurbulenceIntensityCoProcessor::addData(const SPtr<Block3D> block)
             }
         }
     }
+
+    int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
+
     // cell std::vector erstellen
     for (int ix3 = minX3; ix3 < maxX3 - 1; ix3++) {
         for (int ix2 = minX2; ix2 < maxX2 - 1; ix2++) {
@@ -170,7 +170,9 @@ void TurbulenceIntensityCoProcessor::addData(const SPtr<Block3D> block)
                     (SWT = nodeNumbers(ix1, ix2, ix3 + 1)) >= 0 && (SET = nodeNumbers(ix1 + 1, ix2, ix3 + 1)) >= 0 &&
                     (NET = nodeNumbers(ix1 + 1, ix2 + 1, ix3 + 1)) >= 0 &&
                     (NWT = nodeNumbers(ix1, ix2 + 1, ix3 + 1)) >= 0) {
-                    cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
+                    cells.push_back(makeUbTuple((unsigned int)SWB, (unsigned int)SEB, (unsigned int)NEB,
+                                                (unsigned int)NWB, (unsigned int)SWT, (unsigned int)SET,
+                                                (unsigned int)NET, (unsigned int)NWT));
                 }
             }
         }
