@@ -92,6 +92,6 @@ namespace Utilities
       double y = a * x + b;
       return y;
    }
-};
+}
 
 #endif

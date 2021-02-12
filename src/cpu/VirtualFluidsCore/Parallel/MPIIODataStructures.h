@@ -165,5 +165,5 @@ struct DSArraysPresence {
     bool isShearStressValArrayPresent;
     bool isRelaxationFactorPresent;
 };
-}; // namespace MPIIODataStructures
+} // namespace MPIIODataStructures
 #endif

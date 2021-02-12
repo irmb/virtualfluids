@@ -48,11 +48,11 @@ public:
 
 private:
     StringUtil() = default;
-    ;
+
     StringUtil(const StringUtil &) = default;
-    ;
+ 
     virtual ~StringUtil() = default;
-    ;
+
 
     static bool toBool(bool &t, const std::string &input, std::ios_base &(*f)(std::ios_base &));
 };

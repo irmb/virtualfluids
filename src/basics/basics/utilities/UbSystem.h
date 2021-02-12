@@ -530,7 +530,7 @@ struct select2nd {
     const result_type &operator()(const argument_type &p) const { return p.second; }
 };
 
-}; // namespace UbSystem
+} // namespace UbSystem
 
 #define UB_STATIC_ASSERT(expr) static_cast<void>(sizeof(UbSystem::ub_static_assert<expr>));
 // zum ueberpruefen von STATISCHEN ausdruecken waehrend der compile-zeit
