@@ -11,7 +11,7 @@ if(UNIX)
 endif()
 
 if(MSVC)
-   target_compile_options(metis PRIVATE "/w")
+   target_compile_options(metis PRIVATE "/W0")
 endif()
 
 if(METIS_INSTALL)

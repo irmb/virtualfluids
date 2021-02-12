@@ -648,8 +648,8 @@ void RheologyK17LBMKernel::calculate(int step)
                LBMReal OxyyMxzz = 8.0 * (omega - 2.0) * (omega + OxxPyyPzz * (3.0 * omega - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * omega + 9.0 * omega * omega) - 8.0 * omega);
                LBMReal Oxyz = 24.0 * (omega - 2.0) * (4.0 * omega * omega + omega * OxxPyyPzz * (18.0 - 13.0 * omega) + OxxPyyPzz * OxxPyyPzz * (2.0 + omega * (6.0 * omega - 11.0))) / (16.0 * omega * omega * (omega - 6.0) - 2.0 * omega * OxxPyyPzz * (216.0 + 5.0 * omega * (9.0 * omega - 46.0)) + OxxPyyPzz * OxxPyyPzz * (omega * (3.0 * omega - 10.0) * (15.0 * omega - 28.0) - 48.0));
 
-               LBMReal A = (4.0 * omega * omega + 2.0 * omega * OxxPyyPzz * (omega - 6.0) + OxxPyyPzz * OxxPyyPzz * (omega * (10.0 - 3.0 * omega) - 4.0)) / ((omega - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * omega) - 8.0 * omega));
-               LBMReal B = (4.0 * omega * OxxPyyPzz * (9.0 * omega - 16.0) - 4.0 * omega * omega - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * omega * (omega - 2.0))) / (3.0 * (omega - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * omega) - 8.0 * omega));
+               LBMReal A_ = (4.0 * omega * omega + 2.0 * omega * OxxPyyPzz * (omega - 6.0) + OxxPyyPzz * OxxPyyPzz * (omega * (10.0 - 3.0 * omega) - 4.0)) / ((omega - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * omega) - 8.0 * omega));
+               LBMReal B_ = (4.0 * omega * OxxPyyPzz * (9.0 * omega - 16.0) - 4.0 * omega * omega - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * omega * (omega - 2.0))) / (3.0 * (omega - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * omega) - 8.0 * omega));
 
 
                //relax
@@ -771,12 +771,12 @@ void RheologyK17LBMKernel::calculate(int step)
                //CUMbbc += O4 * (-CUMbbc);
                //CUMbcb += O4 * (-CUMbcb);
                //CUMcbb += O4 * (-CUMcbb);
-               CUMacc = -O4*(one / omega - c1o2) * (dyuy + dzuz) * c2o3 * A + (one - O4) * (CUMacc);
-               CUMcac = -O4*(one / omega - c1o2) * (dxux + dzuz) * c2o3 * A + (one - O4) * (CUMcac);
-               CUMcca = -O4*(one / omega - c1o2) * (dyuy + dxux) * c2o3 * A + (one - O4) * (CUMcca);
-               CUMbbc = -O4*(one / omega - c1o2) * Dxy           * c1o3 * B + (one - O4) * (CUMbbc);
-               CUMbcb = -O4*(one / omega - c1o2) * Dxz           * c1o3 * B + (one - O4) * (CUMbcb);
-               CUMcbb = -O4*(one / omega - c1o2) * Dyz           * c1o3 * B + (one - O4) * (CUMcbb);
+               CUMacc = -O4*(one / omega - c1o2) * (dyuy + dzuz) * c2o3 * A_ + (one - O4) * (CUMacc);
+               CUMcac = -O4*(one / omega - c1o2) * (dxux + dzuz) * c2o3 * A_ + (one - O4) * (CUMcac);
+               CUMcca = -O4*(one / omega - c1o2) * (dyuy + dxux) * c2o3 * A_ + (one - O4) * (CUMcca);
+               CUMbbc = -O4*(one / omega - c1o2) * Dxy           * c1o3 * B_ + (one - O4) * (CUMbbc);
+               CUMbcb = -O4*(one / omega - c1o2) * Dxz           * c1o3 * B_ + (one - O4) * (CUMbcb);
+               CUMcbb = -O4*(one / omega - c1o2) * Dyz           * c1o3 * B_ + (one - O4) * (CUMcbb);
                //////////////////////////////////////////////////////////////////////////
 
 

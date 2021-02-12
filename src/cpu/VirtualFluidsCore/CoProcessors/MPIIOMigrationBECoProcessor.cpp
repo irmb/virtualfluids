@@ -1403,7 +1403,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
     BCAddMigration bcAddArray;
     BoundaryCondition *nullBouCond = new BoundaryCondition();
     memset(nullBouCond, 0, sizeof(BoundaryCondition));
-    BoundaryCondition *bcArray;
+    BoundaryCondition *bcArray = nullptr;
     std::vector<SPtr<BoundaryConditions>> bcVector;
     std::vector<int> indexContainerV;
     std::vector<int> bcindexmatrixV;
@@ -1490,8 +1490,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
     MPI_File_close(&file_handler);
 
     delete nullBouCond;
-    if (bcArray)
-        delete bcArray;
+    delete[] bcArray;
     delete[] rawDataReceive;
     delete[] rawDataSend;
     delete[] requests;

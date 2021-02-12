@@ -215,7 +215,7 @@ void InitThixotropyBlockVisitor::setLambda(LBMReal lambda)
    this->checkFunction(muLambda);
 }
 //////////////////////////////////////////////////////////////////////////
-void InitThixotropyBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block)
+void InitThixotropyBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    using namespace D3Q27System;
 

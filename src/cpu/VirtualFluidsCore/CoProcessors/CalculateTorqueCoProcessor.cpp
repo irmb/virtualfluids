@@ -13,17 +13,17 @@
 #include "EsoTwist3D.h"
 #include "DistributionArray3D.h"
 
-CalculateTorqueCoProcessor::CalculateTorqueCoProcessor( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<Communicator> comm) : CoProcessor(grid, s), path(path), comm(comm), forceX1global(0), forceX2global(0), forceX3global(0)
+CalculateTorqueCoProcessor::CalculateTorqueCoProcessor( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path_, SPtr<Communicator> comm) : CoProcessor(grid, s), path(path), comm(comm), forceX1global(0), forceX2global(0), forceX3global(0)
 {
    if (comm->getProcessID() == comm->getRoot())
    {
       std::ofstream ostr;
-      std::string fname = path;
+       std::string fname = path_;
       ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
       if(!ostr)
       { 
          ostr.clear();
-         std::string path = UbSystem::getPathFromString(fname);
+         const std::string path = UbSystem::getPathFromString(fname);
          if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);}
          if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
       }

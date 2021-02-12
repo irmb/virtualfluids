@@ -167,7 +167,7 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
          for(std::size_t ix2=0; ix2<bcArray->getNX2(); ix2++)
             for(std::size_t ix1=0; ix1<bcArray->getNX1(); ix1++)
             {
-               Vector3D coords = grid->getNodeCoordinates(block, ix1, ix2, ix3);
+               Vector3D coords = grid->getNodeCoordinates(block, (int)ix1, (int)ix2, (int)ix3);
                x1 = coords[0];
                x2 = coords[1];
                x3 = coords[2];
