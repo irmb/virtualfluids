@@ -63,11 +63,11 @@ void BCArray3D::resize(std::size_t nx1, std::size_t nx2, std::size_t nx3, int va
 //////////////////////////////////////////////////////////////////////////
 bool BCArray3D::validIndices(std::size_t x1, std::size_t x2, std::size_t x3) const
 {
-    if (x1 < 0 || x1 >= this->bcindexmatrix.getNX1())
+    if (x1 >= this->bcindexmatrix.getNX1())
         return false;
-    if (x2 < 0 || x2 >= this->bcindexmatrix.getNX2())
+    if (x2 >= this->bcindexmatrix.getNX2())
         return false;
-    if (x3 < 0 || x3 >= this->bcindexmatrix.getNX3())
+    if (x3 >= this->bcindexmatrix.getNX3())
         return false;
     return true;
 }

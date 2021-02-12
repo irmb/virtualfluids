@@ -51,15 +51,14 @@ void VelocityWithDensityAndThixotropyBCAlgorithm::applyBC()
    int nx1 = x1;
    int nx2 = x2;
    int nx3 = x3;
-   int direction = -1;
 
    //flag points in direction of fluid
-   if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::E)) { nx1 -= 1; direction = D3Q27System::E; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::W)) { nx1 += 1; direction = D3Q27System::W; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::N)) { nx2 -= 1; direction = D3Q27System::N; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::S)) { nx2 += 1; direction = D3Q27System::S; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::T)) { nx3 -= 1; direction = D3Q27System::T; }
-   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::B)) { nx3 += 1; direction = D3Q27System::B; }
+   if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::E)) { nx1 -= 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::W)) { nx1 += 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::N)) { nx2 -= 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::S)) { nx2 += 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::T)) { nx3 -= 1; }
+   else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::B)) { nx3 += 1; }
    else	 UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on velocity boundary..."));
 
    for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++)
