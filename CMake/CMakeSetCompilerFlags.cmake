@@ -1,29 +1,21 @@
 
-###############################################################
-# set hostname -> CAB_MACHINE and load an optional config file
-###############################################################
+#########################################################################################
+## Access the hostname and loads a optional machine file hostname.cmake
+#########################################################################################
 macro(loadMachineFile)
 
-    IF(NOT CAB_MACHINE)
-        SET(CAB_MACHINE $ENV{CAB_MACHINE})
+    site_name(MACHINE_NAME)
+    string(TOUPPER  "${MACHINE_NAME}" MACHINE_NAME)
 
-        IF( CAB_MACHINE )
-            STRING(TOUPPER  "${CAB_MACHINE}" CAB_MACHINE)
-        ELSE()
-            EXECUTE_PROCESS( COMMAND hostname OUTPUT_VARIABLE CAB_MACHINE)
-            STRING(REGEX REPLACE "[ ]*([A-Za-z0-9]+).*[\\\\n]*" "\\1" CAB_MACHINE "${CAB_MACHINE}" )
-            STRING(TOUPPER  "${CAB_MACHINE}" CAB_MACHINE)
-        ENDIF()
-    ENDIF()
+    set(BUILD_MACHINE_FILE_PATH "${VF_CMAKE_DIR}/cmake_config_files")
 
-    LIST(APPEND VF_COMPILER_DEFINITION CAB_MACHINE=${CAB_MACHINE})
-    SET(CMAKE_CONFIG_FILE "${VF_CMAKE_DIR}/cmake_config_files/${CAB_MACHINE}.config.cmake")
+    set(MACHINE_FILE "${BUILD_MACHINE_FILE_PATH}/${MACHINE_NAME}.config.cmake")
 
-    IF(NOT EXISTS ${CMAKE_CONFIG_FILE})
-        status("No configuration file found for machine: ${CAB_MACHINE}.config.cmake")
+    IF(NOT EXISTS ${MACHINE_FILE})
+        status("No configuration file found: ${MACHINE_FILE}.")
     ELSE()
-        status("Load configuration file ${CAB_MACHINE}.config.cmake")
-        include(${CMAKE_CONFIG_FILE})
+        status("Load configuration file: ${MACHINE_FILE}")
+        include(${MACHINE_FILE})
     ENDIF()
 
 endmacro()
