@@ -47,7 +47,6 @@
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 
 WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor() = default;
-
 //////////////////////////////////////////////////////////////////////////
 WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                                                              const std::string &path,
@@ -111,8 +110,7 @@ void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
 
     std::vector<std::string> cellDataNames;
     std::vector<std::string> pieces = comm->gather(piece);
-    if (comm->getProcessID() == comm->getRoot())
-    {
+    if (comm->getProcessID() == comm->getRoot()) {
         std::string pname =
                 WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath, pieces, datanames, cellDataNames);
         found = pname.find_last_of("/");

@@ -147,8 +147,6 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
     SPtr<ILBMKernel> kernel = block->getKernel();
     SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
 
-    // knotennummerierung faengt immer bei 0 an!
-    int SWB = 0, SEB = 0, NEB = 0, NWB = 0, SWT = 0, SET = 0, NET = 0, NWT = 0;
 
     int minX1 = 0;
     int minX2 = 0;
@@ -205,6 +203,9 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
     maxX1 -= 1;
     maxX2 -= 1;
     maxX3 -= 1;
+
+    // knotennummerierung faengt immer bei 0 an!
+    int SWB = 0, SEB = 0, NEB = 0, NWB = 0, SWT = 0, SET = 0, NET = 0, NWT = 0;
 
     // cell vector erstellen
     for (int ix3 = minX3; ix3 <= maxX3; ix3++) {

@@ -55,7 +55,7 @@ Grid3D::Grid3D(SPtr<Communicator> comm)
 {
     levelSet.resize(Grid3DSystem::MAXLEVEL + 1);
     bundle = comm->getBundleID();
-    rank   = comm->getProcessID();
+    rank = comm->getProcessID();
 }
 //////////////////////////////////////////////////////////////////////////
 Grid3D::Grid3D(SPtr<Communicator> comm, int blockNx1, int blockNx2, int blockNx3, int gridNx1, int gridNx2, int gridNx3)
@@ -65,8 +65,8 @@ Grid3D::Grid3D(SPtr<Communicator> comm, int blockNx1, int blockNx2, int blockNx3
 {
     levelSet.resize(Grid3DSystem::MAXLEVEL + 1);
     bundle = comm->getBundleID();
-    rank   = comm->getProcessID();
-    trafo  = std::make_shared<CoordinateTransformation3D>(0.0, 0.0, 0.0, (double)blockNx1, (double)blockNx2,
+    rank  = comm->getProcessID();
+    trafo = std::make_shared<CoordinateTransformation3D>(0.0, 0.0, 0.0, (double)blockNx1, (double)blockNx2,
                                                          (double)blockNx3);
     UbTupleInt3 minInd(0, 0, 0);
     UbTupleInt3 maxInd(gridNx1, gridNx2, gridNx3);
@@ -218,11 +218,6 @@ SPtr<Block3D> Grid3D::getBlock(int id) const
     return it->second;
 }
 //////////////////////////////////////////////////////////////////////////
-// const Grid3D::Block3DMap& Grid3D::getBlocks(int level)
-//{
-//   return levelSet[level];
-//}
-//////////////////////////////////////////////////////////////////////////
 Grid3D::BlockIDMap &Grid3D::getBlockIDs() { return blockIdMap; }
 //////////////////////////////////////////////////////////////////////////
 SPtr<Block3D> Grid3D::getSuperBlock(SPtr<Block3D> block)
@@ -298,8 +293,6 @@ bool Grid3D::expandBlock(int ix1, int ix2, int ix3, int level)
         throw UbException(UB_EXARGS, "block(x1=" + UbSystem::toString(ix1) + ", x2=" + UbSystem::toString(ix2) +
                                          ", x3=" + UbSystem::toString(ix3) + ", l=" + UbSystem::toString(level) +
                                          ") is not exist");
-    // if(!block->isActive()) throw UbException(UB_EXARGS,"block(x1="+UbSystem::toString(ix1)+",
-    // x2="+UbSystem::toString(ix2)+", x3="+UbSystem::toString(ix3)+", l="+UbSystem::toString(level)+") is not active");
 
     // da bei periodic der eigentliche block andere indizes hat:
     ix1 = block->getX1();
@@ -415,7 +408,6 @@ void Grid3D::deleteConnectors()
         for (Block3DMap::value_type b : blockMap) {
             SPtr<Block3D> block = b.second;
             block->deleteConnectors();
-            // block->deleteInterpolationConnectors();
         }
     }
 }
@@ -2304,6 +2296,7 @@ void Grid3D::renumberBlockIDs()
         }
     }
 }
+
 
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::updateDistributedBlocks(SPtr<Communicator> comm)

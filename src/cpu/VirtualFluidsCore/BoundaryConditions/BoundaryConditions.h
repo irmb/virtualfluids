@@ -46,28 +46,16 @@
 //! Difenition of baundary conditions in grid generation
 class BoundaryConditions
 {
-    // public:
-    //   enum BcAlgorithm{VelocityBC, SlipBC, NoSlipBC, ThinWallNoSlipBC, HighViscosityNoSlipBC, EqDensityBC,
-    //   NonEqDensityBC, NonReflectingVelocityBC, NonReflectingDensityBC};
 public:
     BoundaryConditions()
-        : noslipBoundaryFlags(0), slipBoundaryFlags(0), velocityBoundaryFlags(0), densityBoundaryFlags(0),
-          wallModelBoundaryFlags(0), bcVelocityX1(0.0f), bcVelocityX2(0.0f), bcVelocityX3(0.0f), bcDensity(0.0f)
-          //, bcThixotropy(0.0f)
-          ,
-          bcLodiDensity(0.0f), bcLodiVelocityX1(0.0f), bcLodiVelocityX2(0.0f), bcLodiVelocityX3(0.0f),
-          bcLodiLentgh(0.0f), nx1(0.0f), nx2(0.0f), nx3(0.0f), algorithmType(-1)
     {
-        // wenn folgendes nicht geht, dann hat man weiter unten bei der bit-geschichte ein ernstes problem!!!
         UB_STATIC_ASSERT(sizeof(long long) >= 8);
-        // UB_STATIC_ASSERT( sizeof(double) >= 16);
-        // UB_STATIC_ASSERT( sizeof(long long) == 32);
         UB_STATIC_ASSERT((sizeof(long long) * 8) >= (D3Q27System::FENDDIR + 1) * BoundaryConditions::optionDigits);
 
         for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++)
             q[fdir] = -999.;
     }
-    virtual ~BoundaryConditions() {}
+    virtual ~BoundaryConditions() = default;
 
     virtual bool isEmpty()
     {
@@ -94,9 +82,9 @@ protected:
         if ((secOpt + 1) > maxOptionVal)
             throw UbException(UB_EXARGS, "error: option > " + UbSystem::toString(maxOptionVal - 1));
 
-        // alle digits an den betreffenden postionen auf "0"
+        // all digits at the respective positions to "0"
         flag &= ~(maxOptionVal << (direction * optionDigits));
-        // alle digitsan den betreffenden postionen entsprechend der marke setzen
+        // set all digits according to the flag at the respective positions
         flag |= ((long long)(secOpt + 1) << (direction * optionDigits));
     }
 
@@ -344,41 +332,38 @@ public:
     char getBcAlgorithmType() { return algorithmType; }
 
 public:
-    static const int optionDigits =
-        2; //--> 3 bits fr secondary Option --> maxOptionVal = 7, da man mit drei Digits max die 7 darstellen kann
+    static const int optionDigits = 2;   //--> 2 bits for secondary Option --> maxOptionVal = 7
     static const long long maxOptionVal; // = ( 1<<optionDigits ) - 1; //2^3-1 -> 7
 
 protected:
     float q[D3Q27System::FENDDIR + 1];
-    // float q[D3Q27System::STARTF+1];
 
-    long long noslipBoundaryFlags;
-    long long slipBoundaryFlags;
-    long long velocityBoundaryFlags;
-    long long densityBoundaryFlags;
-    long long wallModelBoundaryFlags;
+    long long noslipBoundaryFlags{ 0 };
+    long long slipBoundaryFlags{ 0 };
+    long long velocityBoundaryFlags{ 0 };
+    long long densityBoundaryFlags{ 0 };
+    long long wallModelBoundaryFlags{ 0 };
 
-    float bcVelocityX1;
-    float bcVelocityX2;
-    float bcVelocityX3;
-    float bcDensity;
-    // float  bcThixotropy;
+    float bcVelocityX1{ 0.0f };
+    float bcVelocityX2{ 0.0f };
+    float bcVelocityX3{ 0.0f };
+    float bcDensity{ 0.0f };
+    // float  bcThixotropy{ 0.0f };
 
-    float bcLodiDensity;
-    float bcLodiVelocityX1;
-    float bcLodiVelocityX2;
-    float bcLodiVelocityX3;
-    float bcLodiLentgh;
+    float bcLodiDensity{ 0.0f };
+    float bcLodiVelocityX1{ 0.0f };
+    float bcLodiVelocityX2{ 0.0f };
+    float bcLodiVelocityX3{ 0.0f };
+    float bcLodiLentgh{ 0.0f };
 
-    float nx1, nx2, nx3;
+    float nx1{ 0.0f }, nx2{ 0.0f }, nx3{ 0.0f };
 
-    char algorithmType;
+    char algorithmType { -1 };
 
 private:
     friend class MPIIORestartCoProcessor;
     friend class MPIIOMigrationCoProcessor;
     friend class MPIIOMigrationBECoProcessor;
 };
-
 
 #endif

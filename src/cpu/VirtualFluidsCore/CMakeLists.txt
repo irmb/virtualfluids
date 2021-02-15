@@ -29,6 +29,14 @@ endif()
 
 vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser MPI::MPI_CXX ${CAB_ADDITIONAL_LINK_LIBRARIES})
 
+vf_get_library_name(library_name)
+
+if(BUILD_USE_OPENMP)
+   list(APPEND CAB_ADDITIONAL_LINK_LIBRARIES OpenMP::OpenMP_CXX)
+endif()
+
+vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser MPI::MPI_CXX ${CAB_ADDITIONAL_LINK_LIBRARIES})
+
 
 vf_get_library_name(library_name)
 

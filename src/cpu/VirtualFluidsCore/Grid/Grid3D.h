@@ -50,10 +50,10 @@ class CoordinateTransformation3D;
 class Communicator;
 class Block3D;
 class Interactor3D;
-// class Grid3DVisitor;
 
 #define OFFSET 0.5
 
+//! A class implements block grid
 //////////////////////////////////////////////////////////////////////////
 class Grid3D : public enableSharedFromThis<Grid3D>
 {
@@ -93,7 +93,6 @@ public:
     void getBlocks(int level, int rank, bool active, std::vector<SPtr<Block3D>> &blockVector);
     int getNumberOfBlocks();
     int getNumberOfBlocks(int level);
-    // const Block3DMap& getBlocks(int level);
     BlockIDMap &getBlockIDs();
     void deleteBlockIDs();
     void renumberBlockIDs();
