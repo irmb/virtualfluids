@@ -35,9 +35,9 @@ endmacro()
 ################################################################
 macro(loadCompilerFlags)
 
-  SET(CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "")
-  SET(CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_DEBUG "")
-  SET(CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_RELEASE "")
+  SET(CS_COMPILER_FLAGS_CXX "")
+  SET(CS_COMPILER_FLAGS_CXX_DEBUG "")
+  SET(CS_COMPILER_FLAGS_CXX_RELEASE "")
 
    # https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER_ID.html#variable:CMAKE_<LANG>_COMPILER_ID
 
@@ -57,9 +57,9 @@ endmacro()
 ################################################################
 function(addAdditionalFlags project_name)
 
-    status_lib("additional compiler flags CXX: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS}")
-    status_lib("additional compiler flags CXX debug: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_DEBUG}")
-    status_lib("additional compiler flags CXX release: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_RELEASE}")
+    status_lib("additional compiler flags CXX: ${CS_COMPILER_FLAGS_CXX}")
+    status_lib("additional compiler flags CXX debug: ${CS_COMPILER_FLAGS_CXX_DEBUG}")
+    status_lib("additional compiler flags CXX release: ${CS_COMPILER_FLAGS_CXX_RELEASE}")
     status_lib("additional compiler definitions: ${VF_COMPILER_DEFINITION}")
     status_lib("additional linker flags: ${VF_LINK_OPTIONS}")
 
@@ -74,15 +74,15 @@ function(addAdditionalFlags project_name)
     endforeach()
 
     # compile options
-    foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS)
+    foreach(flag IN LISTS CS_COMPILER_FLAGS_CXX)
         target_compile_options(${project_name} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${flag}>")
     endforeach()
 
-    foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_DEBUG)
+    foreach(flag IN LISTS CS_COMPILER_FLAGS_CXX_DEBUG)
         target_compile_options(${project_name} PRIVATE "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:${flag}>")
     endforeach()
 
-    foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_RELEASE)
+    foreach(flag IN LISTS CS_COMPILER_FLAGS_CXX_RELEASE)
         target_compile_options(${project_name} PRIVATE "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:${flag}>")
     endforeach()
 
