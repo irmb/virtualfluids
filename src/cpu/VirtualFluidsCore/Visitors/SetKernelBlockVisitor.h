@@ -49,10 +49,6 @@ class SetKernelBlockVisitor : public Block3DVisitor
 public:
     enum Action { NewKernel, ChangeKernel, ChangeKernelWithData };
 
-    // SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue);
-
-    // SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue, double availMem, double needMem);
-
     SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, double availMem, double needMem,
                           SetKernelBlockVisitor::Action action = SetKernelBlockVisitor::NewKernel);
 

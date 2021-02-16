@@ -136,11 +136,11 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
    this->muVx3.DefineVar("x1",&x1); this->muVx3.DefineVar("x2",&x2); this->muVx3.DefineVar("x3",&x3);
    this->muRho.DefineVar("x1",&x1); this->muRho.DefineVar("x2",&x2); this->muRho.DefineVar("x3",&x3);
 
-   //Funktionszeiger
-   typedef void (*CalcFeqsFct)(LBMReal* const& /*feq[27]*/,const LBMReal& /*(d)rho*/,const LBMReal& /*vx1*/,const LBMReal& /*vx2*/,const LBMReal& /*vx3*/);
-   CalcFeqsFct   calcFeqsFct   = NULL;
+    using CalcFeqsFct = void (*)(LBMReal *const & /*feq[27]*/, const LBMReal & /*(d)rho*/, const LBMReal & /*vx1*/,
+                                 const LBMReal & /*vx2*/, const LBMReal & /*vx3*/);
+    CalcFeqsFct calcFeqsFct = NULL;
    
-   LBMReal vx1,vx2,vx3,rho;
+   LBMReal vx1, vx2, vx3, rho;
 
    int gridRank = grid->getRank();
    int blockRank = block->getRank();

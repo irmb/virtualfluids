@@ -47,50 +47,50 @@ class BoundaryConditions;
 class BCAlgorithm
 {
 public:
-   static const char VelocityBCAlgorithm = 0;
-   static const char EqDensityBCAlgorithm = 1;
-   static const char NonEqDensityBCAlgorithm = 2;
-   static const char NoSlipBCAlgorithm = 3;
-   static const char SlipBCAlgorithm = 4;
-   static const char HighViscosityNoSlipBCAlgorithm = 5;
-   static const char ThinWallNoSlipBCAlgorithm = 6;
-   static const char VelocityWithDensityBCAlgorithm = 7;
-   static const char NonReflectingOutflowBCAlgorithm = 8;
-   static const char VelocityAndThixotropyBCAlgorithm = 9;
-   static const char DensityAndThixotropyBCAlgorithm = 10;
-   static const char NoSlipAndThixotropyBCAlgorithm = 11;
-   static const char NonReflectingOutflowAndThixotropyBCAlgorithm = 12;
-   static const char VelocityWithDensityAndThixotropyBCAlgorithm = 13;
-   static const char BinghamModelNoSlipBCAlgorithm = 14;
-   static const char HerschelBulkleyModelNoSlipBCAlgorithm = 15;
-   static const char SimpleVelocityBCAlgorithm = 16;
-   static const char SimpleSlipBCAlgorithm = 17;
-   static const char PowellEyringModelNoSlipBCAlgorithm = 18;
-   static const char BinghamModelVelocityBCAlgorithm = 19;
+    static const char VelocityBCAlgorithm = 0;
+    static const char EqDensityBCAlgorithm = 1;
+    static const char NonEqDensityBCAlgorithm = 2;
+    static const char NoSlipBCAlgorithm = 3;
+    static const char SlipBCAlgorithm = 4;
+    static const char HighViscosityNoSlipBCAlgorithm = 5;
+    static const char ThinWallNoSlipBCAlgorithm = 6;
+    static const char VelocityWithDensityBCAlgorithm = 7;
+    static const char NonReflectingOutflowBCAlgorithm = 8;
+    static const char VelocityAndThixotropyBCAlgorithm = 9;
+    static const char DensityAndThixotropyBCAlgorithm = 10;
+    static const char NoSlipAndThixotropyBCAlgorithm = 11;
+    static const char NonReflectingOutflowAndThixotropyBCAlgorithm = 12;
+    static const char VelocityWithDensityAndThixotropyBCAlgorithm = 13;
+    static const char BinghamModelNoSlipBCAlgorithm = 14;
+    static const char HerschelBulkleyModelNoSlipBCAlgorithm = 15;
+    static const char SimpleVelocityBCAlgorithm = 16;
+    static const char SimpleSlipBCAlgorithm = 17;
+    static const char PowellEyringModelNoSlipBCAlgorithm = 18;
+    static const char BinghamModelVelocityBCAlgorithm = 19;
 
 
 public:
-   BCAlgorithm();
-   virtual ~BCAlgorithm() {}
-   
-   virtual void addDistributions(SPtr<DistributionArray3D> distributions) = 0;
-   void setNodeIndex(int x1, int x2, int x3);
-   void setBcPointer(SPtr<BoundaryConditions> bcPtr);
-   void setCompressible(bool c);
-   void setCollFactor(LBMReal cf);
-   char getType();
-   bool isPreCollision();
-   virtual SPtr<BCAlgorithm> clone() = 0;
-   SPtr<BCArray3D> getBcArray();
-   void setBcArray(SPtr<BCArray3D> bcarray);
-   virtual void applyBC() = 0;
-   bool getThixotropy(){ return thixotropy;};
+    BCAlgorithm() = default;
+    virtual ~BCAlgorithm() = default;
+
+    virtual void addDistributions(SPtr<DistributionArray3D> distributions) = 0;
+    void setNodeIndex(int x1, int x2, int x3);
+    void setBcPointer(SPtr<BoundaryConditions> bcPtr);
+    void setCompressible(bool c);
+    void setCollFactor(LBMReal cf);
+    char getType();
+    bool isPreCollision();
+    virtual SPtr<BCAlgorithm> clone() = 0;
+    SPtr<BCArray3D> getBcArray();
+    void setBcArray(SPtr<BCArray3D> bcarray);
+    virtual void applyBC() = 0;
+    bool getThixotropy(){ return thixotropy; };
 
 protected:
-   bool compressible;
-   char type;
-   bool preCollision;
-   bool thixotropy;
+    bool compressible { false };
+    char type;
+    bool preCollision;
+    bool thixotropy { false };
 
     SPtr<BoundaryConditions> bcPtr;
     SPtr<DistributionArray3D> distributions;
