@@ -1,12 +1,9 @@
+project(GridGenerator LANGUAGES CUDA CXX)
 
 
-vf_add_library(PRIVATE_LINK basics)
+vf_add_library(PRIVATE_LINK basics OpenMP::OpenMP_CXX)
+
 vf_get_library_name(library_name)
-
-linkCUDA()
-linkOpenMP(${library_name})
-
-
 set_target_properties(${library_name} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 # according to linker error when building static libraries.

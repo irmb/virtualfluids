@@ -23,13 +23,14 @@ IF(${USE_DEM_COUPLING})
    INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/../DemCoupling/DemCoupling.cmake)
 ENDIF()
 
-vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser ${CAB_ADDITIONAL_LINK_LIBRARIES})
+if(BUILD_USE_OPENMP)
+   list(APPEND CAB_ADDITIONAL_LINK_LIBRARIES OpenMP::OpenMP_CXX)
+endif()
+
+vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser MPI::MPI_CXX ${CAB_ADDITIONAL_LINK_LIBRARIES})
+
 
 vf_get_library_name(library_name)
-
-if(BUILD_USE_OPENMP)
-   linkOpenMP(${library_name})
-endif()
 
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/BoundaryConditions)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Connectors)
@@ -46,11 +47,6 @@ target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Ut
 IF(${USE_METIS} AND METIS_INCLUDEDIR)
    target_include_directories(${library_name} PUBLIC ${METIS_INCLUDEDIR})
 ENDIF()
-
-IF(${USE_BOOST})
-   target_include_directories(${library_name} PRIVATE ${Boost_INCLUDE_DIR})
-ENDIF()
-
 
 target_include_directories(${library_name} PRIVATE ${ZOLTAN_INCLUDEDIR})
 IF(${USE_VTK})

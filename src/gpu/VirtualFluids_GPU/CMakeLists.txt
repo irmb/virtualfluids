@@ -1,16 +1,12 @@
+project(VirtualFluids_GPU LANGUAGES CUDA CXX)
 
-IF(MSVC)
-    set(libsToLink ws2_32 GridGenerator basics Traffic) # ws_32 throws an error on Phoenix
-ELSE(MSVC)
-    #set(libsToLink GridGenerator VirtualFluidsBasics Core Traffic)
-    set(libsToLink GridGenerator basics)
-ENDIF(MSVC)
+set(additional_libraries "")
+if(MSVC)
+    set(additional_libraries ws2_32 Traffic) # ws_32 throws an error on Phoenix
+endif()
 
+vf_add_library(PRIVATE_LINK ${additional_libraries} GridGenerator basics MPI::MPI_CXX)
 
-vf_add_library(PRIVATE_LINK ${libsToLink})
-
-linkMPI()
-linkCUDA()
 linkBoost(COMPONENTS "serialization")
 
 #SET(TPN_WIN32 "/EHsc")

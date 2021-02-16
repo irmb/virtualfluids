@@ -1,29 +1,21 @@
 
-###############################################################
-# set hostname -> CAB_MACHINE and load an optional config file
-###############################################################
+#########################################################################################
+## Access the hostname and loads a optional machine file hostname.cmake
+#########################################################################################
 macro(loadMachineFile)
 
-    IF(NOT CAB_MACHINE)
-        SET(CAB_MACHINE $ENV{CAB_MACHINE})
+    site_name(MACHINE_NAME)
+    string(TOUPPER  "${MACHINE_NAME}" MACHINE_NAME)
 
-        IF( CAB_MACHINE )
-            STRING(TOUPPER  "${CAB_MACHINE}" CAB_MACHINE)
-        ELSE()
-            EXECUTE_PROCESS( COMMAND hostname OUTPUT_VARIABLE CAB_MACHINE)
-            STRING(REGEX REPLACE "[ ]*([A-Za-z0-9]+).*[\\\\n]*" "\\1" CAB_MACHINE "${CAB_MACHINE}" )
-            STRING(TOUPPER  "${CAB_MACHINE}" CAB_MACHINE)
-        ENDIF()
-    ENDIF()
+    set(BUILD_MACHINE_FILE_PATH "${VF_CMAKE_DIR}/cmake_config_files")
 
-    LIST(APPEND VF_COMPILER_DEFINITION CAB_MACHINE=${CAB_MACHINE})
-    SET(CMAKE_CONFIG_FILE "${VF_CMAKE_DIR}/cmake_config_files/${CAB_MACHINE}.config.cmake")
+    set(MACHINE_FILE "${BUILD_MACHINE_FILE_PATH}/${MACHINE_NAME}.config.cmake")
 
-    IF(NOT EXISTS ${CMAKE_CONFIG_FILE})
-        status("No configuration file found for machine: ${CAB_MACHINE}.config.cmake")
+    IF(NOT EXISTS ${MACHINE_FILE})
+        status("No configuration file found: ${MACHINE_FILE}.")
     ELSE()
-        status("Load configuration file ${CAB_MACHINE}.config.cmake")
-        include(${CMAKE_CONFIG_FILE})
+        status("Load configuration file: ${MACHINE_FILE}")
+        include(${MACHINE_FILE})
     ENDIF()
 
 endmacro()
@@ -35,9 +27,9 @@ endmacro()
 ################################################################
 macro(loadCompilerFlags)
 
-  SET(CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "")
-  SET(CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_DEBUG "")
-  SET(CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_RELEASE "")
+  SET(CS_COMPILER_FLAGS_CXX "")
+  SET(CS_COMPILER_FLAGS_CXX_DEBUG "")
+  SET(CS_COMPILER_FLAGS_CXX_RELEASE "")
 
    # https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER_ID.html#variable:CMAKE_<LANG>_COMPILER_ID
 
@@ -57,9 +49,9 @@ endmacro()
 ################################################################
 function(addAdditionalFlags project_name)
 
-    status_lib("additional compiler flags CXX: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS}")
-    status_lib("additional compiler flags CXX debug: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_DEBUG}")
-    status_lib("additional compiler flags CXX release: ${CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_RELEASE}")
+    status_lib("additional compiler flags CXX: ${CS_COMPILER_FLAGS_CXX}")
+    status_lib("additional compiler flags CXX debug: ${CS_COMPILER_FLAGS_CXX_DEBUG}")
+    status_lib("additional compiler flags CXX release: ${CS_COMPILER_FLAGS_CXX_RELEASE}")
     status_lib("additional compiler definitions: ${VF_COMPILER_DEFINITION}")
     status_lib("additional linker flags: ${VF_LINK_OPTIONS}")
 
@@ -74,15 +66,15 @@ function(addAdditionalFlags project_name)
     endforeach()
 
     # compile options
-    foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS)
+    foreach(flag IN LISTS CS_COMPILER_FLAGS_CXX)
         target_compile_options(${project_name} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${flag}>")
     endforeach()
 
-    foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_DEBUG)
+    foreach(flag IN LISTS CS_COMPILER_FLAGS_CXX_DEBUG)
         target_compile_options(${project_name} PRIVATE "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:${flag}>")
     endforeach()
 
-    foreach(flag IN LISTS CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS_RELEASE)
+    foreach(flag IN LISTS CS_COMPILER_FLAGS_CXX_RELEASE)
         target_compile_options(${project_name} PRIVATE "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:${flag}>")
     endforeach()
 

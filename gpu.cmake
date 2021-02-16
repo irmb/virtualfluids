@@ -1,14 +1,4 @@
 
-#############################################################
-###                     CUDAPATH                          ###
-#############################################################
-
-# if CMake cannot find CUDA by itself, set the correct paths manually:
-#SET(CUDA_CUT_INCLUDE_DIR    "/cluster/cuda/9.0/include;/cluster/cuda/9.0/samples/common/inc" CACHE PATH "CUDA_CUT_INCLUDE_DIR")
-#SET(CUDA_SAMPLE_INCLUDE_DIR "/cluster/cuda/9.0/samples/common/inc" CACHE PATH "CUDA_CUT_INCLUDE_DIR")
-
-
-#############################################################
 
 if(BUILD_NUMERIC_TESTS)
     set(CMAKE_CXX_STANDARD 17)
@@ -24,9 +14,6 @@ ENDIF()
 
 set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
 
-#############################################################
-
-enable_language(CUDA)
 
 ##########################################################################################################################
 ###                  Subdirectories                                                                                    ###
