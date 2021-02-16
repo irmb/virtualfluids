@@ -281,7 +281,7 @@ inline int triBoxOverlap(float boxcenter[3], float boxhalfsize[3], float trivert
     return 1;     /* box and triangle overlaps */
 }
 
-}; // namespace GbMeshTools3D
+} // namespace GbMeshTools3D
 
 #endif
 

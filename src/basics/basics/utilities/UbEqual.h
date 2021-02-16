@@ -259,7 +259,7 @@ inline bool isUbEqual(const T1 &a, const T2 &b)
 {
     using Low = typename UbEqualTrait<T1, T2>::Low;
     return specific_equal<Low, Low>(static_cast<Low>(a), static_cast<Low>(b));
-};
+}
 
 //////////////////////////////////////////////////////////////////////////
 // UbEqual-Functor

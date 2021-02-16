@@ -61,11 +61,9 @@ void SimpleVelocityBCAlgorithm::applyBC()
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal feq[D3Q27System::ENDF+1];
    distributions->getDistributionInv(f, x1, x2, x3);
-   LBMReal rho, vx1, vx2, vx3, drho;
+   LBMReal vx1, vx2, vx3, drho;
    calcMacrosFct(f, drho, vx1, vx2, vx3);
    calcFeqFct(feq, drho, vx1, vx2, vx3);
-
-   rho = 1.0+drho*compressibleFactor;
 
    for (int fdir = D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
    {

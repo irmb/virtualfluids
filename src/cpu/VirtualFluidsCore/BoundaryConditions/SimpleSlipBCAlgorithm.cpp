@@ -29,7 +29,7 @@ void SimpleSlipBCAlgorithm::applyBC()
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal feq[D3Q27System::ENDF+1];
    distributions->getDistributionInv(f, x1, x2, x3);
-   LBMReal rho, vx1, vx2, vx3, drho;
+   LBMReal vx1, vx2, vx3, drho;
    calcMacrosFct(f, drho, vx1, vx2, vx3);
    calcFeqFct(feq, drho, vx1, vx2, vx3);
 
@@ -39,8 +39,6 @@ void SimpleSlipBCAlgorithm::applyBC()
    vx1 = vx1 - amp * val<1>(normale); //normale zeigt von struktur weg!
    vx2 = vx2 - amp * val<2>(normale); //normale zeigt von struktur weg!
    vx3 = vx3 - amp * val<3>(normale); //normale zeigt von struktur weg!
-
-   rho = 1.0+drho*compressibleFactor;
 
    for (int fdir = D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
    {

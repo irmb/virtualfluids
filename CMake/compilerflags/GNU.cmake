@@ -26,10 +26,18 @@ endif()
 # warnings
 #############################################################################################################
 list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wall")
+list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wextra")
+list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-pedantic")
+
+if(BUILD_WARNINGS_AS_ERRORS)
+    list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS -Werror)
+endif()
+
 list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-unused-function")
+list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-unused-parameter")
 list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-reorder")
-list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-sign-compare")
 list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-unknown-pragmas")
+list(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-Wno-cast-function-type")
 
 #############################################################################################################
 # linker options

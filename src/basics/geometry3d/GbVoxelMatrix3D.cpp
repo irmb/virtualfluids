@@ -169,8 +169,8 @@ double GbVoxelMatrix3D::getIntersectionRaytraceFactor(const double &x1, const do
     int nix3 = UbMath::integerRounding((x3 - minX3) / deltaX3) + ndx3;
 
     // test ob nachbar solid
-    if (nix1 >= 0 && nix2 >= 0 && nix3 >= 0 && nix1 < voxelMatrix.getNX1() && nix2 < voxelMatrix.getNX2() &&
-        nix3 < voxelMatrix.getNX3()) {
+    if (nix1 >= 0 && nix2 >= 0 && nix3 >= 0 && nix1 < (int)voxelMatrix.getNX1() && nix2 < (int)voxelMatrix.getNX2() &&
+        nix3 < (int)voxelMatrix.getNX3()) {
         if (UbMath::equal(voxelMatrix(nix1, nix2, nix3), SOLID)) {
             // return halber abstand der beiden knoten
             return 0.5 * sqrt((ndx1 * deltaX1) * (ndx1 * deltaX1) + (ndx2 * deltaX2) * (ndx2 * deltaX2) +
@@ -183,17 +183,15 @@ double GbVoxelMatrix3D::getIntersectionRaytraceFactor(const double &x1, const do
 /*=======================================================*/
 bool GbVoxelMatrix3D::isPointInGbObject3D(const double &x1p, const double &x2p, const double &x3p)
 {
-    // index ermitteln
     int ix1 = UbMath::integerRounding((x1p - minX1) / deltaX1);
     int ix2 = UbMath::integerRounding((x2p - minX2) / deltaX2);
     int ix3 = UbMath::integerRounding((x3p - minX3) / deltaX3);
 
-    if (ix1 >= 0 && ix2 >= 0 && ix3 >= 0 && ix1 < voxelMatrix.getNX1() && ix2 < voxelMatrix.getNX2() &&
-        ix3 < voxelMatrix.getNX3()) {
+    if (ix1 >= 0 && ix2 >= 0 && ix3 >= 0 && ix1 < (int)voxelMatrix.getNX1() && ix2 < (int)voxelMatrix.getNX2() &&
+        ix3 < (int)voxelMatrix.getNX3()) {
         if (UbMath::equal(voxelMatrix(ix1, ix2, ix3), SOLID))
             return true;
     }
-
     return false;
 }
 /*=======================================================*/

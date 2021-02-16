@@ -80,7 +80,7 @@ public:
     void setCenterCoordinates(const double &x1, const double &x2, const double &x3) override;
 
     void translate(const double &x1, const double &x2, const double &x3) override;
-    void rotate(const double &rx1, const double &rx2, const double &rx3) override {}
+    void rotate(const double &rx1, const double &rx2, const double &rx3) override { (void)rx1; (void)rx2; (void)rx3; }
     void scale(const double &sx1, const double &sx2, const double &sx3) override;
 
     double getLengthX1();

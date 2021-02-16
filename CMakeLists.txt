@@ -51,6 +51,7 @@ option(BUILD_VF_CPPCHECK "Add cppcheck to the targets" OFF)
 option(BUILD_VF_COVERAGE "Add the -coverage compiler flag." OFF)
 
 option(BUILD_SHARED_LIBS "" OFF)
+option(BUILD_WARNINGS_AS_ERRORS "" OFF)
 
 # windows: use multi-threaded dynamically-linked runtime library
 if(BUILD_SHARED_LIBS)

@@ -7,7 +7,7 @@ class VoidData3D : public EsoTwist3D
 {
 public:
     VoidData3D() = default;
-    ;
+    
     VoidData3D(size_t nx1, size_t nx2, size_t nx3, LBMReal /*value*/)
     {
         this->NX1 = nx1;
@@ -15,7 +15,7 @@ public:
         this->NX3 = nx3;
     }
     ~VoidData3D() override = default;
-    ;
+    
     size_t getNX1() const override { return NX1; }
     size_t getNX2() const override { return NX2; }
     size_t getNX3() const override { return NX3; }

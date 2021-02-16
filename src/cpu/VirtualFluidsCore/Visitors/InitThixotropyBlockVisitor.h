@@ -103,7 +103,7 @@ public:
 
 	//void initialize(double* f, double x1, double x2, double x3, double vx1, double vx2, double vx3, double rho, UbTupleDouble3 coords, double dx, double o, bool NSE);
 
-	void visit(const SPtr<Grid3D> grid, SPtr<Block3D> block);
+	void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 protected:
 	void checkFunction(mu::Parser fct);

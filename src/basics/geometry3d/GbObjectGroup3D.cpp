@@ -83,7 +83,7 @@ vector<GbTriangle3D *> GbObjectGroup3D::getSurfaceTriangleSet()
     return allTriangles;
 }
 /*=======================================================*/
-void GbObjectGroup3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &nodes, vector<UbTupleInt3> &triangles) {}
+void GbObjectGroup3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &/*nodes*/, vector<UbTupleInt3> &/*triangles*/) {}
 /*=======================================================*/
 bool GbObjectGroup3D::hasIntersectionWithDirectedLine(GbPoint3D /*origin*/, GbPoint3D /*direction*/) { return false; }
 /*=======================================================*/

@@ -170,10 +170,6 @@ void run(string configname)
          SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, slipBCAdapter, Interactor3D::SOLID));
          SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, slipBCAdapter, Interactor3D::SOLID));
 
-         mu::Parser fct;
-         fct.SetExpr("U");
-         fct.DefineConst("U", uLB);
-
          //inflow
          SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
 

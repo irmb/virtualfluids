@@ -89,7 +89,7 @@ public:
         this->midPoint->translate(x1, x2, x3);
         this->notifyObserversObjectChanged();
     }
-    void rotate(const double &rx1, const double &rx2, const double &rx3) override
+    void rotate(const double &/*rx1*/, const double &/*rx2*/, const double &/*rx3*/) override
     { /* rotation makes no sense*/
     }
     void scale(const double &sx1, const double & /*sx2*/, const double & /*sx3*/) override { this->radius *= sx1; }

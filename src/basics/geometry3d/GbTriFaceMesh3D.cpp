@@ -1072,7 +1072,7 @@ void GbTriFaceMesh3D::readMeshFromSTLFileBinary(string filename, bool removeRedu
     float v[12]; // normal=3, vertices=3*3 = 12
     unsigned short uint16;
     // Every Face is 50 Bytes: Normal(3*float), Vertices(9*float), 2 Bytes Spacer
-    for (size_t i = 0; i < nFaces; ++i) {
+    for (int i = 0; i < nFaces; ++i) {
         for (size_t j = 0; j < 12; ++j) {
             fread((void *)&v[j], sizeof(float), 1, f);
         }

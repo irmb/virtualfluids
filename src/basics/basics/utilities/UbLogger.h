@@ -228,7 +228,7 @@ inline std::string UbLogger<OutputPolicy>::logTimeString()
     char buffer[11];
     time_t t;
     time(&t);
-    tm r = { 0 };
+    tm r; // = { 0 };
     strftime(buffer, sizeof(buffer), "%X", localtime_r(&t, &r));
     struct timeval tv;
     gettimeofday(&tv, 0);

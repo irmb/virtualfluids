@@ -287,7 +287,7 @@ inline void sendStringVector(const std::vector<std::string> &v, int dest, int ta
 /*======================================================================*/
 // send a vector of strings
 inline void receiveStringVector(std::vector<std::string> &v, int dest, int tag, PbMpi::Comm comm);
-}; // namespace PbMpi
+} // namespace PbMpi
 
 /*======================================================================*/
 // send a single value of MPI_Datatype

@@ -141,13 +141,11 @@ void MPICommunicator::allGather(std::vector<T> &svalues, std::vector<T> &rvalues
 
     if (rvalues.size() == 0) {
         rvalues.resize(1);
-        rvalues[0] = -999; // FIXME warning C4245: As svalues and rvalues are of type vector<T> there could be a
-                           // potenial signed/unsigned mismatch storring a negative number
+        rvalues[0] = 999;
     }
     if (scount == 0) {
         svalues.resize(1);
-        svalues[0] = -999; // FIXME warning C4245: As svalues and rvalues are of type vector<T> there could be a
-                           // potenial signed/unsigned mismatch storring a negative number
+        svalues[0] = 999;
     }
 
     MPI_Allgatherv(&svalues[0], scount, mpiDataType, &rvalues[0], &rcounts[0], &displs[0], mpiDataType, comm);

@@ -170,7 +170,7 @@ struct compareMember {
 //   l.sort( compareConstMethods<Klasse, double,  &Klasse::getVal1 >() );
 //}
 
-}; // namespace UbComparators
+} // namespace UbComparators
 
 #endif // UBCOMPARATOR_H
 

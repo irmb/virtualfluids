@@ -599,7 +599,7 @@ void MPIIOMigrationBECoProcessor::writeBoundaryConds(int step)
             bcVector[ic].resize(0);
             indexContainerVector[ic].resize(0);
 
-            for (int bc = 0; bc < bcArr->getBCVectorSize(); bc++) {
+            for (std::size_t bc = 0; bc < bcArr->getBCVectorSize(); bc++) {
                 BoundaryCondition *bouCond = new BoundaryCondition();
                 if (bcArr->bcvector[bc] == NULL)
                     memset(bouCond, 0, sizeof(BoundaryCondition));
@@ -800,7 +800,7 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
     SPtr<Block3D> tempBlock;
     int tempRank;
 
-    for (size_t ind = indexB - indexB; ind < indexE - indexB; ind++) // FIXME: both sides of operator are equivalent
+    for (int ind = 0; ind < indexE - indexB; ind++)
     {
         tempBlock = grid->getBlock(indexB + int(ind));
         if (!tempBlock)
@@ -1403,7 +1403,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
     BCAddMigration bcAddArray;
     BoundaryCondition *nullBouCond = new BoundaryCondition();
     memset(nullBouCond, 0, sizeof(BoundaryCondition));
-    BoundaryCondition *bcArray;
+    BoundaryCondition *bcArray = nullptr;
     std::vector<SPtr<BoundaryConditions>> bcVector;
     std::vector<int> indexContainerV;
     std::vector<int> bcindexmatrixV;
@@ -1438,7 +1438,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
 
             bcVector.resize(0);
 
-            for (size_t ibc = 0; ibc < bcAddArray.boundCond_count; ibc++) {
+            for (int ibc = 0; ibc < bcAddArray.boundCond_count; ibc++) {
                 SPtr<BoundaryConditions> bc;
                 if (memcmp(&bcArray[ibc], nullBouCond, sizeof(BoundaryCondition)) == 0)
                     bc = SPtr<BoundaryConditions>();
@@ -1490,8 +1490,7 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
     MPI_File_close(&file_handler);
 
     delete nullBouCond;
-    if (bcArray)
-        delete bcArray;
+    delete[] bcArray;
     delete[] rawDataReceive;
     delete[] rawDataSend;
     delete[] requests;

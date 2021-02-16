@@ -167,9 +167,9 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
     maxX2 -= 1;
     maxX3 -= 1;
 
-    for (size_t ix3 = minX3; ix3 <= maxX3; ix3++) {
-        for (size_t ix2 = minX2; ix2 <= maxX2; ix2++) {
-            for (size_t ix1 = minX1; ix1 <= maxX1; ix1++) {
+    for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
+        for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
+            for (int ix1 = minX1; ix1 <= maxX1; ix1++) {
                 if (!bcArray->isUndefined(ix1, ix2, ix3)) {
                     // int index = 0;
                     nodeNumbers(ix1, ix2, ix3) = nr++;

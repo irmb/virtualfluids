@@ -300,7 +300,7 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
     MPI_Offset write_offset;
     size_t sizeofOneDataSet = sizeof(DataSetMigration) + doubleCountInBlock * sizeof(double);
 
-    for (size_t nb = 0; nb < blocksCount; nb++) {
+    for (int nb = 0; nb < blocksCount; nb++) {
         write_offset = (MPI_Offset)(3 * sizeof(dataSetParam) + dataSetArray[nb].globalID * sizeofOneDataSet);
         MPI_File_write_at(file_handler, write_offset, &dataSetArray[nb], 1, dataSetType, MPI_STATUS_IGNORE);
         MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetMigration)),
@@ -460,7 +460,7 @@ void MPIIOMigrationCoProcessor::write4DArray(int step, Arrays arrayType, std::st
     MPI_Offset write_offset;
     size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
-    for (size_t nb = 0; nb < blocksCount; nb++) {
+    for (int nb = 0; nb < blocksCount; nb++) {
         write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
         MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
         MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmallMigration)),
@@ -581,7 +581,7 @@ void MPIIOMigrationCoProcessor::write3DArray(int step, Arrays arrayType, std::st
     size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
     MPI_Offset write_offset;
-    for (size_t nb = 0; nb < blocksCount; nb++) {
+    for (int nb = 0; nb < blocksCount; nb++) {
         write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
         MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
         MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmallMigration)),
@@ -1363,7 +1363,7 @@ void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
             bcindexmatrixVector[ic].resize(0);
             indexContainerVector[ic].resize(0);
 
-            for (int bc = 0; bc < bcArr->getBCVectorSize(); bc++) {
+            for (std::size_t bc = 0; bc < bcArr->getBCVectorSize(); bc++) {
                 BoundaryCondition *bouCond = new BoundaryCondition();
                 if (bcArr->bcvector[bc] == NULL) {
                     memset(bouCond, 0, sizeof(BoundaryCondition));
@@ -1610,7 +1610,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
     size_t index = 0, vectorSize = 0;
     std::vector<double> vectorsOfValues1, vectorsOfValues2, vectorsOfValues3;
 
-    for (int n = 0; n < blocksCount; n++) {
+    for (std::size_t n = 0; n < blocksCount; n++) {
         vectorSize = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3];
         vectorsOfValues1.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + vectorSize);
         index += vectorSize;
@@ -1779,7 +1779,7 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
     size_t nextVectorSize =
         dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
     std::vector<double> vectorsOfValues;
-    for (int n = 0; n < blocksCount; n++) {
+    for (std::size_t n = 0; n < blocksCount; n++) {
         SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].globalID);
 
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
@@ -2559,7 +2559,7 @@ void MPIIOMigrationCoProcessor::readBoundaryConds(int step)
             indexContainerV.resize(0);
             bcVector.resize(0);
 
-            for (size_t ibc = 0; ibc < bcAddArray[ic].boundCond_count; ibc++) {
+            for (int ibc = 0; ibc < bcAddArray[ic].boundCond_count; ibc++) {
                 SPtr<BoundaryConditions> bc;
                 if (memcmp(&bcArray[ibc], nullBouCond, sizeof(BoundaryCondition)) == 0)
                     bc = SPtr<BoundaryConditions>();

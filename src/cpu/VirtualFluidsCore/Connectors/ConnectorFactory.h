@@ -12,9 +12,9 @@ class ConnectorFactory
 {
 public:
     ConnectorFactory() = default;
-    ;
+    
     virtual ~ConnectorFactory() = default;
-    ;
+    
 
     virtual SPtr<Block3DConnector> createSameLevelDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to,
                                                                   int sendDir)                                = 0;
