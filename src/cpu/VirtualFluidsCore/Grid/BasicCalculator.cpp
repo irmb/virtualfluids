@@ -63,7 +63,6 @@ void BasicCalculator::calculate()
         int maxInitLevel       = maxLevel - minLevel;
         int straightStartLevel = minInitLevel;
         int internalIterations = 1 << (maxInitLevel - minInitLevel);
-        int forwardStartLevel;
         int threshold;
 
 #ifdef TIMING
