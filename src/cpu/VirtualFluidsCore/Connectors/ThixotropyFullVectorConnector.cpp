@@ -30,7 +30,7 @@ void ThixotropyFullVectorConnector::init()
    int anz = 2*27;
    switch (sendDir)
    {
-   case D3Q27System::ZERO: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;
+   case D3Q27System::REST: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;
    case D3Q27System::E:
    case D3Q27System::W: sender->getData().resize(maxX2*maxX3*anz, 0.0);   break;
    case D3Q27System::N:

@@ -67,8 +67,8 @@ GbTriFaceMesh3D::~GbTriFaceMesh3D()
 /*======================================================================*/
 void GbTriFaceMesh3D::init()
 {
-    nodes      = NULL;
-    triangles  = NULL;
+    //nodes      = NULL;
+    //triangles  = NULL;
     x1min      = 0.0;
     x1max      = 0.0;
     x1center   = 0.0;
@@ -787,7 +787,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
             timer.start();
             if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
-                cout << "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit" << std::endl;
+                //cout << "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit" << std::endl;
                 this->kdTree = new Kd::Tree<double>(*this, Kd::SAHSplit<double>());
             } else if (kdtreeSplitAlg == KDTREE_SPATIALSPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SpatialMedianSplit");
@@ -795,7 +795,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
             } else
                 throw UbException(UB_EXARGS, "unknown kdtree split option)");
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.stop() << "seconds");
-            cout << "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.stop() << "seconds" << std::endl;
+            //cout << "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.stop() << "seconds" << std::endl;
         }
 
         // eigentlicher PIO-Test
@@ -1005,48 +1005,44 @@ void GbTriFaceMesh3D::writeMeshPly(const std::string &filename)
         out << "3 " << (*triangles)[i].v1 << " " << (*triangles)[i].v2 << " " << (*triangles)[i].v3 << endl;
 }
 /*======================================================================*/
-void GbTriFaceMesh3D::readMeshFromSTLFile(string filename, bool removeRedundantNodes)
+void GbTriFaceMesh3D::readMeshFromSTLFileASCII(string filename, bool removeRedundantNodes)
 {
     UBLOG(logDEBUG1, "GbTriFaceMesh3DCreator::readMeshFromSTLFile !!! Dieses Format hat leider redundante Knoten ...");
 
-    UbFileInputASCII in(filename);
-    // this->nodes     = new vector<GbTriFaceMesh3D::Vertex>;
-    // this->triangles = new vector<GbTriFaceMesh3D::TriFace>;
-    string dummy;
-
-    double x, y, z;
     int nr = 0;
 
-    in.readLine();
-    while (dummy != "endsolid") {
-        in.readLine();
-        in.readLine();
-        dummy = in.readString();
-        if (dummy != "vertex")
-            throw UbException(UB_EXARGS, "no vertex format");
-        x = in.readDouble();
-        y = in.readDouble();
-        z = in.readDouble();
-        nodes->push_back(GbTriFaceMesh3D::Vertex((float)x, (float)y, (float)z));
-        in.readLine();
-        in.readString();
-        x = in.readDouble();
-        y = in.readDouble();
-        z = in.readDouble();
-        nodes->push_back(GbTriFaceMesh3D::Vertex((float)x, (float)y, (float)z));
-        in.readLine();
-        in.readString();
-        x = in.readDouble();
-        y = in.readDouble();
-        z = in.readDouble();
-        nodes->push_back(GbTriFaceMesh3D::Vertex((float)x, (float)y, (float)z));
-        triangles->push_back(GbTriFaceMesh3D::TriFace(nr, nr + 1, nr + 2));
-        in.readLine();
-        in.readLine();
-        in.readLine();
-        dummy = in.readString();
-        nr += 3;
+    ifstream in(filename.c_str());
+    if (!in.good()) {
+        (*nodes).clear();
+        (*triangles).clear();
+        UB_THROW(UbException(UB_EXARGS, "Can not open STL file: " + filename));
     }
+    char title[80];
+    std::string s0, s1;
+    float n0, n1, n2, f0, f1, f2, f3, f4, f5, f6, f7, f8;
+    in.read(title, 80);
+    while (!in.eof()) {
+        in >> s0; // facet || endsolid
+        if (s0 == "facet") {
+            in >> s1 >> n0 >> n1 >> n2; // normal x y z
+            in >> s0 >> s1;             // outer loop
+            in >> s0 >> f0 >> f1 >> f2; // vertex x y z
+            in >> s0 >> f3 >> f4 >> f5; // vertex x y z
+            in >> s0 >> f6 >> f7 >> f8; // vertex x y z
+            in >> s0;                   // endloop
+            in >> s0;                   // endfacet
+            // Generate a new Triangle without Normal as 3 Vertices
+            nodes->push_back(GbTriFaceMesh3D::Vertex(f0, f1, f2));
+            nodes->push_back(GbTriFaceMesh3D::Vertex(f3, f4, f5));
+            nodes->push_back(GbTriFaceMesh3D::Vertex(f6, f7, f8));
+            triangles->push_back(GbTriFaceMesh3D::TriFace(nr, nr + 1, nr + 2));
+            nr += 3;
+        } else if (s0 == "endsolid") {
+            break;
+        }
+    }
+    in.close();
+
     if (removeRedundantNodes) {
         this->deleteRedundantNodes(); // dort wird autoamtisch calculateValues() aufgerufen
     } else {
@@ -1056,13 +1052,11 @@ void GbTriFaceMesh3D::readMeshFromSTLFile(string filename, bool removeRedundantN
 /*======================================================================*/
 void GbTriFaceMesh3D::readMeshFromSTLFileBinary(string filename, bool removeRedundantNodes)
 {
-    // vector<GbTriFaceMesh3D::Vertex> *nodes      = new vector<GbTriFaceMesh3D::Vertex>;
-    // vector<GbTriFaceMesh3D::TriFace> *triangles = new vector<GbTriFaceMesh3D::TriFace>;
     int nr  = 0;
     FILE *f = fopen(filename.c_str(), "rb");
     if (!f) {
-        delete nodes;
-        delete triangles;
+        (*nodes).clear();
+        (*triangles).clear();
         UB_THROW(UbException(UB_EXARGS, "Can not open STL file: " + filename));
     }
     char title[80];

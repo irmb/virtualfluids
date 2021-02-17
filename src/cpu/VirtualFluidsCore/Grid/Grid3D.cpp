@@ -1341,7 +1341,7 @@ void Grid3D::getNeighborBlocksForDirectionWithDirZero(int dir, int ix1, int ix2,
         case Grid3DSystem::BSW:
             this->getNeighborsBottomSouthWest(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
-        case Grid3DSystem::ZERO:
+        case Grid3DSystem::REST:
             this->getNeighborsZero(ix1, ix2, ix3, level, levelDepth, blocks);
             break;
         default:

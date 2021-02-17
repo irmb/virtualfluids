@@ -251,6 +251,10 @@ public:
                 throw UbException(UB_EXARGS, "unknown error");
         }
     }
+    
+    //Multiphase
+    void setBoundaryPhaseField(const float &phiBC) { this->bcPhaseField = phiBC; }
+    float getBoundaryPhaseField() { return this->bcPhaseField; }
 
     /*============== Density Boundary ========================*/
     void setDensityBoundaryFlag(const int &direction, const short &secOpt = 0)
@@ -348,8 +352,9 @@ protected:
     float bcVelocityX2{ 0.0f };
     float bcVelocityX3{ 0.0f };
     float bcDensity{ 0.0f };
-    // float  bcThixotropy{ 0.0f };
+    float bcPhaseField{ 0.0f };
 
+    //FIXME: remove LODI variables, don't forget to adjust MPIIOCoProcessors
     float bcLodiDensity{ 0.0f };
     float bcLodiVelocityX1{ 0.0f };
     float bcLodiVelocityX2{ 0.0f };

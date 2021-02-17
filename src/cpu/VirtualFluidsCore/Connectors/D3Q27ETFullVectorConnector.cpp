@@ -21,7 +21,7 @@ void D3Q27ETFullVectorConnector::init()
 
     int anz = 27;
     switch (sendDir) {
-        case D3Q27System::ZERO:
+        case D3Q27System::REST:
             UB_THROW(UbException(UB_EXARGS, "ZERO not allowed"));
             break;
         case D3Q27System::E:

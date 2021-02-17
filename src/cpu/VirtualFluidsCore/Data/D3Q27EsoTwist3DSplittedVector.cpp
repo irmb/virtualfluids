@@ -84,7 +84,7 @@ void D3Q27EsoTwist3DSplittedVector::getDistribution(LBMReal *const f, size_t x1,
     f[D3Q27System::BNW] = (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1 + 1, x2, x3 + 1);
     f[D3Q27System::BNE] = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1);
 
-    f[D3Q27System::ZERO] = (*this->zeroDistributions)(x1, x2, x3);
+    f[D3Q27System::REST] = (*this->zeroDistributions)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistribution(const LBMReal *const f, size_t x1, size_t x2, size_t x3)
@@ -117,7 +117,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistribution(const LBMReal *const f, size
     (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1 + 1, x2, x3 + 1)     = f[D3Q27System::INV_BNW];
     (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1)         = f[D3Q27System::INV_BNE];
 
-    (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::ZERO];
+    (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::REST];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::getDistributionInv(LBMReal *const f, size_t x1, size_t x2, size_t x3)
@@ -150,7 +150,7 @@ void D3Q27EsoTwist3DSplittedVector::getDistributionInv(LBMReal *const f, size_t 
     f[D3Q27System::INV_BNW] = (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1 + 1, x2, x3 + 1);
     f[D3Q27System::INV_BNE] = (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1);
 
-    f[D3Q27System::ZERO] = (*this->zeroDistributions)(x1, x2, x3);
+    f[D3Q27System::REST] = (*this->zeroDistributions)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistributionInv(const LBMReal *const f, size_t x1, size_t x2, size_t x3)
@@ -183,7 +183,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInv(const LBMReal *const f, s
     (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1 + 1, x2, x3 + 1)     = f[D3Q27System::BNW];
     (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1)         = f[D3Q27System::BNE];
 
-    (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::ZERO];
+    (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::REST];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(const LBMReal *const f, size_t x1, size_t x2, size_t x3,
@@ -241,8 +241,8 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(const LBMReal *c
         (*this->localDistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3) = f[D3Q27System::BNE];
     if ((direction & EsoTwistD3Q27System::etTSW) == EsoTwistD3Q27System::etTSW)
         (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1) = f[D3Q27System::TSW];
-    if ((direction & EsoTwistD3Q27System::ZERO) == EsoTwistD3Q27System::ZERO)
-        (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::ZERO];
+    if ((direction & EsoTwistD3Q27System::REST) == EsoTwistD3Q27System::REST)
+        (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::REST];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(LBMReal f, size_t x1, size_t x2, size_t x3,
@@ -327,7 +327,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionForDirection(LBMReal f, size_
         case D3Q27System::TSW:
             (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1) = f;
             break;
-        case D3Q27System::ZERO:
+        case D3Q27System::REST:
             (*this->zeroDistributions)(x1, x2, x3) = f;
             break;
         default:
@@ -390,8 +390,8 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(const LBMReal
         (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1) = f[D3Q27System::BNE];
     if ((direction & EsoTwistD3Q27System::etTSW) == EsoTwistD3Q27System::etTSW)
         (*this->localDistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3) = f[D3Q27System::TSW];
-    if ((direction & EsoTwistD3Q27System::ZERO) == EsoTwistD3Q27System::ZERO)
-        (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::ZERO];
+    if ((direction & EsoTwistD3Q27System::REST) == EsoTwistD3Q27System::REST)
+        (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::REST];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(LBMReal f, size_t x1, size_t x2, size_t x3,
@@ -476,7 +476,7 @@ void D3Q27EsoTwist3DSplittedVector::setDistributionInvForDirection(LBMReal f, si
         case D3Q27System::TSW:
             (*this->localDistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3) = f;
             break;
-        case D3Q27System::ZERO:
+        case D3Q27System::REST:
             (*this->zeroDistributions)(x1, x2, x3) = f;
             break;
         default:
@@ -539,7 +539,7 @@ LBMReal D3Q27EsoTwist3DSplittedVector::getDistributionForDirection(size_t x1, si
             return (*this->localDistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3);
         case D3Q27System::BNE:
             return (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1);
-        case D3Q27System::ZERO:
+        case D3Q27System::REST:
             return (*this->zeroDistributions)(x1, x2, x3);
         default:
             UB_THROW(UbException(UB_EXARGS, "Direction didn't find"));
@@ -601,7 +601,7 @@ LBMReal D3Q27EsoTwist3DSplittedVector::getDistributionInvForDirection(size_t x1,
             return (*this->localDistributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3);
         case D3Q27System::TSW:
             return (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1);
-        case D3Q27System::ZERO:
+        case D3Q27System::REST:
             return (*this->zeroDistributions)(x1, x2, x3);
         default:
             UB_THROW(UbException(UB_EXARGS, "Direction didn't find"));

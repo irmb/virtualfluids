@@ -894,7 +894,7 @@ void InitDensityLBMKernel::calculate(int  /*step*/)
                //////////////////////////////////////////////////////////////////////////
                //read distribution
                ////////////////////////////////////////////////////////////////////////////
-               f[ZERO] = (*this->zeroDistributions)(x1, x2, x3);
+               f[REST] = (*this->zeroDistributions)(x1, x2, x3);
 
                f[E] = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
                f[N] = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
@@ -928,7 +928,7 @@ void InitDensityLBMKernel::calculate(int  /*step*/)
                drho = ((f[TNE]+f[BSW])+(f[TSE]+f[BNW]))+((f[BSE]+f[TNW])+(f[TSW]+f[BNE]))
                   +(((f[NE]+f[SW])+(f[SE]+f[NW]))+((f[TE]+f[BW])+(f[BE]+f[TW]))
                      +((f[BN]+f[TS])+(f[TN]+f[BS])))+((f[E]+f[W])+(f[N]+f[S])
-                        +(f[T]+f[B]))+f[ZERO];
+                        +(f[T]+f[B]))+f[REST];
 
                //vx1 = ((((f[TNE]-f[BSW])+(f[TSE]-f[BNW]))+((f[BSE]-f[TNW])+(f[BNE]-f[TSW])))+
                //   (((f[BE]-f[TW])+(f[TE]-f[BW]))+((f[SE]-f[NW])+(f[NE]-f[SW])))+
@@ -956,7 +956,7 @@ void InitDensityLBMKernel::calculate(int  /*step*/)
 
                LBMReal cu_sq = 1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-               feq[ZERO] = c8o27*(drho-cu_sq);
+               feq[REST] = c8o27*(drho-cu_sq);
                feq[E] = c2o27*(drho+3.0*(vx1)+c9o2*(vx1)*(vx1)-cu_sq);
                feq[W] = c2o27*(drho+3.0*(-vx1)+c9o2*(-vx1)*(-vx1)-cu_sq);
                feq[N] = c2o27*(drho+3.0*(vx2)+c9o2*(vx2)*(vx2)-cu_sq);
@@ -985,7 +985,7 @@ void InitDensityLBMKernel::calculate(int  /*step*/)
                feq[TNW] = c1o216*(drho+3.0*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
 
                //Relaxation
-               f[ZERO] += (feq[ZERO]-f[ZERO])*collFactor;
+               f[REST] += (feq[REST]-f[REST])*collFactor;
                f[E] += (feq[E]-f[E])*collFactor;
                f[W] += (feq[W]-f[W])*collFactor;
                f[N] += (feq[N]-f[N])*collFactor;
@@ -1016,7 +1016,7 @@ void InitDensityLBMKernel::calculate(int  /*step*/)
 
                //////////////////////////////////////////////////////////////////////////
 #ifdef  PROOF_CORRECTNESS
-               LBMReal rho_post = f[ZERO]+f[E]+f[W]+f[N]+f[S]+f[T]+f[B]
+               LBMReal rho_post = f[REST]+f[E]+f[W]+f[N]+f[S]+f[T]+f[B]
                   +f[NE]+f[SW]+f[SE]+f[NW]+f[TE]+f[BW]+f[BE]
                   +f[TW]+f[TN]+f[BS]+f[BN]+f[TS]+f[TNE]+f[TSW]
                   +f[TSE]+f[TNW]+f[BNE]+f[BSW]+f[BSE]+f[BNW];
@@ -1061,7 +1061,7 @@ void InitDensityLBMKernel::calculate(int  /*step*/)
                (*this->nonLocalDistributions)(D3Q27System::ET_BNW, x1p, x2, x3p) = f[D3Q27System::INV_BNW];
                (*this->nonLocalDistributions)(D3Q27System::ET_BNE, x1, x2, x3p) = f[D3Q27System::INV_BNE];
 
-               (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::ZERO];
+               (*this->zeroDistributions)(x1, x2, x3) = f[D3Q27System::REST];
                //////////////////////////////////////////////////////////////////////////
 
 

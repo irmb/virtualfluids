@@ -62,7 +62,7 @@ D3Q27EsoTwist3DSoA::D3Q27EsoTwist3DSoA(const size_t &nx1, const size_t &nx2, con
         new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
     d.BSW = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(
         new CbArray3D<LBMReal, IndexerX3X2X1>(nx1 + 1, nx2 + 1, nx3 + 1, value));
-    d.ZERO =
+    d.REST =
         CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(nx1, nx2, nx3, value));
 }
 //////////////////////////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ void D3Q27EsoTwist3DSoA::getDistribution(LBMReal *const f, size_t x1, size_t x2,
     f[D3Q27System::BNW] = (*d.BNW)(x1p, x2, x3p);
     f[D3Q27System::BNE] = (*d.BNE)(x1, x2, x3p);
 
-    f[D3Q27System::ZERO] = (*d.ZERO)(x1, x2, x3);
+    f[D3Q27System::REST] = (*d.REST)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSoA::setDistribution(const LBMReal *const f, size_t x1, size_t x2, size_t x3)
@@ -156,7 +156,7 @@ void D3Q27EsoTwist3DSoA::setDistribution(const LBMReal *const f, size_t x1, size
     (*d.BNW)(x1p, x2, x3p)  = f[D3Q27System::INV_BNW];
     (*d.BNE)(x1, x2, x3p)   = f[D3Q27System::INV_BNE];
 
-    (*d.ZERO)(x1, x2, x3) = f[D3Q27System::ZERO];
+    (*d.REST)(x1, x2, x3) = f[D3Q27System::REST];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSoA::getDistributionInv(LBMReal *const f, size_t x1, size_t x2, size_t x3)
@@ -189,7 +189,7 @@ void D3Q27EsoTwist3DSoA::getDistributionInv(LBMReal *const f, size_t x1, size_t 
     f[D3Q27System::INV_BNW] = (*d.BNW)(x1 + 1, x2, x3 + 1);
     f[D3Q27System::INV_BNE] = (*d.BNE)(x1, x2, x3 + 1);
 
-    f[D3Q27System::ZERO] = (*d.ZERO)(x1, x2, x3);
+    f[D3Q27System::REST] = (*d.REST)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSoA::setDistributionInv(const LBMReal *const f, size_t x1, size_t x2, size_t x3)
@@ -222,7 +222,7 @@ void D3Q27EsoTwist3DSoA::setDistributionInv(const LBMReal *const f, size_t x1, s
     //(*this->nonLocalDistributions)(D3Q27System::ET_BNW,x1+1,x2,  x3+1) = f[D3Q27System::BNW];
     //(*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1) = f[D3Q27System::BNE];
 
-    //(*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::ZERO];
+    //(*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::REST];
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSoA::setDistributionForDirection(const LBMReal *const f, size_t x1, size_t x2, size_t x3,
@@ -281,8 +281,8 @@ void D3Q27EsoTwist3DSoA::setDistributionForDirection(const LBMReal *const f, siz
     //   (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3) = f[D3Q27System::BNE]; directionFlag=true;
     // if ((direction & EsoTwistD3Q27System::etTSW) == EsoTwistD3Q27System::etTSW)
     //   (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1) = f[D3Q27System::TSW]; directionFlag=true;
-    // if ((direction & EsoTwistD3Q27System::ZERO) == EsoTwistD3Q27System::ZERO)
-    //   (*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::ZERO]; directionFlag=true;
+    // if ((direction & EsoTwistD3Q27System::REST) == EsoTwistD3Q27System::REST)
+    //   (*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::REST]; directionFlag=true;
     //#ifdef _DEBUG
     //   if(!directionFlag)UB_THROW( UbException(UB_EXARGS, "Direction didn't find") );
     //#endif //DEBUG
@@ -370,7 +370,7 @@ void D3Q27EsoTwist3DSoA::setDistributionForDirection(LBMReal f, size_t x1, size_
     // case D3Q27System::TSW :
     //   (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1) = f;
     //   break;
-    // case D3Q27System::ZERO :
+    // case D3Q27System::REST :
     //   (*this->zeroDistributions)(x1,x2,x3) = f;
     //   break;
     // default:
@@ -437,8 +437,8 @@ void D3Q27EsoTwist3DSoA::setDistributionInvForDirection(const LBMReal *const f, 
     //      (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1)= f[D3Q27System::BNE]; directionFlag=true;
     //   if ((direction & EsoTwistD3Q27System::etTSW) == EsoTwistD3Q27System::etTSW)
     //      (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3) = f[D3Q27System::TSW]; directionFlag=true;
-    //   if ((direction & EsoTwistD3Q27System::ZERO) == EsoTwistD3Q27System::ZERO)
-    //      (*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::ZERO]; directionFlag=true;
+    //   if ((direction & EsoTwistD3Q27System::REST) == EsoTwistD3Q27System::REST)
+    //      (*this->zeroDistributions)(x1,x2,x3) = f[D3Q27System::REST]; directionFlag=true;
     //#ifdef _DEBUG
     //   if(!directionFlag)UB_THROW( UbException(UB_EXARGS, "Direction didn't find") );
     //#endif //DEBUG
@@ -527,7 +527,7 @@ void D3Q27EsoTwist3DSoA::setDistributionInvForDirection(LBMReal f, size_t x1, si
     // case D3Q27System::TSW :
     //   (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3) = f;
     //   break;
-    // case D3Q27System::ZERO :
+    // case D3Q27System::REST :
     //   (*this->zeroDistributions)(x1,x2,x3) = f;
     //   break;
     // default:
@@ -592,7 +592,7 @@ LBMReal D3Q27EsoTwist3DSoA::getDistributionInvForDirection(size_t /*x1*/, size_t
     //   return (*this->localDistributions)(D3Q27System::ET_TSW,x1+1,x2+1,x3);
     // case D3Q27System::TSW :
     //   return (*this->nonLocalDistributions)(D3Q27System::ET_BNE,x1,  x2,  x3+1);
-    // case D3Q27System::ZERO :
+    // case D3Q27System::REST :
     //   return (*this->zeroDistributions)(x1,x2,x3);
     // default:
     //   UB_THROW( UbException(UB_EXARGS, "Direction didn't find") );

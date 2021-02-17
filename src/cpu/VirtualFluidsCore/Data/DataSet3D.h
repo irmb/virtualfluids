@@ -43,6 +43,7 @@
 using AverageValuesArray3D     = CbArray4D<LBMReal, IndexerX4X3X2X1>;
 using ShearStressValuesArray3D = CbArray4D<LBMReal, IndexerX4X3X2X1>;
 using RelaxationFactorArray3D  = CbArray3D<LBMReal, IndexerX3X2X1>;
+using PhaseFieldArray3D        = CbArray3D<LBMReal, IndexerX3X2X1>;
 
 //! A class provides an interface for data structures in the kernel.
 class DataSet3D
@@ -74,6 +75,10 @@ public:
 
     SPtr<RelaxationFactorArray3D> getRelaxationFactor() const;
     void setRelaxationFactor(SPtr<RelaxationFactorArray3D> values);
+
+    SPtr<PhaseFieldArray3D> getPhaseField() const;
+    void setPhaseField(SPtr<PhaseFieldArray3D> values);
+
 protected:
 private:
     SPtr<DistributionArray3D> fdistributions;
@@ -91,95 +96,50 @@ private:
 
     SPtr<RelaxationFactorArray3D> relaxationFactor;
 
+    SPtr<PhaseFieldArray3D> phaseField;
 };
 
-inline SPtr<DistributionArray3D> DataSet3D::getFdistributions() const
-{
-    return fdistributions;
-}
+inline SPtr<DistributionArray3D> DataSet3D::getFdistributions() const { return fdistributions; }
 
-inline void DataSet3D::setFdistributions(SPtr<DistributionArray3D> distributions)
-{
-    fdistributions = distributions;
-}
+inline void DataSet3D::setFdistributions(SPtr<DistributionArray3D> distributions) { fdistributions = distributions; }
 
-inline SPtr<DistributionArray3D> DataSet3D::getHdistributions() const
-{
-    return hdistributions;
-}
+inline SPtr<DistributionArray3D> DataSet3D::getHdistributions() const { return hdistributions; }
 
-inline void DataSet3D::setHdistributions(SPtr<DistributionArray3D> distributions)
-{
-    hdistributions = distributions;
-}
+inline void DataSet3D::setHdistributions(SPtr<DistributionArray3D> distributions) { hdistributions = distributions; }
 
-inline SPtr<AverageValuesArray3D> DataSet3D::getAverageValues() const
-{
-    return averageValues;
-}
+inline SPtr<AverageValuesArray3D> DataSet3D::getAverageValues() const { return averageValues; }
 
-inline void DataSet3D::setAverageValues(SPtr<AverageValuesArray3D> values)
-{
-    averageValues = values;
-}
+inline void DataSet3D::setAverageValues(SPtr<AverageValuesArray3D> values) { averageValues = values; }
 
-inline SPtr<AverageValuesArray3D> DataSet3D::getAverageDensity() const
-{
-    return averageDensity;
-}
+inline SPtr<AverageValuesArray3D> DataSet3D::getAverageDensity() const { return averageDensity; }
 
-inline void DataSet3D::setAverageDensity(SPtr<AverageValuesArray3D> values)
-{
-    averageDensity = values;
-}
+inline void DataSet3D::setAverageDensity(SPtr<AverageValuesArray3D> values) { averageDensity = values; }
 
-inline SPtr<AverageValuesArray3D> DataSet3D::getAverageVelocity() const
-{
-    return averageVelocity;
-}
+inline SPtr<AverageValuesArray3D> DataSet3D::getAverageVelocity() const { return averageVelocity; }
 
-inline void DataSet3D::setAverageVelocity(SPtr<AverageValuesArray3D> values)
-{
-    averageVelocity = values;
-}
+inline void DataSet3D::setAverageVelocity(SPtr<AverageValuesArray3D> values) { averageVelocity = values; }
 
-inline SPtr<AverageValuesArray3D> DataSet3D::getAverageFluctuations() const
-{
-    return averageFluktuations;
-}
+inline SPtr<AverageValuesArray3D> DataSet3D::getAverageFluctuations() const { return averageFluktuations; }
 
-inline void DataSet3D::setAverageFluctuations(SPtr<AverageValuesArray3D> values)
-{
-    averageFluktuations = values;
-}
+inline void DataSet3D::setAverageFluctuations(SPtr<AverageValuesArray3D> values) { averageFluktuations = values; }
 
-inline SPtr<AverageValuesArray3D> DataSet3D::getAverageTriplecorrelations() const
-{
-    return averageTriplecorrelations;
-}
+inline SPtr<AverageValuesArray3D> DataSet3D::getAverageTriplecorrelations() const { return averageTriplecorrelations; }
 
 inline void DataSet3D::setAverageTriplecorrelations(SPtr<AverageValuesArray3D> values)
 {
     averageTriplecorrelations = values;
 }
 
-inline SPtr<ShearStressValuesArray3D> DataSet3D::getShearStressValues() const
-{
-    return shearStressValues;
-}
+inline SPtr<ShearStressValuesArray3D> DataSet3D::getShearStressValues() const { return shearStressValues; }
 
-inline void DataSet3D::setShearStressValues(SPtr<ShearStressValuesArray3D> values)
-{
-    shearStressValues = values;
-}
+inline void DataSet3D::setShearStressValues(SPtr<ShearStressValuesArray3D> values) { shearStressValues = values; }
 
-inline SPtr<RelaxationFactorArray3D> DataSet3D::getRelaxationFactor() const
-{
-    return relaxationFactor;
-}
+inline SPtr<RelaxationFactorArray3D> DataSet3D::getRelaxationFactor() const { return relaxationFactor; }
 
-inline void DataSet3D::setRelaxationFactor(SPtr<RelaxationFactorArray3D> values)
-{
-    relaxationFactor = values;
-}
+inline void DataSet3D::setRelaxationFactor(SPtr<RelaxationFactorArray3D> values) { relaxationFactor = values; }
+
+inline SPtr<PhaseFieldArray3D> DataSet3D::getPhaseField() const { return phaseField; }
+
+inline void DataSet3D::setPhaseField(SPtr<PhaseFieldArray3D> values) { phaseField = values; }
+
 #endif
