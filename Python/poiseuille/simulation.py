@@ -26,6 +26,11 @@ default_kernel.use_forcing = True
 default_kernel.forcing_in_x1 = 1e-8
 
 
+default_kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
+default_kernel.use_forcing = True
+default_kernel.forcing_in_x1 = 1e-8
+
+
 def run_simulation(physical_params=default_physical_params,
                    grid_params=default_grid_params,
                    runtime_params=default_runtime_params,
