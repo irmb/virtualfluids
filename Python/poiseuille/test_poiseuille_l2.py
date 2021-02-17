@@ -18,8 +18,13 @@ from vtk_utilities import vertical_column_from_mesh, get_values_from_indices
 class TestPoiseuilleFlow(unittest.TestCase):
     node_distances = [1, 0.5, 0.25]
     number_of_nodes = [16, 32, 64]
+<<<<<<< refs/remotes/GITZ_upstream/develop
     number_of_timesteps = [2_500_000, 5_000_000, 10_000_000]
     forcings = [1e-9, 5e-10, 2.5e-10]
+=======
+    number_of_timesteps = [800_000, 1_600_000, 3_200_000]
+    forcings = [1e-7, 5e-8, 2.5e-8]
+>>>>>>> Improve Poiseuille Test Case
     viscosities = [1e-3, 2e-3, 4e-3]
 
     def zipped_settings(self):
