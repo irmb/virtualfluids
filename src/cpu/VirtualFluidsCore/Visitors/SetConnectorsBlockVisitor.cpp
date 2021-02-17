@@ -36,8 +36,8 @@
 #include "D3Q27ETFullVectorConnector.h"
 #include "D3Q27ETCFOffVectorConnector.h"
 #include "D3Q27ETFCOffVectorConnector.h"
-#include "ThixotropyFullDirectConnector.h"
-#include "ThixotropyFullVectorConnector.h"
+#include "TwoDistributionsFullDirectConnector.h"
+#include "TwoDistributionsFullVectorConnector.h"
 #include "Grid3DSystem.h"
 #include <basics/transmitter/TbTransmitterLocal.h>
 
@@ -100,8 +100,8 @@ void SetConnectorsBlockVisitor::setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<B
 				if(blockRank == neighBlockRank && neighBlock->isActive())
 				{
 					SPtr<Block3DConnector> connector;
-               connector = SPtr<Block3DConnector>(new D3Q27ETFullDirectConnector( block, neighBlock, dir));
-					//connector = SPtr<Block3DConnector>(new ThixotropyFullDirectConnector( block, neighBlock, dir));
+                    //connector = SPtr<Block3DConnector>(new D3Q27ETFullDirectConnector( block, neighBlock, dir));
+					connector = SPtr<Block3DConnector>(new TwoDistributionsFullDirectConnector( block, neighBlock, dir));
 					block->setConnector(connector);
 				}
 				else if(blockRank != neighBlockRank && neighBlock->isActive())
@@ -134,8 +134,8 @@ void SetConnectorsBlockVisitor::setRemoteConnectors(SPtr<Block3D> sblock, SPtr<B
 
 
 	SPtr<Block3DConnector> connector;
-	connector = SPtr<Block3DConnector>(new D3Q27ETFullVectorConnector(sblock, sender, receiver, dir));
-	//connector = SPtr<Block3DConnector>(new ThixotropyFullVectorConnector(sblock, sender, receiver, dir));
+	//connector = SPtr<Block3DConnector>(new D3Q27ETFullVectorConnector(sblock, sender, receiver, dir));
+	connector = SPtr<Block3DConnector>(new TwoDistributionsFullVectorConnector(sblock, sender, receiver, dir));
 	sblock->setConnector(connector);
    UBLOG(logDEBUG5, "D3Q27SetConnectorsBlockVisitor::setRemoteConnectors() - end");
 }
