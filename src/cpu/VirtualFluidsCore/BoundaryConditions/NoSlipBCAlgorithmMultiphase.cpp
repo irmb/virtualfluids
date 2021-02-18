@@ -70,7 +70,7 @@ void NoSlipBCAlgorithmMultiphase::applyBC()
    LBMReal heq[D3Q27System::ENDF+1];
    distributions ->getDistributionInv(f, x1, x2, x3);
    distributionsH->getDistributionInv(h, x1, x2, x3);
-   LBMReal phi, rho, vx1, vx2, vx3, p1;
+   LBMReal phi, vx1, vx2, vx3, p1;
    
    D3Q27System::calcDensity(h, phi);
    
@@ -80,7 +80,7 @@ void NoSlipBCAlgorithmMultiphase::applyBC()
    //rho = phi + (1.0 - phi)*1.0/densityRatio;
    LBMReal rhoH = 1.0;
    LBMReal rhoL = 1.0/densityRatio;
-   rho = rhoH + (rhoH - rhoL)*(phi - phiH)/(phiH - phiL);
+   //rho = rhoH + (rhoH - rhoL)*(phi - phiH)/(phiH - phiL);
    
    calcMacrosFct(f, p1, vx1, vx2, vx3);
    /*vx1/=(rho*c1o3);
