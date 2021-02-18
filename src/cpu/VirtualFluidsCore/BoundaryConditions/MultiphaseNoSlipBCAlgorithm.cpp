@@ -74,36 +74,18 @@ void MultiphaseNoSlipBCAlgorithm::applyBC()
    
    D3Q27System::calcDensity(h, phi);
    
-   //LBMReal collFactorM = phi*collFactorL + (1-phi)*collFactorG;
-   //LBMReal collFactorM = collFactorL + (collFactorL - collFactorG)*(phi - phiH)/(phiH - phiL);
-   
-   //rho = phi + (1.0 - phi)*1.0/densityRatio;
-   //LBMReal rhoH = 1.0;
-   //LBMReal rhoL = 1.0/densityRatio;
-   //rho = rhoH + (rhoH - rhoL)*(phi - phiH)/(phiH - phiL);
-   
    calcMacrosFct(f, p1, vx1, vx2, vx3);
-   /*vx1/=(rho*c1o3);
-   vx2/=(rho*c1o3);
-   vx3/=(rho*c1o3);*/ 
-   
-   //calcFeqFct(feq, rho, vx1, vx2, vx3);
-   //D3Q27System::calcMultiphaseFeq(feq, rho, p1, vx1, vx2, vx3);
    D3Q27System::calcMultiphaseFeqVB(feq, p1, vx1, vx2, vx3);
    D3Q27System::calcMultiphaseHeq(heq, phi, vx1, vx2, vx3); 
-   //LBMReal collFactorM1 = 0.9;
+
    for (int fdir = D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
    {
       if (bcPtr->hasNoSlipBoundaryFlag(fdir))
       {
          //quadratic bounce back
          const int invDir = D3Q27System::INVDIR[fdir];
-         //LBMReal q = bcPtr->getQ(invDir);
-         //LBMReal fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactorM)+feq[invDir])+((q/(1.0+q))*(f[invDir]+f[fdir]));
 		 LBMReal fReturn = f[invDir];
          distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
-
-		 //LBMReal hReturn = ((1.0-q)/(1.0+q))*((h[invDir]-heq[invDir])/(1.0-collFactorPh)+heq[invDir])+((q/(1.0+q))*(h[invDir]+h[fdir]));
 		 LBMReal hReturn = h[invDir];
 		 distributionsH->setDistributionForDirection(hReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
       }

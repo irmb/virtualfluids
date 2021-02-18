@@ -236,24 +236,25 @@ void MultiphaseVelocityBCAdapter::init(const D3Q27Interactor* const& interactor,
       if( !this->isTimePeriodic() ) this->unsetTimeDependent();
       else //bei peridoic die interavalle neu setzen:
       {
-         if( UbMath::equal(maxEndtime,BCFunction::INFCONST) )
-            for(size_t pos=0; pos<vx1BCs.size(); ++pos)
-            {
-               vx1BCs[pos].setStartTime( vx1BCs[pos].getStartTime() + timeStep );
-               vx1BCs[pos].setEndTime( vx1BCs[pos].getEndTime() + timeStep );
-            }
-            if( UbMath::equal(maxEndtime,BCFunction::INFCONST) )
-            for(size_t pos=0; pos<vx2BCs.size(); ++pos)
-            {
-               vx2BCs[pos].setStartTime( vx2BCs[pos].getStartTime() + timeStep );
-               vx2BCs[pos].setEndTime( vx2BCs[pos].getEndTime() + timeStep );
-            }
-         if( UbMath::equal(maxEndtime,BCFunction::INFCONST) )
-            for(size_t pos=0; pos<vx3BCs.size(); ++pos)
-            {
-               vx3BCs[pos].setStartTime( vx3BCs[pos].getStartTime() + timeStep );
-               vx3BCs[pos].setEndTime( vx3BCs[pos].getEndTime() + timeStep );
-            }
+         if( UbMath::equal(maxEndtime,BCFunction::INFCONST) )  {
+              for (size_t pos = 0; pos < vx1BCs.size(); ++pos) {
+                  vx1BCs[pos].setStartTime(vx1BCs[pos].getStartTime() + timeStep);
+                  vx1BCs[pos].setEndTime(vx1BCs[pos].getEndTime() + timeStep);
+              }
+         }
+         if( UbMath::equal(maxEndtime,BCFunction::INFCONST) ) {
+             for (size_t pos = 0; pos < vx2BCs.size(); ++pos) {
+                 vx2BCs[pos].setStartTime(vx2BCs[pos].getStartTime() + timeStep);
+                 vx2BCs[pos].setEndTime(vx2BCs[pos].getEndTime() + timeStep);
+             }
+         }
+
+         if( UbMath::equal(maxEndtime,BCFunction::INFCONST) ) {
+             for (size_t pos = 0; pos < vx3BCs.size(); ++pos) {
+                 vx3BCs[pos].setStartTime(vx3BCs[pos].getStartTime() + timeStep);
+                 vx3BCs[pos].setEndTime(vx3BCs[pos].getEndTime() + timeStep);
+             }         
+         }
         this->init(interactor,time);
       }
    }

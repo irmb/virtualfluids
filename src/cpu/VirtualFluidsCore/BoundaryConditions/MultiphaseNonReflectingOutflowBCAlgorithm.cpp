@@ -69,7 +69,6 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
    LBMReal f[ENDF+1];
    LBMReal ftemp[ENDF+1];
    LBMReal h[D3Q27System::ENDF+1];
-   //LBMReal heq[D3Q27System::ENDF+1];
    LBMReal htemp[ENDF+1];
 
    int nx1 = x1;
@@ -91,25 +90,11 @@ void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
    distributionsH->getDistribution(h, x1, x2, x3);
    distributionsH->getDistribution(htemp, nx1, nx2, nx3);
 
-   LBMReal phi, rho, p1, vx1, vx2, vx3;
+   LBMReal phi, p1, vx1, vx2, vx3;
    
    D3Q27System::calcDensity(h, phi);
    
-   //LBMReal collFactorM = phi*collFactorL + (1-phi)*collFactorG;
-   //LBMReal collFactorM = collFactorL + (collFactorL - collFactorG)*(phi - phiH)/(phiH - phiL);
-
-   //rho = phi + (1.0 - phi)*1.0/densityRatio;
-   //LBMReal rhoH = 1.0;
-   //LBMReal rhoL = 1.0/densityRatio;
-   //rho = rhoH + (rhoH - rhoL)*(phi - phiH)/(phiH - phiL);
-
-   
-   
    calcMacrosFct(f, p1, vx1, vx2, vx3);
-   /*vx1/=(rho*c1o3);
-   vx2/=(rho*c1o3);
-   vx3/=(rho*c1o3);*/
-
 
    switch (direction)
    {
