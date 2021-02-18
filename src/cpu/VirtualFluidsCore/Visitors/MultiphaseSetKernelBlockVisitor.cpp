@@ -1,4 +1,4 @@
-#include "SetKernelBlockVisitorMultiphase.h"
+#include "MultiphaseSetKernelBlockVisitor.h"
 #include "Grid3DSystem.h"
 #include "LBMSystem.h"
 #include "Block3D.h"
@@ -19,8 +19,8 @@
 //   }
 //}
 //////////////////////////////////////////////////////////////////////////
-SetKernelBlockVisitorMultiphase::SetKernelBlockVisitorMultiphase(SPtr<LBMKernel> kernel, LBMReal nuL, LBMReal nuG, LBMReal densityRatio, LBMReal beta, LBMReal kappa,
-	LBMReal contactAngle, double availMem, double needMem, SetKernelBlockVisitorMultiphase::Action action /*= SetKernelBlockVisitor::New*/) :
+MultiphaseSetKernelBlockVisitor::MultiphaseSetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nuL, LBMReal nuG, LBMReal densityRatio, LBMReal beta, LBMReal kappa,
+	LBMReal contactAngle, double availMem, double needMem, MultiphaseSetKernelBlockVisitor::Action action /*= SetKernelBlockVisitor::New*/) :
 	Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nuL(nuL), nuG(nuG), densityRatio(densityRatio), beta(beta), kappa(kappa), contactAngle(contactAngle), action(action), dataSetFlag(true)
 {
 	if (needMem > availMem)
@@ -29,7 +29,7 @@ SetKernelBlockVisitorMultiphase::SetKernelBlockVisitorMultiphase(SPtr<LBMKernel>
 	}
 }
 //////////////////////////////////////////////////////////////////////////
-void SetKernelBlockVisitorMultiphase::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
+void MultiphaseSetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
 	if(kernel && (block->getRank() == grid->getRank()))
 	{
@@ -50,10 +50,10 @@ void SetKernelBlockVisitorMultiphase::visit(SPtr<Grid3D> grid, SPtr<Block3D> blo
 
 		switch (action)
 		{
-		case SetKernelBlockVisitorMultiphase::NewKernel:
+		case MultiphaseSetKernelBlockVisitor::NewKernel:
 			block->setKernel(newKernel);
 			break;
-		case SetKernelBlockVisitorMultiphase::ChangeKernel:
+		case MultiphaseSetKernelBlockVisitor::ChangeKernel:
 			{
                 SPtr<DataSet3D> dataSet = block->getKernel()->getDataSet();
 				if (!dataSet)
@@ -73,7 +73,7 @@ void SetKernelBlockVisitorMultiphase::visit(SPtr<Grid3D> grid, SPtr<Block3D> blo
 			}
 			break;
 
-		case SetKernelBlockVisitorMultiphase::ChangeKernelWithData:
+		case MultiphaseSetKernelBlockVisitor::ChangeKernelWithData:
 			{
 				SPtr<BCProcessor> bcProc = block->getKernel()->getBCProcessor();
 				if (!bcProc)
@@ -89,7 +89,7 @@ void SetKernelBlockVisitorMultiphase::visit(SPtr<Grid3D> grid, SPtr<Block3D> blo
 	}
 }
 
-void SetKernelBlockVisitorMultiphase::setNoDataSetFlag(bool flag)
+void MultiphaseSetKernelBlockVisitor::setNoDataSetFlag(bool flag)
 {
 	dataSetFlag = flag;
 }

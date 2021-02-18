@@ -26,43 +26,43 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file NonReflectingOutflowBCAlgorithmMultiphase.cpp
+//! \file MultiphaseNonReflectingOutflowBCAlgorithm.cpp
 //! \ingroup BoundarConditions
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#include "NonReflectingOutflowBCAlgorithmMultiphase.h"
+#include "MultiphaseNonReflectingOutflowBCAlgorithm.h"
 #include "D3Q27System.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
 
-NonReflectingOutflowBCAlgorithmMultiphase::NonReflectingOutflowBCAlgorithmMultiphase()
+MultiphaseNonReflectingOutflowBCAlgorithm::MultiphaseNonReflectingOutflowBCAlgorithm()
 {
    BCAlgorithm::type = BCAlgorithm::NonReflectingOutflowBCAlgorithm;
    BCAlgorithm::preCollision = true;
 }
 //////////////////////////////////////////////////////////////////////////
-NonReflectingOutflowBCAlgorithmMultiphase::~NonReflectingOutflowBCAlgorithmMultiphase()
+MultiphaseNonReflectingOutflowBCAlgorithm::~MultiphaseNonReflectingOutflowBCAlgorithm()
 {
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<BCAlgorithm> NonReflectingOutflowBCAlgorithmMultiphase::clone()
+SPtr<BCAlgorithm> MultiphaseNonReflectingOutflowBCAlgorithm::clone()
 {
-    SPtr<BCAlgorithm> bc(new NonReflectingOutflowBCAlgorithmMultiphase());
+    SPtr<BCAlgorithm> bc(new MultiphaseNonReflectingOutflowBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void NonReflectingOutflowBCAlgorithmMultiphase::addDistributions(SPtr<DistributionArray3D> distributions)
+void MultiphaseNonReflectingOutflowBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void NonReflectingOutflowBCAlgorithmMultiphase::addDistributionsH(SPtr<DistributionArray3D> distributionsH)
+void MultiphaseNonReflectingOutflowBCAlgorithm::addDistributionsH(SPtr<DistributionArray3D> distributionsH)
 {
 	this->distributionsH = distributionsH;
 }
 //////////////////////////////////////////////////////////////////////////
-void NonReflectingOutflowBCAlgorithmMultiphase::applyBC()
+void MultiphaseNonReflectingOutflowBCAlgorithm::applyBC()
 {
    using namespace D3Q27System;
    using namespace UbMath;
@@ -99,9 +99,9 @@ void NonReflectingOutflowBCAlgorithmMultiphase::applyBC()
    //LBMReal collFactorM = collFactorL + (collFactorL - collFactorG)*(phi - phiH)/(phiH - phiL);
 
    //rho = phi + (1.0 - phi)*1.0/densityRatio;
-   LBMReal rhoH = 1.0;
-   LBMReal rhoL = 1.0/densityRatio;
-   rho = rhoH + (rhoH - rhoL)*(phi - phiH)/(phiH - phiL);
+   //LBMReal rhoH = 1.0;
+   //LBMReal rhoL = 1.0/densityRatio;
+   //rho = rhoH + (rhoH - rhoL)*(phi - phiH)/(phiH - phiL);
 
    
    

@@ -26,25 +26,30 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file NoSlipBCAlgorithmMultiphase.h
-//! \ingroup BoundarConditions
+//! \file MultiphaseBoundaryConditionsBlockVisitor.h
+//! \ingroup Visitors
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#ifndef NoSlipBCAlgorithmMultiphase_h__
-#define NoSlipBCAlgorithmMultiphase_h__
+#ifndef MultiphaseBoundaryConditionsBlockVisitor_h__
+#define MultiphaseBoundaryConditionsBlockVisitor_h__
 
-#include "BCAlgorithm.h"
+#include "Block3DVisitor.h"
+#include <map>
 
-//! A class implements no-slip boundary condition for multiphase simulations
-class NoSlipBCAlgorithmMultiphase : public BCAlgorithm
+class BCAdapter;
+class BCAlgorithm;
+
+class MultiphaseBoundaryConditionsBlockVisitor : public Block3DVisitor
 {
 public:
-   NoSlipBCAlgorithmMultiphase();
-   virtual ~NoSlipBCAlgorithmMultiphase();
-   SPtr<BCAlgorithm> clone() override;
-   void addDistributions(SPtr<DistributionArray3D> distributions) override;
-   void addDistributionsH(SPtr<DistributionArray3D> distributionsH) override;
-   void applyBC();
+   MultiphaseBoundaryConditionsBlockVisitor();
+   virtual ~MultiphaseBoundaryConditionsBlockVisitor();
+   
+   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block);
+   void addBC(SPtr<BCAdapter> bc);
+protected:
+private:
+   std::map<char, SPtr<BCAlgorithm>> bcMap;
 };
-#endif // NoSlipBCAlgorithmMultiphase_h__
+#endif // BoundaryConditionBlockVisitor_h__

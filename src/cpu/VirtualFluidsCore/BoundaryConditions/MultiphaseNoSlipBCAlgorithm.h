@@ -26,24 +26,25 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file NonReflectingOutflowBCAlgorithmMultiphase.h
+//! \file MultiphaseNoSlipBCAlgorithm.h
 //! \ingroup BoundarConditions
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#ifndef NonReflectingOutflowBCAlgorithmMultiphase_h__
-#define NonReflectingOutflowBCAlgorithmMultiphase_h__
+#ifndef MultiphaseNoSlipBCAlgorithm_h__
+#define MultiphaseNoSlipBCAlgorithm_h__
 
 #include "BCAlgorithm.h"
-//! A class implements non reflecting outflow boundary condition for multiphase simulations
-class NonReflectingOutflowBCAlgorithmMultiphase : public BCAlgorithm
+
+//! A class implements no-slip boundary condition for multiphase simulations
+class MultiphaseNoSlipBCAlgorithm : public BCAlgorithm
 {
 public:
-   NonReflectingOutflowBCAlgorithmMultiphase();
-   ~NonReflectingOutflowBCAlgorithmMultiphase();
-   SPtr<BCAlgorithm> clone();
-   void addDistributions(SPtr<DistributionArray3D> distributions);
-   void addDistributionsH(SPtr<DistributionArray3D> distributionsH);
+   MultiphaseNoSlipBCAlgorithm();
+   virtual ~MultiphaseNoSlipBCAlgorithm();
+   SPtr<BCAlgorithm> clone() override;
+   void addDistributions(SPtr<DistributionArray3D> distributions) override;
+   void addDistributionsH(SPtr<DistributionArray3D> distributionsH) override;
    void applyBC();
 };
-#endif // NonReflectingOutflowBCAlgorithmMultiphase_h__
+#endif // MultiphaseNoSlipBCAlgorithm_h__

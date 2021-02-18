@@ -26,42 +26,42 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file VelocityBCAlgorithmMultiphase.cpp
+//! \file MultiphaseVelocityBCAlgorithm.cpp
 //! \ingroup BoundarConditions
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#include "VelocityBCAlgorithmMultiphase.h"
+#include "MultiphaseVelocityBCAlgorithm.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
 
-VelocityBCAlgorithmMultiphase::VelocityBCAlgorithmMultiphase()
+MultiphaseVelocityBCAlgorithm::MultiphaseVelocityBCAlgorithm()
 {
    BCAlgorithm::type = BCAlgorithm::VelocityBCAlgorithm;
    BCAlgorithm::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-VelocityBCAlgorithmMultiphase::~VelocityBCAlgorithmMultiphase()
+MultiphaseVelocityBCAlgorithm::~MultiphaseVelocityBCAlgorithm()
 {
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<BCAlgorithm> VelocityBCAlgorithmMultiphase::clone()
+SPtr<BCAlgorithm> MultiphaseVelocityBCAlgorithm::clone()
 {
-   SPtr<BCAlgorithm> bc(new VelocityBCAlgorithmMultiphase());
+   SPtr<BCAlgorithm> bc(new MultiphaseVelocityBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void VelocityBCAlgorithmMultiphase::addDistributions(SPtr<DistributionArray3D> distributions)
+void MultiphaseVelocityBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void VelocityBCAlgorithmMultiphase::addDistributionsH(SPtr<DistributionArray3D> distributionsH)
+void MultiphaseVelocityBCAlgorithm::addDistributionsH(SPtr<DistributionArray3D> distributionsH)
 {
 	this->distributionsH = distributionsH;
 }
 //////////////////////////////////////////////////////////////////////////
-void VelocityBCAlgorithmMultiphase::applyBC()
+void MultiphaseVelocityBCAlgorithm::applyBC()
 {
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal h[D3Q27System::ENDF+1];

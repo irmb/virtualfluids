@@ -26,43 +26,43 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file NoSlipBCAlgorithmMultiphase.cpp
+//! \file MultiphaseNoSlipBCAlgorithm.cpp
 //! \ingroup BoundarConditions
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#include "NoSlipBCAlgorithmMultiphase.h"
+#include "MultiphaseNoSlipBCAlgorithm.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
 
-NoSlipBCAlgorithmMultiphase::NoSlipBCAlgorithmMultiphase()
+MultiphaseNoSlipBCAlgorithm::MultiphaseNoSlipBCAlgorithm()
 {
-   BCAlgorithm::type = BCAlgorithm::NoSlipBCAlgorithmMultiphase;
+   BCAlgorithm::type = BCAlgorithm::MultiphaseNoSlipBCAlgorithm;
    BCAlgorithm::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-NoSlipBCAlgorithmMultiphase::~NoSlipBCAlgorithmMultiphase()
+MultiphaseNoSlipBCAlgorithm::~MultiphaseNoSlipBCAlgorithm()
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<BCAlgorithm> NoSlipBCAlgorithmMultiphase::clone()
+SPtr<BCAlgorithm> MultiphaseNoSlipBCAlgorithm::clone()
 {
-   SPtr<BCAlgorithm> bc(new NoSlipBCAlgorithmMultiphase());
+   SPtr<BCAlgorithm> bc(new MultiphaseNoSlipBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void NoSlipBCAlgorithmMultiphase::addDistributions(SPtr<DistributionArray3D> distributions)
+void MultiphaseNoSlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void NoSlipBCAlgorithmMultiphase::addDistributionsH(SPtr<DistributionArray3D> distributionsH)
+void MultiphaseNoSlipBCAlgorithm::addDistributionsH(SPtr<DistributionArray3D> distributionsH)
 {
 	this->distributionsH = distributionsH;
 }
 //////////////////////////////////////////////////////////////////////////
-void NoSlipBCAlgorithmMultiphase::applyBC()
+void MultiphaseNoSlipBCAlgorithm::applyBC()
 {
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal h[D3Q27System::ENDF+1];

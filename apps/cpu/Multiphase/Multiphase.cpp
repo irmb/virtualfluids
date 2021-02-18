@@ -214,10 +214,10 @@ void run(string configname)
             // BC Adapter
             //////////////////////////////////////////////////////////////////////////////
             SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-            noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithmMultiphase()));
+            noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
 
             SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
-            denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithmMultiphase()));
+            denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
 
             // double r = 5.0; //boost::dynamic_pointer_cast<GbCylinder3D>(cylinder)->getRadius();
             // double cx1 = g_minX1;
@@ -241,19 +241,19 @@ void run(string configname)
             // BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
 
             SPtr<BCAdapter> velBCAdapterF1(
-                new VelocityBCAdapterMultiphase(false, true, false, fctF1, phiH, 0.0, endTime));
+                new MultiphaseVelocityBCAdapter(false, true, false, fctF1, phiH, 0.0, endTime));
 
-            // BCAdapterPtr velBCAdapterF2_1_init(new VelocityBCAdapterMultiphase(false, false, true, fctF2_1, phiH,
-            // 0.0, endTime)); BCAdapterPtr velBCAdapterF2_2_init(new VelocityBCAdapterMultiphase(false, false, true,
+            // BCAdapterPtr velBCAdapterF2_1_init(new MultiphaseVelocityBCAdapter(false, false, true, fctF2_1, phiH,
+            // 0.0, endTime)); BCAdapterPtr velBCAdapterF2_2_init(new MultiphaseVelocityBCAdapter(false, false, true,
             // fctF2_2, phiH, 0.0, endTime));
 
-            // BCAdapterPtr velBCAdapterF2_1_init(new VelocityBCAdapterMultiphase(false, false, true, fctvel_F2_init,
-            // phiL, 0.0, endTime)); BCAdapterPtr velBCAdapterF2_2_init(new VelocityBCAdapterMultiphase(false, false,
+            // BCAdapterPtr velBCAdapterF2_1_init(new MultiphaseVelocityBCAdapter(false, false, true, fctvel_F2_init,
+            // phiL, 0.0, endTime)); BCAdapterPtr velBCAdapterF2_2_init(new MultiphaseVelocityBCAdapter(false, false,
             // true, fctvel_F2_init, phiL, 0.0, endTime));
 
-            velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithmMultiphase()));
-            // velBCAdapterF2_1_init->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithmMultiphase()));
-            // velBCAdapterF2_2_init->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithmMultiphase()));
+            velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+            // velBCAdapterF2_1_init->setBcAlgorithm(BCAlgorithmPtr(new MultiphaseVelocityBCAlgorithm()));
+            // velBCAdapterF2_2_init->setBcAlgorithm(BCAlgorithmPtr(new MultiphaseVelocityBCAlgorithm()));
 
             // velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityWithDensityBCAlgorithm()));
             // mu::Parser fct;
@@ -264,7 +264,7 @@ void run(string configname)
 
             //////////////////////////////////////////////////////////////////////////////////
             // BC visitor
-            BoundaryConditionsBlockVisitorMultiphase bcVisitor;
+            MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
             bcVisitor.addBC(noSlipBCAdapter);
             bcVisitor.addBC(denBCAdapter);
             bcVisitor.addBC(velBCAdapterF1);
@@ -352,7 +352,7 @@ void run(string configname)
 
             // kernel->setBCProcessor(bcProc);
 
-            SetKernelBlockVisitorMultiphase kernelVisitor(kernel, nuL, nuG, densityRatio, beta, kappa, theta, availMem,
+            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nuL, nuG, densityRatio, beta, kappa, theta, availMem,
                                                           needMem);
 
             grid->accept(kernelVisitor);
@@ -406,7 +406,7 @@ void run(string configname)
             fct2.DefineConst("radius", radius);
             fct2.DefineConst("interfaceThickness", interfaceThickness);*/
 
-            InitDistributionsBlockVisitorMultiphase initVisitor(densityRatio, interfaceThickness, radius);
+            MultiphaseInitDistributionsBlockVisitor initVisitor(densityRatio, interfaceThickness, radius);
             initVisitor.setPhi(fct1);
             // initVisitor.setVx1(fct2);
             grid->accept(initVisitor);

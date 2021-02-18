@@ -26,26 +26,24 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file VelocityBCAlgorithmMultiphase.h
+//! \file MultiphaseNonReflectingOutflowBCAlgorithm.h
 //! \ingroup BoundarConditions
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#ifndef VelocityBoundaryConditionMultiphase_h__
-#define VelocityBoundaryConditionMultiphase_h__
+#ifndef MultiphaseNonReflectingOutflowBCAlgorithm_h__
+#define MultiphaseNonReflectingOutflowBCAlgorithm_h__
 
 #include "BCAlgorithm.h"
-//! A class implements velocity boundary condition for multiphase simulations
-class VelocityBCAlgorithmMultiphase : public BCAlgorithm
+//! A class implements non reflecting outflow boundary condition for multiphase simulations
+class MultiphaseNonReflectingOutflowBCAlgorithm : public BCAlgorithm
 {
 public:
-   VelocityBCAlgorithmMultiphase();
-   ~VelocityBCAlgorithmMultiphase();
-   SPtr<BCAlgorithm> clone() override;
-   void addDistributions(SPtr<DistributionArray3D> distributions) override;
-   void addDistributionsH(SPtr<DistributionArray3D> distributionsH) override;
-   void applyBC() override;
+   MultiphaseNonReflectingOutflowBCAlgorithm();
+   ~MultiphaseNonReflectingOutflowBCAlgorithm();
+   SPtr<BCAlgorithm> clone();
+   void addDistributions(SPtr<DistributionArray3D> distributions);
+   void addDistributionsH(SPtr<DistributionArray3D> distributionsH);
+   void applyBC();
 };
-
-#endif // VelocityBoundaryConditionMultiphase_h__
-
+#endif // MultiphaseNonReflectingOutflowBCAlgorithm_h__

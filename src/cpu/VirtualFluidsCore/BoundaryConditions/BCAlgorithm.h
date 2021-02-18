@@ -67,7 +67,7 @@ public:
     static const char SimpleSlipBCAlgorithm                        = 17;
     static const char PowellEyringModelNoSlipBCAlgorithm           = 18;
     static const char BinghamModelVelocityBCAlgorithm              = 19;
-    static const char NoSlipBCAlgorithmMultiphase                  = 20;
+    static const char MultiphaseNoSlipBCAlgorithm                  = 20;
 
 
 public:
