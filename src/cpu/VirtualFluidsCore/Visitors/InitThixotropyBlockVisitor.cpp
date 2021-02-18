@@ -452,7 +452,7 @@ void InitThixotropyBlockVisitor::checkFunction(mu::Parser fct)
 //   f[BNW] = f_TSE + feq[BNW];
 //   f[BSE] = f_TNW + feq[BSE];
 //   f[BSW] = f_TNE + feq[BSW];
-//   f[ZERO] = f_ZERO + feq[ZERO];
+//   f[REST] = f_ZERO + feq[REST];
 //
 //
 //

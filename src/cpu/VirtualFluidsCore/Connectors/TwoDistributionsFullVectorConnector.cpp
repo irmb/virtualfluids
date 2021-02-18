@@ -1,4 +1,37 @@
-#include "ThixotropyFullVectorConnector.h"
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file TwoDistributionsFullVectorConnector.cpp
+//! \ingroup Connectors
+//! \author Konstantin Kutscher
+//=======================================================================================
+
+#include "TwoDistributionsFullVectorConnector.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "LBMKernel.h"
 #include "Block3D.h"
@@ -7,7 +40,7 @@
 #include "DataSet3D.h"
 
 //////////////////////////////////////////////////////////////////////////
-ThixotropyFullVectorConnector::ThixotropyFullVectorConnector(SPtr<Block3D> block
+TwoDistributionsFullVectorConnector::TwoDistributionsFullVectorConnector(SPtr<Block3D> block
    , VectorTransmitterPtr sender
    , VectorTransmitterPtr receiver
    , int sendDir)
@@ -18,7 +51,7 @@ ThixotropyFullVectorConnector::ThixotropyFullVectorConnector(SPtr<Block3D> block
 
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyFullVectorConnector::init()
+void TwoDistributionsFullVectorConnector::init()
 {
    maxX1 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX1() - 1;
    maxX2 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX2() - 1;
@@ -30,7 +63,7 @@ void ThixotropyFullVectorConnector::init()
    int anz = 2*27;
    switch (sendDir)
    {
-   case D3Q27System::ZERO: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;
+   case D3Q27System::REST: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;
    case D3Q27System::E:
    case D3Q27System::W: sender->getData().resize(maxX2*maxX3*anz, 0.0);   break;
    case D3Q27System::N:
@@ -66,7 +99,7 @@ void ThixotropyFullVectorConnector::init()
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyFullVectorConnector::fillSendVectors()
+void TwoDistributionsFullVectorConnector::fillSendVectors()
 {
    localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getLocalDistributions();
    nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getNonLocalDistributions();
@@ -257,7 +290,7 @@ void ThixotropyFullVectorConnector::fillSendVectors()
    else UB_THROW(UbException(UB_EXARGS, "unknown dir"));
 }
 ////////////////////////////////////////////////////////////////////////
-void ThixotropyFullVectorConnector::distributeReceiveVectors()
+void TwoDistributionsFullVectorConnector::distributeReceiveVectors()
 {
    /*e.g. connector sendet nach EAST --> empfaengt daten aus WEST ;-)*/
 

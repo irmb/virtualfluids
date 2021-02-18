@@ -269,7 +269,7 @@ public:
         this->transX2             = transX2;
         this->transX3             = transX3;
     }
-    void readMeshFromSTLFile(std::string filename, bool removeRedundantNodes);
+    void readMeshFromSTLFileASCII(std::string filename, bool removeRedundantNodes);
     void readMeshFromSTLFileBinary(std::string filename, bool removeRedundantNodes);
 
     double getX1Minimum() override
@@ -344,7 +344,7 @@ public:
     void rotateAroundPoint(const double &px1, const double &px2, const double &px3, const double &alpha,
                            const double &beta, const double &gamma);
     void translate(const double &x1, const double &x2, const double &x3) override;
-    void reflectAcrossXYLine(const double &alpha);
+    //void reflectAcrossXYLine(const double &alpha);
 
     bool isPointInGbObject3D(const double &x1, const double &x2, const double &x3) override;
     bool isPointInGbObject3D(const double &x1, const double &x2, const double &x3, int counter);
@@ -378,8 +378,8 @@ protected:
     KDTREE_SPLITAGORITHM kdtreeSplitAlg;
     void init();
 
-    std::vector<Vertex> *nodes;
-    std::vector<TriFace> *triangles;
+    std::vector<Vertex> * nodes;
+    std::vector<TriFace> * triangles;
     // for transfer
     std::string filename;
     bool transferViaFilename{ false };

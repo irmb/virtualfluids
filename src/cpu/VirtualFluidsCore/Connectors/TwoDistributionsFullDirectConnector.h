@@ -1,12 +1,38 @@
-/**
-* @file ThixotropyFullDirectConnector.h
-* @brief Connector send and receive full distribution in shared memory
-*
-* @author Hussein Alihussein
-* @date 28.11.2018
-*/
-#ifndef ThixotropyFullDirectConnector_H
-#define ThixotropyFullDirectConnector_H
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file TwoDistributionsFullDirectConnector.h
+//! \ingroup Connectors
+//! \author Konstantin Kutscher
+//=======================================================================================
+
+#ifndef TwoDistributionsFullDirectConnector_H
+#define TwoDistributionsFullDirectConnector_H
 
 #include "LocalBlock3DConnector.h"
 #include "Block3D.h"
@@ -19,37 +45,21 @@ class EsoTwist3D;
 
 //! \brief   Exchange data between blocks. 
 //! \details Connector send and receive full distributions between two blocks in shared memory.
-//! \author  Hussein Alihussein
 
-class ThixotropyFullDirectConnector : public LocalBlock3DConnector
+class TwoDistributionsFullDirectConnector : public LocalBlock3DConnector
 {
 public:
-	ThixotropyFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
+	TwoDistributionsFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
 	void init();
 	void sendVectors();
 	//void sendCellVectors();
 
 protected:
 	inline void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To);
-	//inline void exchangeDataforCells(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To);
-	//void ExchangeDatabcArray(SPtr<BCArray3D> bcArrayFrom, SPtr<BCArray3D> bcArrayTo, int x1From, int x2From, int x3From, int x1To, int x2To, int x3To);
-	//void ExchangeDatabcArrayReactive(BCArray3DReactivePtr bcArrayFrom, BCArray3DReactivePtr bcArrayTo, int x1From, int x2From, int x3From, int x1To, int x2To, int x3To);
 private:
 	int maxX1;
 	int maxX2;
 	int maxX3;
-
-	//CbArray3D<int>::CbArray3DPtr celltypematrixFrom;
-	//CbArray3D<double>::CbArray3DPtr fillVolumeMatrixFrom;
-	//CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr normalMatrixFrom;
-	//CbArray3D<double>::CbArray3DPtr changeInConcMatrixFrom;
-	//CbArray3D<double>::CbArray3DPtr deltaVolumeMatrixFrom;
-
-	//CbArray3D<int>::CbArray3DPtr celltypematrixTo;
-	//CbArray3D<double>::CbArray3DPtr fillVolumeMatrixTo;
-	//CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr normalMatrixTo;
-	//CbArray3D<double>::CbArray3DPtr changeInConcMatrixTo;
-	//CbArray3D<double>::CbArray3DPtr deltaVolumeMatrixTo;
 
 	CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsFromf;
 	CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsFromf;
@@ -69,17 +79,9 @@ private:
 
 	SPtr<EsoTwist3D>  fFrom, hFrom;
 	SPtr<EsoTwist3D>  fTo, hTo;
-
-	//BCArray3DPtr bcArrayFrom;
-	//BCArray3DPtr bcArrayTo;
-
-	//BCArray3DReactivePtr bcArrayReactiveFrom;
-	//BCArray3DReactivePtr bcArrayReactiveTo;
 };
-
-
 //////////////////////////////////////////////////////////////////////////
-inline void ThixotropyFullDirectConnector::exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
+inline void TwoDistributionsFullDirectConnector::exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
 {
 
 
@@ -144,79 +146,4 @@ inline void ThixotropyFullDirectConnector::exchangeData(int x1From, int x2From, 
 
 	(*this->zeroDistributionsToh)(x1To, x2To, x3To) = (*this->zeroDistributionsFromh)(x1From, x2From, x3From);
 }
-//////////////////////////////////////////////////////////////////////////
-//inline void ThixotropyFullDirectConnector::exchangeDataforCells(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
-//{
-//	//(*this->celltypematrixTo)( x1To, x2To, x3To) = (*this->celltypematrixFrom)( x1From, x2From, x3From);
-//
-//	(*this->celltypematrixTo)(x1To, x2To, x3To) = (*this->celltypematrixFrom)(x1From, x2From, x3From);
-//	(*this->fillVolumeMatrixTo)(x1To, x2To, x3To) = (*this->fillVolumeMatrixFrom)(x1From, x2From, x3From);
-//	(*this->changeInConcMatrixTo)(x1To, x2To, x3To) = (*this->changeInConcMatrixFrom)(x1From, x2From, x3From);
-//	(*this->deltaVolumeMatrixTo)(x1To, x2To, x3To) = (*this->deltaVolumeMatrixFrom)(x1From, x2From, x3From);
-//
-//	(*this->normalMatrixTo)(0, x1To, x2To, x3To) = (*this->normalMatrixFrom)(0, x1From, x2From, x3From);
-//	(*this->normalMatrixTo)(1, x1To, x2To, x3To) = (*this->normalMatrixFrom)(1, x1From, x2From, x3From);
-//	(*this->normalMatrixTo)(2, x1To, x2To, x3To) = (*this->normalMatrixFrom)(2, x1From, x2From, x3From);
-//	//bcArrayTo->bcindexmatrix(x1To, x2To, x3To) = bcArrayFrom->bcindexmatrix(x1From, x2From, x3From);
-//	ExchangeDatabcArray(bcArrayFrom, bcArrayTo, x1From, x2From, x3From, x1To, x2To, x3To);
-//	ExchangeDatabcArrayReactive(bcArrayReactiveFrom, bcArrayReactiveTo, x1From, x2From, x3From, x1To, x2To, x3To);
-//}
-////////////////////////////////////////////////////////////////////////////
-//inline void ThixotropyFullDirectConnector::ExchangeDatabcArray(BCArray3DPtr bcArrayFrom, BCArray3DPtr bcArrayTo, int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
-//{
-//	if (bcArrayFrom->isFluid(x1From, x2From, x3From))
-//	{
-//		if (bcArrayFrom->hasBC(x1From, x2From, x3From))
-//		{
-//			BoundaryConditionsPtr bc = bcArrayFrom->getBC(x1From, x2From, x3From);
-//
-//			bcArrayTo->setBC(x1To, x2To, x3To, bc);
-//
-//		}
-//		else if (bcArrayFrom->isFluidWithoutBC(x1From, x2From, x3From))
-//		{
-//			bcArrayTo->setFluid(x1To, x2To, x3To);
-//		}
-//	}
-//	else if (bcArrayFrom->isSolid(x1From, x2From, x3From))
-//	{
-//		bcArrayTo->setSolid(x1To, x2To, x3To);
-//	}
-//	else
-//	{
-//		bcArrayTo->setUndefined(x1To, x2To, x3To);
-//	}
-//
-//}
-////////////////////////////////////////////////////////////////////////////
-//inline void ThixotropyFullDirectConnector::ExchangeDatabcArrayReactive(BCArray3DReactivePtr bcArrayFrom, BCArray3DReactivePtr bcArrayTo, int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
-//{
-//	if (bcArrayFrom->isFluid(x1From, x2From, x3From))
-//	{
-//		if (bcArrayFrom->hasBC(x1From, x2From, x3From))
-//		{
-//			BoundaryConditionsPtr bc = bcArrayFrom->getBC(x1From, x2From, x3From);
-//
-//			bcArrayTo->setBC(x1To, x2To, x3To, bc);
-//
-//		}
-//		else if (bcArrayFrom->isFluidWithoutBC(x1From, x2From, x3From))
-//		{
-//			bcArrayTo->setFluid(x1To, x2To, x3To);
-//		}
-//	}
-//	else if (bcArrayFrom->isSolid(x1From, x2From, x3From))
-//	{
-//		bcArrayTo->setSolid(x1To, x2To, x3To);
-//	}
-//	else if (bcArrayFrom->isReactiveSolid(x1From, x2From, x3From))
-//	{
-//		bcArrayTo->setReactiveSolidType1(x1To, x2To, x3To);
-//	}
-//	else
-//	{
-//		bcArrayTo->setUndefined(x1To, x2To, x3To);
-//	}
-//
-//}
 #endif

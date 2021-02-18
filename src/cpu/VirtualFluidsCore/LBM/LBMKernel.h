@@ -110,6 +110,25 @@ public:
     void setNX(std::array<int, 3> nx);
     std::array<int, 3> getNX();
 
+    ///////// Extra methods for the multiphase kernel ////////////
+
+    void setCollisionFactorMultiphase(double collFactorL, double collFactorG);
+    double getCollisionFactorL() const;
+    double getCollisionFactorG() const;
+    void setDensityRatio(double densityRatio);
+    double getDensityRatio() const;
+    void setMultiphaseModelParameters(double beta, double kappa);
+    void getMultiphaseModelParameters(double &beta, double &kappa);
+    void setContactAngle(double contactAngle);
+    double getContactAngle() const;
+    void setPhiL(double phiL);
+    void setPhiH(double phiH);
+    double getPhiL() const;
+    double getPhiH() const;
+    void setPhaseFieldRelaxation(double tauH);
+    double getPhaseFieldRelaxation() const;
+    void setMobility(double mob);
+
 protected:
     SPtr<DataSet3D> dataSet;
     SPtr<BCProcessor> bcProcessor;
@@ -132,6 +151,18 @@ protected:
     WPtr<Block3D> block;
 
     std::array<int, 3> nx;
+
+    // Multiphase model
+    LBMReal collFactorL;
+    LBMReal collFactorG;
+    LBMReal densityRatio;
+    LBMReal beta;
+    LBMReal kappa;
+    LBMReal contactAngle;
+    LBMReal phiL;
+    LBMReal phiH;
+    LBMReal tauH;
+    LBMReal mob;
 
 private:
     void checkFunction(mu::Parser fct);

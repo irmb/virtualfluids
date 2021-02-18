@@ -133,6 +133,10 @@
 #include <BoundaryConditions/SimpleSlipBCAlgorithm.h>
 #include <BoundaryConditions/PowellEyringModelNoSlipBCAlgorithm.h>
 #include <BoundaryConditions/BinghamModelVelocityBCAlgorithm.h>
+#include <BoundaryConditions/NoSlipBCAlgorithmMultiphase.h> 
+#include <BoundaryConditions/NonReflectingOutflowBCAlgorithmMultiphase.h> 
+#include <BoundaryConditions/VelocityBCAdapterMultiphase.h>
+#include <BoundaryConditions/VelocityBCAlgorithmMultiphase.h>
 
 #include <Connectors/Block3DConnector.h>
 #include <Connectors/Block3DConnectorFactory.h>
@@ -231,6 +235,7 @@
 #include <LBM/ThixotropyInterpolationProcessor.h>
 #include <LBM/RheologyK17LBMKernel.h>
 #include <LBM/PowellEyringModelLBMKernel.h>
+#include <LBM/MultiphaseCumulantLBMKernel.h>
 
 
 
@@ -322,6 +327,9 @@
 #include <CheckRatioBlockVisitor.h>
 #include <SpongeLayerBlockVisitor.h>
 #include <ZoltanPartitioningGridVisitor.h>
+#include <Visitors/SetKernelBlockVisitorMultiphase.h>
+#include <Visitors/BoundaryConditionsBlockVisitorMultiphase.h>
+#include <Visitors/InitDistributionsBlockVisitorMultiphase.h>
 
 #include <RefineAroundGbObjectHelper.h>
 #include <Visitors/RefineCrossAndInsideGbObjectHelper.h>

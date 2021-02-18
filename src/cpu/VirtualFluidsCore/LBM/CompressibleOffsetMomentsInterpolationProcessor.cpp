@@ -803,7 +803,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeCF(LBM
    f[BS]   = mfbaa;
    f[BN]   = mfbca;
    f[TS]   = mfbac;
-   f[ZERO] = mfbbb;
+   f[REST] = mfbbb;
    f[TNE]  = mfccc;
    f[TSE]  = mfcac;
    f[BNE]  = mfcca;
@@ -1251,7 +1251,7 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedNodeFC(LBM
    f[BS]   = mfbaa;
    f[BN]   = mfbca;
    f[TS]   = mfbac;
-   f[ZERO] = mfbbb;
+   f[REST] = mfbbb;
    f[TNE]  = mfccc;
    f[TSE]  = mfcac;
    f[BNE]  = mfcca;

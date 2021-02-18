@@ -68,4 +68,5 @@ add_subdirectory(${APPS_ROOT_CPU}/HerschelBulkleySphere)
 add_subdirectory(${APPS_ROOT_CPU}/HerschelBulkleyModel)
 add_subdirectory(${APPS_ROOT_CPU}/rheometer)
 add_subdirectory(${APPS_ROOT_CPU}/CouetteFlow)
+add_subdirectory(${APPS_ROOT_CPU}/Multiphase)
 

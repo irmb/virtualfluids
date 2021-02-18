@@ -273,7 +273,7 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
                f[BNW]  = f_TSE  + feq[BNW];
                f[BSE]  = f_TNW  + feq[BSE];
                f[BSW]  = f_TNE  + feq[BSW];
-               f[ZERO] = f_ZERO + feq[ZERO];
+               f[REST] = f_ZERO + feq[REST];
 
                //calcFeqsFct(f,rho,vx1,vx2,vx3);
                distributions->setDistribution(f, ix1, ix2, ix3);

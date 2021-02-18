@@ -71,7 +71,7 @@ static const int BNE          = 22;
 static const int BNW          = 23;
 static const int BSE          = 24;
 static const int BSW          = 25;
-static const int ZERO /*f0 */ = 26;
+static const int REST /*f0 */ = 26;
 
 static const int ENDDIR = 25;
 

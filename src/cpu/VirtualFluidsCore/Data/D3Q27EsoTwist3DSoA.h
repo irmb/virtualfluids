@@ -35,7 +35,7 @@ struct Distributions {
     CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr BNW;
     CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr BSE;
     CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr BSW;
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ZERO;
+    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr REST;
 };
 
 class D3Q27EsoTwist3DSoA : public EsoTwist3D

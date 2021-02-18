@@ -1,0 +1,72 @@
+pathname = d:/temp/Multiphase
+pathGeo = d:/Hesam/VirtualFluids/source/Applications/Multiphase
+geoFile = FlowFocusingS2_Small.ast
+#geoFile = T-Junction.ast
+numOfThreads = 4
+availMem = 10e9
+
+#Grid
+#length = 50 50 50
+#length = 21 6 13
+#boundingBox = x1min x1max x2min x2max x3min x3max [mm]
+#boundingBox = 0.5 219.5 -30 30 -30 30
+#boundingBox = -1 121 -30 30 -30 30
+#boundingBox = -32 128 -12 14 3 58   (FlowFocusingSS , FlowFocusingS) (X1 extendable until 128)
+#blocknx = 10 13 11
+#boundingBox = 0.5 165.5 -17.5 17.5 -29.5 30.5   (FlowFocusing)
+#blocknx = 11 7 10
+#boundingBox = -32 128 -12 14 -27 88 (FlowFocusingSL)
+#blocknx = 10 13 5
+#boundingBox = 1 179 -21 21 -21 59 (T-Junction)
+#blocknx = 8 7 8
+#boundingBox = -23 79 0 26 3 59 (FlowFocusingSq0-1)
+#blocknx = 6 13 7
+#boundingBox = -23 179 0 26 3 59 (FlowFocusingSq2)
+#blocknx = 6 13 7
+#boundingBox = -24 181 0 18 1 101 (FlowFocusingS2)
+#blocknx = 5 9 10
+
+boundingBox = -24.5 180.5 2.5 4.5 1.5 64.5 (FlowFocusingS2_Small)
+blocknx = 5 2 9
+
+#boundingBox = 0.5 50.5 0.5 50.5 0.5 50.5 (Droplet test)
+#blocknx = 10 10 10
+dx = 1.0
+refineLevel = 0
+
+#Simulation
+uLB = 0.001
+uF2 = 0.001
+Re = 10
+#nuL = 3.3e-3
+nuL = 1.0e-2
+nuG = 1.36e-2
+#nuL = 0.16666
+#nuG = 0.16666
+densityRatio = 1.0495
+#densityRatio = 10.0
+sigma = 7.4e-4
+interfaceThickness = 3
+#radius = 10.0  (Droplet test)
+#radius = -20.0   (FlowFocusingSS , FlowFocusingS)
+radius = -5.0   (FlowFocusingSq)
+#radius = 10.0   (FlowFocusing)
+#radius = 20.0   (T-Junction)
+contactAngle = 120.0
+gravity = 1.34e-5
+phi_L = 1.0
+phi_H = 0.0
+Phase-field Relaxation = 1.0
+Mobility = 0.05
+
+
+logToFile = false
+
+newStart = true
+restartStep = 100000
+
+cpStart = 100000
+cpStep = 100000
+
+outTime = 200
+endTime = 20000000

@@ -35,7 +35,7 @@
 
 // index                                                              0   1   2   3   4   5  6   7   8    9  10  11  12
 // 13  14  15  16  17  18  19  20  21  22  23  24  25  26 f: E,  W,  N,  S,  T,  B, NE, SW, SE, NW, TE, BW, BE, TW, TN,
-// BS, BN, TS, TNE TNW TSE TSW BNE BNW BSE BSW ZERO
+// BS, BN, TS, TNE TNW TSE TSW BNE BNW BSE BSW REST
 const int EsoTwistD3Q27System::ETX1[EsoTwistD3Q27System::ENDF + 1] = { 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1,
                                                                        0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
 const int EsoTwistD3Q27System::ETX2[EsoTwistD3Q27System::ENDF + 1] = { 0, 0, 0,  1, 0, 0,  0, 1, 0, -1, 0, 0, 0, 0,
@@ -49,7 +49,7 @@ const int EsoTwistD3Q27System::etINVDIR[EsoTwistD3Q27System::ENDF + 1] = {
     D3Q27System::INV_TE,  D3Q27System::INV_BW,  D3Q27System::INV_BE,  D3Q27System::INV_TW,  D3Q27System::INV_TN,
     D3Q27System::INV_BS,  D3Q27System::INV_BN,  D3Q27System::INV_TS,  D3Q27System::INV_TNE, D3Q27System::INV_TNW,
     D3Q27System::INV_TSE, D3Q27System::INV_TSW, D3Q27System::INV_BNE, D3Q27System::INV_BNW, D3Q27System::INV_BSE,
-    D3Q27System::INV_BSW, D3Q27System::ZERO
+    D3Q27System::INV_BSW, D3Q27System::REST
 };
 
 const unsigned long int EsoTwistD3Q27System::etDIR[EsoTwistD3Q27System::ENDF + 1] = {
