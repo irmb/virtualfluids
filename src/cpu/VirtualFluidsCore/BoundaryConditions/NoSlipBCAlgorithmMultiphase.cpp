@@ -78,8 +78,8 @@ void NoSlipBCAlgorithmMultiphase::applyBC()
    //LBMReal collFactorM = collFactorL + (collFactorL - collFactorG)*(phi - phiH)/(phiH - phiL);
    
    //rho = phi + (1.0 - phi)*1.0/densityRatio;
-   LBMReal rhoH = 1.0;
-   LBMReal rhoL = 1.0/densityRatio;
+   //LBMReal rhoH = 1.0;
+   //LBMReal rhoL = 1.0/densityRatio;
    //rho = rhoH + (rhoH - rhoL)*(phi - phiH)/(phiH - phiL);
    
    calcMacrosFct(f, p1, vx1, vx2, vx3);
