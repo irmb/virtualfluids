@@ -364,15 +364,13 @@ int main( int argc, char* argv[])
 
             //////////////////////////////////////////////////////////////////////////
 		}
-        catch (const std::exception& e)
-        {
-                
-            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-        }
-        catch (const std::bad_alloc e)
-        {
-                
+        catch (const std::bad_alloc& e)
+        { 
             *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+        }
+        catch (const std::exception& e)
+        {   
+            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
         }
         catch (...)
         {
