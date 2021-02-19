@@ -12,7 +12,15 @@ HOSTDEVICE Vertex::Vertex(const Vertex& v)
 	this->z = v.z;
 }
 
-HOSTDEVICE  real Vertex::getEuclideanDistanceTo(const Vertex &w) const
+HOSTDEVICE Vertex& Vertex::operator=(const Vertex& v)
+{
+    this->x = v.x;
+	this->y = v.y;
+	this->z = v.z;
+    return *this;
+}
+
+HOSTDEVICE real Vertex::getEuclideanDistanceTo(const Vertex &w) const
 {
     return vf::Math::sqrtReal((x - w.x)*(x - w.x) + (y - w.y)*(y - w.y) + (z - w.z)*(z - w.z));
 }
