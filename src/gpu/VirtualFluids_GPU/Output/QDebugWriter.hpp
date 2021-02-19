@@ -21,7 +21,7 @@ namespace QDebugWriter
     {
 
 		std::vector< std::vector<real> > qs;
-		for (size_t j = 0; j < kq; j++)
+		for (int j = 0; j < kq; j++)
 		{
 			uint32_t qKey = 0;
 			std::vector<real> qNode;
@@ -49,14 +49,14 @@ namespace QDebugWriter
 
 
 
-		for (int index = 0; index < qs.size(); index++) {
+		for (std::size_t index = 0; index < qs.size(); index++) {
 			std::vector<real> bcs = qs[index];
 			uint32_t key = *((uint32_t*)&bcs[bcs.size() - 2]);
 			int qIndex = (int)bcs[bcs.size() - 1];
 
 			*outQ << qIndex << " " << key;
 
-			for (int i = 0; i < bcs.size() - 2; i++) {
+			for (std::size_t i = 0; i < bcs.size() - 2; i++) {
 				*outQ << " " << std::fixed << std::setprecision(16) << bcs[i];
 			}
 

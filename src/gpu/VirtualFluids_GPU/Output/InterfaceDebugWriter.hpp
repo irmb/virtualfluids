@@ -149,11 +149,6 @@ namespace InterfaceDebugWriter
 		int nodeCount = 0;
 		for (int level = 0; level < para->getMaxLevel(); level++)
 		{
-			double nodeDeltaLevel = para->getParH(level)->dx;
-			double nodeDeltaLevelFine = para->getParH(level+1)->dx;
-			double halfNodeDeltaLevel = 0.5*nodeDeltaLevel;
-			double halfNodeDeltaLevelFine = 0.5*nodeDeltaLevelFine;
-
 			for(unsigned int u=0;u<para->getParH(level)->K_CF;u++)
 			{
 				double xoff = para->getParH(level)->offCF.xOffCF[u];
@@ -199,9 +194,6 @@ namespace InterfaceDebugWriter
 		int nodeCount2 = 0; 
 		for (int level = 0; level < para->getMaxLevel(); level++)
 		{
-			double nodeDeltaLevel = para->getParH(level)->dx;
-			double halfNodeDeltaLevel = 0.5*nodeDeltaLevel;
-
 			for(unsigned int u=0;u<para->getParH(level)->K_CF;u++)
 			{
 				int pos = para->getParH(level)->intCF.ICellCFC[u];
@@ -234,9 +226,6 @@ namespace InterfaceDebugWriter
 		int nodeCount2 = 0; 
 		for (int level = 0; level <= para->getMaxLevel(); level++)
 		{
-			double nodeDeltaLevel = para->getParH(level)->dx;
-			double halfNodeDeltaLevel = 0.5*nodeDeltaLevel;
-
 			for(int u=0;u<para->getParH(level)->QWall.kQ;u++)
 			{
 				int pos = para->getParH(level)->QWall.k[u];
@@ -540,9 +529,6 @@ namespace InterfaceDebugWriter
 		int nodeCount = 0;
 		for (int level = 0; level < para->getMaxLevel(); level++)
 		{
-			double nodeDeltaLevel = para->getParH(level)->dx;
-			double halfNodeDeltaLevel = 0.5*nodeDeltaLevel;
-
 			for(unsigned int u=0;u<para->getParH(level)->K_CF;u++)
 			{
 				int pos  = para->getParH(level)->intCF.ICellCFC[u];
@@ -587,9 +573,6 @@ namespace InterfaceDebugWriter
 		int nodeCount = 0;
 		for (int level = 0; level < para->getMaxLevel(); level++)
 		{
-			double nodeDeltaLevel = para->getParH(level+1)->dx;
-			double halfNodeDeltaLevel = 0.5*nodeDeltaLevel;
-
 			for(unsigned int u=0;u<para->getParH(level)->K_CF;u++)
 			{
 				int pos  = para->getParH(level  )->intCF.ICellCFF[u];

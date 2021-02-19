@@ -548,7 +548,7 @@ void SimulationFileWriter::writeBoundary(std::vector<real> boundary, int rb)
 
     *qStreams[rb] << (index + 1);
 
-    for (int i = 1; i < boundary.size(); i++) {
+    for (std::size_t i = 1; i < boundary.size(); i++) {
         *qStreams[rb] << " " << std::fixed << std::setprecision(16) << boundary[i];
     }
     *valueStreams[rb] << (index+1) << " 0 0 0";
@@ -564,7 +564,7 @@ void SimulationFileWriter::writeBoundaryShort(std::vector<real> boundary, int rb
 
 	*qStreams[rb] << (index + 1) << " " << key;
 
-	for (int i = 0; i < boundary.size() - 2; i++) {
+	for (std::size_t i = 0; i < boundary.size() - 2; i++) {
 		*qStreams[rb] << " " << std::fixed << std::setprecision(16) << boundary[i];
 	}
 	*valueStreams[rb] << (index + 1) << " 0 0 0";

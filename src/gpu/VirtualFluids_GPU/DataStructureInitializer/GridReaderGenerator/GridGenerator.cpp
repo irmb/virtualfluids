@@ -249,7 +249,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 		{
             if( builder->getCommunicationProcess(direction) == INVALID_INDEX ) continue;
 
-			for (int level = 0; level < builder->getNumberOfGridLevels(); level++)
+			for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
             {
                 if( direction == CommunicationDirections::MX || direction == CommunicationDirections::PX )
                 {
@@ -443,7 +443,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 		{
 			if (builder->getCommunicationProcess(direction) == INVALID_INDEX) continue;
 
-			for (int level = 0; level < builder->getNumberOfGridLevels(); level++)
+			for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
 			{
 				if (direction == CommunicationDirections::MX || direction == CommunicationDirections::PX)
 				{

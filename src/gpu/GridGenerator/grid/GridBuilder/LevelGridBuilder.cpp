@@ -51,7 +51,7 @@ void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, 
         setVelocityGeometryBoundaryCondition(vx, vy, vz);
     else
     {
-        for (int level = 0; level < getNumberOfGridLevels(); level++)
+        for (uint level = 0; level < getNumberOfGridLevels(); level++)
         {
             SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
 
@@ -73,7 +73,7 @@ void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, re
 {
     geometryHasValues = true;
 
-    for (int level = 0; level < getNumberOfGridLevels(); level++)
+    for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
 		if (boundaryConditions[level]->geometryBoundaryCondition != nullptr)
 		{
@@ -91,7 +91,7 @@ void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, re
 
 void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
 {
-    for (int level = 0; level < getNumberOfGridLevels(); level++)
+    for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
         SPtr<PressureBoundaryCondition> pressureBoundaryCondition = PressureBoundaryCondition::make(rho);
 
@@ -113,7 +113,7 @@ void LevelGridBuilder::setPeriodicBoundaryCondition(bool periodic_X, bool period
 
 void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
 {
-    for (int level = 0; level < getNumberOfGridLevels(); level++)
+    for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
         SPtr<VelocityBoundaryCondition> noSlipBoundaryCondition = VelocityBoundaryCondition::make(0.0, 0.0, 0.0);
 

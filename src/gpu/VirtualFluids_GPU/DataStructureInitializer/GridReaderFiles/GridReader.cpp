@@ -340,7 +340,7 @@ void GridReader::initalValuesDomainDecompostion(int level)
 	// X
 	if ((para->getNumprocs() > 1) && (procNeighborsSendX.size() == procNeighborsRecvX.size()))
 	{
-		for (int j = 0; j < procNeighborsSendX.size(); j++)
+		for (std::size_t j = 0; j < procNeighborsSendX.size(); j++)
 		{
 			for (int i = 0; i <= level; i++) {
 				int tempSend = procNeighborsSendX[j]->getSize(i);
@@ -396,7 +396,7 @@ void GridReader::initalValuesDomainDecompostion(int level)
 	// Y
 	if ((para->getNumprocs() > 1) && (procNeighborsSendY.size() == procNeighborsRecvY.size()))
 	{
-		for (int j = 0; j < procNeighborsSendY.size(); j++)
+		for (std::size_t j = 0; j < procNeighborsSendY.size(); j++)
 		{
 			for (int i = 0; i <= level; i++) {
 				int tempSend = procNeighborsSendY[j]->getSize(i);
@@ -452,7 +452,7 @@ void GridReader::initalValuesDomainDecompostion(int level)
 	// Z
 	if ((para->getNumprocs() > 1) && (procNeighborsSendZ.size() == procNeighborsRecvZ.size()))
 	{
-		for (int j = 0; j < procNeighborsSendZ.size(); j++)
+		for (std::size_t j = 0; j < procNeighborsSendZ.size(); j++)
 		{
 			for (int i = 0; i <= level; i++) {
 				int tempSend = procNeighborsSendZ[j]->getSize(i);
@@ -512,7 +512,7 @@ void GridReader::allocArrays_BoundaryQs()
 	std::vector<std::shared_ptr<BoundaryQs> > BC_Qs(channelDirections.size());
 	this->makeReader(BC_Qs, para);
 
-	for (int i = 0; i < channelBoundaryConditions.size(); i++)
+	for (std::size_t i = 0; i < channelBoundaryConditions.size(); i++)
 	{
 		if (this->channelBoundaryConditions[i] == "noSlip") { setNoSlipQs(BC_Qs[i]); }
 		else if (this->channelBoundaryConditions[i] == "velocity") { setVelocityQs(BC_Qs[i]); }
@@ -793,7 +793,7 @@ void GridReader::initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned 
 
 void GridReader::makeReader(std::shared_ptr<Parameter> para)
 {
-	for (int i = 0; i < BC_Values.size(); i++)
+	for (std::size_t i = 0; i < BC_Values.size(); i++)
 	{
 		if (channelDirections[i].compare("inlet") == 0){ BC_Values[i]  = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->getinletBcValues())); }
 		if (channelDirections[i].compare("outlet") == 0){ BC_Values[i] = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->getoutletBcValues())); }
@@ -806,7 +806,7 @@ void GridReader::makeReader(std::shared_ptr<Parameter> para)
 
 void GridReader::makeReader(std::vector<std::shared_ptr<BoundaryQs> > &BC_Qs, std::shared_ptr<Parameter> para)
 {
-	for (int i = 0; i < BC_Qs.size(); i++)
+	for (std::size_t i = 0; i < BC_Qs.size(); i++)
 	{
 		if (channelDirections[i].compare("inlet") == 0){ BC_Qs[i]  = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getinletBcQs(), false)); }
 		if (channelDirections[i].compare("outlet") == 0){ BC_Qs[i] = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getoutletBcQs(), false)); }
@@ -819,7 +819,7 @@ void GridReader::makeReader(std::vector<std::shared_ptr<BoundaryQs> > &BC_Qs, st
 
 void GridReader::setChannelBoundaryCondition()
 {
-	for (int i = 0; i < channelDirections.size(); i++)
+	for (std::size_t i = 0; i < channelDirections.size(); i++)
 	{
 		this->channelBoundaryConditions[i] = BC_Values[i]->getBoundaryCondition();
 		std::cout << this->channelDirections[i] << " Boundary: " << channelBoundaryConditions[i] << std::endl;
