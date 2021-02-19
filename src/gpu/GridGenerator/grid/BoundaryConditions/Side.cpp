@@ -75,16 +75,22 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
 
         // correct neighbor coordinates in case of periodic boundaries
         if( grid->getPeriodicityX() && grid->getFieldEntry( grid->transCoordToIndex( neighborX, y, z ) ) == STOPPER_OUT_OF_GRID_BOUNDARY )
+        {
             if( neighborX > x ) neighborX = grid->getFirstFluidNode( coords, 0, grid->getStartX() );
             else                neighborX = grid->getLastFluidNode ( coords, 0, grid->getEndX() );
+        }
 
         if( grid->getPeriodicityY() && grid->getFieldEntry( grid->transCoordToIndex( x, neighborY, z ) ) == STOPPER_OUT_OF_GRID_BOUNDARY )
+        {
             if( neighborY > y ) neighborY = grid->getFirstFluidNode( coords, 1, grid->getStartY() );
             else                neighborY = grid->getLastFluidNode ( coords, 1, grid->getEndY() );
+        }
 
         if( grid->getPeriodicityZ() && grid->getFieldEntry( grid->transCoordToIndex( x, y, neighborZ ) ) == STOPPER_OUT_OF_GRID_BOUNDARY )
+        {
             if( neighborZ > z ) neighborZ = grid->getFirstFluidNode( coords, 2, grid->getStartZ() );
             else                neighborZ = grid->getLastFluidNode ( coords, 2, grid->getEndZ() );
+        }
 
         uint neighborIndex = grid->transCoordToIndex( neighborX, neighborY, neighborZ );
 
@@ -116,7 +122,6 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<Bound
     auto geometryBoundaryCondition = std::dynamic_pointer_cast<GeometryBoundaryCondition>(boundaryCondition);
 
     std::vector<real> qNode(grids[level]->getEndDirection() + 1);
-    bool qFound = false;
 
     for (uint index = 0; index < grids[level]->getSize(); index++)
     {
@@ -148,8 +153,6 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<Bound
         geometryBoundaryCondition->indices.push_back(index);
         geometryBoundaryCondition->qs.push_back(qNode);
         geometryBoundaryCondition->patches.push_back( grids[level]->getQPatch(index) );
-
-        qFound = false;
     }
 }
 

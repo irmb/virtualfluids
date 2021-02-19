@@ -184,7 +184,6 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
     unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
     uint dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
     bool neighborsAreFluid;
-    double vxmax = 0;
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
@@ -289,7 +288,6 @@ void FileWriter::writeUnstrucuredGridLTConc(std::shared_ptr<Parameter> para, int
 	unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
 	uint dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
 	bool neighborsAreFluid;
-	double vxmax = 0;
 	unsigned int startpos = 0;
 	unsigned int endpos = 0;
 	unsigned int sizeOfNodes = 0;
@@ -396,7 +394,6 @@ void FileWriter::writeUnstrucuredGridMedianLT(std::shared_ptr<Parameter> para, i
 	unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
 	unsigned int dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
 	bool neighborsFluid;
-	double vxmax = 0;
 	unsigned int startpos = 0;
 	unsigned int endpos = 0;
 	unsigned int sizeOfNodes = 0;
@@ -405,7 +402,6 @@ void FileWriter::writeUnstrucuredGridMedianLT(std::shared_ptr<Parameter> para, i
 	//printf("\n test for if... \n");
 	for (unsigned int part = 0; part < fname.size(); part++)
 	{
-		vxmax = 0;
 		//printf("\n test in if I... \n");
 		//////////////////////////////////////////////////////////////////////////
 		if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)

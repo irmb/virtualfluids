@@ -16,4 +16,4 @@ endif()
 # supress warning 3152: __host__ function redeclared with __host__ __device__, hence treated as a __host__ __device__ function
 # supress warning 3125, 3127: calling a constexpr __host__ function from a __host__ __device__ function
 # supress warning 3311: unrecognized #pragma in device code
-target_compile_options(${library_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xcudafe "--diag_suppress=3123 --diag_suppress=3126 --diag_suppress=3152 --diag_suppress=3125 --diag_suppress=3127 --diag_suppress=3311">) 
+target_compile_options(${library_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xcudafe "--diag_suppress=3123 --diag_suppress=3126 --diag_suppress=3152 --diag_suppress=3125 --diag_suppress=3127 --diag_suppress=3311" >) 

@@ -74,7 +74,7 @@ void initParticles(Parameter* para)
 		}
 		//////////////////////////////////////////////////////////////////////////
 		//set bool "hot wall"
-		for (unsigned int h = 0; h < para->getParH(lev)->QGeom.kQ; h++)
+		for (int h = 0; h < para->getParH(lev)->QGeom.kQ; h++)
 		{
 			if (para->getParH(lev)->coordX_SP[para->getParH(lev)->QGeom.k[h]] < para->getStartXHotWall() || 
 				para->getParH(lev)->coordX_SP[para->getParH(lev)->QGeom.k[h]] > para->getEndXHotWall())
@@ -104,7 +104,7 @@ void initParticles(Parameter* para)
 			para->getParH(lev)->plp.veloZ[i]         = (real)0.0; 
 		}
 		//////////////////////////////////////////////////////////////////////////
-		real centerX  =  1.0f;					//uebergabeparameter
+		// real centerX  =  1.0f;					//uebergabeparameter
 		real centerY  = 10.5f;					//uebergabeparameter
 		real centerZ  = 10.5f;					//uebergabeparameter
 		real diameter = 15.0f;//21.0f;					//uebergabeparameter
@@ -158,7 +158,7 @@ void initParticles(Parameter* para)
 		//////////////////////////////////////////////////////////////////////////
 		for (unsigned int i = 0; i < para->getParH(lev)->plp.numberOfParticles; i++)
 		{
-			for (int ii = 0; ii < tempID.size(); ii++)
+			for (std::size_t ii = 0; ii < tempID.size(); ii++)
 			{
 				if ((para->getParH(lev)->coordY_SP[tempID[ii]] <= para->getParH(lev)->plp.coordYabsolut[i]) &&
 					((para->getParH(lev)->plp.coordYabsolut[i] - para->getParH(lev)->coordY_SP[tempID[ii]]) <= dx) &&
@@ -455,7 +455,7 @@ void rearrangeGeometry(Parameter* para, CudaMemoryManager* cudaManager)
 		int counter2 = 0;
 		//////////////////////////////////////////////////////////////////////////
 		//redefine fluid nodes
-		for (int index = 0; index < para->getParH(lev)->size_Mat_SP; index++)
+		for (uint index = 0; index < para->getParH(lev)->size_Mat_SP; index++)
 		{
 			if (para->getParH(lev)->geoSP[index] == GEO_FLUID_OLD)
 			{
