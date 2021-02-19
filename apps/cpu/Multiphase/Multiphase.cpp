@@ -412,11 +412,12 @@ void run(string configname)
             grid->accept(initVisitor);
 
             // set connectors
-            InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+            //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
             // InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-            SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+            //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
             // ConnectorFactoryPtr factory(new Block3DConnectorFactory());
             // ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
+            TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
             grid->accept(setConnsVisitor);
 
             // domain decomposition for threads
@@ -458,13 +459,17 @@ void run(string configname)
 
             // set connectors
             // InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-            InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-            SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-            grid->accept(setConnsVisitor);
+            //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+            //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+            //grid->accept(setConnsVisitor);
 
             if (myid == 0)
                 UBLOG(logINFO, "Restart - end");
         }
+        
+        TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+        grid->accept(setConnsVisitor);
+
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         SPtr<WriteMacroscopicQuantitiesCoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(
             grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm));

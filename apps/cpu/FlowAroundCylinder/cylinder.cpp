@@ -289,9 +289,14 @@ void run(string configname)
       }
 
 	  //set connectors
-	  InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
-	  SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
+	  //InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+	  //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
+      OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
 	  grid->accept(setConnsVisitor);
+
+      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      SetInterpolationConnectorsBlockVisitor setInterConnsVisitor(comm, nueLB, iProcessor);
+      grid->accept(setInterConnsVisitor);
 
       SPtr<UbScheduler> stepSch(new UbScheduler(outTime));
 

@@ -26,50 +26,47 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file CreateTransmittersHelper.h
+//! \file SetInterpolationConnectorsBlockVisitor.h
 //! \ingroup Visitors
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef CREATETRANSMITTERSHELPER_H
-#define CREATETRANSMITTERSHELPER_H
+#ifndef SetInterpolationConnectorsBlockVisitor_H
+#define SetInterpolationConnectorsBlockVisitor_H
 
-#include "Block3D.h"
-#include "Communicator.h"
+#include <PointerDefinitions.h>
 
-#include "LBMSystem.h"
+#include "Block3DVisitor.h"
+#include "D3Q27System.h"
 
-#include <basics/container/CbVector.h>
-#include <basics/transmitter/TbTransmitter.h>
-#include <basics/transmitter/TbTransmitterMpiPool.h>
+#include "CreateTransmittersHelper.h"
 
-//! \brief The class helps to create Transmitters.
-//! \details It is created two types of Transmitters: MPI and BOND
-class CreateTransmittersHelper
+class Grid3D;
+class Block3D;
+class Communicator;
+class InterpolationProcessor;
+
+//! \brief  A class sets connectors between blocks.
+class SetInterpolationConnectorsBlockVisitor : public Block3DVisitor
 {
 public:
-    //! Switch between same level and interpolation Connectors. NONE - for same level Connectors; SW, NW, NE, SE -
-    //! source/target fine blocks in grid interface
-    enum IBlock { NONE, SW, NW, NE, SE };
-    //! Switch between MPI and BOND Transmitters
-    enum TransmitterType { MPI, BOND, MPI2BOND };
-
-public:
-    using DataType       = CbVector<LBMReal>;
-    using TransmitterPtr = SPtr<TbTransmitter<DataType>>;
-
-public:
-    CreateTransmittersHelper();
-    void createTransmitters(const SPtr<Block3D> sblock, const SPtr<Block3D> tblock, int dir, IBlock ib,
-                            TransmitterPtr &sender, TransmitterPtr &receiver, SPtr<Communicator> comm,
-                            TransmitterType tType);
-
+    SetInterpolationConnectorsBlockVisitor(SPtr<Communicator> comm, LBMReal nue, SPtr<InterpolationProcessor> iProcessor);
+    ~SetInterpolationConnectorsBlockVisitor() override;
+    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+    //////////////////////////////////////////////////////////////////////////
 protected:
-private:
-    std::string generatePoolKey(int srcRank, int srcLevel, int tgtRank, int tgtLevel);
-    std::string generateVectorKey(int x1, int x2, int x3, /*int id,*/ int dir, IBlock ib);
-    int generateMPITag(int srcLevel, int tgtLevel);
-    static unsigned int vKey;
+    void setInterpolationConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block);
+    void setInterpolationConnectors(SPtr<Block3D> fBlockSW, SPtr<Block3D> fBlockSE, SPtr<Block3D> fBlockNW,
+                                    SPtr<Block3D> fBlockNE, SPtr<Block3D> cBlock, int dir);
+    void createTransmitters(SPtr<Block3D> cBlock, SPtr<Block3D> fBlock, int dir, CreateTransmittersHelper::IBlock ib,
+                            CreateTransmittersHelper::TransmitterPtr &senderCF,
+                            CreateTransmittersHelper::TransmitterPtr &receiverCF,
+                            CreateTransmittersHelper::TransmitterPtr &senderFC,
+                            CreateTransmittersHelper::TransmitterPtr &receiverFC);
+    SPtr<Communicator> comm;
+    int gridRank;
+    LBMReal nue;
+    SPtr<InterpolationProcessor> iProcessor;
 };
 
-#endif
+#endif // SetInterpolationConnectorsBlockVisitor_H

@@ -151,6 +151,8 @@
 #include <Connectors/FineToCoarseNodeSetBlock3DConnector.h>
 #include <Connectors/LocalBlock3DConnector.h>
 #include <Connectors/RemoteBlock3DConnector.h>
+#include <Connectors/TwoDistributionsFullDirectConnector.h>
+#include <Connectors/TwoDistributionsFullVectorConnector.h>
 
 #include <Data/D3Q27EsoTwist3DSplittedVector.h>
 #include <Data/D3Q27EsoTwist3DSplittedVectorEx.h>
@@ -330,6 +332,7 @@
 #include <Visitors/MultiphaseSetKernelBlockVisitor.h>
 #include <Visitors/MultiphaseBoundaryConditionsBlockVisitor.h>
 #include <Visitors/MultiphaseInitDistributionsBlockVisitor.h>
+#include <Visitors/SetInterpolationConnectorsBlockVisitor.h>
 
 #include <RefineAroundGbObjectHelper.h>
 #include <Visitors/RefineCrossAndInsideGbObjectHelper.h>

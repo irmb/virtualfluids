@@ -52,4 +52,4 @@ protected:
 private:
    std::map<char, SPtr<BCAlgorithm>> bcMap;
 };
-#endif // BoundaryConditionBlockVisitor_h__
+#endif // MultiphaseBoundaryConditionsBlockVisitor_h__

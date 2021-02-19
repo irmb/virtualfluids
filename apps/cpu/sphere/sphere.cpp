@@ -265,10 +265,17 @@ void run(string configname)
 
       UBLOG(logINFO, "SetConnectors - start, id=" << myid);
       //set connectors
-      SPtr<InterpolationProcessor> iProcessor(new  IncompressibleOffsetInterpolationProcessor());
+      //SPtr<InterpolationProcessor> iProcessor(new  IncompressibleOffsetInterpolationProcessor());
       //SPtr<CompressibleOffsetMomentsInterpolationProcessor> iProcessor(new  CompressibleOffsetMomentsInterpolationProcessor());
-      SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+      //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+
+      OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
       grid->accept(setConnsVisitor);
+
+      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      SetInterpolationConnectorsBlockVisitor setInterConnsVisitor(comm, nuLB, iProcessor);
+      grid->accept(setInterConnsVisitor);
+
       UBLOG(logINFO, "SetConnectors - end, id=" << myid);
 
       SPtr<UbScheduler> stepSch(new UbScheduler(outstep));
