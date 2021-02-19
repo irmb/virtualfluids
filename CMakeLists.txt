@@ -103,7 +103,7 @@ if(BUILD_VF_GPU)
         message(FATAL_ERROR "CUDA Compiler was requested but is not found on the system.")
     endif()
 
-    set(CMAKE_CUDA_STANDARD 11)
+    set(CMAKE_CUDA_STANDARD 14)
     set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
 
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcudafe --display_error_number")
