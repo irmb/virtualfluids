@@ -26,43 +26,43 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file SlipBCAlgorithmMultiphase.cpp
+//! \file MultiphaseSlipBCAlgorithm.cpp
 //! \ingroup BoundarConditions
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#include "SlipBCAlgorithmMultiphase.h"
+#include "MultiphaseSlipBCAlgorithm.h"
 #include "DistributionArray3D.h"
 #include "BoundaryConditions.h"
 
-SlipBCAlgorithmMultiphase::SlipBCAlgorithmMultiphase()
+MultiphaseSlipBCAlgorithm::MultiphaseSlipBCAlgorithm()
 {
    BCAlgorithm::type = BCAlgorithm::SlipBCAlgorithm;
    BCAlgorithm::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-SlipBCAlgorithmMultiphase::~SlipBCAlgorithmMultiphase()
+MultiphaseSlipBCAlgorithm::~MultiphaseSlipBCAlgorithm()
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<BCAlgorithm> SlipBCAlgorithmMultiphase::clone()
+SPtr<BCAlgorithm> MultiphaseSlipBCAlgorithm::clone()
 {
-   SPtr<BCAlgorithm> bc(new SlipBCAlgorithmMultiphase());
+   SPtr<BCAlgorithm> bc(new MultiphaseSlipBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void SlipBCAlgorithmMultiphase::addDistributions(SPtr<DistributionArray3D> distributions)
+void MultiphaseSlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void SlipBCAlgorithmMultiphase::addDistributionsH(SPtr<DistributionArray3D> distributionsH)
+void MultiphaseSlipBCAlgorithm::addDistributionsH(SPtr<DistributionArray3D> distributionsH)
 {
 	this->distributionsH = distributionsH;
 }
 //////////////////////////////////////////////////////////////////////////
-void SlipBCAlgorithmMultiphase::applyBC()
+void MultiphaseSlipBCAlgorithm::applyBC()
 {
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal h[D3Q27System::ENDF+1];

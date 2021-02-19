@@ -26,12 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file VelocityBCAdapterMultiphase.cpp
+//! \file MultiphaseVelocityBCAdapter.cpp
 //! \ingroup BoundarConditions
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#include "VelocityBCAdapterMultiphase.h"
+#include "MultiphaseVelocityBCAdapter.h"
 #include "basics/utilities/UbLogger.h"
 #include "basics/utilities/UbMath.h"
 #include "basics/utilities/UbTuple.h"
@@ -39,7 +39,7 @@
 using namespace std;
 
 
-VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const bool& vx1, const bool& vx2, const bool& vx3, const BCFunction& velVxBC)
+MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const BCFunction& velVxBC)
 {
    if(vx1) this->vx1BCs.push_back(velVxBC);
    if(vx2) this->vx2BCs.push_back(velVxBC);
@@ -47,7 +47,7 @@ VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const bool& vx1, const 
    this->init();
 }
 /*==========================================================*/
-VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function, const LBMReal& phiBC, const double& startTime, const double& endTime )
+MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function, const LBMReal& phiBC, const double& startTime, const double& endTime )
 {
    if(vx1) this->vx1BCs.push_back(BCFunction(function,startTime,endTime));
    if(vx2) this->vx2BCs.push_back(BCFunction(function,startTime,endTime));
@@ -58,7 +58,7 @@ VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const bool& vx1, const 
 
 }
 /*==========================================================*/
-VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function1, const mu::Parser& function2, const mu::Parser& function3, const LBMReal& phiBC, const double& startTime, const double& endTime )
+MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function1, const mu::Parser& function2, const mu::Parser& function3, const LBMReal& phiBC, const double& startTime, const double& endTime )
 {
    if(vx1) this->vx1BCs.push_back(BCFunction(function1,startTime,endTime));
    if(vx2) this->vx2BCs.push_back(BCFunction(function2,startTime,endTime));
@@ -67,7 +67,7 @@ VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const bool& vx1, const 
    this->init();
 }
 /*==========================================================*/
-VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const bool& vx1, const bool& vx2, const bool& vx3, const string& functionstring, const double& startTime, const double& endTime )
+MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const string& functionstring, const double& startTime, const double& endTime )
 {
    if(vx1) this->vx1BCs.push_back(BCFunction(functionstring,startTime,endTime));
    if(vx2) this->vx2BCs.push_back(BCFunction(functionstring,startTime,endTime));
@@ -75,7 +75,7 @@ VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const bool& vx1, const 
    this->init();
 }
 /*==========================================================*/
-VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const BCFunction& velBC, bool x1Dir, bool x2Dir, bool x3Dir)
+MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const BCFunction& velBC, bool x1Dir, bool x2Dir, bool x3Dir)
 {
    if(x1Dir) this->vx1BCs.push_back(velBC);
    if(x2Dir) this->vx2BCs.push_back(velBC);
@@ -83,7 +83,7 @@ VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const BCFunction& velBC
    this->init();
 }
 /*==========================================================*/
-VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const BCFunction& velVx1BC, const BCFunction& velVx2BC, const BCFunction& velVx3BC)
+MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const BCFunction& velVx1BC, const BCFunction& velVx2BC, const BCFunction& velVx3BC)
 {
    if( velVx1BC.getEndTime()!=-Ub::inf ) this->vx1BCs.push_back(velVx1BC);
    if( velVx2BC.getEndTime()!=-Ub::inf ) this->vx2BCs.push_back(velVx2BC);
@@ -91,7 +91,7 @@ VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const BCFunction& velVx
    this->init();
 }
 /*==========================================================*/
-VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const vector< BCFunction >& velVx1BCs, const vector< BCFunction >& velVx2BCs, const vector< BCFunction >& velVx3BCs)
+MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const vector< BCFunction >& velVx1BCs, const vector< BCFunction >& velVx2BCs, const vector< BCFunction >& velVx3BCs)
 {
    this->vx1BCs = velVx1BCs;
    this->vx2BCs = velVx2BCs;
@@ -99,7 +99,7 @@ VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const vector< BCFunctio
    this->init();
 }
 /*==========================================================*/
-VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const double& vx1, const double& vx1StartTime, const double& vx1EndTime,
+MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const double& vx1, const double& vx1StartTime, const double& vx1EndTime,
                                                const double& vx2, const double& vx2StartTime, const double& vx2EndTime,
                                                const double& vx3, const double& vx3StartTime, const double& vx3EndTime )
 {
@@ -109,7 +109,7 @@ VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const double& vx1, cons
    this->init();
 }
 /*==========================================================*/
-VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const string& vx1Function, const double& vx1StartTime, const double& vx1EndTime,
+MultiphaseVelocityBCAdapter::MultiphaseVelocityBCAdapter(const string& vx1Function, const double& vx1StartTime, const double& vx1EndTime,
                                                const string& vx2Function, const double& vx2StartTime, const double& vx2EndTime,
                                                const string& vx3Function, const double& vx3StartTime, const double& vx3EndTime ) 
 {
@@ -119,7 +119,7 @@ VelocityBCAdapterMultiphase::VelocityBCAdapterMultiphase(const string& vx1Functi
    this->init();
 }
 /*==========================================================*/
-void VelocityBCAdapterMultiphase::setNewVelocities(const double& vx1, const double& vx1StartTime, const double& vx1EndTime,
+void MultiphaseVelocityBCAdapter::setNewVelocities(const double& vx1, const double& vx1StartTime, const double& vx1EndTime,
                                               const double& vx2, const double& vx2StartTime, const double& vx2EndTime,
                                               const double& vx3, const double& vx3StartTime, const double& vx3EndTime )
 {
@@ -130,7 +130,7 @@ void VelocityBCAdapterMultiphase::setNewVelocities(const double& vx1, const doub
    this->init();
 }
 /*==========================================================*/
-void VelocityBCAdapterMultiphase::init()
+void MultiphaseVelocityBCAdapter::init()
 {
    this->unsetTimeDependent();
    
@@ -155,7 +155,7 @@ void VelocityBCAdapterMultiphase::init()
    catch(...)                          { throw UbException(UB_EXARGS,"unknown exception" ); }
 }
 /*==========================================================*/
-void VelocityBCAdapterMultiphase::init(std::vector<BCFunction>& vxBCs)
+void MultiphaseVelocityBCAdapter::init(std::vector<BCFunction>& vxBCs)
 {
    for(size_t pos=0; pos<vxBCs.size(); ++pos)
    {
@@ -174,7 +174,7 @@ void VelocityBCAdapterMultiphase::init(std::vector<BCFunction>& vxBCs)
    }
 }
 /*==========================================================*/
-void VelocityBCAdapterMultiphase::init(const D3Q27Interactor* const& interactor, const double& time)
+void MultiphaseVelocityBCAdapter::init(const D3Q27Interactor* const& interactor, const double& time)
 {
    this->timeStep       = time;
    this->tmpVx1Function = this->tmpVx2Function = this->tmpVx3Function = NULL;
@@ -236,24 +236,25 @@ void VelocityBCAdapterMultiphase::init(const D3Q27Interactor* const& interactor,
       if( !this->isTimePeriodic() ) this->unsetTimeDependent();
       else //bei peridoic die interavalle neu setzen:
       {
-         if( UbMath::equal(maxEndtime,BCFunction::INFCONST) )
-            for(size_t pos=0; pos<vx1BCs.size(); ++pos)
-            {
-               vx1BCs[pos].setStartTime( vx1BCs[pos].getStartTime() + timeStep );
-               vx1BCs[pos].setEndTime( vx1BCs[pos].getEndTime() + timeStep );
-            }
-            if( UbMath::equal(maxEndtime,BCFunction::INFCONST) )
-            for(size_t pos=0; pos<vx2BCs.size(); ++pos)
-            {
-               vx2BCs[pos].setStartTime( vx2BCs[pos].getStartTime() + timeStep );
-               vx2BCs[pos].setEndTime( vx2BCs[pos].getEndTime() + timeStep );
-            }
-         if( UbMath::equal(maxEndtime,BCFunction::INFCONST) )
-            for(size_t pos=0; pos<vx3BCs.size(); ++pos)
-            {
-               vx3BCs[pos].setStartTime( vx3BCs[pos].getStartTime() + timeStep );
-               vx3BCs[pos].setEndTime( vx3BCs[pos].getEndTime() + timeStep );
-            }
+         if( UbMath::equal(maxEndtime,BCFunction::INFCONST) )  {
+              for (size_t pos = 0; pos < vx1BCs.size(); ++pos) {
+                  vx1BCs[pos].setStartTime(vx1BCs[pos].getStartTime() + timeStep);
+                  vx1BCs[pos].setEndTime(vx1BCs[pos].getEndTime() + timeStep);
+              }
+         }
+         if( UbMath::equal(maxEndtime,BCFunction::INFCONST) ) {
+             for (size_t pos = 0; pos < vx2BCs.size(); ++pos) {
+                 vx2BCs[pos].setStartTime(vx2BCs[pos].getStartTime() + timeStep);
+                 vx2BCs[pos].setEndTime(vx2BCs[pos].getEndTime() + timeStep);
+             }
+         }
+
+         if( UbMath::equal(maxEndtime,BCFunction::INFCONST) ) {
+             for (size_t pos = 0; pos < vx3BCs.size(); ++pos) {
+                 vx3BCs[pos].setStartTime(vx3BCs[pos].getStartTime() + timeStep);
+                 vx3BCs[pos].setEndTime(vx3BCs[pos].getEndTime() + timeStep);
+             }         
+         }
         this->init(interactor,time);
       }
    }
@@ -265,24 +266,24 @@ void VelocityBCAdapterMultiphase::init(const D3Q27Interactor* const& interactor,
                    <<", timedependent="<<boolalpha<<this->isTimeDependent()   );
 }
 /*==========================================================*/
-void VelocityBCAdapterMultiphase::update( const D3Q27Interactor* const& interactor, const double& time ) 
+void MultiphaseVelocityBCAdapter::update( const D3Q27Interactor* const& interactor, const double& time ) 
 {
    this->init(interactor,time);
 }
 /*==========================================================*/
-void VelocityBCAdapterMultiphase::adaptBCForDirection( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& q, const int& fdirection, const double& time )
+void MultiphaseVelocityBCAdapter::adaptBCForDirection( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& q, const int& fdirection, const double& time )
 {
    bc->setVelocityBoundaryFlag(D3Q27System::INVDIR[fdirection],secondaryBcOption);
    bc->setQ((float)q,fdirection);
 }
 /*==========================================================*/
-void VelocityBCAdapterMultiphase::adaptBC( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& time ) 
+void MultiphaseVelocityBCAdapter::adaptBC( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& time ) 
 {
    this->setNodeVelocity(interactor,bc,worldX1,worldX2,worldX3,time);
    bc->setBcAlgorithmType(algorithmType);
 }
 /*==========================================================*/
-void VelocityBCAdapterMultiphase::setNodeVelocity( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep) 
+void MultiphaseVelocityBCAdapter::setNodeVelocity( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep) 
 {
    //Geschwindigkeiten setzen
    try
@@ -303,7 +304,7 @@ void VelocityBCAdapterMultiphase::setNodeVelocity( const D3Q27Interactor& intera
    catch(...)                          { throw UbException(UB_EXARGS,"unknown exception" ); }
 }
 /*==========================================================*/
-UbTupleDouble3 VelocityBCAdapterMultiphase::getVelocity(const double& x1, const double& x2, const double& x3, const double& timeStep) const
+UbTupleDouble3 MultiphaseVelocityBCAdapter::getVelocity(const double& x1, const double& x2, const double& x3, const double& timeStep) const
 {
 	double vx1 = 0.0;
 	double vx2 = 0.0;
@@ -320,7 +321,7 @@ UbTupleDouble3 VelocityBCAdapterMultiphase::getVelocity(const double& x1, const 
    return UbTupleDouble3(vx1,vx2,vx3);
 }
 /*==========================================================*/
-string VelocityBCAdapterMultiphase::toString()
+string MultiphaseVelocityBCAdapter::toString()
 {
    stringstream info;
    info<<"D3Q27VelocityBCAdapter:\n";

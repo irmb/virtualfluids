@@ -26,45 +26,26 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file SetKernelBlockVisitorMultiphase.cpp
-//! \ingroup Visitors
+//! \file MultiphaseSlipBCAlgorithm.h
+//! \ingroup BoundarConditions
 //! \author Hesameddin Safari
 //=======================================================================================
-#ifndef SetKernelBlockVisitorMultiphase_h
-#define SetKernelBlockVisitorMultiphase_h
 
-#include "Block3DVisitor.h"
-#include "LBMKernel.h"
+#ifndef MultiphaseSlipBCAlgorithm_h__
+#define MultiphaseSlipBCAlgorithm_h__
 
+#include "BCAlgorithm.h"
 
-class SetKernelBlockVisitorMultiphase : public Block3DVisitor
+//! A class implements slip boundary condition for multiphase simulation
+class MultiphaseSlipBCAlgorithm : public BCAlgorithm
 {
 public:
-	enum Action { NewKernel, ChangeKernel, ChangeKernelWithData};
-public:
-	//SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue);
+   MultiphaseSlipBCAlgorithm();
+   virtual ~MultiphaseSlipBCAlgorithm();
+   SPtr<BCAlgorithm> clone() override;
+   void addDistributions(SPtr<DistributionArray3D> distributions) override;
+   void addDistributionsH(SPtr<DistributionArray3D> distributionsH) override;
+   void applyBC() override;
 
-	//SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue, double availMem, double needMem);
-
-	SetKernelBlockVisitorMultiphase(SPtr<LBMKernel> kernel, LBMReal nuL, LBMReal nuG, LBMReal densityRatio, LBMReal beta, LBMReal kappa, LBMReal contactAngle, double availMem, double needMem, 
-		SetKernelBlockVisitorMultiphase::Action action = SetKernelBlockVisitorMultiphase::NewKernel);
-
-	virtual ~SetKernelBlockVisitorMultiphase() {}
-
-	virtual void visit(SPtr<Grid3D> grid, SPtr<Block3D> block);
-
-	void setNoDataSetFlag(bool flag);
-
-private:
-	SPtr<LBMKernel> kernel;
-	LBMReal nuL;
-	LBMReal nuG;
-	LBMReal densityRatio;
-	LBMReal beta;
-	LBMReal kappa;
-	LBMReal contactAngle;
-	Action action;
-	bool dataSetFlag;
 };
-
-#endif
+#endif // SlipBCAlgorithm_h__

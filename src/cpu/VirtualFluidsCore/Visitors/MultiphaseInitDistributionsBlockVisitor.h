@@ -26,30 +26,77 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file BoundaryConditionsBlockVisitorMultiphase.h
+//! \file MultiphaseInitDistributionsBlockVisitor.h
 //! \ingroup Visitors
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#ifndef BoundaryConditionBlockVisitorMultiphase_h__
-#define BoundaryConditionBlockVisitorMultiphase_h__
+#ifndef MultiphaseInitDistributionsBlockVisitor_H
+#define MultiphaseInitDistributionsBlockVisitor_H
 
 #include "Block3DVisitor.h"
-#include <map>
+#include "D3Q27System.h"
+#include "Block3D.h"
 
-class BCAdapter;
-class BCAlgorithm;
+#include <muParser.h>
 
-class BoundaryConditionsBlockVisitorMultiphase : public Block3DVisitor
+
+
+class MultiphaseInitDistributionsBlockVisitor : public Block3DVisitor
 {
 public:
-   BoundaryConditionsBlockVisitorMultiphase();
-   virtual ~BoundaryConditionsBlockVisitorMultiphase();
-   
-   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block);
-   void addBC(SPtr<BCAdapter> bc);
+	typedef std::numeric_limits<LBMReal> D3Q27RealLim;
+
+public:
+	MultiphaseInitDistributionsBlockVisitor();
+	//D3Q27ETInitDistributionsBlockVisitor(LBMReal rho, LBMReal vx1=0.0, LBMReal vx2=0.0, LBMReal vx3=0.0);
+	//! Constructor
+	//! \param nu - viscosity
+	//! \param rho - density
+	//! \param vx1 - velocity in x
+	//! \param vx2 - velocity in y
+	//! \param vx3 - velocity in z
+	MultiphaseInitDistributionsBlockVisitor( LBMReal densityRatio, LBMReal intThickness, LBMReal radius, LBMReal vx1=0.0, LBMReal vx2=0.0, LBMReal vx3=0.0);
+	//////////////////////////////////////////////////////////////////////////
+	//automatic vars are: x1,x2, x3
+	//ussage example: setVx1("x1*0.01+x2*0.003")
+	//////////////////////////////////////////////////////////////////////////
+	void setVx1( const mu::Parser& parser);
+	void setVx2( const mu::Parser& parser);
+	void setVx3( const mu::Parser& parser);
+	void setRho( const mu::Parser& parser);
+	void setPhi( const mu::Parser& parser);
+
+	void setVx1( const std::string& muParserString);
+	void setVx2( const std::string& muParserString);
+	void setVx3( const std::string& muParserString);
+	void setRho( const std::string& muParserString);
+	void setPhi( const std::string& muParserString);
+
+	//////////////////////////////////////////////////////////////////////////
+	void setVx1( LBMReal vx1 );
+	void setVx2( LBMReal vx2 );
+	void setVx3( LBMReal vx3 );
+	void setRho( LBMReal rho );
+	void setPhi( LBMReal rho );
+	void setNu( LBMReal nu );
+
+	void visit(SPtr<Grid3D> grid, SPtr<Block3D> block);
+
 protected:
+	void checkFunction(mu::Parser fct);
+
 private:
-   std::map<char, SPtr<BCAlgorithm>> bcMap;
+	mu::Parser muVx1;
+	mu::Parser muVx2;
+	mu::Parser muVx3;
+	mu::Parser muRho;
+	mu::Parser muPhi;
+
+	LBMReal nu;
+	LBMReal densityRatio;
+	LBMReal intThickness;
+	LBMReal radius;
 };
-#endif // BoundaryConditionBlockVisitor_h__
+
+#endif //D3Q27INITDISTRIBUTIONSPATCHVISITOR_H

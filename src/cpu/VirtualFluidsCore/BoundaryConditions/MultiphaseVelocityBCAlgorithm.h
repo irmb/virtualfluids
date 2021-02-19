@@ -26,26 +26,26 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file SlipBCAlgorithmMultiphase.h
+//! \file MultiphaseVelocityBCAlgorithm.h
 //! \ingroup BoundarConditions
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#ifndef SlipBCAlgorithmMultiphase_h__
-#define SlipBCAlgorithmMultiphase_h__
+#ifndef MultiphaseVelocityBCAlgorithm_h__
+#define MultiphaseVelocityBCAlgorithm_h__
 
 #include "BCAlgorithm.h"
-
-//! A class implements slip boundary condition for multiphase simulation
-class SlipBCAlgorithmMultiphase : public BCAlgorithm
+//! A class implements velocity boundary condition for multiphase simulations
+class MultiphaseVelocityBCAlgorithm : public BCAlgorithm
 {
 public:
-   SlipBCAlgorithmMultiphase();
-   virtual ~SlipBCAlgorithmMultiphase();
+   MultiphaseVelocityBCAlgorithm();
+   ~MultiphaseVelocityBCAlgorithm();
    SPtr<BCAlgorithm> clone() override;
    void addDistributions(SPtr<DistributionArray3D> distributions) override;
    void addDistributionsH(SPtr<DistributionArray3D> distributionsH) override;
    void applyBC() override;
-
 };
-#endif // SlipBCAlgorithm_h__
+
+#endif // MultiphaseVelocityBCAlgorithm_h__
+

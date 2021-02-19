@@ -26,12 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file BoundaryConditionsBlockVisitorMultiphase.cpp
+//! \file MultiphaseBoundaryConditionsBlockVisitor.cpp
 //! \ingroup Visitors
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#include "BoundaryConditionsBlockVisitorMultiphase.h"
+#include "MultiphaseBoundaryConditionsBlockVisitor.h"
 #include "BCAdapter.h"
 #include "BCArray3D.h"
 #include "BCProcessor.h"
@@ -45,18 +45,18 @@
 #include "BCArray3D.h"
 #include "LBMKernel.h"
 
-BoundaryConditionsBlockVisitorMultiphase::BoundaryConditionsBlockVisitorMultiphase() :
+MultiphaseBoundaryConditionsBlockVisitor::MultiphaseBoundaryConditionsBlockVisitor() :
 Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-BoundaryConditionsBlockVisitorMultiphase::~BoundaryConditionsBlockVisitorMultiphase()
+MultiphaseBoundaryConditionsBlockVisitor::~MultiphaseBoundaryConditionsBlockVisitor()
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-void BoundaryConditionsBlockVisitorMultiphase::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
+void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    if (block->getRank() == grid->getRank())
    {
@@ -136,7 +136,7 @@ void BoundaryConditionsBlockVisitorMultiphase::visit(SPtr<Grid3D> grid, SPtr<Blo
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void BoundaryConditionsBlockVisitorMultiphase::addBC(SPtr<BCAdapter> bc)
+void MultiphaseBoundaryConditionsBlockVisitor::addBC(SPtr<BCAdapter> bc)
 {
    bcMap.insert(std::make_pair(bc->getBcAlgorithmType(), bc->getAlgorithm()));
 }

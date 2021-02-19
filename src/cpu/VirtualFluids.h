@@ -133,10 +133,10 @@
 #include <BoundaryConditions/SimpleSlipBCAlgorithm.h>
 #include <BoundaryConditions/PowellEyringModelNoSlipBCAlgorithm.h>
 #include <BoundaryConditions/BinghamModelVelocityBCAlgorithm.h>
-#include <BoundaryConditions/NoSlipBCAlgorithmMultiphase.h> 
-#include <BoundaryConditions/NonReflectingOutflowBCAlgorithmMultiphase.h> 
-#include <BoundaryConditions/VelocityBCAdapterMultiphase.h>
-#include <BoundaryConditions/VelocityBCAlgorithmMultiphase.h>
+#include <BoundaryConditions/MultiphaseNoSlipBCAlgorithm.h> 
+#include <BoundaryConditions/MultiphaseNonReflectingOutflowBCAlgorithm.h> 
+#include <BoundaryConditions/MultiphaseVelocityBCAdapter.h>
+#include <BoundaryConditions/MultiphaseVelocityBCAlgorithm.h>
 
 #include <Connectors/Block3DConnector.h>
 #include <Connectors/Block3DConnectorFactory.h>
@@ -327,9 +327,9 @@
 #include <CheckRatioBlockVisitor.h>
 #include <SpongeLayerBlockVisitor.h>
 #include <ZoltanPartitioningGridVisitor.h>
-#include <Visitors/SetKernelBlockVisitorMultiphase.h>
-#include <Visitors/BoundaryConditionsBlockVisitorMultiphase.h>
-#include <Visitors/InitDistributionsBlockVisitorMultiphase.h>
+#include <Visitors/MultiphaseSetKernelBlockVisitor.h>
+#include <Visitors/MultiphaseBoundaryConditionsBlockVisitor.h>
+#include <Visitors/MultiphaseInitDistributionsBlockVisitor.h>
 
 #include <RefineAroundGbObjectHelper.h>
 #include <Visitors/RefineCrossAndInsideGbObjectHelper.h>

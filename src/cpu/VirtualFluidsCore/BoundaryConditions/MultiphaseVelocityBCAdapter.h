@@ -26,12 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file VelocityBCAdapterMultiphase.h
+//! \file MultiphaseVelocityBCAdapter.h
 //! \ingroup BoundarConditions
 //! \author Hesameddin Safari
 //=======================================================================================
-#ifndef VelocityBCAdapterMultiphase_H
-#define VelocityBCAdapterMultiphase_H
+#ifndef MultiphaseVelocityBCAdapter_H
+#define MultiphaseVelocityBCAdapter_H
 
 #include <iostream>
 #include <string>
@@ -84,31 +84,31 @@ class UbFileInput;
 //!    VelocityBCAdapter velBC(true, false ,false ,fct, 0, BCFunction::INFCONST);
 //! \endcode 
 
-class VelocityBCAdapterMultiphase : public BCAdapter
+class MultiphaseVelocityBCAdapter : public BCAdapter
 {
 public:
    //constructors
-   VelocityBCAdapterMultiphase() { this->init(); }
+   MultiphaseVelocityBCAdapter() { this->init(); }
    
-   VelocityBCAdapterMultiphase(const bool& vx1, const bool& vx2, const bool& vx3, const BCFunction& velVxBC );
+   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const BCFunction& velVxBC );
 
-   VelocityBCAdapterMultiphase(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function, const LBMReal& phiBC, const double& startTime, const double& endTime  );
+   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function, const LBMReal& phiBC, const double& startTime, const double& endTime  );
 
-   VelocityBCAdapterMultiphase(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function1, const mu::Parser& function2, const mu::Parser& function3, const LBMReal& phiBC, const double& startTime, const double& endTime );
+   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const mu::Parser& function1, const mu::Parser& function2, const mu::Parser& function3, const LBMReal& phiBC, const double& startTime, const double& endTime );
    
-   VelocityBCAdapterMultiphase(const bool& vx1, const bool& vx2, const bool& vx3, const std::string& functionstring, const double& startTime, const double& endTime );
+   MultiphaseVelocityBCAdapter(const bool& vx1, const bool& vx2, const bool& vx3, const std::string& functionstring, const double& startTime, const double& endTime );
 
-   VelocityBCAdapterMultiphase(const BCFunction& velBC, bool x1Dir, bool x2Dir, bool x3Dir);
+   MultiphaseVelocityBCAdapter(const BCFunction& velBC, bool x1Dir, bool x2Dir, bool x3Dir);
 
-   VelocityBCAdapterMultiphase(const BCFunction& velVx1BC, const BCFunction& velVx2BC, const BCFunction& velVx3BC);
+   MultiphaseVelocityBCAdapter(const BCFunction& velVx1BC, const BCFunction& velVx2BC, const BCFunction& velVx3BC);
 
-   VelocityBCAdapterMultiphase(const std::vector< BCFunction >& velVx1BCs, const std::vector< BCFunction >& velVx2BCs, const std::vector< BCFunction >& velVx3BCs);
+   MultiphaseVelocityBCAdapter(const std::vector< BCFunction >& velVx1BCs, const std::vector< BCFunction >& velVx2BCs, const std::vector< BCFunction >& velVx3BCs);
 
-   VelocityBCAdapterMultiphase(const double& vx1, const double& vx1StartTime, const double& vx1EndTime,
+   MultiphaseVelocityBCAdapter(const double& vx1, const double& vx1StartTime, const double& vx1EndTime,
                           const double& vx2, const double& vx2StartTime, const double& vx2EndTime,
                           const double& vx3, const double& vx3StartTime, const double& vx3EndTime);
 
-   VelocityBCAdapterMultiphase(const std::string& vx1Function, const double& vx1StartTime, const double& vx1EndTime,
+   MultiphaseVelocityBCAdapter(const std::string& vx1Function, const double& vx1StartTime, const double& vx1EndTime,
                           const std::string& vx2Function, const double& vx2StartTime, const double& vx2EndTime,
                           const std::string& vx3Function, const double& vx3StartTime, const double& vx3EndTime ); 
 
