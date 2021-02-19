@@ -77,7 +77,7 @@ void run(string configname)
 
         SPtr<LBMUnitConverter> conv(new LBMUnitConverter());
 
-        const int baseLevel = 0;
+        //const int baseLevel = 0;
 
         SPtr<LBMKernel> kernel;
 
