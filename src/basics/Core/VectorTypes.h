@@ -4,8 +4,12 @@
 #ifdef __CUDACC__
 #include <cuda_runtime.h>
 #else
+#ifndef __host__
 #define __host__
+#endif
+#ifndef __device__
 #define __device__
+#endif
 #endif
 
 #include <cmath>
@@ -19,7 +23,7 @@ struct BASICS_EXPORT Vec3 {
     real x{ c0o1 }, y{ c0o1 }, z{ c0o1 };
 
     __host__ __device__ Vec3(real x, real y, real z) : x(x), y(y), z(z) {}
-    __host__ __device__ Vec3() = default;
+    Vec3() = default;
 
     __host__ __device__ real length() { return std::sqrt(x * x + y * y + z * z); }
 
