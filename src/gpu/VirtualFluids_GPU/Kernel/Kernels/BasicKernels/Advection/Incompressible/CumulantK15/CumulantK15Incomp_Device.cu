@@ -208,7 +208,7 @@ extern "C" __global__ void LB_Kernel_CumulantK15Incomp(real omega,
 																	   //				mfbbc-mfbba;
 																	   ////////////////////////////////////////////////////////////////////////////////////
 																	   // oMdrho assembler style -------> faaaaaastaaaa
-																	   // or much sloooowaaaa ... it depändssssss on sadaku
+																	   // or much sloooowaaaa ... it depï¿½ndssssss on sadaku
 			real m0, m1, m2;
 			//real oMdrho;
 			//{
@@ -305,8 +305,8 @@ extern "C" __global__ void LB_Kernel_CumulantK15Incomp(real omega,
 			vy2 = vvy*vvy;
 			vz2 = vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
-			real wadjust;
-			real qudricLimit = 0.01f;
+			//real wadjust;
+			//real qudricLimit = 0.01f;
 			//real s9 = minusomega;
 			//test
 			//s9 = 0.;

@@ -154,7 +154,8 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
    real xoff,    yoff,    zoff;
    real xoff_sq, yoff_sq, zoff_sq;
 
-   real        vvx, vvy, vvz, vx2, vy2, vz2, drho;
+   //real drho;
+   real        vvx, vvy, vvz, vx2, vy2, vz2;
    real        press;//,drho,vx1,vx2,vx3;
    real        /*pressMMM,*/drhoMMM,vx1MMM,vx2MMM,vx3MMM;
    real        /*pressMMP,*/drhoMMP,vx1MMP,vx2MMP,vx3MMP;
@@ -770,10 +771,10 @@ extern "C" __global__ void scaleFC_0817_comp_27( real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real m0, m1, m2, oMdrho;
 	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
+	  //real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
 	  real O3 = c2o1 - o;
-	  real residu, residutmp;
-	  residutmp = c0o1;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
+	  //real residu, residutmp;
+	  //residutmp = c0o1;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
 	  real NeqOn = c1o1;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1367,23 +1368,23 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC,
    real        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
 	//////////////////////////////////////////////////////////////////////////////////////
     real	mfcbb, mfabb, mfbcb, mfbab, mfbbc, mfbba, mfccb, mfaab, mfcab, mfacb, mfcbc, mfaba, mfcba, mfabc, mfbcc, mfbaa, mfbca, mfbac, mfbbb, mfccc, mfaac, mfcac, mfacc, mfcca, mfaaa, mfcaa, mfaca;
-	real wadjust;
-	real qudricLimitP = 0.01f;// * 0.0001f;
-	real qudricLimitM = 0.01f;// * 0.0001f;
-	real qudricLimitD = 0.01f;// * 0.001f;
-	real omega = omFine;
+	//real wadjust;
+	//real qudricLimitP = 0.01f;// * 0.0001f;
+	//real qudricLimitM = 0.01f;// * 0.0001f;
+	//real qudricLimitD = 0.01f;// * 0.001f;
+	//real omega = omFine;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
 	real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
 	real NeqOn = c1o1;
 	real drho, rho;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	real OxxPyyPzz;
-	real OxyyPxzz;
-	real OxyyMxzz;
-	real Oxyz    ;
-	real O4, O5, O6;
-	real CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc, CUMccb, CUMccc;
+	//real OxxPyyPzz;
+	//real OxyyPxzz;
+	//real OxyyMxzz;
+	//real Oxyz;
+	//real O4, O5, O6;
+	//real CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc, CUMccb, CUMccc;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    if(k<kFC)
@@ -5556,23 +5557,23 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC,
    real        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
 	//////////////////////////////////////////////////////////////////////////////////////
     real	mfcbb, mfabb, mfbcb, mfbab, mfbbc, mfbba, mfccb, mfaab, mfcab, mfacb, mfcbc, mfaba, mfcba, mfabc, mfbcc, mfbaa, mfbca, mfbac, mfbbb, mfccc, mfaac, mfcac, mfacc, mfcca, mfaaa, mfcaa, mfaca;
-	real wadjust;
-	real qudricLimitP = 0.01f;// * 0.0001f;
-	real qudricLimitM = 0.01f;// * 0.0001f;
-	real qudricLimitD = 0.01f;// * 0.001f;
-	real omega = omFine;
+	//real wadjust;
+	//real qudricLimitP = 0.01f;// * 0.0001f;
+	//real qudricLimitM = 0.01f;// * 0.0001f;
+	//real qudricLimitD = 0.01f;// * 0.001f;
+	//real omega = omFine;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
 	real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
 	real NeqOn = c1o1;
 	real drho, rho;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	real OxxPyyPzz;
-	real OxyyPxzz;
-	real OxyyMxzz;
-	real Oxyz    ;
-	real O4, O5, O6;
-	real CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc, CUMccb, CUMccc;
+	//real OxxPyyPzz;
+	//real OxyyPxzz;
+	//real OxyyMxzz;
+	//real Oxyz;
+	//real O4, O5, O6;
+	//real CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc, CUMccb, CUMccc;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    if(k<kFC)
@@ -10502,10 +10503,10 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
 	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
+	  //real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
 	  real O3 = c2o1 - o;
-	  real residu, residutmp;
-	  residutmp = c0o1;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
+	  //real residu, residutmp;
+	  //residutmp = c0o1;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
 	  real NeqOn = c1o1;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -13196,7 +13197,8 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
    real xoff,    yoff,    zoff;
    real xoff_sq, yoff_sq, zoff_sq;
 
-   real        vvx, vvy, vvz, vx2, vy2, vz2, drho;
+   // real drho;
+   real        vvx, vvy, vvz, vx2, vy2, vz2;
    real        press;//,drho,vx1,vx2,vx3;
    real        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
    real        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
@@ -14481,10 +14483,10 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC,
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  real m0, m1, m2, oMdrho;
 	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
+	  //real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
 	  real O3 = c2o1 - o;
-	  real residu, residutmp;
-	  residutmp = c0o1;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
+	  //real residu, residutmp;
+	  //residutmp = c0o1;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
 	  real NeqOn = c1o1;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -19972,8 +19974,8 @@ extern "C" __global__ void scaleFCThSMG7(    real* DC,
 
    //real omegaD_C     = two / (six * diffusivity_coarse + one);
    //real omegaD_F     = two / (six * diffusivity_coarse*two + one);
-   real omegaD_C     = c3o1 - sqrt(c3o1);        //Quick and Dörrrty
-   real omegaD_F     = c3o1 - sqrt(c3o1);        //Quick and Dörrrty
+   real omegaD_C     = c3o1 - sqrt(c3o1);        //Quick and Dï¿½rrrty
+   real omegaD_F     = c3o1 - sqrt(c3o1);        //Quick and Dï¿½rrrty
    real Lam         = -(c1o2-c1o1/omegaD_C);
    real nue_d       = Lam/c3o1;
    //real ae          = zero;
@@ -20844,8 +20846,8 @@ extern "C" __global__ void scaleFCThS7(   real* DC,
 
    //real omegaD_C     = two / (six * diffusivity_coarse + one);
    //real omegaD_F     = two / (six * diffusivity_coarse*two + one);
-   real omegaD_C     = c3o1 - sqrt(c3o1);        //Quick and Dörrrty
-   real omegaD_F     = c3o1 - sqrt(c3o1);        //Quick and Dörrrty
+   real omegaD_C     = c3o1 - sqrt(c3o1);        //Quick and Dï¿½rrrty
+   real omegaD_F     = c3o1 - sqrt(c3o1);        //Quick and Dï¿½rrrty
    real Lam         = -(c1o2-c1o1/omegaD_C);
    real nue_d       = Lam/c3o1;
    //real ae          = zero;
@@ -21691,7 +21693,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
 
    real f27E,f27W,f27N,f27S,f27T,f27B,f27NE,f27SW,f27SE,f27NW,f27TE,f27BW,f27BE,f27TW,f27TN,f27BS,f27BN,f27TS,f27ZERO,f27TNE,f27TSW,f27TSE,f27TNW,f27BNE,f27BSW,f27BSE,f27BNW;
    real Mx,My,Mz/*,Mxx,Myy,Mzz,M0*/; 
-   real Conc_C_C;
+   //real Conc_C_C;
    real Conc_F_SWB, Conc_F_SWT, Conc_F_SET, Conc_F_SEB, Conc_F_NWB, Conc_F_NWT, Conc_F_NET, Conc_F_NEB;
 
    real omegaD_C     = c2o1 / (c6o1 * diffusivity_coarse + c1o1);
@@ -21704,7 +21706,7 @@ extern "C" __global__ void scaleFCThS27(     real* DC,
    //real ae          = diffusivity_fine/nue_d - one;
    //real ae_F        = (diffusivity_fine/two)/nue_d - one;
 
-   real x,       y,       z;
+   // real x,       y,       z;
    real xoff,    yoff,    zoff;
    real xoff_sq, yoff_sq, zoff_sq;
 

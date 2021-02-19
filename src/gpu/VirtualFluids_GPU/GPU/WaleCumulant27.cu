@@ -177,8 +177,8 @@ extern "C" __global__ void LB_Kernel_WaleBySoniMalav_Cum_AA2016_Comp_SP_27(
 			////////////////////////////////////////////////////////////////////////////////////
 			/////////////////////          WALE model            ///////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
-
-			float tauTotal, wOper;									  // total relaxation time and operator for the WALE model
+            //float tauTotal;
+			float wOper;									  // total relaxation time and operator for the WALE model
 			float dxux, dyuy, dzuz, dyux, dxuy, dzux, dxuz, dzuy, dyuz; // 9 velocity gradients required for computing the strain rate tensor and vorticity tensor
 
 																		// gradients wrt X-axis

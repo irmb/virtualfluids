@@ -933,7 +933,7 @@ extern "C" __global__ void QThinWallsPartTwo27(
       ////////////////////////////////////////////////////////////////////////////////
       //index
       uint KQK  = k_Q[k];
-      uint kzero= KQK;
+      //uint kzero= KQK;
       uint ke   = KQK;
       uint kw   = neighborX[KQK];
       uint kn   = KQK;
