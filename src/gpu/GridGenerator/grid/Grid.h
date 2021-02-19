@@ -82,7 +82,7 @@ public:
 
     CUDA_HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) = 0;
 
-    CUDA_HOST virtual void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) = 0;
+    HOSTDEVICE virtual void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) = 0;
 
     CUDA_HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) = 0;
     

@@ -21,7 +21,11 @@ class Object;
 class BoundingBox;
 class TriangularMeshDiscretizationStrategy;
 
+#pragma push
+#pragma diag_suppress = 3156
+// warning #3156-D: extern declaration of the entity DIRECTIONS is treated as a static definition
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
+#pragma pop
 
 class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
@@ -111,7 +115,7 @@ public:
 
     CUDA_HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
 
-    CUDA_HOST void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
+    HOSTDEVICE void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
 
     CUDA_HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
 

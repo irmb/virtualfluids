@@ -84,7 +84,13 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder* stre
 
 				onlyNeighbors = false;
 			}
-			else std::cerr << "can't add curve" << std::endl; continue;
+			else 
+            { 
+                // TODO: this could be a bug, as before this change "continue" was not guarded by the "else"
+                // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/11
+                std::cerr << "can't add curve" << std::endl; 
+                continue;
+            }
 		}
 		else
 			junctions.push_back(JunctionReaderData(inCells, outCells, carCanNotEnterThisOutCell, trafficLightTime));

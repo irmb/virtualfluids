@@ -339,6 +339,8 @@ public:
 
     void setCenterCoordinates(const double &x1, const double &x2, const double &x3) override;
 
+    void setCenterCoordinates(const UbTupleDouble3 & /*position*/) override;
+
     void scale(const double &sx1, const double &sx2, const double &sx3) override;
     void rotate(const double &alpha, const double &beta, const double &gamma) override;
     void rotateAroundPoint(const double &px1, const double &px2, const double &px3, const double &alpha,

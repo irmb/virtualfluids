@@ -465,7 +465,10 @@ HOSTDEVICE void GridImp::setNodeTo(uint index, char type)
 HOSTDEVICE bool GridImp::isNode(uint index, char type) const
 {
     if( index != INVALID_INDEX )
-		return field.is(index, type);
+        return field.is(index, type);
+
+    return false;
+    // TODO: cannot throw on gpu: throw std::runtime_error("GridImp::isNode() -> index == INVALID_INDEX not supported.");
 }
 
 HOSTDEVICE bool GridImp::isValidEndOfGridStopper(uint index) const
@@ -797,7 +800,7 @@ CUDA_HOST uint GridImp::getNumberOfSolidBoundaryNodes() const
 
 CUDA_HOST void GridImp::setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes)
 {
-	if (numberOfSolidBoundaryNodes >= 0 && numberOfSolidBoundaryNodes < INVALID_INDEX)
+	if (numberOfSolidBoundaryNodes < INVALID_INDEX)
 		this->numberOfSolidBoundaryNodes = numberOfSolidBoundaryNodes;
 }
 

@@ -269,7 +269,7 @@ std::shared_ptr<Grid> LevelGridBuilder::getGrid(int level, int box)
 
 void LevelGridBuilder::checkLevel(int level)
 {
-    if (level >= grids.size())
+    if (level >= (int)grids.size())
     { 
         std::cout << "wrong level input... return to caller\n";
         return; 
@@ -311,7 +311,7 @@ void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indi
     int allIndicesCounter = 0;
     for (auto boundaryCondition : boundaryConditions[level]->velocityBoundaryConditions)
     {
-        for(int i = 0; i < boundaryCondition->indices.size(); i++)
+        for(std::size_t i = 0; i < boundaryCondition->indices.size(); i++)
         {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) +1;  
 
@@ -338,7 +338,7 @@ void LevelGridBuilder::getPressureValues(real* rho, int* indices, int* neighborI
     int allIndicesCounter = 0;
     for (auto boundaryCondition : boundaryConditions[level]->pressureBoundaryConditions)
     {
-        for (int i = 0; i < boundaryCondition->indices.size(); i++)
+        for (std::size_t i = 0; i < boundaryCondition->indices.size(); i++)
         {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) + 1;
 
@@ -451,7 +451,7 @@ void LevelGridBuilder::getGeometryValues(real* vx, real* vy, real* vz, int level
 
 void LevelGridBuilder::getGeometryQs(real* qs[27], int level) const
 {
-    for (int i = 0; i < boundaryConditions[level]->geometryBoundaryCondition->indices.size(); i++)
+    for (std::size_t i = 0; i < boundaryConditions[level]->geometryBoundaryCondition->indices.size(); i++)
     {
         for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
         {

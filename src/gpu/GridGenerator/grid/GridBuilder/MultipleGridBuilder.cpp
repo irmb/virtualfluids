@@ -214,8 +214,8 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
     // This method computes the start and end coordinates with respect to the coarse grid
     // The following sketch visualizes this procedure for level 2:
     //
-    //                          /----------------------- domain --------------------------------\ 
-    //                          |                      /----------------- refinement region ------------------------\
+    //                          /----------------------- domain --------------------------------/ 
+    //                          |                      /----------------- refinement region ------------------------/
     //                          |                      |                                        |                   |
     //                          |                      |                                        |                   |
     // Level 2:                 |                 2   2|  2   2   2   2   2   2   2   2   2   2 | 2  (2) (2) (2)    |
@@ -468,9 +468,9 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
         // On the coarse grid every thing is Fluid (w.r.t. the refinement)
         // On the finest grid the Fluid region is defined by the Object
         // On the intermediate levels the Fluid region is defined by the fluid region of the finer level
-        if     ( level == 0 )
+        if(level == 0)
             grids[level]->inital( nullptr, 0 );
-        else if( level == grids.size()-1 )
+        else if(level == (int)grids.size() - 1)
             grids[level]->inital( nullptr, this->numberOfLayersFine );
         else
             grids[level]->inital( grids[level+1], this->numberOfLayersBetweenLevels );
