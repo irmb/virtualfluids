@@ -123,6 +123,7 @@ gcc_9_cpu_warning_like_errors:
     - cmake ..
       --preset=all_make_ccache
       -DBUILD_WARNINGS_AS_ERRORS=ON
+      -DCMAKE_CUDA_ARCHITECTURES=60
     - make -j4
     - ccache -s
 
