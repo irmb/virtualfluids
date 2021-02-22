@@ -121,7 +121,7 @@ gcc_9_cpu_warning_like_errors:
     - cd $CI_PROJECT_DIR/build
     - rm -r -f ./*
     - cmake ..
-      --preset=cpu_make_ccache
+      --preset=all_make_ccache
       -DBUILD_WARNINGS_AS_ERRORS=ON
     - make -j4
     - ccache -s
