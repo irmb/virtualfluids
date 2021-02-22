@@ -4117,7 +4117,7 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
       real vx1 =  ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       real vx2 =  ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       real vx3 =  ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
-		 ////dörrrrrty !!!!!!!!!!!!!
+		 ////dï¿½rrrrrty !!!!!!!!!!!!!
    //      real vx1     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
    //      real vx2     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
    //      real vx3     =  ten * ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
@@ -4134,8 +4134,8 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
       //real ae          = diffusivity/nue_d - one; //zero;
 
       real f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
-      real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
-      real /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
+      //real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
+      //real /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
       real TempD = temp[k];
 
 
@@ -4592,7 +4592,7 @@ extern "C" __global__ void QNoSlipADincomp27(int inx,
       real f_TN   = (D.f[dirBS  ])[kbs  ];
       real f_TS   = (D.f[dirBN  ])[kbn  ];
       real f_BN   = (D.f[dirTS  ])[kts  ];
-      real f_ZERO = (D.f[dirZERO])[kzero];
+      //real f_ZERO = (D.f[dirZERO])[kzero];
       real f_BSW  = (D.f[dirTNE ])[ktne ];
       real f_BNE  = (D.f[dirTSW ])[ktsw ];
       real f_BNW  = (D.f[dirTSE ])[ktse ];
@@ -5034,7 +5034,7 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
       real vx1 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       real vx2 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       real vx3 = ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
-		 ////dörrrrrty !!!!!!!!!!!!!
+		 ////dï¿½rrrrrty !!!!!!!!!!!!!
    //      real vx1     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
    //      real vx2     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
    //      real vx3     =  ten * ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
@@ -5045,8 +5045,8 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
       real uz_sq       = vx3 * vx3;
 
       real f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
-      real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
-      real /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
+      //real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
+      //real /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
       real TempD = temp[k];
 
       f7_ZERO =  (D7.f[0])[kzero];
@@ -5556,7 +5556,7 @@ extern "C" __global__ void QADVeloIncomp27( int inx,
       real f_TN   = (D.f[dirBS  ])[kbs  ];
       real f_TS   = (D.f[dirBN  ])[kbn  ];
       real f_BN   = (D.f[dirTS  ])[kts  ];
-      real f_ZERO = (D.f[dirZERO])[kzero];
+      //real f_ZERO = (D.f[dirZERO])[kzero];
       real f_BSW  = (D.f[dirTNE ])[ktne ];
       real f_BNE  = (D.f[dirTSW ])[ktsw ];
       real f_BNW  = (D.f[dirTSE ])[ktse ];
@@ -6025,7 +6025,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
       real vx1 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       real vx2 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       real vx3 = ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
-		 ////dörrrrrty !!!!!!!!!!!!!
+		 ////dï¿½rrrrrty !!!!!!!!!!!!!
    //      real vx1     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
    //      real vx2     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
    //      real vx3     =  ten * ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
@@ -6043,8 +6043,8 @@ extern "C" __global__ void QADPressIncomp7(int inx,
       //real ae          = diffusivity/nue_d - one;
 
       real f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
-      real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
-      real /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
+      //real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
+      //real /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
       //real TempD = temp[k];
 
 
@@ -6512,7 +6512,7 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
       real f_TN   = (D.f[dirBS  ])[kbs  ];
       real f_TS   = (D.f[dirBN  ])[kbn  ];
       real f_BN   = (D.f[dirTS  ])[kts  ];
-      real f_ZERO = (D.f[dirZERO])[kzero];
+      //real f_ZERO = (D.f[dirZERO])[kzero];
       real f_BSW  = (D.f[dirTNE ])[ktne ];
       real f_BNE  = (D.f[dirTSW ])[ktsw ];
       real f_BNW  = (D.f[dirTSE ])[ktse ];

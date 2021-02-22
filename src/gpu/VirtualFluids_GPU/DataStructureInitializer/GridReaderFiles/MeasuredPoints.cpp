@@ -38,7 +38,7 @@ void MeasuredPoints::init() {
 	this->levelSizes.resize(maxLevel);
 	this->points.resize(maxLevel);
 
-	for (int i=0; i<maxLevel;i++) {
+	for (uint i=0; i<maxLevel; i++) {
 		getline(file,bufferString);
 		bufferInt = atoi(bufferString.c_str()); 
 
@@ -46,7 +46,7 @@ void MeasuredPoints::init() {
 
 		this->points[i].resize(levelSizes[i]);
 		if(levelSizes[i] != 0) {
-			for ( int j=0; j<levelSizes[i]; j++) {
+			for ( uint j = 0; j < levelSizes[i]; j++) {
 				getline(file,bufferString);
 				bufferInt = atoi(bufferString.c_str()); 
 				this->points[i][j]=bufferInt;

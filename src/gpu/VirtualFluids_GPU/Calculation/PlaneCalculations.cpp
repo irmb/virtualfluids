@@ -56,10 +56,8 @@ void calcPressure(Parameter* para, std::string inorout, int lev)
 {
 	unsigned int m   = para->getParH(lev)->startP;
    unsigned int anz = 0;
-	real rho = 0.0f;
 	double sumrho = 0.0, mrho = 0.0;
    double PressIn, PressOut;
-   real dummyux = 0.0f, dummyuy = 0.0f, dummyuz = 0.0f;
 
    for (unsigned int i = 0; i < para->getParH(lev)->sizePlanePress; i++)
    {
@@ -97,9 +95,7 @@ void calcFlowRate(Parameter* para, int lev)
 
    unsigned int anz = 0;
    double FlowRate = 0.0;
-   real rho = 0.0f;
    double sumvelo = 0.0, mvelo = 0.0;
-   real dummyux = 0.0f, dummyuy = 0.0f, dummyuz = 0.0f;
 
    for (unsigned int i = 0; i < sizePlane; i++)
    {
@@ -357,10 +353,10 @@ void printRE(Parameter* para, CudaMemoryManager* cudaManager, int timestep)
 	//////////////////////////////////////////////////////////////////////////
 	//fill file with data
 	bool doNothing = false;
-	for (size_t i = 0; i < para->getParH(lev)->QPress.kQ; i++)
+	for (int i = 0; i < para->getParH(lev)->QPress.kQ; i++)
 	{
 		doNothing = false;
-		for (size_t j = 0; j < 27; j++)
+		for (std::size_t j = 0; j < 27; j++)
 		{
 			if (para->getParH(lev)->kDistTestRE.f[0][j*para->getParH(lev)->QPress.kQ + i]==0)
 			{
@@ -379,7 +375,7 @@ void printRE(Parameter* para, CudaMemoryManager* cudaManager, int timestep)
 	//close file
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
-	if (timestep == para->getTEnd())
+	if (timestep == (int)para->getTEnd())
 	{
 		cudaManager->cudaFreeTestRE(lev);
 	}

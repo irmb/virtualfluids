@@ -78,7 +78,7 @@ void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, i
 
 void collisionPorousMedia(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level)
 {
-    for( int i = 0; i < pm.size(); i++ )
+    for( std::size_t i = 0; i < pm.size(); i++ )
     {
         KernelPMCumOneCompSP27(para->getParD(level)->numberofthreads,
                                para->getParD(level)->omega,

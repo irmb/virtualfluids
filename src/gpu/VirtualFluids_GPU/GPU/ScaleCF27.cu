@@ -155,7 +155,8 @@ extern "C" __global__ void scaleCF_0817_comp_27( real* DC,
    real xoff,    yoff,    zoff;
    real xoff_sq, yoff_sq, zoff_sq;
 
-   real        vvx, vvy, vvz, vx2, vy2, vz2, drho;
+   // real drho;
+   real        vvx, vvy, vvz, vx2, vy2, vz2;
    real        press;//,drho,vx1,vx2,vx3;
    real        /*pressMMP,*/drhoMMP,vx1MMP,vx2MMP,vx3MMP;
    real        /*pressMPP,*/drhoMPP,vx1MPP,vx2MPP,vx3MPP;
@@ -4244,11 +4245,11 @@ extern "C" __global__ void scaleCF_AA2016_comp_27(real* DC,
    real        x,y,z;
 	//////////////////////////////////////////////////////////////////////////////////////
     real	mfcbb, mfabb, mfbcb, mfbab, mfbbc, mfbba, mfccb, mfaab, mfcab, mfacb, mfcbc, mfaba, mfcba, mfabc, mfbcc, mfbaa, mfbca, mfbac, mfbbb, mfccc, mfaac, mfcac, mfacc, mfcca, mfaaa, mfcaa, mfaca;
-	real wadjust;
-	real qudricLimitP = 0.01f;// * 0.0001f;
-	real qudricLimitM = 0.01f;// * 0.0001f;
-	real qudricLimitD = 0.01f;// * 0.001f;
-	real omega = omCoarse;
+	//real wadjust;
+	//real qudricLimitP = 0.01f;// * 0.0001f;
+    //real qudricLimitM = 0.01f;// * 0.0001f;
+	//real qudricLimitD = 0.01f;// * 0.001f;
+	//real omega = omCoarse;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
 	real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
@@ -26463,7 +26464,8 @@ extern "C" __global__ void scaleCF_Fix_comp_27(  real* DC,
    real xoff,    yoff,    zoff;
    real xoff_sq, yoff_sq, zoff_sq;
 
-   real        vvx, vvy, vvz, vx2, vy2, vz2, drho;
+    //real dhro;
+   real        vvx, vvy, vvz, vx2, vy2, vz2;
    real        press;//,drho,vx1,vx2,vx3;
    real        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
    real        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;

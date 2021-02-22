@@ -1494,7 +1494,7 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
    {
       //////////////////////////////////////////////////////////////////////////
       //index
-      unsigned int kzero= k;
+      //unsigned int kzero= k;
       unsigned int ke   = k;
       unsigned int kw   = neighborX[k];
       unsigned int kn   = k;
@@ -1836,7 +1836,7 @@ extern "C" __global__ void LBCalcMedCompAD27(
 	{
 		//////////////////////////////////////////////////////////////////////////
 		//index
-		unsigned int kzero = k;
+		//unsigned int kzero = k;
 		unsigned int ke = k;
 		unsigned int kw = neighborX[k];
 		unsigned int kn = k;

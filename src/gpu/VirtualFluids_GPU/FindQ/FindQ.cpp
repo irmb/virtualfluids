@@ -72,7 +72,7 @@ void findQ(Parameter* para, int lev)
                for(l=0;l<=26;l++){
                   mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if((geo_mat[mm] == GEO_SOLID) || (geo_mat[mm] == GEO_VOID)){
-                     //ON[l] = -(((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz +/*+/- Achtung, innen und außen nicht verwechseln!!*/ 
+                     //ON[l] = -(((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz +/*+/- Achtung, innen und auï¿½en nicht verwechseln!!*/ 
                      //           sqrt(pow((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz,2) + 
                      //               (pow((real)ex[l],2) + pow((real)ey[l],2) + pow((real)ez[l],2))* (pow(radius,2) - 
                      //                pow((real)relx,2) - pow((real)rely,2) - pow((real)relz,2))))
@@ -389,9 +389,9 @@ void findQInflow(Parameter* para)
 {
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
-   int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-   int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
-   int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
+   //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
+   //int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
+   //int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
    //real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m;//, mm, l;
@@ -410,7 +410,7 @@ void findQInflow(Parameter* para)
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;   
    unsigned int* kk              = para->getParH(para->getCoarse())->k;
    unsigned int sizeQ            = para->getParH(para->getCoarse())->kInflowQ; 
-   real* rhoBC                = para->getParH(para->getCoarse())->Qinflow.RhoBC;
+   //real* rhoBC                = para->getParH(para->getCoarse())->Qinflow.RhoBC;
    real u0                    = para->getVelocity(); 
    real* vx                   = para->getParH(para->getCoarse())->Qinflow.Vx;     
    real* vy                   = para->getParH(para->getCoarse())->Qinflow.Vy;     
@@ -418,7 +418,7 @@ void findQInflow(Parameter* para)
    real*deltaVz               = para->getParH(para->getCoarse())->Qinflow.deltaVz;
    real* QQ                   = para->getParH(para->getCoarse())->Qinflow.q27[0]; 
    QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qinflow;
-   unsigned int nxny = nx*ny;
+   //unsigned int nxny = nx*ny;
    QIN.kQ = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    QforBoundaryConditions Q;
@@ -450,8 +450,8 @@ void findQInflow(Parameter* para)
    Q.q27[dirBSE ] = &QQ[dirBSE *sizeQ];
    Q.q27[dirBNW ] = &QQ[dirBNW *sizeQ];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
-   unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
+   //unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
+   //unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
 
    //k = STARTOFFZ + 1;
    k = nnz+STARTOFFZ - 1/*3*/;
@@ -656,12 +656,13 @@ void findKforQInflow(Parameter* para)
 {
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
-   int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-   int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
+   //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
+   //int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
    real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   unsigned int i, j, k, m, mm, l;
+   //unsigned int mm;
+   unsigned int i, j, k, m, l;
    real test = 0.f;
    //int nx                        = para->getParH(para->getFine())->nx;     
    //int ny                        = para->getParH(para->getFine())->ny; 
@@ -688,7 +689,7 @@ void findKforQInflow(Parameter* para)
             if(geo_mat[m]==GEO_FLUID){
                test = (real)0.f;
                for(l=0;l<=26;l++){
-                  mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
+                  //mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if(ez[l]==1/*-1*/){
                      ON[l] = (real) 1.f; 
                   }
@@ -738,9 +739,9 @@ void findQOutflow(Parameter* para)
 {
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
-   int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-   int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
-   int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
+   //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
+   //int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
+   //int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
    //real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m;//, mm, l;
@@ -800,8 +801,8 @@ void findQOutflow(Parameter* para)
    Q.q27[dirBNW ] = &QQ[dirBNW *sizeQ];
 
 
-   unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
-   unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
+   //unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
+   //unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
 
    k = nnz + STARTOFFZ - 3;
 
@@ -865,12 +866,13 @@ void findKforQOutflow(Parameter* para)
 {
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
-   int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-   int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
+   //int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
+   //int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
    real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   unsigned int i, j, k, m, mm, l;
+   //unsigned int mm;
+   unsigned int i, j, k, m, l;
    real test = (real) 0.f;
    //int nx                        = para->getParH(para->getFine())->nx;     
    //int ny                        = para->getParH(para->getFine())->ny; 
@@ -896,7 +898,7 @@ void findKforQOutflow(Parameter* para)
             if(geo_mat[m]==GEO_FLUID){
                test = (real)0.f;
                for(l=0;l<=26;l++){
-                  mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
+                  //mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if(ez[l]==1){
                      ON[l] = (real) 1.f; 
                   }
@@ -1016,9 +1018,9 @@ void findQPressX0(Parameter* para, int lev)
 {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
-	int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-	int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
-	int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
+	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
+	//int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
+	//int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	unsigned int i, j, k, m;
 	int nx                        = para->getParH(lev)->nx;     
@@ -1038,7 +1040,7 @@ void findQPressX0(Parameter* para, int lev)
 	real*deltaVz               = para->getParH(lev)->QpressX0.deltaVz;
 	real* QQ                   = para->getParH(lev)->QpressX0.q27[0]; 
 	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX0;
-	unsigned int nxny = nx*ny;
+	//unsigned int nxny = nx*ny;
 	QIN.kQ = 0;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	QforBoundaryConditions Q;
@@ -1071,8 +1073,8 @@ void findQPressX0(Parameter* para, int lev)
 	Q.q27[dirBNW ] = &QQ[dirBNW *sizeQ];
 
 
-	unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
-	unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
+	//unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
+	//unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
 
 	i=STARTOFFX+1;
 	//k=nnz+STARTOFFZ-3;
@@ -1129,16 +1131,17 @@ void findKforQPressX0(Parameter* para, int lev)
 {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
-	int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-	int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
+	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
+	//int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
 	int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
 	real ON[27];
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	unsigned int i, j, k, m, mm, l;
+   //unsigned int mm;
+	unsigned int i, j, k, m, l;
 	real test = (real) 0.f;
 	int nx                        = para->getParH(lev)->nx;     
 	int ny                        = para->getParH(lev)->ny; 
-	unsigned int nnx              = para->getParH(lev)->gridNX; 
+	//unsigned int nnx              = para->getParH(lev)->gridNX; 
 	unsigned int nny              = para->getParH(lev)->gridNY; 
 	unsigned int nnz              = para->getParH(lev)->gridNZ; 
 	int* geo_mat                  = para->getParH(lev)->geo;   
@@ -1156,7 +1159,7 @@ void findKforQPressX0(Parameter* para, int lev)
 				if(geo_mat[m]==GEO_FLUID){
 					test = (real)0.f;
 					for(l=0;l<=26;l++){
-						mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
+						//mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
 						if(ez[l]==1){
 							ON[l] = (real) 1.f; 
 						}
@@ -1181,9 +1184,9 @@ void findQPressX1(Parameter* para, int lev)
 {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
-	int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-	int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
-	int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
+	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
+	//int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
+	//int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	unsigned int i, j, k, m;
 	int nx                        = para->getParH(lev)->nx;     
@@ -1203,7 +1206,7 @@ void findQPressX1(Parameter* para, int lev)
 	real*deltaVz               = para->getParH(lev)->QpressX1.deltaVz;
 	real* QQ                   = para->getParH(lev)->QpressX1.q27[0]; 
 	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX1;
-	unsigned int nxny = nx*ny;
+	//unsigned int nxny = nx*ny;
 	QIN.kQ = 0;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	QforBoundaryConditions Q;
@@ -1236,8 +1239,8 @@ void findQPressX1(Parameter* para, int lev)
 	Q.q27[dirBNW ] = &QQ[dirBNW *sizeQ];
 
 
-	unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
-	unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
+	//unsigned int li = ((nnx+STARTOFFX-2)-(STARTOFFX+1)-1);
+	//unsigned int lj = ((nny+STARTOFFY-2)-(STARTOFFY+1)-1);
 
 	i=nnx+STARTOFFX-3;
 	//k=nnz+STARTOFFZ-3;
@@ -1294,12 +1297,13 @@ void findKforQPressX1(Parameter* para, int lev)
 {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////  E   W   N   S   T   B  NE  SW  SE  NW  TE  BW  BE  TW  TN  BS  BN  TS ZERO TNE BNE TSE BSE TNW BNW TSW BSW  ////////////////////////
-	int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
-	int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
+	//int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
+	//int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
 	int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
 	real ON[27];
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	unsigned int i, j, k, m, mm, l;
+   //unsigned int mm;
+	unsigned int i, j, k, m, l;
 	real test = (real) 0.f;
 	int nx                        = para->getParH(lev)->nx;     
 	int ny                        = para->getParH(lev)->ny; 
@@ -1321,7 +1325,7 @@ void findKforQPressX1(Parameter* para, int lev)
 				if(geo_mat[m]==GEO_FLUID){
 					test = (real)0.f;
 					for(l=0;l<=26;l++){
-						mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
+						//mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
 						if(ez[l]==1){
 							ON[l] = (real) 1.f; 
 						}

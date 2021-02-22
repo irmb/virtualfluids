@@ -293,7 +293,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
    {
       //////////////////////////////////////////////////////////////////////////
       //index
-      unsigned int kzero= k;
+      //unsigned int kzero= k;
       unsigned int ke   = k;
       unsigned int kw   = neighborX[k];
       unsigned int kn   = k;
@@ -321,7 +321,8 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
       unsigned int ktne = k;
       unsigned int kbsw = neighborZ[ksw];
       //////////////////////////////////////////////////////////////////////////
-      real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+	  // real f_ZERO;
+      real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 	  f_E    = (D.f[dirE   ])[ke   ];
 	  f_W    = (D.f[dirW   ])[kw   ];
 	  f_N    = (D.f[dirN   ])[kn   ];
@@ -340,7 +341,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 	  f_BS   = (D.f[dirBS  ])[kbs  ];
 	  f_BN   = (D.f[dirBN  ])[kbn  ];
 	  f_TS   = (D.f[dirTS  ])[kts  ];
-	  f_ZERO = (D.f[dirZERO])[kzero];
+	  //f_ZERO = (D.f[dirZERO])[kzero];
 	  f_TNE  = (D.f[dirTNE ])[ktne ];
 	  f_TSW  = (D.f[dirTSW ])[ktsw ];
 	  f_TSE  = (D.f[dirTSE ])[ktse ];
@@ -350,18 +351,23 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 	  f_BSE  = (D.f[dirBSE ])[kbse ];
 	  f_BNW  = (D.f[dirBNW ])[kbnw ];
       //////////////////////////////////////////////////////////////////////////
-	  real vx1, vx2, vx3, drho, rho;
+	  // real drho;
+	  real vx1, vx2, vx3, rho;
       kxyFromfcNEQ[k]       = c0o1;
 	  kyzFromfcNEQ[k]       = c0o1;
 	  kxzFromfcNEQ[k]       = c0o1;
 	  kxxMyyFromfcNEQ[k]    = c0o1;
 	  kxxMzzFromfcNEQ[k]    = c0o1;
 
+	  // TODO: warning #549-D: variable "rho" is used before its value is set 
+	  // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/12
+	  rho = 0;
+
       if(geoD[k] == GEO_FLUID)
       {
-		  drho               = ((f_TNE+f_BSW)+(f_BSE+f_TNW)+(f_BNE+f_TSW)+(f_TSE+f_BNW)) + 
-							   ((f_NE+f_SW)+(f_TE+f_BW)+(f_SE+f_NW)+(f_BE+f_TW)+(f_BN+f_TS)+(f_TN+f_BS)) + 
-							   ((f_E-f_W) + (f_N-f_S) + (f_T-f_B)) + f_ZERO;
+		//   drho               = ((f_TNE+f_BSW)+(f_BSE+f_TNW)+(f_BNE+f_TSW)+(f_TSE+f_BNW)) + 
+		// 					   ((f_NE+f_SW)+(f_TE+f_BW)+(f_SE+f_NW)+(f_BE+f_TW)+(f_BN+f_TS)+(f_TN+f_BS)) + 
+		// 					   ((f_E-f_W) + (f_N-f_S) + (f_T-f_B)) + f_ZERO;
 		  rho                = rho + c1o1;
 		  vx1                = ((f_TNE-f_BSW)+(f_BSE-f_TNW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W) / rho;
 		  vx2                = ((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S) / rho;

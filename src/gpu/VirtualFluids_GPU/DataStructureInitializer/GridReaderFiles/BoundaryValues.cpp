@@ -193,13 +193,13 @@ void BoundaryValues::setBoundarys(std::vector<std::vector<std::vector<real> > > 
 
 void BoundaryValues::setValues(real* velo, unsigned int level, unsigned int column) const
 {
-	for (int index = 0; index < values[level][column].size(); index++)
+	for (std::size_t index = 0; index < values[level][column].size(); index++)
 		velo[index] = values[level][column][index];
 }
 
 void BoundaryValues::initIndex(/*unsigned*/ int *ptr, unsigned int level)
 {
-	for (int i = 0; i < indices[level].size(); i++)
+	for (std::size_t i = 0; i < indices[level].size(); i++)
 		ptr[i] = indices[level][i];
 }
 
@@ -232,8 +232,8 @@ bool BoundaryValues::getProcNeighbor()
 
 void BoundaryValues::setPressValues(real *RhoBC, int* kN, int level) const
 {
-	for (int column = 0; column < values[level].size(); column++) {
-		for (int index = 0; index < values[level][column].size(); index++) {
+	for (std::size_t column = 0; column < values[level].size(); column++) {
+		for (std::size_t index = 0; index < values[level][column].size(); index++) {
 			if (column == 0) RhoBC[index] = values[level][column][index];
 			if (column == 1) kN[index] = (int)values[level][column][index];
 		}
@@ -242,8 +242,8 @@ void BoundaryValues::setPressValues(real *RhoBC, int* kN, int level) const
 
 void BoundaryValues::setVelocityValues(real *vx, real *vy, real *vz, int level) const
 {
-	for (int column = 0; column < values[level].size(); column++) {
-		for (int index = 0; index < values[level][column].size(); index++) {
+	for (std::size_t column = 0; column < values[level].size(); column++) {
+		for (std::size_t index = 0; index < values[level][column].size(); index++) {
 			if (column == 0) vx[index] = values[level][column][index];
 			if (column == 1) vy[index] = values[level][column][index];
 			if (column == 2) vz[index] = values[level][column][index];
@@ -253,8 +253,8 @@ void BoundaryValues::setVelocityValues(real *vx, real *vy, real *vz, int level) 
 
 void BoundaryValues::setOutflowValues(real *RhoBC, int* kN, int level) const
 {
-	for (int column = 0; column < values[level].size(); column++) {
-		for (int index = 0; index < values[level][column].size(); index++) {
+	for (std::size_t column = 0; column < values[level].size(); column++) {
+		for (std::size_t index = 0; index < values[level][column].size(); index++) {
 			if (column == 0) RhoBC[index] = values[level][column][index];
 			if (column == 1) kN[index] = (int)values[level][column][index];
 		}
@@ -263,8 +263,8 @@ void BoundaryValues::setOutflowValues(real *RhoBC, int* kN, int level) const
 
 void BoundaryValues::setStreetVelocityFractions(real *vxf, real *vyf, int level) const
 {
-	for (int column = 0; column < values[level].size(); column++) {
-		for (int index = 0; index < values[level][column].size(); index++) {
+	for (std::size_t column = 0; column < values[level].size(); column++) {
+		for (std::size_t index = 0; index < values[level][column].size(); index++) {
 			if (column == 0) vxf[index] = values[level][column][index];
 			if (column == 1) vyf[index] = values[level][column][index];
 		}

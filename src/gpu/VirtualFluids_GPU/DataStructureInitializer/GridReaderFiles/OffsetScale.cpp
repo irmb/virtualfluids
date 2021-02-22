@@ -123,7 +123,7 @@ void OffsetScale::initOffset()
 void OffsetScale::initArrayOffset(real *x_ptr,real *y_ptr,real *z_ptr, uint level)
 {
     int coordIndex = 0;
-    for (int index = 0; index < offset[level].size(); index+=3)
+    for (std::size_t index = 0; index < offset[level].size(); index+=3)
     {
         x_ptr[coordIndex] = offset[level][index];
         y_ptr[coordIndex] = offset[level][index + 1];
@@ -134,7 +134,7 @@ void OffsetScale::initArrayOffset(real *x_ptr,real *y_ptr,real *z_ptr, uint leve
 
 void OffsetScale::initScale(unsigned int* data, unsigned int level)
 {
-    for (int index = 0; index < scale[level].size(); index++)
+    for (std::size_t index = 0; index < scale[level].size(); index++)
         data[index] = scale[level][index];
 }
 

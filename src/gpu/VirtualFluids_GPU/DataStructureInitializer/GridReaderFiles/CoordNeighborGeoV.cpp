@@ -146,13 +146,13 @@ void CoordNeighborGeoV::setVec(unsigned int level, std::vector<unsigned int> vec
 
 void CoordNeighborGeoV::initalCoords(real *data, unsigned int level) const
 {
-	for (int index = 0; index < coordinates[level].size(); index++)
+	for (std::size_t index = 0; index < coordinates[level].size(); index++)
 		data[index] = coordinates[level][index];
 }
 
 void CoordNeighborGeoV::initalNeighbors(unsigned int *data, unsigned int level) const
 {
-	for (int index = 0; index < neighbors[level].size(); index++)
+	for (std::size_t index = 0; index < neighbors[level].size(); index++)
 		data[index] = neighbors[level][index];
 }
 

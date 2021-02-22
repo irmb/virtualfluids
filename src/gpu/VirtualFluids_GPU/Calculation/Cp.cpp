@@ -44,7 +44,7 @@ void calcCp(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	para->getParH(lev)->cpTop.push_back(cpTopRow);
 	//////////////////////////////////////////////////////////////////////////
 	//calc cp bottom
-	for (int it = 0; it < para->getParH(lev)->numberOfPointsCpBottom; it++)
+	for (uint it = 0; it < para->getParH(lev)->numberOfPointsCpBottom; it++)
 	{
 		pressSI = (double)(para->getParH(lev)->cpPressBottom[it] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio());
 		cp      = (double) (pressSI / (0.5 * rhoSI * veloSI * veloSI));
@@ -53,7 +53,7 @@ void calcCp(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	para->getParH(lev)->cpBottom.push_back(cpBottomRow);
 	//////////////////////////////////////////////////////////////////////////
 	//calc cp bottom 2
-	for (int it = 0; it < para->getParH(lev)->numberOfPointsCpBottom2; it++)
+	for (uint it = 0; it < para->getParH(lev)->numberOfPointsCpBottom2; it++)
 	{
 		pressSI = (double)(para->getParH(lev)->cpPressBottom2[it] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio());
 		cp      = (double) (pressSI / (0.5 * rhoSI * veloSI * veloSI));
@@ -232,14 +232,14 @@ void excludeGridInterfaceNodesForMirror(Parameter* para, int lev)
 	{
 		for (unsigned int ifit = 0; ifit < para->getParH(lev)->K_CF; ifit++)
 		{
-			if ((para->getParH(lev + 1)->cpTopIndex[it] == para->getParH(lev)->intCF.ICellCFF[ifit]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == para->getParH(lev + 1)->neighborX_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == para->getParH(lev + 1)->neighborY_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == para->getParH(lev + 1)->neighborY_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborY_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborY_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]]]))
+			if ((para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev)->intCF.ICellCFF[ifit]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborX_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborY_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborY_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]]]))
 			{
 				para->getParH(lev + 1)->isOutsideInterface.push_back(false);
 				tempBool = false;
@@ -258,7 +258,7 @@ void excludeGridInterfaceNodesForMirror(Parameter* para, int lev)
 	{
 		for (unsigned int ifit = 0; ifit < para->getParH(lev)->K_FC; ifit++)
 		{
-			if (para->getParH(lev)->cpTopIndex[it] == para->getParH(lev)->intFC.ICellFCC[ifit])
+			if (para->getParH(lev)->cpTopIndex[it] == (int)para->getParH(lev)->intFC.ICellFCC[ifit])
 			{
 				para->getParH(lev)->isOutsideInterface.push_back(false);
 				tempBool = false;
