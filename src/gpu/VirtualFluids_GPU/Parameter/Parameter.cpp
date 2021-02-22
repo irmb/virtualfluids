@@ -4280,7 +4280,7 @@ void Parameter::setMultiKernelOn(bool isOn)
 }
 void Parameter::setMultiKernelLevel(std::vector< int> kernelLevel)
 {
-	this->multiKernelLevel = multiKernelLevel;
+	this->multiKernelLevel = kernelLevel;
 }
 void Parameter::setMultiKernel(std::vector< KernelType> kernel)
 {

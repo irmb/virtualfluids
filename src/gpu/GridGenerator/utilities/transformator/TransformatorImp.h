@@ -41,8 +41,8 @@ public:
     GRIDGENERATOR_EXPORT void transformGridToWorld(Triangle &t) const;
 	GRIDGENERATOR_EXPORT void transformGridToWorld(Vertex &value) const;
 
-	GRIDGENERATOR_EXPORT void transformGridToWorld(BoundingBox &box) const;
-	GRIDGENERATOR_EXPORT void transformWorldToGrid(BoundingBox &box) const;
+	GRIDGENERATOR_EXPORT void transformGridToWorld(BoundingBox &box) const override;
+	GRIDGENERATOR_EXPORT void transformWorldToGrid(BoundingBox &box) const override;
 
 	GRIDGENERATOR_EXPORT bool operator==(const TransformatorImp& trafo) const;
 
