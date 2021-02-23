@@ -140,7 +140,7 @@ void Simulation::run()
     //                                          lbmSystem->getNumberOfDirections(),
     //                                          physicalParameters->latticeViscosity, iProcessor);
 
-    OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
+    OneDistributionSetConnectorsBlockVisitor setConnsVisitor(communicator);
     grid->accept(setConnsVisitor);
 
     InitDistributionsBlockVisitor initVisitor;
