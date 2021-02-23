@@ -1,4 +1,4 @@
-#ifndef JUNCTIOREADER_H
+#ifndef JUNCTIONREADER_H
 #define JUNCTIONREADER_H
 
 #include <vector>

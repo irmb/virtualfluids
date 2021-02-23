@@ -28,6 +28,8 @@ enum class SideType
 class Side
 {
 public:
+    virtual ~Side() = default;
+
     virtual void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition) = 0;
 
     virtual int getCoordinate() const = 0;

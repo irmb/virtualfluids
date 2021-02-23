@@ -29,19 +29,19 @@ private:
 public:
 	GridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
     ~GridReader();
-	void allocArrays_CoordNeighborGeo()override;
-	void allocArrays_BoundaryValues()override;
+	void allocArrays_CoordNeighborGeo() override;
+	void allocArrays_BoundaryValues() override;
     void allocArrays_OffsetScale() override;
 
 	void initalValuesDomainDecompostion(int level);
 
 	void setChannelBoundaryCondition();
 
-	void allocArrays_BoundaryQs()override;
+	void allocArrays_BoundaryQs() override;
 	bool getBinaer();
-	void setDimensions();
-	void setBoundingBox();
-	void initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned int> > > periodV, std::vector<std::vector<unsigned int> > periodIndex, std::string way);
+	void setDimensions() override;
+	void setBoundingBox() override;
+	void initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned int> > > periodV, std::vector<std::vector<unsigned int> > periodIndex, std::string way) override;
 
 private:
 	void makeReader(std::shared_ptr<Parameter> para);

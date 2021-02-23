@@ -461,7 +461,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     // Figure 5.2 in the Dissertation of Stephan Lenz:
     // https://publikationsserver.tu-braunschweig.de/receive/dbbs_mods_00068716
     //
-    for( int level = grids.size()-1; level >= 0; level-- ){
+    for( int level = grids.size()-1; level >= 0; level-- ) {
 
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initializing level " << level << "\n";
 
@@ -561,12 +561,12 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     //      => computes the sparse indices
     //      => generates neighbor connectivity taking into account periodic boundaries
     //      => undates the interface connectivity to sparse indices (overwrites matrix indices!)
-	if (lbmOrGks == LBM) {
-		for (size_t i = 0; i < grids.size() - 1; i++)
-			grids[i]->findSparseIndices(grids[i + 1]);
+    if (lbmOrGks == LBM) {
+        for (size_t i = 0; i < grids.size() - 1; i++)
+           grids[i]->findSparseIndices(grids[i + 1]);
 
-		grids[grids.size() - 1]->findSparseIndices(nullptr);
-	}
+        grids[grids.size() - 1]->findSparseIndices(nullptr);
+    }
 
     //////////////////////////////////////////////////////////////////////////
 }

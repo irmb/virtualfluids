@@ -135,6 +135,8 @@ public:
     T1 getT1() const { return t1; }
     T2 getT2() const { return t2; }
     T3 getT3() const { return t3; }
+
+    Key3(const Key3& other) : t1(other.t1), t2(other.t2), t3(other.t3) {}
     /*==========================================================*/
     Key3 &operator=(const Key3 &srcKey)
     {

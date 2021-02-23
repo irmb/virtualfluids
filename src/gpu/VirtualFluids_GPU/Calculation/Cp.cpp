@@ -390,168 +390,154 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
 	}
 	//////////////////////////////////////////////////////////////////////////
 
-	switch (fileFormat)
-	{
-		case 0: //ASCII
-		{
-			//////////////////////////////////////////////////////////////////////////
-			//set ofstream
-			ofstream ostr;
-			std::ostringstream temp1;
-			std::ostringstream temp2;
-			std::ostringstream temp3;
-			//////////////////////////////////////////////////////////////////////////
-			//open file
-			ostr.open(fname);
-			//////////////////////////////////////////////////////////////////////////
-			ostr << "This geometry File was written by VirtualFluidsGPU\n";
-			ostr << "#### Casefile written by VirtualFluidsGPU\n";
-			//////////////////////////////////////////////////////////////////////////
-			ostr << "node id assign \n";
-			ostr << "element id assign \n";
-			//////////////////////////////////////////////////////////////////////////
-			ostr << "part \n \t 1 \n";
-			ostr << fnameGeo << "\n";
-			ostr << "coordinates \n \t" << non << "\n";
-			//////////////////////////////////////////////////////////////////////////
-			// X
-			for (size_t lev = startlevel; lev <= endlevel; lev++)
-			{
-				for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
-				{
-					if (para->getParH(lev)->isOutsideInterface[i])
-					{
-						ostr << (para->getParH(lev)->coordX_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0)) << std::endl;
-					}
-				}
-			}
-			//////////////////////////////////////////////////////////////////////////
-			// Y
-			for (size_t lev = startlevel; lev <= endlevel; lev++)
-			{
-				for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
-				{
-					if (para->getParH(lev)->isOutsideInterface[i])
-					{
-						ostr << (para->getParH(lev)->coordY_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(1) + para->getTranslateLBMtoSI().at(1)) << std::endl;
-					}
-				}
-			}
-			//////////////////////////////////////////////////////////////////////////
-			// Z
-			for (size_t lev = startlevel; lev <= endlevel; lev++)
-			{
-				for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
-				{
-					if (para->getParH(lev)->isOutsideInterface[i])
-					{
-						ostr << (para->getParH(lev)->coordZ_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(2) + para->getTranslateLBMtoSI().at(2)) << std::endl;
-					}
-				}
-			}
-			//////////////////////////////////////////////////////////////////////////
-			ostr << "point \n \t" << non << "\n";
-			//////////////////////////////////////////////////////////////////////////
-			unsigned int j = 0;
-			for (size_t lev = startlevel; lev <= endlevel; lev++)
-			{
-				for (size_t i = 0; i < para->getParH(lev)->numberOfPointsPressWindow; i++)
-				{
-					j++;
-					ostr << j << "\n";
-				}
-			}
-			//////////////////////////////////////////////////////////////////////////
-			//close file
-			ostr.close();
-			//////////////////////////////////////////////////////////////////////////
-			break;
-			//////////////////////////////////////////////////////////////////////////
-		}
-
-		case 1: //Binary:
-		{
-			int tempX = 0;
-			//////////////////////////////////////////////////////////////////////////
-			std::ofstream ostr;
-			ostr.open(fname, std::ios::out | std::ios::binary);
-			assert(ostr.is_open());
-			//////////////////////////////////////////////////////////////////////////
-			float tempCoord = 0.0f;
-			//////////////////////////////////////////////////////////////////////////
-			writeStringToFile("C Binary", ostr);
-			writeStringToFile("This geometry File was written by VirtualFluidsGPU", ostr);
-			writeStringToFile("#### Casefile written by VirtualFluidsGPU", ostr);
-			writeStringToFile("node id assign", ostr);
-			writeStringToFile("element id assign", ostr);
-			writeStringToFile("part", ostr);
-			writeIntToFile(1, ostr);
-			writeStringToFile(fnameGeo, ostr);
-			writeStringToFile("coordinates", ostr);
-			writeIntToFile(non, ostr);
-			//////////////////////////////////////////////////////////////////////////
-			// X
-			for (size_t lev = startlevel; lev <= endlevel; lev++)
-			{
-				for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
-				{
-					if (para->getParH(lev)->isOutsideInterface[i])
-					{
-						tempCoord = (para->getParH(lev)->coordX_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0));
-						writeFloatToFile(tempCoord, ostr);
-						tempX++;
-					}
-				}
-				//std::cout << "tempX in geo: " << tempX << endl;
-			}
-			//////////////////////////////////////////////////////////////////////////
-			// Y
-			for (size_t lev = startlevel; lev <= endlevel; lev++)
-			{
-				for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
-				{
-					if (para->getParH(lev)->isOutsideInterface[i])
-					{
-						tempCoord = (para->getParH(lev)->coordY_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(1) + para->getTranslateLBMtoSI().at(1));
-						writeFloatToFile(tempCoord, ostr);
-					}
-				}
-			}
-			//////////////////////////////////////////////////////////////////////////
-			// Z
-			for (size_t lev = startlevel; lev <= endlevel; lev++)
-			{
-				for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
-				{
-					if (para->getParH(lev)->isOutsideInterface[i])
-					{
-						tempCoord = (para->getParH(lev)->coordZ_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(2) + para->getTranslateLBMtoSI().at(2));
-						writeFloatToFile(tempCoord, ostr);
-					}
-				}
-			}
-			//////////////////////////////////////////////////////////////////////////
-			writeStringToFile("point", ostr);
-			writeIntToFile(non, ostr);
-			//////////////////////////////////////////////////////////////////////////
-			unsigned int j = 0;
-			for (size_t lev = startlevel; lev <= endlevel; lev++)
-			{
-				for (size_t i = 0; i < para->getParH(lev)->numberOfPointsPressWindow; i++)
-				{
-					j++;
-					writeIntToFile(j, ostr);
-				}
-				//std::cout << "level: " << lev << ", numberOfPointsPressWindow:" << para->getParH(lev)->numberOfPointsPressWindow << endl;
-			}
-			//////////////////////////////////////////////////////////////////////////
-			//close file
-			ostr.close();
-			//////////////////////////////////////////////////////////////////////////
-			break;
-			//////////////////////////////////////////////////////////////////////////
-		}
-	}
+	if (!fileFormat) //ASCII
+    {
+        //////////////////////////////////////////////////////////////////////////
+        //set ofstream
+        ofstream ostr;
+        std::ostringstream temp1;
+        std::ostringstream temp2;
+        std::ostringstream temp3;
+        //////////////////////////////////////////////////////////////////////////
+        //open file
+        ostr.open(fname);
+        //////////////////////////////////////////////////////////////////////////
+        ostr << "This geometry File was written by VirtualFluidsGPU\n";
+        ostr << "#### Casefile written by VirtualFluidsGPU\n";
+        //////////////////////////////////////////////////////////////////////////
+        ostr << "node id assign \n";
+        ostr << "element id assign \n";
+        //////////////////////////////////////////////////////////////////////////
+        ostr << "part \n \t 1 \n";
+        ostr << fnameGeo << "\n";
+        ostr << "coordinates \n \t" << non << "\n";
+        //////////////////////////////////////////////////////////////////////////
+        // X
+        for (size_t lev = startlevel; lev <= endlevel; lev++)
+        {
+            for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
+            {
+                if (para->getParH(lev)->isOutsideInterface[i])
+                {
+                    ostr << (para->getParH(lev)->coordX_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0)) << std::endl;
+                }
+            }
+        }
+        //////////////////////////////////////////////////////////////////////////
+        // Y
+        for (size_t lev = startlevel; lev <= endlevel; lev++)
+        {
+            for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
+            {
+                if (para->getParH(lev)->isOutsideInterface[i])
+                {
+                    ostr << (para->getParH(lev)->coordY_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(1) + para->getTranslateLBMtoSI().at(1)) << std::endl;
+                }
+            }
+        }
+        //////////////////////////////////////////////////////////////////////////
+        // Z
+        for (size_t lev = startlevel; lev <= endlevel; lev++)
+        {
+            for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
+            {
+                if (para->getParH(lev)->isOutsideInterface[i])
+                {
+                    ostr << (para->getParH(lev)->coordZ_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(2) + para->getTranslateLBMtoSI().at(2)) << std::endl;
+                }
+            }
+        }
+        //////////////////////////////////////////////////////////////////////////
+        ostr << "point \n \t" << non << "\n";
+        //////////////////////////////////////////////////////////////////////////
+        unsigned int j = 0;
+        for (size_t lev = startlevel; lev <= endlevel; lev++)
+        {
+            for (size_t i = 0; i < para->getParH(lev)->numberOfPointsPressWindow; i++)
+            {
+                j++;
+                ostr << j << "\n";
+            }
+        }
+        ostr.close();
+    }
+    else //Binary:
+    {
+        int tempX = 0;
+        //////////////////////////////////////////////////////////////////////////
+        std::ofstream ostr;
+        ostr.open(fname, std::ios::out | std::ios::binary);
+        assert(ostr.is_open());
+        //////////////////////////////////////////////////////////////////////////
+        float tempCoord = 0.0f;
+        //////////////////////////////////////////////////////////////////////////
+        writeStringToFile("C Binary", ostr);
+        writeStringToFile("This geometry File was written by VirtualFluidsGPU", ostr);
+        writeStringToFile("#### Casefile written by VirtualFluidsGPU", ostr);
+        writeStringToFile("node id assign", ostr);
+        writeStringToFile("element id assign", ostr);
+        writeStringToFile("part", ostr);
+        writeIntToFile(1, ostr);
+        writeStringToFile(fnameGeo, ostr);
+        writeStringToFile("coordinates", ostr);
+        writeIntToFile(non, ostr);
+        //////////////////////////////////////////////////////////////////////////
+        // X
+        for (size_t lev = startlevel; lev <= endlevel; lev++)
+        {
+            for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
+            {
+                if (para->getParH(lev)->isOutsideInterface[i])
+                {
+                    tempCoord = (para->getParH(lev)->coordX_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0));
+                    writeFloatToFile(tempCoord, ostr);
+                    tempX++;
+                }
+            }
+            //std::cout << "tempX in geo: " << tempX << endl;
+        }
+        //////////////////////////////////////////////////////////////////////////
+        // Y
+        for (size_t lev = startlevel; lev <= endlevel; lev++)
+        {
+            for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
+            {
+                if (para->getParH(lev)->isOutsideInterface[i])
+                {
+                    tempCoord = (para->getParH(lev)->coordY_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(1) + para->getTranslateLBMtoSI().at(1));
+                    writeFloatToFile(tempCoord, ostr);
+                }
+            }
+        }
+        //////////////////////////////////////////////////////////////////////////
+        // Z
+        for (size_t lev = startlevel; lev <= endlevel; lev++)
+        {
+            for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
+            {
+                if (para->getParH(lev)->isOutsideInterface[i])
+                {
+                    tempCoord = (para->getParH(lev)->coordZ_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(2) + para->getTranslateLBMtoSI().at(2));
+                    writeFloatToFile(tempCoord, ostr);
+                }
+            }
+        }
+        //////////////////////////////////////////////////////////////////////////
+        writeStringToFile("point", ostr);
+        writeIntToFile(non, ostr);
+        //////////////////////////////////////////////////////////////////////////
+        unsigned int j = 0;
+        for (size_t lev = startlevel; lev <= endlevel; lev++)
+        {
+            for (size_t i = 0; i < para->getParH(lev)->numberOfPointsPressWindow; i++)
+            {
+                j++;
+                writeIntToFile(j, ostr);
+            }
+            //std::cout << "level: " << lev << ", numberOfPointsPressWindow:" << para->getParH(lev)->numberOfPointsPressWindow << endl;
+        }
+        ostr.close();
+    }
 }
 
 
@@ -574,76 +560,56 @@ extern "C" void printScalars(Parameter* para, bool fileFormat)
 	size_t endlevel   = para->getMaxLevel();
 	//////////////////////////////////////////////////////////////////////////
 
-
-	switch (fileFormat)
+	if (!fileFormat) //ASCII
 	{
-		case 0: //ASCII
-		{
-			//////////////////////////////////////////////////////////////////////////
-			//set ofstream
-			ofstream ostr;
-			//////////////////////////////////////////////////////////////////////////
-			//open file
-			ostr.open(fname);
-			//////////////////////////////////////////////////////////////////////////
-			ostr << fnameScalar << " \n";
-			ostr << "part \n\t 1 \n";
-			ostr << "point\n";
-			//////////////////////////////////////////////////////////////////////////
-			//fill file with data
-			for (size_t lev = startlevel; lev <= endlevel; lev++)
-			{
-				for (vector<double>::const_iterator i = para->getParH(lev)->pressMirror.begin(); i != para->getParH(lev)->pressMirror.end(); ++i)
-				{
-					ostr << *i << "\n";
-				}
-			}
-			//////////////////////////////////////////////////////////////////////////
-			//close file
-			ostr.close();
-			//////////////////////////////////////////////////////////////////////////
-			for (size_t lev = startlevel; lev <= endlevel; lev++)
-			{
-				para->getParH(lev)->pressMirror.clear();
-			}
-			//////////////////////////////////////////////////////////////////////////
-			break;
-			//////////////////////////////////////////////////////////////////////////
-		}
-
-		case 1: //Binary:
-		{
-			//////////////////////////////////////////////////////////////////////////
-			std::ofstream ostr;
-			ostr.open(fname, std::ios::out | std::ios::binary);
-			assert(ostr.is_open());
-			//////////////////////////////////////////////////////////////////////////
-			writeStringToFile(fnameScalar, ostr);
-			writeStringToFile("part", ostr);
-			writeIntToFile(1, ostr);
-			writeStringToFile("point", ostr);
-			//////////////////////////////////////////////////////////////////////////
-			//fill file with data
-			for (size_t lev = startlevel; lev <= endlevel; lev++)
-			{
-				for (vector<double>::const_iterator i = para->getParH(lev)->pressMirror.begin(); i != para->getParH(lev)->pressMirror.end(); ++i)
-				{
-					writeFloatToFile(*i, ostr);
-				}
-			}
-			//////////////////////////////////////////////////////////////////////////
-			//close file
-			ostr.close();
-			//////////////////////////////////////////////////////////////////////////
-			for (size_t lev = startlevel; lev <= endlevel; lev++)
-			{
-				para->getParH(lev)->pressMirror.clear();
-			}
-			//////////////////////////////////////////////////////////////////////////
-			break;
-			//////////////////////////////////////////////////////////////////////////
-		}
-	}
+        ofstream ostr;
+        ostr.open(fname);
+        //////////////////////////////////////////////////////////////////////////
+        ostr << fnameScalar << " \n";
+        ostr << "part \n\t 1 \n";
+        ostr << "point\n";
+        //////////////////////////////////////////////////////////////////////////
+        //fill file with data
+        for (size_t lev = startlevel; lev <= endlevel; lev++)
+        {
+            for (vector<double>::const_iterator i = para->getParH(lev)->pressMirror.begin(); i != para->getParH(lev)->pressMirror.end(); ++i)
+            {
+                ostr << *i << "\n";
+            }
+        }
+        ostr.close();
+        //////////////////////////////////////////////////////////////////////////
+        for (size_t lev = startlevel; lev <= endlevel; lev++)
+        {
+            para->getParH(lev)->pressMirror.clear();
+        } 
+    }  
+    else //Binary:
+    {
+        std::ofstream ostr;
+        ostr.open(fname, std::ios::out | std::ios::binary);
+        assert(ostr.is_open());
+        //////////////////////////////////////////////////////////////////////////
+        writeStringToFile(fnameScalar, ostr);
+        writeStringToFile("part", ostr);
+        writeIntToFile(1, ostr);
+        writeStringToFile("point", ostr);
+        //////////////////////////////////////////////////////////////////////////
+        //fill file with data
+        for (size_t lev = startlevel; lev <= endlevel; lev++)
+        {
+            for (vector<double>::const_iterator i = para->getParH(lev)->pressMirror.begin(); i != para->getParH(lev)->pressMirror.end(); ++i)
+            {
+                writeFloatToFile(*i, ostr);
+            }
+        }
+        ostr.close();
+        //////////////////////////////////////////////////////////////////////////
+        for (size_t lev = startlevel; lev <= endlevel; lev++)
+        {
+            para->getParH(lev)->pressMirror.clear();
+        }
+    }
 }
 
 

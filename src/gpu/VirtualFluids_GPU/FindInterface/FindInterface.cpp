@@ -1647,17 +1647,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       jC = CF_Coarse[ INTERFACE_N];               jF = CF_Fine[ INTERFACE_N];
       hC = CF_Coarse[ INTERFACE_T];               hF = CF_Fine[ INTERFACE_T];
 
-      if ((needInterface[INTERFACE_E]==false))
+      if (needInterface[INTERFACE_E]==false)
       {
          iC = CF_NCoarse[INTERFACE_E];               iF = CF_NFine[INTERFACE_E];
          xOff = (real)0.5f;
       }
-      if ((needInterface[INTERFACE_N]==false))
+      if (needInterface[INTERFACE_N]==false)
       {
          jC = CF_NCoarse[INTERFACE_N];               jF = CF_NFine[INTERFACE_N];
          yOff = (real)0.5f;
       }
-      if ((needInterface[INTERFACE_T]==false))
+      if (needInterface[INTERFACE_T]==false)
       {
          hC = CF_NCoarse[INTERFACE_T];               hF = CF_NFine[INTERFACE_T];
          zOff = (real)0.5f;
@@ -1698,7 +1698,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       offFC.zOffFC[intFC.kFC]   = zOff;
       intFC.kFC++;
 
-      if ((needInterface[INTERFACE_E]==false))
+      if (needInterface[INTERFACE_E]==false)
       {
          iC = FC_NCoarse[INTERFACE_E];               iF = FC_NFine[INTERFACE_E];
          jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
@@ -1713,7 +1713,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_N]==false))
+      if (needInterface[INTERFACE_N]==false)
       {
          iC = FC_Coarse[ INTERFACE_E];               iF = FC_Fine[ INTERFACE_E];
          jC = FC_NCoarse[INTERFACE_N];               jF = FC_NFine[INTERFACE_N];
@@ -1728,7 +1728,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_T]==false))
+      if (needInterface[INTERFACE_T]==false)
       {
          iC = FC_Coarse[ INTERFACE_E];               iF = FC_Fine[ INTERFACE_E];
          jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
@@ -1804,17 +1804,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       jC = CF_Coarse[ INTERFACE_N];               jF = CF_Fine[ INTERFACE_N];
       hC = CF_Coarse[ INTERFACE_B];               hF = CF_Fine[ INTERFACE_B];
 
-      if ((needInterface[INTERFACE_E]==false))
+      if (needInterface[INTERFACE_E]==false)
       {
          iC = CF_NCoarse[INTERFACE_E];               iF = CF_NFine[INTERFACE_E];
          xOff = (real)0.5f;
       }
-      if ((needInterface[INTERFACE_N]==false))
+      if (needInterface[INTERFACE_N]==false)
       {
          jC = CF_NCoarse[INTERFACE_N];               jF = CF_NFine[INTERFACE_N];
          yOff = (real)0.5f;
       }
-      if ((needInterface[INTERFACE_B]==false))
+      if (needInterface[INTERFACE_B]==false)
       {
          hC = CF_NCoarse[INTERFACE_B];               hF = CF_NFine[INTERFACE_B];
          zOff = (real)-0.5f;
@@ -1855,7 +1855,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       offFC.zOffFC[intFC.kFC]   = zOff;
       intFC.kFC++;
 
-      if ((needInterface[INTERFACE_E]==false))
+      if (needInterface[INTERFACE_E]==false)
       {
          iC = FC_NCoarse[INTERFACE_E];               iF = FC_NFine[INTERFACE_E];
          jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
@@ -1870,7 +1870,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_N]==false))
+      if (needInterface[INTERFACE_N]==false)
       {
          iC = FC_Coarse[ INTERFACE_E];               iF = FC_Fine[ INTERFACE_E];
          jC = FC_NCoarse[INTERFACE_N];               jF = FC_NFine[INTERFACE_N];
@@ -1885,7 +1885,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_B]==false))
+      if (needInterface[INTERFACE_B]==false)
       {
          iC = FC_Coarse[ INTERFACE_E];               iF = FC_Fine[ INTERFACE_E];
          jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
@@ -1961,17 +1961,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       jC = CF_Coarse[ INTERFACE_S];               jF = CF_Fine[ INTERFACE_S];
       hC = CF_Coarse[ INTERFACE_T];               hF = CF_Fine[ INTERFACE_T];
 
-      if ((needInterface[INTERFACE_E]==false))
+      if (needInterface[INTERFACE_E]==false)
       {
          iC = CF_NCoarse[INTERFACE_E];               iF = CF_NFine[INTERFACE_E];
          xOff = (real)0.5f;
       }
-      if ((needInterface[INTERFACE_S]==false))
+      if (needInterface[INTERFACE_S]==false)
       {
          jC = CF_NCoarse[INTERFACE_S];               jF = CF_NFine[INTERFACE_S];
          yOff = (real)-0.5f;
       }
-      if ((needInterface[INTERFACE_T]==false))
+      if (needInterface[INTERFACE_T]==false)
       {
          hC = CF_NCoarse[INTERFACE_T];               hF = CF_NFine[INTERFACE_T];
          zOff = (real)0.5f;
@@ -2012,7 +2012,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       offFC.zOffFC[intFC.kFC]   = zOff;
       intFC.kFC++;
 
-      if ((needInterface[INTERFACE_E]==false))
+      if (needInterface[INTERFACE_E]==false)
       {
          iC = FC_NCoarse[INTERFACE_E];               iF = FC_NFine[INTERFACE_E];
          jC = FC_Coarse[ INTERFACE_S];               jF = FC_Fine[ INTERFACE_S];
@@ -2027,7 +2027,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_S]==false))
+      if (needInterface[INTERFACE_S]==false)
       {
          iC = FC_Coarse[ INTERFACE_E];               iF = FC_Fine[ INTERFACE_E];
          jC = FC_NCoarse[INTERFACE_S];               jF = FC_NFine[INTERFACE_S];
@@ -2042,7 +2042,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_T]==false))
+      if (needInterface[INTERFACE_T]==false)
       {
          iC = FC_Coarse[ INTERFACE_E];               iF = FC_Fine[ INTERFACE_E];
          jC = FC_Coarse[ INTERFACE_S];               jF = FC_Fine[ INTERFACE_S];
@@ -2118,17 +2118,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       jC = CF_Coarse[ INTERFACE_S];               jF = CF_Fine[ INTERFACE_S];
       hC = CF_Coarse[ INTERFACE_B];               hF = CF_Fine[ INTERFACE_B];
 
-      if ((needInterface[INTERFACE_E]==false))
+      if (needInterface[INTERFACE_E]==false)
       {
          iC = CF_NCoarse[INTERFACE_E];               iF = CF_NFine[INTERFACE_E];
          xOff = (real)0.5f;
       }
-      if ((needInterface[INTERFACE_S]==false))
+      if (needInterface[INTERFACE_S]==false)
       {
          jC = CF_NCoarse[INTERFACE_S];               jF = CF_NFine[INTERFACE_S];
          yOff = (real)-0.5f;
       }
-      if ((needInterface[INTERFACE_B]==false))
+      if (needInterface[INTERFACE_B]==false)
       {
          hC = CF_NCoarse[INTERFACE_B];               hF = CF_NFine[INTERFACE_B];
          zOff = (real)-0.5f;
@@ -2169,7 +2169,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       offFC.zOffFC[intFC.kFC]   = zOff;
       intFC.kFC++;
 
-      if ((needInterface[INTERFACE_E]==false))
+      if (needInterface[INTERFACE_E]==false)
       {
          iC = FC_NCoarse[INTERFACE_E];               iF = FC_NFine[INTERFACE_E];
          jC = FC_Coarse[ INTERFACE_S];               jF = FC_Fine[ INTERFACE_S];
@@ -2184,7 +2184,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_S]==false))
+      if (needInterface[INTERFACE_S]==false)
       {
          iC = FC_Coarse[ INTERFACE_E];               iF = FC_Fine[ INTERFACE_E];
          jC = FC_NCoarse[INTERFACE_S];               jF = FC_NFine[INTERFACE_S];
@@ -2199,7 +2199,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_B]==false))
+      if (needInterface[INTERFACE_B]==false)
       {
          iC = FC_Coarse[ INTERFACE_E];               iF = FC_Fine[ INTERFACE_E];
          jC = FC_Coarse[ INTERFACE_S];               jF = FC_Fine[ INTERFACE_S];
@@ -2275,17 +2275,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       jC = CF_Coarse[ INTERFACE_N];               jF = CF_Fine[ INTERFACE_N];
       hC = CF_Coarse[ INTERFACE_T];               hF = CF_Fine[ INTERFACE_T];
 
-      if ((needInterface[INTERFACE_W]==false))
+      if (needInterface[INTERFACE_W]==false)
       {
          iC = CF_NCoarse[INTERFACE_W];               iF = CF_NFine[INTERFACE_W];
          xOff = (real)-0.5f;
       }
-      if ((needInterface[INTERFACE_N]==false))
+      if (needInterface[INTERFACE_N]==false)
       {
          jC = CF_NCoarse[INTERFACE_N];               jF = CF_NFine[INTERFACE_N];
          yOff = (real)0.5f;
       }
-      if ((needInterface[INTERFACE_T]==false))
+      if (needInterface[INTERFACE_T]==false)
       {
          hC = CF_NCoarse[INTERFACE_T];               hF = CF_NFine[INTERFACE_T];
          zOff = (real)0.5f;
@@ -2326,7 +2326,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       offFC.zOffFC[intFC.kFC]   = zOff;
       intFC.kFC++;
 
-      if ((needInterface[INTERFACE_W]==false))
+      if (needInterface[INTERFACE_W]==false)
       {
          iC = FC_NCoarse[INTERFACE_W];               iF = FC_NFine[INTERFACE_W];
          jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
@@ -2341,7 +2341,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_N]==false))
+      if (needInterface[INTERFACE_N]==false)
       {
          iC = FC_Coarse[ INTERFACE_W];               iF = FC_Fine[ INTERFACE_W];
          jC = FC_NCoarse[INTERFACE_N];               jF = FC_NFine[INTERFACE_N];
@@ -2356,7 +2356,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_T]==false))
+      if (needInterface[INTERFACE_T]==false)
       {
          iC = FC_Coarse[ INTERFACE_W];               iF = FC_Fine[ INTERFACE_W];
          jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
@@ -2432,17 +2432,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       jC = CF_Coarse[ INTERFACE_N];               jF = CF_Fine[ INTERFACE_N];
       hC = CF_Coarse[ INTERFACE_B];               hF = CF_Fine[ INTERFACE_B];
 
-      if ((needInterface[INTERFACE_W]==false))
+      if (needInterface[INTERFACE_W]==false)
       {
          iC = CF_NCoarse[INTERFACE_W];               iF = CF_NFine[INTERFACE_W];
          xOff = (real)-0.5f;
       }
-      if ((needInterface[INTERFACE_N]==false))
+      if (needInterface[INTERFACE_N]==false)
       {
          jC = CF_NCoarse[INTERFACE_N];               jF = CF_NFine[INTERFACE_N];
          yOff = (real)0.5f;
       }
-      if ((needInterface[INTERFACE_B]==false))
+      if (needInterface[INTERFACE_B]==false)
       {
          hC = CF_NCoarse[INTERFACE_B];               hF = CF_NFine[INTERFACE_B];
          zOff = (real)-0.5f;
@@ -2483,7 +2483,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       offFC.zOffFC[intFC.kFC]   = zOff;
       intFC.kFC++;
 
-      if ((needInterface[INTERFACE_W]==false))
+      if (needInterface[INTERFACE_W]==false)
       {
          iC = FC_NCoarse[INTERFACE_W];               iF = FC_NFine[INTERFACE_W];
          jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
@@ -2498,7 +2498,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_N]==false))
+      if (needInterface[INTERFACE_N]==false)
       {
          iC = FC_Coarse[ INTERFACE_W];               iF = FC_Fine[ INTERFACE_W];
          jC = FC_NCoarse[INTERFACE_N];               jF = FC_NFine[INTERFACE_N];
@@ -2513,7 +2513,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_B]==false))
+      if (needInterface[INTERFACE_B]==false)
       {
          iC = FC_Coarse[ INTERFACE_W];               iF = FC_Fine[ INTERFACE_W];
          jC = FC_Coarse[ INTERFACE_N];               jF = FC_Fine[ INTERFACE_N];
@@ -2640,7 +2640,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       offFC.zOffFC[intFC.kFC]   = zOff;
       intFC.kFC++;
 
-      if ((needInterface[INTERFACE_W]==false))
+      if (needInterface[INTERFACE_W]==false)
       {
          iC = FC_NCoarse[INTERFACE_W];               iF = FC_NFine[INTERFACE_W];
          jC = FC_Coarse[ INTERFACE_S];               jF = FC_Fine[ INTERFACE_S];
@@ -2655,7 +2655,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
          offFC.zOffFC[intFC.kFC]   = zOff;
          intFC.kFC++;
       }
-      if ((needInterface[INTERFACE_S]==false))
+      if (needInterface[INTERFACE_S]==false)
       {
          iC = FC_Coarse[ INTERFACE_W];               iF = FC_Fine[ INTERFACE_W];
          jC = FC_NCoarse[INTERFACE_S];               jF = FC_NFine[INTERFACE_S];
@@ -2746,17 +2746,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       jC = CF_Coarse[ INTERFACE_S];               jF = CF_Fine[ INTERFACE_S];
       hC = CF_Coarse[ INTERFACE_B];               hF = CF_Fine[ INTERFACE_B];
 
-      if ((needInterface[INTERFACE_W]==false))
+      if (needInterface[INTERFACE_W]==false)
       {
          iC = CF_NCoarse[INTERFACE_W];               iF = CF_NFine[INTERFACE_W];
          xOff = (real)-0.5f;
       }
-      if ((needInterface[INTERFACE_S]==false))
+      if (needInterface[INTERFACE_S]==false)
       {
          jC = CF_NCoarse[INTERFACE_S];               jF = CF_NFine[INTERFACE_S];
          yOff = (real)-0.5f;
       }
-      if ((needInterface[INTERFACE_B]==false))
+      if (needInterface[INTERFACE_B]==false)
       {
          hC = CF_NCoarse[INTERFACE_B];               hF = CF_NFine[INTERFACE_B];
          zOff = (real)-0.5f;
@@ -2797,7 +2797,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       offFC.zOffFC[intFC.kFC]   = zOff;
       intFC.kFC++;
 
-      if ((needInterface[INTERFACE_W]==false))
+      if (needInterface[INTERFACE_W]==false)
       {
          iC = FC_NCoarse[INTERFACE_W];               iF = FC_NFine[INTERFACE_W];
          jC = FC_Coarse[ INTERFACE_S];               jF = FC_Fine[ INTERFACE_S];

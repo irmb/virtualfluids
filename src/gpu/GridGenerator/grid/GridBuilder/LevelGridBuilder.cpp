@@ -146,7 +146,7 @@ GRIDGENERATOR_EXPORT uint LevelGridBuilder::getCommunicationProcess(int directio
 
 void LevelGridBuilder::copyDataFromGpu()
 {
-    for (const auto grid : grids)
+    for (const auto& grid : grids)
     {
         auto gridGpuStrategy = std::dynamic_pointer_cast<GridGpuStrategy>(grid->getGridStrategy());
         if(gridGpuStrategy)
@@ -157,7 +157,7 @@ void LevelGridBuilder::copyDataFromGpu()
 
 LevelGridBuilder::~LevelGridBuilder()
 {
-    for (const auto grid : grids)
+    for (const auto& grid : grids)
         grid->freeMemory();
 }
 
@@ -171,7 +171,7 @@ void LevelGridBuilder::getGridInformations(std::vector<int>& gridX, std::vector<
     std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY,
     std::vector<int>& distZ)
 {
-    for (const auto grid : grids)
+    for (const auto& grid : grids)
     {
         gridX.push_back(int(grid->getNumberOfNodesX()));
         gridY.push_back(int(grid->getNumberOfNodesY()));

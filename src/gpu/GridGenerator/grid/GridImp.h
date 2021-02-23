@@ -21,11 +21,21 @@ class Object;
 class BoundingBox;
 class TriangularMeshDiscretizationStrategy;
 
-#pragma push
-#pragma diag_suppress = 3156
+#ifdef __GNUC__
+    #ifndef __clang__
+        #pragma push
+        #pragma diag_suppress = 3156
+    #endif
+#endif
+
 // warning #3156-D: extern declaration of the entity DIRECTIONS is treated as a static definition
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
-#pragma pop
+
+#ifdef __GNUC__
+    #ifndef __clang__
+        #pragma pop
+    #endif
+#endif
 
 class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
@@ -188,8 +198,8 @@ public:
     CUDA_HOST int getStartDirection() const override;
     CUDA_HOST int getEndDirection() const override;
 
-    HOSTDEVICE Vertex getMinimumOnNode(Vertex exact) const;
-    HOSTDEVICE Vertex getMaximumOnNode(Vertex exact) const;
+    HOSTDEVICE Vertex getMinimumOnNode(Vertex exact) const override;
+    HOSTDEVICE Vertex getMaximumOnNode(Vertex exact) const override;
 
     HOSTDEVICE real getStartX() const override;
     HOSTDEVICE real getStartY() const override;
@@ -228,12 +238,12 @@ public:
 
 
 public:
-    CUDA_HOST virtual void findSparseIndices(SPtr<Grid> fineGrid);
+    CUDA_HOST virtual void findSparseIndices(SPtr<Grid> fineGrid) override;
 
     CUDA_HOST void updateSparseIndices();
     HOSTDEVICE void setNeighborIndices(uint index);
-    HOSTDEVICE real getFirstFluidNode(real coords[3], int direction, real startCoord) const;
-    HOSTDEVICE real getLastFluidNode(real coords[3], int direction, real startCoord) const;
+    HOSTDEVICE real getFirstFluidNode(real coords[3], int direction, real startCoord) const override;
+    HOSTDEVICE real getLastFluidNode(real coords[3], int direction, real startCoord) const override;
 private:
     HOSTDEVICE void setStopperNeighborCoords(uint index);
     HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
@@ -274,8 +284,8 @@ private:
     } qComputationStage;
 
 public:
-    CUDA_HOST void enableFindSolidBoundaryNodes(){ qComputationStage = qComputationStageType::FindSolidBoundaryNodes; }
-    CUDA_HOST void enableComputeQs(){ qComputationStage = qComputationStageType::ComputeQs; }
+    CUDA_HOST void enableFindSolidBoundaryNodes() override{ qComputationStage = qComputationStageType::FindSolidBoundaryNodes; }
+    CUDA_HOST void enableComputeQs() override{ qComputationStage = qComputationStageType::ComputeQs; }
 
 private:
     HOSTDEVICE void setDebugPoint(uint index, int pointValue);

@@ -16,6 +16,8 @@ enum class SideType;
 class BoundaryCondition
 {
 public:
+    virtual ~BoundaryCondition() = default;
+
     std::vector<uint> indices;
     SPtr<Side> side;
     std::vector<std::vector<real> > qs;
