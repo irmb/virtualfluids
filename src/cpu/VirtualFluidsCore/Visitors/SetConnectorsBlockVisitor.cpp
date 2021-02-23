@@ -33,7 +33,6 @@
 
 #include "SetConnectorsBlockVisitor.h"
 #include "Communicator.h"
-#include "Grid3D.h"
 #include "D3Q27ETFullDirectConnector.h"
 #include "D3Q27ETFullVectorConnector.h"
 #include "TwoDistributionsFullDirectConnector.h"

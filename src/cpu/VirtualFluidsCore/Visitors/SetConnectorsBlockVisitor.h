@@ -39,16 +39,14 @@
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
 #include "Grid3DSystem.h"
+#include "Grid3D.h"
 #include "CreateTransmittersHelper.h"
-
-class Grid3D;
-class Block3D;
-class Communicator;
-class D3Q27ETFullDirectConnector;
-class D3Q27ETFullVectorConnector;
-class TwoDistributionsFullDirectConnector;
-class TwoDistributionsFullVectorConnector;
-
+#include "Communicator.h"
+#include "D3Q27ETFullDirectConnector.h"
+#include "D3Q27ETFullVectorConnector.h"
+#include "TwoDistributionsFullDirectConnector.h"
+#include "TwoDistributionsFullVectorConnector.h"
+#include <basics/transmitter/TbTransmitterLocal.h>
 
 //! \brief  A class sets connectors between blocks.
 template <class T1, class T2>
