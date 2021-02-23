@@ -51,8 +51,11 @@ MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor
 }
 //////////////////////////////////////////////////////////////////////////
 MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor( LBMReal densityRatio, LBMReal intThickness, LBMReal radius, LBMReal vx1, LBMReal vx2, LBMReal vx3)
-	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL), densityRatio(densityRatio), intThickness(intThickness), radius(radius)
+	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL), densityRatio(densityRatio) /*, intThickness(intThickness), radius(radius) */
 {
+    (void) intThickness;
+    (void) radius;
+
 	this->setVx1(vx1);
 	this->setVx2(vx2);
 	this->setVx3(vx3);

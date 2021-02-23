@@ -45,6 +45,6 @@ public:
    SPtr<BCAlgorithm> clone() override;
    void addDistributions(SPtr<DistributionArray3D> distributions) override;
    void addDistributionsH(SPtr<DistributionArray3D> distributionsH) override;
-   void applyBC();
+   void applyBC() override;
 };
 #endif // MultiphaseNoSlipBCAlgorithm_h__
