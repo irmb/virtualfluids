@@ -31,13 +31,13 @@
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#include "Communicator.h"
 #include "SetConnectorsBlockVisitor.h"
+#include "Communicator.h"
+#include "Grid3D.h"
 #include "D3Q27ETFullDirectConnector.h"
 #include "D3Q27ETFullVectorConnector.h"
 #include "TwoDistributionsFullDirectConnector.h"
 #include "TwoDistributionsFullVectorConnector.h"
-#include "Grid3DSystem.h"
 #include <basics/transmitter/TbTransmitterLocal.h>
 
 

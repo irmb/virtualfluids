@@ -38,7 +38,7 @@
 
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
-
+#include "Grid3DSystem.h"
 #include "CreateTransmittersHelper.h"
 
 class Grid3D;
