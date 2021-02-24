@@ -461,9 +461,9 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     // Figure 5.2 in the Dissertation of Stephan Lenz:
     // https://publikationsserver.tu-braunschweig.de/receive/dbbs_mods_00068716
     //
-    for( std::size_t level = grids.size()-1; level >= 0; level-- ) {
+    for( int level = (int)grids.size()-1; level >= 0; level-- ) {
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initializing level " << (int)level << "\n";
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initializing level " << level << "\n";
 
         // On the coarse grid every thing is Fluid (w.r.t. the refinement)
         // On the finest grid the Fluid region is defined by the Object
@@ -475,7 +475,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
         else
             grids[level]->inital( grids[level+1], this->numberOfLayersBetweenLevels );
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done initializing level " << (int)level << "\n";
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done initializing level " << level << "\n";
     }
 
     //////////////////////////////////////////////////////////////////////////
