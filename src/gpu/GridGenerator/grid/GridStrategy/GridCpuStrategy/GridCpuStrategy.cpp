@@ -208,18 +208,18 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     grid->gridInterface->fc.fine   = new uint[sizeCF];
     grid->gridInterface->fc.offset = new uint[sizeCF];
 
-    for (std::size_t index = 0; index < grid->getSize(); index++)
+    for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceCF(index, *fineGrid, lbmOrGks);
 
-    for (std::size_t index = 0; index < grid->getSize(); index++)
+    for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceFC(index, *fineGrid);
 
-    for (std::size_t index = 0; index < grid->getSize(); index++)
+    for (uint index = 0; index < grid->getSize(); index++)
         grid->findOverlapStopper(index, *fineGrid);
 
     if( lbmOrGks == GKS )
     {
-        for (std::size_t index = 0; index < grid->getSize(); index++)
+        for (uint index = 0; index < grid->getSize(); index++)
             grid->findInvalidBoundaryNodes(index);
     }
 

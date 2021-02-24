@@ -1929,370 +1929,373 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
 													  unsigned int size_Mat, 
 													  bool evenOrOdd)
 {
-   Distributions27 D;
-   if (evenOrOdd==true)
-   {
-      D.f[dirE   ] = &DD[dirE   *size_Mat];
-      D.f[dirW   ] = &DD[dirW   *size_Mat];
-      D.f[dirN   ] = &DD[dirN   *size_Mat];
-      D.f[dirS   ] = &DD[dirS   *size_Mat];
-      D.f[dirT   ] = &DD[dirT   *size_Mat];
-      D.f[dirB   ] = &DD[dirB   *size_Mat];
-      D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-      D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-      D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-      D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-      D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-      D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-      D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-      D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-      D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-      D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-      D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-      D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
-      D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-      D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-      D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-      D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-      D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-      D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-      D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-      D.f[dirBNW ] = &DD[dirBNW *size_Mat];
-   } 
-   else
-   {
-      D.f[dirW   ] = &DD[dirE   *size_Mat];
-      D.f[dirE   ] = &DD[dirW   *size_Mat];
-      D.f[dirS   ] = &DD[dirN   *size_Mat];
-      D.f[dirN   ] = &DD[dirS   *size_Mat];
-      D.f[dirB   ] = &DD[dirT   *size_Mat];
-      D.f[dirT   ] = &DD[dirB   *size_Mat];
-      D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-      D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-      D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-      D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-      D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-      D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-      D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-      D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-      D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-      D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-      D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-      D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
-      D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-      D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-      D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-      D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-      D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-      D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-      D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-      D.f[dirBNW ] = &DD[dirTSE *size_Mat];
-   }
-   ////////////////////////////////////////////////////////////////////////////////
-   const unsigned  x = threadIdx.x;  // Globaler x-Index 
-   const unsigned  y = blockIdx.x;   // Globaler y-Index 
-   const unsigned  z = blockIdx.y;   // Globaler z-Index 
 
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
+	//TODO: What is this function for???
 
-   const unsigned k = nx*(ny*z + y) + x;
-   //////////////////////////////////////////////////////////////////////////
+   //Distributions27 D;
+   //if (evenOrOdd==true)
+   //{
+   //   D.f[dirE   ] = &DD[dirE   *size_Mat];
+   //   D.f[dirW   ] = &DD[dirW   *size_Mat];
+   //   D.f[dirN   ] = &DD[dirN   *size_Mat];
+   //   D.f[dirS   ] = &DD[dirS   *size_Mat];
+   //   D.f[dirT   ] = &DD[dirT   *size_Mat];
+   //   D.f[dirB   ] = &DD[dirB   *size_Mat];
+   //   D.f[dirNE  ] = &DD[dirNE  *size_Mat];
+   //   D.f[dirSW  ] = &DD[dirSW  *size_Mat];
+   //   D.f[dirSE  ] = &DD[dirSE  *size_Mat];
+   //   D.f[dirNW  ] = &DD[dirNW  *size_Mat];
+   //   D.f[dirTE  ] = &DD[dirTE  *size_Mat];
+   //   D.f[dirBW  ] = &DD[dirBW  *size_Mat];
+   //   D.f[dirBE  ] = &DD[dirBE  *size_Mat];
+   //   D.f[dirTW  ] = &DD[dirTW  *size_Mat];
+   //   D.f[dirTN  ] = &DD[dirTN  *size_Mat];
+   //   D.f[dirBS  ] = &DD[dirBS  *size_Mat];
+   //   D.f[dirBN  ] = &DD[dirBN  *size_Mat];
+   //   D.f[dirTS  ] = &DD[dirTS  *size_Mat];
+   //   D.f[dirZERO] = &DD[dirZERO*size_Mat];
+   //   D.f[dirTNE ] = &DD[dirTNE *size_Mat];
+   //   D.f[dirTSW ] = &DD[dirTSW *size_Mat];
+   //   D.f[dirTSE ] = &DD[dirTSE *size_Mat];
+   //   D.f[dirTNW ] = &DD[dirTNW *size_Mat];
+   //   D.f[dirBNE ] = &DD[dirBNE *size_Mat];
+   //   D.f[dirBSW ] = &DD[dirBSW *size_Mat];
+   //   D.f[dirBSE ] = &DD[dirBSE *size_Mat];
+   //   D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+   //} 
+   //else
+   //{
+   //   D.f[dirW   ] = &DD[dirE   *size_Mat];
+   //   D.f[dirE   ] = &DD[dirW   *size_Mat];
+   //   D.f[dirS   ] = &DD[dirN   *size_Mat];
+   //   D.f[dirN   ] = &DD[dirS   *size_Mat];
+   //   D.f[dirB   ] = &DD[dirT   *size_Mat];
+   //   D.f[dirT   ] = &DD[dirB   *size_Mat];
+   //   D.f[dirSW  ] = &DD[dirNE  *size_Mat];
+   //   D.f[dirNE  ] = &DD[dirSW  *size_Mat];
+   //   D.f[dirNW  ] = &DD[dirSE  *size_Mat];
+   //   D.f[dirSE  ] = &DD[dirNW  *size_Mat];
+   //   D.f[dirBW  ] = &DD[dirTE  *size_Mat];
+   //   D.f[dirTE  ] = &DD[dirBW  *size_Mat];
+   //   D.f[dirTW  ] = &DD[dirBE  *size_Mat];
+   //   D.f[dirBE  ] = &DD[dirTW  *size_Mat];
+   //   D.f[dirBS  ] = &DD[dirTN  *size_Mat];
+   //   D.f[dirTN  ] = &DD[dirBS  *size_Mat];
+   //   D.f[dirTS  ] = &DD[dirBN  *size_Mat];
+   //   D.f[dirBN  ] = &DD[dirTS  *size_Mat];
+   //   D.f[dirZERO] = &DD[dirZERO*size_Mat];
+   //   D.f[dirTNE ] = &DD[dirBSW *size_Mat];
+   //   D.f[dirTSW ] = &DD[dirBNE *size_Mat];
+   //   D.f[dirTSE ] = &DD[dirBNW *size_Mat];
+   //   D.f[dirTNW ] = &DD[dirBSE *size_Mat];
+   //   D.f[dirBNE ] = &DD[dirTSW *size_Mat];
+   //   D.f[dirBSW ] = &DD[dirTNE *size_Mat];
+   //   D.f[dirBSE ] = &DD[dirTNW *size_Mat];
+   //   D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+   //}
+   //////////////////////////////////////////////////////////////////////////////////
+   //const unsigned  x = threadIdx.x;  // Globaler x-Index 
+   //const unsigned  y = blockIdx.x;   // Globaler y-Index 
+   //const unsigned  z = blockIdx.y;   // Globaler z-Index 
 
-   if(k<sizeQ)
-   {
-      ////////////////////////////////////////////////////////////////////////////////
-      real *q_dirW, *q_dirS, *q_dirB;
-    //   real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
-    //         *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
-    //         *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
-    //         *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
-    //         *q_dirBSE, *q_dirBNW; 
-    //   q_dirE   = &QQ[dirE   *sizeQ];
-       q_dirW   = &QQ[dirW   *sizeQ];
-    //   q_dirN   = &QQ[dirN   *sizeQ];
-       q_dirS   = &QQ[dirS   *sizeQ];
-    //   q_dirT   = &QQ[dirT   *sizeQ];
-       q_dirB   = &QQ[dirB   *sizeQ];
-    //   q_dirNE  = &QQ[dirNE  *sizeQ];
-    //   q_dirSW  = &QQ[dirSW  *sizeQ];
-    //   q_dirSE  = &QQ[dirSE  *sizeQ];
-    //   q_dirNW  = &QQ[dirNW  *sizeQ];
-    //   q_dirTE  = &QQ[dirTE  *sizeQ];
-    //   q_dirBW  = &QQ[dirBW  *sizeQ];
-    //   q_dirBE  = &QQ[dirBE  *sizeQ];
-    //   q_dirTW  = &QQ[dirTW  *sizeQ];
-    //   q_dirTN  = &QQ[dirTN  *sizeQ];
-    //   q_dirBS  = &QQ[dirBS  *sizeQ];
-    //   q_dirBN  = &QQ[dirBN  *sizeQ];
-    //   q_dirTS  = &QQ[dirTS  *sizeQ];
-    //   q_dirTNE = &QQ[dirTNE *sizeQ];
-    //   q_dirTSW = &QQ[dirTSW *sizeQ];
-    //   q_dirTSE = &QQ[dirTSE *sizeQ];
-    //   q_dirTNW = &QQ[dirTNW *sizeQ];
-    //   q_dirBNE = &QQ[dirBNE *sizeQ];
-    //   q_dirBSW = &QQ[dirBSW *sizeQ];
-    //   q_dirBSE = &QQ[dirBSE *sizeQ];
-    //   q_dirBNW = &QQ[dirBNW *sizeQ];
-      ////////////////////////////////////////////////////////////////////////////////
-    //   real *nx_dirE,   *nx_dirW,   *nx_dirN,   *nx_dirS,   *nx_dirT,   *nx_dirB, 
-    //           *nx_dirNE,  *nx_dirSW,  *nx_dirSE,  *nx_dirNW,  *nx_dirTE,  *nx_dirBW,
-    //           *nx_dirBE,  *nx_dirTW,  *nx_dirTN,  *nx_dirBS,  *nx_dirBN,  *nx_dirTS,
-    //           *nx_dirTNE, *nx_dirTSW, *nx_dirTSE, *nx_dirTNW, *nx_dirBNE, *nx_dirBSW,
-    //           *nx_dirBSE, *nx_dirBNW; 
-    //   nx_dirE   = &NormalX[dirE   *sizeQ];
-    //   nx_dirW   = &NormalX[dirW   *sizeQ];
-    //   nx_dirN   = &NormalX[dirN   *sizeQ];
-    //   nx_dirS   = &NormalX[dirS   *sizeQ];
-    //   nx_dirT   = &NormalX[dirT   *sizeQ];
-    //   nx_dirB   = &NormalX[dirB   *sizeQ];
-    //   nx_dirNE  = &NormalX[dirNE  *sizeQ];
-    //   nx_dirSW  = &NormalX[dirSW  *sizeQ];
-    //   nx_dirSE  = &NormalX[dirSE  *sizeQ];
-    //   nx_dirNW  = &NormalX[dirNW  *sizeQ];
-    //   nx_dirTE  = &NormalX[dirTE  *sizeQ];
-    //   nx_dirBW  = &NormalX[dirBW  *sizeQ];
-    //   nx_dirBE  = &NormalX[dirBE  *sizeQ];
-    //   nx_dirTW  = &NormalX[dirTW  *sizeQ];
-    //   nx_dirTN  = &NormalX[dirTN  *sizeQ];
-    //   nx_dirBS  = &NormalX[dirBS  *sizeQ];
-    //   nx_dirBN  = &NormalX[dirBN  *sizeQ];
-    //   nx_dirTS  = &NormalX[dirTS  *sizeQ];
-    //   nx_dirTNE = &NormalX[dirTNE *sizeQ];
-    //   nx_dirTSW = &NormalX[dirTSW *sizeQ];
-    //   nx_dirTSE = &NormalX[dirTSE *sizeQ];
-    //   nx_dirTNW = &NormalX[dirTNW *sizeQ];
-    //   nx_dirBNE = &NormalX[dirBNE *sizeQ];
-    //   nx_dirBSW = &NormalX[dirBSW *sizeQ];
-    //   nx_dirBSE = &NormalX[dirBSE *sizeQ];
-    //   nx_dirBNW = &NormalX[dirBNW *sizeQ];
-      ////////////////////////////////////////////////////////////////////////////////
-    //   real *ny_dirE,   *ny_dirW,   *ny_dirN,   *ny_dirS,   *ny_dirT,   *ny_dirB, 
-    //           *ny_dirNE,  *ny_dirSW,  *ny_dirSE,  *ny_dirNW,  *ny_dirTE,  *ny_dirBW,
-    //           *ny_dirBE,  *ny_dirTW,  *ny_dirTN,  *ny_dirBS,  *ny_dirBN,  *ny_dirTS,
-    //           *ny_dirTNE, *ny_dirTSW, *ny_dirTSE, *ny_dirTNW, *ny_dirBNE, *ny_dirBSW,
-    //           *ny_dirBSE, *ny_dirBNW; 
-    //   ny_dirE   = &NormalY[dirE   *sizeQ];
-    //   ny_dirW   = &NormalY[dirW   *sizeQ];
-    //   ny_dirN   = &NormalY[dirN   *sizeQ];
-    //   ny_dirS   = &NormalY[dirS   *sizeQ];
-    //   ny_dirT   = &NormalY[dirT   *sizeQ];
-    //   ny_dirB   = &NormalY[dirB   *sizeQ];
-    //   ny_dirNE  = &NormalY[dirNE  *sizeQ];
-    //   ny_dirSW  = &NormalY[dirSW  *sizeQ];
-    //   ny_dirSE  = &NormalY[dirSE  *sizeQ];
-    //   ny_dirNW  = &NormalY[dirNW  *sizeQ];
-    //   ny_dirTE  = &NormalY[dirTE  *sizeQ];
-    //   ny_dirBW  = &NormalY[dirBW  *sizeQ];
-    //   ny_dirBE  = &NormalY[dirBE  *sizeQ];
-    //   ny_dirTW  = &NormalY[dirTW  *sizeQ];
-    //   ny_dirTN  = &NormalY[dirTN  *sizeQ];
-    //   ny_dirBS  = &NormalY[dirBS  *sizeQ];
-    //   ny_dirBN  = &NormalY[dirBN  *sizeQ];
-    //   ny_dirTS  = &NormalY[dirTS  *sizeQ];
-    //   ny_dirTNE = &NormalY[dirTNE *sizeQ];
-    //   ny_dirTSW = &NormalY[dirTSW *sizeQ];
-    //   ny_dirTSE = &NormalY[dirTSE *sizeQ];
-    //   ny_dirTNW = &NormalY[dirTNW *sizeQ];
-    //   ny_dirBNE = &NormalY[dirBNE *sizeQ];
-    //   ny_dirBSW = &NormalY[dirBSW *sizeQ];
-    //   ny_dirBSE = &NormalY[dirBSE *sizeQ];
-    //   ny_dirBNW = &NormalY[dirBNW *sizeQ];
-      ////////////////////////////////////////////////////////////////////////////////
-    //   real *nz_dirE,   *nz_dirW,   *nz_dirN,   *nz_dirS,   *nz_dirT,   *nz_dirB, 
-    //           *nz_dirNE,  *nz_dirSW,  *nz_dirSE,  *nz_dirNW,  *nz_dirTE,  *nz_dirBW,
-    //           *nz_dirBE,  *nz_dirTW,  *nz_dirTN,  *nz_dirBS,  *nz_dirBN,  *nz_dirTS,
-    //           *nz_dirTNE, *nz_dirTSW, *nz_dirTSE, *nz_dirTNW, *nz_dirBNE, *nz_dirBSW,
-    //           *nz_dirBSE, *nz_dirBNW; 
-    //   nz_dirE   = &NormalZ[dirE   *sizeQ];
-    //   nz_dirW   = &NormalZ[dirW   *sizeQ];
-    //   nz_dirN   = &NormalZ[dirN   *sizeQ];
-    //   nz_dirS   = &NormalZ[dirS   *sizeQ];
-    //   nz_dirT   = &NormalZ[dirT   *sizeQ];
-    //   nz_dirB   = &NormalZ[dirB   *sizeQ];
-    //   nz_dirNE  = &NormalZ[dirNE  *sizeQ];
-    //   nz_dirSW  = &NormalZ[dirSW  *sizeQ];
-    //   nz_dirSE  = &NormalZ[dirSE  *sizeQ];
-    //   nz_dirNW  = &NormalZ[dirNW  *sizeQ];
-    //   nz_dirTE  = &NormalZ[dirTE  *sizeQ];
-    //   nz_dirBW  = &NormalZ[dirBW  *sizeQ];
-    //   nz_dirBE  = &NormalZ[dirBE  *sizeQ];
-    //   nz_dirTW  = &NormalZ[dirTW  *sizeQ];
-    //   nz_dirTN  = &NormalZ[dirTN  *sizeQ];
-    //   nz_dirBS  = &NormalZ[dirBS  *sizeQ];
-    //   nz_dirBN  = &NormalZ[dirBN  *sizeQ];
-    //   nz_dirTS  = &NormalZ[dirTS  *sizeQ];
-    //   nz_dirTNE = &NormalZ[dirTNE *sizeQ];
-    //   nz_dirTSW = &NormalZ[dirTSW *sizeQ];
-    //   nz_dirTSE = &NormalZ[dirTSE *sizeQ];
-    //   nz_dirTNW = &NormalZ[dirTNW *sizeQ];
-    //   nz_dirBNE = &NormalZ[dirBNE *sizeQ];
-    //   nz_dirBSW = &NormalZ[dirBSW *sizeQ];
-    //   nz_dirBSE = &NormalZ[dirBSE *sizeQ];
-    //   nz_dirBNW = &NormalZ[dirBNW *sizeQ];
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  bool changeCell = false;
-      unsigned int KQK  = k_Q[k];
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  if( q_dirW[k] > c0o1 || q_dirS[k] > c0o1 || q_dirB[k] > c0o1 ) {
-		  KQK = neighborWSB[KQK];
-		  changeCell = true;
-	  }
-	  if( q_dirW[k] == c0o1 && changeCell == true ) {
-		  KQK = neighborX[KQK];
-	  }
-	  if( q_dirS[k] == c0o1 && changeCell == true ) {
-		  KQK = neighborY[KQK];
-	  }
-	  if( q_dirB[k] == c0o1 && changeCell == true ) {
-		  KQK = neighborZ[KQK];
-	  }
+   //const unsigned nx = blockDim.x;
+   //const unsigned ny = gridDim.x;
 
-	  for(int i = 0; i < numberOfParticles; i++){
-		  //push back?
-	  }
+   //const unsigned k = nx*(ny*z + y) + x;
+   ////////////////////////////////////////////////////////////////////////////
 
-      ////////////////////////////////////////////////////////////////////////////////
-      //index
-      //unsigned int KQK  = k_Q[k];
-      unsigned int kzero= KQK;
-      unsigned int ke   = KQK;
-      unsigned int kw   = neighborX[KQK];
-      unsigned int kn   = KQK;
-      unsigned int ks   = neighborY[KQK];
-      unsigned int kt   = KQK;
-      unsigned int kb   = neighborZ[KQK];
-      unsigned int ksw  = neighborY[kw];
-      unsigned int kne  = KQK;
-      unsigned int kse  = ks;
-      unsigned int knw  = kw;
-      unsigned int kbw  = neighborZ[kw];
-      unsigned int kte  = KQK;
-      unsigned int kbe  = kb;
-      unsigned int ktw  = kw;
-      unsigned int kbs  = neighborZ[ks];
-      unsigned int ktn  = KQK;
-      unsigned int kbn  = kb;
-      unsigned int kts  = ks;
-      unsigned int ktse = ks;
-      unsigned int kbnw = kbw;
-      unsigned int ktnw = kw;
-      unsigned int kbse = kbs;
-      unsigned int ktsw = ksw;
-      unsigned int kbne = kb;
-      unsigned int ktne = KQK;
-      unsigned int kbsw = neighborZ[ksw];
-      ////////////////////////////////////////////////////////////////////////////////
-      real f_W    = (D.f[dirE   ])[ke   ];
-      real f_E    = (D.f[dirW   ])[kw   ];
-      real f_S    = (D.f[dirN   ])[kn   ];
-      real f_N    = (D.f[dirS   ])[ks   ];
-      real f_B    = (D.f[dirT   ])[kt   ];
-      real f_T    = (D.f[dirB   ])[kb   ];
-      real f_SW   = (D.f[dirNE  ])[kne  ];
-      real f_NE   = (D.f[dirSW  ])[ksw  ];
-      real f_NW   = (D.f[dirSE  ])[kse  ];
-      real f_SE   = (D.f[dirNW  ])[knw  ];
-      real f_BW   = (D.f[dirTE  ])[kte  ];
-      real f_TE   = (D.f[dirBW  ])[kbw  ];
-      real f_TW   = (D.f[dirBE  ])[kbe  ];
-      real f_BE   = (D.f[dirTW  ])[ktw  ];
-      real f_BS   = (D.f[dirTN  ])[ktn  ];
-      real f_TN   = (D.f[dirBS  ])[kbs  ];
-      real f_TS   = (D.f[dirBN  ])[kbn  ];
-      real f_BN   = (D.f[dirTS  ])[kts  ];
-      real f_BSW  = (D.f[dirTNE ])[ktne ];
-      real f_BNE  = (D.f[dirTSW ])[ktsw ];
-      real f_BNW  = (D.f[dirTSE ])[ktse ];
-      real f_BSE  = (D.f[dirTNW ])[ktnw ];
-      real f_TSW  = (D.f[dirBNE ])[kbne ];
-      real f_TNE  = (D.f[dirBSW ])[kbsw ];
-      real f_TNW  = (D.f[dirBSE ])[kbse ];
-      real f_TSE  = (D.f[dirBNW ])[kbnw ];
-      ////////////////////////////////////////////////////////////////////////////////
-      // real feq, q;
-      real vx1, vx2, vx3, drho;
-      drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
-                f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
-                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+   //if(k < sizeQ)
+   //{
+   //   ////////////////////////////////////////////////////////////////////////////////
+   //   real *q_dirW, *q_dirS, *q_dirB;
+   // //   real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+   // //         *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
+   // //         *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
+   // //         *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
+   // //         *q_dirBSE, *q_dirBNW; 
+   // //   q_dirE   = &QQ[dirE   *sizeQ];
+   //    q_dirW   = &QQ[dirW   *sizeQ];
+   // //   q_dirN   = &QQ[dirN   *sizeQ];
+   //    q_dirS   = &QQ[dirS   *sizeQ];
+   // //   q_dirT   = &QQ[dirT   *sizeQ];
+   //    q_dirB   = &QQ[dirB   *sizeQ];
+   // //   q_dirNE  = &QQ[dirNE  *sizeQ];
+   // //   q_dirSW  = &QQ[dirSW  *sizeQ];
+   // //   q_dirSE  = &QQ[dirSE  *sizeQ];
+   // //   q_dirNW  = &QQ[dirNW  *sizeQ];
+   // //   q_dirTE  = &QQ[dirTE  *sizeQ];
+   // //   q_dirBW  = &QQ[dirBW  *sizeQ];
+   // //   q_dirBE  = &QQ[dirBE  *sizeQ];
+   // //   q_dirTW  = &QQ[dirTW  *sizeQ];
+   // //   q_dirTN  = &QQ[dirTN  *sizeQ];
+   // //   q_dirBS  = &QQ[dirBS  *sizeQ];
+   // //   q_dirBN  = &QQ[dirBN  *sizeQ];
+   // //   q_dirTS  = &QQ[dirTS  *sizeQ];
+   // //   q_dirTNE = &QQ[dirTNE *sizeQ];
+   // //   q_dirTSW = &QQ[dirTSW *sizeQ];
+   // //   q_dirTSE = &QQ[dirTSE *sizeQ];
+   // //   q_dirTNW = &QQ[dirTNW *sizeQ];
+   // //   q_dirBNE = &QQ[dirBNE *sizeQ];
+   // //   q_dirBSW = &QQ[dirBSW *sizeQ];
+   // //   q_dirBSE = &QQ[dirBSE *sizeQ];
+   // //   q_dirBNW = &QQ[dirBNW *sizeQ];
+   //   ////////////////////////////////////////////////////////////////////////////////
+   // //   real *nx_dirE,   *nx_dirW,   *nx_dirN,   *nx_dirS,   *nx_dirT,   *nx_dirB, 
+   // //           *nx_dirNE,  *nx_dirSW,  *nx_dirSE,  *nx_dirNW,  *nx_dirTE,  *nx_dirBW,
+   // //           *nx_dirBE,  *nx_dirTW,  *nx_dirTN,  *nx_dirBS,  *nx_dirBN,  *nx_dirTS,
+   // //           *nx_dirTNE, *nx_dirTSW, *nx_dirTSE, *nx_dirTNW, *nx_dirBNE, *nx_dirBSW,
+   // //           *nx_dirBSE, *nx_dirBNW; 
+   // //   nx_dirE   = &NormalX[dirE   *sizeQ];
+   // //   nx_dirW   = &NormalX[dirW   *sizeQ];
+   // //   nx_dirN   = &NormalX[dirN   *sizeQ];
+   // //   nx_dirS   = &NormalX[dirS   *sizeQ];
+   // //   nx_dirT   = &NormalX[dirT   *sizeQ];
+   // //   nx_dirB   = &NormalX[dirB   *sizeQ];
+   // //   nx_dirNE  = &NormalX[dirNE  *sizeQ];
+   // //   nx_dirSW  = &NormalX[dirSW  *sizeQ];
+   // //   nx_dirSE  = &NormalX[dirSE  *sizeQ];
+   // //   nx_dirNW  = &NormalX[dirNW  *sizeQ];
+   // //   nx_dirTE  = &NormalX[dirTE  *sizeQ];
+   // //   nx_dirBW  = &NormalX[dirBW  *sizeQ];
+   // //   nx_dirBE  = &NormalX[dirBE  *sizeQ];
+   // //   nx_dirTW  = &NormalX[dirTW  *sizeQ];
+   // //   nx_dirTN  = &NormalX[dirTN  *sizeQ];
+   // //   nx_dirBS  = &NormalX[dirBS  *sizeQ];
+   // //   nx_dirBN  = &NormalX[dirBN  *sizeQ];
+   // //   nx_dirTS  = &NormalX[dirTS  *sizeQ];
+   // //   nx_dirTNE = &NormalX[dirTNE *sizeQ];
+   // //   nx_dirTSW = &NormalX[dirTSW *sizeQ];
+   // //   nx_dirTSE = &NormalX[dirTSE *sizeQ];
+   // //   nx_dirTNW = &NormalX[dirTNW *sizeQ];
+   // //   nx_dirBNE = &NormalX[dirBNE *sizeQ];
+   // //   nx_dirBSW = &NormalX[dirBSW *sizeQ];
+   // //   nx_dirBSE = &NormalX[dirBSE *sizeQ];
+   // //   nx_dirBNW = &NormalX[dirBNW *sizeQ];
+   //   ////////////////////////////////////////////////////////////////////////////////
+   // //   real *ny_dirE,   *ny_dirW,   *ny_dirN,   *ny_dirS,   *ny_dirT,   *ny_dirB, 
+   // //           *ny_dirNE,  *ny_dirSW,  *ny_dirSE,  *ny_dirNW,  *ny_dirTE,  *ny_dirBW,
+   // //           *ny_dirBE,  *ny_dirTW,  *ny_dirTN,  *ny_dirBS,  *ny_dirBN,  *ny_dirTS,
+   // //           *ny_dirTNE, *ny_dirTSW, *ny_dirTSE, *ny_dirTNW, *ny_dirBNE, *ny_dirBSW,
+   // //           *ny_dirBSE, *ny_dirBNW; 
+   // //   ny_dirE   = &NormalY[dirE   *sizeQ];
+   // //   ny_dirW   = &NormalY[dirW   *sizeQ];
+   // //   ny_dirN   = &NormalY[dirN   *sizeQ];
+   // //   ny_dirS   = &NormalY[dirS   *sizeQ];
+   // //   ny_dirT   = &NormalY[dirT   *sizeQ];
+   // //   ny_dirB   = &NormalY[dirB   *sizeQ];
+   // //   ny_dirNE  = &NormalY[dirNE  *sizeQ];
+   // //   ny_dirSW  = &NormalY[dirSW  *sizeQ];
+   // //   ny_dirSE  = &NormalY[dirSE  *sizeQ];
+   // //   ny_dirNW  = &NormalY[dirNW  *sizeQ];
+   // //   ny_dirTE  = &NormalY[dirTE  *sizeQ];
+   // //   ny_dirBW  = &NormalY[dirBW  *sizeQ];
+   // //   ny_dirBE  = &NormalY[dirBE  *sizeQ];
+   // //   ny_dirTW  = &NormalY[dirTW  *sizeQ];
+   // //   ny_dirTN  = &NormalY[dirTN  *sizeQ];
+   // //   ny_dirBS  = &NormalY[dirBS  *sizeQ];
+   // //   ny_dirBN  = &NormalY[dirBN  *sizeQ];
+   // //   ny_dirTS  = &NormalY[dirTS  *sizeQ];
+   // //   ny_dirTNE = &NormalY[dirTNE *sizeQ];
+   // //   ny_dirTSW = &NormalY[dirTSW *sizeQ];
+   // //   ny_dirTSE = &NormalY[dirTSE *sizeQ];
+   // //   ny_dirTNW = &NormalY[dirTNW *sizeQ];
+   // //   ny_dirBNE = &NormalY[dirBNE *sizeQ];
+   // //   ny_dirBSW = &NormalY[dirBSW *sizeQ];
+   // //   ny_dirBSE = &NormalY[dirBSE *sizeQ];
+   // //   ny_dirBNW = &NormalY[dirBNW *sizeQ];
+   //   ////////////////////////////////////////////////////////////////////////////////
+   // //   real *nz_dirE,   *nz_dirW,   *nz_dirN,   *nz_dirS,   *nz_dirT,   *nz_dirB, 
+   // //           *nz_dirNE,  *nz_dirSW,  *nz_dirSE,  *nz_dirNW,  *nz_dirTE,  *nz_dirBW,
+   // //           *nz_dirBE,  *nz_dirTW,  *nz_dirTN,  *nz_dirBS,  *nz_dirBN,  *nz_dirTS,
+   // //           *nz_dirTNE, *nz_dirTSW, *nz_dirTSE, *nz_dirTNW, *nz_dirBNE, *nz_dirBSW,
+   // //           *nz_dirBSE, *nz_dirBNW; 
+   // //   nz_dirE   = &NormalZ[dirE   *sizeQ];
+   // //   nz_dirW   = &NormalZ[dirW   *sizeQ];
+   // //   nz_dirN   = &NormalZ[dirN   *sizeQ];
+   // //   nz_dirS   = &NormalZ[dirS   *sizeQ];
+   // //   nz_dirT   = &NormalZ[dirT   *sizeQ];
+   // //   nz_dirB   = &NormalZ[dirB   *sizeQ];
+   // //   nz_dirNE  = &NormalZ[dirNE  *sizeQ];
+   // //   nz_dirSW  = &NormalZ[dirSW  *sizeQ];
+   // //   nz_dirSE  = &NormalZ[dirSE  *sizeQ];
+   // //   nz_dirNW  = &NormalZ[dirNW  *sizeQ];
+   // //   nz_dirTE  = &NormalZ[dirTE  *sizeQ];
+   // //   nz_dirBW  = &NormalZ[dirBW  *sizeQ];
+   // //   nz_dirBE  = &NormalZ[dirBE  *sizeQ];
+   // //   nz_dirTW  = &NormalZ[dirTW  *sizeQ];
+   // //   nz_dirTN  = &NormalZ[dirTN  *sizeQ];
+   // //   nz_dirBS  = &NormalZ[dirBS  *sizeQ];
+   // //   nz_dirBN  = &NormalZ[dirBN  *sizeQ];
+   // //   nz_dirTS  = &NormalZ[dirTS  *sizeQ];
+   // //   nz_dirTNE = &NormalZ[dirTNE *sizeQ];
+   // //   nz_dirTSW = &NormalZ[dirTSW *sizeQ];
+   // //   nz_dirTSE = &NormalZ[dirTSE *sizeQ];
+   // //   nz_dirTNW = &NormalZ[dirTNW *sizeQ];
+   // //   nz_dirBNE = &NormalZ[dirBNE *sizeQ];
+   // //   nz_dirBSW = &NormalZ[dirBSW *sizeQ];
+   // //   nz_dirBSE = &NormalZ[dirBSE *sizeQ];
+   // //   nz_dirBNW = &NormalZ[dirBNW *sizeQ];
+   //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	  //bool changeCell = false;
+   //   unsigned int KQK  = k_Q[k];
+   //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	  //if( q_dirW[k] > c0o1 || q_dirS[k] > c0o1 || q_dirB[k] > c0o1 ) {
+		 // KQK = neighborWSB[KQK];
+		 // changeCell = true;
+	  //}
+	  //if( q_dirW[k] == c0o1 && changeCell == true ) {
+		 // KQK = neighborX[KQK];
+	  //}
+	  //if( q_dirS[k] == c0o1 && changeCell == true ) {
+		 // KQK = neighborY[KQK];
+	  //}
+	  //if( q_dirB[k] == c0o1 && changeCell == true ) {
+		 // KQK = neighborZ[KQK];
+	  //}
 
-      vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
-                ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
-                (f_E - f_W)) / (c1o1 + drho); 
-         
+	  ////for(int i = 0; i < numberOfParticles; i++){
+		 //// //push back?
+	  ////}
 
-      vx2    =   ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
-                 ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
-                 (f_N - f_S)) / (c1o1 + drho); 
+   //   ////////////////////////////////////////////////////////////////////////////////
+   //   //index
+   //   //unsigned int KQK  = k_Q[k];
+   //   unsigned int kzero= KQK;
+   //   unsigned int ke   = KQK;
+   //   unsigned int kw   = neighborX[KQK];
+   //   unsigned int kn   = KQK;
+   //   unsigned int ks   = neighborY[KQK];
+   //   unsigned int kt   = KQK;
+   //   unsigned int kb   = neighborZ[KQK];
+   //   unsigned int ksw  = neighborY[kw];
+   //   unsigned int kne  = KQK;
+   //   unsigned int kse  = ks;
+   //   unsigned int knw  = kw;
+   //   unsigned int kbw  = neighborZ[kw];
+   //   unsigned int kte  = KQK;
+   //   unsigned int kbe  = kb;
+   //   unsigned int ktw  = kw;
+   //   unsigned int kbs  = neighborZ[ks];
+   //   unsigned int ktn  = KQK;
+   //   unsigned int kbn  = kb;
+   //   unsigned int kts  = ks;
+   //   unsigned int ktse = ks;
+   //   unsigned int kbnw = kbw;
+   //   unsigned int ktnw = kw;
+   //   unsigned int kbse = kbs;
+   //   unsigned int ktsw = ksw;
+   //   unsigned int kbne = kb;
+   //   unsigned int ktne = KQK;
+   //   unsigned int kbsw = neighborZ[ksw];
+   //   ////////////////////////////////////////////////////////////////////////////////
+   //   real f_W    = (D.f[dirE   ])[ke   ];
+   //   real f_E    = (D.f[dirW   ])[kw   ];
+   //   real f_S    = (D.f[dirN   ])[kn   ];
+   //   real f_N    = (D.f[dirS   ])[ks   ];
+   //   real f_B    = (D.f[dirT   ])[kt   ];
+   //   real f_T    = (D.f[dirB   ])[kb   ];
+   //   real f_SW   = (D.f[dirNE  ])[kne  ];
+   //   real f_NE   = (D.f[dirSW  ])[ksw  ];
+   //   real f_NW   = (D.f[dirSE  ])[kse  ];
+   //   real f_SE   = (D.f[dirNW  ])[knw  ];
+   //   real f_BW   = (D.f[dirTE  ])[kte  ];
+   //   real f_TE   = (D.f[dirBW  ])[kbw  ];
+   //   real f_TW   = (D.f[dirBE  ])[kbe  ];
+   //   real f_BE   = (D.f[dirTW  ])[ktw  ];
+   //   real f_BS   = (D.f[dirTN  ])[ktn  ];
+   //   real f_TN   = (D.f[dirBS  ])[kbs  ];
+   //   real f_TS   = (D.f[dirBN  ])[kbn  ];
+   //   real f_BN   = (D.f[dirTS  ])[kts  ];
+   //   real f_BSW  = (D.f[dirTNE ])[ktne ];
+   //   real f_BNE  = (D.f[dirTSW ])[ktsw ];
+   //   real f_BNW  = (D.f[dirTSE ])[ktse ];
+   //   real f_BSE  = (D.f[dirTNW ])[ktnw ];
+   //   real f_TSW  = (D.f[dirBNE ])[kbne ];
+   //   real f_TNE  = (D.f[dirBSW ])[kbsw ];
+   //   real f_TNW  = (D.f[dirBSE ])[kbse ];
+   //   real f_TSE  = (D.f[dirBNW ])[kbnw ];
+   //   ////////////////////////////////////////////////////////////////////////////////
+   //   // real feq, q;
+   //   real vx1, vx2, vx3, drho;
+   //   drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
+   //             f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
+   //             f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
 
-      vx3    =   (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
-                 (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
-                 (f_T - f_B)) / (c1o1 + drho); 
+   //   vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+   //             ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
+   //             (f_E - f_W)) / (c1o1 + drho); 
+   //      
 
-      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
+   //   vx2    =   ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+   //              ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
+   //              (f_N - f_S)) / (c1o1 + drho); 
 
-      //////////////////////////////////////////////////////////////////////////
-      if (evenOrOdd==false)
-      {
-         D.f[dirE   ] = &DD[dirE   *size_Mat];
-         D.f[dirW   ] = &DD[dirW   *size_Mat];
-         D.f[dirN   ] = &DD[dirN   *size_Mat];
-         D.f[dirS   ] = &DD[dirS   *size_Mat];
-         D.f[dirT   ] = &DD[dirT   *size_Mat];
-         D.f[dirB   ] = &DD[dirB   *size_Mat];
-         D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-         D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-         D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-         D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-         D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-         D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-         D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-         D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-         D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-         D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-         D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-         D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-         D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-         D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-         D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-         D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-         D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNW ] = &DD[dirBNW *size_Mat];
-      } 
-      else
-      {
-         D.f[dirW   ] = &DD[dirE   *size_Mat];
-         D.f[dirE   ] = &DD[dirW   *size_Mat];
-         D.f[dirS   ] = &DD[dirN   *size_Mat];
-         D.f[dirN   ] = &DD[dirS   *size_Mat];
-         D.f[dirB   ] = &DD[dirT   *size_Mat];
-         D.f[dirT   ] = &DD[dirB   *size_Mat];
-         D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-         D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-         D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-         D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-         D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-         D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-         D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-         D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-         D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-         D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-         D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-         D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-         D.f[dirZERO] = &DD[dirZERO*size_Mat];
-         D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-         D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-         D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-         D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-         D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-         D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-         D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-         D.f[dirBNW ] = &DD[dirTSE *size_Mat];
-      }
-   }
+   //   vx3    =   (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
+   //              (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
+   //              (f_T - f_B)) / (c1o1 + drho); 
+
+   //   //real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
+
+   //   //////////////////////////////////////////////////////////////////////////
+   //   if (evenOrOdd==false)
+   //   {
+   //      D.f[dirE   ] = &DD[dirE   *size_Mat];
+   //      D.f[dirW   ] = &DD[dirW   *size_Mat];
+   //      D.f[dirN   ] = &DD[dirN   *size_Mat];
+   //      D.f[dirS   ] = &DD[dirS   *size_Mat];
+   //      D.f[dirT   ] = &DD[dirT   *size_Mat];
+   //      D.f[dirB   ] = &DD[dirB   *size_Mat];
+   //      D.f[dirNE  ] = &DD[dirNE  *size_Mat];
+   //      D.f[dirSW  ] = &DD[dirSW  *size_Mat];
+   //      D.f[dirSE  ] = &DD[dirSE  *size_Mat];
+   //      D.f[dirNW  ] = &DD[dirNW  *size_Mat];
+   //      D.f[dirTE  ] = &DD[dirTE  *size_Mat];
+   //      D.f[dirBW  ] = &DD[dirBW  *size_Mat];
+   //      D.f[dirBE  ] = &DD[dirBE  *size_Mat];
+   //      D.f[dirTW  ] = &DD[dirTW  *size_Mat];
+   //      D.f[dirTN  ] = &DD[dirTN  *size_Mat];
+   //      D.f[dirBS  ] = &DD[dirBS  *size_Mat];
+   //      D.f[dirBN  ] = &DD[dirBN  *size_Mat];
+   //      D.f[dirTS  ] = &DD[dirTS  *size_Mat];
+   //      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+   //      D.f[dirTNE ] = &DD[dirTNE *size_Mat];
+   //      D.f[dirTSW ] = &DD[dirTSW *size_Mat];
+   //      D.f[dirTSE ] = &DD[dirTSE *size_Mat];
+   //      D.f[dirTNW ] = &DD[dirTNW *size_Mat];
+   //      D.f[dirBNE ] = &DD[dirBNE *size_Mat];
+   //      D.f[dirBSW ] = &DD[dirBSW *size_Mat];
+   //      D.f[dirBSE ] = &DD[dirBSE *size_Mat];
+   //      D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+   //   } 
+   //   else
+   //   {
+   //      D.f[dirW   ] = &DD[dirE   *size_Mat];
+   //      D.f[dirE   ] = &DD[dirW   *size_Mat];
+   //      D.f[dirS   ] = &DD[dirN   *size_Mat];
+   //      D.f[dirN   ] = &DD[dirS   *size_Mat];
+   //      D.f[dirB   ] = &DD[dirT   *size_Mat];
+   //      D.f[dirT   ] = &DD[dirB   *size_Mat];
+   //      D.f[dirSW  ] = &DD[dirNE  *size_Mat];
+   //      D.f[dirNE  ] = &DD[dirSW  *size_Mat];
+   //      D.f[dirNW  ] = &DD[dirSE  *size_Mat];
+   //      D.f[dirSE  ] = &DD[dirNW  *size_Mat];
+   //      D.f[dirBW  ] = &DD[dirTE  *size_Mat];
+   //      D.f[dirTE  ] = &DD[dirBW  *size_Mat];
+   //      D.f[dirTW  ] = &DD[dirBE  *size_Mat];
+   //      D.f[dirBE  ] = &DD[dirTW  *size_Mat];
+   //      D.f[dirBS  ] = &DD[dirTN  *size_Mat];
+   //      D.f[dirTN  ] = &DD[dirBS  *size_Mat];
+   //      D.f[dirTS  ] = &DD[dirBN  *size_Mat];
+   //      D.f[dirBN  ] = &DD[dirTS  *size_Mat];
+   //      D.f[dirZERO] = &DD[dirZERO*size_Mat];
+   //      D.f[dirTNE ] = &DD[dirBSW *size_Mat];
+   //      D.f[dirTSW ] = &DD[dirBNE *size_Mat];
+   //      D.f[dirTSE ] = &DD[dirBNW *size_Mat];
+   //      D.f[dirTNW ] = &DD[dirBSE *size_Mat];
+   //      D.f[dirBNE ] = &DD[dirTSW *size_Mat];
+   //      D.f[dirBSW ] = &DD[dirTNE *size_Mat];
+   //      D.f[dirBSE ] = &DD[dirTNW *size_Mat];
+   //      D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+   //   }
+   //}
 }

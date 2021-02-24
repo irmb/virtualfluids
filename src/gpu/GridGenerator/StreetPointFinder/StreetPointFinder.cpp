@@ -112,7 +112,7 @@ void StreetPointFinder::prepareSimulationFileData()
 	//////////////////////////////////////////////////////////////////////////
 	// prepare vectors
 
-	uint numberOfCells = this->sparseIndicesLB.size();
+	uint numberOfCells = (uint)this->sparseIndicesLB.size();
 
 	mapNashToConc.resize(numberOfCells);
 

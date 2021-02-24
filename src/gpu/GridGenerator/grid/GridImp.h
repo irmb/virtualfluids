@@ -28,7 +28,7 @@ class TriangularMeshDiscretizationStrategy;
     #endif
 #endif
 
-// warning #3156-D: extern declaration of the entity DIRECTIONS is treated as a static definition
+//GCC:  warning #3156-D: extern declaration of the entity DIRECTIONS is treated as a static definition
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 #ifdef __GNUC__

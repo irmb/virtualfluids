@@ -22,5 +22,10 @@ if(NOT MSVC)
     set(cuda_warnings_suppressions "${cuda_warnings_suppressions} --diag_suppress=3311")
 endif()
 
+# suppress warning 2979: calling a __host__ function from __host__ __device__ is not allowed
+if(MSVC)
+    set(cuda_warnings_suppressions "${cuda_warnings_suppressions} --diag_suppress=2979 --diag_suppress=2976 --diag_suppress=3005")
+endif()
+
 target_compile_options(${library_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xcudafe ${cuda_warnings_suppressions} >)
 

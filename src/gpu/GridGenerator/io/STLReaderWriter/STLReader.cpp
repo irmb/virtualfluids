@@ -295,7 +295,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
         if (box.isInside(t) || box.intersect(t))
             triangles.push_back(t);
     }
-    int size = triangles.size();
+    int size = (int)triangles.size();
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles in process: " << size << "\n";
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Complete reading STL file. \n";
 

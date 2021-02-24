@@ -180,7 +180,7 @@ HOSTDEVICE void GridImp::findInnerNode(uint index)
 HOSTDEVICE void GridImp::discretize(Object* solidObject, char innerType, char outerType)
 {
 #pragma omp parallel for
-    for (int index = 0; index < this->size; index++)
+    for (int index = 0; index < (int)this->size; index++)
     {
         this->sparseIndices[index] = index;
 
@@ -1299,7 +1299,7 @@ CUDA_HOST void GridImp::findQsPrimitive(Object * object)
     }
 
 
-    for( int index = 0; index < this->size; index++ )
+    for( int index = 0; index < (int)this->size; index++ )
     {
 
         if( this->qIndices[index] == INVALID_INDEX ) continue;
@@ -1554,12 +1554,12 @@ void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, i
 
 uint GridImp::getNumberOfSendNodes(int direction)
 {
-    return this->communicationIndices[direction].sendIndices.size();
+    return (uint)this->communicationIndices[direction].sendIndices.size();
 }
 
 uint GridImp::getNumberOfReceiveNodes(int direction)
 {
-    return this->communicationIndices[direction].receiveIndices.size();
+    return (uint)this->communicationIndices[direction].receiveIndices.size();
 }
 
 uint GridImp::getSendIndex(int direction, uint index)

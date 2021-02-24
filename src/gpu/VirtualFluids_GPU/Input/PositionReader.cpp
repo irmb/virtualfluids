@@ -91,7 +91,7 @@ const int INVDIR[] = {	INV_E,
 
 static const int        optionDigits = 2;  //--> 2 bits f�r secondary Option
 static const long long  maxOptionVal = ( 1<<optionDigits ) - 1; //2^3-1 -> 7
-float q[27]; 
+//float q[27]; 
 long long noslipBoundaryFlags;		
 																     
 

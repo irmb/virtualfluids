@@ -315,9 +315,9 @@ void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indi
         {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) +1;  
 
-            vx[allIndicesCounter] = boundaryCondition->getVx(i);
-            vy[allIndicesCounter] = boundaryCondition->getVy(i);
-            vz[allIndicesCounter] = boundaryCondition->getVz(i);
+            vx[allIndicesCounter] = (uint)boundaryCondition->getVx(i);
+            vy[allIndicesCounter] = (uint)boundaryCondition->getVy(i);
+            vz[allIndicesCounter] = (uint)boundaryCondition->getVz(i);
             allIndicesCounter++;
         }
     }
@@ -419,7 +419,7 @@ void LevelGridBuilder::getPressureQs(real* qs[27], int level) const
 uint LevelGridBuilder::getGeometrySize(int level) const
 {
     if (boundaryConditions[level]->geometryBoundaryCondition)
-        return  boundaryConditions[level]->geometryBoundaryCondition->indices.size();
+        return  (uint)boundaryConditions[level]->geometryBoundaryCondition->indices.size();
     
     return 0;
 }

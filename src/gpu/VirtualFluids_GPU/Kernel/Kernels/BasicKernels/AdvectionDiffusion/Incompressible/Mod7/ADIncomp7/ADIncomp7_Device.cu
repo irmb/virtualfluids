@@ -197,9 +197,9 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_7(real diffusivity,
 			//      real vy     =  ten * ((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
 			//      real vz     =  ten * ((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
 			////////////////////////////////////////////////////////////////////////////////
-			real ux_sq = vx * vx;
-			real uy_sq = vy * vy;
-			real uz_sq = vz * vz;
+			//real ux_sq = vx * vx;
+			//real uy_sq = vy * vy;
+			//real uz_sq = vz * vz;
 			////////////////////////////////////////////////////////////////////////////////
 			//BGK
 			//real omegaD     = -three + sqrt(three); !!!!!!!!!!!!!!Achtung!!!!!!!!!!!!!!!!!! anderes Vorzeichen als in den Randbedingungen

@@ -395,9 +395,9 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 	this->setForcing(forcingX, forcingY, forcingZ);
 	//////////////////////////////////////////////////////////////////////////
 	//quadricLimiters
-	real quadricLimiterP = 0.01;
-	real quadricLimiterM = 0.01;
-	real quadricLimiterD = 0.01;
+	real quadricLimiterP = (real)0.01;
+	real quadricLimiterM = (real)0.01;
+	real quadricLimiterD = (real)0.01;
 
 	if (configData->isQuadricLimiterPInConfigFile())
 		quadricLimiterP = configData->getQuadricLimiterP();

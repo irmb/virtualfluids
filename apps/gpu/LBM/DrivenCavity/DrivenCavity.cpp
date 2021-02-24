@@ -93,7 +93,7 @@ const real Re = 500.0;// 1000.0;
 
 const real velocity  = 1.0;
 
-const real dt = 1.0e-3; //0.5e-3;
+const real dt = (real)1.0e-3; //0.5e-3;
 
 const uint nx = 64;
 
@@ -162,8 +162,8 @@ void multipleLevel(const std::string& configPath)
 
         const real velocityLB = velocity * dt / dx; // LB units
 
-	    const real vx = velocityLB / sqrt(2.0); // LB units
-	    const real vy = velocityLB / sqrt(2.0); // LB units
+	    const real vx = velocityLB / (real)sqrt(2.0); // LB units
+	    const real vy = velocityLB / (real)sqrt(2.0); // LB units
 
         const real viscosityLB = nx * velocityLB / Re; // LB units
 

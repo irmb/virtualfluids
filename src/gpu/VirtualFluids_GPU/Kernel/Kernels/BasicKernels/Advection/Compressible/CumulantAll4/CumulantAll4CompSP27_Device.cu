@@ -681,8 +681,8 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(	real omega,
 			real dzuz = dxux + omega * c3o2 * mxxMzz;
 
 			//////////////////////////////////////////////////////////////////////////////
-			real divTest = (mxxPyyPzz - (mfaaa + (-c3o1 * (c1o1 - OxxPyyPzz*c1o2)*(vx2*dxux + vy2*dyuy + vz2*dzuz) + (c6o1 - c3o1 * (omega + OxxPyyPzz) + omega*OxxPyyPzz) /
-				(c3o1 * omega)*(dxux*dxux / rho + dyuy*dyuy / rho + dzuz*dzuz / rho + vvx*dxxux + vvy*dyyuy + vvz*dzzuz)) / OxxPyyPzz)) / OxxPyyPzz;
+			//real divTest = (mxxPyyPzz - (mfaaa + (-c3o1 * (c1o1 - OxxPyyPzz*c1o2)*(vx2*dxux + vy2*dyuy + vz2*dzuz) + (c6o1 - c3o1 * (omega + OxxPyyPzz) + omega*OxxPyyPzz) /
+				//(c3o1 * omega)*(dxux*dxux / rho + dyuy*dyuy / rho + dzuz*dzuz / rho + vvx*dxxux + vvy*dyyuy + vvz*dzzuz)) / OxxPyyPzz)) / OxxPyyPzz;
 
 			//dxxux *= limAdvect / (limAdvect + sqrt(abs(divTest)));
 			//dyyuy *= limAdvect / (limAdvect + sqrt(abs(divTest)));

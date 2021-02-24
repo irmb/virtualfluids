@@ -22,7 +22,5 @@ public:
     virtual void writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager) = 0;
     virtual void writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep) = 0;
 	virtual void writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level) = 0;
-
-    DataWriter(const DataWriter& dataWriter) {}
 };
 #endif
