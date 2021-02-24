@@ -54,7 +54,7 @@ public:
    double getCalculationTime() override { return .0; }
 protected:
    virtual void initDataSet();
-   void swapDistributions();
+   void swapDistributions() override;
    LBMReal f1[D3Q27System::ENDF+1];
 
    CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;

@@ -287,10 +287,12 @@ void run(string configname)
          if (myid == 0) UBLOG(logINFO, "Restart - end");
       }
 
-      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
-      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkViscosity(nuLB, bulckViscosity);
-      SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+      OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
       grid->accept(setConnsVisitor);
+
+      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      SetInterpolationConnectorsBlockVisitor setInterConnsVisitor(comm, nuLB, iProcessor);
+      grid->accept(setInterConnsVisitor);
 
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       SPtr<CoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm));

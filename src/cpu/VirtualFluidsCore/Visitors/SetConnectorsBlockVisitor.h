@@ -38,40 +38,126 @@
 
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
-
+#include "Grid3DSystem.h"
+#include "Grid3D.h"
 #include "CreateTransmittersHelper.h"
-
-class Grid3D;
-class Block3D;
-class Communicator;
-class InterpolationProcessor;
+#include "Communicator.h"
+#include "D3Q27ETFullDirectConnector.h"
+#include "D3Q27ETFullVectorConnector.h"
+#include "TwoDistributionsFullDirectConnector.h"
+#include "TwoDistributionsFullVectorConnector.h"
+#include <basics/transmitter/TbTransmitterLocal.h>
 
 //! \brief  A class sets connectors between blocks.
+template <class T1, class T2>
 class SetConnectorsBlockVisitor : public Block3DVisitor
 {
 public:
-    SetConnectorsBlockVisitor(SPtr<Communicator> comm, bool fullConnector, int dirs, LBMReal nue,
-                              SPtr<InterpolationProcessor> iProcessor);
+    using LocalConnector  = T1;
+    using RemoteConnector = T2;
+public:
+    SetConnectorsBlockVisitor(SPtr<Communicator> comm);
     ~SetConnectorsBlockVisitor() override;
     void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
     //////////////////////////////////////////////////////////////////////////
 protected:
     void setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block);
-    void setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir, bool fullConnector);
-    void setInterpolationConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block);
-    void setInterpolationConnectors(SPtr<Block3D> fBlockSW, SPtr<Block3D> fBlockSE, SPtr<Block3D> fBlockNW,
-                                    SPtr<Block3D> fBlockNE, SPtr<Block3D> cBlock, int dir);
-    void createTransmitters(SPtr<Block3D> cBlock, SPtr<Block3D> fBlock, int dir, CreateTransmittersHelper::IBlock ib,
-                            CreateTransmittersHelper::TransmitterPtr &senderCF,
-                            CreateTransmittersHelper::TransmitterPtr &receiverCF,
-                            CreateTransmittersHelper::TransmitterPtr &senderFC,
-                            CreateTransmittersHelper::TransmitterPtr &receiverFC);
+    void setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir);
     SPtr<Communicator> comm;
-    bool fullConnector;
     int dirs;
     int gridRank;
-    LBMReal nue;
-    SPtr<InterpolationProcessor> iProcessor;
 };
+
+template <class T1, class T2>
+SetConnectorsBlockVisitor<T1, T2>::SetConnectorsBlockVisitor(SPtr<Communicator> comm)
+    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), comm(comm)
+{
+}
+//////////////////////////////////////////////////////////////////////////
+template <class T1, class T2>
+SetConnectorsBlockVisitor<T1, T2>::~SetConnectorsBlockVisitor(void)
+{
+}
+//////////////////////////////////////////////////////////////////////////
+template <class T1, class T2>
+void SetConnectorsBlockVisitor<T1, T2>::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
+{
+    if (!block)
+        return;
+
+    UBLOG(logDEBUG5, "SetConnectorsBlockVisitor::visit() - start");
+    UBLOG(logDEBUG5, block->toString());
+
+    gridRank = comm->getProcessID();
+    grid->setRank(gridRank);
+
+    setSameLevelConnectors(grid, block);
+
+    UBLOG(logDEBUG5, "SetConnectorsBlockVisitor::visit() - end");
+}
+//////////////////////////////////////////////////////////////////////////
+template <class T1, class T2>
+void SetConnectorsBlockVisitor<T1, T2>::setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block)
+{
+    UBLOG(logDEBUG5, "SetConnectorsBlockVisitor::setSameLevelConnectors() - start");
+    int blockRank = block->getRank();
+    if (gridRank == blockRank && block->isActive()) {
+        block->clearWeight();
+        std::vector<SPtr<Block3D>> neighbors;
+        int ix1   = block->getX1();
+        int ix2   = block->getX2();
+        int ix3   = block->getX3();
+        int level = block->getLevel();
+
+        for (int dir = 0; dir < D3Q27System::ENDDIR; dir++) {
+            SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, ix1, ix2, ix3, level);
+
+            if (neighBlock) {
+                int neighBlockRank = neighBlock->getRank();
+                if (blockRank == neighBlockRank && neighBlock->isActive()) {
+                    SPtr<Block3DConnector> connector;
+                    // connector = SPtr<Block3DConnector>(new D3Q27ETFullDirectConnector( block, neighBlock, dir));
+                    //connector = SPtr<Block3DConnector>(new TwoDistributionsFullDirectConnector(block, neighBlock, dir));
+                    connector = SPtr<Block3DConnector>(new LocalConnector(block, neighBlock, dir));
+                    block->setConnector(connector);
+                } else if (blockRank != neighBlockRank && neighBlock->isActive()) {
+                    setRemoteConnectors(block, neighBlock, dir);
+
+                    if (dir >= 0 && dir <= 5) {
+                        int weight = block->getWeight(neighBlockRank);
+                        weight++;
+                        block->setWeight(neighBlockRank, weight);
+                    }
+                }
+            }
+        }
+
+        int weight = block->getNumberOfLocalConnectorsForSurfaces();
+        weight     = 6 - weight;
+        block->addWeightForAll(weight);
+    }
+    UBLOG(logDEBUG5, "SetConnectorsBlockVisitor::setSameLevelConnectors() - end");
+}
+//////////////////////////////////////////////////////////////////////////
+template <class T1, class T2>
+void SetConnectorsBlockVisitor<T1, T2>::setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir)
+{
+    UBLOG(logDEBUG5, "SetConnectorsBlockVisitor::setRemoteConnectors() - start");
+    CreateTransmittersHelper helper;
+    CreateTransmittersHelper::TransmitterPtr sender, receiver;
+    helper.createTransmitters(sblock, tblock, dir, CreateTransmittersHelper::NONE, sender, receiver, comm,
+                              CreateTransmittersHelper::MPI);
+
+    SPtr<Block3DConnector> connector;
+    // connector = SPtr<Block3DConnector>(new D3Q27ETFullVectorConnector(sblock, sender, receiver, dir));
+    //connector = SPtr<Block3DConnector>(new TwoDistributionsFullVectorConnector(sblock, sender, receiver, dir));
+    connector = SPtr<Block3DConnector>(new RemoteConnector(sblock, sender, receiver, dir));
+    sblock->setConnector(connector);
+    UBLOG(logDEBUG5, "SetConnectorsBlockVisitor::setRemoteConnectors() - end");
+}
+//
+
+using OneDistributionSetConnectorsBlockVisitor  = SetConnectorsBlockVisitor<D3Q27ETFullDirectConnector, D3Q27ETFullVectorConnector>;
+using TwoDistributionsSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<TwoDistributionsFullDirectConnector, TwoDistributionsFullVectorConnector>;
 
 #endif // SETCONNECTORSBLOCKVISITOR_H

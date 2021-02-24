@@ -314,9 +314,12 @@ void bflow(string configname)
       omp_set_num_threads(numOfThreads);
 
       //set connectors
-      InterpolationProcessorPtr iProcessor(new ThixotropyInterpolationProcessor());
-      static_pointer_cast<ThixotropyInterpolationProcessor>(iProcessor)->setOmegaMin(thix->getOmegaMin());
-      SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, k, iProcessor);
+      //InterpolationProcessorPtr iProcessor(new ThixotropyInterpolationProcessor());
+      //static_pointer_cast<ThixotropyInterpolationProcessor>(iProcessor)->setOmegaMin(thix->getOmegaMin());
+      //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, k, iProcessor);
+      //grid->accept(setConnsVisitor);
+
+      OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
       grid->accept(setConnsVisitor);
 
       grid->accept(bcVisitor);

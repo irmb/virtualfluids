@@ -275,8 +275,11 @@ void bflow(string configname)
 
 
       //set connectors
-      InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-      SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, k, iProcessor);
+      //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+      //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, k, iProcessor);
+      //grid->accept(setConnsVisitor);
+
+      OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
       grid->accept(setConnsVisitor);
 
       grid->accept(bcVisitor);
