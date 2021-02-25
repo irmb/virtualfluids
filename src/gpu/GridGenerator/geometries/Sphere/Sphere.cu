@@ -1,6 +1,7 @@
 #include "Sphere.h"
 
 #include <algorithm>    // std::min
+#include <float.h>
 
 #include "geometries/Vertex/Vertex.h"
 
