@@ -35,31 +35,31 @@ void calcCp(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	std::vector< double > cpBottom2Row;
 	//////////////////////////////////////////////////////////////////////////
 	//calc cp top
-	for (unsigned int it = 0; it < para->getParH(lev)->numberOfPointsCpTop; it++)
+	for (unsigned int it = 0; it < para->getParH((int)lev)->numberOfPointsCpTop; it++)
 	{
-		pressSI = (double)(para->getParH(lev)->cpPressTop[it] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio());
+		pressSI = (double)(para->getParH((int)lev)->cpPressTop[it] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio());
 		cp      = (double) (pressSI / (0.5 * rhoSI * veloSI * veloSI));
 		cpTopRow.push_back(cp);
 	}
-	para->getParH(lev)->cpTop.push_back(cpTopRow);
+	para->getParH((int)lev)->cpTop.push_back(cpTopRow);
 	//////////////////////////////////////////////////////////////////////////
 	//calc cp bottom
-	for (uint it = 0; it < para->getParH(lev)->numberOfPointsCpBottom; it++)
+	for (uint it = 0; it < para->getParH((int)lev)->numberOfPointsCpBottom; it++)
 	{
-		pressSI = (double)(para->getParH(lev)->cpPressBottom[it] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio());
+		pressSI = (double)(para->getParH((int)lev)->cpPressBottom[it] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio());
 		cp      = (double) (pressSI / (0.5 * rhoSI * veloSI * veloSI));
 		cpBottomRow.push_back(cp);
 	}
-	para->getParH(lev)->cpBottom.push_back(cpBottomRow);
+	para->getParH((int)lev)->cpBottom.push_back(cpBottomRow);
 	//////////////////////////////////////////////////////////////////////////
 	//calc cp bottom 2
-	for (uint it = 0; it < para->getParH(lev)->numberOfPointsCpBottom2; it++)
+	for (uint it = 0; it < para->getParH((int)lev)->numberOfPointsCpBottom2; it++)
 	{
-		pressSI = (double)(para->getParH(lev)->cpPressBottom2[it] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio());
+		pressSI = (double)(para->getParH((int)lev)->cpPressBottom2[it] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio());
 		cp      = (double) (pressSI / (0.5 * rhoSI * veloSI * veloSI));
 		cpBottom2Row.push_back(cp);
 	}
-	para->getParH(lev)->cpBottom2.push_back(cpBottom2Row);
+	para->getParH((int)lev)->cpBottom2.push_back(cpBottom2Row);
 	//////////////////////////////////////////////////////////////////////////
 }
 
@@ -79,7 +79,7 @@ void printCpTopIntermediateStep(Parameter* para, unsigned int t, int lev)
 	ostr.open(fname);
 	//////////////////////////////////////////////////////////////////////////
 	//fill file with data
-	for (vector< vector<double> >::const_iterator i = para->getParH(lev)->cpTop.begin(); i != para->getParH(lev)->cpTop.end(); ++i)
+	for (vector< vector<double> >::const_iterator i = para->getParH((int)lev)->cpTop.begin(); i != para->getParH((int)lev)->cpTop.end(); ++i)
 	{
 		for (vector<double>::const_iterator j = i->begin(); j != i->end(); ++j)
 		{
@@ -91,7 +91,7 @@ void printCpTopIntermediateStep(Parameter* para, unsigned int t, int lev)
 	//close file
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
-	para->getParH(lev)->cpTop.clear();
+	para->getParH((int)lev)->cpTop.clear();
 	//////////////////////////////////////////////////////////////////////////
 }
 
@@ -111,7 +111,7 @@ void printCpTop(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	ostr.open(fname);
 	//////////////////////////////////////////////////////////////////////////
 	//fill file with data
-	for (vector< vector<double> >::const_iterator i = para->getParH(lev)->cpTop.begin() ; i != para->getParH(lev)->cpTop.end(); ++i)
+	for (vector< vector<double> >::const_iterator i = para->getParH((int)lev)->cpTop.begin() ; i != para->getParH((int)lev)->cpTop.end(); ++i)
 	{
 		for (vector<double>::const_iterator j=i->begin(); j!=i->end(); ++j)
 		{
@@ -123,7 +123,7 @@ void printCpTop(Parameter* para, CudaMemoryManager* cudaManager, int lev)
 	//close file
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
-	para->getParH(lev)->cpTop.clear();
+	para->getParH((int)lev)->cpTop.clear();
 	cudaManager->cudaFreeCpTop(lev);
 	//////////////////////////////////////////////////////////////////////////
 }
@@ -147,7 +147,7 @@ void printCpBottom(Parameter* para, CudaMemoryManager* cudaManager)
 	ostr.open(fname);
 	//////////////////////////////////////////////////////////////////////////
 	//fill file with data
-	for (vector< vector<double> >::const_iterator i = para->getParH(lev)->cpBottom.begin() ; i != para->getParH(lev)->cpBottom.end(); ++i)
+	for (vector< vector<double> >::const_iterator i = para->getParH((int)lev)->cpBottom.begin() ; i != para->getParH((int)lev)->cpBottom.end(); ++i)
 	{
 		for (vector<double>::const_iterator j=i->begin(); j!=i->end(); ++j)
 		{
@@ -159,7 +159,7 @@ void printCpBottom(Parameter* para, CudaMemoryManager* cudaManager)
 	//close file
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
-	para->getParH(lev)->cpBottom.clear();
+	para->getParH((int)lev)->cpBottom.clear();
 	cudaManager->cudaFreeCpBottom(lev);
 	//////////////////////////////////////////////////////////////////////////
 }
@@ -183,7 +183,7 @@ void printCpBottom2(Parameter* para, CudaMemoryManager* cudaManager)
 	ostr.open(fname);
 	//////////////////////////////////////////////////////////////////////////
 	//fill file with data
-	for (vector< vector<double> >::const_iterator i = para->getParH(lev)->cpBottom2.begin() ; i != para->getParH(lev)->cpBottom2.end(); ++i)
+	for (vector< vector<double> >::const_iterator i = para->getParH((int)lev)->cpBottom2.begin() ; i != para->getParH((int)lev)->cpBottom2.end(); ++i)
 	{
 		for (vector<double>::const_iterator j=i->begin(); j!=i->end(); ++j)
 		{
@@ -195,7 +195,7 @@ void printCpBottom2(Parameter* para, CudaMemoryManager* cudaManager)
 	//close file
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
-	para->getParH(lev)->cpBottom2.clear();
+	para->getParH((int)lev)->cpBottom2.clear();
 	cudaManager->cudaFreeCpBottom2(lev);
 	//////////////////////////////////////////////////////////////////////////
 }
@@ -224,22 +224,22 @@ void printCpBottom2(Parameter* para, CudaMemoryManager* cudaManager)
 void excludeGridInterfaceNodesForMirror(Parameter* para, int lev)
 {
 	bool tempBool = true;
-	para->getParH(lev)->numberOfPointsPressWindow = 0;
+	para->getParH((int)lev)->numberOfPointsPressWindow = 0;
 	para->getParH(lev + 1)->numberOfPointsPressWindow = 0;
 	//////////////////////////////////////////////////////////////////////////
 	//define bool vector for nodes outside the interface
 	for (unsigned int it = 0; it < para->getParH(lev + 1)->numberOfPointsCpTop; it++)
 	{
-		for (unsigned int ifit = 0; ifit < para->getParH(lev)->K_CF; ifit++)
+		for (unsigned int ifit = 0; ifit < para->getParH((int)lev)->K_CF; ifit++)
 		{
-			if ((para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev)->intCF.ICellCFF[ifit]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborX_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborY_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]]) ||
-				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborY_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH(lev)->intCF.ICellCFF[ifit]]]]))
+			if ((para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH((int)lev)->intCF.ICellCFF[ifit]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborX_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborY_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborY_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]]) ||
+				(para->getParH(lev + 1)->cpTopIndex[it] == (int)para->getParH(lev + 1)->neighborZ_SP[para->getParH(lev + 1)->neighborY_SP[para->getParH(lev + 1)->neighborX_SP[para->getParH((int)lev)->intCF.ICellCFF[ifit]]]]))
 			{
 				para->getParH(lev + 1)->isOutsideInterface.push_back(false);
 				tempBool = false;
@@ -254,28 +254,28 @@ void excludeGridInterfaceNodesForMirror(Parameter* para, int lev)
 		tempBool = true;
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	for (unsigned int it = 0; it < para->getParH(lev)->numberOfPointsCpTop; it++)
+	for (unsigned int it = 0; it < para->getParH((int)lev)->numberOfPointsCpTop; it++)
 	{
-		for (unsigned int ifit = 0; ifit < para->getParH(lev)->K_FC; ifit++)
+		for (unsigned int ifit = 0; ifit < para->getParH((int)lev)->K_FC; ifit++)
 		{
-			if (para->getParH(lev)->cpTopIndex[it] == (int)para->getParH(lev)->intFC.ICellFCC[ifit])
+			if (para->getParH((int)lev)->cpTopIndex[it] == (int)para->getParH((int)lev)->intFC.ICellFCC[ifit])
 			{
-				para->getParH(lev)->isOutsideInterface.push_back(false);
+				para->getParH((int)lev)->isOutsideInterface.push_back(false);
 				tempBool = false;
 				break;
 			}
 		}
 		if (tempBool == true)
 		{
-			para->getParH(lev)->isOutsideInterface.push_back(true);
-			para->getParH(lev)->numberOfPointsPressWindow++;
+			para->getParH((int)lev)->isOutsideInterface.push_back(true);
+			para->getParH((int)lev)->numberOfPointsPressWindow++;
 		}
 		tempBool = true;
 	}
 	////////////////////////////////////////////////////////////////////////////
-	std::cout << "number of nodes cp top level 7:" << para->getParH(lev)->numberOfPointsCpTop << endl;
-	std::cout << "number of nodes bool level 7:" << para->getParH(lev)->isOutsideInterface.size() << endl;
-	std::cout << "number of nodes press window level 7:" << para->getParH(lev)->numberOfPointsPressWindow << endl;
+	std::cout << "number of nodes cp top level 7:" << para->getParH((int)lev)->numberOfPointsCpTop << endl;
+	std::cout << "number of nodes bool level 7:" << para->getParH((int)lev)->isOutsideInterface.size() << endl;
+	std::cout << "number of nodes press window level 7:" << para->getParH((int)lev)->numberOfPointsPressWindow << endl;
 	std::cout << "number of nodes cp top level 8:" << para->getParH(lev + 1)->numberOfPointsCpTop << endl;
 	std::cout << "number of nodes bool level 8:" << para->getParH(lev + 1)->isOutsideInterface.size() << endl;
 	std::cout << "number of nodes press window level 8:" << para->getParH(lev + 1)->numberOfPointsPressWindow << endl;
@@ -293,16 +293,16 @@ void calcPressForMirror(Parameter* para, CudaMemoryManager* cudaManager, int lev
 	double pressSI;
 	//////////////////////////////////////////////////////////////////////////
 	//calc press
-	for (unsigned int it = 0; it < para->getParH(lev)->numberOfPointsCpTop; it++)
+	for (unsigned int it = 0; it < para->getParH((int)lev)->numberOfPointsCpTop; it++)
 	{
-		if (para->getParH(lev)->isOutsideInterface[it])
+		if (para->getParH((int)lev)->isOutsideInterface[it])
 		{
-			pressSI = (double)(para->getParH(lev)->cpPressTop[it] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio());
-			para->getParH(lev)->pressMirror.push_back(pressSI);
+			pressSI = (double)(para->getParH((int)lev)->cpPressTop[it] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio());
+			para->getParH((int)lev)->pressMirror.push_back(pressSI);
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////
-	//std::cout << "number of nodes press mirror:" << para->getParH(lev)->pressMirror.size() << ", at level: " << lev << endl;
+	//std::cout << "number of nodes press mirror:" << para->getParH((int)lev)->pressMirror.size() << ", at level: " << lev << endl;
 }
 
 
@@ -386,7 +386,7 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
 	unsigned int non = 0;
 	for (size_t lev = startlevel; lev <= endlevel; lev++)
 	{
-		non += para->getParH(lev)->numberOfPointsPressWindow;
+		non += para->getParH((int)lev)->numberOfPointsPressWindow;
 	}
 	//////////////////////////////////////////////////////////////////////////
 
@@ -415,11 +415,11 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
         // X
         for (size_t lev = startlevel; lev <= endlevel; lev++)
         {
-            for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
+            for (unsigned int i = 0; i < para->getParH((int)lev)->numberOfPointsCpTop; i++)
             {
-                if (para->getParH(lev)->isOutsideInterface[i])
+                if (para->getParH((int)lev)->isOutsideInterface[i])
                 {
-                    ostr << (para->getParH(lev)->coordX_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0)) << std::endl;
+                    ostr << (para->getParH((int)lev)->coordX_SP[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0)) << std::endl;
                 }
             }
         }
@@ -427,11 +427,11 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
         // Y
         for (size_t lev = startlevel; lev <= endlevel; lev++)
         {
-            for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
+            for (unsigned int i = 0; i < para->getParH((int)lev)->numberOfPointsCpTop; i++)
             {
-                if (para->getParH(lev)->isOutsideInterface[i])
+                if (para->getParH((int)lev)->isOutsideInterface[i])
                 {
-                    ostr << (para->getParH(lev)->coordY_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(1) + para->getTranslateLBMtoSI().at(1)) << std::endl;
+                    ostr << (para->getParH((int)lev)->coordY_SP[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(1) + para->getTranslateLBMtoSI().at(1)) << std::endl;
                 }
             }
         }
@@ -439,11 +439,11 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
         // Z
         for (size_t lev = startlevel; lev <= endlevel; lev++)
         {
-            for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
+            for (unsigned int i = 0; i < para->getParH((int)lev)->numberOfPointsCpTop; i++)
             {
-                if (para->getParH(lev)->isOutsideInterface[i])
+                if (para->getParH((int)lev)->isOutsideInterface[i])
                 {
-                    ostr << (para->getParH(lev)->coordZ_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(2) + para->getTranslateLBMtoSI().at(2)) << std::endl;
+                    ostr << (para->getParH((int)lev)->coordZ_SP[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(2) + para->getTranslateLBMtoSI().at(2)) << std::endl;
                 }
             }
         }
@@ -453,7 +453,7 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
         unsigned int j = 0;
         for (size_t lev = startlevel; lev <= endlevel; lev++)
         {
-            for (size_t i = 0; i < para->getParH(lev)->numberOfPointsPressWindow; i++)
+            for (size_t i = 0; i < para->getParH((int)lev)->numberOfPointsPressWindow; i++)
             {
                 j++;
                 ostr << j << "\n";
@@ -485,11 +485,11 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
         // X
         for (size_t lev = startlevel; lev <= endlevel; lev++)
         {
-            for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
+            for (unsigned int i = 0; i < para->getParH((int)lev)->numberOfPointsCpTop; i++)
             {
-                if (para->getParH(lev)->isOutsideInterface[i])
+                if (para->getParH((int)lev)->isOutsideInterface[i])
                 {
-                    tempCoord = (para->getParH(lev)->coordX_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0));
+                    tempCoord = (para->getParH((int)lev)->coordX_SP[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(0) + para->getTranslateLBMtoSI().at(0));
                     writeFloatToFile(tempCoord, ostr);
                     tempX++;
                 }
@@ -500,11 +500,11 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
         // Y
         for (size_t lev = startlevel; lev <= endlevel; lev++)
         {
-            for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
+            for (unsigned int i = 0; i < para->getParH((int)lev)->numberOfPointsCpTop; i++)
             {
-                if (para->getParH(lev)->isOutsideInterface[i])
+                if (para->getParH((int)lev)->isOutsideInterface[i])
                 {
-                    tempCoord = (para->getParH(lev)->coordY_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(1) + para->getTranslateLBMtoSI().at(1));
+                    tempCoord = (para->getParH((int)lev)->coordY_SP[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(1) + para->getTranslateLBMtoSI().at(1));
                     writeFloatToFile(tempCoord, ostr);
                 }
             }
@@ -513,11 +513,11 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
         // Z
         for (size_t lev = startlevel; lev <= endlevel; lev++)
         {
-            for (unsigned int i = 0; i < para->getParH(lev)->numberOfPointsCpTop; i++)
+            for (unsigned int i = 0; i < para->getParH((int)lev)->numberOfPointsCpTop; i++)
             {
-                if (para->getParH(lev)->isOutsideInterface[i])
+                if (para->getParH((int)lev)->isOutsideInterface[i])
                 {
-                    tempCoord = (para->getParH(lev)->coordZ_SP[para->getParH(lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(2) + para->getTranslateLBMtoSI().at(2));
+                    tempCoord = (para->getParH((int)lev)->coordZ_SP[para->getParH((int)lev)->cpTopIndex[i]] * para->getScaleLBMtoSI().at(2) + para->getTranslateLBMtoSI().at(2));
                     writeFloatToFile(tempCoord, ostr);
                 }
             }
@@ -529,12 +529,12 @@ extern "C" void printGeoFile(Parameter* para, bool fileFormat)
         unsigned int j = 0;
         for (size_t lev = startlevel; lev <= endlevel; lev++)
         {
-            for (size_t i = 0; i < para->getParH(lev)->numberOfPointsPressWindow; i++)
+            for (size_t i = 0; i < para->getParH((int)lev)->numberOfPointsPressWindow; i++)
             {
                 j++;
                 writeIntToFile(j, ostr);
             }
-            //std::cout << "level: " << lev << ", numberOfPointsPressWindow:" << para->getParH(lev)->numberOfPointsPressWindow << endl;
+            //std::cout << "level: " << lev << ", numberOfPointsPressWindow:" << para->getParH((int)lev)->numberOfPointsPressWindow << endl;
         }
         ostr.close();
     }
@@ -572,7 +572,7 @@ extern "C" void printScalars(Parameter* para, bool fileFormat)
         //fill file with data
         for (size_t lev = startlevel; lev <= endlevel; lev++)
         {
-            for (vector<double>::const_iterator i = para->getParH(lev)->pressMirror.begin(); i != para->getParH(lev)->pressMirror.end(); ++i)
+            for (vector<double>::const_iterator i = para->getParH((int)lev)->pressMirror.begin(); i != para->getParH((int)lev)->pressMirror.end(); ++i)
             {
                 ostr << *i << "\n";
             }
@@ -581,7 +581,7 @@ extern "C" void printScalars(Parameter* para, bool fileFormat)
         //////////////////////////////////////////////////////////////////////////
         for (size_t lev = startlevel; lev <= endlevel; lev++)
         {
-            para->getParH(lev)->pressMirror.clear();
+            para->getParH((int)lev)->pressMirror.clear();
         } 
     }  
     else //Binary:
@@ -598,7 +598,7 @@ extern "C" void printScalars(Parameter* para, bool fileFormat)
         //fill file with data
         for (size_t lev = startlevel; lev <= endlevel; lev++)
         {
-            for (vector<double>::const_iterator i = para->getParH(lev)->pressMirror.begin(); i != para->getParH(lev)->pressMirror.end(); ++i)
+            for (vector<double>::const_iterator i = para->getParH((int)lev)->pressMirror.begin(); i != para->getParH((int)lev)->pressMirror.end(); ++i)
             {
                 writeFloatToFile(*i, ostr);
             }
@@ -607,7 +607,7 @@ extern "C" void printScalars(Parameter* para, bool fileFormat)
         //////////////////////////////////////////////////////////////////////////
         for (size_t lev = startlevel; lev <= endlevel; lev++)
         {
-            para->getParH(lev)->pressMirror.clear();
+            para->getParH((int)lev)->pressMirror.clear();
         }
     }
 }

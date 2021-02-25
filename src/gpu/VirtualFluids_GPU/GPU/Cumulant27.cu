@@ -4023,7 +4023,7 @@ extern "C" __global__ void LB_Kernel_Kum_New_SP_27(     real omega,
 			real mxxMzz	   = mfcaa - mfaac;
 			
 			//////////////////////////////////////////////////////////////////////////
-			real magicBulk=(CUMacc+CUMcac+CUMcca)*(c1o1/OxxPyyPzz-c1o2)*c3o2*8.;
+			//real magicBulk=(CUMacc+CUMcac+CUMcca)*(c1o1/OxxPyyPzz-c1o2)*c3o2*8.;
 
 			//////////////////////////////////////////////////////////////////////////
 			//limiter-Scheise Teil 1

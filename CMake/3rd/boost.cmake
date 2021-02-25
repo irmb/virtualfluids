@@ -30,10 +30,8 @@ function(linkBoost)
     if(DEFINED ARG_COMPONENTS)
         find_package( Boost REQUIRED COMPONENTS ${ARG_COMPONENTS})
         target_link_libraries(${library_name} PRIVATE ${Boost_LIBRARIES})
-        message("here")
     else()
         find_package( Boost REQUIRED)
-        message("or here")
     endif()
 
 

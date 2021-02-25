@@ -472,9 +472,9 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 									////////////////////////////////////////////////////////////
 									//3.
 									//////////////////////////////
-			real OxyyPxzz = c8o1*(-c2o1 + omega)*(c1o1 + c2o1*omega) / (-c8o1 - c14o1*omega + c7o1*omega*omega);//one;
-			real OxyyMxzz = c8o1*(-c2o1 + omega)*(-c7o1 + c4o1*omega) / (c56o1 - c50o1*omega + c9o1*omega*omega);//one;
-			real Oxyz = c24o1*(-c2o1 + omega)*(-c2o1 - c7o1*omega + c3o1*omega*omega) / (c48o1 + c152o1*omega - c130o1*omega*omega + c29o1*omega*omega*omega);//one;
+			//real OxyyPxzz = c8o1*(-c2o1 + omega)*(c1o1 + c2o1*omega) / (-c8o1 - c14o1*omega + c7o1*omega*omega);//one;
+			//real OxyyMxzz = c8o1*(-c2o1 + omega)*(-c7o1 + c4o1*omega) / (c56o1 - c50o1*omega + c9o1*omega*omega);//one;
+			//real Oxyz = c24o1*(-c2o1 + omega)*(-c2o1 - c7o1*omega + c3o1*omega*omega) / (c48o1 + c152o1*omega - c130o1*omega*omega + c29o1*omega*omega*omega);//one;
 																																										  ////////////////////////////////////////////////////////////
 			//central moments to cumulants
 			//4.

@@ -109,7 +109,7 @@ CUDA_HOST int Sphere::getIntersection(const Vertex & point, const Vertex & direc
     real q = ( relativePoint.x * relativePoint.x
              + relativePoint.y * relativePoint.y
              + relativePoint.z * relativePoint.z
-             - this->radius    * this->radius )
+             - (real)this->radius * (real)this->radius )
            / directionSquare;
 
     real discriminant = 0.25 * p * p - q;
@@ -122,8 +122,10 @@ CUDA_HOST int Sphere::getIntersection(const Vertex & point, const Vertex & direc
 
     if( result1 < 0.0 && result2 < 0.0 ) return 1;
 
-    if( result1 < 0.0 ) result1 = 1e99;
-    if( result2 < 0.0 ) result2 = 1e99;
+    if (result1 < 0.0)
+        result1 = (real)FLT_MAX;
+    if (result2 < 0.0)
+        result2 = (real)FLT_MAX;
 
     real t = std::min( result1, result2 );
 

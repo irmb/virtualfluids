@@ -315,9 +315,9 @@ void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indi
         {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) +1;  
 
-            vx[allIndicesCounter] = (uint)boundaryCondition->getVx(i);
-            vy[allIndicesCounter] = (uint)boundaryCondition->getVy(i);
-            vz[allIndicesCounter] = (uint)boundaryCondition->getVz(i);
+            vx[allIndicesCounter] = (uint)boundaryCondition->getVx((uint)i);
+            vy[allIndicesCounter] = (uint)boundaryCondition->getVy((uint)i);
+            vz[allIndicesCounter] = (uint)boundaryCondition->getVz((uint)i);
             allIndicesCounter++;
         }
     }
