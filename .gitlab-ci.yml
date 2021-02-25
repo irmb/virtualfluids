@@ -127,7 +127,7 @@ msvc_16:
     - cd $CI_PROJECT_DIR
     - md -force $env:BUILD_FOLDER
     - cd $env:BUILD_FOLDER
-    - cmake .. --preset=all_msvc
+    - cmake .. --preset=all_msvc -DBUILD_WARNINGS_AS_ERRORS=ON
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
 
   cache:

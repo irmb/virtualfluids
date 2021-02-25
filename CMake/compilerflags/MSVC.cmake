@@ -31,6 +31,12 @@ list(APPEND CS_COMPILER_FLAGS_CXX "/wd4100") # unreferenced formal parameter
 list(APPEND CS_COMPILER_FLAGS_CXX "/wd4324")
 list(APPEND CS_COMPILER_FLAGS_CXX "/wd4201")
 
+
+if(BUILD_WARNINGS_AS_ERRORS)
+    list(APPEND CS_COMPILER_FLAGS_CXX "/WX")
+endif()
+
+
 #############################################################################################################
 # preprocessor definitions
 #############################################################################################################
