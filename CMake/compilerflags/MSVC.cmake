@@ -28,8 +28,8 @@ list(APPEND CS_COMPILER_FLAGS_CXX "/wd4005") # disable macro redefinition (trigg
 
 list(APPEND CS_COMPILER_FLAGS_CXX "/wd26812") # disable the enum type is unscoped
 list(APPEND CS_COMPILER_FLAGS_CXX "/wd4100") # unreferenced formal parameter
-list(APPEND CS_COMPILER_FLAGS_CXX "/wd4324")
-list(APPEND CS_COMPILER_FLAGS_CXX "/wd4201")
+list(APPEND CS_COMPILER_FLAGS_CXX "/wd4324") # structure was padded
+list(APPEND CS_COMPILER_FLAGS_CXX "/wd4201") # nonstandard extension used : nameless struct/union
 
 
 if(BUILD_WARNINGS_AS_ERRORS)
