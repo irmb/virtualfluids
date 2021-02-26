@@ -28,6 +28,7 @@ stages:
       - $BUILD_FOLDER
 
   artifacts:
+    expire_in: 1 hrs
     paths:
       - $BUILD_FOLDER
 
@@ -164,6 +165,7 @@ msvc_16:
       - $CI_PROJECT_DIR/$env:BUILD_FOLDER/
 
   artifacts:
+    expire_in: 1 hrs
     paths:
       - $CI_PROJECT_DIR/$env:BUILD_FOLDER/
 
@@ -202,6 +204,7 @@ gcc_9_python:
       - $BUILD_FOLDER
 
   artifacts:
+    expire_in: 1 hrs
     paths:
       - build/
       - dist/
