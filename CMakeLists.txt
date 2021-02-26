@@ -103,12 +103,15 @@ if(BUILD_VF_GPU)
         message(FATAL_ERROR "CUDA Compiler was requested but is not found on the system.")
     endif()
 
-    if(NOT MSVC) 
+    if(MSVC) 
         # With the MSVC compiler we got this warning: nvcc : The -std=c++14 flag is not supported with the configured host compiler. Flag will be ignored.
-        # But we build the c++ code with C++14. Until we have not a solution here, we are not setting this on MSVC.
+        # But we build the c++ code with C++14. Until we have not a solution here, we set the standard to 11 here.
+        set(CMAKE_CUDA_STANDARD 11)
+    else()
         set(CMAKE_CUDA_STANDARD 14)
-        set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
     endif()
+
+    set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
 
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcudafe --display_error_number")
 
