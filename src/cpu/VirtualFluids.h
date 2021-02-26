@@ -139,16 +139,16 @@
 #include <BoundaryConditions/MultiphaseVelocityBCAlgorithm.h>
 
 #include <Connectors/Block3DConnector.h>
-#include <Connectors/Block3DConnectorFactory.h>
-#include <Connectors/CoarseToFineBlock3DConnector.h>
-#include <Connectors/CoarseToFineNodeSetBlock3DConnector.h>
-#include <Connectors/ConnectorFactory.h>
+//#include <Connectors/Block3DConnectorFactory.h>
+//#include <Connectors/CoarseToFineBlock3DConnector.h>
+//#include <Connectors/CoarseToFineNodeSetBlock3DConnector.h>
+//#include <Connectors/ConnectorFactory.h>
 #include <Connectors/D3Q27ETCFOffVectorConnector.h>
 #include <Connectors/D3Q27ETFCOffVectorConnector.h>
 #include <Connectors/D3Q27ETFullDirectConnector.h>
 #include <Connectors/D3Q27ETFullVectorConnector.h>
-#include <Connectors/FineToCoarseBlock3DConnector.h>
-#include <Connectors/FineToCoarseNodeSetBlock3DConnector.h>
+//#include <Connectors/FineToCoarseBlock3DConnector.h>
+//#include <Connectors/FineToCoarseNodeSetBlock3DConnector.h>
 #include <Connectors/LocalBlock3DConnector.h>
 #include <Connectors/RemoteBlock3DConnector.h>
 #include <Connectors/TwoDistributionsFullDirectConnector.h>
@@ -299,7 +299,7 @@
 #include <Visitors/BoundaryConditionsBlockVisitor.h>
 #include <Visitors/ChangeBoundaryDensityBlockVisitor.h>
 #include <Visitors/CoarsenCrossAndInsideGbObjectBlockVisitor.h>
-#include <Visitors/ConnectorBlockVisitor.h>
+//#include <Visitors/ConnectorBlockVisitor.h>
 #include <Visitors/CreateTransmittersHelper.h>
 #include <Visitors/GenBlocksGridVisitor.h>
 #include <Visitors/Grid3DVisitor.h>
