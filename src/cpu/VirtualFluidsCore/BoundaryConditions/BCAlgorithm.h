@@ -56,17 +56,17 @@ public:
     static const char ThinWallNoSlipBCAlgorithm                    = 6;
     static const char VelocityWithDensityBCAlgorithm               = 7;
     static const char NonReflectingOutflowBCAlgorithm              = 8;
-    static const char VelocityAndThixotropyBCAlgorithm             = 9;
-    static const char DensityAndThixotropyBCAlgorithm              = 10;
-    static const char NoSlipAndThixotropyBCAlgorithm               = 11;
-    static const char NonReflectingOutflowAndThixotropyBCAlgorithm = 12;
-    static const char VelocityWithDensityAndThixotropyBCAlgorithm  = 13;
-    static const char BinghamModelNoSlipBCAlgorithm                = 14;
-    static const char HerschelBulkleyModelNoSlipBCAlgorithm        = 15;
+    static const char ThixotropyVelocityBCAlgorithm             = 9;
+    static const char ThixotropyDensityBCAlgorithm              = 10;
+    static const char ThixotropyNoSlipBCAlgorithm               = 11;
+    static const char ThixotropyNonReflectingOutflowBCAlgorithm = 12;
+    static const char ThixotropyVelocityWithDensityBCAlgorithm  = 13;
+    static const char RheologyBinghamModelNoSlipBCAlgorithm                = 14;
+    static const char RheologyHerschelBulkleyModelNoSlipBCAlgorithm        = 15;
     static const char SimpleVelocityBCAlgorithm                    = 16;
     static const char SimpleSlipBCAlgorithm                        = 17;
-    static const char PowellEyringModelNoSlipBCAlgorithm           = 18;
-    static const char BinghamModelVelocityBCAlgorithm              = 19;
+    static const char RheologyPowellEyringModelNoSlipBCAlgorithm           = 18;
+    static const char RheologyBinghamModelVelocityBCAlgorithm              = 19;
     static const char MultiphaseNoSlipBCAlgorithm                  = 20;
 
 

@@ -26,65 +26,54 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file RheologyK17LBMKernel.h
-//! \ingroup LBM
+//! \file RheologyVelocityBCAlgorithm.cpp
+//! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
+#include "RheologyVelocityBCAlgorithm.h"
+#include "DistributionArray3D.h"
+#include "BoundaryConditions.h"
 
-#ifndef RheologyK17LBMKernel_h__
-#define RheologyK17LBMKernel_h__
-
-#include "LBMKernel.h"
-#include "BCProcessor.h"
-#include "D3Q27System.h"
-#include "basics/utilities/UbTiming.h"
-#include "basics/container/CbArray4D.h"
-#include "basics/container/CbArray3D.h"
-
-//! \brief   compressible cumulant LBM kernel with rheological properties of shear and bulk viscosity for non-Newtonian fluids.
-//! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
-//! \author  K. Kutscher, M. Geier
-class RheologyK17LBMKernel :  public LBMKernel
+RheologyVelocityBCAlgorithm::RheologyVelocityBCAlgorithm()
 {
-public:
-   //! This option set relaxation parameter: NORMAL  
-   enum Parameter{NORMAL, MAGIC};
-public:
-   RheologyK17LBMKernel();
-   virtual ~RheologyK17LBMKernel(void);
-   virtual void calculate(int step) override;
-   virtual SPtr<LBMKernel> clone() override;
-   double getCalculationTime() override;
-   //! The value should not be equal to a shear viscosity
-   void setBulkViscosity(LBMReal value);
-protected:
-   virtual void initDataSet();
+   //BCAlgorithm::type = BCAlgorithm::RheologyVelocityBCAlgorithm;
+   //BCAlgorithm::preCollision = false;
+}
+//////////////////////////////////////////////////////////////////////////
+RheologyVelocityBCAlgorithm::~RheologyVelocityBCAlgorithm()
+{
+}
+//////////////////////////////////////////////////////////////////////////
+void RheologyVelocityBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
+{
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
+void RheologyVelocityBCAlgorithm::applyBC()
+{
+   LBMReal f[D3Q27System::ENDF+1];
+   LBMReal feq[D3Q27System::ENDF+1];
+   distributions->getDistributionInv(f, x1, x2, x3);
+   LBMReal rho, vx1, vx2, vx3, drho;
+   calcMacrosFct(f, drho, vx1, vx2, vx3);
+   calcFeqFct(feq, drho, vx1, vx2, vx3);
 
-   virtual LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const
+    LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
+    LBMReal collFactorF = getRheologyCollFactor(collFactor, shearRate, drho);
+
+    rho = 1.0+drho*compressibleFactor;
+
+   for (int fdir = D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
    {
-       UB_THROW(UbException("LBMReal getRheologyCollFactor() - belongs in the derived class"));
+      if (bcPtr->hasVelocityBoundaryFlag(fdir))
+      {
+         const int invDir = D3Q27System::INVDIR[fdir];
+         LBMReal q = bcPtr->getQ(invDir);// m+m q=0 stabiler
+         LBMReal velocity = bcPtr->getBoundaryVelocity(invDir);
+         LBMReal fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactorF)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity*rho)/(1.0+q));
+         distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
+      }
    }
 
-   LBMReal f[D3Q27System::ENDF+1];
-
-   UbTimer timer;
-
-   CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-   CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-   CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
-
-   mu::value_type muX1,muX2,muX3;
-   mu::value_type muDeltaT;
-   mu::value_type muNu;
-   LBMReal forcingX1;
-   LBMReal forcingX2;
-   LBMReal forcingX3;
-   
-   // bulk viscosity
-   LBMReal OxxPyyPzz; //omega2 (bulk viscosity)
-   LBMReal bulkViscosity;
-
-};
-#endif // RheologyK17LBMKernel_h__
-
+}
 

@@ -26,24 +26,24 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file ThixotropyInterpolationProcessor.h
-//! \ingroup BoundarConditions
+//! \file RheologyInterpolationProcessor.h
+//! \ingroup LBM
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef ThixotropyInterpolationProcessor_H_
-#define ThixotropyInterpolationProcessor_H_
+#ifndef RheologyInterpolationProcessor_H_
+#define RheologyInterpolationProcessor_H_
 
 #include "InterpolationProcessor.h"
 #include "D3Q27System.h"
 
 //! \brief A class implements an interpolation function of grid refinement for thixotropic fluid.
 
-class ThixotropyInterpolationProcessor : public InterpolationProcessor
+class RheologyInterpolationProcessor : public InterpolationProcessor
 {
 public:
-   ThixotropyInterpolationProcessor();
-   ThixotropyInterpolationProcessor(LBMReal omegaC, LBMReal omegaF, LBMReal omegaMin);
-   virtual ~ThixotropyInterpolationProcessor();
+   RheologyInterpolationProcessor();
+   RheologyInterpolationProcessor(LBMReal omegaC, LBMReal omegaF, LBMReal omegaMin);
+   virtual ~RheologyInterpolationProcessor();
    InterpolationProcessorPtr clone();
    void setOmegas(LBMReal omegaC, LBMReal omegaF);
    void setOmegaMin(LBMReal omegaMin);
@@ -94,12 +94,12 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-inline void ThixotropyInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF)
+inline void RheologyInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF)
 {
    this->interpolateCoarseToFine(icellC, icellF, 0.0, 0.0, 0.0);
 }
 //////////////////////////////////////////////////////////////////////////
-inline void ThixotropyInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC)
+inline void RheologyInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC)
 {
    this->interpolateFineToCoarse(icellF, icellC, 0.0, 0.0, 0.0);
 }

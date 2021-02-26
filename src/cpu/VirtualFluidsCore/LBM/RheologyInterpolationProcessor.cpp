@@ -26,51 +26,51 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file ThixotropyInterpolationProcessor.cpp
-//! \ingroup BoundarConditions
+//! \file RheologyInterpolationProcessor.cpp
+//! \ingroup LBM
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#include "ThixotropyInterpolationProcessor.h"
+#include "RheologyInterpolationProcessor.h"
 #include "D3Q27System.h"
-#include "Thixotropy.h"
+#include "Rheology.h"
 
 
-ThixotropyInterpolationProcessor::ThixotropyInterpolationProcessor()
+RheologyInterpolationProcessor::RheologyInterpolationProcessor()
    : omegaC(0.0), omegaF(0.0), omegaMin(0.0)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-ThixotropyInterpolationProcessor::ThixotropyInterpolationProcessor(LBMReal omegaC, LBMReal omegaF, LBMReal omegaMin)
+RheologyInterpolationProcessor::RheologyInterpolationProcessor(LBMReal omegaC, LBMReal omegaF, LBMReal omegaMin)
    : omegaC(omegaC), omegaF(omegaF), omegaMin(omegaMin)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-ThixotropyInterpolationProcessor::~ThixotropyInterpolationProcessor()
+RheologyInterpolationProcessor::~RheologyInterpolationProcessor()
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-InterpolationProcessorPtr ThixotropyInterpolationProcessor::clone()
+InterpolationProcessorPtr RheologyInterpolationProcessor::clone()
 {
-   InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new ThixotropyInterpolationProcessor(this->omegaC, this->omegaF, this->omegaMin));
+   InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new RheologyInterpolationProcessor(this->omegaC, this->omegaF, this->omegaMin));
    return iproc;
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyInterpolationProcessor::setOmegas( LBMReal omegaC, LBMReal omegaF )
+void RheologyInterpolationProcessor::setOmegas( LBMReal omegaC, LBMReal omegaF )
 {
    this->omegaC = omegaC;
    this->omegaF = omegaF;
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyInterpolationProcessor::setOmegaMin( LBMReal omegaMin )
+void RheologyInterpolationProcessor::setOmegaMin( LBMReal omegaMin )
 {
    this->omegaMin = omegaMin;
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyInterpolationProcessor::setOffsets(LBMReal xoff, LBMReal yoff, LBMReal zoff)
+void RheologyInterpolationProcessor::setOffsets(LBMReal xoff, LBMReal yoff, LBMReal zoff)
 {
    this->xoff = xoff;
    this->yoff = yoff;
@@ -80,7 +80,7 @@ void ThixotropyInterpolationProcessor::setOffsets(LBMReal xoff, LBMReal yoff, LB
    this->zoff_sq = zoff * zoff;
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, LBMReal xoff, LBMReal yoff, LBMReal zoff)
+void RheologyInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, LBMReal xoff, LBMReal yoff, LBMReal zoff)
 {
     setOffsets(xoff, yoff, zoff);
     calcInterpolatedCoefficiets_intern(icellC, omegaC, 0.5, 0.25, -0.25, -0.25, -1, -1, -1);
@@ -101,14 +101,14 @@ void ThixotropyInterpolationProcessor::interpolateCoarseToFine(D3Q27ICell& icell
     calcInterpolatedNode(icellF.TNE, /*omegaF,*/  0.25,  0.25,  0.25, calcPressTNE(),  1,  1,  1);
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC, LBMReal xoff, LBMReal yoff, LBMReal zoff)
+void RheologyInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC, LBMReal xoff, LBMReal yoff, LBMReal zoff)
 {
    setOffsets(xoff, yoff, zoff);
     calcInterpolatedCoefficiets_intern(icellF, omegaF, 2.0, 0, 0, 0, 0, 0, 0);
    calcInterpolatedNodeFC(icellC, omegaC);
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyInterpolationProcessor::calcMoments(const LBMReal* const f, LBMReal omegaInf, LBMReal& press, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3, LBMReal& kxy, LBMReal& kyz, LBMReal& kxz, LBMReal& kxxMyy, LBMReal& kxxMzz)
+void RheologyInterpolationProcessor::calcMoments(const LBMReal* const f, LBMReal omegaInf, LBMReal& press, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3, LBMReal& kxy, LBMReal& kyz, LBMReal& kxz, LBMReal& kxxMyy, LBMReal& kxxMzz)
 {
    using namespace D3Q27System;
 
@@ -117,7 +117,7 @@ void ThixotropyInterpolationProcessor::calcMoments(const LBMReal* const f, LBMRe
 
    shearRate = D3Q27System::getShearRate(f, omegaInf);
 
-   LBMReal omega = Thixotropy::getHerschelBulkleyCollFactor(omegaInf, shearRate, rho);
+   LBMReal omega = Rheology::getHerschelBulkleyCollFactor(omegaInf, shearRate, rho);
 
    press = rho; //interpolate rho!
 
@@ -128,7 +128,7 @@ void ThixotropyInterpolationProcessor::calcMoments(const LBMReal* const f, LBMRe
    kxxMzz = -3./2.*omega*((((f[NW]+f[SE])-(f[BS]+f[TN]))+((f[SW]+f[NE])-(f[TS]+f[BN])))+((f[W]+f[E])-(f[B]+f[T]))-(vx1*vx1-vx3*vx3));
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyInterpolationProcessor::calcInterpolatedCoefficiets_intern(const D3Q27ICell& icell,
+void RheologyInterpolationProcessor::calcInterpolatedCoefficiets_intern(const D3Q27ICell& icell,
                                                                           LBMReal omega,
                                                                           LBMReal eps_new,
                                                                           LBMReal x,
@@ -320,7 +320,7 @@ void ThixotropyInterpolationProcessor::calcInterpolatedCoefficiets_intern(const 
    shearRate = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
 
 
-   LBMReal o = Thixotropy::getHerschelBulkleyCollFactorBackward(shearRate, rho); //omega;
+   LBMReal o = Rheology::getHerschelBulkleyCollFactorBackward(shearRate, rho); //omega;
 
    if (o < omegaMin)
       o = omegaMin;
@@ -431,7 +431,7 @@ void ThixotropyInterpolationProcessor::calcInterpolatedCoefficiets_intern(const 
    yz_TNW =   0.0625*eps_new *((                bxyz +     cxyz)/(72.*o));
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyInterpolationProcessor::calcInterpolatedNode(LBMReal* f, /*LBMReal omega,*/ LBMReal x, LBMReal y, LBMReal z, LBMReal press, LBMReal xs, LBMReal ys, LBMReal zs)
+void RheologyInterpolationProcessor::calcInterpolatedNode(LBMReal* f, /*LBMReal omega,*/ LBMReal x, LBMReal y, LBMReal z, LBMReal press, LBMReal xs, LBMReal ys, LBMReal zs)
 {
    using namespace D3Q27System;
 
@@ -473,7 +473,7 @@ void ThixotropyInterpolationProcessor::calcInterpolatedNode(LBMReal* f, /*LBMRea
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWB -0.25, -0.25, -0.25
-LBMReal ThixotropyInterpolationProcessor::calcPressBSW()
+LBMReal RheologyInterpolationProcessor::calcPressBSW()
 {
    return   press_SWT * (0.140625 + 0.1875 * xoff + 0.1875 * yoff - 0.5625 * zoff) +
       press_NWT * (0.046875 + 0.0625 * xoff - 0.1875 * yoff - 0.1875 * zoff) +
@@ -486,7 +486,7 @@ LBMReal ThixotropyInterpolationProcessor::calcPressBSW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SWT -0.25, -0.25, 0.25
-LBMReal ThixotropyInterpolationProcessor::calcPressTSW()
+LBMReal RheologyInterpolationProcessor::calcPressTSW()
 {
    return   press_SWT * (0.421875 + 0.5625 * xoff + 0.5625 * yoff - 0.5625 * zoff) +
       press_NWT * (0.140625 + 0.1875 * xoff - 0.5625 * yoff - 0.1875 * zoff) +
@@ -499,7 +499,7 @@ LBMReal ThixotropyInterpolationProcessor::calcPressTSW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SET 0.25, -0.25, 0.25
-LBMReal ThixotropyInterpolationProcessor::calcPressTSE()
+LBMReal RheologyInterpolationProcessor::calcPressTSE()
 {
    return   press_SET * (0.421875 - 0.5625 * xoff + 0.5625 * yoff - 0.5625 * zoff) +
       press_NET * (0.140625 - 0.1875 * xoff - 0.5625 * yoff - 0.1875 * zoff) +
@@ -512,7 +512,7 @@ LBMReal ThixotropyInterpolationProcessor::calcPressTSE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position SEB 0.25, -0.25, -0.25
-LBMReal ThixotropyInterpolationProcessor::calcPressBSE()
+LBMReal RheologyInterpolationProcessor::calcPressBSE()
 {
    return   press_SET * (0.140625 - 0.1875 * xoff + 0.1875 * yoff - 0.5625 * zoff) +
       press_NET * (0.046875 - 0.0625 * xoff - 0.1875 * yoff - 0.1875 * zoff) +
@@ -525,7 +525,7 @@ LBMReal ThixotropyInterpolationProcessor::calcPressBSE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NWB -0.25, 0.25, -0.25
-LBMReal ThixotropyInterpolationProcessor::calcPressBNW()
+LBMReal RheologyInterpolationProcessor::calcPressBNW()
 {
    return   press_NWT * (0.140625 + 0.1875 * xoff - 0.1875 * yoff - 0.5625 * zoff) +
       press_NET * (0.046875 - 0.1875 * xoff - 0.0625 * yoff - 0.1875 * zoff) +
@@ -538,7 +538,7 @@ LBMReal ThixotropyInterpolationProcessor::calcPressBNW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NWT -0.25, 0.25, 0.25
-LBMReal ThixotropyInterpolationProcessor::calcPressTNW()
+LBMReal RheologyInterpolationProcessor::calcPressTNW()
 {
    return   press_NWT * (0.421875 + 0.5625 * xoff - 0.5625 * yoff - 0.5625 * zoff) +
       press_NET * (0.140625 - 0.5625 * xoff - 0.1875 * yoff - 0.1875 * zoff) +
@@ -551,7 +551,7 @@ LBMReal ThixotropyInterpolationProcessor::calcPressTNW()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NET 0.25, 0.25, 0.25
-LBMReal ThixotropyInterpolationProcessor::calcPressTNE()
+LBMReal RheologyInterpolationProcessor::calcPressTNE()
 {
    return   press_NET * (0.421875 - 0.5625 * xoff - 0.5625 * yoff - 0.5625 * zoff) +
       press_NWT * (0.140625 + 0.5625 * xoff - 0.1875 * yoff - 0.1875 * zoff) +
@@ -564,7 +564,7 @@ LBMReal ThixotropyInterpolationProcessor::calcPressTNE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position NEB 0.25, 0.25, -0.25
-LBMReal ThixotropyInterpolationProcessor::calcPressBNE()
+LBMReal RheologyInterpolationProcessor::calcPressBNE()
 {
    return   press_NET * (0.140625 - 0.1875 * xoff - 0.1875 * yoff - 0.5625 * zoff) +
       press_NWT * (0.046875 + 0.1875 * xoff - 0.0625 * yoff - 0.1875 * zoff) +
@@ -577,7 +577,7 @@ LBMReal ThixotropyInterpolationProcessor::calcPressBNE()
 }
 //////////////////////////////////////////////////////////////////////////
 //Position C 0.0, 0.0, 0.0
-void ThixotropyInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f, LBMReal omega)
+void RheologyInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f, LBMReal omega)
 {
    using namespace D3Q27System;
 
@@ -612,7 +612,7 @@ void ThixotropyInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f, LBMRea
    shearRate = sqrt(dxux * dxux + dyuy * dyuy + dzuz * dzuz + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
 
 
-   LBMReal o = Thixotropy::getHerschelBulkleyCollFactorBackward(shearRate, rho); //omega;
+   LBMReal o = Rheology::getHerschelBulkleyCollFactorBackward(shearRate, rho); //omega;
 
    if (o < omegaMin)
       o = omegaMin;
@@ -661,14 +661,14 @@ void ThixotropyInterpolationProcessor::calcInterpolatedNodeFC(LBMReal* f, LBMRea
    f[REST] = f_ZERO + feq[REST];
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyInterpolationProcessor::calcInterpolatedVelocity(LBMReal x, LBMReal y, LBMReal z, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3)
+void RheologyInterpolationProcessor::calcInterpolatedVelocity(LBMReal x, LBMReal y, LBMReal z, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3)
 {
 	vx1  = a0 + ax*x + ay*y + az*z + axx*x*x + ayy*y*y + azz*z*z + axy*x*y + axz*x*z + ayz*y*z+axyz*x*y*z;
 	vx2  = b0 + bx*x + by*y + bz*z + bxx*x*x + byy*y*y + bzz*z*z + bxy*x*y + bxz*x*z + byz*y*z+bxyz*x*y*z;
 	vx3  = c0 + cx*x + cy*y + cz*z + cxx*x*x + cyy*y*y + czz*z*z + cxy*x*y + cxz*x*z + cyz*y*z+cxyz*x*y*z;
 }
 //////////////////////////////////////////////////////////////////////////
-void ThixotropyInterpolationProcessor::calcInterpolatedShearStress(LBMReal x, LBMReal y, LBMReal z,LBMReal& tauxx, LBMReal& tauyy, LBMReal& tauzz,LBMReal& tauxy, LBMReal& tauxz, LBMReal& tauyz)
+void RheologyInterpolationProcessor::calcInterpolatedShearStress(LBMReal x, LBMReal y, LBMReal z,LBMReal& tauxx, LBMReal& tauyy, LBMReal& tauzz,LBMReal& tauxy, LBMReal& tauxz, LBMReal& tauyz)
 {
 	tauxx=ax+2*axx*x+axy*y+axz*z+axyz*y*z;
 	tauyy=by+2*byy*y+bxy*x+byz*z+bxyz*x*z;

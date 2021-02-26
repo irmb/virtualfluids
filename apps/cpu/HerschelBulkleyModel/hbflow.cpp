@@ -120,7 +120,7 @@ void bflow(string configname)
       double c = 10; // 1.0 / 6.0;
       double mu0 = 1e-4;
 
-      SPtr<Thixotropy> thix = Thixotropy::getInstance();
+      SPtr<Rheology> thix = Rheology::getInstance();
       //Herschel-Bulkley
       thix->setPowerIndex(n);
       thix->setViscosityParameter(k);
@@ -131,9 +131,9 @@ void bflow(string configname)
       thix->setMu0(mu0);
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new HerschelBulkleyModelNoSlipBCAlgorithm()));
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new PowellEyringModelNoSlipBCAlgorithm()));
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new BinghamModelNoSlipBCAlgorithm()));
+      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyHerschelBulkleyModelNoSlipBCAlgorithm()));
+      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyPowellEyringModelNoSlipBCAlgorithm()));
+      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
 
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;

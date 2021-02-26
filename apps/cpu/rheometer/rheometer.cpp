@@ -125,7 +125,7 @@ void bflow(string configname)
 
       //double omegaMin = 1.0e-8;
 
-      SPtr<Thixotropy> thix = Thixotropy::getInstance();
+      SPtr<Rheology> thix = Rheology::getInstance();
       //thix->setPowerIndex(n);
       //thix->setViscosityParameter(k);
       thix->setYieldStress(tau0);
@@ -133,8 +133,8 @@ void bflow(string configname)
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new HerschelBulkleyModelNoSlipBCAlgorithm()));
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new BinghamModelNoSlipBCAlgorithm()));
+      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyHerschelBulkleyModelNoSlipBCAlgorithm()));
+      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
 
       //SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
       //slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
@@ -159,7 +159,7 @@ void bflow(string configname)
       //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
       //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
       //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
-      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new BinghamModelVelocityBCAlgorithm()));
+      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelVelocityBCAlgorithm()));
 
       //SPtr<BCAdapter> densityBCAdapter(new DensityBCAdapter());
       //densityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));

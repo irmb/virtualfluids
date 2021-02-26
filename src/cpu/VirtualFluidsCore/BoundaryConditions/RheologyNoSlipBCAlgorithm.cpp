@@ -26,65 +26,41 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file RheologyK17LBMKernel.h
-//! \ingroup LBM
+//! \file RheologyNoSlipBCAlgorithm.cpp
+//! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
+#include "RheologyNoSlipBCAlgorithm.h"
+#include "DistributionArray3D.h"
+#include "BoundaryConditions.h"
 
-#ifndef RheologyK17LBMKernel_h__
-#define RheologyK17LBMKernel_h__
-
-#include "LBMKernel.h"
-#include "BCProcessor.h"
-#include "D3Q27System.h"
-#include "basics/utilities/UbTiming.h"
-#include "basics/container/CbArray4D.h"
-#include "basics/container/CbArray3D.h"
-
-//! \brief   compressible cumulant LBM kernel with rheological properties of shear and bulk viscosity for non-Newtonian fluids.
-//! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
-//! \author  K. Kutscher, M. Geier
-class RheologyK17LBMKernel :  public LBMKernel
+//////////////////////////////////////////////////////////////////////////
+void RheologyNoSlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
-public:
-   //! This option set relaxation parameter: NORMAL  
-   enum Parameter{NORMAL, MAGIC};
-public:
-   RheologyK17LBMKernel();
-   virtual ~RheologyK17LBMKernel(void);
-   virtual void calculate(int step) override;
-   virtual SPtr<LBMKernel> clone() override;
-   double getCalculationTime() override;
-   //! The value should not be equal to a shear viscosity
-   void setBulkViscosity(LBMReal value);
-protected:
-   virtual void initDataSet();
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
+void RheologyNoSlipBCAlgorithm::applyBC()
+{
+   LBMReal f[D3Q27System::ENDF + 1];
+   LBMReal feq[D3Q27System::ENDF + 1];
+   distributions->getDistribution(f, x1, x2, x3);
+   LBMReal rho, vx1, vx2, vx3;
+   calcMacrosFct(f, rho, vx1, vx2, vx3);
+   calcFeqFct(feq, rho, vx1, vx2, vx3);
 
-   virtual LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const
+   LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
+   LBMReal collFactorF = getRheologyCollFactor(collFactor, shearRate, rho);
+
+   for (int fDir = D3Q27System::FSTARTDIR; fDir <= D3Q27System::FENDDIR; fDir++)
    {
-       UB_THROW(UbException("LBMReal getRheologyCollFactor() - belongs in the derived class"));
+      if (bcPtr->hasNoSlipBoundaryFlag(fDir))
+      {
+         //quadratic bounce back
+         const int invDir = D3Q27System::INVDIR[fDir];
+         LBMReal q = bcPtr->getQ(invDir);
+         LBMReal fReturn =(f[invDir] + q * f[fDir] + q * collFactorF * (feq[invDir] - f[invDir] + feq[fDir] - f[fDir])) / (1.0 + q);
+         distributions->setDistributionInvForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], invDir);
+      }
    }
-
-   LBMReal f[D3Q27System::ENDF+1];
-
-   UbTimer timer;
-
-   CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-   CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-   CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
-
-   mu::value_type muX1,muX2,muX3;
-   mu::value_type muDeltaT;
-   mu::value_type muNu;
-   LBMReal forcingX1;
-   LBMReal forcingX2;
-   LBMReal forcingX3;
-   
-   // bulk viscosity
-   LBMReal OxxPyyPzz; //omega2 (bulk viscosity)
-   LBMReal bulkViscosity;
-
-};
-#endif // RheologyK17LBMKernel_h__
-
-
+}

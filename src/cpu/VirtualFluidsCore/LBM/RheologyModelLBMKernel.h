@@ -26,33 +26,58 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file DensityAndThixotropyBCAlgorithm.h
-//! \ingroup BoundarConditions
+//! \file RheologyModelLBMKernel.h
+//! \ingroup LBM
 //! \author Konstantin Kutscher
 //=======================================================================================
+#ifndef RheologyModelLBMKernel_H
+#define RheologyModelLBMKernel_H
 
-#ifndef DensityAndThixotropyBCAlgorithm_h__
-#define DensityAndThixotropyBCAlgorithm_h__
+#include "LBMKernel.h"
+#include "BCProcessor.h"
+#include "D3Q27System.h"
+#include "basics/utilities/UbTiming.h"
+#include "basics/container/CbArray4D.h"
+#include "basics/container/CbArray3D.h"
 
-#include "BCAlgorithm.h"
+class RheologyModelLBMKernel;
 
-
-class DensityAndThixotropyBCAlgorithm : public BCAlgorithm
+//! \brief Base class for model of thixotropy based on K16. Use Template Method design pattern for Implementation of different models. 
+//! \author K. Kutscher, M. Geier
+class RheologyModelLBMKernel : public LBMKernel
 {
 public:
-	DensityAndThixotropyBCAlgorithm();
-	virtual ~DensityAndThixotropyBCAlgorithm();
-	SPtr<BCAlgorithm> clone();
-	void addDistributions(SPtr<DistributionArray3D> distributions);
-	//void addDistributionsF(SPtr<DistributionArray3D> distributions);
-	void addDistributionsH(SPtr<DistributionArray3D> distributions);
-	void applyBC();
-	void setLambdaBC(LBMReal lambda) { this->lambdaBC = lambda; }
-	LBMReal getLambdaBC() { return this->lambdaBC; }
-protected:
-	SPtr<DistributionArray3D> distributionsH;
-private:
-	LBMReal lambdaBC;
-};
-#endif // DensityAndThixotropyBCAlgorithm_h__
+	RheologyModelLBMKernel();
+	virtual ~RheologyModelLBMKernel();
+	void calculate(int step);
+	virtual SPtr<LBMKernel> clone() { UB_THROW(UbException("SPtr<LBMKernel> clone() - belongs in the derived class")); };
+	double getCalculationTime();
 
+	void swapDistributions();
+
+protected:
+	void initDataSet();
+
+	virtual LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const { UB_THROW(UbException("LBMReal getRheologyCollFactor() - belongs in the derived class")); }
+
+	LBMReal f[D3Q27System::ENDF + 1];
+
+	UbTimer timer;
+
+	LBMReal OxyyMxzz;
+	
+	CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;
+	CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF;
+	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsF;
+
+	mu::value_type muX1, muX2, muX3;
+	mu::value_type muDeltaT;
+	mu::value_type muNu;
+	LBMReal forcingX1;
+	LBMReal forcingX2;
+	LBMReal forcingX3;
+
+	bool test;
+};
+
+#endif

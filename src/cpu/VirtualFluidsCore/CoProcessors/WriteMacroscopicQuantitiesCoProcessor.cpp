@@ -246,7 +246,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 
                     // shearRate = D3Q27System::getShearRate(f, collFactor);
 
-                    // LBMReal collFactorF = BinghamModelLBMKernel::getBinghamCollFactor(collFactor, yieldStress,
+                    // LBMReal collFactorF = RheologyBinghamModelLBMKernel::getBinghamCollFactor(collFactor, yieldStress,
                     // shearRate, rho);
 
                     // data[index++].push_back(shearRate);

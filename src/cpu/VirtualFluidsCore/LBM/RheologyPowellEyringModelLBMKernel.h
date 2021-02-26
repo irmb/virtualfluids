@@ -26,65 +26,45 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file RheologyK17LBMKernel.h
+//! \file RheologyPowellEyringModelLBMKernel.h
 //! \ingroup LBM
 //! \author Konstantin Kutscher
 //=======================================================================================
+#ifndef RheologyPowellEyringModelLBMKernel_H
+#define RheologyPowellEyringModelLBMKernel_H
 
-#ifndef RheologyK17LBMKernel_h__
-#define RheologyK17LBMKernel_h__
+#include "RheologyK17LBMKernel.h"
+#include "Rheology.h"
 
-#include "LBMKernel.h"
-#include "BCProcessor.h"
-#include "D3Q27System.h"
-#include "basics/utilities/UbTiming.h"
-#include "basics/container/CbArray4D.h"
-#include "basics/container/CbArray3D.h"
-
-//! \brief   compressible cumulant LBM kernel with rheological properties of shear and bulk viscosity for non-Newtonian fluids.
-//! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
-//! \author  K. Kutscher, M. Geier
-class RheologyK17LBMKernel :  public LBMKernel
+//! \brief    Cumulant LBM kernel + Herschel-Bulkley plastic model 
+//! \author K. Kutscher, M. Geier
+class RheologyPowellEyringModelLBMKernel : public RheologyK17LBMKernel
 {
 public:
-   //! This option set relaxation parameter: NORMAL  
-   enum Parameter{NORMAL, MAGIC};
-public:
-   RheologyK17LBMKernel();
-   virtual ~RheologyK17LBMKernel(void);
-   virtual void calculate(int step) override;
-   virtual SPtr<LBMKernel> clone() override;
-   double getCalculationTime() override;
-   //! The value should not be equal to a shear viscosity
-   void setBulkViscosity(LBMReal value);
+	RheologyPowellEyringModelLBMKernel() {};
+	~RheologyPowellEyringModelLBMKernel() {};
+	SPtr<LBMKernel> clone() override
+	{
+		SPtr<LBMKernel> kernel(new RheologyPowellEyringModelLBMKernel());
+		kernel->setNX(nx);
+		kernel->setCollisionFactor(collFactor);
+		dynamicPointerCast<RheologyPowellEyringModelLBMKernel>(kernel)->initDataSet();
+		kernel->setBCProcessor(bcProcessor->clone(kernel));
+		kernel->setWithForcing(withForcing);
+		kernel->setForcingX1(muForcingX1);
+		kernel->setForcingX2(muForcingX2);
+		kernel->setForcingX3(muForcingX3);
+		kernel->setIndex(ix1, ix2, ix3);
+		kernel->setDeltaT(deltaT);
+
+		return kernel;
+	}
 protected:
-   virtual void initDataSet();
-
-   virtual LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const
-   {
-       UB_THROW(UbException("LBMReal getRheologyCollFactor() - belongs in the derived class"));
-   }
-
-   LBMReal f[D3Q27System::ENDF+1];
-
-   UbTimer timer;
-
-   CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-   CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-   CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
-
-   mu::value_type muX1,muX2,muX3;
-   mu::value_type muDeltaT;
-   mu::value_type muNu;
-   LBMReal forcingX1;
-   LBMReal forcingX2;
-   LBMReal forcingX3;
-   
-   // bulk viscosity
-   LBMReal OxxPyyPzz; //omega2 (bulk viscosity)
-   LBMReal bulkViscosity;
-
+	LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const override
+	{
+		return Rheology::getPowellEyringCollFactor(omegaInf, shearRate, drho);
+	}
 };
-#endif // RheologyK17LBMKernel_h__
 
 
+#endif

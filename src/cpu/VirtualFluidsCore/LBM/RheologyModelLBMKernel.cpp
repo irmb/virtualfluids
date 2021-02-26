@@ -1,28 +1,59 @@
-#include "ThixotropyModelLBMKernel2.h"
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file RheologyModelLBMKernel.cpp
+//! \ingroup LBM
+//! \author Konstantin Kutscher
+//=======================================================================================
+
+#include "RheologyModelLBMKernel.h"
 #include "D3Q27System.h"
 #include "BCArray3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include <math.h>
 #include "DataSet3D.h"
 #include "LBMKernel.h"
-#include "Thixotropy.h"
 
 #define PROOF_CORRECTNESS
 
 using namespace UbMath;
 
-
-ThixotropyModelLBMKernel2::ThixotropyModelLBMKernel2() : forcingX1(0), forcingX2(0), forcingX3(0)
+RheologyModelLBMKernel::RheologyModelLBMKernel() : forcingX1(0), forcingX2(0), forcingX3(0)
 {
    compressible = false;
 	OxyyMxzz = 1.0;
 }
 
-ThixotropyModelLBMKernel2::~ThixotropyModelLBMKernel2()
+RheologyModelLBMKernel::~RheologyModelLBMKernel()
 {
 }
 
-void ThixotropyModelLBMKernel2::calculate(int step)
+void RheologyModelLBMKernel::calculate(int step)
 {
 	using namespace D3Q27System;
 
@@ -479,52 +510,23 @@ void ThixotropyModelLBMKernel2::calculate(int step)
 						LBMReal dyuy = dxux + collFactorF * c3o2 * mxxMyy;
 						LBMReal dzuz = dxux + collFactorF * c3o2 * mxxMzz;
 
-//						LBMReal Dxy = -three * collFactorF * mfbba;
-//						LBMReal Dxz = -three * collFactorF * mfbab;
-//						LBMReal Dyz = -three * collFactorF * mfabb;
+						LBMReal Dxy = -three * collFactorF * mfbba;
+						LBMReal Dxz = -three * collFactorF * mfbab;
+						LBMReal Dyz = -three * collFactorF * mfabb;
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 						//non Newtonian fluid collision factor
-//						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
-
-						LBMReal shearFactor = sqrt(c1o2 * ((mfcaa - mfaaa * c1o3) * (mfcaa - mfaaa * c1o3) + (mfaca - mfaaa * c1o3) * (mfaca - mfaaa * c1o3) + (mfaac - mfaaa * c1o3) * (mfaac - mfaaa * c1o3)) + mfbba * mfbba + mfbab * mfbab + mfabb * mfabb) + UbMath::Epsilon<LBMReal>::val();
-
-						//collFactorF = getThyxotropyCollFactor(collFactorF, shearRate, rho);
+						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+						collFactorF = getRheologyCollFactor(collFactorF, shearRate, rho);
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 						//relax
-						//mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
-						//
-						//LBMReal collFactorFyy = getThyxotropyCollFactor(collFactorF, std::sqrt(dxux*dxux + dyuy*dyuy) / (rho + one), rho);
-						//mxxMyy += collFactorFyy * (-mxxMyy) - 3. * (1. - c1o2 * collFactorFyy) * (vx2 * dxux - vy2 * dyuy);
-						//
-						//LBMReal collFactorFzz = getThyxotropyCollFactor(collFactorF, std::sqrt(dxux*dxux + dzuz*dzuz) / (rho + one), rho);
-						//mxxMzz += collFactorFzz * (-mxxMzz) - 3. * (1. - c1o2 * collFactorFzz) * (vx2 * dxux - vz2 * dzuz);
+						mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+						mxxMyy += collFactorF * (-mxxMyy) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vy2 * dyuy);
+						mxxMzz += collFactorF * (-mxxMzz) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vz2 * dzuz);
 
-						//mfabb += getThyxotropyCollFactor(collFactorF, std::abs(Dyz) / (rho + one), rho) * (-mfabb);
-						//mfbab += getThyxotropyCollFactor(collFactorF, std::abs(Dxz) / (rho + one), rho) * (-mfbab);
-						//mfbba += getThyxotropyCollFactor(collFactorF, std::abs(Dxy) / (rho + one), rho) * (-mfbba);
-
-						SPtr<Thixotropy> thix = Thixotropy::getInstance();
-						LBMReal tau0 = thix->getYieldStress();
-
-						mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz /*+ ((mxxPyyPzz-mfaaa)/shearFactor*tau0)*/) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
-						//mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
-						//mxxMyy += collFactorF * (-mxxMyy + mxxMyy/shearFactor*tau0) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vy2 * dyuy);
-						//mxxMzz += collFactorF * (-mxxMzz + mxxMzz/shearFactor*tau0) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vz2 * dzuz);
-
-						//mfabb += collFactorF * (-mfabb + mfabb/shearFactor*tau0);
-						//mfbab += collFactorF * (-mfbab + mfbab/shearFactor*tau0);
-						//mfbba += collFactorF * (-mfbba + mfbba/shearFactor*tau0);
-
-						collFactorF = collFactor * (c1 - tau0 / shearFactor);
-
-						mxxMyy += collFactorF * (-mxxMyy/* + mxxMyy / shearFactor * tau0*/) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vy2 * dyuy);
-						mxxMzz += collFactorF * (-mxxMzz/* + mxxMzz / shearFactor * tau0*/) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vz2 * dzuz);
-
-						mfabb += collFactorF * (-mfabb/* + mfabb / shearFactor * tau0*/);
-						mfbab += collFactorF * (-mfbab/* + mfbab / shearFactor * tau0*/);
-						mfbba += collFactorF * (-mfbba/* + mfbba / shearFactor * tau0*/);
-
+						mfabb += collFactorF * (-mfabb);
+						mfbab += collFactorF * (-mfbab);
+						mfbba += collFactorF * (-mfbba);
 
 						// linear combinations back
 						mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
@@ -893,13 +895,13 @@ void ThixotropyModelLBMKernel2::calculate(int step)
 	}
 }
 
-//SPtr<LBMKernel> ThixotropyModelLBMKernel2::clone()
+//SPtr<LBMKernel> RheologyModelLBMKernel::clone()
 //{
-//	SPtr<LBMKernel> kernel(new ThixotropyModelLBMKernel2());
+//	SPtr<LBMKernel> kernel(new RheologyModelLBMKernel());
 //	kernel->setNX(nx);
 //	kernel->setCollisionFactor(collFactor);
 //	collFactorF = collFactor;
-//	dynamicPointerCast<ThixotropyModelLBMKernel2>(kernel)->initDataSet();
+//	dynamicPointerCast<RheologyModelLBMKernel>(kernel)->initDataSet();
 //	kernel->setBCProcessor(bcProcessor->clone(kernel));
 //	kernel->setWithForcing(withForcing);
 //	kernel->setForcingX1(muForcingX1);
@@ -911,17 +913,17 @@ void ThixotropyModelLBMKernel2::calculate(int step)
 //	return kernel;
 //}
 
-double ThixotropyModelLBMKernel2::getCalculationTime()
+double RheologyModelLBMKernel::getCalculationTime()
 {
    return timer.getTotalTime();
 }
 
-void ThixotropyModelLBMKernel2::swapDistributions()
+void RheologyModelLBMKernel::swapDistributions()
 {
    LBMKernel::swapDistributions();
 }
 
-void ThixotropyModelLBMKernel2::initDataSet()
+void RheologyModelLBMKernel::initDataSet()
 {
    SPtr<DistributionArray3D> df(new D3Q27EsoTwist3DSplittedVector(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.0));
    dataSet->setFdistributions(df);

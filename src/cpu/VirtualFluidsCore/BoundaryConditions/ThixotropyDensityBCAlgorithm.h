@@ -26,35 +26,33 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file BinghamModelVelocityBCAlgorithm.h
+//! \file ThixotropyDensityBCAlgorithm.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef BinghamModelVelocityBCAlgorithm_h__
-#define BinghamModelVelocityBCAlgorithm_h__
+#ifndef ThixotropyDensityBCAlgorithm_h__
+#define ThixotropyDensityBCAlgorithm_h__
 
-#include "RheologicalVelocityBCAlgorithm.h"
-#include "Thixotropy.h"
+#include "BCAlgorithm.h"
 
-class BinghamModelVelocityBCAlgorithm : public RheologicalVelocityBCAlgorithm
+
+class ThixotropyDensityBCAlgorithm : public BCAlgorithm
 {
 public:
-   BinghamModelVelocityBCAlgorithm()
-   {
-      BCAlgorithm::type = BCAlgorithm::BinghamModelVelocityBCAlgorithm;
-      BCAlgorithm::preCollision = false;
-   }
-   ~BinghamModelVelocityBCAlgorithm() {}
-   SPtr<BCAlgorithm> clone() override
-   {
-      SPtr<BCAlgorithm> bc(new BinghamModelVelocityBCAlgorithm());
-      return bc;
-   }
+	ThixotropyDensityBCAlgorithm();
+	virtual ~ThixotropyDensityBCAlgorithm();
+	SPtr<BCAlgorithm> clone();
+	void addDistributions(SPtr<DistributionArray3D> distributions);
+	//void addDistributionsF(SPtr<DistributionArray3D> distributions);
+	void addDistributionsH(SPtr<DistributionArray3D> distributions);
+	void applyBC();
+	void setLambdaBC(LBMReal lambda) { this->lambdaBC = lambda; }
+	LBMReal getLambdaBC() { return this->lambdaBC; }
 protected:
-   LBMReal getThyxotropyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const override 
-   { 
-      return Thixotropy::getBinghamCollFactor(omegaInf, shearRate, drho);
-   }
+	SPtr<DistributionArray3D> distributionsH;
+private:
+	LBMReal lambdaBC;
 };
-#endif // BinghamModelVelocityBCAlgorithm_h__
+#endif // ThixotropyDensityBCAlgorithm_h__
+

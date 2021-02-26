@@ -26,35 +26,34 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file BinghamModelNoSlipBCAlgorithm.h
+//! \file RheologyHerschelBulkleyModelNoSlipBCAlgorithm.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
+#ifndef RheologyHerschelBulkleyModelNoSlipBCAlgorithm_h__
+#define RheologyHerschelBulkleyModelNoSlipBCAlgorithm_h__
 
-#ifndef BinghamModelNoSlipBCAlgorithm_h__
-#define BinghamModelNoSlipBCAlgorithm_h__
+#include "RheologyNoSlipBCAlgorithm.h"
+#include "Rheology.h"
 
-#include "ThixotropyNoSlipBCAlgorithm.h"
-#include "Thixotropy.h"
-
-class BinghamModelNoSlipBCAlgorithm : public ThixotropyNoSlipBCAlgorithm
+class RheologyHerschelBulkleyModelNoSlipBCAlgorithm : public RheologyNoSlipBCAlgorithm
 {
 public:
-   BinghamModelNoSlipBCAlgorithm()
+   RheologyHerschelBulkleyModelNoSlipBCAlgorithm() 
    {
-      BCAlgorithm::type = BCAlgorithm::BinghamModelNoSlipBCAlgorithm;
+      BCAlgorithm::type = BCAlgorithm::RheologyHerschelBulkleyModelNoSlipBCAlgorithm;
       BCAlgorithm::preCollision = true;
    }
-   ~BinghamModelNoSlipBCAlgorithm() {}
+   ~RheologyHerschelBulkleyModelNoSlipBCAlgorithm() {}
    SPtr<BCAlgorithm> clone() override
    {
-      SPtr<BCAlgorithm> bc(new BinghamModelNoSlipBCAlgorithm());
+      SPtr<BCAlgorithm> bc(new RheologyHerschelBulkleyModelNoSlipBCAlgorithm());
       return bc;
    }
 protected:
-   LBMReal getThyxotropyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const override 
-   { 
-      return Thixotropy::getBinghamCollFactor(omegaInf, shearRate, drho);
+   LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const override
+   {
+      return Rheology::getHerschelBulkleyCollFactor(omegaInf, shearRate, drho);
    }
 };
-#endif // BinghamModelNoSlipBCAlgorithm_h__
+#endif // RheologyHerschelBulkleyModelNoSlipBCAlgorithm_h__

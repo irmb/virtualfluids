@@ -1,17 +1,50 @@
-#ifndef Thixotropy_H
-#define Thixotropy_H
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file Rheology.h
+//! \ingroup LBM
+//! \author Konstantin Kutscher, Martin Geier
+//=======================================================================================
+
+#ifndef Rheology_H
+#define Rheology_H
 
 #include <PointerDefinitions.h>
 #include <LBMSystem.h>
 #include <UbMath.h>
 #include <math.h> 
 
-class Thixotropy
+class Rheology
 {
 public:
-	Thixotropy(Thixotropy const&) = delete;
-	Thixotropy& operator=(Thixotropy const&) = delete;
-	static SPtr<Thixotropy> getInstance();
+	Rheology(Rheology const&) = delete;
+	Rheology& operator=(Rheology const&) = delete;
+	static SPtr<Rheology> getInstance();
 	void setYieldStress(LBMReal tau0);
 	LBMReal getYieldStress() const;
 	
@@ -39,9 +72,9 @@ public:
 	static LBMReal getHerschelBulkleyCollFactorBackward(LBMReal shearRate, LBMReal drho);
 	static LBMReal getPowellEyringCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho);
 private:
-	Thixotropy();
+	Rheology();
 	
-	static SPtr<Thixotropy> instance;
+	static SPtr<Rheology> instance;
 
 	static LBMReal tau0;
 	static LBMReal k;
@@ -53,11 +86,12 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-inline LBMReal Thixotropy::getBinghamCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
+inline LBMReal Rheology::getBinghamCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
 {
 	LBMReal cs2 = UbMath::one_over_sqrt3 * UbMath::one_over_sqrt3;
 	LBMReal rho = UbMath::one + drho;
-	//LBMReal omega = omegaInf * (UbMath::one - (omegaInf * tau0) / (shearRate * cs2 * rho + UbMath::Epsilon<LBMReal>::val()));
+	//analytical solution
+	LBMReal omega = omegaInf * (UbMath::one - (omegaInf * tau0) / (shearRate * cs2 * rho + UbMath::Epsilon<LBMReal>::val()));
 	
 	//LBMReal omega = cs2 * cs2 * shearRate * shearRate * omegaInf * rho * rho / (cs2 * cs2 * shearRate * shearRate * rho * rho + cs2 * shearRate * omegaInf * rho * tau0+omegaInf*omegaInf*tau0*tau0);
 	
@@ -66,24 +100,24 @@ inline LBMReal Thixotropy::getBinghamCollFactor(LBMReal omegaInf, LBMReal shearR
 	//LBMReal omega = omegaInf / (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a))))))))));
 	
 	//20 iterations
-	//LBMReal omega = omegaInf / (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a))))))))))))))))))));
-	
-	LBMReal omega = omegaInf*cs2 * shearRate * rho / (cs2 * shearRate * rho + omegaInf * tau0);
-	LBMReal shearRateNew = shearRate * (omega / omegaInf);
+	////LBMReal omega = omegaInf / (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a * (1 + a))))))))))))))))))));
+	//
+	//LBMReal omega = omegaInf*cs2 * shearRate * rho / (cs2 * shearRate * rho + omegaInf * tau0);
+	//LBMReal shearRateNew = shearRate * (omega / omegaInf);
 
-	for (int i = 0; i < 20; i++)
-	{
-		omega = omegaInf * cs2 * shearRateNew * rho / (cs2 * shearRateNew * rho + omegaInf * tau0);
-		shearRateNew = shearRate * (omega / omegaInf);
-	}
-	omega = omegaInf * cs2 * shearRateNew * rho / (cs2 * shearRateNew * rho + omegaInf * tau0);
-	
-	//if (omega < 0.2)
-	//	omega = 0.2;
+	//for (int i = 0; i < 20; i++)
+	//{
+	//	omega = omegaInf * cs2 * shearRateNew * rho / (cs2 * shearRateNew * rho + omegaInf * tau0);
+	//	shearRateNew = shearRate * (omega / omegaInf);
+	//}
+	//omega = omegaInf * cs2 * shearRateNew * rho / (cs2 * shearRateNew * rho + omegaInf * tau0);
+	//
+	////if (omega < 0.2)
+	////	omega = 0.2;
 	return omega;
 }
 
-inline LBMReal Thixotropy::getBinghamCollFactorOld(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
+inline LBMReal Rheology::getBinghamCollFactorOld(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
 {
 	const LBMReal cs2 = UbMath::c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;
 	LBMReal rho = UbMath::one + drho;
@@ -94,7 +128,7 @@ inline LBMReal Thixotropy::getBinghamCollFactorOld(LBMReal omegaInf, LBMReal she
 		return omegaInf;
 }
 //////////////////////////////////////////////////////////////////////////
-inline LBMReal Thixotropy::getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
+inline LBMReal Rheology::getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
 {
 	LBMReal cs2 = UbMath::one_over_sqrt3 * UbMath::one_over_sqrt3;
 	LBMReal rho = UbMath::one + drho;
@@ -125,7 +159,7 @@ inline LBMReal Thixotropy::getHerschelBulkleyCollFactor(LBMReal omegaInf, LBMRea
 	return omega;
 }
 //////////////////////////////////////////////////////////////////////////
-inline LBMReal Thixotropy::getHerschelBulkleyCollFactorBackward(LBMReal shearRate, LBMReal drho)
+inline LBMReal Rheology::getHerschelBulkleyCollFactorBackward(LBMReal shearRate, LBMReal drho)
 {
 	LBMReal rho = UbMath::one + drho;
 	LBMReal gamma = shearRate + UbMath::Epsilon<LBMReal>::val();
@@ -134,7 +168,7 @@ inline LBMReal Thixotropy::getHerschelBulkleyCollFactorBackward(LBMReal shearRat
 	return 1.0 / ((tau0 + k * std::pow(gamma, n)) / (cs2 * rho * gamma) + UbMath::c1o2);
 }
 //////////////////////////////////////////////////////////////////////////
-inline LBMReal Thixotropy::getPowellEyringCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
+inline LBMReal Rheology::getPowellEyringCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho)
 {
 	using namespace UbMath;
 	LBMReal cs2 = c1o3; // UbMath::one_over_sqrt3* UbMath::one_over_sqrt3;

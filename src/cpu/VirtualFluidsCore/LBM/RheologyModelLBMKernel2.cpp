@@ -1,26 +1,28 @@
-#include "ThixotropyModelLBMKernel.h"
+#include "RheologyModelLBMKernel2.h"
 #include "D3Q27System.h"
 #include "BCArray3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include <math.h>
 #include "DataSet3D.h"
 #include "LBMKernel.h"
+#include "Rheology.h"
 
 #define PROOF_CORRECTNESS
 
 using namespace UbMath;
 
-ThixotropyModelLBMKernel::ThixotropyModelLBMKernel() : forcingX1(0), forcingX2(0), forcingX3(0)
+
+RheologyModelLBMKernel2::RheologyModelLBMKernel2() : forcingX1(0), forcingX2(0), forcingX3(0)
 {
    compressible = false;
 	OxyyMxzz = 1.0;
 }
 
-ThixotropyModelLBMKernel::~ThixotropyModelLBMKernel()
+RheologyModelLBMKernel2::~RheologyModelLBMKernel2()
 {
 }
 
-void ThixotropyModelLBMKernel::calculate(int step)
+void RheologyModelLBMKernel2::calculate(int step)
 {
 	using namespace D3Q27System;
 
@@ -477,23 +479,52 @@ void ThixotropyModelLBMKernel::calculate(int step)
 						LBMReal dyuy = dxux + collFactorF * c3o2 * mxxMyy;
 						LBMReal dzuz = dxux + collFactorF * c3o2 * mxxMzz;
 
-						LBMReal Dxy = -three * collFactorF * mfbba;
-						LBMReal Dxz = -three * collFactorF * mfbab;
-						LBMReal Dyz = -three * collFactorF * mfabb;
+//						LBMReal Dxy = -three * collFactorF * mfbba;
+//						LBMReal Dxz = -three * collFactorF * mfbab;
+//						LBMReal Dyz = -three * collFactorF * mfabb;
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 						//non Newtonian fluid collision factor
-						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
-						collFactorF = getThyxotropyCollFactor(collFactorF, shearRate, rho);
+//						LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho + one);
+
+						LBMReal shearFactor = sqrt(c1o2 * ((mfcaa - mfaaa * c1o3) * (mfcaa - mfaaa * c1o3) + (mfaca - mfaaa * c1o3) * (mfaca - mfaaa * c1o3) + (mfaac - mfaaa * c1o3) * (mfaac - mfaaa * c1o3)) + mfbba * mfbba + mfbab * mfbab + mfabb * mfabb) + UbMath::Epsilon<LBMReal>::val();
+
+						//collFactorF = getRheologyCollFactor(collFactorF, shearRate, rho);
 						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 						//relax
-						mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
-						mxxMyy += collFactorF * (-mxxMyy) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vy2 * dyuy);
-						mxxMzz += collFactorF * (-mxxMzz) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vz2 * dzuz);
+						//mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+						//
+						//LBMReal collFactorFyy = getRheologyCollFactor(collFactorF, std::sqrt(dxux*dxux + dyuy*dyuy) / (rho + one), rho);
+						//mxxMyy += collFactorFyy * (-mxxMyy) - 3. * (1. - c1o2 * collFactorFyy) * (vx2 * dxux - vy2 * dyuy);
+						//
+						//LBMReal collFactorFzz = getRheologyCollFactor(collFactorF, std::sqrt(dxux*dxux + dzuz*dzuz) / (rho + one), rho);
+						//mxxMzz += collFactorFzz * (-mxxMzz) - 3. * (1. - c1o2 * collFactorFzz) * (vx2 * dxux - vz2 * dzuz);
 
-						mfabb += collFactorF * (-mfabb);
-						mfbab += collFactorF * (-mfbab);
-						mfbba += collFactorF * (-mfbba);
+						//mfabb += getRheologyCollFactor(collFactorF, std::abs(Dyz) / (rho + one), rho) * (-mfabb);
+						//mfbab += getRheologyCollFactor(collFactorF, std::abs(Dxz) / (rho + one), rho) * (-mfbab);
+						//mfbba += getRheologyCollFactor(collFactorF, std::abs(Dxy) / (rho + one), rho) * (-mfbba);
+
+						SPtr<Rheology> thix = Rheology::getInstance();
+						LBMReal tau0 = thix->getYieldStress();
+
+						mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz /*+ ((mxxPyyPzz-mfaaa)/shearFactor*tau0)*/) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+						//mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+						//mxxMyy += collFactorF * (-mxxMyy + mxxMyy/shearFactor*tau0) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vy2 * dyuy);
+						//mxxMzz += collFactorF * (-mxxMzz + mxxMzz/shearFactor*tau0) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vz2 * dzuz);
+
+						//mfabb += collFactorF * (-mfabb + mfabb/shearFactor*tau0);
+						//mfbab += collFactorF * (-mfbab + mfbab/shearFactor*tau0);
+						//mfbba += collFactorF * (-mfbba + mfbba/shearFactor*tau0);
+
+						collFactorF = collFactor * (c1 - tau0 / shearFactor);
+
+						mxxMyy += collFactorF * (-mxxMyy/* + mxxMyy / shearFactor * tau0*/) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vy2 * dyuy);
+						mxxMzz += collFactorF * (-mxxMzz/* + mxxMzz / shearFactor * tau0*/) - 3. * (1. - c1o2 * collFactorF) * (vx2 * dxux - vz2 * dzuz);
+
+						mfabb += collFactorF * (-mfabb/* + mfabb / shearFactor * tau0*/);
+						mfbab += collFactorF * (-mfbab/* + mfbab / shearFactor * tau0*/);
+						mfbba += collFactorF * (-mfbba/* + mfbba / shearFactor * tau0*/);
+
 
 						// linear combinations back
 						mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
@@ -862,13 +893,13 @@ void ThixotropyModelLBMKernel::calculate(int step)
 	}
 }
 
-//SPtr<LBMKernel> ThixotropyModelLBMKernel::clone()
+//SPtr<LBMKernel> RheologyModelLBMKernel2::clone()
 //{
-//	SPtr<LBMKernel> kernel(new ThixotropyModelLBMKernel());
+//	SPtr<LBMKernel> kernel(new RheologyModelLBMKernel2());
 //	kernel->setNX(nx);
 //	kernel->setCollisionFactor(collFactor);
 //	collFactorF = collFactor;
-//	dynamicPointerCast<ThixotropyModelLBMKernel>(kernel)->initDataSet();
+//	dynamicPointerCast<RheologyModelLBMKernel2>(kernel)->initDataSet();
 //	kernel->setBCProcessor(bcProcessor->clone(kernel));
 //	kernel->setWithForcing(withForcing);
 //	kernel->setForcingX1(muForcingX1);
@@ -880,17 +911,17 @@ void ThixotropyModelLBMKernel::calculate(int step)
 //	return kernel;
 //}
 
-double ThixotropyModelLBMKernel::getCalculationTime()
+double RheologyModelLBMKernel2::getCalculationTime()
 {
    return timer.getTotalTime();
 }
 
-void ThixotropyModelLBMKernel::swapDistributions()
+void RheologyModelLBMKernel2::swapDistributions()
 {
    LBMKernel::swapDistributions();
 }
 
-void ThixotropyModelLBMKernel::initDataSet()
+void RheologyModelLBMKernel2::initDataSet()
 {
    SPtr<DistributionArray3D> df(new D3Q27EsoTwist3DSplittedVector(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.0));
    dataSet->setFdistributions(df);

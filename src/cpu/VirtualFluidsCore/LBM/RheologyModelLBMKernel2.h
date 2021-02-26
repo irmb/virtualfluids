@@ -1,5 +1,5 @@
-#ifndef ThixotropyModelLBMKernel2_H
-#define ThixotropyModelLBMKernel2_H
+#ifndef RheologyModelLBMKernel2_H
+#define RheologyModelLBMKernel2_H
 
 #include "LBMKernel.h"
 #include "BCProcessor.h"
@@ -8,15 +8,15 @@
 #include "basics/container/CbArray4D.h"
 #include "basics/container/CbArray3D.h"
 
-class ThixotropyModelLBMKernel2;
+class RheologyModelLBMKernel2;
 
 //! \brief Base class for model of thixotropy based on K16. Use Template Method design pattern for Implementation of different models. 
 //! \author K. Kutscher, M. Geier
-class ThixotropyModelLBMKernel2 : public LBMKernel
+class RheologyModelLBMKernel2 : public LBMKernel
 {
 public:
-	ThixotropyModelLBMKernel2();
-	virtual ~ThixotropyModelLBMKernel2();
+	RheologyModelLBMKernel2();
+	virtual ~RheologyModelLBMKernel2();
 	void calculate(int step);
 	virtual SPtr<LBMKernel> clone() { UB_THROW(UbException("SPtr<LBMKernel> clone() - belongs in the derived class")); };
 	double getCalculationTime();
@@ -26,7 +26,7 @@ public:
 protected:
 	void initDataSet();
 
-	virtual LBMReal getThyxotropyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const { UB_THROW(UbException("LBMReal getThyxotropyCollFactor() - belongs in the derived class")); }
+	virtual LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const { UB_THROW(UbException("LBMReal getRheologyCollFactor() - belongs in the derived class")); }
 
 	LBMReal f[D3Q27System::ENDF + 1];
 
