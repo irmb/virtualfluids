@@ -341,7 +341,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 	  f_BS   = (D.f[dirBS  ])[kbs  ];
 	  f_BN   = (D.f[dirBN  ])[kbn  ];
 	  f_TS   = (D.f[dirTS  ])[kts  ];
-	  //f_ZERO = (D.f[dirZERO])[kzero];
+	  f_ZERO = (D.f[dirZERO])[kzero];
 	  f_TNE  = (D.f[dirTNE ])[ktne ];
 	  f_TSW  = (D.f[dirTSW ])[ktsw ];
 	  f_TSE  = (D.f[dirTSE ])[ktse ];
