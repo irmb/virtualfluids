@@ -17,8 +17,8 @@ default_physical_params.lattice_viscosity = 0.005
 
 default_runtime_params = RuntimeParameters()
 default_runtime_params.number_of_threads = 4
-default_runtime_params.number_of_timesteps = 100000
-default_runtime_params.timestep_log_interval = 10000
+default_runtime_params.number_of_timesteps = 10000
+default_runtime_params.timestep_log_interval = 1000
 
 
 default_kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
