@@ -72,7 +72,7 @@ void findQ(Parameter* para, int lev)
                for(l=0;l<=26;l++){
                   mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if((geo_mat[mm] == GEO_SOLID) || (geo_mat[mm] == GEO_VOID)){
-                     //ON[l] = -(((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz +/*+/- Achtung, innen und au�en nicht verwechseln!!*/ 
+                     //ON[l] = -(((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz +/*+/- Achtung, innen und aussen nicht verwechseln!!*/
                      //           sqrt(pow((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz,2) + 
                      //               (pow((real)ex[l],2) + pow((real)ey[l],2) + pow((real)ez[l],2))* (pow(radius,2) - 
                      //                pow((real)relx,2) - pow((real)rely,2) - pow((real)relz,2))))

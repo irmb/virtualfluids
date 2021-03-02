@@ -807,6 +807,8 @@ void Parameter::setSizeMatSparse(int level)
 }
 void Parameter::fillSparse(int level)
 {
+    //nsigned int li = ((parH[level]->gridNX+STARTOFFX-2)-(STARTOFFX+1)-1);
+    //unsigned int lj = ((parH[level]->gridNY+STARTOFFY-2)-(STARTOFFY+1)-1);
 	// real globalX, globalY, globalZ;
 
 	real PI = 3.141592653589793238462643383279f;

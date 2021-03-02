@@ -719,6 +719,7 @@ extern "C" __global__ void scaleCF_0817_comp_27( real* DC,
 	  dxy  = ( ((drhoPPM - drhoPMP) + (drhoPPP - drhoPMM)) + ((drhoMMP - drhoMPM) + (drhoMMM - drhoMPP))) * c1o2;
 	  dxz  = ( ((drhoMMM - drhoPPM) + (drhoPPP - drhoMMP)) + ((drhoMPM - drhoPMM) + (drhoPMP - drhoMPP))) * c1o2;
 	  dyz  = ( ((drhoMPP - drhoPPM) + (drhoPPP - drhoMPM)) + ((drhoPMM - drhoMMP) + (drhoMMM - drhoPMP))) * c1o2;
+	  dxyz =  -drho_NEB + drho_NET + drho_NWB - drho_NWT + drho_SEB - drho_SET - drho_SWB + drho_SWT;
      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //
       // Bernd das Brot
@@ -815,9 +816,6 @@ extern "C" __global__ void scaleCF_0817_comp_27( real* DC,
 			//  drho_SEB * (c9o64 - c9o16 * xoff + c3o16 * yoff + c3o16 * zoff) + 
 			//  drho_SWB * (c27o64 + c9o16 * xoff + c9o16 * yoff + c9o16 * zoff);
 
-     // TODO:  variable "dxyz" is used before its value is set
-     dxyz = 1;
-     // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/12
 	  press = d0 + x*dx + y*dy + z*dz + x*y*dxy + x*z*dxz + y*z*dyz + x*y*z*dxyz;
 	  vvx = (a0 + x*ax + y*ay + z*az + x*x*axx + y*y*ayy + z*z*azz + x*y*axy + x*z*axz + y*z*ayz + x*y*z*axyz);
 	  vvy = (b0 + x*bx + y*by + z*bz + x*x*bxx + y*y*byy + z*z*bzz + x*y*bxy + x*z*bxz + y*z*byz + x*y*z*bxyz);
@@ -27680,7 +27678,7 @@ extern "C" __global__ void scaleCF_Fix_comp_27(  real* DC,
 	  //dxy  = ( drho_NEB + drho_NET - drho_NWB - drho_NWT - drho_SEB - drho_SET + drho_SWB + drho_SWT) * c1o2;
 	  //dxz  = (-drho_NEB + drho_NET + drho_NWB - drho_NWT - drho_SEB + drho_SET + drho_SWB - drho_SWT) * c1o2;
 	  //dyz  = (-drho_NEB + drho_NET - drho_NWB + drho_NWT + drho_SEB - drho_SET + drho_SWB - drho_SWT) * c1o2;
-	  //dxyz =  -drho_NEB + drho_NET + drho_NWB - drho_NWT + drho_SEB - drho_SET - drho_SWB + drho_SWT;
+	  dxyz =  -drho_NEB + drho_NET + drho_NWB - drho_NWT + drho_SEB - drho_SET - drho_SWB + drho_SWT;
   	//  d0   = zero;
 	  //dx   = zero;
 	  //dy   = zero;
@@ -27827,9 +27825,6 @@ extern "C" __global__ void scaleCF_Fix_comp_27(  real* DC,
 			//  drho_SEB * (c9o64 - c9o16 * xoff + c3o16 * yoff + c3o16 * zoff) + 
 			//  drho_SWB * (c27o64 + c9o16 * xoff + c9o16 * yoff + c9o16 * zoff);
 
-     // TODO:  variable "dxyz" is used before its value is set
-     dxyz = 1;
-     // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/12
 	  press = d0 + x*dx + y*dy + z*dz + x*y*dxy + x*z*dxz + y*z*dyz + x*y*z*dxyz;
 	  vvx = (a0 + x*ax + y*ay + z*az + x*x*axx + y*y*ayy + z*z*azz + x*y*axy + x*z*axz + y*z*ayz + x*y*z*axyz);
 	  vvy = (b0 + x*bx + y*by + z*bz + x*x*bxx + y*y*byy + z*z*bzz + x*y*bxy + x*z*bxz + y*z*byz + x*y*z*bxyz);

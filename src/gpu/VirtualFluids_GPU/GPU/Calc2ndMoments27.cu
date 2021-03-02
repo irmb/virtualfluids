@@ -351,7 +351,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 	  f_BSE  = (D.f[dirBSE ])[kbse ];
 	  f_BNW  = (D.f[dirBNW ])[kbnw ];
       //////////////////////////////////////////////////////////////////////////
-	  // real drho;
+	  real drho;
 	  real vx1, vx2, vx3, rho;
       kxyFromfcNEQ[k]       = c0o1;
 	  kyzFromfcNEQ[k]       = c0o1;
@@ -359,16 +359,12 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
 	  kxxMyyFromfcNEQ[k]    = c0o1;
 	  kxxMzzFromfcNEQ[k]    = c0o1;
 
-	  // TODO: warning #549-D: variable "rho" is used before its value is set 
-	  // https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/issues/12
-	  rho = 0;
-
       if(geoD[k] == GEO_FLUID)
       {
-		//   drho               = ((f_TNE+f_BSW)+(f_BSE+f_TNW)+(f_BNE+f_TSW)+(f_TSE+f_BNW)) + 
-		// 					   ((f_NE+f_SW)+(f_TE+f_BW)+(f_SE+f_NW)+(f_BE+f_TW)+(f_BN+f_TS)+(f_TN+f_BS)) + 
-		// 					   ((f_E-f_W) + (f_N-f_S) + (f_T-f_B)) + f_ZERO;
-		  rho                = rho + c1o1;
+          drho               = ((f_TNE+f_BSW)+(f_BSE+f_TNW)+(f_BNE+f_TSW)+(f_TSE+f_BNW)) +
+		 					   ((f_NE+f_SW)+(f_TE+f_BW)+(f_SE+f_NW)+(f_BE+f_TW)+(f_BN+f_TS)+(f_TN+f_BS)) +
+		 					   ((f_E-f_W) + (f_N-f_S) + (f_T-f_B)) + f_ZERO;
+		  rho                = drho + c1o1;
 		  vx1                = ((f_TNE-f_BSW)+(f_BSE-f_TNW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W) / rho;
 		  vx2                = ((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S) / rho;
 		  vx3                = ((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSW-f_BNE)+(f_TSE-f_BNW)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B) / rho;
