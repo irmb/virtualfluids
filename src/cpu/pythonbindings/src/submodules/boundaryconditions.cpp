@@ -14,7 +14,9 @@ namespace boundaryconditions
     namespace py = pybind11;
     using namespace py::literals;
 
-    template<class adapter, class algorithm>
+    template<class adapter, class algorithm,
+            class = std::enable_if_t<std::is_base_of<BCAdapter, adapter>::value>,
+            class = std::enable_if_t<std::is_base_of<BCAlgorithm, algorithm>::value>>
     class PyBoundaryCondition : public adapter
     {
     public:
@@ -31,7 +33,6 @@ namespace boundaryconditions
 
     void makeModule(py::module_ &parentModule)
     {
-
         py::module_ bcModule = parentModule.def_submodule("boundaryconditions");
 
         auto _ = py::class_<BCAdapter, std::shared_ptr<BCAdapter>>(bcModule, "BCAdapter");
