@@ -719,7 +719,7 @@ extern "C" __global__ void scaleCF_0817_comp_27( real* DC,
 	  dxy  = ( ((drhoPPM - drhoPMP) + (drhoPPP - drhoPMM)) + ((drhoMMP - drhoMPM) + (drhoMMM - drhoMPP))) * c1o2;
 	  dxz  = ( ((drhoMMM - drhoPPM) + (drhoPPP - drhoMMP)) + ((drhoMPM - drhoPMM) + (drhoPMP - drhoMPP))) * c1o2;
 	  dyz  = ( ((drhoMPP - drhoPPM) + (drhoPPP - drhoMPM)) + ((drhoPMM - drhoMMP) + (drhoMMM - drhoPMP))) * c1o2;
-	  dxyz =  -drho_NEB + drho_NET + drho_NWB - drho_NWT + drho_SEB - drho_SET - drho_SWB + drho_SWT;
+	  dxyz =  -drhoPPM + drhoPPP + drhoMPM - drhoMPP + drhoPMM - drhoPMP - drhoMMM + drhoMMP;
      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //
       // Bernd das Brot
