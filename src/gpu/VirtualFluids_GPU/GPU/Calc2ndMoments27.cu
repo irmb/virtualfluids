@@ -321,7 +321,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
       unsigned int ktne = k;
       unsigned int kbsw = neighborZ[ksw];
       //////////////////////////////////////////////////////////////////////////
-	  // real f_ZERO;
+      real f_ZERO;
       real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 	  f_E    = (D.f[dirE   ])[ke   ];
 	  f_W    = (D.f[dirW   ])[kw   ];
