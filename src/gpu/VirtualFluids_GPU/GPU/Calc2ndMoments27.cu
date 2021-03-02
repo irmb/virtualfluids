@@ -293,7 +293,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
    {
       //////////////////////////////////////////////////////////////////////////
       //index
-      //unsigned int kzero= k;
+      unsigned int kzero= k;
       unsigned int ke   = k;
       unsigned int kw   = neighborX[k];
       unsigned int kn   = k;
