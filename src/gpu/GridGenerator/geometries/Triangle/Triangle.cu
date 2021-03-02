@@ -36,7 +36,7 @@ HOSTDEVICE Vertex Triangle::get(int index)
     if (index == 2)
         return v3;
     else
-        return Vertex(-999999999999999, -99999999999999, -9999999999999);
+        return Vertex((real)-999999999999999, (real)-99999999999999, (real)-9999999999999);
 }
 
 HOSTDEVICE void Triangle::calcNormal()

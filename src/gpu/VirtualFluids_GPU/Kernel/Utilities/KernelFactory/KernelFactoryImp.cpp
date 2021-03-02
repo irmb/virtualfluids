@@ -63,7 +63,7 @@ std::vector<std::shared_ptr<Kernel>> KernelFactoryImp::makeKernels(std::shared_p
 
 	if (para->getMaxLevel() > 0)
 		if (para->getMultiKernelOn())
-			for (int i = 0; i < para->getMultiKernelLevel().size(); i++)
+			for (std::size_t i = 0; i < para->getMultiKernelLevel().size(); i++)
 				setKernelAtLevel(kernels, para, para->getMultiKernel().at(i), para->getMultiKernelLevel().at(i));
 	return kernels;
 }

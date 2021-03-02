@@ -60,7 +60,7 @@ Object* TriangularMesh::clone() const
 
 uint TriangularMesh::getNumberOfTriangles() const
 {
-    return triangleVec.size();
+    return (uint)triangleVec.size();
 }
 
 
@@ -94,7 +94,7 @@ void TriangularMesh::initalizeDataFromTriangles()
 	this->triangles = triangleVec.data();
 	this->size = long(triangleVec.size());
 
-    for (uint i = 0; i < this->size; i++) {
+    for (std::size_t i = 0; i < this->size; i++) {
         this->minmax.setMinMax(this->triangleVec[i]);
     }
 }
@@ -167,7 +167,7 @@ void TriangularMesh::scale(double offset)
     auto averrageNormals = getAverrageNormalsPerVertex(trianglesPerVertex);
 
 
-    for (int vertexID = 0; vertexID < this->getNumberOfTriangles() * 3; vertexID++)
+    for (std::size_t vertexID = 0; vertexID < this->getNumberOfTriangles() * 3; vertexID++)
     {
         int coordinatedID = finder.sortedToTriangles[vertexID][IDS::coordinateID];
         Vertex averrageNormal = averrageNormals[coordinatedID];
@@ -205,13 +205,13 @@ void TriangularMesh::scale(double offset)
         //printf("\n\n");
 
         averrageNormal.normalize();
-        const int triangleID = vertexID / 3;
-        const int vertexTriangleID = vertexID % 3;
+        const int triangleID = (int)vertexID / 3;
+        const int vertexTriangleID = (int)vertexID % 3;
 
         Vertex intersection;
         Vertex p = this->triangleVec[triangleID].v1 + this->triangleVec[triangleID].normal * offset;
         Vertex lineOrigin = this->triangleVec[triangleID].get(vertexTriangleID);
-        bool b = intersectPlane(this->triangleVec[triangleID].normal, p, lineOrigin, averrageNormal, intersection);
+        //bool b = intersectPlane(this->triangleVec[triangleID].normal, p, lineOrigin, averrageNormal, intersection);
         triangles[triangleID].set(vertexTriangleID, intersection);
         triangles[triangleID].calcNormal();
 

@@ -21,9 +21,9 @@ public:
       consoleOut = false;
       this->fname = fname;
    }
-   void setName(std::string fname)
+   void setName(std::string name)
    {
-      this->fname = fname;
+      this->fname = name;
    }
    void setConsoleOut(bool flag)
    {

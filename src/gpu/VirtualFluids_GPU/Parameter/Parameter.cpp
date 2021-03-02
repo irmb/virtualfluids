@@ -395,9 +395,9 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 	this->setForcing(forcingX, forcingY, forcingZ);
 	//////////////////////////////////////////////////////////////////////////
 	//quadricLimiters
-	real quadricLimiterP = 0.01;
-	real quadricLimiterM = 0.01;
-	real quadricLimiterD = 0.01;
+	real quadricLimiterP = (real)0.01;
+	real quadricLimiterM = (real)0.01;
+	real quadricLimiterD = (real)0.01;
 
 	if (configData->isQuadricLimiterPInConfigFile())
 		quadricLimiterP = configData->getQuadricLimiterP();
@@ -552,7 +552,7 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 
 	if (configData->isMultiKernelNameInConfigFile()) {
 		std::vector<KernelType> kernels;
-		for (int i = 0; i < configData->getMultiKernelName().size(); i++) {
+		for (std::size_t i = 0; i < configData->getMultiKernelName().size(); i++) {
 			kernels.push_back(kernelMapper->getEnum(configData->getMultiKernelName().at(i)));
 		}
 		this->setMultiKernel(kernels);
@@ -807,10 +807,10 @@ void Parameter::setSizeMatSparse(int level)
 }
 void Parameter::fillSparse(int level)
 {
-	unsigned int li = ((parH[level]->gridNX+STARTOFFX-2)-(STARTOFFX+1)-1);
-	unsigned int lj = ((parH[level]->gridNY+STARTOFFY-2)-(STARTOFFY+1)-1);
-	real globalX, globalY, globalZ;
-	//real InitglobalX, InitglobalY, InitglobalZ;
+    //nsigned int li = ((parH[level]->gridNX+STARTOFFX-2)-(STARTOFFX+1)-1);
+    //unsigned int lj = ((parH[level]->gridNY+STARTOFFY-2)-(STARTOFFY+1)-1);
+	// real globalX, globalY, globalZ;
+
 	real PI = 3.141592653589793238462643383279f;
 
 	for (unsigned int k=1; k<parH[level]->gridNZ + 2 * STARTOFFZ - 1; k++)
@@ -876,9 +876,9 @@ void Parameter::fillSparse(int level)
 				//{
 				//   parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.0f;
 				//}
-				globalX = TrafoXtoWorld(i,level);
-				globalY = TrafoYtoWorld(j,level);
-				globalZ = TrafoZtoWorld(k,level);
+				// globalX = TrafoXtoWorld(i,level);
+				// globalY = TrafoYtoWorld(j,level);
+				// globalZ = TrafoZtoWorld(k,level);
 				//without setting a pressure
 				parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.0f;       //parH[level]->Conc_Full[m];//bitte schnell wieder entfernen!!!
 				//////////////////////////////////////////////////////////////////////////
@@ -4282,7 +4282,7 @@ void Parameter::setMultiKernelOn(bool isOn)
 }
 void Parameter::setMultiKernelLevel(std::vector< int> kernelLevel)
 {
-	this->multiKernelLevel = multiKernelLevel;
+	this->multiKernelLevel = kernelLevel;
 }
 void Parameter::setMultiKernel(std::vector< KernelType> kernel)
 {
@@ -5077,6 +5077,7 @@ std::vector<std::string> Parameter::getPossNeighborFiles(std::string sor)
 	{
 		return this->possNeighborFilesRecv;
 	}
+    throw std::runtime_error("Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighbors(int level, std::string sor)
 {
@@ -5088,6 +5089,7 @@ unsigned int Parameter::getNumberOfProcessNeighbors(int level, std::string sor)
 	{
 		return (unsigned int)parH[level]->recvProcessNeighbor.size();
 	}
+    throw std::runtime_error("Parameter string invalid.");
 }
 bool Parameter::getIsNeighbor()
 {
@@ -5104,6 +5106,7 @@ std::vector<std::string> Parameter::getPossNeighborFilesX(std::string sor)
 	{
 		return this->possNeighborFilesRecvX;
 	}
+    throw std::runtime_error("Parameter string invalid.");
 }
 std::vector<std::string> Parameter::getPossNeighborFilesY(std::string sor)
 {
@@ -5115,6 +5118,7 @@ std::vector<std::string> Parameter::getPossNeighborFilesY(std::string sor)
 	{
 		return this->possNeighborFilesRecvY;
 	}
+    throw std::runtime_error("Parameter string invalid.");
 }
 std::vector<std::string> Parameter::getPossNeighborFilesZ(std::string sor)
 {
@@ -5126,6 +5130,7 @@ std::vector<std::string> Parameter::getPossNeighborFilesZ(std::string sor)
 	{
 		return this->possNeighborFilesRecvZ;
 	}
+    throw std::runtime_error("Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighborsX(int level, std::string sor)
 {
@@ -5137,6 +5142,7 @@ unsigned int Parameter::getNumberOfProcessNeighborsX(int level, std::string sor)
 	{
 		return (unsigned int)parH[level]->recvProcessNeighborX.size();
 	}
+    throw std::runtime_error("Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighborsY(int level, std::string sor)
 {
@@ -5148,6 +5154,7 @@ unsigned int Parameter::getNumberOfProcessNeighborsY(int level, std::string sor)
 	{
 		return (unsigned int)parH[level]->recvProcessNeighborY.size();
 	}
+    throw std::runtime_error("Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighborsZ(int level, std::string sor)
 {
@@ -5159,7 +5166,9 @@ unsigned int Parameter::getNumberOfProcessNeighborsZ(int level, std::string sor)
 	{
 		return (unsigned int)parH[level]->recvProcessNeighborZ.size();
 	}
+    throw std::runtime_error("Parameter string invalid.");
 }
+
 bool Parameter::getIsNeighborX()
 {
 	return this->isNeigborX;

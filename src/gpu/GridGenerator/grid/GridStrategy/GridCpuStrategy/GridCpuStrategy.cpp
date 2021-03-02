@@ -40,20 +40,20 @@ void GridCpuStrategy::allocateQs(SPtr<GridImp> grid)
     grid->qPatches = new uint[grid->getNumberOfSolidBoundaryNodes()];
     //grid->qPatches.resize( grid->getNumberOfSolidBoundaryNodes() );
 
-    for( int i = 0; i < grid->getNumberOfSolidBoundaryNodes(); i++ )
+    for( uint i = 0; i < grid->getNumberOfSolidBoundaryNodes(); i++ )
         grid->qPatches[i] = INVALID_INDEX;
 
-	const uint numberOfQs = grid->getNumberOfSolidBoundaryNodes() * (grid->distribution.dir_end + 1);
-	grid->qValues = new real[numberOfQs];
+    const uint numberOfQs = grid->getNumberOfSolidBoundaryNodes() * (grid->distribution.dir_end + 1);
+    grid->qValues = new real[numberOfQs];
 #pragma omp parallel for
-	for (int i = 0; i < numberOfQs; i++)
+	for (int i = 0; i < (int)numberOfQs; i++)
 		grid->qValues[i] = -1.0;
 }
 
 void GridCpuStrategy::initalNodesToOutOfGrid(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
-    for (int index = 0; index < grid->size; index++)
+    for (int index = 0; index < (int)grid->size; index++)
         grid->initalNodeToOutOfGrid(index);
 }
 
@@ -66,7 +66,7 @@ void GridCpuStrategy::allocateFieldMemory(Field* field)
 void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
-    for (int index = 0; index < grid->size; index++)
+    for (int index = 0; index < (int)grid->size; index++)
         grid->findInnerNode(index);
 }
 
@@ -74,11 +74,11 @@ void GridCpuStrategy::addOverlap(SPtr<GridImp> grid)
 {
 
 #pragma omp parallel for
-    for( int index = 0; index < grid->size; index++ )
+    for( int index = 0; index < (int)grid->size; index++ )
         grid->setOverlapTmp( index );
 
 #pragma omp parallel for
-    for( int index = 0; index < grid->size; index++ )
+    for( int index = 0; index < (int)grid->size; index++ )
         grid->setOverlapFluid( index );
 }
 
@@ -86,31 +86,31 @@ void GridCpuStrategy::addOverlap(SPtr<GridImp> grid)
 void GridCpuStrategy::fixOddCells(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
-    for (int index = 0; index < grid->size; index++)
+    for (int index = 0; index < (int)grid->size; index++)
         grid->fixOddCell(index);
 }
 
 void GridCpuStrategy::fixRefinementIntoWall(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
-	for (int xIdx = 0; xIdx < grid->nx; xIdx++){
-	    for (int yIdx = 0; yIdx < grid->ny; yIdx++){
+	for (int xIdx = 0; xIdx < (int)grid->nx; xIdx++){
+	    for (uint yIdx = 0; yIdx < grid->ny; yIdx++){
 		    grid->fixRefinementIntoWall( xIdx, yIdx, 0         ,  3 );
 		    grid->fixRefinementIntoWall( xIdx, yIdx, grid->nz-1, -3 );
         }
     }
 
 #pragma omp parallel for
-	for (int xIdx = 0; xIdx < grid->nx; xIdx++){
-	    for (int zIdx = 0; zIdx < grid->nz; zIdx++){
+	for (int xIdx = 0; xIdx < (int)grid->nx; xIdx++){
+	    for (uint zIdx = 0; zIdx < grid->nz; zIdx++){
 		    grid->fixRefinementIntoWall( xIdx, 0,          zIdx,  2 );
 		    grid->fixRefinementIntoWall( xIdx, grid->ny-1, zIdx, -2 );
         }
     }
 
 #pragma omp parallel for
-	for (int yIdx = 0; yIdx < grid->ny; yIdx++){
-	    for (int zIdx = 0; zIdx < grid->nz; zIdx++){
+	for (int yIdx = 0; yIdx < (int)grid->ny; yIdx++){
+	    for (uint zIdx = 0; zIdx < grid->nz; zIdx++){
 		    grid->fixRefinementIntoWall( 0,          yIdx, zIdx,  1 );
 		    grid->fixRefinementIntoWall( grid->nx-1, yIdx, zIdx, -1 );
         }
@@ -121,28 +121,28 @@ void GridCpuStrategy::fixRefinementIntoWall(SPtr<GridImp> grid)
 void GridCpuStrategy::findStopperNodes(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
-    for (int index = 0; index < grid->size; index++)
+    for (int index = 0; index < (int)grid->size; index++)
         grid->findStopperNode(index);
 }
 
 void GridCpuStrategy::findEndOfGridStopperNodes(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
-	for (int index = 0; index < grid->size; index++)
+	for (int index = 0; index < (int)grid->size; index++)
 		grid->findEndOfGridStopperNode(index);
 }
 
 void GridCpuStrategy::findSolidStopperNodes(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
-	for (int index = 0; index < grid->size; index++)
+	for (int index = 0; index < (int)grid->size; index++)
 		grid->findSolidStopperNode(index);
 }
 
 void GridCpuStrategy::findBoundarySolidNodes(SPtr<GridImp> grid)
 {
 //#pragma omp parallel for
-	for (int index = 0; index < grid->size; index++)
+	for (int index = 0; index < (int)grid->size; index++)
 	{
 		grid->findBoundarySolidNode(index);
 	}
@@ -160,7 +160,7 @@ uint GridCpuStrategy::closeNeedleCells(SPtr<GridImp> grid)
     uint numberOfClosedNeedleCells = 0;
 
 #pragma omp parallel for reduction(+:numberOfClosedNeedleCells)
-	for (int index = 0; index < grid->size; index++)
+	for (int index = 0; index < (int)grid->size; index++)
 	{
 		if( grid->closeCellIfNeedle(index) )
             numberOfClosedNeedleCells++;
@@ -174,7 +174,7 @@ uint GridCpuStrategy::closeNeedleCellsThinWall(SPtr<GridImp> grid)
     uint numberOfClosedNeedleCells = 0;
 
 #pragma omp parallel for reduction(+:numberOfClosedNeedleCells)
-	for (int index = 0; index < grid->size; index++)
+	for (int index = 0; index < (int)grid->size; index++)
 	{
 		if( grid->closeCellIfNeedleThinWall(index) )
             numberOfClosedNeedleCells++;
@@ -197,8 +197,6 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     const auto fineLevel = fineGrid->getLevel();
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "find interface level " << coarseLevel << " -> " << fineLevel;
-    const uint oldGridSize = grid->getSparseSize();
-
 
     grid->gridInterface = new GridInterface();
     // TODO: this is stupid! concave refinements can easily have many more interface cells
@@ -210,22 +208,21 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     grid->gridInterface->fc.fine   = new uint[sizeCF];
     grid->gridInterface->fc.offset = new uint[sizeCF];
 
-    for (int index = 0; index < grid->getSize(); index++)
+    for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceCF(index, *fineGrid, lbmOrGks);
 
-    for (int index = 0; index < grid->getSize(); index++)
+    for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceFC(index, *fineGrid);
 
-    for (int index = 0; index < grid->getSize(); index++)
+    for (uint index = 0; index < grid->getSize(); index++)
         grid->findOverlapStopper(index, *fineGrid);
 
     if( lbmOrGks == GKS )
     {
-        for (int index = 0; index < grid->getSize(); index++)
+        for (uint index = 0; index < grid->getSize(); index++)
             grid->findInvalidBoundaryNodes(index);
     }
 
-    const uint newGridSize = grid->getSparseSize();
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "  ... done. \n";
 }
 
@@ -249,18 +246,18 @@ void GridCpuStrategy::findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> 
 void GridCpuStrategy::findForNeighborsNewIndices(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
-    for (int index = 0; index < grid->getSize(); index++)
+    for (int index = 0; index < (int)grid->getSize(); index++)
         grid->setNeighborIndices(index);
 }
 
 void GridCpuStrategy::findForGridInterfaceNewIndices(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)
 {
 #pragma omp parallel for
-    for (int index = 0; index < grid->getNumberOfNodesCF(); index++)
+    for (int index = 0; index < (int)grid->getNumberOfNodesCF(); index++)
         grid->gridInterface->findForGridInterfaceSparseIndexCF(grid.get(), fineGrid.get(), index);
 
 #pragma omp parallel for
-    for (int index = 0; index < grid->getNumberOfNodesFC(); index++)
+    for (int index = 0; index < (int)grid->getNumberOfNodesFC(); index++)
         grid->gridInterface->findForGridInterfaceSparseIndexFC(grid.get(), fineGrid.get(), index);
 }
 

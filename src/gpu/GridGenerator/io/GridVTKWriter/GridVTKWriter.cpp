@@ -40,7 +40,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
         int endZ   = endZ_Loop;
         int startZ = startZ_Loop - 1;
 
-        if( endZ >= grid->getNumberOfNodesZ()  ) 
+        if(endZ >= (int)grid->getNumberOfNodesZ()) 
             endZ = grid->getNumberOfNodesZ();
 
         if( startZ < 0 )
@@ -66,7 +66,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
         {
             for (uint yIndex = 0; yIndex < grid->getNumberOfNodesY(); yIndex++)
             {
-                for (uint zIndex = startZ; zIndex < endZ; zIndex++)
+                for (int zIndex = startZ; zIndex < endZ; zIndex++)
                 {
                     real x, y, z;
                     uint index =
@@ -92,7 +92,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
         {
             for (uint yIndex = 0; yIndex < grid->getNumberOfNodesY() - 1; yIndex++)
             {
-                for (uint zIndex = startZ; zIndex < endZ - 1; zIndex++)
+                for (int zIndex = startZ; zIndex < endZ - 1; zIndex++)
                 {
                     real x, y, z;
                     uint index = grid->getNumberOfNodesX() * grid->getNumberOfNodesY() * zIndex
@@ -141,7 +141,7 @@ void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> 
             matrixIndices[ sparseIndex ] = matrixIndex;
     }
 
-    for( int index = 0; index < grid->getNumberOfNodesCF(); index++ ){
+    for( uint index = 0; index < grid->getNumberOfNodesCF(); index++ ){
         nodeInterpolationCellType[ matrixIndices[ grid->getCF_coarse()[index] ] ] = grid->getFieldEntry( matrixIndices[ grid->getCF_coarse()[index] ] );
 
         nodeOffset               [ matrixIndices[ grid->getCF_coarse()[index] ] ] = grid->getCF_offset()[index];
@@ -153,11 +153,11 @@ void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> 
 
     if( gridCoarse ){
 
-        for( int index = 0; index < gridCoarse->getNumberOfNodesCF(); index++ ){
+        for( uint index = 0; index < gridCoarse->getNumberOfNodesCF(); index++ ){
             nodeInterpolationCellType[ matrixIndices[ gridCoarse->getCF_fine()[index] ] ] = grid->getFieldEntry( matrixIndices[ gridCoarse->getCF_fine()[index] ] );
         }
 
-        for( int index = 0; index < gridCoarse->getNumberOfNodesFC(); index++ ){
+        for( uint index = 0; index < gridCoarse->getNumberOfNodesFC(); index++ ){
             nodeInterpolationCellType[ matrixIndices[ gridCoarse->getFC_fine()[index] ] ] = grid->getFieldEntry( matrixIndices[ gridCoarse->getFC_fine()[index] ] );
 
             nodeOffset               [ matrixIndices[ gridCoarse->getFC_fine()[index] ] ] = gridCoarse->getFC_offset()[index];
@@ -437,7 +437,7 @@ void GridVTKWriter::writeTypes(SPtr<Grid> grid)
 void GridVTKWriter::end_line()
 {
 	char str2[8] = "\n";
-	fprintf(file, str2);
+	fprintf(file, "%s", str2);
 }
 
 void GridVTKWriter::write_int(int val)

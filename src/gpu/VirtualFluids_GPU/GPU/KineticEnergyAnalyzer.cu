@@ -89,6 +89,9 @@ bool KineticEnergyAnalyzer::run(uint iter)
     //std::cout << "EKin " << EKin << "   " << numberOfFluidNodes << std::endl;
 
     this->kineticEnergyTimeSeries.push_back( EKin / real(numberOfFluidNodes) );
+
+    //TODO: Should this function probably return nothing?
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

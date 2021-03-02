@@ -28,6 +28,8 @@ enum class SideType
 class Side
 {
 public:
+    virtual ~Side() = default;
+
     virtual void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition) = 0;
 
     virtual int getCoordinate() const = 0;
@@ -218,6 +220,8 @@ public:
             return SPtr<Side>(new PZ());
         case SideType::GEOMETRY:
             return SPtr<Side>(new Geometry());
+        default:
+            throw std::runtime_error("SideFactory::make() - SideType not valid.");
         }
     }
 };

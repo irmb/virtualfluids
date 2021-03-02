@@ -122,7 +122,7 @@ void printDragLift(Parameter* para, CudaMemoryManager* cudaManager, int timestep
 	//close file
 	ostr.close();
 	//////////////////////////////////////////////////////////////////////////
-	if (timestep == para->getTEnd())
+	if (timestep == (int)para->getTEnd())
 	{
 		cudaManager->cudaFreeDragLift(lev);
 	}

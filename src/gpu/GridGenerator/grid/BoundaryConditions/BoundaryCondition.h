@@ -16,6 +16,8 @@ enum class SideType;
 class BoundaryCondition
 {
 public:
+    virtual ~BoundaryCondition() = default;
+
     std::vector<uint> indices;
     SPtr<Side> side;
     std::vector<std::vector<real> > qs;
@@ -81,7 +83,8 @@ public:
 
     void fillVelocityLists()
     {
-        for( uint index : this->indices ){
+        for( uint index : this->indices ) {
+            (void) index;
             this->vxList.push_back(vx);
             this->vyList.push_back(vy);
             this->vzList.push_back(vz);

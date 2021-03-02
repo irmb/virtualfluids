@@ -265,8 +265,8 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 			//real omega = omega_in;
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
-			real oMdrho = c1o1; // comp special
-			real m0, m1, m2;
+			//real oMdrho = c1o1; // comp special
+			//real m0, m1, m2;
 			real vx2;
 			real vy2;
 			real vz2;
@@ -274,10 +274,10 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 			vy2 = vvy*vvy;
 			vz2 = vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
-			real wadjust;
-			real qudricLimitP = c1o100;// * 0.0001f;
-			real qudricLimitM = c1o100;// * 0.0001f;
-			real qudricLimitD = c1o100;// * 0.001f;
+			//real wadjust;
+			//real qudricLimitP = c1o100;// * 0.0001f;
+			//real qudricLimitM = c1o100;// * 0.0001f;
+			//real qudricLimitD = c1o100;// * 0.001f;
 			//real s9 = minusomega;
 			//test
 			//s9 = 0.;
@@ -486,7 +486,7 @@ extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_
 			//////////////////////////////
 			real OxyyPxzz = c1o1;
 			real OxyyMxzz = c1o1;
-			real Oxyz = c1o1;
+			//real Oxyz = c1o1;
 			////////////////////////////////////////////////////////////
 			//4.
 			//////////////////////////////
@@ -1180,8 +1180,8 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 			//real omega = omega_in;
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
-			real oMdrho = c1o1; // comp special
-			real m0, m1, m2;
+			//real oMdrho = c1o1; // comp special
+			//real m0, m1, m2;
 			real vx2;
 			real vy2;
 			real vz2;
@@ -1189,10 +1189,10 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 			vy2 = vvy*vvy;
 			vz2 = vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
-			real wadjust;
-			real qudricLimitP = c1o100;// * 0.0001f;
-			real qudricLimitM = c1o100;// * 0.0001f;
-			real qudricLimitD = c1o100;// * 0.001f;
+			//real wadjust;
+			//real qudricLimitP = c1o100;// * 0.0001f;
+			//real qudricLimitM = c1o100;// * 0.0001f;
+			//real qudricLimitD = c1o100;// * 0.001f;
 			//real s9 = minusomega;
 			//test
 			//s9 = 0.;
@@ -1401,7 +1401,7 @@ extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
 			//////////////////////////////
 			real OxyyPxzz = c1o1;
 			real OxyyMxzz = c1o1;
-			real Oxyz = c1o1;
+			//real Oxyz = c1o1;
 			////////////////////////////////////////////////////////////
 			//4.
 			//////////////////////////////
@@ -1953,8 +1953,8 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 			//real omega = omega_in;
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
-			real oMdrho = c1o1; // comp special
-			real m0, m1, m2;
+			//real oMdrho = c1o1; // comp special
+			//real m0, m1, m2;
 			real vx2;
 			real vy2;
 			real vz2;
@@ -1962,10 +1962,10 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 			vy2 = vvy*vvy;
 			vz2 = vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
-			real wadjust;
-			real qudricLimitP = c1o100;// * 0.0001f;
-			real qudricLimitM = c1o100;// * 0.0001f;
-			real qudricLimitD = c1o100;// * 0.001f;
+			//real wadjust;
+			//real qudricLimitP = c1o100;// * 0.0001f;
+			//real qudricLimitM = c1o100;// * 0.0001f;
+			//real qudricLimitD = c1o100;// * 0.001f;
 			////////////////////////////////////////////////////////////////////////////////////
 			//Hin
 			////////////////////////////////////////////////////////////////////////////////////
@@ -2019,7 +2019,7 @@ extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
 			//////////////////////////////
 			real OxyyPxzz = c1o1;
 			real OxyyMxzz = c1o1;
-			real Oxyz = c1o1;
+			//real Oxyz = c1o1;
 			////////////////////////////////////////////////////////////
 			//4.
 			//////////////////////////////

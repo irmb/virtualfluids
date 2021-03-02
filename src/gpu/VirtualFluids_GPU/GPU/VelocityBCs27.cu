@@ -2870,7 +2870,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
       ////////////////////////////////////////////////////////////////////////////////
       //index
       unsigned int KQK  = k_Q[k];
-      unsigned int kzero= KQK;
+      //unsigned int kzero= KQK;
       unsigned int ke   = KQK;
       unsigned int kw   = neighborX[KQK];
       unsigned int kn   = KQK;

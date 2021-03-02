@@ -16,13 +16,11 @@ class CudaMemoryManager;
 class DataWriter
 {
 public:
-	DataWriter() {}
-    virtual ~DataWriter() {}
+	DataWriter() = default;
+    virtual ~DataWriter() = default;
 
     virtual void writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager) = 0;
     virtual void writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep) = 0;
 	virtual void writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level) = 0;
-
-    DataWriter(const DataWriter& dataWriter) {}
 };
 #endif

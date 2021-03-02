@@ -58,7 +58,7 @@ void ConfigFile::get_token_and_value(void)
    }
    if (i==0)
    {
-      // It didn’t find a token, in this case.
+      // It didnï¿½t find a token, in this case.
       m_token="";
       m_value="";
       return;
@@ -78,7 +78,7 @@ void ConfigFile::get_token_and_value(void)
          return;
       }
    }
-   // Get the token’s value.
+   // Get the tokenï¿½s value.
    i=0;
    char c = eat_white_and_comments(false);
    if ( c != '\n' )
@@ -139,6 +139,7 @@ char ConfigFile::eat_white_and_comments(bool traverse_newlines)
    bool in_comment;
    in_comment = false;
    while (!(m_in.get(ch)).fail())
+   {
       if (ch == '#')
          in_comment = true;
       else if (ch == '\n')
@@ -155,7 +156,8 @@ char ConfigFile::eat_white_and_comments(bool traverse_newlines)
          m_in.putback(ch);
          return 0;
       }
-      return 0;
+   }
+   return 0;
 }
 void ConfigFile::makeLower(std::string &instring)
 {

@@ -144,7 +144,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_7(real diffusivity,
 			real fTN = (D.f[dirBS])[kbs];
 			real fTS = (D.f[dirBN])[kb];//kbn
 			real fBN = (D.f[dirTS])[ks];//kts
-			real fZERO = (D.f[dirZERO])[k];//kzero
+			//real fZERO = (D.f[dirZERO])[k];//kzero
 			real fBSW = (D.f[dirTNE])[k];//ktne
 			real fBNE = (D.f[dirTSW])[ksw];//ktsw
 			real fBNW = (D.f[dirTSE])[ks];//ktse
@@ -192,14 +192,14 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_7(real diffusivity,
 			real vx = ((fTNE - fBSW) + (fBNE - fTSW) + (fTSE - fBNW) + (fBSE - fTNW) + (fNE - fSW) + (fSE - fNW) + (fTE - fBW) + (fBE - fTW) + (fE - fW));
 			real vy = ((fTNE - fBSW) + (fBNE - fTSW) + (fBNW - fTSE) + (fTNW - fBSE) + (fNE - fSW) + (fNW - fSE) + (fTN - fBS) + (fBN - fTS) + (fN - fS));
 			real vz = ((fTNE - fBSW) + (fTSW - fBNE) + (fTSE - fBNW) + (fTNW - fBSE) + (fTE - fBW) + (fTW - fBE) + (fTN - fBS) + (fTS - fBN) + (fT - fB));
-			////dörrrrrty !!!!!!!!!!!!!
+			////dï¿½rrrrrty !!!!!!!!!!!!!
 			//      real vx     =  ten * ((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
 			//      real vy     =  ten * ((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
 			//      real vz     =  ten * ((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
 			////////////////////////////////////////////////////////////////////////////////
-			real ux_sq = vx * vx;
-			real uy_sq = vy * vy;
-			real uz_sq = vz * vz;
+			//real ux_sq = vx * vx;
+			//real uy_sq = vy * vy;
+			//real uz_sq = vz * vz;
 			////////////////////////////////////////////////////////////////////////////////
 			//BGK
 			//real omegaD     = -three + sqrt(three); !!!!!!!!!!!!!!Achtung!!!!!!!!!!!!!!!!!! anderes Vorzeichen als in den Randbedingungen
@@ -219,10 +219,10 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_7(real diffusivity,
 
 			////////////////////////////////////////////////////////////////////////////////
 			//TRT  Yoshida Kernel - based on Ying
-			real cs2 = c1o4;
+			//real cs2 = c1o4;
 			real Lam = diffusivity*c4o1;//diffusivity/(one)/cs2;
 			real omegaD = -c1o1 / (Lam + c1o2);
-			real ae = c0o1;
+			//real ae = c0o1;
 			////////////////////////////////////////////////////////////////////////////////
 			real ConcD = f7ZERO + f7E + f7W + f7N + f7S + f7T + f7B;
 

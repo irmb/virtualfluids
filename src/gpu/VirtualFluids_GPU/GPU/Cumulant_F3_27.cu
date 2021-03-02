@@ -230,10 +230,10 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			vy2 = vvy*vvy;
 			vz2 = vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
-			real wadjust;
-			real qudricLimitP = 0.01f;// * 0.0001f;
-			real qudricLimitM = 0.01f;// * 0.0001f;
-			real qudricLimitD = 0.01f;// * 0.001f;
+			//real wadjust;
+			//real qudricLimitP = 0.01f;// * 0.0001f;
+			//real qudricLimitM = 0.01f;// * 0.0001f;
+			//real qudricLimitD = 0.01f;// * 0.001f;
 									  ////////////////////////////////////////////////////////////////////////////////////
 									  //Hin
 									  ////////////////////////////////////////////////////////////////////////////////////
@@ -472,55 +472,39 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 									////////////////////////////////////////////////////////////
 									//3.
 									//////////////////////////////
-			real OxyyPxzz = c8o1*(-c2o1 + omega)*(c1o1 + c2o1*omega) / (-c8o1 - c14o1*omega + c7o1*omega*omega);//one;
-			real OxyyMxzz = c8o1*(-c2o1 + omega)*(-c7o1 + c4o1*omega) / (c56o1 - c50o1*omega + c9o1*omega*omega);//one;
-			real Oxyz = c24o1*(-c2o1 + omega)*(-c2o1 - c7o1*omega + c3o1*omega*omega) / (c48o1 + c152o1*omega - c130o1*omega*omega + c29o1*omega*omega*omega);//one;
+			//real OxyyPxzz = c8o1*(-c2o1 + omega)*(c1o1 + c2o1*omega) / (-c8o1 - c14o1*omega + c7o1*omega*omega);//one;
+			//real OxyyMxzz = c8o1*(-c2o1 + omega)*(-c7o1 + c4o1*omega) / (c56o1 - c50o1*omega + c9o1*omega*omega);//one;
+			//real Oxyz = c24o1*(-c2o1 + omega)*(-c2o1 - c7o1*omega + c3o1*omega*omega) / (c48o1 + c152o1*omega - c130o1*omega*omega + c29o1*omega*omega*omega);//one;
 																																										  ////////////////////////////////////////////////////////////
-																																										  //4.
-																																										  //////////////////////////////
-			real O4 = c1o1;
-			//////////////////////////////
-			//real O4        = omega;//TRT
-			////////////////////////////////////////////////////////////
-			//5.
-			//////////////////////////////
-			real O5 = c1o1;
-			////////////////////////////////////////////////////////////
-			//6.
-			//////////////////////////////
-			real O6 = c1o1;
-			////////////////////////////////////////////////////////////
-
-
 			//central moments to cumulants
 			//4.
-			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho;
-			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho;
-			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho;
+			//real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + c2o1 * mfbba * mfbab) / rho;
+			//real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + c2o1 * mfbba * mfabb) / rho;
+			//real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + c2o1 * mfbab * mfabb) / rho;
 
-			real CUMcca = mfcca - (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
-			real CUMcac = mfcac - (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
-			real CUMacc = mfacc - (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
+			//real CUMcca = mfcca - (((mfcaa * mfaca + c2o1 * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho - c1o9*(drho / rho));
+			//real CUMcac = mfcac - (((mfcaa * mfaac + c2o1 * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho - c1o9*(drho / rho));
+			//real CUMacc = mfacc - (((mfaac * mfaca + c2o1 * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho - c1o9*(drho / rho));
 
 			//5.
-			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
-			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
-			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
+			//real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + c4o1 * mfabb * mfbbb + c2o1 * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)) / rho;
+			//real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + c4o1 * mfbab * mfbbb + c2o1 * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc)) / rho;
+			//real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + c4o1 * mfbba * mfbbb + c2o1 * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab)) / rho;
 
 			//6.
 
-			real CUMccc = mfccc + ((-c4o1 *  mfbbb * mfbbb
-				- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-				- c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-				- c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
-				+ (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-					+ c2o1 * (mfcaa * mfaca * mfaac)
-					+ c16o1 *  mfbba * mfbab * mfabb) / (rho * rho)
-				- c1o3 * (mfacc + mfcac + mfcca) / rho
-				- c1o9 * (mfcaa + mfaca + mfaac) / rho
-				+ (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
-					+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3
-				+ c1o27*((drho * drho - drho) / (rho*rho)));
+			//real CUMccc = mfccc + ((-c4o1 *  mfbbb * mfbbb
+			//	- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
+			//	- c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+			//	- c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
+			//	+ (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+			//		+ c2o1 * (mfcaa * mfaca * mfaac)
+			//		+ c16o1 *  mfbba * mfbab * mfabb) / (rho * rho)
+			//	- c1o3 * (mfacc + mfcac + mfcca) / rho
+			//	- c1o9 * (mfcaa + mfaca + mfaac) / rho
+			//	+ (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+			//		+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) / (rho * rho) * c2o3
+			//	+ c1o27*((drho * drho - drho) / (rho*rho)));
 
 			//2.
 			// linear combinations
@@ -529,9 +513,9 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 			real mxxMzz = mfcaa - mfaac;
 
 			////////////////////////////////////////////////////////////////////////////
-			real Dxy = -c3o1*omega*mfbba;
-			real Dxz = -c3o1*omega*mfbab;
-			real Dyz = -c3o1*omega*mfabb;
+			//real Dxy = -c3o1*omega*mfbba;
+			//real Dxz = -c3o1*omega*mfbab;
+			//real Dyz = -c3o1*omega*mfabb;
 
 			//3.
 			// linear combinations
@@ -2239,7 +2223,7 @@ extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(real omega,
 //								  //				mfbbc-mfbba;
 //								  ////////////////////////////////////////////////////////////////////////////////////
 //								  // oMdrho assembler style -------> faaaaaastaaaa
-//								  // or much sloooowaaaa ... it depändssssss on sadaku
+//								  // or much sloooowaaaa ... it depï¿½ndssssss on sadaku
 //			real m0, m1, m2;
 //			//real oMdrho;
 //			//{

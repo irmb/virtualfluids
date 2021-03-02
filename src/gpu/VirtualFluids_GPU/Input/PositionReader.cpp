@@ -2,33 +2,33 @@
 
 #include "basics/utilities/UbFileInputASCII.h"
 
-static const int E    = dirE;		   //static const int E    = 0;
-static const int W    = dirW;		   //static const int W    = 1;
-static const int N    = dirN;		   //static const int N    = 2;
-static const int S    = dirS;		   //static const int S    = 3;
-static const int T    = dirT;		   //static const int T    = 4;
-static const int B    = dirB;		   //static const int B    = 5;
-static const int NE   = dirNE;		   //static const int NE   = 6;
-static const int SW   = dirSW;		   //static const int SW   = 7;
-static const int SE   = dirSE;		   //static const int SE   = 8;
-static const int NW   = dirNW;		   //static const int NW   = 9;
-static const int TE   = dirTE;		   //static const int TE   = 10;
-static const int BW   = dirBW;		   //static const int BW   = 11;
-static const int BE   = dirBE;		   //static const int BE   = 12;
-static const int TW   = dirTW;		   //static const int TW   = 13;
-static const int TN   = dirTN;		   //static const int TN   = 14;
-static const int BS   = dirBS;		   //static const int BS   = 15;
-static const int BN   = dirBN;		   //static const int BN   = 16;
-static const int TS   = dirTS;		   //static const int TS   = 17;
-static const int TNE  = dirTNE;		   //static const int TNE  = 18;
-static const int TNW  = dirTNW;		   //static const int TNW  = 19;
-static const int TSE  = dirTSE;		   //static const int TSE  = 20;
-static const int TSW  = dirTSW;		   //static const int TSW  = 21;
-static const int BNE  = dirBNE;		   //static const int BNE  = 22;
-static const int BNW  = dirBNW;		   //static const int BNW  = 23;
-static const int BSE  = dirBSE;		   //static const int BSE  = 24;
-static const int BSW  = dirBSW;		   //static const int BSW  = 25;
-static const int ZERO = dirZERO;	   //static const int ZERO = 26;
+// static const int E    = dirE;		   //static const int E    = 0;
+// static const int W    = dirW;		   //static const int W    = 1;
+// static const int N    = dirN;		   //static const int N    = 2;
+// static const int S    = dirS;		   //static const int S    = 3;
+// static const int T    = dirT;		   //static const int T    = 4;
+// static const int B    = dirB;		   //static const int B    = 5;
+// static const int NE   = dirNE;		   //static const int NE   = 6;
+// static const int SW   = dirSW;		   //static const int SW   = 7;
+// static const int SE   = dirSE;		   //static const int SE   = 8;
+// static const int NW   = dirNW;		   //static const int NW   = 9;
+// static const int TE   = dirTE;		   //static const int TE   = 10;
+// static const int BW   = dirBW;		   //static const int BW   = 11;
+// static const int BE   = dirBE;		   //static const int BE   = 12;
+// static const int TW   = dirTW;		   //static const int TW   = 13;
+// static const int TN   = dirTN;		   //static const int TN   = 14;
+// static const int BS   = dirBS;		   //static const int BS   = 15;
+// static const int BN   = dirBN;		   //static const int BN   = 16;
+// static const int TS   = dirTS;		   //static const int TS   = 17;
+// static const int TNE  = dirTNE;		   //static const int TNE  = 18;
+// static const int TNW  = dirTNW;		   //static const int TNW  = 19;
+// static const int TSE  = dirTSE;		   //static const int TSE  = 20;
+// static const int TSW  = dirTSW;		   //static const int TSW  = 21;
+// static const int BNE  = dirBNE;		   //static const int BNE  = 22;
+// static const int BNW  = dirBNW;		   //static const int BNW  = 23;
+// static const int BSE  = dirBSE;		   //static const int BSE  = 24;
+// static const int BSW  = dirBSW;		   //static const int BSW  = 25;
+// static const int ZERO = dirZERO;	   //static const int ZERO = 26;
 								 
 								 
 static const int INV_E   = dirE;		   //= W;  
@@ -91,7 +91,7 @@ const int INVDIR[] = {	INV_E,
 
 static const int        optionDigits = 2;  //--> 2 bits f�r secondary Option
 static const long long  maxOptionVal = ( 1<<optionDigits ) - 1; //2^3-1 -> 7
-float q[27]; 
+//float q[27]; 
 long long noslipBoundaryFlags;		
 																     
 

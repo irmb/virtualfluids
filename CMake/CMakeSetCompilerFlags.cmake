@@ -68,6 +68,9 @@ function(addAdditionalFlags project_name)
     # compile options
     foreach(flag IN LISTS CS_COMPILER_FLAGS_CXX)
         target_compile_options(${project_name} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${flag}>")
+        if(MSVC)
+            target_compile_options(${project_name} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${flag}>")
+        endif()
     endforeach()
 
     foreach(flag IN LISTS CS_COMPILER_FLAGS_CXX_DEBUG)

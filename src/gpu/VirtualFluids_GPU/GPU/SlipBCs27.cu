@@ -1717,7 +1717,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(real* DD,
 	  real VeloZ = vx3;
 	  real fac = c0o1;//0.5;
  	  real phi = c0o1;
-	  real alpha = c1o100;
+	  //real alpha = c1o100;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real kxyFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE ) / (c1o1 + drho) - ((vx1*vx2)));
       real kyzFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW ) / (c1o1 + drho) - ((vx2*vx3)));
@@ -2602,7 +2602,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 	  real VeloY = vx2;
 	  real VeloZ = vx3;
 	  real fac = c1o100;//0.5;
- 	  real phi = c0o1;
+ 	  //real phi = c0o1;
 	  real alpha = c1o100;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real kxyFromfcNEQ = -(c3o1 * om1 / (c1o1-om1))*((f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE ) / (c1o1 + drho) - ((vx1*vx2)));

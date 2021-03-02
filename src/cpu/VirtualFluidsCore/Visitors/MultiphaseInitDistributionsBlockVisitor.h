@@ -95,8 +95,8 @@ private:
 
 	LBMReal nu;
 	LBMReal densityRatio;
-	LBMReal intThickness;
-	LBMReal radius;
+	//LBMReal intThickness;
+	//LBMReal radius;
 };
 
 #endif //D3Q27INITDISTRIBUTIONSPATCHVISITOR_H

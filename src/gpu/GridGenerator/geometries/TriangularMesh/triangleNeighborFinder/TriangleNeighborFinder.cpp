@@ -237,12 +237,11 @@ void TriangleNeighborFinder::fillWithNeighborIndices(IntegerPtr2D *neighborIndic
 
 void TriangleNeighborFinder::fillWithNeighborAngles(TriangularMesh *geom) const
 {
-    int j, row, index, indexNeighbor;
+    int j, index, indexNeighbor;
     //#pragma omp parallel for private(j, row, index, indexNeighbor) shared(neighborAngles->ptr)
-    for (int i = 0; i < indicesOfTriangleNeighbors.size(); i++){
-        row = i * 3;
+    for (int i = 0; i < (int)indicesOfTriangleNeighbors.size(); i++){
         geom->triangles[i].alphaAngles[0] = geom->triangles[i].alphaAngles[1] = geom->triangles[i].alphaAngles[2] = 90.0f;
-        for (j = 0; j < indicesOfTriangleNeighbors[i].size(); j++){
+        for (j = 0; j < (int)indicesOfTriangleNeighbors[i].size(); j++){
             indexNeighbor = indicesOfTriangleNeighbors[i][j];
             index = geom->triangles[i].getCommonEdge(geom->triangles[indexNeighbor]);
             geom->triangles[i].alphaAngles[index] = geom->triangles[i].getHalfAngleBetweenToAdjacentTriangle(geom->triangles[indexNeighbor]);

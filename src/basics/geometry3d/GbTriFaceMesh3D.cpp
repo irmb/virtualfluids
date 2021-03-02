@@ -498,6 +498,12 @@ void GbTriFaceMesh3D::setCenterCoordinates(const double &x1, const double &x2, c
 }
 
 /*======================================================================*/
+void GbTriFaceMesh3D::setCenterCoordinates(const UbTupleDouble3 & /*position*/)
+{
+    throw UbException(UB_EXARGS, "not implemented for " + (std::string) typeid(*this).name());
+}
+
+/*======================================================================*/
 void GbTriFaceMesh3D::scale(const double &sx1, const double &sx2, const double &sx3)
 {
     CoordinateTransformation3D trafoForw(this->getX1Centroid(), this->getX2Centroid(), this->getX3Centroid(), 1.0, 1.0,

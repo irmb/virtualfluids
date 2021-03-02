@@ -1,4 +1,4 @@
-#ifndef AD_KERNEL_MAPPPER_H
+#ifndef AD_KERNEL_MAPPER_H
 #define AD_KERNEL_MAPPER_H
 
 #include "Utilities/EnumMapper/EnumMapperImp.h"

@@ -112,7 +112,7 @@ void StreetPointFinder::prepareSimulationFileData()
 	//////////////////////////////////////////////////////////////////////////
 	// prepare vectors
 
-	uint numberOfCells = this->sparseIndicesLB.size();
+	uint numberOfCells = (uint)this->sparseIndicesLB.size();
 
 	mapNashToConc.resize(numberOfCells);
 
@@ -518,7 +518,8 @@ void StreetPointFinder::writeStreetVectorFile(std::string gridPath, real concent
 			{
 				for (auto& sparseIndexLB : street.sparseIndicesLB)
 				{
-					// + 1 for numbering shift between GridGenerator and VF_GPU
+                    (void) sparseIndexLB;
+ 					// + 1 for numbering shift between GridGenerator and VF_GPU
 					file << street.getVectorX() << " " << street.getVectorY() << "\n";
 				}
 			}

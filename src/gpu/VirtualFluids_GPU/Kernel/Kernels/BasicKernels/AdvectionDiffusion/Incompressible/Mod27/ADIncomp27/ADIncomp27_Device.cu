@@ -184,7 +184,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(real diffusivity,
 			real fTN = (D.f[dirBS])[kbs];
 			real fTS = (D.f[dirBN])[kb];//kbn
 			real fBN = (D.f[dirTS])[ks];//kts
-			real fZERO = (D.f[dirZERO])[k];//kzero
+			//real fZERO = (D.f[dirZERO])[k];//kzero
 			real fBSW = (D.f[dirTNE])[k];//ktne
 			real fBNE = (D.f[dirTSW])[ksw];//ktsw
 			real fBNW = (D.f[dirTSE])[ks];//ktse
@@ -260,7 +260,7 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(real diffusivity,
 			real drho = ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
 				(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 				((mfabb + mfcbb) + (mfbab + mfbcb)) + (mfbba + mfbbc)) + mfbbb;
-			real rho = c1o1 + drho;
+			//real rho = c1o1 + drho;
 			////////////////////////////////////////////////////////////////////////////////////
 
 			real vvx = ((fTNE - fBSW) + (fBNE - fTSW) + (fTSE - fBNW) + (fBSE - fTNW) + (fNE - fSW) + (fSE - fNW) + (fTE - fBW) + (fBE - fTW) + (fE - fW));

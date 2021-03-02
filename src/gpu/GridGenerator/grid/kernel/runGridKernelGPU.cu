@@ -24,9 +24,10 @@ float runKernelInitalUniformGrid3d(const LaunchParameter& para, GridImp &grid)
 
 GLOBAL void initalField(GridImp grid)
 {
-    uint index = LaunchParameter::getGlobalIdx_2D_1D();
-    if (index < grid.getSize())
-        grid.findInnerNode(index);
+    //TODO: outcomment because of nvlink warning caused by the new allocation in Cell().
+    //uint index = LaunchParameter::getGlobalIdx_2D_1D();
+    //if (index < grid.getSize())
+    //    grid.findInnerNode(index);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -38,9 +39,10 @@ float runKernelToMesh(const LaunchParameter& para, GridImp &grid, const Triangul
 
 GLOBAL void runMeshing(GridImp grid, const TriangularMesh geom)
 {
-    unsigned int i = LaunchParameter::getGlobalIdx_1D_1D();
-    if (i < geom.size)
-        grid.mesh(geom.triangles[i]);
+    // TODO: outcomment because of nvlink warning caused by the new allocation in Cell().
+    //unsigned int i = LaunchParameter::getGlobalIdx_1D_1D();
+    //if (i < geom.size)
+    //    grid.mesh(geom.triangles[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////

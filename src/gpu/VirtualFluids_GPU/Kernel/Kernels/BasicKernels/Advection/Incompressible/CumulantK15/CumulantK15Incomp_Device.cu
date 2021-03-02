@@ -208,7 +208,7 @@ extern "C" __global__ void LB_Kernel_CumulantK15Incomp(real omega,
 																	   //				mfbbc-mfbba;
 																	   ////////////////////////////////////////////////////////////////////////////////////
 																	   // oMdrho assembler style -------> faaaaaastaaaa
-																	   // or much sloooowaaaa ... it depändssssss on sadaku
+																	   // or much sloooowaaaa ... it depï¿½ndssssss on sadaku
 			real m0, m1, m2;
 			//real oMdrho;
 			//{
@@ -305,8 +305,8 @@ extern "C" __global__ void LB_Kernel_CumulantK15Incomp(real omega,
 			vy2 = vvy*vvy;
 			vz2 = vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
-			real wadjust;
-			real qudricLimit = 0.01f;
+			//real wadjust;
+			//real qudricLimit = 0.01f;
 			//real s9 = minusomega;
 			//test
 			//s9 = 0.;
@@ -797,7 +797,7 @@ extern "C" __global__ void LB_Kernel_CumulantK15Incomp(real omega,
 			real mxxMzz = mfcaa - mfaac;
 
 			//////////////////////////////////////////////////////////////////////////
-			real magicBulk = (CUMacc + CUMcac + CUMcca)*(c1o1 / OxxPyyPzz - c1o2)*c3o2*8.;
+			//real magicBulk = (CUMacc + CUMcac + CUMcca)*(c1o1 / OxxPyyPzz - c1o2)*c3o2*8.;
 
 			//////////////////////////////////////////////////////////////////////////
 			//limiter-Scheise Teil 1

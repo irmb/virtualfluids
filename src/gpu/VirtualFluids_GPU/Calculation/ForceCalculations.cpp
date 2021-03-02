@@ -45,7 +45,7 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryMan
  {
 	 //////////////////////////////////////////////////////////////////////////
 	 double tempVeloX = 0.0, tempVeloY = 0.0, tempVeloZ = 0.0;
-	 double veloAverageX = 0.0, veloAverageY = 0.0, veloAverageZ = 0.0;
+	 double veloAverageX = 0.0; //, veloAverageY = 0.0, veloAverageZ = 0.0;
 	 double levelVeloAverageX = 0.0, levelVeloAverageY = 0.0, levelVeloAverageZ = 0.0;
 	 int counter = 0;
 	 //////////////////////////////////////////////////////////////////////////
@@ -94,8 +94,8 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para, CudaMemoryMan
 	 }
 	 //////////////////////////////////////////////////////////////////////////
 	 veloAverageX = levelVeloAverageX / (double)counter;
-	 veloAverageY = levelVeloAverageY / (double)counter;
-	 veloAverageZ = levelVeloAverageZ / (double)counter;
+	 //veloAverageY = levelVeloAverageY / (double)counter;
+	 //veloAverageZ = levelVeloAverageZ / (double)counter;
 	 //////////////////////////////////////////////////////////////////////////
 	 if (isPID)
 	 {

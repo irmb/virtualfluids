@@ -214,8 +214,8 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
     // This method computes the start and end coordinates with respect to the coarse grid
     // The following sketch visualizes this procedure for level 2:
     //
-    //                          /----------------------- domain --------------------------------\ 
-    //                          |                      /----------------- refinement region ------------------------\
+    //                          /----------------------- domain --------------------------------/ 
+    //                          |                      /----------------- refinement region ------------------------/
     //                          |                      |                                        |                   |
     //                          |                      |                                        |                   |
     // Level 2:                 |                 2   2|  2   2   2   2   2   2   2   2   2   2 | 2  (2) (2) (2)    |
@@ -461,16 +461,16 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     // Figure 5.2 in the Dissertation of Stephan Lenz:
     // https://publikationsserver.tu-braunschweig.de/receive/dbbs_mods_00068716
     //
-    for( int level = grids.size()-1; level >= 0; level-- ){
+    for( int level = (int)grids.size()-1; level >= 0; level-- ) {
 
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initializing level " << level << "\n";
 
         // On the coarse grid every thing is Fluid (w.r.t. the refinement)
         // On the finest grid the Fluid region is defined by the Object
         // On the intermediate levels the Fluid region is defined by the fluid region of the finer level
-        if     ( level == 0 )
+        if(level == 0)
             grids[level]->inital( nullptr, 0 );
-        else if( level == grids.size()-1 )
+        else if(level == (int)grids.size() - 1)
             grids[level]->inital( nullptr, this->numberOfLayersFine );
         else
             grids[level]->inital( grids[level+1], this->numberOfLayersBetweenLevels );
@@ -500,7 +500,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
         // change the following two lines. This is not tested though!
 
         //for( uint level = 0; level < grids.size(); level++ )
-        uint level = grids.size() - 1;
+        uint level = (uint)grids.size() - 1;
         {
             // the Grid::mesh(...) method distinguishes inside and ouside regions
             // of the solid domain.:
@@ -561,12 +561,12 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     //      => computes the sparse indices
     //      => generates neighbor connectivity taking into account periodic boundaries
     //      => undates the interface connectivity to sparse indices (overwrites matrix indices!)
-	if (lbmOrGks == LBM) {
-		for (size_t i = 0; i < grids.size() - 1; i++)
-			grids[i]->findSparseIndices(grids[i + 1]);
+    if (lbmOrGks == LBM) {
+        for (size_t i = 0; i < grids.size() - 1; i++)
+           grids[i]->findSparseIndices(grids[i + 1]);
 
-		grids[grids.size() - 1]->findSparseIndices(nullptr);
-	}
+        grids[grids.size() - 1]->findSparseIndices(nullptr);
+    }
 
     //////////////////////////////////////////////////////////////////////////
 }

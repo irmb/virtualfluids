@@ -165,7 +165,8 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
    real xoff,    yoff,    zoff;
    real xoff_sq, yoff_sq, zoff_sq;
 
-   real        vvx, vvy, vvz, vx2, vy2, vz2, drho;
+   // real drho;
+   real        vvx, vvy, vvz, vx2, vy2, vz2;
    real        press;//,drho,vx1,vx2,vx3;
    real        /*pressMMP,*/drhoMMP,vx1MMP,vx2MMP,vx3MMP;
    real        /*pressMPP,*/drhoMPP,vx1MPP,vx2MPP,vx3MPP;
@@ -728,6 +729,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 	  dxy  = ( ((drhoPPM - drhoPMP) + (drhoPPP - drhoPMM)) + ((drhoMMP - drhoMPM) + (drhoMMM - drhoMPP))) * c1o2;
 	  dxz  = ( ((drhoMMM - drhoPPM) + (drhoPPP - drhoMMP)) + ((drhoMPM - drhoPMM) + (drhoPMP - drhoMPP))) * c1o2;
 	  dyz  = ( ((drhoMPP - drhoPPM) + (drhoPPP - drhoMPM)) + ((drhoPMM - drhoMMP) + (drhoMMM - drhoPMP))) * c1o2;
+      dxyz =  -drhoPPM + drhoPPP + drhoMPM - drhoMPP + drhoPMM - drhoPMP - drhoMMM + drhoMMP;
      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //
       // Bernd das Brot
@@ -833,6 +835,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,
 			//  drho_NWB * (c9o64 + c3o16 * xoff - c9o16 * yoff + c3o16 * zoff) + 
 			//  drho_SEB * (c9o64 - c9o16 * xoff + c3o16 * yoff + c3o16 * zoff) + 
 			//  drho_SWB * (c27o64 + c9o16 * xoff + c9o16 * yoff + c9o16 * zoff);
+
 	  press = d0 + x*dx + y*dy + z*dz + x*y*dxy + x*z*dxz + y*z*dyz + x*y*z*dxyz;
 	  vvx = (a0 + x*ax + y*ay + z*az + x*x*axx + y*y*ayy + z*z*azz + x*y*axy + x*z*axz + y*z*ayz + x*y*z*axyz);
 	  vvy = (b0 + x*bx + y*by + z*bz + x*x*bxx + y*y*byy + z*z*bzz + x*y*bxy + x*z*bxz + y*z*byz + x*y*z*bxyz);
@@ -4509,7 +4512,8 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
    real xoff,    yoff,    zoff;
    real xoff_sq, yoff_sq, zoff_sq;
 
-   real        vvx, vvy, vvz, vx2, vy2, vz2, drho;
+   // real drho;
+   real        vvx, vvy, vvz, vx2, vy2, vz2;
    real        press;//,drho,vx1,vx2,vx3;
    real        /*pressMMP,*/drhoMMP,vx1MMP,vx2MMP,vx3MMP;
    real        /*pressMPP,*/drhoMPP,vx1MPP,vx2MPP,vx3MPP;
@@ -5072,6 +5076,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 	  dxy  = ( ((drhoPPM - drhoPMP) + (drhoPPP - drhoPMM)) + ((drhoMMP - drhoMPM) + (drhoMMM - drhoMPP))) * c1o2;
 	  dxz  = ( ((drhoMMM - drhoPPM) + (drhoPPP - drhoMMP)) + ((drhoMPM - drhoPMM) + (drhoPMP - drhoMPP))) * c1o2;
 	  dyz  = ( ((drhoMPP - drhoPPM) + (drhoPPP - drhoMPM)) + ((drhoPMM - drhoMMP) + (drhoMMM - drhoPMP))) * c1o2;
+      dxyz =  -drhoPPM + drhoPPP + drhoMPM - drhoMPP + drhoPMM - drhoPMP - drhoMMM + drhoMMP;
      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //
       // Bernd das Brot
@@ -5174,6 +5179,7 @@ extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 			//  drho_NWB * (c9o64 + c3o16 * xoff - c9o16 * yoff + c3o16 * zoff) + 
 			//  drho_SEB * (c9o64 - c9o16 * xoff + c3o16 * yoff + c3o16 * zoff) + 
 			//  drho_SWB * (c27o64 + c9o16 * xoff + c9o16 * yoff + c9o16 * zoff);
+
 	  press = d0 + x*dx + y*dy + z*dz + x*y*dxy + x*z*dxz + y*z*dyz + x*y*z*dxyz;
 	  vvx = (a0 + x*ax + y*ay + z*az + x*x*axx + y*y*ayy + z*z*azz + x*y*axy + x*z*axz + y*z*ayz + x*y*z*axyz);
 	  vvy = (b0 + x*bx + y*by + z*bz + x*x*bxx + y*y*byy + z*z*bzz + x*y*bxy + x*z*bxz + y*z*byz + x*y*z*bxyz);

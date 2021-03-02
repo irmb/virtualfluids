@@ -30,13 +30,13 @@ static void printCudaInformation(int i) {
     else
         printf("Disabled\n");
     printf(" --- Memory Information for device %d ---\n", i);
-    printf("Total global mem: %llu\n", prop.totalGlobalMem);
-    printf("Total constant Mem: %zd\n", prop.totalConstMem);
-    printf("Max mem pitch: %zd\n", prop.memPitch);
-    printf("Texture Alignment: %zd\n", prop.textureAlignment);
-    printf("max Texture 1D: %ld\n", prop.maxTexture1D);
-    printf("max Texture 2D: %ld, %ld\n", prop.maxTexture2D[0], prop.maxTexture2D[1]);
-    printf("max Texture 3D: %ld, %ld, %ld\n", prop.maxTexture3D[0], prop.maxTexture3D[1], prop.maxTexture3D[2]);
+    printf("Total global mem: %zu\n", prop.totalGlobalMem);
+    printf("Total constant Mem: %zu\n", prop.totalConstMem);
+    printf("Max mem pitch: %zu\n", prop.memPitch);
+    printf("Texture Alignment: %zu\n", prop.textureAlignment);
+    printf("max Texture 1D: %d\n", prop.maxTexture1D);
+    printf("max Texture 2D: %d, %d\n", prop.maxTexture2D[0], prop.maxTexture2D[1]);
+    printf("max Texture 3D: %d, %d, %d\n", prop.maxTexture3D[0], prop.maxTexture3D[1], prop.maxTexture3D[2]);
     printf(" --- MP Information for device %d ---\n", i);
     printf("Multiprocessor count: %d\n",
         prop.multiProcessorCount);
@@ -58,8 +58,8 @@ static void printCudaInformation(int i) {
     size_t free;
     size_t total;
     cudaMemGetInfo(&free, &total);
-    printf("Free: %llu Bytes, Total: %llu Bytes\n", free, total);
-    printf("Free: %llu MB, Total: %llu MB\n", free / 1000 / 1000, total / 1000 / 1000);
+    printf("Free: %zu Bytes, Total: %zu Bytes\n", free, total);
+    printf("Free: %zu MB, Total: %zu MB\n", free / 1000 / 1000, total / 1000 / 1000);
     //cudaDeviceSetLimit(cudaLimitMallocHeapSize, free);
 }
 

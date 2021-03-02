@@ -17,11 +17,17 @@ struct Vertex;
 
 class invalidDelta : public std::exception
 {
-	const char* what() const throw() {
-		std::ostringstream getNr;
-		getNr << "Delta cant be < Null. To enable no changes change delta to 1.0.";
-		return getNr.str().c_str();
+    public:
+    invalidDelta() : error_message ("Delta cant be < Null. To enable no changes change delta to 1.0.")
+    {}
+
+	const char* what() const noexcept
+    {
+	    return error_message.c_str();
 	}
+
+    private:
+    std::string error_message;
 };
 
 class TransformatorImp
@@ -34,15 +40,15 @@ public:
 	GRIDGENERATOR_EXPORT TransformatorImp(real delta, real dx, real dy, real dz);
 	GRIDGENERATOR_EXPORT virtual ~TransformatorImp();
 	
-	GRIDGENERATOR_EXPORT void transformWorldToGrid(Triangle &value) const;
-	GRIDGENERATOR_EXPORT void transformWorldToGrid(TriangularMesh &geom) const;
-	GRIDGENERATOR_EXPORT void transformWorldToGrid(Vertex &value) const;
+	GRIDGENERATOR_EXPORT void transformWorldToGrid(Triangle &value) const override;
+	GRIDGENERATOR_EXPORT void transformWorldToGrid(TriangularMesh &geom) const override;
+	GRIDGENERATOR_EXPORT void transformWorldToGrid(Vertex &value) const override;
 
-    GRIDGENERATOR_EXPORT void transformGridToWorld(Triangle &t) const;
-	GRIDGENERATOR_EXPORT void transformGridToWorld(Vertex &value) const;
+    GRIDGENERATOR_EXPORT void transformGridToWorld(Triangle &t) const override;
+	GRIDGENERATOR_EXPORT void transformGridToWorld(Vertex &value) const override;
 
-	GRIDGENERATOR_EXPORT void transformGridToWorld(BoundingBox &box) const;
-	GRIDGENERATOR_EXPORT void transformWorldToGrid(BoundingBox &box) const;
+	GRIDGENERATOR_EXPORT void transformGridToWorld(BoundingBox &box) const override;
+	GRIDGENERATOR_EXPORT void transformWorldToGrid(BoundingBox &box) const override;
 
 	GRIDGENERATOR_EXPORT bool operator==(const TransformatorImp& trafo) const;
 

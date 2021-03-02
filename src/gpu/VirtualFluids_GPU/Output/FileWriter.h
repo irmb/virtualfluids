@@ -29,7 +29,7 @@ private:
 	void VIRTUALFLUIDS_GPU_EXPORT writeUnstrucuredGridMedianLTConc(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname);
 	bool VIRTUALFLUIDS_GPU_EXPORT isPeriodicCell(std::shared_ptr<Parameter> para, int level, unsigned int number2, unsigned int number1, unsigned int number3, unsigned int number5);
 
-	FileWriter(const FileWriter& fileWriter) {};
+	FileWriter(const FileWriter& fileWriter) = default;
 
     void VIRTUALFLUIDS_GPU_EXPORT writeCollectionFile( std::shared_ptr<Parameter> para, unsigned int timestep );
 

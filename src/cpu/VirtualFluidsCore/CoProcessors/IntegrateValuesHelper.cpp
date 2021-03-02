@@ -131,9 +131,9 @@ void IntegrateValuesHelper::calculateAV()
             double Avzz = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVzz);
 
             double Avxz = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVxz);
-            sAvVx1 += abs(Avx);
-            sAvVx2 += abs(Avy);
-            sAvVx3 += abs(Avz);
+            sAvVx1 += std::abs(Avx);
+            sAvVx2 += std::abs(Avy);
+            sAvVx3 += std::abs(Avz);
 
             sTSx1 += sqrt(Avxx);
             sTSx2 += sqrt(Avyy);

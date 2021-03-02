@@ -57,7 +57,7 @@ extern "C" __global__ void LB_Init_F3(unsigned int* neighborX,
 			//////////////////////////////////////////////////////////////////////////
 			//index
 			//////////////////////////////////////////////////////////////////////////
-			unsigned int kzero = k;
+			// unsigned int kzero = k;
 			unsigned int ke = k;
 			unsigned int kw = neighborX[k];
 			unsigned int kn = k;

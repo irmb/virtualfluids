@@ -278,7 +278,7 @@ CUDA_HOST void GRIDGENERATOR_EXPORT GridInterface::repairGridInterfaceOnMultiGPU
         delete[] cf.fine;
         delete[] cf.offset;
 
-        cf.numberOfEntries = tmpCFC.size();
+        cf.numberOfEntries = (uint)tmpCFC.size();
 
         cf.coarse = new uint[cf.numberOfEntries];
         cf.fine   = new uint[cf.numberOfEntries];
@@ -311,7 +311,7 @@ CUDA_HOST void GRIDGENERATOR_EXPORT GridInterface::repairGridInterfaceOnMultiGPU
         delete[] fc.coarse;
         delete[] fc.offset;
 
-        fc.numberOfEntries = tmpFCC.size();
+        fc.numberOfEntries = (uint)tmpFCC.size();
         
         fc.fine   = new uint[fc.numberOfEntries];
         fc.coarse = new uint[fc.numberOfEntries];

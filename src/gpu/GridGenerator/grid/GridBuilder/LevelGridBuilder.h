@@ -56,30 +56,30 @@ public:
     GRIDGENERATOR_EXPORT virtual std::shared_ptr<Grid> getGrid(int level, int box);
 
 
-    GRIDGENERATOR_EXPORT virtual unsigned int getNumberOfNodes(unsigned int level) const;
+    GRIDGENERATOR_EXPORT virtual unsigned int getNumberOfNodes(unsigned int level) const override;
 
 
     GRIDGENERATOR_EXPORT virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords,
                                          uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, 
                                          uint *geo, const int level) const override;
-    GRIDGENERATOR_EXPORT virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const;
+    GRIDGENERATOR_EXPORT virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const override;
 
 
-    GRIDGENERATOR_EXPORT uint getVelocitySize(int level) const;
-    GRIDGENERATOR_EXPORT virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const;
-    GRIDGENERATOR_EXPORT virtual void getVelocityQs(real* qs[27], int level) const;
+    GRIDGENERATOR_EXPORT uint getVelocitySize(int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getVelocityQs(real* qs[27], int level) const override;
     GRIDGENERATOR_EXPORT uint getPressureSize(int level) const override;
     GRIDGENERATOR_EXPORT void getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const override;
-    GRIDGENERATOR_EXPORT virtual void getPressureQs(real* qs[27], int level) const;
+    GRIDGENERATOR_EXPORT virtual void getPressureQs(real* qs[27], int level) const override;
 
-    GRIDGENERATOR_EXPORT virtual void getGeometryQs(real* qs[27], int level) const;
-    GRIDGENERATOR_EXPORT virtual uint getGeometrySize(int level) const;
-    GRIDGENERATOR_EXPORT virtual void getGeometryIndices(int* indices, int level) const;
-    GRIDGENERATOR_EXPORT virtual bool hasGeometryValues() const;
-    GRIDGENERATOR_EXPORT virtual void getGeometryValues(real* vx, real* vy, real* vz, int level) const;
+    GRIDGENERATOR_EXPORT virtual void getGeometryQs(real* qs[27], int level) const override;
+    GRIDGENERATOR_EXPORT virtual uint getGeometrySize(int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getGeometryIndices(int* indices, int level) const override;
+    GRIDGENERATOR_EXPORT virtual bool hasGeometryValues() const override;
+    GRIDGENERATOR_EXPORT virtual void getGeometryValues(real* vx, real* vy, real* vz, int level) const override;
 
 
-    GRIDGENERATOR_EXPORT void writeArrows(std::string fileName) const;
+    GRIDGENERATOR_EXPORT void writeArrows(std::string fileName) const override;
 
     GRIDGENERATOR_EXPORT SPtr<BoundaryCondition> getBoundaryCondition( SideType side, uint level ) const override;
     GRIDGENERATOR_EXPORT SPtr<GeometryBoundaryCondition> getGeometryBoundaryCondition(uint level) const override;

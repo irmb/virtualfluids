@@ -3531,8 +3531,8 @@ extern "C" __global__ void LB_Kernel_Kum_New_SP_27(     real omega,
 			vy2=vvy*vvy;
 			vz2=vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
-			real wadjust;
-			real qudricLimit = 0.01f;
+			//real wadjust;
+			//real qudricLimit = 0.01f;
 			//real s9 = minusomega;
 			//test
 			//s9 = 0.;
@@ -4023,7 +4023,7 @@ extern "C" __global__ void LB_Kernel_Kum_New_SP_27(     real omega,
 			real mxxMzz	   = mfcaa - mfaac;
 			
 			//////////////////////////////////////////////////////////////////////////
-			real magicBulk=(CUMacc+CUMcac+CUMcca)*(c1o1/OxxPyyPzz-c1o2)*c3o2*8.;
+			//real magicBulk=(CUMacc+CUMcac+CUMcca)*(c1o1/OxxPyyPzz-c1o2)*c3o2*8.;
 
 			//////////////////////////////////////////////////////////////////////////
 			//limiter-Scheise Teil 1
@@ -5630,10 +5630,10 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
 			vy2 = vvy*vvy;
 			vz2 = vvz*vvz;
 			//////////////////////////////////////////////////////////////////////////////////////
-			real wadjust;
-			real qudricLimitP = c1o100;// * 0.0001f;
-			real qudricLimitM = c1o100;// * 0.0001f;
-			real qudricLimitD = c1o100;// * 0.001f;
+			//real wadjust;
+			//real qudricLimitP = c1o100;// * 0.0001f;
+			//real qudricLimitM = c1o100;// * 0.0001f;
+			//real qudricLimitD = c1o100;// * 0.001f;
 			////////////////////////////////////////////////////////////////////////////////////
 			//Hin
 			////////////////////////////////////////////////////////////////////////////////////
@@ -5875,7 +5875,7 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_SRT_SP_27(
 			//////////////////////////////
 			real OxyyPxzz = omega; 
 			real OxyyMxzz = omega; 
-			real Oxyz = omega; 
+			//real Oxyz = omega; 
 			////////////////////////////////////////////////////////////
 			//4.
 			//////////////////////////////

@@ -88,6 +88,9 @@ bool EnstrophyAnalyzer::run(uint iter)
     //std::cout << "Enstrophy " << EnstrophyTmp << "   " << numberOfFluidNodes << std::endl;
 
 	this->enstrophyTimeSeries.push_back( EnstrophyTmp / real(numberOfFluidNodes) );
+
+    //TODO: Should this function probably return nothing?
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,8 +168,8 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
     uint kMz4    = neighborY[neighborX[kMz3WSB]];   if( geo[ kMz4    ] != GEO_FLUID && maxOrderZ > 6 ) maxOrderZ = 6;
     //////////////////////////////////////////////////////////////////////////
 	//getVeloX//
-	real veloXNeighborPx = veloX[kPx];
-	real veloXNeighborMx = veloX[kMx];
+	//real veloXNeighborPx = veloX[kPx];
+	//real veloXNeighborMx = veloX[kMx];
 	real veloXNeighborPy = veloX[kPy];
 	real veloXNeighborMy = veloX[kMy];
 	real veloXNeighborPz = veloX[kPz];
@@ -174,8 +177,8 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 	//getVeloY//
 	real veloYNeighborPx = veloY[kPx];
 	real veloYNeighborMx = veloY[kMx];
-	real veloYNeighborPy = veloY[kPy];
-	real veloYNeighborMy = veloY[kMy];
+	//real veloYNeighborPy = veloY[kPy];
+	//real veloYNeighborMy = veloY[kMy];
 	real veloYNeighborPz = veloY[kPz];
 	real veloYNeighborMz = veloY[kMz];
 	//getVeloZ//
@@ -183,12 +186,12 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 	real veloZNeighborMx = veloZ[kMx];
 	real veloZNeighborPy = veloZ[kPy];
 	real veloZNeighborMy = veloZ[kMy];
-	real veloZNeighborPz = veloZ[kPz];
-	real veloZNeighborMz = veloZ[kMz];
+	//real veloZNeighborPz = veloZ[kPz];
+	//real veloZNeighborMz = veloZ[kMz];
 	//////////////////////////////////////////////////////////////////////////////
 	//getVeloX//
-	real veloXNeighborPx2 = veloX[kPx2];
-	real veloXNeighborMx2 = veloX[kMx2];
+	//real veloXNeighborPx2 = veloX[kPx2];
+	//real veloXNeighborMx2 = veloX[kMx2];
 	real veloXNeighborPy2 = veloX[kPy2];
 	real veloXNeighborMy2 = veloX[kMy2];
 	real veloXNeighborPz2 = veloX[kPz2];
@@ -196,8 +199,8 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 	//getVeloY//
 	real veloYNeighborPx2 = veloY[kPx2];
 	real veloYNeighborMx2 = veloY[kMx2];
-	real veloYNeighborPy2 = veloY[kPy2];
-	real veloYNeighborMy2 = veloY[kMy2];
+	//real veloYNeighborPy2 = veloY[kPy2];
+	//real veloYNeighborMy2 = veloY[kMy2];
 	real veloYNeighborPz2 = veloY[kPz2];
 	real veloYNeighborMz2 = veloY[kMz2];
 	//getVeloZ//
@@ -205,12 +208,12 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 	real veloZNeighborMx2 = veloZ[kMx2];
 	real veloZNeighborPy2 = veloZ[kPy2];
 	real veloZNeighborMy2 = veloZ[kMy2];
-	real veloZNeighborPz2 = veloZ[kPz2];
-	real veloZNeighborMz2 = veloZ[kMz2];
+	//real veloZNeighborPz2 = veloZ[kPz2];
+	//real veloZNeighborMz2 = veloZ[kMz2];
 	//////////////////////////////////////////////////////////////////////////////
 	//getVeloX//
-	real veloXNeighborPx3 = veloX[kPx3];
-	real veloXNeighborMx3 = veloX[kMx3];
+	//real veloXNeighborPx3 = veloX[kPx3];
+	//real veloXNeighborMx3 = veloX[kMx3];
 	real veloXNeighborPy3 = veloX[kPy3];
 	real veloXNeighborMy3 = veloX[kMy3];
 	real veloXNeighborPz3 = veloX[kPz3];
@@ -218,8 +221,8 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 	//getVeloY//
 	real veloYNeighborPx3 = veloY[kPx3];
 	real veloYNeighborMx3 = veloY[kMx3];
-	real veloYNeighborPy3 = veloY[kPy3];
-	real veloYNeighborMy3 = veloY[kMy3];
+	//real veloYNeighborPy3 = veloY[kPy3];
+	//real veloYNeighborMy3 = veloY[kMy3];
 	real veloYNeighborPz3 = veloY[kPz3];
 	real veloYNeighborMz3 = veloY[kMz3];
 	//getVeloZ//
@@ -227,12 +230,12 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 	real veloZNeighborMx3 = veloZ[kMx3];
 	real veloZNeighborPy3 = veloZ[kPy3];
 	real veloZNeighborMy3 = veloZ[kMy3];
-	real veloZNeighborPz3 = veloZ[kPz3];
-	real veloZNeighborMz3 = veloZ[kMz3];
+	//real veloZNeighborPz3 = veloZ[kPz3];
+	//real veloZNeighborMz3 = veloZ[kMz3];
 	//////////////////////////////////////////////////////////////////////////////
 	//getVeloX//
-	real veloXNeighborPx4 = veloX[kPx4];
-	real veloXNeighborMx4 = veloX[kMx4];
+	//real veloXNeighborPx4 = veloX[kPx4];
+	//real veloXNeighborMx4 = veloX[kMx4];
 	real veloXNeighborPy4 = veloX[kPy4];
 	real veloXNeighborMy4 = veloX[kMy4];
 	real veloXNeighborPz4 = veloX[kPz4];
@@ -240,8 +243,8 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 	//getVeloY//
 	real veloYNeighborPx4 = veloY[kPx4];
 	real veloYNeighborMx4 = veloY[kMx4];
-	real veloYNeighborPy4 = veloY[kPy4];
-	real veloYNeighborMy4 = veloY[kMy4];
+	//real veloYNeighborPy4 = veloY[kPy4];
+	//real veloYNeighborMy4 = veloY[kMy4];
 	real veloYNeighborPz4 = veloY[kPz4];
 	real veloYNeighborMz4 = veloY[kMz4];
 	//getVeloZ//
@@ -249,18 +252,18 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 	real veloZNeighborMx4 = veloZ[kMx4];
 	real veloZNeighborPy4 = veloZ[kPy4];
 	real veloZNeighborMy4 = veloZ[kMy4];
-	real veloZNeighborPz4 = veloZ[kPz4];
-	real veloZNeighborMz4 = veloZ[kMz4];
+	//real veloZNeighborPz4 = veloZ[kPz4];
+	//real veloZNeighborMz4 = veloZ[kMz4];
 	//////////////////////////////////////////////////////////////////////////////
-	real dxvx = c0o1;
+	//real dxvx = c0o1;
 	real dyvx = c0o1;
 	real dzvx = c0o1;
 	real dxvy = c0o1;
-	real dyvy = c0o1;
+	//real dyvy = c0o1;
 	real dzvy = c0o1;
 	real dxvz = c0o1;
 	real dyvz = c0o1;
-	real dzvz = c0o1;
+	//real dzvz = c0o1;
     //////////////////////////////////////////////////////////////////////////
 
     //maxOrderX = 2;

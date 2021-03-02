@@ -249,11 +249,11 @@ void GridGenerator::allocArrays_BoundaryValues()
 		{
             if( builder->getCommunicationProcess(direction) == INVALID_INDEX ) continue;
 
-			for (int level = 0; level < builder->getNumberOfGridLevels(); level++)
+			for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
             {
                 if( direction == CommunicationDirections::MX || direction == CommunicationDirections::PX )
                 {
-                    int j = para->getParH(level)->sendProcessNeighborX.size();
+                    int j = (int)para->getParH(level)->sendProcessNeighborX.size();
 
 		            para->getParH(level)->sendProcessNeighborX.emplace_back();
 		            para->getParD(level)->sendProcessNeighborX.emplace_back();
@@ -313,7 +313,7 @@ void GridGenerator::allocArrays_BoundaryValues()
                 
                 if( direction == CommunicationDirections::MY || direction == CommunicationDirections::PY )
                 {
-                    int j = para->getParH(level)->sendProcessNeighborY.size();
+                    int j = (int)para->getParH(level)->sendProcessNeighborY.size();
 
 		            para->getParH(level)->sendProcessNeighborY.emplace_back();
 		            para->getParD(level)->sendProcessNeighborY.emplace_back();
@@ -373,7 +373,7 @@ void GridGenerator::allocArrays_BoundaryValues()
                 
                 if( direction == CommunicationDirections::MZ || direction == CommunicationDirections::PZ )
                 {
-                    int j = para->getParH(level)->sendProcessNeighborZ.size();
+                    int j = (int)para->getParH(level)->sendProcessNeighborZ.size();
 
 		            para->getParH(level)->sendProcessNeighborZ.emplace_back();
 		            para->getParD(level)->sendProcessNeighborZ.emplace_back();
@@ -443,11 +443,11 @@ void GridGenerator::allocArrays_BoundaryValues()
 		{
 			if (builder->getCommunicationProcess(direction) == INVALID_INDEX) continue;
 
-			for (int level = 0; level < builder->getNumberOfGridLevels(); level++)
+			for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
 			{
 				if (direction == CommunicationDirections::MX || direction == CommunicationDirections::PX)
 				{
-					int j = para->getParH(level)->sendProcessNeighborF3X.size();
+                    int j = (int)para->getParH(level)->sendProcessNeighborF3X.size();
 
 					para->getParH(level)->sendProcessNeighborF3X.emplace_back();
 					para->getParD(level)->sendProcessNeighborF3X.emplace_back();
@@ -501,7 +501,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
 				if (direction == CommunicationDirections::MY || direction == CommunicationDirections::PY)
 				{
-					int j = para->getParH(level)->sendProcessNeighborF3Y.size();
+                    int j = (int)para->getParH(level)->sendProcessNeighborF3Y.size();
 
 					para->getParH(level)->sendProcessNeighborF3Y.emplace_back();
 					para->getParD(level)->sendProcessNeighborF3Y.emplace_back();
@@ -555,7 +555,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
 				if (direction == CommunicationDirections::MZ || direction == CommunicationDirections::PZ)
 				{
-					int j = para->getParH(level)->sendProcessNeighborF3Z.size();
+                    int j = (int)para->getParH(level)->sendProcessNeighborF3Z.size();
 
 					para->getParH(level)->sendProcessNeighborF3Z.emplace_back();
 					para->getParD(level)->sendProcessNeighborF3Z.emplace_back();
@@ -820,9 +820,9 @@ void GridGenerator::allocArrays_BoundaryQs()
             builder->getGeometryQs(Q.q27, i);
 			//QDebugWriter::writeQValues(Q, para->getParH(i)->QGeom.k, para->getParH(i)->QGeom.kQ, "M:/TestGridGeneration/results/GeomGPU.dat");
             //////////////////////////////////////////////////////////////////
-            for (int i = 0; i < numberOfGeometryNodes; i++)
+            for (int node_i = 0; node_i < numberOfGeometryNodes; node_i++)
             {
-                Q.q27[dirZERO][i] = 0.0f;
+                Q.q27[dirZERO][node_i] = 0.0f;
             }
             //for(int test = 0; test < 3; test++)
             //{

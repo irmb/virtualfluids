@@ -25,7 +25,7 @@ void QLineWriter::writeArrows(std::string fileName, SPtr<GeometryBoundaryConditi
     std::vector<UbTupleInt2> cells;
 
     int actualNodeNumber = 0;
-    for (int index = 0; index < geometryBoundaryCondition->indices.size(); index++)
+    for (std::size_t index = 0; index < geometryBoundaryCondition->indices.size(); index++)
     {
         Vertex startNode = getVertex(geometryBoundaryCondition->indices[index], grid);
 		for (int qi = 0; qi <= 26; qi++)

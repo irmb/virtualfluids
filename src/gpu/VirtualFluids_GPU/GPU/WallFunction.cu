@@ -98,8 +98,8 @@ extern "C" __global__ void WallFunction27(int inx,
    {
       ////////////////////////////////////////////////////////////////////////////////
       real VeloX = vx[k];
-      real VeloY = vy[k];
-      real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
+      //real VeloY = vy[k];
+      //real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
       ////////////////////////////////////////////////////////////////////////////////
       //real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
       //      *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
@@ -193,23 +193,24 @@ extern "C" __global__ void WallFunction27(int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      real vx1, vx2, vx3, drho, feq, q;
+      // real vx2, vx3, feq, q;
+      real vx1, drho;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
 
-      vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
-                ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
-                (f_E - f_W)) / (c1o1 + drho); 
+       vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+                 ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
+                 (f_E - f_W)) / (c1o1 + drho); 
          
 
-      vx2    =   ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
-                 ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
-                 (f_N - f_S)) / (c1o1 + drho); 
+    //   vx2    =   ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+    //              ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
+    //              (f_N - f_S)) / (c1o1 + drho); 
 
-      vx3    =   (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
-                 (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
-                 (f_T - f_B)) / (c1o1 + drho); 
+    //   vx3    =   (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
+    //              (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
+    //              (f_T - f_B)) / (c1o1 + drho); 
 
       //real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 

@@ -18,6 +18,7 @@ public:
 	HOSTDEVICE Vertex(real x, real y, real z);
 	HOSTDEVICE Vertex();
 	HOSTDEVICE Vertex(const Vertex& v);
+    HOSTDEVICE Vertex& operator=(const Vertex&);
 	HOSTDEVICE ~Vertex() {}
 
 	HOSTDEVICE real getEuclideanDistanceTo(const Vertex &w) const;

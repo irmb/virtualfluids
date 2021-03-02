@@ -406,8 +406,8 @@ std::vector<std::vector<real> > DistributionHelper::getVectorWithoutRowsWithOnly
 {
     std::vector<std::vector<real> > qs_ausgeduennt;
     bool hasQs = false;
-    for (int node = 0; node < qs.size(); node++) {
-        for (int dir = 0; dir < qs[node].size() - 1; dir++) {
+    for (std::size_t node = 0; node < qs.size(); node++) {
+        for (std::size_t dir = 0; dir < qs[node].size() - 1; dir++) {
             if (qs[node][dir + 1] != 0)
                 hasQs = true;
         }
@@ -422,9 +422,9 @@ std::vector<std::vector<real> > DistributionHelper::getVectorWithoutRowsWithOnly
 
 void DistributionHelper::printQs(std::vector<std::vector<real> > qs, int decimalPlaces)
 {
-    for (int node = 0; node < qs.size(); node++) {
-        printf("index %d: ", node);
-        for (int dir = 1; dir < qs[node].size(); dir++) {
+    for (std::size_t node = 0; node < qs.size(); node++) {
+        printf("index %zu: ", node);
+        for (std::size_t dir = 1; dir < qs[node].size(); dir++) {
             printf("%d ", (int)qs[node][0]);
             printf("%.*f ", decimalPlaces, qs[node][dir]);
         }

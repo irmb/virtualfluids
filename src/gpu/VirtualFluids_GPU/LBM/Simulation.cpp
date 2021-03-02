@@ -396,10 +396,7 @@ void Simulation::run()
    unsigned int t_MP = 0;
    //////////////////////////////////////////////////////////////////////////
    para->setStepEnsight(0);
-   //////////////////////////////////////////////////////////////////////////
-   real visSponge = 0.001f;
-   real omegaSponge = 1.f / ( 3.f * visSponge + 0.5f );
-   //////////////////////////////////////////////////////////////////////////
+
    //turning Ship
    real Pi = (real)3.14159265358979323846;
    real delta_x_F = (real)0.1;
@@ -1306,7 +1303,7 @@ void Simulation::free()
 	gridProvider->~GridProvider();
 	dataWriter->~DataWriter();
 	comm->~Communicator();
-	for(int i = 0; i < kernels.size(); i++)
+	for(std::size_t i = 0; i < kernels.size(); i++)
 		kernels.at(i)->~Kernel();
 
 }

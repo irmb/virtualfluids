@@ -17,6 +17,7 @@ class PorousMedia;
 class VIRTUALFLUIDS_GPU_EXPORT KernelFactory
 {
 public:
+    virtual ~KernelFactory() = default;
 	virtual std::vector< std::shared_ptr< Kernel>> makeKernels(std::shared_ptr<Parameter> para) = 0;
 	virtual std::vector< std::shared_ptr< ADKernel>> makeAdvDifKernels(std::shared_ptr<Parameter> para) = 0;
 	

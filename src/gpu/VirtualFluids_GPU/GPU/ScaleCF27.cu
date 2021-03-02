@@ -155,7 +155,8 @@ extern "C" __global__ void scaleCF_0817_comp_27( real* DC,
    real xoff,    yoff,    zoff;
    real xoff_sq, yoff_sq, zoff_sq;
 
-   real        vvx, vvy, vvz, vx2, vy2, vz2, drho;
+   // real drho;
+   real        vvx, vvy, vvz, vx2, vy2, vz2;
    real        press;//,drho,vx1,vx2,vx3;
    real        /*pressMMP,*/drhoMMP,vx1MMP,vx2MMP,vx3MMP;
    real        /*pressMPP,*/drhoMPP,vx1MPP,vx2MPP,vx3MPP;
@@ -718,6 +719,7 @@ extern "C" __global__ void scaleCF_0817_comp_27( real* DC,
 	  dxy  = ( ((drhoPPM - drhoPMP) + (drhoPPP - drhoPMM)) + ((drhoMMP - drhoMPM) + (drhoMMM - drhoMPP))) * c1o2;
 	  dxz  = ( ((drhoMMM - drhoPPM) + (drhoPPP - drhoMMP)) + ((drhoMPM - drhoPMM) + (drhoPMP - drhoMPP))) * c1o2;
 	  dyz  = ( ((drhoMPP - drhoPPM) + (drhoPPP - drhoMPM)) + ((drhoPMM - drhoMMP) + (drhoMMM - drhoPMP))) * c1o2;
+	  dxyz =  -drhoPPM + drhoPPP + drhoMPM - drhoMPP + drhoPMM - drhoPMP - drhoMMM + drhoMMP;
      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //
       // Bernd das Brot
@@ -813,6 +815,7 @@ extern "C" __global__ void scaleCF_0817_comp_27( real* DC,
 			//  drho_NWB * (c9o64 + c3o16 * xoff - c9o16 * yoff + c3o16 * zoff) + 
 			//  drho_SEB * (c9o64 - c9o16 * xoff + c3o16 * yoff + c3o16 * zoff) + 
 			//  drho_SWB * (c27o64 + c9o16 * xoff + c9o16 * yoff + c9o16 * zoff);
+
 	  press = d0 + x*dx + y*dy + z*dz + x*y*dxy + x*z*dxz + y*z*dyz + x*y*z*dxyz;
 	  vvx = (a0 + x*ax + y*ay + z*az + x*x*axx + y*y*ayy + z*z*azz + x*y*axy + x*z*axz + y*z*ayz + x*y*z*axyz);
 	  vvy = (b0 + x*bx + y*by + z*bz + x*x*bxx + y*y*byy + z*z*bzz + x*y*bxy + x*z*bxz + y*z*byz + x*y*z*bxyz);
@@ -4240,23 +4243,23 @@ extern "C" __global__ void scaleCF_AA2016_comp_27(real* DC,
    real        x,y,z;
 	//////////////////////////////////////////////////////////////////////////////////////
     real	mfcbb, mfabb, mfbcb, mfbab, mfbbc, mfbba, mfccb, mfaab, mfcab, mfacb, mfcbc, mfaba, mfcba, mfabc, mfbcc, mfbaa, mfbca, mfbac, mfbbb, mfccc, mfaac, mfcac, mfacc, mfcca, mfaaa, mfcaa, mfaca;
-	real wadjust;
-	real qudricLimitP = 0.01f;// * 0.0001f;
-	real qudricLimitM = 0.01f;// * 0.0001f;
-	real qudricLimitD = 0.01f;// * 0.001f;
-	real omega = omCoarse;
+	//real wadjust;
+	//real qudricLimitP = 0.01f;// * 0.0001f;
+    //real qudricLimitM = 0.01f;// * 0.0001f;
+	//real qudricLimitD = 0.01f;// * 0.001f;
+	//real omega = omCoarse;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
 	real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
 	real NeqOn = c1o1;
 	real drho, rho;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	real OxxPyyPzz;
-	real OxyyPxzz;
-	real OxyyMxzz;
-	real Oxyz    ;
-	real O4, O5, O6;
-	real CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc, CUMccb, CUMccc;
+	//real OxxPyyPzz;
+	//real OxyyPxzz;
+	//real OxyyMxzz;
+	//real Oxyz    ;
+	//real O4, O5, O6;
+	//real CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc, CUMccb, CUMccc;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -11123,23 +11126,23 @@ extern "C" __global__ void scaleCF_RhoSq_3rdMom_comp_27(real* DC,
    real        x,y,z;
 	//////////////////////////////////////////////////////////////////////////////////////
     real	mfcbb, mfabb, mfbcb, mfbab, mfbbc, mfbba, mfccb, mfaab, mfcab, mfacb, mfcbc, mfaba, mfcba, mfabc, mfbcc, mfbaa, mfbca, mfbac, mfbbb, mfccc, mfaac, mfcac, mfacc, mfcca, mfaaa, mfcaa, mfaca;
-	real wadjust;
-	real qudricLimitP = 0.01f;// * 0.0001f;
-	real qudricLimitM = 0.01f;// * 0.0001f;
-	real qudricLimitD = 0.01f;// * 0.001f;
-	real omega = omCoarse;
+	//real wadjust;
+	//real qudricLimitP = 0.01f;// * 0.0001f;
+	//real qudricLimitM = 0.01f;// * 0.0001f;
+	//real qudricLimitD = 0.01f;// * 0.001f;
+	//real omega = omCoarse;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
 	real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
 	real NeqOn = c1o1;
 	real drho, rho;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	real OxxPyyPzz;
-	real OxyyPxzz;
-	real OxyyMxzz;
-	real Oxyz    ;
-	real O4, O5, O6;
-	real CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc, CUMccb, CUMccc;
+	//real OxxPyyPzz;
+	//real OxyyPxzz;
+	//real OxyyMxzz;
+	//real Oxyz    ;
+	//real O4, O5, O6;
+	//real CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc, CUMccb, CUMccc;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -26459,7 +26462,8 @@ extern "C" __global__ void scaleCF_Fix_comp_27(  real* DC,
    real xoff,    yoff,    zoff;
    real xoff_sq, yoff_sq, zoff_sq;
 
-   real        vvx, vvy, vvz, vx2, vy2, vz2, drho;
+    //real dhro;
+   real        vvx, vvy, vvz, vx2, vy2, vz2;
    real        press;//,drho,vx1,vx2,vx3;
    real        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
    real        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
@@ -27674,7 +27678,7 @@ extern "C" __global__ void scaleCF_Fix_comp_27(  real* DC,
 	  //dxy  = ( drho_NEB + drho_NET - drho_NWB - drho_NWT - drho_SEB - drho_SET + drho_SWB + drho_SWT) * c1o2;
 	  //dxz  = (-drho_NEB + drho_NET + drho_NWB - drho_NWT - drho_SEB + drho_SET + drho_SWB - drho_SWT) * c1o2;
 	  //dyz  = (-drho_NEB + drho_NET - drho_NWB + drho_NWT + drho_SEB - drho_SET + drho_SWB - drho_SWT) * c1o2;
-	  //dxyz =  -drho_NEB + drho_NET + drho_NWB - drho_NWT + drho_SEB - drho_SET - drho_SWB + drho_SWT;
+	  dxyz =  -drho_NEB + drho_NET + drho_NWB - drho_NWT + drho_SEB - drho_SET - drho_SWB + drho_SWT;
   	//  d0   = zero;
 	  //dx   = zero;
 	  //dy   = zero;
@@ -27820,6 +27824,7 @@ extern "C" __global__ void scaleCF_Fix_comp_27(  real* DC,
 			//  drho_NWB * (c9o64 + c3o16 * xoff - c9o16 * yoff + c3o16 * zoff) + 
 			//  drho_SEB * (c9o64 - c9o16 * xoff + c3o16 * yoff + c3o16 * zoff) + 
 			//  drho_SWB * (c27o64 + c9o16 * xoff + c9o16 * yoff + c9o16 * zoff);
+
 	  press = d0 + x*dx + y*dy + z*dz + x*y*dxy + x*z*dxz + y*z*dyz + x*y*z*dxyz;
 	  vvx = (a0 + x*ax + y*ay + z*az + x*x*axx + y*y*ayy + z*z*azz + x*y*axy + x*z*axz + y*z*ayz + x*y*z*axyz);
 	  vvy = (b0 + x*bx + y*by + z*bz + x*x*bxx + y*y*byy + z*z*bzz + x*y*bxy + x*z*bxz + y*z*byz + x*y*z*bxyz);
@@ -43368,8 +43373,8 @@ extern "C" __global__ void scaleCFThSMG7(    real* DC,
 
    //real omegaD_C     = two / (six * diffusivity_fine/two + one);
    //real omegaD_F     = two / (six * diffusivity_fine + one);
-   real omegaD_C     = c3o1 - sqrt(c3o1);     //Quick and Dörrrty
-   real omegaD_F     = c3o1 - sqrt(c3o1);     //Quick and Dörrrty
+   real omegaD_C     = c3o1 - sqrt(c3o1);     //Quick and Dï¿½rrrty
+   real omegaD_F     = c3o1 - sqrt(c3o1);     //Quick and Dï¿½rrrty
    real Lam         = -(c1o2-c1o1/omegaD_C);
    real nue_d       = Lam/c3o1;
    //real ae          = zero;
@@ -44590,8 +44595,8 @@ extern "C" __global__ void scaleCFThS7(   real* DC,
 
    //real omegaD_C     = two / (six * diffusivity_fine/two + one);
    //real omegaD_F     = two / (six * diffusivity_fine + one);
-   real omegaD_C     = c3o1 - sqrt(c3o1);     //Quick and Dörrrty
-   real omegaD_F     = c3o1 - sqrt(c3o1);     //Quick and Dörrrty
+   real omegaD_C     = c3o1 - sqrt(c3o1);     //Quick and Dï¿½rrrty
+   real omegaD_F     = c3o1 - sqrt(c3o1);     //Quick and Dï¿½rrrty
    real Lam         = -(c1o2-c1o1/omegaD_C);
    real nue_d       = Lam/c3o1;
    //real ae          = zero;
@@ -45770,7 +45775,7 @@ extern "C" __global__ void scaleCFThS27(     real* DC,
    real f27E,f27W,f27N,f27S,f27T,f27B,f27NE,f27SW,f27SE,f27NW,f27TE,f27BW,f27BE,f27TW,f27TN,f27BS,f27BN,f27TS,f27ZERO,f27TNE,f27TSW,f27TSE,f27TNW,f27BNE,f27BSW,f27BSE,f27BNW;
    real Mx,My,Mz/*,Mxx,Myy,Mzz,M0*/; 
    real Conc_C_SWB, Conc_C_SWT, Conc_C_SET, Conc_C_SEB, Conc_C_NWB, Conc_C_NWT, Conc_C_NET, Conc_C_NEB;
-   real Conc_F_SWB, Conc_F_SWT, Conc_F_SET, Conc_F_SEB, Conc_F_NWB, Conc_F_NWT, Conc_F_NET, Conc_F_NEB;
+   //real Conc_F_SWB, Conc_F_SWT, Conc_F_SET, Conc_F_SEB, Conc_F_NWB, Conc_F_NWT, Conc_F_NET, Conc_F_NEB;
 
    real omegaD_C     = c2o1 / (c6o1 * diffusivity_fine/c2o1 + c1o1);
    real omegaD_F     = c2o1 / (c6o1 * diffusivity_fine + c1o1);

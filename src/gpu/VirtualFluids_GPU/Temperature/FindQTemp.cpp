@@ -18,8 +18,8 @@ void findTempPress(Parameter* para)
    unsigned int nnz                      = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                          = para->getParH(para->getCoarse())->geo;
    unsigned int* kk                      = para->getParH(para->getCoarse())->k;
-   real TempBC                        = para->getTemperatureBC();
-   real VelBC                         = para->getVelocity();
+   // real TempBC                        = para->getTemperatureBC();
+   // real VelBC                         = para->getVelocity();
    TempPressforBoundaryConditions  Temp  = para->getParH(para->getCoarse())->TempPress;
    Temp.kTemp = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,7 +139,7 @@ void findTempVel(Parameter* para)
    int ny                             = para->getParH(para->getCoarse())->ny;
    unsigned int nnx                   = para->getParH(para->getCoarse())->gridNX;
    unsigned int nny                   = para->getParH(para->getCoarse())->gridNY;
-   unsigned int nnz                   = para->getParH(para->getCoarse())->gridNZ;
+   // unsigned int nnz                   = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                       = para->getParH(para->getCoarse())->geo;
    unsigned int* kk                   = para->getParH(para->getCoarse())->k;
    real TempBC                     = para->getTemperatureBC();
@@ -217,7 +217,7 @@ void findKforTempVel(Parameter* para)
    int ny                             = para->getParH(para->getCoarse())->ny;
    unsigned int nnx                   = para->getParH(para->getCoarse())->gridNX;
    unsigned int nny                   = para->getParH(para->getCoarse())->gridNY;
-   unsigned int nnz                   = para->getParH(para->getCoarse())->gridNZ;
+   // unsigned int nnz                   = para->getParH(para->getCoarse())->gridNZ;
    int* geo_mat                       = para->getParH(para->getCoarse())->geo;
    TempVelforBoundaryConditions Temp  = para->getParH(para->getCoarse())->TempVel;
    Temp.kTemp = 0;

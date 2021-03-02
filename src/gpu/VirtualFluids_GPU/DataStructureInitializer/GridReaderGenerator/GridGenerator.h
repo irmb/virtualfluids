@@ -30,10 +30,10 @@ public:
 	void allocArrays_BoundaryQs() override;
     void allocArrays_OffsetScale() override;
 
-	virtual void setDimensions();
-	virtual void setBoundingBox();
+	virtual void setDimensions() override;
+	virtual void setBoundingBox() override;
 
-	virtual void initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned int> > > periodV, std::vector<std::vector<unsigned int> > periodIndex, std::string way);
+	virtual void initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned int> > > periodV, std::vector<std::vector<unsigned int> > periodIndex, std::string way) override;
 	
 private:
 	void setPressureValues(int channelSide) const;

@@ -8,7 +8,7 @@ list(APPEND CS_COMPILER_FLAGS_CXX "-MP")     # enable multi-threaded compiling
 #############################################################################################################
 # warnings
 #############################################################################################################
-list(APPEND CS_COMPILER_FLAGS_CXX "/W4") # highest warning level
+list(APPEND CS_COMPILER_FLAGS_CXX "/W3") # highest warning level
 
 # With W4 the following warnings appear many times. As long they are not eliminated they are suppressed:
 list(APPEND CS_COMPILER_FLAGS_CXX "/wd4458") # C4458: declaration of 'XXX' hides class member
@@ -24,6 +24,18 @@ list(APPEND CS_COMPILER_FLAGS_CXX "/wd4701") # C4701: potentially uninitialized 
 
 list(APPEND CS_COMPILER_FLAGS_CXX "/wd4251") # disable needs to have dll interface
 list(APPEND CS_COMPILER_FLAGS_CXX "/wd4005") # disable macro redefinition (triggered by metis.h)
+
+
+list(APPEND CS_COMPILER_FLAGS_CXX "/wd26812") # disable the enum type is unscoped
+list(APPEND CS_COMPILER_FLAGS_CXX "/wd4100") # unreferenced formal parameter
+list(APPEND CS_COMPILER_FLAGS_CXX "/wd4324") # structure was padded
+list(APPEND CS_COMPILER_FLAGS_CXX "/wd4201") # nonstandard extension used : nameless struct/union
+
+
+if(BUILD_WARNINGS_AS_ERRORS)
+    list(APPEND CS_COMPILER_FLAGS_CXX "/WX")
+endif()
+
 
 #############################################################################################################
 # preprocessor definitions

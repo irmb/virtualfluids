@@ -227,7 +227,7 @@ extern "C" __global__ void LB_KERNEL_AD_COMP_27(real diffusivity,
 				(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 				((mfabb + mfcbb) + (mfbab + mfbcb)) + (mfbba + mfbbc)) + mfbbb;
 
-			real rho = c1o1 + drho;
+			//real rho = c1o1 + drho;
 			////////////////////////////////////////////////////////////////////////////////
 			real rho0fluid = (fTNE + fBSW) + (fTSW + fBNE) + (fTSE + fBNW) + (fTNW + fBSE) + (fNE + fSW) + (fNW + fSE) + (fTE + fBW) + (fBE + fTW) + (fTN + fBS) + (fBN + fTS) + (fE + fW) + (fN + fS) + (fT + fB) + fZERO;
 			real rhofluid = rho0fluid + c1o1;

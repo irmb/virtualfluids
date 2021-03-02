@@ -22,7 +22,7 @@ std::shared_ptr<PreProcessor> PreProcessorFactoryImp::makePreProcessor(std::vect
 {
 	std::shared_ptr<PreProcessorImp> prePro = PreProcessorImp::getNewInstance();
 
-	for (int i = 0; i < preProcessorTypes.size(); i++)
+	for (std::size_t i = 0; i < preProcessorTypes.size(); i++)
 		prePro->addStrategy(makePreProcessorStrategy(preProcessorTypes.at(i), para));
 
 	return prePro;
