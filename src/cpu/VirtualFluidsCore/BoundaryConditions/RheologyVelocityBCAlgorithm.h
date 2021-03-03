@@ -26,25 +26,29 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file EqDensityBCAlgorithm.h
+//! \file RheologyVelocityBCAlgorithm.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef EqDensityBCAlgorithm_h__
-#define EqDensityBCAlgorithm_h__
+#ifndef RheologyVelocityBCAlgorithm_h__
+#define RheologyVelocityBCAlgorithm_h__
 
 #include "BCAlgorithm.h"
 #include <PointerDefinitions.h>
 
 class DistributionArray3D;
 
-class EqDensityBCAlgorithm : public BCAlgorithm
+class RheologyVelocityBCAlgorithm : public BCAlgorithm
 {
 public:
-    EqDensityBCAlgorithm();
-    ~EqDensityBCAlgorithm() override;
-    SPtr<BCAlgorithm> clone() override;
-    void addDistributions(SPtr<DistributionArray3D> distributions) override;
-    void applyBC() override;
+   RheologyVelocityBCAlgorithm();
+   ~RheologyVelocityBCAlgorithm();
+   virtual SPtr<BCAlgorithm> clone() override { UB_THROW(UbException("LBMReal clone() - belongs in the derived class")); }
+   void addDistributions(SPtr<DistributionArray3D> distributions) override;
+   void applyBC() override;
+protected:
+   virtual LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const = 0; // { UB_THROW(UbException("LBMReal getRheologyCollFactor() - belongs in the derived class")); }
 };
-#endif // EqDensityBCAlgorithm_h__
+
+#endif // RheologyVelocityBCAlgorithm_h__
+

@@ -1,15 +1,37 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file SlipBCAdapter.h
+//! \ingroup BoundarConditions
+//! \author Sören Freudiger
+//=======================================================================================
 #ifndef SlipBCAdapter_H
 #define SlipBCAdapter_H
-
-#ifdef CAB_RCF
-#include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif
 
 #include "BCAdapter.h"
 
@@ -35,23 +57,6 @@
 //   D3Q27SlipBCAdapterCreator() : ObObjectCreator() {}
 //};
 //
-//#ifndef SWIG
-// UB_AUTO_RUN_NAMED(
-// D3Q27BCAdapterFactory::getInstance()->addObObjectCreator(D3Q27SlipBCAdapterCreator::getInstance()),
-// CAB_D3Q27SlipBCAdapterCreator); #endif
-
-/*=========================================================================*/
-/*  D3Q27SlipBCAdapter                                                     */
-/*                                                                         */
-/**
-<BR><BR>
-@author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
-@version 1.0 - 06.09.06
-*/
-
-/*
-usage: ...
-*/
 
 class SlipBCAdapter : public BCAdapter
 {

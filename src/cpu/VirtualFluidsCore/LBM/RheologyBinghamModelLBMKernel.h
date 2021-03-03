@@ -26,25 +26,46 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file EqDensityBCAlgorithm.h
-//! \ingroup BoundarConditions
+//! \file RheologyBinghamModelLBMKernel.h
+//! \ingroup LBM
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef EqDensityBCAlgorithm_h__
-#define EqDensityBCAlgorithm_h__
 
-#include "BCAlgorithm.h"
-#include <PointerDefinitions.h>
+#ifndef RheologyBinghamModelLBMKernel_H
+#define RheologyBinghamModelLBMKernel_H
 
-class DistributionArray3D;
+#include "RheologyK17LBMKernel.h"
+#include "Rheology.h"
 
-class EqDensityBCAlgorithm : public BCAlgorithm
+//! \brief    Cumulant LBM kernel + Bingham plastic model 
+
+class RheologyBinghamModelLBMKernel : public RheologyK17LBMKernel
 {
 public:
-    EqDensityBCAlgorithm();
-    ~EqDensityBCAlgorithm() override;
-    SPtr<BCAlgorithm> clone() override;
-    void addDistributions(SPtr<DistributionArray3D> distributions) override;
-    void applyBC() override;
+	RheologyBinghamModelLBMKernel() {};
+	~RheologyBinghamModelLBMKernel() {};
+	SPtr<LBMKernel> clone() override
+	{
+		SPtr<LBMKernel> kernel(new RheologyBinghamModelLBMKernel());
+		kernel->setNX(nx);
+		kernel->setCollisionFactor(collFactor);
+		dynamicPointerCast<RheologyBinghamModelLBMKernel>(kernel)->initDataSet();
+		kernel->setBCProcessor(bcProcessor->clone(kernel));
+		kernel->setWithForcing(withForcing);
+		kernel->setForcingX1(muForcingX1);
+		kernel->setForcingX2(muForcingX2);
+		kernel->setForcingX3(muForcingX3);
+		kernel->setIndex(ix1, ix2, ix3);
+		kernel->setDeltaT(deltaT);
+
+		return kernel;
+	}
+protected:	
+	LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const override
+	{
+		return Rheology::getBinghamCollFactor(omegaInf, shearRate, drho);
+	}
 };
-#endif // EqDensityBCAlgorithm_h__
+
+
+#endif

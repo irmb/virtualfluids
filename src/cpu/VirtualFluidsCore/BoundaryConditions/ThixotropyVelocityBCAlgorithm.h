@@ -26,25 +26,31 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file EqDensityBCAlgorithm.h
+//! \file ThixotropyVelocityBCAlgorithm.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef EqDensityBCAlgorithm_h__
-#define EqDensityBCAlgorithm_h__
+#ifndef ThixotropyVelocityBCAlgorithm_h__
+#define ThixotropyVelocityBCAlgorithm_h__
 
 #include "BCAlgorithm.h"
-#include <PointerDefinitions.h>
 
-class DistributionArray3D;
 
-class EqDensityBCAlgorithm : public BCAlgorithm
+class ThixotropyVelocityBCAlgorithm : public BCAlgorithm
 {
 public:
-    EqDensityBCAlgorithm();
-    ~EqDensityBCAlgorithm() override;
-    SPtr<BCAlgorithm> clone() override;
-    void addDistributions(SPtr<DistributionArray3D> distributions) override;
-    void applyBC() override;
+	ThixotropyVelocityBCAlgorithm();
+	virtual ~ThixotropyVelocityBCAlgorithm();
+	SPtr<BCAlgorithm> clone();
+	void addDistributions(SPtr<DistributionArray3D> distributions);
+	void addDistributionsH(SPtr<DistributionArray3D> distributions);
+	void applyBC();
+	void setLambdaBC(LBMReal lambda) { this->lambdaBC = lambda; }
+	LBMReal getLambdaBC() { return this->lambdaBC; }
+protected:
+	SPtr<DistributionArray3D> distributionsH;
+private:
+	LBMReal lambdaBC;
 };
-#endif // EqDensityBCAlgorithm_h__
+#endif // ThixotropyVelocityBCAlgorithm_h__
+

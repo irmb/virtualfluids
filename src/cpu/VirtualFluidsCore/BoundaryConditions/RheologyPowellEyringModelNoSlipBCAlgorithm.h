@@ -26,25 +26,34 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file EqDensityBCAlgorithm.h
+//! \file RheologyPowellEyringModelNoSlipBCAlgorithm.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef EqDensityBCAlgorithm_h__
-#define EqDensityBCAlgorithm_h__
+#ifndef RheologyPowellEyringModelNoSlipBCAlgorithm_h__
+#define RheologyPowellEyringModelNoSlipBCAlgorithm_h__
 
-#include "BCAlgorithm.h"
-#include <PointerDefinitions.h>
+#include "RheologyNoSlipBCAlgorithm.h"
+#include "Rheology.h"
 
-class DistributionArray3D;
-
-class EqDensityBCAlgorithm : public BCAlgorithm
+class RheologyPowellEyringModelNoSlipBCAlgorithm : public RheologyNoSlipBCAlgorithm
 {
 public:
-    EqDensityBCAlgorithm();
-    ~EqDensityBCAlgorithm() override;
-    SPtr<BCAlgorithm> clone() override;
-    void addDistributions(SPtr<DistributionArray3D> distributions) override;
-    void applyBC() override;
+   RheologyPowellEyringModelNoSlipBCAlgorithm() 
+   {
+      BCAlgorithm::type = BCAlgorithm::RheologyPowellEyringModelNoSlipBCAlgorithm;
+      BCAlgorithm::preCollision = true;
+   }
+   ~RheologyPowellEyringModelNoSlipBCAlgorithm() {}
+   SPtr<BCAlgorithm> clone() override
+   {
+      SPtr<BCAlgorithm> bc(new RheologyPowellEyringModelNoSlipBCAlgorithm());
+      return bc;
+   }
+protected:
+   LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const override
+   {
+      return Rheology::getHerschelBulkleyCollFactor(omegaInf, shearRate, drho);
+   }
 };
-#endif // EqDensityBCAlgorithm_h__
+#endif // RheologyPowellEyringModelNoSlipBCAlgorithm_h__

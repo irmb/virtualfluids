@@ -26,25 +26,93 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file EqDensityBCAlgorithm.h
-//! \ingroup BoundarConditions
-//! \author Konstantin Kutscher
+//! \file Rheology.cpp
+//! \ingroup LBM
+//! \author Konstantin Kutscher, Martin Geier
 //=======================================================================================
-#ifndef EqDensityBCAlgorithm_h__
-#define EqDensityBCAlgorithm_h__
+#include "Rheology.h"
 
-#include "BCAlgorithm.h"
-#include <PointerDefinitions.h>
+SPtr<Rheology> Rheology::instance = SPtr<Rheology>();
+LBMReal Rheology::tau0 = 0;
+LBMReal Rheology::k = 0;
+LBMReal Rheology::n = 1;
+LBMReal Rheology::omegaMin = 0;
+LBMReal Rheology::beta = 0;
+LBMReal Rheology::c = 0;
+LBMReal Rheology::mu0 = 0;
 
-class DistributionArray3D;
-
-class EqDensityBCAlgorithm : public BCAlgorithm
+//////////////////////////////////////////////////////////////////////////
+SPtr<Rheology> Rheology::getInstance()
 {
-public:
-    EqDensityBCAlgorithm();
-    ~EqDensityBCAlgorithm() override;
-    SPtr<BCAlgorithm> clone() override;
-    void addDistributions(SPtr<DistributionArray3D> distributions) override;
-    void applyBC() override;
-};
-#endif // EqDensityBCAlgorithm_h__
+   if (!instance)
+      instance = SPtr<Rheology>(new Rheology());
+   return instance;
+}
+
+void Rheology::setYieldStress(LBMReal yieldStress)
+{
+	tau0 = yieldStress;
+}
+LBMReal Rheology::getYieldStress() const
+{
+	return tau0;
+}
+void Rheology::setViscosityParameter(LBMReal kParameter)
+{
+	k = kParameter;
+}
+LBMReal Rheology::getViscosityParameter() const
+{
+	return k;
+}
+void Rheology::setPowerIndex(LBMReal index)
+{
+	n = index;
+}
+LBMReal Rheology::getPowerIndex() const
+{
+	return n;
+}
+
+void Rheology::setOmegaMin(LBMReal omega)
+{
+	omegaMin = omega;
+}
+LBMReal Rheology::getOmegaMin() const
+{
+	return omegaMin;
+}
+
+void Rheology::setBeta(LBMReal PowellEyringBeta)
+{
+	beta = PowellEyringBeta;
+}
+
+LBMReal Rheology::getBeta() const
+{
+	return beta;
+}
+
+void Rheology::setC(LBMReal PowellEyringC)
+{
+	c = PowellEyringC;
+}
+
+LBMReal Rheology::getC() const
+{
+	return c;
+}
+
+void Rheology::setMu0(LBMReal mu)
+{
+	mu0 = mu;
+}
+
+LBMReal Rheology::getMu0() const
+{
+	return mu0;
+}
+
+Rheology::Rheology()
+{
+}

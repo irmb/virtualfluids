@@ -26,25 +26,41 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file EqDensityBCAlgorithm.h
+//! \file RheologyNoSlipBCAlgorithm.cpp
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef EqDensityBCAlgorithm_h__
-#define EqDensityBCAlgorithm_h__
+#include "RheologyNoSlipBCAlgorithm.h"
+#include "DistributionArray3D.h"
+#include "BoundaryConditions.h"
 
-#include "BCAlgorithm.h"
-#include <PointerDefinitions.h>
-
-class DistributionArray3D;
-
-class EqDensityBCAlgorithm : public BCAlgorithm
+//////////////////////////////////////////////////////////////////////////
+void RheologyNoSlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
-public:
-    EqDensityBCAlgorithm();
-    ~EqDensityBCAlgorithm() override;
-    SPtr<BCAlgorithm> clone() override;
-    void addDistributions(SPtr<DistributionArray3D> distributions) override;
-    void applyBC() override;
-};
-#endif // EqDensityBCAlgorithm_h__
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
+void RheologyNoSlipBCAlgorithm::applyBC()
+{
+   LBMReal f[D3Q27System::ENDF + 1];
+   LBMReal feq[D3Q27System::ENDF + 1];
+   distributions->getDistribution(f, x1, x2, x3);
+   LBMReal rho, vx1, vx2, vx3;
+   calcMacrosFct(f, rho, vx1, vx2, vx3);
+   calcFeqFct(feq, rho, vx1, vx2, vx3);
+
+   LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
+   LBMReal collFactorF = getRheologyCollFactor(collFactor, shearRate, rho);
+
+   for (int fDir = D3Q27System::FSTARTDIR; fDir <= D3Q27System::FENDDIR; fDir++)
+   {
+      if (bcPtr->hasNoSlipBoundaryFlag(fDir))
+      {
+         //quadratic bounce back
+         const int invDir = D3Q27System::INVDIR[fDir];
+         LBMReal q = bcPtr->getQ(invDir);
+         LBMReal fReturn =(f[invDir] + q * f[fDir] + q * collFactorF * (feq[invDir] - f[invDir] + feq[fDir] - f[fDir])) / (1.0 + q);
+         distributions->setDistributionInvForDirection(fReturn, x1 + D3Q27System::DX1[invDir], x2 + D3Q27System::DX2[invDir], x3 + D3Q27System::DX3[invDir], invDir);
+      }
+   }
+}

@@ -26,25 +26,45 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file EqDensityBCAlgorithm.h
-//! \ingroup BoundarConditions
+//! \file RheologyHerschelBulkleyModelLBMKernel.h
+//! \ingroup LBM
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef EqDensityBCAlgorithm_h__
-#define EqDensityBCAlgorithm_h__
+#ifndef RheologyHerschelBulkleyModelLBMKernel_H
+#define RheologyHerschelBulkleyModelLBMKernel_H
 
-#include "BCAlgorithm.h"
-#include <PointerDefinitions.h>
+#include "RheologyK17LBMKernel.h"
+#include "Rheology.h"
 
-class DistributionArray3D;
+//! \brief    Cumulant LBM kernel + Herschel-Bulkley plastic model 
 
-class EqDensityBCAlgorithm : public BCAlgorithm
+class RheologyHerschelBulkleyModelLBMKernel : public RheologyK17LBMKernel
 {
 public:
-    EqDensityBCAlgorithm();
-    ~EqDensityBCAlgorithm() override;
-    SPtr<BCAlgorithm> clone() override;
-    void addDistributions(SPtr<DistributionArray3D> distributions) override;
-    void applyBC() override;
+	RheologyHerschelBulkleyModelLBMKernel() {};
+	~RheologyHerschelBulkleyModelLBMKernel() {};
+	SPtr<LBMKernel> clone() override
+	{
+		SPtr<LBMKernel> kernel(new RheologyHerschelBulkleyModelLBMKernel());
+		kernel->setNX(nx);
+		kernel->setCollisionFactor(collFactor);
+		dynamicPointerCast<RheologyHerschelBulkleyModelLBMKernel>(kernel)->initDataSet();
+		kernel->setBCProcessor(bcProcessor->clone(kernel));
+		kernel->setWithForcing(withForcing);
+		kernel->setForcingX1(muForcingX1);
+		kernel->setForcingX2(muForcingX2);
+		kernel->setForcingX3(muForcingX3);
+		kernel->setIndex(ix1, ix2, ix3);
+		kernel->setDeltaT(deltaT);
+
+		return kernel;
+	}
+protected:
+	LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const override
+	{
+		return Rheology::getHerschelBulkleyCollFactor(omegaInf, shearRate, drho);
+	}
 };
-#endif // EqDensityBCAlgorithm_h__
+
+
+#endif

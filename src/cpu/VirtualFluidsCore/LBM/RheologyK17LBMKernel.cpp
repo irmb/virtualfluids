@@ -1,3 +1,36 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file RheologyK17LBMKernel.cpp
+//! \ingroup LBM
+//! \author Konstantin Kutscher
+//=======================================================================================
+
 #include "RheologyK17LBMKernel.h"
 #include "D3Q27System.h"
 #include "InterpolationProcessor.h"
@@ -6,7 +39,7 @@
 #include "DataSet3D.h"
 #include "LBMKernel.h"
 #include "Block3D.h"
-#include "Thixotropy.h"
+#include "Rheology.h"
 
 #define PROOF_CORRECTNESS
 
@@ -615,9 +648,9 @@ void RheologyK17LBMKernel::calculate(int step)
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //non Newtonian fluid collision factor
                LBMReal shearRate = sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (drho + c1);
-               //omega = getThyxotropyCollFactor(omega, shearRate, rho);
-               //omega = Thixotropy::getHerschelBulkleyCollFactor(omega, shearRate, drho);
-               omega = Thixotropy::getBinghamCollFactor(omega, shearRate, drho);
+               omega = getRheologyCollFactor(omega, shearRate, rho);
+               //omega = Rheology::getHerschelBulkleyCollFactor(omega, shearRate, drho);
+               //omega = Rheology::getBinghamCollFactor(omega, shearRate, drho);
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                dxux = c1o2 * (-omega) * (mxxMyy + mxxMzz);// +c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);

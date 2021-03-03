@@ -17,7 +17,7 @@ void bflow(string configname)
       string          viscosityPath = config.getValue<string>("viscosityPath");
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
-      //vector<double>  boundingBox = config.getVector<double>("boundingBox");
+      vector<double>  boundingBox = config.getVector<double>("boundingBox");
       //double          nuLB = 1.5e-3;//config.getValue<double>("nuLB");
       double          endTime = config.getValue<double>("endTime");
       double          outTime = config.getValue<double>("outTime");
@@ -93,9 +93,9 @@ void bflow(string configname)
       double g_minX2 = 0;
       double g_minX3 = 0;
 
-      double g_maxX1 = resolution;// boundingBox[0];
-      double g_maxX2 = resolution;// boundingBox[1];
-      double g_maxX3 = 1.0; // boundingBox[2];
+      double g_maxX1 = boundingBox[0];
+      double g_maxX2 = boundingBox[1];
+      double g_maxX3 = boundingBox[2];
 
       //double g_minX1 = -boundingBox[0]/2.0;
       //double g_minX2 = -boundingBox[1] / 2.0;

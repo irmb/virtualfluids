@@ -26,25 +26,35 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file EqDensityBCAlgorithm.h
+//! \file RheologyBinghamModelNoSlipBCAlgorithm.h
 //! \ingroup BoundarConditions
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef EqDensityBCAlgorithm_h__
-#define EqDensityBCAlgorithm_h__
 
-#include "BCAlgorithm.h"
-#include <PointerDefinitions.h>
+#ifndef RheologyBinghamModelNoSlipBCAlgorithm_h__
+#define RheologyBinghamModelNoSlipBCAlgorithm_h__
 
-class DistributionArray3D;
+#include "RheologyNoSlipBCAlgorithm.h"
+#include "Rheology.h"
 
-class EqDensityBCAlgorithm : public BCAlgorithm
+class RheologyBinghamModelNoSlipBCAlgorithm : public RheologyNoSlipBCAlgorithm
 {
 public:
-    EqDensityBCAlgorithm();
-    ~EqDensityBCAlgorithm() override;
-    SPtr<BCAlgorithm> clone() override;
-    void addDistributions(SPtr<DistributionArray3D> distributions) override;
-    void applyBC() override;
+   RheologyBinghamModelNoSlipBCAlgorithm()
+   {
+      BCAlgorithm::type = BCAlgorithm::RheologyBinghamModelNoSlipBCAlgorithm;
+      BCAlgorithm::preCollision = true;
+   }
+   ~RheologyBinghamModelNoSlipBCAlgorithm() {}
+   SPtr<BCAlgorithm> clone() override
+   {
+      SPtr<BCAlgorithm> bc(new RheologyBinghamModelNoSlipBCAlgorithm());
+      return bc;
+   }
+protected:
+   LBMReal getRheologyCollFactor(LBMReal omegaInf, LBMReal shearRate, LBMReal drho) const override 
+   { 
+      return Rheology::getBinghamCollFactor(omegaInf, shearRate, drho);
+   }
 };
-#endif // EqDensityBCAlgorithm_h__
+#endif // BinghamModelNoSlipBCAlgorithm_h__

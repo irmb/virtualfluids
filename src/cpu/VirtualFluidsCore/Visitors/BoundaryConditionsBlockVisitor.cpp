@@ -45,11 +45,11 @@
 #include "BCArray3D.h"
 #include "ILBMKernel.h"
 
-#include "DensityAndThixotropyBCAlgorithm.h"
-#include "VelocityAndThixotropyBCAlgorithm.h"
-#include "NoSlipAndThixotropyBCAlgorithm.h"
-#include "NonReflectingOutflowAndThixotropyBCAlgorithm.h"
-#include "VelocityWithDensityAndThixotropyBCAlgorithm.h"
+#include "ThixotropyDensityBCAlgorithm.h"
+#include "ThixotropyVelocityBCAlgorithm.h"
+#include "ThixotropyNoSlipBCAlgorithm.h"
+#include "ThixotropyNonReflectingOutflowBCAlgorithm.h"
+#include "ThixotropyVelocityWithDensityBCAlgorithm.h"
 
 
 BoundaryConditionsBlockVisitor::BoundaryConditionsBlockVisitor() : Block3DVisitor(0, Grid3DSystem::MAXLEVEL) {}
@@ -102,20 +102,20 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
                                 bca->setBcPointer(bcPtr);
                                 bca->addDistributions(distributions);
 
-                                if (alg == BCAlgorithm::VelocityAndThixotropyBCAlgorithm)
-                                    std::static_pointer_cast<VelocityAndThixotropyBCAlgorithm>(bca)->addDistributionsH(
+                                if (alg == BCAlgorithm::ThixotropyVelocityBCAlgorithm)
+                                    std::static_pointer_cast<ThixotropyVelocityBCAlgorithm>(bca)->addDistributionsH(
                                         kernel->getDataSet()->getHdistributions());
-                                if (alg == BCAlgorithm::DensityAndThixotropyBCAlgorithm)
-                                    std::static_pointer_cast<DensityAndThixotropyBCAlgorithm>(bca)->addDistributionsH(
+                                if (alg == BCAlgorithm::ThixotropyDensityBCAlgorithm)
+                                    std::static_pointer_cast<ThixotropyDensityBCAlgorithm>(bca)->addDistributionsH(
                                         kernel->getDataSet()->getHdistributions());
-                                if (alg == BCAlgorithm::NoSlipAndThixotropyBCAlgorithm)
-                                    std::static_pointer_cast<NoSlipAndThixotropyBCAlgorithm>(bca)->addDistributionsH(
+                                if (alg == BCAlgorithm::ThixotropyNoSlipBCAlgorithm)
+                                    std::static_pointer_cast<ThixotropyNoSlipBCAlgorithm>(bca)->addDistributionsH(
                                         kernel->getDataSet()->getHdistributions());
-                                if (alg == BCAlgorithm::NonReflectingOutflowAndThixotropyBCAlgorithm)
-                                    std::static_pointer_cast<NonReflectingOutflowAndThixotropyBCAlgorithm>(bca)
+                                if (alg == BCAlgorithm::ThixotropyNonReflectingOutflowBCAlgorithm)
+                                    std::static_pointer_cast<ThixotropyNonReflectingOutflowBCAlgorithm>(bca)
                                         ->addDistributionsH(kernel->getDataSet()->getHdistributions());
-                                if (alg == BCAlgorithm::VelocityWithDensityAndThixotropyBCAlgorithm)
-                                    std::static_pointer_cast<VelocityWithDensityAndThixotropyBCAlgorithm>(bca)
+                                if (alg == BCAlgorithm::ThixotropyVelocityWithDensityBCAlgorithm)
+                                    std::static_pointer_cast<ThixotropyVelocityWithDensityBCAlgorithm>(bca)
                                         ->addDistributionsH(kernel->getDataSet()->getHdistributions());
 
                                 bca->setCollFactor(collFactor);
