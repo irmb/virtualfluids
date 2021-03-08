@@ -11,7 +11,7 @@
 #include <numeric>
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 #include "ThixotropyExpLBMKernel.h"
-#include "Thixotropy.h"
+#include "Rheology.h"
 
 using namespace std;
 
@@ -204,7 +204,7 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 					//LBMReal collFactorF = collFactor - 1e-6 / (gammaDot + one * 1e-9);
 					//collFactorF = (collFactorF < 0.5) ? 0.5 : collFactorF;
 
-					//LBMReal collFactorF = Thixotropy::getBinghamCollFactor(collFactor, gammaDot, rho);
+					//LBMReal collFactorF = Rheology::getBinghamCollFactor(collFactor, gammaDot, rho);
 
 					//data[index++].push_back(lambda);
 					//data[index++].push_back(gammaDot);
@@ -213,9 +213,9 @@ void WriteThixotropyQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 					distributionsF->getDistribution(f, ix1, ix2, ix3);
 					LBMReal rho = D3Q27System::getDensity(f);
 					LBMReal shearRate = D3Q27System::getShearRate(f, collFactor);
-					//LBMReal omega = Thixotropy::getHerschelBulkleyCollFactor(collFactor, shearRate, rho);
-					//LBMReal omega = Thixotropy::getPowellEyringCollFactor(collFactor, shearRate, rho);
-					LBMReal omega = Thixotropy::getBinghamCollFactor(collFactor, shearRate, rho);
+					//LBMReal omega = Rheology::getHerschelBulkleyCollFactor(collFactor, shearRate, rho);
+					//LBMReal omega = Rheology::getPowellEyringCollFactor(collFactor, shearRate, rho);
+					LBMReal omega = Rheology::getBinghamCollFactor(collFactor, shearRate, rho);
 					LBMReal viscosity = (omega == 0) ? 0 : UbMath::c1o3 * (UbMath::c1/omega-UbMath::c1o2);
 
 					
