@@ -10,6 +10,235 @@
 #include "LBM/D3Q27.h"
 #include "Core/RealConstants.h"
 
+static const int E    = 0;
+static const int W    = 1;
+static const int N    = 2;
+static const int S    = 3;
+static const int T    = 4;
+static const int B    = 5;
+static const int NE   = 6;
+static const int SW   = 7;
+static const int SE   = 8;
+static const int NW   = 9;
+static const int TE   = 10;
+static const int BW   = 11;
+static const int BE   = 12;
+static const int TW   = 13;
+static const int TN   = 14;
+static const int BS   = 15;
+static const int BN   = 16;
+static const int TS   = 17;
+static const int TNE  = 18;
+static const int TNW  = 19;
+static const int TSE  = 20;
+static const int TSW  = 21;
+static const int BNE  = 22;
+static const int BNW  = 23;
+static const int BSE  = 24;
+static const int BSW  = 25;
+static const int REST = 26;
+
+__device__ real getDensity(const real *const &f /*[27]*/)
+{
+    return ((f[TNE] + f[BSW]) + (f[TSE] + f[BNW])) + ((f[BSE] + f[TNW]) + (f[TSW] + f[BNE])) +
+           (((f[NE] + f[SW]) + (f[SE] + f[NW])) + ((f[TE] + f[BW]) + (f[BE] + f[TW])) +
+            ((f[BN] + f[TS]) + (f[TN] + f[BS]))) +
+           ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[REST];
+}
+
+
+__device__ real getIncompVelocityX1(const real *const &f /*[27]*/)
+{
+    return ((((f[TNE] - f[BSW]) + (f[TSE] - f[BNW])) + ((f[BSE] - f[TNW]) + (f[BNE] - f[TSW]))) +
+            (((f[BE] - f[TW]) + (f[TE] - f[BW])) + ((f[SE] - f[NW]) + (f[NE] - f[SW]))) + (f[E] - f[W]));
+}
+
+
+__device__ real getIncompVelocityX2(const real *const &f /*[27]*/)
+{
+    return ((((f[TNE] - f[BSW]) + (f[BNW] - f[TSE])) + ((f[TNW] - f[BSE]) + (f[BNE] - f[TSW]))) +
+            (((f[BN] - f[TS]) + (f[TN] - f[BS])) + ((f[NW] - f[SE]) + (f[NE] - f[SW]))) + (f[N] - f[S]));
+}
+
+
+__device__ real getIncompVelocityX3(const real *const &f /*[27]*/)
+{
+    return ((((f[TNE] - f[BSW]) + (f[TSE] - f[BNW])) + ((f[TNW] - f[BSE]) + (f[TSW] - f[BNE]))) +
+            (((f[TS] - f[BN]) + (f[TN] - f[BS])) + ((f[TW] - f[BE]) + (f[TE] - f[BW]))) + (f[T] - f[B]));
+}
+
+
+
+__device__ Distributions27 getDistributions(real* DD, unsigned int size_Mat, bool evenOrOdd)
+{
+    Distributions27 D;
+    if (evenOrOdd)
+    {
+        D.f[dirE   ] = &DD[dirE   *size_Mat];
+        D.f[dirW   ] = &DD[dirW   *size_Mat];
+        D.f[dirN   ] = &DD[dirN   *size_Mat];
+        D.f[dirS   ] = &DD[dirS   *size_Mat];
+        D.f[dirT   ] = &DD[dirT   *size_Mat];
+        D.f[dirB   ] = &DD[dirB   *size_Mat];
+        D.f[dirNE  ] = &DD[dirNE  *size_Mat];
+        D.f[dirSW  ] = &DD[dirSW  *size_Mat];
+        D.f[dirSE  ] = &DD[dirSE  *size_Mat];
+        D.f[dirNW  ] = &DD[dirNW  *size_Mat];
+        D.f[dirTE  ] = &DD[dirTE  *size_Mat];
+        D.f[dirBW  ] = &DD[dirBW  *size_Mat];
+        D.f[dirBE  ] = &DD[dirBE  *size_Mat];
+        D.f[dirTW  ] = &DD[dirTW  *size_Mat];
+        D.f[dirTN  ] = &DD[dirTN  *size_Mat];
+        D.f[dirBS  ] = &DD[dirBS  *size_Mat];
+        D.f[dirBN  ] = &DD[dirBN  *size_Mat];
+        D.f[dirTS  ] = &DD[dirTS  *size_Mat];
+        D.f[dirZERO] = &DD[dirZERO*size_Mat];
+        D.f[dirTNE ] = &DD[dirTNE *size_Mat];
+        D.f[dirTSW ] = &DD[dirTSW *size_Mat];
+        D.f[dirTSE ] = &DD[dirTSE *size_Mat];
+        D.f[dirTNW ] = &DD[dirTNW *size_Mat];
+        D.f[dirBNE ] = &DD[dirBNE *size_Mat];
+        D.f[dirBSW ] = &DD[dirBSW *size_Mat];
+        D.f[dirBSE ] = &DD[dirBSE *size_Mat];
+        D.f[dirBNW ] = &DD[dirBNW *size_Mat];
+    }
+    else
+    {
+        D.f[dirW   ] = &DD[dirE   *size_Mat];
+        D.f[dirE   ] = &DD[dirW   *size_Mat];
+        D.f[dirS   ] = &DD[dirN   *size_Mat];
+        D.f[dirN   ] = &DD[dirS   *size_Mat];
+        D.f[dirB   ] = &DD[dirT   *size_Mat];
+        D.f[dirT   ] = &DD[dirB   *size_Mat];
+        D.f[dirSW  ] = &DD[dirNE  *size_Mat];
+        D.f[dirNE  ] = &DD[dirSW  *size_Mat];
+        D.f[dirNW  ] = &DD[dirSE  *size_Mat];
+        D.f[dirSE  ] = &DD[dirNW  *size_Mat];
+        D.f[dirBW  ] = &DD[dirTE  *size_Mat];
+        D.f[dirTE  ] = &DD[dirBW  *size_Mat];
+        D.f[dirTW  ] = &DD[dirBE  *size_Mat];
+        D.f[dirBE  ] = &DD[dirTW  *size_Mat];
+        D.f[dirBS  ] = &DD[dirTN  *size_Mat];
+        D.f[dirTN  ] = &DD[dirBS  *size_Mat];
+        D.f[dirTS  ] = &DD[dirBN  *size_Mat];
+        D.f[dirBN  ] = &DD[dirTS  *size_Mat];
+        D.f[dirZERO] = &DD[dirZERO*size_Mat];
+        D.f[dirTNE ] = &DD[dirBSW *size_Mat];
+        D.f[dirTSW ] = &DD[dirBNE *size_Mat];
+        D.f[dirTSE ] = &DD[dirBNW *size_Mat];
+        D.f[dirTNW ] = &DD[dirBSE *size_Mat];
+        D.f[dirBNE ] = &DD[dirTSW *size_Mat];
+        D.f[dirBSW ] = &DD[dirTNE *size_Mat];
+        D.f[dirBSE ] = &DD[dirTNW *size_Mat];
+        D.f[dirBNW ] = &DD[dirTSE *size_Mat];
+    }
+    return D;
+}
+
+struct Distribution27
+{
+   real f[27];
+};
+
+__device__ Distribution27 getDistribution(real* DD, unsigned int size_Mat, bool evenOrOdd, unsigned int k,
+                                    unsigned int* neighborX,
+                                    unsigned int* neighborY,
+                                    unsigned int* neighborZ)
+{
+    unsigned int kzero= k;
+    unsigned int ke   = k;
+    unsigned int kw   = neighborX[k];
+    unsigned int kn   = k;
+    unsigned int ks   = neighborY[k];
+    unsigned int kt   = k;
+    unsigned int kb   = neighborZ[k];
+    unsigned int ksw  = neighborY[kw];
+    unsigned int kne  = k;
+    unsigned int kse  = ks;
+    unsigned int knw  = kw;
+    unsigned int kbw  = neighborZ[kw];
+    unsigned int kte  = k;
+    unsigned int kbe  = kb;
+    unsigned int ktw  = kw;
+    unsigned int kbs  = neighborZ[ks];
+    unsigned int ktn  = k;
+    unsigned int kbn  = kb;
+    unsigned int kts  = ks;
+    unsigned int ktse = ks;
+    unsigned int kbnw = kbw;
+    unsigned int ktnw = kw;
+    unsigned int kbse = kbs;
+    unsigned int ktsw = ksw;
+    unsigned int kbne = kb;
+    unsigned int ktne = k;
+    unsigned int kbsw = neighborZ[ksw];
+
+    Distributions27 D = getDistributions(DD, size_Mat, evenOrOdd);
+
+//       real f_dirE = (D.f[dirE])[ke];
+//       real f_dirW = (D.f[dirW])[kw];
+//       real f_dirN = (D.f[dirN])[kn];
+//       real f_dirS = (D.f[dirS])[ks];
+//       real f_dirT = (D.f[dirT])[kt];
+//       real f_dirB = (D.f[dirB])[kb];
+//
+//       real f_dirNE = (D.f[dirNE])[kne];
+//       real f_dirSW = (D.f[dirSW])[ksw];
+//       real f_dirSE = (D.f[dirSE])[kse];
+//       real f_dirNW = (D.f[dirNW])[knw];
+//       real f_dirTE = (D.f[dirTE])[kte];
+//       real f_dirBW = (D.f[dirBW])[kbw];
+//
+//       real f_dirBE = (D.f[dirBE])[kbe];
+//       real f_dirTW = (D.f[dirTW])[ktw];
+//       real f_dirTN = (D.f[dirTN])[ktn];
+//       real f_dirBS = (D.f[dirBS])[kbs];
+//       real f_dirBN = (D.f[dirBN])[kbn];
+//       real f_dirTS = (D.f[dirTS])[kts];
+//
+//       real f_dirZERO = (D.f[dirZERO])[kzero];
+//
+//       real f_dirTNE = (D.f[dirTNE ])[ktne];
+//       real f_dirTSW = (D.f[dirTSW ])[ktsw];
+//       real f_dirTSE = (D.f[dirTSE ])[ktse];
+//       real f_dirTNW = (D.f[dirTNW ])[ktnw];
+//       real f_dirBNE = (D.f[dirBNE ])[kbne];
+//       real f_dirBSW = (D.f[dirBSW ])[kbsw];
+//       real f_dirBSE = (D.f[dirBSE ])[kbse];
+//       real f_dirBNW = (D.f[dirBNW ])[kbnw];
+
+
+return {
+        (D.f[dirE])[ke],
+        (D.f[dirW])[kw],
+        (D.f[dirN])[kn],
+        (D.f[dirS])[ks],
+        (D.f[dirT])[kt],
+        (D.f[dirB])[kb],
+        (D.f[dirNE])[kne],
+        (D.f[dirSW])[ksw],
+        (D.f[dirSE])[kse],
+        (D.f[dirNW])[knw],
+        (D.f[dirTE])[kte],
+        (D.f[dirBW])[kbw],
+        (D.f[dirBE])[kbe],
+        (D.f[dirTW])[ktw],
+        (D.f[dirTN])[ktn],
+        (D.f[dirBS])[kbs],
+        (D.f[dirBN])[kbn],
+        (D.f[dirTS])[kts],
+        (D.f[dirZERO])[kzero],
+        (D.f[dirTNE ])[ktne],
+        (D.f[dirTSW ])[ktsw],
+        (D.f[dirTSE ])[ktse],
+        (D.f[dirTNW ])[ktnw],
+        (D.f[dirBNE ])[kbne],
+        (D.f[dirBSW ])[kbsw],
+        (D.f[dirBSE ])[kbse],
+        (D.f[dirBNW ])[kbnw]
+    };
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void LBCalcMac27( real* vxD,
                                         real* vyD,
@@ -23,141 +252,20 @@ extern "C" __global__ void LBCalcMac27( real* vxD,
                                         real* DD,
                                         bool evenOrOdd)
 {
-   Distributions27 D;
-   if (evenOrOdd==true)
-   {
-      D.f[dirE   ] = &DD[dirE   *size_Mat];
-      D.f[dirW   ] = &DD[dirW   *size_Mat];
-      D.f[dirN   ] = &DD[dirN   *size_Mat];
-      D.f[dirS   ] = &DD[dirS   *size_Mat];
-      D.f[dirT   ] = &DD[dirT   *size_Mat];
-      D.f[dirB   ] = &DD[dirB   *size_Mat];
-      D.f[dirNE  ] = &DD[dirNE  *size_Mat];
-      D.f[dirSW  ] = &DD[dirSW  *size_Mat];
-      D.f[dirSE  ] = &DD[dirSE  *size_Mat];
-      D.f[dirNW  ] = &DD[dirNW  *size_Mat];
-      D.f[dirTE  ] = &DD[dirTE  *size_Mat];
-      D.f[dirBW  ] = &DD[dirBW  *size_Mat];
-      D.f[dirBE  ] = &DD[dirBE  *size_Mat];
-      D.f[dirTW  ] = &DD[dirTW  *size_Mat];
-      D.f[dirTN  ] = &DD[dirTN  *size_Mat];
-      D.f[dirBS  ] = &DD[dirBS  *size_Mat];
-      D.f[dirBN  ] = &DD[dirBN  *size_Mat];
-      D.f[dirTS  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
-      D.f[dirTNE ] = &DD[dirTNE *size_Mat];
-      D.f[dirTSW ] = &DD[dirTSW *size_Mat];
-      D.f[dirTSE ] = &DD[dirTSE *size_Mat];
-      D.f[dirTNW ] = &DD[dirTNW *size_Mat];
-      D.f[dirBNE ] = &DD[dirBNE *size_Mat];
-      D.f[dirBSW ] = &DD[dirBSW *size_Mat];
-      D.f[dirBSE ] = &DD[dirBSE *size_Mat];
-      D.f[dirBNW ] = &DD[dirBNW *size_Mat];
-   } 
-   else
-   {
-      D.f[dirW   ] = &DD[dirE   *size_Mat];
-      D.f[dirE   ] = &DD[dirW   *size_Mat];
-      D.f[dirS   ] = &DD[dirN   *size_Mat];
-      D.f[dirN   ] = &DD[dirS   *size_Mat];
-      D.f[dirB   ] = &DD[dirT   *size_Mat];
-      D.f[dirT   ] = &DD[dirB   *size_Mat];
-      D.f[dirSW  ] = &DD[dirNE  *size_Mat];
-      D.f[dirNE  ] = &DD[dirSW  *size_Mat];
-      D.f[dirNW  ] = &DD[dirSE  *size_Mat];
-      D.f[dirSE  ] = &DD[dirNW  *size_Mat];
-      D.f[dirBW  ] = &DD[dirTE  *size_Mat];
-      D.f[dirTE  ] = &DD[dirBW  *size_Mat];
-      D.f[dirTW  ] = &DD[dirBE  *size_Mat];
-      D.f[dirBE  ] = &DD[dirTW  *size_Mat];
-      D.f[dirBS  ] = &DD[dirTN  *size_Mat];
-      D.f[dirTN  ] = &DD[dirBS  *size_Mat];
-      D.f[dirTS  ] = &DD[dirBN  *size_Mat];
-      D.f[dirBN  ] = &DD[dirTS  *size_Mat];
-      D.f[dirZERO] = &DD[dirZERO*size_Mat];
-      D.f[dirTNE ] = &DD[dirBSW *size_Mat];
-      D.f[dirTSW ] = &DD[dirBNE *size_Mat];
-      D.f[dirTSE ] = &DD[dirBNW *size_Mat];
-      D.f[dirTNW ] = &DD[dirBSE *size_Mat];
-      D.f[dirBNE ] = &DD[dirTSW *size_Mat];
-      D.f[dirBSW ] = &DD[dirTNE *size_Mat];
-      D.f[dirBSE ] = &DD[dirTNW *size_Mat];
-      D.f[dirBNW ] = &DD[dirTSE *size_Mat];
-   }
-   ////////////////////////////////////////////////////////////////////////////////
-   unsigned int  k;                   // Zugriff auf arrays im device
-   //
-   unsigned int tx = threadIdx.x;     // Thread index = lokaler i index
-   unsigned int by = blockIdx.x;      // Block index x
-   unsigned int bz = blockIdx.y;      // Block index y
-   unsigned int  x = tx + STARTOFFX;  // Globaler x-Index 
-   unsigned int  y = by + STARTOFFY;  // Globaler y-Index 
-   unsigned int  z = bz + STARTOFFZ;  // Globaler z-Index 
+   const unsigned int tx = threadIdx.x;    // Thread index = lokaler i index
+   const unsigned int by = blockIdx.x;     // Block index x
+   const unsigned int bz = blockIdx.y;     // Block index y
+   const unsigned int x = tx + STARTOFFX;  // Globaler x-Index 
+   const unsigned int y = by + STARTOFFY;  // Globaler y-Index 
+   const unsigned int z = bz + STARTOFFZ;  // Globaler z-Index 
 
    const unsigned sizeX = blockDim.x;
    const unsigned sizeY = gridDim.x;
    const unsigned nx = sizeX + 2 * STARTOFFX;
    const unsigned ny = sizeY + 2 * STARTOFFY;
 
-   k = nx*(ny*z + y) + x;
-   //////////////////////////////////////////////////////////////////////////
-   //index
-   unsigned int kzero= k;
-   unsigned int ke   = k;
-   unsigned int kw   = neighborX[k];
-   unsigned int kn   = k;
-   unsigned int ks   = neighborY[k];
-   unsigned int kt   = k;
-   unsigned int kb   = neighborZ[k];
-   unsigned int ksw  = neighborY[kw];
-   unsigned int kne  = k;
-   unsigned int kse  = ks;
-   unsigned int knw  = kw;
-   unsigned int kbw  = neighborZ[kw];
-   unsigned int kte  = k;
-   unsigned int kbe  = kb;
-   unsigned int ktw  = kw;
-   unsigned int kbs  = neighborZ[ks];
-   unsigned int ktn  = k;
-   unsigned int kbn  = kb;
-   unsigned int kts  = ks;
-   unsigned int ktse = ks;
-   unsigned int kbnw = kbw;
-   unsigned int ktnw = kw;
-   unsigned int kbse = kbs;
-   unsigned int ktsw = ksw;
-   unsigned int kbne = kb;
-   unsigned int ktne = k;
-   unsigned int kbsw = neighborZ[ksw];
-   //unsigned int nxny = nx*ny;
-   //unsigned int kzero= k;
-   //unsigned int ke   = k;
-   //unsigned int kw   = k + 1;
-   //unsigned int kn   = k;
-   //unsigned int ks   = k + nx;
-   //unsigned int kt   = k;
-   //unsigned int kb   = k + nxny;
-   //unsigned int ksw  = k + nx + 1;
-   //unsigned int kne  = k;
-   //unsigned int kse  = k + nx;
-   //unsigned int knw  = k + 1;
-   //unsigned int kbw  = k + nxny + 1;
-   //unsigned int kte  = k;
-   //unsigned int kbe  = k + nxny;
-   //unsigned int ktw  = k + 1;
-   //unsigned int kbs  = k + nxny + nx;
-   //unsigned int ktn  = k;
-   //unsigned int kbn  = k + nxny;
-   //unsigned int kts  = k + nx;
-   //unsigned int ktse = k + nx;
-   //unsigned int kbnw = k + nxny + 1;
-   //unsigned int ktnw = k + 1;
-   //unsigned int kbse = k + nxny + nx;
-   //unsigned int ktsw = k + nx + 1;
-   //unsigned int kbne = k + nxny;
-   //unsigned int ktne = k;
-   //unsigned int kbsw = k + nxny + nx + 1;
-   //////////////////////////////////////////////////////////////////////////
+   const unsigned int k = nx*(ny*z + y) + x; // Zugriff auf arrays im device
+
    rhoD[k] = c0o1;
    vxD[k]  = c0o1;
    vyD[k]  = c0o1;
@@ -165,50 +273,12 @@ extern "C" __global__ void LBCalcMac27( real* vxD,
 
    if(geoD[k] == GEO_FLUID)
    {
-      rhoD[k]    =   (D.f[dirE   ])[ke  ]+ (D.f[dirW   ])[kw  ]+ 
-                     (D.f[dirN   ])[kn  ]+ (D.f[dirS   ])[ks  ]+
-                     (D.f[dirT   ])[kt  ]+ (D.f[dirB   ])[kb  ]+
-                     (D.f[dirNE  ])[kne ]+ (D.f[dirSW  ])[ksw ]+
-                     (D.f[dirSE  ])[kse ]+ (D.f[dirNW  ])[knw ]+
-                     (D.f[dirTE  ])[kte ]+ (D.f[dirBW  ])[kbw ]+
-                     (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
-                     (D.f[dirTN  ])[ktn ]+ (D.f[dirBS  ])[kbs ]+
-                     (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ]+
-                     (D.f[dirZERO])[kzero]+ 
-                     (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
-                     (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
-                     (D.f[dirBNE ])[kbne]+ (D.f[dirBSW ])[kbsw]+ 
-                     (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw];
+       const auto distribution = getDistribution(DD, size_Mat, evenOrOdd, k, neighborX, neighborY, neighborZ);
 
-      vxD[k]     =   (D.f[dirE   ])[ke  ]- (D.f[dirW   ])[kw  ]+ 
-                     (D.f[dirNE  ])[kne ]- (D.f[dirSW  ])[ksw ]+
-                     (D.f[dirSE  ])[kse ]- (D.f[dirNW  ])[knw ]+
-                     (D.f[dirTE  ])[kte ]- (D.f[dirBW  ])[kbw ]+
-                     (D.f[dirBE  ])[kbe ]- (D.f[dirTW  ])[ktw ]+
-                     (D.f[dirTNE ])[ktne]- (D.f[dirTSW ])[ktsw]+ 
-                     (D.f[dirTSE ])[ktse]- (D.f[dirTNW ])[ktnw]+ 
-                     (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]+ 
-                     (D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw];
-
-      vyD[k]     =   (D.f[dirN   ])[kn  ]- (D.f[dirS   ])[ks  ]+
-                     (D.f[dirNE  ])[kne ]- (D.f[dirSW  ])[ksw ]-
-                     (D.f[dirSE  ])[kse ]+ (D.f[dirNW  ])[knw ]+
-                     (D.f[dirTN  ])[ktn ]- (D.f[dirBS  ])[kbs ]+
-                     (D.f[dirBN  ])[kbn ]- (D.f[dirTS  ])[kts ]+
-                     (D.f[dirTNE ])[ktne]- (D.f[dirTSW ])[ktsw]- 
-                     (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
-                     (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]- 
-                     (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw];
-
-      vzD[k]     =   (D.f[dirT   ])[kt  ]- (D.f[dirB   ])[kb  ]+
-                     (D.f[dirTE  ])[kte ]- (D.f[dirBW  ])[kbw ]-
-                     (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
-                     (D.f[dirTN  ])[ktn ]- (D.f[dirBS  ])[kbs ]-
-                     (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ]+
-                     (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
-                     (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]- 
-                     (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]- 
-                     (D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw];
+       rhoD[k] = getDensity(distribution.f);
+       vxD[k] = getIncompVelocityX1(distribution.f);
+       vyD[k] = getIncompVelocityX2(distribution.f);
+       vzD[k] = getIncompVelocityX3(distribution.f);
    }
 }
 
