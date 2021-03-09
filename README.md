@@ -11,8 +11,8 @@ VirtualFluids has been used on a variety of platforms:
  - Cygwin
 ### Software Requirements
  
- - [CMake](https://cmake.org/) (minimum version 3.13)
- - C++ compiler with C++11 support, for example gcc 6.3 or Visual C++ 14.0
+ - [CMake](https://cmake.org/) (minimum version 3.15)
+ - C++ compiler with C++14 support
  - [Paraview](https://www.paraview.org/) (most recent version)
 
 with usage of the GPU:  
@@ -62,9 +62,7 @@ The doxygen generated documentation can be found [here](https://git.irmb.bau.tu-
 
 
 ## Known Issues
-If CMake does not find CUDA_CUT_INCLUDE_DIR use and set the correct CUDA Pathes in gpu.cmake in the base directory in lines 35, 36.
-
-If you notice any problems on your platform, please report an gitea issue. 
+If you notice any problems on your platform, please report an issue. 
 
 
 ## Authors
