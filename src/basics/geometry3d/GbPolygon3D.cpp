@@ -46,10 +46,13 @@ void GbPolygon3D::init()
 {
     x1s   = 0.0;
     x2s   = 0.0;
+    x3s   = 0.0;
     x1min = 0.0;
     x1max = 0.0;
     x2min = 0.0;
     x2max = 0.0;
+    x3min = 0.0;
+    x3max = 0.0;
     //		points   = NULL;
     consistent = false;
     ps         = NULL;
