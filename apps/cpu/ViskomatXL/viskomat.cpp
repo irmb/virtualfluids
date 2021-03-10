@@ -14,11 +14,12 @@ void bflow(string configname)
       config.load(configname);
 
       string          outputPath = config.getValue<string>("outputPath");
-      string          viscosityPath = config.getValue<string>("viscosityPath");
+      string          geoPath = config.getValue<string>("geoPath");
+      string          geoFile = config.getValue<string>("geoFile");
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
       vector<double>  boundingBox = config.getVector<double>("boundingBox");
-      //double          nuLB = 1.5e-3;//config.getValue<double>("nuLB");
+      double          nuLB = config.getValue<double>("nuLB");
       double          endTime = config.getValue<double>("endTime");
       double          outTime = config.getValue<double>("outTime");
       double          availMem = config.getValue<double>("availMem");
@@ -35,10 +36,10 @@ void bflow(string configname)
       double          resolution = config.getValue<double>("resolution");
 
       ConfigurationFile   viscosity;
-      viscosity.load(viscosityPath + "/viscosity.cfg");
-      double nuLB = viscosity.getValue<double>("nuLB");
+      //viscosity.load(viscosityPath + "/viscosity.cfg");
+      //double nuLB = viscosity.getValue<double>("nuLB");
 
-      outputPath = outputPath + "/rheometerBingham_" + config.getValue<string>("resolution") + "_" + config.getValue<string>("OmegaLB");
+      //outputPath = outputPath + "/rheometerBingham_" + config.getValue<string>("resolution") + "_" + config.getValue<string>("OmegaLB");
 
       SPtr<Communicator> comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -89,13 +90,14 @@ void bflow(string configname)
 
       //bounding box
 
-      double g_minX1 = 0;
-      double g_minX2 = 0;
-      double g_minX3 = 0;
+      double g_minX1 = boundingBox[0];
+      double g_maxX1 = boundingBox[1];
 
-      double g_maxX1 = boundingBox[0];
-      double g_maxX2 = boundingBox[1];
-      double g_maxX3 = boundingBox[2];
+      double g_minX2 = boundingBox[2];
+      double g_maxX2 = boundingBox[3];
+      
+      double g_minX3 = boundingBox[4];
+      double g_maxX3 = boundingBox[5];
 
       //double g_minX1 = -boundingBox[0]/2.0;
       //double g_minX2 = -boundingBox[1] / 2.0;
@@ -136,21 +138,21 @@ void bflow(string configname)
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyHerschelBulkleyModelNoSlipBCAlgorithm()));
       noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
 
-      //SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
-      //slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
+      SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
+      slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
 
       mu::Parser fctVx;
       //fctVx.SetExpr("omega*(r-x2)");
       fctVx.SetExpr("-Omega*(x2-r)");
       fctVx.DefineConst("Omega", OmegaLB);
       //fctVx.DefineConst("r", R0);
-      fctVx.DefineConst("r", g_maxX1*0.5);
+      fctVx.DefineConst("r", 0.5 * (g_maxX2 - g_minX2));
 
       mu::Parser fctVy;
-      fctVy.SetExpr("Omega*(x1-r)");
+      fctVy.SetExpr("Omega*(x3-r)");
       fctVy.DefineConst("Omega", OmegaLB);
       //fctVy.DefineConst("r", R0);
-      fctVy.DefineConst("r", g_maxX2 * 0.5);
+      fctVy.DefineConst("r", 0.5 * (g_maxX2 - g_minX2));
 
       mu::Parser fctVz;
       fctVz.SetExpr("0.0");
@@ -169,7 +171,7 @@ void bflow(string configname)
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
       bcVisitor.addBC(noSlipBCAdapter);
-      //bcVisitor.addBC(slipBCAdapter);
+      bcVisitor.addBC(slipBCAdapter);
       bcVisitor.addBC(velocityBCAdapter);
       //bcVisitor.addBC(densityBCAdapter);
       
@@ -178,7 +180,7 @@ void bflow(string configname)
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyK17LBMKernel());
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
       kernel->setBCProcessor(bcProc);
@@ -188,7 +190,7 @@ void bflow(string configname)
       SPtr<Grid3D> grid(new Grid3D(comm));
       grid->setPeriodicX1(false);
       grid->setPeriodicX2(false);
-      grid->setPeriodicX3(true);
+      grid->setPeriodicX3(false);
       grid->setDeltaX(deltax);
       grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
 
@@ -205,16 +207,22 @@ void bflow(string configname)
       //////////////////////////////////////////////////////////////////////////
 
       ////stator
-      SPtr<GbObject3D> stator(new GbCylinder3D(0.5 * g_maxX1, 0.5 * g_maxX2, g_minX3-2.0*deltax, 0.5 * g_maxX1, 0.5 * g_maxX2, g_maxX3+ 2.0 * deltax, 0.5 * g_maxX1));
+      //SPtr<GbObject3D> stator(new GbCylinder3D(0.5 * g_maxX1, 0.5 * g_maxX2, g_minX3-2.0*deltax, 0.5 * g_maxX1, 0.5 * g_maxX2, g_maxX3+ 2.0 * deltax, 0.5 * g_maxX1));
+      SPtr<GbTriFaceMesh3D> stator = make_shared<GbTriFaceMesh3D>();
+      stator->readMeshFromSTLFileBinary(geoPath + "/" + geoFile, false);
       GbSystem3D::writeGeoObject(stator.get(), outputPath + "/geo/stator", WbWriterVtkXmlBinary::getInstance());
 
-      SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, velocityBCAdapter, Interactor3D::INVERSESOLID));
+      SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27TriFaceMeshInteractor>(
+          new D3Q27TriFaceMeshInteractor(stator, grid, velocityBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
 
       ////rotor (cylinder)
-      SPtr<GbObject3D> rotor(new GbCylinder3D(0.5 * g_maxX1, 0.5 * g_maxX2, g_minX3- 2.0 * deltax, 0.5 * g_maxX1, 0.5 * g_maxX2, g_maxX3+ 2.0 * deltax, 0.25 * g_maxX1));
+      SPtr<GbObject3D> rotor(new GbCylinder3D(g_minX1, g_minX2 + 0.5 * (g_maxX2 - g_minX2),
+                                              g_minX3 + 0.5 * (g_maxX3 - g_minX3),
+                                              g_maxX1,
+          g_minX2 + 0.5 * (g_maxX2 - g_minX2), g_minX3 + 0.5 * (g_maxX3 - g_minX3), 0.5 * (g_maxX3 - g_minX3)));
       GbSystem3D::writeGeoObject(rotor.get(), outputPath + "/geo/rotor", WbWriterVtkXmlBinary::getInstance());
 
-      SPtr<D3Q27Interactor> rotorInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(rotor, grid, noSlipBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> rotorInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(rotor, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
 
       if (myid == 0)
       {
@@ -261,15 +269,17 @@ void bflow(string configname)
 
 
          //walls
-         //GbCuboid3DPtr wallZmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_minX3));
-         //if (myid == 0) GbSystem3D::writeGeoObject(wallZmin.get(), outputPath + "/geo/wallZmin", WbWriterVtkXmlASCII::getInstance());
+         GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - deltax, g_minX2 - deltax, g_minX3 - deltax, g_minX1,
+                                               g_maxX2 + deltax, g_maxX3 + deltax));
+         if (myid == 0) GbSystem3D::writeGeoObject(wallXmin.get(), outputPath + "/geo/wallXmin", WbWriterVtkXmlASCII::getInstance());
 
-         //GbCuboid3DPtr wallZmax(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_maxX3, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
-         //if (myid == 0) GbSystem3D::writeGeoObject(wallZmax.get(), outputPath + "/geo/wallZmax", WbWriterVtkXmlASCII::getInstance());
+         GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - deltax, g_minX3 - deltax, g_maxX1 + deltax,
+                                               g_maxX2 + deltax, g_maxX3 + deltax));
+         if (myid == 0) GbSystem3D::writeGeoObject(wallXmax.get(), outputPath + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
 
-         ////wall interactors
-         //SPtr<D3Q27Interactor> wallZminInt(new D3Q27Interactor(wallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         //SPtr<D3Q27Interactor> wallZmaxInt(new D3Q27Interactor(wallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         //wall interactors
+         SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, slipBCAdapter, Interactor3D::SOLID));
 
          ////////////////////////////////////////////
          //METIS
@@ -278,8 +288,8 @@ void bflow(string configname)
          /////delete solid blocks
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
          InteractorsHelper intHelper(grid, metisVisitor);
-         //intHelper.addInteractor(wallZminInt);
-         //intHelper.addInteractor(wallZmaxInt);
+         intHelper.addInteractor(wallXminInt);
+         intHelper.addInteractor(wallXmaxInt);
          intHelper.addInteractor(statorInt);
          intHelper.addInteractor(rotorInt);
          intHelper.selectBlocks();
@@ -359,7 +369,7 @@ void bflow(string configname)
       grid->accept(bcVisitor);
 
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, outputPath, WbWriterVtkXmlASCII::getInstance(), comm);
+      WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm);
       ppgeo.process(0);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
