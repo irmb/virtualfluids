@@ -37,6 +37,8 @@
 #include <iostream>
 #include <string>
 
+#include "basics/Core/DataTypes.h"
+
 //! \brief namespace for global system-functions
 
 namespace LBMSystem
@@ -45,10 +47,10 @@ namespace LBMSystem
 //#define SINGLEPRECISION
 
 #ifdef SINGLEPRECISION
-typedef float real;
+//using real = float;
 #define REAL_CAST(x) ((LBMSystem::real)(x))
 #else
-using real = double;
+//using real = double;
 #define REAL_CAST(x) (x)
 #endif
 
@@ -82,6 +84,7 @@ static real calcOmega2(real viscosity, real deltaT) { return REAL_CAST(1.0 / (4.
 } // namespace LBMSystem
 
 // some typedefs for global namespace
-using LBMReal = LBMSystem::real;
+//using LBMReal = LBMSystem::real;
+using LBMReal = real;
 
 #endif

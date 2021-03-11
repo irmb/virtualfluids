@@ -1,5 +1,7 @@
 #include "D3Q27System.h"
 
+#include "lbm/CalcMac.h"
+
 namespace D3Q27System
 {
 using namespace UbMath;
@@ -17,5 +19,32 @@ const double WEIGTH[] = { c2o27,  c2o27,  c2o27,  c2o27,  c2o27,  c2o27,  c1o54,
 const int INVDIR[] = { INV_E,   INV_W,   INV_N,   INV_S,   INV_T,   INV_B,   INV_NE,  INV_SW, INV_SE,
                        INV_NW,  INV_TE,  INV_BW,  INV_BE,  INV_TW,  INV_TN,  INV_BS,  INV_BN, INV_TS,
                        INV_TNE, INV_TNW, INV_TSE, INV_TSW, INV_BNE, INV_BNW, INV_BSE, INV_BSW };
+
+
+
+
+LBMReal getDensity(const LBMReal *const &f /*[27]*/)
+{
+    return LBM::getDensity(f);
+}
+
+LBMReal getIncompVelocityX1(const LBMReal *const &f /*[27]*/)
+{
+    return LBM::getIncompVelocityX1(f);
+}
+
+LBMReal getIncompVelocityX2(const LBMReal *const &f /*[27]*/)
+{
+    return LBM::getIncompVelocityX2(f);
+}
+
+LBMReal getIncompVelocityX3(const LBMReal *const &f /*[27]*/)
+{
+    return LBM::getIncompVelocityX3(f);
+}
+
+
+
+
 
 } // namespace D3Q27System

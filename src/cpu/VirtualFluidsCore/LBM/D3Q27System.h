@@ -42,7 +42,6 @@
 #include "UbException.h"
 #include "UbMath.h"
 
-#include "lbm/CalcMac.h"
 
 //! \brief namespace for global system-functions
 namespace D3Q27System
@@ -149,30 +148,21 @@ static const int ET_BNW = 11;
 static const int ET_TSW = 12;
 static const int ET_BNE = 12;
 
+
 //////////////////////////////////////////////////////////////////////////
 // MACROSCOPIC VALUES
 /*=====================================================================*/
-static LBMReal getDensity(const LBMReal *const &f /*[27]*/)
-{
-    return LBM::getDensity(f);
-}
+LBMReal getDensity(const LBMReal *const &f /*[27]*/);
 /*=====================================================================*/
 static LBMReal getPressure(const LBMReal *const &f /*[27]*/) { return REAL_CAST(UbMath::c1o3) * getDensity(f); }
 /*=====================================================================*/
-static LBMReal getIncompVelocityX1(const LBMReal *const &f /*[27]*/)
-{
-    return LBM::getIncompVelocityX1(f);
-}
+LBMReal getIncompVelocityX1(const LBMReal *const &f /*[27]*/);
 /*=====================================================================*/
-static LBMReal getIncompVelocityX2(const LBMReal *const &f /*[27]*/)
-{
-    return LBM::getIncompVelocityX2(f);
-}
+LBMReal getIncompVelocityX2(const LBMReal *const &f /*[27]*/);
 /*=====================================================================*/
-static LBMReal getIncompVelocityX3(const LBMReal *const &f /*[27]*/)
-{
-    return LBM::getIncompVelocityX3(f);
-}
+LBMReal getIncompVelocityX3(const LBMReal *const &f /*[27]*/);
+
+
 /*=====================================================================*/
 static void calcDensity(const LBMReal *const &f /*[27]*/, LBMReal &rho)
 {

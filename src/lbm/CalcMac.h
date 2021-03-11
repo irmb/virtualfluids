@@ -1,10 +1,7 @@
 #ifndef LBM_CALCMAC_H
 #define LBM_CALCMAC_H
 
-#include "Core/DataTypes.h"
-
 #ifdef __CUDACC__
-#pragma message ( "C Preprocessor got here!" )
 #include <cuda_runtime.h>
 #else
 #ifndef __host__
@@ -13,9 +10,12 @@
 #ifndef __device__
 #define __device__
 #endif
-#endif 
+#endif
 
-class LBM
+#include "Core/DataTypes.h"
+#include "lbm_export.h"
+
+class LBM_EXPORT LBM
 {
 public:
 

@@ -88,6 +88,7 @@ find_package(MPI REQUIRED)
 
 add_subdirectory(src/basics)
 add_subdirectory(src/lbm)
+add_subdirectory(src/lbmApp)
 
 #################################################################################
 #  VIRTUAL FLUIDS CPU / GPU
