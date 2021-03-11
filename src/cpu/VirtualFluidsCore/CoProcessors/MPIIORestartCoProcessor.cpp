@@ -1498,7 +1498,7 @@ void MPIIORestartCoProcessor::readDataSet(int step)
     }
 
     size_t index = 0, vectorSize = 0;
-    std::vector<double> vectorsOfValues1, vectorsOfValues2, vectorsOfValues3;
+    std::vector<LBMReal> vectorsOfValues1, vectorsOfValues2, vectorsOfValues3;
 
     for (int n = 0; n < blocksCount; n++) {
         vectorSize = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3];
@@ -1665,7 +1665,7 @@ void MPIIORestartCoProcessor::readAverageDensityArray(int step)
     size_t index = 0;
     size_t nextVectorSize =
         dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
+    std::vector<LBMReal> vectorsOfValues;
     for (int n = 0; n < blocksCount; n++) {
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
         index += nextVectorSize;
@@ -1766,7 +1766,7 @@ void MPIIORestartCoProcessor::readAverageVelocityArray(int step)
     size_t index = 0;
     size_t nextVectorSize =
         dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
+    std::vector<LBMReal> vectorsOfValues;
     for (int n = 0; n < blocksCount; n++) {
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
         index += nextVectorSize;
@@ -1869,7 +1869,7 @@ void MPIIORestartCoProcessor::readAverageFluktuationsArray(int step)
     size_t index = 0;
     size_t nextVectorSize =
         dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
+    std::vector<LBMReal> vectorsOfValues;
     for (int n = 0; n < blocksCount; n++) {
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
         index += nextVectorSize;
@@ -1970,7 +1970,7 @@ void MPIIORestartCoProcessor::readAverageTripleArray(int step)
     size_t index = 0;
     size_t nextVectorSize =
         dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
+    std::vector<LBMReal> vectorsOfValues;
     for (int n = 0; n < blocksCount; n++) {
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
         index += nextVectorSize;
@@ -2071,7 +2071,7 @@ void MPIIORestartCoProcessor::readShearStressValArray(int step)
     size_t index = 0;
     size_t nextVectorSize =
         dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
+    std::vector<LBMReal> vectorsOfValues;
     for (int n = 0; n < blocksCount; n++) {
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
         index += nextVectorSize;
@@ -2172,7 +2172,7 @@ void MPIIORestartCoProcessor::readRelaxationFactor(int step)
     size_t index = 0;
     size_t nextVectorSize =
         dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
+    std::vector<LBMReal> vectorsOfValues;
     for (int n = 0; n < blocksCount; n++) {
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
         index += nextVectorSize;

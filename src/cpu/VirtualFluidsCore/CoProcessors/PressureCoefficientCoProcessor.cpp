@@ -42,8 +42,8 @@ void PressureCoefficientCoProcessor::collectData(double step)
 //////////////////////////////////////////////////////////////////////////
 void PressureCoefficientCoProcessor::calculateRho()
 {
-    double f[D3Q27System::ENDF + 1];
-    double vx1, vx2, vx3, rho;
+    LBMReal f[D3Q27System::ENDF + 1];
+    LBMReal vx1, vx2, vx3, rho;
     std::vector<double> values;
     std::vector<double> rvalues;
 

@@ -1608,7 +1608,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
     }
 
     size_t index = 0, vectorSize = 0;
-    std::vector<double> vectorsOfValues1, vectorsOfValues2, vectorsOfValues3;
+    std::vector<LBMReal> vectorsOfValues1, vectorsOfValues2, vectorsOfValues3;
 
     for (std::size_t n = 0; n < blocksCount; n++) {
         vectorSize = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3];
@@ -1778,7 +1778,7 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
     size_t index = 0;
     size_t nextVectorSize =
         dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
+    std::vector<LBMReal> vectorsOfValues;
     for (std::size_t n = 0; n < blocksCount; n++) {
         SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].globalID);
 
