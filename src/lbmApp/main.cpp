@@ -2,9 +2,9 @@
 #include <stdio.h>
 
 #include "lbm/CalcMac.h"
-#include <cuda_runtime.h>
+//#include <cuda_runtime.h>
 
-__global__ void test()
+/* __global__ */ void test()
 {
     printf("Hello World from GPU!\n");
     real f[27] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
@@ -17,9 +17,9 @@ __global__ void test()
 int main()
 {
     std::cout << "hello world \n";
-
-    test<<<1,1>>>();
-    cudaDeviceSynchronize();
+    test();
+    //test<<<1,1>>>();
+    //cudaDeviceSynchronize();
 
     return 0;
 }

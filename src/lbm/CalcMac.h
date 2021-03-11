@@ -13,9 +13,8 @@
 #endif
 
 #include "Core/DataTypes.h"
-#include "lbm_export.h"
 
-class LBM_EXPORT LBM
+class LBM
 {
 public:
 

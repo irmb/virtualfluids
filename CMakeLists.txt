@@ -76,6 +76,34 @@ IF( BUILD_VF_DOUBLE_ACCURACY )
     list(APPEND VF_COMPILER_DEFINITION VF_DOUBLE_ACCURACY)
 ENDIF()
 
+if(BUILD_VF_GPU)
+	include(CheckLanguage)
+    check_language(CUDA)
+
+    if(NOT CMAKE_CUDA_COMPILER)
+        message(FATAL_ERROR "CUDA Compiler was requested but is not found on the system.")
+    endif()
+
+    if(MSVC) 
+        # With the MSVC compiler we got this warning: nvcc : The -std=c++14 flag is not supported with the configured host compiler. Flag will be ignored.
+        # But we build the c++ code with C++14. Until we have not a solution here, we set the standard to 11 here.
+        set(CMAKE_CUDA_STANDARD 11)
+    else()
+        set(CMAKE_CUDA_STANDARD 14)
+    endif()
+
+    set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
+
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcudafe --display_error_number")
+
+    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+        message(WARNING "CMAKE_CUDA_ARCHITECTURES was not defined and is set to 30 (CUDA support until 10.1 only).")
+        set(CMAKE_CUDA_ARCHITECTURES 30)
+    endif()
+
+    message("CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
+endif()
+
 #################################################################################
 #  COMMON LIBRARIES
 #################################################################################
@@ -94,8 +122,6 @@ find_package(MPI REQUIRED)
 
 add_subdirectory(src/basics)
 add_subdirectory(src/lbm)
-add_subdirectory(src/lbmApp)
-
 
 
 #################################################################################
@@ -105,30 +131,6 @@ if (BUILD_VF_CPU)
     include (cpu.cmake)
 endif()
 if(BUILD_VF_GPU)
-
-    include(CheckLanguage)
-    check_language(CUDA)
-
-    if(NOT CMAKE_CUDA_COMPILER)
-        message(FATAL_ERROR "CUDA Compiler was requested but is not found on the system.")
-    endif()
-
-    if(MSVC) 
-        # With the MSVC compiler we got this warning: nvcc : The -std=c++14 flag is not supported with the configured host compiler. Flag will be ignored.
-        # But we build the c++ code with C++14. Until we have not a solution here, we set the standard to 11 here.
-        set(CMAKE_CUDA_STANDARD 11)
-    else()
-        set(CMAKE_CUDA_STANDARD 14)
-    endif()
-
-    set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
-
-    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-        message(WARNING "CMAKE_CUDA_ARCHITECTURES was not defined and is set to 30 (CUDA support until 10.1 only).")
-        set(CMAKE_CUDA_ARCHITECTURES 30)
-    endif()
-
-    message("CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
-
+    add_subdirectory(src/lbmApp)
     include (gpu.cmake)
 endif()
