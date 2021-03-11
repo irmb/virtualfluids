@@ -5,86 +5,6 @@ std::shared_ptr<ConfigDataImp> ConfigDataImp::getNewInstance()
     return std::shared_ptr<ConfigDataImp>(new ConfigDataImp());
 }
 
-ConfigDataImp::ConfigDataImp()
-{
-    this->isViscosity            = false;
-    this->isNumberOfDevices      = false;
-    this->isDevices              = false;
-    this->isOutputPath           = false;
-    this->isPrefix               = false;
-    this->isGridPath             = false;
-    this->isPrintOutputFiles     = false;
-    this->isGeometryValues       = false;
-    this->isCalc2ndOrderMoments  = false;
-    this->isCalc3rdOrderMoments  = false;
-    this->isCalcHighOrderMoments = false;
-    this->isReadGeo              = false;
-    this->isCalcMedian           = false;
-    this->isCalcDragLift         = false;
-    this->isCalcCp               = false;
-    this->isConcFile             = false;
-    this->isUseMeasurePoints     = false;
-    this->isUseWale              = false;
-    this->isSimulatePorousMedia  = false;
-    this->isD3Qxx                = false;
-    this->isTEnd                 = false;
-    this->isTOut                 = false;
-    this->isTStartOut            = false;
-    this->isTimeCalcMedStart     = false;
-    this->isTimeCalcMedEnd       = false;
-    this->isPressInID            = false;
-    this->isPressOutID           = false;
-    this->isPressInZ             = false;
-    this->isPressOutZ            = false;
-    this->isDiffOn               = false;
-    this->isDiffMod              = false;
-    this->isDiffusivity          = false;
-    this->isTemperatureInit      = false;
-    this->isTemperatureBC        = false;
-    this->isVelocity             = false;
-    this->isViscosityRatio       = false;
-    this->isVelocityRatio        = false;
-    this->isDensityRatio         = false;
-    this->isPressRatio           = false;
-    this->isRealX                = false;
-    this->isRealY                = false;
-    this->isFactorPressBC        = false;
-    this->isGeometryFileC        = false;
-    this->isGeometryFileM        = false;
-    this->isGeometryFileF        = false;
-    this->isClockCycleForMP      = false;
-    this->isTimestepForMP        = false;
-    this->isForcingX             = false;
-    this->isForcingY             = false;
-    this->isForcingZ             = false;
-    this->isCalcParticles        = false;
-    this->isParticleBasicLevel   = false;
-    this->isParticleInitLevel    = false;
-    this->isNumberOfParticles    = false;
-    this->isNeighborWSB          = false;
-    this->isStartXHotWall        = false;
-    this->isEndXHotWall          = false;
-    this->isPossNeighborFilesX   = false;
-    this->isPossNeighborFilesY   = false;
-    this->isPossNeighborFilesZ   = false;
-    this->isTimeDoCheckPoint     = false;
-    this->isTimeDoRestart        = false;
-    this->isDoCheckPoint         = false;
-    this->isDoRestart            = false;
-    this->isMaxLevel             = false;
-    this->isGridX                = false;
-    this->isGridY                = false;
-    this->isGridZ                = false;
-    this->isDistX                = false;
-    this->isDistY                = false;
-    this->isDistZ                = false;
-    this->isNeedInterface        = false;
-    this->isMainKernel           = false;
-    this->isMultiKernelOn        = false;
-    this->isMultiKernelLevel     = false;
-    this->isMultiKernelName      = false;
-}
-
 real ConfigDataImp::getViscosity() { return this->viscosity; }
 
 uint ConfigDataImp::getNumberOfDevices() { return this->numberOfDevices; }
@@ -633,19 +553,19 @@ void ConfigDataImp::setEndXHotWall(real endXHotWall)
     this->isEndXHotWall = true;
 }
 
-void ConfigDataImp::setPossNeighborFilesX(std::vector<std::string> possNeighborFilesX)
+void ConfigDataImp::setPossNeighborFilesX(const std::vector<std::string> &possNeighborFilesX)
 {
     this->possNeighborFilesX   = possNeighborFilesX;
     this->isPossNeighborFilesX = true;
 }
 
-void ConfigDataImp::setPossNeighborFilesY(std::vector<std::string> possNeighborFilesY)
+void ConfigDataImp::setPossNeighborFilesY(const std::vector<std::string> &possNeighborFilesY)
 {
     this->possNeighborFilesY   = possNeighborFilesY;
     this->isPossNeighborFilesY = true;
 }
 
-void ConfigDataImp::setPossNeighborFilesZ(std::vector<std::string> possNeighborFilesZ)
+void ConfigDataImp::setPossNeighborFilesZ(const std::vector<std::string> &possNeighborFilesZ)
 {
     this->possNeighborFilesZ   = possNeighborFilesZ;
     this->isPossNeighborFilesZ = true;
@@ -681,49 +601,49 @@ void ConfigDataImp::setMaxLevel(uint maxLevel)
     this->isMaxLevel = true;
 }
 
-void ConfigDataImp::setGridX(std::vector<int> gridX)
+void ConfigDataImp::setGridX(const std::vector<int> &gridX)
 {
     this->gridX   = gridX;
     this->isGridX = true;
 }
 
-void ConfigDataImp::setGridY(std::vector<int> gridY)
+void ConfigDataImp::setGridY(const std::vector<int> &gridY)
 {
     this->gridY   = gridY;
     this->isGridY = true;
 }
 
-void ConfigDataImp::setGridZ(std::vector<int> gridZ)
+void ConfigDataImp::setGridZ(const std::vector<int> &gridZ)
 {
     this->gridZ   = gridZ;
     this->isGridZ = true;
 }
 
-void ConfigDataImp::setDistX(std::vector<int> distX)
+void ConfigDataImp::setDistX(const std::vector<int> &distX)
 {
     this->distX   = distX;
     this->isDistX = true;
 }
 
-void ConfigDataImp::setDistY(std::vector<int> distY)
+void ConfigDataImp::setDistY(const std::vector<int> &distY)
 {
     this->distY   = distY;
     this->isDistY = true;
 }
 
-void ConfigDataImp::setDistZ(std::vector<int> distZ)
+void ConfigDataImp::setDistZ(const std::vector<int> &distZ)
 {
     this->distZ   = distZ;
     this->isDistZ = true;
 }
 
-void ConfigDataImp::setNeedInterface(std::vector<bool> needInterface)
+void ConfigDataImp::setNeedInterface(const std::vector<bool> &needInterface)
 {
     this->needInterface   = needInterface;
     this->isNeedInterface = true;
 }
 
-void ConfigDataImp::setMainKernel(std::string mainKernel)
+void ConfigDataImp::setMainKernel(const std::string &mainKernel)
 {
     this->mainKernel   = mainKernel;
     this->isMainKernel = true;
@@ -735,13 +655,13 @@ void ConfigDataImp::setMultiKernelOn(bool multiKernelOn)
     this->isMultiKernelOn = true;
 }
 
-void ConfigDataImp::setMultiKernelLevel(std::vector<int> multiKernelLevel)
+void ConfigDataImp::setMultiKernelLevel(const std::vector<int> &multiKernelLevel)
 {
     this->multiKernelLevel   = multiKernelLevel;
     this->isMultiKernelLevel = true;
 }
 
-void ConfigDataImp::setMultiKernelName(std::vector<std::string> multiKernelName)
+void ConfigDataImp::setMultiKernelName(const std::vector<std::string> &multiKernelName)
 {
     this->multiKernelName   = multiKernelName;
     this->isMultiKernelName = true;
