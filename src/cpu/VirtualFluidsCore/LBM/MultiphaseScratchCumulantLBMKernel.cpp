@@ -207,7 +207,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
         }
 
         LBMReal collFactorM;
-        LBMReal forcingTerm[D3Q27System::ENDF + 1];
+        //LBMReal forcingTerm[D3Q27System::ENDF + 1];
 
         for (int x3 = minX3; x3 < maxX3; x3++) {
             for (int x2 = minX2; x2 < maxX2; x2++) {
@@ -286,7 +286,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 						collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[REST] - phiH) / (phiH - phiL);
 
 
-                        LBMReal mu = 2 * beta * phi[REST] * (phi[REST] - 1) * (2 * phi[REST] - 1) - kappa * nabla2_phi();
+                        //LBMReal mu = 2 * beta * phi[REST] * (phi[REST] - 1) * (2 * phi[REST] - 1) - kappa * nabla2_phi();
 
                         //----------- Calculating Macroscopic Values -------------
                         LBMReal rho = rhoH + rhoToPhi * (phi[REST] - phiH);

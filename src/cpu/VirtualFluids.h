@@ -204,6 +204,7 @@
 #include <CoProcessors/MPIIORestartCoProcessor.h>
 #include <CoProcessors/MicrophoneArrayCoProcessor.h>
 #include <WriteThixotropyQuantitiesCoProcessor.h>
+#include <WriteMultiphaseQuantitiesCoProcessor.h>
 
 #include <IntegrateValuesHelper.h>
 //#include <LBM/D3Q27CompactInterpolationProcessor.h>
@@ -239,6 +240,7 @@
 #include <LBM/RheologyK17LBMKernel.h>
 #include <LBM/RheologyPowellEyringModelLBMKernel.h>
 #include <LBM/MultiphaseCumulantLBMKernel.h>
+#include <LBM/MultiphaseScratchCumulantLBMKernel.h>
 
 
 
