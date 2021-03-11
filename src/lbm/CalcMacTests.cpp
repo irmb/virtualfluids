@@ -2,11 +2,11 @@
 
 #include "CalcMac.h"
 
-TEST(AAA,BBB)
+TEST(CalcMacTest, calcDensity)
 {
     real f[27] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 
     double density = LBM::getDensity(f);
 
-    ASSERT_THAT(density, testing::DoubleEq(1));
+    ASSERT_THAT(density, testing::DoubleEq(27));
 }

@@ -79,6 +79,12 @@ ENDIF()
 #################################################################################
 #  COMMON LIBRARIES
 #################################################################################
+if(BUILD_VF_UNIT_TESTS)
+    add_subdirectory(${VF_THIRD_DIR}/googletest)
+    include(GoogleTest)
+    enable_testing()
+endif()
+
 if(BUILD_USE_OPENMP)
     find_package(OpenMP REQUIRED)
 endif()
@@ -89,6 +95,8 @@ find_package(MPI REQUIRED)
 add_subdirectory(src/basics)
 add_subdirectory(src/lbm)
 add_subdirectory(src/lbmApp)
+
+
 
 #################################################################################
 #  VIRTUAL FLUIDS CPU / GPU
@@ -123,13 +131,4 @@ if(BUILD_VF_GPU)
     message("CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
 
     include (gpu.cmake)
-endif()
-
-#################################################################################
-#  3rd Party Libraries
-#################################################################################
-if(BUILD_VF_UNIT_TESTS)
-    if(NOT BUILD_NUMERIC_TESTS) # in this case googletest is already included.
-        add_subdirectory(${VF_THIRD_DIR}/googletest)
-    endif()
 endif()

@@ -192,10 +192,10 @@ gcc_9_unit_tests:
   needs: ["gcc_9"]
 
   before_script:
-    - export VF_UNITTESTS=$(find build_gcc9 -name basicsTests)
+    - cd $CI_PROJECT_DIR/build
 
   script:
-    - $VF_UNITTESTS
+    - ctest
 
 ###############################################################################
 msvc_16_unit_tests:
@@ -211,7 +211,7 @@ msvc_16_unit_tests:
     - cd $CI_PROJECT_DIR/build
 
   script:
-    - .\bin\Release\basicsTests.exe
+    - ctest
 
 ###############################################################################
 gcc_9_python_bindings_test:

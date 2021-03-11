@@ -286,6 +286,9 @@ function(vf_add_tests)
     # link googlemock
     linkGMOCK()
 
+    # add the target to ctest
+    gtest_add_tests(TARGET ${library_test_name})
+
 endfunction()
 
 #################################################################################
