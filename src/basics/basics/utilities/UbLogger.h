@@ -217,8 +217,8 @@ inline std::string UbLogger<OutputPolicy>::logTimeString()
     }
 
     char result[100]   = { 0 };
-    static DWORD first = GetTickCount();
-    std::sprintf(result, "%s.%03ld", buffer, (long)(GetTickCount() - first) % 1000);
+    static DWORD first = GetTickCount64();
+    std::sprintf(result, "%s.%03ld", buffer, (long)(GetTickCount64() - first) % 1000);
     return result;
 }
 #else
