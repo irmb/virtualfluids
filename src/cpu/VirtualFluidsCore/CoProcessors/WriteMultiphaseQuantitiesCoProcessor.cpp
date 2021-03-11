@@ -146,7 +146,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     using namespace D3Q27System;
     using namespace UbMath;
 
-    double level   = (double)block->getLevel();
+    //double level   = (double)block->getLevel();
 
     // Diese Daten werden geschrieben:
     datanames.resize(0);
@@ -203,9 +203,9 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField1(
         new CbArray3D<LBMReal, IndexerX3X2X1>(maxX1, maxX2, maxX3, -999.0));
 
-    for (size_t ix3 = minX3; ix3 < maxX3; ix3++) {
-        for (size_t ix2 = minX2; ix2 < maxX2; ix2++) {
-            for (size_t ix1 = minX1; ix1 < maxX1; ix1++) {
+    for (int ix3 = minX3; ix3 < maxX3; ix3++) {
+        for (int ix2 = minX2; ix2 < maxX2; ix2++) {
+            for (int ix1 = minX1; ix1 < maxX1; ix1++) {
                 if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
                     distributionsH->getDistribution(f, ix1, ix2, ix3);
                     (*phaseField1)(ix1, ix2, ix3) =
@@ -287,7 +287,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     }
 
                     distributionsF->getDistribution(f, ix1, ix2, ix3);
-                    LBMReal dU = (*divU)(ix1, ix2, ix3);
+                    //LBMReal dU = (*divU)(ix1, ix2, ix3);
 
                     LBMReal rhoH = 1.0;
                     LBMReal rhoL = 1.0 / densityRatio;
