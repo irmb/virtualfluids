@@ -1,6 +1,6 @@
 #include "D3Q27System.h"
 
-#include "lbm/CalcMac.h"
+#include "lbm/MacroscopicQuantities.h"
 
 namespace D3Q27System
 {
@@ -25,22 +25,22 @@ const int INVDIR[] = { INV_E,   INV_W,   INV_N,   INV_S,   INV_T,   INV_B,   INV
 
 LBMReal getDensity(const LBMReal *const &f /*[27]*/)
 {
-    return LBM::getDensity(f);
+    return VF::LBM::getDensity(f);
 }
 
 LBMReal getIncompVelocityX1(const LBMReal *const &f /*[27]*/)
 {
-    return LBM::getIncompVelocityX1(f);
+    return VF::LBM::getIncompressibleVelocityX1(f);
 }
 
 LBMReal getIncompVelocityX2(const LBMReal *const &f /*[27]*/)
 {
-    return LBM::getIncompVelocityX2(f);
+    return VF::LBM::getIncompressibleVelocityX2(f);
 }
 
 LBMReal getIncompVelocityX3(const LBMReal *const &f /*[27]*/)
 {
-    return LBM::getIncompVelocityX3(f);
+    return VF::LBM::getIncompressibleVelocityX3(f);
 }
 
 

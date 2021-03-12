@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 
-#include "lbm/CalcMac.h"
+#include "lbm/MacroscopicQuantities.h"
 //#include <cuda_runtime.h>
 
 /* __global__ */ void test()
@@ -9,7 +9,7 @@
     printf("Hello World from GPU!\n");
     real f[27] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 
-    double density = LBM::getDensity(f);
+    double density = VF::LBM::getDensity(f);
 
     printf("Hello density: %f \n", density);
 }

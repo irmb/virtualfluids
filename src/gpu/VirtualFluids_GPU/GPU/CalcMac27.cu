@@ -10,7 +10,7 @@
 #include "LBM/D3Q27.h"
 #include "Core/RealConstants.h"
 
-#include "lbm/CalcMac.h"
+#include "lbm/MacroscopicQuantities.h"
 
 
 __device__ Distributions27 getDistributions(real* DD, unsigned int size_Mat, bool evenOrOdd)
@@ -219,10 +219,10 @@ extern "C" __global__ void LBCalcMac27( real* vxD,
    {
        const auto distribution = getDistribution(DD, size_Mat, evenOrOdd, k, neighborX, neighborY, neighborZ);
 
-       rhoD[k] = LBM::getDensity(distribution.f);
-       vxD[k] = LBM::getIncompVelocityX1(distribution.f);
-       vyD[k] = LBM::getIncompVelocityX2(distribution.f);
-       vzD[k] = LBM::getIncompVelocityX3(distribution.f);
+       rhoD[k] = VF::LBM::getDensity(distribution.f);
+       vxD[k] = VF::LBM::getIncompressibleVelocityX1(distribution.f);
+       vyD[k] = VF::LBM::getIncompressibleVelocityX2(distribution.f);
+       vzD[k] = VF::LBM::getIncompressibleVelocityX3(distribution.f);
    }
 }
 
