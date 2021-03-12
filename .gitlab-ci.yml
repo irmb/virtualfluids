@@ -185,6 +185,10 @@ gcc_9_python:
       - build/
       - dist/
 
+  before_script:
+    - export CCACHE_BASEDIR=$CI_PROJECT_DIR
+    - export CCACHE_DIR=$CI_PROJECT_DIR/cache
+
   script:
     - python3 setup.py bdist_wheel
 
