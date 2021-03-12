@@ -29,15 +29,15 @@ set(VTK_DIR "d:/Tools/VTK/build/VTK-8.0.0")
 #################################################################################
 #  METIS  
 #################################################################################
-IF(${USE_METIS})
-  SET(METIS_INCLUDEDIR "d:/Tools/metis-5.1.0/include")
-  SET(METIS_DEBUG_LIBRARY "d:/Tools/metis-5.1.0/build/libmetis/Debug/metis.lib") 
-  SET(METIS_RELEASE_LIBRARY "d:/Tools/metis-5.1.0/build/libmetis/Release/metis.lib") 
+#IF(${USE_METIS})
+#  SET(METIS_INCLUDEDIR "d:/Tools/metis-5.1.0/include")
+#  SET(METIS_DEBUG_LIBRARY "d:/Tools/metis-5.1.0/build/libmetis/Debug/metis.lib") 
+#  SET(METIS_RELEASE_LIBRARY "d:/Tools/metis-5.1.0/build/libmetis/Release/metis.lib") 
   
   # SET(METIS_INCLUDEDIR "/mnt/d/Tools/metis-5.1.0/include")
   # SET(METIS_DEBUG_LIBRARY "/mnt/d/Tools/metis-5.1.0/build/Linux-x86_64/libmetis/libmetis.a") 
   # SET(METIS_RELEASE_LIBRARY "/mnt/d/Tools/metis-5.1.0/build/Linux-x86_64/libmetis/libmetis.a") 
-ENDIF()
+#ENDIF()
 
 #################################################################################
 #  PE  

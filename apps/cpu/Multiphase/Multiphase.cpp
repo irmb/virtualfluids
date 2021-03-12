@@ -81,7 +81,7 @@ void run(string configname)
 
         SPtr<LBMKernel> kernel;
 
-        kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
@@ -471,7 +471,7 @@ void run(string configname)
         grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-        SPtr<WriteMacroscopicQuantitiesCoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(
+        SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
             grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm));
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
