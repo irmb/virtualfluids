@@ -1,7 +1,7 @@
 project(simulationconfig)
 
 
-vf_add_library(NAME simulationconfig PUBLIC_LINK basics muparser MPI::MPI_CXX ${VF_LIBRARIES} PRIVATE_LINK lbm)
+vf_add_library(NAME simulationconfig PUBLIC_LINK VirtualFluidsCore basics muparser)
 
 set_target_properties(simulationconfig PROPERTIES CXX_STANDARD 14 POSITION_INDEPENDENT_CODE ON)
 
