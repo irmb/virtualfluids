@@ -9,13 +9,8 @@ from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
 vf_cmake_args = [
-    "-DBUILD_VF_PYTHON_BINDINGS=ON",
-    "-DBUILD_VF_CPU:BOOL=ON",
-    "-DUSE_METIS=ON",
-    "-DUSE_MPI=ON",
-    "-DBUILD_SHARED_LIBS=OFF",
-    "-DBUILD_VF_UNIT_TESTS:BOOL=ON"
-    "-DBUILD_VF_DOUBLE_ACCURACY=ON"
+    "--preset=cpu_make"
+    "-DBUILD_VF_PYTHON_BINDINGS=ON"
 ]
 
 
