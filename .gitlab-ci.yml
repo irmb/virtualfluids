@@ -35,6 +35,10 @@ stages:
   before_script:
     - export CC=gcc
     - export CXX=g++
+    - export CCACHE_BASEDIR=$CI_PROJECT_DIR
+    - export CCACHE_DIR=$CI_PROJECT_DIR/cache
+    - ccache -s
+
 
   script:
     - $CXX --version
@@ -44,7 +48,7 @@ stages:
     - mkdir -p $CI_PROJECT_DIR/$BUILD_FOLDER
     - cd $CI_PROJECT_DIR/$BUILD_FOLDER
     - cmake ..
-      --preset=all_make
+      --preset=all_make_ccache
       -DBUILD_WARNINGS_AS_ERRORS=ON
       -DCMAKE_CUDA_ARCHITECTURES=60
     - cmake . -LAH
