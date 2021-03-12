@@ -307,52 +307,53 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 
                             			   ////Incompressible Kernal
 
-			    mfbbc = (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3);
-			    mfbcb = (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3);
-			    mfccb = (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3);
-			    mfacb = (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3);
-			    mfcbb = (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3);
-			    mfcbc = (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3);
-			    mfabc = (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3);
-			    mfbcc = (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3);
-			    mfbac = (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3);
-			    mfccc = (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3);
-			    mfacc = (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3);
-			    mfcac = (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3);
-			    mfaac = (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3);
+			    mfbbc = (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3)/rho;
+			    mfbcb = (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) / rho;
+			    mfccb = (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) / rho;
+			    mfacb = (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3) / rho;
+			    mfcbb = (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) / rho;
+			    mfcbc = (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3) / rho;
+			    mfabc = (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3) / rho;
+			    mfbcc = (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3) / rho;
+			    mfbac = (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3) / rho;
+			    mfccc = (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3) / rho;
+			    mfacc = (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3) / rho;
+			    mfcac = (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) / rho;
+			    mfaac = (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) / rho;
 
-			    mfabb = (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3);
-			    mfbab = (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3);
-			    mfbba = (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p);
-			    mfaab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3);
-			    mfcab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3);
-			    mfaba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p);
-			    mfcba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p);
-			    mfbaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p);
-			    mfbca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p);
-			    mfaaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-			    mfcaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p);
-			    mfaca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p);
-			    mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p);
+			    mfabb = (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) / rho;
+			    mfbab = (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) / rho;
+			    mfbba = (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) / rho;
+			    mfaab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) / rho;
+			    mfcab = (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3) / rho;
+			    mfaba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p) / rho;
+			    mfcba = (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p) / rho;
+			    mfbaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p) / rho;
+			    mfbca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p) / rho;
+			    mfaaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p) / rho;
+			    mfcaa = (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p) / rho;
+			    mfaca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p) / rho;
+			    mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) / rho;
 
-			    mfbbb = (*this->zeroDistributionsF)(x1, x2, x3);
+			    mfbbb = (*this->zeroDistributionsF)(x1, x2, x3) / rho;
 
 			   LBMReal m0, m1, m2;
+			   LBMReal rhoRef=c1;
 
 			  //LBMReal 
-			   rho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+			   LBMReal drho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
 				   + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 				   + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
 			   LBMReal vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 				   (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
-				   (mfcbb - mfabb));
+				   (mfcbb - mfabb))/rhoRef;
 			   LBMReal vvy = ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
 				   (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
-				   (mfbcb - mfbab));
+				   (mfbcb - mfbab))/rhoRef;
 			   LBMReal vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
 				   (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
-				   (mfbbc - mfbba));
+				   (mfbbc - mfbba))/rhoRef;
 
 			   //forcing 
 			   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -372,6 +373,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   }
 			   ///////////////////////////////////////////////////////////////////////////////////////////               
 			   LBMReal oMdrho;
+
 
 			   oMdrho = mfccc + mfaaa;
 			   m0 = mfaca + mfcac;
@@ -397,7 +399,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   m2 = mfbba + mfbbc;
 			   m0 += m1 + m2;
 			   m0 += mfbbb; //hat gefehlt
-			   oMdrho = 1. - (oMdrho + m0);
+			   oMdrho = (rhoRef - (oMdrho + m0))/rhoRef;// 12.03.21 check derivation!!!!
 
 			   LBMReal vx2;
 			   LBMReal vy2;
@@ -654,9 +656,9 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   LBMReal CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
 			   LBMReal CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
 
-			   LBMReal CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
-			   LBMReal CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
-			   LBMReal CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho);
+			   LBMReal CUMcca = mfcca - ((mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
+			   LBMReal CUMcac = mfcac - ((mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
+			   LBMReal CUMacc = mfacc - ((mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho);
 
 			   //Cum 5.
 			   LBMReal CUMbcc = mfbcc - (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) - c1o3 * (mfbca + mfbac) * oMdrho;
@@ -679,15 +681,25 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   //2.
 			   // linear combinations
 			   LBMReal mxxPyyPzz = mfcaa + mfaca + mfaac;
+				mxxPyyPzz-=mfaaa;//12.03.21 shifted by mfaaa
 			   LBMReal mxxMyy = mfcaa - mfaca;
 			   LBMReal mxxMzz = mfcaa - mfaac;
 
-			   LBMReal dxux = -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
-			   LBMReal dyuy = dxux + collFactorM * c3o2 * mxxMyy;
-			   LBMReal dzuz = dxux + collFactorM * c3o2 * mxxMzz;
+			   //applying phase field gradients first part:
+			  // mxxPyyPzz += c2o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz);
+			   mxxPyyPzz += c1o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz); // As in Hesam's code
+			   mxxMyy += c1o3 * rhoToPhi * (dX1_phi * vvx - dX2_phi * vvy);
+			   mxxMzz += c1o3 * rhoToPhi * (dX1_phi * vvx - dX3_phi * vvz);
+			   mfabb += c1o6 * rhoToPhi * (dX2_phi * vvz + dX3_phi * vvy);
+			   mfbab += c1o6 * rhoToPhi * (dX1_phi * vvz + dX3_phi * vvx);
+			   mfbba += c1o6 * rhoToPhi * (dX1_phi * vvy + dX2_phi * vvx);
+
+			   LBMReal dxux = 0.0;// -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz);
+			   LBMReal dyuy = 0.0;// dxux + collFactorM * c3o2 * mxxMyy;
+			   LBMReal dzuz = 0.0;// dxux + collFactorM * c3o2 * mxxMzz;
 
 			   //relax
-			   mxxPyyPzz += OxxPyyPzz * (mfaaa - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+			   mxxPyyPzz += OxxPyyPzz * (/*mfaaa*/ - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
 			   mxxMyy += collFactorM * (-mxxMyy) - 3. * (1. - c1o2 * collFactorM) * (vx2 * dxux - vy2 * dyuy);
 			   mxxMzz += collFactorM * (-mxxMzz) - 3. * (1. - c1o2 * collFactorM) * (vx2 * dxux - vz2 * dzuz);
 
@@ -695,6 +707,20 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   mfbab += collFactorM * (-mfbab);
 			   mfbba += collFactorM * (-mfbba);
 
+			   //applying phase field gradients second part:
+			   //mxxPyyPzz += c2o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz);
+			   mxxPyyPzz += c1o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz); // As in Hesam's code
+			   mxxMyy += c1o3 * rhoToPhi * (dX1_phi * vvx - dX2_phi * vvy);
+			   mxxMzz += c1o3 * rhoToPhi * (dX1_phi * vvx - dX3_phi * vvz);
+			   mfabb += c1o6 * rhoToPhi * (dX2_phi * vvz + dX3_phi * vvy);
+			   mfbab += c1o6 * rhoToPhi * (dX1_phi * vvz + dX3_phi * vvx);
+			   mfbba += c1o6 * rhoToPhi * (dX1_phi * vvy + dX2_phi * vvx);
+
+			   ////updated pressure
+			   mfaaa += rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz);
+
+			 //  mxxPyyPzz += mfaaa;//12.03.21 shifted by mfaaa
+			   mxxPyyPzz = mfaaa; //12.03.21 reguarized pressure !?
 			   // linear combinations back
 			   mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
 			   mfaca = c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz);
@@ -762,9 +788,9 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   mfbcb = CUMbcb + ((mfaca + c1o3) * mfbab + 2. * mfbba * mfabb);
 			   mfbbc = CUMbbc + ((mfaac + c1o3) * mfbba + 2. * mfbab * mfabb);
 
-			   mfcca = CUMcca + (mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho;
-			   mfcac = CUMcac + (mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho;
-			   mfacc = CUMacc + (mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - 1) * oMdrho;
+			   mfcca = CUMcca + (mfcaa * mfaca + 2. * mfbba * mfbba) + c1o3 * (mfcaa + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho;
+			   mfcac = CUMcac + (mfcaa * mfaac + 2. * mfbab * mfbab) + c1o3 * (mfcaa + mfaac) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho;
+			   mfacc = CUMacc + (mfaac * mfaca + 2. * mfabb * mfabb) + c1o3 * (mfaac + mfaca) * oMdrho + c1o9 * (oMdrho - c1) * oMdrho;
 
 			   //5.
 			   mfbcc = CUMbcc + (mfaac * mfbca + mfaca * mfbac + 4. * mfabb * mfbbb + 2. * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac) * oMdrho;
@@ -784,11 +810,15 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 				   + (2. * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
 					   + (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa)) * c2o3 * oMdrho) - c1o27 * oMdrho;
 
+
+			   ////////
+
+
 			   ////////////////////////////////////////////////////////////////////////////////////
 			   //forcing
-			   mfbaa = -mfbaa;
-			   mfaba = -mfaba;
-			   mfaab = -mfaab;
+			   //mfbaa = -mfbaa;
+			   //mfaba = -mfaba;
+			   //mfaab = -mfaab;
 			   //////////////////////////////////////////////////////////////////////////////////////
 
 			   ////////////////////////////////////////////////////////////////////////////////////
@@ -1007,53 +1037,53 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   LBMReal rho_post = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
 				   + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 				   + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
-			   //LBMReal dif = fabs(rho - rho_post);
-			   LBMReal dif = rho - rho_post;
+			   //LBMReal dif = fabs(drho - rho_post);
+			   LBMReal dif = drho+ rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) - rho_post;
 #ifdef SINGLEPRECISION
 			   if (dif > 10.0E-7 || dif < -10.0E-7)
 #else
 			   if (dif > 10.0E-15 || dif < -10.0E-15)
 #endif
 			   {
-				   UB_THROW(UbException(UB_EXARGS, "rho=" + UbSystem::toString(rho) + ", rho_post=" + UbSystem::toString(rho_post)
+				   UB_THROW(UbException(UB_EXARGS, "drho=" + UbSystem::toString(drho) + ", rho_post=" + UbSystem::toString(rho_post)
 					   + " dif=" + UbSystem::toString(dif)
-					   + " rho is not correct for node " + UbSystem::toString(x1) + "," + UbSystem::toString(x2) + "," + UbSystem::toString(x3)));
-				   //UBLOG(logERROR,"LBMKernelETD3Q27CCLB::collideAll(): rho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3));
+					   + " drho is not correct for node " + UbSystem::toString(x1) + "," + UbSystem::toString(x2) + "," + UbSystem::toString(x3)));
+				   //UBLOG(logERROR,"LBMKernelETD3Q27CCLB::collideAll(): drho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3));
 				   //exit(EXIT_FAILURE);
 			   }
 #endif
 			   //////////////////////////////////////////////////////////////////////////
 			   //write distribution
 			   //////////////////////////////////////////////////////////////////////////
-			   (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = mfabb;
-			   (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) = mfbab;
-			   (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3) = mfbba;
-			   (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) = mfaab;
-			   (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3) = mfcab;
-			   (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3) = mfaba;
-			   (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3) = mfcba;
-			   (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3) = mfbaa;
-			   (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3) = mfbca;
-			   (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3) = mfaaa;
-			   (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3) = mfcaa;
-			   (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) = mfaca;
-			   (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) = mfcca;
+			   (*this->localDistributionsF)(D3Q27System::ET_E, x1, x2, x3) = mfabb * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_N, x1, x2, x3) = mfbab * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_T, x1, x2, x3) = mfbba * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_NE, x1, x2, x3) = mfaab * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_NW, x1p, x2, x3) = mfcab * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_TE, x1, x2, x3) = mfaba * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_TW, x1p, x2, x3) = mfcba * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_TN, x1, x2, x3) = mfbaa * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_TS, x1, x2p, x3) = mfbca * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_TNE, x1, x2, x3) = mfaaa * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_TNW, x1p, x2, x3) = mfcaa * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_TSE, x1, x2p, x3) = mfaca * rho;
+			   (*this->localDistributionsF)(D3Q27System::ET_TSW, x1p, x2p, x3) = mfcca * rho;
 
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) = mfcbb;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) = mfbcb;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) = mfbbc;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) = mfccb;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3) = mfacb;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p) = mfcbc;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p) = mfabc;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p) = mfbcc;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p) = mfbac;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p) = mfccc;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p) = mfacc;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p) = mfcac;
-			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) = mfaac;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_W, x1p, x2, x3) = mfcbb * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_S, x1, x2p, x3) = mfbcb * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_B, x1, x2, x3p) = mfbbc * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_SW, x1p, x2p, x3) = mfccb * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_SE, x1, x2p, x3) = mfacb * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BW, x1p, x2, x3p) = mfcbc * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BE, x1, x2, x3p) = mfabc * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BS, x1, x2p, x3p) = mfbcc * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BN, x1, x2, x3p) = mfbac * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BSW, x1p, x2p, x3p) = mfccc * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BSE, x1, x2p, x3p) = mfacc * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BNW, x1p, x2, x3p) = mfcac * rho;
+			   (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) = mfaac * rho;
 
-			   (*this->zeroDistributionsF)(x1, x2, x3) = mfbbb;
+			   (*this->zeroDistributionsF)(x1, x2, x3) = mfbbb * rho;
 			   //////////////////////////////////////////////////////////////////////////
 
 			   ////!Incompressible Kernal

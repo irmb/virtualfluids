@@ -472,7 +472,7 @@ void run(string configname)
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
-            grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm));
+            grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
         SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
