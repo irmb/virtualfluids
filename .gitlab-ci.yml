@@ -172,7 +172,7 @@ gcc_9_python:
   cache:
     key: "gcc_9-$CI_COMMIT_REF_SLUG"
     paths:
-      - $BUILD_FOLDER
+      - build
 
   artifacts:
     expire_in: 1 hrs
@@ -213,7 +213,7 @@ msvc_16_unit_tests:
 
   script:
     - cd $CI_PROJECT_DIR/build
-    - ctest -C debug
+    - ctest -C Release
 
 ###############################################################################
 gcc_9_python_bindings_test:

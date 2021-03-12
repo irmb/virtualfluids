@@ -9,9 +9,6 @@ from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
 vf_cmake_args = [
-    "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache",
-    "-DCMAKE_CUDA_COMPILER_LAUNCHER=ccache",
-    "-DCMAKE_C_COMPILER_LAUNCHER=ccache",
     "-DBUILD_VF_PYTHON_BINDINGS=ON",
     "-DBUILD_VF_CPU:BOOL=ON",
     "-DUSE_METIS=ON",
