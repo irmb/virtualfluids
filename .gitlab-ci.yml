@@ -208,9 +208,11 @@ msvc_16_unit_tests:
   needs: ["msvc_16"]
 
   before_script:
-    - cd $CI_PROJECT_DIR/build
+    - $env:Path += ";C:\Program Files\CMake\bin\"
+    - ctest --version
 
   script:
+    - cd $CI_PROJECT_DIR/build
     - ctest
 
 ###############################################################################
