@@ -213,7 +213,7 @@ msvc_16_unit_tests:
 
   script:
     - cd $CI_PROJECT_DIR/build
-    - ctest
+    - ctest -C debug
 
 ###############################################################################
 gcc_9_python_bindings_test:
