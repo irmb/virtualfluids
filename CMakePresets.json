@@ -42,7 +42,8 @@
       "hidden": true,
       "description": "CPU build of VirtualFluids",
       "cacheVariables": {
-        "BUILD_VF_CPU": "ON"
+        "BUILD_VF_CPU": "ON",
+        "BUILD_VF_DOUBLE_ACCURACY": "ON"
       }
     },
     {
@@ -50,7 +51,8 @@
       "hidden": true,
       "description": "GPU build of VirtualFluids",
       "cacheVariables": {
-        "BUILD_VF_GPU": "ON"
+        "BUILD_VF_GPU": "ON",
+        "BUILD_VF_DOUBLE_ACCURACY": "OFF"
       }
     },
     {
@@ -67,7 +69,10 @@
       "name": "default_all",
       "hidden": true,
       "description": "All build of VirtualFluids",
-      "inherits": ["default_cpu", "default_gpu"]
+      "inherits": ["default_cpu", "default_gpu"],
+      "cacheVariables": {
+        "BUILD_VF_DOUBLE_ACCURACY": "ON"
+      }
     },
     {
       "name": "cpu_make",
