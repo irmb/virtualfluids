@@ -82,6 +82,7 @@ void run(string configname)
         SPtr<LBMKernel> kernel;
 
         kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
+  //      kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
