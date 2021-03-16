@@ -53,6 +53,7 @@ public:
 
 public:
     LBMKernel();
+    virtual ~LBMKernel() = default;
 
     virtual SPtr<LBMKernel> clone() = 0;
 

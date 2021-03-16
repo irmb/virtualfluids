@@ -152,6 +152,17 @@ function(vf_add_library)
             ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
             PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
+    # link time optimization
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
+
+    if( ipo_supported )
+        status_lib("IPO / LTO enabled")
+        set_target_properties(${library_name} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+    else()
+        status_lib("IPO / LTO not supported: <${ipo_error}>")
+    endif()
+
     # clang-tidy
     if(BUILD_VF_CLANG_TIDY)
         find_program(CLANG_TIDY_PROGRAM NAMES clang-tidy)

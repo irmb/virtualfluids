@@ -8,3 +8,4 @@ set_target_properties(lbmCuda PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 
 set_source_files_properties(../MacroscopicQuantities.cpp PROPERTIES LANGUAGE CUDA)
+set_source_files_properties(../BackwardChimera.cpp PROPERTIES LANGUAGE CUDA)

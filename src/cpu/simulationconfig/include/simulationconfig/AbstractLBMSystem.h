@@ -7,6 +7,8 @@
 
 class AbstractLBMSystem {
 public:
+    virtual ~AbstractLBMSystem() = default;
+
     virtual int getNumberOfDirections() = 0;
 
     virtual std::shared_ptr<Interactor3D> makeInteractor() = 0;

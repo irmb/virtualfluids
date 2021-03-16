@@ -99,7 +99,7 @@ void Simulation::run()
     grid->setPeriodicX2(gridParameters->periodicBoundaryInX2);
     grid->setPeriodicX3(gridParameters->periodicBoundaryInX3);
 
-    int &numberOfNodesInReferenceDirection = gridParameters->numberOfNodesPerDirection[gridParameters->referenceDirectionIndex];
+    //int &numberOfNodesInReferenceDirection = gridParameters->numberOfNodesPerDirection[gridParameters->referenceDirectionIndex];
     std::shared_ptr<LBMUnitConverter> converter = makeLBMUnitConverter();
 
     int &nodesInX1 = gridParameters->numberOfNodesPerDirection[0];
@@ -132,7 +132,7 @@ void Simulation::run()
     grid->accept(kernelVisitor);
     intHelper.setBC();
 
-    double bulkViscosity = physicalParameters->latticeViscosity * physicalParameters->bulkViscosityFactor;
+    //double bulkViscosity = physicalParameters->latticeViscosity * physicalParameters->bulkViscosityFactor;
     //auto iProcessor = std::make_shared<CompressibleOffsetMomentsInterpolationProcessor>();
     //iProcessor->setBulkViscosity(physicalParameters->latticeViscosity, bulkViscosity);
 

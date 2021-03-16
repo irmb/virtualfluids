@@ -3,7 +3,7 @@
 #include "D3Q27.h"
 
 
-__host__ __device__ real VF::LBM::getDensity(const real *const &f /*[27]*/)
+real VF::LBM::getDensity(const real *const &f /*[27]*/)
 {
     return ((f[DIR::TNE] + f[DIR::BSW]) + (f[DIR::TSE] + f[DIR::BNW])) + ((f[DIR::BSE] + f[DIR::TNW]) + (f[DIR::TSW] + f[DIR::BNE])) +
            (((f[DIR::NE] + f[DIR::SW]) + (f[DIR::SE] + f[DIR::NW])) + ((f[DIR::TE] + f[DIR::BW]) + (f[DIR::BE] + f[DIR::TW])) +
