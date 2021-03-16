@@ -2371,7 +2371,7 @@ LBMReal MultiphaseScratchCumulantLBMKernel::nabla2_phi()
 	sum += WEIGTH[TN] * (
 			(((phi[TN] - phi[REST]) + (phi[BS] - phi[REST])) + ((phi[TS] - phi[REST]) + (phi[BN] - phi[REST])))
 		+	(((phi[TE] - phi[REST]) + (phi[BW] - phi[REST])) + ((phi[TW] - phi[REST]) + (phi[BE] - phi[REST])))
-		+	(((phi[NE] - phi[REST]) + (phi[SW] - phi[REST])) + ((phi[NW] - phi[REST]) + (phi[SW] - phi[REST])))
+		+	(((phi[NE] - phi[REST]) + (phi[SW] - phi[REST])) + ((phi[NW] - phi[REST]) + (phi[SE] - phi[REST])))
 		);
 	sum += WEIGTH[T] * (
 			((phi[T] - phi[REST]) + (phi[B] - phi[REST]))
