@@ -155,7 +155,7 @@ function(vf_add_library)
     # link time optimization
     if(NOT ${ARG_BUILDTYPE} MATCHES binary)
         include(CheckIPOSupported)
-        check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
+        check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error LANGUAGES CXX)
 
         if( ipo_supported )
             status_lib("IPO / LTO enabled")
