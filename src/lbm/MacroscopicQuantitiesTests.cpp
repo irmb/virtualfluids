@@ -35,10 +35,17 @@ TEST(MacroscopicQuantitiesTest, givenAllFsAreOne_when_Eis2_velocityInXShouldBeOn
 {
     f[VF::LBM::DIR::E] = 2.;
 
-    const double velocity = VF::LBM::getIncompressibleVelocityX1(f);
+    const double velocityX1 = VF::LBM::getIncompressibleVelocityX1(f);
+    const double velocityX2 = VF::LBM::getIncompressibleVelocityX2(f);
+    const double velocityX3 = VF::LBM::getIncompressibleVelocityX3(f);
 
-    const double expected_velocity = 1.;
-    ASSERT_THAT(velocity, testing::DoubleEq(expected_velocity));
+    const double expected_velocity_x1 = 1.;
+    const double expected_velocity_x2 = 0.;
+    const double expected_velocity_x3 = 0.;
+
+    EXPECT_THAT(velocityX1, testing::DoubleEq(expected_velocity_x1));
+    EXPECT_THAT(velocityX2, testing::DoubleEq(expected_velocity_x2));
+    EXPECT_THAT(velocityX3, testing::DoubleEq(expected_velocity_x3));
 }
 
 TEST(MacroscopicQuantitiesTest, givenAllFsAreOne_when_Nis2_velocityInX2ShouldBeOne)
