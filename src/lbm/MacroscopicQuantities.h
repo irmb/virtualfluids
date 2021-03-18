@@ -10,7 +10,7 @@
 
 #include <basics/Core/DataTypes.h>
 
-#include "lbm/D3Q27.h"
+#include "D3Q27.h"
 
 namespace VF
 {
