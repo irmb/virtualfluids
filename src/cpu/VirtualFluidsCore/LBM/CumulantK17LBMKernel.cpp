@@ -39,7 +39,7 @@
 #include "Block3D.h"
 #include "BCArray3D.h"
 
-#include <lbm/BackwardChimera.h>
+#include <lbm/Chimera.h>
 
 #define PROOF_CORRECTNESS
 
