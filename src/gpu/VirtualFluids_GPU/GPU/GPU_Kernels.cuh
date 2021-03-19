@@ -141,6 +141,35 @@ extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(real s9,
 													bool EvenOrOdd);
 
 
+/////////////////////////////////////////////////////////////////////////
+//! \brief \ref Cumulant_K17_LBM_Device_Kernel : Cumulant K17 lattice Boltzmann device kernel function 
+extern "C" __global__ void Cumulant_K17_LBM_Device_Kernel(
+	real omega,
+	uint* typeOfGridNode,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	real* distributions,
+	int size_Mat,
+    int level,
+	real* forces,
+	bool isEvenTimestep);
+
+    /////////////////////////////////////////////////////////////////////////
+//! \brief \ref Cumulant_K17_LBM_Device_Kernel : Cumulant K17 lattice Boltzmann device kernel function 
+extern "C" __global__ void Cumulant_K17_LBM_Device_Kernel_old(
+	real omega,
+	uint* typeOfGridNode,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	real* distributions,
+	int size_Mat,
+    int level,
+	real* forces,
+	bool isEvenTimestep);
+
+
 extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27(
 	real omega,
 	unsigned int* bcMatD,

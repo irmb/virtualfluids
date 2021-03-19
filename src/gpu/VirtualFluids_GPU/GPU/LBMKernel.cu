@@ -353,6 +353,72 @@ extern "C" void KernelKumNewCompSP27(unsigned int numberOfThreads,
 		//													EvenOrOdd); 
 		//getLastCudaError("LB_Kernel_Kum_New_Comp_SP_27 execution failed"); 
 }
+
+//////////////////////////////////////////////////////////////////////////
+extern "C" void CumulantK17LBMDeviceKernel(
+	uint numberOfThreads,
+	real omega,
+	uint* typeOfGridNode,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	real* distributions,
+	int size_Mat,
+    int level,
+	real* forces,
+	bool isEvenTimestep)
+{
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	dim3 grid(Grid, 1, 1);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	Cumulant_K17_LBM_Device_Kernel <<< grid, threads >>> (
+		omega,
+		typeOfGridNode,
+		neighborX,
+		neighborY,
+		neighborZ,
+		distributions,
+		size_Mat,
+        level,
+		forces,
+		isEvenTimestep);
+	getLastCudaError("Cumulant_K17_AA2016_chim_Comp_SP_27 execution failed");
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+extern "C" void CumulantK17LBMDeviceKernel_old(
+	uint numberOfThreads,
+	real omega,
+	uint* typeOfGridNode,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	real* distributions,
+	int size_Mat,
+    int level,
+	real* forces,
+	bool isEvenTimestep)
+{
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	dim3 grid(Grid, 1, 1);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	Cumulant_K17_LBM_Device_Kernel_old <<< grid, threads >>> (
+		omega,
+		typeOfGridNode,
+		neighborX,
+		neighborY,
+		neighborZ,
+		distributions,
+		size_Mat,
+        level,
+		forces,
+		isEvenTimestep);
+	getLastCudaError("Cumulant_K17_AA2016_chim_Comp_SP_27 execution failed");
+}
+
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CumulantOnePreconditionedErrorDiffusionChimCompSP27(unsigned int numberOfThreads,
 																	real s9,

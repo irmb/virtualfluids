@@ -2,6 +2,12 @@
 
 #include "Chimera.h"
 
+#ifdef VF_DOUBLE_ACCURACY
+#define REAL_EQ(a) testing::DoubleEq(a)
+#else
+#define REAL_EQ(a) testing::FloatEq(a)
+#endif
+
 /*
 * InverseChimeraWithK
 */
@@ -19,9 +25,9 @@ TEST(ChimeraTest, forwardInverseChimeraWithK)
 
     VF::LBM::forwardInverseChimeraWithK(mfa, mfb, mfc, vv, v2, K, Kinverse);
 
-    EXPECT_THAT(mfa, testing::DoubleEq(3.));  // mfa + mfb + mfc
-    EXPECT_THAT(mfb, testing::DoubleEq(-4.)); // -(mfa + mfb + mfc + 1)
-    EXPECT_THAT(mfc, testing::DoubleEq(6.));  // (mfa + mfc) + (mfa + mfb + mfc + 1)
+    EXPECT_THAT(mfa, REAL_EQ(3.));  // mfa + mfb + mfc
+    EXPECT_THAT(mfb, REAL_EQ(-4.)); // -(mfa + mfb + mfc + 1)
+    EXPECT_THAT(mfc, REAL_EQ(6.));  // (mfa + mfc) + (mfa + mfb + mfc + 1)
 }
 
 
@@ -41,9 +47,9 @@ TEST(ChimeraTest, backwardInverseChimeraWithK)
     VF::LBM::backwardInverseChimeraWithK(mfa, mfb, mfc, vv, v2, K, Kinverse);
 
     // resulting in the start values from the test above.
-    EXPECT_THAT(mfa, testing::DoubleEq(1.));
-    EXPECT_THAT(mfb, testing::DoubleEq(1.));
-    EXPECT_THAT(mfc, testing::DoubleEq(1.));
+    EXPECT_THAT(mfa, REAL_EQ(1.));
+    EXPECT_THAT(mfb, REAL_EQ(1.));
+    EXPECT_THAT(mfc, REAL_EQ(1.));
 }
 
 /*
@@ -60,9 +66,9 @@ TEST(ChimeraTest, forwardChimera)
 
     VF::LBM::forwardChimera(mfa, mfb, mfc, vv, v2);
 
-    EXPECT_THAT(mfa, testing::DoubleEq(3.));  // mfa + mfb + mfc
-    EXPECT_THAT(mfb, testing::DoubleEq(-3.)); // -(mfa + mfb + mfc)
-    EXPECT_THAT(mfc, testing::DoubleEq(5.));  // (mfa + mfc) + (mfa + mfb + mfc)
+    EXPECT_THAT(mfa, REAL_EQ(3.));  // mfa + mfb + mfc
+    EXPECT_THAT(mfb, REAL_EQ(-3.)); // -(mfa + mfb + mfc)
+    EXPECT_THAT(mfc, REAL_EQ(5.));  // (mfa + mfc) + (mfa + mfb + mfc)
 }
 
 
@@ -79,9 +85,9 @@ TEST(ChimeraTest, backwardChimera)
     VF::LBM::backwardChimera(mfa, mfb, mfc, vv, v2);
 
     // resulting in the start values from the test above.
-    EXPECT_THAT(mfa, testing::DoubleEq(1.));
-    EXPECT_THAT(mfb, testing::DoubleEq(1.));
-    EXPECT_THAT(mfc, testing::DoubleEq(1.));
+    EXPECT_THAT(mfa, REAL_EQ(1.));
+    EXPECT_THAT(mfb, REAL_EQ(1.));
+    EXPECT_THAT(mfc, REAL_EQ(1.));
 }
 
 /*
@@ -100,9 +106,9 @@ TEST(ChimeraTest, forwardChimeraWithK)
 
     VF::LBM::forwardChimeraWithK(mfa, mfb, mfc, vv, v2, K);
 
-    EXPECT_THAT(mfa, testing::DoubleEq(3.));  // mfa + mfb + mfc
-    EXPECT_THAT(mfb, testing::DoubleEq(-4.)); // -(mfa + mfb + mfc)
-    EXPECT_THAT(mfc, testing::DoubleEq(6.));  // (mfa + mfc) + (mfa + mfb + mfc)
+    EXPECT_THAT(mfa, REAL_EQ(3.));  // mfa + mfb + mfc
+    EXPECT_THAT(mfb, REAL_EQ(-4.)); // -(mfa + mfb + mfc)
+    EXPECT_THAT(mfc, REAL_EQ(6.));  // (mfa + mfc) + (mfa + mfb + mfc)
 }
 
 
@@ -121,7 +127,7 @@ TEST(ChimeraTest, backwardChimeraWithK)
     VF::LBM::backwardChimeraWithK(mfa, mfb, mfc, vv, v2, K);
 
     // resulting in the start values from the test above.
-    EXPECT_THAT(mfa, testing::DoubleEq(1.));
-    EXPECT_THAT(mfb, testing::DoubleEq(1.));
-    EXPECT_THAT(mfc, testing::DoubleEq(1.));
+    EXPECT_THAT(mfa, REAL_EQ(1.));
+    EXPECT_THAT(mfb, REAL_EQ(1.));
+    EXPECT_THAT(mfc, REAL_EQ(1.));
 }
