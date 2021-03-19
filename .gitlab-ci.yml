@@ -159,7 +159,7 @@ build_singularity_image:
 
   script:
     - singularity build Containers/VirtualFluidsMPICH.sif Containers/VirtualFluidsMPICH.def
-    - ls -sh Containers/VirtualFluidsMPICH.sif
+    - singularity push --docker-username "${CI_REGISTRY_USER}" --docker-password "${CI_REGISTRY_PASSWORD}" Containers/VirtualFluidsMPICH.sif oras://"$CI_REGISTRY_IMAGE"/"$CI_PROJECT_NAME":"$CI_COMMIT_TAG"
 
 
 ###############################################################################
@@ -549,10 +549,10 @@ vf_wheel_to_jupyterhub:
   needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
 
   variables:
-    HOST: "finrod.irmb.bau.tu-bs.de"
-    SSH_KEY: "$SSH_PRIVATE_KEY_JUPYTER_HOST_AT_FINROD"
-    REMOTE_USER: "jupyter_host"
-    jupyter_host: "jupyter_host"
+    HOST: "gitlab-runner01.irmb.bau.tu-bs.de"
+    SSH_KEY: "$SSH_PRIVATE_KEY"
+    REMOTE_USER: "runner"
+    jupyter_host: "runner"
 
   script:
     - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook_jupyter_update.yml
