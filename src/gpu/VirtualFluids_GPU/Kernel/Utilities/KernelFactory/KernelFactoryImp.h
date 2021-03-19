@@ -17,9 +17,9 @@ public:
 private:
 	KernelFactoryImp();
 
-	std::shared_ptr< Kernel> makeKernel(std::shared_ptr<Parameter> para, KernelType kernel, int level);
-	std::shared_ptr< ADKernel> makeAdvDifKernel(std::shared_ptr<Parameter> para, ADKernelType kernel, int level);
-	void setKernelAtLevel(std::vector< std::shared_ptr<Kernel>> kernels, std::shared_ptr<Parameter> para, KernelType kernel, int level);
+	std::shared_ptr<Kernel> makeKernel(std::shared_ptr<Parameter> para, std::string kernel, int level);
+	std::shared_ptr<ADKernel> makeAdvDifKernel(std::shared_ptr<Parameter> para, std::string kernel, int level);
+	void setKernelAtLevel(std::vector< std::shared_ptr<Kernel>> kernels, std::shared_ptr<Parameter> para, std::string kernel, int level);
 
 	std::vector<std::shared_ptr<PorousMedia>> pm;
 };
