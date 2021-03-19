@@ -154,11 +154,11 @@ build_singularity_image:
   artifacts:
     expire_in: 1 hrs
     paths:
-      - Containers/VirtualFluidsOpenMPI.sif
+      - Containers/VirtualFluidsMPICH.sif
 
   script:
-    - singularity build --fakeroot Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
-    - ls -sh Containers/VirtualFluidsOpenMPI.sif
+    - singularity build Containers/VirtualFluidsMPICH.sif Containers/VirtualFluidsMPICH.def
+    - ls -sh Containers/VirtualFluidsMPICH.sif
 
 
 ###############################################################################
