@@ -31,7 +31,7 @@ TEST(MacroscopicQuantitiesTest, whenFsAreEqual_velocityInEachDirectionShouldBeZe
     EXPECT_THAT(velocityX3, testing::DoubleEq(expected_velocity));
 }
 
-TEST(MacroscopicQuantitiesTest, givenAllFsAreOne_when_Eis2_velocityInXShouldBeOne)
+TEST(MacroscopicQuantitiesTest, givenAllFsAreOne_when_Eis2_velocityInX1ShouldBeOne)
 {
     f[VF::LBM::DIR::E] = 2.;
 
