@@ -146,7 +146,6 @@ build_singularity_image:
   stage: build
 
   tags:
-    - priviliged
     - linux
 
   rules:
