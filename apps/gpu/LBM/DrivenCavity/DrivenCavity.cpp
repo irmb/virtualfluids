@@ -50,7 +50,6 @@
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -97,10 +96,10 @@ const real dt = (real)1.0e-3; //0.5e-3;
 
 const uint nx = 64;
 
-std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
-//std::string path("E:/DrivenCavity/results/"); //TESLA03
+//std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
+std::string path("D:/out/DrivenCavity"); //Mollok
 
-std::string simulationName("DrivenCavity_chim_XY_fast_Re500_inversePrecond");
+std::string simulationName("DrivenCavity");
 
 const uint timeStepOut = 10000;
 const uint timeStepEnd = 250000;
@@ -156,7 +155,6 @@ void multipleLevel(const std::string& configPath)
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         SPtr<Parameter>    para         = Parameter::make(configData, comm);
-		SPtr<KernelMapper> kernelMapper = KernelMapper::getInstance();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -188,11 +186,14 @@ void multipleLevel(const std::string& configPath)
 
         para->setVelocityRatio(velocity/ velocityLB);
 
-		// para->setMainKernel(kernelMapper->getEnum("BGKCompSP27"));
-		//para->setMainKernel(kernelMapper->getEnum("BGKPlusCompSP27"));
-		//para->setMainKernel(kernelMapper->getEnum("CumulantOneCompSP27"));
-		//para->setMainKernel(kernelMapper->getEnum("CumulantAA2016CompSP27"));
-		//para->setMainKernel(kernelMapper->getEnum("CumulantOnePreconditionedChimCompSP27"));
+		para->setMainKernel("CumulantK17Comp");
+
+		para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
+            rho = (real)0.0;
+            vx  = (real)0.0; //(6 * velocityLB * coordZ * (L - coordZ) / (L * L));
+            vy  = (real)0.0;
+            vz  = (real)0.0;
+        });
 
         para->setTOut( timeStepOut );
         para->setTEnd( timeStepEnd );
