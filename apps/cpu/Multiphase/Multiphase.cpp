@@ -116,12 +116,16 @@ void run(string configname)
         // fctF1.SetExpr("vy1*(1-((x1-x0)^2+(x3-z0)^2)/(R^2))");
         // fctF1.SetExpr("vy1*(1-(sqrt((x1-x0)^2+(x3-z0)^2)/R))^0.1");
         fctF1.SetExpr("vy1");
-        fctF1.DefineConst("vy1", -uLB);
+        fctF1.DefineConst("vy1", -uLB*0);
+        //fctF1.DefineConst("vy1", -uLB);
         fctF1.DefineConst("R", 8.0);
         fctF1.DefineConst("x0", 0.0);
         fctF1.DefineConst("z0", 0.0);
 
-        if (newStart) {
+      //  mu::Parser fctFStart;
+      //  fctFStart.SetExpr("0");
+
+      //  if (newStart) {
 
             // bounding box
             /*double g_minX1 = 0.0;
@@ -241,8 +245,14 @@ void run(string configname)
             // fct.DefineConst("U", uLB);
             // BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
 
+            //Am Anfang keine Geschwindigkeit
+     //       double startGeschwindigkeit = 200;
+     //       SPtr<BCAdapter> velBCAdapterFStart(
+     //           new MultiphaseVelocityBCAdapter(false, true, false, fctFStart, phiH, 0.0, startGeschwindigkeit));
+
+
             SPtr<BCAdapter> velBCAdapterF1(
-                new MultiphaseVelocityBCAdapter(false, true, false, fctF1, phiH, 0.0, endTime));
+                new MultiphaseVelocityBCAdapter(false, true, false, fctF1, phiH, 0, endTime));
 
             // BCAdapterPtr velBCAdapterF2_1_init(new MultiphaseVelocityBCAdapter(false, false, true, fctF2_1, phiH,
             // 0.0, endTime)); BCAdapterPtr velBCAdapterF2_2_init(new MultiphaseVelocityBCAdapter(false, false, true,
@@ -253,6 +263,7 @@ void run(string configname)
             // true, fctvel_F2_init, phiL, 0.0, endTime));
 
             velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+           // velBCAdapterFStart->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
             // velBCAdapterF2_1_init->setBcAlgorithm(BCAlgorithmPtr(new MultiphaseVelocityBCAlgorithm()));
             // velBCAdapterF2_2_init->setBcAlgorithm(BCAlgorithmPtr(new MultiphaseVelocityBCAlgorithm()));
 
@@ -267,7 +278,7 @@ void run(string configname)
             // BC visitor
             MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
             bcVisitor.addBC(noSlipBCAdapter);
-            bcVisitor.addBC(denBCAdapter);
+           // bcVisitor.addBC(denBCAdapter); //Ohne das BB?
             bcVisitor.addBC(velBCAdapterF1);
             // bcVisitor.addBC(velBCAdapterF2_1_init);
             // bcVisitor.addBC(velBCAdapterF2_2_init);
@@ -282,6 +293,8 @@ void run(string configname)
 
             SPtr<D3Q27Interactor> inflowF1Int(
                 new D3Q27Interactor(geoInflowF1, grid, velBCAdapterF1, Interactor3D::SOLID));
+
+           // inflowF1Int->addBCAdapter(velBCAdapterFStart);
 
             // D3Q27InteractorPtr inflowF2_1Int_init = D3Q27InteractorPtr(new D3Q27Interactor(geoInflowF2_1, grid,
             // velBCAdapterF2_1_init, Interactor3D::SOLID));
@@ -418,8 +431,8 @@ void run(string configname)
             //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
             // ConnectorFactoryPtr factory(new Block3DConnectorFactory());
             // ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
-            TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-            grid->accept(setConnsVisitor);
+           // TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+           // grid->accept(setConnsVisitor);
 
             // domain decomposition for threads
             // PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
@@ -436,37 +449,37 @@ void run(string configname)
 
             if (myid == 0)
                 UBLOG(logINFO, "Preprocess - end");
-        } else {
-            if (myid == 0) {
-                UBLOG(logINFO, "Parameters:");
-                UBLOG(logINFO, "uLb = " << uLB);
-                UBLOG(logINFO, "rho = " << rhoLB);
-                UBLOG(logINFO, "nuLb = " << nuLB);
-                UBLOG(logINFO, "Re = " << Re);
-                UBLOG(logINFO, "dx = " << dx);
-                UBLOG(logINFO, "number of levels = " << refineLevel + 1);
-                UBLOG(logINFO, "numOfThreads = " << numOfThreads);
-                UBLOG(logINFO, "path = " << pathname);
-            }
+        //} else {
+        //    if (myid == 0) {
+        //        UBLOG(logINFO, "Parameters:");
+        //        UBLOG(logINFO, "uLb = " << uLB);
+        //        UBLOG(logINFO, "rho = " << rhoLB);
+        //        UBLOG(logINFO, "nuLb = " << nuLB);
+        //        UBLOG(logINFO, "Re = " << Re);
+        //        UBLOG(logINFO, "dx = " << dx);
+        //        UBLOG(logINFO, "number of levels = " << refineLevel + 1);
+        //        UBLOG(logINFO, "numOfThreads = " << numOfThreads);
+        //        UBLOG(logINFO, "path = " << pathname);
+        //    }
 
-            rcp.restart((int)restartStep);
-            grid->setTimeStep(restartStep);
+        //    rcp.restart((int)restartStep);
+        //    grid->setTimeStep(restartStep);
 
-            // BCAdapterPtr velBCAdapter(new VelocityBCAdapter());
-            // velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
-            // velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityWithDensityBCAlgorithm()));
-            // bcVisitor.addBC(velBCAdapter);
-            // grid->accept(bcVisitor);
+        //    // BCAdapterPtr velBCAdapter(new VelocityBCAdapter());
+        //    // velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
+        //    // velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityWithDensityBCAlgorithm()));
+        //    // bcVisitor.addBC(velBCAdapter);
+        //    // grid->accept(bcVisitor);
 
-            // set connectors
-            // InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-            //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-            //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-            //grid->accept(setConnsVisitor);
+        //    // set connectors
+        //    // InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+        //    //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+        //    //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+        //    //grid->accept(setConnsVisitor);
 
-            if (myid == 0)
-                UBLOG(logINFO, "Restart - end");
-        }
+        //    if (myid == 0)
+        //        UBLOG(logINFO, "Restart - end");
+        //}
         
         TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
@@ -478,14 +491,37 @@ void run(string configname)
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
         SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
+//////
+        double fluxStart = 500.0;
         SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-        SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+        SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, fluxStart));
         calculator->addCoProcessor(npr);
         calculator->addCoProcessor(pp);
 
+        calculator->calculate();
+        dynamicPointerCast<MultiphaseVelocityBCAdapter>(velBCAdapterF1)->setNewVelocities(0.0,0.0,endTime, -uLB,0.0,endTime,0.0,0.0,endTime);
+        inflowF1Int->initInteractor();
+
+       // SPtr<D3Q27Interactor> inflowF1Int(
+       //     new D3Q27Interactor(geoInflowF1, grid, velBCAdapterF1, Interactor3D::SOLID));
+
+//////
+
+
+
+       // SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
+        grid->setTimeStep(fluxStart);
+        SPtr<Calculator> calculator2(new BasicCalculator(grid, stepGhostLayer, endTime));
+        calculator2->addCoProcessor(npr);
+        calculator2->addCoProcessor(pp);
+
+
+      
+
+
         if (myid == 0)
             UBLOG(logINFO, "Simulation-start");
-        calculator->calculate();
+        calculator2->calculate();
         if (myid == 0)
             UBLOG(logINFO, "Simulation-end");
     } catch (std::exception &e) {

@@ -132,6 +132,8 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
     forcingX1 = 0.0;
     forcingX2 = 0.0;
     forcingX3 = 0.0;
+
+	LBMReal oneOverInterfaceScale = 1.0;// 1.0 / 3.0;
     /////////////////////////////////////
 
     localDistributionsF    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
@@ -341,6 +343,10 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 
 			    mfbbb = (*this->zeroDistributionsF)(x1, x2, x3) / rho;
 
+
+
+
+
 			   LBMReal m0, m1, m2;
 			   LBMReal rhoRef=c1;
 
@@ -380,6 +386,18 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 				   vvy += forcingX2 * deltaT * 0.5; // Y
 				   vvz += forcingX3 * deltaT * 0.5; // Z
 			   }
+
+			   LBMReal vx2;
+			   LBMReal vy2;
+			   LBMReal vz2;
+			   vx2 = vvx * vvx;
+			   vy2 = vvy * vvy;
+			   vz2 = vvz * vvz;
+
+			   ///////
+
+
+
 			   ///////////////////////////////////////////////////////////////////////////////////////////               
 			   LBMReal oMdrho;
 
@@ -410,12 +428,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   m0 += mfbbb; //hat gefehlt
 			   oMdrho = (rhoRef - (oMdrho + m0))/rhoRef;// 12.03.21 check derivation!!!!
 
-			   LBMReal vx2;
-			   LBMReal vy2;
-			   LBMReal vz2;
-			   vx2 = vvx * vvx;
-			   vy2 = vvy * vvy;
-			   vz2 = vvz * vvz;
+
 			   ////////////////////////////////////////////////////////////////////////////////////
 			   LBMReal wadjust;
 			   LBMReal qudricLimit = 0.01;
@@ -696,12 +709,15 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 
 			   //applying phase field gradients first part:
 			  // mxxPyyPzz += c2o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz);
-			   mxxPyyPzz += c1o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz); // As in Hesam's code
-			   mxxMyy += c1o3 * rhoToPhi * (dX1_phi * vvx - dX2_phi * vvy);
-			   mxxMzz += c1o3 * rhoToPhi * (dX1_phi * vvx - dX3_phi * vvz);
-			   mfabb += c1o6 * rhoToPhi * (dX2_phi * vvz + dX3_phi * vvy);
-			   mfbab += c1o6 * rhoToPhi * (dX1_phi * vvz + dX3_phi * vvx);
-			   mfbba += c1o6 * rhoToPhi * (dX1_phi * vvy + dX2_phi * vvx);
+
+			   //17.03.2021 attempt for statililization by assymptotically vanishing bias
+			   LBMReal correctionScaling = rhoToPhi /rho;// +0.5;// (vx2 + vy2 + vz2) * 100;// +0.5;//(vx2 + vy2 + vz2)*1000;
+			   mxxPyyPzz += (1.0/6.0) * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz)* correctionScaling; // As in Hesam's code
+			   mxxMyy += c1o3 * (dX1_phi * vvx - dX2_phi * vvy)* correctionScaling;
+			   mxxMzz += c1o3 * (dX1_phi * vvx - dX3_phi * vvz) * correctionScaling;
+			   mfabb += c1o6 * (dX2_phi * vvz + dX3_phi * vvy) * correctionScaling;
+			   mfbab += c1o6 * (dX1_phi * vvz + dX3_phi * vvx) * correctionScaling;
+			   mfbba += c1o6 * (dX1_phi * vvy + dX2_phi * vvx) * correctionScaling;
 
 			   LBMReal dxux = 0.0;// -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz);
 			   LBMReal dyuy = 0.0;// dxux + collFactorM * c3o2 * mxxMyy;
@@ -718,18 +734,18 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 
 			   //applying phase field gradients second part:
 			   //mxxPyyPzz += c2o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz);
-			   mxxPyyPzz += c1o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz); // As in Hesam's code
-			   mxxMyy += c1o3 * rhoToPhi * (dX1_phi * vvx - dX2_phi * vvy);
-			   mxxMzz += c1o3 * rhoToPhi * (dX1_phi * vvx - dX3_phi * vvz);
-			   mfabb += c1o6 * rhoToPhi * (dX2_phi * vvz + dX3_phi * vvy);
-			   mfbab += c1o6 * rhoToPhi * (dX1_phi * vvz + dX3_phi * vvx);
-			   mfbba += c1o6 * rhoToPhi * (dX1_phi * vvy + dX2_phi * vvx);
+			   mxxPyyPzz += (1.0 / 6.0) * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) * correctionScaling; // As in Hesam's code
+			   mxxMyy += c1o3 * (dX1_phi * vvx - dX2_phi * vvy) * correctionScaling;
+			   mxxMzz += c1o3 * (dX1_phi * vvx - dX3_phi * vvz) * correctionScaling;
+			   mfabb += c1o6 * (dX2_phi * vvz + dX3_phi * vvy) * correctionScaling;
+			   mfbab += c1o6 * (dX1_phi * vvz + dX3_phi * vvx) * correctionScaling;
+			   mfbba += c1o6 * (dX1_phi * vvy + dX2_phi * vvx) * correctionScaling;
 
 			   ////updated pressure
-			   mfaaa += rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz);
+			   mfaaa += (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) * correctionScaling;
 
-			 //  mxxPyyPzz += mfaaa;//12.03.21 shifted by mfaaa
-			   mxxPyyPzz = mfaaa; //12.03.21 reguarized pressure !?
+			   mxxPyyPzz += mfaaa;//12.03.21 shifted by mfaaa
+			 //  mxxPyyPzz = mfaaa; //12.03.21 reguarized pressure !?
 			   // linear combinations back
 			   mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
 			   mfaca = c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz);
@@ -1047,7 +1063,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 				   + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 				   + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 			   //LBMReal dif = fabs(drho - rho_post);
-			   LBMReal dif = drho+ rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) - rho_post;
+			   LBMReal dif = drho+  (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) *correctionScaling - rho_post;
 #ifdef SINGLEPRECISION
 			   if (dif > 10.0E-7 || dif < -10.0E-7)
 #else
@@ -2083,9 +2099,9 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   LBMReal Mccb = mfccb - mfaab * c1o9;
 
 			   // collision of 1st order moments
-			   cx = cx * (c1 - omegaD) + omegaD * vvx * concentration + normX1 * (c1 - 0.5*omegaD) * (1.0 - phi[REST]) * (phi[REST])*c1o3;
-			   cy = cy * (c1 - omegaD) + omegaD * vvy * concentration + normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3;
-			   cz = cz * (c1 - omegaD) + omegaD * vvz * concentration + normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3;
+			   cx = cx * (c1 - omegaD) + omegaD * vvx * concentration + normX1 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+			   cy = cy * (c1 - omegaD) + omegaD * vvy * concentration + normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+			   cz = cz * (c1 - omegaD) + omegaD * vvz * concentration + normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
 
 			   //mhx = (ux * phi[REST] + normX1 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhx;
 			   //mhy = (uy * phi[REST] + normX2 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhy;

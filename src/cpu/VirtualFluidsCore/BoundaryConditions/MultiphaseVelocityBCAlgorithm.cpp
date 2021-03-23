@@ -96,13 +96,15 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
    
    phiBC = bcPtr->getBoundaryPhaseField();
    
-   D3Q27System::calcMultiphaseHeq(htemp, phiBC, vx1, vx2, vx3);
-
+   //D3Q27System::calcMultiphaseHeq(htemp, phiBC, vx1, vx2, vx3);
+   D3Q27System::calcMultiphaseHeq(htemp, phiBC, 0.0, 0.0, 0.0);//16.03.2021 dirty hack!
    for (int fdir = D3Q27System::STARTF; fdir<=D3Q27System::ENDF; fdir++)
    {
 	   if (bcPtr->hasVelocityBoundaryFlag(fdir))
 	   {
-		   LBMReal hReturn = htemp[fdir]+h[fdir]-heq[fdir];
+		  // LBMReal hReturn = htemp[fdir]+h[fdir]-heq[fdir];
+           //17.03.2021 Let us just set the plain eq
+           LBMReal hReturn = htemp[fdir];
 		   distributionsH->setDistributionForDirection(hReturn, nx1, nx2, nx3, fdir);
 	   }
    }
@@ -114,7 +116,9 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
          const int invDir = D3Q27System::INVDIR[fdir];
          LBMReal q = bcPtr->getQ(invDir);// m+m q=0 stabiler
          LBMReal velocity = bcPtr->getBoundaryVelocity(invDir);
-		 LBMReal fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity)/(1.0+q));
+		 //16.03.2021 quick fix for velocity BC
+         LBMReal fReturn = f[invDir] - velocity;
+         //LBMReal fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity)/(1.0+q));
          distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
       }
    }
