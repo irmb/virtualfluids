@@ -23,16 +23,28 @@ namespace LBM
 
 struct Distribution27
 {
-   real f[27];
+    real f[27];
 
-   inline __host__ __device__ real getDensity_() const
-   {
-       return getDensity(f);
-   }
+    inline __host__ __device__ real getDensity_() const
+    {
+        return getDensity(f);
+    }
 };
 
-inline __host__ __device__ Distribution27 cumulantChimera(const Distribution27& distribution, real omega, const real* forces)
+
+//////////////////////////////////////////////////////////////////////////
+//! Cumulant K17 Kernel is based on \ref
+//! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
+//! and \ref
+//! <a href="https://doi.org/10.1016/j.jcp.2017.07.004"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.07.004 ]</b></a>
+//////////////////////////////////////////////////////////////////////////
+inline __host__ __device__ void cumulantChimera(Distribution27& distribution, real omega, real* forces)
 {
+    ////////////////////////////////////////////////////////////////////////////////////
+    //! - Read distributions: style of reading and writing the distributions from/to 
+    //! stored arrays dependent on timestep is based on the esoteric twist algorithm
+    //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
+    //!
     real mfcbb = distribution.f[DIR::PZZ];
     real mfabb = distribution.f[DIR::MZZ];
     real mfbcb = distribution.f[DIR::ZPZ];
@@ -66,23 +78,23 @@ inline __host__ __device__ Distribution27 cumulantChimera(const Distribution27& 
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa  2015.05.001 ]</b></a>
     //!
     real drho =
-    	((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
-    	(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
-    	((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb; 
+        ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
+        (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
+        ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb; 
     real rho = c1o1 + drho;
     real OOrho = c1o1 / rho;    
     real vvx = 
-    	((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
-    	(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
-    	(mfcbb - mfabb)) * OOrho;
+        ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
+        (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
+        (mfcbb - mfabb)) * OOrho;
     real vvy = 
-    	((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
-    	(((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
-    	(mfbcb - mfbab)) * OOrho;
+        ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
+        (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
+        (mfbcb - mfbab)) * OOrho;
     real vvz = 
-    	((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
-    	(((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
-    	(mfbbc - mfbba)) * OOrho;
+        ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
+        (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
+        (mfbbc - mfbba)) * OOrho;
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa  2015.05.001 ]</b></a>
@@ -198,17 +210,17 @@ inline __host__ __device__ Distribution27 cumulantChimera(const Distribution27& 
     ////////////////////////////////////////////////////////////
     //6.
     real CUMccc = mfccc + ((-c4o1 *  mfbbb * mfbbb
-    	- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-    	- c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-    	- c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
-    	+ (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-    	+ c2o1 * (mfcaa * mfaca * mfaac)
-    	+ c16o1 *  mfbba * mfbab * mfabb) * OOrho * OOrho
-    	- c1o3 * (mfacc + mfcac + mfcca) * OOrho
-    	- c1o9 * (mfcaa + mfaca + mfaac) * OOrho
-    	+ (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
-    	+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) * OOrho * OOrho  * c2o3
-    	+ c1o27*((drho * drho - drho) * OOrho * OOrho));    
+        - (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
+        - c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+        - c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
+        + (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+        + c2o1 * (mfcaa * mfaca * mfaac)
+        + c16o1 *  mfbba * mfbab * mfabb) * OOrho * OOrho
+        - c1o3 * (mfacc + mfcac + mfcca) * OOrho
+        - c1o9 * (mfcaa + mfaca + mfaac) * OOrho
+        + (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+        + (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) * OOrho * OOrho  * c2o3
+        + c1o27*((drho * drho - drho) * OOrho * OOrho));    
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Compute linear combinations of second and third order cumulants
     //!
@@ -339,17 +351,17 @@ inline __host__ __device__ Distribution27 cumulantChimera(const Distribution27& 
     //////////////////////////////////////////////////////////////////////////
     //6.
     mfccc =	CUMccc - ((-c4o1 *  mfbbb * mfbbb
-    		- (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
-    		- c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
-    		- c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
-    		+ (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
-    			+ c2o1 * (mfcaa * mfaca * mfaac)
-    			+ c16o1 *  mfbba * mfbab * mfabb) * OOrho * OOrho
-    		- c1o3 * (mfacc + mfcac + mfcca) * OOrho
-    		- c1o9 * (mfcaa + mfaca + mfaac) * OOrho
-    		+ (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
-    			+ (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) * OOrho * OOrho * c2o3
-    		+ c1o27*((drho * drho - drho) * OOrho * OOrho));    
+            - (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
+            - c4o1 * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
+            - c2o1 * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) * OOrho
+            + (c4o1 * (mfbab * mfbab * mfaca + mfabb * mfabb * mfcaa + mfbba * mfbba * mfaac)
+                + c2o1 * (mfcaa * mfaca * mfaac)
+                + c16o1 *  mfbba * mfbab * mfabb) * OOrho * OOrho
+            - c1o3 * (mfacc + mfcac + mfcca) * OOrho
+            - c1o9 * (mfcaa + mfaca + mfaac) * OOrho
+            + (c2o1 * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
+                + (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa) + c1o3 *(mfaac + mfaca + mfcaa)) * OOrho * OOrho * c2o3
+            + c1o27*((drho * drho - drho) * OOrho * OOrho));    
     ////////////////////////////////////////////////////////////////////////////////////
     //! -  Add acceleration (body force) to first order cumulants according to Eq. (85)-(87) in
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa  2015.05.001 ]</b></a>
@@ -397,38 +409,41 @@ inline __host__ __device__ Distribution27 cumulantChimera(const Distribution27& 
     VF::LBM::backwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2,  c9o1,  c1o9);
     VF::LBM::backwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36o1, c1o36);
 
-    Distribution27 distribution_calculated;
-    
-    distribution_calculated.f[DIR::PZZ] = mfcbb;
-    distribution_calculated.f[DIR::MZZ] = mfabb;
-    distribution_calculated.f[DIR::ZPZ] = mfbcb;
-    distribution_calculated.f[DIR::ZMZ] = mfbab;
-    distribution_calculated.f[DIR::ZZP] = mfbbc;
-    distribution_calculated.f[DIR::ZZM] = mfbba;
-    distribution_calculated.f[DIR::PPZ] = mfccb;
-    distribution_calculated.f[DIR::MMZ] = mfaab;
-    distribution_calculated.f[DIR::PMZ] = mfcab;
-    distribution_calculated.f[DIR::MPZ] = mfacb;
-    distribution_calculated.f[DIR::PZP] = mfcbc;
-    distribution_calculated.f[DIR::MZM] = mfaba;
-    distribution_calculated.f[DIR::PZM] = mfcba;
-    distribution_calculated.f[DIR::MZP] = mfabc;
-    distribution_calculated.f[DIR::ZPP] = mfbcc;
-    distribution_calculated.f[DIR::ZMM] = mfbaa;
-    distribution_calculated.f[DIR::ZPM] = mfbca;
-    distribution_calculated.f[DIR::ZMP] = mfbac;
-    distribution_calculated.f[DIR::PPP] = mfccc;
-    distribution_calculated.f[DIR::MPP] = mfacc;
-    distribution_calculated.f[DIR::PMP] = mfcac;
-    distribution_calculated.f[DIR::MMP] = mfaac;
-    distribution_calculated.f[DIR::PPM] = mfcca;
-    distribution_calculated.f[DIR::MPM] = mfaca;
-    distribution_calculated.f[DIR::PMM] = mfcaa;
-    distribution_calculated.f[DIR::MMM] = mfaaa;
-    distribution_calculated.f[DIR::ZZZ] = mfbbb;
 
-    return distribution_calculated;
+    ////////////////////////////////////////////////////////////////////////////////////
+    //! - Write distributions: style of reading and writing the distributions from/to 
+    //! stored arrays dependent on timestep is based on the esoteric twist algorithm
+    //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
+    //!
+    distribution.f[VF::LBM::DIR::MZZ] = mfcbb;
+    distribution.f[VF::LBM::DIR::PZZ] = mfabb;
+    distribution.f[VF::LBM::DIR::ZMZ] = mfbcb;
+    distribution.f[VF::LBM::DIR::ZPZ] = mfbab;
+    distribution.f[VF::LBM::DIR::ZZM] = mfbbc;
+    distribution.f[VF::LBM::DIR::ZZP] = mfbba;
+    distribution.f[VF::LBM::DIR::MMZ] = mfccb;
+    distribution.f[VF::LBM::DIR::PPZ] = mfaab;
+    distribution.f[VF::LBM::DIR::MPZ] = mfcab;
+    distribution.f[VF::LBM::DIR::PMZ] = mfacb;
+    distribution.f[VF::LBM::DIR::MZM] = mfcbc;
+    distribution.f[VF::LBM::DIR::PZP] = mfaba;
+    distribution.f[VF::LBM::DIR::MZP] = mfcba;
+    distribution.f[VF::LBM::DIR::PZM] = mfabc;
+    distribution.f[VF::LBM::DIR::ZMM] = mfbcc;
+    distribution.f[VF::LBM::DIR::ZPP] = mfbaa;
+    distribution.f[VF::LBM::DIR::ZMP] = mfbca;
+    distribution.f[VF::LBM::DIR::ZPM] = mfbac;
+    distribution.f[VF::LBM::DIR::MMM] = mfccc;
+    distribution.f[VF::LBM::DIR::PMM] = mfacc;
+    distribution.f[VF::LBM::DIR::MPM] = mfcac;
+    distribution.f[VF::LBM::DIR::PPM] = mfaac;
+    distribution.f[VF::LBM::DIR::MMP] = mfcca;
+    distribution.f[VF::LBM::DIR::PMP] = mfaca;
+    distribution.f[VF::LBM::DIR::MPP] = mfcaa;
+    distribution.f[VF::LBM::DIR::PPP] = mfaaa;
+    distribution.f[VF::LBM::DIR::ZZZ] = mfbbb;
 }
+
 
 }
 }
