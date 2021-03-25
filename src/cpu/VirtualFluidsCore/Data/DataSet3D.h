@@ -55,6 +55,12 @@ public:
     SPtr<DistributionArray3D> getHdistributions() const;
     void setHdistributions(SPtr<DistributionArray3D> distributions);
 
+    SPtr<DistributionArray3D> getH1distributions() const;
+    void setH1distributions(SPtr<DistributionArray3D> distributions);
+
+    SPtr<DistributionArray3D> getH2distributions() const;
+    void setH2distributions(SPtr<DistributionArray3D> distributions);
+
     SPtr<AverageValuesArray3D> getAverageDensity() const;
     void setAverageDensity(SPtr<AverageValuesArray3D> values);
 
@@ -79,11 +85,17 @@ public:
     SPtr<PhaseFieldArray3D> getPhaseField() const;
     void setPhaseField(SPtr<PhaseFieldArray3D> values);
 
+    SPtr<PhaseFieldArray3D> getPhaseField2() const;
+    void setPhaseField2(SPtr<PhaseFieldArray3D> values);
+
 protected:
 private:
     SPtr<DistributionArray3D> fdistributions;
 
     SPtr<DistributionArray3D> hdistributions;
+
+    SPtr<DistributionArray3D> h1distributions;
+    SPtr<DistributionArray3D> h2distributions;
 
     SPtr<AverageValuesArray3D> averageValues;
 
@@ -97,6 +109,7 @@ private:
     SPtr<RelaxationFactorArray3D> relaxationFactor;
 
     SPtr<PhaseFieldArray3D> phaseField;
+    SPtr<PhaseFieldArray3D> phaseField2;
 };
 
 inline SPtr<DistributionArray3D> DataSet3D::getFdistributions() const { return fdistributions; }
@@ -106,6 +119,14 @@ inline void DataSet3D::setFdistributions(SPtr<DistributionArray3D> distributions
 inline SPtr<DistributionArray3D> DataSet3D::getHdistributions() const { return hdistributions; }
 
 inline void DataSet3D::setHdistributions(SPtr<DistributionArray3D> distributions) { hdistributions = distributions; }
+
+inline SPtr<DistributionArray3D> DataSet3D::getH1distributions() const { return h1distributions; }
+
+inline void DataSet3D::setH1distributions(SPtr<DistributionArray3D> distributions) { h1distributions = distributions; }
+
+inline SPtr<DistributionArray3D> DataSet3D::getH2distributions() const { return h2distributions; }
+
+inline void DataSet3D::setH2distributions(SPtr<DistributionArray3D> distributions) { h2distributions = distributions; }
 
 inline SPtr<AverageValuesArray3D> DataSet3D::getAverageValues() const { return averageValues; }
 
@@ -141,5 +162,9 @@ inline void DataSet3D::setRelaxationFactor(SPtr<RelaxationFactorArray3D> values)
 inline SPtr<PhaseFieldArray3D> DataSet3D::getPhaseField() const { return phaseField; }
 
 inline void DataSet3D::setPhaseField(SPtr<PhaseFieldArray3D> values) { phaseField = values; }
+
+inline SPtr<PhaseFieldArray3D> DataSet3D::getPhaseField2() const { return phaseField2; }
+
+inline void DataSet3D::setPhaseField2(SPtr<PhaseFieldArray3D> values) { phaseField2 = values; }
 
 #endif

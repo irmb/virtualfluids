@@ -1,14 +1,15 @@
-#ifndef D3Q27ETFULLVECTORCONNECTOR_H
-#define D3Q27ETFULLVECTORCONNECTOR_H
+#ifndef OneDistributionFullVectorConnector_H
+#define OneDistributionFullVectorConnector_H
 
 #include <vector>
 
 #include "Block3D.h"
 #include "D3Q27System.h"
 #include "EsoTwist3D.h"
-#include "EsoTwistD3Q27System.h"
+//#include "EsoTwistD3Q27System.h"
 #include "LBMKernel.h"
-#include "RemoteBlock3DConnector.h"
+#include "FullVectorConnector.h"
+#include "D3Q27EsoTwist3DSplittedVector.h"
 #include "basics/container/CbArray3D.h"
 #include "basics/container/CbArray4D.h"
 
@@ -16,35 +17,35 @@
 // der vector wird via transmitter uebertragen
 // transmitter kann ein lokal, MPI, RCG, CTL oder was auch immer fuer ein
 // transmitter sein, der von Transmitter abgeleitet ist ;-)
-class D3Q27ETFullVectorConnector : public RemoteBlock3DConnector
+class OneDistributionFullVectorConnector : public FullVectorConnector
 {
 public:
-    D3Q27ETFullVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
+    OneDistributionFullVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
                                int sendDir);
 
     void init() override;
 
-    void fillSendVectors() override;
-    void distributeReceiveVectors() override;
-
 protected:
+    inline void updatePointers();
     inline void fillData(vector_type &sdata, int &index, int x1, int x2, int x3);
     inline void distributeData(vector_type &rdata, int &index, int x1, int x2, int x3);
 
 private:
-    int maxX1;
-    int maxX2;
-    int maxX3;
-
     CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
     CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
     CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions;
 
     SPtr<EsoTwist3D> fDis;
 };
-
 //////////////////////////////////////////////////////////////////////////
-inline void D3Q27ETFullVectorConnector::fillData(vector_type &sdata, int &index, int x1, int x2, int x3)
+inline void OneDistributionFullVectorConnector::updatePointers()
+{
+    localDistributions    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getLocalDistributions();
+    nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getNonLocalDistributions();
+    zeroDistributions     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getZeroDistributions();
+}
+//////////////////////////////////////////////////////////////////////////
+inline void OneDistributionFullVectorConnector::fillData(vector_type &sdata, int &index, int x1, int x2, int x3)
 {
     sdata[index++] = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
     sdata[index++] = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
@@ -77,7 +78,7 @@ inline void D3Q27ETFullVectorConnector::fillData(vector_type &sdata, int &index,
     sdata[index++] = (*this->zeroDistributions)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-inline void D3Q27ETFullVectorConnector::distributeData(vector_type &rdata, int &index, int x1, int x2, int x3)
+inline void OneDistributionFullVectorConnector::distributeData(vector_type &rdata, int &index, int x1, int x2, int x3)
 {
     (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3)           = rdata[index++];
     (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3)           = rdata[index++];
@@ -110,4 +111,4 @@ inline void D3Q27ETFullVectorConnector::distributeData(vector_type &rdata, int &
     (*this->zeroDistributions)(x1, x2, x3) = rdata[index++];
 }
 
-#endif // D3Q27VECTORCONNECTOR_H
+#endif // OneDistributionFullVectorConnector_H

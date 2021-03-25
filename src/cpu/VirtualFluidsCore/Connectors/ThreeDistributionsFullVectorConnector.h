@@ -26,13 +26,13 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TwoDistributionsFullVectorConnector.h
+//! \file ThreeDistributionsFullVectorConnector.h
 //! \ingroup Connectors
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef TwoDistributionsFullVectorConnector_H
-#define TwoDistributionsFullVectorConnector_H
+#ifndef ThreeDistributionsFullVectorConnector_H
+#define ThreeDistributionsFullVectorConnector_H
 
 #include <vector>
 
@@ -49,10 +49,10 @@ class Block3D;
 //der vector wird via transmitter uebertragen
 //transmitter kann ein lokal, MPI, RCG, CTL oder was auch immer fuer ein
 //transmitter sein, der von Transmitter abgeleitet ist ;-)
-class TwoDistributionsFullVectorConnector : public FullVectorConnector
+class ThreeDistributionsFullVectorConnector : public FullVectorConnector
 {
 public:
-   TwoDistributionsFullVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir);
+   ThreeDistributionsFullVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir);
 
    void init();
 
@@ -72,12 +72,17 @@ private:
    CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalHdistributions;
    CbArray3D <LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroHdistributions;
 
-
    SPtr<EsoTwist3D>  hDis;
+
+   CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localH2distributions;
+   CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalH2distributions;
+   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroH2distributions;
+
+   SPtr<EsoTwist3D> h2Dis;
 
 };
 //////////////////////////////////////////////////////////////////////////
-inline void TwoDistributionsFullVectorConnector::updatePointers()
+inline void ThreeDistributionsFullVectorConnector::updatePointers()
 {
     localDistributions    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getLocalDistributions();
     nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getNonLocalDistributions();
@@ -86,9 +91,13 @@ inline void TwoDistributionsFullVectorConnector::updatePointers()
     localHdistributions    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hDis)->getLocalDistributions();
     nonLocalHdistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hDis)->getNonLocalDistributions();
     zeroHdistributions     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hDis)->getZeroDistributions();
+
+    localH2distributions    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->h2Dis)->getLocalDistributions();
+    nonLocalH2distributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->h2Dis)->getNonLocalDistributions();
+    zeroH2distributions     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->h2Dis)->getZeroDistributions();
 }
 //////////////////////////////////////////////////////////////////////////
-inline void TwoDistributionsFullVectorConnector::fillData(vector_type& sdata, int& index, int x1, int x2, int x3)
+inline void ThreeDistributionsFullVectorConnector::fillData(vector_type& sdata, int& index, int x1, int x2, int x3)
 {
    sdata[index++] = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
    sdata[index++] = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
@@ -151,9 +160,38 @@ inline void TwoDistributionsFullVectorConnector::fillData(vector_type& sdata, in
 
    sdata[index++] = (*this->zeroHdistributions)(x1, x2, x3);
 
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_E, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_N, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_T, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_NE, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_NW, x1 + 1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TE, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TW, x1 + 1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TN, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TS, x1, x2 + 1, x3);
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TNE, x1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TNW, x1 + 1, x2, x3);
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TSE, x1, x2 + 1, x3);
+   sdata[index++] = (*this->localH2distributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3);
+
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_W, x1 + 1, x2, x3);
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_S, x1, x2 + 1, x3);
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_B, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_SW, x1 + 1, x2 + 1, x3);
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_SE, x1, x2 + 1, x3);
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BW, x1 + 1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BE, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BS, x1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BN, x1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BSW, x1 + 1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BSE, x1, x2 + 1, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BNW, x1 + 1, x2, x3 + 1);
+   sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1);
+
+   sdata[index++] = (*this->zeroH2distributions)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-inline void TwoDistributionsFullVectorConnector::distributeData(vector_type& rdata, int& index, int x1, int x2, int x3)
+inline void ThreeDistributionsFullVectorConnector::distributeData(vector_type& rdata, int& index, int x1, int x2, int x3)
 {
    (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3) = rdata[index++];
    (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3) = rdata[index++];
@@ -215,6 +253,36 @@ inline void TwoDistributionsFullVectorConnector::distributeData(vector_type& rda
    (*this->nonLocalHdistributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1) = rdata[index++];
 
    (*this->zeroHdistributions)(x1, x2, x3) = rdata[index++];
+
+   (*this->localH2distributions)(D3Q27System::ET_E, x1, x2, x3)           = rdata[index++];
+   (*this->localH2distributions)(D3Q27System::ET_N, x1, x2, x3)           = rdata[index++];
+   (*this->localH2distributions)(D3Q27System::ET_T, x1, x2, x3)           = rdata[index++];
+   (*this->localH2distributions)(D3Q27System::ET_NE, x1, x2, x3)          = rdata[index++];
+   (*this->localH2distributions)(D3Q27System::ET_NW, x1 + 1, x2, x3)      = rdata[index++];
+   (*this->localH2distributions)(D3Q27System::ET_TE, x1, x2, x3)          = rdata[index++];
+   (*this->localH2distributions)(D3Q27System::ET_TW, x1 + 1, x2, x3)      = rdata[index++];
+   (*this->localH2distributions)(D3Q27System::ET_TN, x1, x2, x3)          = rdata[index++];
+   (*this->localH2distributions)(D3Q27System::ET_TS, x1, x2 + 1, x3)      = rdata[index++];
+   (*this->localH2distributions)(D3Q27System::ET_TNE, x1, x2, x3)         = rdata[index++];
+   (*this->localH2distributions)(D3Q27System::ET_TNW, x1 + 1, x2, x3)     = rdata[index++];
+   (*this->localH2distributions)(D3Q27System::ET_TSE, x1, x2 + 1, x3)     = rdata[index++];
+   (*this->localH2distributions)(D3Q27System::ET_TSW, x1 + 1, x2 + 1, x3) = rdata[index++];
+
+   (*this->nonLocalH2distributions)(D3Q27System::ET_W, x1 + 1, x2, x3)           = rdata[index++];
+   (*this->nonLocalH2distributions)(D3Q27System::ET_S, x1, x2 + 1, x3)           = rdata[index++];
+   (*this->nonLocalH2distributions)(D3Q27System::ET_B, x1, x2, x3 + 1)           = rdata[index++];
+   (*this->nonLocalH2distributions)(D3Q27System::ET_SW, x1 + 1, x2 + 1, x3)      = rdata[index++];
+   (*this->nonLocalH2distributions)(D3Q27System::ET_SE, x1, x2 + 1, x3)          = rdata[index++];
+   (*this->nonLocalH2distributions)(D3Q27System::ET_BW, x1 + 1, x2, x3 + 1)      = rdata[index++];
+   (*this->nonLocalH2distributions)(D3Q27System::ET_BE, x1, x2, x3 + 1)          = rdata[index++];
+   (*this->nonLocalH2distributions)(D3Q27System::ET_BS, x1, x2 + 1, x3 + 1)      = rdata[index++];
+   (*this->nonLocalH2distributions)(D3Q27System::ET_BN, x1, x2, x3 + 1)          = rdata[index++];
+   (*this->nonLocalH2distributions)(D3Q27System::ET_BSW, x1 + 1, x2 + 1, x3 + 1) = rdata[index++];
+   (*this->nonLocalH2distributions)(D3Q27System::ET_BSE, x1, x2 + 1, x3 + 1)     = rdata[index++];
+   (*this->nonLocalH2distributions)(D3Q27System::ET_BNW, x1 + 1, x2, x3 + 1)     = rdata[index++];
+   (*this->nonLocalH2distributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1)         = rdata[index++];
+
+   (*this->zeroH2distributions)(x1, x2, x3) = rdata[index++];
 }
 
 

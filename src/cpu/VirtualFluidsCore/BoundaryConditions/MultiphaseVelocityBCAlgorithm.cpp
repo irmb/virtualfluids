@@ -61,16 +61,24 @@ void MultiphaseVelocityBCAlgorithm::addDistributionsH(SPtr<DistributionArray3D> 
 	this->distributionsH = distributionsH;
 }
 //////////////////////////////////////////////////////////////////////////
+void MultiphaseVelocityBCAlgorithm::addDistributionsH2(SPtr<DistributionArray3D> distributionsH)
+{
+    this->distributionsH2 = distributionsH;
+}
+//////////////////////////////////////////////////////////////////////////
 void MultiphaseVelocityBCAlgorithm::applyBC()
 {
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal h[D3Q27System::ENDF+1];
+   LBMReal h2[D3Q27System::ENDF + 1];
    LBMReal feq[D3Q27System::ENDF+1];
    LBMReal heq[D3Q27System::ENDF+1];
    LBMReal htemp[D3Q27System::ENDF+1];
    
    distributions->getDistributionInv(f, x1, x2, x3);
    distributionsH->getDistributionInv(h, x1, x2, x3);
+   if (distributionsH2)
+       distributionsH2->getDistributionInv(h2, x1, x2, x3);
    LBMReal phi, vx1, vx2, vx3, p1, phiBC;
    
    D3Q27System::calcDensity(h, phi);
@@ -106,6 +114,8 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
            //17.03.2021 Let us just set the plain eq
            LBMReal hReturn = htemp[fdir];
 		   distributionsH->setDistributionForDirection(hReturn, nx1, nx2, nx3, fdir);
+           if (distributionsH2)
+               distributionsH2->setDistributionForDirection(hReturn, nx1, nx2, nx3, fdir);
 	   }
    }
    

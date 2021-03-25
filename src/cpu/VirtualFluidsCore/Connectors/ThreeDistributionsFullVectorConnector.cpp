@@ -26,19 +26,19 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TwoDistributionsFullVectorConnector.cpp
+//! \file ThreeDistributionsFullVectorConnector.cpp
 //! \ingroup Connectors
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#include "TwoDistributionsFullVectorConnector.h"
+#include "ThreeDistributionsFullVectorConnector.h"
 #include "Block3D.h"
 #include "LBMKernel.h"
 #include "EsoTwist3D.h"
 #include "DataSet3D.h"
 
 //////////////////////////////////////////////////////////////////////////
-TwoDistributionsFullVectorConnector::TwoDistributionsFullVectorConnector(SPtr<Block3D> block,
+ThreeDistributionsFullVectorConnector::ThreeDistributionsFullVectorConnector(SPtr<Block3D> block,
                                                                          VectorTransmitterPtr sender,
                                                                          VectorTransmitterPtr receiver, int sendDir)
     : FullVectorConnector(block, sender, receiver, sendDir)
@@ -48,12 +48,13 @@ TwoDistributionsFullVectorConnector::TwoDistributionsFullVectorConnector(SPtr<Bl
 
 }
 //////////////////////////////////////////////////////////////////////////
-void TwoDistributionsFullVectorConnector::init()
+void ThreeDistributionsFullVectorConnector::init()
 {
    fDis = dynamicPointerCast<EsoTwist3D>(block.lock()->getKernel()->getDataSet()->getFdistributions());
    hDis = dynamicPointerCast<EsoTwist3D>(block.lock()->getKernel()->getDataSet()->getHdistributions());
+   h2Dis = dynamicPointerCast<EsoTwist3D>(block.lock()->getKernel()->getDataSet()->getH2distributions());
 
-   int anz = 2*27;
+   int anz = 3*27;
    switch (sendDir)
    {
    case D3Q27System::REST: UB_THROW(UbException(UB_EXARGS, "ZERO not allowed")); break;

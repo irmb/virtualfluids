@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file RemoteBlock3DConnector.h
+//! \ingroup Connectors
+//! \author Konstantin Kutscher
+//=======================================================================================
 #ifndef RemoteBlock3DConnector_H
 #define RemoteBlock3DConnector_H
 
@@ -10,10 +42,8 @@
 #include "LBMKernel.h"
 #include "TransmitterType.h"
 
-// daten werden in einen vector (dieser befindet sich im transmitter) kopiert
-// der vector wird via transmitter uebertragen
-// transmitter kann ein lokal, MPI, RCG, CTL oder was auch immer fuer ein
-// transmitter sein, der von Transmitter abgeleitet ist ;-)
+//! \brief The same level connector between two distributed blocks.
+//! \details Data are copied into a vector (this is located in the transmitter) the vector is transmitted via transmitter.
 class RemoteBlock3DConnector : public Block3DConnector
 {
 public:
