@@ -39,7 +39,6 @@
 #include "Block3D.h"
 #include "BCArray3D.h"
 
-#include <lbm/Chimera.h>
 
 #define PROOF_CORRECTNESS
 
@@ -258,39 +257,39 @@ void CumulantK17LBMKernel::calculate(int step)
                     //!
                     ////////////////////////////////////////////////////////////////////////////////////
                     // Z - Dir
-                    VF::LBM::forwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36, c1o36);
-                    VF::LBM::forwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, c9, c1o9);
-                    VF::LBM::forwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36, c1o36);
-                    VF::LBM::forwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, c9, c1o9);
-                    VF::LBM::forwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2, c9o4, c4o9);
-                    VF::LBM::forwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, c9, c1o9);
-                    VF::LBM::forwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36, c1o36);
-                    VF::LBM::forwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, c9, c1o9);
-                    VF::LBM::forwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36, c1o36);
+                    forwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36, c1o36);
+                    forwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, c9, c1o9);
+                    forwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36, c1o36);
+                    forwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, c9, c1o9);
+                    forwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2, c9o4, c4o9);
+                    forwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, c9, c1o9);
+                    forwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36, c1o36);
+                    forwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, c9, c1o9);
+                    forwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36, c1o36);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     // Y - Dir
-                    VF::LBM::forwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, c6, c1o6);
-                    VF::LBM::forwardChimera(mfaab, mfabb, mfacb, vvy, vy2);
-                    VF::LBM::forwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18, c1o18);
-                    VF::LBM::forwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2, c3o2, c2o3);
-                    VF::LBM::forwardChimera(mfbab, mfbbb, mfbcb, vvy, vy2);
-                    VF::LBM::forwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2, c9o2, c2o9);
-                    VF::LBM::forwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, c6, c1o6);
-                    VF::LBM::forwardChimera(mfcab, mfcbb, mfccb, vvy, vy2);
-                    VF::LBM::forwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18, c1o18);
+                    forwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, c6, c1o6);
+                    forwardChimera(mfaab, mfabb, mfacb, vvy, vy2);
+                    forwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18, c1o18);
+                    forwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2, c3o2, c2o3);
+                    forwardChimera(mfbab, mfbbb, mfbcb, vvy, vy2);
+                    forwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2, c9o2, c2o9);
+                    forwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, c6, c1o6);
+                    forwardChimera(mfcab, mfcbb, mfccb, vvy, vy2);
+                    forwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18, c1o18);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     // X - Dir
-                    VF::LBM::forwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1, c1);
-                    VF::LBM::forwardChimera(mfaba, mfbba, mfcba, vvx, vx2);
-                    VF::LBM::forwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3, c1o3);
-                    VF::LBM::forwardChimera(mfaab, mfbab, mfcab, vvx, vx2);
-                    VF::LBM::forwardChimera(mfabb, mfbbb, mfcbb, vvx, vx2);
-                    VF::LBM::forwardChimera(mfacb, mfbcb, mfccb, vvx, vx2);
-                    VF::LBM::forwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3, c1o3);
-                    VF::LBM::forwardChimera(mfabc, mfbbc, mfcbc, vvx, vx2);
-                    VF::LBM::forwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c9, c1o9);
+                    forwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1, c1);
+                    forwardChimera(mfaba, mfbba, mfcba, vvx, vx2);
+                    forwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3, c1o3);
+                    forwardChimera(mfaab, mfbab, mfcab, vvx, vx2);
+                    forwardChimera(mfabb, mfbbb, mfcbb, vvx, vx2);
+                    forwardChimera(mfacb, mfbcb, mfccb, vvx, vx2);
+                    forwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3, c1o3);
+                    forwardChimera(mfabc, mfbbc, mfcbc, vvx, vx2);
+                    forwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c9, c1o9);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     //! - Setting relaxation rates for non-hydrodynamic cumulants (default values). Variable names and equations according to
@@ -538,39 +537,39 @@ void CumulantK17LBMKernel::calculate(int step)
                     //!
                     ////////////////////////////////////////////////////////////////////////////////////
                     // X - Dir
-                    VF::LBM::backwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1, c1);
-                    VF::LBM::backwardChimera(mfaba, mfbba, mfcba, vvx, vx2);
-                    VF::LBM::backwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3, c1o3);
-                    VF::LBM::backwardChimera(mfaab, mfbab, mfcab, vvx, vx2);
-                    VF::LBM::backwardChimera(mfabb, mfbbb, mfcbb, vvx, vx2);
-                    VF::LBM::backwardChimera(mfacb, mfbcb, mfccb, vvx, vx2);
-                    VF::LBM::backwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3, c1o3);
-                    VF::LBM::backwardChimera(mfabc, mfbbc, mfcbc, vvx, vx2);
-                    VF::LBM::backwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c9, c1o9);
+                    backwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1, c1);
+                    backwardChimera(mfaba, mfbba, mfcba, vvx, vx2);
+                    backwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3, c1o3);
+                    backwardChimera(mfaab, mfbab, mfcab, vvx, vx2);
+                    backwardChimera(mfabb, mfbbb, mfcbb, vvx, vx2);
+                    backwardChimera(mfacb, mfbcb, mfccb, vvx, vx2);
+                    backwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3, c1o3);
+                    backwardChimera(mfabc, mfbbc, mfcbc, vvx, vx2);
+                    backwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c9, c1o9);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     // Y - Dir
-                    VF::LBM::backwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, c6, c1o6);
-                    VF::LBM::backwardChimera(mfaab, mfabb, mfacb, vvy, vy2);
-                    VF::LBM::backwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18, c1o18);
-                    VF::LBM::backwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2, c3o2, c2o3);
-                    VF::LBM::backwardChimera(mfbab, mfbbb, mfbcb, vvy, vy2);
-                    VF::LBM::backwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2, c9o2, c2o9);
-                    VF::LBM::backwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, c6, c1o6);
-                    VF::LBM::backwardChimera(mfcab, mfcbb, mfccb, vvy, vy2);
-                    VF::LBM::backwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18, c1o18);
+                    backwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2, c6, c1o6);
+                    backwardChimera(mfaab, mfabb, mfacb, vvy, vy2);
+                    backwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18, c1o18);
+                    backwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2, c3o2, c2o3);
+                    backwardChimera(mfbab, mfbbb, mfbcb, vvy, vy2);
+                    backwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2, c9o2, c2o9);
+                    backwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2, c6, c1o6);
+                    backwardChimera(mfcab, mfcbb, mfccb, vvy, vy2);
+                    backwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18, c1o18);
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     // Z - Dir
-                    VF::LBM::backwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36, c1o36);
-                    VF::LBM::backwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, c9, c1o9);
-                    VF::LBM::backwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36, c1o36);
-                    VF::LBM::backwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, c9, c1o9);
-                    VF::LBM::backwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2, c9o4, c4o9);
-                    VF::LBM::backwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, c9, c1o9);
-                    VF::LBM::backwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36, c1o36);
-                    VF::LBM::backwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, c9, c1o9);
-                    VF::LBM::backwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36, c1o36);
+                    backwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36, c1o36);
+                    backwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2, c9, c1o9);
+                    backwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36, c1o36);
+                    backwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2, c9, c1o9);
+                    backwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2, c9o4, c4o9);
+                    backwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2, c9, c1o9);
+                    backwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36, c1o36);
+                    backwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2, c9, c1o9);
+                    backwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36, c1o36);
                     ////////////////////////////////////////////////////////////////////////////////////
 
                     //////////////////////////////////////////////////////////////////////////
