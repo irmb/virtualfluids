@@ -1,4 +1,8 @@
 #include "Simulation.h"
+
+#include <stdio.h>
+#include <vector>
+
 #include "LBM/LB.h"
 #include "Communication/Communicator.h"
 #include "Communication/ExchangeData27.h"
@@ -40,17 +44,6 @@
 #include "Calculation/ForceCalculations.h"
 #include "Calculation/PorousMedia.h"
 //////////////////////////////////////////////////////////////////////////
-//CUDA
-#include <cuda_runtime.h>
-#include <helper_functions.h>
-#include <helper_cuda.h>
-////random numbers
-//#include <curand.h>
-//#include <curand_kernel.h>
-//////////////////////////////////////////////////////////////////////////
-#include <boost/foreach.hpp>
-#include <stdio.h>
-#include <vector>
 #include "Restart/RestartPostprocessor.h"
 //////////////////////////////////////////////////////////////////////////
 #include "DataStructureInitializer/GridProvider.h"
@@ -58,17 +51,6 @@
 #include "Kernel/Utilities/KernelFactory/KernelFactory.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
 #include "Kernel/Kernel.h"
-
-Simulation::Simulation()
-{
-
-}
-
-Simulation::~Simulation()
-{
-
-}
-
 
 void Simulation::setFactories(std::shared_ptr<KernelFactory> kernelFactory, std::shared_ptr<PreProcessorFactory> preProcessorFactory)
 {
