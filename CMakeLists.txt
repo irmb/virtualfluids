@@ -77,7 +77,7 @@ IF( BUILD_VF_DOUBLE_ACCURACY )
 ENDIF()
 
 if(BUILD_VF_GPU)
-	include(CheckLanguage)
+    include(CheckLanguage)
     check_language(CUDA)
 
     if(NOT CMAKE_CUDA_COMPILER)
