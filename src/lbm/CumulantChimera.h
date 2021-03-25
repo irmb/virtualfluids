@@ -8,6 +8,7 @@
 #define __device__
 #endif
 
+#include <cmath>
 
 #include <basics/Core/DataTypes.h>
 #include <basics/Core/RealConstants.h>
@@ -30,6 +31,19 @@ struct Distribution27
         return getDensity(f);
     }
 };
+
+
+
+
+inline __host__ __device__ real abs_internal(real value)
+{
+#ifdef __CUDA_ARCH__
+    return ::abs(value);
+#else
+    return std::abs(value);
+#endif
+}
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -275,19 +289,19 @@ inline __host__ __device__ void cumulantChimera(Distribution27& distribution, re
     //! - Relaxation of third order cumulants including limiter according to Eq. (116)-(123)
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05  040 ]</b></a>
     //!
-    wadjust   = Oxyz + (c1o1 - Oxyz)*abs(mfbbb) / (abs(mfbbb) + qudricLimitD);
+    wadjust   = Oxyz + (c1o1 - Oxyz)*abs_internal(mfbbb) / (abs_internal(mfbbb) + qudricLimitD);
     mfbbb    += wadjust * (-mfbbb);
-    wadjust   = OxyyPxzz + (c1o1 - OxyyPxzz)*abs(mxxyPyzz) / (abs(mxxyPyzz) + qudricLimitP);
+    wadjust   = OxyyPxzz + (c1o1 - OxyyPxzz)*abs_internal(mxxyPyzz) / (abs_internal(mxxyPyzz) + qudricLimitP);
     mxxyPyzz += wadjust * (-mxxyPyzz);
-    wadjust   = OxyyMxzz + (c1o1 - OxyyMxzz)*abs(mxxyMyzz) / (abs(mxxyMyzz) + qudricLimitM);
+    wadjust   = OxyyMxzz + (c1o1 - OxyyMxzz)*abs_internal(mxxyMyzz) / (abs_internal(mxxyMyzz) + qudricLimitM);
     mxxyMyzz += wadjust * (-mxxyMyzz);
-    wadjust   = OxyyPxzz + (c1o1 - OxyyPxzz)*abs(mxxzPyyz) / (abs(mxxzPyyz) + qudricLimitP);
+    wadjust   = OxyyPxzz + (c1o1 - OxyyPxzz)*abs_internal(mxxzPyyz) / (abs_internal(mxxzPyyz) + qudricLimitP);
     mxxzPyyz += wadjust * (-mxxzPyyz);
-    wadjust   = OxyyMxzz + (c1o1 - OxyyMxzz)*abs(mxxzMyyz) / (abs(mxxzMyyz) + qudricLimitM);
+    wadjust   = OxyyMxzz + (c1o1 - OxyyMxzz)*abs_internal(mxxzMyyz) / (abs_internal(mxxzMyyz) + qudricLimitM);
     mxxzMyyz += wadjust * (-mxxzMyyz);
-    wadjust   = OxyyPxzz + (c1o1 - OxyyPxzz)*abs(mxyyPxzz) / (abs(mxyyPxzz) + qudricLimitP);
+    wadjust   = OxyyPxzz + (c1o1 - OxyyPxzz)*abs_internal(mxyyPxzz) / (abs_internal(mxyyPxzz) + qudricLimitP);
     mxyyPxzz += wadjust * (-mxyyPxzz);
-    wadjust   = OxyyMxzz + (c1o1 - OxyyMxzz)*abs(mxyyMxzz) / (abs(mxyyMxzz) + qudricLimitM);
+    wadjust   = OxyyMxzz + (c1o1 - OxyyMxzz)*abs_internal(mxyyMxzz) / (abs_internal(mxyyMxzz) + qudricLimitM);
     mxyyMxzz += wadjust * (-mxyyMxzz);
     //////////////////////////////////////////////////////////////////////////
     // no limiter
