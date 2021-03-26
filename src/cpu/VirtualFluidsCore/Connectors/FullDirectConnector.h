@@ -44,7 +44,7 @@ class FullDirectConnector : public LocalBlock3DConnector
 {
 public:
     FullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
-    virtual void init();
+    virtual void init() override;
     void sendVectors() override;
 
 protected:
