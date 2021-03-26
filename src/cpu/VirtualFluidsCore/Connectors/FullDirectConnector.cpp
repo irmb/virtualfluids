@@ -26,46 +26,39 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file D3Q27ETFullDirectConnector.cpp
+//! \file FullDirectConnector.cpp
 //! \ingroup Connectors
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#include "D3Q27ETFullDirectConnector.h"
+#include "FullDirectConnector.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "DataSet3D.h"
 #include "LBMKernel.h"
 
 using namespace std;
 
-D3Q27ETFullDirectConnector::D3Q27ETFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir)
+FullDirectConnector::FullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir)
     : LocalBlock3DConnector(from, to, sendDir)
 
 {
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27ETFullDirectConnector::init()
-{
+void FullDirectConnector::init()
+{ 
     maxX1 = (int)this->from.lock()->getKernel()->getDataSet()->getFdistributions()->getNX1() - 1;
     maxX2 = (int)this->from.lock()->getKernel()->getDataSet()->getFdistributions()->getNX2() - 1;
     maxX3 = (int)this->from.lock()->getKernel()->getDataSet()->getFdistributions()->getNX3() - 1;
-
-    fFrom = dynamic_pointer_cast<EsoTwist3D>(from.lock()->getKernel()->getDataSet()->getFdistributions());
-    fTo   = dynamic_pointer_cast<EsoTwist3D>(to.lock()->getKernel()->getDataSet()->getFdistributions());
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27ETFullDirectConnector::sendVectors()
+void FullDirectConnector::sendVectors()
 {
-    localDistributionsFrom = dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(this->fFrom)->getLocalDistributions();
-    nonLocalDistributionsFrom =
-        dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(this->fFrom)->getNonLocalDistributions();
-    zeroDistributionsFrom = dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(this->fFrom)->getZeroDistributions();
-
-    localDistributionsTo = dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(this->fTo)->getLocalDistributions();
-    nonLocalDistributionsTo =
-        dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(this->fTo)->getNonLocalDistributions();
-    zeroDistributionsTo = dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(this->fTo)->getZeroDistributions();
-
+    updatePointers();
+    exchangeData();
+}
+//////////////////////////////////////////////////////////////////////////
+void FullDirectConnector::exchangeData()
+{
     // EAST
     if (sendDir == D3Q27System::E) {
         for (int x3 = 1; x3 < maxX3; x3++) {

@@ -61,16 +61,24 @@ void MultiphaseVelocityBCAlgorithm::addDistributionsH(SPtr<DistributionArray3D> 
 	this->distributionsH = distributionsH;
 }
 //////////////////////////////////////////////////////////////////////////
+void MultiphaseVelocityBCAlgorithm::addDistributionsH2(SPtr<DistributionArray3D> distributionsH)
+{
+    this->distributionsH2 = distributionsH;
+}
+//////////////////////////////////////////////////////////////////////////
 void MultiphaseVelocityBCAlgorithm::applyBC()
 {
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal h[D3Q27System::ENDF+1];
+   LBMReal h2[D3Q27System::ENDF + 1];
    LBMReal feq[D3Q27System::ENDF+1];
    LBMReal heq[D3Q27System::ENDF+1];
    LBMReal htemp[D3Q27System::ENDF+1];
    
    distributions->getDistributionInv(f, x1, x2, x3);
    distributionsH->getDistributionInv(h, x1, x2, x3);
+   if (distributionsH2)
+       distributionsH2->getDistributionInv(h2, x1, x2, x3);
    LBMReal phi, vx1, vx2, vx3, p1, phiBC;
    
    D3Q27System::calcDensity(h, phi);
@@ -96,14 +104,18 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
    
    phiBC = bcPtr->getBoundaryPhaseField();
    
-   D3Q27System::calcMultiphaseHeq(htemp, phiBC, vx1, vx2, vx3);
-
+   //D3Q27System::calcMultiphaseHeq(htemp, phiBC, vx1, vx2, vx3);
+   D3Q27System::calcMultiphaseHeq(htemp, phiBC, 0.0, 0.0, 0.0);//16.03.2021 dirty hack!
    for (int fdir = D3Q27System::STARTF; fdir<=D3Q27System::ENDF; fdir++)
    {
 	   if (bcPtr->hasVelocityBoundaryFlag(fdir))
 	   {
-		   LBMReal hReturn = htemp[fdir]+h[fdir]-heq[fdir];
+		  // LBMReal hReturn = htemp[fdir]+h[fdir]-heq[fdir];
+           //17.03.2021 Let us just set the plain eq
+           LBMReal hReturn = htemp[fdir];
 		   distributionsH->setDistributionForDirection(hReturn, nx1, nx2, nx3, fdir);
+           if (distributionsH2)
+               distributionsH2->setDistributionForDirection(hReturn, nx1, nx2, nx3, fdir);
 	   }
    }
    
@@ -112,9 +124,11 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
       if (bcPtr->hasVelocityBoundaryFlag(fdir))
       {
          const int invDir = D3Q27System::INVDIR[fdir];
-         LBMReal q = bcPtr->getQ(invDir);// m+m q=0 stabiler
+         //LBMReal q = bcPtr->getQ(invDir);// m+m q=0 stabiler
          LBMReal velocity = bcPtr->getBoundaryVelocity(invDir);
-		 LBMReal fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity)/(1.0+q));
+		 //16.03.2021 quick fix for velocity BC
+         LBMReal fReturn = f[invDir] - velocity;
+         //LBMReal fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity)/(1.0+q));
          distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
       }
    }

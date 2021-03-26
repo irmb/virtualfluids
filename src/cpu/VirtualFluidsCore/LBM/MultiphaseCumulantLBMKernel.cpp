@@ -1285,6 +1285,8 @@ void MultiphaseCumulantLBMKernel::findNeighbors(CbArray3D<LBMReal, IndexerX3X2X1
         if (!bcArray->isSolid(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k])) {
             phi[k] = (*ph)(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k]);
         } else {
+
+            phi[k] = 0.;//16.03.2021 quick fix for uninitialized variables, might influence contact angle!
          }
     }
 }

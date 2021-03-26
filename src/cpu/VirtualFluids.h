@@ -143,10 +143,10 @@
 //#include <Connectors/CoarseToFineBlock3DConnector.h>
 //#include <Connectors/CoarseToFineNodeSetBlock3DConnector.h>
 //#include <Connectors/ConnectorFactory.h>
-#include <Connectors/D3Q27ETCFOffVectorConnector.h>
-#include <Connectors/D3Q27ETFCOffVectorConnector.h>
-#include <Connectors/D3Q27ETFullDirectConnector.h>
-#include <Connectors/D3Q27ETFullVectorConnector.h>
+#include <Connectors/CoarseToFineVectorConnector.h>
+#include <Connectors/FineToCoarseVectorConnector.h>
+#include <Connectors/OneDistributionFullDirectConnector.h>
+#include <Connectors/OneDistributionFullVectorConnector.h>
 //#include <Connectors/FineToCoarseBlock3DConnector.h>
 //#include <Connectors/FineToCoarseNodeSetBlock3DConnector.h>
 #include <Connectors/LocalBlock3DConnector.h>
@@ -205,6 +205,7 @@
 #include <CoProcessors/MicrophoneArrayCoProcessor.h>
 #include <WriteThixotropyQuantitiesCoProcessor.h>
 #include <WriteMultiphaseQuantitiesCoProcessor.h>
+#include <TimeDependentBCCoProcessor.h>
 
 #include <IntegrateValuesHelper.h>
 //#include <LBM/D3Q27CompactInterpolationProcessor.h>
@@ -231,6 +232,7 @@
 #include <LBM/ThixotropyLBMKernel.h>
 #include <LBM/ThixotropyExpLBMKernel.h>
 #include <LBM/CumulantLBMKernel.h>
+#include <LBM/CumulantK17LBMKernel.h>
 //#include <LBM/RheologyModelLBMKernel.h>
 //#include <LBM/RheologyModelLBMKernel2.h>
 #include <LBM/RheologyBinghamModelLBMKernel.h>
@@ -241,6 +243,7 @@
 #include <LBM/RheologyPowellEyringModelLBMKernel.h>
 #include <LBM/MultiphaseCumulantLBMKernel.h>
 #include <LBM/MultiphaseScratchCumulantLBMKernel.h>
+#include <LBM/MultiphaseTwoPhaseFieldsCumulantLBMKernel.h>
 
 
 

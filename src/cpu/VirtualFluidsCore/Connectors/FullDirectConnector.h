@@ -26,27 +26,39 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file MultiphaseVelocityBCAlgorithm.h
-//! \ingroup BoundarConditions
-//! \author Hesameddin Safari
+//! \file FullDirectConnector.h
+//! \ingroup Connectors
+//! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef MultiphaseVelocityBCAlgorithm_h__
-#define MultiphaseVelocityBCAlgorithm_h__
+#ifndef FullDirectConnector_H
+#define FullDirectConnector_H
 
-#include "BCAlgorithm.h"
-//! A class implements velocity boundary condition for multiphase simulations
-class MultiphaseVelocityBCAlgorithm : public BCAlgorithm
+#include "Block3D.h"
+#include "LocalBlock3DConnector.h"
+
+
+//! \brief   Exchange data between blocks.
+//! \details Connector send and receive full distributions between two blocks in shared memory.
+class FullDirectConnector : public LocalBlock3DConnector
 {
 public:
-   MultiphaseVelocityBCAlgorithm();
-   ~MultiphaseVelocityBCAlgorithm();
-   SPtr<BCAlgorithm> clone() override;
-   void addDistributions(SPtr<DistributionArray3D> distributions) override;
-   void addDistributionsH(SPtr<DistributionArray3D> distributionsH) override;
-   void addDistributionsH2(SPtr<DistributionArray3D> distributionsH2) override;
-   void applyBC() override;
+    FullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
+    virtual void init() override;
+    void sendVectors() override;
+
+protected:
+    virtual inline void updatePointers() = 0;
+    virtual void exchangeData();
+    virtual inline void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To) = 0;
+
+    int maxX1;
+    int maxX2;
+    int maxX3;
+
+private:
 };
 
-#endif // MultiphaseVelocityBCAlgorithm_h__
+//////////////////////////////////////////////////////////////////////////
 
+#endif
