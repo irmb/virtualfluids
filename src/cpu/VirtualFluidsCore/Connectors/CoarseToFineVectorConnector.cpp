@@ -26,27 +26,8 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file MultiphaseVelocityBCAlgorithm.h
-//! \ingroup BoundarConditions
-//! \author Hesameddin Safari
+//! \file CoarseToFineVectorConnector.cpp
+//! \ingroup Connectors
+//! \author Konstantin Kutscher
 //=======================================================================================
-
-#ifndef MultiphaseVelocityBCAlgorithm_h__
-#define MultiphaseVelocityBCAlgorithm_h__
-
-#include "BCAlgorithm.h"
-//! A class implements velocity boundary condition for multiphase simulations
-class MultiphaseVelocityBCAlgorithm : public BCAlgorithm
-{
-public:
-   MultiphaseVelocityBCAlgorithm();
-   ~MultiphaseVelocityBCAlgorithm();
-   SPtr<BCAlgorithm> clone() override;
-   void addDistributions(SPtr<DistributionArray3D> distributions) override;
-   void addDistributionsH(SPtr<DistributionArray3D> distributionsH) override;
-   void addDistributionsH2(SPtr<DistributionArray3D> distributionsH2) override;
-   void applyBC() override;
-};
-
-#endif // MultiphaseVelocityBCAlgorithm_h__
-
+#include "CoarseToFineVectorConnector.h"

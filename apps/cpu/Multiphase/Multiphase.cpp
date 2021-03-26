@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <memory>
 
 #include "VirtualFluids.h"
 
@@ -81,7 +82,9 @@ void run(string configname)
 
         SPtr<LBMKernel> kernel;
 
-        kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
@@ -115,12 +118,24 @@ void run(string configname)
         // fctF1.SetExpr("vy1*(1-((x1-x0)^2+(x3-z0)^2)/(R^2))");
         // fctF1.SetExpr("vy1*(1-(sqrt((x1-x0)^2+(x3-z0)^2)/R))^0.1");
         fctF1.SetExpr("vy1");
-        fctF1.DefineConst("vy1", -uLB);
+        fctF1.DefineConst("vy1", 0.0);
         fctF1.DefineConst("R", 8.0);
         fctF1.DefineConst("x0", 0.0);
         fctF1.DefineConst("z0", 0.0);
 
+        mu::Parser fctF2;
+        fctF2.SetExpr("vy1");
+        fctF2.DefineConst("vy1", -uLB);
+
+        double startTime = 5;
+        SPtr<BCAdapter> velBCAdapterF1(new MultiphaseVelocityBCAdapter(false, true, false, fctF1, phiH, 0.0, startTime));
+        SPtr<BCAdapter> velBCAdapterF2(new MultiphaseVelocityBCAdapter(false, true, false, fctF2, phiH, startTime, endTime));
+
+        SPtr<D3Q27Interactor> inflowF1Int;
+
         if (newStart) {
+
+      //  if (newStart) {
 
             // bounding box
             /*double g_minX1 = 0.0;
@@ -240,8 +255,9 @@ void run(string configname)
             // fct.DefineConst("U", uLB);
             // BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
 
-            SPtr<BCAdapter> velBCAdapterF1(
-                new MultiphaseVelocityBCAdapter(false, true, false, fctF1, phiH, 0.0, endTime));
+
+
+
 
             // BCAdapterPtr velBCAdapterF2_1_init(new MultiphaseVelocityBCAdapter(false, false, true, fctF2_1, phiH,
             // 0.0, endTime)); BCAdapterPtr velBCAdapterF2_2_init(new MultiphaseVelocityBCAdapter(false, false, true,
@@ -251,7 +267,8 @@ void run(string configname)
             // phiL, 0.0, endTime)); BCAdapterPtr velBCAdapterF2_2_init(new MultiphaseVelocityBCAdapter(false, false,
             // true, fctvel_F2_init, phiL, 0.0, endTime));
 
-            velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+            //velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+            velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
             // velBCAdapterF2_1_init->setBcAlgorithm(BCAlgorithmPtr(new MultiphaseVelocityBCAlgorithm()));
             // velBCAdapterF2_2_init->setBcAlgorithm(BCAlgorithmPtr(new MultiphaseVelocityBCAlgorithm()));
 
@@ -266,7 +283,7 @@ void run(string configname)
             // BC visitor
             MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
             bcVisitor.addBC(noSlipBCAdapter);
-            bcVisitor.addBC(denBCAdapter);
+           // bcVisitor.addBC(denBCAdapter); //Ohne das BB?
             bcVisitor.addBC(velBCAdapterF1);
             // bcVisitor.addBC(velBCAdapterF2_1_init);
             // bcVisitor.addBC(velBCAdapterF2_2_init);
@@ -276,11 +293,12 @@ void run(string configname)
 
             //ppblocks->process(0);
 
-            SPtr<Interactor3D> tubes(
-                new D3Q27TriFaceMeshInteractor(cylinder, grid, noSlipBCAdapter, Interactor3D::SOLID));
+            SPtr<Interactor3D> tubes(new D3Q27TriFaceMeshInteractor(cylinder, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
-            SPtr<D3Q27Interactor> inflowF1Int(
-                new D3Q27Interactor(geoInflowF1, grid, velBCAdapterF1, Interactor3D::SOLID));
+            inflowF1Int = SPtr<D3Q27Interactor> (new D3Q27Interactor(geoInflowF1, grid, velBCAdapterF1, Interactor3D::SOLID));
+            inflowF1Int->addBCAdapter(velBCAdapterF2);
+
+           // inflowF1Int->addBCAdapter(velBCAdapterFStart);
 
             // D3Q27InteractorPtr inflowF2_1Int_init = D3Q27InteractorPtr(new D3Q27Interactor(geoInflowF2_1, grid,
             // velBCAdapterF2_1_init, Interactor3D::SOLID));
@@ -417,7 +435,7 @@ void run(string configname)
             //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
             // ConnectorFactoryPtr factory(new Block3DConnectorFactory());
             // ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
-            TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+            ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
             grid->accept(setConnsVisitor);
 
             // domain decomposition for threads
@@ -472,15 +490,23 @@ void run(string configname)
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
-            grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm));
+            grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
         SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+
+        SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
+        auto timeDepBC = make_shared<TimeDependentBCCoProcessor>(TimeDependentBCCoProcessor(grid, timeBCSch));
+        timeDepBC->addInteractor(inflowF1Int);
 
         SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
         SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
         calculator->addCoProcessor(npr);
         calculator->addCoProcessor(pp);
+        calculator->addCoProcessor(timeDepBC);
+
+
+        
 
         if (myid == 0)
             UBLOG(logINFO, "Simulation-start");

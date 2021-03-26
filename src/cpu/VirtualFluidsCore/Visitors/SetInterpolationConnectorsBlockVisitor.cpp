@@ -32,8 +32,8 @@
 //=======================================================================================
 
 #include "SetInterpolationConnectorsBlockVisitor.h"
-#include "D3Q27ETCFOffVectorConnector.h"
-#include "D3Q27ETFCOffVectorConnector.h"
+#include "CoarseToFineVectorConnector.h"
+#include "FineToCoarseVectorConnector.h"
 #include "TwoDistributionsFullDirectConnector.h"
 #include "TwoDistributionsFullVectorConnector.h"
 #include "Grid3DSystem.h"
@@ -373,7 +373,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Blo
 
 	if(cBlockRank == gridRank)
 	{
-      SPtr<Block3DConnector> connector(new D3Q27ETCFOffVectorConnector< TbTransmitter< CbVector< LBMReal > > >(cBlock,
+      SPtr<Block3DConnector> connector(new CoarseToFineVectorConnector< TbTransmitter< CbVector< LBMReal > > >(cBlock,
 			senderCFevenEvenSW, receiverCFevenEvenSW, senderCFevenOddNW,  receiverCFevenOddNW, 
 			senderCFoddEvenSE,  receiverCFoddEvenSE,  senderCFoddOddNE,   receiverCFoddOddNE, 
 			dir, cIProcessor) );
@@ -381,25 +381,25 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Blo
 	}
 	if(fBlockSW && fBlockSWRank == gridRank)
 	{
-		SPtr<Block3DConnector> connector( new D3Q27ETFCOffVectorConnector< TbTransmitter< CbVector< LBMReal > > >(fBlockSW, 
+		SPtr<Block3DConnector> connector( new FineToCoarseVectorConnector< TbTransmitter< CbVector< LBMReal > > >(fBlockSW, 
 			senderFCevenEvenSW, receiverFCevenEvenSW, dir, fIProcessorSW, EvenEvenSW) );
 		fBlockSW->setConnector(connector);
 	}
 	if(fBlockNW && fBlockNWRank == gridRank)
 	{
-		SPtr<Block3DConnector> connector( new D3Q27ETFCOffVectorConnector< TbTransmitter< CbVector< LBMReal > > >(fBlockNW, 
+		SPtr<Block3DConnector> connector( new FineToCoarseVectorConnector< TbTransmitter< CbVector< LBMReal > > >(fBlockNW, 
 			senderFCevenOddNW, receiverFCevenOddNW, dir, fIProcessorNW, EvenOddNW) );
 		fBlockNW->setConnector(connector);
 	}
 	if(fBlockSE && fBlockSERank == gridRank)
 	{
-		SPtr<Block3DConnector> connector( new D3Q27ETFCOffVectorConnector< TbTransmitter< CbVector< LBMReal > > >(fBlockSE, 
+		SPtr<Block3DConnector> connector( new FineToCoarseVectorConnector< TbTransmitter< CbVector< LBMReal > > >(fBlockSE, 
 			senderFCoddEvenSE, receiverFCoddEvenSE, dir, fIProcessorSE, OddEvenSE) );
 		fBlockSE->setConnector(connector);
 	}
 	if(fBlockNE && fBlockNERank == gridRank)
 	{
-		SPtr<Block3DConnector> connector( new D3Q27ETFCOffVectorConnector< TbTransmitter< CbVector< LBMReal > > >(fBlockNE, 
+		SPtr<Block3DConnector> connector( new FineToCoarseVectorConnector< TbTransmitter< CbVector< LBMReal > > >(fBlockNE, 
 			senderFCoddOddNE, receiverFCoddOddNE, dir, fIProcessorNE, OddOddNE) );
 		fBlockNE->setConnector(connector);
 	}

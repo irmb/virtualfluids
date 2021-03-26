@@ -1,12 +1,38 @@
-/**
- * @file D3Q27ETFCOffVectorConnector.h
- * @class D3Q27ETFCVectorConnector
- * @brief Interpolation from fine level to coarse.
- * @author Kostyantyn Kucher and Ehsan Fard
- * @date 08.06.2011
- */
-#ifndef D3Q27ETFCOffVectorConnector_H
-#define D3Q27ETFCOffVectorConnector_H
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file FineToCoarseVectorConnector.h
+//! \ingroup Connectors
+//! \author Konstantin Kutscher
+//=======================================================================================
+
+#ifndef FineToCoarseVectorConnector_H
+#define FineToCoarseVectorConnector_H
 
 #include <vector>
 
@@ -27,13 +53,11 @@ class Block3D;
 
 enum CFconnectorType { EvenOddNW, EvenEvenSW, OddEvenSE, OddOddNE };
 
-// daten werden in einen vector (dieser befindet sich im transmitter) kopiert
-// der vector wird via transmitter uebertragen
-// transmitter kann ein lokal, MPI, RCG, CTL oder was auch immer fuer ein
-// transmitter sein, der von Transmitter abgeleitet ist ;-)
-
+//! \brief Interpolation from fine level to coarse.
+//! \details Data are copied into a vector (this is located in the transmitter) the vector is transmitted via transmitter.
+//!  Transmitter can be a local, MPI, RCG, CTL or whatever be a transmitter that is derived from the transmitter ;-)
 template <typename VectorTransmitter>
-class D3Q27ETFCOffVectorConnector : public Block3DConnector
+class FineToCoarseVectorConnector : public Block3DConnector
 {
 public:
 protected:
@@ -41,7 +65,7 @@ protected:
     using VectorTransmitterPtr = SPtr<VectorTransmitter>;
 
 public:
-    D3Q27ETFCOffVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
+    FineToCoarseVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
                                 int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
 
     bool isLocalConnector() override;
@@ -111,7 +135,7 @@ protected:
 };
 ////////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-D3Q27ETFCOffVectorConnector<VectorTransmitter>::D3Q27ETFCOffVectorConnector(SPtr<Block3D> block,
+FineToCoarseVectorConnector<VectorTransmitter>::FineToCoarseVectorConnector(SPtr<Block3D> block,
                                                                             VectorTransmitterPtr sender,
                                                                             VectorTransmitterPtr receiver, int sendDir,
                                                                             InterpolationProcessorPtr iprocessor,
@@ -136,67 +160,67 @@ D3Q27ETFCOffVectorConnector<VectorTransmitter>::D3Q27ETFCOffVectorConnector(SPtr
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-bool D3Q27ETFCOffVectorConnector<VectorTransmitter>::isLocalConnector()
+bool FineToCoarseVectorConnector<VectorTransmitter>::isLocalConnector()
 {
     return !this->isRemoteConnector();
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-bool D3Q27ETFCOffVectorConnector<VectorTransmitter>::isRemoteConnector()
+bool FineToCoarseVectorConnector<VectorTransmitter>::isRemoteConnector()
 {
     return sender->isRemoteTransmitter() || receiver->isRemoteTransmitter();
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::sendTransmitterDataSize()
+void FineToCoarseVectorConnector<VectorTransmitter>::sendTransmitterDataSize()
 {
     if (sender) {
-        UBLOG(logDEBUG5, "D3Q27ETFCOffVectorConnector<VectorTransmitter>::sendTransmitterDataSize()"
+        UBLOG(logDEBUG5, "FineToCoarseVectorConnector<VectorTransmitter>::sendTransmitterDataSize()"
                              << block.lock()->toString() + "sendDir=" << sendDir);
         sender->sendDataSize();
     }
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::receiveTransmitterDataSize()
+void FineToCoarseVectorConnector<VectorTransmitter>::receiveTransmitterDataSize()
 {
     if (receiver) {
-        UBLOG(logDEBUG5, "D3Q27ETFCOffVectorConnector<VectorTransmitter>::receiveTransmitterDataSize()"
+        UBLOG(logDEBUG5, "FineToCoarseVectorConnector<VectorTransmitter>::receiveTransmitterDataSize()"
                              << block.lock()->toString() << "sendDir=" << sendDir);
         receiver->receiveDataSize();
     }
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::prepareForSend()
+void FineToCoarseVectorConnector<VectorTransmitter>::prepareForSend()
 {
     if (sender)
         sender->prepareForSend();
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::sendVectors()
+void FineToCoarseVectorConnector<VectorTransmitter>::sendVectors()
 {
     if (sender)
         sender->sendData();
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::prepareForReceive()
+void FineToCoarseVectorConnector<VectorTransmitter>::prepareForReceive()
 {
     if (receiver)
         receiver->prepareForReceive();
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::receiveVectors()
+void FineToCoarseVectorConnector<VectorTransmitter>::receiveVectors()
 {
     if (receiver)
         receiver->receiveData();
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::init()
+void FineToCoarseVectorConnector<VectorTransmitter>::init()
 {
     using namespace D3Q27System;
 
@@ -258,7 +282,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::init()
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::fillSendVectors()
+void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVectors()
 {
     using namespace D3Q27System;
 
@@ -305,16 +329,6 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::fillSendVectors()
             fillSendVector(fFrom, lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3, data, index);
             break;
         case W:
-            ///////////////////////////////////////
-            /// DEBUG
-#ifdef _DEBUG
-            // if (block.lock()->getGlobalID() == 2516)
-            //{
-            //   int test = 0;
-            //}
-#endif
-            //////////////
-            // getLocalMinMax(lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3, none);
             getLocalMinMax(lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3);
             getLocalMins(lMinX1, lMinX2, lMinX3, oMinX1, oMinX2, oMinX3);
             lMinX1 = 5;
@@ -769,7 +783,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::fillSendVectors()
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::fillSendVector(SPtr<DistributionArray3D> fFrom, const int &lMinX1,
+void FineToCoarseVectorConnector<VectorTransmitter>::fillSendVector(SPtr<DistributionArray3D> fFrom, const int &lMinX1,
                                                                     const int &lMinX2, const int &lMinX3,
                                                                     const int &lMaxX1, const int &lMaxX2,
                                                                     const int &lMaxX3, vector_type &data, int &index)
@@ -812,7 +826,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::fillSendVector(SPtr<Distrib
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::writeICellCtoData(vector_type &data, int &index, LBMReal *icellC)
+void FineToCoarseVectorConnector<VectorTransmitter>::writeICellCtoData(vector_type &data, int &index, LBMReal *icellC)
 {
     for (int i = D3Q27System::STARTF; i < D3Q27System::ENDF + 1; i++) {
         data[index++] = icellC[i];
@@ -820,7 +834,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::writeICellCtoData(vector_ty
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::getLocalMinMaxCF(int gMax, int &lMin, int &lMax)
+void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMaxCF(int gMax, int &lMin, int &lMax)
 {
     if (Utilities::isOdd(gMax)) {
         if (connType == OddEvenSE || connType == OddOddNE) {
@@ -831,7 +845,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::getLocalMinMaxCF(int gMax, 
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::distributeReceiveVectors()
+void FineToCoarseVectorConnector<VectorTransmitter>::distributeReceiveVectors()
 {
     using namespace D3Q27System;
 
@@ -863,13 +877,6 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::distributeReceiveVectors()
             distributeReceiveVector(fTo, lMinX1, lMinX2, lMinX3, lMaxX1, lMaxX2, lMaxX3, data, index);
             break;
         case W:
-            ///////////////////////////////////////
-            /// DEBUG
-            // if (block.lock()->getGlobalID() == 2554)
-            //{
-            //   int test = 0;
-            //}
-            //////////////
             lMinX1 = 2;
             lMaxX1 = lMinX1 + 1;
             getLocalMinMaxCF(maxX2, lMinX2, lMaxX2);
@@ -1101,7 +1108,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::distributeReceiveVectors()
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::distributeReceiveVector(SPtr<DistributionArray3D> fTo,
+void FineToCoarseVectorConnector<VectorTransmitter>::distributeReceiveVector(SPtr<DistributionArray3D> fTo,
                                                                              const int &lMinX1, const int &lMinX2,
                                                                              const int &lMinX3, const int &lMaxX1,
                                                                              const int &lMaxX2, const int &lMaxX3,
@@ -1123,7 +1130,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::distributeReceiveVector(SPt
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::readICellFfromData(vector_type &data, int &index,
+void FineToCoarseVectorConnector<VectorTransmitter>::readICellFfromData(vector_type &data, int &index,
                                                                         D3Q27ICell &icellF)
 {
     readNodeFromVector(data, index, icellF.BSW);
@@ -1137,7 +1144,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::readICellFfromData(vector_t
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::readNodeFromVector(vector_type &data, int &index, LBMReal *inode)
+void FineToCoarseVectorConnector<VectorTransmitter>::readNodeFromVector(vector_type &data, int &index, LBMReal *inode)
 {
     for (int i = D3Q27System::STARTF; i < D3Q27System::ENDF + 1; i++) {
         inode[i] = data[index++];
@@ -1145,7 +1152,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::readNodeFromVector(vector_t
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1,
+void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1,
                                                                     int &maxX2, int &maxX3)
 {
     using namespace D3Q27System;
@@ -1285,7 +1292,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1,
+void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, int &minX2, int &minX3, int &maxX1,
                                                                     int &maxX2, int &maxX3,
                                                                     CFconnectorType /*connType*/)
 {
@@ -1424,7 +1431,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::getLocalMinMax(int &minX1, 
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::getLocalOffsets(const int &gMax, int &oMin)
+void FineToCoarseVectorConnector<VectorTransmitter>::getLocalOffsets(const int &gMax, int &oMin)
 {
     if (Utilities::isEven(gMax)) {
         oMin = 0;
@@ -1435,7 +1442,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::getLocalOffsets(const int &
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-void D3Q27ETFCOffVectorConnector<VectorTransmitter>::getLocalMins(int &minX1, int &minX2, int &minX3, const int &oMinX1,
+void FineToCoarseVectorConnector<VectorTransmitter>::getLocalMins(int &minX1, int &minX2, int &minX3, const int &oMinX1,
                                                                   const int &oMinX2, const int &oMinX3)
 {
     using namespace D3Q27System;
@@ -1537,7 +1544,7 @@ void D3Q27ETFCOffVectorConnector<VectorTransmitter>::getLocalMins(int &minX1, in
 }
 //////////////////////////////////////////////////////////////////////////
 template <typename VectorTransmitter>
-double D3Q27ETFCOffVectorConnector<VectorTransmitter>::getSendRecieveTime()
+double FineToCoarseVectorConnector<VectorTransmitter>::getSendRecieveTime()
 {
     return 0;
 }

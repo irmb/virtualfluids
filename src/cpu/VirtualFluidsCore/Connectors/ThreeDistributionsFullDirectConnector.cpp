@@ -26,27 +26,29 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file MultiphaseVelocityBCAlgorithm.h
-//! \ingroup BoundarConditions
-//! \author Hesameddin Safari
+//! \file ThreeDistributionsFullDirectConnector.cpp
+//! \ingroup Connectors
+//! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef MultiphaseVelocityBCAlgorithm_h__
-#define MultiphaseVelocityBCAlgorithm_h__
+#include "ThreeDistributionsFullDirectConnector.h"
+#include "LBMKernel.h"
+#include "DataSet3D.h"
 
-#include "BCAlgorithm.h"
-//! A class implements velocity boundary condition for multiphase simulations
-class MultiphaseVelocityBCAlgorithm : public BCAlgorithm
+ThreeDistributionsFullDirectConnector::ThreeDistributionsFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir)
+    : FullDirectConnector(from, to, sendDir)
 {
-public:
-   MultiphaseVelocityBCAlgorithm();
-   ~MultiphaseVelocityBCAlgorithm();
-   SPtr<BCAlgorithm> clone() override;
-   void addDistributions(SPtr<DistributionArray3D> distributions) override;
-   void addDistributionsH(SPtr<DistributionArray3D> distributionsH) override;
-   void addDistributionsH2(SPtr<DistributionArray3D> distributionsH2) override;
-   void applyBC() override;
-};
 
-#endif // MultiphaseVelocityBCAlgorithm_h__
+}
+//////////////////////////////////////////////////////////////////////////
+void ThreeDistributionsFullDirectConnector::init()
+{
+    FullDirectConnector::init();
 
+	fFrom =dynamicPointerCast<EsoTwist3D>(from.lock()->getKernel()->getDataSet()->getFdistributions());
+	fTo = dynamicPointerCast<EsoTwist3D>(to.lock()->getKernel()->getDataSet()->getFdistributions());
+	hFrom = dynamicPointerCast<EsoTwist3D>(from.lock()->getKernel()->getDataSet()->getHdistributions());
+	hTo = dynamicPointerCast<EsoTwist3D>(to.lock()->getKernel()->getDataSet()->getHdistributions());
+    hFrom2 = dynamicPointerCast<EsoTwist3D>(from.lock()->getKernel()->getDataSet()->getH2distributions());
+    hTo2  = dynamicPointerCast<EsoTwist3D>(to.lock()->getKernel()->getDataSet()->getH2distributions());
+}

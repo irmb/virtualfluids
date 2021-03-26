@@ -42,10 +42,12 @@
 #include "Grid3D.h"
 #include "CreateTransmittersHelper.h"
 #include "Communicator.h"
-#include "D3Q27ETFullDirectConnector.h"
-#include "D3Q27ETFullVectorConnector.h"
+#include "OneDistributionFullDirectConnector.h"
+#include "OneDistributionFullVectorConnector.h"
 #include "TwoDistributionsFullDirectConnector.h"
 #include "TwoDistributionsFullVectorConnector.h"
+#include "ThreeDistributionsFullDirectConnector.h"
+#include "ThreeDistributionsFullVectorConnector.h"
 #include <basics/transmitter/TbTransmitterLocal.h>
 
 //! \brief  A class sets connectors between blocks.
@@ -116,8 +118,6 @@ void SetConnectorsBlockVisitor<T1, T2>::setSameLevelConnectors(SPtr<Grid3D> grid
                 int neighBlockRank = neighBlock->getRank();
                 if (blockRank == neighBlockRank && neighBlock->isActive()) {
                     SPtr<Block3DConnector> connector;
-                    // connector = SPtr<Block3DConnector>(new D3Q27ETFullDirectConnector( block, neighBlock, dir));
-                    //connector = SPtr<Block3DConnector>(new TwoDistributionsFullDirectConnector(block, neighBlock, dir));
                     connector = SPtr<Block3DConnector>(new LocalConnector(block, neighBlock, dir));
                     block->setConnector(connector);
                 } else if (blockRank != neighBlockRank && neighBlock->isActive()) {
@@ -149,15 +149,14 @@ void SetConnectorsBlockVisitor<T1, T2>::setRemoteConnectors(SPtr<Block3D> sblock
                               CreateTransmittersHelper::MPI);
 
     SPtr<Block3DConnector> connector;
-    // connector = SPtr<Block3DConnector>(new D3Q27ETFullVectorConnector(sblock, sender, receiver, dir));
-    //connector = SPtr<Block3DConnector>(new TwoDistributionsFullVectorConnector(sblock, sender, receiver, dir));
     connector = SPtr<Block3DConnector>(new RemoteConnector(sblock, sender, receiver, dir));
     sblock->setConnector(connector);
     UBLOG(logDEBUG5, "SetConnectorsBlockVisitor::setRemoteConnectors() - end");
 }
 //
 
-using OneDistributionSetConnectorsBlockVisitor  = SetConnectorsBlockVisitor<D3Q27ETFullDirectConnector, D3Q27ETFullVectorConnector>;
+using OneDistributionSetConnectorsBlockVisitor  = SetConnectorsBlockVisitor<OneDistributionFullDirectConnector, OneDistributionFullVectorConnector>;
 using TwoDistributionsSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<TwoDistributionsFullDirectConnector, TwoDistributionsFullVectorConnector>;
+using ThreeDistributionsSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<ThreeDistributionsFullDirectConnector, ThreeDistributionsFullVectorConnector>;
 
 #endif // SETCONNECTORSBLOCKVISITOR_H

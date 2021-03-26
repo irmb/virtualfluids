@@ -26,27 +26,49 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file MultiphaseVelocityBCAlgorithm.h
-//! \ingroup BoundarConditions
-//! \author Hesameddin Safari
+//! \file FullVectorConnector.h
+//! \ingroup Connectors
+//! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef MultiphaseVelocityBCAlgorithm_h__
-#define MultiphaseVelocityBCAlgorithm_h__
+#ifndef FullVectorConnector_H
+#define FullVectorConnector_H
 
-#include "BCAlgorithm.h"
-//! A class implements velocity boundary condition for multiphase simulations
-class MultiphaseVelocityBCAlgorithm : public BCAlgorithm
+#include <vector>
+
+#include "Block3D.h"
+#include "RemoteBlock3DConnector.h"
+
+// daten werden in einen vector (dieser befindet sich im transmitter) kopiert
+// der vector wird via transmitter uebertragen
+// transmitter kann ein lokal, MPI, RCG, CTL oder was auch immer fuer ein
+// transmitter sein, der von Transmitter abgeleitet ist ;-)
+class FullVectorConnector : public RemoteBlock3DConnector
 {
 public:
-   MultiphaseVelocityBCAlgorithm();
-   ~MultiphaseVelocityBCAlgorithm();
-   SPtr<BCAlgorithm> clone() override;
-   void addDistributions(SPtr<DistributionArray3D> distributions) override;
-   void addDistributionsH(SPtr<DistributionArray3D> distributionsH) override;
-   void addDistributionsH2(SPtr<DistributionArray3D> distributionsH2) override;
-   void applyBC() override;
+    FullVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
+                               int sendDir);
+
+    void init() override;
+
+    void fillSendVectors() override;
+    void distributeReceiveVectors() override;
+
+protected:
+    virtual inline void updatePointers() = 0;
+    void fillData();
+    void distributeData();
+    virtual inline void fillData(vector_type &sdata, int &index, int x1, int x2, int x3) = 0;
+    virtual inline void distributeData(vector_type &rdata, int &index, int x1, int x2, int x3) = 0;
+    
+    int maxX1;
+    int maxX2;
+    int maxX3;
+
+private:
+
 };
 
-#endif // MultiphaseVelocityBCAlgorithm_h__
+//////////////////////////////////////////////////////////////////////////
 
+#endif // FullVectorConnector_H
