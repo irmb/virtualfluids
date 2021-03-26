@@ -124,7 +124,7 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
       if (bcPtr->hasVelocityBoundaryFlag(fdir))
       {
          const int invDir = D3Q27System::INVDIR[fdir];
-         LBMReal q = bcPtr->getQ(invDir);// m+m q=0 stabiler
+         //LBMReal q = bcPtr->getQ(invDir);// m+m q=0 stabiler
          LBMReal velocity = bcPtr->getBoundaryVelocity(invDir);
 		 //16.03.2021 quick fix for velocity BC
          LBMReal fReturn = f[invDir] - velocity;
