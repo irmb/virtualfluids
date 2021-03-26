@@ -54,12 +54,12 @@ class TwoDistributionsFullVectorConnector : public FullVectorConnector
 public:
    TwoDistributionsFullVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir);
 
-   void init();
+   void init() override;
 
 protected:
-   inline void updatePointers();
-   inline void fillData(vector_type& sdata, int& index, int x1, int x2, int x3);
-   inline void distributeData(vector_type& rdata, int& index, int x1, int x2, int x3);
+   inline void updatePointers() override;
+   inline void fillData(vector_type &sdata, int &index, int x1, int x2, int x3) override;
+   inline void distributeData(vector_type &rdata, int &index, int x1, int x2, int x3) override;
 
 private:
    CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;

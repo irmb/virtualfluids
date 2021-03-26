@@ -50,8 +50,8 @@ public:
     void init() override;
 
 protected:
-    inline void updatePointers();
-    inline void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To);
+    inline void updatePointers() override;
+    inline void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To) override;
 
 private:
     CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsFrom;
