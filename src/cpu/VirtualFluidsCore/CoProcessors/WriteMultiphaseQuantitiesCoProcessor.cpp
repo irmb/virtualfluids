@@ -200,7 +200,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 
     // nummern vergeben und node vector erstellen + daten sammeln
     CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3, -1);
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField1(
+    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField(
         new CbArray3D<LBMReal, IndexerX3X2X1>(maxX1, maxX2, maxX3, -999.0));
 
     for (int ix3 = minX3; ix3 < maxX3; ix3++) {
@@ -208,7 +208,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
             for (int ix1 = minX1; ix1 < maxX1; ix1++) {
                 if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
                     distributionsH->getDistribution(f, ix1, ix2, ix3);
-                    (*phaseField1)(ix1, ix2, ix3) =
+                    (*phaseField)(ix1, ix2, ix3) =
                         ((f[TNE] + f[BSW]) + (f[TSE] + f[BNW])) + ((f[BSE] + f[TNW]) + (f[TSW] + f[BNE])) +
                         (((f[NE] + f[SW]) + (f[SE] + f[NW])) + ((f[TE] + f[BW]) + (f[BE] + f[TW])) +
                          ((f[BN] + f[TS]) + (f[TN] + f[BS]))) +
@@ -243,7 +243,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     nodes.push_back(UbTupleFloat3(float(worldCoordinates[0]), float(worldCoordinates[1]),
                                                   float(worldCoordinates[2])));
 
-                    phi[REST] = (*phaseField1)(ix1, ix2, ix3);
+                    phi[REST] = (*phaseField)(ix1, ix2, ix3);
 
                     if ((ix1 == 0) || (ix2 == 0) || (ix3 == 0)) {
                         dX1_phi = 0.0;
@@ -254,32 +254,32 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                         // vx2 = 0.0;
                         // vx3 = 0.0;
                     } else {
-                        phi[E]   = (*phaseField1)(ix1 + DX1[E], ix2 + DX2[E], ix3 + DX3[E]);
-                        phi[N]   = (*phaseField1)(ix1 + DX1[N], ix2 + DX2[N], ix3 + DX3[N]);
-                        phi[T]   = (*phaseField1)(ix1 + DX1[T], ix2 + DX2[T], ix3 + DX3[T]);
-                        phi[W]   = (*phaseField1)(ix1 + DX1[W], ix2 + DX2[W], ix3 + DX3[W]);
-                        phi[S]   = (*phaseField1)(ix1 + DX1[S], ix2 + DX2[S], ix3 + DX3[S]);
-                        phi[B]   = (*phaseField1)(ix1 + DX1[B], ix2 + DX2[B], ix3 + DX3[B]);
-                        phi[NE]  = (*phaseField1)(ix1 + DX1[NE], ix2 + DX2[NE], ix3 + DX3[NE]);
-                        phi[NW]  = (*phaseField1)(ix1 + DX1[NW], ix2 + DX2[NW], ix3 + DX3[NW]);
-                        phi[TE]  = (*phaseField1)(ix1 + DX1[TE], ix2 + DX2[TE], ix3 + DX3[TE]);
-                        phi[TW]  = (*phaseField1)(ix1 + DX1[TW], ix2 + DX2[TW], ix3 + DX3[TW]);
-                        phi[TN]  = (*phaseField1)(ix1 + DX1[TN], ix2 + DX2[TN], ix3 + DX3[TN]);
-                        phi[TS]  = (*phaseField1)(ix1 + DX1[TS], ix2 + DX2[TS], ix3 + DX3[TS]);
-                        phi[SW]  = (*phaseField1)(ix1 + DX1[SW], ix2 + DX2[SW], ix3 + DX3[SW]);
-                        phi[SE]  = (*phaseField1)(ix1 + DX1[SE], ix2 + DX2[SE], ix3 + DX3[SE]);
-                        phi[BW]  = (*phaseField1)(ix1 + DX1[BW], ix2 + DX2[BW], ix3 + DX3[BW]);
-                        phi[BE]  = (*phaseField1)(ix1 + DX1[BE], ix2 + DX2[BE], ix3 + DX3[BE]);
-                        phi[BS]  = (*phaseField1)(ix1 + DX1[BS], ix2 + DX2[BS], ix3 + DX3[BS]);
-                        phi[BN]  = (*phaseField1)(ix1 + DX1[BN], ix2 + DX2[BN], ix3 + DX3[BN]);
-                        phi[BSW] = (*phaseField1)(ix1 + DX1[BSW], ix2 + DX2[BSW], ix3 + DX3[BSW]);
-                        phi[BSE] = (*phaseField1)(ix1 + DX1[BSE], ix2 + DX2[BSE], ix3 + DX3[BSE]);
-                        phi[BNW] = (*phaseField1)(ix1 + DX1[BNW], ix2 + DX2[BNW], ix3 + DX3[BNW]);
-                        phi[BNE] = (*phaseField1)(ix1 + DX1[BNE], ix2 + DX2[BNE], ix3 + DX3[BNE]);
-                        phi[TNE] = (*phaseField1)(ix1 + DX1[TNE], ix2 + DX2[TNE], ix3 + DX3[TNE]);
-                        phi[TNW] = (*phaseField1)(ix1 + DX1[TNW], ix2 + DX2[TNW], ix3 + DX3[TNW]);
-                        phi[TSE] = (*phaseField1)(ix1 + DX1[TSE], ix2 + DX2[TSE], ix3 + DX3[TSE]);
-                        phi[TSW] = (*phaseField1)(ix1 + DX1[TSW], ix2 + DX2[TSW], ix3 + DX3[TSW]);
+                        phi[E]   = (*phaseField)(ix1 + DX1[E], ix2 + DX2[E], ix3 + DX3[E]);
+                        phi[N]   = (*phaseField)(ix1 + DX1[N], ix2 + DX2[N], ix3 + DX3[N]);
+                        phi[T]   = (*phaseField)(ix1 + DX1[T], ix2 + DX2[T], ix3 + DX3[T]);
+                        phi[W]   = (*phaseField)(ix1 + DX1[W], ix2 + DX2[W], ix3 + DX3[W]);
+                        phi[S]   = (*phaseField)(ix1 + DX1[S], ix2 + DX2[S], ix3 + DX3[S]);
+                        phi[B]   = (*phaseField)(ix1 + DX1[B], ix2 + DX2[B], ix3 + DX3[B]);
+                        phi[NE]  = (*phaseField)(ix1 + DX1[NE], ix2 + DX2[NE], ix3 + DX3[NE]);
+                        phi[NW]  = (*phaseField)(ix1 + DX1[NW], ix2 + DX2[NW], ix3 + DX3[NW]);
+                        phi[TE]  = (*phaseField)(ix1 + DX1[TE], ix2 + DX2[TE], ix3 + DX3[TE]);
+                        phi[TW]  = (*phaseField)(ix1 + DX1[TW], ix2 + DX2[TW], ix3 + DX3[TW]);
+                        phi[TN]  = (*phaseField)(ix1 + DX1[TN], ix2 + DX2[TN], ix3 + DX3[TN]);
+                        phi[TS]  = (*phaseField)(ix1 + DX1[TS], ix2 + DX2[TS], ix3 + DX3[TS]);
+                        phi[SW]  = (*phaseField)(ix1 + DX1[SW], ix2 + DX2[SW], ix3 + DX3[SW]);
+                        phi[SE]  = (*phaseField)(ix1 + DX1[SE], ix2 + DX2[SE], ix3 + DX3[SE]);
+                        phi[BW]  = (*phaseField)(ix1 + DX1[BW], ix2 + DX2[BW], ix3 + DX3[BW]);
+                        phi[BE]  = (*phaseField)(ix1 + DX1[BE], ix2 + DX2[BE], ix3 + DX3[BE]);
+                        phi[BS]  = (*phaseField)(ix1 + DX1[BS], ix2 + DX2[BS], ix3 + DX3[BS]);
+                        phi[BN]  = (*phaseField)(ix1 + DX1[BN], ix2 + DX2[BN], ix3 + DX3[BN]);
+                        phi[BSW] = (*phaseField)(ix1 + DX1[BSW], ix2 + DX2[BSW], ix3 + DX3[BSW]);
+                        phi[BSE] = (*phaseField)(ix1 + DX1[BSE], ix2 + DX2[BSE], ix3 + DX3[BSE]);
+                        phi[BNW] = (*phaseField)(ix1 + DX1[BNW], ix2 + DX2[BNW], ix3 + DX3[BNW]);
+                        phi[BNE] = (*phaseField)(ix1 + DX1[BNE], ix2 + DX2[BNE], ix3 + DX3[BNE]);
+                        phi[TNE] = (*phaseField)(ix1 + DX1[TNE], ix2 + DX2[TNE], ix3 + DX3[TNE]);
+                        phi[TNW] = (*phaseField)(ix1 + DX1[TNW], ix2 + DX2[TNW], ix3 + DX3[TNW]);
+                        phi[TSE] = (*phaseField)(ix1 + DX1[TSE], ix2 + DX2[TSE], ix3 + DX3[TSE]);
+                        phi[TSW] = (*phaseField)(ix1 + DX1[TSW], ix2 + DX2[TSW], ix3 + DX3[TSW]);
                         dX1_phi  = 0.0 * gradX1_phi(phi);
                         dX2_phi  = 0.0 * gradX2_phi(phi);
                         dX3_phi  = 0.0 * gradX3_phi(phi);
