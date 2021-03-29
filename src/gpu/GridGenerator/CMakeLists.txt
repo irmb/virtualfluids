@@ -9,7 +9,7 @@ set_target_properties(${library_name} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 # according to linker error when building static libraries.
 # https://stackoverflow.com/questions/50033435/cmake-cuda-separate-compilation-static-lib-link-error-on-windows-but-not-on-ubun
 if (NOT BUILD_SHARED_LIBRARY)
-    set_target_properties(${library_name} PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+    #set_target_properties(${library_name} PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 endif()
 
 # we want to suppress all cuda warnings so far for this library.

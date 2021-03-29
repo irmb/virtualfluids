@@ -94,12 +94,21 @@ if(BUILD_VF_GPU)
 
     set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
 
-    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcudafe --display_error_number")
 
-    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-        message(WARNING "CMAKE_CUDA_ARCHITECTURES was not defined and is set to 30 (CUDA support until 10.1 only).")
-        set(CMAKE_CUDA_ARCHITECTURES 30)
-    endif()
+    #set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -dlto")
+    enable_language(CUDA)
+    #set(CMAKE_CUDA_FLAGS "-gencode arch=compute_70,code=lto_70")
+
+    set(CMAKE_CUDA_FLAGS "-dlto -arch=sm_75")
+    #set(CMAKE_CUDA_ARCHITECTURES 75)
+    #set(CMAKE_CUDA_FLAGS "-arch=sm_75")
+
+    #set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcudafe --display_error_number")
+
+    #if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    #    message(WARNING "CMAKE_CUDA_ARCHITECTURES was not defined and is set to 30 (CUDA support until 10.1 only).")
+    #    set(CMAKE_CUDA_ARCHITECTURES 30)
+    #endif()
 
     message("CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
 endif()
