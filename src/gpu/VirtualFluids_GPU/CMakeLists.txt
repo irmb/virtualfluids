@@ -5,7 +5,7 @@ if(MSVC)
     set(additional_libraries ws2_32 Traffic) # ws_32 throws an error on Phoenix
 endif()
 
-vf_add_library(PRIVATE_LINK ${additional_libraries} GridGenerator basics MPI::MPI_CXX lbm)
+vf_add_library(PRIVATE_LINK ${additional_libraries} GridGenerator basics MPI::MPI_CXX lbmCuda)
 
 
 linkBoost(COMPONENTS "serialization")

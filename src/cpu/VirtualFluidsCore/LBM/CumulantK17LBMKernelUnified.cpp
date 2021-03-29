@@ -39,10 +39,10 @@
 #include "Block3D.h"
 #include "BCArray3D.h"
 
-#include <lbm/Chimera.h>
-#include <lbm/CumulantChimera.h>
+//#include <lbm/CumulantChimera.h>
+#include <lbm/CumulantChimeraPreCompiled.h>
 
-#define PROOF_CORRECTNESS
+//#define PROOF_CORRECTNESS
 
 using namespace UbMath;
 
