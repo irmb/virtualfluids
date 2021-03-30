@@ -51,7 +51,7 @@ stages:
     - cmake ..
       --preset=all_make_ccache
       -DBUILD_WARNINGS_AS_ERRORS=ON
-      -DCMAKE_CUDA_ARCHITECTURES=60
+      #-DCMAKE_CUDA_ARCHITECTURES=60
     - cmake . -LAH
     - make -j4
 
@@ -94,7 +94,7 @@ gcc_9_rebuild:
     - cmake ..
       --preset=all_make_ccache
       -DBUILD_WARNINGS_AS_ERRORS=ON
-      -DCMAKE_CUDA_ARCHITECTURES=60
+      #-DCMAKE_CUDA_ARCHITECTURES=60
     - make -j4  2>&1 | tee gcc_warnings.txt
     - ccache -s
 

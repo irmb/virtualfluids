@@ -99,7 +99,9 @@ if(BUILD_VF_GPU)
     enable_language(CUDA)
     #set(CMAKE_CUDA_FLAGS "-gencode arch=compute_70,code=lto_70")
 
-    set(CMAKE_CUDA_FLAGS "-dlto -arch=sm_75")
+    if(NOT MSVC)
+        set(CMAKE_CUDA_FLAGS "-dlto -arch=sm_75")
+    endif()
     #set(CMAKE_CUDA_ARCHITECTURES 75)
     #set(CMAKE_CUDA_FLAGS "-arch=sm_75")
 
