@@ -2,49 +2,56 @@
 
 #include "Parameter/Parameter.h"
 
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/BGK/BGKCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/BGKPlus/BGKPlusCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/Cascade/CascadeCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/Cumulant/CumulantCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK17/CumulantK17Comp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK17Bulk/CumulantK17BulkComp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantAll4/CumulantAll4CompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK18/CumulantK18Comp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK20/CumulantK20Comp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK15/CumulantK15Comp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK15Bulk/CumulantK15BulkComp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK15Sponge/CumulantK15SpongeComp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/MRT/MRTCompSP27.h"
+//LBM kernel (compressible)
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGK/BGKCompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGKPlus/BGKPlusCompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/Cascade/CascadeCompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/Cumulant/CumulantCompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17/CumulantK17Comp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Bulk/CumulantK17BulkComp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantAll4/CumulantAll4CompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK18/CumulantK18Comp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK20/CumulantK20Comp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15/CumulantK15Comp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Bulk/CumulantK15BulkComp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Sponge/CumulantK15SpongeComp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/MRT/MRTCompSP27.h"
 
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/BGK/BGKIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/BGKPlus/BGKPlusIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/Cascade/CascadeIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/Cumulant1hSP27/Cumulant1hIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/CumulantIsoSP27/CumulantIsoIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/CumulantK15/CumulantK15Incomp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/MRT/MRTIncompSP27.h"
+//LBM kernel (inkompressible)
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/BGK/BGKIncompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/BGKPlus/BGKPlusIncompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/Cascade/CascadeIncompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/Cumulant1hSP27/Cumulant1hIncompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/CumulantIsoSP27/CumulantIsoIncompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/CumulantK15/CumulantK15Incomp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/MRT/MRTIncompSP27.h"
 
+//advection diffusion kernel (compressible)
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Compressible/Mod27/ADComp27/ADComp27.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Compressible/Mod7/ADComp7/ADComp7.h"
 
+//advection diffusion kernel (incompressible)
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Incompressible/Mod27/ADIncomp27/ADIncomp27.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Incompressible/Mod7/ADIncomp7/ADIncomp7.h"
 
-#include "Kernel/Kernels/PorousMediaKernels/Advection/Compressible/CumulantOne/PMCumulantOneCompSP27.h"
+//porous media kernel
+#include "Kernel/Kernels/PorousMediaKernels/FluidFlow/Compressible/CumulantOne/PMCumulantOneCompSP27.h"
 
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantK17/WaleCumulantK17Comp.h"
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantK17Debug/WaleCumulantK17DebugComp.h"
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantK15/WaleCumulantK15Comp.h"
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantK15BySoniMalav/WaleBySoniMalavCumulantK15Comp.h"
+//wale kernel
+#include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/CumulantK17/WaleCumulantK17Comp.h"
+#include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/CumulantK17Debug/WaleCumulantK17DebugComp.h"
+#include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/CumulantK15/WaleCumulantK15Comp.h"
+#include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/CumulantK15BySoniMalav/WaleBySoniMalavCumulantK15Comp.h"
 
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/AdvecCompStrategy.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/AdvecIncompStrategy.h"
+//strategies
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/AdvecCompStrategy.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/AdvecIncompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Compressible/Mod27/ADMod27CompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Compressible/Mod7/ADMod7CompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Incompressible/Mod27/ADMod27IncompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Incompressible/Mod7/ADMod7IncompStrategy.h"
-#include "Kernel/Kernels/PorousMediaKernels/Advection/Compressible/PMAdvecCompStrategy.h"
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/WaleAdvecCompStrategy.h"
+#include "Kernel/Kernels/PorousMediaKernels/FluidFlow/Compressible/PMAdvecCompStrategy.h"
+#include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/WaleAdvecCompStrategy.h"
 
 
 std::shared_ptr<KernelFactoryImp> KernelFactoryImp::getInstance()
