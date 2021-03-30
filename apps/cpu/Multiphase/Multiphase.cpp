@@ -127,7 +127,7 @@ void run(string configname)
         fctF2.SetExpr("vy1");
         fctF2.DefineConst("vy1", -uLB);
 
-        double startTime = 500;
+        double startTime = 1;
         SPtr<BCAdapter> velBCAdapterF1(new MultiphaseVelocityBCAdapter(false, true, false, fctF1, phiH, 0.0, startTime));
         SPtr<BCAdapter> velBCAdapterF2(new MultiphaseVelocityBCAdapter(false, true, false, fctF2, phiH, startTime, endTime));
 

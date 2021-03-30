@@ -105,7 +105,7 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
    phiBC = bcPtr->getBoundaryPhaseField();
    
    //D3Q27System::calcMultiphaseHeq(htemp, phiBC, vx1, vx2, vx3);
-   D3Q27System::calcMultiphaseHeq(htemp, phiBC, 0.0, 0.0, 0.0);//16.03.2021 dirty hack!
+   D3Q27System::calcMultiphaseHeq(htemp, phiBC, bcPtr->getBoundaryVelocityX1(), bcPtr->getBoundaryVelocityX2(), bcPtr->getBoundaryVelocityX2());//30.03.2021 EQ phase field BC!
    for (int fdir = D3Q27System::STARTF; fdir<=D3Q27System::ENDF; fdir++)
    {
 	   if (bcPtr->hasVelocityBoundaryFlag(fdir))

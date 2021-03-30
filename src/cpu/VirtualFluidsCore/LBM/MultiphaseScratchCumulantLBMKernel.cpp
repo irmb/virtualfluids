@@ -284,10 +284,25 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
                         LBMReal dX2_phi = gradX2_phi();
                         LBMReal dX3_phi = gradX3_phi();
 
+
                         LBMReal denom = sqrt(dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi) + 1e-9;
                         LBMReal normX1 = dX1_phi/denom;
 						LBMReal normX2 = dX2_phi/denom;
-						LBMReal normX3 = dX3_phi/denom;
+						LBMReal normX3 = dX3_phi/denom; 
+
+
+						///test for magnitude of gradient from phase indicator directly
+						//if (fabs((1.0 - phi[REST]) * (phi[REST]) */* c4*/ - (denom- 1e-9)) / denom > 1e-3 &&phi[REST]>0.4 &&phi[REST]<0.6) {
+						//	std::cout << (1.0 - phi[REST]) * (phi[REST])  // *c4 
+						//		<< " " << denom <<" "<< ((1.0 - phi[REST]) * (phi[REST]) * c4 ) / denom << std::endl;
+						//}
+						//dX1_phi = (1.0 - phi[REST]) * (phi[REST]) /* c4 */* normX1;
+						//dX2_phi = (1.0 - phi[REST]) * (phi[REST]) /* c4 */* normX2;
+						//dX3_phi = (1.0 - phi[REST]) * (phi[REST]) /* c4 */* normX3;
+
+						//denom = 1.0;
+
+						///!test
 
 						collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[REST] - phiH) / (phiH - phiL);
 
