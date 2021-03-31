@@ -164,6 +164,7 @@ struct DSArraysPresence {
     bool isAverageTripleArrayPresent;
     bool isShearStressValArrayPresent;
     bool isRelaxationFactorPresent;
+    bool isPhaseFieldPresent;
 };
 } // namespace MPIIODataStructures
 #endif

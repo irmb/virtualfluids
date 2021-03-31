@@ -24,7 +24,8 @@ public:
         AverageFluktuations = 3,
         AverageTriple       = 4,
         ShearStressVal      = 5,
-        RelaxationFactor    = 6
+        RelaxationFactor = 6,
+        PhaseField = 7
     };
 
     MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<Communicator> comm);
