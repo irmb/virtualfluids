@@ -76,6 +76,7 @@ public:
 
     virtual void addDistributions(SPtr<DistributionArray3D> distributions)   = 0;
     virtual void addDistributionsH(SPtr<DistributionArray3D> distributionsH) {}
+    virtual void addDistributionsH2(SPtr<DistributionArray3D> distributionsH2) {}
     void setNodeIndex(int x1, int x2, int x3);
     void setBcPointer(SPtr<BoundaryConditions> bcPtr);
     void setCompressible(bool c);
@@ -104,6 +105,7 @@ protected:
     SPtr<BoundaryConditions> bcPtr;
     SPtr<DistributionArray3D> distributions;
     SPtr<DistributionArray3D> distributionsH;
+    SPtr<DistributionArray3D> distributionsH2;
     SPtr<BCArray3D> bcArray;
 
     LBMReal collFactor;

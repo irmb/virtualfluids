@@ -31,8 +31,8 @@
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef BLOCK2DCONNECTOR_H
-#define BLOCK2DCONNECTOR_H
+#ifndef BLOCK3DCONNECTOR_H
+#define BLOCK3DCONNECTOR_H
 
 #include <string>
 #include <vector>

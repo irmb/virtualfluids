@@ -26,38 +26,34 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file D3Q27ETFullDirectConnector.h
+//! \file OneDistributionFullDirectConnector.h
 //! \ingroup Connectors
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef D3Q27ETFULLDIRECTCONNECTOR_H
-#define D3Q27ETFULLDIRECTCONNECTOR_H
+#ifndef OneDistributionFullDirectConnector_H
+#define OneDistributionFullDirectConnector_H
 
 #include "Block3D.h"
 #include "D3Q27System.h"
-#include "EsoTwist3D.h"
-#include "LocalBlock3DConnector.h"
+#include "FullDirectConnector.h"
+#include "D3Q27EsoTwist3DSplittedVector.h"
 #include "basics/container/CbArray3D.h"
 #include "basics/container/CbArray4D.h"
 
 //! \brief   Exchange data between blocks.
 //! \details Connector send and receive full distributions between two blocks in shared memory.
-class D3Q27ETFullDirectConnector : public LocalBlock3DConnector
+class OneDistributionFullDirectConnector : public FullDirectConnector
 {
 public:
-    D3Q27ETFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
+    OneDistributionFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
     void init() override;
-    void sendVectors() override;
 
 protected:
-    inline void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To);
+    inline void updatePointers() override;
+    inline void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To) override;
 
 private:
-    int maxX1;
-    int maxX2;
-    int maxX3;
-
     CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsFrom;
     CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsFrom;
     CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsFrom;
@@ -69,9 +65,19 @@ private:
     SPtr<EsoTwist3D> fFrom;
     SPtr<EsoTwist3D> fTo;
 };
-
 //////////////////////////////////////////////////////////////////////////
-inline void D3Q27ETFullDirectConnector::exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
+inline void OneDistributionFullDirectConnector::updatePointers()
+{
+    localDistributionsFrom = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fFrom)->getLocalDistributions();
+    nonLocalDistributionsFrom = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fFrom)->getNonLocalDistributions();
+    zeroDistributionsFrom = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fFrom)->getZeroDistributions();
+
+    localDistributionsTo = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fTo)->getLocalDistributions();
+    nonLocalDistributionsTo = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fTo)->getNonLocalDistributions();
+    zeroDistributionsTo     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fTo)->getZeroDistributions();
+}
+//////////////////////////////////////////////////////////////////////////
+inline void OneDistributionFullDirectConnector::exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
 {
     (*this->localDistributionsTo)(D3Q27System::ET_E, x1To, x2To, x3To) =
         (*this->localDistributionsFrom)(D3Q27System::ET_E, x1From, x2From, x3From);

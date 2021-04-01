@@ -179,6 +179,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 		SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
         SPtr<EsoTwist3D> distributionsF = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getFdistributions()); 
 		SPtr<EsoTwist3D> distributionsH = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getHdistributions());
+        SPtr<EsoTwist3D> distributionsH2 = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getH2distributions());
 
 		LBMReal phiL = kernel->getPhiL();
 		LBMReal phiH = kernel->getPhiH();
@@ -288,6 +289,11 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 
 					distributionsH->setDistribution(f, ix1, ix2, ix3);
 					distributionsH->setDistributionInv(f, ix1, ix2, ix3);
+
+					if (distributionsH2) {
+                        distributionsH2->setDistribution(f, ix1, ix2, ix3);
+                        distributionsH2->setDistributionInv(f, ix1, ix2, ix3);                    
+					}
 				}
 	}
 

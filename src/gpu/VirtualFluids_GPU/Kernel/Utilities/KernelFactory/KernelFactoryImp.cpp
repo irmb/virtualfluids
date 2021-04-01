@@ -2,49 +2,56 @@
 
 #include "Parameter/Parameter.h"
 
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/BGK/BGKCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/BGKPlus/BGKPlusCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/Cascade/CascadeCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/Cumulant/CumulantCompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK17/CumulantK17Comp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK17Bulk/CumulantK17BulkComp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantAll4/CumulantAll4CompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK18/CumulantK18Comp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK20/CumulantK20Comp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK15/CumulantK15Comp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK15Bulk/CumulantK15BulkComp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/CumulantK15Sponge/CumulantK15SpongeComp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/MRT/MRTCompSP27.h"
+//LBM kernel (compressible)
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGK/BGKCompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGKPlus/BGKPlusCompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/Cascade/CascadeCompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/Cumulant/CumulantCompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17/CumulantK17Comp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Bulk/CumulantK17BulkComp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantAll4/CumulantAll4CompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK18/CumulantK18Comp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK20/CumulantK20Comp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15/CumulantK15Comp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Bulk/CumulantK15BulkComp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Sponge/CumulantK15SpongeComp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/MRT/MRTCompSP27.h"
 
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/BGK/BGKIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/BGKPlus/BGKPlusIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/Cascade/CascadeIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/Cumulant1hSP27/Cumulant1hIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/CumulantIsoSP27/CumulantIsoIncompSP27.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/CumulantK15/CumulantK15Incomp.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/MRT/MRTIncompSP27.h"
+//LBM kernel (inkompressible)
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/BGK/BGKIncompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/BGKPlus/BGKPlusIncompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/Cascade/CascadeIncompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/Cumulant1hSP27/Cumulant1hIncompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/CumulantIsoSP27/CumulantIsoIncompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/CumulantK15/CumulantK15Incomp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/MRT/MRTIncompSP27.h"
 
+//advection diffusion kernel (compressible)
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Compressible/Mod27/ADComp27/ADComp27.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Compressible/Mod7/ADComp7/ADComp7.h"
 
+//advection diffusion kernel (incompressible)
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Incompressible/Mod27/ADIncomp27/ADIncomp27.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Incompressible/Mod7/ADIncomp7/ADIncomp7.h"
 
-#include "Kernel/Kernels/PorousMediaKernels/Advection/Compressible/CumulantOne/PMCumulantOneCompSP27.h"
+//porous media kernel
+#include "Kernel/Kernels/PorousMediaKernels/FluidFlow/Compressible/CumulantOne/PMCumulantOneCompSP27.h"
 
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantK17/WaleCumulantK17Comp.h"
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantK17Debug/WaleCumulantK17DebugComp.h"
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantK15/WaleCumulantK15Comp.h"
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/CumulantK15BySoniMalav/WaleBySoniMalavCumulantK15Comp.h"
+//wale kernel
+#include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/CumulantK17/WaleCumulantK17Comp.h"
+#include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/CumulantK17Debug/WaleCumulantK17DebugComp.h"
+#include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/CumulantK15/WaleCumulantK15Comp.h"
+#include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/CumulantK15BySoniMalav/WaleBySoniMalavCumulantK15Comp.h"
 
-#include "Kernel/Kernels/BasicKernels/Advection/Compressible/AdvecCompStrategy.h"
-#include "Kernel/Kernels/BasicKernels/Advection/Incompressible/AdvecIncompStrategy.h"
+//strategies
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/AdvecCompStrategy.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/AdvecIncompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Compressible/Mod27/ADMod27CompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Compressible/Mod7/ADMod7CompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Incompressible/Mod27/ADMod27IncompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Incompressible/Mod7/ADMod7IncompStrategy.h"
-#include "Kernel/Kernels/PorousMediaKernels/Advection/Compressible/PMAdvecCompStrategy.h"
-#include "Kernel/Kernels/WaleKernels/Advection/Compressible/WaleAdvecCompStrategy.h"
+#include "Kernel/Kernels/PorousMediaKernels/FluidFlow/Compressible/PMAdvecCompStrategy.h"
+#include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/WaleAdvecCompStrategy.h"
 
 
 std::shared_ptr<KernelFactoryImp> KernelFactoryImp::getInstance()
@@ -81,164 +88,124 @@ void KernelFactoryImp::setPorousMedia(std::vector<std::shared_ptr<PorousMedia>> 
 	this->pm = pm;
 }
 
-void KernelFactoryImp::setKernelAtLevel(std::vector<std::shared_ptr<Kernel>> kernels, std::shared_ptr<Parameter> para, KernelType kernel, int level)
+void KernelFactoryImp::setKernelAtLevel(std::vector<std::shared_ptr<Kernel>> kernels, std::shared_ptr<Parameter> para, std::string kernel, int level)
 {
 	kernels.at(level) = makeKernel(para, kernel, level);
 }
 
-std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> para, KernelType kernel, int level)
+std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> para, std::string kernel, int level)
 {
 	std::shared_ptr<KernelImp> newKernel;
 	std::shared_ptr<CheckParameterStrategy> checkStrategy;
 
-	switch (kernel)
-	{
-	case LB_BGKCompSP27:
-		newKernel = BGKCompSP27::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
-	case LB_BGKPlusCompSP27:
-		newKernel = BGKPlusCompSP27::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
-	case LB_CascadeCompSP27:
-		newKernel = CascadeCompSP27::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
-	case LB_CumulantCompSP27:
-		newKernel = CumulantCompSP27::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
-	case LB_CumulantK17Comp:
-		newKernel = CumulantK17Comp::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
-	case LB_CumulantK17BulkComp:
-		newKernel = CumulantK17BulkComp::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
-	case LB_CumulantAll4CompSP27:
-		newKernel = CumulantAll4CompSP27::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
-	case LB_CumulantK18Comp:
-		newKernel = CumulantK18Comp::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
-	case LB_CumulantK20Comp:
-		newKernel = CumulantK20Comp::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
-	case LB_CumulantK15Comp:
-		newKernel = CumulantK15Comp::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
-	case LB_CumulantK15BulkComp:
-		newKernel = CumulantK15Comp::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
-	case LB_CumulantK15SpongeComp:
-		newKernel = CumulantK15SpongeComp::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
-	case LB_MRTCompSP27:
-		newKernel = MRTCompSP27::getNewInstance(para, level);
-		checkStrategy = AdvecCompStrategy::getInstance();
-		break;
+	if (       kernel == "BGKCompSP27") {
+        newKernel     = BGKCompSP27::getNewInstance(para, level);				// compressible
+        checkStrategy = AdvecCompStrategy::getInstance();						//	   ||
+    } else if (kernel == "BGKPlusCompSP27") {									//     \/
+        newKernel     = BGKPlusCompSP27::getNewInstance(para, level);
+        checkStrategy = AdvecCompStrategy::getInstance();
+    } else if (kernel == "MRTCompSP27") {
+        newKernel     = MRTCompSP27::getNewInstance(para, level);
+        checkStrategy = AdvecCompStrategy::getInstance();
+    } else if (kernel == "CascadeCompSP27") {
+        newKernel     = CascadeCompSP27::getNewInstance(para, level);
+        checkStrategy = AdvecCompStrategy::getInstance();
+    } else if (kernel == "CumulantCompSP27") {
+        newKernel     = CumulantCompSP27::getNewInstance(para, level);
+        checkStrategy = AdvecCompStrategy::getInstance();
+    } else if (kernel == "CumulantK17Comp") {
+        newKernel     = CumulantK17Comp::getNewInstance(para, level);
+        checkStrategy = AdvecCompStrategy::getInstance();
+    } else if (kernel == "CumulantK17BulkComp") {
+        newKernel     = CumulantK17BulkComp::getNewInstance(para, level);
+        checkStrategy = AdvecCompStrategy::getInstance();
+    } else if (kernel == "CumulantAll4CompSP27") {
+        newKernel     = CumulantAll4CompSP27::getNewInstance(para, level);
+        checkStrategy = AdvecCompStrategy::getInstance();
+    } else if (kernel == "CumulantK18Comp") {
+        newKernel     = CumulantK18Comp::getNewInstance(para, level);
+        checkStrategy = AdvecCompStrategy::getInstance();
+    } else if (kernel == "CumulantK20Comp") {
+        newKernel     = CumulantK20Comp::getNewInstance(para, level);
+        checkStrategy = AdvecCompStrategy::getInstance();
+    } else if (kernel == "CumulantK15Comp") {
+        newKernel     = CumulantK15Comp::getNewInstance(para, level);
+        checkStrategy = AdvecCompStrategy::getInstance();
+    } else if (kernel == "CumulantK15BulkComp") {
+        newKernel     = CumulantK15BulkComp::getNewInstance(para, level);
+        checkStrategy = AdvecCompStrategy::getInstance();
+    } else if (kernel == "CumulantK15SpongeComp") {                             //     /\      //
+        newKernel     = CumulantK15SpongeComp::getNewInstance(para, level);     //	   ||
+        checkStrategy = AdvecCompStrategy::getInstance();						// compressible
+    }																			//===============
+	else if (  kernel == "BGKIncompSP27") {										// incompressible
+        newKernel     = BGKIncompSP27::getNewInstance(para, level);				//	   ||
+        checkStrategy = AdvecIncompStrategy::getInstance();                     //     \/
+    } else if (kernel == "BGKPlusIncompSP27") {
+        newKernel     = BGKPlusIncompSP27::getNewInstance(para, level);
+        checkStrategy = AdvecIncompStrategy::getInstance();
+    } else if (kernel == "MRTIncompSP27") {
+        newKernel     = MRTIncompSP27::getNewInstance(para, level);
+        checkStrategy = AdvecIncompStrategy::getInstance();
+    } else if (kernel == "CascadeIncompSP27") {
+        newKernel     = CascadeIncompSP27::getNewInstance(para, level);
+        checkStrategy = AdvecIncompStrategy::getInstance();
+    } else if (kernel == "Cumulant1hIncompSP27") {
+        newKernel     = Cumulant1hIncompSP27::getNewInstance(para, level);
+        checkStrategy = AdvecIncompStrategy::getInstance();
+    } else if (kernel == "CumulantIsoIncompSP27") {
+        newKernel     = CumulantIsoIncompSP27::getNewInstance(para, level);
+        checkStrategy = AdvecIncompStrategy::getInstance();
+    } else if (kernel == "CumulantK15Incomp") {									//     /\      //
+        newKernel     = CumulantK15Incomp::getNewInstance(para, level);			//	   ||
+        checkStrategy = AdvecIncompStrategy::getInstance();						// incompressible
+    }																			//=============== 
+	else if (kernel == "PMCumulantOneCompSP27") {								// porous media
+        newKernel     = PMCumulantOneCompSP27::getNewInstance(para, pm, level);	//	   ||
+        checkStrategy = PMAdvecCompStrategy::getInstance();						// porous media
+    }                                                                           //===============
+    else if (kernel == "WaleCumulantK17Comp") {                                 // wale model
+        newKernel     = WaleCumulantK17Comp::getNewInstance(para, level);       //	   ||
+        checkStrategy = WaleAdvecCompStrategy::getInstance();                   //     \/
+    } else if (kernel == "WaleCumulantK17DebugComp") {
+        newKernel     = WaleCumulantK17DebugComp::getNewInstance(para, level);
+        checkStrategy = WaleAdvecCompStrategy::getInstance();
+    } else if (kernel == "WaleCumulantK15Comp") {
+        newKernel     = WaleCumulantK15Comp::getNewInstance(para, level);
+        checkStrategy = WaleAdvecCompStrategy::getInstance();
+    } else if (kernel == "WaleBySoniMalavCumulantK15Comp") {                    //     /\      //
+        newKernel     = WaleBySoniMalavCumulantK15Comp::getNewInstance(para, level);// ||
+        checkStrategy = WaleAdvecCompStrategy::getInstance();                   // wale model
+    }                                                                           //===============
+    else {
+        throw std::runtime_error("KernelFactory does not know the KernelType.");
+    }
 
-
-	case LB_BGKIncompSP27:
-		newKernel = BGKIncompSP27::getNewInstance(para, level);
-		checkStrategy = AdvecIncompStrategy::getInstance();
-		break;
-	case LB_BGKPlusIncompSP27:
-		newKernel = BGKPlusIncompSP27::getNewInstance(para, level);
-		checkStrategy = AdvecIncompStrategy::getInstance();
-		break;
-	case LB_CascadeIncompSP27:
-		newKernel = CascadeIncompSP27::getNewInstance(para, level);
-		checkStrategy = AdvecIncompStrategy::getInstance();
-		break;
-	case LB_Cumulant1hIncompSP27:
-		newKernel = Cumulant1hIncompSP27::getNewInstance(para, level);
-		checkStrategy = AdvecIncompStrategy::getInstance();
-		break;
-	case LB_CumulantIsoIncompSP27:
-		newKernel = CumulantIsoIncompSP27::getNewInstance(para, level);
-		checkStrategy = AdvecIncompStrategy::getInstance();
-		break;
-	case LB_CumulantK15Incomp:
-		newKernel = CumulantK15Incomp::getNewInstance(para, level);
-		checkStrategy = AdvecIncompStrategy::getInstance();
-		break;
-	case LB_MRTIncompSP27:
-		newKernel = MRTIncompSP27::getNewInstance(para, level);
-		checkStrategy = AdvecIncompStrategy::getInstance();
-		break;
-
-	case LB_PMCumulantOneCompSP27:
-		newKernel = PMCumulantOneCompSP27::getNewInstance(para, pm, level);
-		checkStrategy = PMAdvecCompStrategy::getInstance();
-		break;
-
-
-
-	case LB_WaleCumulantK17Comp:
-		newKernel = WaleCumulantK17Comp::getNewInstance(para, level);
-		checkStrategy = WaleAdvecCompStrategy::getInstance();
-		break;
-	case LB_WaleCumulantK17DebugComp:
-		newKernel = WaleCumulantK17DebugComp::getNewInstance(para, level);
-		checkStrategy = WaleAdvecCompStrategy::getInstance();
-		break;
-	case LB_WaleCumulantK15Comp:
-		newKernel = WaleCumulantK15Comp::getNewInstance(para, level);
-		checkStrategy = WaleAdvecCompStrategy::getInstance();
-		break;
-	case LB_WaleBySoniMalavCumulantK15Comp:
-		newKernel = WaleBySoniMalavCumulantK15Comp::getNewInstance(para, level);
-		checkStrategy = WaleAdvecCompStrategy::getInstance();
-		break;
-	default:
-		break;
-	}
-
-	if (newKernel) {
-		newKernel->setCheckParameterStrategy(checkStrategy);
-		return newKernel;
-	}
-	else
-		throw  std::runtime_error("KernelFactory does not know the KernelType.");
-
+	newKernel->setCheckParameterStrategy(checkStrategy);
+	return newKernel;
 	
 }
 
-std::shared_ptr<ADKernel> KernelFactoryImp::makeAdvDifKernel(std::shared_ptr<Parameter> para, ADKernelType kernel, int level)
+std::shared_ptr<ADKernel> KernelFactoryImp::makeAdvDifKernel(std::shared_ptr<Parameter> para, std::string kernel, int level)
 {
 	std::shared_ptr<ADKernel> newKernel;
 	std::shared_ptr<CheckParameterStrategy> checkStrategy;
 
-	switch (kernel)
-	{
-	case LB_ADComp27:
-		newKernel = ADComp27::getNewInstance(para, level);
-		checkStrategy = ADMod27CompStrategy::getInstance();
-		break;
-	case LB_ADComp7:
-		newKernel = ADComp7::getNewInstance(para, level);
-		checkStrategy = ADMod7CompStrategy::getInstance();
-		break;
-	case LB_ADIncomp27:
-		newKernel = ADIncomp27::getNewInstance(para, level);
-		checkStrategy = ADMod27IncompStrategy::getInstance();
-		break;
-	case LB_ADIncomp7:
-		newKernel = ADIncomp7::getNewInstance(para, level);
-		checkStrategy = ADMod7IncompStrategy::getInstance();
-		break;
-	default:
-		break;
-	}
+    if (kernel == "ADComp27") {
+        newKernel     = ADComp27::getNewInstance(para, level);
+        checkStrategy = ADMod27CompStrategy::getInstance();
+    } else if(kernel == "ADComp7") {
+        newKernel     = ADComp7::getNewInstance(para, level);
+        checkStrategy = ADMod7CompStrategy::getInstance();
+    } else if (kernel == "ADIncomp27") {
+        newKernel     = ADIncomp27::getNewInstance(para, level);
+        checkStrategy = ADMod7CompStrategy::getInstance();
+    } else if (kernel == "ADIncomp7") {
+        newKernel     = ADIncomp7::getNewInstance(para, level);
+        checkStrategy = ADMod7CompStrategy::getInstance();
+    } else {
+        throw std::runtime_error("KernelFactory does not know the KernelType.");
+    }
 
 	if (newKernel) {
 		newKernel->setCheckParameterStrategy(checkStrategy);

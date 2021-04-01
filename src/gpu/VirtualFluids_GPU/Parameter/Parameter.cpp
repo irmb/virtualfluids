@@ -18,7 +18,6 @@
 #include "Core/Input/ConfigData/ConfigData.h"
 #include "Core/StringUtilities/StringUtil.h"
 #include "Communication/Communicator.h"
-#include "Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
 //#ifdef WIN32
 //   #include <Winsock2.h>
 //#endif
@@ -40,8 +39,6 @@ Parameter::Parameter()
 }
 Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 {
-	std::shared_ptr<KernelMapper> kernelMapper = KernelMapper::getInstance();
-
 	//////////////////////////////////////////////////////////////////////////
 	this->setNumprocs(comm->getNummberOfProcess());
 	this->setMyID(comm->getPID());
@@ -527,9 +524,9 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Kernel
 	if (configData->isMainKernelInConfigFile())
-		this->setMainKernel(kernelMapper->getEnum(configData->getMainKernel()));
+		this->setMainKernel(configData->getMainKernel());
 	else
-		this->setMainKernel(kernelMapper->getEnum("CumulantK15Comp"));
+		this->setMainKernel("CumulantK15Comp");
 
 	if (configData->isMultiKernelOnInConfigFile())
 		this->setMultiKernelOn(configData->getMultiKernelOn());
@@ -551,23 +548,23 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 		this->setMultiKernelLevel(std::vector<int>(0));
 
 	if (configData->isMultiKernelNameInConfigFile()) {
-		std::vector<KernelType> kernels;
+        std::vector<std::string> kernels;
 		for (std::size_t i = 0; i < configData->getMultiKernelName().size(); i++) {
-			kernels.push_back(kernelMapper->getEnum(configData->getMultiKernelName().at(i)));
+			kernels.push_back(configData->getMultiKernelName().at(i));
 		}
 		this->setMultiKernel(kernels);
 	}
 	else if (this->getMultiKernelOn())
 	{
-		std::vector<KernelType> tmp;
+        std::vector<std::string> tmp;
 		for (int i = 0; i < this->getMaxLevel()+1; i++)
 		{
-			tmp.push_back(kernelMapper->getEnum("CumulantK15Comp"));
+			tmp.push_back("CumulantK15Comp");
 		}
 		this->setMultiKernel(tmp);
 	}
 	else {
-		std::vector<KernelType> tmp;
+        std::vector<std::string> tmp;
 		this->setMultiKernel(tmp);
 	}		
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4272,7 +4269,7 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 {
 	ic.outflowNormalZ = outflowNormalZ;
 }
-void Parameter::setMainKernel(KernelType kernel)
+void Parameter::setMainKernel(std::string kernel)
 {
 	this->mainKernel = kernel;
 }
@@ -4284,11 +4281,11 @@ void Parameter::setMultiKernelLevel(std::vector< int> kernelLevel)
 {
 	this->multiKernelLevel = kernelLevel;
 }
-void Parameter::setMultiKernel(std::vector< KernelType> kernel)
+void Parameter::setMultiKernel(std::vector< std::string> kernel)
 {
 	this->multiKernel = kernel;
 }
-void Parameter::setADKernel(ADKernelType adKernel)
+void Parameter::setADKernel(std::string adKernel)
 {
 	this->adKernel = adKernel;
 }
@@ -5222,7 +5219,7 @@ curandState* Parameter::getRandomState()
 	return this->devState;
 }
 
-KernelType Parameter::getMainKernel()
+std::string Parameter::getMainKernel()
 {
 	return mainKernel;
 }
@@ -5234,11 +5231,11 @@ std::vector< int> Parameter::getMultiKernelLevel()
 {
 	return multiKernelLevel;
 }
-std::vector< KernelType> Parameter::getMultiKernel()
+std::vector< std::string> Parameter::getMultiKernel()
 {
 	return multiKernel;
 }
-ADKernelType Parameter::getADKernel()
+std::string Parameter::getADKernel()
 {
 	return adKernel;
 }

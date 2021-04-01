@@ -26,12 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file MultiphaseScratchCumulantLBMKernel.cpp
+//! \file MultiphaseTwoPhaseFieldsCumulantLBMKernel.cpp
 //! \ingroup LBMKernel
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#include "MultiphaseScratchCumulantLBMKernel.h"
+#include "MultiphaseTwoPhaseFieldsCumulantLBMKernel.h"
 #include "BCArray3D.h"
 #include "Block3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
@@ -43,23 +43,25 @@
 #define PROOF_CORRECTNESS
 
 //////////////////////////////////////////////////////////////////////////
-MultiphaseScratchCumulantLBMKernel::MultiphaseScratchCumulantLBMKernel() { this->compressible = false; }
+MultiphaseTwoPhaseFieldsCumulantLBMKernel::MultiphaseTwoPhaseFieldsCumulantLBMKernel() { this->compressible = false; }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseScratchCumulantLBMKernel::initDataSet()
+void MultiphaseTwoPhaseFieldsCumulantLBMKernel::initDataSet()
 {
     SPtr<DistributionArray3D> f(new D3Q27EsoTwist3DSplittedVector(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9));
     SPtr<DistributionArray3D> h(new D3Q27EsoTwist3DSplittedVector(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9)); // For phase-field
+    SPtr<DistributionArray3D> h2(new D3Q27EsoTwist3DSplittedVector(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9)); // For phase-field
     SPtr<PhaseFieldArray3D> divU(new PhaseFieldArray3D(nx[0] + 2, nx[1] + 2, nx[2] + 2, 0.0));
     dataSet->setFdistributions(f);
     dataSet->setHdistributions(h); // For phase-field
+    dataSet->setH2distributions(h2); // For phase-field
     dataSet->setPhaseField(divU);
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<LBMKernel> MultiphaseScratchCumulantLBMKernel::clone()
+SPtr<LBMKernel> MultiphaseTwoPhaseFieldsCumulantLBMKernel::clone()
 {
-    SPtr<LBMKernel> kernel(new MultiphaseScratchCumulantLBMKernel());
+    SPtr<LBMKernel> kernel(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
     kernel->setNX(nx);
-    dynamicPointerCast<MultiphaseScratchCumulantLBMKernel>(kernel)->initDataSet();
+    dynamicPointerCast<MultiphaseTwoPhaseFieldsCumulantLBMKernel>(kernel)->initDataSet();
     kernel->setCollisionFactorMultiphase(this->collFactorL, this->collFactorG);
     kernel->setDensityRatio(this->densityRatio);
     kernel->setMultiphaseModelParameters(this->beta, this->kappa);
@@ -80,7 +82,7 @@ SPtr<LBMKernel> MultiphaseScratchCumulantLBMKernel::clone()
     return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
- void  MultiphaseScratchCumulantLBMKernel::forwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho) {
+ void  MultiphaseTwoPhaseFieldsCumulantLBMKernel::forwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho) {
 	using namespace UbMath;
     LBMReal m2 = mfa + mfc;
 	LBMReal m1 = mfc - mfa;
@@ -93,7 +95,7 @@ SPtr<LBMKernel> MultiphaseScratchCumulantLBMKernel::clone()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
- void  MultiphaseScratchCumulantLBMKernel::backwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho) {
+ void  MultiphaseTwoPhaseFieldsCumulantLBMKernel::backwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho) {
 	using namespace UbMath;
     LBMReal m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (v2 - vv) * c1o2) * K;
 	LBMReal m1 = (((mfa - mfc) - c2 * mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (-v2)) * K;
@@ -104,7 +106,7 @@ SPtr<LBMKernel> MultiphaseScratchCumulantLBMKernel::clone()
 
 
 ////////////////////////////////////////////////////////////////////////////////
- void  MultiphaseScratchCumulantLBMKernel::forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2) {
+ void  MultiphaseTwoPhaseFieldsCumulantLBMKernel::forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2) {
 	using namespace UbMath;
     LBMReal m1 = (mfa + mfc) + mfb;
 	LBMReal m2 = mfc - mfa;
@@ -114,7 +116,7 @@ SPtr<LBMKernel> MultiphaseScratchCumulantLBMKernel::clone()
 }
 
 
- void  MultiphaseScratchCumulantLBMKernel::backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2) {
+ void  MultiphaseTwoPhaseFieldsCumulantLBMKernel::backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2) {
 	using namespace UbMath;
     LBMReal ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
 	LBMReal mb = ((mfa - mfc) - mfa * v2) - c2 * mfb * vv;
@@ -124,7 +126,7 @@ SPtr<LBMKernel> MultiphaseScratchCumulantLBMKernel::clone()
 }
 
 
-void MultiphaseScratchCumulantLBMKernel::calculate(int step)
+void MultiphaseTwoPhaseFieldsCumulantLBMKernel::calculate(int step)
 {
     using namespace D3Q27System;
     using namespace UbMath;
@@ -133,16 +135,20 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
     forcingX2 = 0.0;
     forcingX3 = 0.0;
 
-	LBMReal oneOverInterfaceScale = 1.0;// 1.0 / 3.0;
+	LBMReal oneOverInterfaceScale = 1.0;
     /////////////////////////////////////
 
     localDistributionsF    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
     nonLocalDistributionsF = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
     zeroDistributionsF     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-    localDistributionsH    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getLocalDistributions();
-    nonLocalDistributionsH = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getNonLocalDistributions();
-    zeroDistributionsH     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getZeroDistributions();
+    localDistributionsH1    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getLocalDistributions();
+    nonLocalDistributionsH1 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getNonLocalDistributions();
+    zeroDistributionsH1     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getZeroDistributions();
+
+	localDistributionsH2    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getH2distributions())->getLocalDistributions();
+    nonLocalDistributionsH2 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getH2distributions())->getNonLocalDistributions();
+    zeroDistributionsH2     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getH2distributions())->getZeroDistributions();
 
     SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
 
@@ -157,8 +163,12 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
     int maxX2 = bcArrayMaxX2 - ghostLayerWidth;
     int maxX3 = bcArrayMaxX3 - ghostLayerWidth;
 
-        CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField(
+    //TODO
+	//very expensive !!!!!
+	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField(
             new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, -999.0));
+    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField2(
+        new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, -999.0));
         CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr divU(
             new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, 0.0));
 
@@ -171,38 +181,72 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
                         int x2p = x2 + 1;
                         int x3p = x3 + 1;
 
-                        LBMReal mfcbb = (*this->localDistributionsH)(D3Q27System::ET_E, x1, x2, x3);
-                        LBMReal mfbcb = (*this->localDistributionsH)(D3Q27System::ET_N, x1, x2, x3);
-                        LBMReal mfbbc = (*this->localDistributionsH)(D3Q27System::ET_T, x1, x2, x3);
-                        LBMReal mfccb = (*this->localDistributionsH)(D3Q27System::ET_NE, x1, x2, x3);
-                        LBMReal mfacb = (*this->localDistributionsH)(D3Q27System::ET_NW, x1p, x2, x3);
-                        LBMReal mfcbc = (*this->localDistributionsH)(D3Q27System::ET_TE, x1, x2, x3);
-                        LBMReal mfabc = (*this->localDistributionsH)(D3Q27System::ET_TW, x1p, x2, x3);
-                        LBMReal mfbcc = (*this->localDistributionsH)(D3Q27System::ET_TN, x1, x2, x3);
-                        LBMReal mfbac = (*this->localDistributionsH)(D3Q27System::ET_TS, x1, x2p, x3);
-                        LBMReal mfccc = (*this->localDistributionsH)(D3Q27System::ET_TNE, x1, x2, x3);
-                        LBMReal mfacc = (*this->localDistributionsH)(D3Q27System::ET_TNW, x1p, x2, x3);
-                        LBMReal mfcac = (*this->localDistributionsH)(D3Q27System::ET_TSE, x1, x2p, x3);
-                        LBMReal mfaac = (*this->localDistributionsH)(D3Q27System::ET_TSW, x1p, x2p, x3);
-                        LBMReal mfabb = (*this->nonLocalDistributionsH)(D3Q27System::ET_W, x1p, x2, x3);
-                        LBMReal mfbab = (*this->nonLocalDistributionsH)(D3Q27System::ET_S, x1, x2p, x3);
-                        LBMReal mfbba = (*this->nonLocalDistributionsH)(D3Q27System::ET_B, x1, x2, x3p);
-                        LBMReal mfaab = (*this->nonLocalDistributionsH)(D3Q27System::ET_SW, x1p, x2p, x3);
-                        LBMReal mfcab = (*this->nonLocalDistributionsH)(D3Q27System::ET_SE, x1, x2p, x3);
-                        LBMReal mfaba = (*this->nonLocalDistributionsH)(D3Q27System::ET_BW, x1p, x2, x3p);
-                        LBMReal mfcba = (*this->nonLocalDistributionsH)(D3Q27System::ET_BE, x1, x2, x3p);
-                        LBMReal mfbaa = (*this->nonLocalDistributionsH)(D3Q27System::ET_BS, x1, x2p, x3p);
-                        LBMReal mfbca = (*this->nonLocalDistributionsH)(D3Q27System::ET_BN, x1, x2, x3p);
-                        LBMReal mfaaa = (*this->nonLocalDistributionsH)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-                        LBMReal mfcaa = (*this->nonLocalDistributionsH)(D3Q27System::ET_BSE, x1, x2p, x3p);
-                        LBMReal mfaca = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNW, x1p, x2, x3p);
-                        LBMReal mfcca = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNE, x1, x2, x3p);
+                        LBMReal mfcbb = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
+                        LBMReal mfbcb = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
+                        LBMReal mfbbc = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
+                        LBMReal mfccb = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
+                        LBMReal mfacb = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
+                        LBMReal mfcbc = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
+                        LBMReal mfabc = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
+                        LBMReal mfbcc = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
+                        LBMReal mfbac = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
+                        LBMReal mfccc = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
+                        LBMReal mfacc = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
+                        LBMReal mfcac = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
+                        LBMReal mfaac = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
+                        LBMReal mfabb = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
+                        LBMReal mfbab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
+                        LBMReal mfbba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
+                        LBMReal mfaab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
+                        LBMReal mfcab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
+                        LBMReal mfaba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
+                        LBMReal mfcba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
+                        LBMReal mfbaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
+                        LBMReal mfbca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
+                        LBMReal mfaaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+                        LBMReal mfcaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
+                        LBMReal mfaca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
+                        LBMReal mfcca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                        LBMReal mfbbb = (*this->zeroDistributionsH)(x1, x2, x3);
+                        LBMReal mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
                         (*phaseField)(x1, x2, x3) = (((mfaaa + mfccc) + (mfaca + mfcac)) + ((mfaac + mfcca)  + (mfcaa + mfacc))  ) +
                                                     (((mfaab + mfacb) + (mfcab + mfccb)) + ((mfaba + mfabc) + (mfcba + mfcbc)) +
                                                     ((mfbaa + mfbac) + (mfbca + mfbcc))) + ((mfabb + mfcbb) +
                                                     (mfbab + mfbcb) + (mfbba + mfbbc)) + mfbbb;
+
+                        mfcbb = (*this->localDistributionsH2)(D3Q27System::ET_E, x1, x2, x3);
+                        mfbcb = (*this->localDistributionsH2)(D3Q27System::ET_N, x1, x2, x3);
+                        mfbbc = (*this->localDistributionsH2)(D3Q27System::ET_T, x1, x2, x3);
+                        mfccb = (*this->localDistributionsH2)(D3Q27System::ET_NE, x1, x2, x3);
+                        mfacb = (*this->localDistributionsH2)(D3Q27System::ET_NW, x1p, x2, x3);
+                        mfcbc = (*this->localDistributionsH2)(D3Q27System::ET_TE, x1, x2, x3);
+                        mfabc = (*this->localDistributionsH2)(D3Q27System::ET_TW, x1p, x2, x3);
+                        mfbcc = (*this->localDistributionsH2)(D3Q27System::ET_TN, x1, x2, x3);
+                        mfbac = (*this->localDistributionsH2)(D3Q27System::ET_TS, x1, x2p, x3);
+                        mfccc = (*this->localDistributionsH2)(D3Q27System::ET_TNE, x1, x2, x3);
+                        mfacc = (*this->localDistributionsH2)(D3Q27System::ET_TNW, x1p, x2, x3);
+                        mfcac = (*this->localDistributionsH2)(D3Q27System::ET_TSE, x1, x2p, x3);
+                        mfaac = (*this->localDistributionsH2)(D3Q27System::ET_TSW, x1p, x2p, x3);
+                        mfabb = (*this->nonLocalDistributionsH2)(D3Q27System::ET_W, x1p, x2, x3);
+                        mfbab = (*this->nonLocalDistributionsH2)(D3Q27System::ET_S, x1, x2p, x3);
+                        mfbba = (*this->nonLocalDistributionsH2)(D3Q27System::ET_B, x1, x2, x3p);
+                        mfaab = (*this->nonLocalDistributionsH2)(D3Q27System::ET_SW, x1p, x2p, x3);
+                        mfcab = (*this->nonLocalDistributionsH2)(D3Q27System::ET_SE, x1, x2p, x3);
+                        mfaba = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BW, x1p, x2, x3p);
+                        mfcba = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BE, x1, x2, x3p);
+                        mfbaa = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BS, x1, x2p, x3p);
+                        mfbca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BN, x1, x2, x3p);
+                        mfaaa = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+                        mfcaa = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BSE, x1, x2p, x3p);
+                        mfaca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BNW, x1p, x2, x3p);
+                        mfcca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BNE, x1, x2, x3p);
+
+                        mfbbb = (*this->zeroDistributionsH2)(x1, x2, x3);
+                        (*phaseField2)(x1, x2, x3) =
+                            (((mfaaa + mfccc) + (mfaca + mfcac)) + ((mfaac + mfcca) + (mfcaa + mfacc))) +
+                            (((mfaab + mfacb) + (mfcab + mfccb)) + ((mfaba + mfabc) + (mfcba + mfcbc)) +
+                             ((mfbaa + mfbac) + (mfbca + mfbcc))) +
+                            ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc)) + mfbbb;
 						//(*phaseField)(x1, x2, x3) = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca) +
 						//	(mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) +
 						//	(mfbaa + mfbac + mfbca + mfbcc) + (mfabb + mfcbb) +
@@ -343,10 +387,6 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 
 			    mfbbb = (*this->zeroDistributionsF)(x1, x2, x3) / rho;
 
-
-
-
-
 			   LBMReal m0, m1, m2;
 			   LBMReal rhoRef=c1;
 
@@ -388,16 +428,11 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   }
 
 			   LBMReal vx2;
-			   LBMReal vy2;
-			   LBMReal vz2;
-			   vx2 = vvx * vvx;
-			   vy2 = vvy * vvy;
-			   vz2 = vvz * vvz;
-
-			   ///////
-
-
-
+               LBMReal vy2;
+               LBMReal vz2;
+               vx2 = vvx * vvx;
+               vy2 = vvy * vvy;
+               vz2 = vvz * vvz;
 			   ///////////////////////////////////////////////////////////////////////////////////////////               
 			   LBMReal oMdrho;
 
@@ -427,7 +462,6 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   m0 += m1 + m2;
 			   m0 += mfbbb; //hat gefehlt
 			   oMdrho = (rhoRef - (oMdrho + m0))/rhoRef;// 12.03.21 check derivation!!!!
-
 
 			   ////////////////////////////////////////////////////////////////////////////////////
 			   LBMReal wadjust;
@@ -709,15 +743,16 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 
 			   //applying phase field gradients first part:
 			  // mxxPyyPzz += c2o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz);
-
-			   //17.03.2021 attempt for statililization by assymptotically vanishing bias
-			   LBMReal correctionScaling = rhoToPhi /rho;// +0.5;// (vx2 + vy2 + vz2) * 100;// +0.5;//(vx2 + vy2 + vz2)*1000;
-			   mxxPyyPzz += (1.0/6.0) * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz)* correctionScaling; // As in Hesam's code
-			   mxxMyy += c1o3 * (dX1_phi * vvx - dX2_phi * vvy)* correctionScaling;
-			   mxxMzz += c1o3 * (dX1_phi * vvx - dX3_phi * vvz) * correctionScaling;
-			   mfabb += c1o6 * (dX2_phi * vvz + dX3_phi * vvy) * correctionScaling;
-			   mfbab += c1o6 * (dX1_phi * vvz + dX3_phi * vvx) * correctionScaling;
-			   mfbba += c1o6 * (dX1_phi * vvy + dX2_phi * vvx) * correctionScaling;
+               // 17.03.2021 attempt for statililization by assymptotically vanishing bias
+               LBMReal correctionScaling =
+                   rhoToPhi / rho; // +0.5;// (vx2 + vy2 + vz2) * 100;// +0.5;//(vx2 + vy2 + vz2)*1000;
+               mxxPyyPzz += (1.0 / 6.0) * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) *
+                            correctionScaling; // As in Hesam's code
+               mxxMyy += c1o3 * (dX1_phi * vvx - dX2_phi * vvy) * correctionScaling;
+               mxxMzz += c1o3 * (dX1_phi * vvx - dX3_phi * vvz) * correctionScaling;
+               mfabb += c1o6 * (dX2_phi * vvz + dX3_phi * vvy) * correctionScaling;
+               mfbab += c1o6 * (dX1_phi * vvz + dX3_phi * vvx) * correctionScaling;
+               mfbba += c1o6 * (dX1_phi * vvy + dX2_phi * vvx) * correctionScaling;
 
 			   LBMReal dxux = 0.0;// -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz);
 			   LBMReal dyuy = 0.0;// dxux + collFactorM * c3o2 * mxxMyy;
@@ -734,18 +769,18 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 
 			   //applying phase field gradients second part:
 			   //mxxPyyPzz += c2o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz);
-			   mxxPyyPzz += (1.0 / 6.0) * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) * correctionScaling; // As in Hesam's code
-			   mxxMyy += c1o3 * (dX1_phi * vvx - dX2_phi * vvy) * correctionScaling;
-			   mxxMzz += c1o3 * (dX1_phi * vvx - dX3_phi * vvz) * correctionScaling;
-			   mfabb += c1o6 * (dX2_phi * vvz + dX3_phi * vvy) * correctionScaling;
-			   mfbab += c1o6 * (dX1_phi * vvz + dX3_phi * vvx) * correctionScaling;
-			   mfbba += c1o6 * (dX1_phi * vvy + dX2_phi * vvx) * correctionScaling;
+               mxxPyyPzz += (1.0 / 6.0) * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) *
+                            correctionScaling; // As in Hesam's code
+               mxxMyy += c1o3 * (dX1_phi * vvx - dX2_phi * vvy) * correctionScaling;
+               mxxMzz += c1o3 * (dX1_phi * vvx - dX3_phi * vvz) * correctionScaling;
+               mfabb += c1o6 * (dX2_phi * vvz + dX3_phi * vvy) * correctionScaling;
+               mfbab += c1o6 * (dX1_phi * vvz + dX3_phi * vvx) * correctionScaling;
+               mfbba += c1o6 * (dX1_phi * vvy + dX2_phi * vvx) * correctionScaling;
 
-			   ////updated pressure
-			   mfaaa += (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) * correctionScaling;
+               ////updated pressure
+               mfaaa += (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) * correctionScaling;
 
-			   mxxPyyPzz += mfaaa;//12.03.21 shifted by mfaaa
-			 //  mxxPyyPzz = mfaaa; //12.03.21 reguarized pressure !?
+               mxxPyyPzz += mfaaa; // 12.03.21 shifted by mfaaa
 			   // linear combinations back
 			   mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
 			   mfaca = c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz);
@@ -1063,7 +1098,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 				   + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 				   + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 			   //LBMReal dif = fabs(drho - rho_post);
-			   LBMReal dif = drho+  (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) *correctionScaling - rho_post;
+               LBMReal dif = drho + (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) * correctionScaling - rho_post;
 #ifdef SINGLEPRECISION
 			   if (dif > 10.0E-7 || dif < -10.0E-7)
 #else
@@ -1943,33 +1978,33 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 		/////CUMULANT PHASE-FIELD
 				LBMReal omegaD =1.0/( 3.0 * mob + 0.5);
 
-			   mfcbb = (*this->localDistributionsH)(D3Q27System::ET_E, x1, x2, x3);
-			   mfbcb = (*this->localDistributionsH)(D3Q27System::ET_N, x1, x2, x3);
-			   mfbbc = (*this->localDistributionsH)(D3Q27System::ET_T, x1, x2, x3);
-			   mfccb = (*this->localDistributionsH)(D3Q27System::ET_NE, x1, x2, x3);
-			   mfacb = (*this->localDistributionsH)(D3Q27System::ET_NW, x1p, x2, x3);
-			   mfcbc = (*this->localDistributionsH)(D3Q27System::ET_TE, x1, x2, x3);
-			   mfabc = (*this->localDistributionsH)(D3Q27System::ET_TW, x1p, x2, x3);
-			   mfbcc = (*this->localDistributionsH)(D3Q27System::ET_TN, x1, x2, x3);
-			   mfbac = (*this->localDistributionsH)(D3Q27System::ET_TS, x1, x2p, x3);
-			   mfccc = (*this->localDistributionsH)(D3Q27System::ET_TNE, x1, x2, x3);
-			   mfacc = (*this->localDistributionsH)(D3Q27System::ET_TNW, x1p, x2, x3);
-			   mfcac = (*this->localDistributionsH)(D3Q27System::ET_TSE, x1, x2p, x3);
-			   mfaac = (*this->localDistributionsH)(D3Q27System::ET_TSW, x1p, x2p, x3);
-			   mfabb = (*this->nonLocalDistributionsH)(D3Q27System::ET_W, x1p, x2, x3);
-			   mfbab = (*this->nonLocalDistributionsH)(D3Q27System::ET_S, x1, x2p, x3);
-			   mfbba = (*this->nonLocalDistributionsH)(D3Q27System::ET_B, x1, x2, x3p);
-			   mfaab = (*this->nonLocalDistributionsH)(D3Q27System::ET_SW, x1p, x2p, x3);
-			   mfcab = (*this->nonLocalDistributionsH)(D3Q27System::ET_SE, x1, x2p, x3);
-			   mfaba = (*this->nonLocalDistributionsH)(D3Q27System::ET_BW, x1p, x2, x3p);
-			   mfcba = (*this->nonLocalDistributionsH)(D3Q27System::ET_BE, x1, x2, x3p);
-			   mfbaa = (*this->nonLocalDistributionsH)(D3Q27System::ET_BS, x1, x2p, x3p);
-			   mfbca = (*this->nonLocalDistributionsH)(D3Q27System::ET_BN, x1, x2, x3p);
-			   mfaaa = (*this->nonLocalDistributionsH)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-			   mfcaa = (*this->nonLocalDistributionsH)(D3Q27System::ET_BSE, x1, x2p, x3p);
-			   mfaca = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNW, x1p, x2, x3p);
-			   mfcca = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNE, x1, x2, x3p);
-			   mfbbb = (*this->zeroDistributionsH)(x1, x2, x3);
+			   mfcbb = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
+			   mfbcb = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
+			   mfbbc = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
+			   mfccb = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
+			   mfacb = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
+			   mfcbc = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
+			   mfabc = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
+			   mfbcc = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
+			   mfbac = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
+			   mfccc = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
+			   mfacc = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
+			   mfcac = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
+			   mfaac = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
+			   mfabb = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
+			   mfbab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
+			   mfbba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
+			   mfaab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
+			   mfcab = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
+			   mfaba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
+			   mfcba = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
+			   mfbaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
+			   mfbca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
+			   mfaaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+			   mfcaa = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
+			   mfaca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
+			   mfcca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
+			   mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
 
 
 					////////////////////////////////////////////////////////////////////////////////////
@@ -2099,9 +2134,12 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   LBMReal Mccb = mfccb - mfaab * c1o9;
 
 			   // collision of 1st order moments
-			   cx = cx * (c1 - omegaD) + omegaD * vvx * concentration + normX1 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
-			   cy = cy * (c1 - omegaD) + omegaD * vvy * concentration + normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
-			   cz = cz * (c1 - omegaD) + omegaD * vvz * concentration + normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+               cx = cx * (c1 - omegaD) + omegaD * vvx * concentration +
+                    normX1 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+               cy = cy * (c1 - omegaD) + omegaD * vvy * concentration +
+                    normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+               cz = cz * (c1 - omegaD) + omegaD * vvz * concentration +
+                    normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
 
 			   //mhx = (ux * phi[REST] + normX1 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhx;
 			   //mhy = (uy * phi[REST] + normX2 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhy;
@@ -2214,35 +2252,35 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 
 
 
-			   (*this->localDistributionsH)(D3Q27System::ET_E,   x1,  x2,  x3) = mfabb;
-   (*this->localDistributionsH)(D3Q27System::ET_N,   x1,  x2,  x3) = mfbab;
-   (*this->localDistributionsH)(D3Q27System::ET_T,   x1,  x2,  x3) = mfbba;
-   (*this->localDistributionsH)(D3Q27System::ET_NE,  x1,  x2,  x3) = mfaab;
-   (*this->localDistributionsH)(D3Q27System::ET_NW,  x1p, x2,  x3) = mfcab;
-   (*this->localDistributionsH)(D3Q27System::ET_TE,  x1,  x2,  x3) = mfaba;
-   (*this->localDistributionsH)(D3Q27System::ET_TW,  x1p, x2,  x3) = mfcba;
-   (*this->localDistributionsH)(D3Q27System::ET_TN,  x1,  x2,  x3) = mfbaa;
-   (*this->localDistributionsH)(D3Q27System::ET_TS,  x1,  x2p, x3) = mfbca;
-   (*this->localDistributionsH)(D3Q27System::ET_TNE, x1,  x2,  x3) = mfaaa;
-   (*this->localDistributionsH)(D3Q27System::ET_TNW, x1p, x2,  x3) = mfcaa;
-   (*this->localDistributionsH)(D3Q27System::ET_TSE, x1,  x2p, x3) = mfaca;
-   (*this->localDistributionsH)(D3Q27System::ET_TSW, x1p, x2p, x3) = mfcca;
+			   (*this->localDistributionsH1)(D3Q27System::ET_E,   x1,  x2,  x3) = mfabb;
+   (*this->localDistributionsH1)(D3Q27System::ET_N,   x1,  x2,  x3) = mfbab;
+   (*this->localDistributionsH1)(D3Q27System::ET_T,   x1,  x2,  x3) = mfbba;
+   (*this->localDistributionsH1)(D3Q27System::ET_NE,  x1,  x2,  x3) = mfaab;
+   (*this->localDistributionsH1)(D3Q27System::ET_NW,  x1p, x2,  x3) = mfcab;
+   (*this->localDistributionsH1)(D3Q27System::ET_TE,  x1,  x2,  x3) = mfaba;
+   (*this->localDistributionsH1)(D3Q27System::ET_TW,  x1p, x2,  x3) = mfcba;
+   (*this->localDistributionsH1)(D3Q27System::ET_TN,  x1,  x2,  x3) = mfbaa;
+   (*this->localDistributionsH1)(D3Q27System::ET_TS,  x1,  x2p, x3) = mfbca;
+   (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1,  x2,  x3) = mfaaa;
+   (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2,  x3) = mfcaa;
+   (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1,  x2p, x3) = mfaca;
+   (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3) = mfcca;
 
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_W,   x1p, x2,  x3 ) = mfcbb;
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_S,   x1,  x2p, x3 ) = mfbcb;
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_B,   x1,  x2,  x3p) = mfbbc;
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_SW,  x1p, x2p, x3 ) = mfccb;
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_SE,  x1,  x2p, x3 ) = mfacb;
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_BW,  x1p, x2,  x3p) = mfcbc;
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_BE,  x1,  x2,  x3p) = mfabc;
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_BS,  x1,  x2p, x3p) = mfbcc;
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_BN,  x1,  x2,  x3p) = mfbac;
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_BSW, x1p, x2p, x3p) = mfccc;
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_BSE, x1,  x2p, x3p) = mfacc;
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_BNW, x1p, x2,  x3p) = mfcac;
-   (*this->nonLocalDistributionsH)(D3Q27System::ET_BNE, x1,  x2,  x3p) = mfaac;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_W,   x1p, x2,  x3 ) = mfcbb;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_S,   x1,  x2p, x3 ) = mfbcb;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_B,   x1,  x2,  x3p) = mfbbc;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW,  x1p, x2p, x3 ) = mfccb;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE,  x1,  x2p, x3 ) = mfacb;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW,  x1p, x2,  x3p) = mfcbc;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE,  x1,  x2,  x3p) = mfabc;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS,  x1,  x2p, x3p) = mfbcc;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN,  x1,  x2,  x3p) = mfbac;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p) = mfccc;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1,  x2p, x3p) = mfacc;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2,  x3p) = mfcac;
+   (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1,  x2,  x3p) = mfaac;
 
-   (*this->zeroDistributionsH)(x1,x2,x3) = mfbbb;
+   (*this->zeroDistributionsH1)(x1,x2,x3) = mfbbb;
 
 		/////!CUMULANT PHASE-FIELD
 
@@ -2339,7 +2377,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 }
 //////////////////////////////////////////////////////////////////////////
 
-LBMReal MultiphaseScratchCumulantLBMKernel::gradX1_phi()
+LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX1_phi()
 {
     using namespace D3Q27System;
 	return 3.0* ((WEIGTH[TNE] * (((phi[TNE] - phi[BSW]) + (phi[BSE] - phi[TNW])) + ((phi[TSE] - phi[BNW]) + (phi[BNE] - phi[TSW])))
@@ -2352,7 +2390,7 @@ LBMReal MultiphaseScratchCumulantLBMKernel::gradX1_phi()
     //return 3.0 * sum;
 }
 
-LBMReal MultiphaseScratchCumulantLBMKernel::gradX2_phi()
+LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX2_phi()
 {
     using namespace D3Q27System;
 	return 3.0 * ((WEIGTH[TNE] * (((phi[TNE] - phi[BSW]) - (phi[BSE] - phi[TNW])) + ((phi[BNE] - phi[TSW])- (phi[TSE] - phi[BNW])))
@@ -2365,7 +2403,7 @@ LBMReal MultiphaseScratchCumulantLBMKernel::gradX2_phi()
     //return 3.0 * sum;
 }
 
-LBMReal MultiphaseScratchCumulantLBMKernel::gradX3_phi()
+LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::gradX3_phi()
 {
     using namespace D3Q27System;
 	return 3.0 * ((WEIGTH[TNE] * (((phi[TNE] - phi[BSW]) - (phi[BSE] - phi[TNW])) + ((phi[TSE] - phi[BNW]) - (phi[BNE] - phi[TSW])))
@@ -2378,7 +2416,7 @@ LBMReal MultiphaseScratchCumulantLBMKernel::gradX3_phi()
     //return 3.0 * sum;
 }
 
-LBMReal MultiphaseScratchCumulantLBMKernel::nabla2_phi()
+LBMReal MultiphaseTwoPhaseFieldsCumulantLBMKernel::nabla2_phi()
 {
     using namespace D3Q27System;
     LBMReal sum = 0.0;
@@ -2400,7 +2438,7 @@ LBMReal MultiphaseScratchCumulantLBMKernel::nabla2_phi()
     return 6.0 * sum;
 }
 
-void MultiphaseScratchCumulantLBMKernel::computePhasefield()
+void MultiphaseTwoPhaseFieldsCumulantLBMKernel::computePhasefield()
 {
     using namespace D3Q27System;
     SPtr<DistributionArray3D> distributionsH = dataSet->getHdistributions();
@@ -2422,42 +2460,42 @@ void MultiphaseScratchCumulantLBMKernel::computePhasefield()
                     int x2p = x2 + 1;
                     int x3p = x3 + 1;
 
-                    h[E]   = (*this->localDistributionsH)(D3Q27System::ET_E, x1, x2, x3);
-                    h[N]   = (*this->localDistributionsH)(D3Q27System::ET_N, x1, x2, x3);
-                    h[T]   = (*this->localDistributionsH)(D3Q27System::ET_T, x1, x2, x3);
-                    h[NE]  = (*this->localDistributionsH)(D3Q27System::ET_NE, x1, x2, x3);
-                    h[NW]  = (*this->localDistributionsH)(D3Q27System::ET_NW, x1p, x2, x3);
-                    h[TE]  = (*this->localDistributionsH)(D3Q27System::ET_TE, x1, x2, x3);
-                    h[TW]  = (*this->localDistributionsH)(D3Q27System::ET_TW, x1p, x2, x3);
-                    h[TN]  = (*this->localDistributionsH)(D3Q27System::ET_TN, x1, x2, x3);
-                    h[TS]  = (*this->localDistributionsH)(D3Q27System::ET_TS, x1, x2p, x3);
-                    h[TNE] = (*this->localDistributionsH)(D3Q27System::ET_TNE, x1, x2, x3);
-                    h[TNW] = (*this->localDistributionsH)(D3Q27System::ET_TNW, x1p, x2, x3);
-                    h[TSE] = (*this->localDistributionsH)(D3Q27System::ET_TSE, x1, x2p, x3);
-                    h[TSW] = (*this->localDistributionsH)(D3Q27System::ET_TSW, x1p, x2p, x3);
+                    h[E]   = (*this->localDistributionsH1)(D3Q27System::ET_E, x1, x2, x3);
+                    h[N]   = (*this->localDistributionsH1)(D3Q27System::ET_N, x1, x2, x3);
+                    h[T]   = (*this->localDistributionsH1)(D3Q27System::ET_T, x1, x2, x3);
+                    h[NE]  = (*this->localDistributionsH1)(D3Q27System::ET_NE, x1, x2, x3);
+                    h[NW]  = (*this->localDistributionsH1)(D3Q27System::ET_NW, x1p, x2, x3);
+                    h[TE]  = (*this->localDistributionsH1)(D3Q27System::ET_TE, x1, x2, x3);
+                    h[TW]  = (*this->localDistributionsH1)(D3Q27System::ET_TW, x1p, x2, x3);
+                    h[TN]  = (*this->localDistributionsH1)(D3Q27System::ET_TN, x1, x2, x3);
+                    h[TS]  = (*this->localDistributionsH1)(D3Q27System::ET_TS, x1, x2p, x3);
+                    h[TNE] = (*this->localDistributionsH1)(D3Q27System::ET_TNE, x1, x2, x3);
+                    h[TNW] = (*this->localDistributionsH1)(D3Q27System::ET_TNW, x1p, x2, x3);
+                    h[TSE] = (*this->localDistributionsH1)(D3Q27System::ET_TSE, x1, x2p, x3);
+                    h[TSW] = (*this->localDistributionsH1)(D3Q27System::ET_TSW, x1p, x2p, x3);
 
-                    h[W]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_W, x1p, x2, x3);
-                    h[S]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_S, x1, x2p, x3);
-                    h[B]   = (*this->nonLocalDistributionsH)(D3Q27System::ET_B, x1, x2, x3p);
-                    h[SW]  = (*this->nonLocalDistributionsH)(D3Q27System::ET_SW, x1p, x2p, x3);
-                    h[SE]  = (*this->nonLocalDistributionsH)(D3Q27System::ET_SE, x1, x2p, x3);
-                    h[BW]  = (*this->nonLocalDistributionsH)(D3Q27System::ET_BW, x1p, x2, x3p);
-                    h[BE]  = (*this->nonLocalDistributionsH)(D3Q27System::ET_BE, x1, x2, x3p);
-                    h[BS]  = (*this->nonLocalDistributionsH)(D3Q27System::ET_BS, x1, x2p, x3p);
-                    h[BN]  = (*this->nonLocalDistributionsH)(D3Q27System::ET_BN, x1, x2, x3p);
-                    h[BSW] = (*this->nonLocalDistributionsH)(D3Q27System::ET_BSW, x1p, x2p, x3p);
-                    h[BSE] = (*this->nonLocalDistributionsH)(D3Q27System::ET_BSE, x1, x2p, x3p);
-                    h[BNW] = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNW, x1p, x2, x3p);
-                    h[BNE] = (*this->nonLocalDistributionsH)(D3Q27System::ET_BNE, x1, x2, x3p);
+                    h[W]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_W, x1p, x2, x3);
+                    h[S]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_S, x1, x2p, x3);
+                    h[B]   = (*this->nonLocalDistributionsH1)(D3Q27System::ET_B, x1, x2, x3p);
+                    h[SW]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SW, x1p, x2p, x3);
+                    h[SE]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_SE, x1, x2p, x3);
+                    h[BW]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BW, x1p, x2, x3p);
+                    h[BE]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BE, x1, x2, x3p);
+                    h[BS]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BS, x1, x2p, x3p);
+                    h[BN]  = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BN, x1, x2, x3p);
+                    h[BSW] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSW, x1p, x2p, x3p);
+                    h[BSE] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BSE, x1, x2p, x3p);
+                    h[BNW] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNW, x1p, x2, x3p);
+                    h[BNE] = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 
-                    h[REST] = (*this->zeroDistributionsH)(x1, x2, x3);
+                    h[REST] = (*this->zeroDistributionsH1)(x1, x2, x3);
                 }
             }
         }
     }
 }
 
-void MultiphaseScratchCumulantLBMKernel::findNeighbors(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
+void MultiphaseTwoPhaseFieldsCumulantLBMKernel::findNeighbors(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
                                                 int x3)
 {
     using namespace D3Q27System;
@@ -2476,7 +2514,7 @@ void MultiphaseScratchCumulantLBMKernel::findNeighbors(CbArray3D<LBMReal, Indexe
     }
 }
 
-void MultiphaseScratchCumulantLBMKernel::swapDistributions()
+void MultiphaseTwoPhaseFieldsCumulantLBMKernel::swapDistributions()
 {
     LBMKernel::swapDistributions();
     dataSet->getHdistributions()->swap();

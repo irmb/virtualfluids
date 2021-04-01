@@ -26,8 +26,6 @@
 
 #include "VirtualFluids_GPU_export.h"
 
-#include "Kernel/Utilities/KernelType.h"
-
 class ConfigData;
 class Communicator;
 
@@ -789,12 +787,12 @@ public:
 	void setOutflowBoundaryNormalY(std::string outflowNormalY);
 	void setOutflowBoundaryNormalZ(std::string outflowNormalZ);
 	//Kernel
-	void setMainKernel(KernelType kernel);
+    void setMainKernel(std::string kernel);
 	void setMultiKernelOn(bool isOn);
-	void setMultiKernelLevel(std::vector< int> kernelLevel);
-	void setMultiKernel(std::vector< KernelType> kernel);
+	void setMultiKernelLevel(std::vector<int> kernelLevel);
+    void setMultiKernel(std::vector<std::string> kernel);
 
-	void setADKernel(ADKernelType adKernel);
+	void setADKernel(std::string adKernel);
 
 	//getter
 	double* getForcesDouble();
@@ -1002,12 +1000,12 @@ public:
 	//CUDA random number
 	curandState* getRandomState();
 	//Kernel
-	KernelType getMainKernel();
+    std::string getMainKernel();
 	bool getMultiKernelOn();
-	std::vector< int> getMultiKernelLevel();
-	std::vector< KernelType> getMultiKernel();
+	std::vector<int> getMultiKernelLevel();
+    std::vector<std::string> getMultiKernel();
 
-	ADKernelType getADKernel();
+	std::string getADKernel();
 
 	~Parameter();
 
@@ -1047,12 +1045,12 @@ private:
 
 
 	//Kernel
-	KernelType mainKernel;
+    std::string mainKernel;
 	bool multiKernelOn;
-	std::vector< int> multiKernelLevel;
-	std::vector< KernelType> multiKernel;
+	std::vector<int> multiKernelLevel;
+    std::vector<std::string> multiKernel;
 
-	ADKernelType adKernel;
+	std::string adKernel;
 
 	//////////////////////////////////////////////////////////////////////////
 	//particles
