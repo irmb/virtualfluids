@@ -26,13 +26,13 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file TwoDistributionsFullDirectConnector.h
+//! \file ThreeDistributionsFullDirectConnector.h
 //! \ingroup Connectors
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef TwoDistributionsFullDirectConnector_H
-#define TwoDistributionsFullDirectConnector_H
+#ifndef ThreeDistributionsFullDirectConnector_H
+#define ThreeDistributionsFullDirectConnector_H
 
 #include "FullDirectConnector.h"
 #include "Block3D.h"
@@ -44,10 +44,10 @@
 //! \brief   Exchange data between blocks. 
 //! \details Connector send and receive full distributions between two blocks in shared memory.
 
-class TwoDistributionsFullDirectConnector : public FullDirectConnector
+class ThreeDistributionsFullDirectConnector : public FullDirectConnector
 {
 public:
-	TwoDistributionsFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
+	ThreeDistributionsFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
     void init() override;
 
 protected:
@@ -71,11 +71,19 @@ private:
 	CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsToh;
 	CbArray3D <LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsToh;
 
-	SPtr<EsoTwist3D>  fFrom, hFrom;
-	SPtr<EsoTwist3D>  fTo, hTo;
+	CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsFromh2;
+    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsFromh2;
+    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsFromh2;
+
+    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsToh2;
+    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsToh2;
+    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsToh2;
+
+	SPtr<EsoTwist3D> fFrom, hFrom, hFrom2;
+    SPtr<EsoTwist3D> fTo, hTo, hTo2;
 };
 //////////////////////////////////////////////////////////////////////////
-inline void TwoDistributionsFullDirectConnector::updatePointers()
+inline void ThreeDistributionsFullDirectConnector::updatePointers()
 {
     localDistributionsFromf = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fFrom)->getLocalDistributions();
     nonLocalDistributionsFromf = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fFrom)->getNonLocalDistributions();
@@ -92,9 +100,17 @@ inline void TwoDistributionsFullDirectConnector::updatePointers()
     localDistributionsToh    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hTo)->getLocalDistributions();
     nonLocalDistributionsToh = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hTo)->getNonLocalDistributions();
     zeroDistributionsToh     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hTo)->getZeroDistributions();
+
+    localDistributionsFromh2 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hFrom2)->getLocalDistributions();
+    nonLocalDistributionsFromh2 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hFrom2)->getNonLocalDistributions();
+    zeroDistributionsFromh2 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hFrom2)->getZeroDistributions();
+
+    localDistributionsToh2    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hTo2)->getLocalDistributions();
+    nonLocalDistributionsToh2 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hTo2)->getNonLocalDistributions();
+    zeroDistributionsToh2     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hTo2)->getZeroDistributions();
 }
 //////////////////////////////////////////////////////////////////////////
-inline void TwoDistributionsFullDirectConnector::exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
+inline void ThreeDistributionsFullDirectConnector::exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
 {
 	(*this->localDistributionsTof)(D3Q27System::ET_E, x1To, x2To, x3To) = (*this->localDistributionsFromf)(D3Q27System::ET_E, x1From, x2From, x3From);
 	(*this->localDistributionsTof)(D3Q27System::ET_N, x1To, x2To, x3To) = (*this->localDistributionsFromf)(D3Q27System::ET_N, x1From, x2From, x3From);
@@ -156,5 +172,61 @@ inline void TwoDistributionsFullDirectConnector::exchangeData(int x1From, int x2
 	(*this->nonLocalDistributionsToh)(D3Q27System::ET_BNE, x1To, x2To, x3To + 1) = (*this->nonLocalDistributionsFromh)(D3Q27System::ET_BNE, x1From, x2From, x3From + 1);
 
 	(*this->zeroDistributionsToh)(x1To, x2To, x3To) = (*this->zeroDistributionsFromh)(x1From, x2From, x3From);
+
+	(*this->localDistributionsToh2)(D3Q27System::ET_E, x1To, x2To, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_E, x1From, x2From, x3From);
+    (*this->localDistributionsToh2)(D3Q27System::ET_N, x1To, x2To, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_N, x1From, x2From, x3From);
+    (*this->localDistributionsToh2)(D3Q27System::ET_T, x1To, x2To, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_T, x1From, x2From, x3From);
+    (*this->localDistributionsToh2)(D3Q27System::ET_NE, x1To, x2To, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_NE, x1From, x2From, x3From);
+    (*this->localDistributionsToh2)(D3Q27System::ET_NW, x1To + 1, x2To, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_NW, x1From + 1, x2From, x3From);
+    (*this->localDistributionsToh2)(D3Q27System::ET_TE, x1To, x2To, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_TE, x1From, x2From, x3From);
+    (*this->localDistributionsToh2)(D3Q27System::ET_TW, x1To + 1, x2To, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_TW, x1From + 1, x2From, x3From);
+    (*this->localDistributionsToh2)(D3Q27System::ET_TN, x1To, x2To, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_TN, x1From, x2From, x3From);
+    (*this->localDistributionsToh2)(D3Q27System::ET_TS, x1To, x2To + 1, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_TS, x1From, x2From + 1, x3From);
+    (*this->localDistributionsToh2)(D3Q27System::ET_TNE, x1To, x2To, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_TNE, x1From, x2From, x3From);
+    (*this->localDistributionsToh2)(D3Q27System::ET_TNW, x1To + 1, x2To, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_TNW, x1From + 1, x2From, x3From);
+    (*this->localDistributionsToh2)(D3Q27System::ET_TSE, x1To, x2To + 1, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_TSE, x1From, x2From + 1, x3From);
+    (*this->localDistributionsToh2)(D3Q27System::ET_TSW, x1To + 1, x2To + 1, x3To) =
+        (*this->localDistributionsFromh2)(D3Q27System::ET_TSW, x1From + 1, x2From + 1, x3From);
+
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_W, x1To + 1, x2To, x3To) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_W, x1From + 1, x2From, x3From);
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_S, x1To, x2To + 1, x3To) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_S, x1From, x2From + 1, x3From);
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_B, x1To, x2To, x3To + 1) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_B, x1From, x2From, x3From + 1);
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_SW, x1To + 1, x2To + 1, x3To) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_SW, x1From + 1, x2From + 1, x3From);
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_SE, x1To, x2To + 1, x3To) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_SE, x1From, x2From + 1, x3From);
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_BW, x1To + 1, x2To, x3To + 1) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_BW, x1From + 1, x2From, x3From + 1);
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_BE, x1To, x2To, x3To + 1) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_BE, x1From, x2From, x3From + 1);
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_BS, x1To, x2To + 1, x3To + 1) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_BS, x1From, x2From + 1, x3From + 1);
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_BN, x1To, x2To, x3To + 1) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_BN, x1From, x2From, x3From + 1);
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_BSW, x1To + 1, x2To + 1, x3To + 1) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_BSW, x1From + 1, x2From + 1, x3From + 1);
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_BSE, x1To, x2To + 1, x3To + 1) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_BSE, x1From, x2From + 1, x3From + 1);
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_BNW, x1To + 1, x2To, x3To + 1) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_BNW, x1From + 1, x2From, x3From + 1);
+    (*this->nonLocalDistributionsToh2)(D3Q27System::ET_BNE, x1To, x2To, x3To + 1) =
+        (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_BNE, x1From, x2From, x3From + 1);
+
+    (*this->zeroDistributionsToh2)(x1To, x2To, x3To) = (*this->zeroDistributionsFromh2)(x1From, x2From, x3From);
 }
 #endif

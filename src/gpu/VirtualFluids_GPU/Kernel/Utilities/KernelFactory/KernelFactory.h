@@ -1,7 +1,6 @@
 #ifndef KERNEL_FACTORY_H
 #define KERNEL_FACTORY_H
 
-#include "Kernel/Utilities/KernelType.h"
 
 #include <memory>
 #include <string>

@@ -1901,7 +1901,7 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs(const double & /*timeStep*/)
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27TriFaceMeshInteractor::updateInteractor(const double & /*timestep*/ /*=0*/)
+void D3Q27TriFaceMeshInteractor::updateInteractor(const double &timestep)
 {
-    UB_THROW(UbException("D3Q27TriFaceMeshInteractor::updateInteractor - toDo"));
+    D3Q27Interactor::updateInteractor(timestep);
 }

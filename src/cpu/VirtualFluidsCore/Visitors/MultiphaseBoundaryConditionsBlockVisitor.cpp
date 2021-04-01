@@ -97,6 +97,7 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
 
       SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 	  SPtr<DistributionArray3D> distributionsH = kernel->getDataSet()->getHdistributions();
+      SPtr<DistributionArray3D> distributionsH2 = kernel->getDataSet()->getH2distributions();
 
       for (int x3 = minX3; x3 < maxX3; x3++)
       {
@@ -119,6 +120,8 @@ void MultiphaseBoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Blo
                         //bca->addDistributions(distributions, distributionsH);
 						bca->addDistributions(distributions);
 						bca->addDistributionsH(distributionsH);
+                        if (distributionsH2)
+                            bca->addDistributionsH2(distributionsH2);
                         bca->setCollFactorL(collFactorL);
 						bca->setCollFactorG(collFactorG);
 						bca->setCollFactorPh(collFactorPh);

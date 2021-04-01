@@ -73,12 +73,17 @@ void run(string configname)
       //denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
       denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
 
-      //mu::Parser fct;
-      //fct.SetExpr("U");
-      //fct.DefineConst("U", uLB);
-      //SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-      //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingVelocityBCAlgorithm()));
+      double startTime = 5;
+      mu::Parser fct1;
+      fct1.SetExpr("U");
+      fct1.DefineConst("U", 0.00001);
+      SPtr<BCAdapter> velBCAdapter1(new VelocityBCAdapter(true, false, false, fct1, 0, startTime));
+      velBCAdapter1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
 
+      mu::Parser fct2;
+      fct2.SetExpr("U");
+      fct2.DefineConst("U", uLB);
+      SPtr<BCAdapter> velBCAdapter2(new VelocityBCAdapter(true, false, false, fct2, startTime, BCFunction::INFCONST));
 
       //////////////////////////////////////////////////////////////////////////////////
       //BS visitor
@@ -92,9 +97,10 @@ void run(string configname)
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      double bulckViscosity = 3700*nuLB;
-      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      //double bulckViscosity = 3700*nuLB;
+      //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel());
       kernel->setBCProcessor(bcProc);
       kernel->setBCProcessor(bcProc);
 
@@ -105,6 +111,8 @@ void run(string configname)
       migCoProcessor->setLBMKernel(kernel);
       migCoProcessor->setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////
+
+      SPtr<D3Q27Interactor> inflowInt;
 
       if (newStart)
       {
@@ -182,21 +190,24 @@ void run(string configname)
          //double cx2 = cylinder->getX2Centroid();
          //double cx3 = cylinder->getX3Centroid();
 
-         mu::Parser fct;
-         fct.SetExpr("vx1");
-         //fct.SetExpr("vx1*(1-((x2-y0)^2+(x3-z0)^2)/(R^2))");
-         //fct.DefineConst("x2Vmax", 0.0); //x2-Pos fuer vmax
-         //fct.DefineConst("x3Vmax", 0.0); //x3-Pos fuer vmax
-         //fct.DefineConst("R", r);
-         fct.DefineConst("vx1", uLB);
-         //fct.DefineConst("x0", cx1);
-         //fct.DefineConst("y0", cx2);
-         //fct.DefineConst("z0", cx3);
-         //fct.DefineConst("nue", nuLB);
-         SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-         velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+         //mu::Parser fct;
+         //fct.SetExpr("vx1");
+         ////fct.SetExpr("vx1*(1-((x2-y0)^2+(x3-z0)^2)/(R^2))");
+         ////fct.DefineConst("x2Vmax", 0.0); //x2-Pos fuer vmax
+         ////fct.DefineConst("x3Vmax", 0.0); //x3-Pos fuer vmax
+         ////fct.DefineConst("R", r);
+         //fct.DefineConst("vx1", uLB);
+         ////fct.DefineConst("x0", cx1);
+         ////fct.DefineConst("y0", cx2);
+         ////fct.DefineConst("z0", cx3);
+         ////fct.DefineConst("nue", nuLB);
+         //SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
+         //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
          //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
-         SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
+         
+         inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter1, Interactor3D::SOLID));
+         inflowInt->addBCAdapter(velBCAdapter2);
+
 
          //outflow
          SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBCAdapter, Interactor3D::SOLID));
@@ -247,7 +258,7 @@ void run(string configname)
 
          intHelper.setBC();
 
-         bcVisitor.addBC(velBCAdapter);
+         bcVisitor.addBC(velBCAdapter1);
          grid->accept(bcVisitor);
 
          //initialization of distributions
@@ -295,10 +306,14 @@ void run(string configname)
       grid->accept(setInterConnsVisitor);
 
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-      SPtr<CoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm));
+      SPtr<CoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(100, 100, 100000000));
       SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+
+      SPtr<UbScheduler> timeBCSch(new UbScheduler(1, startTime, startTime));
+      auto timeDepBC = make_shared<TimeDependentBCCoProcessor>(TimeDependentBCCoProcessor(grid, timeBCSch));
+      timeDepBC->addInteractor(inflowInt);
 
       //omp_set_num_threads(numOfThreads);
       numOfThreads = 1;
@@ -307,6 +322,7 @@ void run(string configname)
       calculator->addCoProcessor(npr);
       calculator->addCoProcessor(pp);
       calculator->addCoProcessor(migCoProcessor);
+      calculator->addCoProcessor(timeDepBC);
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculator->calculate();
