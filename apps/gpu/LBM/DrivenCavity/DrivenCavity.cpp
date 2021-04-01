@@ -99,7 +99,7 @@ const uint nx = 64;
 //std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
 std::string path("D:/out/DrivenCavity"); //Mollok
 
-std::string simulationName("DrivenCavity");
+std::string simulationName("DrivenCavityChim");
 
 const uint timeStepOut = 10000;
 const uint timeStepEnd = 250000;
@@ -186,7 +186,7 @@ void multipleLevel(const std::string& configPath)
 
         para->setVelocityRatio(velocity/ velocityLB);
 
-		para->setMainKernel("CumulantK17Comp");
+		para->setMainKernel("CumulantK17CompChim");
 
 		para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
             rho = (real)0.0;
