@@ -1,8 +1,6 @@
 #include "BasicSimulationInfo.h"
 
-#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
-
-std::shared_ptr<BasicSimulationInfo> BasicSimulationInfo::getNewInstance(int numberOfTimeSteps, double viscosity, int basicTimeStepLength, KernelType kernel)
+std::shared_ptr<BasicSimulationInfo> BasicSimulationInfo::getNewInstance(int numberOfTimeSteps, double viscosity, int basicTimeStepLength, std::string kernel)
 {
 	return std::shared_ptr<BasicSimulationInfo>(new BasicSimulationInfo(numberOfTimeSteps, viscosity, basicTimeStepLength, kernel));
 }
@@ -18,9 +16,8 @@ std::string BasicSimulationInfo::getOutput()
 	return oss.str();
 }
 
-BasicSimulationInfo::BasicSimulationInfo(int numberOfTimeSteps, double viscosity, int basicTimeStepLength, KernelType kernel)
+BasicSimulationInfo::BasicSimulationInfo(int numberOfTimeSteps, double viscosity, int basicTimeStepLength, std::string kernel)
   : numberOfTimeSteps(numberOfTimeSteps), viscosity(viscosity), basicTimeStepLength(basicTimeStepLength)
 {
-	std::shared_ptr<KernelMapper> myKernelMapper = KernelMapper::getInstance();
-	kernelName = myKernelMapper->getString(kernel);
+	kernelName = kernel;
 }

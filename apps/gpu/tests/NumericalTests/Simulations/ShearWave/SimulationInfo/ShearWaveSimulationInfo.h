@@ -13,10 +13,10 @@ struct GridInformationStruct;
 class ShearWaveSimulationInfo : public SimulationInfoImp
 {
 public:
-	static std::shared_ptr<ShearWaveSimulationInfo> getNewInstance(int simID, KernelType kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations);
+	static std::shared_ptr<ShearWaveSimulationInfo> getNewInstance(int simID, std::string kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations);
 
 private:
 	ShearWaveSimulationInfo() {};
-	ShearWaveSimulationInfo(int simID, KernelType kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations);
+	ShearWaveSimulationInfo(int simID, std::string kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations);
 };
 #endif 

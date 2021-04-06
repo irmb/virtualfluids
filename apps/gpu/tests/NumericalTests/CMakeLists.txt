@@ -11,4 +11,4 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions (${library_name} PRIVATE "GTEST_LINKED_AS_SHARED_LIBRARY=1")
 endif()
 
-linkCUDA()
+#linkCUDA()

@@ -3,8 +3,6 @@
 
 #include "LogFileWriter.h"
 
-#include "VirtualFluids_GPU/Kernel//Utilities/KernelType.h"
-
 #include <fstream>
 #include <vector>
 #include <memory>
@@ -23,12 +21,12 @@ public:
 	static std::shared_ptr<LogFileWriterImp> getNewInstance(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles,
 														std::shared_ptr<LogFileTimeInformation> logFileTimeInfo,
 														std::shared_ptr<SimulationLogFileInformation> simLogInfo, 
-														KernelType kernel, double viscosity);
+														std::string kernel, double viscosity);
 	void writeLogFile(std::string basicFilePath);
 	
 
 private:
-	LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, KernelType kernel, double viscosity);
+	LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernel, double viscosity);
 	std::string calcDateAndTime();
 	std::string buildFilePath(std::string basicFilePath);
 

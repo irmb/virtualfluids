@@ -5,12 +5,12 @@
 
 #include <sstream>
 
-std::shared_ptr<SimulationInfoTaylorGreenUx> SimulationInfoTaylorGreenUx::getNewInstance(int simID, KernelType kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations)
+std::shared_ptr<SimulationInfoTaylorGreenUx> SimulationInfoTaylorGreenUx::getNewInstance(int simID, std::string kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations)
 {
 	return std::shared_ptr<SimulationInfoTaylorGreenUx>(new SimulationInfoTaylorGreenUx(simID, kernel, viscosity, simParaStruct, gridInfoStruct, numberOfSimulations));
 }
 
-SimulationInfoTaylorGreenUx::SimulationInfoTaylorGreenUx(int simID, KernelType kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations)
+SimulationInfoTaylorGreenUx::SimulationInfoTaylorGreenUx(int simID, std::string kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations)
 	: SimulationInfoImp(simID, kernel, viscosity, gridInfoStruct->lx, numberOfSimulations, "TaylorGreenVortex Ux", simParaStruct->dataToCalcTests)
 {
 	std::ostringstream oss;

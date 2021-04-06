@@ -7,17 +7,14 @@
 #include "Utilities/LogFileInformation/LogFileTimeInformation/LogFileTimeInformation.h"
 #include "Utilities/LogFileInformation/TestLogFileInformation/TestLogFileInformation.h"
 
-#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
-
 #include <helper_functions.h>
 #include <iomanip>
 #include <ctime>
 #include <filesystem>
 
-LogFileWriterImp::LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, KernelType kernel, double viscosity) : viscosity(viscosity)
+LogFileWriterImp::LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernel, double viscosity) : viscosity(viscosity)
 {
-	std::shared_ptr<KernelMapper> myKernelMapper = KernelMapper::getInstance();
-	kernelName = myKernelMapper->getString(kernel);
+	kernelName = kernel;
 
 	logFileInfo.push_back(logFileHead);
 	logFileInfo.push_back(basicSimInfo);
@@ -29,7 +26,7 @@ LogFileWriterImp::LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std
 		logFileInfo.push_back(testLogFiles.at(i));
 }
 
-std::shared_ptr<LogFileWriterImp> LogFileWriterImp::getNewInstance(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, KernelType kernel, double viscosity)
+std::shared_ptr<LogFileWriterImp> LogFileWriterImp::getNewInstance(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernel, double viscosity)
 {
 	return std::shared_ptr<LogFileWriterImp>(new LogFileWriterImp(logFileHead, basicSimInfo, basicTestInfo, testLogFiles, logFileTimeInfo, simLogInfo, kernel, viscosity));
 }

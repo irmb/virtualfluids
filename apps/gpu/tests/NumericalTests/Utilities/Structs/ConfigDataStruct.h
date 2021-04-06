@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "VirtualFluids_GPU/Kernel//Utilities/KernelType.h"
-
 #include "Simulations/ShearWave/ShearWaveParameterStruct.h"
 #include "Simulations/TaylorGreenVortexUx/TaylorGreenVortexUxParameterStruct.h"
 #include "Simulations/TaylorGreenVortexUz/TaylorGreenVortexUzParameterStruct.h"
@@ -22,7 +20,7 @@
 struct ConfigDataStruct
 {
 	std::vector<double> viscosity;
-	std::vector<KernelType> kernelsToTest;
+    std::vector<std::string> kernelsToTest;
 
 	std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > taylorGreenVortexUxParameter;
 	std::vector<std::shared_ptr<GridInformationStruct> > taylorGreenVortexUxGridInformation;
