@@ -60,7 +60,7 @@ typedef ptrdiff_t ssize_t;
 
 #ifdef __MSC__
 /* MSC does not have rint() function */
-#define rint(x) ((int)((x)+0.5))  
+//#define rint(x) ((int)((x)+0.5))  
 
 /* MSC does not have INFINITY defined */
 #ifndef INFINITY
