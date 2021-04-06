@@ -125,7 +125,7 @@ void NumericalTestFactoryImp::init(std::shared_ptr<ConfigDataStruct> configFileD
 	}
 }
 
-std::shared_ptr<NumericalTestStruct> NumericalTestFactoryImp::makeNumericalTestStruct(std::shared_ptr<ConfigDataStruct> configFileData, std::shared_ptr<SimulationDataStruct> simDataStruct, KernelType kernel, double viscosity, int basicTimeStepLength)
+std::shared_ptr<NumericalTestStruct> NumericalTestFactoryImp::makeNumericalTestStruct(std::shared_ptr<ConfigDataStruct> configFileData, std::shared_ptr<SimulationDataStruct> simDataStruct, std::string kernel, double viscosity, int basicTimeStepLength)
 {
 	std::shared_ptr<NumericalTestStruct> numTestStruct = std::shared_ptr<NumericalTestStruct>(new NumericalTestStruct);
 
@@ -167,7 +167,7 @@ void NumericalTestFactoryImp::addNumericalTestStruct(std::shared_ptr<NumericalTe
 	myLogFileWriterQueue->addLogFileWriter(numericalTestStruct->logFileWriter);
 }
 
-std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeTaylorGreenUxSimulationData(KernelType kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
+std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeTaylorGreenUxSimulationData(std::string kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
 {
 	std::shared_ptr<SimulationDataStruct> simDataStruct = std::shared_ptr<SimulationDataStruct>(new SimulationDataStruct);
 
@@ -190,7 +190,7 @@ std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeTaylorGreenUx
 	return simDataStruct;
 }
 
-std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeTaylorGreenUzSimulationData(KernelType kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
+std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeTaylorGreenUzSimulationData(std::string kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
 {
 	std::shared_ptr<SimulationDataStruct> simDataStruct = std::shared_ptr<SimulationDataStruct>(new SimulationDataStruct);
 	if (gridInfoStruct.size() > 0) {
@@ -212,7 +212,7 @@ std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeTaylorGreenUz
 	return simDataStruct;
 }
 
-std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeShearWaveSimulationData(KernelType kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
+std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeShearWaveSimulationData(std::string kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
 {
 	std::shared_ptr<SimulationDataStruct> simDataStruct = std::shared_ptr<SimulationDataStruct>(new SimulationDataStruct);
 	if (gridInfoStruct.size() > 0) {
@@ -369,7 +369,7 @@ std::vector<std::shared_ptr<L2NormTest> > NumericalTestFactoryImp::makeL2NormTes
 	return l2Tests;
 }
 
-std::shared_ptr<TestStruct> NumericalTestFactoryImp::makeL2NormTestsBetweenKernelsStructs(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, KernelType kernelName)
+std::shared_ptr<TestStruct> NumericalTestFactoryImp::makeL2NormTestsBetweenKernelsStructs(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::string kernelName)
 {
 	std::shared_ptr<TestStruct> testStruct = std::shared_ptr<TestStruct>(new TestStruct);
 	testStruct->testName = "L2NormTestBetweenKernel";
@@ -465,7 +465,7 @@ void NumericalTestFactoryImp::initTestStruct(std::shared_ptr<TestStruct> testStr
 	}
 }
 
-std::shared_ptr<LogFileWriter> NumericalTestFactoryImp::makeLogFileWriter(std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::vector<std::shared_ptr<SimulationInfo> > simInfo, KernelType kernel, double viscosity, int basicTimeStepLength, std::shared_ptr<LogFileParameterStruct> logFilePara, std::shared_ptr<BasicTestLogFileInformation> basicTestLogFileInfo)
+std::shared_ptr<LogFileWriter> NumericalTestFactoryImp::makeLogFileWriter(std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::vector<std::shared_ptr<SimulationInfo> > simInfo, std::string kernel, double viscosity, int basicTimeStepLength, std::shared_ptr<LogFileParameterStruct> logFilePara, std::shared_ptr<BasicTestLogFileInformation> basicTestLogFileInfo)
 {
 	std::shared_ptr<LogFileHead> logFileHead = LogFileHead::getNewInstance(logFilePara->devices);
 	std::shared_ptr<BasicSimulationInfo> basicSimInfo = BasicSimulationInfo::getNewInstance(logFilePara->numberOfTimeSteps, viscosity, basicTimeStepLength, kernel);

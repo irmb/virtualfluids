@@ -1,16 +1,12 @@
 #ifndef CONFIG_FILE_READER_H
 #define CONFIG_FILE_READER_H
 
-#include "VirtualFluids_GPU/Kernel//Utilities/KernelType.h"
-
 #include "Core/Input/Input.h"
 #include "Utilities/Structs/ConfigDataStruct.h"
 
 #include <memory>
 #include <string>
 #include <vector>
-
-class KernelMapper;
 
 class ConfigFileReader
 {
@@ -25,7 +21,7 @@ private:
 
     std::ifstream openConfigFile(const std::string aFilePath);
     bool checkConfigFile(std::shared_ptr<input::Input> input);
-    std::vector<KernelType> readKernelList(std::shared_ptr<input::Input> input);
+    std::vector<std::string> readKernelList(std::shared_ptr<input::Input> input);
 
     int calcNumberOfSimulations(std::shared_ptr<input::Input> input);
     int calcNumberOfSimulationGroup(std::shared_ptr<input::Input> input, std::string simName);
@@ -59,6 +55,6 @@ private:
 
     const std::string myFilePath;
     std::shared_ptr<ConfigDataStruct> configData;
-    std::shared_ptr<KernelMapper> myKernelMapper;
+    //std::shared_ptr<KernelMapper> myKernelMapper;
 };
 #endif

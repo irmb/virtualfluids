@@ -7,7 +7,7 @@
 
 #include <filesystem>
 
-SimulationParameterImp::SimulationParameterImp(KernelType kernel, double viscosity, std::shared_ptr<BasicSimulationParameterStruct> basicSimPara, std::shared_ptr<GridInformationStruct> gridInfo)
+SimulationParameterImp::SimulationParameterImp(std::string kernel, double viscosity, std::shared_ptr<BasicSimulationParameterStruct> basicSimPara, std::shared_ptr<GridInformationStruct> gridInfo)
 	: viscosity(viscosity)
 {
 	kernelConfig = KernelConfigurationImp::getNewInstance(kernel);
