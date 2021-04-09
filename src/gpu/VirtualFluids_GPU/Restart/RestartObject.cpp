@@ -114,13 +114,13 @@ void BinaryRestartObject::serialize_internal(const std::string &filename)
     }
 
     // Store size of the outer vector
-    int s1 = fs.size();
+    int s1 = (int)fs.size();
     stream.write(reinterpret_cast<const char *>(&s1), sizeof(s1));
 
     // Now write each vector one by one
     for (auto &v : fs) {
         // Store its size
-        int size = v.size();
+        int size = (int)v.size();
         stream.write(reinterpret_cast<const char *>(&size), sizeof(size));
 
         // Store its contents

@@ -1060,7 +1060,7 @@ void Simulation::porousMedia()
 	endY =  0.277833;
 	endZ =  0.360379;
 	pm.push_back(std::shared_ptr<PorousMedia>(new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level)));
-	int n = pm.size() - 1;
+	int n = (int)pm.size() - 1;
 	pm.at(n)->setStartCoordinates(startX, startY, startZ);
 	pm.at(n)->setEndCoordinates(endX, endY, endZ);
 	pm.at(n)->setResistanceLBM();
@@ -1081,7 +1081,7 @@ void Simulation::porousMedia()
 	endY =  0.324822;
 	endZ =  0.057098;
 	pm.push_back(std::shared_ptr<PorousMedia>(new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level)));
-	n = pm.size() - 1;
+	n = (int)pm.size() - 1;
 	pm.at(n)->setStartCoordinates(startX, startY, startZ);
 	pm.at(n)->setEndCoordinates(endX, endY, endZ);
 	pm.at(n)->setResistanceLBM();
@@ -1102,7 +1102,7 @@ void Simulation::porousMedia()
 	endY =  0.32538;
 	endZ =  0.400974;
 	pm.push_back(std::shared_ptr<PorousMedia>(new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level)));
-	n = pm.size() - 1;
+	n = (int)pm.size() - 1;
 	pm.at(n)->setStartCoordinates(startX, startY, startZ);
 	pm.at(n)->setEndCoordinates(endX, endY, endZ);
 	pm.at(n)->setResistanceLBM();
