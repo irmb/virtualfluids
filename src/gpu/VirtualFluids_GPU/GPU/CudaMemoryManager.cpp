@@ -38,7 +38,7 @@ void CudaMemoryManager::cudaAllocCoord(int lev)
 	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->coordX_SP      ), parameter->getParH(lev)->mem_size_real_SP  ));
 	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->coordY_SP      ), parameter->getParH(lev)->mem_size_real_SP  ));
 	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->coordZ_SP      ), parameter->getParH(lev)->mem_size_real_SP  ));
-	//Device (spinning ship)
+	//Device (spinning ship + upsala)
 	checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->coordX_SP      ), parameter->getParH(lev)->mem_size_real_SP  ));
 	checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->coordY_SP      ), parameter->getParH(lev)->mem_size_real_SP  ));
 	checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->coordZ_SP      ), parameter->getParH(lev)->mem_size_real_SP  ));
@@ -58,6 +58,36 @@ void CudaMemoryManager::cudaFreeCoord(int lev)
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->coordX_SP   ));
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->coordY_SP   ));
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->coordZ_SP   ));
+}
+void CudaMemoryManager::cudaAllocBodyForce(int lev) 
+{
+    //Host
+	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->forceX_SP      ), parameter->getParH(lev)->mem_size_real_SP  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->forceY_SP      ), parameter->getParH(lev)->mem_size_real_SP  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->forceZ_SP      ), parameter->getParH(lev)->mem_size_real_SP  ));
+	//Device (spinning ship)
+	checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->forceX_SP      ), parameter->getParH(lev)->mem_size_real_SP  ));
+	checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->forceY_SP      ), parameter->getParH(lev)->mem_size_real_SP  ));
+	checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->forceZ_SP      ), parameter->getParH(lev)->mem_size_real_SP  ));
+	//////////////////////////////////////////////////////////////////////////
+	double tmp = 3. * (double)parameter->getParH(lev)->mem_size_real_SP;
+	setMemsizeGPU(tmp, false);
+
+}
+void CudaMemoryManager::cudaCopyBodyForce(int lev) 
+{
+   	//copy host to device
+	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->forceX_SP,  parameter->getParH(lev)->forceX_SP,  parameter->getParH(lev)->mem_size_real_SP     , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->forceY_SP,  parameter->getParH(lev)->forceY_SP,  parameter->getParH(lev)->mem_size_real_SP     , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->forceZ_SP,  parameter->getParH(lev)->forceZ_SP,  parameter->getParH(lev)->mem_size_real_SP     , cudaMemcpyHostToDevice));
+
+}
+void CudaMemoryManager::cudaFreeBodyForce(int lev) 
+{
+   	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->forceX_SP   ));
+	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->forceY_SP   ));
+	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->forceZ_SP   ));
+
 }
 //print
 void CudaMemoryManager::cudaCopyDataToHost(int lev)

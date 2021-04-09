@@ -3666,7 +3666,12 @@ void Parameter::setSimulatePorousMedia(bool simulatePorousMedia)
 
 void Parameter::setIsF3(bool isF3)
 {
-	this->isF3 = isF3;
+	this->isF3 = isF3; 
+}
+
+void Parameter::setIsBodyForce(bool isBodyForce) 
+{
+	this->isBodyForce = isBodyForce;
 }
 
 void Parameter::setGridX(std::vector<int> GridX)
@@ -5017,7 +5022,12 @@ bool Parameter::getSimulatePorousMedia()
 
 bool Parameter::getIsF3()
 {
-	return this->isF3;
+	return this->isF3; 
+}
+
+bool Parameter::getIsBodyForce() 
+{ 
+	return this->isBodyForce; 
 }
 
 bool Parameter::getIsGeometryValues()
