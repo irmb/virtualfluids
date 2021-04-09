@@ -41,10 +41,6 @@
 #include "Calculation/PorousMedia.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Restart/RestartObject.h"
-
-#include <cuda_runtime.h>
-#include <helper_functions.h>
-#include <helper_cuda.h>
 //////////////////////////////////////////////////////////////////////////
 #include "DataStructureInitializer/GridProvider.h"
 #include "Output/DataWriter.h"
