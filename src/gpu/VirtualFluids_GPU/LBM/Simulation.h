@@ -20,7 +20,6 @@ class Parameter;
 class GridProvider;
 class PorousMedia;
 class RestartObject;
-class RestartPostprocessor;
 class ForceCalculations;
 class DataWriter;
 class Kernel;
@@ -33,8 +32,6 @@ class TrafficMovementFactory;
 class VIRTUALFLUIDS_GPU_EXPORT Simulation
 {
 public:
-	Simulation();
-	~Simulation();
 	void run();
 	void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter, std::shared_ptr<CudaMemoryManager> cudaManager);
 	void free();
@@ -73,12 +70,10 @@ protected:
 	std::vector < SPtr< ADKernel>> adKernels;
 	std::shared_ptr<PreProcessor> preProcessor;
 
-	//Restart object
-	RestartObject* restObj;
-	RestartPostprocessor* rest;
+    SPtr<RestartObject> restart_object;
 
 	//Forcing Calculation
-	ForceCalculations* forceCalculator;
+	std::shared_ptr<ForceCalculations> forceCalculator;
 
 	//Porous Media
 	std::vector<std::shared_ptr<PorousMedia>> pm;

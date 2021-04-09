@@ -40,18 +40,11 @@
 #include "Calculation/ForceCalculations.h"
 #include "Calculation/PorousMedia.h"
 //////////////////////////////////////////////////////////////////////////
-//CUDA
+#include "Restart/RestartObject.h"
+
 #include <cuda_runtime.h>
 #include <helper_functions.h>
 #include <helper_cuda.h>
-////random numbers
-//#include <curand.h>
-//#include <curand_kernel.h>
-//////////////////////////////////////////////////////////////////////////
-#include <boost/foreach.hpp>
-#include <stdio.h>
-#include <vector>
-#include "Restart/RestartPostprocessor.h"
 //////////////////////////////////////////////////////////////////////////
 #include "DataStructureInitializer/GridProvider.h"
 #include "Output/DataWriter.h"
@@ -59,14 +52,11 @@
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
 #include "Kernel/Kernel.h"
 
-Simulation::Simulation()
+
+
+std::string getFileName(const std::string& fname, int step, int myID)
 {
-
-}
-
-Simulation::~Simulation()
-{
-
+    return std::string(fname + "_Restart_" + UbSystem::toString(myID) + "_" +  UbSystem::toString(step));
 }
 
 
@@ -114,9 +104,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    else
        para->setStartTurn((unsigned int)0); //100000
 
-   //Restart object
-   restObj = new RestartObject();
-   rest = new RestartPostprocessor(restObj, RestartPostprocessor::TXT);
+   restart_object = std::make_shared<ASCIIRestartObject>();
    //////////////////////////////////////////////////////////////////////////
    output.setName(para->getFName() + StringUtil::toString<int>(para->getMyID()) + ".log");
    if(para->getMyID() == 0) output.setConsoleOut(true);
@@ -264,7 +252,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    ////allocVeloForForcing(para);
    //output << "new object forceCalulator  " << "\n";
-   //forceCalculator = new ForceCalculations(para.get());
+   //forceCalculator = std::make_shared<ForceCalculations>(para.get());
 
    //////////////////////////////////////////////////////////////////////////
    //output << "define the Grid..." ;
@@ -330,10 +318,10 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    if (para->getDoRestart())
    {
 	   output << "Restart...\n...get the Object...\n";
-	   restObj = rest->restart(para->getFName(), para->getTimeDoRestart(), para->getMyID());
-	   output << "...load...\n";
-	   restObj->load(para.get());
-	   //para = rest->restart(para->getTimeDoRestart());
+
+		const auto name = getFileName(para->getFName(), para->getTimeDoRestart(), para->getMyID());
+		restart_object->deserialize(name, para);
+
 	   output << "...copy Memory for Restart...\n";
 	   for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	   {
@@ -523,8 +511,10 @@ void Simulation::run()
                 }
                 
                 output << "Dateien fuer CheckPoint schreiben t=" << t << "...";
-                restObj->safe(para.get());
-                rest->doCheckPoint(para->getFName(), t, para->getMyID());
+
+				const auto name = getFileName(para->getFName(), t, para->getMyID());
+				restart_object->serialize(name, para);
+
                 output << "\n fertig\n";
             }
             //////////////////////////////////////////////////////////////////////////
@@ -1299,11 +1289,6 @@ void Simulation::free()
 	}
 	//////////////////////////////////////////////////////////////////////////
 
-	para->~Parameter();
-	gridProvider->~GridProvider();
-	dataWriter->~DataWriter();
-	comm->~Communicator();
-	for(std::size_t i = 0; i < kernels.size(); i++)
-		kernels.at(i)->~Kernel();
+    delete comm;
 
 }
