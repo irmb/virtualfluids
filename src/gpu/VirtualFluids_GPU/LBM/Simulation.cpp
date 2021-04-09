@@ -8,7 +8,6 @@
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Input/ConfigFile.h"
-#include "Input/VtkXmlReader.hpp"
 #include "Input/VtkGeometryReader.h"
 #include "Input/kFullReader.h"
 #include "Input/PositionReader.h"

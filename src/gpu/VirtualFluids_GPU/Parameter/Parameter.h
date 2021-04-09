@@ -14,8 +14,6 @@
 #include "LBM/D3Q27.h"
 #include "Calculation/PorousMedia.h"
 //#include "Output/LogWriter.hpp"
-//#include "boost/serialization/serialization.hpp"
-//#include "boost/serialization/vector.hpp"
 
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
@@ -275,27 +273,6 @@ struct ParameterStruct{
 	std::vector< ProcessNeighborF3 > recvProcessNeighborF3X;
 	std::vector< ProcessNeighborF3 > recvProcessNeighborF3Y;
 	std::vector< ProcessNeighborF3 > recvProcessNeighborF3Z;
-	////////////////////////////////////////////////////////////////////////////
-
-
-
-	////////////////////////////////////////////////////////////////////////////
-	////Restart
-	//friend class boost::serialization::access;
-	//template<class Archive>
-	//void serialize(Archive & ar, const unsigned int version)
-	//{
-	// unsigned int i;
-	// for (i=0; i<size_Mat_SP;i++)
-	// {
-	//  ar & d0SP.f[0][i];
-	// }
-
-	// for (i=0; i<size_Mat;i++)
-	// {
-	//  ar & k[i];
-	// }
-	//}
 	////////////////////////////////////////////////////////////////////////////
 };
 
@@ -1103,27 +1080,7 @@ private:
 	std::vector<std::string> possNeighborFilesSendX, possNeighborFilesSendY, possNeighborFilesSendZ;
 	std::vector<std::string> possNeighborFilesRecvX, possNeighborFilesRecvY, possNeighborFilesRecvZ;
 	bool isNeigborX, isNeigborY, isNeigborZ;
-	////////////////////////////////////////////////////////////////////////////
-	////Restart
-	//friend class boost::serialization::access;
-	//template<class Archive>
-	//void serialize(Archive & ar, const unsigned int version)
-	//{
-	// unsigned int i;
-	// int j;
-	// for (j=coarse; j<=fine; j++)
-	// {
-	//  for (i=0; i<parH[j]->size_Mat_SP;i++)
-	//  {
-	//   ar & parH[j]->d0SP.f[0][i];
-	//  }
-
-	//  for (i=0; i<parH[j]->size_Mat;i++)
-	//  {
-	//   ar & parH[j]->k[j];
-	//  }
-	// }
-	//}
+	
 	////////////////////////////////////////////////////////////////////////////
     // initial condition
     std::function<void(real,real,real,real&,real&,real&,real&)> initialCondition;
