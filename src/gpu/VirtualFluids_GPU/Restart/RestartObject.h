@@ -14,8 +14,8 @@ class RestartObject
 public:
     virtual ~RestartObject() = default;
 
-    void deserialize(const std::string &filename, std::shared_ptr<Parameter> para);
-    void serialize(const std::string &filename, std::shared_ptr<Parameter> para);
+    void deserialize(const std::string &filename, std::shared_ptr<Parameter>& para);
+    void serialize(const std::string &filename, const std::shared_ptr<Parameter>& para);
 
     std::vector<std::vector<real>> fs;
 
@@ -23,7 +23,7 @@ public:
     virtual void deserialize_internal(const std::string &filename) = 0;
 
 private:
-    void clear(std::shared_ptr<Parameter> para);
+    void clear(const std::shared_ptr<Parameter>& para);
 };
 
 

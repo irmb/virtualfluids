@@ -26,6 +26,7 @@ stages:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
       - $BUILD_FOLDER
+      - $CI_PROJECT_DIR/cache
 
   artifacts:
     expire_in: 1 hrs
@@ -35,6 +36,10 @@ stages:
   before_script:
     - export CC=gcc
     - export CXX=g++
+    - export CCACHE_BASEDIR=$CI_PROJECT_DIR
+    - export CCACHE_DIR=$CI_PROJECT_DIR/cache
+    - ccache -s
+
 
   script:
     - $CXX --version
@@ -44,7 +49,7 @@ stages:
     - mkdir -p $CI_PROJECT_DIR/$BUILD_FOLDER
     - cd $CI_PROJECT_DIR/$BUILD_FOLDER
     - cmake ..
-      --preset=all_make
+      --preset=all_make_ccache
       -DBUILD_WARNINGS_AS_ERRORS=ON
       -DCMAKE_CUDA_ARCHITECTURES=60
     - cmake . -LAH
@@ -172,13 +177,17 @@ gcc_9_python:
   cache:
     key: "gcc_9-$CI_COMMIT_REF_SLUG"
     paths:
-      - $BUILD_FOLDER
+      - build
 
   artifacts:
     expire_in: 1 hrs
     paths:
       - build/
       - dist/
+
+  before_script:
+    - export CCACHE_BASEDIR=$CI_PROJECT_DIR
+    - export CCACHE_DIR=$CI_PROJECT_DIR/cache
 
   script:
     - python3 setup.py bdist_wheel
@@ -192,10 +201,10 @@ gcc_9_unit_tests:
   needs: ["gcc_9"]
 
   before_script:
-    - export VF_UNITTESTS=$(find build_gcc9 -name basicsTests)
+    - cd $CI_PROJECT_DIR/build
 
   script:
-    - $VF_UNITTESTS
+    - ctest
 
 ###############################################################################
 msvc_16_unit_tests:
@@ -208,10 +217,12 @@ msvc_16_unit_tests:
   needs: ["msvc_16"]
 
   before_script:
-    - cd $CI_PROJECT_DIR/build
+    - $env:Path += ";C:\Program Files\CMake\bin\"
+    - ctest --version
 
   script:
-    - .\bin\Release\basicsTests.exe
+    - cd $CI_PROJECT_DIR/build
+    - ctest -C Release
 
 ###############################################################################
 gcc_9_python_bindings_test:

@@ -3,41 +3,33 @@
 #include "RestartObject.h"
 
 
-TEST(RestartObjectTests, saveAndLoad_ascii)
+template <typename Type>
+void saveAndLoad()
 {
-    std::shared_ptr<RestartObject> sut = std::make_shared<ASCIIRestartObject>();
+    std::shared_ptr<RestartObject> write_object = std::make_shared<Type>();
 
-    sut->fs = std::vector<std::vector<float>> {
+    write_object->fs = std::vector<std::vector<float>> {
                 { 1,2,3 },
                 { 4,5,6 }
             };
 
-    std::string name {"test_do_check_point"};
-    sut->serialize_internal(name);
+    const std::string name {"test_do_check_point"};
+    write_object->serialize_internal(name);
 
 
-    std::shared_ptr<RestartObject> obj_read = std::make_shared<ASCIIRestartObject>();
-    obj_read->deserialize_internal(name);
+    std::shared_ptr<RestartObject> read_object = std::make_shared<Type>();
+    read_object->deserialize_internal(name);
 
-    EXPECT_THAT(sut->fs, ::testing::ContainerEq(obj_read->fs));
+    EXPECT_THAT(write_object->fs, ::testing::ContainerEq(read_object->fs));
+}
+
+TEST(RestartObjectTests, saveAndLoad_ascii)
+{
+    saveAndLoad<ASCIIRestartObject>();
 }
 
 
 TEST(RestartObjectTests, saveAndLoad_binary)
 {
-    std::shared_ptr<RestartObject> sut = std::make_shared<BinaryRestartObject>();
-
-    sut->fs = std::vector<std::vector<float>> {
-                { 1,2,3 },
-                { 4,5,6 }
-            };
-
-    std::string name {"test_do_check_point"};
-    sut->serialize_internal(name);
-
-
-    std::shared_ptr<RestartObject> obj_read = std::make_shared<BinaryRestartObject>();
-    obj_read->deserialize_internal(name);
-
-    EXPECT_THAT(sut->fs, ::testing::ContainerEq(obj_read->fs));
+    saveAndLoad<BinaryRestartObject>();
 }

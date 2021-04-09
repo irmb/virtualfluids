@@ -5,8 +5,10 @@
 #include "Parameter/Parameter.h"
 #include "basics/utilities/UbMath.h"
 
-void RestartObject::deserialize(const std::string &filename, std::shared_ptr<Parameter> para)
+void RestartObject::deserialize(const std::string &filename, std::shared_ptr<Parameter>& para)
 {
+    deserialize_internal(filename);
+
     for (int j = para->getCoarse(); j <= para->getFine(); j++) {
         std::vector<real> vec;
         fs.push_back(vec);
@@ -15,11 +17,9 @@ void RestartObject::deserialize(const std::string &filename, std::shared_ptr<Par
             para->getParH(j)->d0SP.f[0][i] = fs[j][i];
         }
     }
-
-    deserialize_internal(filename);
 }
 
-void RestartObject::serialize(const std::string &filename, std::shared_ptr<Parameter> para)
+void RestartObject::serialize(const std::string &filename, const std::shared_ptr<Parameter>& para)
 {
     if (fs.size() > 0) {
         clear(para);
@@ -40,7 +40,7 @@ void RestartObject::serialize(const std::string &filename, std::shared_ptr<Param
     serialize_internal(filename);
 }
 
-void RestartObject::clear(std::shared_ptr<Parameter> para)
+void RestartObject::clear(const std::shared_ptr<Parameter>& para)
 {
     for (int j = para->getCoarse(); j <= para->getFine(); j++) {
         fs[j].resize(0);

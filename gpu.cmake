@@ -120,8 +120,11 @@ if(BUILD_NUMERIC_TESTS)
         LIST(APPEND VF_COMPILER_DEFINITION "PATH_NUMERICAL_TESTS=${PATH_NUMERICAL_TESTS}")
     endif()
 
+    if(NOT BUILD_VF_UNIT_TESTS) # in this case googletest is already included.
+        add_subdirectory(${VF_THIRD_DIR}/googletest)
+    endif()
+
     add_subdirectory(3rdParty/fftw/fftw-3.3.7)
-    add_subdirectory(3rdParty/googletest)
     add_subdirectory(apps/gpu/tests/NumericalTests)
     add_subdirectory(apps/gpu/tests/NumericalTestPostProcessing)
 endif()
