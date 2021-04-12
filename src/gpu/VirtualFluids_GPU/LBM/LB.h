@@ -52,8 +52,6 @@
 
 #include <string>
 #include <vector>
-//#include <boost/shared_ptr.hpp>
-//#define  BSP boost::shared_ptr
 
 // Initial condition
 typedef struct InitCond{
@@ -146,20 +144,10 @@ typedef struct  Distri19{
 // Distribution functions f 27
 typedef struct  Distri27{
    real* f[27];
-   ////////////////////////////////////////////////////////////////////////////
-   ////Restart
-   //friend class boost::serialization::access;
-   //template<class Archive>
-   //void serialize(Archive & ar, const unsigned int version)
-   //{
-	  // ar & f[0];
-   //}
-   ////////////////////////////////////////////////////////////////////////////
 } Distributions27;
 
 //Q for second order BCs
 typedef struct QforBC{
-	//boost::shared_ptr<int> k;
    int* k;
    int* kN;
    long long* valueQ;
