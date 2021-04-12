@@ -47,7 +47,7 @@ endmacro()
 ################################################################
 ###             ADD_COMPILER_FLAGS_TO_PROJECT                ###
 ################################################################
-function(addAdditionalFlags project_name)
+function(addAdditionalFlags library_name)
 
     status_lib("additional compiler flags CXX: ${CS_COMPILER_FLAGS_CXX}")
     status_lib("additional compiler flags CXX debug: ${CS_COMPILER_FLAGS_CXX_DEBUG}")
@@ -67,18 +67,18 @@ function(addAdditionalFlags project_name)
 
     # compile options
     foreach(flag IN LISTS CS_COMPILER_FLAGS_CXX)
-        target_compile_options(${project_name} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${flag}>")
+        target_compile_options(${library_name} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${flag}>")
         if(MSVC)
-            target_compile_options(${project_name} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${flag}>")
+            target_compile_options(${library_name} PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${flag}>")
         endif()
     endforeach()
 
     foreach(flag IN LISTS CS_COMPILER_FLAGS_CXX_DEBUG)
-        target_compile_options(${project_name} PRIVATE "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:${flag}>")
+        target_compile_options(${library_name} PRIVATE "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:${flag}>")
     endforeach()
 
     foreach(flag IN LISTS CS_COMPILER_FLAGS_CXX_RELEASE)
-        target_compile_options(${project_name} PRIVATE "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:${flag}>")
+        target_compile_options(${library_name} PRIVATE "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:${flag}>")
     endforeach()
 
 endfunction()
