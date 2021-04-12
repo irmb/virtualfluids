@@ -80,7 +80,7 @@ endfunction()
 #################################################################################
 function (vf_get_library_test_name library_test_name)
     vf_get_library_name (folder_name)
-    set (${library_test_name} ${library_name}Tests PARENT_SCOPE)
+    set (${library_test_name} ${folder_name}Tests PARENT_SCOPE)
 endfunction()
 
 
@@ -103,11 +103,11 @@ endfunction()
 function(vf_add_library)
 
     set( options )
-    set( oneValueArgs )
-    set( multiValueArgs NAME BUILDTYPE PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE)
+    set( oneValueArgs NAME BUILDTYPE)
+    set( multiValueArgs PUBLIC_LINK PRIVATE_LINK FILES FOLDER EXCLUDE)
     cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    if(${ARG_NAME})
+    if(DEFINED ARG_NAME)
         set(library_name ${ARG_NAME})
     else()
         vf_get_library_name (library_name)
@@ -285,6 +285,8 @@ function(vf_add_tests)
 
     # link googlemock
     linkGMOCK()
+
+    gtest_add_tests(TARGET ${library_test_name})
 
 endfunction()
 

@@ -1,36 +1,44 @@
 #ifndef RestartObject_H
 #define RestartObject_H
 
-#include "LBM/LB.h"
-#include "LBM/D3Q27.h"
-#include "Parameter/Parameter.h"
-#include "basics/utilities/UbSystem.h"
-#include "boost/serialization/serialization.hpp"
-#include "boost/serialization/vector.hpp"
+#include <memory>
+#include <string>
+#include <vector>
+
+#include <basics/Core/DataTypes.h>
+
+class Parameter;
 
 class RestartObject
 {
 public:
-   RestartObject();
-   ~RestartObject();
-   void load(Parameter* para);
-   void safe(Parameter* para);
-   void clear(Parameter* para);
-protected:
+    virtual ~RestartObject() = default;
+
+    void deserialize(const std::string &filename, std::shared_ptr<Parameter>& para);
+    void serialize(const std::string &filename, const std::shared_ptr<Parameter>& para);
+
+    std::vector<std::vector<real>> fs;
+
+    virtual void serialize_internal(const std::string &filename)   = 0;
+    virtual void deserialize_internal(const std::string &filename) = 0;
 
 private:
-	//////////////////////////////////////////////////////////////////////////
-	//Restart
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version)
-	{
-		ar & fs;
-	}
-	//////////////////////////////////////////////////////////////////////////
-	std::vector< std::vector<real> > fs;
-	//////////////////////////////////////////////////////////////////////////
+    void clear(const std::shared_ptr<Parameter>& para);
+};
 
+
+class ASCIIRestartObject : public RestartObject
+{
+private:
+    virtual void serialize_internal(const std::string &filename);
+    virtual void deserialize_internal(const std::string &filename);
+};
+
+class BinaryRestartObject : public RestartObject
+{
+private:
+    virtual void serialize_internal(const std::string &filename);
+    virtual void deserialize_internal(const std::string &filename);
 };
 
 #endif
