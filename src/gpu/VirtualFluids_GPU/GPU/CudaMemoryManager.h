@@ -37,7 +37,11 @@ public:
 	void cudaCopyCoord(int lev);
 	void cudaFreeCoord(int lev);
 
-	void cudaCopyDataToHost(int lev);
+	void cudaAllocBodyForce(int lev);
+    void cudaCopyBodyForce(int lev);
+    void cudaFreeBodyForce(int lev);
+
+    void cudaCopyDataToHost(int lev);
 
 	void cudaAllocSP(int lev);
 	void cudaCopySP(int lev);

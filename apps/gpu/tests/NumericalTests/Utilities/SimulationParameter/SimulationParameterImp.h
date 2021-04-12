@@ -4,8 +4,6 @@
 #include "SimulationParameter.h"
 
 #include "LBM/LB.h"
-#include "VirtualFluids_GPU/Kernel//Utilities/KernelType.h"
-
 struct GridInformationStruct;
 struct BasicSimulationParameterStruct;
 
@@ -28,7 +26,7 @@ public:
 
 protected:
 	SimulationParameterImp() {};
-	SimulationParameterImp(KernelType kernelName, double viscosity, std::shared_ptr<BasicSimulationParameterStruct> basicSimPara, std::shared_ptr<GridInformationStruct> gridInfo);
+	SimulationParameterImp(std::string kernelName, double viscosity, std::shared_ptr<BasicSimulationParameterStruct> basicSimPara, std::shared_ptr<GridInformationStruct> gridInfo);
 
 	void generateFileDirectionInMyStystem(std::string filePath);
 

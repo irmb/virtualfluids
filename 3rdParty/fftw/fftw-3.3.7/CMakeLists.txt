@@ -327,7 +327,7 @@ if (Threads_FOUND)
   endif ()
 endif ()
 
-if (OPENMP_FOUND)
+if (ENABLE_OPENMP AND OPENMP_FOUND)
   add_library (${fftw3_lib}_omp ${fftw_omp_SOURCE})
   target_link_libraries (${fftw3_lib}_omp ${fftw3_lib})
   target_link_libraries (${fftw3_lib}_omp ${CMAKE_THREAD_LIBS_INIT})

@@ -80,6 +80,9 @@ struct ParameterStruct{
 	//unsigned int *coordX_SP, *coordY_SP, *coordZ_SP;
 	real *coordX_SP, *coordY_SP, *coordZ_SP;
 
+	//body forces////////////
+	real *forceX_SP, *forceY_SP, *forceZ_SP;
+
 	//vel parab///////////////
 	real *vParab;
 
@@ -723,6 +726,7 @@ public:
 	void setUseInitNeq(bool useInitNeq);
 	void setSimulatePorousMedia(bool simulatePorousMedia);
 	void setIsF3(bool isF3);
+    void setIsBodyForce(bool isBodyForce);
 	void setclockCycleForMP(real clockCycleForMP);
 	void setDevices(std::vector<uint> devices);
 	void setGridX(std::vector<int> GridX);
@@ -972,6 +976,7 @@ public:
 	bool getUseInitNeq();
 	bool getSimulatePorousMedia();
 	bool getIsF3();
+    bool getIsBodyForce();
 	double getMemsizeGPU();
 	//1D domain decomposition
 	std::vector<std::string> getPossNeighborFiles(std::string sor);
@@ -1033,6 +1038,7 @@ private:
 	bool calcDragLift, calcCp;
 	bool writeVeloASCII;
 	bool calcPlaneConc;
+    bool isBodyForce;
 	int diffMod;
 	int coarse, fine, maxlevel;
 	int factor_gridNZ;
