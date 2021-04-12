@@ -1,17 +1,16 @@
 #ifndef KERNEL_CONFIGURATION_H
 #define KERNEL_CONFIGURATION_H
 
+#include <string>
 #include <vector>
-
-#include "VirtualFluids_GPU/Kernel//Utilities/KernelType.h"
 
 class KernelConfiguration
 {
 public:
-	virtual KernelType getMainKernel() = 0;
+    virtual std::string getMainKernel()              = 0;
 	virtual bool getMultiKernelOn() = 0;
 	virtual	std::vector<int> getMultiKernelLevel() = 0;
-	virtual std::vector<KernelType> getMultiKernel() = 0;
+    virtual std::vector<std::string> getMultiKernel() = 0;
 
 private:	
 

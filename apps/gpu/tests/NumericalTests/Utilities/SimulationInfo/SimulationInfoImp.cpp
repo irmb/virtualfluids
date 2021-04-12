@@ -2,8 +2,6 @@
 
 #include "Utilities/Time/TimeInfo.h"
 
-#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
-
 #include <iomanip>
 #include <sstream>
 
@@ -62,9 +60,8 @@ std::vector<std::string> SimulationInfoImp::getDataToCalcTests()
 	return dataToCalcTests;
 }
 
-SimulationInfoImp::SimulationInfoImp(int simID, KernelType kernel, double viscosity, int lx, int numberOfSimulations, std::string simulationName, std::vector<std::string> dataToCalcTests)
+SimulationInfoImp::SimulationInfoImp(int simID, std::string kernel, double viscosity, int lx, int numberOfSimulations, std::string simulationName, std::vector<std::string> dataToCalcTests)
 	: simID(simID), lx(lx), viscosity(viscosity), numberOfSimulations(numberOfSimulations), simulationName(simulationName), dataToCalcTests(dataToCalcTests)
 {
-	std::shared_ptr<KernelMapper> myKernelMapper = KernelMapper::getInstance();
-	this->kernelName = myKernelMapper->getString(kernel);
+	this->kernelName = kernel;
 }

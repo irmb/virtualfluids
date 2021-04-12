@@ -7,15 +7,13 @@
 
 #include "Utilities/Structs/BasicTestParameterStruct.h"
 
-#include "VirtualFluids_GPU/Kernel//Utilities/KernelType.h"
-
 struct L2NormTestBetweenKernelsParameterStruct
 {
 	std::shared_ptr<BasicTestParameterStruct> basicTestParameter;
 
-	KernelType basicKernel;
+	std::string basicKernel;
 
-	std::vector<KernelType> kernelsToTest;
+	std::vector<std::string> kernelsToTest;
 	std::vector<int> timeSteps;
 
 	std::vector<std::string> normalizeData;

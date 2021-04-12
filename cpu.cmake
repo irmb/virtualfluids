@@ -74,7 +74,7 @@ IF(${CMAKE_SYSTEM_PROCESSOR} MATCHES "ia64")
 ENDIF()
 
 if(${USE_METIS} AND NOT METIS_INCLUDEDIR)
-    add_subdirectory(${VF_THIRD_DIR}/metis/metis-5.1.1)
+    add_subdirectory(${VF_THIRD_DIR}/metis/metis-5.1.0)
 endif()
 
 
