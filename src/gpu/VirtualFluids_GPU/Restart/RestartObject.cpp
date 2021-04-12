@@ -124,7 +124,7 @@ void BinaryRestartObject::serialize_internal(const std::string &filename)
         stream.write(reinterpret_cast<const char *>(&size), sizeof(size));
 
         // Store its contents
-        stream.write(reinterpret_cast<const char *>(&v[0]), v.size() * sizeof(float));
+        stream.write(reinterpret_cast<const char *>(&v[0]), v.size() * sizeof(real));
     }
 
     stream.close();
