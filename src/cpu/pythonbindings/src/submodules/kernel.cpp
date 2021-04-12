@@ -16,9 +16,9 @@ namespace kernel
                 .value("CompressibleCumulantFourthOrderViscosity",
                        KernelFactory::COMPRESSIBLE_CUMULANT_4TH_ORDER_VISCOSITY);
 
-
         py::class_<LBMKernelConfiguration, std::shared_ptr<LBMKernelConfiguration>>(kernelModule, "LBMKernel")
                 .def(py::init<KernelFactory::KernelType>())
+                .def_readwrite("type", &LBMKernelConfiguration::kernelType)
                 .def_readwrite("use_forcing", &LBMKernelConfiguration::useForcing)
                 .def_readwrite("forcing_in_x1", &LBMKernelConfiguration::forcingX1)
                 .def_readwrite("forcing_in_x2", &LBMKernelConfiguration::forcingX2)

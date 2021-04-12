@@ -1,4 +1,6 @@
 import math
+from typing import List
+
 import pyvista as pv
 
 
@@ -21,7 +23,7 @@ def vertical_column_from_mesh(mesh):
     return relevant_indices
 
 
-def get_values_from_indices(array, indices):
+def get_values_from_indices(array, indices) -> List[float]:
     return [array[index] for index in indices]
 
 

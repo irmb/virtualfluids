@@ -20,10 +20,13 @@ default_runtime_params.number_of_threads = 4
 default_runtime_params.number_of_timesteps = 10000
 default_runtime_params.timestep_log_interval = 1000
 
-
 default_kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
 default_kernel.use_forcing = True
 default_kernel.forcing_in_x1 = 1e-8
+
+default_writer = Writer()
+default_writer.output_path = "./output"
+default_writer.output_format = OutputFormat.BINARY
 
 
 default_kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
@@ -34,12 +37,9 @@ default_kernel.forcing_in_x1 = 1e-8
 def run_simulation(physical_params=default_physical_params,
                    grid_params=default_grid_params,
                    runtime_params=default_runtime_params,
-                   kernel=default_kernel):
+                   kernel=default_kernel,
+                   writer=default_writer):
     simulation = Simulation()
-
-    writer = Writer()
-    writer.output_path = "./output"
-    writer.output_format = OutputFormat.BINARY
 
     simulation.set_kernel_config(kernel)
     simulation.set_physical_parameters(physical_params)
