@@ -24,37 +24,19 @@ From: ubuntu:20.04
     python3-dev                \
     python3-pip                \
     mpich                      \
-    libomp-dev
+    libomp-dev                 \
+    libgl1
 
-    pip3 install setuptools wheel
+    pip3 install setuptools wheel numpy scipy pyvista
 
     export PYTHONPATH=Python
     python3 /setup.py install
 
 %environment
     export PYTHONPATH=/Python
+    export PYFLUIDS_NUM_THREADS=8
 
-%appenv poiseuille01
-    export PYTHONPATH=Python
-    export PYFLUIDS_SCALE_LEVEL=0
-
-%apprun poisueille01
-    python3 /Python/SlurmTests/poiseuille/simulation_runner.py
-
-
-%appenv poiseuille02
-    export PYTHONPATH=Python
-    export PYFLUIDS_SCALE_LEVEL=1
-
-%apprun poisueille02
-    python3 /Python/SlurmTests/poiseuille/simulation_runner.py
-
-
-%appenv poiseuille03
-    export PYTHONPATH=Python
-    export PYFLUIDS_SCALE_LEVEL=2
-
-%apprun poisueille03
+%apprun testcase
     python3 /Python/SlurmTests/poiseuille/simulation_runner.py
 
 %apprun evaluate
