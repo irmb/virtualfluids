@@ -13,13 +13,8 @@ source .bashrc
 echo "PyFluids Poiseuille Test Case"
 echo "Number of tasks: ${SLURM_NTASKS}"
 
-export PYFLUIDS_SCALE_LEVEL=0
-mpiexec -np "$SLURM_NTASKS" singularity exec SingularityImages/VirtualFluidsMPICH.sif python3 /VirtualFluids_dev/Python/poiseuille/simulation_runner.py
+mpiexec -np "$SLURM_NTASKS" singularity run --app PoiseuilleTestContainer.sif --app poiseuille01
+mpiexec -np "$SLURM_NTASKS" singularity run --app PoiseuilleTestContainer.sif --app poiseuille02
+mpiexec -np "$SLURM_NTASKS" singularity run --app PoiseuilleTestContainer.sif --app poiseuille03
 
-export PYFLUIDS_SCALE_LEVEL=1
-mpiexec -np "$SLURM_NTASKS" singularity exec SingularityImages/VirtualFluidsMPICH.sif python3 /VirtualFluids_dev/Python/poiseuille/simulation_runner.py
-
-export PYFLUIDS_SCALE_LEVEL=2
-mpiexec -np "$SLURM_NTASKS" singularity exec SingularityImages/VirtualFluidsMPICH.sif python3 /VirtualFluids_dev/Python/poiseuille/simulation_runner.py
-
-singularity exec SingularityImages/VirtualFluidsMPICH.sif python3 /VirtualFluids_dev/Python/poiseuille/SlurmTests/poiseuille/evaluator.py
+singularity run --app PoiseuilleTestContainer.sif evaluate
