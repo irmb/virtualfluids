@@ -237,6 +237,37 @@ gcc_9_python_bindings_test:
     - python3 -m unittest discover -s Python -v
 
 ###############################################################################
+gcc_9_python_slurm_test:
+  extends: .deploy_template
+  stage: test
+
+  when: manual
+
+  tags:
+    - linux
+    - privileged
+
+  variables:
+    SSH_KEY: "$SSH_PRIVATE_KEY"
+    HOST: "phoenix.hlr.rz.tu-bs.de"
+    PHOENIX_USER: "y0054816"
+
+  script:
+    - singularity build PoiseuilleTestContainer.sif Python/SlurmTests/poiseuille/PoiseuilleTestContainer.def
+    - scp PoiseuilleTestContainer.sif $PHOENIX_USER@$HOST:PoiseuilleTestContainer.sif
+    - scp Python/SlurmTests/poiseuille/slurm.job $PHOENIX_USER@$HOST:slurm.job
+    - ssh $PHOENIX_USER@$HOST "rm -rf output-*"
+    - ssh $PHOENIX_USER@$HOST "rm *.out"
+    - ssh $PHOENIX_USER@$HOST "sbatch --wait slurm.job"
+    - cat *.out
+
+  after_script:
+  - ssh $PHOENIX_USER@$HOST "rm -rf output-*"
+  - ssh $PHOENIX_USER@$HOST "rm *.out"
+  - ssh $PHOENIX_USER@$HOST "rm PoiseuilleTestContainer.sif"
+  - ssh $PHOENIX_USER@$HOST "rm slurm.job"
+
+###############################################################################
 ##                            Benchmark                                      ##
 ###############################################################################
 nvidia_test:
