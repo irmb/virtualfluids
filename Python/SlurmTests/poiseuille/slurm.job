@@ -1,20 +1,25 @@
 #!/bin/bash
 #SBATCH -J PyFluidsTest
-#SBATCH --nodes=2
+#SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=8
 
-#SBATCH --mem-per-cpu=30000
-#SBATCH --time=02:00:00
-#SBATCH --partition=shortrun_small
+#SBATCH --mem-per-cpu=3000
+#SBATCH --time=07:00:00
+#SBATCH --partition=standard
 
-source .bashrc
+source $HOME/.bashrc
 
 echo "PyFluids Poiseuille Test Case"
 echo "Number of tasks: ${SLURM_NTASKS}"
 
-mpiexec -np "$SLURM_NTASKS" singularity run --app PoiseuilleTestContainer.sif --app poiseuille01
-mpiexec -np "$SLURM_NTASKS" singularity run --app PoiseuilleTestContainer.sif --app poiseuille02
-mpiexec -np "$SLURM_NTASKS" singularity run --app PoiseuilleTestContainer.sif --app poiseuille03
+export SINGULARITYENV_PYFLUIDS_SCALE_LEVEL=0
+mpiexec -np "$SLURM_NTASKS" singularity run --app testcase PoiseuilleTestContainer.sif
 
-singularity run --app PoiseuilleTestContainer.sif evaluate
+export SINGULARITYENV_PYFLUIDS_SCALE_LEVEL=1
+mpiexec -np "$SLURM_NTASKS" singularity run --app testcase PoiseuilleTestContainer.sif
+
+export SINGULARITYENV_PYFLUIDS_SCALE_LEVEL=2
+mpiexec -np "$SLURM_NTASKS" singularity run --app testcase PoiseuilleTestContainer.sif
+
+singularity run --app evaluate PoiseuilleTestContainer.sif
