@@ -240,7 +240,7 @@ gcc_9_python_bindings_test:
 gcc_9_python_slurm_test:
   stage: test
 
-  when: manual
+#  when: manual
 
   tags:
     - linux
@@ -271,10 +271,10 @@ gcc_9_python_slurm_test:
     - cat *.out
 
   after_script:
-  - ssh $PHOENIX_USER@$HOST "rm -rf output-*"
-  - ssh $PHOENIX_USER@$HOST "rm *.out"
-  - ssh $PHOENIX_USER@$HOST "rm PoiseuilleTestContainer.sif"
-  - ssh $PHOENIX_USER@$HOST "rm slurm.job"
+    - ssh $PHOENIX_USER@$HOST "rm -rf output-*"
+    - ssh $PHOENIX_USER@$HOST "rm *.out"
+    - ssh $PHOENIX_USER@$HOST "rm PoiseuilleTestContainer.sif"
+    - ssh $PHOENIX_USER@$HOST "rm slurm.job"
 
 ###############################################################################
 ##                            Benchmark                                      ##
