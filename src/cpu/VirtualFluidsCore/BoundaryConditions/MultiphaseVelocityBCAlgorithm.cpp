@@ -104,15 +104,15 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
    
    phiBC = bcPtr->getBoundaryPhaseField();
    
-   //D3Q27System::calcMultiphaseHeq(htemp, phiBC, vx1, vx2, vx3);
-   D3Q27System::calcMultiphaseHeq(htemp, phiBC, bcPtr->getBoundaryVelocityX1(), bcPtr->getBoundaryVelocityX2(), bcPtr->getBoundaryVelocityX2());//30.03.2021 EQ phase field BC!
+   D3Q27System::calcMultiphaseHeq(htemp, phiBC, vx1, vx2, vx3);
+   //D3Q27System::calcMultiphaseHeq(htemp, phiBC, bcPtr->getBoundaryVelocityX1(), bcPtr->getBoundaryVelocityX2(), bcPtr->getBoundaryVelocityX2());//30.03.2021 EQ phase field BC!
    for (int fdir = D3Q27System::STARTF; fdir<=D3Q27System::ENDF; fdir++)
    {
 	   if (bcPtr->hasVelocityBoundaryFlag(fdir))
 	   {
-		  // LBMReal hReturn = htemp[fdir]+h[fdir]-heq[fdir];
+		   LBMReal hReturn = htemp[fdir]+h[fdir]-heq[fdir];
            //17.03.2021 Let us just set the plain eq
-           LBMReal hReturn = htemp[fdir];
+           //LBMReal hReturn = htemp[fdir];
 		   distributionsH->setDistributionForDirection(hReturn, nx1, nx2, nx3, fdir);
            if (distributionsH2)
                distributionsH2->setDistributionForDirection(hReturn, nx1, nx2, nx3, fdir);
