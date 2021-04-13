@@ -19,7 +19,7 @@ void bflow(string configname)
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
       vector<double>  boundingBox = config.getVector<double>("boundingBox");
-      double          nuLB = config.getValue<double>("nuLB");
+      //double          nuLB = config.getValue<double>("nuLB");
       double          endTime = config.getValue<double>("endTime");
       double          outTime = config.getValue<double>("outTime");
       double          availMem = config.getValue<double>("availMem");
@@ -65,12 +65,12 @@ void bflow(string configname)
       LBMReal rhoLB = 0.0;
 
       //akoustic
-       OmegaLB /= scaleFactor;
-       nuLB *=scaleFactor;
-       endTime *= scaleFactor;
-       //outTime = endTime;
-       cpStart = endTime;
-       cpStep  = endTime;
+       //OmegaLB /= scaleFactor;
+       //nuLB *=scaleFactor;
+       //endTime *= scaleFactor;
+       ////outTime = endTime;
+       //cpStart = endTime;
+       //cpStep  = endTime;
 
 //diffusive
       //OmegaLB /= scaleFactor * scaleFactor;
@@ -79,6 +79,16 @@ void bflow(string configname)
       //outTime = endTime;
       //cpStart = endTime;
       //cpStep = endTime;
+
+      //double Re = 1.38230076758;
+      double N  = 80;
+      double Omega = 2 * UbMath::PI / 60.0 * N;
+      double mu    = 1;
+      double R     = 0.165 / 2.0;
+      double rho   = 970;
+      double Re    = Omega * R * R * rho / mu;
+
+      double nuLB = OmegaLB * R * 1e3 * R * 1e3 / Re;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
       // double uWorld = (N * PI) / 30.0; //0.0037699111843
@@ -134,9 +144,9 @@ void bflow(string configname)
       //thix->setOmegaMin(omegaMin);
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyHerschelBulkleyModelNoSlipBCAlgorithm()));
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
+      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
 
       SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
       slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
@@ -158,10 +168,10 @@ void bflow(string configname)
       fctVz.SetExpr("0.0");
 
       SPtr<BCAdapter> velocityBCAdapter(new VelocityBCAdapter(true, true, true, fctVx, fctVy, fctVz, 0, BCFunction::INFCONST));
-      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
       //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleVelocityBCAlgorithm()));
       //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
-      velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelVelocityBCAlgorithm()));
+      //velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelVelocityBCAlgorithm()));
 
       //SPtr<BCAdapter> densityBCAdapter(new DensityBCAdapter());
       //densityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
@@ -179,8 +189,8 @@ void bflow(string configname)
       bcProc = SPtr<BCProcessor>(new BCProcessor());
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
       kernel->setBCProcessor(bcProc);
@@ -228,6 +238,9 @@ void bflow(string configname)
       {
          UBLOG(logINFO, "Parameters:");
          //UBLOG(logINFO, "forcing = " << forcing);
+         UBLOG(logINFO, "N = " << N << " rpm");
+         UBLOG(logINFO, "Omega = " << Omega << " rad/s");
+         UBLOG(logINFO, "Re = " << Re);
          UBLOG(logINFO, "rho = " << rhoLB);
          UBLOG(logINFO, "uLB = " << OmegaLB);
          UBLOG(logINFO, "nuLB = " << nuLB);
@@ -384,18 +397,18 @@ void bflow(string configname)
       SPtr<UbScheduler> forceSch(new UbScheduler(100));
       SPtr<CalculateTorqueCoProcessor> fp = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueRotor.txt", comm);
       fp->addInteractor(rotorInt);
-      SPtr<CalculateTorqueCoProcessor> fp2 = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueStator.txt", comm);
-      fp2->addInteractor(statorInt);
+      //SPtr<CalculateTorqueCoProcessor> fp2 = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueStator.txt", comm);
+      //fp2->addInteractor(statorInt);
 
-      SPtr<WriteThixotropyQuantitiesCoProcessor> writeThixotropicMQCoProcessor(new WriteThixotropyQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+      //SPtr<WriteThixotropyQuantitiesCoProcessor> writeThixotropicMQCoProcessor(new WriteThixotropyQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(npr);
       calculator->addCoProcessor(fp);
-      calculator->addCoProcessor(fp2);
+      //calculator->addCoProcessor(fp2);
       calculator->addCoProcessor(writeMQCoProcessor);
-      calculator->addCoProcessor(writeThixotropicMQCoProcessor);
+      //calculator->addCoProcessor(writeThixotropicMQCoProcessor);
       calculator->addCoProcessor(restartCoProcessor);
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");

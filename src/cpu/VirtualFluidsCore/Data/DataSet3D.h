@@ -55,8 +55,8 @@ public:
     SPtr<DistributionArray3D> getHdistributions() const;
     void setHdistributions(SPtr<DistributionArray3D> distributions);
 
-    SPtr<DistributionArray3D> getH1distributions() const;
-    void setH1distributions(SPtr<DistributionArray3D> distributions);
+    //SPtr<DistributionArray3D> getH1distributions() const;
+    //void setH1distributions(SPtr<DistributionArray3D> distributions);
 
     SPtr<DistributionArray3D> getH2distributions() const;
     void setH2distributions(SPtr<DistributionArray3D> distributions);
@@ -94,7 +94,7 @@ private:
 
     SPtr<DistributionArray3D> hdistributions;
 
-    SPtr<DistributionArray3D> h1distributions;
+    //SPtr<DistributionArray3D> h1distributions;
     SPtr<DistributionArray3D> h2distributions;
 
     SPtr<AverageValuesArray3D> averageValues;
@@ -120,9 +120,9 @@ inline SPtr<DistributionArray3D> DataSet3D::getHdistributions() const { return h
 
 inline void DataSet3D::setHdistributions(SPtr<DistributionArray3D> distributions) { hdistributions = distributions; }
 
-inline SPtr<DistributionArray3D> DataSet3D::getH1distributions() const { return h1distributions; }
-
-inline void DataSet3D::setH1distributions(SPtr<DistributionArray3D> distributions) { h1distributions = distributions; }
+//inline SPtr<DistributionArray3D> DataSet3D::getH1distributions() const { return h1distributions; }
+//
+//inline void DataSet3D::setH1distributions(SPtr<DistributionArray3D> distributions) { h1distributions = distributions; }
 
 inline SPtr<DistributionArray3D> DataSet3D::getH2distributions() const { return h2distributions; }
 
