@@ -240,7 +240,8 @@ gcc_9_python_bindings_test:
 gcc_9_python_slurm_test:
   stage: test
 
-#  when: manual
+  when: manual
+  needs: ["gcc_9_python"]
 
   tags:
     - linux
@@ -260,19 +261,19 @@ gcc_9_python_slurm_test:
     - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
     - echo $SSH_KEY >> ansible/private_key
     - ssh-keyscan -t rsa $HOST >> ~/.ssh/known_hosts
+    - ssh $PHOENIX_USER@$HOST "rm -rf output-*"
+    - ssh $PHOENIX_USER@$HOST "rm -f *.out"
 
   script:
     - singularity build PoiseuilleTestContainer.sif Python/SlurmTests/poiseuille/PoiseuilleTestContainer.def
     - scp PoiseuilleTestContainer.sif $PHOENIX_USER@$HOST:PoiseuilleTestContainer.sif
     - scp Python/SlurmTests/poiseuille/slurm.job $PHOENIX_USER@$HOST:slurm.job
-    - ssh $PHOENIX_USER@$HOST "rm -rf output-*"
-    - ssh $PHOENIX_USER@$HOST "rm *.out"
     - ssh $PHOENIX_USER@$HOST "sbatch --wait slurm.job"
     - cat *.out
 
   after_script:
     - ssh $PHOENIX_USER@$HOST "rm -rf output-*"
-    - ssh $PHOENIX_USER@$HOST "rm *.out"
+    - ssh $PHOENIX_USER@$HOST "rm -f *.out"
     - ssh $PHOENIX_USER@$HOST "rm PoiseuilleTestContainer.sif"
     - ssh $PHOENIX_USER@$HOST "rm slurm.job"
 
