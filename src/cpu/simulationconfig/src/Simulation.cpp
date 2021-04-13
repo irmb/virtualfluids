@@ -65,6 +65,8 @@ Simulation::addObject(const std::shared_ptr<GbObject3D> &object, const std::shar
     const bool is_in = registeredAdapters.find(bcAdapter) != registeredAdapters.end();
     if (!is_in) addBCAdapter(bcAdapter);
     this->interactors.push_back(lbmSystem->makeInteractor(object, this->grid, bcAdapter, state));
+    if (communicator->getProcessID() != 0) return;
+
     GbSystem3D::writeGeoObject(object, writerConfig.outputPath + folderPath, writerConfig.getWriter());
 }
 
@@ -105,7 +107,9 @@ void Simulation::run()
     int &nodesInX1 = gridParameters->numberOfNodesPerDirection[0];
     int &nodesInX2 = gridParameters->numberOfNodesPerDirection[1];
     int &nodesInX3 = gridParameters->numberOfNodesPerDirection[2];
-    logSimulationData(nodesInX1, nodesInX2, nodesInX3);
+
+    if (isMainProcess())
+        logSimulationData(nodesInX1, nodesInX2, nodesInX3);
 
     setBlockSize(nodesInX1, nodesInX2, nodesInX3);
     auto gridCube = makeSimulationBoundingBox();
@@ -132,13 +136,13 @@ void Simulation::run()
     grid->accept(kernelVisitor);
     intHelper.setBC();
 
-    double bulkViscosity = physicalParameters->latticeViscosity * physicalParameters->bulkViscosityFactor;
+//    double bulkViscosity = physicalParameters->latticeViscosity * physicalParameters->bulkViscosityFactor;
     //auto iProcessor = std::make_shared<CompressibleOffsetMomentsInterpolationProcessor>();
     //iProcessor->setBulkViscosity(physicalParameters->latticeViscosity, bulkViscosity);
 
-    //SetConnectorsBlockVisitor setConnsVisitor(communicator, true,
-    //                                          lbmSystem->getNumberOfDirections(),
-    //                                          physicalParameters->latticeViscosity, iProcessor);
+//    SetConnectorsBlockVisitor setConnsVisitor(communicator, true,
+//                                              lbmSystem->getNumberOfDirections(),
+//                                              physicalParameters->latticeViscosity, iProcessor);
 
     OneDistributionSetConnectorsBlockVisitor setConnsVisitor(communicator);
     grid->accept(setConnsVisitor);
@@ -163,7 +167,8 @@ void Simulation::run()
 
 #ifdef _OPENMP
     omp_set_num_threads(simulationParameters->numberOfThreads);
-    UBLOG(logINFO, "OpenMP is set to run with " << omp_get_num_threads() << " threads")
+    if (isMainProcess())
+        UBLOG(logINFO, "OpenMP is set to run with " << simulationParameters->numberOfThreads << " threads")
 #endif
 
     auto calculator = std::make_shared<BasicCalculator>(grid, visualizationScheduler,
@@ -171,9 +176,14 @@ void Simulation::run()
     calculator->addCoProcessor(nupsCoProcessor);
     calculator->addCoProcessor(mqCoProcessor);
 
-    UBLOG(logINFO, "Simulation-start")
+    if (isMainProcess()) UBLOG(logINFO, "Simulation-start")
     calculator->calculate();
-    UBLOG(logINFO, "Simulation-end")
+    if (isMainProcess()) UBLOG(logINFO, "Simulation-end")
+}
+
+bool Simulation::isMainProcess()
+{
+    return communicator->getProcessID() == 0;
 }
 
 void
@@ -248,8 +258,9 @@ void Simulation::writeBoundaryConditions() const
 void Simulation::writeBlocksToFile() const
 {
     UBLOG(logINFO, "Write block grid to VTK-file")
+    auto scheduler = std::make_shared<UbScheduler>(1);
     auto ppblocks = std::make_shared<WriteBlocksCoProcessor>(grid,
-                                                             std::make_shared<UbScheduler>(1),
+                                                             scheduler,
                                                              writerConfig.outputPath,
                                                              writerConfig.getWriter(),
                                                              communicator);
@@ -258,17 +269,23 @@ void Simulation::writeBlocksToFile() const
 }
 
 std::shared_ptr<GbObject3D>
-Simulation::makeSimulationBoundingBox() const
+Simulation::makeSimulationBoundingBox()
 {
     auto box = gridParameters->boundingBox();
+    auto gridCube = std::make_shared<GbCuboid3D>(box->minX1, box->minX2, box->minX3, box->maxX1, box->maxX2,
+                                                 box->maxX3);
 
-    UBLOG(logINFO, "Bounding box dimensions = [("
-            << box->minX1 << ", " << box->minX2 << ", " << box->minX3 << "); ("
-            << box->maxX1 << ", " << box->maxX2 << ", " << box->maxX3 << ")]")
+    if (isMainProcess())
+    {
+        UBLOG(logINFO, "Bounding box dimensions = [("
+                << box->minX1 << ", " << box->minX2 << ", " << box->minX3 << "); ("
+                << box->maxX1 << ", " << box->maxX2 << ", " << box->maxX3 << ")]")
 
-    auto gridCube = std::make_shared<GbCuboid3D>(box->minX1, box->minX2, box->minX3, box->maxX1, box->maxX2, box->maxX3);
-    GbSystem3D::writeGeoObject(gridCube.get(), writerConfig.outputPath + "/geo/gridCube", writerConfig.getWriter());
+        GbSystem3D::writeGeoObject(gridCube.get(), writerConfig.outputPath + "/geo/gridCube", writerConfig.getWriter());
+    }
+
     return gridCube;
 }
+
 
 Simulation::~Simulation() = default;

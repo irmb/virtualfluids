@@ -2,7 +2,7 @@ from pyfluids.kernel import LBMKernel
 from pyfluids.parameters import GridParameters, PhysicalParameters, RuntimeParameters
 
 
-class AcousticScaling:
+class OneDirectionalAcousticScaling:
 
     def __init__(self, grid_parameters: GridParameters,
                  physical_parameters: PhysicalParameters,
@@ -55,7 +55,7 @@ class AcousticScaling:
         physical_params.lattice_viscosity = self._physical_params.lattice_viscosity
 
         if level > 0:
-            physical_params.lattice_viscosity /= (level * 2)
+            physical_params.lattice_viscosity *= (level * 2)
 
         return physical_params
 
@@ -78,8 +78,8 @@ class AcousticScaling:
         kernel.forcing_in_x3 = self._kernel.forcing_in_x3
 
         if level > 0:
-            kernel.forcing_in_x1 *= (level * 2)
-            kernel.forcing_in_x2 *= (level * 2)
-            kernel.forcing_in_x3 *= (level * 2)
+            kernel.forcing_in_x1 /= (level * 2)
+            kernel.forcing_in_x2 /= (level * 2)
+            kernel.forcing_in_x3 /= (level * 2)
 
         return kernel

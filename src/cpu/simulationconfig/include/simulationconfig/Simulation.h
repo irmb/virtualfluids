@@ -63,7 +63,9 @@ public:
     void run();
 
 private:
-    std::shared_ptr<GbObject3D> makeSimulationBoundingBox() const;
+    bool isMainProcess();
+
+    std::shared_ptr<GbObject3D> makeSimulationBoundingBox();
 
     void writeBlocksToFile() const;
 
