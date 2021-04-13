@@ -238,7 +238,6 @@ gcc_9_python_bindings_test:
 
 ###############################################################################
 gcc_9_python_slurm_test:
-  extends: .deploy_template
   stage: test
 
   when: manual
@@ -251,6 +250,16 @@ gcc_9_python_slurm_test:
     SSH_KEY: "$SSH_PRIVATE_KEY"
     HOST: "phoenix.hlr.rz.tu-bs.de"
     PHOENIX_USER: "y0054816"
+
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - apt-get install -y rsync
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+    - echo $SSH_KEY >> ansible/private_key
+    - ssh-keyscan -t rsa $HOST >> ~/.ssh/known_hosts
 
   script:
     - singularity build PoiseuilleTestContainer.sif Python/SlurmTests/poiseuille/PoiseuilleTestContainer.def
