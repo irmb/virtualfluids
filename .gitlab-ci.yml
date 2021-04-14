@@ -257,7 +257,7 @@ gcc_9_python_slurm_test:
     - apt-get install -y rsync
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    - echo "Host *\n    ServerAliveInterval 240\n    TCPKeepAlive no" >> ~/.ssh/config
+    - echo "Host *\n    ServerAliveInterval 240" >> ~/.ssh/config
     - eval $(ssh-agent -s)
     - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
     - echo $SSH_KEY >> ansible/private_key
