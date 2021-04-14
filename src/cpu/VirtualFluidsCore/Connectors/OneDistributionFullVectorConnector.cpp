@@ -12,6 +12,8 @@ OneDistributionFullVectorConnector::OneDistributionFullVectorConnector(SPtr<Bloc
 //////////////////////////////////////////////////////////////////////////
 void OneDistributionFullVectorConnector::init()
 {
+    FullVectorConnector::init();
+    
     fDis = dynamicPointerCast<EsoTwist3D>(block.lock()->getKernel()->getDataSet()->getFdistributions());
 
     int anz = 27;

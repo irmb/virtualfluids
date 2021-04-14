@@ -50,6 +50,8 @@ ThreeDistributionsFullVectorConnector::ThreeDistributionsFullVectorConnector(SPt
 //////////////////////////////////////////////////////////////////////////
 void ThreeDistributionsFullVectorConnector::init()
 {
+   FullVectorConnector::init();
+
    fDis = dynamicPointerCast<EsoTwist3D>(block.lock()->getKernel()->getDataSet()->getFdistributions());
    hDis = dynamicPointerCast<EsoTwist3D>(block.lock()->getKernel()->getDataSet()->getHdistributions());
    h2Dis = dynamicPointerCast<EsoTwist3D>(block.lock()->getKernel()->getDataSet()->getH2distributions());

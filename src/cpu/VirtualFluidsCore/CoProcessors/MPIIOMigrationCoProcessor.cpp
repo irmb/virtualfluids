@@ -144,10 +144,10 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
     bool firstBlock           = true;
     size_t doubleCountInBlock = 0;
     int ic                    = 0;
-    SPtr<D3Q27EsoTwist3DSplittedVector> D3Q27EsoTwist3DSplittedVectorPtr;
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributions;
+    SPtr<D3Q27EsoTwist3DSplittedVector> D3Q27EsoTwist3DSplittedVectorPtrF, D3Q27EsoTwist3DSplittedVectorPtrH;
+    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF, localDistributionsH;
+    CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF, nonLocalDistributionsH;
+    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsF, zeroDistributionsH;
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) {
         for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
@@ -160,31 +160,37 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
             dataSetArray[ic].compressible    = block->getKernel()->getCompressible();
             dataSetArray[ic].withForcing     = block->getKernel()->getWithForcing();
 
-            D3Q27EsoTwist3DSplittedVectorPtr = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(
+            D3Q27EsoTwist3DSplittedVectorPtrF = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(
                 block->getKernel()->getDataSet()->getFdistributions());
-            localDistributions    = D3Q27EsoTwist3DSplittedVectorPtr->getLocalDistributions();
-            nonLocalDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getNonLocalDistributions();
-            zeroDistributions     = D3Q27EsoTwist3DSplittedVectorPtr->getZeroDistributions();
+            localDistributionsF = D3Q27EsoTwist3DSplittedVectorPtrF->getLocalDistributions();
+            nonLocalDistributionsF = D3Q27EsoTwist3DSplittedVectorPtrF->getNonLocalDistributions();
+            zeroDistributionsF = D3Q27EsoTwist3DSplittedVectorPtrF->getZeroDistributions();
+
+            D3Q27EsoTwist3DSplittedVectorPtrH = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(
+                block->getKernel()->getDataSet()->getHdistributions());
+            localDistributionsH = D3Q27EsoTwist3DSplittedVectorPtrH->getLocalDistributions();
+            nonLocalDistributionsH = D3Q27EsoTwist3DSplittedVectorPtrH->getNonLocalDistributions();
+            zeroDistributionsH = D3Q27EsoTwist3DSplittedVectorPtrH->getZeroDistributions();
 
             if (firstBlock) // && block->getKernel()) // when first (any) valid block...
             {
-                if (localDistributions) {
-                    dataSetParamStr1.nx[0] = static_cast<int>(localDistributions->getNX1());
-                    dataSetParamStr1.nx[1] = static_cast<int>(localDistributions->getNX2());
-                    dataSetParamStr1.nx[2] = static_cast<int>(localDistributions->getNX3());
-                    dataSetParamStr1.nx[3] = static_cast<int>(localDistributions->getNX4());
+                if (localDistributionsF) {
+                    dataSetParamStr1.nx[0] = static_cast<int>(localDistributionsF->getNX1());
+                    dataSetParamStr1.nx[1] = static_cast<int>(localDistributionsF->getNX2());
+                    dataSetParamStr1.nx[2] = static_cast<int>(localDistributionsF->getNX3());
+                    dataSetParamStr1.nx[3] = static_cast<int>(localDistributionsF->getNX4());
                 }
 
-                if (nonLocalDistributions) {
-                    dataSetParamStr2.nx[0] = static_cast<int>(nonLocalDistributions->getNX1());
-                    dataSetParamStr2.nx[1] = static_cast<int>(nonLocalDistributions->getNX2());
-                    dataSetParamStr2.nx[2] = static_cast<int>(nonLocalDistributions->getNX3());
-                    dataSetParamStr2.nx[3] = static_cast<int>(nonLocalDistributions->getNX4());
+                if (nonLocalDistributionsF) {
+                    dataSetParamStr2.nx[0] = static_cast<int>(nonLocalDistributionsF->getNX1());
+                    dataSetParamStr2.nx[1] = static_cast<int>(nonLocalDistributionsF->getNX2());
+                    dataSetParamStr2.nx[2] = static_cast<int>(nonLocalDistributionsF->getNX3());
+                    dataSetParamStr2.nx[3] = static_cast<int>(nonLocalDistributionsF->getNX4());
                 }
-                if (zeroDistributions) {
-                    dataSetParamStr3.nx[0] = static_cast<int>(zeroDistributions->getNX1());
-                    dataSetParamStr3.nx[1] = static_cast<int>(zeroDistributions->getNX2());
-                    dataSetParamStr3.nx[2] = static_cast<int>(zeroDistributions->getNX3());
+                if (zeroDistributionsF) {
+                    dataSetParamStr3.nx[0] = static_cast<int>(zeroDistributionsF->getNX1());
+                    dataSetParamStr3.nx[1] = static_cast<int>(zeroDistributionsF->getNX2());
+                    dataSetParamStr3.nx[2] = static_cast<int>(zeroDistributionsF->getNX3());
                     dataSetParamStr3.nx[3] = 1;
                 }
 
@@ -196,10 +202,11 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
                 dataSetParamStr1.nx3 = dataSetParamStr2.nx3 = dataSetParamStr3.nx3 =
                     static_cast<int>(block->getKernel()->getDataSet()->getFdistributions()->getNX3());
 
+                //  Fdistributions + Hdistributions
                 doubleCountInBlock =
-                    dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3] +
-                    dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3] +
-                    dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
+                    (dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3] +
+                        dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3] +
+                        dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3]) * 2;
 
                 SPtr<CbArray4D<LBMReal, IndexerX4X3X2X1>> averageDensityArray =
                     block->getKernel()->getDataSet()->getAverageDensity();
@@ -243,21 +250,39 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
                 else
                     arrPresence.isRelaxationFactorPresent = false;
 
+                SPtr<CbArray3D<LBMReal, IndexerX3X2X1>> phaseField3DPtr =
+                    block->getKernel()->getDataSet()->getPhaseField();
+                if (phaseField3DPtr)
+                    arrPresence.isPhaseFieldPresent = true;
+                else
+                    arrPresence.isPhaseFieldPresent = false;
+
                 firstBlock = false;
             }
 
-            if (localDistributions && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) &&
+            if (localDistributionsF && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) &&
                 (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
-                doubleValuesArray.insert(doubleValuesArray.end(), localDistributions->getDataVector().begin(),
-                                         localDistributions->getDataVector().end());
-            if (nonLocalDistributions && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) &&
+                doubleValuesArray.insert(doubleValuesArray.end(), localDistributionsF->getDataVector().begin(),
+                    localDistributionsF->getDataVector().end());
+            if (nonLocalDistributionsF && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) &&
                 (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
-                doubleValuesArray.insert(doubleValuesArray.end(), nonLocalDistributions->getDataVector().begin(),
-                                         nonLocalDistributions->getDataVector().end());
-            if (zeroDistributions && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) &&
-                (dataSetParamStr3.nx[2] > 0))
-                doubleValuesArray.insert(doubleValuesArray.end(), zeroDistributions->getDataVector().begin(),
-                                         zeroDistributions->getDataVector().end());
+                doubleValuesArray.insert(doubleValuesArray.end(), nonLocalDistributionsF->getDataVector().begin(),
+                    nonLocalDistributionsF->getDataVector().end());
+            if (zeroDistributionsF && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
+                doubleValuesArray.insert(doubleValuesArray.end(), zeroDistributionsF->getDataVector().begin(),
+                    zeroDistributionsF->getDataVector().end());
+
+            if (localDistributionsH && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) &&
+                (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
+                doubleValuesArray.insert(doubleValuesArray.end(), localDistributionsH->getDataVector().begin(),
+                    localDistributionsH->getDataVector().end());
+            if (nonLocalDistributionsH && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) &&
+                (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
+                doubleValuesArray.insert(doubleValuesArray.end(), nonLocalDistributionsH->getDataVector().begin(),
+                    nonLocalDistributionsH->getDataVector().end());
+            if (zeroDistributionsH && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
+                doubleValuesArray.insert(doubleValuesArray.end(), zeroDistributionsH->getDataVector().begin(),
+                    zeroDistributionsH->getDataVector().end());
 
             ic++;
         }
@@ -349,6 +374,10 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
 
     if (arrPresence.isRelaxationFactorPresent)
         write3DArray(step, RelaxationFactor, std::string("/cpRelaxationFactor.bin"));
+
+    if (arrPresence.isPhaseFieldPresent)
+        write3DArray(step, PhaseField, std::string("/cpPhaseField.bin"));
+
 }
 
 void MPIIOMigrationCoProcessor::write4DArray(int step, Arrays arrayType, std::string fname)
@@ -519,6 +548,9 @@ void MPIIOMigrationCoProcessor::write3DArray(int step, Arrays arrayType, std::st
             switch (arrayType) {
                 case RelaxationFactor:
                     ___Array = block->getKernel()->getDataSet()->getRelaxationFactor();
+                    break;
+                case PhaseField:
+                    ___Array = block->getKernel()->getDataSet()->getPhaseField();
                     break;
                 default:
                     UB_THROW(UbException(UB_EXARGS,
@@ -1572,9 +1604,9 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
                      MPI_STATUS_IGNORE);
 
     size_t doubleCountInBlock =
-        dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3] +
+        (dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3] +
         dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3] +
-        dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
+        dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3] * 2);
     std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
     // define MPI_types depending on the block-specific information
@@ -1608,41 +1640,72 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
     }
 
     size_t index = 0, vectorSize = 0;
-    std::vector<double> vectorsOfValues1, vectorsOfValues2, vectorsOfValues3;
+    std::vector<double> vectorsOfValuesF1, vectorsOfValuesF2, vectorsOfValuesF3;
+    std::vector<double> vectorsOfValuesH1, vectorsOfValuesH2, vectorsOfValuesH3;
+
+    size_t vectorSize1 =
+        dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3];
+    size_t vectorSize2 =
+        dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3];
+    size_t vectorSize3 =
+        dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
 
     for (std::size_t n = 0; n < blocksCount; n++) {
-        vectorSize = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3];
-        vectorsOfValues1.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + vectorSize);
-        index += vectorSize;
+        vectorsOfValuesF1.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + vectorSize1);
+        index += vectorSize1;
 
-        vectorSize = dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3];
-        vectorsOfValues2.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + vectorSize);
-        index += vectorSize;
+        vectorsOfValuesF2.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + vectorSize2);
+        index += vectorSize2;
 
-        vectorSize = dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
-        vectorsOfValues3.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + vectorSize);
-        index += vectorSize;
+        vectorsOfValuesF3.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + vectorSize3);
+        index += vectorSize3;
+
+        vectorsOfValuesH1.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + vectorSize1);
+        index += vectorSize1;
+
+        vectorsOfValuesH2.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + vectorSize2);
+        index += vectorSize2;
+
+        vectorsOfValuesH3.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + vectorSize3);
+        index += vectorSize3;
 
         SPtr<DistributionArray3D> mFdistributions(new D3Q27EsoTwist3DSplittedVector());
-
         dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)
             ->setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(
-                new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues1, dataSetParamStr1.nx[0],
+                new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValuesF1, dataSetParamStr1.nx[0],
                                                         dataSetParamStr1.nx[1], dataSetParamStr1.nx[2],
                                                         dataSetParamStr1.nx[3])));
         dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)
             ->setNonLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(
-                new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues2, dataSetParamStr2.nx[0],
+                new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValuesF2, dataSetParamStr2.nx[0],
                                                         dataSetParamStr2.nx[1], dataSetParamStr2.nx[2],
                                                         dataSetParamStr2.nx[3])));
         dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)
-            ->setZeroDistributions(
-                CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
-                    vectorsOfValues3, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
+            ->setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
+                    vectorsOfValuesF3, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
 
         dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX1(dataSetParamStr1.nx1);
         dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX2(dataSetParamStr1.nx2);
         dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX3(dataSetParamStr1.nx3);
+
+        SPtr<DistributionArray3D> mHdistributions(new D3Q27EsoTwist3DSplittedVector());
+        dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mHdistributions)
+            ->setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(
+                new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValuesH1, dataSetParamStr1.nx[0],
+                    dataSetParamStr1.nx[1], dataSetParamStr1.nx[2],
+                    dataSetParamStr1.nx[3])));
+        dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mHdistributions)
+            ->setNonLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(
+                new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValuesH2, dataSetParamStr2.nx[0],
+                    dataSetParamStr2.nx[1], dataSetParamStr2.nx[2],
+                    dataSetParamStr2.nx[3])));
+        dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mHdistributions)
+            ->setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
+                vectorsOfValuesH3, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
+
+        dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mHdistributions)->setNX1(dataSetParamStr1.nx1);
+        dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mHdistributions)->setNX2(dataSetParamStr1.nx2);
+        dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mHdistributions)->setNX3(dataSetParamStr1.nx3);
 
         // find the nesessary block and fill it
         SPtr<Block3D> block = grid->getBlock(dataSetArray[n].globalID);
@@ -1655,6 +1718,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
         kernel->setWithForcing(dataSetArray[n].withForcing);
         SPtr<DataSet3D> dataSetPtr = SPtr<DataSet3D>(new DataSet3D());
         dataSetPtr->setFdistributions(mFdistributions);
+        dataSetPtr->setHdistributions(mHdistributions);
         kernel->setDataSet(dataSetPtr);
         block->setKernel(kernel);
     }
@@ -1701,6 +1765,9 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
     if (arrPresence.isRelaxationFactorPresent)
         readArray(step, RelaxationFactor, std::string("/cpRelaxationFactor.bin"));
     //   readRelaxationFactor(step);
+ 
+    if (arrPresence.isPhaseFieldPresent)
+        readArray(step, PhaseField, std::string("/cpPhaseField.bin"));
 }
 
 void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string fname)
@@ -1824,6 +1891,11 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
                 ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
                     vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
                 block->getKernel()->getDataSet()->setRelaxationFactor(___3DArray);
+                break;
+            case PhaseField:
+                ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
+                    vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
+                block->getKernel()->getDataSet()->setPhaseField(___3DArray);
                 break;
             default:
                 UB_THROW(UbException(UB_EXARGS, "MPIIOMigrationCoProcessor::readArray : array type does not exist!"));
