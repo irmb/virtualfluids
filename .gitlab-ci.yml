@@ -240,7 +240,6 @@ gcc_9_python_bindings_test:
 gcc_9_python_slurm_test:
   stage: test
 
-  when: manual
   needs: ["gcc_9_python"]
 
   tags:
