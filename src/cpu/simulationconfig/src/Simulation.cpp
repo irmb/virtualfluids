@@ -115,7 +115,6 @@ void Simulation::run()
     auto gridCube = makeSimulationBoundingBox();
 
     generateBlockGrid(gridCube);
-
     setKernelForcing(lbmKernel, converter);
     setBoundaryConditionProcessor(lbmKernel);
 
@@ -129,47 +128,30 @@ void Simulation::run()
 
     intHelper.selectBlocks();
 
-
     int numberOfProcesses = communicator->getNumberOfProcesses();
     SetKernelBlockVisitor kernelVisitor(lbmKernel, physicalParameters->latticeViscosity,
                                         numberOfProcesses);
     grid->accept(kernelVisitor);
     intHelper.setBC();
 
-//    double bulkViscosity = physicalParameters->latticeViscosity * physicalParameters->bulkViscosityFactor;
-    //auto iProcessor = std::make_shared<CompressibleOffsetMomentsInterpolationProcessor>();
-    //iProcessor->setBulkViscosity(physicalParameters->latticeViscosity, bulkViscosity);
 
-//    SetConnectorsBlockVisitor setConnsVisitor(communicator, true,
-//                                              lbmSystem->getNumberOfDirections(),
-//                                              physicalParameters->latticeViscosity, iProcessor);
-
-    OneDistributionSetConnectorsBlockVisitor setConnsVisitor(communicator);
-    grid->accept(setConnsVisitor);
-
-    InitDistributionsBlockVisitor initVisitor;
-    grid->accept(initVisitor);
-    grid->accept(setConnsVisitor);
+    writeBlocksToFile(); // important: run this after metis & intHelper.selectBlocks()
+    setConnectors();
+    initializeDistributions();
     grid->accept(bcVisitor);
-
     writeBoundaryConditions();
-    // important: run this after metis & intHelper.selectBlocks()
-    writeBlocksToFile();
-
-    auto visualizationScheduler = std::make_shared<UbScheduler>(simulationParameters->timeStepLogInterval);
-    auto mqCoProcessor = makeMacroscopicQuantitiesCoProcessor(converter,
-                                                              visualizationScheduler);
-
-    std::shared_ptr<UbScheduler> nupsScheduler(new UbScheduler(100, 100));
-    std::shared_ptr<CoProcessor> nupsCoProcessor(
-            new NUPSCounterCoProcessor(grid, nupsScheduler, simulationParameters->numberOfThreads, communicator));
-
 
 #ifdef _OPENMP
     omp_set_num_threads(simulationParameters->numberOfThreads);
     if (isMainProcess())
         UBLOG(logINFO, "OpenMP is set to run with " << simulationParameters->numberOfThreads << " threads")
 #endif
+
+    auto visualizationScheduler = std::make_shared<UbScheduler>(simulationParameters->timeStepLogInterval);
+    auto mqCoProcessor = makeMacroscopicQuantitiesCoProcessor(converter,
+                                                              visualizationScheduler);
+
+    auto nupsCoProcessor = makeNupsCoProcessor();
 
     auto calculator = std::make_shared<BasicCalculator>(grid, visualizationScheduler,
                                                         simulationParameters->numberOfTimeSteps);
@@ -234,18 +216,7 @@ Simulation::makeLBMUnitConverter()
     return std::make_shared<LBMUnitConverter>();
 }
 
-std::shared_ptr<CoProcessor>
-Simulation::makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter,
-                                                 const std::shared_ptr<UbScheduler> &visualizationScheduler) const
-{
-    auto mqCoProcessor = std::make_shared<WriteMacroscopicQuantitiesCoProcessor>(grid, visualizationScheduler,
-                                                                                 writerConfig.outputPath,
-                                                                                 writerConfig.getWriter(),
-                                                                                 converter,
-                                                                                 communicator);
-    mqCoProcessor->process(0);
-    return mqCoProcessor;
-}
+
 
 void Simulation::writeBoundaryConditions() const
 {
@@ -285,6 +256,39 @@ Simulation::makeSimulationBoundingBox()
     }
 
     return gridCube;
+}
+
+void Simulation::setConnectors()
+{
+    OneDistributionSetConnectorsBlockVisitor setConnsVisitor(communicator);
+    grid->accept(setConnsVisitor);
+}
+
+void Simulation::initializeDistributions()
+{
+    InitDistributionsBlockVisitor initVisitor;
+    grid->accept(initVisitor);
+}
+
+std::shared_ptr<CoProcessor>
+Simulation::makeMacroscopicQuantitiesCoProcessor(const std::shared_ptr<LBMUnitConverter> &converter,
+                                                 const std::shared_ptr<UbScheduler> &visualizationScheduler) const
+{
+    auto mqCoProcessor = std::make_shared<WriteMacroscopicQuantitiesCoProcessor>(grid, visualizationScheduler,
+                                                                                 writerConfig.outputPath,
+                                                                                 writerConfig.getWriter(),
+                                                                                 converter,
+                                                                                 communicator);
+    mqCoProcessor->process(0);
+    return mqCoProcessor;
+}
+
+std::shared_ptr<CoProcessor> Simulation::makeNupsCoProcessor() const
+{
+    auto scheduler = std::make_shared<UbScheduler>(100, 100);
+    return std::make_shared<NUPSCounterCoProcessor>(grid, scheduler,
+                                                    simulationParameters->numberOfThreads,
+                                                    communicator);
 }
 
 

@@ -86,6 +86,12 @@ private:
 
 
     void setKernelForcing(const std::shared_ptr<LBMKernel> &kernel, std::shared_ptr<LBMUnitConverter> &converter) const;
+
+    void setConnectors();
+
+    void initializeDistributions();
+
+    std::shared_ptr<CoProcessor> makeNupsCoProcessor() const;
 };
 
 #endif
