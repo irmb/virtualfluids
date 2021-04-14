@@ -1639,7 +1639,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
                            << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    size_t index = 0, vectorSize = 0;
+    size_t index = 0;
     std::vector<double> vectorsOfValuesF1, vectorsOfValuesF2, vectorsOfValuesF3;
     std::vector<double> vectorsOfValuesH1, vectorsOfValuesH2, vectorsOfValuesH3;
 
