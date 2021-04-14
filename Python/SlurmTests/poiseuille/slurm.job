@@ -4,7 +4,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=8
 
-#SBATCH --mem-per-cpu=3000
+#SBATCH --mem-per-cpu=4000
 #SBATCH --time=07:00:00
 #SBATCH --partition=standard
 
@@ -14,6 +14,7 @@ echo "PyFluids Poiseuille Test Case"
 echo "Number of tasks: ${SLURM_NTASKS}"
 
 export SINGULARITYENV_PYFLUIDS_SCALE_LEVEL=0
+export SINGULARITYENV_PYFLUIDS_NUM_THREADS=4
 mpiexec -np "$SLURM_NTASKS" singularity run --app testcase PoiseuilleTestContainer.sif
 
 export SINGULARITYENV_PYFLUIDS_SCALE_LEVEL=1

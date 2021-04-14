@@ -34,7 +34,6 @@ From: ubuntu:20.04
 
 %environment
     export PYTHONPATH=/Python
-    export PYFLUIDS_NUM_THREADS=8
 
 %apprun testcase
     python3 /Python/SlurmTests/poiseuille/simulation_runner.py
