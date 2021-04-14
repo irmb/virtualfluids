@@ -176,7 +176,7 @@ void run(string configname)
                 new GbCuboid3D(g_minX1*0.5 - dx, g_minX2 - dx, g_minX3*0.5 - dx, g_maxX1*0.5 + dx, g_minX2, g_maxX3*0.5 + dx));
             if (myid == 0)  GbSystem3D::writeGeoObject(geoInflowF1.get(), pathname + "/geo/geoInflowF1",                                           WbWriterVtkXmlASCII::getInstance());
 
-            GbCylinder3DPtr cylinder1(new GbCylinder3D(g_minX1-dx, 0.0, 0.0, cylinder->getX1Maximum(), 0.0, 0.0, 3e-3));
+            GbCylinder3DPtr cylinder1(new GbCylinder3D(g_minX1-dx, 0.0, 0.0, g_minX1+dx, 0.0, 0.0, 3e-3));
             if (myid == 0)
                 GbSystem3D::writeGeoObject(cylinder1.get(), pathname + "/geo/cylinder1",
                                            WbWriterVtkXmlASCII::getInstance());

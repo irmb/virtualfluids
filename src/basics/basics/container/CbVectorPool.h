@@ -118,7 +118,7 @@ public:
             return this->allocData(allocator, vec, dataSize, value);
         }
 
-        UB_THROW(UbException(UB_EXARGS, "vector-key=" + UbSystem::toString(allocator.key) + " bereits vergeben!"));
+        UB_THROW(UbException(UB_EXARGS, "vector-key=" + UbSystem::toString(allocator.key) + " already taken! (e.g. SetConnectorBlockVisitor was called several times"));
     }
     /*==================================================================*/
     bool resizeVectorData(CbVector<value_type> &vec, const size_type &dataSize, const value_type &value = value_type())
