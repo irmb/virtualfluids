@@ -1054,6 +1054,51 @@ void GbTriFaceMesh3D::readMeshFromSTLFileASCII(string filename, bool removeRedun
     } else {
         this->calculateValues();
     }
+    //UBLOG(logDEBUG1, "GbTriFaceMesh3DCreator::readMeshFromSTLFile !!! Dieses Format hat leider redundante Knoten ...");
+
+    //string dummy;
+
+    //double x, y, z;
+    //int nr = 0;
+
+    //UbFileInputASCII in(filename);
+    //in.readLine();
+    //while (dummy != "endsolid") {
+    //    in.readLine();
+    //    in.readLine();
+    //    dummy = in.readString();
+    //    if (dummy != "vertex")
+    //        throw UbException(UB_EXARGS, "no vertex format");
+    //    x = in.readDouble();
+    //    y = in.readDouble();
+    //    z = in.readDouble();
+    //    nodes->push_back(GbTriFaceMesh3D::Vertex((float)x, (float)y, (float)z));
+    //    in.readLine();
+    //    in.readString();
+    //    x = in.readDouble();
+    //    y = in.readDouble();
+    //    z = in.readDouble();
+    //    nodes->push_back(GbTriFaceMesh3D::Vertex((float)x, (float)y, (float)z));
+    //    in.readLine();
+    //    in.readString();
+    //    x = in.readDouble();
+    //    y = in.readDouble();
+    //    z = in.readDouble();
+    //    nodes->push_back(GbTriFaceMesh3D::Vertex((float)x, (float)y, (float)z));
+    //    triangles->push_back(GbTriFaceMesh3D::TriFace(nr, nr + 1, nr + 2));
+    //    in.readLine();
+    //    in.readLine();
+    //    in.readLine();
+    //    dummy = in.readString();
+    //    nr += 3;
+    //    // std::cout<<"read mesh "<< nr <<" \n";
+    //}
+
+    //if (removeRedundantNodes) {
+    //    this->deleteRedundantNodes(); // dort wird autoamtisch calculateValues() aufgerufen
+    //} else {
+    //    this->calculateValues();
+    //}
 }
 /*======================================================================*/
 void GbTriFaceMesh3D::readMeshFromSTLFileBinary(string filename, bool removeRedundantNodes)

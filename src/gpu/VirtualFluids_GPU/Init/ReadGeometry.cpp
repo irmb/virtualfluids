@@ -12,7 +12,6 @@ void readGeometry(Parameter* para, Communicator* comm, int lev, std::string geom
    {
       dataRoot = new unsigned int[dataSizeTotal];
       VtkGeometryReader::readFile(geometryFile, dataRoot);
-      //vtk_xml_reader::getPointData<unsigned int>(geometryFile, "Node Type", "StructuredGrid", dataRoot, dataSizeTotal);
    }
 
    std::cout << "dataSizePerGPU size: " << dataSizePerGPU << "\n";

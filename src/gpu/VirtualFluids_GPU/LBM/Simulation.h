@@ -19,7 +19,6 @@ class Parameter;
 class GridProvider;
 class PorousMedia;
 class RestartObject;
-class RestartPostprocessor;
 class ForceCalculations;
 class DataWriter;
 class Kernel;
@@ -70,12 +69,10 @@ protected:
 	std::vector < SPtr< ADKernel>> adKernels;
 	std::shared_ptr<PreProcessor> preProcessor;
 
-	//Restart object
-	RestartObject* restObj;
-	RestartPostprocessor* rest;
+    SPtr<RestartObject> restart_object;
 
 	//Forcing Calculation
-	ForceCalculations* forceCalculator;
+	std::shared_ptr<ForceCalculations> forceCalculator;
 
 	//Porous Media
 	std::vector<std::shared_ptr<PorousMedia>> pm;

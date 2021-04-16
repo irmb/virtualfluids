@@ -12,7 +12,6 @@
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Input/ConfigFile.h"
-#include "Input/VtkXmlReader.hpp"
 #include "Input/VtkGeometryReader.h"
 #include "Input/kFullReader.h"
 #include "Input/PositionReader.h"
@@ -44,13 +43,21 @@
 #include "Calculation/ForceCalculations.h"
 #include "Calculation/PorousMedia.h"
 //////////////////////////////////////////////////////////////////////////
-#include "Restart/RestartPostprocessor.h"
+#include "Restart/RestartObject.h"
 //////////////////////////////////////////////////////////////////////////
 #include "DataStructureInitializer/GridProvider.h"
 #include "Output/DataWriter.h"
 #include "Kernel/Utilities/KernelFactory/KernelFactory.h"
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
 #include "Kernel/Kernel.h"
+
+
+
+std::string getFileName(const std::string& fname, int step, int myID)
+{
+    return std::string(fname + "_Restart_" + UbSystem::toString(myID) + "_" +  UbSystem::toString(step));
+}
+
 
 void Simulation::setFactories(std::shared_ptr<KernelFactory> kernelFactory, std::shared_ptr<PreProcessorFactory> preProcessorFactory)
 {
@@ -96,9 +103,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    else
        para->setStartTurn((unsigned int)0); //100000
 
-   //Restart object
-   restObj = new RestartObject();
-   rest = new RestartPostprocessor(restObj, RestartPostprocessor::TXT);
+   restart_object = std::make_shared<ASCIIRestartObject>();
    //////////////////////////////////////////////////////////////////////////
    output.setName(para->getFName() + StringUtil::toString<int>(para->getMyID()) + ".log");
    if(para->getMyID() == 0) output.setConsoleOut(true);
@@ -246,7 +251,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    ////allocVeloForForcing(para);
    //output << "new object forceCalulator  " << "\n";
-   //forceCalculator = new ForceCalculations(para.get());
+   //forceCalculator = std::make_shared<ForceCalculations>(para.get());
 
    //////////////////////////////////////////////////////////////////////////
    //output << "define the Grid..." ;
@@ -312,10 +317,10 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    if (para->getDoRestart())
    {
 	   output << "Restart...\n...get the Object...\n";
-	   restObj = rest->restart(para->getFName(), para->getTimeDoRestart(), para->getMyID());
-	   output << "...load...\n";
-	   restObj->load(para.get());
-	   //para = rest->restart(para->getTimeDoRestart());
+
+		const auto name = getFileName(para->getFName(), para->getTimeDoRestart(), para->getMyID());
+		restart_object->deserialize(name, para);
+
 	   output << "...copy Memory for Restart...\n";
 	   for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	   {
@@ -505,8 +510,10 @@ void Simulation::run()
                 }
                 
                 output << "Dateien fuer CheckPoint schreiben t=" << t << "...";
-                restObj->safe(para.get());
-                rest->doCheckPoint(para->getFName(), t, para->getMyID());
+
+				const auto name = getFileName(para->getFName(), t, para->getMyID());
+				restart_object->serialize(name, para);
+
                 output << "\n fertig\n";
             }
             //////////////////////////////////////////////////////////////////////////
@@ -1056,7 +1063,7 @@ void Simulation::porousMedia()
 	endY =  0.277833;
 	endZ =  0.360379;
 	pm.push_back(std::shared_ptr<PorousMedia>(new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level)));
-	int n = pm.size() - 1;
+	int n = (int)pm.size() - 1;
 	pm.at(n)->setStartCoordinates(startX, startY, startZ);
 	pm.at(n)->setEndCoordinates(endX, endY, endZ);
 	pm.at(n)->setResistanceLBM();
@@ -1077,7 +1084,7 @@ void Simulation::porousMedia()
 	endY =  0.324822;
 	endZ =  0.057098;
 	pm.push_back(std::shared_ptr<PorousMedia>(new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level)));
-	n = pm.size() - 1;
+	n = (int)pm.size() - 1;
 	pm.at(n)->setStartCoordinates(startX, startY, startZ);
 	pm.at(n)->setEndCoordinates(endX, endY, endZ);
 	pm.at(n)->setResistanceLBM();
@@ -1098,7 +1105,7 @@ void Simulation::porousMedia()
 	endY =  0.32538;
 	endZ =  0.400974;
 	pm.push_back(std::shared_ptr<PorousMedia>(new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level)));
-	n = pm.size() - 1;
+	n = (int)pm.size() - 1;
 	pm.at(n)->setStartCoordinates(startX, startY, startZ);
 	pm.at(n)->setEndCoordinates(endX, endY, endZ);
 	pm.at(n)->setResistanceLBM();
@@ -1281,11 +1288,6 @@ void Simulation::free()
 	}
 	//////////////////////////////////////////////////////////////////////////
 
-	para->~Parameter();
-	gridProvider->~GridProvider();
-	dataWriter->~DataWriter();
-	comm->~Communicator();
-	for(std::size_t i = 0; i < kernels.size(); i++)
-		kernels.at(i)->~Kernel();
+    delete comm;
 
 }

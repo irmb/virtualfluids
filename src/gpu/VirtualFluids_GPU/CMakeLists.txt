@@ -8,8 +8,6 @@ endif()
 vf_add_library(PRIVATE_LINK ${additional_libraries} GridGenerator basics MPI::MPI_CXX lbmCuda)
 
 
-linkBoost(COMPONENTS "serialization")
-
 #SET(TPN_WIN32 "/EHsc")
 #https://stackoverflow.com/questions/6832666/lnk2019-when-including-asio-headers-solution-generated-with-cmake
 #https://stackoverflow.com/questions/27442885/syntax-error-with-stdnumeric-limitsmax
@@ -19,3 +17,4 @@ set_target_properties(VirtualFluids_GPU PROPERTIES CUDA_SEPARABLE_COMPILATION ON
 #target_compile_options(VirtualFluids_GPU PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-dlto>)
 
 #target_link_options(VirtualFluids_GPU PRIVATE $<DEVICE_LINK:-dlto>)
+vf_add_tests()
