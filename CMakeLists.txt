@@ -127,7 +127,6 @@ endif()
 
 if(BUILD_USE_OPENMP)
     find_package(OpenMP REQUIRED)
-<<<<<<< HEAD
 endif()
 
 find_package(MPI REQUIRED)
@@ -135,24 +134,6 @@ find_package(MPI REQUIRED)
 
 add_subdirectory(src/basics)
 add_subdirectory(src/lbm)
-
-
-#################################################################################
-#  VIRTUAL FLUIDS CPU / GPU
-#################################################################################
-if (BUILD_VF_CPU)
-    include (cpu.cmake)
-endif()
-if(BUILD_VF_GPU)
-    include (gpu.cmake)
-=======
->>>>>>> develop
-endif()
-
-find_package(MPI REQUIRED)
-
-
-add_subdirectory(src/basics)
 
 
 #################################################################################
