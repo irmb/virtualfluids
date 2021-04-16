@@ -15,12 +15,12 @@ echo "Number of tasks: ${SLURM_NTASKS}"
 
 export SINGULARITYENV_PYFLUIDS_SCALE_LEVEL=0
 export SINGULARITYENV_PYFLUIDS_NUM_THREADS=4
-mpiexec -np "$SLURM_NTASKS" singularity run --app testcase PoiseuilleTestContainer.sif
+srun singularity run --app testcase PoiseuilleTestContainer.sif
 
 export SINGULARITYENV_PYFLUIDS_SCALE_LEVEL=1
-mpiexec -np "$SLURM_NTASKS" singularity run --app testcase PoiseuilleTestContainer.sif
+srun singularity run --app testcase PoiseuilleTestContainer.sif
 
 export SINGULARITYENV_PYFLUIDS_SCALE_LEVEL=2
-mpiexec -np "$SLURM_NTASKS" singularity run --app testcase PoiseuilleTestContainer.sif
+srun singularity run --app testcase PoiseuilleTestContainer.sif
 
-singularity run --app evaluate PoiseuilleTestContainer.sif
+srun singularity run --app evaluate PoiseuilleTestContainer.sif
