@@ -46,7 +46,11 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
 	real* distributions,
 	int size_Mat,
 	int level,
+    bool bodyForce,
 	real* forces,
+    real* bodyForceX,
+    real* bodyForceY,
+    real* bodyForceZ,
 	real* quadricLimiters,
 	bool isEvenTimestep)
 {
@@ -208,12 +212,20 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
         for (size_t i = 1; i <= level; i++) {
             factor *= c2o1;
         }
-        real fx = forces[0] / factor;
-        real fy = forces[1] / factor;
-        real fz = forces[2] / factor;
-        vvx += fx * c1o2;
-        vvy += fy * c1o2;
-        vvz += fz * c1o2;
+        
+        real fx = forces[0];
+        real fy = forces[1];
+        real fz = forces[2];
+
+        if( bodyForce ){
+            fx += bodyForceX[k];
+            fy += bodyForceY[k];
+            fz += bodyForceZ[k];
+        }
+        
+        vvx += fx * c1o2 / factor;
+        vvy += fy * c1o2 / factor;
+        vvz += fz * c1o2 / factor;
         ////////////////////////////////////////////////////////////////////////////////////
         // calculate the square of velocities for this lattice node
         real vx2 = vvx * vvx;

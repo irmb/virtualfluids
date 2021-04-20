@@ -138,8 +138,8 @@ void multipleLevel(const std::string& configPath)
 
 	const real dx = D/real(nodes_per_D);
 
-	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0
-								L_x,  L_y,  L_z, dx);
+	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
+							   L_x,  L_y,  L_z, dx);
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -203,15 +203,15 @@ void multipleLevel(const std::string& configPath)
         para->setTOut( timeStepOut );
         para->setTEnd( timeStepEnd );
 
-        para->setBodyForce( true );
+        para->setIsBodyForce( true );
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        gridBuilder->setVelocityBoundaryCondition(SideType::MX,  vx,  0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PX,  vx,  0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MY,  vx,  0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PY,  vx,  0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  vx,  0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB,  0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PX,  velocityLB,  0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::MY,  velocityLB,  0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PY,  velocityLB,  0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB,  0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB,  0.0, 0.0);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
