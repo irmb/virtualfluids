@@ -70,7 +70,7 @@ MPIIOCoProcessor::MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const
 
     //---------------------------------------
 
-    MPI_Type_contiguous(6, MPI_CHAR, &arrayPresenceType);
+    MPI_Type_contiguous(7, MPI_CHAR, &arrayPresenceType);
     MPI_Type_commit(&arrayPresenceType);
 }
 
@@ -440,6 +440,14 @@ void MPIIOCoProcessor::clearAllFiles(int step)
         throw UbException(UB_EXARGS, "couldn't open file " + filename9);
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
+
+    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpPhaseField.bin";
+    int rc10 = MPI_File_open(MPI_COMM_WORLD, filename10.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+    if (rc10 != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename10);
+    MPI_File_set_size(file_handler, new_size);
+    MPI_File_close(&file_handler);
+
 
     /*std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC1.bin";
     int rc10 = MPI_File_open(MPI_COMM_WORLD, filename10.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info,

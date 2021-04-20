@@ -24,7 +24,8 @@ class MPIIOMigrationBECoProcessor : public MPIIOCoProcessor
         AverageFluktuations = 3,
         AverageTriple       = 4,
         ShearStressVal      = 5,
-        RelaxationFactor    = 6
+        RelaxationFactor    = 6,
+        PhaseField          = 7
     };
 
 public:
