@@ -1,0 +1,5 @@
+VF_BASE_DIR=/home/$USER/VirtualFluids/dev
+BRANCH=actuator_line
+VF_DIR=$VF_BASE_DIR/$BRANCH
+VF_BIN_DIR=$VF_DIR/build/bin
+export PATH=$PATH:$VF_BIN_DIR
