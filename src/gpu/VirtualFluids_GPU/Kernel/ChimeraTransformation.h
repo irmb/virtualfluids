@@ -1,7 +1,9 @@
 #ifndef CHIMERA_TRANSFORMATION_H
 #define CHIMERA_TRANSFORMATION_H
 
-#include "Core/RealConstants.h"
+#include <lbm/constants/NumericConstants.h>
+
+using namespace vf::lbm::constant;
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief forward chimera transformation \ref forwardInverseChimeraWithK
