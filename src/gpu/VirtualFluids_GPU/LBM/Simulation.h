@@ -14,9 +14,14 @@
 #include "LBM/LB.h"
 #include "VirtualFluids_GPU_export.h"
 
-namespace VF::GPU {
-	class Communicator;
+namespace VF
+{
+namespace GPU
+{
+class Communicator;
 }
+}
+
 class CudaMemoryManager;
 class Parameter;
 class GridProvider;

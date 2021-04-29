@@ -5,6 +5,7 @@
 
 
 
+
 #include <mpi.h>
 
 #include "VirtualFluids_GPU_export.h"
@@ -20,8 +21,11 @@
 //////////////////////////////////
 
 
-namespace VF::GPU
+namespace VF
 {
+namespace GPU
+{
+
 
 class VIRTUALFLUIDS_GPU_EXPORT Communicator
 {
@@ -75,7 +79,8 @@ private:
    Communicator(const Communicator&);
 };
 
-}
+} // namespace GPU
+} // namespace VF
 
 #endif
 

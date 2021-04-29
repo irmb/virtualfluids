@@ -26,11 +26,13 @@
 
 class ConfigData;
 
-namespace VF::GPU
+namespace VF
 {
-    class Communicator;
+namespace GPU
+{
+class Communicator;
 }
-
+}
 
 //struct
 struct ParameterStruct{
