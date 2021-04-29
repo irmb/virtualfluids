@@ -30,6 +30,8 @@
 #define GEOFLUID 19
 #define GEOSOLID 16
 
+using namespace VF::GPU;
+
 LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : device(device), d3qxx(d3qxx)
 {
     this->communicationProcesses[CommunicationDirections::MX] = INVALID_INDEX;

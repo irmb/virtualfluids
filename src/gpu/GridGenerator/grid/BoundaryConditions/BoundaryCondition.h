@@ -51,7 +51,7 @@ protected:
 public:
     char getType() const override
     {
-        return BC_PRESSURE;
+        return VF::GPU::BC_PRESSURE;
     }
 
     real getRho()
@@ -78,7 +78,7 @@ protected:
 public:
     virtual char getType() const override
     {
-        return BC_VELOCITY;
+        return VF::GPU::BC_VELOCITY;
     }
 
     void fillVelocityLists()
@@ -119,7 +119,7 @@ private:
 public:
     char getType() const override
     {
-        return BC_SOLID;
+        return VF::GPU::BC_SOLID;
     }
 
     void setVelocityForPatch( uint patch, real vx, real vy, real vz ){

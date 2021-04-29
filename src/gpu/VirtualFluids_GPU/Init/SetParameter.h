@@ -9,7 +9,7 @@
 //
 //#include <iostream>
 //
-//void setParameters(Parameter* para, Communicator* comm, std::string &cstr);
+//void setParameters(Parameter* para, VF::GPU::Communicator* comm, std::string &cstr);
 //std::string getGridPath(Parameter* para, std::string Gridpath);
 //
 //#endif

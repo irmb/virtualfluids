@@ -51,6 +51,8 @@
 #include "utilities/communication.h"
 #include "utilities/transformator/TransformatorImp.h"
 
+using namespace VF::GPU;
+
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 {
     if (para->getNumprocs() == 1)

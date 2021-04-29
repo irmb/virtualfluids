@@ -34,6 +34,8 @@
 
 #include "GridGenerator/grid/NodeValues.h"
 
+using namespace VF::GPU;
+
 MeshCell::MeshCell(){
 
     level   = INVALID_INDEX;

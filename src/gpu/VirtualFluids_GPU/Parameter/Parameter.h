@@ -25,7 +25,12 @@
 #include "VirtualFluids_GPU_export.h"
 
 class ConfigData;
-class Communicator;
+
+namespace VF::GPU
+{
+    class Communicator;
+}
+
 
 //struct
 struct ParameterStruct{
@@ -287,7 +292,7 @@ public:
 	//Parameter();
 	////////////////////////////////////////////////////////////////////////////
     static SPtr<Parameter> make();
-	static SPtr<Parameter> make(SPtr<ConfigData> configData, Communicator* comm);
+	static SPtr<Parameter> make(SPtr<ConfigData> configData, VF::GPU::Communicator* comm);
 
 
 	static Parameter* getInstanz();
@@ -1066,7 +1071,7 @@ private:
 	//LogWriter output;
 
 	Parameter();
-	Parameter(SPtr<ConfigData> configData, Communicator* comm);
+	Parameter(SPtr<ConfigData> configData, VF::GPU::Communicator* comm);
 	Parameter(const Parameter&);
 	void initInterfaceParameter(int level);
 	real TrafoXtoWorld(int CoordX, int level);

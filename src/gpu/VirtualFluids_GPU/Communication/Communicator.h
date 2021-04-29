@@ -1,5 +1,5 @@
-#ifndef COMMUNICATOR_H
-#define COMMUNICATOR_H
+#ifndef COMMUNICATOR_GPU_H
+#define COMMUNICATOR_GPU_H
 
 #include <vector>
 
@@ -20,6 +20,8 @@
 //////////////////////////////////
 
 
+namespace VF::GPU
+{
 
 class VIRTUALFLUIDS_GPU_EXPORT Communicator
 {
@@ -72,6 +74,8 @@ private:
    Communicator(const int numberOfProcs);
    Communicator(const Communicator&);
 };
+
+}
 
 #endif
 

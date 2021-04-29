@@ -12,6 +12,8 @@
 #endif
 //lib for windows Ws2_32.lib
 
+namespace VF::GPU
+{
 
 Communicator::Communicator()
 {
@@ -241,4 +243,6 @@ int Communicator::mapCudaDevice(const int &rank, const int &size, const std::vec
    free(map);
    free(host);
    return device;
+}
+
 }
