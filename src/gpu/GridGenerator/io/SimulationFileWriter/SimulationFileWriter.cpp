@@ -19,7 +19,7 @@
 
 #include "utilities/communication.h"
 
-using namespace VF::GPU;
+using namespace vf::gpu;
 
 /*#################################################################################*/
 /*---------------------------------public methods----------------------------------*/

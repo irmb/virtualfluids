@@ -6,7 +6,7 @@
 
 #include "utilities/math/Math.h"
 
-using namespace VF::GPU;
+using namespace vf::gpu;
 
 void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::string coord, real constant,
                       real startInner, real endInner, real startOuter, real endOuter)

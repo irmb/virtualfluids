@@ -2,7 +2,11 @@
 #define REAL_CONSTANT_H
 
 
-namespace vf::lbm::constant
+namespace vf
+{
+namespace lbm 
+{
+namespace constant
 {
 
 #ifdef VF_DOUBLE_ACCURACY
@@ -225,6 +229,8 @@ static constexpr float smallSingle = 0.0000000002f;
 
 #endif
 
+}
+}
 }
 
 #endif

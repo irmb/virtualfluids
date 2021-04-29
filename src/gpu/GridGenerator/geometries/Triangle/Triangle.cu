@@ -5,7 +5,7 @@
 
 #include "grid/NodeValues.h"
 
-using namespace VF::GPU;
+using namespace vf::gpu;
 
 HOSTDEVICE Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &normal) : v1(v1), v2(v2), v3(v3), normal(normal), patchIndex(INVALID_INDEX) {}
 HOSTDEVICE Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3) : v1(v1), v2(v2), v3(v3), patchIndex(INVALID_INDEX) { calcNormal(); }

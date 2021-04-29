@@ -1,7 +1,9 @@
 #ifndef NodeValues_H
 #define NodeValues_H
 
-namespace VF::GPU
+namespace vf
+{
+namespace gpu
 {
 
 static constexpr char FLUID = 0;
@@ -39,6 +41,7 @@ static constexpr char Q_DEPRECATED = 52;
 
 static constexpr char OVERLAP_TMP = 60;
 
+}
 }
 
 #endif

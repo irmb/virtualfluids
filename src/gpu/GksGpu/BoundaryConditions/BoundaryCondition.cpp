@@ -11,7 +11,7 @@
 #include "DataBase/DataBaseAllocator.h"
 #include "DataBase/DataBaseStruct.h"
 
-using namespace VF::GPU;
+using namespace vf::gpu;
 
 namespace GksGpu{
 

@@ -3,7 +3,7 @@
 #include "grid/NodeValues.h"
 #include "grid/GridStrategy/GridStrategy.h"
 
-using namespace VF::GPU;
+using namespace vf::gpu;
 
 CUDA_HOST Field::Field(SPtr<GridStrategy> gridStrategy, uint size) : gridStrategy(gridStrategy), size(size)
 {

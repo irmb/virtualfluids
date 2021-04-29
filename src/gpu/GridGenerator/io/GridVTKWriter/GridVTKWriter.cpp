@@ -15,7 +15,7 @@
 #include "grid/NodeValues.h"
 #include "grid/Cell.h"
 
-using namespace VF::GPU;
+using namespace vf::gpu;
 
 FILE* GridVTKWriter::file = nullptr;
 WRITING_FORMAT GridVTKWriter::format = WRITING_FORMAT::ASCII;

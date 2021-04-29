@@ -34,7 +34,7 @@
 
 #include "GridGenerator/grid/NodeValues.h"
 
-using namespace VF::GPU;
+using namespace vf::gpu;
 
 MeshCell::MeshCell(){
 

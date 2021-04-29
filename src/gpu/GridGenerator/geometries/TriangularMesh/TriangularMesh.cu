@@ -15,7 +15,7 @@
 
 #include "utilities/transformator/TransformatorImp.h"
 
-using namespace VF::GPU;
+using namespace vf::gpu;
 
 
 TriangularMesh* TriangularMesh::make(const std::string& fileName, const std::vector<uint> ignorePatches)

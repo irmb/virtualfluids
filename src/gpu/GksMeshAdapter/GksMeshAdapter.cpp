@@ -22,7 +22,7 @@
 #include "MeshCell.h"
 #include "MeshFace.h"
 
-using namespace VF::GPU;
+using namespace vf::gpu;
 
 GksMeshAdapter::GksMeshAdapter(SPtr<MultipleGridBuilder> gridBuilder)
     : gridBuilder(gridBuilder)

@@ -10,7 +10,7 @@
 #include "grid/GridImp.h"
 #include "grid/NodeValues.h"
 
-using namespace VF::GPU;
+using namespace vf::gpu;
 
 void TriangularMeshDiscretizationStrategy::removeOddBoundaryCellNodes(GridImp* grid)
 {
