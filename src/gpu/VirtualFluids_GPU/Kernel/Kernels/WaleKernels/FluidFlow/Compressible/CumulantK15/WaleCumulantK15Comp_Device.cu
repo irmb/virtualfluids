@@ -423,7 +423,7 @@ extern "C" __global__ void LB_Kernel_WaleCumulantK15Comp(
 				//nuTurb = pow(delta, two) * pow(SumSDsq, c3o2) / (pow(SumSsq, c5o2) + pow(SumSDsq, c5o4) + smallSingle);     //pow
 				//nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 1.5) / ((real)pow((double)SumSsq, 2.5) + (real)pow((double)SumSDsq, 1.25) + smallSingle); //SMversion//
 				nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 0.25) /
-					((real)pow(((real)pow((double)SumSsq, 0.5) / ((real)pow((double)SumSDsq, 0.25) + c10eM10)), 5.0) + c1o1); //SMversion2//
+					((real)pow(((double)pow((double)SumSsq, 0.5) / ((real)pow((double)SumSDsq, 0.25) + c10eM10)), 5.0) + c1o1); //SMversion2//
 																																	  /////////////////////////////////
 																																	  //nuTurb = rho * powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
 																																	  //nuTurb = powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
