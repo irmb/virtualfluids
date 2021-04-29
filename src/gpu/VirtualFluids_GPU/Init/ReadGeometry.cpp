@@ -1,7 +1,7 @@
 #include "Init/ReadGeometry.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void readGeometry(Parameter* para, VF::GPU::Communicator* comm, int lev, std::string geometryFile)
+void readGeometry(Parameter* para, vf::gpu::Communicator* comm, int lev, std::string geometryFile)
 {
    int dataSizePerGPU = para->getParH(lev)->gridNX * para->getParH(lev)->gridNY * para->getParH(lev)->gridNZ;
    unsigned int dataSizeTotal = para->getParH(lev)->gridNX * para->getParH(lev)->gridNY * para->getParH(lev)->gridNZ * para->getNumprocs();

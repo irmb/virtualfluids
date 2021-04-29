@@ -26,9 +26,9 @@
 
 class ConfigData;
 
-namespace VF
+namespace vf
 {
-namespace GPU
+namespace gpu
 {
 class Communicator;
 }
@@ -294,7 +294,7 @@ public:
 	//Parameter();
 	////////////////////////////////////////////////////////////////////////////
     static SPtr<Parameter> make();
-	static SPtr<Parameter> make(SPtr<ConfigData> configData, VF::GPU::Communicator* comm);
+	static SPtr<Parameter> make(SPtr<ConfigData> configData, vf::gpu::Communicator* comm);
 
 
 	static Parameter* getInstanz();
@@ -1073,7 +1073,7 @@ private:
 	//LogWriter output;
 
 	Parameter();
-	Parameter(SPtr<ConfigData> configData, VF::GPU::Communicator* comm);
+	Parameter(SPtr<ConfigData> configData, vf::gpu::Communicator* comm);
 	Parameter(const Parameter&);
 	void initInterfaceParameter(int level);
 	real TrafoXtoWorld(int CoordX, int level);

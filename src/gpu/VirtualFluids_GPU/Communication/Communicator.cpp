@@ -12,9 +12,9 @@
 #endif
 //lib for windows Ws2_32.lib
 
-namespace VF
+namespace vf
 {
-namespace GPU
+namespace gpu
 {
 
 Communicator::Communicator()

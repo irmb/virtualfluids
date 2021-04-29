@@ -6,6 +6,6 @@
 #include "Communication/Communicator.h"
 #include "GPU/CudaMemoryManager.h"
 
-extern "C" void defineGrid(Parameter* para, VF::GPU::Communicator* comm, CudaMemoryManager* cudaManager);
+extern "C" void defineGrid(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager);
 
 #endif

@@ -29,7 +29,7 @@ SPtr<Parameter> Parameter::make()
     return SPtr<Parameter>(new Parameter());
 }
 
-SPtr<Parameter> Parameter::make(SPtr<ConfigData> configData, VF::GPU::Communicator* comm)
+SPtr<Parameter> Parameter::make(SPtr<ConfigData> configData, vf::gpu::Communicator* comm)
 {
 	return SPtr<Parameter>(new Parameter(configData, comm));
 }
@@ -37,7 +37,7 @@ SPtr<Parameter> Parameter::make(SPtr<ConfigData> configData, VF::GPU::Communicat
 Parameter::Parameter()
 {
 }
-Parameter::Parameter(SPtr<ConfigData> configData, VF::GPU::Communicator* comm)
+Parameter::Parameter(SPtr<ConfigData> configData, vf::gpu::Communicator* comm)
 {
 	//////////////////////////////////////////////////////////////////////////
 	this->setNumprocs(comm->getNummberOfProcess());

@@ -21,9 +21,9 @@
 //////////////////////////////////
 
 
-namespace VF
+namespace vf
 {
-namespace GPU
+namespace gpu
 {
 
 

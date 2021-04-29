@@ -14,9 +14,9 @@
 #include "LBM/LB.h"
 #include "VirtualFluids_GPU_export.h"
 
-namespace VF
+namespace vf
 {
-namespace GPU
+namespace gpu
 {
 class Communicator;
 }
@@ -68,7 +68,7 @@ protected:
 
 	LogWriter output;
 
-    VF::GPU::Communicator* comm;
+    vf::gpu::Communicator* comm;
     SPtr<Parameter> para;
     SPtr<GridProvider> gridProvider;
     SPtr<DataWriter> dataWriter;

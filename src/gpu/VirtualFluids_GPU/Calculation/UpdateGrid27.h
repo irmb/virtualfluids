@@ -11,7 +11,7 @@
 class Kernel;
 
 extern "C" void updateGrid27(Parameter* para, 
-                             VF::GPU::Communicator* comm, 
+                             vf::gpu::Communicator* comm, 
                              CudaMemoryManager* cudaManager, 
                              std::vector<std::shared_ptr<PorousMedia>>& pm, 
                              int level,
@@ -24,7 +24,7 @@ extern "C" void collisionPorousMedia(Parameter* para, std::vector<std::shared_pt
 
 extern "C" void collisionAdvectionDiffusion(Parameter* para, int level);
 
-extern "C" void exchangeMultiGPU(Parameter* para, VF::GPU::Communicator* comm, CudaMemoryManager* cudaManager, int level);
+extern "C" void exchangeMultiGPU(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);
 
 extern "C" void postCollisionBC(Parameter* para, int level, unsigned int t);
 

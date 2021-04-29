@@ -7,6 +7,6 @@
 
 #include <iostream>
 
-extern "C" void readGeometry(Parameter* para, VF::GPU::Communicator* comm, int lev, std::string geometryFile);
+extern "C" void readGeometry(Parameter* para, vf::gpu::Communicator* comm, int lev, std::string geometryFile);
 
 #endif
