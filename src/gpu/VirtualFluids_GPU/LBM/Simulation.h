@@ -13,7 +13,14 @@
 
 #include "VirtualFluids_GPU_export.h"
 
+namespace vf
+{
+namespace gpu
+{
 class Communicator;
+}
+}
+
 class CudaMemoryManager;
 class Parameter;
 class GridProvider;
@@ -60,7 +67,7 @@ protected:
 
 	LogWriter output;
 
-    Communicator* comm;
+    vf::gpu::Communicator* comm;
     SPtr<Parameter> para;
     SPtr<GridProvider> gridProvider;
     SPtr<DataWriter> dataWriter;

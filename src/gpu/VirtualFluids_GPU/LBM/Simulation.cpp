@@ -82,7 +82,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    this->gridProvider = gridProvider;
    this->cudaManager = cudaManager;
    gridProvider->initalGridInformations();
-   comm = Communicator::getInstanz();
+   comm = vf::gpu::Communicator::getInstanz();
    this->para = para;
 
    para->setMyID(comm->getPID());

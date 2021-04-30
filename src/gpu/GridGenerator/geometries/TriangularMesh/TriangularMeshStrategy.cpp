@@ -10,6 +10,8 @@
 #include "grid/GridImp.h"
 #include "grid/NodeValues.h"
 
+using namespace vf::gpu;
+
 void TriangularMeshDiscretizationStrategy::removeOddBoundaryCellNodes(GridImp* grid)
 {
 #pragma omp parallel for

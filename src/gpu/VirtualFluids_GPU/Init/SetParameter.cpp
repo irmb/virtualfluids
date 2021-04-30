@@ -2,7 +2,7 @@
 //#include "Interface_OpenFOAM/Interface.h"
 //
 //////////////////////////////////////////////////////////////////////////////////
-//void setParameters(Parameter* para, Communicator* comm, std::string &cstr)
+//void setParameters(Parameter* para, vf::gpu::Communicator* comm, std::string &cstr)
 //{
 //   ConfigFile cf(cstr.c_str());
 //   if ( !cf.read() )

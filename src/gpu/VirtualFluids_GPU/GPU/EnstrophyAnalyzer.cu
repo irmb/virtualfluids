@@ -18,7 +18,9 @@
 #include "Parameter/Parameter.h"
 // includes, kernels
 #include "GPU/GPU_Kernels.cuh"
-#include "Core/RealConstants.h"
+#include <lbm/constants/NumericConstants.h>
+
+using namespace vf::lbm::constant;
 
 __global__                 void enstrophyKernel  ( real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint* isFluid, uint size_Mat );
 

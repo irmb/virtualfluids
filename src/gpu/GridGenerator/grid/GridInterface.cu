@@ -7,6 +7,8 @@
 #include "grid/Field.h"
 #include "grid/NodeValues.h"
 
+using namespace vf::gpu;
+
 GridInterface::GridInterface()
 {
 
