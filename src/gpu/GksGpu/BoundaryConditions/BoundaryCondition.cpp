@@ -11,6 +11,8 @@
 #include "DataBase/DataBaseAllocator.h"
 #include "DataBase/DataBaseStruct.h"
 
+using namespace vf::gpu;
+
 namespace GksGpu{
 
 BoundaryCondition::BoundaryCondition( SPtr<DataBase> dataBase )

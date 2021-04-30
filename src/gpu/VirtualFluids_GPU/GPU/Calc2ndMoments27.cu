@@ -1,7 +1,9 @@
 /* Device code */
 #include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "Core/RealConstants.h"
+#include <lbm/constants/NumericConstants.h>
+
+using namespace vf::lbm::constant;
 
 
 ////////////////////////////////////////////////////////////////////////////////

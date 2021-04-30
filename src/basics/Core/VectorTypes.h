@@ -17,10 +17,9 @@
 #include "basics_export.h"
 
 #include "DataTypes.h"
-#include "RealConstants.h"
 
 struct BASICS_EXPORT Vec3 {
-    real x{ c0o1 }, y{ c0o1 }, z{ c0o1 };
+    real x{ 0. }, y{ 0. }, z{ 0. };
 
     __host__ __device__ Vec3(real x, real y, real z) : x(x), y(y), z(z) {}
     Vec3() = default;
