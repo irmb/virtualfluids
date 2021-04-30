@@ -135,6 +135,9 @@ public:
     
     void cudaAllocMedianOut(int lev);
     void cudaFreeMedianOut(int lev);
+
+    void cudaAllocMedianOutAD(int lev);
+    void cudaFreeMedianOutAD(int lev);
     
     void cudaAllocInterfaceCF(int lev);
     void cudaCopyInterfaceCF(int lev);
