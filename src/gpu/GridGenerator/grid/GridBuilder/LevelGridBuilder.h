@@ -11,7 +11,6 @@
 #include "grid/GridBuilder/GridBuilder.h"
 #include "grid/Grid.h"
 #include "grid/GridInterface.h"
-#include "grid/NodeValues.h"
 
 struct Vertex;
 class  Grid;

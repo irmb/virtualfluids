@@ -121,7 +121,7 @@ void multipleLevel(const std::string& configPath)
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     
-	Communicator* comm = Communicator::getInstanz();
+	vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
 	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
 
     std::cout << configPath << std::endl;

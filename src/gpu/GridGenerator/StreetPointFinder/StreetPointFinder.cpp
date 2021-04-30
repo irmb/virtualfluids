@@ -13,6 +13,8 @@
 #include "grid/Grid.h"
 #include "grid/NodeValues.h"
 
+using namespace vf::gpu;
+
 Street::Street(real xStartCell, real yStartCell, real xEndCell, real yEndCell, real dx)
 {
 	real length = std::sqrt((xEndCell - xStartCell)*(xEndCell - xStartCell)

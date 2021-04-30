@@ -8,7 +8,9 @@
 /* Device code */
 #include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "Core/RealConstants.h"
+#include <lbm/constants/NumericConstants.h>
+
+using namespace vf::lbm::constant;
 
 //////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void scaleCF_comp_D3Q27F3_2018(real* DC,

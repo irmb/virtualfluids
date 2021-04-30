@@ -6,7 +6,7 @@
 #include <helper_cuda.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-void defineGrid(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager)
+void defineGrid(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager)
 {
 	for (int lev=para->getFine(); lev >= para->getCoarse(); lev--)
 	{
