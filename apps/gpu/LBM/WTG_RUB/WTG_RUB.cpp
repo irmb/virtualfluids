@@ -121,21 +121,21 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     real dx = 0;
-    real viscosityLB = 1.0e-03;
+    real viscosityLB = (real)1.0e-03;
     uint maxLevel    = 1;
 
     if (setupDomain == 1) {
-        dx = 4;
+        dx          = (real)4;
         maxLevel    = 5;
-        viscosityLB = 3.75e-06; // LB units
+        viscosityLB = (real)3.75e-06; // LB units
     } else if (setupDomain == 2) {
-        dx = 1;   
+        dx          = (real)1;   
         maxLevel    = 3;
-        viscosityLB = 1.5e-05; // LB units
+        viscosityLB = (real)1.5e-05; // LB units
     } else if (setupDomain == 3) {
-        dx          = 1.6;
+        dx          = (real)1.6;
         maxLevel    = 4;
-        viscosityLB = 9.375e-06; // LB units
+        viscosityLB = (real)9.375e-06; // LB units
     }
     
     real x_min = 0.0;
@@ -176,7 +176,7 @@ void multipleLevel(const std::string& configPath)
     SPtr<Parameter>    para         = Parameter::make(configData, comm);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    const real velocityLB = 0.0844; // LB units
+    const real velocityLB = (real)0.0844; // LB units
 
 	//const real vx = velocityLB / (real)sqrt(2.0); // LB units
 	//const real vy = velocityLB / (real)sqrt(2.0); // LB units
@@ -458,9 +458,9 @@ std::string chooseVariation()
     }
 
     if ((0 < variant) && (variant <= 6))
-        rotationOfCity = 0.0;
+        rotationOfCity = (real)0.0;
     else if ((6 < variant) && (variant <= 12))
-        rotationOfCity = 63.295;
+        rotationOfCity = (real)63.295;
 
     std::cout << "Variant selected. Simulation name is: " << simulationName << std::endl;
     std::cout << "Rotation selected: " << rotationOfCity << std::endl;
