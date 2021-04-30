@@ -1,11 +1,11 @@
 #ifndef LBM_D3Q27_H
 #define LBM_D3Q27_H
 
-namespace VF
+namespace vf
 {
-namespace LBM
+namespace lbm
 {
-namespace DIR
+namespace dir
 {
 
 static constexpr int E    = 0;

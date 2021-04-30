@@ -17,10 +17,11 @@
 #include "Chimera.h"
 #include "MacroscopicQuantities.h"
 
-namespace VF
+namespace vf
 {
-namespace LBM
+namespace lbm
 {
+
 
 struct Distribution27
 {

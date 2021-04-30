@@ -12,38 +12,38 @@
 
 #include "D3Q27.h"
 
-namespace VF
+namespace vf
 {
-namespace LBM
+namespace lbm
 {
 
 inline __host__ __device__ real getDensity(const real *const &f /*[27]*/)
 {
-    return ((f[DIR::TNE] + f[DIR::BSW]) + (f[DIR::TSE] + f[DIR::BNW])) + ((f[DIR::BSE] + f[DIR::TNW]) + (f[DIR::TSW] + f[DIR::BNE])) +
-           (((f[DIR::NE] + f[DIR::SW]) + (f[DIR::SE] + f[DIR::NW])) + ((f[DIR::TE] + f[DIR::BW]) + (f[DIR::BE] + f[DIR::TW])) +
-            ((f[DIR::BN] + f[DIR::TS]) + (f[DIR::TN] + f[DIR::BS]))) +
-           ((f[DIR::E] + f[DIR::W]) + (f[DIR::N] + f[DIR::S]) + (f[DIR::T] + f[DIR::B])) + f[DIR::REST];
+    return ((f[dir::TNE] + f[dir::BSW]) + (f[dir::TSE] + f[dir::BNW])) + ((f[dir::BSE] + f[dir::TNW]) + (f[dir::TSW] + f[dir::BNE])) +
+           (((f[dir::NE] + f[dir::SW]) + (f[dir::SE] + f[dir::NW])) + ((f[dir::TE] + f[dir::BW]) + (f[dir::BE] + f[dir::TW])) +
+            ((f[dir::BN] + f[dir::TS]) + (f[dir::TN] + f[dir::BS]))) +
+           ((f[dir::E] + f[dir::W]) + (f[dir::N] + f[dir::S]) + (f[dir::T] + f[dir::B])) + f[dir::REST];
 }
 
 
 inline __host__ __device__ real getIncompressibleVelocityX1(const real *const &f /*[27]*/)
 {
-    return ((((f[DIR::TNE] - f[DIR::BSW]) + (f[DIR::TSE] - f[DIR::BNW])) + ((f[DIR::BSE] - f[DIR::TNW]) + (f[DIR::BNE] - f[DIR::TSW]))) +
-            (((f[DIR::BE] - f[DIR::TW]) + (f[DIR::TE] - f[DIR::BW])) + ((f[DIR::SE] - f[DIR::NW]) + (f[DIR::NE] - f[DIR::SW]))) + (f[DIR::E] - f[DIR::W]));
+    return ((((f[dir::TNE] - f[dir::BSW]) + (f[dir::TSE] - f[dir::BNW])) + ((f[dir::BSE] - f[dir::TNW]) + (f[dir::BNE] - f[dir::TSW]))) +
+            (((f[dir::BE] - f[dir::TW]) + (f[dir::TE] - f[dir::BW])) + ((f[dir::SE] - f[dir::NW]) + (f[dir::NE] - f[dir::SW]))) + (f[dir::E] - f[dir::W]));
 }
 
 
 inline __host__ __device__ real getIncompressibleVelocityX2(const real *const &f /*[27]*/)
 {
-    return ((((f[DIR::TNE] - f[DIR::BSW]) + (f[DIR::BNW] - f[DIR::TSE])) + ((f[DIR::TNW] - f[DIR::BSE]) + (f[DIR::BNE] - f[DIR::TSW]))) +
-            (((f[DIR::BN] - f[DIR::TS]) + (f[DIR::TN] - f[DIR::BS])) + ((f[DIR::NW] - f[DIR::SE]) + (f[DIR::NE] - f[DIR::SW]))) + (f[DIR::N] - f[DIR::S]));
+    return ((((f[dir::TNE] - f[dir::BSW]) + (f[dir::BNW] - f[dir::TSE])) + ((f[dir::TNW] - f[dir::BSE]) + (f[dir::BNE] - f[dir::TSW]))) +
+            (((f[dir::BN] - f[dir::TS]) + (f[dir::TN] - f[dir::BS])) + ((f[dir::NW] - f[dir::SE]) + (f[dir::NE] - f[dir::SW]))) + (f[dir::N] - f[dir::S]));
 }
 
 
 inline __host__ __device__ real getIncompressibleVelocityX3(const real *const &f /*[27]*/)
 {
-    return ((((f[DIR::TNE] - f[DIR::BSW]) + (f[DIR::TSE] - f[DIR::BNW])) + ((f[DIR::TNW] - f[DIR::BSE]) + (f[DIR::TSW] - f[DIR::BNE]))) +
-            (((f[DIR::TS] - f[DIR::BN]) + (f[DIR::TN] - f[DIR::BS])) + ((f[DIR::TW] - f[DIR::BE]) + (f[DIR::TE] - f[DIR::BW]))) + (f[DIR::T] - f[DIR::B]));
+    return ((((f[dir::TNE] - f[dir::BSW]) + (f[dir::TSE] - f[dir::BNW])) + ((f[dir::TNW] - f[dir::BSE]) + (f[dir::TSW] - f[dir::BNE]))) +
+            (((f[dir::TS] - f[dir::BN]) + (f[dir::TN] - f[dir::BS])) + ((f[dir::TW] - f[dir::BE]) + (f[dir::TE] - f[dir::BW]))) + (f[dir::T] - f[dir::B]));
 }
 
 

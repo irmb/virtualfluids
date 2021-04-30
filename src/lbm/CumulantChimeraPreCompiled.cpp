@@ -5,14 +5,19 @@
 #include <basics/Core/DataTypes.h>
 #include <basics/Core/RealConstants.h>
 
+#include "constants/NumericConstants.h"
+
+
 #include "D3Q27.h"
 #include "Chimera.h"
 #include "MacroscopicQuantities.h"
 
-namespace VF
+namespace vf
 {
-namespace LBM
+namespace lbm
 {
+
+    using namespace constant;
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -28,33 +33,33 @@ __host__ __device__ void cumulantChimera(Distribution27& distribution, real omeg
     //! stored arrays dependent on timestep is based on the esoteric twist algorithm
     //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
     //!
-    real mfcbb = distribution.f[DIR::PZZ];
-    real mfabb = distribution.f[DIR::MZZ];
-    real mfbcb = distribution.f[DIR::ZPZ];
-    real mfbab = distribution.f[DIR::ZMZ];
-    real mfbbc = distribution.f[DIR::ZZP];
-    real mfbba = distribution.f[DIR::ZZM];
-    real mfccb = distribution.f[DIR::PPZ];
-    real mfaab = distribution.f[DIR::MMZ];
-    real mfcab = distribution.f[DIR::PMZ];
-    real mfacb = distribution.f[DIR::MPZ];
-    real mfcbc = distribution.f[DIR::PZP];
-    real mfaba = distribution.f[DIR::MZM];
-    real mfcba = distribution.f[DIR::PZM];
-    real mfabc = distribution.f[DIR::MZP];
-    real mfbcc = distribution.f[DIR::ZPP];
-    real mfbaa = distribution.f[DIR::ZMM];
-    real mfbca = distribution.f[DIR::ZPM];
-    real mfbac = distribution.f[DIR::ZMP];
-    real mfccc = distribution.f[DIR::PPP];
-    real mfacc = distribution.f[DIR::MPP];
-    real mfcac = distribution.f[DIR::PMP];
-    real mfaac = distribution.f[DIR::MMP];
-    real mfcca = distribution.f[DIR::PPM];
-    real mfaca = distribution.f[DIR::MPM];
-    real mfcaa = distribution.f[DIR::PMM];
-    real mfaaa = distribution.f[DIR::MMM];
-    real mfbbb = distribution.f[DIR::ZZZ];
+    real mfcbb = distribution.f[dir::PZZ];
+    real mfabb = distribution.f[dir::MZZ];
+    real mfbcb = distribution.f[dir::ZPZ];
+    real mfbab = distribution.f[dir::ZMZ];
+    real mfbbc = distribution.f[dir::ZZP];
+    real mfbba = distribution.f[dir::ZZM];
+    real mfccb = distribution.f[dir::PPZ];
+    real mfaab = distribution.f[dir::MMZ];
+    real mfcab = distribution.f[dir::PMZ];
+    real mfacb = distribution.f[dir::MPZ];
+    real mfcbc = distribution.f[dir::PZP];
+    real mfaba = distribution.f[dir::MZM];
+    real mfcba = distribution.f[dir::PZM];
+    real mfabc = distribution.f[dir::MZP];
+    real mfbcc = distribution.f[dir::ZPP];
+    real mfbaa = distribution.f[dir::ZMM];
+    real mfbca = distribution.f[dir::ZPM];
+    real mfbac = distribution.f[dir::ZMP];
+    real mfccc = distribution.f[dir::PPP];
+    real mfacc = distribution.f[dir::MPP];
+    real mfcac = distribution.f[dir::PMP];
+    real mfaac = distribution.f[dir::MMP];
+    real mfcca = distribution.f[dir::PPM];
+    real mfaca = distribution.f[dir::MPM];
+    real mfcaa = distribution.f[dir::PMM];
+    real mfaaa = distribution.f[dir::MMM];
+    real mfbbb = distribution.f[dir::ZZZ];
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
@@ -106,37 +111,37 @@ __host__ __device__ void cumulantChimera(Distribution27& distribution, real omeg
     //!
     ////////////////////////////////////////////////////////////////////////////////////
     // Z - Dir
-    VF::LBM::forwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36o1, c1o36);
-    VF::LBM::forwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2,  c9o1,  c1o9);
-    VF::LBM::forwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36o1, c1o36);
-    VF::LBM::forwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2,  c9o1,  c1o9);
-    VF::LBM::forwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2,  c9o4,  c4o9);
-    VF::LBM::forwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2,  c9o1,  c1o9);
-    VF::LBM::forwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36o1, c1o36);
-    VF::LBM::forwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2,  c9o1,  c1o9);
-    VF::LBM::forwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36o1, c1o36);   
+    vf::lbm::forwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36o1, c1o36);
+    vf::lbm::forwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2,  c9o1,  c1o9);
+    vf::lbm::forwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36o1, c1o36);
+    vf::lbm::forwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2,  c9o1,  c1o9);
+    vf::lbm::forwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2,  c9o4,  c4o9);
+    vf::lbm::forwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2,  c9o1,  c1o9);
+    vf::lbm::forwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36o1, c1o36);
+    vf::lbm::forwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2,  c9o1,  c1o9);
+    vf::lbm::forwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36o1, c1o36);   
     ////////////////////////////////////////////////////////////////////////////////////
     // Y - Dir
-    VF::LBM::forwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2,  c6o1,  c1o6);
-    VF::LBM::forwardChimera(            mfaab, mfabb, mfacb, vvy, vy2);
-    VF::LBM::forwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18o1, c1o18);
-    VF::LBM::forwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2,  c3o2,  c2o3);
-    VF::LBM::forwardChimera(            mfbab, mfbbb, mfbcb, vvy, vy2);
-    VF::LBM::forwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2,  c9o2,  c2o9);
-    VF::LBM::forwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2,  c6o1,  c1o6);
-    VF::LBM::forwardChimera(            mfcab, mfcbb, mfccb, vvy, vy2);
-    VF::LBM::forwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18o1, c1o18);   
+    vf::lbm::forwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2,  c6o1,  c1o6);
+    vf::lbm::forwardChimera(            mfaab, mfabb, mfacb, vvy, vy2);
+    vf::lbm::forwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18o1, c1o18);
+    vf::lbm::forwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2,  c3o2,  c2o3);
+    vf::lbm::forwardChimera(            mfbab, mfbbb, mfbcb, vvy, vy2);
+    vf::lbm::forwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2,  c9o2,  c2o9);
+    vf::lbm::forwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2,  c6o1,  c1o6);
+    vf::lbm::forwardChimera(            mfcab, mfcbb, mfccb, vvy, vy2);
+    vf::lbm::forwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18o1, c1o18);   
     ////////////////////////////////////////////////////////////////////////////////////
     // X - Dir
-    VF::LBM::forwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1o1, c1o1);
-    VF::LBM::forwardChimera(            mfaba, mfbba, mfcba, vvx, vx2);
-    VF::LBM::forwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3o1, c1o3);
-    VF::LBM::forwardChimera(            mfaab, mfbab, mfcab, vvx, vx2);
-    VF::LBM::forwardChimera(            mfabb, mfbbb, mfcbb, vvx, vx2);
-    VF::LBM::forwardChimera(            mfacb, mfbcb, mfccb, vvx, vx2);
-    VF::LBM::forwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3o1, c1o3);
-    VF::LBM::forwardChimera(            mfabc, mfbbc, mfcbc, vvx, vx2);
-    VF::LBM::forwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c3o1, c1o9); 
+    vf::lbm::forwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1o1, c1o1);
+    vf::lbm::forwardChimera(            mfaba, mfbba, mfcba, vvx, vx2);
+    vf::lbm::forwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3o1, c1o3);
+    vf::lbm::forwardChimera(            mfaab, mfbab, mfcab, vvx, vx2);
+    vf::lbm::forwardChimera(            mfabb, mfbbb, mfcbb, vvx, vx2);
+    vf::lbm::forwardChimera(            mfacb, mfbcb, mfccb, vvx, vx2);
+    vf::lbm::forwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3o1, c1o3);
+    vf::lbm::forwardChimera(            mfabc, mfbbc, mfcbc, vvx, vx2);
+    vf::lbm::forwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c3o1, c1o9); 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Setting relaxation rates for non-hydrodynamic cumulants (default values). Variable names and equations    according to
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05  040 ]</b></a>
@@ -360,37 +365,37 @@ __host__ __device__ void cumulantChimera(Distribution27& distribution, real omeg
     //!
     ////////////////////////////////////////////////////////////////////////////////////
     // X - Dir
-    VF::LBM::backwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1o1, c1o1);
-    VF::LBM::backwardChimera(            mfaba, mfbba, mfcba, vvx, vx2);
-    VF::LBM::backwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3o1, c1o3);
-    VF::LBM::backwardChimera(            mfaab, mfbab, mfcab, vvx, vx2);
-    VF::LBM::backwardChimera(            mfabb, mfbbb, mfcbb, vvx, vx2);
-    VF::LBM::backwardChimera(            mfacb, mfbcb, mfccb, vvx, vx2);
-    VF::LBM::backwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3o1, c1o3);
-    VF::LBM::backwardChimera(            mfabc, mfbbc, mfcbc, vvx, vx2);
-    VF::LBM::backwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c9o1, c1o9);    
+    vf::lbm::backwardInverseChimeraWithK(mfaaa, mfbaa, mfcaa, vvx, vx2, c1o1, c1o1);
+    vf::lbm::backwardChimera(            mfaba, mfbba, mfcba, vvx, vx2);
+    vf::lbm::backwardInverseChimeraWithK(mfaca, mfbca, mfcca, vvx, vx2, c3o1, c1o3);
+    vf::lbm::backwardChimera(            mfaab, mfbab, mfcab, vvx, vx2);
+    vf::lbm::backwardChimera(            mfabb, mfbbb, mfcbb, vvx, vx2);
+    vf::lbm::backwardChimera(            mfacb, mfbcb, mfccb, vvx, vx2);
+    vf::lbm::backwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3o1, c1o3);
+    vf::lbm::backwardChimera(            mfabc, mfbbc, mfcbc, vvx, vx2);
+    vf::lbm::backwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c9o1, c1o9);    
     ////////////////////////////////////////////////////////////////////////////////////
     // Y - Dir
-    VF::LBM::backwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2,  c6o1,  c1o6);
-    VF::LBM::backwardChimera(            mfaab, mfabb, mfacb, vvy, vy2);
-    VF::LBM::backwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18o1, c1o18);
-    VF::LBM::backwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2,  c3o2,  c2o3);
-    VF::LBM::backwardChimera(            mfbab, mfbbb, mfbcb, vvy, vy2);
-    VF::LBM::backwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2,  c9o2,  c2o9);
-    VF::LBM::backwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2,  c6o1,  c1o6);
-    VF::LBM::backwardChimera(            mfcab, mfcbb, mfccb, vvy, vy2);
-    VF::LBM::backwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18o1, c1o18);  
+    vf::lbm::backwardInverseChimeraWithK(mfaaa, mfaba, mfaca, vvy, vy2,  c6o1,  c1o6);
+    vf::lbm::backwardChimera(            mfaab, mfabb, mfacb, vvy, vy2);
+    vf::lbm::backwardInverseChimeraWithK(mfaac, mfabc, mfacc, vvy, vy2, c18o1, c1o18);
+    vf::lbm::backwardInverseChimeraWithK(mfbaa, mfbba, mfbca, vvy, vy2,  c3o2,  c2o3);
+    vf::lbm::backwardChimera(            mfbab, mfbbb, mfbcb, vvy, vy2);
+    vf::lbm::backwardInverseChimeraWithK(mfbac, mfbbc, mfbcc, vvy, vy2,  c9o2,  c2o9);
+    vf::lbm::backwardInverseChimeraWithK(mfcaa, mfcba, mfcca, vvy, vy2,  c6o1,  c1o6);
+    vf::lbm::backwardChimera(            mfcab, mfcbb, mfccb, vvy, vy2);
+    vf::lbm::backwardInverseChimeraWithK(mfcac, mfcbc, mfccc, vvy, vy2, c18o1, c1o18);  
     ////////////////////////////////////////////////////////////////////////////////////
     // Z - Dir
-    VF::LBM::backwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36o1, c1o36);
-    VF::LBM::backwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2,  c9o1,  c1o9);
-    VF::LBM::backwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36o1, c1o36);
-    VF::LBM::backwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2,  c9o1,  c1o9);
-    VF::LBM::backwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2,  c9o4,  c4o9);
-    VF::LBM::backwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2,  c9o1,  c1o9);
-    VF::LBM::backwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36o1, c1o36);
-    VF::LBM::backwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2,  c9o1,  c1o9);
-    VF::LBM::backwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36o1, c1o36);
+    vf::lbm::backwardInverseChimeraWithK(mfaaa, mfaab, mfaac, vvz, vz2, c36o1, c1o36);
+    vf::lbm::backwardInverseChimeraWithK(mfaba, mfabb, mfabc, vvz, vz2,  c9o1,  c1o9);
+    vf::lbm::backwardInverseChimeraWithK(mfaca, mfacb, mfacc, vvz, vz2, c36o1, c1o36);
+    vf::lbm::backwardInverseChimeraWithK(mfbaa, mfbab, mfbac, vvz, vz2,  c9o1,  c1o9);
+    vf::lbm::backwardInverseChimeraWithK(mfbba, mfbbb, mfbbc, vvz, vz2,  c9o4,  c4o9);
+    vf::lbm::backwardInverseChimeraWithK(mfbca, mfbcb, mfbcc, vvz, vz2,  c9o1,  c1o9);
+    vf::lbm::backwardInverseChimeraWithK(mfcaa, mfcab, mfcac, vvz, vz2, c36o1, c1o36);
+    vf::lbm::backwardInverseChimeraWithK(mfcba, mfcbb, mfcbc, vvz, vz2,  c9o1,  c1o9);
+    vf::lbm::backwardInverseChimeraWithK(mfcca, mfccb, mfccc, vvz, vz2, c36o1, c1o36);
 
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -398,33 +403,33 @@ __host__ __device__ void cumulantChimera(Distribution27& distribution, real omeg
     //! stored arrays dependent on timestep is based on the esoteric twist algorithm
     //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
     //!
-    distribution.f[VF::LBM::DIR::MZZ] = mfcbb;
-    distribution.f[VF::LBM::DIR::PZZ] = mfabb;
-    distribution.f[VF::LBM::DIR::ZMZ] = mfbcb;
-    distribution.f[VF::LBM::DIR::ZPZ] = mfbab;
-    distribution.f[VF::LBM::DIR::ZZM] = mfbbc;
-    distribution.f[VF::LBM::DIR::ZZP] = mfbba;
-    distribution.f[VF::LBM::DIR::MMZ] = mfccb;
-    distribution.f[VF::LBM::DIR::PPZ] = mfaab;
-    distribution.f[VF::LBM::DIR::MPZ] = mfcab;
-    distribution.f[VF::LBM::DIR::PMZ] = mfacb;
-    distribution.f[VF::LBM::DIR::MZM] = mfcbc;
-    distribution.f[VF::LBM::DIR::PZP] = mfaba;
-    distribution.f[VF::LBM::DIR::MZP] = mfcba;
-    distribution.f[VF::LBM::DIR::PZM] = mfabc;
-    distribution.f[VF::LBM::DIR::ZMM] = mfbcc;
-    distribution.f[VF::LBM::DIR::ZPP] = mfbaa;
-    distribution.f[VF::LBM::DIR::ZMP] = mfbca;
-    distribution.f[VF::LBM::DIR::ZPM] = mfbac;
-    distribution.f[VF::LBM::DIR::MMM] = mfccc;
-    distribution.f[VF::LBM::DIR::PMM] = mfacc;
-    distribution.f[VF::LBM::DIR::MPM] = mfcac;
-    distribution.f[VF::LBM::DIR::PPM] = mfaac;
-    distribution.f[VF::LBM::DIR::MMP] = mfcca;
-    distribution.f[VF::LBM::DIR::PMP] = mfaca;
-    distribution.f[VF::LBM::DIR::MPP] = mfcaa;
-    distribution.f[VF::LBM::DIR::PPP] = mfaaa;
-    distribution.f[VF::LBM::DIR::ZZZ] = mfbbb;
+    distribution.f[vf::lbm::dir::MZZ] = mfcbb;
+    distribution.f[vf::lbm::dir::PZZ] = mfabb;
+    distribution.f[vf::lbm::dir::ZMZ] = mfbcb;
+    distribution.f[vf::lbm::dir::ZPZ] = mfbab;
+    distribution.f[vf::lbm::dir::ZZM] = mfbbc;
+    distribution.f[vf::lbm::dir::ZZP] = mfbba;
+    distribution.f[vf::lbm::dir::MMZ] = mfccb;
+    distribution.f[vf::lbm::dir::PPZ] = mfaab;
+    distribution.f[vf::lbm::dir::MPZ] = mfcab;
+    distribution.f[vf::lbm::dir::PMZ] = mfacb;
+    distribution.f[vf::lbm::dir::MZM] = mfcbc;
+    distribution.f[vf::lbm::dir::PZP] = mfaba;
+    distribution.f[vf::lbm::dir::MZP] = mfcba;
+    distribution.f[vf::lbm::dir::PZM] = mfabc;
+    distribution.f[vf::lbm::dir::ZMM] = mfbcc;
+    distribution.f[vf::lbm::dir::ZPP] = mfbaa;
+    distribution.f[vf::lbm::dir::ZMP] = mfbca;
+    distribution.f[vf::lbm::dir::ZPM] = mfbac;
+    distribution.f[vf::lbm::dir::MMM] = mfccc;
+    distribution.f[vf::lbm::dir::PMM] = mfacc;
+    distribution.f[vf::lbm::dir::MPM] = mfcac;
+    distribution.f[vf::lbm::dir::PPM] = mfaac;
+    distribution.f[vf::lbm::dir::MMP] = mfcca;
+    distribution.f[vf::lbm::dir::PMP] = mfaca;
+    distribution.f[vf::lbm::dir::MPP] = mfcaa;
+    distribution.f[vf::lbm::dir::PPP] = mfaaa;
+    distribution.f[vf::lbm::dir::ZZZ] = mfbbb;
 }
 
 

@@ -221,10 +221,10 @@ extern "C" __global__ void LBCalcMac27( real* vxD,
    {
        const auto distribution = getDistribution(DD, size_Mat, evenOrOdd, k, neighborX, neighborY, neighborZ);
 
-       rhoD[k] = VF::LBM::getDensity(distribution.f);
-       vxD[k] = VF::LBM::getIncompressibleVelocityX1(distribution.f);
-       vyD[k] = VF::LBM::getIncompressibleVelocityX2(distribution.f);
-       vzD[k] = VF::LBM::getIncompressibleVelocityX3(distribution.f);
+       rhoD[k] = vf::lbm::getDensity(distribution.f);
+       vxD[k] = vf::lbm::getIncompressibleVelocityX1(distribution.f);
+       vyD[k] = vf::lbm::getIncompressibleVelocityX2(distribution.f);
+       vzD[k] = vf::lbm::getIncompressibleVelocityX3(distribution.f);
    }
 }
 

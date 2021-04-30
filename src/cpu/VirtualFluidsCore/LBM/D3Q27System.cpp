@@ -25,22 +25,22 @@ const int INVDIR[] = { INV_E,   INV_W,   INV_N,   INV_S,   INV_T,   INV_B,   INV
 
 LBMReal getDensity(const LBMReal *const &f /*[27]*/)
 {
-    return VF::LBM::getDensity(f);
+    return vf::lbm::getDensity(f);
 }
 
 LBMReal getIncompVelocityX1(const LBMReal *const &f /*[27]*/)
 {
-    return VF::LBM::getIncompressibleVelocityX1(f);
+    return vf::lbm::getIncompressibleVelocityX1(f);
 }
 
 LBMReal getIncompVelocityX2(const LBMReal *const &f /*[27]*/)
 {
-    return VF::LBM::getIncompressibleVelocityX2(f);
+    return vf::lbm::getIncompressibleVelocityX2(f);
 }
 
 LBMReal getIncompVelocityX3(const LBMReal *const &f /*[27]*/)
 {
-    return VF::LBM::getIncompressibleVelocityX3(f);
+    return vf::lbm::getIncompressibleVelocityX3(f);
 }
 
 

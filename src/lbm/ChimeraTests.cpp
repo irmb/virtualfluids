@@ -23,7 +23,7 @@ TEST(ChimeraTest, forwardInverseChimeraWithK)
     const real K = 1.;
     const real Kinverse = 1 / K;
 
-    VF::LBM::forwardInverseChimeraWithK(mfa, mfb, mfc, vv, v2, K, Kinverse);
+    vf::lbm::forwardInverseChimeraWithK(mfa, mfb, mfc, vv, v2, K, Kinverse);
 
     EXPECT_THAT(mfa, REAL_EQ(3.));  // mfa + mfb + mfc
     EXPECT_THAT(mfb, REAL_EQ(-4.)); // -(mfa + mfb + mfc + 1)
@@ -44,7 +44,7 @@ TEST(ChimeraTest, backwardInverseChimeraWithK)
     const real K = 1.;
     const real Kinverse = 1 / K;
 
-    VF::LBM::backwardInverseChimeraWithK(mfa, mfb, mfc, vv, v2, K, Kinverse);
+    vf::lbm::backwardInverseChimeraWithK(mfa, mfb, mfc, vv, v2, K, Kinverse);
 
     // resulting in the start values from the test above.
     EXPECT_THAT(mfa, REAL_EQ(1.));
@@ -64,7 +64,7 @@ TEST(ChimeraTest, forwardChimera)
     const real vv = 1.;
     const real v2 = 1.;
 
-    VF::LBM::forwardChimera(mfa, mfb, mfc, vv, v2);
+    vf::lbm::forwardChimera(mfa, mfb, mfc, vv, v2);
 
     EXPECT_THAT(mfa, REAL_EQ(3.));  // mfa + mfb + mfc
     EXPECT_THAT(mfb, REAL_EQ(-3.)); // -(mfa + mfb + mfc)
@@ -82,7 +82,7 @@ TEST(ChimeraTest, backwardChimera)
     const real vv = 1.;
     const real v2 = 1.;
 
-    VF::LBM::backwardChimera(mfa, mfb, mfc, vv, v2);
+    vf::lbm::backwardChimera(mfa, mfb, mfc, vv, v2);
 
     // resulting in the start values from the test above.
     EXPECT_THAT(mfa, REAL_EQ(1.));
@@ -104,7 +104,7 @@ TEST(ChimeraTest, forwardChimeraWithK)
 
     const real K = 1.;
 
-    VF::LBM::forwardChimeraWithK(mfa, mfb, mfc, vv, v2, K);
+    vf::lbm::forwardChimeraWithK(mfa, mfb, mfc, vv, v2, K);
 
     EXPECT_THAT(mfa, REAL_EQ(3.));  // mfa + mfb + mfc
     EXPECT_THAT(mfb, REAL_EQ(-4.)); // -(mfa + mfb + mfc)
@@ -124,7 +124,7 @@ TEST(ChimeraTest, backwardChimeraWithK)
 
     const real K = 1.;
 
-    VF::LBM::backwardChimeraWithK(mfa, mfb, mfc, vv, v2, K);
+    vf::lbm::backwardChimeraWithK(mfa, mfb, mfc, vv, v2, K);
 
     // resulting in the start values from the test above.
     EXPECT_THAT(mfa, REAL_EQ(1.));

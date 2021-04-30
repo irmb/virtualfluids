@@ -9,12 +9,15 @@
 #endif
 
 #include <basics/Core/DataTypes.h>
-#include <basics/Core/RealConstants.h>
 
-namespace VF
+#include <lbm/constants/NumericConstants.h>
+
+namespace vf
 {
-namespace LBM
+namespace lbm
 {
+
+    using namespace constant;
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief forward chimera transformation \ref forwardInverseChimeraWithK 
