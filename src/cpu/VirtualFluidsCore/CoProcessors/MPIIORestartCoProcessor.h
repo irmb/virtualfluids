@@ -4,6 +4,7 @@
 #include <mpi.h>
 //#include <PointerDefinitions.h>
 #include <string>
+#include <vector>
 
 #include "MPIIOCoProcessor.h"
 #include "MPIIODataStructures.h"
@@ -35,8 +36,8 @@ public:
     void writeAverageTripleArray(int step);
     void writeShearStressValArray(int step);
     void writeRelaxationFactor(int step);
-    void writePhaseField(int step);
-   //! Writes the boundary conditions of the blocks into the file cpBC.bin
+    void writePhaseField(int step, int num);
+    //! Writes the boundary conditions of the blocks into the file cpBC.bin
     void writeBoundaryConds(int step);
 
     //! Reads the blocks of the grid from the file cpBlocks.bin
@@ -49,7 +50,7 @@ public:
     void readAverageTripleArray(int step);
     void readShearStressValArray(int step);
     void readRelaxationFactor(int step);
-    void readPhaseField(int step);
+    void readPhaseField(int step, int num);
     //! Reads the boundary conditions of the blocks from the file cpBC.bin
     void readBoundaryConds(int step);
     //! The function sets LBMKernel

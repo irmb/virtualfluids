@@ -284,10 +284,25 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
                         LBMReal dX2_phi = gradX2_phi();
                         LBMReal dX3_phi = gradX3_phi();
 
+
                         LBMReal denom = sqrt(dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi) + 1e-9;
                         LBMReal normX1 = dX1_phi/denom;
 						LBMReal normX2 = dX2_phi/denom;
-						LBMReal normX3 = dX3_phi/denom;
+						LBMReal normX3 = dX3_phi/denom; 
+
+
+						///test for magnitude of gradient from phase indicator directly
+						//if (fabs((1.0 - phi[REST]) * (phi[REST]) */* c4*/ - (denom- 1e-9)) / denom > 1e-3 &&phi[REST]>0.4 &&phi[REST]<0.6) {
+						//	std::cout << (1.0 - phi[REST]) * (phi[REST])  // *c4 
+						//		<< " " << denom <<" "<< ((1.0 - phi[REST]) * (phi[REST]) * c4 ) / denom << std::endl;
+						//}
+						//dX1_phi = (1.0 - phi[REST]) * (phi[REST]) /* c4 */* normX1;
+						//dX2_phi = (1.0 - phi[REST]) * (phi[REST]) /* c4 */* normX2;
+						//dX3_phi = (1.0 - phi[REST]) * (phi[REST]) /* c4 */* normX3;
+
+						//denom = 1.0;
+
+						///!test
 
 						collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[REST] - phiH) / (phiH - phiL);
 
@@ -663,11 +678,22 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   // Cumulants
 			   ////////////////////////////////////////////////////////////////////////////////////
 			   LBMReal OxxPyyPzz = 1.; //omega2 or bulk viscosity
-			   LBMReal OxyyPxzz = 1.;//-s9;//2+s9;//
-			   LBMReal OxyyMxzz  = 1.;//2+s9;//
-			   LBMReal O4 = 1.;
+			   //LBMReal OxyyPxzz = 2.0 - collFactorM;// 1.;//-s9;//2+s9;//
+			   //LBMReal OxyyMxzz  = 2.0 - collFactorM;// 1.;//2+s9;//
+			   LBMReal O4 = 1.0;//collFactorM;// 1.;
 			   LBMReal O5 = 1.;
 			   LBMReal O6 = 1.;
+
+
+			   /////fourth order parameters; here only for test. Move out of loop!
+
+			   LBMReal OxyyPxzz = 8.0 * (collFactorM - 2.0) * (OxxPyyPzz * (3.0 * collFactorM - 1.0) - 5.0 * collFactorM) / (8.0 * (5.0 - 2.0 * collFactorM) * collFactorM + OxxPyyPzz * (8.0 + collFactorM * (9.0 * collFactorM - 26.0)));
+			   LBMReal OxyyMxzz = 8.0 * (collFactorM - 2.0) * (collFactorM + OxxPyyPzz * (3.0 * collFactorM - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * collFactorM + 9.0 * collFactorM * collFactorM) - 8.0 * collFactorM);
+			   LBMReal Oxyz = 24.0 * (collFactorM - 2.0) * (4.0 * collFactorM * collFactorM + collFactorM * OxxPyyPzz * (18.0 - 13.0 * collFactorM) + OxxPyyPzz * OxxPyyPzz * (2.0 + collFactorM * (6.0 * collFactorM - 11.0))) / (16.0 * collFactorM * collFactorM * (collFactorM - 6.0) - 2.0 * collFactorM * OxxPyyPzz * (216.0 + 5.0 * collFactorM * (9.0 * collFactorM - 46.0)) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (3.0 * collFactorM - 10.0) * (15.0 * collFactorM - 28.0) - 48.0));
+			   LBMReal A = (4.0 * collFactorM * collFactorM + 2.0 * collFactorM * OxxPyyPzz * (collFactorM - 6.0) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (10.0 - 3.0 * collFactorM) - 4.0)) / ((collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
+			   //FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::B' )
+			   LBMReal B = (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
+
 
 			   //Cum 4.
 			   //LBMReal CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + 2. * mfbba * mfbab); // till 18.05.2015
@@ -719,11 +745,15 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   mfbab += c1o6 * (dX1_phi * vvz + dX3_phi * vvx) * correctionScaling;
 			   mfbba += c1o6 * (dX1_phi * vvy + dX2_phi * vvx) * correctionScaling;
 
-			   LBMReal dxux = 0.0;// -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz);
-			   LBMReal dyuy = 0.0;// dxux + collFactorM * c3o2 * mxxMyy;
-			   LBMReal dzuz = 0.0;// dxux + collFactorM * c3o2 * mxxMzz;
+			   LBMReal dxux = -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz);
+			   LBMReal dyuy =  dxux + collFactorM * c3o2 * mxxMyy;
+			   LBMReal dzuz =  dxux + collFactorM * c3o2 * mxxMzz;
 
-			   //relax
+			   LBMReal Dxy = -three * collFactorM * mfbba;
+			   LBMReal Dxz = -three * collFactorM * mfbab;
+			   LBMReal Dyz = -three * collFactorM * mfabb;
+
+			   ////relax unfiltered
 			   mxxPyyPzz += OxxPyyPzz * (/*mfaaa*/ - mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
 			   mxxMyy += collFactorM * (-mxxMyy) - 3. * (1. - c1o2 * collFactorM) * (vx2 * dxux - vy2 * dyuy);
 			   mxxMzz += collFactorM * (-mxxMzz) - 3. * (1. - c1o2 * collFactorM) * (vx2 * dxux - vz2 * dzuz);
@@ -731,6 +761,25 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   mfabb += collFactorM * (-mfabb);
 			   mfbab += collFactorM * (-mfbab);
 			   mfbba += collFactorM * (-mfbba);
+
+
+			   //relax filtered
+			   //LBMReal interfaceFilter=0.001;
+			   //LBMReal interfaceFactor = c1;// (dX1_phi * dX1_phi + dX2_phi * dX2_phi + dX3_phi * dX3_phi);
+
+			   //mxxPyyPzz += OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz) - 3. * (1. - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
+			   //
+			   //wadjust = collFactorM + (1. - collFactorM) * fabs(mxxMyy) / (fabs(mxxMyy) * interfaceFactor + interfaceFilter)* interfaceFactor;
+			   //mxxMyy += wadjust * (-mxxMyy);// -3. * (1. - c1o2 * collFactorM) * (vx2 * dxux - vy2 * dyuy);
+			   //wadjust = collFactorM + (1. - collFactorM) * fabs(mxxMzz) / (fabs(mxxMzz) * interfaceFactor + interfaceFilter) * interfaceFactor;
+			   //mxxMzz += wadjust * (-mxxMzz);// -3. * (1. - c1o2 * collFactorM) * (vx2 * dxux - vz2 * dzuz);
+
+			   //wadjust = collFactorM + (1. - collFactorM) * fabs(mfabb) / (fabs(mfabb) * interfaceFactor + interfaceFilter) * interfaceFactor;
+			   //mfabb += wadjust * (-mfabb);
+			   //wadjust = collFactorM + (1. - collFactorM) * fabs(mfbab) / (fabs(mfbab) * interfaceFactor + interfaceFilter) * interfaceFactor;
+			   //mfbab += wadjust * (-mfbab);
+			   //wadjust = collFactorM + (1. - collFactorM) * fabs(mfbba) / (fabs(mfbba) * interfaceFactor + interfaceFilter) * interfaceFactor;
+			   //mfbba += wadjust * (-mfbba);
 
 			   //applying phase field gradients second part:
 			   //mxxPyyPzz += c2o3 * rhoToPhi * (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz);
@@ -763,7 +812,7 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   LBMReal mxyyMxzz = mfbca - mfbac;
 
 			   //relax
-			   wadjust = OxyyMxzz + (1. - OxyyMxzz) * fabs(mfbbb) / (fabs(mfbbb) + qudricLimit);
+			   wadjust = Oxyz + (1. - Oxyz) * fabs(mfbbb) / (fabs(mfbbb) + qudricLimit);
 			   mfbbb += wadjust * (-mfbbb);
 			   wadjust = OxyyPxzz + (1. - OxyyPxzz) * fabs(mxxyPyzz) / (fabs(mxxyPyzz) + qudricLimit);
 			   mxxyPyzz += wadjust * (-mxxyPyzz);
@@ -787,18 +836,70 @@ void MultiphaseScratchCumulantLBMKernel::calculate(int step)
 			   mfbac = (-mxyyMxzz + mxyyPxzz) * c1o2;
 
 			   //4.
-			   CUMacc += O4 * (-CUMacc);
-			   CUMcac += O4 * (-CUMcac);
-			   CUMcca += O4 * (-CUMcca);
+			   //CUMacc += O4 * (-CUMacc);
+			   //CUMcac += O4 * (-CUMcac);
+			   //CUMcca += O4 * (-CUMcca);
 
-			   CUMbbc += O4 * (-CUMbbc);
-			   CUMbcb += O4 * (-CUMbcb);
-			   CUMcbb += O4 * (-CUMcbb);
+			   //CUMbbc += O4 * (-CUMbbc);
+			   //CUMbcb += O4 * (-CUMbcb);
+			   //CUMcbb += O4 * (-CUMcbb);
+
+
+			   CUMacc = -O4 * (one / collFactorM - c1o2) * (dyuy + dzuz) * c2o3 * A + (one - O4) * (CUMacc);
+			   CUMcac = -O4 * (one / collFactorM - c1o2) * (dxux + dzuz) * c2o3 * A + (one - O4) * (CUMcac);
+			   CUMcca = -O4 * (one / collFactorM - c1o2) * (dyuy + dxux) * c2o3 * A + (one - O4) * (CUMcca);
+			   CUMbbc = -O4 * (one / collFactorM - c1o2) * Dxy * c1o3 * B + (one - O4) * (CUMbbc);
+			   CUMbcb = -O4 * (one / collFactorM - c1o2) * Dxz * c1o3 * B + (one - O4) * (CUMbcb);
+			   CUMcbb = -O4 * (one / collFactorM - c1o2) * Dyz * c1o3 * B + (one - O4) * (CUMcbb);
+
+
+
+
+			   //CUMacc -= (one / collFactorM - c1o2) * (dyuy + dzuz) * c2o3 * A ;
+			   //CUMcac -= (one / collFactorM - c1o2) * (dxux + dzuz) * c2o3 * A ;
+			   //CUMcca -= (one / collFactorM - c1o2) * (dyuy + dxux) * c2o3 * A ;
+			   //CUMbbc -= (one / collFactorM - c1o2) * Dxy * c1o3 * B ;
+			   //CUMbcb -= (one / collFactorM - c1o2) * Dxz * c1o3 * B ;
+			   //CUMcbb -= (one / collFactorM - c1o2) * Dyz * c1o3 * B ;
+
+			   //wadjust = O4 + (1. - O4) * fabs(CUMacc) / (fabs(CUMacc) + qudricLimit);
+			   //CUMacc += wadjust * (-CUMacc);
+			   //wadjust = O4 + (1. - O4) * fabs(CUMcac) / (fabs(CUMcac) + qudricLimit);
+			   //CUMcac += wadjust * (-CUMcac);
+			   //wadjust = O4 + (1. - O4) * fabs(CUMcca) / (fabs(CUMcca) + qudricLimit);
+			   //CUMcca += wadjust * (-CUMcca);
+			   //wadjust = O4 + (1. - O4) * fabs(CUMbbc) / (fabs(CUMbbc) + qudricLimit);
+			   //CUMbbc += wadjust * (-CUMbbc);
+			   //wadjust = O4 + (1. - O4) * fabs(CUMbcb) / (fabs(CUMbcb) + qudricLimit);
+			   //CUMbcb += wadjust * (-CUMbcb);
+			   //wadjust = O4 + (1. - O4) * fabs(CUMcbb) / (fabs(CUMcbb) + qudricLimit);
+			   //CUMcbb += wadjust * (-CUMcbb);
+
+
+
+
+
+
+			   //CUMacc += (one / collFactorM - c1o2) * (dyuy + dzuz) * c2o3 * A;
+			   //CUMcac += (one / collFactorM - c1o2) * (dxux + dzuz) * c2o3 * A;
+			   //CUMcca += (one / collFactorM - c1o2) * (dyuy + dxux) * c2o3 * A;
+			   //CUMbbc += (one / collFactorM - c1o2) * Dxy * c1o3 * B;
+			   //CUMbcb += (one / collFactorM - c1o2) * Dxz * c1o3 * B;
+			   //CUMcbb += (one / collFactorM - c1o2) * Dyz * c1o3 * B;
 
 			   //5.
 			   CUMbcc += O5 * (-CUMbcc);
 			   CUMcbc += O5 * (-CUMcbc);
 			   CUMccb += O5 * (-CUMccb);
+
+
+			   //wadjust = O5 + (1. - O5) * fabs(CUMbcc) / (fabs(CUMbcc) + qudricLimit);
+			   //CUMbcc += wadjust * (-CUMbcc);
+			   //wadjust = O5 + (1. - O5) * fabs(CUMcbc) / (fabs(CUMcbc) + qudricLimit);
+			   //CUMbcc += wadjust * (-CUMcbc);
+			   //wadjust = O5 + (1. - O5) * fabs(CUMccb) / (fabs(CUMccb) + qudricLimit);
+			   //CUMbcc += wadjust * (-CUMccb);
+
 
 			   //6.
 			   CUMccc += O6 * (-CUMccc);

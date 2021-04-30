@@ -70,7 +70,7 @@ MPIIOCoProcessor::MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const
 
     //---------------------------------------
 
-    MPI_Type_contiguous(7, MPI_CHAR, &arrayPresenceType);
+    MPI_Type_contiguous(8, MPI_CHAR, &arrayPresenceType);
     MPI_Type_commit(&arrayPresenceType);
 }
 
@@ -378,10 +378,24 @@ void MPIIOCoProcessor::clearAllFiles(int step)
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename2 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSet.bin";
-    int rc2 = MPI_File_open(MPI_COMM_WORLD, filename2.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
-    if (rc2 != MPI_SUCCESS)
-        throw UbException(UB_EXARGS, "couldn't open file " + filename2);
+    std::string filename21 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetF.bin";
+    int rc21 = MPI_File_open(MPI_COMM_WORLD, filename21.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+    if (rc21 != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename21);
+    MPI_File_set_size(file_handler, new_size);
+    MPI_File_close(&file_handler);
+
+    std::string filename22 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH1.bin";
+    int rc22 = MPI_File_open(MPI_COMM_WORLD, filename22.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+    if (rc22 != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename22);
+    MPI_File_set_size(file_handler, new_size);
+    MPI_File_close(&file_handler);
+
+    std::string filename23 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH2.bin";
+    int rc23 = MPI_File_open(MPI_COMM_WORLD, filename23.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+    if (rc23 != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename23);
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
@@ -441,25 +455,20 @@ void MPIIOCoProcessor::clearAllFiles(int step)
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpPhaseField.bin";
+    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpPhaseField1.bin";
     int rc10 = MPI_File_open(MPI_COMM_WORLD, filename10.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc10 != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename10);
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-
-    /*std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC1.bin";
-    int rc10 = MPI_File_open(MPI_COMM_WORLD, filename10.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info,
-    &file_handler); if (rc10 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename10);
+    std::string filename11 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpPhaseField2.bin";
+    int rc11 = MPI_File_open(MPI_COMM_WORLD, filename11.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+    if (rc11 != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename11);
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename11 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC2.bin";
-    int rc11 = MPI_File_open(MPI_COMM_WORLD, filename11.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info,
-    &file_handler); if (rc11 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename11);
-    MPI_File_set_size(file_handler, new_size);
-    MPI_File_close(&file_handler);*/
 }
 
 void MPIIOCoProcessor::writeCpTimeStep(int step)

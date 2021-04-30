@@ -55,8 +55,8 @@ public:
     SPtr<DistributionArray3D> getHdistributions() const;
     void setHdistributions(SPtr<DistributionArray3D> distributions);
 
-    SPtr<DistributionArray3D> getH1distributions() const;
-    void setH1distributions(SPtr<DistributionArray3D> distributions);
+    //SPtr<DistributionArray3D> getH1distributions() const;
+    //void setH1distributions(SPtr<DistributionArray3D> distributions);
 
     SPtr<DistributionArray3D> getH2distributions() const;
     void setH2distributions(SPtr<DistributionArray3D> distributions);
@@ -91,23 +91,18 @@ public:
 protected:
 private:
     SPtr<DistributionArray3D> fdistributions;
-
     SPtr<DistributionArray3D> hdistributions;
-
-    SPtr<DistributionArray3D> h1distributions;
+    //SPtr<DistributionArray3D> h1distributions;
     SPtr<DistributionArray3D> h2distributions;
-
+ 
     SPtr<AverageValuesArray3D> averageValues;
-
     SPtr<AverageValuesArray3D> averageDensity;
     SPtr<AverageValuesArray3D> averageVelocity;
     SPtr<AverageValuesArray3D> averageFluktuations;
     SPtr<AverageValuesArray3D> averageTriplecorrelations;
-
     SPtr<ShearStressValuesArray3D> shearStressValues;
 
     SPtr<RelaxationFactorArray3D> relaxationFactor;
-
     SPtr<PhaseFieldArray3D> phaseField;
     SPtr<PhaseFieldArray3D> phaseField2;
 };
@@ -120,9 +115,9 @@ inline SPtr<DistributionArray3D> DataSet3D::getHdistributions() const { return h
 
 inline void DataSet3D::setHdistributions(SPtr<DistributionArray3D> distributions) { hdistributions = distributions; }
 
-inline SPtr<DistributionArray3D> DataSet3D::getH1distributions() const { return h1distributions; }
-
-inline void DataSet3D::setH1distributions(SPtr<DistributionArray3D> distributions) { h1distributions = distributions; }
+//inline SPtr<DistributionArray3D> DataSet3D::getH1distributions() const { return h1distributions; }
+//
+//inline void DataSet3D::setH1distributions(SPtr<DistributionArray3D> distributions) { h1distributions = distributions; }
 
 inline SPtr<DistributionArray3D> DataSet3D::getH2distributions() const { return h2distributions; }
 

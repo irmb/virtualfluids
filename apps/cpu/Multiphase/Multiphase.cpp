@@ -70,7 +70,7 @@ void run(string configname)
             }
         }
 
-        // Sleep(30000);
+         //Sleep(30000);
 
         // LBMReal dLB = 0; // = length[1] / dx;
         LBMReal rhoLB = 0.0;
@@ -82,10 +82,10 @@ void run(string configname)
 
         SPtr<LBMKernel> kernel;
 
-        //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
-        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
-
+        //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
+       
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
         kernel->setForcingX2(gr);
@@ -108,10 +108,15 @@ void run(string configname)
         //////////////////////////////////////////////////////////////////////////
         // restart
         SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
-        // RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
-        MPIIORestartCoProcessor rcp(grid, rSch, pathname, comm);
-        rcp.setLBMKernel(kernel);
-        rcp.setBCProcessor(bcProc);
+        //SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
+        //SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, pathname, comm));
+        SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
+        rcp->setNu(nuLB);
+        rcp->setNuLG(nuL, nuG);
+        rcp->setDensityRatio(densityRatio);
+
+        rcp->setLBMKernel(kernel);
+        rcp->setBCProcessor(bcProc);
         //////////////////////////////////////////////////////////////////////////
 
         mu::Parser fctF1;
@@ -127,7 +132,7 @@ void run(string configname)
         fctF2.SetExpr("vy1");
         fctF2.DefineConst("vy1", -uLB);
 
-        double startTime = 5;
+        double startTime = 1;
         SPtr<BCAdapter> velBCAdapterF1(new MultiphaseVelocityBCAdapter(false, true, false, fctF1, phiH, 0.0, startTime));
         SPtr<BCAdapter> velBCAdapterF2(new MultiphaseVelocityBCAdapter(false, true, false, fctF2, phiH, startTime, endTime));
 
@@ -267,8 +272,8 @@ void run(string configname)
             // phiL, 0.0, endTime)); BCAdapterPtr velBCAdapterF2_2_init(new MultiphaseVelocityBCAdapter(false, false,
             // true, fctvel_F2_init, phiL, 0.0, endTime));
 
-            //velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
-            velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+            velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+            //velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
             // velBCAdapterF2_1_init->setBcAlgorithm(BCAlgorithmPtr(new MultiphaseVelocityBCAlgorithm()));
             // velBCAdapterF2_2_init->setBcAlgorithm(BCAlgorithmPtr(new MultiphaseVelocityBCAlgorithm()));
 
@@ -435,8 +440,8 @@ void run(string configname)
             //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
             // ConnectorFactoryPtr factory(new Block3DConnectorFactory());
             // ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
-            ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-            grid->accept(setConnsVisitor);
+            //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+            //grid->accept(setConnsVisitor);
 
             // domain decomposition for threads
             // PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
@@ -466,7 +471,7 @@ void run(string configname)
                 UBLOG(logINFO, "path = " << pathname);
             }
 
-            rcp.restart((int)restartStep);
+            rcp->restart((int)restartStep);
             grid->setTimeStep(restartStep);
 
             // BCAdapterPtr velBCAdapter(new VelocityBCAdapter());
@@ -487,10 +492,15 @@ void run(string configname)
         
         TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
+        
+        //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+        //grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
             grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+        //SPtr<WriteMacroscopicQuantitiesCoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(
+        //    grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
         SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
@@ -504,7 +514,7 @@ void run(string configname)
         calculator->addCoProcessor(npr);
         calculator->addCoProcessor(pp);
         calculator->addCoProcessor(timeDepBC);
-
+        calculator->addCoProcessor(rcp);
 
         
 

@@ -77,7 +77,7 @@ CheckpointConverter::CheckpointConverter(SPtr<Grid3D> grid, const std::string &p
     //---------------------------------------
 
     MPI_Datatype typesDataSetRead[3] = { MPI_DOUBLE, MPI_INT, MPI_CHAR };
-    int blocksDataSetRead[3]         = { 2, 5, 2 };
+    int blocksDataSetRead[3]         = { 3, 5, 2 };
     MPI_Aint offsetsDataSetRead[3], lbDataSetRead, extentDataSetRead;
 
     offsetsDataSetRead[0] = 0;
@@ -358,6 +358,7 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
             dataSetWriteArray[nb].deltaT          = dataSetReadArray[nb].deltaT;
             dataSetWriteArray[nb].compressible    = dataSetReadArray[nb].compressible;
             dataSetWriteArray[nb].withForcing     = dataSetReadArray[nb].withForcing;
+//            dataSetWriteArray[nb].densityRatio    = dataSetReadArray[nb].densityRatio;
 
             write_offset = (MPI_Offset)(3 * sizeof(dataSetParam) + dataSetWriteArray[nb].globalID * sizeofOneDataSet);
             MPI_File_write_at(file_handlerW, write_offset, &dataSetWriteArray[nb], 1, dataSetTypeWrite,
