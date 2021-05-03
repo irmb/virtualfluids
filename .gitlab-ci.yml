@@ -3,6 +3,7 @@ image: irmb/virtualfluids-python-deps:latest
 stages:
   - build
   - build_python
+  - container_upload
   - test
   - benchmark
   - analyze
@@ -141,26 +142,6 @@ msvc_16:
     paths:
       - $CI_PROJECT_DIR/$env:BUILD_FOLDER/
 
-###############################################################################
-build_singularity_image:
-  stage: build
-
-  tags:
-    - linux
-    - privileged
-
-  rules:
-    - if: $CI_COMMIT_TAG
-
-  artifacts:
-    expire_in: 1 hrs
-    paths:
-      - Containers/VirtualFluidsMPICH.sif
-
-  script:
-    - singularity build Containers/VirtualFluidsMPICH.sif Containers/VirtualFluidsMPICH.def
-    - singularity push --docker-username "${CI_REGISTRY_USER}" --docker-password "${CI_REGISTRY_PASSWORD}" Containers/VirtualFluidsMPICH.sif oras://"$CI_REGISTRY_IMAGE"/"$CI_PROJECT_NAME":"$CI_COMMIT_TAG"
-
 
 ###############################################################################
 ##                             Build Python                                  ##
@@ -188,6 +169,25 @@ gcc_9_python:
 
   script:
     - python3 setup.py bdist_wheel
+
+###############################################################################
+##                            Container Upload                               ##
+###############################################################################
+build_singularity_image:
+  stage: container_upload
+
+  needs:
+    - gcc_9_python
+
+  tags:
+    - docker-alpine
+
+  rules:
+    - if: $CI_COMMIT_TAG
+
+  script:
+    - singularity build Containers/VirtualFluidsPython.sif Containers/VirtualFluidsPython.def
+    - singularity push --docker-username "${CI_REGISTRY_USER}" --docker-password "${CI_REGISTRY_PASSWORD}" Containers/VirtualFluidsPython.sif oras://"$CI_REGISTRY_IMAGE"/"$CI_PROJECT_NAME":"$CI_COMMIT_TAG"
 
 ###############################################################################
 ##                                Tests                                      ##
