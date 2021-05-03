@@ -255,7 +255,7 @@ gcc_9_python_slurm_test:
   before_script:
 #    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
 #    - apt-get install -y rsync
-#    - mkdir -p ~/.ssh
+    - mkdir -p ~/.ssh
 #    - chmod 700 ~/.ssh
 #    - eval $(ssh-agent -s)
 #    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
