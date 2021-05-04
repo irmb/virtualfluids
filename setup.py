@@ -11,6 +11,7 @@ from distutils.version import LooseVersion
 vf_cmake_args = [
     "-DBUILD_VF_PYTHON_BINDINGS=ON",
     "-DBUILD_VF_CPU:BOOL=ON",
+    "-DBUILD_VF_GPU:BOOL=OFF",
     "-DUSE_METIS=ON",
     "-DUSE_MPI=ON",
     "-DBUILD_SHARED_LIBS=OFF",
