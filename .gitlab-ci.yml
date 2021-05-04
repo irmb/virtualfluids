@@ -389,7 +389,7 @@ cppcheck:
     - cppcheck src --enable=all --xml 2> cppcheck.xml
 
   artifacts:
-    expires_in: 1 week
+    expire_in: 1 week
     paths:
       - cppcheck.xml
 
@@ -418,7 +418,7 @@ lizard:
     - lizard -l cpp src/ > lizard.txt --warnings_only --ignore_warnings 400
 
   artifacts:
-    expires_in: 1 week
+    expire_in: 1 week
     paths:
       - lizard.txt
 
@@ -454,7 +454,7 @@ gcov_gcc_9:
     - gcovr -r $CI_PROJECT_DIR -k build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
 
   artifacts:
-    expires_in: 1 week
+    expire_in: 1 week
     paths:
       - coverage/
 
@@ -492,7 +492,7 @@ clang-tidy:
     - run-clang-tidy -quiet > clangtidy.txt
 
   artifacts:
-    expires_in: 1 week
+    expire_in: 1 week
     paths:
       - build/clangtidy.txt
       - build/compile_commands.json
