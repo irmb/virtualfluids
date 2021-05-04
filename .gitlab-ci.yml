@@ -95,12 +95,8 @@ gcc_9_rebuild:
       --preset=all_make_ccache
       -DBUILD_WARNINGS_AS_ERRORS=ON
       -DCMAKE_CUDA_ARCHITECTURES=60
-    - make -j4  2>&1 | tee gcc_warnings.txt
+    - make -j4
     - ccache -s
-
-  artifacts:
-    paths:
-      - build/gcc_warnings.txt
 
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
@@ -157,6 +153,7 @@ build_singularity_image:
     - if: $CI_COMMIT_TAG
 
   artifacts:
+    expire_in: 1 hrs
     paths:
       - Containers/VirtualFluidsOpenMPI.sif
 
@@ -297,6 +294,7 @@ gpu_numerical_tests:
       - $CI_PROJECT_DIR/cache
 
   artifacts:
+    expire_in: 1 hrs
     paths:
       - $CI_PROJECT_DIR/numerical_tests_gpu_results.txt
 
@@ -389,11 +387,10 @@ cppcheck:
     - cd $CI_PROJECT_DIR
     - cppcheck --version
     - cppcheck src --enable=all --xml 2> cppcheck.xml
-    - cppcheck-htmlreport --file=cppcheck.xml --report-dir=html_report --source-dir=.
 
   artifacts:
+    expires_in: 1 week
     paths:
-      - html_report/
       - cppcheck.xml
 
 ###############################################################################
@@ -421,6 +418,7 @@ lizard:
     - lizard -l cpp src/ > lizard.txt --warnings_only --ignore_warnings 400
 
   artifacts:
+    expires_in: 1 week
     paths:
       - lizard.txt
 
@@ -456,9 +454,9 @@ gcov_gcc_9:
     - gcovr -r $CI_PROJECT_DIR -k build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
 
   artifacts:
+    expires_in: 1 week
     paths:
       - coverage/
-      - build/
 
     reports:
       cobertura: coverage/coverage.xml
@@ -494,6 +492,7 @@ clang-tidy:
     - run-clang-tidy -quiet > clangtidy.txt
 
   artifacts:
+    expires_in: 1 week
     paths:
       - build/clangtidy.txt
       - build/compile_commands.json
