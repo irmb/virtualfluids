@@ -30,7 +30,7 @@ extern "C" void KernelCas27( unsigned int grid_nx,
    dim3 threads       ( grid_nx, 1, 1 );
    dim3 grid          ( grid_ny, grid_nz );   // Gitter fuer Kollision und Propagation
 
-      LB_Kernel_Casc27<< < grid, threads >>>( s9,
+      LB_Kernel_Casc27<<< grid, threads >>>( s9,
                                              bcMatD,
                                              neighborX,
                                              neighborY,
@@ -3390,21 +3390,21 @@ extern "C" void QVelDevCompZeroPress27(   unsigned int numberOfThreads,
 										  unsigned int size_Mat, 
 										  bool evenOrOdd)
 {
-   int Grid = kArray / numberOfThreads;
-   //int Grid = (kQ / numberOfThreads)+1;
-   //int Grid1, Grid2;
-   //if (Grid>512)
-   //{
-   //   Grid1 = 512;
-   //   Grid2 = (Grid/Grid1)+1;
-   //} 
-   //else
-   //{
-   //   Grid1 = 1;
-   //   Grid2 = Grid;
-   //}
-   //dim3 gridQ(Grid1, Grid2);
-   dim3 gridQ(Grid, 1, 1);
+   //int Grid = kArray / numberOfThreads;
+   int Grid = (sizeQ / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridQ(Grid1, Grid2);
+   //dim3 gridQ(Grid, 1, 1);
    dim3 threads(numberOfThreads, 1, 1 );
 
       QVelDeviceCompZeroPress27<<< gridQ, threads >>> (   nx,
@@ -3423,7 +3423,7 @@ extern "C" void QVelDevCompZeroPress27(   unsigned int numberOfThreads,
 														  neighborZ,
 														  size_Mat, 
 														  evenOrOdd);
-      getLastCudaError("QVelDeviceComp27 execution failed"); 
+      getLastCudaError("QVelDeviceCompZeroPress27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevIncompHighNu27(unsigned int numberOfThreads,
