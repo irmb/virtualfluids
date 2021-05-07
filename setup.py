@@ -15,7 +15,8 @@ vf_cmake_args = [
     "-DUSE_METIS=ON",
     "-DUSE_MPI=ON",
     "-DBUILD_SHARED_LIBS=OFF",
-    "-DBUILD_VF_UNIT_TESTS:BOOL=ON"
+    "-DBUILD_VF_UNIT_TESTS:BOOL=ON",
+    "-DBUILD_WARNINGS_AS_ERRORS=OFF"
 ]
 
 
