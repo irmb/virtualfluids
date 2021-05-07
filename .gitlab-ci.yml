@@ -3,6 +3,7 @@ image: irmb/virtualfluids-python-deps:latest
 stages:
   - build
   - build_python
+  - container_upload
   - test
   - benchmark
   - analyze
@@ -33,27 +34,26 @@ stages:
     paths:
       - $BUILD_FOLDER
 
-  before_script:
-    - export CC=gcc
-    - export CXX=g++
+  script:
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
-    - ccache -s
-
-
-  script:
+    - export CCACHE_COMPILERCHECK=content
+    - ccache --zero-stats
+    - ccache --show-stats
     - $CXX --version
     - $CC --version
     - cmake --version
     - mpirun --version
     - mkdir -p $CI_PROJECT_DIR/$BUILD_FOLDER
     - cd $CI_PROJECT_DIR/$BUILD_FOLDER
+    - rm -r -f ./*
     - cmake ..
       --preset=all_make_ccache
       -DBUILD_WARNINGS_AS_ERRORS=ON
       #-DCMAKE_CUDA_ARCHITECTURES=60
     - cmake . -LAH
     - make -j4
+    - ccache --show-stats
 
   variables:
     BUILD_FOLDER: "build"
@@ -62,50 +62,17 @@ stages:
 gcc_9:
   extends: .gnu_build_template
 
-###############################################################################
+  before_script:
+    - export CC=gcc
+    - export CXX=g++
 
+###############################################################################
 clang_10:
   extends: .gnu_build_template
 
   before_script:
     - export CC=clang
     - export CXX=clang++
-
-
-###############################################################################
-gcc_9_rebuild:
-  stage: build
-
-  image: irmb/virtualfluids-deps-ubuntu20.04
-
-  tags:
-    - gpu
-    - linux
-
-  before_script:
-    - export CCACHE_BASEDIR=$CI_PROJECT_DIR
-    - export CCACHE_DIR=$CI_PROJECT_DIR/cache
-    - ccache -s
-
-  script:
-    - mkdir -p $CI_PROJECT_DIR/build
-    - cd $CI_PROJECT_DIR/build
-    - rm -r -f ./*
-    - cmake ..
-      --preset=all_make_ccache
-      -DBUILD_WARNINGS_AS_ERRORS=ON
-      #-DCMAKE_CUDA_ARCHITECTURES=60
-    - make -j4  2>&1 | tee gcc_warnings.txt
-    - ccache -s
-
-  artifacts:
-    paths:
-      - build/gcc_warnings.txt
-
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - $CI_PROJECT_DIR/cache
 
 ###############################################################################
 msvc_16:
@@ -145,30 +112,10 @@ msvc_16:
     paths:
       - $CI_PROJECT_DIR/$env:BUILD_FOLDER/
 
-###############################################################################
-build_singularity_image:
-  stage: build
-
-  tags:
-    - priviliged
-    - linux
-
-  rules:
-    - if: $CI_COMMIT_TAG
-
-  artifacts:
-    paths:
-      - Containers/VirtualFluidsOpenMPI.sif
-
-  script:
-    - singularity build --fakeroot Containers/VirtualFluidsOpenMPI.sif Containers/VirtualFluidsOpenMPI.def
-    - ls -sh Containers/VirtualFluidsOpenMPI.sif
-
 
 ###############################################################################
 ##                             Build Python                                  ##
 ###############################################################################
-
 gcc_9_python:
   stage: build_python
 
@@ -190,7 +137,27 @@ gcc_9_python:
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
 
   script:
-    - python3 setup.py bdist_wheel
+    - python3 setup.py bdist_wheel build_ext --build-temp=build
+
+###############################################################################
+##                            Container Upload                               ##
+###############################################################################
+build_singularity_image:
+  stage: container_upload
+
+  needs:
+    - gcc_9_python
+
+  tags:
+    - linux
+    - privileged
+
+  rules:
+    - if: $CI_COMMIT_TAG
+
+  script:
+    - singularity build Containers/VirtualFluidsPython.sif Containers/VirtualFluidsPython.def
+    - singularity push --docker-username "${CI_REGISTRY_USER}" --docker-password "${CI_REGISTRY_PASSWORD}" Containers/VirtualFluidsPython.sif oras://"$CI_REGISTRY_IMAGE"/"$CI_PROJECT_NAME":"$CI_COMMIT_TAG"
 
 ###############################################################################
 ##                                Tests                                      ##
@@ -238,6 +205,47 @@ gcc_9_python_bindings_test:
 
   script:
     - python3 -m unittest discover -s Python -v
+
+###############################################################################
+gcc_9_python_slurm_test:
+  stage: test
+
+  needs: ["gcc_9_python"]
+
+  rules:
+    - if: $PHOENIX_PRIVATE_KEY
+
+  tags:
+    - linux
+    - privileged
+
+  variables:
+    SSH_KEY: "$PHOENIX_PRIVATE_KEY"
+    HOST: "$PHOENIX_HOSTNAME"
+    USER: "$PHOENIX_USER"
+
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - apt-get install -y rsync
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+    - echo $SSH_KEY >> ansible/private_key
+    - ssh-keyscan -t rsa $HOST >> ~/.ssh/known_hosts
+    - ssh $USER@$HOST "rm -rf output-*"
+    - ssh $USER@$HOST "rm -f *.out"
+    - pip3 install git+git://github.com/SvenMarcus/ssh-slurm-runner
+
+  script:
+    - singularity build PoiseuilleTestContainer.sif Python/SlurmTests/poiseuille/PoiseuilleTestContainer.def
+    - scp PoiseuilleTestContainer.sif $USER@$HOST:PoiseuilleTestContainer.sif
+    - scp Python/SlurmTests/poiseuille/slurm.job $USER@$HOST:slurm.job
+    - python3 -m ssh_slurm_runner slurm.job --host $HOST --user $USER --keyfile ansible/private_key
+    - ssh $USER@$HOST "rm -rf output-*"
+    - ssh $USER@$HOST "rm -f *.out"
+    - ssh $USER@$HOST "rm PoiseuilleTestContainer.sif"
+    - ssh $USER@$HOST "rm slurm.job"
 
 ###############################################################################
 ##                            Benchmark                                      ##
@@ -297,6 +305,7 @@ gpu_numerical_tests:
       - $CI_PROJECT_DIR/cache
 
   artifacts:
+    expire_in: 1 hrs
     paths:
       - $CI_PROJECT_DIR/numerical_tests_gpu_results.txt
 
@@ -389,11 +398,10 @@ cppcheck:
     - cd $CI_PROJECT_DIR
     - cppcheck --version
     - cppcheck src --enable=all --xml 2> cppcheck.xml
-    - cppcheck-htmlreport --file=cppcheck.xml --report-dir=html_report --source-dir=.
 
   artifacts:
+    expire_in: 1 week
     paths:
-      - html_report/
       - cppcheck.xml
 
 ###############################################################################
@@ -421,6 +429,7 @@ lizard:
     - lizard -l cpp src/ > lizard.txt --warnings_only --ignore_warnings 400
 
   artifacts:
+    expire_in: 1 week
     paths:
       - lizard.txt
 
@@ -456,9 +465,9 @@ gcov_gcc_9:
     - gcovr -r $CI_PROJECT_DIR -k build -f "src" --print-summary --html coverage/coverage.html --html-details --xml coverage/coverage.xml
 
   artifacts:
+    expire_in: 1 week
     paths:
       - coverage/
-      - build/
 
     reports:
       cobertura: coverage/coverage.xml
@@ -494,6 +503,7 @@ clang-tidy:
     - run-clang-tidy -quiet > clangtidy.txt
 
   artifacts:
+    expire_in: 1 week
     paths:
       - build/clangtidy.txt
       - build/compile_commands.json
@@ -550,10 +560,10 @@ vf_wheel_to_jupyterhub:
   needs: ["gcc_9_python", "gcc_9_unit_tests", "gcc_9_python_bindings_test"]
 
   variables:
-    HOST: "finrod.irmb.bau.tu-bs.de"
-    SSH_KEY: "$SSH_PRIVATE_KEY_JUPYTER_HOST_AT_FINROD"
-    REMOTE_USER: "jupyter_host"
-    jupyter_host: "jupyter_host"
+    HOST: "gitlab-runner01.irmb.bau.tu-bs.de"
+    SSH_KEY: "$SSH_PRIVATE_KEY"
+    REMOTE_USER: "runner"
+    jupyter_host: "runner"
 
   script:
     - ansible-playbook -i ansible/hosts.cfg -u $REMOTE_USER ansible/playbook_jupyter_update.yml
@@ -574,7 +584,7 @@ sonar-scanner:
   variables:
     SONAR_HOST_URL: "http://gitlab-runner01.irmb.bau.tu-bs.de/sonarqube/"
 
-  needs: ["cppcheck","clang-tidy","gcov_gcc_9","gcc_9_rebuild"]
+  needs: ["cppcheck","clang-tidy","gcov_gcc_9"]
 
   before_script:
     - cd /tmp
