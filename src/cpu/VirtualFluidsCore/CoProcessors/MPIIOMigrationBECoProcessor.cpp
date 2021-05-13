@@ -972,6 +972,8 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
 
     MPI_Waitall(requestCount, &requests[0], MPI_STATUSES_IGNORE);
 
+    MPI_Type_free(&sendBlockDoubleType);
+
     delete[] blocksCounterSend;
     delete[] blocksCounterRec;
     delete[] rawDataSend;
@@ -1079,11 +1081,15 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
     for (int r = 0; r < size; r++)
         rawDataReceiveF[r].resize(0);
     blocksExchange(MESSAGE_TAG, indexB, indexE, int(doubleCountInBlock), doubleValuesArrayF, rawDataReceiveF);
+    
 
     std::vector<double>* rawDataReceiveH1 = new std::vector<double>[size];
-    for (int r = 0; r < size; r++)
-        rawDataReceiveH1[r].resize(0);
-    blocksExchange(MESSAGE_TAG, indexB, indexE, int(doubleCountInBlock), doubleValuesArrayH1, rawDataReceiveH1);
+    if (multiPhase)
+    {
+        for (int r = 0; r < size; r++)
+            rawDataReceiveH1[r].resize(0);
+        blocksExchange(MESSAGE_TAG, indexB, indexE, int(doubleCountInBlock), doubleValuesArrayH1, rawDataReceiveH1);
+    }
 
     /*    std::vector<double>* rawDataReceiveH2 = new std::vector<double>[size];
         for (int r = 0; r < size; r++)
@@ -1125,14 +1131,14 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
 
             vectorsOfValuesF2.assign(rawDataReceiveF[r].data() + index, rawDataReceiveF[r].data() + index + vectorSize2);
             if (multiPhase)
-                vectorsOfValuesH12.assign(rawDataReceiveH1[r].data() + index, rawDataReceiveH1[r].data() + index + vectorSize1);
-            //vectorsOfValuesH22.assign(rawDataReceiveH2[r].data() + index, rawDataReceiveH2[r].data() + index + vectorSize1);
+                vectorsOfValuesH12.assign(rawDataReceiveH1[r].data() + index, rawDataReceiveH1[r].data() + index + vectorSize2);
+            //vectorsOfValuesH22.assign(rawDataReceiveH2[r].data() + index, rawDataReceiveH2[r].data() + index + vectorSize2);
             index += vectorSize2;
 
             vectorsOfValuesF3.assign(rawDataReceiveF[r].data() + index, rawDataReceiveF[r].data() + index + vectorSize3);
             if (multiPhase)
-                vectorsOfValuesH13.assign(rawDataReceiveH1[r].data() + index, rawDataReceiveH1[r].data() + index + vectorSize1);
-                //vectorsOfValuesH23.assign(rawDataReceiveH2[r].data() + index, rawDataReceiveH2[r].data() + index + vectorSize1);
+                vectorsOfValuesH13.assign(rawDataReceiveH1[r].data() + index, rawDataReceiveH1[r].data() + index + vectorSize3);
+                //vectorsOfValuesH23.assign(rawDataReceiveH2[r].data() + index, rawDataReceiveH2[r].data() + index + vectorSize3);
             index += vectorSize3;
 
             SPtr<DistributionArray3D> mFdistributions(new D3Q27EsoTwist3DSplittedVector());
@@ -1174,7 +1180,6 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setNX2(dataSetParamStr1.nx2);
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setNX3(dataSetParamStr1.nx3);*/
 
-
             // find the nesessary block and fill it
             SPtr<Block3D> block = grid->getBlock(blockID);
             this->lbmKernel->setBlock(block);
@@ -1196,7 +1201,8 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
             block->setKernel(kernel);
         }
     }
-    //if (comm->isRoot()) 
+
+    if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readDataSet end of restore of data, rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
@@ -1245,7 +1251,7 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
         readArray(step, PhaseField2, std::string("/cpPhaseField2.bin"));
 
     delete[] rawDataReceiveF;
-//    delete[] rawDataReceiveH1;
+    delete[] rawDataReceiveH1;
 //    delete[] rawDataReceiveH2;
 }
 
