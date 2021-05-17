@@ -59,6 +59,9 @@ struct dataSetParam {
 struct DataSetRestart {
     double collFactor;
     double deltaT;
+    double collFactorL; // for Multiphase model
+    double collFactorG; // for Multiphase model
+    double densityRatio;// for Multiphase model
     int x1;
     int x2;
     int x3;
@@ -74,6 +77,9 @@ struct DataSetRestart {
 struct DataSetMigration {
     double collFactor;
     double deltaT;
+    double collFactorL; // for Multiphase model
+    double collFactorG; // for Multiphase model
+    double densityRatio;// for Multiphase model
     int globalID;
     int ghostLayerWidth;
     bool compressible;
@@ -164,7 +170,8 @@ struct DSArraysPresence {
     bool isAverageTripleArrayPresent;
     bool isShearStressValArrayPresent;
     bool isRelaxationFactorPresent;
-    bool isPhaseFieldPresent;
+    bool isPhaseField1Present;
+    bool isPhaseField2Present;
 };
 } // namespace MPIIODataStructures
 #endif
