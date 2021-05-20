@@ -8,5 +8,3 @@ endif()
 
 
 vf_add_tests()
-
-#set_target_properties(lbm PROPERTIES CUDA_SEPARABLE_COMPILATION ON)

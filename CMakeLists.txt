@@ -51,6 +51,8 @@ option(BUILD_VF_INCLUDE_WHAT_YOU_USE "Add IWYU to the targets" OFF)
 option(BUILD_VF_CPPCHECK "Add cppcheck to the targets" OFF)
 option(BUILD_VF_COVERAGE "Add the -coverage compiler flag." OFF)
 
+option(BUILD_CUDA_LTO "Enables the cuda link optimization." OFF)
+
 option(BUILD_SHARED_LIBS "" OFF)
 option(BUILD_WARNINGS_AS_ERRORS "" OFF)
 
@@ -94,23 +96,29 @@ if(BUILD_VF_GPU)
 
     set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
 
-
-    #set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -dlto")
     enable_language(CUDA)
-    #set(CMAKE_CUDA_FLAGS "-gencode arch=compute_70,code=lto_70")
 
-    if(NOT MSVC)
-        set(CMAKE_CUDA_FLAGS "-dlto -arch=sm_75")
+
+    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+        message(WARNING "CMAKE_CUDA_ARCHITECTURES was not defined and is set to 30 (CUDA support until 10.1 only).")
+        set(CMAKE_CUDA_ARCHITECTURES 30)
     endif()
-    #set(CMAKE_CUDA_ARCHITECTURES 75)
-    #set(CMAKE_CUDA_FLAGS "-arch=sm_75")
 
-    #set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcudafe --display_error_number")
 
-    #if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-    #    message(WARNING "CMAKE_CUDA_ARCHITECTURES was not defined and is set to 30 (CUDA support until 10.1 only).")
-    #    set(CMAKE_CUDA_ARCHITECTURES 30)
-    #endif()
+    if(BUILD_CUDA_LTO)
+        
+       if(CMAKE_CUDA_ARCHITECTURES LESS 50)
+            message(FATAL_ERROR "CUDA Link time optimization requires CUDA 11.2 and CC 5.0.")
+       else()
+
+        set(CMAKE_CUDA_FLAGS "-dlto -arch=sm_${CMAKE_CUDA_ARCHITECTURES}")
+        message("CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
+        set(CMAKE_CUDA_ARCHITECTURES OFF)
+
+        list(APPEND VF_COMPILER_DEFINITION BUILD_CUDA_LTO)
+
+       endif()
+    endif()
 
     message("CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
 endif()
