@@ -7,7 +7,3 @@ vf_add_library(BUILDTYPE binary PRIVATE_LINK basics VirtualFluids_GPU GridGenera
 set_source_files_properties(DrivenCavity.cpp PROPERTIES LANGUAGE CUDA)
 
 set_target_properties(DrivenCavity PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-
-#target_compile_options(DrivenCavity PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-dlto>)
-
-#target_link_options(DrivenCavity PRIVATE $<DEVICE_LINK:-dlto>)
