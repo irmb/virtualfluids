@@ -96,9 +96,9 @@ const real dt = (real)1.0e-3; //0.5e-3;
 
 const uint nx = 64;
 
-std::string path("E:/temp/DrivenCavity");
+std::string path("E:/temp/MusselOyster");
 
-std::string simulationName("DrivenCavityChim");
+std::string simulationName("MusselOysterChim");
 
 const uint timeStepOut = 10000;
 const uint timeStepEnd = 250000;
@@ -360,7 +360,7 @@ int main( int argc, char* argv[])
 
 			std::cout << targetPath << std::endl;
 
-			multipleLevel(targetPath + "configDrivenCavity.txt");
+			multipleLevel(targetPath + "configMusselOyster.txt");
 
             //////////////////////////////////////////////////////////////////////////
 		}
