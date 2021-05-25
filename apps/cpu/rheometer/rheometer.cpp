@@ -154,14 +154,6 @@ void bflow(string configname)
       //fctVx.DefineConst("r", R0);
       fctVx.DefineConst("r", g_maxX1*0.5);
 
-      double var_a = 164.5;
-      fctVx.DefineVar("x2", &var_a);
-      LBMReal test1 = fctVx.Eval();
-      double test2 = (164.5 - 82.5) * -1e-4;
-      std::cout << fctVx.Eval() << std::endl;
-
-      std::cout << std::setprecision(9) << test2 << std::endl;
-
       mu::Parser fctVy;
       fctVy.SetExpr("Omega*(x1-r)");
       fctVy.DefineConst("Omega", OmegaLB);
