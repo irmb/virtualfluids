@@ -11,8 +11,7 @@
 #include <basics/Core/DataTypes.h>
 
 #include "constants/NumericConstants.h"
-
-#include "D3Q27.h"
+#include "constants/D3Q27.h"
 
 namespace vf
 {

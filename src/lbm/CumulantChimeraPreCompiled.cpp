@@ -6,9 +6,8 @@
 #include <basics/Core/RealConstants.h>
 
 #include "constants/NumericConstants.h"
+#include "constants/D3Q27.h"
 
-
-#include "D3Q27.h"
 #include "Chimera.h"
 #include "MacroscopicQuantities.h"
 

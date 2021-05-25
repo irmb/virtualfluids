@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 
 #include "MacroscopicQuantities.h"
-#include "D3Q27.h"
+#include "constants/D3Q27.h"
 
 
 /*

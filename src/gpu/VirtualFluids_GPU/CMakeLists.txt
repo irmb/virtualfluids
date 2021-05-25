@@ -15,3 +15,5 @@ vf_add_library(PUBLIC_LINK basics PRIVATE_LINK ${additional_libraries} GridGener
 set_target_properties(VirtualFluids_GPU PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 vf_add_tests()
+
+set_target_properties(VirtualFluids_GPUTests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)

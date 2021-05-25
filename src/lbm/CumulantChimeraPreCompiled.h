@@ -13,7 +13,6 @@
 #include <basics/Core/DataTypes.h>
 #include <basics/Core/RealConstants.h>
 
-#include "D3Q27.h"
 #include "Chimera.h"
 #include "MacroscopicQuantities.h"
 

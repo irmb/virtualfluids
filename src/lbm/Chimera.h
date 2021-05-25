@@ -17,7 +17,7 @@ namespace vf
 namespace lbm
 {
 
-    using namespace constant;
+using namespace constant;
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief forward chimera transformation \ref forwardInverseChimeraWithK 
