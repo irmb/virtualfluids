@@ -34,6 +34,7 @@
 #include "VelocityBCAlgorithm.h"
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
+#include "Block3D.h"
 
 VelocityBCAlgorithm::VelocityBCAlgorithm()
 {
@@ -60,6 +61,9 @@ void VelocityBCAlgorithm::applyBC()
     LBMReal rho, vx1, vx2, vx3, drho;
     calcMacrosFct(f, drho, vx1, vx2, vx3);
     calcFeqFct(feq, drho, vx1, vx2, vx3);
+
+    //DEBUG
+    int blockID = block->getGlobalID();
 
     rho = 1.0 + drho * compressibleFactor;
 

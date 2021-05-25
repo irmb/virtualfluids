@@ -315,7 +315,7 @@ void run(string configname)
       auto timeDepBC = make_shared<TimeDependentBCCoProcessor>(TimeDependentBCCoProcessor(grid, timeBCSch));
       timeDepBC->addInteractor(inflowInt);
 
-      //omp_set_num_threads(numOfThreads);
+      omp_set_num_threads(numOfThreads);
       numOfThreads = 1;
       SPtr<UbScheduler> stepGhostLayer(visSch);
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, int(endTime)));

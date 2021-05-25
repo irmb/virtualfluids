@@ -42,7 +42,7 @@ public:
     void setQs(const double &timeStep);
     void refineBlockGridToLevel(int level, double startDistance, double stopDistance);
 
-    bool setDifferencesToGbObject3D(const SPtr<Block3D> block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep=0*/) override;
+    bool setDifferencesToGbObject3D(const SPtr<Block3D> block) override;
 
     void setRegardPointInObjectTest(bool opt) { this->regardPIOTest = opt; }
 
