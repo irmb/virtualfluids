@@ -1,6 +1,9 @@
 #include "DistributionHelper.cuh"
 
+#include <cuda_runtime.h>
+
 #include "LBM/D3Q27.h"
+
 
 namespace vf
 {

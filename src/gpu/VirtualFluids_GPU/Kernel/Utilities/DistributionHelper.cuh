@@ -35,7 +35,6 @@
 
 #include "LBM/LB.h" 
 
-#include <cuda_runtime.h>
 
 #include <lbm/CumulantChimeraPreCompiled.h>
 
