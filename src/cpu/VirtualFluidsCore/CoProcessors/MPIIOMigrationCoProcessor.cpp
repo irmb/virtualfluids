@@ -1707,7 +1707,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
     rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
-    int fs = MPI_File_get_size(file_handler, &fsize);
+    MPI_File_get_size(file_handler, &fsize);
     if (fsize > 0)
     {
         multiPhase = true;
