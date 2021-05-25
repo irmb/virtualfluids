@@ -63,7 +63,7 @@ void VelocityBCAlgorithm::applyBC()
     calcFeqFct(feq, drho, vx1, vx2, vx3);
 
     //DEBUG
-    int blockID = block->getGlobalID();
+    //int blockID = block->getGlobalID();
 
     rho = 1.0 + drho * compressibleFactor;
 
