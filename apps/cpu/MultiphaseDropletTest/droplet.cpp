@@ -37,9 +37,9 @@ void run(string configname)
         double Re          = config.getValue<double>("Re");
         double dx          = config.getValue<double>("dx");
         bool logToFile     = config.getValue<bool>("logToFile");
-        double restartStep = config.getValue<double>("restartStep");
-        double cpStart     = config.getValue<double>("cpStart");
-        double cpStep      = config.getValue<double>("cpStep");
+        //double restartStep = config.getValue<double>("restartStep");
+        //double cpStart     = config.getValue<double>("cpStart");
+        //double cpStep      = config.getValue<double>("cpStep");
         bool newStart      = config.getValue<bool>("newStart");
 
         double beta  = 12 * sigma / interfaceThickness;
