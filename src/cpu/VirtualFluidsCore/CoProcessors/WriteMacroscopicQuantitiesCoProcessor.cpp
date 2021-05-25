@@ -211,7 +211,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 
                     distributions->getDistribution(f, ix1, ix2, ix3);
                     calcMacros(f, rho, vx1, vx2, vx3);
-                    double press = D3Q27System::getPressure(f); // D3Q27System::calcPress(f,rho,vx1,vx2,vx3);
+                    //double press = D3Q27System::getPressure(f); // D3Q27System::calcPress(f,rho,vx1,vx2,vx3);
 
                     if (UbMath::isNaN(rho) || UbMath::isInfinity(rho))
                          UB_THROW( UbException(UB_EXARGS,"rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+",node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
