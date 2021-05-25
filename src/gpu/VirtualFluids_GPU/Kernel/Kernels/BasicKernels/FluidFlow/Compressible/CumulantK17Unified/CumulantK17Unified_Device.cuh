@@ -9,12 +9,10 @@ namespace vf
 {
 namespace gpu 
 {
-
-extern "C" __global__ void LB_Kernel_CumulantK17Unified(real omega, unsigned int *bcMatD, unsigned int *neighborX,
+__global__ void LB_Kernel_CumulantK17Unified(real omega, unsigned int *bcMatD, unsigned int *neighborX,
                                                         unsigned int *neighborY, unsigned int *neighborZ, real *DDStart,
-                                                        int size_Mat, int level, real *forces, real *quadricLimiters,
+                                                        int size_Mat, int level, real *forces,
                                                         bool EvenOrOdd);
-
 
 }
 }

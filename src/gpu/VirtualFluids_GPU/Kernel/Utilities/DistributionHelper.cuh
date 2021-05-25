@@ -44,7 +44,7 @@ namespace vf
 namespace gpu
 {
 
-__device__ Distributions27 getDistributions27(real* distributions, unsigned int size_Mat, bool isEvenTimestep);
+__device__ __host__ Distributions27 getDistributions27(real* distributions, unsigned int size_Mat, bool isEvenTimestep);
 
 struct DistributionWrapper
 {

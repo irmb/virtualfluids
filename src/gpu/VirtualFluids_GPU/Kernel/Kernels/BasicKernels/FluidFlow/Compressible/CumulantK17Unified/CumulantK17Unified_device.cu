@@ -41,7 +41,7 @@ namespace vf
 namespace gpu 
 {
 
-extern "C" __global__ void LB_Kernel_CumulantK17Unified(
+__global__ void LB_Kernel_CumulantK17Unified(
     real omega,
     uint* typeOfGridNode,
     uint* neighborX,

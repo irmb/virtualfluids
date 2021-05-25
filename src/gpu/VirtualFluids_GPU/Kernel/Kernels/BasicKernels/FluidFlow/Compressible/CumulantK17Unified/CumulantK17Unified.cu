@@ -28,12 +28,18 @@ void CumulantK17Unified::run()
     dim3 threads(numberOfThreads, 1, 1);
 
     vf::gpu::LB_Kernel_CumulantK17Unified<<<grid, threads>>>(
-        para->getParD(level)->omega, para->getParD(level)->geoSP, para->getParD(level)->neighborX_SP,
-        para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP, para->getParD(level)->d0SP.f[0],
-        para->getParD(level)->size_Mat_SP, level, para->getForcesDev(), para->getQuadricLimitersDev(),
+        para->getParD(level)->omega,
+        para->getParD(level)->geoSP,
+        para->getParD(level)->neighborX_SP,
+        para->getParD(level)->neighborY_SP,
+        para->getParD(level)->neighborZ_SP,
+        para->getParD(level)->d0SP.f[0],
+        para->getParD(level)->size_Mat_SP,
+        level,
+        para->getForcesDev(),
         para->getParD(level)->evenOrOdd);
 
-    getLastCudaError("LB_Kernel_CumulantK17Comp execution failed");
+    getLastCudaError("LB_Kernel_CumulantK17Unified execution failed");
 }
 
 CumulantK17Unified::CumulantK17Unified(std::shared_ptr<Parameter> para, int level)

@@ -97,6 +97,7 @@ void KernelFactoryImp::setKernelAtLevel(std::vector<std::shared_ptr<Kernel>> ker
 
 std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> para, std::string kernel, int level)
 {
+    printf("Instantiating Kernel: %s\n", kernel.c_str());
 	std::shared_ptr<KernelImp> newKernel;
 	std::shared_ptr<CheckParameterStrategy> checkStrategy;
 
