@@ -131,35 +131,6 @@ extern "C" void KernelKumNewSP27(   unsigned int numberOfThreads,
 									int size_Mat,
 									bool EvenOrOdd);
 
-//////////////////////////////////////////////////////////////////////////
-//! \brief Cumulant LBM kernel
-extern "C" void CumulantK17LBMDeviceKernel(
-	uint numberOfThreads,
-	real omega,
-	uint* typeOfGridNode,
-	uint* neighborX,
-	uint* neighborY,
-	uint* neighborZ,
-	real* distributions,
-	int size_Mat,
-    int level,
-	real* forces,
-	bool isEvenTimestep);
-
-    //////////////////////////////////////////////////////////////////////////
-//! \brief Cumulant LBM kernel
-extern "C" void CumulantK17LBMDeviceKernel_old(
-	uint numberOfThreads,
-	real omega,
-	uint* typeOfGridNode,
-	uint* neighborX,
-	uint* neighborY,
-	uint* neighborZ,
-	real* distributions,
-	int size_Mat,
-    int level,
-	real* forces,
-	bool isEvenTimestep);
 
 extern "C" void CumulantOnePreconditionedErrorDiffusionChimCompSP27(
 	unsigned int numberOfThreads,
