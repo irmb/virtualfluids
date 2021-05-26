@@ -22,7 +22,7 @@ TEST(DistributionHelperTests, getPointerToDistribution_WhenEvenTimeStep_ShouldBe
     const uint size_Mat = 1;
     const bool isEvenTimeStep = true;
 
-    Distributions27 distribution_out = vf::gpu::getDistributions27(distributions_in, size_Mat, isEvenTimeStep);
+    Distributions27 distribution_out = vf::gpu::getDistributionReferences27(distributions_in, size_Mat, isEvenTimeStep);
 
     EXPECT_THAT(*distribution_out.f[dirE], RealEq(distributions_in[dirE]));
     EXPECT_THAT(*distribution_out.f[dirW], RealEq(distributions_in[dirW]));
@@ -61,7 +61,7 @@ TEST(DistributionHelperTests, getPointerToDistribution_WhenOddTimeStep_ShouldBeS
     const int size_Mat = 1;
     const bool isEvenTimeStep = false;
 
-    Distributions27 distribution_out = vf::gpu::getDistributions27(distributions_in, size_Mat, isEvenTimeStep);
+    Distributions27 distribution_out = vf::gpu::getDistributionReferences27(distributions_in, size_Mat, isEvenTimeStep);
 
     EXPECT_THAT(*distribution_out.f[dirW], RealEq(distributions_in[dirE]));
     EXPECT_THAT(*distribution_out.f[dirE], RealEq(distributions_in[dirW]));

@@ -10,74 +10,73 @@ namespace vf
 namespace gpu
 {
 
-__device__ __host__ Distributions27 getDistributions27(real *distributions, unsigned int size_Mat, bool isEvenTimestep)
+__device__ __host__ DistributionReferences27 getDistributionReferences27(real *distributions, unsigned int size_Mat, bool isEvenTimestep)
 {
-
-    Distributions27 dist;
+    DistributionReferences27 distribution_references;
 
     if (isEvenTimestep) {
-        dist.f[dirE]    = &distributions[dirE * size_Mat];
-        dist.f[dirW]    = &distributions[dirW * size_Mat];
-        dist.f[dirN]    = &distributions[dirN * size_Mat];
-        dist.f[dirS]    = &distributions[dirS * size_Mat];
-        dist.f[dirT]    = &distributions[dirT * size_Mat];
-        dist.f[dirB]    = &distributions[dirB * size_Mat];
-        dist.f[dirNE]   = &distributions[dirNE * size_Mat];
-        dist.f[dirSW]   = &distributions[dirSW * size_Mat];
-        dist.f[dirSE]   = &distributions[dirSE * size_Mat];
-        dist.f[dirNW]   = &distributions[dirNW * size_Mat];
-        dist.f[dirTE]   = &distributions[dirTE * size_Mat];
-        dist.f[dirBW]   = &distributions[dirBW * size_Mat];
-        dist.f[dirBE]   = &distributions[dirBE * size_Mat];
-        dist.f[dirTW]   = &distributions[dirTW * size_Mat];
-        dist.f[dirTN]   = &distributions[dirTN * size_Mat];
-        dist.f[dirBS]   = &distributions[dirBS * size_Mat];
-        dist.f[dirBN]   = &distributions[dirBN * size_Mat];
-        dist.f[dirTS]   = &distributions[dirTS * size_Mat];
-        dist.f[dirREST] = &distributions[dirREST * size_Mat];
-        dist.f[dirTNE]  = &distributions[dirTNE * size_Mat];
-        dist.f[dirTSW]  = &distributions[dirTSW * size_Mat];
-        dist.f[dirTSE]  = &distributions[dirTSE * size_Mat];
-        dist.f[dirTNW]  = &distributions[dirTNW * size_Mat];
-        dist.f[dirBNE]  = &distributions[dirBNE * size_Mat];
-        dist.f[dirBSW]  = &distributions[dirBSW * size_Mat];
-        dist.f[dirBSE]  = &distributions[dirBSE * size_Mat];
-        dist.f[dirBNW]  = &distributions[dirBNW * size_Mat];
+        distribution_references.f[dirE]    = &distributions[dirE * size_Mat];
+        distribution_references.f[dirW]    = &distributions[dirW * size_Mat];
+        distribution_references.f[dirN]    = &distributions[dirN * size_Mat];
+        distribution_references.f[dirS]    = &distributions[dirS * size_Mat];
+        distribution_references.f[dirT]    = &distributions[dirT * size_Mat];
+        distribution_references.f[dirB]    = &distributions[dirB * size_Mat];
+        distribution_references.f[dirNE]   = &distributions[dirNE * size_Mat];
+        distribution_references.f[dirSW]   = &distributions[dirSW * size_Mat];
+        distribution_references.f[dirSE]   = &distributions[dirSE * size_Mat];
+        distribution_references.f[dirNW]   = &distributions[dirNW * size_Mat];
+        distribution_references.f[dirTE]   = &distributions[dirTE * size_Mat];
+        distribution_references.f[dirBW]   = &distributions[dirBW * size_Mat];
+        distribution_references.f[dirBE]   = &distributions[dirBE * size_Mat];
+        distribution_references.f[dirTW]   = &distributions[dirTW * size_Mat];
+        distribution_references.f[dirTN]   = &distributions[dirTN * size_Mat];
+        distribution_references.f[dirBS]   = &distributions[dirBS * size_Mat];
+        distribution_references.f[dirBN]   = &distributions[dirBN * size_Mat];
+        distribution_references.f[dirTS]   = &distributions[dirTS * size_Mat];
+        distribution_references.f[dirREST] = &distributions[dirREST * size_Mat];
+        distribution_references.f[dirTNE]  = &distributions[dirTNE * size_Mat];
+        distribution_references.f[dirTSW]  = &distributions[dirTSW * size_Mat];
+        distribution_references.f[dirTSE]  = &distributions[dirTSE * size_Mat];
+        distribution_references.f[dirTNW]  = &distributions[dirTNW * size_Mat];
+        distribution_references.f[dirBNE]  = &distributions[dirBNE * size_Mat];
+        distribution_references.f[dirBSW]  = &distributions[dirBSW * size_Mat];
+        distribution_references.f[dirBSE]  = &distributions[dirBSE * size_Mat];
+        distribution_references.f[dirBNW]  = &distributions[dirBNW * size_Mat];
     } else {
-        dist.f[dirW]    = &distributions[dirE * size_Mat];
-        dist.f[dirE]    = &distributions[dirW * size_Mat];
-        dist.f[dirS]    = &distributions[dirN * size_Mat];
-        dist.f[dirN]    = &distributions[dirS * size_Mat];
-        dist.f[dirB]    = &distributions[dirT * size_Mat];
-        dist.f[dirT]    = &distributions[dirB * size_Mat];
-        dist.f[dirSW]   = &distributions[dirNE * size_Mat];
-        dist.f[dirNE]   = &distributions[dirSW * size_Mat];
-        dist.f[dirNW]   = &distributions[dirSE * size_Mat];
-        dist.f[dirSE]   = &distributions[dirNW * size_Mat];
-        dist.f[dirBW]   = &distributions[dirTE * size_Mat];
-        dist.f[dirTE]   = &distributions[dirBW * size_Mat];
-        dist.f[dirTW]   = &distributions[dirBE * size_Mat];
-        dist.f[dirBE]   = &distributions[dirTW * size_Mat];
-        dist.f[dirBS]   = &distributions[dirTN * size_Mat];
-        dist.f[dirTN]   = &distributions[dirBS * size_Mat];
-        dist.f[dirTS]   = &distributions[dirBN * size_Mat];
-        dist.f[dirBN]   = &distributions[dirTS * size_Mat];
-        dist.f[dirREST] = &distributions[dirREST * size_Mat];
-        dist.f[dirBSW]  = &distributions[dirTNE * size_Mat];
-        dist.f[dirBNE]  = &distributions[dirTSW * size_Mat];
-        dist.f[dirBNW]  = &distributions[dirTSE * size_Mat];
-        dist.f[dirBSE]  = &distributions[dirTNW * size_Mat];
-        dist.f[dirTSW]  = &distributions[dirBNE * size_Mat];
-        dist.f[dirTNE]  = &distributions[dirBSW * size_Mat];
-        dist.f[dirTNW]  = &distributions[dirBSE * size_Mat];
-        dist.f[dirTSE]  = &distributions[dirBNW * size_Mat];
+        distribution_references.f[dirW]    = &distributions[dirE * size_Mat];
+        distribution_references.f[dirE]    = &distributions[dirW * size_Mat];
+        distribution_references.f[dirS]    = &distributions[dirN * size_Mat];
+        distribution_references.f[dirN]    = &distributions[dirS * size_Mat];
+        distribution_references.f[dirB]    = &distributions[dirT * size_Mat];
+        distribution_references.f[dirT]    = &distributions[dirB * size_Mat];
+        distribution_references.f[dirSW]   = &distributions[dirNE * size_Mat];
+        distribution_references.f[dirNE]   = &distributions[dirSW * size_Mat];
+        distribution_references.f[dirNW]   = &distributions[dirSE * size_Mat];
+        distribution_references.f[dirSE]   = &distributions[dirNW * size_Mat];
+        distribution_references.f[dirBW]   = &distributions[dirTE * size_Mat];
+        distribution_references.f[dirTE]   = &distributions[dirBW * size_Mat];
+        distribution_references.f[dirTW]   = &distributions[dirBE * size_Mat];
+        distribution_references.f[dirBE]   = &distributions[dirTW * size_Mat];
+        distribution_references.f[dirBS]   = &distributions[dirTN * size_Mat];
+        distribution_references.f[dirTN]   = &distributions[dirBS * size_Mat];
+        distribution_references.f[dirTS]   = &distributions[dirBN * size_Mat];
+        distribution_references.f[dirBN]   = &distributions[dirTS * size_Mat];
+        distribution_references.f[dirREST] = &distributions[dirREST * size_Mat];
+        distribution_references.f[dirBSW]  = &distributions[dirTNE * size_Mat];
+        distribution_references.f[dirBNE]  = &distributions[dirTSW * size_Mat];
+        distribution_references.f[dirBNW]  = &distributions[dirTSE * size_Mat];
+        distribution_references.f[dirBSE]  = &distributions[dirTNW * size_Mat];
+        distribution_references.f[dirTSW]  = &distributions[dirBNE * size_Mat];
+        distribution_references.f[dirTNE]  = &distributions[dirBSW * size_Mat];
+        distribution_references.f[dirTNW]  = &distributions[dirBSE * size_Mat];
+        distribution_references.f[dirTSE]  = &distributions[dirBNW * size_Mat];
     }
-    return dist;
+    return distribution_references;
 }
 
 __device__ DistributionWrapper::DistributionWrapper(real *distributions, unsigned int size_Mat, bool isEvenTimestep,
                                                     uint k, uint *neighborX, uint *neighborY, uint *neighborZ)
-    : dist(getDistributions27(distributions, size_Mat, isEvenTimestep)), k(k), kw(neighborX[k]), ks(neighborY[k]),
+    : distribution_references(getDistributionReferences27(distributions, size_Mat, isEvenTimestep)), k(k), kw(neighborX[k]), ks(neighborY[k]),
       kb(neighborZ[k]), ksw(neighborY[kw]), kbw(neighborZ[kw]), kbs(neighborZ[ks]), kbsw(neighborZ[ksw])
 {
     read();
@@ -85,64 +84,64 @@ __device__ DistributionWrapper::DistributionWrapper(real *distributions, unsigne
 
 __device__ void DistributionWrapper::read()
 {
-    distribution.f[vf::lbm::dir::PZZ] = (dist.f[dirE])[k];
-    distribution.f[vf::lbm::dir::MZZ] = (dist.f[dirW])[kw];
-    distribution.f[vf::lbm::dir::ZPZ] = (dist.f[dirN])[k];
-    distribution.f[vf::lbm::dir::ZMZ] = (dist.f[dirS])[ks];
-    distribution.f[vf::lbm::dir::ZZP] = (dist.f[dirT])[k];
-    distribution.f[vf::lbm::dir::ZZM] = (dist.f[dirB])[kb];
-    distribution.f[vf::lbm::dir::PPZ] = (dist.f[dirNE])[k];
-    distribution.f[vf::lbm::dir::MMZ] = (dist.f[dirSW])[ksw];
-    distribution.f[vf::lbm::dir::PMZ] = (dist.f[dirSE])[ks];
-    distribution.f[vf::lbm::dir::MPZ] = (dist.f[dirNW])[kw];
-    distribution.f[vf::lbm::dir::PZP] = (dist.f[dirTE])[k];
-    distribution.f[vf::lbm::dir::MZM] = (dist.f[dirBW])[kbw];
-    distribution.f[vf::lbm::dir::PZM] = (dist.f[dirBE])[kb];
-    distribution.f[vf::lbm::dir::MZP] = (dist.f[dirTW])[kw];
-    distribution.f[vf::lbm::dir::ZPP] = (dist.f[dirTN])[k];
-    distribution.f[vf::lbm::dir::ZMM] = (dist.f[dirBS])[kbs];
-    distribution.f[vf::lbm::dir::ZPM] = (dist.f[dirBN])[kb];
-    distribution.f[vf::lbm::dir::ZMP] = (dist.f[dirTS])[ks];
-    distribution.f[vf::lbm::dir::PPP] = (dist.f[dirTNE])[k];
-    distribution.f[vf::lbm::dir::MPP] = (dist.f[dirTNW])[kw];
-    distribution.f[vf::lbm::dir::PMP] = (dist.f[dirTSE])[ks];
-    distribution.f[vf::lbm::dir::MMP] = (dist.f[dirTSW])[ksw];
-    distribution.f[vf::lbm::dir::PPM] = (dist.f[dirBNE])[kb];
-    distribution.f[vf::lbm::dir::MPM] = (dist.f[dirBNW])[kbw];
-    distribution.f[vf::lbm::dir::PMM] = (dist.f[dirBSE])[kbs];
-    distribution.f[vf::lbm::dir::MMM] = (dist.f[dirBSW])[kbsw];
-    distribution.f[vf::lbm::dir::ZZZ] = (dist.f[dirREST])[k];
+    distribution.f[vf::lbm::dir::PZZ] = (distribution_references.f[dirE])[k];
+    distribution.f[vf::lbm::dir::MZZ] = (distribution_references.f[dirW])[kw];
+    distribution.f[vf::lbm::dir::ZPZ] = (distribution_references.f[dirN])[k];
+    distribution.f[vf::lbm::dir::ZMZ] = (distribution_references.f[dirS])[ks];
+    distribution.f[vf::lbm::dir::ZZP] = (distribution_references.f[dirT])[k];
+    distribution.f[vf::lbm::dir::ZZM] = (distribution_references.f[dirB])[kb];
+    distribution.f[vf::lbm::dir::PPZ] = (distribution_references.f[dirNE])[k];
+    distribution.f[vf::lbm::dir::MMZ] = (distribution_references.f[dirSW])[ksw];
+    distribution.f[vf::lbm::dir::PMZ] = (distribution_references.f[dirSE])[ks];
+    distribution.f[vf::lbm::dir::MPZ] = (distribution_references.f[dirNW])[kw];
+    distribution.f[vf::lbm::dir::PZP] = (distribution_references.f[dirTE])[k];
+    distribution.f[vf::lbm::dir::MZM] = (distribution_references.f[dirBW])[kbw];
+    distribution.f[vf::lbm::dir::PZM] = (distribution_references.f[dirBE])[kb];
+    distribution.f[vf::lbm::dir::MZP] = (distribution_references.f[dirTW])[kw];
+    distribution.f[vf::lbm::dir::ZPP] = (distribution_references.f[dirTN])[k];
+    distribution.f[vf::lbm::dir::ZMM] = (distribution_references.f[dirBS])[kbs];
+    distribution.f[vf::lbm::dir::ZPM] = (distribution_references.f[dirBN])[kb];
+    distribution.f[vf::lbm::dir::ZMP] = (distribution_references.f[dirTS])[ks];
+    distribution.f[vf::lbm::dir::PPP] = (distribution_references.f[dirTNE])[k];
+    distribution.f[vf::lbm::dir::MPP] = (distribution_references.f[dirTNW])[kw];
+    distribution.f[vf::lbm::dir::PMP] = (distribution_references.f[dirTSE])[ks];
+    distribution.f[vf::lbm::dir::MMP] = (distribution_references.f[dirTSW])[ksw];
+    distribution.f[vf::lbm::dir::PPM] = (distribution_references.f[dirBNE])[kb];
+    distribution.f[vf::lbm::dir::MPM] = (distribution_references.f[dirBNW])[kbw];
+    distribution.f[vf::lbm::dir::PMM] = (distribution_references.f[dirBSE])[kbs];
+    distribution.f[vf::lbm::dir::MMM] = (distribution_references.f[dirBSW])[kbsw];
+    distribution.f[vf::lbm::dir::ZZZ] = (distribution_references.f[dirREST])[k];
 }
 
 __device__ void DistributionWrapper::write()
 {
-    (dist.f[dirE])[k]      = distribution.f[vf::lbm::dir::PZZ];
-    (dist.f[dirW])[kw]     = distribution.f[vf::lbm::dir::MZZ];
-    (dist.f[dirN])[k]      = distribution.f[vf::lbm::dir::ZPZ];
-    (dist.f[dirS])[ks]     = distribution.f[vf::lbm::dir::ZMZ];
-    (dist.f[dirT])[k]      = distribution.f[vf::lbm::dir::ZZP];
-    (dist.f[dirB])[kb]     = distribution.f[vf::lbm::dir::ZZM];
-    (dist.f[dirNE])[k]     = distribution.f[vf::lbm::dir::PPZ];
-    (dist.f[dirSW])[ksw]   = distribution.f[vf::lbm::dir::MMZ];
-    (dist.f[dirSE])[ks]    = distribution.f[vf::lbm::dir::PMZ];
-    (dist.f[dirNW])[kw]    = distribution.f[vf::lbm::dir::MPZ];
-    (dist.f[dirTE])[k]     = distribution.f[vf::lbm::dir::PZP];
-    (dist.f[dirBW])[kbw]   = distribution.f[vf::lbm::dir::MZM];
-    (dist.f[dirBE])[kb]    = distribution.f[vf::lbm::dir::PZM];
-    (dist.f[dirTW])[kw]    = distribution.f[vf::lbm::dir::MZP];
-    (dist.f[dirTN])[k]     = distribution.f[vf::lbm::dir::ZPP];
-    (dist.f[dirBS])[kbs]   = distribution.f[vf::lbm::dir::ZMM];
-    (dist.f[dirBN])[kb]    = distribution.f[vf::lbm::dir::ZPM];
-    (dist.f[dirTS])[ks]    = distribution.f[vf::lbm::dir::ZMP];
-    (dist.f[dirTNE])[k]    = distribution.f[vf::lbm::dir::PPP];
-    (dist.f[dirTNW])[kw]   = distribution.f[vf::lbm::dir::MPP];
-    (dist.f[dirTSE])[ks]   = distribution.f[vf::lbm::dir::PMP];
-    (dist.f[dirTSW])[ksw]  = distribution.f[vf::lbm::dir::MMP];
-    (dist.f[dirBNE])[kb]   = distribution.f[vf::lbm::dir::PPM];
-    (dist.f[dirBNW])[kbw]  = distribution.f[vf::lbm::dir::MPM];
-    (dist.f[dirBSE])[kbs]  = distribution.f[vf::lbm::dir::PMM];
-    (dist.f[dirBSW])[kbsw] = distribution.f[vf::lbm::dir::MMM];
-    (dist.f[dirREST])[k]   = distribution.f[vf::lbm::dir::ZZZ];
+    (distribution_references.f[dirE])[k]      = distribution.f[vf::lbm::dir::PZZ];
+    (distribution_references.f[dirW])[kw]     = distribution.f[vf::lbm::dir::MZZ];
+    (distribution_references.f[dirN])[k]      = distribution.f[vf::lbm::dir::ZPZ];
+    (distribution_references.f[dirS])[ks]     = distribution.f[vf::lbm::dir::ZMZ];
+    (distribution_references.f[dirT])[k]      = distribution.f[vf::lbm::dir::ZZP];
+    (distribution_references.f[dirB])[kb]     = distribution.f[vf::lbm::dir::ZZM];
+    (distribution_references.f[dirNE])[k]     = distribution.f[vf::lbm::dir::PPZ];
+    (distribution_references.f[dirSW])[ksw]   = distribution.f[vf::lbm::dir::MMZ];
+    (distribution_references.f[dirSE])[ks]    = distribution.f[vf::lbm::dir::PMZ];
+    (distribution_references.f[dirNW])[kw]    = distribution.f[vf::lbm::dir::MPZ];
+    (distribution_references.f[dirTE])[k]     = distribution.f[vf::lbm::dir::PZP];
+    (distribution_references.f[dirBW])[kbw]   = distribution.f[vf::lbm::dir::MZM];
+    (distribution_references.f[dirBE])[kb]    = distribution.f[vf::lbm::dir::PZM];
+    (distribution_references.f[dirTW])[kw]    = distribution.f[vf::lbm::dir::MZP];
+    (distribution_references.f[dirTN])[k]     = distribution.f[vf::lbm::dir::ZPP];
+    (distribution_references.f[dirBS])[kbs]   = distribution.f[vf::lbm::dir::ZMM];
+    (distribution_references.f[dirBN])[kb]    = distribution.f[vf::lbm::dir::ZPM];
+    (distribution_references.f[dirTS])[ks]    = distribution.f[vf::lbm::dir::ZMP];
+    (distribution_references.f[dirTNE])[k]    = distribution.f[vf::lbm::dir::PPP];
+    (distribution_references.f[dirTNW])[kw]   = distribution.f[vf::lbm::dir::MPP];
+    (distribution_references.f[dirTSE])[ks]   = distribution.f[vf::lbm::dir::PMP];
+    (distribution_references.f[dirTSW])[ksw]  = distribution.f[vf::lbm::dir::MMP];
+    (distribution_references.f[dirBNE])[kb]   = distribution.f[vf::lbm::dir::PPM];
+    (distribution_references.f[dirBNW])[kbw]  = distribution.f[vf::lbm::dir::MPM];
+    (distribution_references.f[dirBSE])[kbs]  = distribution.f[vf::lbm::dir::PMM];
+    (distribution_references.f[dirBSW])[kbsw] = distribution.f[vf::lbm::dir::MMM];
+    (distribution_references.f[dirREST])[k]   = distribution.f[vf::lbm::dir::ZZZ];
 }
 
 __device__ unsigned int getNodeIndex()

@@ -35,7 +35,6 @@
 
 #include "LBM/LB.h" 
 
-
 #include <lbm/CumulantChimeraK17.h>
 
 namespace vf
@@ -43,8 +42,21 @@ namespace vf
 namespace gpu
 {
 
-__device__ __host__ Distributions27 getDistributions27(real* distributions, unsigned int size_Mat, bool isEvenTimestep);
+/**
+*  Getting references to the 27 directions.
+*  @params distributions 1D real* array containing all data (number of elements = 27 * matrix_size)
+*  @params matrix_size number of discretizations nodes
+*  @params isEvenTimestep: stored data dependent on timestep is based on the esoteric twist algorithm
+*  @return a data struct containing the addresses to the 27 directions within the 1D distribution array
+*/
+__device__ __host__ DistributionReferences27 getDistributionReferences27(real* distributions, unsigned int matrix_size, bool isEvenTimestep);
 
+
+/**
+*  Holds the references to all directions and the concrete distributions for a single node.
+*  After instantiation the distributions are read to the member "distribution" from "distribution_references".
+*  After computation the data can be written back to "distribution_references".
+*/
 struct DistributionWrapper
 {
     __device__ DistributionWrapper(
@@ -60,8 +72,10 @@ struct DistributionWrapper
 
     __device__ void write();
 
-    Distributions27 dist;
+    // origin distributions to read from and write to after computation
+    DistributionReferences27 distribution_references;
 
+    // distribution pass to kernel computation
     vf::lbm::Distribution27 distribution;
 
     const uint k;
