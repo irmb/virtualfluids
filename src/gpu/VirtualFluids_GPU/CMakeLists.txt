@@ -5,7 +5,7 @@ if(MSVC)
     set(additional_libraries ws2_32 Traffic) # ws_32 throws an error on Phoenix
 endif()
 
-vf_add_library(PUBLIC_LINK basics PRIVATE_LINK ${additional_libraries} GridGenerator MPI::MPI_CXX lbmCuda)
+vf_add_library(PUBLIC_LINK basics lbmCuda PRIVATE_LINK ${additional_libraries} GridGenerator MPI::MPI_CXX)
 
 
 #SET(TPN_WIN32 "/EHsc")
@@ -17,3 +17,4 @@ set_target_properties(VirtualFluids_GPU PROPERTIES CUDA_SEPARABLE_COMPILATION ON
 vf_add_tests()
 
 set_target_properties(VirtualFluids_GPUTests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+set_source_files_properties(Kernel/Utilities/DistributionHelperTests.cpp PROPERTIES LANGUAGE CUDA)
