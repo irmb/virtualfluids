@@ -244,7 +244,7 @@ void CumulantK17LBMKernelUnified::calculate(int step)
                     distribution.f[vf::lbm::dir::MMM] = mfaaa;
                     distribution.f[vf::lbm::dir::ZZZ] = mfbbb;
 
-                    vf::lbm::cumulantChimera(distribution, omega, forces);
+                    vf::lbm::cumulantChimeraK17(distribution, omega, forces);
 
                     mfcbb = distribution.f[vf::lbm::dir::PZZ];
                     mfabb = distribution.f[vf::lbm::dir::MZZ];

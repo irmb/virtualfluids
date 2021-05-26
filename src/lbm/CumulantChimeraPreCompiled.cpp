@@ -16,7 +16,7 @@ namespace vf
 namespace lbm
 {
 
-    using namespace constant;
+using namespace constant;
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -25,7 +25,7 @@ namespace lbm
 //! and \ref
 //! <a href="https://doi.org/10.1016/j.jcp.2017.07.004"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.07.004 ]</b></a>
 //////////////////////////////////////////////////////////////////////////
-__host__ __device__ void cumulantChimera(Distribution27& distribution, real omega, real* forces)
+__host__ __device__ void cumulantChimeraK17(Distribution27& distribution, real omega, real* forces)
 {
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Read distributions: style of reading and writing the distributions from/to 

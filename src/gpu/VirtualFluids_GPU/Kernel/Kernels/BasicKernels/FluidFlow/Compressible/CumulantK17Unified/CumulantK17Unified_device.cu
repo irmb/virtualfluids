@@ -66,7 +66,7 @@ __global__ void LB_Kernel_CumulantK17Unified(
     real level_forces[3];
     getLevelForce(forces[0], forces[1], forces[2], level, level_forces);
 
-    vf::lbm::cumulantChimera(distributionWrapper.distribution, omega, level_forces);
+    vf::lbm::cumulantChimeraK17(distributionWrapper.distribution, omega, level_forces);
 
     distributionWrapper.write();
 }

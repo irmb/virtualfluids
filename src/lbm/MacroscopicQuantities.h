@@ -84,7 +84,8 @@ inline __host__ __device__ real getPressure(const real *const &f27, const real& 
     constant::c3o1 * (f27[dir::TNE] + f27[dir::TSW] + f27[dir::TSE] + f27[dir::TNW] + 
                       f27[dir::BNE] + f27[dir::BSW] + f27[dir::BSE] + f27[dir::BNW]) -
     rho - (vx * vx + vy * vy + vz * vz) * (constant::c1o1 + rho)) * 
-    constant::c1o2 + rho;
+    constant::c1o2 + rho; // times zero for incompressible case                 
+                          // Attention: op defined directly to op = 1 ; ^^^^(1.0/op-0.5)=0.5
 }
 
 // GPU: LBCalcMacCompSP27
