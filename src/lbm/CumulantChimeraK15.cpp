@@ -1,4 +1,4 @@
-#include "CumulantChimeraK15.h"
+#include "CumulantChimeraK17.h"
 
 #include <cmath>
 
@@ -25,7 +25,7 @@ using namespace constant;
 //! and \ref
 //! <a href="https://doi.org/10.1016/j.jcp.2017.07.004"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.07.004 ]</b></a>
 //////////////////////////////////////////////////////////////////////////
-__host__ __device__ void cumulantChimeraK17(Distribution27& distribution, real omega, real* forces)
+__host__ __device__ void cumulantChimeraK15(Distribution27& distribution, real omega, real* forces)
 {
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Read distributions: style of reading and writing the distributions from/to 
@@ -158,9 +158,9 @@ __host__ __device__ void cumulantChimeraK17(Distribution27& distribution, real o
     real OxxPyyPzz = c1o1;
     ////////////////////////////////////////////////////////////
     //3.
-    real OxyyPxzz = c8o1  * (-c2o1 + omega) * ( c1o1 + c2o1*omega) / (-c8o1 - c14o1*omega + c7o1*omega*omega);
-    real OxyyMxzz = c8o1  * (-c2o1 + omega) * (-c7o1 + c4o1*omega) / (c56o1 - c50o1*omega + c9o1*omega*omega);
-    real Oxyz     = c24o1 * (-c2o1 + omega) * (-c2o1 - c7o1*omega + c3o1*omega*omega) / (c48o1 + c152o1*omega - c130o1*omega*omega + c29o1*omega*omega*omega);
+    real OxyyPxzz = c1o1;//three  * (two - omega) / (three  - omega);//one;//(1000.*(-2. + omega))/(-1000. + 439.*omega);//(eight * (omega - two)) / (omega - eight);//two-omega;//eight*(two-omega)/(eight -omega);//one;//omega;//two-omega;//
+    real OxyyMxzz = c1o1;//six    * (two - omega) / (six    - omega);//one;//two-omega;//(1000.*(-2. + omega))/(-1000. + 439.*omega);//(eight * (omega - two)) / (omega - eight);//omega;//one;//eight*(two-omega)/(eight -omega);//one;//two-omega;//one;// 
+    real Oxyz = c1o1;//twelve * (two - omega) / (twelve + omega);//one;//two-omega;//(1000.*(-2. + omega))/(-1000. + 439.*omega);//(eight * (omega - two)) / (omega - eight);//omega;//one;//eight*(two-omega)/(eight -omega);//one;//two-omega;//one;// 
     ////////////////////////////////////////////////////////////
     //4.
     real O4 = c1o1;

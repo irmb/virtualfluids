@@ -4,6 +4,8 @@
 
 #include "LBM/D3Q27.h"
 
+#include <lbm/constants/NumericConstants.h>
+#include <lbm/constants/D3Q27.h>
 
 namespace vf
 {

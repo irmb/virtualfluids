@@ -35,7 +35,7 @@
 
 #include "LBM/LB.h" 
 
-#include <lbm/CumulantChimeraK17.h>
+#include <lbm/Distribution27.h>
 
 namespace vf
 {
