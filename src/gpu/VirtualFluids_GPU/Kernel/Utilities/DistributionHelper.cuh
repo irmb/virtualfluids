@@ -36,7 +36,7 @@
 #include "LBM/LB.h" 
 
 
-#include <lbm/CumulantChimeraPreCompiled.h>
+#include <lbm/CumulantChimeraK17.h>
 
 namespace vf
 {

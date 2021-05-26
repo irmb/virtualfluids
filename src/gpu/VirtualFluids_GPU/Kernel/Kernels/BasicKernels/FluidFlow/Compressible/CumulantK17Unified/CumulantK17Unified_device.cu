@@ -31,7 +31,7 @@
 //! \author Martin Schoenherr, Soeren Peters
 //=======================================================================================
 /* Device code */
-#include <lbm/CumulantChimeraPreCompiled.h>
+#include <lbm/CumulantChimeraK17.h>
 
 #include "Kernel/Utilities/DistributionHelper.cuh"
 

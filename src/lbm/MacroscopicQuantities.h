@@ -88,44 +88,6 @@ inline __host__ __device__ real getPressure(const real *const &f27, const real& 
                           // Attention: op defined directly to op = 1 ; ^^^^(1.0/op-0.5)=0.5
 }
 
-// GPU: LBCalcMacCompSP27
-// rhoD[k] = (D.f[dirE])[ke] + (D.f[dirW])[kw] + (D.f[dirN])[kn] + (D.f[dirS])[ks] + (D.f[dirT])[kt] + (D.f[dirB])[kb] 
-//                   + (D.f[dirNE])[kne] + (D.f[dirSW])[ksw] + (D.f[dirSE])[kse] + (D.f[dirNW])[knw] +
-//                   (D.f[dirTE])[kte] + (D.f[dirBW])[kbw] + (D.f[dirBE])[kbe] + (D.f[dirTW])[ktw] + (D.f[dirTN])[ktn] +
-//                   (D.f[dirBS])[kbs] + (D.f[dirBN])[kbn] + (D.f[dirTS])[kts] + (D.f[dirZERO])[kzero] +
-//                   (D.f[dirTNE])[ktne] + (D.f[dirTSW])[ktsw] + (D.f[dirTSE])[ktse] + (D.f[dirTNW])[ktnw] +
-//                   (D.f[dirBNE])[kbne] + (D.f[dirBSW])[kbsw] + (D.f[dirBSE])[kbse] + (D.f[dirBNW])[kbnw];
-
-// vxD[k] = ((D.f[dirE])[ke] - (D.f[dirW])[kw] + (D.f[dirNE])[kne] - (D.f[dirSW])[ksw] + (D.f[dirSE])[kse] -
-//             (D.f[dirNW])[knw] + (D.f[dirTE])[kte] - (D.f[dirBW])[kbw] + (D.f[dirBE])[kbe] - (D.f[dirTW])[ktw] +
-//             (D.f[dirTNE])[ktne] - (D.f[dirTSW])[ktsw] + (D.f[dirTSE])[ktse] - (D.f[dirTNW])[ktnw] +
-//             (D.f[dirBNE])[kbne] - (D.f[dirBSW])[kbsw] + (D.f[dirBSE])[kbse] - (D.f[dirBNW])[kbnw]) /
-//             (c1o1 + rhoD[k]);
-
-// vyD[k] = ((D.f[dirN])[kn] - (D.f[dirS])[ks] + (D.f[dirNE])[kne] - (D.f[dirSW])[ksw] - (D.f[dirSE])[kse] +
-//             (D.f[dirNW])[knw] + (D.f[dirTN])[ktn] - (D.f[dirBS])[kbs] + (D.f[dirBN])[kbn] - (D.f[dirTS])[kts] +
-//             (D.f[dirTNE])[ktne] - (D.f[dirTSW])[ktsw] - (D.f[dirTSE])[ktse] + (D.f[dirTNW])[ktnw] +
-//             (D.f[dirBNE])[kbne] - (D.f[dirBSW])[kbsw] - (D.f[dirBSE])[kbse] + (D.f[dirBNW])[kbnw]) /
-//             (c1o1 + rhoD[k]);
-
-// vzD[k] = ((D.f[dirT])[kt] - (D.f[dirB])[kb] + (D.f[dirTE])[kte] - (D.f[dirBW])[kbw] - (D.f[dirBE])[kbe] +
-//             (D.f[dirTW])[ktw] + (D.f[dirTN])[ktn] - (D.f[dirBS])[kbs] - (D.f[dirBN])[kbn] + (D.f[dirTS])[kts] +
-//             (D.f[dirTNE])[ktne] + (D.f[dirTSW])[ktsw] + (D.f[dirTSE])[ktse] + (D.f[dirTNW])[ktnw] -
-//             (D.f[dirBNE])[kbne] - (D.f[dirBSW])[kbsw] - (D.f[dirBSE])[kbse] - (D.f[dirBNW])[kbnw]) /
-//             (c1o1 + rhoD[k]);
-
-// pressD[k] =
-//     ((D.f[dirE])[ke] + (D.f[dirW])[kw] + (D.f[dirN])[kn] + (D.f[dirS])[ks] + (D.f[dirT])[kt] + (D.f[dirB])[kb] +
-//         c2o1 * ((D.f[dirNE])[kne] + (D.f[dirSW])[ksw] + (D.f[dirSE])[kse] + (D.f[dirNW])[knw] + (D.f[dirTE])[kte] +
-//                 (D.f[dirBW])[kbw] + (D.f[dirBE])[kbe] + (D.f[dirTW])[ktw] + (D.f[dirTN])[ktn] + (D.f[dirBS])[kbs] +
-//                 (D.f[dirBN])[kbn] + (D.f[dirTS])[kts]) +
-//         c3o1 * ((D.f[dirTNE])[ktne] + (D.f[dirTSW])[ktsw] + (D.f[dirTSE])[ktse] + (D.f[dirTNW])[ktnw] +
-//                 (D.f[dirBNE])[kbne] + (D.f[dirBSW])[kbsw] + (D.f[dirBSE])[kbse] + (D.f[dirBNW])[kbnw]) -
-//         rhoD[k] - (vxD[k] * vxD[k] + vyD[k] * vyD[k] + vzD[k] * vzD[k]) * (c1o1 + rhoD[k])) *
-//         c1o2 +
-//     rhoD[k]; // times zero for incompressible case
-//                 // achtung op hart gesetzt Annahme op = 1 ; ^^^^(1.0/op-0.5)=0.5
-
 }
 }
 

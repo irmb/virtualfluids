@@ -14,7 +14,10 @@ vf_add_library(PUBLIC_LINK basics lbmCuda PRIVATE_LINK ${additional_libraries} G
 
 set_target_properties(VirtualFluids_GPU PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
+
 vf_add_tests()
 
-set_target_properties(VirtualFluids_GPUTests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-set_source_files_properties(Kernel/Utilities/DistributionHelperTests.cpp PROPERTIES LANGUAGE CUDA)
+if(BUILD_VF_UNIT_TESTS)
+    set_target_properties(VirtualFluids_GPUTests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+    set_source_files_properties(Kernel/Utilities/DistributionHelperTests.cpp PROPERTIES LANGUAGE CUDA)
+endif()
