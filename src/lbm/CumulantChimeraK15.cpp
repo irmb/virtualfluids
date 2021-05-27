@@ -25,8 +25,12 @@ using namespace constant;
 //! and \ref
 //! <a href="https://doi.org/10.1016/j.jcp.2017.07.004"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.07.004 ]</b></a>
 //////////////////////////////////////////////////////////////////////////
-__host__ __device__ void cumulantChimeraK15(Distribution27& distribution, real omega, real* forces)
+__host__ __device__ void cumulantChimeraK15(CumulantChimeraParameter parameter)
 {
+    auto& distribution = parameter.distribution;
+    const auto omega = parameter.omega;
+    const auto* forces = parameter.forces;
+
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Read distributions: style of reading and writing the distributions from/to 
     //! stored arrays dependent on timestep is based on the esoteric twist algorithm

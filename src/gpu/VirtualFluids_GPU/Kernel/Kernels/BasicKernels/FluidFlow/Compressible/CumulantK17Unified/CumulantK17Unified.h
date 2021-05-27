@@ -9,8 +9,6 @@ public:
     static std::shared_ptr<CumulantK17Unified> getNewInstance(std::shared_ptr<Parameter> para, int level);
     void run();
 
-private:
-    CumulantK17Unified();
     CumulantK17Unified(std::shared_ptr<Parameter> para, int level);
 };
 

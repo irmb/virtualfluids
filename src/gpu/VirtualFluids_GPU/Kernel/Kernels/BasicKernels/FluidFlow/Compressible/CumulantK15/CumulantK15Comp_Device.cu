@@ -2,44 +2,10 @@
 #include "LBM/D3Q27.h"
 #include <lbm/constants/NumericConstants.h>
 
-#include <lbm/CumulantChimeraK15.h>
-
-#include "Kernel/Utilities/DistributionHelper.cuh"
-
 using namespace vf::lbm::constant;
 #include "math.h"
 
 extern "C" __global__ void LB_Kernel_CumulantK15Comp(real omega,
-    unsigned int* typeOfGridNode,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    real* distributions,
-    int size_Mat,
-    int level,
-    real* forces,
-    bool isEvenTimestep)
-{
-    const uint k = vf::gpu::getNodeIndex();
-    const uint nodeType = typeOfGridNode[k];
-
-    if (!vf::gpu::isValidFluidNode(k, size_Mat, nodeType))
-        return;
-
-    vf::gpu::DistributionWrapper distributionWrapper {
-        distributions, size_Mat, isEvenTimestep, k, neighborX, neighborY, neighborZ
-    };
-
-    real level_forces[3];
-    vf::gpu::getLevelForce(forces[0], forces[1], forces[2], level, level_forces);
-
-    vf::lbm::cumulantChimeraK15(distributionWrapper.distribution, omega, level_forces);
-
-    distributionWrapper.write();
-}
-
-
-extern "C" __global__ void LB_Kernel_CumulantK15Comp_(real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
 	unsigned int* neighborY,

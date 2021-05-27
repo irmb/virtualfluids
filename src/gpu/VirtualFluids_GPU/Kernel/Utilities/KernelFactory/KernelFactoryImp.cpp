@@ -15,6 +15,7 @@
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK18/CumulantK18Comp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK20/CumulantK20Comp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15/CumulantK15Comp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Unified/CumulantK15Unified.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Bulk/CumulantK15BulkComp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Sponge/CumulantK15SpongeComp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/MRT/MRTCompSP27.h"
@@ -118,6 +119,9 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "CumulantK17Comp") {
         newKernel     = CumulantK17Comp::getNewInstance(para, level);
+        checkStrategy = FluidFlowCompStrategy::getInstance();
+    } else if (kernel == "CumulantK15Unified") {
+        newKernel     = CumulantK15Unified::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "CumulantK17Unified") {
         newKernel     = CumulantK17Unified::getNewInstance(para, level);

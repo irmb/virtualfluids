@@ -5,6 +5,8 @@
 
 #include <memory>
 
+#include "Utilities/CudaGrid.h"
+
 class CheckParameterStrategy;
 class Parameter;
 
@@ -27,6 +29,8 @@ protected:
 	int level;
 	std::vector<PreProcessorType> myPreProcessorTypes;
 	KernelGroup myKernelGroup;
+
+	vf::gpu::CudaGrid cudaGrid;
 
 };
 #endif

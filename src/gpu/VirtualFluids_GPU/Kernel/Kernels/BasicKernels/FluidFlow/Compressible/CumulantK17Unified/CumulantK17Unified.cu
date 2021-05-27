@@ -1,43 +1,37 @@
 #include "CumulantK17Unified.h"
 
-#include "CumulantK17Unified_Device.cuh"
 #include "Parameter/Parameter.h"
-
+#include "../CumulantKernel.cuh"
+#include "Kernel/Utilities/CudaGrid.h"
 #include <stdexcept>
+
+#include <lbm/CumulantChimeraK17.h>
 
 std::shared_ptr<CumulantK17Unified> CumulantK17Unified::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-    return std::shared_ptr<CumulantK17Unified>(new CumulantK17Unified(para, level));
+    return std::make_shared<CumulantK17Unified>(para, level);
 }
 
 void CumulantK17Unified::run()
 {
-    int numberOfThreads = para->getParD(level)->numberofthreads;
-    int size_Mat        = para->getParD(level)->size_Mat_SP;
+    vf::gpu::LBMKernelParameter kernelParameter
+	{	para->getParD(level)->omega,
+		para->getParD(level)->geoSP,
+		para->getParD(level)->neighborX_SP,
+		para->getParD(level)->neighborY_SP,
+		para->getParD(level)->neighborZ_SP,
+		para->getParD(level)->d0SP.f[0],
+		(int)para->getParD(level)->size_Mat_SP,
+		level,
+		para->getForcesDev(),
+		para->getParD(level)->evenOrOdd
+	};
 
-    int Grid = (size_Mat / numberOfThreads) + 1;
-    int Grid1, Grid2;
-    if (Grid > 512) {
-        Grid1 = 512;
-        Grid2 = (Grid / Grid1) + 1;
-    } else {
-        Grid1 = 1;
-        Grid2 = Grid;
-    }
-    dim3 grid(Grid1, Grid2);
-    dim3 threads(numberOfThreads, 1, 1);
+	auto lambda = [] __device__(vf::lbm::CumulantChimeraParameter parameter) {
+		return vf::lbm::cumulantChimeraK17(parameter);
+	};
 
-    vf::gpu::LB_Kernel_CumulantK17Unified<<<grid, threads>>>(
-        para->getParD(level)->omega,
-        para->getParD(level)->geoSP,
-        para->getParD(level)->neighborX_SP,
-        para->getParD(level)->neighborY_SP,
-        para->getParD(level)->neighborZ_SP,
-        para->getParD(level)->d0SP.f[0],
-        para->getParD(level)->size_Mat_SP,
-        level,
-        para->getForcesDev(),
-        para->getParD(level)->evenOrOdd);
+	vf::gpu::cumulantKernel<<< cudaGrid.grid, cudaGrid.threads >>>(lambda, kernelParameter);
 
     getLastCudaError("LB_Kernel_CumulantK17Unified execution failed");
 }
@@ -54,4 +48,6 @@ CumulantK17Unified::CumulantK17Unified(std::shared_ptr<Parameter> para, int leve
     myPreProcessorTypes.push_back(InitCompSP27);
 
     myKernelGroup = BasicKernel;
+
+    this->cudaGrid = vf::gpu::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->size_Mat_SP);
 }

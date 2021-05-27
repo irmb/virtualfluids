@@ -40,7 +40,9 @@
 #include "BCArray3D.h"
 
 //#include <lbm/CumulantChimera.h>
+#include <lbm/CumulantChimeraParameter.h>
 #include <lbm/CumulantChimeraK17.h>
+#include <lbm/constants/D3Q27.h>
 
 //#define PROOF_CORRECTNESS
 
@@ -244,7 +246,8 @@ void CumulantK17LBMKernelUnified::calculate(int step)
                     distribution.f[vf::lbm::dir::MMM] = mfaaa;
                     distribution.f[vf::lbm::dir::ZZZ] = mfbbb;
 
-                    vf::lbm::cumulantChimeraK17(distribution, omega, forces);
+                    vf::lbm::CumulantChimeraParameter chimeraParameter {distribution, omega, forces};
+                    vf::lbm::cumulantChimeraK17(chimeraParameter);
 
                     mfcbb = distribution.f[vf::lbm::dir::PZZ];
                     mfabb = distribution.f[vf::lbm::dir::MZZ];
