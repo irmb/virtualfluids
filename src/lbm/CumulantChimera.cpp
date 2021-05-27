@@ -1,4 +1,4 @@
-#include "CumulantChimeraK17.h"
+#include "CumulantChimera.h"
 
 #include <cmath>
 
@@ -19,13 +19,59 @@ namespace lbm
 using namespace constant;
 
 
+////////////////////////////////////////////////////////////////////////////////////
+//! - Setting relaxation rates for non-hydrodynamic cumulants (default values). Variable names and equations    according to
+//! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05  040 ]</b></a>
+//!  => [NAME IN PAPER]=[NAME IN CODE]=[DEFAULT VALUE].
+//!  - Trace of second order cumulants \f$ C_{200}+C_{020}+C_{002} \f$ used to adjust bulk  viscosity:\f$\omega_2=OxxPyyPzz=1.0 \f$.
+//!  - Third order cumulants \f$ C_{120}+C_{102}, C_{210}+C_{012}, C_{201}+C_{021} \f$: \f$ \omega_3=OxyyPxzz   \f$ set according to Eq. (111) with simplifications assuming \f$ \omega_2=1.0\f$.
+//!  - Third order cumulants \f$ C_{120}-C_{102}, C_{210}-C_{012}, C_{201}-C_{021} \f$: \f$ \omega_4 =  OxyyMxzz \f$ set according to Eq. (112) with simplifications assuming \f$ \omega_2 = 1.0\f$.
+//!  - Third order cumulants \f$ C_{111} \f$: \f$ \omega_5 = Oxyz \f$ set according to Eq. (113) with   simplifications assuming \f$ \omega_2 = 1.0\f$  (modify for different bulk viscosity).
+//!  - Fourth order cumulants \f$ C_{220}, C_{202}, C_{022}, C_{211}, C_{121}, C_{112} \f$: for simplification  all set to the same default value \f$ \omega_6=\omega_7=\omega_8=O4=1.0 \f$.
+//!  - Fifth order cumulants \f$ C_{221}, C_{212}, C_{122}\f$: \f$\omega_9=O5=1.0\f$.
+//!  - Sixth order cumulant \f$ C_{222}\f$: \f$\omega_{10}=O6=1.0\f$.
+//////////////////////////////////////////////////////////////////////////
+__host__ __device__ void setRelaxationRatesK17(real omega, real &OxxPyyPzz, real &OxyyPxzz, real &OxyyMxzz, real &Oxyz,
+                                               real &O4, real &O5, real &O6)
+{
+    OxxPyyPzz = c1o1;
+
+    OxyyPxzz = c8o1 * (-c2o1 + omega) * (c1o1 + c2o1 * omega) / (-c8o1 - c14o1 * omega + c7o1 * omega * omega);
+    OxyyMxzz = c8o1 * (-c2o1 + omega) * (-c7o1 + c4o1 * omega) / (c56o1 - c50o1 * omega + c9o1 * omega * omega);
+    Oxyz     = c24o1 * (-c2o1 + omega) * (-c2o1 - c7o1 * omega + c3o1 * omega * omega) /
+                (c48o1 + c152o1 * omega - c130o1 * omega * omega + c29o1 * omega * omega * omega);
+
+    O4 = c1o1;
+
+    O5 = c1o1;
+
+    O6 = c1o1;
+}
+
+
+__host__ __device__ void setRelaxationRatesK15(real omega, real &OxxPyyPzz, real &OxyyPxzz, real &OxyyMxzz, real &Oxyz,
+                                               real &O4, real &O5, real &O6)
+{
+    OxxPyyPzz = c1o1;
+
+    OxyyPxzz = c1o1;
+    OxyyMxzz = c1o1;
+    Oxyz     = c1o1;
+
+    O4 = c1o1;
+
+    O5 = c1o1;
+
+    O6 = c1o1;
+}
+
 //////////////////////////////////////////////////////////////////////////
 //! Cumulant K17 Kernel is based on \ref
 //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
 //! and \ref
 //! <a href="https://doi.org/10.1016/j.jcp.2017.07.004"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.07.004 ]</b></a>
 //////////////////////////////////////////////////////////////////////////
-__host__ __device__ void cumulantChimeraK15(CumulantChimeraParameter parameter)
+__host__ __device__ void cumulantChimera(CumulantChimeraParameter parameter, RelaxationRatesFunctor setRelaxationRates)
 {
     auto& distribution = parameter.distribution;
     const auto omega = parameter.omega;
@@ -145,35 +191,19 @@ __host__ __device__ void cumulantChimeraK15(CumulantChimeraParameter parameter)
     vf::lbm::forwardInverseChimeraWithK(mfaac, mfbac, mfcac, vvx, vx2, c3o1, c1o3);
     vf::lbm::forwardChimera(            mfabc, mfbbc, mfcbc, vvx, vx2);
     vf::lbm::forwardInverseChimeraWithK(mfacc, mfbcc, mfccc, vvx, vx2, c3o1, c1o9); 
+
     ////////////////////////////////////////////////////////////////////////////////////
-    //! - Setting relaxation rates for non-hydrodynamic cumulants (default values). Variable names and equations    according to
-    //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05  040 ]</b></a>
-    //!  => [NAME IN PAPER]=[NAME IN CODE]=[DEFAULT VALUE].
-    //!  - Trace of second order cumulants \f$ C_{200}+C_{020}+C_{002} \f$ used to adjust bulk  viscosity:\f$\omega_2=OxxPyyPzz=1.0 \f$.
-    //!  - Third order cumulants \f$ C_{120}+C_{102}, C_{210}+C_{012}, C_{201}+C_{021} \f$: \f$ \omega_3=OxyyPxzz   \f$ set according to Eq. (111) with simplifications assuming \f$ \omega_2=1.0\f$.
-    //!  - Third order cumulants \f$ C_{120}-C_{102}, C_{210}-C_{012}, C_{201}-C_{021} \f$: \f$ \omega_4 =  OxyyMxzz \f$ set according to Eq. (112) with simplifications assuming \f$ \omega_2 = 1.0\f$.
-    //!  - Third order cumulants \f$ C_{111} \f$: \f$ \omega_5 = Oxyz \f$ set according to Eq. (113) with   simplifications assuming \f$ \omega_2 = 1.0\f$  (modify for different bulk viscosity).
-    //!  - Fourth order cumulants \f$ C_{220}, C_{202}, C_{022}, C_{211}, C_{121}, C_{112} \f$: for simplification  all set to the same default value \f$ \omega_6=\omega_7=\omega_8=O4=1.0 \f$.
-    //!  - Fifth order cumulants \f$ C_{221}, C_{212}, C_{122}\f$: \f$\omega_9=O5=1.0\f$.
-    //!  - Sixth order cumulant \f$ C_{222}\f$: \f$\omega_{10}=O6=1.0\f$.
-    //!
-    ////////////////////////////////////////////////////////////
-    //2.
-    real OxxPyyPzz = c1o1;
-    ////////////////////////////////////////////////////////////
-    //3.
-    real OxyyPxzz = c1o1;//three  * (two - omega) / (three  - omega);//one;//(1000.*(-2. + omega))/(-1000. + 439.*omega);//(eight * (omega - two)) / (omega - eight);//two-omega;//eight*(two-omega)/(eight -omega);//one;//omega;//two-omega;//
-    real OxyyMxzz = c1o1;//six    * (two - omega) / (six    - omega);//one;//two-omega;//(1000.*(-2. + omega))/(-1000. + 439.*omega);//(eight * (omega - two)) / (omega - eight);//omega;//one;//eight*(two-omega)/(eight -omega);//one;//two-omega;//one;// 
-    real Oxyz = c1o1;//twelve * (two - omega) / (twelve + omega);//one;//two-omega;//(1000.*(-2. + omega))/(-1000. + 439.*omega);//(eight * (omega - two)) / (omega - eight);//omega;//one;//eight*(two-omega)/(eight -omega);//one;//two-omega;//one;// 
-    ////////////////////////////////////////////////////////////
-    //4.
-    real O4 = c1o1;
-    ////////////////////////////////////////////////////////////
-    //5.
-    real O5 = c1o1;
-    ////////////////////////////////////////////////////////////
-    //6.
-    real O6 = c1o1; 
+    //! - Setting relaxation rates for non-hydrodynamic cumulants (default values). Variable names and equations
+    real OxxPyyPzz;
+    real OxyyPxzz;
+    real OxyyMxzz;
+    real Oxyz;
+    real O4;
+    real O5;
+    real O6;
+
+    setRelaxationRates(omega, OxxPyyPzz, OxyyPxzz, OxyyMxzz, Oxyz, O4, O5, O6);
+
     ////////////////////////////////////////////////////////////////////////////////////
     //! - A and B: parameters for fourth order convergence of the diffusion term according to Eq. (114) and (115) 
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05  040 ]</b></a>

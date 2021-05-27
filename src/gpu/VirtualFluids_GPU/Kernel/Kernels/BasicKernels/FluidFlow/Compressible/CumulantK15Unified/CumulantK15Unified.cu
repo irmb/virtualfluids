@@ -4,8 +4,9 @@
 
 #include "Parameter/Parameter.h"
 
-#include <lbm/CumulantChimeraK15.h>
 #include <lbm/Distribution27.h>
+
+#include <lbm/CumulantChimera.h>
 
 std::shared_ptr<CumulantK15Unified> CumulantK15Unified::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
@@ -26,7 +27,7 @@ void CumulantK15Unified::run()
                                                  para->getParD(level)->evenOrOdd };
 
     auto lambda = [] __device__(vf::lbm::CumulantChimeraParameter parameter) {
-        return vf::lbm::cumulantChimeraK15(parameter);
+        return vf::lbm::cumulantChimera(parameter, vf::lbm::setRelaxationRatesK15);
     };
 
     vf::gpu::cumulantKernel<<<cudaGrid.grid, cudaGrid.threads>>>(lambda, kernelParameter);

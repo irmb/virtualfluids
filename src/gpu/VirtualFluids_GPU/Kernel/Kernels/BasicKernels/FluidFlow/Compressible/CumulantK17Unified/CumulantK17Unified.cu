@@ -5,7 +5,8 @@
 #include "Kernel/Utilities/CudaGrid.h"
 #include <stdexcept>
 
-#include <lbm/CumulantChimeraK17.h>
+#include <lbm/CumulantChimera.h>
+
 
 std::shared_ptr<CumulantK17Unified> CumulantK17Unified::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
@@ -28,7 +29,7 @@ void CumulantK17Unified::run()
 	};
 
 	auto lambda = [] __device__(vf::lbm::CumulantChimeraParameter parameter) {
-		return vf::lbm::cumulantChimeraK17(parameter);
+		return vf::lbm::cumulantChimera(parameter, vf::lbm::setRelaxationRatesK17);
 	};
 
 	vf::gpu::cumulantKernel<<< cudaGrid.grid, cudaGrid.threads >>>(lambda, kernelParameter);
