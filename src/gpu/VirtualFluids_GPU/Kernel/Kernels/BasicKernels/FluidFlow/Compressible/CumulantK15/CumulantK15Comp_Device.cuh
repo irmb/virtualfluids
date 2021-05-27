@@ -4,7 +4,7 @@
 #include <DataTypes.h>
 #include <curand.h>
 
-__global__ void LB_Kernel_CumulantK15Comp(	real omega,
+extern "C" __global__ void LB_Kernel_CumulantK15Comp(	real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
@@ -14,4 +14,4 @@ __global__ void LB_Kernel_CumulantK15Comp(	real omega,
 														int level,
 														real* forces,
 														bool EvenOrOdd);
-#endif 
+#endif
