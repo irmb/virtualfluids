@@ -40,7 +40,7 @@
 #include "BCArray3D.h"
 
 //#include <lbm/CumulantChimera.h>
-#include <lbm/CumulantChimeraPreCompiled.h>
+#include <lbm/CumulantChimeraK17.h>
 
 //#define PROOF_CORRECTNESS
 
