@@ -112,7 +112,6 @@ if(BUILD_VF_GPU)
        else()
 
         set(CMAKE_CUDA_FLAGS "-dlto -arch=sm_${CMAKE_CUDA_ARCHITECTURES}")
-        message("CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
         set(CMAKE_CUDA_ARCHITECTURES OFF)
 
         list(APPEND VF_COMPILER_DEFINITION BUILD_CUDA_LTO)
@@ -120,6 +119,9 @@ if(BUILD_VF_GPU)
        endif()
     endif()
 
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --extended-lambda")
+
+    message("CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
     message("CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
 endif()
 
