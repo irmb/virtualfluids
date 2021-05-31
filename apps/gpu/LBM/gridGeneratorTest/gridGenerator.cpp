@@ -31,7 +31,6 @@
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
-#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
 
 #include "global.h"
 
@@ -79,11 +78,9 @@ void multipleLevel(const std::string& configPath)
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     
-	Communicator* comm = Communicator::getInstanz();
+	vf::gpu::Communicator *comm         = vf::gpu::Communicator::getInstanz();
 	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
-	SPtr<ConfigData> configData = configReader->readConfigFile(configPath);
-
-    std::shared_ptr<KernelMapper> kernelMapper = KernelMapper::getInstance();
+    SPtr<ConfigData> configData         = configReader->readConfigFile(configPath.c_str());
 
     SPtr<Parameter> para = Parameter::make(configData, comm);
 
@@ -208,7 +205,7 @@ void multipleLevel(const std::string& configPath)
 
             para->setUseWale(false);
 
-            para->setMainKernel(kernelMapper->getEnum("CumulantK15Comp"));
+            para->setMainKernel("CumulantK15Comp");
 
             //////////////////////////////////////////////////////////////////////////
 
@@ -291,7 +288,7 @@ void multipleLevel(const std::string& configPath)
 
             para->setUseWale(false);
 
-            para->setMainKernel(kernelMapper->getEnum("CumulantK20Comp"));
+            para->setMainKernel("CumulantK20Comp");
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -392,7 +389,7 @@ void multipleLevel(const std::string& configPath)
 
             para->setUseWale(false);
 
-            para->setMainKernel(kernelMapper->getEnum("CumulantAA2016CompSP27"));
+            para->setMainKernel("CumulantAA2016CompSP27");
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -468,7 +465,7 @@ void multipleLevel(const std::string& configPath)
 
             para->setUseWale(false);
 
-            para->setMainKernel(kernelMapper->getEnum("CumulantAA2016CompSP27"));
+            para->setMainKernel("CumulantAA2016CompSP27");
             //para->setMainKernel(kernelMapper->getEnum("CumulantOneCompSP27"));
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -659,13 +656,13 @@ void multipleLevel(const std::string& configPath)
 
             para->setUseWale(false);
 
-            para->setMainKernel(kernelMapper->getEnum("CumulantK15Comp"));
+            para->setMainKernel("CumulantK15Comp");
 
             para->setDevices( { 0, 1 } );
             para->setMaxDev(2);
 
             //const uint generatePart = 1;
-            const uint generatePart = Communicator::getInstanz()->getPID();
+            const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
             
             std::ofstream logFile2;
             
