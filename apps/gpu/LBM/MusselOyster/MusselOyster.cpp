@@ -69,22 +69,9 @@
 
 
 
-//const real L  = 1.0;
-//
-//const real Re = 500.0;// 1000.0;
-//
-//const real velocity  = 1.0;
-//
-//const real dt = (real)1.0e-3; //0.5e-3;
-//
-//const uint nx = 64;
-
 std::string path("E:/temp/MusselOyster");
 
-std::string simulationName("MusselOysterChim");
-
-//const uint timeStepOut = 10000;
-//const uint timeStepEnd = 250000;
+std::string simulationName("MusselOyster");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,18 +96,6 @@ void multipleLevel(const std::string& configPath)
     std::cout << configPath << std::endl;
 	SPtr<ConfigData> configData = configReader->readConfigFile(configPath.c_str());
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//real dx = L / real(nx);
-
-	//gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
-	//							0.5 * L,  0.5 * L,  0.5 * L, dx);
-
-	//gridBuilder->setPeriodicBoundaryCondition(false, false, false);
-
-	//gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,12 +107,12 @@ void multipleLevel(const std::string& configPath)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        SPtr<Parameter>    para         = Parameter::make(configData, comm);
+    SPtr<Parameter>    para         = Parameter::make(configData, comm);
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         real dx = 1.0;
         real vx = (real) 0.005;
@@ -153,27 +128,25 @@ void multipleLevel(const std::string& configPath)
         para->setCalcDragLift(false);
         para->setUseWale(false);
 
-        para->setMainKernel("CumulantK15Comp");
+        // para->setMainKernel("CumulantK15Comp");
+        para->setMainKernel("CumulantK17CompChim");
 
         TriangularMesh *musselSTL =
             TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/MUSSEL_Paraview.stl");
         TriangularMesh *musselRef_1_STL =
             TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/MUSSEL_Level1.stl");
 
-        //bounding box mussel:
-        //x = -18, 58
-        //y = -17, 18    
-        //z = -5, 13
+        // bounding box mussel:
+        // x = -18, 58
+        // y = -17, 18
+        // z = -5, 13
 
         const real f = 3.0;
-        gridBuilder->addCoarseGrid(-18.0 * f, -17 * f, -5 * f, 
-                                    58 * f * 2, 18 * f, 13 * f, dx); 
+        gridBuilder->addCoarseGrid(-18.0 * f,          -17.0 * f,   -5.0 * f,
+                                    58.0 * f * 2.0,     18.0 * f,   13.0 * f, dx);
 
         gridBuilder->setNumberOfLayers(6, 8);
         gridBuilder->addGrid(musselRef_1_STL, 1);
-
-        // gridBuilder->addGrid(sphereRef_2_STL, 4);
-        // gridBuilder->setNumberOfLayers(10,8);
 
         gridBuilder->addGeometry(musselSTL);
 
@@ -182,10 +155,7 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
         //////////////////////////////////////////////////////////////////////////
         gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx, 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx, 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx, 0.0, 0.0);
-
+        gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
         gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
 
@@ -195,20 +165,20 @@ void multipleLevel(const std::string& configPath)
         SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
         //////////////////////////////////////////////////////////////////////////
 
-        gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/grid/");
-        // gridBuilder->writeArrows    ("F:/Work/Computations/out/Sphere/arrow");
+        // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/grid/");
+        // gridBuilder->writeArrows    ("E:/temp/MusselOyster/grid/arrow");
 
         SimulationFileWriter::write("E:/temp/MusselOyster/grid/", gridBuilder, FILEFORMAT::BINARY);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        //const real velocityLB = velocity * dt / dx; // LB units
+        // const real velocityLB = velocity * dt / dx; // LB units
 
-	    //const real vx = velocityLB / (real)sqrt(2.0); // LB units
-	    //const real vy = velocityLB / (real)sqrt(2.0); // LB units
+        // const real vx = velocityLB / (real)sqrt(2.0); // LB units
+        // const real vy = velocityLB / (real)sqrt(2.0); // LB units
 
-        //const real viscosityLB = nx * velocityLB / Re; // LB units
+        // const real viscosityLB = nx * velocityLB / Re; // LB units
 
         //*logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
         //*logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
@@ -225,30 +195,23 @@ void multipleLevel(const std::string& configPath)
         para->setPrintFiles(true);
 
         para->setMaxLevel(1);
+        // para->setVelocity(velocityLB);
+        // para->setViscosity(viscosityLB);
 
-        //para->setVelocity(velocityLB);
-        //para->setViscosity(viscosityLB);
+        // para->setVelocityRatio(velocity/ velocityLB);
 
-        //para->setVelocityRatio(velocity/ velocityLB);
+        // para->setMainKernel("CumulantK17CompChim");
 
-		//para->setMainKernel("CumulantK17CompChim");
-
-		//para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
-  //          rho = (real)0.0;
-  //          vx  = (real)0.0; //(6 * velocityLB * coordZ * (L - coordZ) / (L * L));
-  //          vy  = (real)0.0;
-  //          vz  = (real)0.0;
-  //      });
+        // para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz)
+        // {
+        //          rho = (real)0.0;
+        //          vx  = (real)0.0; //(6 * velocityLB * coordZ * (L - coordZ) / (L * L));
+        //          vy  = (real)0.0;
+        //          vz  = (real)0.0;
+        //      });
 
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		//gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-		//gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-		//gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-	    //gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-	    //gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  vx, 0.0);
-	    //gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+  
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
