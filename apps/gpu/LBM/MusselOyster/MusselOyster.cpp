@@ -141,57 +141,43 @@ void multipleLevel(const std::string& configPath)
 
         real dx = 1.0;
         real vx = (real) 0.005;
-
         real Re = 100;
-
 
         para->setVelocity(vx);
         para->setViscosity((vx * dx) / Re);
-
         para->setVelocityRatio(1.0);
 
         para->setTOut(50000);
         para->setTEnd(250000);
 
         para->setCalcDragLift(false);
-
         para->setUseWale(false);
 
         para->setMainKernel("CumulantK15Comp");
 
-        //////////////////////////////////////////////////////////////////////////
-
         TriangularMesh *musselSTL =
             TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/MUSSEL_Paraview.stl");
-
         TriangularMesh *musselRef_1_STL =
             TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/MUSSEL_Level1.stl");
-
 
         //bounding box mussel:
         //x = -18, 58
         //y = -17, 18    
         //z = -5, 13
 
-
         const real f = 3.0;
-
         gridBuilder->addCoarseGrid(-18.0 * f, -17 * f, -5 * f, 
-                                    58 * f, 18 * f, 13 * f, dx); 
+                                    58 * f * 2, 18 * f, 13 * f, dx); 
 
-        // gridBuilder->setNumberOfLayers(10,8);
-        // gridBuilder->addGrid(SphereSTL, 2);
-
-        gridBuilder->setNumberOfLayers(10, 8);
+        gridBuilder->setNumberOfLayers(6, 8);
         gridBuilder->addGrid(musselRef_1_STL, 1);
-        // gridBuilder->addGrid(sphereRef_2_STL, 4);
 
+        // gridBuilder->addGrid(sphereRef_2_STL, 4);
         // gridBuilder->setNumberOfLayers(10,8);
-        // gridBuilder->addGrid(sphere, 5);
 
         gridBuilder->addGeometry(musselSTL);
 
-        gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+        gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
         gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
         //////////////////////////////////////////////////////////////////////////
