@@ -228,7 +228,7 @@
 #include <LBM/LBMKernelETD3Q27BGK.h>
 #include <LBM/LBMSystem.h>
 #include <LBM/LBMUnitConverter.h>
-//#include <LBM/BGKLBMKernel.h>
+#include <LBM/BGKLBMKernel.h>
 #include <LBM/ThixotropyLBMKernel.h>
 #include <LBM/ThixotropyExpLBMKernel.h>
 #include <LBM/CumulantLBMKernel.h>

@@ -27,13 +27,10 @@ CalculateTorqueCoProcessor::CalculateTorqueCoProcessor( SPtr<Grid3D> grid, SPtr<
          if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);}
          if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
       }
-      ostr.width(12);
-      ostr << "step" << "\t";
-      ostr.width(10); 
-      ostr << "Tx" << "\t";
-      ostr.width(18); 
-      ostr << "Ty" << "\t";
-      ostr.width(18);
+
+      ostr << "step;";
+      ostr << "Tx;";
+      ostr << "Ty;";
       ostr << "Tz" << std::endl;
       ostr.close();
    }
@@ -70,12 +67,10 @@ void CalculateTorqueCoProcessor::collectData( double step )
          if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
       }
 
-      ostr.width(12); 
-      ostr.setf(std::ios::fixed); 
-      ostr << istep << "\t";
-      write(&ostr, forceX1global, (char*)"\t");
-      write(&ostr, forceX2global, (char*)"\t");
-      write(&ostr, forceX3global, (char*)"\t");
+      ostr << istep << ";";
+      ostr << forceX1global << ";";
+      ostr << forceX2global << ";";
+      ostr << forceX3global;
       ostr << std::endl;
       ostr.close();
    }
@@ -134,6 +129,9 @@ void CalculateTorqueCoProcessor::calculateForces()
             int x3 = node[2];
 
             Vector3D worldCoordinates = grid->getNodeCoordinates(block, x1, x2, x3);
+            double rx                 = worldCoordinates[0] - x1Centre;
+            double ry                 = worldCoordinates[1] - x2Centre;
+            double rz                 = worldCoordinates[2] - x3Centre;
 
             //without ghost nodes
             if (x1 < minX1 || x1 > maxX1 || x2 < minX2 || x2 > maxX2 ||x3 < minX3 || x3 > maxX3 ) continue;
@@ -141,10 +139,14 @@ void CalculateTorqueCoProcessor::calculateForces()
             if(bcArray->isFluid(x1,x2,x3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
                SPtr<BoundaryConditions> bc = bcArray->getBC(x1,x2,x3);
-               UbTupleDouble3 forceVec = getForces(x1,x2,x3,distributions,bc);
-               torqueX1 += (worldCoordinates[1] - x2Centre) * val<3>(forceVec) - (worldCoordinates[2] - x3Centre) * val<2>(forceVec);
-               torqueX2 += (worldCoordinates[2] - x3Centre) * val<1>(forceVec) - (worldCoordinates[0] - x1Centre) * val<3>(forceVec);
-               torqueX3 += (worldCoordinates[0] - x1Centre) * val<2>(forceVec) - (worldCoordinates[1] - x2Centre) * val<1>(forceVec);
+               UbTupleDouble3 forceVec     = getForces(x1,x2,x3,distributions,bc);
+               double Fx                   = val<1>(forceVec);
+               double Fy                   = val<2>(forceVec);
+               double Fz                   = val<3>(forceVec);
+
+               torqueX1 += ry * Fz - rz * Fy;
+               torqueX2 += rz * Fx - rx * Fz;
+               torqueX3 += rx * Fy - ry * Fx;
                //counter++;
                //UBLOG(logINFO, "x1="<<(worldCoordinates[1] - x2Centre)<<",x2=" << (worldCoordinates[2] - x3Centre)<< ",x3=" << (worldCoordinates[0] - x1Centre) <<" forceX3 = " << forceX3);
             }
@@ -241,14 +243,6 @@ void CalculateTorqueCoProcessor::addInteractor( SPtr<D3Q27Interactor> interactor
 {
    interactors.push_back(interactor);
 }
-//////////////////////////////////////////////////////////////////////////
-void CalculateTorqueCoProcessor::write(std::ofstream *fileObject, double value, char *separator) 
-{ 
-   (*fileObject).width(12); 
-   (*fileObject).precision(16); 
-   (*fileObject).setf(std::ios::fixed); 
-   (*fileObject) << value; 
-   (*fileObject) << separator; 
-} 
+
 
 

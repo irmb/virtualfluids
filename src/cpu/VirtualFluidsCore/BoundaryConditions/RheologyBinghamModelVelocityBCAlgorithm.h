@@ -43,7 +43,7 @@ public:
    RheologyBinghamModelVelocityBCAlgorithm()
    {
       BCAlgorithm::type = BCAlgorithm::RheologyBinghamModelVelocityBCAlgorithm;
-      BCAlgorithm::preCollision = false;
+      BCAlgorithm::preCollision = true;
    }
    ~RheologyBinghamModelVelocityBCAlgorithm() {}
    SPtr<BCAlgorithm> clone() override

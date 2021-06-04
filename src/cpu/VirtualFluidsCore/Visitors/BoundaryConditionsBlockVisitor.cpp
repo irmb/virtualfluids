@@ -98,6 +98,7 @@ void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bloc
 
                             if (bca) {
                                 bca = bca->clone();
+                                bca->setBlock(block);
                                 bca->setNodeIndex(x1, x2, x3);
                                 bca->setBcPointer(bcPtr);
                                 bca->addDistributions(distributions);
