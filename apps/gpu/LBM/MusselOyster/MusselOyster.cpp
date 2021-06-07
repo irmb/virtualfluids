@@ -114,9 +114,9 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        real dx = 1.0;
+        real dx = 0.5;
         real vx = (real) 0.005;
-        real Re = 100;
+        real Re = 50.0;
 
         para->setVelocity(vx);
         para->setViscosity((vx * dx) / Re);
@@ -142,8 +142,8 @@ void multipleLevel(const std::string& configPath)
         // z = -5, 13
 
         const real f = 3.0;
-        gridBuilder->addCoarseGrid(-18.0 * f,          -17.0 * f,   -5.0 * f,
-                                    58.0 * f * 2.0,     18.0 * f,   13.0 * f, dx);
+        gridBuilder->addCoarseGrid(-18.0 * f,      -16.0,      -5.0 * f,
+                                    116.0 * f,     26.0 * f,   13.0 * f, dx);
 
         gridBuilder->setNumberOfLayers(6, 8);
         gridBuilder->addGrid(musselRef_1_STL, 1);
