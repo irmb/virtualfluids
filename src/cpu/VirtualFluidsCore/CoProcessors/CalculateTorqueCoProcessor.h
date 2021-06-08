@@ -36,7 +36,6 @@ protected:
 	void collectData(double step);
    void calculateForces();
    UbTupleDouble3 getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc);
-   void write(std::ofstream *fileObject, double value, char *separator);
 private:
    std::string path;
    SPtr<Communicator> comm;

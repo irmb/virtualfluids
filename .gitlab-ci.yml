@@ -508,6 +508,29 @@ clang-tidy:
       - build/clangtidy.txt
       - build/compile_commands.json
 
+
+###############################################################################
+# doxgen
+doxygen:
+  stage: analyze
+
+  only:
+    - develop@irmb/VirtualFluids_dev
+
+  needs: []
+
+  image: alpine
+
+  script:
+  - apk update && apk add doxygen
+  - doxygen docs/Doxyfile
+
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - docs/build/
+
+
 ###############################################################################
 ##                               Deploy                                      ##
 ###############################################################################
