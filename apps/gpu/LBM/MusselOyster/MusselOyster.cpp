@@ -114,33 +114,46 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::string bivalveType = "OYSTER"; // "MUSSEL" "OYSTER"    
+    std::string bivalveType = "OYSTER"; // "MUSSEL" "OYSTER"
 
-    
+    real dx = 0.5;
+    real vx = (real)0.005;
+    real Re = 50;
+
+    para->setVelocity(vx);
+    para->setViscosity((vx * dx) / Re);
+    para->setVelocityRatio(1.0);
+
+    para->setTOut(50000);
+    para->setTEnd(200000);
+
+    para->setCalcDragLift(false);
+    para->setUseWale(false);
+
+    // para->setMainKernel("CumulantK15Comp");
+    para->setMainKernel("CumulantK17CompChim");
+
+    para->setDevices(std::vector<uint>{ (uint)0 });
+
+    para->setOutputPath(path);
+    para->setOutputPrefix(simulationName);
+
+    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+
+    para->setPrintFiles(true);
+
+    para->setMaxLevel(2);
+
+    //////////////////////////////////////////////////////////////////////////
+
+
       if (useGridGenerator) {
 
-        real dx = 0.5;
-        real vx = (real) 0.005;
-        real Re = 50.0;
+        TriangularMesh* bivalveSTL =
+              TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
+        TriangularMesh* bivalveRef_1_STL =
+              TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
 
-        para->setVelocity(vx);
-        para->setViscosity((vx * dx) / Re);
-        para->setVelocityRatio(1.0);
-
-        para->setTOut(50000);
-        para->setTEnd(200000);
-
-        para->setCalcDragLift(false);
-        para->setUseWale(false);
-
-        // para->setMainKernel("CumulantK15Comp");
-        para->setMainKernel("CumulantK17CompChim");
-
-        TriangularMesh *bivalveSTL =
-            TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
-        TriangularMesh *bivalveRef_1_STL =
-            TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
-        
         // bounding box mussel:
         // x = -18, 58
         // y = -17, 18
@@ -182,18 +195,6 @@ void multipleLevel(const std::string& configPath)
         SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
         //////////////////////////////////////////////////////////////////////////
 
-        para->setDevices(std::vector<uint>{ (uint)0 });
-
-        para->setOutputPath(path);
-        para->setOutputPrefix(simulationName);
-
-        para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
-
-        para->setPrintFiles(true);
-
-        para->setMaxLevel(1);
-
-        //////////////////////////////////////////////////////////////////////////
 
 
         // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/grid/");
