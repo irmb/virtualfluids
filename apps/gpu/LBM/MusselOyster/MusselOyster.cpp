@@ -113,6 +113,7 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        std::string bivalveType = "OYSTER"; // "MUSSEL" "OYSTER"    
 
         real dx = 0.5;
         real vx = (real) 0.005;
@@ -123,7 +124,7 @@ void multipleLevel(const std::string& configPath)
         para->setVelocityRatio(1.0);
 
         para->setTOut(50000);
-        para->setTEnd(250000);
+        para->setTEnd(200000);
 
         para->setCalcDragLift(false);
         para->setUseWale(false);
@@ -131,24 +132,36 @@ void multipleLevel(const std::string& configPath)
         // para->setMainKernel("CumulantK15Comp");
         para->setMainKernel("CumulantK17CompChim");
 
-        TriangularMesh *musselSTL =
-            TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/MUSSEL_Paraview.stl");
-        TriangularMesh *musselRef_1_STL =
-            TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/MUSSEL_Level1.stl");
-
+        TriangularMesh *bivalveSTL =
+            TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
+        TriangularMesh *bivalveRef_1_STL =
+            TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
+        
         // bounding box mussel:
         // x = -18, 58
         // y = -17, 18
         // z = -5, 13
-
-        const real f = 3.0;
-        gridBuilder->addCoarseGrid(-18.0 * f,      -16.0,      -5.0 * f,
-                                    116.0 * f,     26.0 * f,   13.0 * f, dx);
+        // bounding box oyster:
+        // x = 0, 115
+        // y = 0, 27
+        // z = 0, 63
+        
+        const real xSpaceM = 30.0;
+        const real xSpaceP = 300.0;
+        const real ySpaceP = 60.0;
+        const real zSpacePM  = 20.0;
+        if (bivalveType == "MUSSEL")
+            gridBuilder->addCoarseGrid(-18.0 - xSpaceM,   -16.5,            -5.0 - zSpacePM, 
+                                        58.0 + xSpaceP,   180. + ySpaceP,   13.0 + zSpacePM, dx);
+        else if (bivalveType == "OYSTER")
+            gridBuilder->addCoarseGrid(0.0 - xSpaceM,     0.5,              0.0 - zSpacePM, 
+                                       115.0 + xSpaceP,   27.0 + ySpaceP,   63.0 + zSpacePM, dx);    
+        
 
         gridBuilder->setNumberOfLayers(6, 8);
-        gridBuilder->addGrid(musselRef_1_STL, 1);
+        gridBuilder->addGrid(bivalveRef_1_STL, 1);
 
-        gridBuilder->addGeometry(musselSTL);
+        gridBuilder->addGeometry(bivalveSTL);
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
