@@ -628,7 +628,25 @@ bool GridReader::hasQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level
 
 void GridReader::initalGridInformations()
 {
+    int maxLevel = para->getMaxLevel();
+    std::vector<int> gridX, gridY, gridZ;
+    std::vector<int> distX, distY, distZ;
 
+	for (int i = 0; i <= maxLevel; i++) {
+        gridX.push_back(0);
+        gridY.push_back(0);
+        gridZ.push_back(0);
+        distX.push_back(0);
+        distY.push_back(0);
+        distZ.push_back(0);
+    }
+
+    para->setGridX(gridX);
+    para->setGridY(gridY);
+    para->setGridZ(gridZ);
+    para->setDistX(distX);
+    para->setDistY(distY);
+    para->setDistZ(distZ);
 }
 
 void GridReader::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const
