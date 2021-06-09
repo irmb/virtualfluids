@@ -632,7 +632,7 @@ void GridReader::initalGridInformations()
     std::vector<int> gridX, gridY, gridZ;
     std::vector<int> distX, distY, distZ;
 
-	for (size_t i = 0; i <= maxLevel; i++) {
+	for (int i = 0; i <= maxLevel; i++) {
         gridX.push_back(0);
         gridY.push_back(0);
         gridZ.push_back(0);
