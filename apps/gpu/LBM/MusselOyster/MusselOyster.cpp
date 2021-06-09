@@ -70,7 +70,7 @@
 
 
 std::string path("E:/temp/MusselOyster");
-
+std::string gridPath("E:/temp/GridMussel/");
 std::string simulationName("MusselOyster");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,10 +110,14 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     SPtr<Parameter>    para         = Parameter::make(configData, comm);
+    bool useGridGenerator = false;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         std::string bivalveType = "OYSTER"; // "MUSSEL" "OYSTER"    
+
+    
+      if (useGridGenerator) {
 
         real dx = 0.5;
         real vx = (real) 0.005;
@@ -178,10 +182,24 @@ void multipleLevel(const std::string& configPath)
         SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
         //////////////////////////////////////////////////////////////////////////
 
+        para->setDevices(std::vector<uint>{ (uint)0 });
+
+        para->setOutputPath(path);
+        para->setOutputPrefix(simulationName);
+
+        para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+
+        para->setPrintFiles(true);
+
+        para->setMaxLevel(1);
+
+        //////////////////////////////////////////////////////////////////////////
+
+
         // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/grid/");
         // gridBuilder->writeArrows    ("E:/temp/MusselOyster/grid/arrow");
 
-        SimulationFileWriter::write("E:/temp/MusselOyster/grid/", gridBuilder, FILEFORMAT::BINARY);
+        SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -198,16 +216,7 @@ void multipleLevel(const std::string& configPath)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		para->setDevices(std::vector<uint>{(uint)0});
 
-        para->setOutputPath( path );
-        para->setOutputPrefix( simulationName );
-
-        para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
-
-        para->setPrintFiles(true);
-
-        para->setMaxLevel(1);
         // para->setVelocity(velocityLB);
         // para->setViscosity(viscosityLB);
 
@@ -224,14 +233,21 @@ void multipleLevel(const std::string& configPath)
         //      });
 
 
-  
+
+       return;
+    }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
-        SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
-
+        SPtr<GridProvider> gridGenerator;
+        if (useGridGenerator)
+            gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+        else {
+            gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
+        }
+           
         Simulation sim;
         SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
         SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();

@@ -14,8 +14,8 @@
 ##################################################
 #informations for reading
 ##################################################
-#GridPath="E:/MusselOyster/dummy"
-GridPath="C:"
+GridPath="E:/temp/GridMussel"
+#GridPath="C:"
 
 ##################################################
 #number of grid levels
