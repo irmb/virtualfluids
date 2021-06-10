@@ -1,5 +1,6 @@
 #include "KernelParameter.h"
 
+#include <cmath>
 
 #include "MacroscopicQuantities.h"
 
