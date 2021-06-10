@@ -2536,7 +2536,7 @@ void MPIIORestartCoProcessor::readPhaseField(int step, int fieldN)
 
     size_t index = 0;
     size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
+    std::vector<LBMReal> vectorsOfValues;
 
     for (int n = 0; n < blocksCount; n++)
     {
