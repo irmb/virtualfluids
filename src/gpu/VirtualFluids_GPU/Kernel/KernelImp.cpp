@@ -23,3 +23,5 @@ void KernelImp::setCheckParameterStrategy(std::shared_ptr<CheckParameterStrategy
 }
 
 KernelImp::KernelImp(std::shared_ptr<Parameter> para, int level) : para(para), level(level) {}
+
+KernelImp::KernelImp() {}

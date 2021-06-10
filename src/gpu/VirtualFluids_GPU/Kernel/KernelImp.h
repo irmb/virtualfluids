@@ -23,7 +23,7 @@ public:
 
 protected:
     KernelImp(std::shared_ptr<Parameter> para, int level);
-    KernelImp() = default;
+    KernelImp();
 
     std::shared_ptr<Parameter> para;
     std::shared_ptr<CheckParameterStrategy> checkStrategy;
