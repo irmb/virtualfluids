@@ -14,4 +14,4 @@ extern "C" __global__ void LB_Kernel_CumulantK15Comp(	real omega,
 														int level,
 														real* forces,
 														bool EvenOrOdd);
-#endif 
+#endif

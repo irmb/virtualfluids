@@ -1973,10 +1973,10 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
 
     //----------------------------- restore data ---------------------------------
     size_t index = 0;
-    size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
-    for (std::size_t n = 0; n < blocksCount; n++) 
-    {
+    size_t nextVectorSize =
+        dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+    std::vector<LBMReal> vectorsOfValues;
+    for (std::size_t n = 0; n < blocksCount; n++) {
         SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].globalID);
 
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);

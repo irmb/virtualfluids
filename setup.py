@@ -10,6 +10,10 @@ from distutils.version import LooseVersion
 
 vf_cmake_args = [
     "-DBUILD_VF_PYTHON_BINDINGS=ON",
+    "-DBUILD_VF_DOUBLE_ACCURACY=ON",
+    "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache",
+    "-DCMAKE_CUDA_COMPILER_LAUNCHER=ccache",
+    "-DCMAKE_C_COMPILER_LAUNCHER=ccache",
     "-DBUILD_VF_CPU:BOOL=ON",
     "-DBUILD_VF_GPU:BOOL=OFF",
     "-DUSE_METIS=ON",

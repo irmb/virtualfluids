@@ -140,7 +140,6 @@ extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(real s9,
 													int size_Mat,
 													bool EvenOrOdd);
 
-
 extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27(
 	real omega,
 	unsigned int* bcMatD,

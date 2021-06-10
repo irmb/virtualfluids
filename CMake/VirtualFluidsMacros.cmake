@@ -131,18 +131,18 @@ function(vf_add_library)
     #################################################################
     ###   ADD TARGET                                              ###
     #################################################################
-    IF(${ARG_BUILDTYPE} MATCHES binary)
-        ADD_EXECUTABLE(${library_name} ${MY_SRCS} )
+    if(${ARG_BUILDTYPE} MATCHES binary)
+        add_executable(${library_name} ${MY_SRCS} )
         groupTarget(${library_name} ${appFolder})
-    ELSEIF(${ARG_BUILDTYPE} MATCHES shared)
-        ADD_LIBRARY(${library_name} SHARED ${MY_SRCS} )
+    elseif(${ARG_BUILDTYPE} MATCHES shared)
+        add_library(${library_name} SHARED ${MY_SRCS} )
         groupTarget(${library_name} ${libraryFolder})
-    ELSEIF(${ARG_BUILDTYPE} MATCHES static)
-        ADD_LIBRARY(${library_name} STATIC ${MY_SRCS} )
+        elseif(${ARG_BUILDTYPE} MATCHES static)
+        add_library(${library_name} STATIC ${MY_SRCS} )
         groupTarget(${library_name} ${libraryFolder})
-    ELSE()
-        MESSAGE(FATAL_ERROR "build_type=${ARG_BUILDTYPE} doesn't match BINARY, SHARED or STATIC")
-    ENDIF()
+    else()
+        message(FATAL_ERROR "build_type=${ARG_BUILDTYPE} doesn't match BINARY, SHARED or STATIC")
+    endif()
 
     # Set the output directory for build artifacts
     set_target_properties(${library_name}
@@ -151,6 +151,21 @@ function(vf_add_library)
             LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
             ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
             PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
+    # link time optimization
+    if(BUILD_VF_LTO)
+        if(NOT ${ARG_BUILDTYPE} MATCHES binary)
+            include(CheckIPOSupported)
+            check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error LANGUAGES CXX)
+
+            if( ipo_supported )
+                status_lib("IPO / LTO enabled")
+                set_target_properties(${library_name} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+            else()
+                status_lib("IPO / LTO not supported: <${ipo_error}>")
+            endif()
+        endif()
+    endif()
 
     # clang-tidy
     if(BUILD_VF_CLANG_TIDY)
@@ -286,6 +301,7 @@ function(vf_add_tests)
     # link googlemock
     linkGMOCK()
 
+    # add the target to ctest
     gtest_add_tests(TARGET ${library_test_name})
 
 endfunction()

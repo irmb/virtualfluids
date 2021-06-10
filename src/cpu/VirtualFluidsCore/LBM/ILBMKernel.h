@@ -36,6 +36,8 @@
 
 #include <PointerDefinitions.h>
 
+#include "LBMSystem.h"
+
 class BCProcessor;
 class DataSet3D;
 
@@ -57,7 +59,7 @@ public:
     virtual void setCollisionFactor(double collFactor)                               = 0;
     virtual bool isInsideOfDomain(const int &x1, const int &x2, const int &x3) const = 0;
     virtual int getGhostLayerWidth() const                                           = 0;
-    virtual double getDeltaT() const                                                 = 0;
+    virtual LBMReal getDeltaT() const                                                = 0;
     virtual bool getWithForcing() const                                              = 0;
 };
 

@@ -20,6 +20,7 @@ public:
     };
 
     KernelFactory() = default;
+    virtual ~KernelFactory() = default;
 
     std::shared_ptr<LBMKernel> makeKernel(KernelType kernelType);
 

@@ -6,6 +6,8 @@
 
 #include <Parameter/Parameter.h>
 
+#include <lbm/constants/NumericConstants.h>
+
 void CudaMemoryManager::cudaAllocFull(int lev)
 {
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->geo      ), parameter->getParH(lev)->mem_size_int  ));
@@ -404,6 +406,44 @@ void CudaMemoryManager::cudaFreeForcing()
 {
 	checkCudaErrors( cudaFreeHost(parameter->getForcesHost()));
 }
+
+void CudaMemoryManager::cudaAllocLevelForcing(int level)
+{
+    real fx_t{ 1. }, fy_t{ 1. }, fz_t{ 1. };
+    for (int i = 0; i < level; i++) {
+        fx_t *= vf::lbm::constant::c2o1;
+        fy_t *= vf::lbm::constant::c2o1;
+        fz_t *= vf::lbm::constant::c2o1;
+    }
+
+    const unsigned int mem_size = sizeof(real) * 3;
+
+    //Host
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(level)->forcing), mem_size));
+    parameter->getParH(level)->forcing[0] = parameter->forcingH[0] / fx_t;
+    parameter->getParH(level)->forcing[1] = parameter->forcingH[1] / fy_t;
+    parameter->getParH(level)->forcing[2] = parameter->forcingH[2] / fz_t;
+
+	//Device
+	checkCudaErrors( cudaMalloc((void**) &parameter->getParD(level)->forcing, mem_size));
+	//////////////////////////////////////////////////////////////////////////
+	const double tmp = (double)mem_size;
+	setMemsizeGPU(tmp, false);
+}
+
+void CudaMemoryManager::cudaCopyLevelForcingToDevice(int level)
+{
+	unsigned int mem_size = sizeof(real) * 3;
+	checkCudaErrors( cudaMemcpy(parameter->getParD(level)->forcing, parameter->getParH(level)->forcing, mem_size, cudaMemcpyHostToDevice));
+}
+
+void CudaMemoryManager::cudaFreeLevelForcing(int level)
+{
+	checkCudaErrors( cudaFreeHost(parameter->getParH(level)->forcing));
+    checkCudaErrors( cudaFree(parameter->getParD(level)->forcing));
+}
+
+
 //quadric Limiters
 void CudaMemoryManager::cudaAllocQuadricLimiters()
 {

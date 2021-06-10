@@ -1325,7 +1325,7 @@ void MPIIOMigrationBECoProcessor::readArray(int step, Arrays arrType, std::strin
 
     //----------------------------- restore data ---------------------------------
     int blockID;
-    std::vector<double> vectorsOfValues;
+    std::vector<LBMReal> vectorsOfValues;
     size_t index;
     size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
 

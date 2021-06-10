@@ -1949,10 +1949,10 @@ void MPIIORestartCoProcessor::readAverageDensityArray(int step)
     }
 
     size_t index = 0;
-    size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
-    for (int n = 0; n < blocksCount; n++) 
-    {
+    size_t nextVectorSize =
+        dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+    std::vector<LBMReal> vectorsOfValues;
+    for (int n = 0; n < blocksCount; n++) {
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
         index += nextVectorSize;
 
@@ -2046,10 +2046,10 @@ void MPIIORestartCoProcessor::readAverageVelocityArray(int step)
     }
 
     size_t index = 0;
-    size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
-    for (int n = 0; n < blocksCount; n++) 
-    {
+    size_t nextVectorSize =
+        dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+    std::vector<LBMReal> vectorsOfValues;
+    for (int n = 0; n < blocksCount; n++) {
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
         index += nextVectorSize;
 
@@ -2144,10 +2144,10 @@ void MPIIORestartCoProcessor::readAverageFluktuationsArray(int step)
     }
 
     size_t index = 0;
-    size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
-    for (int n = 0; n < blocksCount; n++) 
-    {
+    size_t nextVectorSize =
+        dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+    std::vector<LBMReal> vectorsOfValues;
+    for (int n = 0; n < blocksCount; n++) {
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
         index += nextVectorSize;
 
@@ -2241,10 +2241,10 @@ void MPIIORestartCoProcessor::readAverageTripleArray(int step)
     }
 
     size_t index = 0;
-    size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
-    for (int n = 0; n < blocksCount; n++) 
-    {
+    size_t nextVectorSize =
+        dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+    std::vector<LBMReal> vectorsOfValues;
+    for (int n = 0; n < blocksCount; n++) {
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
         index += nextVectorSize;
 
@@ -2338,10 +2338,10 @@ void MPIIORestartCoProcessor::readShearStressValArray(int step)
     }
 
     size_t index = 0;
-    size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
-    for (int n = 0; n < blocksCount; n++) 
-    {
+    size_t nextVectorSize =
+        dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+    std::vector<LBMReal> vectorsOfValues;
+    for (int n = 0; n < blocksCount; n++) {
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
         index += nextVectorSize;
 
@@ -2435,10 +2435,10 @@ void MPIIORestartCoProcessor::readRelaxationFactor(int step)
     }
 
     size_t index = 0;
-    size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-    std::vector<double> vectorsOfValues;
-    for (int n = 0; n < blocksCount; n++) 
-    {
+    size_t nextVectorSize =
+        dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+    std::vector<LBMReal> vectorsOfValues;
+    for (int n = 0; n < blocksCount; n++) {
         vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
         index += nextVectorSize;
 
