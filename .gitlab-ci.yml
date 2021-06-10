@@ -47,11 +47,10 @@ stages:
     - mkdir -p $CI_PROJECT_DIR/$BUILD_FOLDER
     - cd $CI_PROJECT_DIR/$BUILD_FOLDER
     - rm -r -f ./*
-    - cmake ..
+    - cmake .. -LAH
       --preset=all_make_ccache
       -DBUILD_WARNINGS_AS_ERRORS=ON
       -DCMAKE_CUDA_ARCHITECTURES=60
-    - cmake . -LAH
     - make -j4
     - ccache --show-stats
 
