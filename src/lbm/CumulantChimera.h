@@ -10,7 +10,7 @@
 
 #include <basics/Core/DataTypes.h>
 
-#include "CumulantChimeraParameter.h"
+#include "KernelParameter.h"
 
 namespace vf
 {
@@ -27,7 +27,7 @@ using RelaxationRatesFunctor = void(*)(real omega, real &OxxPyyPzz, real &OxyyPx
                                        real &O4, real &O5, real &O6);
 
 
-__host__ __device__ void cumulantChimera(CumulantChimeraParameter parameter, RelaxationRatesFunctor setRelaxationRates);
+__host__ __device__ void cumulantChimera(KernelParameter parameter, RelaxationRatesFunctor setRelaxationRates);
 
 }
 }

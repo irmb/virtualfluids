@@ -1,10 +1,10 @@
 #include "CumulantK15Unified.h"
 
-#include "../CumulantKernel.cuh"
+#include <stdexcept>
+
+#include "../RunLBMKernel.cuh"
 
 #include "Parameter/Parameter.h"
-
-#include <lbm/Distribution27.h>
 
 #include <lbm/CumulantChimera.h>
 
@@ -15,7 +15,7 @@ std::shared_ptr<CumulantK15Unified> CumulantK15Unified::getNewInstance(std::shar
 
 void CumulantK15Unified::run()
 {
-    vf::gpu::LBMKernelParameter kernelParameter{ para->getParD(level)->omega,
+    vf::gpu::GPUKernelParameter kernelParameter{ para->getParD(level)->omega,
                                                  para->getParD(level)->geoSP,
                                                  para->getParD(level)->neighborX_SP,
                                                  para->getParD(level)->neighborY_SP,
@@ -25,11 +25,11 @@ void CumulantK15Unified::run()
                                                  para->getParD(level)->forcing,
                                                  para->getParD(level)->evenOrOdd };
 
-    auto lambda = [] __device__(vf::lbm::CumulantChimeraParameter parameter) {
+    auto lambda = [] __device__(vf::lbm::KernelParameter parameter) {
         return vf::lbm::cumulantChimera(parameter, vf::lbm::setRelaxationRatesK15);
     };
 
-    vf::gpu::cumulantKernel<<<cudaGrid.grid, cudaGrid.threads>>>(lambda, kernelParameter);
+    vf::gpu::runKernel<<<cudaGrid.grid, cudaGrid.threads>>>(lambda, kernelParameter);
 
     getLastCudaError("LB_Kernel_CumulantK15Comp execution failed");
 }

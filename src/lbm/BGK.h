@@ -10,14 +10,14 @@
 
 #include <basics/Core/DataTypes.h>
 
-#include "CumulantChimeraParameter.h"
+#include "KernelParameter.h"
 
 namespace vf
 {
 namespace lbm
 {
 
-__host__ __device__ void bgk(CumulantChimeraParameter parameter);
+__host__ __device__ void bgk(KernelParameter parameter);
 
 }
 }

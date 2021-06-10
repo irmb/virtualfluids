@@ -20,7 +20,7 @@ using namespace constant;
 
 
 
-__host__ __device__ void bgk(CumulantChimeraParameter parameter)
+__host__ __device__ void bgk(KernelParameter parameter)
 {
     auto& distribution = parameter.distribution;
     const auto omega = parameter.omega;

@@ -18,7 +18,7 @@ namespace lbm
 {
 
 
-struct CumulantChimeraParameter
+struct KernelParameter
 {
     Distribution27& distribution;
     real omega;

@@ -6,7 +6,7 @@
 #include <cuda_runtime.h>
 
 #include <lbm/Distribution27.h>
-#include <lbm/CumulantChimeraParameter.h>
+#include <lbm/KernelParameter.h>
 
 #include "Kernel/Utilities/DistributionHelper.cuh"
 
@@ -16,7 +16,7 @@ namespace gpu
 {
 
 
-struct LBMKernelParameter
+struct GPUKernelParameter
 {
     real omega;
     unsigned int* typeOfGridNode;
@@ -30,7 +30,7 @@ struct LBMKernelParameter
 };
 
 template<typename KernelFunctor>
-__global__ void cumulantKernel(KernelFunctor kernel, LBMKernelParameter kernelParameter)
+__global__ void runKernel(KernelFunctor kernel, GPUKernelParameter kernelParameter)
 {
     const uint k = vf::gpu::getNodeIndex();
     const uint nodeType = kernelParameter.typeOfGridNode[k];
@@ -48,8 +48,8 @@ __global__ void cumulantKernel(KernelFunctor kernel, LBMKernelParameter kernelPa
         kernelParameter.neighborZ
     };
 
-    lbm::CumulantChimeraParameter chimeraParameter {distributionWrapper.distribution, kernelParameter.omega, kernelParameter.forces};
-    kernel(chimeraParameter);
+    lbm::KernelParameter parameter {distributionWrapper.distribution, kernelParameter.omega, kernelParameter.forces};
+    kernel(parameter);
 
     distributionWrapper.write();
 }

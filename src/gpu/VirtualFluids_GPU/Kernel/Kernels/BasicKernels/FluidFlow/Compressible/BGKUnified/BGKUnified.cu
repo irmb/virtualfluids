@@ -1,9 +1,10 @@
 #include "BGKUnified.h"
 
-#include "Parameter/Parameter.h"
-#include "../CumulantKernel.cuh"
-#include "Kernel/Utilities/CudaGrid.h"
 #include <stdexcept>
+
+#include "Parameter/Parameter.h"
+#include "../RunLBMKernel.cuh"
+#include "Kernel/Utilities/CudaGrid.h"
 
 #include <lbm/BGK.h>
 
@@ -15,7 +16,7 @@ std::shared_ptr<BGKUnified> BGKUnified::getNewInstance(std::shared_ptr<Parameter
 
 void BGKUnified::run()
 {
-    vf::gpu::LBMKernelParameter kernelParameter{ para->getParD(level)->omega,
+    vf::gpu::GPUKernelParameter kernelParameter{ para->getParD(level)->omega,
                                                  para->getParD(level)->geoSP,
                                                  para->getParD(level)->neighborX_SP,
                                                  para->getParD(level)->neighborY_SP,
@@ -25,11 +26,11 @@ void BGKUnified::run()
                                                  nullptr, /* forces not used in bgk kernel */
                                                  para->getParD(level)->evenOrOdd };
 
-    auto lambda = [] __device__(vf::lbm::CumulantChimeraParameter parameter) {
+    auto lambda = [] __device__(vf::lbm::KernelParameter parameter) {
         return vf::lbm::bgk(parameter);
     };
 
-    vf::gpu::cumulantKernel<<<cudaGrid.grid, cudaGrid.threads>>>(lambda, kernelParameter);
+    vf::gpu::runKernel<<<cudaGrid.grid, cudaGrid.threads>>>(lambda, kernelParameter);
 
     getLastCudaError("LB_Kernel_BGKUnified execution failed");
 }

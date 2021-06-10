@@ -71,7 +71,7 @@ __host__ __device__ void setRelaxationRatesK15(real omega, real &OxxPyyPzz, real
 //! and \ref
 //! <a href="https://doi.org/10.1016/j.jcp.2017.07.004"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.07.004 ]</b></a>
 //////////////////////////////////////////////////////////////////////////
-__host__ __device__ void cumulantChimera(CumulantChimeraParameter parameter, RelaxationRatesFunctor setRelaxationRates)
+__host__ __device__ void cumulantChimera(KernelParameter parameter, RelaxationRatesFunctor setRelaxationRates)
 {
     auto& distribution = parameter.distribution;
     const auto omega = parameter.omega;
