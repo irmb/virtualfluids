@@ -488,6 +488,8 @@ clang-tidy:
 
   needs: []
 
+  allow_failure: true
+
   before_script:
     - run-clang-tidy -h
 
