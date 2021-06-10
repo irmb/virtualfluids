@@ -99,7 +99,7 @@ msvc_16:
     - cd $CI_PROJECT_DIR
     - md -force $env:BUILD_FOLDER
     - cd $env:BUILD_FOLDER
-    - cmake .. --preset=all_msvc -DBUILD_WARNINGS_AS_ERRORS=ON
+    - cmake .. --preset=all_msvc -DCMAKE_CUDA_ARCHITECTURES=61 -DBUILD_WARNINGS_AS_ERRORS=ON
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
 
   cache:
@@ -507,6 +507,29 @@ clang-tidy:
     paths:
       - build/clangtidy.txt
       - build/compile_commands.json
+
+
+###############################################################################
+# doxgen
+doxygen:
+  stage: analyze
+
+  only:
+    - develop@irmb/VirtualFluids_dev
+
+  needs: []
+
+  image: alpine
+
+  script:
+  - apk update && apk add doxygen
+  - doxygen docs/Doxyfile
+
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - docs/build/
+
 
 ###############################################################################
 ##                               Deploy                                      ##

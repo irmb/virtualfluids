@@ -76,12 +76,7 @@ public:
     SPtr<Grid3D> getGrid3D() const { return grid.lock(); }
     void setGrid3D(SPtr<Grid3D> grid) { this->grid = grid; }
     virtual SPtr<GbObject3D> getGbObject3D() const { return geoObject3D; }
-    virtual bool setDifferencesToGbObject3D(const SPtr<Block3D>)
-    {
-        // UBLOG(logINFO, "Interactor3D::setDifferencesToGbObject3D()");
-        return false;
-    }
-
+    virtual bool setDifferencesToGbObject3D(const SPtr<Block3D>) = 0;
     virtual std::vector<SPtr<Block3D>> &getBcBlocks() { return this->bcBlocks; }
     virtual void removeBcBlocks() { this->bcBlocks.clear(); }
     virtual std::vector<SPtr<Block3D>> &getSolidBlockSet() { return this->solidBlocks; }
