@@ -89,12 +89,13 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    para->setNumprocs(comm->getNummberOfProcess());
    devCheck(comm->mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
 
+   para->initParameter();
+
    gridProvider->allocAndCopyForcing();
    gridProvider->allocAndCopyQuadricLimiters();
    gridProvider->setDimensions();
    gridProvider->setBoundingBox();
 
-   para->initParameter();
    para->setRe(para->getVelocity() * (real)1.0 / para->getViscosity());
    para->setPhi((real) 0.0);
    para->setlimitOfNodesForVTK(30000000); //max 30 Million nodes per VTK file
