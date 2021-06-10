@@ -1745,9 +1745,9 @@ void MPIIORestartCoProcessor::readDataSet(int step)
     }
     
     size_t index = 0;
-    std::vector<double> vectorsOfValuesF1, vectorsOfValuesF2, vectorsOfValuesF3;
-    std::vector<double> vectorsOfValuesH11, vectorsOfValuesH12, vectorsOfValuesH13;
-    //std::vector<double> vectorsOfValuesH21, vectorsOfValuesH22, vectorsOfValuesH23;
+    std::vector<LBMReal> vectorsOfValuesF1, vectorsOfValuesF2, vectorsOfValuesF3;
+    std::vector<LBMReal> vectorsOfValuesH11, vectorsOfValuesH12, vectorsOfValuesH13;
+    //std::vector<LBMReal> vectorsOfValuesH21, vectorsOfValuesH22, vectorsOfValuesH23;
     size_t vectorSize1 = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3];
     size_t vectorSize2 = dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3];
     size_t vectorSize3 = dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];

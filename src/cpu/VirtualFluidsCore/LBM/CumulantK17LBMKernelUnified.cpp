@@ -30,6 +30,10 @@
 //! \ingroup LBM
 //! \author Konstantin Kutscher, Martin Geier
 //=======================================================================================
+#include <lbm/KernelParameter.h>
+#include <lbm/CumulantChimera.h>
+#include <lbm/constants/D3Q27.h>
+
 #include "CumulantK17LBMKernelUnified.h"
 #include "D3Q27System.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
@@ -39,9 +43,6 @@
 #include "Block3D.h"
 #include "BCArray3D.h"
 
-#include <lbm/KernelParameter.h>
-#include <lbm/CumulantChimera.h>
-#include <lbm/constants/D3Q27.h>
 
 //#define PROOF_CORRECTNESS
 
