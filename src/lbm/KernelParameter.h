@@ -1,5 +1,5 @@
-#ifndef LBM_CUMULANT_CHIMERA_PARAMETER_H
-#define LBM_CUMULANT_CHIMERA_PARAMETER_H
+#ifndef LBM_KERNEL_PARAMETER_H
+#define LBM_KERNEL_PARAMETER_H
 
 #ifndef __host__
 #define __host__
@@ -10,12 +10,21 @@
 
 #include <basics/Core/DataTypes.h>
 
-#include "Distribution27.h"
 
 namespace vf
 {
 namespace lbm
 {
+
+struct Distribution27
+{
+    real f[27];
+
+    __host__ __device__ real getDensity_() const;
+};
+
+
+__host__ __device__ real abs_internal(real value);
 
 
 struct KernelParameter
@@ -24,6 +33,7 @@ struct KernelParameter
     real omega;
     real* forces;
 };
+
 
 
 

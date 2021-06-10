@@ -110,48 +110,24 @@ __host__ __device__ void cumulantChimera(KernelParameter parameter, RelaxationRa
     real mfaaa = distribution.f[dir::MMM];
     real mfbbb = distribution.f[dir::ZZZ];
 
-    ////////////////////////////////////////////////////////////////////////////////////
-    //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
-    //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa  2015.05.001 ]</b></a>
-    //!
-    const real drho =
-        ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
-        (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
-        ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb; 
-    const real rho = c1o1 + drho;
-    const real OOrho = c1o1 / rho;    
-    real vvx = 
-        ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
-        (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
-        (mfcbb - mfabb)) * OOrho;
-    real vvy = 
-        ((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
-        (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
-        (mfbcb - mfbab)) * OOrho;
-    real vvz = 
-        ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
-        (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
-        (mfbbc - mfbba)) * OOrho;
+
+    const real drho = getDensity(distribution.f);
+    const real OOrho = c1o1 / (c1o1 + drho);    
+
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa  2015.05.001 ]</b></a>
     //!
-    vvx += forces[0] * c1o2;
-    vvy += forces[1] * c1o2;
-    vvz += forces[2] * c1o2;
+    const real vvx = getIncompressibleVelocityX1(distribution.f) * OOrho + forces[0] * c1o2;
+    const real vvy = getIncompressibleVelocityX2(distribution.f) * OOrho + forces[0] * c1o2;
+    const real vvz = getIncompressibleVelocityX3(distribution.f) * OOrho + forces[0] * c1o2;
+
     ////////////////////////////////////////////////////////////////////////////////////
     // calculate the square of velocities for this lattice node
-    real vx2 = vvx*vvx;
-    real vy2 = vvy*vvy;
-    real vz2 = vvz*vvz;
-    ////////////////////////////////////////////////////////////////////////////////////
-    //! - Set relaxation limiters for third order cumulants to default value \f$ \lambda=0.001 \f$ according to section 6 in \ref
-    //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05  040 ]</b></a>
-    //!
-    real wadjust;
-    real qudricLimitP = c1o100;
-    real qudricLimitM = c1o100;
-    real qudricLimitD = c1o100;
+    const real vx2 = vvx*vvx;
+    const real vy2 = vvy*vvy;
+    const real vz2 = vvz*vvz;
+
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Chimera transform from well conditioned distributions to central moments as defined in Appendix J in \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa  2015.05.001 ]</b></a>
@@ -209,8 +185,8 @@ __host__ __device__ void cumulantChimera(KernelParameter parameter, RelaxationRa
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05  040 ]</b></a>
     //! with simplifications assuming \f$ \omega_2 = 1.0 \f$ (modify for different bulk viscosity).
     //!
-    real A = (c4o1 + c2o1*omega - c3o1*omega*omega) / (c2o1 - c7o1*omega + c5o1*omega*omega);
-    real B = (c4o1 + c28o1*omega - c14o1*omega*omega) / (c6o1 - c21o1*omega + c15o1*omega*omega);   
+    const real A = (c4o1 + c2o1*omega - c3o1*omega*omega) / (c2o1 - c7o1*omega + c5o1*omega*omega);
+    const real B = (c4o1 + c28o1*omega - c14o1*omega*omega) / (c6o1 - c21o1*omega + c15o1*omega*omega);   
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Compute cumulants from central moments according to Eq. (20)-(23) in
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05  040 ]</b></a>
@@ -267,12 +243,12 @@ __host__ __device__ void cumulantChimera(KernelParameter parameter, RelaxationRa
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015), DOI:10.1016/j.camwa  2015.05.001 ]</b></a>
     //! Note that the division by rho is omitted here as we need rho times the gradients later.
     //!
-    real Dxy = -c3o1*omega*mfbba;
-    real Dxz = -c3o1*omega*mfbab;
-    real Dyz = -c3o1*omega*mfabb;
-    real dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
-    real dyuy = dxux + omega * c3o2 * mxxMyy;
-    real dzuz = dxux + omega * c3o2 * mxxMzz;
+    const real Dxy = -c3o1*omega*mfbba;
+    const real Dxz = -c3o1*omega*mfbab;
+    const real Dyz = -c3o1*omega*mfabb;
+    const real dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
+    const real dyuy = dxux + omega * c3o2 * mxxMyy;
+    const real dzuz = dxux + omega * c3o2 * mxxMzz;
     ////////////////////////////////////////////////////////////
     //! - Relaxation of second order cumulants with correction terms according to Eq. (33)-(35) in
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05  040 ]</b></a>
@@ -293,10 +269,16 @@ __host__ __device__ void cumulantChimera(KernelParameter parameter, RelaxationRa
     //relax
     //////////////////////////////////////////////////////////////////////////
     // incl. limiter
+    //! Set relaxation limiters for third order cumulants to default value \f$ \lambda=0.001 \f$ according to section 6 in \ref
     //! - Relaxation of third order cumulants including limiter according to Eq. (116)-(123)
     //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05  040 ]</b></a>
     //!
-    wadjust   = Oxyz + (c1o1 - Oxyz)*abs_internal(mfbbb) / (abs_internal(mfbbb) + qudricLimitD);
+
+    const real qudricLimitP = c1o100;
+    const real qudricLimitM = c1o100;
+    const real qudricLimitD = c1o100;
+
+    real wadjust   = Oxyz + (c1o1 - Oxyz)*abs_internal(mfbbb) / (abs_internal(mfbbb) + qudricLimitD);
     mfbbb    += wadjust * (-mfbbb);
     wadjust   = OxyyPxzz + (c1o1 - OxyyPxzz)*abs_internal(mxxyPyzz) / (abs_internal(mxxyPyzz) + qudricLimitP);
     mxxyPyzz += wadjust * (-mxxyPyzz);
@@ -436,33 +418,33 @@ __host__ __device__ void cumulantChimera(KernelParameter parameter, RelaxationRa
     //! stored arrays dependent on timestep is based on the esoteric twist algorithm
     //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017), DOI:10.3390/computation5020019 ]</b></a>
     //!
-    distribution.f[vf::lbm::dir::MZZ] = mfcbb;
-    distribution.f[vf::lbm::dir::PZZ] = mfabb;
-    distribution.f[vf::lbm::dir::ZMZ] = mfbcb;
-    distribution.f[vf::lbm::dir::ZPZ] = mfbab;
-    distribution.f[vf::lbm::dir::ZZM] = mfbbc;
-    distribution.f[vf::lbm::dir::ZZP] = mfbba;
-    distribution.f[vf::lbm::dir::MMZ] = mfccb;
-    distribution.f[vf::lbm::dir::PPZ] = mfaab;
-    distribution.f[vf::lbm::dir::MPZ] = mfcab;
-    distribution.f[vf::lbm::dir::PMZ] = mfacb;
-    distribution.f[vf::lbm::dir::MZM] = mfcbc;
-    distribution.f[vf::lbm::dir::PZP] = mfaba;
-    distribution.f[vf::lbm::dir::MZP] = mfcba;
-    distribution.f[vf::lbm::dir::PZM] = mfabc;
-    distribution.f[vf::lbm::dir::ZMM] = mfbcc;
-    distribution.f[vf::lbm::dir::ZPP] = mfbaa;
-    distribution.f[vf::lbm::dir::ZMP] = mfbca;
-    distribution.f[vf::lbm::dir::ZPM] = mfbac;
-    distribution.f[vf::lbm::dir::MMM] = mfccc;
-    distribution.f[vf::lbm::dir::PMM] = mfacc;
-    distribution.f[vf::lbm::dir::MPM] = mfcac;
-    distribution.f[vf::lbm::dir::PPM] = mfaac;
-    distribution.f[vf::lbm::dir::MMP] = mfcca;
-    distribution.f[vf::lbm::dir::PMP] = mfaca;
-    distribution.f[vf::lbm::dir::MPP] = mfcaa;
-    distribution.f[vf::lbm::dir::PPP] = mfaaa;
-    distribution.f[vf::lbm::dir::ZZZ] = mfbbb;
+    distribution.f[dir::MZZ] = mfcbb;
+    distribution.f[dir::PZZ] = mfabb;
+    distribution.f[dir::ZMZ] = mfbcb;
+    distribution.f[dir::ZPZ] = mfbab;
+    distribution.f[dir::ZZM] = mfbbc;
+    distribution.f[dir::ZZP] = mfbba;
+    distribution.f[dir::MMZ] = mfccb;
+    distribution.f[dir::PPZ] = mfaab;
+    distribution.f[dir::MPZ] = mfcab;
+    distribution.f[dir::PMZ] = mfacb;
+    distribution.f[dir::MZM] = mfcbc;
+    distribution.f[dir::PZP] = mfaba;
+    distribution.f[dir::MZP] = mfcba;
+    distribution.f[dir::PZM] = mfabc;
+    distribution.f[dir::ZMM] = mfbcc;
+    distribution.f[dir::ZPP] = mfbaa;
+    distribution.f[dir::ZMP] = mfbca;
+    distribution.f[dir::ZPM] = mfbac;
+    distribution.f[dir::MMM] = mfccc;
+    distribution.f[dir::PMM] = mfacc;
+    distribution.f[dir::MPM] = mfcac;
+    distribution.f[dir::PPM] = mfaac;
+    distribution.f[dir::MMP] = mfcca;
+    distribution.f[dir::PMP] = mfaca;
+    distribution.f[dir::MPP] = mfcaa;
+    distribution.f[dir::PPP] = mfaaa;
+    distribution.f[dir::ZZZ] = mfbbb;
 }
 
 

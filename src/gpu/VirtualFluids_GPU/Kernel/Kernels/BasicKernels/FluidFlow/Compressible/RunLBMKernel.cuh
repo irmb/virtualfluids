@@ -5,7 +5,6 @@
 #include <DataTypes.h>
 #include <cuda_runtime.h>
 
-#include <lbm/Distribution27.h>
 #include <lbm/KernelParameter.h>
 
 #include "Kernel/Utilities/DistributionHelper.cuh"
@@ -32,13 +31,13 @@ struct GPUKernelParameter
 template<typename KernelFunctor>
 __global__ void runKernel(KernelFunctor kernel, GPUKernelParameter kernelParameter)
 {
-    const uint k = vf::gpu::getNodeIndex();
+    const uint k = getNodeIndex();
     const uint nodeType = kernelParameter.typeOfGridNode[k];
 
-    if (!vf::gpu::isValidFluidNode(k, kernelParameter.size_Mat, nodeType))
+    if (!isValidFluidNode(k, kernelParameter.size_Mat, nodeType))
         return;
 
-    vf::gpu::DistributionWrapper distributionWrapper {
+    DistributionWrapper distributionWrapper {
         kernelParameter.distributions,
         kernelParameter.size_Mat,
         kernelParameter.isEvenTimestep,

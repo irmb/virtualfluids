@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <vector>
 
+#include <helper_timer.h>
+
 #include "LBM/LB.h"
 #include "Communication/Communicator.h"
 #include "Communication/ExchangeData27.h"

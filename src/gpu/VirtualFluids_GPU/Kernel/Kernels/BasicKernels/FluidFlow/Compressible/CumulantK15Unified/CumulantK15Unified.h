@@ -3,12 +3,19 @@
 
 #include "Kernel/KernelImp.h"
 
+namespace vf
+{
+namespace gpu
+{
 class CumulantK15Unified : public KernelImp
 {
 public:
-    static std::shared_ptr<CumulantK15Unified> getNewInstance(std::shared_ptr<Parameter> para, int level);
-    void run();
-
     CumulantK15Unified(std::shared_ptr<Parameter> para, int level);
+    
+    void run();
 };
+
+}
+}
+
 #endif

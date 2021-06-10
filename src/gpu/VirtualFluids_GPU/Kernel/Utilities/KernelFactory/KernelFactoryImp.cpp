@@ -106,8 +106,8 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     if (kernel == "BGKCompSP27") {
         newKernel     = BGKCompSP27::getNewInstance(para, level);   // compressible
         checkStrategy = FluidFlowCompStrategy::getInstance();       //      ||
-    } else if (kernel == "BGKUnified") {                            //     \/
-        newKernel     = BGKUnified::getNewInstance(para, level);
+    } else if (kernel == "BGKUnified") {                            //      \/
+        newKernel     = std::make_shared<vf::gpu::BGKUnified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "BGKPlusCompSP27") {
         newKernel     = BGKPlusCompSP27::getNewInstance(para, level);
@@ -125,10 +125,10 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
         newKernel     = CumulantK17Comp::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "CumulantK15Unified") {
-        newKernel     = CumulantK15Unified::getNewInstance(para, level);
+        newKernel     = std::make_shared<vf::gpu::CumulantK15Unified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "CumulantK17Unified") {
-        newKernel     = CumulantK17Unified::getNewInstance(para, level);
+        newKernel     = std::make_shared<vf::gpu::CumulantK17Unified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "CumulantK17BulkComp") {
         newKernel     = CumulantK17BulkComp::getNewInstance(para, level);

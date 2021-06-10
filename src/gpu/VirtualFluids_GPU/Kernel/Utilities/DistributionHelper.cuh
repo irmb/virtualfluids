@@ -35,7 +35,7 @@
 
 #include "LBM/LB.h" 
 
-#include <lbm/Distribution27.h>
+#include <lbm/KernelParameter.h>
 
 namespace vf
 {
@@ -91,8 +91,6 @@ struct DistributionWrapper
 __device__ unsigned int getNodeIndex();
 
 __device__ bool isValidFluidNode(uint k, int size_Mat, uint nodeType);
-
-__device__ void getLevelForce(real fx, real fy, real fz, int level, real* forces);
 
 }
 }

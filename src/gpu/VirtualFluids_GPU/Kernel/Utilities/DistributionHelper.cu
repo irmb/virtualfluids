@@ -164,19 +164,6 @@ __device__ bool isValidFluidNode(uint k, int size_Mat, uint nodeType)
            (nodeType == GEO_FLUID || nodeType == GEO_PM_0 || nodeType == GEO_PM_1 || nodeType == GEO_PM_2);
 }
 
-__device__ void getLevelForce(real fx, real fy, real fz, int level, real *forces)
-{
-    real fx_t{ 1. }, fy_t{ 1. }, fz_t{ 1. };
-    for (int i = 0; i < level; i++) {
-        fx_t *= vf::lbm::constant::c2o1;
-        fy_t *= vf::lbm::constant::c2o1;
-        fz_t *= vf::lbm::constant::c2o1;
-    }
-
-    forces[0] = fx / fx_t;
-    forces[1] = fy / fy_t;
-    forces[2] = fz / fz_t;
-}
 
 } // namespace gpu
 } // namespace vf
