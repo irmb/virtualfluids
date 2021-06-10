@@ -8,3 +8,4 @@ set_target_properties(lbmCuda PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 set_source_files_properties(../Distribution27.cpp PROPERTIES LANGUAGE CUDA)
 set_source_files_properties(../CumulantChimera.cpp PROPERTIES LANGUAGE CUDA)
+set_source_files_properties(../BGK.cpp PROPERTIES LANGUAGE CUDA)

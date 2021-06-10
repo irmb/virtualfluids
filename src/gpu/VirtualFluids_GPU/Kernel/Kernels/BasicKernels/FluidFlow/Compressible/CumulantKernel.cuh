@@ -25,7 +25,6 @@ struct LBMKernelParameter
     unsigned int* neighborZ;
     real* distributions;
     int size_Mat;
-    int level;
     real* forces;
     bool isEvenTimestep;
 };
@@ -49,11 +48,7 @@ __global__ void cumulantKernel(KernelFunctor kernel, LBMKernelParameter kernelPa
         kernelParameter.neighborZ
     };
 
-
-    real level_forces[3];
-    vf::gpu::getLevelForce(kernelParameter.forces[0], kernelParameter.forces[1], kernelParameter.forces[2], kernelParameter.level, level_forces);
-
-    lbm::CumulantChimeraParameter chimeraParameter {distributionWrapper.distribution, kernelParameter.omega, level_forces};
+    lbm::CumulantChimeraParameter chimeraParameter {distributionWrapper.distribution, kernelParameter.omega, kernelParameter.forces};
     kernel(chimeraParameter);
 
     distributionWrapper.write();

@@ -4,6 +4,7 @@
 
 //LBM kernel (compressible)
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGK/BGKCompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGKUnified/BGKUnified.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGKPlus/BGKPlusCompSP27.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/Cascade/CascadeCompSP27.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/Cumulant/CumulantCompSP27.h"
@@ -102,10 +103,13 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
 	std::shared_ptr<KernelImp> newKernel;
 	std::shared_ptr<CheckParameterStrategy> checkStrategy;
 
-	if (       kernel == "BGKCompSP27") {
-        newKernel     = BGKCompSP27::getNewInstance(para, level);				// compressible
-        checkStrategy = FluidFlowCompStrategy::getInstance();     //	   ||
-    } else if (kernel == "BGKPlusCompSP27") {									//     \/
+    if (kernel == "BGKCompSP27") {
+        newKernel     = BGKCompSP27::getNewInstance(para, level);   // compressible
+        checkStrategy = FluidFlowCompStrategy::getInstance();       //      ||
+    } else if (kernel == "BGKUnified") {                            //     \/
+        newKernel     = BGKUnified::getNewInstance(para, level);
+        checkStrategy = FluidFlowCompStrategy::getInstance();
+    } else if (kernel == "BGKPlusCompSP27") {
         newKernel     = BGKPlusCompSP27::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "MRTCompSP27") {

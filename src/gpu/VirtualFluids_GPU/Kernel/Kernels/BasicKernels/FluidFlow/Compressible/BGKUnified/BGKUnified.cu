@@ -1,19 +1,19 @@
-#include "CumulantK17Unified.h"
+#include "BGKUnified.h"
 
 #include "Parameter/Parameter.h"
 #include "../CumulantKernel.cuh"
 #include "Kernel/Utilities/CudaGrid.h"
 #include <stdexcept>
 
-#include <lbm/CumulantChimera.h>
+#include <lbm/BGK.h>
 
 
-std::shared_ptr<CumulantK17Unified> CumulantK17Unified::getNewInstance(std::shared_ptr<Parameter> para, int level)
+std::shared_ptr<BGKUnified> BGKUnified::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-    return std::make_shared<CumulantK17Unified>(para, level);
+    return std::make_shared<BGKUnified>(para, level);
 }
 
-void CumulantK17Unified::run()
+void BGKUnified::run()
 {
     vf::gpu::LBMKernelParameter kernelParameter{ para->getParD(level)->omega,
                                                  para->getParD(level)->geoSP,
@@ -22,22 +22,22 @@ void CumulantK17Unified::run()
                                                  para->getParD(level)->neighborZ_SP,
                                                  para->getParD(level)->d0SP.f[0],
                                                  (int)para->getParD(level)->size_Mat_SP,
-                                                 para->getParD(level)->forcing,
+                                                 nullptr, /* forces not used in bgk kernel */
                                                  para->getParD(level)->evenOrOdd };
 
     auto lambda = [] __device__(vf::lbm::CumulantChimeraParameter parameter) {
-        return vf::lbm::cumulantChimera(parameter, vf::lbm::setRelaxationRatesK17);
+        return vf::lbm::bgk(parameter);
     };
 
     vf::gpu::cumulantKernel<<<cudaGrid.grid, cudaGrid.threads>>>(lambda, kernelParameter);
 
-    getLastCudaError("LB_Kernel_CumulantK17Unified execution failed");
+    getLastCudaError("LB_Kernel_BGKUnified execution failed");
 }
 
-CumulantK17Unified::CumulantK17Unified(std::shared_ptr<Parameter> para, int level)
+BGKUnified::BGKUnified(std::shared_ptr<Parameter> para, int level)
 {
 #ifndef BUILD_CUDA_LTO
-    throw std::invalid_argument("To use the CumulantK17Unified kernel, pass -DBUILD_CUDA_LTO=ON to cmake. Requires: CUDA 11.2 & cc 5.0");
+    throw std::invalid_argument("To use the BKGUnified kernel, pass -DBUILD_CUDA_LTO=ON to cmake. Requires: CUDA 11.2 & cc 5.0");
 #endif
 
     this->para  = para;

@@ -22,8 +22,7 @@ void CumulantK15Unified::run()
                                                  para->getParD(level)->neighborZ_SP,
                                                  para->getParD(level)->d0SP.f[0],
                                                  (int)para->getParD(level)->size_Mat_SP,
-                                                 level,
-                                                 para->getForcesDev(),
+                                                 para->getParD(level)->forcing,
                                                  para->getParD(level)->evenOrOdd };
 
     auto lambda = [] __device__(vf::lbm::CumulantChimeraParameter parameter) {
