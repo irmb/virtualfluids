@@ -15,24 +15,22 @@ std::shared_ptr<CumulantK17Unified> CumulantK17Unified::getNewInstance(std::shar
 
 void CumulantK17Unified::run()
 {
-    vf::gpu::LBMKernelParameter kernelParameter
-	{	para->getParD(level)->omega,
-		para->getParD(level)->geoSP,
-		para->getParD(level)->neighborX_SP,
-		para->getParD(level)->neighborY_SP,
-		para->getParD(level)->neighborZ_SP,
-		para->getParD(level)->d0SP.f[0],
-		(int)para->getParD(level)->size_Mat_SP,
-		level,
-		para->getForcesDev(),
-		para->getParD(level)->evenOrOdd
-	};
+    vf::gpu::LBMKernelParameter kernelParameter{ para->getParD(level)->omega,
+                                                 para->getParD(level)->geoSP,
+                                                 para->getParD(level)->neighborX_SP,
+                                                 para->getParD(level)->neighborY_SP,
+                                                 para->getParD(level)->neighborZ_SP,
+                                                 para->getParD(level)->d0SP.f[0],
+                                                 (int)para->getParD(level)->size_Mat_SP,
+                                                 level,
+                                                 para->getForcesDev(),
+                                                 para->getParD(level)->evenOrOdd };
 
-	auto lambda = [] __device__(vf::lbm::CumulantChimeraParameter parameter) {
-		return vf::lbm::cumulantChimera(parameter, vf::lbm::setRelaxationRatesK17);
-	};
+    auto lambda = [] __device__(vf::lbm::CumulantChimeraParameter parameter) {
+        return vf::lbm::cumulantChimera(parameter, vf::lbm::setRelaxationRatesK17);
+    };
 
-	vf::gpu::cumulantKernel<<< cudaGrid.grid, cudaGrid.threads >>>(lambda, kernelParameter);
+    vf::gpu::cumulantKernel<<<cudaGrid.grid, cudaGrid.threads>>>(lambda, kernelParameter);
 
     getLastCudaError("LB_Kernel_CumulantK17Unified execution failed");
 }
