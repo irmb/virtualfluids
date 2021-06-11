@@ -32,10 +32,16 @@ namespace gpu
 {
 class Communicator;
 }
+
+namespace basics
+{
+class ConfigurationFile;
+}
 }
 
 //struct
-struct ParameterStruct{
+struct ParameterStruct 
+{
 	bool evenOrOdd;
 	unsigned int numberofthreads;
 
@@ -290,6 +296,8 @@ struct ParameterStruct{
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
+    Parameter(const vf::gpu::Communicator& comm);
+    Parameter(const vf::basics::ConfigurationFile& configData, const vf::gpu::Communicator& comm);
 	////////////////////////////////////////////////////////////////////////////
 	////really ugly...should be in private...
 	//Parameter();

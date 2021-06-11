@@ -23,6 +23,8 @@
 //#endif
 //lib for windows Ws2_32.lib
 
+#include <basics/config/ConfigurationFile.h>
+
 
 SPtr<Parameter> Parameter::make()
 {
@@ -37,6 +39,24 @@ SPtr<Parameter> Parameter::make(SPtr<ConfigData> configData, vf::gpu::Communicat
 Parameter::Parameter()
 {
 }
+
+Parameter::Parameter(const vf::gpu::Communicator& comm)
+{
+    ic.numprocs = comm.getNummberOfProcess();
+    ic.myid = comm.getPID();
+}
+
+Parameter::Parameter(const vf::basics::ConfigurationFile& configData,
+                     const vf::gpu::Communicator& comm) :
+                     Parameter(comm)
+
+{
+    if (configData.contains("NumberOfDevices"))
+        ic.maxdev = configData.getValue<int>("NumberOfDevices");
+    else
+        ic.maxdev = 1;
+}
+
 Parameter::Parameter(SPtr<ConfigData> configData, vf::gpu::Communicator* comm)
 {
 	//////////////////////////////////////////////////////////////////////////
