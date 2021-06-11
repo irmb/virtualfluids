@@ -42,6 +42,8 @@
 
 #include <basics/PointerDefinitions.h>
 
+#include <basics/config/ConfigurationFile.hpp>
+
 #include <basics/container/CbArray2D.h>
 #include <basics/container/CbArray3D.h>
 #include <basics/container/CbArray4D.h>
@@ -291,7 +293,6 @@
 
 #include <Utilities/ChangeRandomQs.hpp>
 #include <Utilities/CheckpointConverter.h>
-#include <Utilities/ConfigurationFile.hpp>
 #include <Utilities/MathUtil.hpp>
 #include <Utilities/MemoryUtil.h>
 #include <Utilities/VoxelMatrixUtil.hpp>

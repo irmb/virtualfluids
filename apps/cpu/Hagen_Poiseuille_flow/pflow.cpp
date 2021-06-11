@@ -10,7 +10,7 @@ using namespace std;
 //{
 //   try
 //   {
-//      ConfigurationFile   config;
+//      vf::basics::ConfigurationFile   config;
 //      config.load(configname);
 //
 //      string          pathname = config.getString("pathname");
@@ -301,7 +301,7 @@ void pflowdp(string configname)
 {
    try
    {
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathname = config.getValue<string>("pathname");
@@ -544,7 +544,7 @@ void pflowdp(string configname)
 
          intHelper.addInteractor(outflowInt);
 
-         //die Geschwindigkeit Randbedingung soll Ausflüß überdecken !!!!!
+         //die Geschwindigkeit Randbedingung soll Ausflï¿½ï¿½ ï¿½berdecken !!!!!
 
 
 

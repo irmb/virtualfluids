@@ -1,11 +1,7 @@
 # build directories
-buildDev/
 build/
-buildDev/
 bin/
 cmake-build-debug/
-MSVC2017/
-VS2017/
 run/
 
 # Python
@@ -25,6 +21,3 @@ output/
 
 # MacOS
 .DS_Store
-
-#Cluster
-run/

@@ -160,7 +160,7 @@ void run(string configname)
    try
    {
 
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathOut = config.getValue<string>("pathOut");

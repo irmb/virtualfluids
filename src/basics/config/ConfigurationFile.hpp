@@ -1,5 +1,5 @@
-#ifndef Configuration_h__
-#define Configuration_h__
+#ifndef BASICS_CONFIGURATIONFILE_H
+#define BASICS_CONFIGURATIONFILE_H
 
 #include <map>
 #include <vector>
@@ -8,6 +8,8 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
+
+#include <basics/basics/utilities/UbException.h>
 
 //! \brief  Simple configuration file
 //! \details The Configuration class presented here can read and keep values of any configuration file written in a format like this:
@@ -36,6 +38,11 @@
 //!vector<double> origin       = config.getVector<double>("origin");
 //!            
 //! \author  Konstantin Kutscher
+
+
+namespace vf::basics
+{
+
 
 class ConfigurationFile
 {
@@ -240,4 +247,7 @@ T ConfigurationFile::getValue(const std::string& key) const
 
    return x;
 }
-#endif // Configuration_h__
+
+}
+
+#endif
