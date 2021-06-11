@@ -55,6 +55,28 @@ Parameter::Parameter(const vf::basics::ConfigurationFile& configData,
         ic.maxdev = configData.getValue<int>("NumberOfDevices");
     else
         ic.maxdev = 1;
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("Devices"))
+        ic.devices = configData.getVector<uint>("Devices");
+	else
+        ic.devices = std::vector<uint>{(uint)0};
+    //////////////////////////////////////////////////////////////////////////
+	if (configData.contains("Path"))
+		ic.oPath = configData.getValue<std::string>("Path");
+	else
+		ic.oPath = "C:/Output/"; //TODO: Shouldnt we throw an exception here?
+    //////////////////////////////////////////////////////////////////////////
+	if (configData.contains("Prefix"))
+		ic.oPrefix = configData.getValue<std::string>("Prefix");
+	else
+		ic.oPrefix = "MyFile";
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("WriteGrid"))
+		ic.printFiles = configData.getValue<bool>("WriteGrid");
+	else
+		ic.printFiles = false;
+    //////////////////////////////////////////////////////////////////////////
+
 }
 
 Parameter::Parameter(SPtr<ConfigData> configData, vf::gpu::Communicator* comm)
