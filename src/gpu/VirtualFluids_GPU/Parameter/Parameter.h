@@ -13,19 +13,15 @@
 #include "LBM/LB.h"
 #include "LBM/D3Q27.h"
 #include "Calculation/PorousMedia.h"
-//#include "Output/LogWriter.hpp"
 
-#include <cuda_runtime.h>
-#include <helper_cuda.h>
-//random numbers
-#include <curand.h>
-#include <curand_kernel.h>
 #include "PointerDefinitions.h"
 
 #include "VirtualFluids_GPU_export.h"
 
 class ConfigData;
 
+struct curandStateXORWOW;
+typedef struct curandStateXORWOW curandState;
 namespace vf
 {
 namespace gpu
@@ -298,15 +294,10 @@ class VIRTUALFLUIDS_GPU_EXPORT Parameter
 public:
     Parameter(const vf::gpu::Communicator& comm);
     Parameter(const vf::basics::ConfigurationFile& configData, const vf::gpu::Communicator& comm);
-	////////////////////////////////////////////////////////////////////////////
-	////really ugly...should be in private...
-	//Parameter();
-	////////////////////////////////////////////////////////////////////////////
-    static SPtr<Parameter> make();
+	Parameter(SPtr<ConfigData> configData, vf::gpu::Communicator* comm);
+
 	static SPtr<Parameter> make(SPtr<ConfigData> configData, vf::gpu::Communicator* comm);
 
-
-	static Parameter* getInstanz();
 	ParameterStruct* getParH(int level);
 	ParameterStruct* getParD(int level);
 	void initParameter();
@@ -734,12 +725,10 @@ public:
 
 	std::string getADKernel();
 
-	~Parameter();
-
-    public:
-        //Forcing///////////////
-        real *forcingH, *forcingD;
-        double hostForcing[3];
+public:
+	//Forcing///////////////
+	real *forcingH, *forcingD;
+	double hostForcing[3];
 
     //////////////////////////////////////////////////////////////////////////
     // limiters
@@ -753,7 +742,6 @@ public:
 
 protected:
 private:
-	static Parameter* instanz;
 	bool compOn;
 	bool diffOn;
 	bool isF3;
@@ -810,9 +798,6 @@ private:
 	std::vector<ParameterStruct*> parD;
 	//LogWriter output;
 
-	Parameter();
-	Parameter(SPtr<ConfigData> configData, vf::gpu::Communicator* comm);
-	Parameter(const Parameter&);
 	void initInterfaceParameter(int level);
 	real TrafoXtoWorld(int CoordX, int level);
 	real TrafoYtoWorld(int CoordY, int level);
