@@ -516,8 +516,8 @@ clang-tidy:
 doxygen:
   stage: analyze
 
-  only:
-    - develop@irmb/VirtualFluids_dev
+  #only:
+  #  - develop@irmb/VirtualFluids_dev
 
   needs: []
 
@@ -526,11 +526,13 @@ doxygen:
   script:
   - apk update && apk add doxygen
   - doxygen docs/Doxyfile
+  - mv docs/build/html/ public/
 
   artifacts:
     expire_in: 1 week
     paths:
-    - docs/build/
+    - docs/build/html/
+    - public
 
 
 ###############################################################################
