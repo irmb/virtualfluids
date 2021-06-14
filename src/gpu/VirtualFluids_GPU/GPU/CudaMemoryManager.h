@@ -78,6 +78,10 @@ public:
 	void cudaCopyForcingToHost();
 	void cudaFreeForcing();
 
+    void cudaAllocLevelForcing(int level);
+	void cudaCopyLevelForcingToDevice(int level);
+	void cudaFreeLevelForcing(int level);
+
 	void cudaAllocQuadricLimiters();
 	void cudaCopyQuadricLimitersToDevice();
 	void cudaFreeQuadricLimiters();

@@ -5,13 +5,12 @@
 #include <vector>
 #include <PointerDefinitions.h>
 
-
-
 #include "Output/LogWriter.hpp"
 #include "GPU/KineticEnergyAnalyzer.h"
 #include "GPU/EnstrophyAnalyzer.h"
 #include "Utilities/Buffer2D.hpp"
 #include "LBM/LB.h"
+
 #include "VirtualFluids_GPU_export.h"
 
 namespace vf

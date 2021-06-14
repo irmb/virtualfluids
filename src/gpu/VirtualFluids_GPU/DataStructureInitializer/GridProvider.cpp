@@ -118,6 +118,12 @@ void GridProvider::allocAndCopyForcing()
 {
     cudaMemoryManager->cudaAllocForcing();
     cudaMemoryManager->cudaCopyForcingToDevice();
+
+    for (int level = para->getCoarse(); level <= para->getFine(); level++)
+    {
+        cudaMemoryManager->cudaAllocLevelForcing(level);
+        cudaMemoryManager->cudaCopyLevelForcingToDevice(level);
+    }
 }
 
 void GridProvider::allocAndCopyQuadricLimiters()

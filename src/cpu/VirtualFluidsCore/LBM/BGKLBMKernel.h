@@ -1,5 +1,5 @@
-#ifndef LBMKERNELETD3Q27BGK_H
-#define LBMKERNELETD3Q27BGK_H
+#ifndef BGKLBMKernel_H
+#define BGKLBMKernel_H
 
 #include "LBMKernel.h"
 #include "basics/container/CbArray3D.h"

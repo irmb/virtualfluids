@@ -1,0 +1,26 @@
+#!/bin/bash
+#SBATCH -J PyFluidsTest
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=20
+
+#SBATCH --mem-per-cpu=3000
+#SBATCH --time=07:00:00
+#SBATCH --partition=standard
+
+source $HOME/.bashrc
+
+echo "PyFluids Poiseuille Test Case"
+echo "Number of tasks: ${SLURM_NTASKS}"
+
+export SINGULARITYENV_PYFLUIDS_SCALE_LEVEL=0
+export SINGULARITYENV_PYFLUIDS_NUM_THREADS=4
+srun singularity run --app testcase PoiseuilleTestContainer.sif
+
+export SINGULARITYENV_PYFLUIDS_SCALE_LEVEL=1
+srun singularity run --app testcase PoiseuilleTestContainer.sif
+
+export SINGULARITYENV_PYFLUIDS_SCALE_LEVEL=2
+srun singularity run --app testcase PoiseuilleTestContainer.sif
+
+srun singularity run --app evaluate PoiseuilleTestContainer.sif

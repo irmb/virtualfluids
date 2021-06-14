@@ -26,3 +26,5 @@ output/
 # MacOS
 .DS_Store
 
+#Cluster
+run/

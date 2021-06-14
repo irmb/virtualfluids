@@ -5,8 +5,9 @@
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "D3Q27System.h"
 #include "DataSet3D.h"
+#include "Block3D.h"
 
-//#define PROOF_CORRECTNESS
+#define PROOF_CORRECTNESS
 
 //////////////////////////////////////////////////////////////////////////
 BGKLBMKernel::BGKLBMKernel() { this->compressible = false; }
@@ -22,6 +23,7 @@ void BGKLBMKernel::initDataSet()
 SPtr<LBMKernel> BGKLBMKernel::clone()
 {
     SPtr<LBMKernel> kernel(new BGKLBMKernel());
+    kernel->setNX(nx);
     std::dynamic_pointer_cast<BGKLBMKernel>(kernel)->initDataSet();
     kernel->setCollisionFactor(this->collFactor);
     kernel->setBCProcessor(bcProcessor->clone(kernel));
@@ -30,10 +32,12 @@ SPtr<LBMKernel> BGKLBMKernel::clone()
     kernel->setForcingX2(muForcingX2);
     kernel->setForcingX3(muForcingX3);
     kernel->setIndex(ix1, ix2, ix3);
+    kernel->setDeltaT(deltaT);
+    kernel->setBlock(block.lock());
     return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
-void BGKLBMKernel::calculate(int /*step*/)
+void BGKLBMKernel::calculate(int step)
 {
     using namespace D3Q27System;
     using namespace UbMath;
@@ -250,7 +254,10 @@ void BGKLBMKernel::calculate(int /*step*/)
                     if (dif > 10.0E-15 || dif < -10.0E-15)
 #endif
                     {
-                        UB_THROW(UbException(UB_EXARGS, "rho is not correct"));
+                      UB_THROW(UbException(UB_EXARGS, "rho="+UbSystem::toString(drho)+", rho_post="+UbSystem::toString(rho_post)
+                         +" dif="+UbSystem::toString(dif)
+                         +" rho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3)
+                         +" in " + block.lock()->toString()+" step = "+UbSystem::toString(step)));
                     }
 #endif
                     //////////////////////////////////////////////////////////////////////////

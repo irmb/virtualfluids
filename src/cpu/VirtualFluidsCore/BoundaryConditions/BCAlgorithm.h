@@ -41,6 +41,7 @@
 class DistributionArray3D;
 class BCArray3D;
 class BoundaryConditions;
+class Block3D;
 
 //! \brief Abstract class of baundary conditions algorithm
 //! \details  BCAlgorithm provides interface for implementation of diferent boundary conditions
@@ -77,6 +78,7 @@ public:
     virtual void addDistributions(SPtr<DistributionArray3D> distributions)   = 0;
     virtual void addDistributionsH(SPtr<DistributionArray3D> distributionsH) {}
     virtual void addDistributionsH2(SPtr<DistributionArray3D> distributionsH2) {}
+    void setBlock(SPtr<Block3D> block);
     void setNodeIndex(int x1, int x2, int x3);
     void setBcPointer(SPtr<BoundaryConditions> bcPtr);
     void setCompressible(bool c);
@@ -107,6 +109,7 @@ protected:
     SPtr<DistributionArray3D> distributionsH;
     SPtr<DistributionArray3D> distributionsH2;
     SPtr<BCArray3D> bcArray;
+    SPtr<Block3D> block;
 
     LBMReal collFactor;
     LBMReal collFactorL, collFactorG, collFactorPh;
