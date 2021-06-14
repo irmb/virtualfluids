@@ -61,9 +61,11 @@ void SimpleSlipBCAlgorithm::applyBC()
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal feq[D3Q27System::ENDF+1];
    distributions->getDistributionInv(f, x1, x2, x3);
-   LBMReal vx1, vx2, vx3, drho;
+   LBMReal vx1, vx2, vx3, drho, rho;
    calcMacrosFct(f, drho, vx1, vx2, vx3);
    calcFeqFct(feq, drho, vx1, vx2, vx3);
+
+   rho = 1.0 + drho * compressibleFactor;
 
    UbTupleFloat3 normale = bcPtr->getNormalVector();
    LBMReal amp = vx1*val<1>(normale)+vx2*val<2>(normale)+vx3*val<3>(normale);
@@ -109,7 +111,7 @@ void SimpleSlipBCAlgorithm::applyBC()
          case D3Q27System::TNW: velocity = (UbMath::c1o36*(-vx1+vx2+vx3)); break;
          default: throw UbException(UB_EXARGS, "unknown error");
          }
-         LBMReal fReturn = f[invDir] - velocity;;
+         LBMReal fReturn = f[invDir] - velocity * rho;
          distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
       }
    }
