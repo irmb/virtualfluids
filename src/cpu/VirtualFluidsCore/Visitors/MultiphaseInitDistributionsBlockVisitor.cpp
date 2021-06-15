@@ -224,7 +224,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 
 						feq[dir] = rho*WEIGTH[dir]*(1 + 3*velProd + 4.5*velSq1 - 1.5*(vx1Sq+vx2Sq+vx3Sq));
 						//geq[dir] = p1*WEIGTH1[dir] + gamma;
-						geq[dir] = p1*WEIGTH[dir]/(rho*UbMath::c1o3) + gamma;
+						geq[dir] = p1*WEIGTH[dir]/(rho*UbMath::c1o3) + gamma*rho;
 					}
 
 
@@ -291,6 +291,35 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 					distributionsH->setDistributionInv(f, ix1, ix2, ix3);
 
 					if (distributionsH2) {
+
+						f[E]    = (1.-phi) * feq[E] / rho;
+						f[W]    = (1.-phi) * feq[W] / rho;
+						f[N]    = (1.-phi) * feq[N] / rho;
+						f[S]    = (1.-phi) * feq[S] / rho;
+						f[T]    = (1.-phi) * feq[T] / rho;
+						f[B]    = (1.-phi) * feq[B] / rho;
+						f[NE]   = (1.-phi) * feq[NE] / rho;
+						f[SW]   = (1.-phi) * feq[SW] / rho;
+						f[SE]   = (1.-phi) * feq[SE] / rho;
+						f[NW]   = (1.-phi) * feq[NW] / rho;
+						f[TE]   = (1.-phi) * feq[TE] / rho;
+						f[BW]   = (1.-phi) * feq[BW] / rho;
+						f[BE]   = (1.-phi) * feq[BE] / rho;
+						f[TW]   = (1.-phi) * feq[TW] / rho;
+						f[TN]   = (1.-phi) * feq[TN] / rho;
+						f[BS]   = (1.-phi) * feq[BS] / rho;
+						f[BN]   = (1.-phi) * feq[BN] / rho;
+						f[TS]   = (1.-phi) * feq[TS] / rho;
+						f[TNE]  = (1.-phi) * feq[TNE] / rho;
+						f[TNW]  = (1.-phi) * feq[TNW] / rho;
+						f[TSE]  = (1.-phi) * feq[TSE] / rho;
+						f[TSW]  = (1.-phi) * feq[TSW] / rho;
+						f[BNE]  = (1.-phi) * feq[BNE] / rho;
+						f[BNW]  = (1.-phi) * feq[BNW] / rho;
+						f[BSE]  = (1.-phi) * feq[BSE] / rho;
+						f[BSW]  = (1.-phi) * feq[BSW] / rho;
+						f[REST] = (1.-phi) * feq[REST] / rho;
+
                         distributionsH2->setDistribution(f, ix1, ix2, ix3);
                         distributionsH2->setDistributionInv(f, ix1, ix2, ix3);                    
 					}

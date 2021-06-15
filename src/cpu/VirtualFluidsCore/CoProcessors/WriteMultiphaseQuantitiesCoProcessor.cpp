@@ -155,6 +155,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     datanames.push_back("Vy");
     datanames.push_back("Vz");
     datanames.push_back("P1");
+    datanames.push_back("Phi2");
 
     data.resize(datanames.size());
 
@@ -162,10 +163,12 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     SPtr<BCArray3D> bcArray                  = kernel->getBCProcessor()->getBCArray();
     SPtr<DistributionArray3D> distributionsF = kernel->getDataSet()->getFdistributions();
     SPtr<DistributionArray3D> distributionsH = kernel->getDataSet()->getHdistributions();
+    SPtr<DistributionArray3D> distributionsH2 = kernel->getDataSet()->getH2distributions();
     SPtr<PhaseFieldArray3D> divU             = kernel->getDataSet()->getPhaseField();
 
     LBMReal f[D3Q27System::ENDF + 1];
     LBMReal phi[D3Q27System::ENDF + 1];
+    LBMReal phi2[D3Q27System::ENDF + 1];
     LBMReal vx1, vx2, vx3, rho, p1, beta, kappa;
     LBMReal densityRatio = kernel->getDensityRatio();
 
@@ -202,6 +205,8 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3, -1);
     CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField(
         new CbArray3D<LBMReal, IndexerX3X2X1>(maxX1, maxX2, maxX3, -999.0));
+    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField2(
+        new CbArray3D<LBMReal, IndexerX3X2X1>(maxX1, maxX2, maxX3, -999.0));
 
     for (int ix3 = minX3; ix3 < maxX3; ix3++) {
         for (int ix2 = minX2; ix2 < maxX2; ix2++) {
@@ -211,8 +216,17 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     (*phaseField)(ix1, ix2, ix3) =
                         ((f[TNE] + f[BSW]) + (f[TSE] + f[BNW])) + ((f[BSE] + f[TNW]) + (f[TSW] + f[BNE])) +
                         (((f[NE] + f[SW]) + (f[SE] + f[NW])) + ((f[TE] + f[BW]) + (f[BE] + f[TW])) +
-                         ((f[BN] + f[TS]) + (f[TN] + f[BS]))) +
-                        ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[REST];
+                        ((f[BN] + f[TS]) + (f[TN] + f[BS]))) +
+                            ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[REST];
+                    if (distributionsH2) {
+                    distributionsH2->getDistribution(f, ix1, ix2, ix3);
+                    (*phaseField2)(ix1, ix2, ix3) =
+                        ((f[TNE] + f[BSW]) + (f[TSE] + f[BNW])) + ((f[BSE] + f[TNW]) + (f[TSW] + f[BNE])) +
+                        (((f[NE] + f[SW]) + (f[SE] + f[NW])) + ((f[TE] + f[BW]) + (f[BE] + f[TW])) +
+                        ((f[BN] + f[TS]) + (f[TN] + f[BS]))) +
+                            ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[REST];
+                }
+                    else { (*phaseField2)(ix1, ix2, ix3) = 999.0; }
                 }
             }
         }
@@ -244,6 +258,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                                                   float(worldCoordinates[2])));
 
                     phi[REST] = (*phaseField)(ix1, ix2, ix3);
+                    phi2[REST] = (*phaseField2)(ix1, ix2, ix3);
 
                     if ((ix1 == 0) || (ix2 == 0) || (ix3 == 0)) {
                         dX1_phi = 0.0;
@@ -284,6 +299,38 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                         dX2_phi  = 0.0 * gradX2_phi(phi);
                         dX3_phi  = 0.0 * gradX3_phi(phi);
                         mu = 2 * beta * phi[REST] * (phi[REST] - 1) * (2 * phi[REST] - 1) - kappa * nabla2_phi(phi);
+
+                        //phi2[E] = (*phaseField2)(ix1 + DX1[E], ix2 + DX2[E], ix3 + DX3[E]);
+                        //phi2[N] = (*phaseField2)(ix1 + DX1[N], ix2 + DX2[N], ix3 + DX3[N]);
+                        //phi2[T] = (*phaseField2)(ix1 + DX1[T], ix2 + DX2[T], ix3 + DX3[T]);
+                        //phi2[W] = (*phaseField2)(ix1 + DX1[W], ix2 + DX2[W], ix3 + DX3[W]);
+                        //phi2[S] = (*phaseField2)(ix1 + DX1[S], ix2 + DX2[S], ix3 + DX3[S]);
+                        //phi2[B] = (*phaseField2)(ix1 + DX1[B], ix2 + DX2[B], ix3 + DX3[B]);
+                        //phi2[NE] = (*phaseField2)(ix1 + DX1[NE], ix2 + DX2[NE], ix3 + DX3[NE]);
+                        //phi2[NW] = (*phaseField2)(ix1 + DX1[NW], ix2 + DX2[NW], ix3 + DX3[NW]);
+                        //phi2[TE] = (*phaseField2)(ix1 + DX1[TE], ix2 + DX2[TE], ix3 + DX3[TE]);
+                        //phi2[TW] = (*phaseField2)(ix1 + DX1[TW], ix2 + DX2[TW], ix3 + DX3[TW]);
+                        //phi2[TN] = (*phaseField2)(ix1 + DX1[TN], ix2 + DX2[TN], ix3 + DX3[TN]);
+                        //phi2[TS] = (*phaseField2)(ix1 + DX1[TS], ix2 + DX2[TS], ix3 + DX3[TS]);
+                        //phi2[SW] = (*phaseField2)(ix1 + DX1[SW], ix2 + DX2[SW], ix3 + DX3[SW]);
+                        //phi2[SE] = (*phaseField2)(ix1 + DX1[SE], ix2 + DX2[SE], ix3 + DX3[SE]);
+                        //phi2[BW] = (*phaseField2)(ix1 + DX1[BW], ix2 + DX2[BW], ix3 + DX3[BW]);
+                        //phi2[BE] = (*phaseField2)(ix1 + DX1[BE], ix2 + DX2[BE], ix3 + DX3[BE]);
+                        //phi2[BS] = (*phaseField2)(ix1 + DX1[BS], ix2 + DX2[BS], ix3 + DX3[BS]);
+                        //phi2[BN] = (*phaseField2)(ix1 + DX1[BN], ix2 + DX2[BN], ix3 + DX3[BN]);
+                        //phi2[BSW] = (*phaseField2)(ix1 + DX1[BSW], ix2 + DX2[BSW], ix3 + DX3[BSW]);
+                        //phi2[BSE] = (*phaseField2)(ix1 + DX1[BSE], ix2 + DX2[BSE], ix3 + DX3[BSE]);
+                        //phi2[BNW] = (*phaseField2)(ix1 + DX1[BNW], ix2 + DX2[BNW], ix3 + DX3[BNW]);
+                        //phi2[BNE] = (*phaseField2)(ix1 + DX1[BNE], ix2 + DX2[BNE], ix3 + DX3[BNE]);
+                        //phi2[TNE] = (*phaseField2)(ix1 + DX1[TNE], ix2 + DX2[TNE], ix3 + DX3[TNE]);
+                        //phi2[TNW] = (*phaseField2)(ix1 + DX1[TNW], ix2 + DX2[TNW], ix3 + DX3[TNW]);
+                        //phi2[TSE] = (*phaseField2)(ix1 + DX1[TSE], ix2 + DX2[TSE], ix3 + DX3[TSE]);
+                        //phi2[TSW] = (*phaseField2)(ix1 + DX1[TSW], ix2 + DX2[TSW], ix3 + DX3[TSW]);
+
+                       // mu = 2 * beta * phi[REST] * (phi[REST] - 1) * (2 * phi[REST] - 1) - kappa * nabla2_phi(phi);
+
+
+
                     }
 
                     distributionsF->getDistribution(f, ix1, ix2, ix3);
@@ -361,6 +408,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     data[index++].push_back(vx2);
                     data[index++].push_back(vx3);
                     data[index++].push_back(p1);
+                    data[index++].push_back(phi2[REST]);
                 }
             }
         }
