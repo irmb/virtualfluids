@@ -743,16 +743,18 @@ public:
 protected:
 private:
 	bool compOn;
-	bool diffOn;
+	bool diffOn {false};
 	bool isF3;
-	bool calcDragLift, calcCp;
-	bool writeVeloASCII;
-	bool calcPlaneConc;
+	bool calcDragLift {false};
+	bool calcCp {false};
+	bool writeVeloASCII {false};
+	bool calcPlaneConc {false};
     bool isBodyForce;
-	int diffMod;
-	int coarse, fine, maxlevel;
+	int diffMod {27};
+	int maxlevel {0};
+	int coarse, fine;
 	int factor_gridNZ;
-	int D3Qxx;
+	int D3Qxx {27};
 	InitCondition ic;
 	double memsizeGPU;
 	unsigned int limitOfNodesForVTK;
@@ -761,8 +763,8 @@ private:
 
 
 	//Kernel
-    std::string mainKernel;
-	bool multiKernelOn;
+    std::string mainKernel {"CumulantK17Comp"};
+	bool multiKernelOn {false};
 	std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;
 
@@ -770,11 +772,13 @@ private:
 
 	//////////////////////////////////////////////////////////////////////////
 	//particles
-	int particleBasicLevel, particleInitLevel;
-	int numberOfParticles;
-	bool calcParticles;
-	real stickToSolid;
-	real startXHotWall, endXHotWall;
+	int particleBasicLevel {0};
+	int particleInitLevel {0};
+	int numberOfParticles {0};
+	bool calcParticles {false};
+	real stickToSolid {(real) 0.0};
+	real startXHotWall {(real) 0.0};
+	real endXHotWall {(real) 0.0};
 	//////////////////////////////////////////////////////////////////////////
 	//CUDA random number generation
 	curandState* devState;
