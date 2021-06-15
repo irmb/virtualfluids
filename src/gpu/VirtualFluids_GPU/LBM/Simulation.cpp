@@ -87,11 +87,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    comm = vf::gpu::Communicator::getInstanz();
    this->para = para;
 
-   para->setMyID(comm->getPID());
-   para->setNumprocs(comm->getNummberOfProcess());
    devCheck(comm->mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
-
-   para->initParameter();
 
    gridProvider->allocAndCopyForcing();
    gridProvider->allocAndCopyQuadricLimiters();
@@ -99,7 +95,6 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    gridProvider->setBoundingBox();
 
    para->setRe(para->getVelocity() * (real)1.0 / para->getViscosity());
-   para->setPhi((real) 0.0);
    para->setlimitOfNodesForVTK(30000000); //max 30 Million nodes per VTK file
    if (para->getDoRestart())
        para->setStartTurn(para->getTimeDoRestart());

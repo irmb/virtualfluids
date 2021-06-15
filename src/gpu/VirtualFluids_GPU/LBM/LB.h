@@ -60,7 +60,8 @@ struct InitCondition
    real TempBC {1.0};
    real RealX {1.0};
    real RealY {1.0};
-   int numprocs, myid;
+   int numprocs {1};
+   int myid {0};
    int maxdev {1};
    uint tDoCheckPoint {0};
    uint tDoRestart {0};
