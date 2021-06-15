@@ -789,12 +789,12 @@ private:
 
     //////////////////////////////////////////////////////////////////////////
     // particles
-    int particleBasicLevel{ 0 };
-    int particleInitLevel{ 0 };
-    int numberOfParticles{ 0 };
-    bool calcParticles{ false };
-    real startXHotWall{ (real)0.0 };
-    real endXHotWall{ (real)0.0 };
+    int particleBasicLevel {0};
+    int particleInitLevel {0};
+    int numberOfParticles {0};
+    bool calcParticles {false};
+    real startXHotWall {(real)0.0};
+    real endXHotWall {(real)0.0};
     //////////////////////////////////////////////////////////////////////////
     // CUDA random number generation
     curandState *devState;
