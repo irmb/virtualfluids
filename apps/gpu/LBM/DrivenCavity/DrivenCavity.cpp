@@ -22,6 +22,8 @@
 #include "Core/VectorTypes.h"
 #include "Core/Logger/Logger.h"
 
+#include <basics/config/ConfigurationFile.h>
+
 //////////////////////////////////////////////////////////////////////////
 
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
@@ -119,12 +121,6 @@ void multipleLevel(const std::string& configPath)
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    
-	vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
-	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
-
-    std::cout << configPath << std::endl;
-	SPtr<ConfigData> configData = configReader->readConfigFile(configPath.c_str());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,8 +148,12 @@ void multipleLevel(const std::string& configPath)
     {
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
 
-        SPtr<Parameter>    para         = Parameter::make(configData, comm);
+        vf::basics::ConfigurationFile config;
+        config.load(configPath);
+
+        SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
