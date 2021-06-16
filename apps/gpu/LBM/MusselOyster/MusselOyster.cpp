@@ -123,8 +123,10 @@ void multipleLevel(const std::string& configPath)
     para->setViscosity((vx * dx) / Re);
     para->setVelocityRatio(1.0);
 
-    para->setTOut(50000);
-    para->setTEnd(100000);
+    para->setTOut(10);
+    para->setTEnd(100);
+    //para->setTOut(50000);
+    //para->setTEnd(100000);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -151,7 +153,7 @@ void multipleLevel(const std::string& configPath)
         TriangularMesh* bivalveSTL =
               TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
         TriangularMesh* bivalveRef_1_STL =
-              TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
+              TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
 
         // bounding box mussel:
         // x = -18, 58
