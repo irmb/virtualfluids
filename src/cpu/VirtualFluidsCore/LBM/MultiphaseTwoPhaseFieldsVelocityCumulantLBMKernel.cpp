@@ -52,7 +52,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::initDataSet()
     SPtr<DistributionArray3D> h2(new D3Q27EsoTwist3DSplittedVector(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9)); // For phase-field
     SPtr<PhaseFieldArray3D> divU(new PhaseFieldArray3D(nx[0] + 2, nx[1] + 2, nx[2] + 2, 0.0));
 	 pressure= CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 2, nx[1] + 2, nx[2] + 2, 0.0));
-	 pressureOld = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 2, nx[1] + 2, nx[2] + 2, 0.0));
+	// pressureOld = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 2, nx[1] + 2, nx[2] + 2, 0.0));
     dataSet->setFdistributions(f);
     dataSet->setHdistributions(h); // For phase-field
     dataSet->setH2distributions(h2); // For phase-field

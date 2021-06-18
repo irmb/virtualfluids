@@ -56,6 +56,10 @@ public:
    void forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
    void backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
 
+   ///refactor
+   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure;
+   //CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressureOld;
+
    double getCalculationTime() override { return .0; }
 protected:
    virtual void initDataSet();
@@ -75,8 +79,7 @@ protected:
    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsH2;
 
    //CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   phaseField;
-   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure;
-   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressureOld;
+
 
    LBMReal h  [D3Q27System::ENDF+1];
    LBMReal h2[D3Q27System::ENDF + 1];
