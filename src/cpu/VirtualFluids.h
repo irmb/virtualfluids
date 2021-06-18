@@ -244,6 +244,7 @@
 #include <LBM/MultiphaseCumulantLBMKernel.h>
 #include <LBM/MultiphaseScratchCumulantLBMKernel.h>
 #include <LBM/MultiphaseTwoPhaseFieldsCumulantLBMKernel.h>
+#include <LBM/MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel.h>
 
 
 
@@ -338,6 +339,7 @@
 #include <Visitors/MultiphaseSetKernelBlockVisitor.h>
 #include <Visitors/MultiphaseBoundaryConditionsBlockVisitor.h>
 #include <Visitors/MultiphaseInitDistributionsBlockVisitor.h>
+#include <Visitors/MultiphaseInitDistributionsBlockVisitorVelocity.h>
 #include <Visitors/SetInterpolationConnectorsBlockVisitor.h>
 
 #include <RefineAroundGbObjectHelper.h>

@@ -79,8 +79,8 @@ void run(string configname)
         SPtr<LBMKernel> kernel;
 
         //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
-        kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
-        //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(gr);
@@ -221,7 +221,7 @@ void run(string configname)
             fct2.DefineConst("radius", radius);
             fct2.DefineConst("interfaceThickness", interfaceThickness);
 
-            MultiphaseInitDistributionsBlockVisitor initVisitor(densityRatio, interfaceThickness, radius);
+            MultiphaseInitDistributionsBlockVisitorVelocity initVisitor(densityRatio, interfaceThickness, radius);
             initVisitor.setPhi(fct1);
             initVisitor.setVx1(fct2);
             grid->accept(initVisitor);
@@ -257,11 +257,11 @@ void run(string configname)
                 UBLOG(logINFO, "Restart - end");
         }
 
-        TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-        grid->accept(setConnsVisitor);
-
-        //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+        //TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
         //grid->accept(setConnsVisitor);
+
+        ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+        grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
