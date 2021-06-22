@@ -56,6 +56,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
+#include "utilities/communication.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,6 +109,7 @@ void multipleLevel(const std::string& configPath)
 
     SPtr<Parameter>    para         = Parameter::make(configData, comm);
     bool useGridGenerator = true;
+    bool useMultiGPU = true;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,30 +137,29 @@ void multipleLevel(const std::string& configPath)
     para->setCalcDragLift(false);
     para->setUseWale(false);
 
-    // para->setMainKernel("CumulantK15Comp");
-    para->setMainKernel("CumulantK17CompChim");
-
-    para->setDevices(std::vector<uint>{ (uint)0 });
-
     para->setOutputPath(path);
     para->setOutputPrefix(simulationName);
-
     para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
-
     para->setPrintFiles(true);
 
     // para->setMaxLevel(2);
 
+    // para->setMainKernel("CumulantK15Comp");
+    para->setMainKernel("CumulantK17CompChim");
+
+    if (useMultiGPU) {
+        para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
+        para->setMaxDev(2);
+        gridPath = gridPath + "MultiGPU/" ;
+    } else 
+        para->setDevices(std::vector<uint>{ (uint)0 });
+
+
+
     //////////////////////////////////////////////////////////////////////////
 
 
-      if (useGridGenerator) {
-
-        TriangularMesh* bivalveSTL =
-              TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
-        // TriangularMesh* bivalveRef_1_STL =
-        //       TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
-
+    if (useGridGenerator) {
         // bounding box mussel:
         const real bbxm = -18.0;
         const real bbxp = 58.0;
@@ -181,34 +182,104 @@ void multipleLevel(const std::string& configPath)
         const real zGridMin  = bbzm - 30.0;
         const real zGridMax  = bbzp + 30.0;
 
-        gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
-        // gridBuilder->setNumberOfLayers(6, 8);
-        // gridBuilder->addGrid(bivalveRef_1_STL, 1);
+        if (useMultiGPU) {
+            // const uint generatePart = 1;
+            const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
+            std::ofstream logFile2;
+            logFile2.open(gridPath + "/" + std::to_string(generatePart) + "/gridGeneratorLog.txt");
+            logging::Logger::addStream(&logFile2);
 
-        gridBuilder->addGeometry(bivalveSTL);
+            TriangularMesh *bivalveSTL =
+                TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
+            
+            real overlap      = 10.0 * dxGrid;            
+            const real xSplit = bbxm + (bbxm + bbxp) / 2;
 
-        gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+            if (generatePart == 0) {
+                gridBuilder->addCoarseGrid( xGridMin,           yGridMin,   zGridMin, 
+                                            xSplit + overlap,   yGridMax,   zGridMax, dxGrid);
+            }
+            if (generatePart == 1) {
+                gridBuilder->addCoarseGrid(xSplit - overlap,    yGridMin,   zGridMin, 
+                                           xGridMax,            yGridMax,   zGridMax, dxGrid);
+            }
 
-        gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-        //////////////////////////////////////////////////////////////////////////
-        gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+            gridBuilder->addGeometry(bivalveSTL);
 
-        gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+            if (generatePart == 0)
+                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xGridMin, xSplit,
+                                                                           yGridMin, yGridMax, 
+                                                                           zGridMin, zGridMax));
+            if (generatePart == 1)
+                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xSplit,   xGridMax, 
+                                                                           yGridMin, yGridMax, 
+                                                                           zGridMin, zGridMax));
+            gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
-        //////////////////////////////////////////////////////////////////////////
-        SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
-        //////////////////////////////////////////////////////////////////////////
+            if (generatePart == 0) {
+                gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 1);
+            }
 
+            if (generatePart == 1) {
+                gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
+            }
 
+            //////////////////////////////////////////////////////////////////////////
+            gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
 
-        // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/grid/");
-        // gridBuilder->writeArrows    ("E:/temp/MusselOyster/grid/arrow");
+            if (generatePart == 0)
+                gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+            if (generatePart == 1)
+                gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+           
+            gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
-        SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
+            //SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
+            
+            // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/grid/");
+            // gridBuilder->writeArrows    ("E:/temp/MusselOyster/grid/arrow");
 
+            SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder, FILEFORMAT::BINARY);
+            
+
+        } else {
+            TriangularMesh *bivalveSTL =
+                TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
+            // TriangularMesh* bivalveRef_1_STL =
+            //       TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
+
+            gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
+
+            // gridBuilder->setNumberOfLayers(6, 8);
+            // gridBuilder->addGrid(bivalveRef_1_STL, 1);
+
+            gridBuilder->addGeometry(bivalveSTL);
+
+            gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+
+            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            //////////////////////////////////////////////////////////////////////////
+            gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
+            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+
+            gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+
+            //////////////////////////////////////////////////////////////////////////
+            SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
+            //////////////////////////////////////////////////////////////////////////
+
+            // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/grid/");
+            // gridBuilder->writeArrows    ("E:/temp/MusselOyster/grid/arrow");
+
+            SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
+        }
+
+        
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
