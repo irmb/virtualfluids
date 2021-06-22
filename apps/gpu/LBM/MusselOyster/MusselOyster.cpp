@@ -147,7 +147,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setPrintFiles(true);
 
-    para->setMaxLevel(2);
+    // para->setMaxLevel(2);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -156,8 +156,8 @@ void multipleLevel(const std::string& configPath)
 
         TriangularMesh* bivalveSTL =
               TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
-        TriangularMesh* bivalveRef_1_STL =
-              TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
+        // TriangularMesh* bivalveRef_1_STL =
+        //       TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
 
         // bounding box mussel:
         const real bbxm = -18.0;
@@ -182,8 +182,8 @@ void multipleLevel(const std::string& configPath)
         const real zGridMax  = bbzp + 30.0;
 
         gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
-        gridBuilder->setNumberOfLayers(6, 8);
-        gridBuilder->addGrid(bivalveRef_1_STL, 1);
+        // gridBuilder->setNumberOfLayers(6, 8);
+        // gridBuilder->addGrid(bivalveRef_1_STL, 1);
 
         gridBuilder->addGeometry(bivalveSTL);
 
@@ -247,23 +247,23 @@ void multipleLevel(const std::string& configPath)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
+    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
-        SPtr<GridProvider> gridGenerator;
-        if (useGridGenerator)
-            gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
-        else {
-            gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
-        }
+    SPtr<GridProvider> gridGenerator;
+    if (useGridGenerator)
+        gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+    else {
+        gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
+    }
            
-        Simulation sim;
-        SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-        SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-        SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-        sim.setFactories(kernelFactory, preProcessorFactory);
-        sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
-        sim.run();
-        sim.free();
+    Simulation sim;
+    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
+    SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
+    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
+    sim.setFactories(kernelFactory, preProcessorFactory);
+    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
+    sim.run();
+    sim.free();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
