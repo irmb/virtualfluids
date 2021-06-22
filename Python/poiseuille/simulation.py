@@ -17,22 +17,29 @@ default_physical_params.lattice_viscosity = 0.005
 
 default_runtime_params = RuntimeParameters()
 default_runtime_params.number_of_threads = 4
-default_runtime_params.number_of_timesteps = 100000
-default_runtime_params.timestep_log_interval = 10000
+default_runtime_params.number_of_timesteps = 10000
+default_runtime_params.timestep_log_interval = 1000
+
+default_kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
+default_kernel.use_forcing = True
+default_kernel.forcing_in_x1 = 1e-8
+
+default_writer = Writer()
+default_writer.output_path = "./output"
+default_writer.output_format = OutputFormat.BINARY
+
+
+default_kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
+default_kernel.use_forcing = True
+default_kernel.forcing_in_x1 = 1e-8
 
 
 def run_simulation(physical_params=default_physical_params,
                    grid_params=default_grid_params,
-                   runtime_params=default_runtime_params):
+                   runtime_params=default_runtime_params,
+                   kernel=default_kernel,
+                   writer=default_writer):
     simulation = Simulation()
-
-    kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
-    kernel.use_forcing = True
-    kernel.forcing_in_x1 = 1e-8
-
-    writer = Writer()
-    writer.output_path = "./output"
-    writer.output_format = OutputFormat.BINARY
 
     simulation.set_kernel_config(kernel)
     simulation.set_physical_parameters(physical_params)
@@ -42,26 +49,26 @@ def run_simulation(physical_params=default_physical_params,
 
     no_slip_bc = NoSlipBoundaryCondition()
 
-    block_width = 3 * grid_params.node_distance
+    block_thickness = 3 * grid_params.node_distance
     simulation.add_object(
         GbCuboid3D(
-            grid_params.bounding_box.min_x1 - block_width,
-            grid_params.bounding_box.min_x2 - block_width,
-            grid_params.bounding_box.min_x3 - block_width,
-            grid_params.bounding_box.max_x1 + block_width,
-            grid_params.bounding_box.max_x2 + block_width,
+            grid_params.bounding_box.min_x1 - block_thickness,
+            grid_params.bounding_box.min_x2 - block_thickness,
+            grid_params.bounding_box.min_x3 - block_thickness,
+            grid_params.bounding_box.max_x1 + block_thickness,
+            grid_params.bounding_box.max_x2 + block_thickness,
             grid_params.bounding_box.min_x3),
         no_slip_bc,
         State.SOLID, "/geo/addWallZMin")
 
     simulation.add_object(
         GbCuboid3D(
-            grid_params.bounding_box.min_x1 - block_width,
-            grid_params.bounding_box.min_x2 - block_width,
+            grid_params.bounding_box.min_x1 - block_thickness,
+            grid_params.bounding_box.min_x2 - block_thickness,
             grid_params.bounding_box.max_x3,
-            grid_params.bounding_box.max_x1 + block_width,
-            grid_params.bounding_box.max_x2 + block_width,
-            grid_params.bounding_box.max_x3 + block_width),
+            grid_params.bounding_box.max_x1 + block_thickness,
+            grid_params.bounding_box.max_x2 + block_thickness,
+            grid_params.bounding_box.max_x3 + block_thickness),
         no_slip_bc,
         State.SOLID, "/geo/addWallZMax")
 

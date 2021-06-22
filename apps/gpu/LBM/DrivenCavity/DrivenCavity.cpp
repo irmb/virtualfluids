@@ -122,7 +122,7 @@ void multipleLevel(const std::string& configPath)
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     
-	Communicator* comm = Communicator::getInstanz();
+	vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
 	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
 
     std::cout << configPath << std::endl;
@@ -187,7 +187,7 @@ void multipleLevel(const std::string& configPath)
 
         para->setVelocityRatio(velocity/ velocityLB);
 
-		para->setMainKernel("CumulantK17CompChim");
+		//para->setMainKernel("CumulantK17CompChim");
 
 		para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
             rho = (real)0.0;

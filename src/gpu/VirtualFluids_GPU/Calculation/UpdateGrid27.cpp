@@ -9,7 +9,7 @@
 #include "Kernel/Kernel.h"
 
 void updateGrid27(Parameter* para, 
-                  Communicator* comm, 
+                  vf::gpu::Communicator* comm, 
                   CudaMemoryManager* cudaManager, 
                   std::vector<std::shared_ptr<PorousMedia>>& pm, 
                   int level, 
@@ -149,7 +149,7 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
 	}
 }
 
-void exchangeMultiGPU(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangeMultiGPU(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level)
 {
     if (para->getNumprocs() > 1)
 	{
@@ -336,13 +336,21 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
         //           para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
         //getLastCudaError("QDevComp27 (Geom) execution failed");
 
-        QVelDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
-                      para->getParD(level)->QGeom.Vx,        para->getParD(level)->QGeom.Vy,     para->getParD(level)->QGeom.Vz,
-                      para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
-                      para->getParD(level)->QGeom.kQ,        para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
-                      para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-                      para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        getLastCudaError("QVelDevComp27 execution failed");
+        //QVelDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+        //              para->getParD(level)->QGeom.Vx,        para->getParD(level)->QGeom.Vy,     para->getParD(level)->QGeom.Vz,
+        //              para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+        //              para->getParD(level)->QGeom.kQ,        para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,
+        //              para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //              para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        //getLastCudaError("QVelDevComp27 execution failed");
+
+   		QVelDevCompZeroPress27(	para->getParD(0)->numberofthreads, para->getParD(0)->nx,           para->getParD(0)->ny,
+								para->getParD(0)->QGeom.Vx,        para->getParD(0)->QGeom.Vy,     para->getParD(0)->QGeom.Vz,
+								para->getParD(0)->d0SP.f[0],       para->getParD(0)->QGeom.k,      para->getParD(0)->QGeom.q27[0], 
+								para->getParD(0)->QGeom.kQ,        para->getParD(0)->QGeom.kQ,     para->getParD(0)->omega,
+								para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
+								para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
+		getLastCudaError("QVelDevCompZeroPress27 execution failed");
 
         //QDev3rdMomentsComp27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
         //                      para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 

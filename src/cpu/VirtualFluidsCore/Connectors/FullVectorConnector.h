@@ -55,11 +55,11 @@ public:
     void distributeReceiveVectors() override;
 
 protected:
-    virtual inline void updatePointers() = 0;
+    virtual void updatePointers() = 0;
     void fillData();
     void distributeData();
-    virtual inline void fillData(vector_type &sdata, int &index, int x1, int x2, int x3) = 0;
-    virtual inline void distributeData(vector_type &rdata, int &index, int x1, int x2, int x3) = 0;
+    virtual void fillData(vector_type &sdata, int &index, int x1, int x2, int x3) = 0;
+    virtual void distributeData(vector_type &rdata, int &index, int x1, int x2, int x3) = 0;
     
     int maxX1;
     int maxX2;

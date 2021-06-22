@@ -211,33 +211,25 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 
                     distributions->getDistribution(f, ix1, ix2, ix3);
                     calcMacros(f, rho, vx1, vx2, vx3);
-                    double press = D3Q27System::getPressure(f); // D3Q27System::calcPress(f,rho,vx1,vx2,vx3);
+                    //double press = D3Q27System::getPressure(f); // D3Q27System::calcPress(f,rho,vx1,vx2,vx3);
 
                     if (UbMath::isNaN(rho) || UbMath::isInfinity(rho))
-                        // UB_THROW( UbException(UB_EXARGS,"rho is not a number (nan or -1.#IND) or infinity number
-                        // -1.#INF in block="+block->toString()+",
-                        // node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                        rho = 999.0;
-                    if (UbMath::isNaN(press) || UbMath::isInfinity(press))
+                         UB_THROW( UbException(UB_EXARGS,"rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+",node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                        //rho = 999.0;
+                    //if (UbMath::isNaN(press) || UbMath::isInfinity(press))
                         // UB_THROW( UbException(UB_EXARGS,"press is not a number (nan or -1.#IND) or infinity number
                         // -1.#INF in block="+block->toString()+",
                         // node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                        press = 999.0;
+                        //press = 999.0;
                     if (UbMath::isNaN(vx1) || UbMath::isInfinity(vx1))
-                        // UB_THROW( UbException(UB_EXARGS,"vx1 is not a number (nan or -1.#IND) or infinity number
-                        // -1.#INF in block="+block->toString()+",
-                        // node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                        vx1 = 999.0;
+                         UB_THROW( UbException(UB_EXARGS,"vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                        //vx1 = 999.0;
                     if (UbMath::isNaN(vx2) || UbMath::isInfinity(vx2))
-                        // UB_THROW( UbException(UB_EXARGS,"vx2 is not a number (nan or -1.#IND) or infinity number
-                        // -1.#INF in block="+block->toString()+",
-                        // node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                        vx2 = 999.0;
+                         UB_THROW( UbException(UB_EXARGS,"vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                        //vx2 = 999.0;
                     if (UbMath::isNaN(vx3) || UbMath::isInfinity(vx3))
-                        // UB_THROW( UbException(UB_EXARGS,"vx3 is not a number (nan or -1.#IND) or infinity number
-                        // -1.#INF in block="+block->toString()+",
-                        // node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
-                        vx3 = 999.0;
+                         UB_THROW( UbException(UB_EXARGS,"vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block="+block->toString()+", node="+UbSystem::toString(ix1)+","+UbSystem::toString(ix2)+","+UbSystem::toString(ix3)));
+                        //vx3 = 999.0;
 
                     data[index++].push_back(rho);
                     data[index++].push_back(vx1);

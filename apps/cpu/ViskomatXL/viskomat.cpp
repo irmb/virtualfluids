@@ -81,11 +81,11 @@ void bflow(string configname)
       //cpStep = endTime;
 
       //double Re = 1.38230076758;
-      double N  = 80;
-      double Omega = 2 * UbMath::PI / 60.0 * N;
-      double mu    = 1;
-      double R     = 0.165 / 2.0;
-      double rho   = 970;
+      double N  = 80; //rpm
+      double Omega = 2 * UbMath::PI / 60.0 * N; //rad/s
+      double mu    = 1; //Pa s
+      double R     = 0.165 / 2.0; //m
+      double rho   = 970; //kg/m^3
       double Re    = Omega * R * R * rho / mu;
 
       double nuLB = OmegaLB * R * 1e3 * R * 1e3 / Re;
@@ -151,21 +151,36 @@ void bflow(string configname)
       SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
       slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
 
-      mu::Parser fctVx;
-      //fctVx.SetExpr("omega*(r-x2)");
-      fctVx.SetExpr("-Omega*(x2-r)");
-      fctVx.DefineConst("Omega", OmegaLB);
-      //fctVx.DefineConst("r", R0);
-      fctVx.DefineConst("r", 0.5 * (g_maxX2 - g_minX2));
-
+      //// rotation around X-axis
       mu::Parser fctVy;
-      fctVy.SetExpr("Omega*(x3-r)");
+      fctVy.SetExpr("-Omega*(x3-z0-r)");
       fctVy.DefineConst("Omega", OmegaLB);
-      //fctVy.DefineConst("r", R0);
-      fctVy.DefineConst("r", 0.5 * (g_maxX2 - g_minX2));
+      fctVy.DefineConst("r", 0.5 * (g_maxX3 - g_minX3));
+      fctVy.DefineConst("z0", g_minX3);
 
       mu::Parser fctVz;
-      fctVz.SetExpr("0.0");
+      fctVz.SetExpr("Omega*(x2-y0-r)");
+      fctVz.DefineConst("Omega", OmegaLB);
+      fctVz.DefineConst("r", 0.5 * (g_maxX2 - g_minX2));
+      fctVz.DefineConst("y0", g_minX2);
+
+      mu::Parser fctVx;
+      fctVx.SetExpr("0.0");
+
+      // rotation around Y-axis
+      //mu::Parser fctVz;
+      //// fctVx.SetExpr("omega*(r-x2)");
+      //fctVz.SetExpr("Omega*(x1-r)");
+      //fctVz.DefineConst("Omega", OmegaLB);
+      //fctVz.DefineConst("r", 0.5 * (g_maxX1 - g_minX1));
+
+      //mu::Parser fctVx;
+      //fctVx.SetExpr("-Omega*(x3-r)");
+      //fctVx.DefineConst("Omega", OmegaLB);
+      //fctVx.DefineConst("r", 0.5 * (g_maxX1 - g_minX1));
+
+      //mu::Parser fctVy;
+      //fctVy.SetExpr("0.0");
 
       SPtr<BCAdapter> velocityBCAdapter(new VelocityBCAdapter(true, true, true, fctVx, fctVy, fctVz, 0, BCFunction::INFCONST));
       velocityBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
@@ -188,8 +203,11 @@ void bflow(string configname)
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
 
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BGKLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel()); 
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel()); 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
@@ -211,28 +229,64 @@ void bflow(string configname)
       //restart
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
       SPtr<MPIIOMigrationCoProcessor> restartCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, outputPath, comm));
+      //SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, mSch, outputPath, comm));
       restartCoProcessor->setLBMKernel(kernel);
       restartCoProcessor->setBCProcessor(bcProc);
       //restartCoProcessor->setNu(k);
       //////////////////////////////////////////////////////////////////////////
 
       ////stator
-      //SPtr<GbObject3D> stator(new GbCylinder3D(0.5 * g_maxX1, 0.5 * g_maxX2, g_minX3-2.0*deltax, 0.5 * g_maxX1, 0.5 * g_maxX2, g_maxX3+ 2.0 * deltax, 0.5 * g_maxX1));
-      SPtr<GbTriFaceMesh3D> stator = make_shared<GbTriFaceMesh3D>();
-      stator->readMeshFromSTLFileBinary(geoPath + "/" + geoFile, false);
-      GbSystem3D::writeGeoObject(stator.get(), outputPath + "/geo/stator", WbWriterVtkXmlBinary::getInstance());
+      // rotation around X-axis 
+      SPtr<GbObject3D> stator(new GbCylinder3D(g_minX1 - 3.0 * deltax, g_minX2 + 0.5 * (g_maxX2 - g_minX2),
+                                               g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_maxX1 + 3.0 * deltax,
+          g_minX2 + 0.5 * (g_maxX2 - g_minX2), g_minX3 + 0.5 * (g_maxX3 - g_minX3), 0.5 * (g_maxX3 - g_minX3) * 0.5));
 
-      SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27TriFaceMeshInteractor>(
-          new D3Q27TriFaceMeshInteractor(stator, grid, velocityBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+       // rotation around Y-axis 
+      //SPtr<GbObject3D> stator(new GbCylinder3D(g_minX1 + 0.5 * (g_maxX1 - g_minX1), g_minX2 - 3.0 * deltax, 
+      //                                         g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_minX1 + 0.5 * (g_maxX1 - g_minX1),
+      //                                         g_maxX2 + 3.0 * deltax, g_minX3 + 0.5 * (g_maxX3 - g_minX3),
+      //                                         0.5 * (g_maxX3 - g_minX3) * 0.5));
+
+      SPtr<D3Q27Interactor> statorInt =
+          SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID));
+      
+      //SPtr<GbTriFaceMesh3D> stator = make_shared<GbTriFaceMesh3D>();
+      //stator->readMeshFromSTLFileBinary(geoPath + "/" + geoFile, false);
+      //stator->translate(4.0, -73.0, -6.0);
+      GbSystem3D::writeGeoObject(stator.get(), outputPath + "/geo/stator", WbWriterVtkXmlBinary::getInstance());
+      
+      //SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27TriFaceMeshInteractor>(
+      //    new D3Q27TriFaceMeshInteractor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
 
       ////rotor (cylinder)
-      SPtr<GbObject3D> rotor(new GbCylinder3D(g_minX1, g_minX2 + 0.5 * (g_maxX2 - g_minX2),
-                                              g_minX3 + 0.5 * (g_maxX3 - g_minX3),
-                                              g_maxX1,
+      // rotation around X-axis 
+      SPtr<GbObject3D> rotor(new GbCylinder3D(
+          g_minX1 - 3.0 * deltax, g_minX2 + 0.5 * (g_maxX2 - g_minX2),
+                                              g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_maxX1 + 3.0 * deltax,
           g_minX2 + 0.5 * (g_maxX2 - g_minX2), g_minX3 + 0.5 * (g_maxX3 - g_minX3), 0.5 * (g_maxX3 - g_minX3)));
+      // rotation around Y-axis
+      //SPtr<GbObject3D> rotor(new GbCylinder3D(g_minX1 + 0.5 * (g_maxX1 - g_minX1), g_minX2 - 3.0 * deltax,
+      //                                        g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_minX1 + 0.5 * (g_maxX1 - g_minX1),
+      //                                        g_maxX2 + 3.0 * deltax, g_minX3 + 0.5 * (g_maxX3 - g_minX3),
+      //                                        0.5 * (g_maxX3 - g_minX3)));
+
       GbSystem3D::writeGeoObject(rotor.get(), outputPath + "/geo/rotor", WbWriterVtkXmlBinary::getInstance());
 
-      SPtr<D3Q27Interactor> rotorInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(rotor, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
+      SPtr<D3Q27Interactor> rotorInt =
+          SPtr<D3Q27Interactor>(new D3Q27Interactor(rotor, grid, velocityBCAdapter, Interactor3D::INVERSESOLID));
+
+      //walls
+      GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - deltax, g_minX2 - deltax, g_minX3 - deltax, g_minX1,
+          g_maxX2 + deltax, g_maxX3 + deltax));
+      if (myid == 0) GbSystem3D::writeGeoObject(wallXmin.get(), outputPath + "/geo/wallXmin", WbWriterVtkXmlASCII::getInstance());
+
+      GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - deltax, g_minX3 - deltax, g_maxX1 +  (double)blocknx[0]*deltax,
+          g_maxX2 + deltax, g_maxX3 + deltax));
+      if (myid == 0) GbSystem3D::writeGeoObject(wallXmax.get(), outputPath + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
+
+      //wall interactors
+      SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, slipBCAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, slipBCAdapter, Interactor3D::SOLID));
 
       if (myid == 0)
       {
@@ -280,19 +334,6 @@ void bflow(string configname)
             if (myid == 0) UBLOG(logINFO, "Refinement - end");
          }
 
-
-         //walls
-         GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - deltax, g_minX2 - deltax, g_minX3 - deltax, g_minX1,
-                                               g_maxX2 + deltax, g_maxX3 + deltax));
-         if (myid == 0) GbSystem3D::writeGeoObject(wallXmin.get(), outputPath + "/geo/wallXmin", WbWriterVtkXmlASCII::getInstance());
-
-         GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - deltax, g_minX3 - deltax, g_maxX1 + deltax,
-                                               g_maxX2 + deltax, g_maxX3 + deltax));
-         if (myid == 0) GbSystem3D::writeGeoObject(wallXmax.get(), outputPath + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
-
-         //wall interactors
-         SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, slipBCAdapter, Interactor3D::SOLID));
 
          ////////////////////////////////////////////
          //METIS
@@ -353,6 +394,9 @@ void bflow(string configname)
          InitDistributionsBlockVisitor initVisitor;
          grid->accept(initVisitor);
 
+         SPtr<UbScheduler> geoSch(new UbScheduler(1));
+         WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm);
+         ppgeo.process(0);
 
          if (myid == 0) UBLOG(logINFO, "Preprozess - end");
       }
@@ -360,12 +404,24 @@ void bflow(string configname)
       {
          restartCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
-         SetBcBlocksBlockVisitor v1(rotorInt);
-         grid->accept(v1);
-         rotorInt->initInteractor();
-         SetBcBlocksBlockVisitor v2(statorInt);
-         grid->accept(v2);
+         
+         //SetBcBlocksBlockVisitor v1(wallXminInt);
+         //grid->accept(v1);
+         //wallXminInt->initInteractor();
+         //
+         //SetBcBlocksBlockVisitor v2(wallXmaxInt);
+         //grid->accept(v2);
+         //wallXmaxInt->initInteractor();
+         
+         SetBcBlocksBlockVisitor v3(statorInt);
+         grid->accept(v3);
          statorInt->initInteractor();
+
+         SetBcBlocksBlockVisitor v4(rotorInt);
+         grid->accept(v4);
+         rotorInt->initInteractor();
+
+
       }
       
       omp_set_num_threads(numOfThreads);
@@ -381,10 +437,6 @@ void bflow(string configname)
 
       grid->accept(bcVisitor);
 
-      SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, outputPath, WbWriterVtkXmlBinary::getInstance(), comm);
-      ppgeo.process(0);
-
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
       SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
@@ -392,13 +444,13 @@ void bflow(string configname)
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       //SPtr<UbScheduler> visSch(new UbScheduler(10,1));
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
-      //writeMQCoProcessor->process(0);
+      //writeMQCoProcessor->process(100);
 
       SPtr<UbScheduler> forceSch(new UbScheduler(100));
-      SPtr<CalculateTorqueCoProcessor> fp = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueRotor.txt", comm);
+      SPtr<CalculateTorqueCoProcessor> fp = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueRotor.csv", comm);
       fp->addInteractor(rotorInt);
-      //SPtr<CalculateTorqueCoProcessor> fp2 = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueStator.txt", comm);
-      //fp2->addInteractor(statorInt);
+      SPtr<CalculateTorqueCoProcessor> fp2 = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueStator.csv", comm);
+      fp2->addInteractor(statorInt);
 
       //SPtr<WriteThixotropyQuantitiesCoProcessor> writeThixotropicMQCoProcessor(new WriteThixotropyQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
@@ -406,7 +458,7 @@ void bflow(string configname)
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(npr);
       calculator->addCoProcessor(fp);
-      //calculator->addCoProcessor(fp2);
+      calculator->addCoProcessor(fp2);
       calculator->addCoProcessor(writeMQCoProcessor);
       //calculator->addCoProcessor(writeThixotropicMQCoProcessor);
       calculator->addCoProcessor(restartCoProcessor);

@@ -1162,12 +1162,10 @@ double GbCylinder3D::getIntersectionRaytraceFactor(const double &x1, const doubl
             } else
                 return -1.0;
         } else {
-            // if     (UbMath::negative(rx1)) d = -1.0 * (x1 - minX1) / rx1;
-            // else if(UbMath::positive(rx1)) d = -1.0 * (x1 - maxX1) / rx1;
             if (UbMath::negative(rx1))
-                d = -1.0 * (x1 - maxX1) / rx1;
-            else if (UbMath::positive(rx1))
                 d = -1.0 * (x1 - minX1) / rx1;
+            else if (UbMath::positive(rx1))
+                d = -1.0 * (x1 - maxX1) / rx1;
         }
     } else if (this->isParallelToX2Axis()) {
         if (UbMath::equal(x2, minX2) && UbMath::negative(rx2))

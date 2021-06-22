@@ -91,23 +91,18 @@ public:
 protected:
 private:
     SPtr<DistributionArray3D> fdistributions;
-
     SPtr<DistributionArray3D> hdistributions;
-
     //SPtr<DistributionArray3D> h1distributions;
     SPtr<DistributionArray3D> h2distributions;
-
+ 
     SPtr<AverageValuesArray3D> averageValues;
-
     SPtr<AverageValuesArray3D> averageDensity;
     SPtr<AverageValuesArray3D> averageVelocity;
     SPtr<AverageValuesArray3D> averageFluktuations;
     SPtr<AverageValuesArray3D> averageTriplecorrelations;
-
     SPtr<ShearStressValuesArray3D> shearStressValues;
 
     SPtr<RelaxationFactorArray3D> relaxationFactor;
-
     SPtr<PhaseFieldArray3D> phaseField;
     SPtr<PhaseFieldArray3D> phaseField2;
 };

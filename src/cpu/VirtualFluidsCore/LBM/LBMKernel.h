@@ -53,6 +53,7 @@ public:
 
 public:
     LBMKernel();
+    virtual ~LBMKernel() = default;
 
     virtual SPtr<LBMKernel> clone() = 0;
 
@@ -117,8 +118,8 @@ public:
     double getCollisionFactorG() const;
     void setDensityRatio(double densityRatio);
     double getDensityRatio() const;
-    void setMultiphaseModelParameters(double beta, double kappa);
-    void getMultiphaseModelParameters(double &beta, double &kappa);
+    void setMultiphaseModelParameters(LBMReal beta, LBMReal kappa);
+    void getMultiphaseModelParameters(LBMReal &beta, LBMReal &kappa);
     void setContactAngle(double contactAngle);
     double getContactAngle() const;
     void setPhiL(double phiL);

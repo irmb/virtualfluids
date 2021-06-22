@@ -51,3 +51,10 @@ class TestLBMKernel(unittest.TestCase):
         self.assertEqual(self.sut.forcing_in_x2, 8)
         self.assertEqual(self.sut.forcing_in_x3, 5)
 
+    def test_lbm_kernel__when_getting_type__should_equal_kernel_type_enum_value(self) -> None:
+        """
+        WHEN getting the kernel type IT should equal the corresponding KernelType enum value
+        """
+
+        actual = self.sut.type
+        self.assertEqual(KernelType.BGK, actual)
