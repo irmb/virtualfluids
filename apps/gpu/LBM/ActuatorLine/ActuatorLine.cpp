@@ -92,7 +92,7 @@ const real L_x = 10*D;
 const real L_y = 6*D;
 const real L_z = 6*D;
 
-const real viscosity = 1.48e-5;
+const real viscosity = 1.56e-5;
 
 const real velocity  = 9.0;
 
@@ -164,14 +164,13 @@ void multipleLevel(const std::string& configPath)
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         const real dt = dx * mach / (sqrt(3) * velocity);
-        const real dv = dx / dt;
 
-        const real velocityLB = velocity / dv; // LB units
+        const real velocityLB = velocity * dt / dx; // LB units
 
-        const real viscosityLB = viscosity / dx / dv; // LB units
+        const real viscosityLB = viscosity * dt / (dx * dx); // LB units
 
         *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
-        *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
+        *logging::out << logging::Logger::INFO_HIGH << "viscosity [10^8 dx^2/dt] = " << viscosityLB*1e8 << "\n";
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -189,13 +188,13 @@ void multipleLevel(const std::string& configPath)
         para->setVelocity(velocityLB);
         para->setViscosity(viscosityLB);
 
-        para->setVelocityRatio( dv );
+        para->setVelocityRatio( dx / dt );
 
 		para->setMainKernel("CumulantK17CompChim");
 
 		para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
             rho = (real)0.0;
-            vx  = (real)0.0; //(6 * velocityLB * coordZ * (L - coordZ) / (L * L));
+            vx  = (real)0.0;
             vy  = (real)0.0;
             vz  = (real)0.0;
         });
@@ -203,7 +202,7 @@ void multipleLevel(const std::string& configPath)
         para->setTOut( timeStepOut );
         para->setTEnd( timeStepEnd );
 
-        para->setIsBodyForce( true );
+        para->setIsBodyForce( false );
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB,  0.0, 0.0);
@@ -357,17 +356,17 @@ int main( int argc, char* argv[])
         {
             //////////////////////////////////////////////////////////////////////////
 
-			std::string targetPath;
+			// std::string targetPath;
 
-			targetPath = __FILE__;
+			// targetPath = __FILE__;
 
-			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
+			// targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
 
 
 
-			std::cout << targetPath << std::endl;
+			// std::cout << targetPath << std::endl;
 
-			multipleLevel(targetPath + "configActuatorLine.txt");
+			multipleLevel(path + "/configActuatorLine.txt");
 
             //////////////////////////////////////////////////////////////////////////
 		}
