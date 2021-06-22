@@ -223,6 +223,11 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
             fx += bodyForceX[k];
             fy += bodyForceY[k];
             fz += bodyForceZ[k];
+
+            //Reset body force
+            bodyForceX[k] = 0.0f;
+            bodyForceY[k] = 0.0f;
+            bodyForceZ[k] = 0.0f;
         }
         
         vvx += fx * c1o2 / factor;

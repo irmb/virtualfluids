@@ -13,6 +13,7 @@
 #include "LBM/LB.h"
 #include "LBM/D3Q27.h"
 #include "Calculation/PorousMedia.h"
+#include "Visitor/Visitor.h"
 //#include "Output/LogWriter.hpp"
 
 #include <cuda_runtime.h>
@@ -512,6 +513,12 @@ public:
 
 	void setADKernel(std::string adKernel);
 
+
+	//adder
+
+	void addActuator(Visitor* actuator);
+	void addProbe(Visitor* probes);
+
 	//getter
 	double* getForcesDouble();
 	real* getForcesHost();
@@ -668,6 +675,8 @@ public:
 	TempVelforBoundaryConditions* getTempVelD();
 	TempPressforBoundaryConditions* getTempPressH();
 	TempPressforBoundaryConditions* getTempPressD();
+	std::vector<Visitor*> getActuators();
+	std::vector<Visitor*> getProbes();
 	unsigned int getTimeDoCheckPoint();
 	unsigned int	getTimeDoRestart();   
 	bool getDoCheckPoint();
@@ -725,6 +734,7 @@ public:
     std::vector<std::string> getMultiKernel();
 
 	std::string getADKernel();
+
 
 	~Parameter();
 
@@ -791,6 +801,9 @@ private:
 	//Temperature Pressure
 	TempPressforBoundaryConditions *TempPressH, *TempPressD;
 
+	std::vector<Visitor*> actuators;
+	std::vector<Visitor*> probes;
+
 	//Drehung///////////////
 	real Phi, angularVelocity;
 	unsigned int startTurn;
@@ -823,6 +836,8 @@ private:
 	std::vector<std::string> possNeighborFilesSendX, possNeighborFilesSendY, possNeighborFilesSendZ;
 	std::vector<std::string> possNeighborFilesRecvX, possNeighborFilesRecvY, possNeighborFilesRecvZ;
 	bool isNeigborX, isNeigborY, isNeigborZ;
+
+
 	
 	////////////////////////////////////////////////////////////////////////////
     // initial condition

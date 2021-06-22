@@ -45,6 +45,7 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
+#include "VirtualFluids_GPU/Visitor/ActuatorLine.h"
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
@@ -98,7 +99,7 @@ const real velocity  = 9.0;
 
 const real mach = 0.1;
 
-const uint nodes_per_D = 32;
+const uint nodes_per_D = 8;
 
 //std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
 //std::string path("D:/out/DrivenCavity"); //Mollok
@@ -202,7 +203,8 @@ void multipleLevel(const std::string& configPath)
         para->setTOut( timeStepOut );
         para->setTEnd( timeStepEnd );
 
-        para->setIsBodyForce( false );
+        para->setIsBodyForce( true );
+
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB,  0.0, 0.0);
@@ -218,12 +220,20 @@ void multipleLevel(const std::string& configPath)
 
         SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
+        real turbPos[3] = {100.f, 100.f, 100.f};
+        real epsilon = 5.f;
+        real density = 1.225f;
+        int level = 0;
+
+        ActuatorLine* actuator_line = new ActuatorLine((unsigned int) 3, density, (unsigned int)32, epsilon, turbPos[0], turbPos[1], turbPos[2], D, level);
+        para->addActuator( actuator_line );
+
         Simulation sim;
         SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
         SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
         SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
         sim.setFactories(kernelFactory, preProcessorFactory);
-        sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
+        sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);        
         sim.run();
         sim.free();
 

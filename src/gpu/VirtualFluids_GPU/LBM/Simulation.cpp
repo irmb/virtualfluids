@@ -140,6 +140,13 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    gridProvider->allocArrays_BoundaryQs();
    gridProvider->allocArrays_OffsetScale();
 
+	for( Visitor* actuator: para->getActuators()){
+		actuator->init(para.get(), gridProvider.get(), cudaManager.get());
+	}
+
+	for( Visitor* probe: para->getProbes()){
+		probe->init(para.get(), gridProvider.get(), cudaManager.get());
+	}
 
    //////////////////////////////////////////////////////////////////////////
    //Kernel init

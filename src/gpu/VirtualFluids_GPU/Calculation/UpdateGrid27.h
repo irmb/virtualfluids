@@ -38,4 +38,9 @@ extern "C" void fineToCoarse(Parameter* para, int level);
 
 extern "C" void coarseToFine(Parameter* para, int level);
 
+extern "C" void visitVisitors(Parameter* para, int level, unsigned int t);
+
+extern "C" void visitProbes(Parameter* para, int level, unsigned int t);
+
+
 #endif

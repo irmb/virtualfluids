@@ -59,6 +59,10 @@ void updateGrid27(Parameter* para,
 
         coarseToFine(para, level);
     }
+
+    visitVisitors(para, level, t);
+
+    visitProbes(para, level, t);
 }
 
 void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels)
@@ -1258,4 +1262,20 @@ void coarseToFine(Parameter* para, int level)
         }
     } 
 
+}
+
+void visitVisitors(Parameter* para, int level, unsigned int t)
+{
+    for( Visitor* actuator: para->getActuators() )
+    {
+        actuator->visit(para, level, t);
+    }
+}
+
+void visitProbes(Parameter* para, int level, unsigned int t)
+{
+    for( Visitor* probe: para->getProbes() )
+    {
+        probe->visit(para, level, t);
+    }
 }
