@@ -156,25 +156,26 @@ void multipleLevel(const std::string& configPath)
               TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
 
         // bounding box mussel:
-        // x = -18, 58
-        // y = -17, 18
-        // z = -5, 13
+        const real bbxm = -18.0;
+        const real bbxp = 58.0;
+        const real bbym = -17.0;
+        const real bbyp = 18.0;
+        const real bbzm = -5.0;
+        const real bbzp = 13.0;
         // bounding box oyster:
-        // x = 0, 115
-        // y = 0, 27
-        // z = 0, 63
-        
-        const real xSpaceM = 40.0;
-        const real xSpaceP = 300.0;
-        const real ySpaceP = 60.0;
-        const real zSpacePM  = 30.0;
-        if (bivalveType == "MUSSEL")
-            gridBuilder->addCoarseGrid(-18.0 - xSpaceM,   -16.5,            -5.0 - zSpacePM, 
-                                        58.0 + xSpaceP,   18.0 + ySpaceP,   13.0 + zSpacePM, dx);
-        else if (bivalveType == "OYSTER")
-            gridBuilder->addCoarseGrid(0.0 - xSpaceM,     0.5,              0.0 - zSpacePM, 
-                                       115.0 + xSpaceP,   27.0 + ySpaceP,   63.0 + zSpacePM, dx);    
-        
+        // const real bbxm = 0.0;
+        // const real bbxp = 115.0;
+        // const real bbym = 0.0;
+        // const real bbyp = 27.0;
+        // const real bbzm = 0.0;
+        // const real bbzp = 63.0;
+
+        const real xGridMin  = bbxm - 40.0;
+        const real xGridMax  = bbxp + 250.0;
+        const real yGridMin  = bbym + 0.5;
+        const real yGridMax  = bbyp + 60.0;
+        const real zGridMin  = bbzm - 30.0;
+        const real zGridMax  = bbzp + 30.0;
 
         gridBuilder->setNumberOfLayers(6, 8);
         gridBuilder->addGrid(bivalveRef_1_STL, 1);
@@ -182,6 +183,7 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->addGeometry(bivalveSTL);
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+            gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dx);
 
         gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
         //////////////////////////////////////////////////////////////////////////
