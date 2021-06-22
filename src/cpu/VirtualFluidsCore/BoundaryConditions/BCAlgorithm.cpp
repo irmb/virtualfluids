@@ -36,7 +36,12 @@
 #include "BCArray3D.h"
 #include "BoundaryConditions.h"
 #include "EsoTwist3D.h"
+#include "Block3D.h"
 
+void BCAlgorithm::setBlock(SPtr<Block3D> block) 
+{ 
+    this->block = block; 
+}
 //////////////////////////////////////////////////////////////////////////
 void BCAlgorithm::setNodeIndex(int x1, int x2, int x3)
 {

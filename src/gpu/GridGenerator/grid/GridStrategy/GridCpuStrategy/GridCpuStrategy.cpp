@@ -13,6 +13,8 @@
 #include "grid/GridImp.h"
 #include "grid/NodeValues.h"
 
+using namespace vf::gpu;
+
 void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 {
     grid->neighborIndexX        = new int[grid->size];

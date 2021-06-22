@@ -10,7 +10,7 @@
 #  CMAKE 3.13: target_link_options
 #  CMAKE 3.15: CMAKE_MSVC_RUNTIME_LIBRARY
 #################################################################################
-cmake_minimum_required(VERSION 3.15..3.19 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15..3.20 FATAL_ERROR)
 
 project(VirtualFluids CXX)
 
@@ -50,6 +50,8 @@ option(BUILD_VF_CLANG_TIDY "Add the clang tidy checks to the targets" OFF)
 option(BUILD_VF_INCLUDE_WHAT_YOU_USE "Add IWYU to the targets" OFF)
 option(BUILD_VF_CPPCHECK "Add cppcheck to the targets" OFF)
 option(BUILD_VF_COVERAGE "Add the -coverage compiler flag." OFF)
+
+option(BUILD_CUDA_LTO "Enables the cuda link optimization." OFF)
 
 option(BUILD_SHARED_LIBS "" OFF)
 option(BUILD_WARNINGS_AS_ERRORS "" OFF)
@@ -94,13 +96,35 @@ if(BUILD_VF_GPU)
 
     set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
 
+    enable_language(CUDA)
+
+
     if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
         message(WARNING "CMAKE_CUDA_ARCHITECTURES was not defined and is set to 30 (CUDA support until 10.1 only).")
         set(CMAKE_CUDA_ARCHITECTURES 30)
     endif()
 
+
+    if(BUILD_CUDA_LTO)
+        
+       if(CMAKE_CUDA_ARCHITECTURES LESS 50)
+            message(FATAL_ERROR "CUDA Link time optimization requires CUDA 11.2 and CC 5.0.")
+       else()
+
+        set(CMAKE_CUDA_FLAGS "-dlto -arch=sm_${CMAKE_CUDA_ARCHITECTURES}")
+        set(CMAKE_CUDA_ARCHITECTURES OFF)
+
+        list(APPEND VF_COMPILER_DEFINITION BUILD_CUDA_LTO)
+
+       endif()
+    endif()
+
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --extended-lambda")
+
+    message("CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
     message("CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
 endif()
+
 
 #################################################################################
 #  COMMON LIBRARIES
@@ -119,6 +143,7 @@ find_package(MPI REQUIRED)
 
 
 add_subdirectory(src/basics)
+add_subdirectory(src/lbm)
 
 
 #################################################################################

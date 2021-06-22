@@ -78,6 +78,10 @@ public:
 	void cudaCopyForcingToHost();
 	void cudaFreeForcing();
 
+    void cudaAllocLevelForcing(int level);
+	void cudaCopyLevelForcingToDevice(int level);
+	void cudaFreeLevelForcing(int level);
+
 	void cudaAllocQuadricLimiters();
 	void cudaCopyQuadricLimitersToDevice();
 	void cudaFreeQuadricLimiters();
@@ -135,6 +139,9 @@ public:
     
     void cudaAllocMedianOut(int lev);
     void cudaFreeMedianOut(int lev);
+
+    void cudaAllocMedianOutAD(int lev);
+    void cudaFreeMedianOutAD(int lev);
     
     void cudaAllocInterfaceCF(int lev);
     void cudaCopyInterfaceCF(int lev);

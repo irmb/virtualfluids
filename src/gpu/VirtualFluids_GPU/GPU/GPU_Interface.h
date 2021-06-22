@@ -131,6 +131,7 @@ extern "C" void KernelKumNewSP27(   unsigned int numberOfThreads,
 									int size_Mat,
 									bool EvenOrOdd);
 
+
 extern "C" void CumulantOnePreconditionedErrorDiffusionChimCompSP27(
 	unsigned int numberOfThreads,
 	real s9,

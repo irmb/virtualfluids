@@ -6,14 +6,17 @@
 #include "submodules/simulationparameters.cpp"
 #include "submodules/writer.cpp"
 
-namespace py = pybind11;
-
-PYBIND11_MODULE(pyfluids, m)
+namespace py_bindings
 {
-    makeBoundaryConditionsModule(m);
-    makeSimulationModule(m);
-    makeGeometryModule(m);
-    makeKernelModule(m);
-    makeParametersModule(m);
-    makeWriterModule(m);
+    namespace py = pybind11;
+
+    PYBIND11_MODULE(pyfluids, m)
+    {
+        boundaryconditions::makeModule(m);
+        simulation::makeModule(m);
+        geometry::makeModule(m);
+        kernel::makeModule(m);
+        parameters::makeModule(m);
+        writer::makeModule(m);
+    }
 }

@@ -1,6 +1,8 @@
 #include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "Core/RealConstants.h"
+#include <lbm/constants/NumericConstants.h>
+
+using namespace vf::lbm::constant;
 #include "math.h"
 
 extern "C" __global__ void LB_Kernel_Cum_1h_Incomp_SP_27(real omega,
@@ -226,7 +228,7 @@ extern "C" __global__ void LB_Kernel_Cum_1h_Incomp_SP_27(real omega,
 																	   //				mfbbc-mfbba;
 																	   ////////////////////////////////////////////////////////////////////////////////////
 																	   // oMdrho assembler style -------> faaaaaastaaaa
-																	   // or much sloooowaaaa ... it depändssssss on sadaku
+																	   // or much sloooowaaaa ... it depï¿½ndssssss on sadaku
 			real m0, m1, m2;
 			//real oMdrho;
 			//{

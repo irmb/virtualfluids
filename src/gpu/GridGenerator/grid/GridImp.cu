@@ -28,6 +28,8 @@
 
 CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
+using namespace vf::gpu;
+
 
 CUDA_HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution, uint level)
             : object(object), 

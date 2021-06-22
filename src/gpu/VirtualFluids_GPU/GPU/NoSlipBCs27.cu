@@ -8,7 +8,9 @@
 /* Device code */
 #include "LBM/LB.h" 
 #include "LBM/D3Q27.h"
-#include "Core/RealConstants.h"
+#include <lbm/constants/NumericConstants.h>
+
+using namespace vf::lbm::constant;
 
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
@@ -2428,7 +2430,7 @@ extern "C" __global__ void QDevice27(int inx,
 
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-	  //böser lecktest
+	  //bï¿½ser lecktest
 	  //q = q_dirE[k];
    //   if (q>=zero && q<=one)
    //   {

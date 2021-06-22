@@ -19,7 +19,7 @@ class MPICommunicator : public Communicator
 {
 private:
     MPICommunicator();
-    MPICommunicator(const MPICommunicator &) {}
+    MPICommunicator(const MPICommunicator &) = default;
 
 public:
     ~MPICommunicator() override;

@@ -25,7 +25,8 @@ class MPIIOMigrationBECoProcessor : public MPIIOCoProcessor
         AverageTriple       = 4,
         ShearStressVal      = 5,
         RelaxationFactor    = 6,
-        PhaseField          = 7
+        PhaseField1         = 7,
+        PhaseField2 = 8
     };
 
 public:
@@ -71,6 +72,8 @@ public:
     //! The function truncates the data files
     void clearAllFiles(int step);
     void setNu(double nu);
+    void setNuLG(double cfL, double cfG);
+    void setDensityRatio(double dr);
 
     void blocksExchange(int tagN, int ind1, int ind2, int doubleCountInBlock, std::vector<double> &pV,
                         std::vector<double> *rawDataReceive);
@@ -91,6 +94,10 @@ private:
     SPtr<LBMKernel> lbmKernel;
     SPtr<BCProcessor> bcProcessor;
     double nue;
+    double nuL;
+    double nuG;
+    double densityRatio;
+
 };
 
 #endif

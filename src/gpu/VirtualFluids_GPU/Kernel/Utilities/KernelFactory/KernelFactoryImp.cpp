@@ -4,16 +4,19 @@
 
 //LBM kernel (compressible)
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGK/BGKCompSP27.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGKUnified/BGKUnified.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/BGKPlus/BGKPlusCompSP27.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/Cascade/CascadeCompSP27.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/Cumulant/CumulantCompSP27.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17/CumulantK17Comp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Unified/CumulantK17Unified.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17chim/CumulantK17CompChim.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17Bulk/CumulantK17BulkComp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantAll4/CumulantAll4CompSP27.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK18/CumulantK18Comp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK20/CumulantK20Comp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15/CumulantK15Comp.h"
+#include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Unified/CumulantK15Unified.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Bulk/CumulantK15BulkComp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK15Sponge/CumulantK15SpongeComp.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/MRT/MRTCompSP27.h"
@@ -96,13 +99,17 @@ void KernelFactoryImp::setKernelAtLevel(std::vector<std::shared_ptr<Kernel>> ker
 
 std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> para, std::string kernel, int level)
 {
+    printf("Instantiating Kernel: %s\n", kernel.c_str());
 	std::shared_ptr<KernelImp> newKernel;
 	std::shared_ptr<CheckParameterStrategy> checkStrategy;
 
-	if (       kernel == "BGKCompSP27") {
-        newKernel     = BGKCompSP27::getNewInstance(para, level);				// compressible
-        checkStrategy = FluidFlowCompStrategy::getInstance();     //	   ||
-    } else if (kernel == "BGKPlusCompSP27") {									//     \/
+    if (kernel == "BGKCompSP27") {
+        newKernel     = BGKCompSP27::getNewInstance(para, level);   // compressible
+        checkStrategy = FluidFlowCompStrategy::getInstance();       //      ||
+    } else if (kernel == "BGKUnified") {                            //      \/
+        newKernel     = std::make_shared<vf::gpu::BGKUnified>(para, level);
+        checkStrategy = FluidFlowCompStrategy::getInstance();
+    } else if (kernel == "BGKPlusCompSP27") {
         newKernel     = BGKPlusCompSP27::getNewInstance(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "MRTCompSP27") {
@@ -116,6 +123,12 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "CumulantK17Comp") {
         newKernel     = CumulantK17Comp::getNewInstance(para, level);
+        checkStrategy = FluidFlowCompStrategy::getInstance();
+    } else if (kernel == "CumulantK15Unified") {
+        newKernel     = std::make_shared<vf::gpu::CumulantK15Unified>(para, level);
+        checkStrategy = FluidFlowCompStrategy::getInstance();
+    } else if (kernel == "CumulantK17Unified") {
+        newKernel     = std::make_shared<vf::gpu::CumulantK17Unified>(para, level);
         checkStrategy = FluidFlowCompStrategy::getInstance();
     } else if (kernel == "CumulantK17BulkComp") {
         newKernel     = CumulantK17BulkComp::getNewInstance(para, level);

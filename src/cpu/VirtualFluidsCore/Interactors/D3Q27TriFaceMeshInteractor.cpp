@@ -58,7 +58,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor(const double &timeStep)
     setQs(timeStep);
 }
 //////////////////////////////////////////////////////////////////////////
-bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const SPtr<Block3D> block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep*/)
+bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 {
     if (!block)
         return false;

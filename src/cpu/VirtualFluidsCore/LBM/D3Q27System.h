@@ -42,6 +42,7 @@
 #include "UbException.h"
 #include "UbMath.h"
 
+
 //! \brief namespace for global system-functions
 namespace D3Q27System
 {
@@ -147,36 +148,21 @@ static const int ET_BNW = 11;
 static const int ET_TSW = 12;
 static const int ET_BNE = 12;
 
+
 //////////////////////////////////////////////////////////////////////////
 // MACROSCOPIC VALUES
 /*=====================================================================*/
-static LBMReal getDensity(const LBMReal *const &f /*[27]*/)
-{
-    return ((f[TNE] + f[BSW]) + (f[TSE] + f[BNW])) + ((f[BSE] + f[TNW]) + (f[TSW] + f[BNE])) +
-           (((f[NE] + f[SW]) + (f[SE] + f[NW])) + ((f[TE] + f[BW]) + (f[BE] + f[TW])) +
-            ((f[BN] + f[TS]) + (f[TN] + f[BS]))) +
-           ((f[E] + f[W]) + (f[N] + f[S]) + (f[T] + f[B])) + f[REST];
-}
+LBMReal getDensity(const LBMReal *const &f /*[27]*/);
 /*=====================================================================*/
 static LBMReal getPressure(const LBMReal *const &f /*[27]*/) { return REAL_CAST(UbMath::c1o3) * getDensity(f); }
 /*=====================================================================*/
-static LBMReal getIncompVelocityX1(const LBMReal *const &f /*[27]*/)
-{
-    return ((((f[TNE] - f[BSW]) + (f[TSE] - f[BNW])) + ((f[BSE] - f[TNW]) + (f[BNE] - f[TSW]))) +
-            (((f[BE] - f[TW]) + (f[TE] - f[BW])) + ((f[SE] - f[NW]) + (f[NE] - f[SW]))) + (f[E] - f[W]));
-}
+LBMReal getIncompVelocityX1(const LBMReal *const &f /*[27]*/);
 /*=====================================================================*/
-static LBMReal getIncompVelocityX2(const LBMReal *const &f /*[27]*/)
-{
-    return ((((f[TNE] - f[BSW]) + (f[BNW] - f[TSE])) + ((f[TNW] - f[BSE]) + (f[BNE] - f[TSW]))) +
-            (((f[BN] - f[TS]) + (f[TN] - f[BS])) + ((f[NW] - f[SE]) + (f[NE] - f[SW]))) + (f[N] - f[S]));
-}
+LBMReal getIncompVelocityX2(const LBMReal *const &f /*[27]*/);
 /*=====================================================================*/
-static LBMReal getIncompVelocityX3(const LBMReal *const &f /*[27]*/)
-{
-    return ((((f[TNE] - f[BSW]) + (f[TSE] - f[BNW])) + ((f[TNW] - f[BSE]) + (f[TSW] - f[BNE]))) +
-            (((f[TS] - f[BN]) + (f[TN] - f[BS])) + ((f[TW] - f[BE]) + (f[TE] - f[BW]))) + (f[T] - f[B]));
-}
+LBMReal getIncompVelocityX3(const LBMReal *const &f /*[27]*/);
+
+
 /*=====================================================================*/
 static void calcDensity(const LBMReal *const &f /*[27]*/, LBMReal &rho)
 {
