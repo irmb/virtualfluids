@@ -229,22 +229,20 @@ void multipleLevel(const std::string& configPath)
             //////////////////////////////////////////////////////////////////////////
             gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-
             if (generatePart == 0)
                 gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
             if (generatePart == 1)
-                gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-           
+                gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);           
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-
+            //////////////////////////////////////////////////////////////////////////
+            
             //SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
             
-            // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/grid/");
-            // gridBuilder->writeArrows    ("E:/temp/MusselOyster/grid/arrow");
+            gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/" + std::to_string(generatePart) + " /grid/");
+            //gridBuilder->writeArrows(path + "/" + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
 
             SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder, FILEFORMAT::BINARY);
-            
-
+           
         } else {
             TriangularMesh *bivalveSTL =
                 TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
@@ -273,8 +271,8 @@ void multipleLevel(const std::string& configPath)
             SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
             //////////////////////////////////////////////////////////////////////////
 
-            // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/grid/");
-            // gridBuilder->writeArrows    ("E:/temp/MusselOyster/grid/arrow");
+            gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");
+            // gridBuilder->writeArrows ("E:/temp/MusselOyster/" + bivalveType + "/arrow");
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
         }
