@@ -4,6 +4,43 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
+#include "VirtualFluids_GPU/GPU/GeometryUtils.h"
+
+__global__ void interpQuantities(   int* pointIndices,
+                                    uint nPoints,
+                                    real* distX, real* distY, real* distZ,
+                                    real* vx, real* vy, real* vz, real* rho,            
+                                    uint* neighborX, uint* neighborY, uint* neighborZ,
+                                    real* vx_point, real* vy_point, real* vz_point, real* rho_point
+                                )
+{
+    const uint x = threadIdx.x; 
+    const uint y = blockIdx.x;
+    const uint z = blockIdx.y;
+
+    const uint nx = blockDim.x;
+    const uint ny = gridDim.x;
+
+    const uint node = nx*(ny*z + y) + x;
+
+    if(node>=nPoints) return;
+
+    // Get indices of neighbor nodes. 
+    node referring to BSW cell as seen from probe point
+    uint k = pointIndices[node];
+    uint ke, uint kn, uint kt, uint kne, uint kte, uint ktn, uint ktne;
+    getNeighborIndicesBSW(  k, ke, kn, kt, kne, kte, ktn, ktne, neighborX, neighborY, neighborZ);
+
+    // Trilinear interpolation of macroscopic quantities to probe point
+    real dW, dE, dN, dS, dT, dB;
+    getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX[node], distY[node], dist[node]);
+
+    vx_point [node] = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
+    vy_point [node] = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
+    vz_point [node] = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
+    rho_point[node] = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
+}
+
 
 void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
 {
@@ -55,6 +92,11 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         std::copy(distY_level.begin(), distY_level.end(), probeParams[level]->distYH);
         std::copy(distZ_level.begin(), distZ_level.end(), probeParams[level]->distZH);
         std::copy(probeIndices_level.begin(), probeIndices_level.end(), probeParams[level]->pointIndicesH);
+
+        checkCudaErrors( cudaMemcpy(probeParams[level]->distXD, probeParams[level]->distXH, sizeof(real)*probeParams[level]->nPoints, cudaMemcpyHostToDevice) );
+        checkCudaErrors( cudaMemcpy(probeParams[level]->distYD, probeParams[level]->distYH, sizeof(real)*probeParams[level]->nPoints, cudaMemcpyHostToDevice) );
+        checkCudaErrors( cudaMemcpy(probeParams[level]->distZD, probeParams[level]->distZH, sizeof(real)*probeParams[level]->nPoints, cudaMemcpyHostToDevice) );
+        checkCudaErrors( cudaMemcpy(probeParams[level]->pointIndicesD, probeParams[level]->pointIndicesH, sizeof(int)*probeParams[level]->nPoints, cudaMemcpyHostToDevice) );
     }
 }
 
@@ -73,4 +115,9 @@ void Probe::setProbePointsFromList(std::vector<real> &_pointCoordsX, std::vector
     this->pointCoordsZ = _pointCoordsZ;
     this->nProbePoints = _pointCoordsX.size();
     printf("Adde list of %u  points", this->nProbePoints );
+}
+
+void Probe::addPostProcessingVariable(PostProcessingVariable _variable)
+{
+    this->postProcessingVariables.push_back(_variable)
 }
