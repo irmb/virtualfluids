@@ -26,14 +26,14 @@ __global__ void interpQuantities(   int* pointIndices,
     if(node>=nPoints) return;
 
     // Get indices of neighbor nodes. 
-    node referring to BSW cell as seen from probe point
+    // node referring to BSW cell as seen from probe point
     uint k = pointIndices[node];
-    uint ke, uint kn, uint kt, uint kne, uint kte, uint ktn, uint ktne;
+    uint ke, kn, kt, kne, kte, ktn, ktne;
     getNeighborIndicesBSW(  k, ke, kn, kt, kne, kte, ktn, ktne, neighborX, neighborY, neighborZ);
 
     // Trilinear interpolation of macroscopic quantities to probe point
     real dW, dE, dN, dS, dT, dB;
-    getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX[node], distY[node], dist[node]);
+    getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX[node], distY[node], distZ[node]);
 
     vx_point [node] = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
     vy_point [node] = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
@@ -119,5 +119,5 @@ void Probe::setProbePointsFromList(std::vector<real> &_pointCoordsX, std::vector
 
 void Probe::addPostProcessingVariable(PostProcessingVariable _variable)
 {
-    this->postProcessingVariables.push_back(_variable)
+    this->postProcessingVariables.push_back(_variable);
 }
