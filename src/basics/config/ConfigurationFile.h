@@ -122,7 +122,7 @@ T ConfigurationFile::getValue(const std::string& key) const
    {
       bFlag = true;
    }
-      
+
    std::istringstream iss(str);
    T x;
    iss >> x;

@@ -756,23 +756,26 @@ public:
     void setInitialCondition(std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition);
     std::function<void(real, real, real, real &, real &, real &, real &)> &getInitialCondition();
 
+    std::vector<std::shared_ptr<LBMSimulationParameter>> parH;
+    std::vector<std::shared_ptr<LBMSimulationParameter>> parD;
 private:
 	void readConfigData(const vf::basics::ConfigurationFile &configData);
     void initLBMSimulationParameter();
 
     bool compOn;
-    bool diffOn{ false };
+    bool diffOn { false };
     bool isF3;
-    bool calcDragLift{ false };
-    bool calcCp{ false };
-    bool writeVeloASCII{ false };
-    bool calcPlaneConc{ false };
+    bool calcDragLift { false };
+    bool calcCp { false };
+    bool writeVeloASCII { false };
+    bool calcPlaneConc { false };
     bool isBodyForce;
-    int diffMod{ 27 };
-    int maxlevel{ 0 };
-    int coarse, fine;
+    int diffMod {27};
+    int maxlevel {0};
+    int coarse {0};
+    int fine {0};
     int factor_gridNZ {2};
-    int D3Qxx{ 27 };
+    int D3Qxx {27};
     InitCondition ic;
     double memsizeGPU;
     unsigned int limitOfNodesForVTK;
@@ -815,8 +818,6 @@ private:
     // Step of Ensight writing//
     unsigned int stepEnsight;
 
-    std::vector<std::shared_ptr<LBMSimulationParameter>> parH;
-    std::vector<std::shared_ptr<LBMSimulationParameter>> parD;
     // LogWriter output;
 
     void initInterfaceParameter(int level);

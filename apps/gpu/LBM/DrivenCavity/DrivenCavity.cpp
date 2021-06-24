@@ -356,8 +356,6 @@ int main( int argc, char* argv[])
 
 			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
 
-
-
 			std::cout << targetPath << std::endl;
 
 			multipleLevel(targetPath + "configDrivenCavity.txt");

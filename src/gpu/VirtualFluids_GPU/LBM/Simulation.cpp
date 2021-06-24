@@ -13,7 +13,6 @@
 #include "GPU/devCheck.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
-#include "Input/ConfigFile.h"
 #include "Input/VtkGeometryReader.h"
 #include "Input/kFullReader.h"
 #include "Input/PositionReader.h"
@@ -27,8 +26,6 @@
 #include "Core/StringUtilities/StringUtil.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Init/InitLattice.h"
-#include "Init/DefineGrid.h"
-#include "Init/SetParameter.h"
 #include "Init/VfReader.h"
 //////////////////////////////////////////////////////////////////////////
 #include "FindQ/FindQ.h"

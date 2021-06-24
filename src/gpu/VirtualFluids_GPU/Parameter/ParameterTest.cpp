@@ -145,6 +145,12 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     for (size_t i = 0; i < kernel.size(); ++i) {
         EXPECT_THAT(kernel_actual[i], testing::Eq(kernel[i]));
     }
+
+
+    EXPECT_THAT(para.getCoarse(), testing::Eq(0));
+    EXPECT_THAT(para.getFine(), testing::Eq(1));  // NOGL - 1
+    EXPECT_THAT(para.parH.size(), testing::Eq(2));
+    EXPECT_THAT(para.parD.size(), testing::Eq(2));
 }
 
 

@@ -373,7 +373,13 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setDoRestart(configData.getValue<bool>("DoRestart"));
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (configData.contains("NOGL"))
-        this->setMaxLevel(configData.getValue<int>("NOGL"));
+    {
+        maxlevel = configData.getValue<int>("NOGL") - 1;
+        fine = maxlevel;
+
+        parH.resize(maxlevel + 1);
+        parD.resize(maxlevel + 1);
+    }
 
     this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
     this->setGridY(std::vector<int>(this->getMaxLevel() + 1, 32));
@@ -437,11 +443,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
 void Parameter::initLBMSimulationParameter()
 {
-	coarse         = 0;
-	fine           = this->maxlevel;
-	parH.resize(this->maxlevel+1);
-	parD.resize(this->maxlevel+1);
-
 	//host
 	for (int i = coarse; i <= fine; i++)
 	{
@@ -558,241 +559,6 @@ void Parameter::initLBMSimulationParameter()
 	}
 }
 
-void Parameter::setSizeMatSparse(int level)
-{
-	parH[level]->size_Mat_SP = 1;
-	parD[level]->size_Mat_SP = 1;
-	parH[level]->sizePlaneSB = 0;
-	parH[level]->sizePlaneST = 0;
-	parH[level]->sizePlaneRB = 0;
-	parH[level]->sizePlaneRT = 0;
-	parH[level]->isSetSendB  = false;
-	parH[level]->isSetSendT  = false;
-	parH[level]->isSetRecvB  = false;
-	parH[level]->isSetRecvT  = false;
-	unsigned int mm[8];
-
-	for (unsigned int k=1; k<parH[level]->gridNZ + 2 * STARTOFFZ - 1; k++)
-	{
-		for (unsigned int j=1; j<parH[level]->gridNY + 2 * STARTOFFY - 1; j++)
-		{
-			for (unsigned int i=1; i<parH[level]->gridNX + 2 * STARTOFFX - 1; i++)
-			{
-				mm[0]= parH[level]->nx*(parH[level]->ny*k + j) + i;
-				mm[1]= mm[0]                                                  -1; //W
-				mm[2]= mm[0]                                  -parH[level]->nx-1; //SW
-				mm[3]= mm[0]                                  -parH[level]->nx;   //S
-				mm[4]= mm[0]-(parH[level]->nx*parH[level]->ny);                   //B
-				mm[5]= mm[0]-(parH[level]->nx*parH[level]->ny)                -1; //BW
-				mm[6]= mm[0]-(parH[level]->nx*parH[level]->ny)-parH[level]->nx;   //BS
-				mm[7]= mm[0]-(parH[level]->nx*parH[level]->ny)-parH[level]->nx-1; //BSW
-
-				if ( parH[level]->geo[mm[0]] != GEO_VOID ||
-					parH[level]->geo[mm[1]] != GEO_VOID ||
-					parH[level]->geo[mm[2]] != GEO_VOID ||
-					parH[level]->geo[mm[3]] != GEO_VOID ||
-					parH[level]->geo[mm[4]] != GEO_VOID ||
-					parH[level]->geo[mm[5]] != GEO_VOID ||
-					parH[level]->geo[mm[6]] != GEO_VOID ||
-					parH[level]->geo[mm[7]] != GEO_VOID )
-				{
-					//////////////////////////////////////////////////////////////////////////
-					//add some stuff for the data exchange between the GPUs //////////////////
-					if (k == STARTOFFZ)
-					{
-						parH[level]->sizePlaneSB  += 1;
-						if (parH[level]->isSetSendB == false)
-						{
-							parH[level]->startB = mm[0];
-							parH[level]->isSetSendB = true;
-						}
-					} 
-					else if (k == parH[level]->gridNZ + STARTOFFZ - 1)
-					{
-						parH[level]->sizePlaneST  += 1;
-						if (parH[level]->isSetSendT == false)
-						{
-							parH[level]->startT = mm[0];
-							parH[level]->isSetSendT = true;
-						}
-					}
-					else if (k == parH[level]->gridNZ + STARTOFFZ)
-					{
-						parH[level]->sizePlaneRB  += 1;
-						if (parH[level]->isSetRecvB == false)
-						{
-							parH[level]->endB = mm[0];
-							parH[level]->isSetRecvB = true;
-						}
-					}
-					else if (k == STARTOFFZ-1)
-					{
-						parH[level]->sizePlaneRT  += 1;
-						if (parH[level]->isSetRecvT == false)
-						{
-							parH[level]->endT = mm[0];
-							parH[level]->isSetRecvT = true;
-						}
-					}
-					//////////////////////////////////////////////////////////////////////////
-					parH[level]->k[mm[0]]    = parH[level]->size_Mat_SP;
-					parH[level]->size_Mat_SP = parH[level]->size_Mat_SP + 1;               
-					parD[level]->size_Mat_SP = parD[level]->size_Mat_SP + 1;  
-				}
-				else parH[level]->k[mm[0]] = 0;
-			}
-		}
-	}
-	parH[level]->mem_size_real_SP    = sizeof(real     ) * parH[level]->size_Mat_SP;
-	parH[level]->mem_size_int_SP        = sizeof(unsigned int) * parH[level]->size_Mat_SP;
-	parD[level]->mem_size_real_SP    = sizeof(real     ) * parD[level]->size_Mat_SP;
-	parD[level]->mem_size_int_SP        = sizeof(unsigned int) * parD[level]->size_Mat_SP;
-}
-void Parameter::fillSparse(int level)
-{
-    //nsigned int li = ((parH[level]->gridNX+STARTOFFX-2)-(STARTOFFX+1)-1);
-    //unsigned int lj = ((parH[level]->gridNY+STARTOFFY-2)-(STARTOFFY+1)-1);
-	// real globalX, globalY, globalZ;
-
-	real PI = 3.141592653589793238462643383279f;
-
-	for (unsigned int k=1; k<parH[level]->gridNZ + 2 * STARTOFFZ - 1; k++)
-	{
-		for (unsigned int j=1; j<parH[level]->gridNY + 2 * STARTOFFY - 1; j++)
-		{
-			for (unsigned int i=1; i<parH[level]->gridNX + 2 * STARTOFFX - 1; i++)
-			{
-				int m = parH[level]->nx*(parH[level]->ny*k + j) + i;
-				if ((k < parH[level]->gridNZ + 2 * STARTOFFZ - 2) && (j < parH[level]->gridNY + 2 * STARTOFFY - 2) && (i < parH[level]->gridNX + 2 * STARTOFFX - 2))
-				{
-					if ((X1PERIODIC == true) && (level==coarse) && (i==parH[level]->gridNX + STARTOFFX - 1)) 
-					{
-						int mm = parH[level]->nx*(parH[level]->ny*k + j) + STARTOFFX;
-						parH[level]->neighborX_SP[parH[level]->k[m]] = parH[level]->k[mm];
-					}
-					else
-					{
-						parH[level]->neighborX_SP[parH[level]->k[m]] = parH[level]->k[m+1];
-					}
-					if ((X2PERIODIC == true) && (level==coarse) && (j==parH[level]->gridNY + STARTOFFY - 1)) 
-					{
-						int mm = parH[level]->nx*(parH[level]->ny*k + STARTOFFY) + i;
-						parH[level]->neighborY_SP[parH[level]->k[m]] = parH[level]->k[mm];
-					}
-					else
-					{
-						parH[level]->neighborY_SP[parH[level]->k[m]] = parH[level]->k[m+parH[level]->nx];
-					}
-					if ((X3PERIODIC == true) && (level==coarse) && (k==parH[level]->gridNZ + STARTOFFZ - 1)) 
-					{
-						int mm = parH[level]->nx*(parH[level]->ny*STARTOFFZ + j) + i;
-						parH[level]->neighborZ_SP[parH[level]->k[m]] = parH[level]->k[mm];
-					}
-					else
-					{
-						parH[level]->neighborZ_SP[parH[level]->k[m]] = parH[level]->k[m+(parH[level]->nx*parH[level]->ny)];
-					}
-				}
-				parH[level]->geoSP[parH[level]->k[m]]        = parH[level]->geo[m];
-				////////////////////////////////////////////////////////////////////////////
-				////Coordinates
-				//parH[level]->coordX_SP[parH[level]->k[m]]    = i;
-				//parH[level]->coordY_SP[parH[level]->k[m]]    = j;
-				//parH[level]->coordZ_SP[parH[level]->k[m]]    = k;
-				////////////////////////////////////////////////////////////////////////////
-				if (diffOn==true)
-				{
-					parH[level]->Conc[parH[level]->k[m]]         = parH[level]->Conc_Full[m];
-				}
-				////////////////////////////////////////////////////////////////////////////
-				////set pressure in the middle of the fine grid
-				//if (level == getFine())
-				//{
-				//   if(   i == parH[level]->gridNX/2 + STARTOFFX
-				//      && j == parH[level]->gridNY/2 + STARTOFFY 
-				//      && k == parH[level]->gridNZ/2 + STARTOFFZ) 
-				//      parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.1f;             
-				//   else 
-				//      parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.0f;
-				//} 
-				//else
-				//{
-				//   parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.0f;
-				//}
-				// globalX = TrafoXtoWorld(i,level);
-				// globalY = TrafoYtoWorld(j,level);
-				// globalZ = TrafoZtoWorld(k,level);
-				//without setting a pressure
-				parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.0f;       //parH[level]->Conc_Full[m];//bitte schnell wieder entfernen!!!
-				//////////////////////////////////////////////////////////////////////////
-				parH[level]->vx_SP[parH[level]->k[m]]        = (real)0.0f;
-				//parH[level]->vx_SP[parH[level]->k[m]]        = u0/3.0;
-				parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0f;
-				//parH[level]->vy_SP[parH[level]->k[m]]        = u0/3.0;
-				parH[level]->vz_SP[parH[level]->k[m]]        = (real)0.0f;
-				//parH[level]->vz_SP[parH[level]->k[m]]        = u0/3.0;
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)(u0*2.f)*((-4.f*globalX*globalX + parH[level]->gridNX*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + globalX*(-4.f + 4.f*parH[level]->gridNX + 8.f*STARTOFFX))*(-4.f*globalY*globalY + parH[level]->gridNY*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + globalY*(-4.f + 4.f*parH[level]->gridNY + 8.f*STARTOFFY)))/((2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNY)*(2.f - parH[level]->gridNY));
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)(u0*2.f)*((-4.f*i*i + parH[level]->gridNX*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*parH[level]->gridNX + 8.f*STARTOFFX))*(-4.f*j*j + parH[level]->gridNY*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*parH[level]->gridNY + 8.f*STARTOFFY)))/((2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNY)*(2.f - parH[level]->gridNY));
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);//(16.f*(u0*2.f)*i*j*(parH[level]->nx-i)*(parH[level]->ny-j))/(parH[level]->nx*parH[level]->nx*parH[level]->ny*parH[level]->ny); //u0;
-				//////////////////////////////////////////////////////////////////////////
-				////gerade
-				//parH[level]->vx_SP[parH[level]->k[m]] = (real)((32. * 32. * 3.) / (1000.*(real)parH[level]->gridNX));//(real)parH[level]->gridNX / (real)1000 * 3.0;
-				//parH[level]->vy_SP[parH[level]->k[m]] = (real)((getVelocity() * sin(2.0 * i / parH[level]->gridNX * PI) * cos(2.0 * k / parH[level]->gridNZ * PI)) * (32. / (real)parH[level]->gridNX));
-				//parH[level]->vz_SP[parH[level]->k[m]] = (real)0.0f;
-				//schraeg x
-				// 			parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNX) + (getVelocity() * cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
-				// 			parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
-				// 			parH[level]->vz_SP[parH[level]->k[m]]        = (real)(getVelocity() * cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
-				//schraeg z
-				//parH[level]->vx_SP[parH[level]->k[m]]        = (real)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
-				//parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNZ) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
-
-				  			//Taylor Green Vortex uniform
-				  			parH[level]->rho_SP[parH[level]->k[m]]       = (real)((getVelocity()*getVelocity())*3.0/4.0*(cos((i)*4.0*PI/(real)parH[level]->gridNX)+cos((k)*4.0*PI/(real)parH[level]->gridNZ)))*(real)(parH[level]->gridNZ)/(real)(parH[level]->gridNX);
-				  			//inkl. ueberlagerter Geschwindigkeit
-				  // 			parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNX) + getVelocity()*sin(((i)*2.0*PI/(real)parH[level]->gridNX))*cos((k)*2.0*PI/(real)parH[level]->gridNZ));
-				  			parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000. * 32.) * getVelocity() / 0.001 + getVelocity()*sin(((i)*2.0*PI/(real)parH[level]->gridNX))*cos((k)*2.0*PI/(real)parH[level]->gridNZ));
-				  			//ohne ueberlagerter Geschwindigkeit
-				  //			parH[level]->vx_SP[parH[level]->k[m]]        = (real)(getVelocity()*sin(((i)*2.0*PI/(real)parH[level]->gridNX))*cos((k)*2.0*PI/(real)parH[level]->gridNZ));
-				  			parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
-				  			parH[level]->vz_SP[parH[level]->k[m]]        = (real)(-getVelocity()*cos(((i)*2.0*PI/(real)parH[level]->gridNX))*sin((k)*2.0*PI/(real)parH[level]->gridNZ))*(real)(parH[level]->gridNZ)/(real)(parH[level]->gridNX);            
-
-				//Kernel Fix Test
-				//parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNX) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
-				//parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
-				////parH[level]->vx_SP[parH[level]->k[m]]        = (real)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
-				////parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
-				////parH[level]->vz_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNZ) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
-				//////////////////////////////////////////////////////////////////////////
-				//Taylor Green Vortex
-				//InitglobalX = TrafoXtoMGsWorld(i,level);
-				//InitglobalY = TrafoYtoMGsWorld(j,level);
-				//InitglobalZ = TrafoZtoMGsWorld(k,level);
-				//parH[level]->rho_SP[parH[level]->k[m]]       = (real)((u0*u0)*3.f/4.f*(cos((InitglobalX)*4.f*PI/parH[level]->gridNX)+cos((InitglobalY)*4.f*PI/parH[level]->gridNY)));
-				//parH[level]->vx_SP[parH[level]->k[m]]        = (real)( u0*sin(((InitglobalX)*2.f*PI/parH[level]->gridNX))*cos((InitglobalY)*2.f*PI/parH[level]->gridNY));
-				//parH[level]->vy_SP[parH[level]->k[m]]        = (real)(-u0*cos(((InitglobalX)*2.f*PI/parH[level]->gridNX))*sin((InitglobalY)*2.f*PI/parH[level]->gridNY));
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)0.0f;            
-				//////////////////////////////////////////////////////////////////////////
-			}
-		}
-	}
-	parH[level]->neighborX_SP[parH[level]->k[0]] = 0;
-	parH[level]->neighborY_SP[parH[level]->k[0]] = 0;
-	parH[level]->neighborZ_SP[parH[level]->k[0]] = 0;
-	parH[level]->geoSP[       parH[level]->k[0]] = GEO_VOID;
-	parH[level]->rho_SP[      parH[level]->k[0]] = (real)0.f;
-	parH[level]->vx_SP[       parH[level]->k[0]] = (real)0.f;
-	parH[level]->vy_SP[       parH[level]->k[0]] = (real)0.f;
-	parH[level]->vz_SP[       parH[level]->k[0]] = (real)0.f;
-	////////////////////////////////////////////////////////////////////////////
-	////Coordinates
-	//parH[level]->coordX_SP[parH[level]->k[0]]    = 0;
-	//parH[level]->coordY_SP[parH[level]->k[0]]    = 0;
-	//parH[level]->coordZ_SP[parH[level]->k[0]]    = 0;
-	////////////////////////////////////////////////////////////////////////////
-}
 void Parameter::copyMeasurePointsArrayToVector(int lev)
 {
 	int valuesPerClockCycle = (int)(getclockCycleForMP()/getTimestepForMP());
@@ -808,12 +574,6 @@ void Parameter::copyMeasurePointsArrayToVector(int lev)
 		}
 	}
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -873,7 +633,7 @@ void Parameter::setD3Qxx(int d3qxx)
 }
 void Parameter::setMaxLevel(int maxlevel)
 {
-	this->maxlevel = maxlevel-1;
+    this->maxlevel = maxlevel-1;
 }
 void Parameter::setParticleBasicLevel(int pbl)
 {
