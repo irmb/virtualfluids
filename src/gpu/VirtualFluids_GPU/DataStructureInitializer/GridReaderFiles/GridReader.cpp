@@ -61,10 +61,11 @@ void GridReader::allocArrays_CoordNeighborGeo()
 	CoordNeighborGeoV coordX(para->getcoordX(), binaer, true);
 	CoordNeighborGeoV coordY(para->getcoordY(), binaer, true);
 	CoordNeighborGeoV coordZ(para->getcoordZ(), binaer, true);
-	neighX = std::shared_ptr<CoordNeighborGeoV>(new CoordNeighborGeoV(para->getneighborX(), binaer, false));
-	neighY = std::shared_ptr<CoordNeighborGeoV>(new CoordNeighborGeoV(para->getneighborY(), binaer, false));
-	neighZ = std::shared_ptr<CoordNeighborGeoV>(new CoordNeighborGeoV(para->getneighborZ(), binaer, false));
-	CoordNeighborGeoV geoV(para->getgeoVec(), binaer, false);
+	neighX   = std::shared_ptr<CoordNeighborGeoV>(new CoordNeighborGeoV(para->getneighborX(),   binaer, false));
+	neighY   = std::shared_ptr<CoordNeighborGeoV>(new CoordNeighborGeoV(para->getneighborY(),   binaer, false));
+	neighZ   = std::shared_ptr<CoordNeighborGeoV>(new CoordNeighborGeoV(para->getneighborZ(),   binaer, false));
+    neighWSB = std::shared_ptr<CoordNeighborGeoV>(new CoordNeighborGeoV(para->getneighborWSB(), binaer, false));
+    CoordNeighborGeoV geoV(para->getgeoVec(), binaer, false);
 
 	uint maxLevel = coordX.getLevel();
 	std::cout << "Number of Level: " << maxLevel + 1 << std::endl;
@@ -81,19 +82,20 @@ void GridReader::allocArrays_CoordNeighborGeo()
 
         cudaMemoryManager->cudaAllocCoord(level);
 		cudaMemoryManager->cudaAllocSP(level);
-        cudaMemoryManager->cudaAllocF3SP(level);
+        //cudaMemoryManager->cudaAllocF3SP(level);
         cudaMemoryManager->cudaAllocNeighborWSB(level);
 
         if (para->getUseWale())
 			cudaMemoryManager->cudaAllocTurbulentViscosity(level);
 
-		coordX.initalCoords(para->getParH(level)->coordX_SP, level);
-		coordY.initalCoords(para->getParH(level)->coordY_SP, level);
-		coordZ.initalCoords(para->getParH(level)->coordZ_SP, level);
-		neighX->initalNeighbors(para->getParH(level)->neighborX_SP, level);
-		neighY->initalNeighbors(para->getParH(level)->neighborY_SP, level);
-		neighZ->initalNeighbors(para->getParH(level)->neighborZ_SP, level);
-		geoV.initalNeighbors(para->getParH(level)->geoSP, level);
+		coordX.initalCoords(      para->getParH(level)->coordX_SP,      level);
+		coordY.initalCoords(      para->getParH(level)->coordY_SP,      level);
+		coordZ.initalCoords(      para->getParH(level)->coordZ_SP,      level);
+		neighX->initalNeighbors(  para->getParH(level)->neighborX_SP,   level);
+		neighY->initalNeighbors(  para->getParH(level)->neighborY_SP,   level);
+		neighZ->initalNeighbors(  para->getParH(level)->neighborZ_SP,   level);
+        neighWSB->initalNeighbors(para->getParH(level)->neighborWSB_SP, level);
+        geoV.initalNeighbors(     para->getParH(level)->geoSP,          level);
         rearrangeGeometry(para.get(), level);
 		setInitalNodeValues(numberOfNodesPerLevel, level);
 
@@ -113,12 +115,20 @@ void GridReader::allocArrays_BoundaryValues()
 	this->setChannelBoundaryCondition();
 	int level = BC_Values[0]->getLevel();
 
+	for (size_t i = 0; i <= level; i++) {
+        velocityX_BCvalues.push_back(std::vector<real>());
+        velocityY_BCvalues.push_back(std::vector<real>());
+        velocityZ_BCvalues.push_back(std::vector<real>());
+    }
+
     for (uint i = 0; i < channelBoundaryConditions.size(); i++)
     {
-        setVelocityValues(i);
-        setPressureValues(i);
-        setOutflowValues(i);
+        if (     this->channelBoundaryConditions[i] == "velocity") { fillVelocityVectors(i); } 
+		else if (this->channelBoundaryConditions[i] == "pressure") { setPressureValues(i); } 
+		else if (this->channelBoundaryConditions[i] == "outflow")  { setOutflowValues(i);  }
     }
+
+	setVelocityValues();
 
 	initalValuesDomainDecompostion(level);
 }
@@ -229,37 +239,59 @@ void GridReader::setPressRhoBC(int sizePerLevel, int level, int channelSide) con
 }
 
 
-void GridReader::setVelocityValues(int channelSide) const
+void GridReader::fillVelocityVectors(int channelSide)
 {
-	for (unsigned int level = 0; level <= BC_Values[channelSide]->getLevel(); level++)
+    for (unsigned int level = 0; level <= BC_Values[channelSide]->getLevel(); level++)
 	{
-		int sizePerLevel = BC_Values[channelSide]->getSize(level);
-        setVelocitySizePerLevel(level, sizePerLevel);
+		const int sizePerLevel = BC_Values[channelSide]->getSize(level);
 
 		if (sizePerLevel > 1)
 		{
-			std::cout << "size velocity level " << level << " : " << sizePerLevel << std::endl;
+            // set local vectors per side and level
+            real *veloX_ValuesPerSide = new real[sizePerLevel];
+            real *veloY_ValuesPerSide = new real[sizePerLevel];
+            real *veloZ_ValuesPerSide = new real[sizePerLevel];
 
-            cudaMemoryManager->cudaAllocVeloBC(level);
+            std::cout << "size velocity level " << level << " : " << sizePerLevel << std::endl;
+            BC_Values[channelSide]->setVelocityValues(veloX_ValuesPerSide, veloY_ValuesPerSide, veloZ_ValuesPerSide, level);
 
-			setVelocity(level, sizePerLevel, channelSide);
-            cudaMemoryManager->cudaCopyVeloBC(level);
-		}
+            for (size_t i = 0; i < sizePerLevel; i++) {
+                this->velocityX_BCvalues[level].push_back(veloX_ValuesPerSide[i]);
+                this->velocityY_BCvalues[level].push_back(veloY_ValuesPerSide[i]);
+                this->velocityZ_BCvalues[level].push_back(veloZ_ValuesPerSide[i]);
+            }
+
+			delete veloX_ValuesPerSide;
+            delete veloY_ValuesPerSide;
+            delete veloZ_ValuesPerSide;
+        }        
 	}
+
+
 }
 
-void GridReader::setVelocity(int level, int sizePerLevel, int channelSide) const
-{
-	BC_Values[channelSide]->setVelocityValues(para->getParH(level)->Qinflow.Vx, para->getParH(level)->Qinflow.Vy, para->getParH(level)->Qinflow.Vz, level);
+void GridReader::setVelocityValues() { 
+    for (size_t level = 0; level < velocityX_BCvalues.size(); level++) {
+        
+		int sizePerLevel = velocityX_BCvalues[level].size();
+        std::cout << "complete size velocity level " << level << " : " << sizePerLevel << std::endl;
+        setVelocitySizePerLevel(level, sizePerLevel);
+        
+		if (sizePerLevel > 1) {
+            cudaMemoryManager->cudaAllocVeloBC(level);
+            setVelocity(level, sizePerLevel);
+			cudaMemoryManager->cudaCopyVeloBC(level);
+        }
+    }
+}
 
+void GridReader::setVelocity(int level, int sizePerLevel) const
+{
 	for (int index = 0; index < sizePerLevel; index++)
 	{
-		para->getParH(level)->Qinflow.Vx[index] = para->getParH(level)->Qinflow.Vx[index] / para->getVelocityRatio();
-		para->getParH(level)->Qinflow.Vy[index] = para->getParH(level)->Qinflow.Vy[index] / para->getVelocityRatio();
-		para->getParH(level)->Qinflow.Vz[index] = para->getParH(level)->Qinflow.Vz[index] / para->getVelocityRatio();
-		//para->getParH(level)->Qinflow.Vx[index] = para->getVelocity();//0.035;
-		//para->getParH(level)->Qinflow.Vy[index] = 0.0;//para->getVelocity();//0.0;
-		//para->getParH(level)->Qinflow.Vz[index] = 0.0;
+        para->getParH(level)->Qinflow.Vx[index] = this->velocityX_BCvalues[level][index] / para->getVelocityRatio();
+        para->getParH(level)->Qinflow.Vy[index] = this->velocityY_BCvalues[level][index] / para->getVelocityRatio();
+        para->getParH(level)->Qinflow.Vz[index] = this->velocityZ_BCvalues[level][index] / para->getVelocityRatio();
 	}
 }
 
@@ -511,6 +543,7 @@ void GridReader::allocArrays_BoundaryQs()
 
 	std::vector<std::shared_ptr<BoundaryQs> > BC_Qs(channelDirections.size());
 	this->makeReader(BC_Qs, para);
+    int level = BC_Values[0]->getLevel();
 
 	for (std::size_t i = 0; i < channelBoundaryConditions.size(); i++)
 	{
@@ -519,6 +552,12 @@ void GridReader::allocArrays_BoundaryQs()
 		else if (this->channelBoundaryConditions[i] == "pressure") { setPressQs(BC_Qs[i]); }
 		else if (this->channelBoundaryConditions[i] == "outflow") { setOutflowQs(BC_Qs[i]); }
 	}
+
+	for (size_t lev = 0; lev < velocityIndex.size(); lev++) {
+        if (velocityIndex[lev].size() > 1) {
+            cudaMemoryManager->cudaCopyVeloBC(lev);
+        }
+    }
 
 	std::shared_ptr<BoundaryQs> obj_geomQ = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getgeomBoundaryBcQs(), para, "geo", false));
 	if (para->getIsGeo())
