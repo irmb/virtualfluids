@@ -5,7 +5,7 @@
 #include <helper_cuda.h>
 #include "Kernel/Utilities/CudaGrid.h"
 #include "lbm/constants/NumericConstants.h"
-#include "basics/geometry3d/CoordinateTransformation3D.h"
+#include "Utilities/geometry_helper.h"
 
 __host__ __device__ __inline__ real calc_gaussian3D(real posX, real posY, real posZ, real destX, real destY, real destZ, real epsilon)
 {
@@ -16,6 +16,7 @@ __host__ __device__ __inline__ real calc_gaussian3D(real posX, real posY, real p
     real oneOeps_sq = 1.f/(epsilon*epsilon);
     return oneOeps_sq*pow(vf::lbm::constant::cPi,-1.5f)*exp(-dist*dist*oneOeps_sq);
 }
+
 
 __host__ __device__ uint find_nearest_cellBSW(uint index, 
                                               real* coordsX, real* coordsY, real* coordsZ, 
@@ -63,10 +64,10 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
     bladeVelocitiesY[node] = u_interpY;
     bladeVelocitiesZ[node] = u_interpZ;
 
-    if(node==numberOfNodes-1)
-    {
-        printf("after: blade (%f, %f, %f), node BSW (%f, %f, %f), nodeTNE (%f, %f, %f)\n", bladePosX, bladePosY, bladePosZ, gridCoordsX[kBSW], gridCoordsY[kBSW], gridCoordsZ[kBSW], gridCoordsX[neighborsX[kBSW]], gridCoordsY[neighborsY[kBSW]], gridCoordsZ[neighborsZ[kBSW]]);
-    }
+    // if(node==numberOfNodes-1)
+    // {
+    //     printf("after: blade (%f, %f, %f), node BSW (%f, %f, %f), nodeTNE (%f, %f, %f)\n", bladePosX, bladePosY, bladePosZ, gridCoordsX[kBSW], gridCoordsY[kBSW], gridCoordsZ[kBSW], gridCoordsX[neighborsX[kBSW]], gridCoordsY[neighborsY[kBSW]], gridCoordsZ[neighborsZ[kBSW]]);
+    // }
 
 }
 
@@ -97,9 +98,9 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
     real posY = gridCoordsY[gridIndex];
     real posZ = gridCoordsZ[gridIndex];
 
-    real forceX = 0.0f;
-    real forceY = 0.0f;
-    real forceZ = 0.0f;
+    real fXYZ_X = 0.0f;
+    real fXYZ_Y = 0.0f;
+    real fXYZ_Z = 0.0f;
 
     real last_r = 0.0f;
     real eta = 0.0f;
@@ -109,44 +110,21 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
     {
         eta = calc_gaussian3D(posX, posY, posZ, bladeCoordsX[node], bladeCoordsY[node], bladeCoordsZ[node], epsilon);
         r = bladeRadii[node];
-        forceX += bladeForcesX[node]*(r-last_r)*eta;
-        forceY += bladeForcesY[node]*(r-last_r)*eta;
-        forceZ += bladeForcesZ[node]*(r-last_r)*eta;
+        fXYZ_X += bladeForcesX[node]*(r-last_r)*eta;
+        fXYZ_Y += bladeForcesY[node]*(r-last_r)*eta;
+        fXYZ_Z += bladeForcesZ[node]*(r-last_r)*eta;
 
         last_r = r;
     }
 
-    forceX += bladeForcesX[numberOfNodes-1]*(radius-last_r)*eta;
-    forceY += bladeForcesY[numberOfNodes-1]*(radius-last_r)*eta;
-    forceZ += bladeForcesZ[numberOfNodes-1]*(radius-last_r)*eta;
+    fXYZ_X += bladeForcesX[numberOfNodes-1]*(radius-last_r)*eta;
+    fXYZ_Y += bladeForcesY[numberOfNodes-1]*(radius-last_r)*eta;
+    fXYZ_Z += bladeForcesZ[numberOfNodes-1]*(radius-last_r)*eta;
 
-    gridForcesX[gridIndex] = forceX;
-    gridForcesY[gridIndex] = forceY;
-    gridForcesZ[gridIndex] = forceZ;
+    gridForcesX[gridIndex] = fXYZ_X;
+    gridForcesY[gridIndex] = fXYZ_Y;
+    gridForcesZ[gridIndex] = fXYZ_Z;
 
-}
-
-__host__ __device__ uint find_nearest_cellBSW(uint index, 
-                                              real* coordsX, real* coordsY, real* coordsZ, 
-                                              real posX, real posY, real posZ, 
-                                              uint* neighborsX, uint* neighborsY, uint* neighborsZ, uint* neighborsWSB){   
-    uint new_index = index;
-
-    while(coordsX[new_index] > posX && coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = neighborsWSB[new_index];}
-
-    while(coordsX[new_index] > posX && coordsY[new_index] > posY ){ new_index = neighborsZ[neighborsWSB[new_index]];}
-    while(coordsX[new_index] > posX && coordsZ[new_index] > posZ ){ new_index = neighborsY[neighborsWSB[new_index]];}
-    while(coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = neighborsX[neighborsWSB[new_index]];}
-
-    while(coordsX[new_index] > posX){ new_index = neighborsY[neighborsZ[neighborsWSB[new_index]]];}
-    while(coordsY[new_index] > posY){ new_index = neighborsX[neighborsZ[neighborsWSB[new_index]]];}
-    while(coordsZ[new_index] > posZ){ new_index = neighborsX[neighborsY[neighborsWSB[new_index]]];}
-
-    while(coordsX[new_index] < posX){ new_index = neighborsX[new_index];}
-    while(coordsY[new_index] < posY){ new_index = neighborsY[new_index];}
-    while(coordsZ[new_index] < posZ){ new_index = neighborsZ[new_index];}
-
-    return neighborsWSB[new_index];
 }
 
 void ActuatorLine::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
@@ -188,30 +166,43 @@ void ActuatorLine::visit(Parameter* para, int level, unsigned int t)
     if(true)
     {
         real forceRatio = para->getVelocityRatio()*para->getDensityRatio();
-        for( uint node=0; node<this->numberOfNodes; node++)
+        for( int blade=0; blade<this->nBlades; blade++)
         {
-            real u_rel = this->bladeVelocitiesXH[node]*para->getVelocityRatio();
-            real v_rel = this->bladeVelocitiesYH[node]*para->getVelocityRatio()+this->omega*this->bladeRadiiH[node];
+            real localAzimuth = this->azimuth+2*blade*vf::lbm::constant::cPi/this->nBlades;
+            for( uint bladeNode=0; bladeNode<this->nBladeNodes; bladeNode++)
+            {
+                uint node = bladeNode*blade+this->nBladeNodes;
+                real uXYZ_X = this->bladeVelocitiesXH[node]/para->getVelocityRatio();
+                real uXYZ_Y = this->bladeVelocitiesYH[node]/para->getVelocityRatio();
+                real uXYZ_Z = this->bladeVelocitiesZH[node]/para->getVelocityRatio();
 
-            real u_rel_sq = u_rel*u_rel+v_rel*v_rel;
-            real phi = atan2(u_rel, v_rel);
-            real Cl = 1.f;
-            real Cd = 0.f;
-            real c0 = 0.1f;
-            real c = c0 * sqrt( 1- pow(2.f*(2*this->bladeRadiiH[node]-0.5*this->diameter)/(this->diameter), 2.f) );
-            real Cn =   Cl*cos(phi)+Cd*sin(phi);
-            real Ct =  -Cl*sin(phi)+Cd*cos(phi);
+                real uRTZ_X, uRTZ_Y, uRTZ_Z;
+                invRotateAboutX3D(uXYZ_X, uXYZ_Y, uXYZ_Z, localAzimuth, uRTZ_X, uRTZ_Y, uRTZ_Z);
+                
+                real u_rel = uRTZ_X;
+                real v_rel = uRTZ_Y+this->omega*this->bladeRadiiH[node];
 
-            real fRTZ_X = 0.5f*u_rel_sq*c*this->density*Cn;
-            real fRTZ_Y = 0.5f*u_rel_sq*c*this->density*Ct;
-            real fRTZ_Z = 0.0;
-            real forceX = fRTZ_X;
-            real forceY = fRTZ_Y;
-            real forceZ = fRTZ_Z;
-        
-            this->bladeForcesXH[node] = forceX/forceRatio;
-            this->bladeForcesYH[node] = forceY/forceRatio;
-            this->bladeForcesZH[node] = forceZ/forceRatio;
+                real u_rel_sq = u_rel*u_rel+v_rel*v_rel;
+                real phi = atan2(u_rel, v_rel);
+                real Cl = 1.f;
+                real Cd = 0.f;
+                real c0 = 0.1f;
+                real c = c0 * sqrt( 1- pow(2.f*(2*this->bladeRadiiH[node]-0.5*this->diameter)/(this->diameter), 2.f) );
+                real Cn =   Cl*cos(phi)+Cd*sin(phi);
+                real Ct =  -Cl*sin(phi)+Cd*cos(phi);
+
+                real fRTZ_X = 0.5f*u_rel_sq*c*this->density*Cn;
+                real fRTZ_Y = 0.5f*u_rel_sq*c*this->density*Ct;
+                real fRTZ_Z = 0.0;
+
+                real fXYZ_X, fXYZ_Y, fXYZ_Z;
+
+                rotateAboutX3D(fRTZ_X, fRTZ_Y, fRTZ_Z, localAzimuth, fXYZ_X, fXYZ_Y, fXYZ_Z);
+            
+                this->bladeForcesXH[node] = fXYZ_X*forceRatio;
+                this->bladeForcesYH[node] = fXYZ_Y*forceRatio;
+                this->bladeForcesZH[node] = fXYZ_Z*forceRatio;
+            }
         }
     }
 
@@ -295,15 +286,19 @@ void ActuatorLine::initBladeCoords()
 {   
     for( unsigned int blade=0; blade<this->nBlades; blade++)
     {
-        real azimuth = (2*vf::lbm::constant::cPi/this->nBlades*blade);
+        real localAzimuth = this->azimuth*(2*vf::lbm::constant::cPi/this->nBlades*blade);
         for(unsigned int node=0; node<this->nBladeNodes; node++)
         {
+            real coordY, coordZ, r, y;
+            r = this->bladeRadiiH[node];
+            y = 0.f;
+
+            rotate2D(localAzimuth, y, r, coordY, coordZ);
             this->bladeCoordsXH[node+this->nBladeNodes*blade] = this->turbinePosX;
-            this->bladeCoordsYH[node+this->nBladeNodes*blade] = this->turbinePosY+this->bladeRadiiH[node]*sin(azimuth);
-            this->bladeCoordsZH[node+this->nBladeNodes*blade] = this->turbinePosZ+this->bladeRadiiH[node]*cos(azimuth);
+            this->bladeCoordsYH[node+this->nBladeNodes*blade] = this->turbinePosY+coordY;
+            this->bladeCoordsZH[node+this->nBladeNodes*blade] = this->turbinePosZ+coordZ;
         }
     }
-    printf("bladeCoords %f %f %f turbPos %f %f %f \n", this->bladeCoordsXH[this->numberOfNodes-1], this->bladeCoordsYH[this->numberOfNodes-1], this->bladeCoordsZH[this->numberOfNodes-1], this->turbinePosX, this->turbinePosY, this->turbinePosZ);
 }
 
 void ActuatorLine::copyBladeCoordsHtoD()
@@ -369,10 +364,12 @@ void ActuatorLine::rotateBlades(real angle)
 {
     for(unsigned int node=0; node<this->nBladeNodes*this->nBlades; node++)
     {
-        real y = this->bladeCoordsYH[node]-this->turbinePosY;
-        real z = this->bladeCoordsZH[node]-this->turbinePosZ;
-        this->bladeCoordsYH[node] = y*cos(angle)-z*sin(angle)+this->turbinePosY;
-        this->bladeCoordsZH[node] = y*sin(angle)+z*cos(angle)+this->turbinePosZ;
+        real oldCoordY = this->bladeCoordsYH[node];
+        real oldCoordZ = this->bladeCoordsZH[node];
+        real newCoordY, newCoordZ;
+        rotate2D(angle, oldCoordY, oldCoordZ, newCoordY, newCoordZ, this->turbinePosY, this->turbinePosZ);
+        this->bladeCoordsYH[node] = newCoordY;
+        this->bladeCoordsZH[node] = newCoordZ;
     }
 }
 

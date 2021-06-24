@@ -11,15 +11,15 @@ class ActuatorLine : public Visitor
 {
 public:
     ActuatorLine(
-        const unsigned int &_nBlades,
-        const real &_density,
-        const unsigned int &_nBladeNodes,
-        const real &_epsilon,
-        real &_turbinePosX, real &_turbinePosY, real &_turbinePosZ,
-        const real &_diameter,
-        int &_level,
-        const real &_delta_t,
-        const real &_delta_x
+        const unsigned int _nBlades,
+        const real _density,
+        const unsigned int _nBladeNodes,
+        const real _epsilon,
+        real _turbinePosX, real _turbinePosY, real _turbinePosZ,
+        const real _diameter,
+        int _level,
+        const real _delta_t,
+        const real _delta_x
     ) : nBlades(_nBlades),
         density(_density),
         nBladeNodes(_nBladeNodes), 
@@ -33,8 +33,9 @@ public:
         this->delta_t = _delta_t/pow(2,this->level);
         this->delta_x = _delta_x/pow(2,this->level);
         this->numberOfNodes = this->nBladeNodes*this->nBlades;
-        this->omega = 0.1f;
+        this->omega = 1.0f;
         this->azimuth = 0.0f;
+
     }
 
     virtual  ~ActuatorLine()
@@ -110,8 +111,6 @@ private:
     int numberOfNodes;
     
     unsigned int* indicesBoundingBox;
-
-    CoordinateTransformation3D* transformationBlade1, transformationBlade2, transformationBlade3;
 };
 
 #endif

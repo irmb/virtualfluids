@@ -99,7 +99,7 @@ const real velocity  = 9.0;
 
 const real mach = 0.1;
 
-const uint nodes_per_D = 8;
+const uint nodes_per_D = 32;
 
 //std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
 //std::string path("D:/out/DrivenCavity"); //Mollok
