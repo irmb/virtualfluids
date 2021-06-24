@@ -425,7 +425,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     }
 
     if (configData.contains("MultiKernelName"))
-        this->setMultiKernel(StringUtil::toStringVector(configData.getValue<std::string>("MultiKernelName")));
+        this->setMultiKernel(configData.getVector<std::string>("MultiKernelName"));
     else if (this->getMultiKernelOn()) {
         std::vector<std::string> tmp;
         for (int i = 0; i < this->getMaxLevel() + 1; i++) {
@@ -437,7 +437,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
 void Parameter::initLBMSimulationParameter()
 {
-	factor_gridNZ  = 2;
 	coarse         = 0;
 	fine           = this->maxlevel;
 	parH.resize(this->maxlevel+1);
@@ -2685,7 +2684,7 @@ std::vector< int> Parameter::getMultiKernelLevel()
 {
 	return multiKernelLevel;
 }
-std::vector< std::string> Parameter::getMultiKernel()
+std::vector<std::string> Parameter::getMultiKernel()
 {
 	return multiKernel;
 }

@@ -771,7 +771,7 @@ private:
     int diffMod{ 27 };
     int maxlevel{ 0 };
     int coarse, fine;
-    int factor_gridNZ;
+    int factor_gridNZ {2};
     int D3Qxx{ 27 };
     InitCondition ic;
     double memsizeGPU;

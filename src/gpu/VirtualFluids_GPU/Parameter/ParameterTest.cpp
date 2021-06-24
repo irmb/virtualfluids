@@ -135,6 +135,16 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getDistY(), testing::ElementsAreArray({500, 501}));
     EXPECT_THAT(para.getDistZ(), testing::ElementsAreArray({600, 601}));
     EXPECT_THAT(para.getNeedInterface(), testing::ElementsAreArray({true, true, true, true, true, true}));
+
+    EXPECT_THAT(para.getMainKernel(), testing::Eq("KernelName"));
+    EXPECT_THAT(para.getMultiKernelOn(), testing::Eq(true));
+    EXPECT_THAT(para.getMultiKernelLevel(), testing::ElementsAreArray({3, 2, 1}));
+
+    std::vector<std::string> kernel {"Kernel1", "Kernel2", "Kernel3"};
+    auto kernel_actual = para.getMultiKernel();
+    for (size_t i = 0; i < kernel.size(); ++i) {
+        EXPECT_THAT(kernel_actual[i], testing::Eq(kernel[i]));
+    }
 }
 
 

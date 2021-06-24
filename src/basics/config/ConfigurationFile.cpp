@@ -65,6 +65,14 @@ bool ConfigurationFile::load(const std::string& file)
 
    return true;
 }
+
+//////////////////////////////////////////////////////////////////////////
+template<>
+bool ConfigurationFile::fromString<bool>(const std::string& str) const
+{
+   return str == "true";
+}
+
 //////////////////////////////////////////////////////////////////////////
 bool ConfigurationFile::contains(const std::string& key) const
 {

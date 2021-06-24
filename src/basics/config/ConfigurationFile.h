@@ -103,17 +103,15 @@ std::vector<T> ConfigurationFile::getVector(const std::string& key) const
 template<class T>
 T ConfigurationFile::fromString(const std::string& str) const
 {
-   //boolean hack
-   if (str == "true")
-      return true;
-   else if (str == "false")
-      return false;
-   //////////////
    std::istringstream stream(str);
    T t;
    stream >> t;
    return t;
 }
+
+template<>
+bool ConfigurationFile::fromString<bool>(const std::string& str) const;
+
 //////////////////////////////////////////////////////////////////////////
 template<class T>
 T ConfigurationFile::getValue(const std::string& key) const
