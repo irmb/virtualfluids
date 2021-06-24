@@ -225,7 +225,7 @@ void multipleLevel(const std::string& configPath)
         real density = 1.225f;
         int level = 0;
 
-        ActuatorLine* actuator_line = new ActuatorLine((unsigned int) 3, density, (unsigned int)32, epsilon, turbPos[0], turbPos[1], turbPos[2], D, level);
+        ActuatorLine* actuator_line = new ActuatorLine((unsigned int) 3, density, (unsigned int)32, epsilon, turbPos[0], turbPos[1], turbPos[2], D, level, dt, dx);
         para->addActuator( actuator_line );
 
         Simulation sim;
