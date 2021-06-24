@@ -27,7 +27,10 @@ TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldThrow)
     EXPECT_THROW(Parameter para(config, 1, 0), std::runtime_error);
 }
 
-TEST(ParameterTest, check_outputPath)
+// TODO: test setPossNeighborFilesX
+// TODO: test default values
+
+TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
 {
     vf::basics::ConfigurationFile config;
     std::string targetPath = __FILE__;
@@ -55,6 +58,83 @@ TEST(ParameterTest, check_outputPath)
     EXPECT_THAT(para.getCalcMedian(), testing::Eq(true));
     EXPECT_THAT(para.getCalcCp(), testing::Eq(true));
     EXPECT_THAT(para.getCalcDragLift(), testing::Eq(true));
+    EXPECT_THAT(para.getWriteVeloASCIIfiles(), testing::Eq(true));
+    EXPECT_THAT(para.getCalcPlaneConc(), testing::Eq(true));
+    EXPECT_THAT(para.getConcFile(), testing::Eq(true));
+    EXPECT_THAT(para.isStreetVelocityFile(), testing::Eq(true));
+    EXPECT_THAT(para.getUseMeasurePoints(), testing::Eq(true));
+    EXPECT_THAT(para.getUseWale(), testing::Eq(true));
+    EXPECT_THAT(para.getUseInitNeq(), testing::Eq(true));
+    EXPECT_THAT(para.getSimulatePorousMedia(), testing::Eq(true));
+
+    EXPECT_THAT(para.getD3Qxx(), testing::Eq(99));
+    EXPECT_THAT(para.getTEnd(), testing::Eq(33));
+    EXPECT_THAT(para.getTOut(), testing::Eq(22));
+    EXPECT_THAT(para.getTStartOut(), testing::Eq(11));
+    EXPECT_THAT(para.getTimeCalcMedStart(), testing::Eq(22));
+    EXPECT_THAT(para.getTimeCalcMedEnd(), testing::Eq(44));
+    EXPECT_THAT(para.getPressInID(), testing::Eq(25));
+    EXPECT_THAT(para.getPressOutID(), testing::Eq(26));
+    EXPECT_THAT(para.getPressInZ(), testing::Eq(27));
+    EXPECT_THAT(para.getPressOutZ(), testing::Eq(28));
+
+    EXPECT_THAT(para.getDiffOn(), testing::Eq(true));
+    EXPECT_THAT(para.getDiffMod(), testing::Eq(99));
+    EXPECT_THAT(para.getDiffusivity(), RealEq(1.11));
+    EXPECT_THAT(para.getTemperatureInit(), RealEq(2.22));
+    EXPECT_THAT(para.getTemperatureBC(), RealEq(3.33));
+
+    EXPECT_THAT(para.getViscosity(), RealEq(4.44));
+    EXPECT_THAT(para.getVelocity(), RealEq(5.55));
+    EXPECT_THAT(para.getViscosityRatio(), RealEq(6.66));
+    EXPECT_THAT(para.getVelocityRatio(), RealEq(7.77));
+    EXPECT_THAT(para.getDensityRatio(), RealEq(8.88));
+    EXPECT_THAT(para.getPressRatio(), RealEq(9.99));
+
+    EXPECT_THAT(para.getRealX(), RealEq(0.1));
+    EXPECT_THAT(para.getRealY(), RealEq(0.2));
+    EXPECT_THAT(para.getFactorPressBC(), RealEq(0.3));
+
+    EXPECT_THAT(para.getReadGeo(), testing::Eq(true));
+    EXPECT_THAT(para.getGeometryFileC(), testing::Eq("/pass/to/c"));
+    EXPECT_THAT(para.getGeometryFileM(), testing::Eq("/pass/to/m"));
+    EXPECT_THAT(para.getGeometryFileF(), testing::Eq("/pass/to/f"));
+
+    EXPECT_THAT(para.getclockCycleForMP(), RealEq(0.4));
+    EXPECT_THAT(para.getTimestepForMP(), testing::Eq(4));
+
+    std::vector<real> forces {2.0,2.1,2.2};
+    double* forces_actual = para.getForcesDouble();
+    for (size_t i = 0; i < forces.size(); ++i) {
+         EXPECT_THAT((real)forces_actual[i], RealEq(forces[i]));
+    }
+
+    std::vector<real> limiters {3.0,3.1,3.2};
+    double* limiters_actual = para.getQuadricLimitersDouble();
+    for (size_t i = 0; i < limiters.size(); ++i) {
+         EXPECT_THAT((real)limiters_actual[i], RealEq(limiters[i]));
+    }
+
+    EXPECT_THAT(para.getCalcParticle(), testing::Eq(true));
+    EXPECT_THAT(para.getParticleBasicLevel(), testing::Eq(1));
+    EXPECT_THAT(para.getParticleInitLevel(), testing::Eq(2));
+    EXPECT_THAT(para.getNumberOfParticles(), testing::Eq(1111));
+    EXPECT_THAT(para.getStartXHotWall(), RealEq(4.1));
+    EXPECT_THAT(para.getEndXHotWall(), RealEq(4.2));
+
+    EXPECT_THAT(para.getTimeDoCheckPoint(), testing::Eq(33));
+    EXPECT_THAT(para.getTimeDoRestart(), testing::Eq(44));
+    EXPECT_THAT(para.getDoCheckPoint(), testing::Eq(true));
+    EXPECT_THAT(para.getDoRestart(), testing::Eq(true));
+    EXPECT_THAT(para.getMaxLevel(), testing::Eq(1)); // NOGL - 1
+
+    EXPECT_THAT(para.getGridX(), testing::ElementsAreArray({100, 101}));
+    EXPECT_THAT(para.getGridY(), testing::ElementsAreArray({200, 201}));
+    EXPECT_THAT(para.getGridZ(), testing::ElementsAreArray({300, 301}));
+    EXPECT_THAT(para.getDistX(), testing::ElementsAreArray({400, 401}));
+    EXPECT_THAT(para.getDistY(), testing::ElementsAreArray({500, 501}));
+    EXPECT_THAT(para.getDistZ(), testing::ElementsAreArray({600, 601}));
+    // EXPECT_THAT(para.getNeedInterface(), testing::ElementsAreArray({true, true}));
 }
 
 

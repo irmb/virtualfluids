@@ -57,6 +57,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 {
    if (configData.contains("NumberOfDevices"))
         this->setMaxDev(configData.getValue<int>("NumberOfDevices"));
+
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Devices"))
         this->setDevices(configData.getVector<uint>("Devices"));
@@ -330,10 +331,10 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setNumberOfParticles(configData.getValue<int>("numberOfParticles"));
 
     if (configData.contains("startXHotWall"))
-        this->setEndXHotWall(configData.getValue<real>("startXHotWall"));
+        this->setStartXHotWall(configData.getValue<real>("startXHotWall"));
 
     if (configData.contains("endXHotWall"))
-        this->setCalcParticles(configData.getValue<real>("endXHotWall"));
+        this->setEndXHotWall(configData.getValue<real>("endXHotWall"));
     //////////////////////////////////////////////////////////////////////////
     // for Multi GPU
     if (this->getNumprocs() > 1) {
