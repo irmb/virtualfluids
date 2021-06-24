@@ -5,6 +5,7 @@
 #include "Parameter/Parameter.h"
 #include "PointerDefinitions.h"
 #include "GridGenerator/grid/GridBuilder/GridBuilder.h"
+#include "basics/geometry3d/CoordinateTransformation3D.h"
 
 class ActuatorLine : public Visitor
 {
@@ -16,7 +17,9 @@ public:
         const real &_epsilon,
         real &_turbinePosX, real &_turbinePosY, real &_turbinePosZ,
         const real &_diameter,
-        int &_level
+        int &_level,
+        const real &_delta_t,
+        const real &_delta_x
     ) : nBlades(_nBlades),
         density(_density),
         nBladeNodes(_nBladeNodes), 
@@ -24,10 +27,13 @@ public:
         turbinePosX(_turbinePosX), turbinePosY(_turbinePosY), turbinePosZ(_turbinePosZ),
         diameter(_diameter),
         level(_level),
+        delta_x(_delta_x),
         Visitor()
     {
+        this->delta_t = _delta_t/pow(2,this->level);
+        this->delta_x = _delta_x/pow(2,this->level);
         this->numberOfNodes = this->nBladeNodes*this->nBlades;
-        this->omega = 0.0f;
+        this->omega = 0.1f;
         this->azimuth = 0.0f;
     }
 
@@ -45,6 +51,12 @@ public:
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
 
 private:
+
+    void allocBladeRadii(CudaMemoryManager* cudaManager);
+    void initBladeRadii();
+    void copyBladeRadiiHtoD();
+    void copyBladeRadiiDtoH();
+    void freeBladeRadii();
 
     void allocBladeCoords(CudaMemoryManager* cudaManager);
     void initBladeCoords();
@@ -77,7 +89,8 @@ private:
 private:
     const real density;
     real turbinePosX, turbinePosY, turbinePosZ;
-    real* bladeRadii;
+    real* bladeRadiiH;
+    real* bladeRadiiD;
     real* bladeCoordsXH, * bladeCoordsYH, * bladeCoordsZH;
     real* bladeCoordsXD, * bladeCoordsYD, * bladeCoordsZD;
     real* bladeVelocitiesXH, * bladeVelocitiesYH, * bladeVelocitiesZH;
@@ -87,7 +100,7 @@ private:
     uint* bladeIndicesH;
     uint* bladeIndicesD; 
     int* boundingSphereIndicesH, * boundingSphereIndicesD;
-    real omega, azimuth;
+    real omega, azimuth, delta_t, delta_x;
     const real diameter;
     const unsigned int nBladeNodes;
     const unsigned int nBlades;
@@ -98,7 +111,7 @@ private:
     
     unsigned int* indicesBoundingBox;
 
-
+    CoordinateTransformation3D* transformationBlade1, transformationBlade2, transformationBlade3;
 };
 
 #endif

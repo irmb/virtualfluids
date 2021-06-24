@@ -227,6 +227,10 @@ static constexpr float c10eM30 = 1e-30f;
 static constexpr float c10eM10 = 1e-10f;
 static constexpr float smallSingle = 0.0000000002f;
 
+static constexpr float cPi = 3.1415926535f;
+static constexpr float cPio180 = 0.0174532925199f;
+static constexpr float c180oPi = 57.2957795131f;
+
 #endif
 
 }
