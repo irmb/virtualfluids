@@ -13,10 +13,6 @@
 #include "GPU/devCheck.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
-#include "Input/VtkGeometryReader.h"
-#include "Input/kFullReader.h"
-#include "Input/PositionReader.h"
-//////////////////////////////////////////////////////////////////////////
 #include "Output/MeasurePointWriter.hpp"
 #include "Output/AnalysisData.hpp"
 #include "Output/InterfaceDebugWriter.hpp"
