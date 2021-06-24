@@ -112,7 +112,8 @@ struct InitCondition
    bool printFiles {false};
    bool doRestart {false};
    bool doCheckPoint {false};
-   bool readGeo, isGeo, isProp, isCp;
+   bool readGeo {false};
+   bool isGeo, isProp, isCp;
    bool GeometryValues {false};
    bool is2ndOrderMoments {false};
    bool is3rdOrderMoments {false};

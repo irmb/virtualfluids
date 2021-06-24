@@ -65,6 +65,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setOutputPath(configData.getValue<std::string>("Path"));
     else
         throw std::runtime_error("<Path> need to be defined in config file!");
+
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Prefix"))
         this->setOutputPrefix(configData.getValue<std::string>("Prefix"));
@@ -136,16 +137,16 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setTimeCalcMedEnd(configData.getValue<int>("TimeEndCalcMedian"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("PressInID"))
-        this->setTOut(configData.getValue<int>("PressInID"));
+        this->setPressInID(configData.getValue<int>("PressInID"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("PressOutID"))
-        this->setTStartOut(configData.getValue<int>("PressOutID"));
+        this->setPressOutID(configData.getValue<int>("PressOutID"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("PressInZ"))
-        this->setTimeCalcMedStart(configData.getValue<int>("PressInZ"));
+        this->setPressInZ(configData.getValue<int>("PressInZ"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("PressOutZ"))
-        this->setTimeCalcMedEnd(configData.getValue<int>("PressOutZ"));
+        this->setPressOutZ(configData.getValue<int>("PressOutZ"));
 
     //////////////////////////////////////////////////////////////////////////
     //second component
