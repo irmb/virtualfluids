@@ -118,6 +118,10 @@ static constexpr double c10eM30 = 1e-30;
 static constexpr double c10eM10 = 1e-10;
 static constexpr double smallSingle = 0.0000000002;
 
+static constexpr double cPi = 3.1415926535;
+static constexpr double cPio180 = 1.74532925199e-2;
+static constexpr double c180oPi = 57.2957795131;
+
 #else
 static constexpr float c1o2 = 0.5f;
 static constexpr float c3o2 = 1.5f;
