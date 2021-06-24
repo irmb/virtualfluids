@@ -158,10 +158,10 @@ __device__ unsigned int getNodeIndex()
     return nx * (ny * z + y) + x;
 }
 
-__device__ bool isValidFluidNode(uint k, int size_Mat, uint nodeType)
+
+__device__ bool isValidFluidNode(uint nodeType)
 {
-    return (k < size_Mat) &&
-           (nodeType == GEO_FLUID || nodeType == GEO_PM_0 || nodeType == GEO_PM_1 || nodeType == GEO_PM_2);
+    return (nodeType == GEO_FLUID || nodeType == GEO_PM_0 || nodeType == GEO_PM_1 || nodeType == GEO_PM_2);
 }
 
 
