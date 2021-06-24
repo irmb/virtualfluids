@@ -12,6 +12,11 @@ struct ProbeStruct{
     real *distXH, *distYH, *distZH, *distXD, *distYD, *distZD;
 };
 
+enum class PostProcessingVariable{
+    Means = 1,
+    Variances = 2
+};
+
 class Probe : public Visitor 
 {
 public:
@@ -28,6 +33,7 @@ public:
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
 
     void setProbePointsFromList(std::vector<real> &_pointCoordsX, std::vector<real> &_pointCoordsY, std::vector<real> &_pointCoordsZ);
+    void addPostProcessingVariable(PostProcessingVariable _variable);
 
     
 private:
@@ -36,7 +42,7 @@ private:
     uint nProbePoints;
 
     std::vector<ProbeStruct*> probeParams;
-
+    std::vector<PostProcessingVariable> postProcessingVariables;
     // int* pointIndicesH, *pointIndicesD;
     // std::vector< std::vector<int> > probeIndices;
     // std::vector< std::vector<real> > distX, distY, distZ;
