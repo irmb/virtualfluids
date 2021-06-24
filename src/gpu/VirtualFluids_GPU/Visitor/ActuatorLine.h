@@ -26,7 +26,7 @@ public:
         level(_level),
         Visitor()
     {
-        this->mem_size_blades = sizeof(real)*this->nBladeNodes*this->nBlades;
+        this->numberOfNodes = this->nBladeNodes*this->nBlades;
         this->omega = 0.0f;
         this->azimuth = 0.0f;
     }
@@ -34,6 +34,9 @@ public:
     virtual  ~ActuatorLine()
     {
         this->freeBladeCoords();
+        this->freeBladeVelocities();
+        this->freeBladeForces();
+        this->freeBladeIndices();
         this->freeSphereIndices();
     }
 
@@ -50,6 +53,23 @@ private:
     void freeBladeCoords();
     void rotateBlades(real angle);
 
+    void allocBladeVelocities(CudaMemoryManager* cudaManager);
+    void initBladeVelocities();
+    void copyBladeVelocitiesHtoD();
+    void copyBladeVelocitiesDtoH();
+    void freeBladeVelocities();
+
+    void allocBladeForces(CudaMemoryManager* cudaManager);
+    void initBladeForces();
+    void copyBladeForcesHtoD();
+    void copyBladeForcesDtoH();
+    void freeBladeForces();
+
+    void allocBladeIndices(CudaMemoryManager* cudaManager);
+    void initBladeIndices(Parameter* para);
+    void copyBladeIndicesHtoD();
+    void freeBladeIndices();
+
     void allocSphereIndices(CudaMemoryManager* cudaManager);
     void copySphereIndices();
     void freeSphereIndices();
@@ -57,8 +77,15 @@ private:
 private:
     const real density;
     real turbinePosX, turbinePosY, turbinePosZ;
+    real* bladeRadii;
     real* bladeCoordsXH, * bladeCoordsYH, * bladeCoordsZH;
     real* bladeCoordsXD, * bladeCoordsYD, * bladeCoordsZD;
+    real* bladeVelocitiesXH, * bladeVelocitiesYH, * bladeVelocitiesZH;
+    real* bladeVelocitiesXD, * bladeVelocitiesYD, * bladeVelocitiesZD;
+    real* bladeForcesXH, * bladeForcesYH, * bladeForcesZH;
+    real* bladeForcesXD, * bladeForcesYD, * bladeForcesZD;
+    uint* bladeIndicesH;
+    uint* bladeIndicesD; 
     int* boundingSphereIndicesH, * boundingSphereIndicesD;
     real omega, azimuth;
     const real diameter;
@@ -67,8 +94,7 @@ private:
     const real epsilon; // in m
     const int level;
     int numberOfIndices;
-    size_t mem_size_blades;
-    size_t mem_size_boundingSphere;
+    int numberOfNodes;
     
     unsigned int* indicesBoundingBox;
 
