@@ -190,25 +190,25 @@ void bflow(string configname)
        //                                         g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_maxX1 + 3.0 * deltax,
        //    g_minX2 + 0.5 * (g_maxX2 - g_minX2), g_minX3 + 0.5 * (g_maxX3 - g_minX3), 0.5 * (g_maxX3 - g_minX3) * 0.5));
 
-      // SPtr<GbObject3D> stator(new GbCylinder3D(g_minX1 - 4.0 * deltax, g_minX2 + 0.5 * (g_maxX2 - g_minX2),
-      //                                          g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_maxX1 + 3.0 * deltax,
-      //     g_minX2 + 0.5 * (g_maxX2 - g_minX2), g_minX3 + 0.5 * (g_maxX3 - g_minX3), 12.0*0.5));
+       SPtr<GbObject3D> stator(new GbCylinder3D(g_minX1 - 4.0 * deltax, g_minX2 + 0.5 * (g_maxX2 - g_minX2),
+                                                g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_maxX1 + 3.0 * deltax,
+           g_minX2 + 0.5 * (g_maxX2 - g_minX2), g_minX3 + 0.5 * (g_maxX3 - g_minX3), 12.0*0.5));
 
-      ////  // rotation around Y-axis 
-      //// //SPtr<GbObject3D> stator(new GbCylinder3D(g_minX1 + 0.5 * (g_maxX1 - g_minX1), g_minX2 - 3.0 * deltax, 
-      //// //                                         g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_minX1 + 0.5 * (g_maxX1 - g_minX1),
-      //// //                                         g_maxX2 + 3.0 * deltax, g_minX3 + 0.5 * (g_maxX3 - g_minX3),
-      //// //                                         0.5 * (g_maxX3 - g_minX3) * 0.5));
+      //  // rotation around Y-axis 
+      // //SPtr<GbObject3D> stator(new GbCylinder3D(g_minX1 + 0.5 * (g_maxX1 - g_minX1), g_minX2 - 3.0 * deltax, 
+      // //                                         g_minX3 + 0.5 * (g_maxX3 - g_minX3), g_minX1 + 0.5 * (g_maxX1 - g_minX1),
+      // //                                         g_maxX2 + 3.0 * deltax, g_minX3 + 0.5 * (g_maxX3 - g_minX3),
+      // //                                         0.5 * (g_maxX3 - g_minX3) * 0.5));
 
-      // SPtr<D3Q27Interactor> statorInt =
-      //    SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID));
+       SPtr<D3Q27Interactor> statorInt =
+          SPtr<D3Q27Interactor>(new D3Q27Interactor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID));
       
-      SPtr<GbTriFaceMesh3D> stator = make_shared<GbTriFaceMesh3D>();
-      stator->readMeshFromSTLFileBinary(geoPath + "/" + geoFile, false);
-      //stator->translate(4.0, -73.0, -6.0);
+      //SPtr<GbTriFaceMesh3D> stator = make_shared<GbTriFaceMesh3D>();
+      //stator->readMeshFromSTLFileBinary(geoPath + "/" + geoFile, false);
+      ////stator->translate(4.0, -73.0, -6.0);
 
-      SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27TriFaceMeshInteractor>(
-         new D3Q27TriFaceMeshInteractor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+      //SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27TriFaceMeshInteractor>(
+      //   new D3Q27TriFaceMeshInteractor(stator, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
 
       GbSystem3D::writeGeoObject(stator.get(), outputPath + "/geo/stator", WbWriterVtkXmlBinary::getInstance());
 

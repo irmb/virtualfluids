@@ -42,7 +42,7 @@ Vector3D ForceCalculator::getForces(int x1, int x2, int x3, SPtr<DistributionArr
                 // UBLOG(logINFO, "c, c * bv(x,y,z): " << correction << ", " << correction * val<1>(boundaryVelocity) <<
                 // ", " << correction * val<2>(boundaryVelocity) << ", " << correction * val<3>(boundaryVelocity));
 
-                // force consists of the MEM part and the galilean invariance correction including the boundary velocity
+                // force consists of the MEM part and the Galilean invariance correction including the boundary velocity
                 forceX1 += (f + fnbr) * D3Q27System::DX1[invDir] - correction[0];
                 forceX2 += (f + fnbr) * D3Q27System::DX2[invDir] - correction[1];
                 forceX3 += (f + fnbr) * D3Q27System::DX3[invDir] - correction[2];
