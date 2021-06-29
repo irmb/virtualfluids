@@ -119,6 +119,11 @@ void GridReader::allocArrays_BoundaryValues()
         velocityX_BCvalues.push_back(std::vector<real>());
         velocityY_BCvalues.push_back(std::vector<real>());
         velocityZ_BCvalues.push_back(std::vector<real>());
+        velocityQs.push_back(std::vector<std::vector<real>>());
+        velocityIndex.push_back(std::vector<int>());
+        for (size_t j = 0; j < para->getD3Qxx(); j++) {
+            velocityQs[i].push_back(std::vector<real>());
+        }
     }
 
     for (uint i = 0; i < channelBoundaryConditions.size(); i++)
@@ -547,14 +552,15 @@ void GridReader::allocArrays_BoundaryQs()
 
 	for (std::size_t i = 0; i < channelBoundaryConditions.size(); i++)
 	{
-		if (this->channelBoundaryConditions[i] == "noSlip") { setNoSlipQs(BC_Qs[i]); }
+		if (     this->channelBoundaryConditions[i] == "noSlip"  ) { setNoSlipQs(BC_Qs[i]);   }
 		else if (this->channelBoundaryConditions[i] == "velocity") { setVelocityQs(BC_Qs[i]); }
-		else if (this->channelBoundaryConditions[i] == "pressure") { setPressQs(BC_Qs[i]); }
-		else if (this->channelBoundaryConditions[i] == "outflow") { setOutflowQs(BC_Qs[i]); }
+		else if (this->channelBoundaryConditions[i] == "pressure") { setPressQs(BC_Qs[i]);    }
+		else if (this->channelBoundaryConditions[i] == "outflow" ) { setOutflowQs(BC_Qs[i]);  }
 	}
 
 	for (size_t lev = 0; lev < velocityIndex.size(); lev++) {
         if (velocityIndex[lev].size() > 1) {
+            copyVectorsToQStruct(velocityQs[lev], velocityIndex[lev], para->getParH(lev)->Qinflow);
             cudaMemoryManager->cudaCopyVeloBC(lev);
         }
     }
@@ -583,15 +589,14 @@ void GridReader::setPressQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 	}
 }
 
-void GridReader::setVelocityQs(std::shared_ptr<BoundaryQs> boundaryQ) const
+void GridReader::setVelocityQs(std::shared_ptr<BoundaryQs> boundaryQ)
 {
 	for (unsigned int level = 0; level <= boundaryQ->getLevel(); level++)
 	{
 		if (hasQs(boundaryQ, level))
 		{
 			this->printQSize("velocity", boundaryQ, level);
-			this->initalQStruct(para->getParH(level)->Qinflow, boundaryQ, level);
-            cudaMemoryManager->cudaCopyVeloBC(level);
+            this->initalVectorForQStruct(velocityQs, velocityIndex, boundaryQ, level);
 		}
 	}
 }
@@ -652,7 +657,34 @@ void GridReader::modifyQElement(std::shared_ptr<BoundaryQs> boundaryQ, unsigned 
 /*------------------------------------------------------------------------------------------------*/
 /*---------------------------------------private q methods----------------------------------------*/
 /*------------------------------------------------------------------------------------------------*/
-void GridReader::initalQStruct(QforBoundaryConditions& Q, std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
+void GridReader::initalVectorForQStruct(std::vector<std::vector<std::vector<real>>> &Qs, std::vector<std::vector<int>> &index, 
+										std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
+{
+    boundaryQ->setValuesInVector(Qs, level);
+    boundaryQ->setIndexInVector(index, level);
+}
+
+void GridReader::copyVectorsToQStruct(std::vector<std::vector<real>> &Qs,
+                                      std::vector<int> &index, QforBoundaryConditions &Q) const
+{
+    QforBoundaryConditions qTemp;
+    this->setQ27Size(qTemp, Q.q27[0], Q.kQ);
+
+	uint sizeOfValues = index.size();
+
+	for (size_t direction = 0; direction < para->getD3Qxx(); direction++) {
+        for (size_t indexQ = 0; indexQ < sizeOfValues; indexQ++) {
+            qTemp.q27[direction][indexQ] = Qs[direction][indexQ]; 
+        }
+    }
+
+    for (size_t indexQ = 0; indexQ < sizeOfValues; indexQ++) {
+        Q.k[indexQ] = index[indexQ];
+    }
+}
+
+void GridReader::initalQStruct(QforBoundaryConditions &Q, std::shared_ptr<BoundaryQs> boundaryQ,
+                               unsigned int level) const
 {
 	QforBoundaryConditions qTemp;
 	this->setQ27Size(qTemp, Q.q27[0], Q.kQ);

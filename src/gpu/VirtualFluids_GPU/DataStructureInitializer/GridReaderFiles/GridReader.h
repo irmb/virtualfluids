@@ -25,7 +25,9 @@ private:
 	std::vector<std::string> channelBoundaryConditions;
 	std::shared_ptr<CoordNeighborGeoV> neighX, neighY, neighZ, neighWSB;
 	std::vector<std::shared_ptr<BoundaryValues> > BC_Values;
+
     std::vector<std::vector<real>> velocityX_BCvalues, velocityY_BCvalues, velocityZ_BCvalues;
+    std::vector<std::vector<std::vector<real>>> velocityQs;
     std::vector<std::vector<int>> velocityIndex;
 
     std::vector<std::vector<real>> pressureBCvalues;
@@ -63,14 +65,19 @@ private:
 	void setOutflow(int level, int sizePerLevel, int channelSide) const;
 
 
-	void setPressQs(std::shared_ptr<BoundaryQs> boundaryQ) const;
-	void setVelocityQs(std::shared_ptr<BoundaryQs> boundaryQ) const;
+	//void fillVelocityQVectors(int channelSide);
+    void setPressQs(std::shared_ptr<BoundaryQs> boundaryQ) const;
+	void setVelocityQs(std::shared_ptr<BoundaryQs> boundaryQ);
 	void setOutflowQs(std::shared_ptr<BoundaryQs> boundaryQ) const;
 	void setNoSlipQs(std::shared_ptr<BoundaryQs> boundaryQ) const;
 	void setGeoQs(std::shared_ptr<BoundaryQs> boundaryQ) const;
 	void modifyQElement(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 
-	void initalQStruct(QforBoundaryConditions& Q, std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
+	void initalVectorForQStruct(std::vector<std::vector<std::vector<real>>> &Qs, std::vector<std::vector<int>> &index,
+                                std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
+    void copyVectorsToQStruct(std::vector<std::vector<real>> &Qs, std::vector<int> &index,
+                              QforBoundaryConditions &Q) const;
+    void initalQStruct(QforBoundaryConditions &Q, std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 	void printQSize(std::string bc, std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 	void setSizeNoSlip(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 	void setSizeGeoQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
