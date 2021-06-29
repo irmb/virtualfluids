@@ -107,8 +107,8 @@ std::string path(".");
 
 std::string simulationName("ActuatorLine");
 
-const uint timeStepOut = 100;
-const uint timeStepEnd = 500;
+const uint timeStepOut = 500;
+const uint timeStepEnd = 2500;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,7 +195,7 @@ void multipleLevel(const std::string& configPath)
 
 		para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
             rho = (real)0.0;
-            vx  = (real)0.0;
+            vx  = velocityLB;
             vy  = (real)0.0;
             vz  = (real)0.0;
         });
@@ -220,7 +220,7 @@ void multipleLevel(const std::string& configPath)
 
         SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
-        real turbPos[3] = {100.f, 100.f, 100.f};
+        real turbPos[3] = {3*D, 3*D, 3*D};
         real epsilon = 5.f;
         real density = 1.225f;
         int level = 0;

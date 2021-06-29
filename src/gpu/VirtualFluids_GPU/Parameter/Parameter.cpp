@@ -2173,6 +2173,18 @@ real Parameter::getPressRatio()
 {
 	return ic.delta_press;
 }
+real Parameter::getTimeRatio()
+{
+	return this->getViscosityRatio()*pow(this->getVelocityRatio(),-2);
+}
+real Parameter::getLengthRatio()
+{
+	return this->getViscosityRatio()/this->getVelocityRatio();
+}
+real Parameter::getForceRatio()
+{
+	return this->getDensityRatio()*pow(this->getViscosityRatio(),2);
+}
 real Parameter::getRealX()
 {
 	return ic.RealX;
