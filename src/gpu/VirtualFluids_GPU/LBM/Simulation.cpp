@@ -1297,6 +1297,15 @@ void Simulation::free()
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////
+	//Visitors
+	for( Visitor* actuator: para->getActuators()){
+		actuator->free(para.get(), cudaManager.get());
+	}
+
+	for( Visitor* probe: para->getProbes()){
+		probe->free(para.get(), cudaManager.get());
+	}
+	//////////////////////////////////////////////////////////////////////////
 
     delete comm;
 

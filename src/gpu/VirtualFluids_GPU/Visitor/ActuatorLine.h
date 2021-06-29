@@ -44,7 +44,8 @@ public:
 
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
     void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
-    void free(CudaMemoryManager* cudaManager);
+    void free(Parameter* para, CudaMemoryManager* cudaManager);
+    void write(uint t);
 
     uint getNBladeNodes(){return this->nBladeNodes;};
     uint getNBlades(){return this->nBlades;};
@@ -62,6 +63,11 @@ private:
 
     void calcForcesEllipticWing(Parameter* para);
     void rotateBlades(real angle);
+
+    void writeBladeCoords(uint t);
+    void writeBladeForces(uint t);
+    void writeBladeVelocities(uint t);
+    
 
 public:
     real* bladeRadiiH;
@@ -88,6 +94,6 @@ private:
     const int level;
     int numberOfIndices;
     int numberOfNodes;
-};
+    };
 
 #endif

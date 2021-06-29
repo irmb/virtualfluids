@@ -19,6 +19,7 @@
 class Parameter;
 class PorousMedia;
 class ActuatorLine;
+class Probe;
 
 class VIRTUALFLUIDS_GPU_EXPORT CudaMemoryManager
 {
@@ -351,11 +352,20 @@ public:
     void cudaCopySphereIndicesHtoD(ActuatorLine* actuatorLine);
     void cudaFreeSphereIndices(ActuatorLine* actuatorLine);
 
-    
-    
-    
-    
-    
+    void cudaAllocProbeDistances(Probe* probe, int level);
+    void cudaCopyProbeDistancesHtoD(Probe* probe, int level);
+    void cudaCopyProbeDistancesDtoH(Probe* probe, int level);
+    void cudaFreeProbeDistances(Probe* probe, int level);
+
+    void cudaAllocProbeIndices(Probe* probe, int level);
+    void cudaCopyProbeIndicesHtoD(Probe* probe, int level);
+    void cudaCopyProbeIndicesDtoH(Probe* probe, int level);
+    void cudaFreeProbeIndices(Probe* probe, int level);
+
+    void cudaAllocProbeQuantity(Probe* probe, int level, int index);
+    void cudaCopyProbeQuantityHtoD(Probe* probe, int level, int index);
+    void cudaCopyProbeQuantityDtoH(Probe* probe, int level, int index);
+    void cudaFreeProbeQuantity(Probe* probe, int level, int index);
     
     
 private:

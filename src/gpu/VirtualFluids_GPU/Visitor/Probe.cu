@@ -74,29 +74,46 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
                 }
             }
         }
-
+        
         probeParams[level] = new ProbeStruct;
         probeParams[level]->nPoints = probeIndices_level.size();
         // Might have to catch nPoints=0 ?!?!
-        checkCudaErrors( cudaMallocHost((void**) &probeParams[level]->distXH,        sizeof(real)*probeParams[level]->nPoints) );
-        checkCudaErrors( cudaMallocHost((void**) &probeParams[level]->distYH,        sizeof(real)*probeParams[level]->nPoints) );
-        checkCudaErrors( cudaMallocHost((void**) &probeParams[level]->distZH,        sizeof(real)*probeParams[level]->nPoints) );
-        checkCudaErrors( cudaMallocHost((void**) &probeParams[level]->pointIndicesH, sizeof(int)*probeParams[level]->nPoints) );
-
-        checkCudaErrors( cudaMalloc    ((void**) &probeParams[level]->distXD,        sizeof(real)*probeParams[level]->nPoints) );
-        checkCudaErrors( cudaMalloc    ((void**) &probeParams[level]->distYD,        sizeof(real)*probeParams[level]->nPoints) );
-        checkCudaErrors( cudaMalloc    ((void**) &probeParams[level]->distZD,        sizeof(real)*probeParams[level]->nPoints) );
-        checkCudaErrors( cudaMalloc    ((void**) &probeParams[level]->pointIndicesD, sizeof(int)*probeParams[level]->nPoints) );
+        cudaManager->cudaAllocProbeDistances(this, level);
+        cudaManager->cudaAllocProbeIndices(this, level);
 
         std::copy(distX_level.begin(), distX_level.end(), probeParams[level]->distXH);
         std::copy(distY_level.begin(), distY_level.end(), probeParams[level]->distYH);
         std::copy(distZ_level.begin(), distZ_level.end(), probeParams[level]->distZH);
         std::copy(probeIndices_level.begin(), probeIndices_level.end(), probeParams[level]->pointIndicesH);
 
-        checkCudaErrors( cudaMemcpy(probeParams[level]->distXD, probeParams[level]->distXH, sizeof(real)*probeParams[level]->nPoints, cudaMemcpyHostToDevice) );
-        checkCudaErrors( cudaMemcpy(probeParams[level]->distYD, probeParams[level]->distYH, sizeof(real)*probeParams[level]->nPoints, cudaMemcpyHostToDevice) );
-        checkCudaErrors( cudaMemcpy(probeParams[level]->distZD, probeParams[level]->distZH, sizeof(real)*probeParams[level]->nPoints, cudaMemcpyHostToDevice) );
-        checkCudaErrors( cudaMemcpy(probeParams[level]->pointIndicesD, probeParams[level]->pointIndicesH, sizeof(int)*probeParams[level]->nPoints, cudaMemcpyHostToDevice) );
+        cudaManager->cudaCopyProbeDistancesHtoD(this, level);
+        cudaManager->cudaCopyProbeIndicesHtoD(this, level);
+
+        for(PostProcessingVariable variable: this->postProcessingVariables)
+        {
+            switch(variable)
+            {
+                case PostProcessingVariable::Means:
+                        
+                    cudaManager->cudaAllocProbeQuantity(this, level, int(PostProcessingVariable::Means));
+                    cudaManager->cudaAllocProbeQuantity(this, level, int(PostProcessingVariable::Means)+1);
+                    cudaManager->cudaAllocProbeQuantity(this, level, int(PostProcessingVariable::Means)+2);
+                    cudaManager->cudaAllocProbeQuantity(this, level, int(PostProcessingVariable::Means)+3);
+                        
+                break;                
+                case PostProcessingVariable::Variances:
+
+                    cudaManager->cudaAllocProbeQuantity(this, level, int(PostProcessingVariable::Variances));
+                    cudaManager->cudaAllocProbeQuantity(this, level, int(PostProcessingVariable::Variances)+1);
+                    cudaManager->cudaAllocProbeQuantity(this, level, int(PostProcessingVariable::Variances)+2);
+                    cudaManager->cudaAllocProbeQuantity(this, level, int(PostProcessingVariable::Variances)+3);
+                        
+                break;
+                default: break;
+            }
+        }
+
+
     }
 }
 
@@ -104,6 +121,39 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
 void Probe::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
 {
 
+}
+
+void Probe::free(Parameter* para, CudaMemoryManager* cudaManager)
+{
+    for(int level=0; level<=para->getMaxLevel(); level++)
+    {
+        cudaManager->cudaFreeProbeDistances(this, level);
+        cudaManager->cudaFreeProbeIndices(this, level);
+        for(PostProcessingVariable variable: this->postProcessingVariables)
+        {
+            switch(variable)
+            {
+                case PostProcessingVariable::Means:
+                        
+                    cudaManager->cudaFreeProbeQuantity(this, level, int(PostProcessingVariable::Means));
+                    cudaManager->cudaFreeProbeQuantity(this, level, int(PostProcessingVariable::Means)+1);
+                    cudaManager->cudaFreeProbeQuantity(this, level, int(PostProcessingVariable::Means)+2);
+                    cudaManager->cudaFreeProbeQuantity(this, level, int(PostProcessingVariable::Means)+3);
+                        
+                break;                
+                case PostProcessingVariable::Variances:
+
+                    cudaManager->cudaFreeProbeQuantity(this, level, int(PostProcessingVariable::Variances));
+                    cudaManager->cudaFreeProbeQuantity(this, level, int(PostProcessingVariable::Variances)+1);
+                    cudaManager->cudaFreeProbeQuantity(this, level, int(PostProcessingVariable::Variances)+2);
+                    cudaManager->cudaFreeProbeQuantity(this, level, int(PostProcessingVariable::Variances)+3);
+                        
+                break;
+                default: break;
+            }
+        }
+
+    }
 }
 
 void Probe::setProbePointsFromList(std::vector<real> &_pointCoordsX, std::vector<real> &_pointCoordsY, std::vector<real> &_pointCoordsZ)

@@ -10,11 +10,13 @@ struct ProbeStruct{
     int nPoints;
     int *pointIndicesH, *pointIndicesD;
     real *distXH, *distYH, *distZH, *distXD, *distYD, *distZD;
+    std::vector<void*> quantitiesH, quantitiesD;
 };
 
-enum class PostProcessingVariable{
-    Means = 1,
-    Variances = 2
+enum class PostProcessingVariable{ 
+    //Enum val is index in pointer array -> increment between enum1 and enum2 is number of quantities allocated for enum1
+    Means = 0,
+    Variances = 4
 };
 
 class Probe : public Visitor 
@@ -28,9 +30,11 @@ public:
     {
         
     }
-
-    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
+    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+    void free(Parameter* para, CudaMemoryManager* cudaManager);
+
+    ProbeStruct* getProbeStruct(int level){ return this->probeParams[level]; }
 
     void setProbePointsFromList(std::vector<real> &_pointCoordsX, std::vector<real> &_pointCoordsY, std::vector<real> &_pointCoordsZ);
     void addPostProcessingVariable(PostProcessingVariable _variable);

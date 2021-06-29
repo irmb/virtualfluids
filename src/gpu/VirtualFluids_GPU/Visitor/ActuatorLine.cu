@@ -133,8 +133,8 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
 
             last_r = r;
 
-            if(node==16||node==48||node==80)
-            {            
+            // if(node==16||node==48||node==80)
+            // {            
                 // printf("uRTZ: %f %f %f \n", uRTZ_X, uRTZ_Y, uRTZ_Z);
                 // printf("uXYZ: %f %f %f \n", uXYZ_X, uXYZ_Y, uXYZ_Z);
                 // printf("omega: %f radius: %f \n", this->omega, r);
@@ -144,7 +144,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
                 // printf("fXYZ: %f %f %f \n", fXYZ_X, fXYZ_Y, fXYZ_Z);
                 // printf("fRTZ: %f %f %f \n", fRTZ_X, fRTZ_Y, fRTZ_Z);
                 // printf("X Y Z: %f %f %f \n", this->bladeCoordsXH[node],this->bladeCoordsYH[node],this->bladeCoordsZH[node]);
-            }
+            // }
         }    
 
         fXYZ_X += bladeForcesX[nBladeNodes-1]*(radius-last_r)*eta;
@@ -216,7 +216,7 @@ void ActuatorLine::visit(Parameter* para, CudaMemoryManager* cudaManager, int le
 }
 
 
-void ActuatorLine::free(CudaMemoryManager* cudaManager)
+void ActuatorLine::free(Parameter* para, CudaMemoryManager* cudaManager)
 {
     cudaManager->cudaFreeBladeRadii(this);
     cudaManager->cudaFreeBladeCoords(this);
@@ -279,8 +279,8 @@ void ActuatorLine::calcForcesEllipticWing(Parameter* para)
             this->bladeForcesYH[node] = fXYZ_Y/forceRatio;
             this->bladeForcesZH[node] = fXYZ_Z/forceRatio;
 
-            if(node==16||node==48||node==80)
-            {            
+            // if(node==16||node==48||node==80)
+            // {            
             // printf("uRTZ: %f %f %f \n", uRTZ_X, uRTZ_Y, uRTZ_Z);
             // printf("uXYZ: %f %f %f \n", uXYZ_X, uXYZ_Y, uXYZ_Z);
             // printf("omega: %f radius: %f \n", this->omega, r);
@@ -290,7 +290,7 @@ void ActuatorLine::calcForcesEllipticWing(Parameter* para)
             // printf("fXYZ: %f %f %f \n", fXYZ_X, fXYZ_Y, fXYZ_Z);
             // printf("fRTZ: %f %f %f \n", fRTZ_X, fRTZ_Y, fRTZ_Z);
             // printf("X Y Z: %f %f %f \n", this->bladeCoordsXH[node],this->bladeCoordsYH[node],this->bladeCoordsZH[node]);
-            }
+            // }
         }
     }
     // printf("uRTZ: %f %f %f \n", uRTZ_X, uRTZ_Y, uRTZ_Z);
@@ -401,8 +401,6 @@ void ActuatorLine::initBladeIndices(Parameter* para, CudaMemoryManager* cudaMana
     }
     cudaManager->cudaCopyBladeIndicesHtoD(this);
 }
-
-
 
 void ActuatorLine::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager)
 {

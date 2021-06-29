@@ -6,6 +6,7 @@
 
 #include <Parameter/Parameter.h>
 #include <Visitor/ActuatorLine.h>
+#include <Visitor/Probe.h>
 
 #include <lbm/constants/NumericConstants.h>
 
@@ -2642,7 +2643,9 @@ void CudaMemoryManager::cudaFree2ndOrderDerivitivesIsoTest(int lev)
     checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->dzzUz));
     
 }
-
+////////////////////////////////////////////////////////////////////////////////////
+//  ActuatorLine
+///////////////////////////////////////////////////////////////////////////////
 
 void CudaMemoryManager::cudaAllocBladeRadii(ActuatorLine* actuatorLine)
 {
@@ -2661,7 +2664,7 @@ void CudaMemoryManager::cudaCopyBladeRadiiHtoD(ActuatorLine* actuatorLine)
 void CudaMemoryManager::cudaCopyBladeRadiiDtoH(ActuatorLine* actuatorLine)
 {
     checkCudaErrors( cudaMemcpy(actuatorLine->bladeRadiiH, actuatorLine->bladeRadiiD, sizeof(real)*actuatorLine->getNBladeNodes(), cudaMemcpyDeviceToHost) );
-    }
+}
 
 void CudaMemoryManager::cudaFreeBladeRadii(ActuatorLine* actuatorLine)
 {
@@ -2669,9 +2672,6 @@ void CudaMemoryManager::cudaFreeBladeRadii(ActuatorLine* actuatorLine)
     
     checkCudaErrors( cudaFreeHost(actuatorLine->bladeRadiiH) );
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////// Blade coords
 
 void CudaMemoryManager::cudaAllocBladeCoords(ActuatorLine* actuatorLine)
 {
@@ -2685,8 +2685,6 @@ void CudaMemoryManager::cudaAllocBladeCoords(ActuatorLine* actuatorLine)
 
     setMemsizeGPU(3.f*actuatorLine->getNumberOfNodes(), false);
 }
-
-
 
 void CudaMemoryManager::cudaCopyBladeCoordsHtoD(ActuatorLine* actuatorLine)
 {
@@ -2713,9 +2711,6 @@ void CudaMemoryManager::cudaFreeBladeCoords(ActuatorLine* actuatorLine)
     checkCudaErrors( cudaFreeHost(actuatorLine->bladeCoordsZH) );
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////// Blade indices
-
 void CudaMemoryManager::cudaAllocBladeIndices(ActuatorLine* actuatorLine)
 {
     checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeIndicesH, sizeof(uint)*actuatorLine->getNumberOfNodes()) );
@@ -2724,8 +2719,6 @@ void CudaMemoryManager::cudaAllocBladeIndices(ActuatorLine* actuatorLine)
 
     setMemsizeGPU(sizeof(uint)*actuatorLine->getNumberOfNodes(), false);
 }
-
-
 
 void CudaMemoryManager::cudaCopyBladeIndicesHtoD(ActuatorLine* actuatorLine)
 {
@@ -2738,12 +2731,6 @@ void CudaMemoryManager::cudaFreeBladeIndices(ActuatorLine* actuatorLine)
 
     checkCudaErrors( cudaFreeHost(actuatorLine->bladeIndicesH) );
 }
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////// Blade velocities
 
 void CudaMemoryManager::cudaAllocBladeVelocities(ActuatorLine* actuatorLine)
 {
@@ -2783,11 +2770,8 @@ void CudaMemoryManager::cudaFreeBladeVelocities(ActuatorLine* actuatorLine)
     checkCudaErrors( cudaFreeHost(actuatorLine->bladeVelocitiesZH) );
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////// Blade forces
-
 void CudaMemoryManager::cudaAllocBladeForces(ActuatorLine* actuatorLine)
-{
+{   
     checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeForcesXH, sizeof(real)*actuatorLine->getNumberOfNodes()) );
     checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeForcesYH, sizeof(real)*actuatorLine->getNumberOfNodes()) );
     checkCudaErrors( cudaMallocHost((void**) &actuatorLine->bladeForcesZH, sizeof(real)*actuatorLine->getNumberOfNodes()) );
@@ -2824,11 +2808,6 @@ void CudaMemoryManager::cudaFreeBladeForces(ActuatorLine* actuatorLine)
     checkCudaErrors( cudaFreeHost(actuatorLine->bladeForcesZH) );
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////// Sphere indices
-
-
-
 void CudaMemoryManager::cudaAllocSphereIndices(ActuatorLine* actuatorLine)
 {    
     checkCudaErrors( cudaMallocHost((void**) &(actuatorLine->boundingSphereIndicesH), sizeof(int)*actuatorLine->getNumberOfIndices()));
@@ -2847,11 +2826,93 @@ void CudaMemoryManager::cudaFreeSphereIndices(ActuatorLine* actuatorLine)
     checkCudaErrors( cudaFree(actuatorLine->boundingSphereIndicesD) );
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+//  Probe
+///////////////////////////////////////////////////////////////////////////////
 
+void CudaMemoryManager::cudaAllocProbeDistances(Probe* probe, int level)
+{
+    size_t tmp = sizeof(real)*probe->getProbeStruct(level)->nPoints;
+    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->distXH,        tmp) );
+    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->distYH,        tmp) );
+    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->distZH,        tmp) );
 
+    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->distXD,        tmp) );
+    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->distYD,        tmp) );
+    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->distZD,        tmp) );
+    setMemsizeGPU(3.f*tmp, false);
+}
+void CudaMemoryManager::cudaCopyProbeDistancesHtoD(Probe* probe, int level)
+{
+    size_t tmp = sizeof(real)*probe->getProbeStruct(level)->nPoints;
 
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distXD, probe->getProbeStruct(level)->distXH, tmp, cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distYD, probe->getProbeStruct(level)->distYH, tmp, cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distZD, probe->getProbeStruct(level)->distZH, tmp, cudaMemcpyHostToDevice) );
+}
+void CudaMemoryManager::cudaCopyProbeDistancesDtoH(Probe* probe, int level)
+{
+    size_t tmp = sizeof(real)*probe->getProbeStruct(level)->nPoints;
 
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distXH, probe->getProbeStruct(level)->distXD, tmp, cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distYH, probe->getProbeStruct(level)->distXD, tmp, cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distZH, probe->getProbeStruct(level)->distXD, tmp, cudaMemcpyDeviceToHost) );
+}
+void CudaMemoryManager::cudaFreeProbeDistances(Probe* probe, int level)
+{
+    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->distXH) );
+    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->distYH) );
+    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->distZH) );
 
+    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->distXD) );
+    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->distYD) );
+    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->distZD) );
+}
+
+void CudaMemoryManager::cudaAllocProbeIndices(Probe* probe, int level)
+{
+    size_t tmp = sizeof(int)*probe->getProbeStruct(level)->nPoints;
+    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->pointIndicesH, tmp) );
+    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->pointIndicesD, tmp) );
+    setMemsizeGPU(1.f*tmp, false);
+}
+void CudaMemoryManager::cudaCopyProbeIndicesHtoD(Probe* probe, int level)
+{
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distXD, probe->getProbeStruct(level)->distXH, sizeof(int)*probe->getProbeStruct(level)->nPoints, cudaMemcpyHostToDevice) );
+}
+void CudaMemoryManager::cudaCopyProbeIndicesDtoH(Probe* probe, int level)
+{
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distXH, probe->getProbeStruct(level)->distXD, sizeof(int)*probe->getProbeStruct(level)->nPoints, cudaMemcpyDeviceToHost) );
+}
+void CudaMemoryManager::cudaFreeProbeIndices(Probe* probe, int level)
+{
+    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->pointIndicesH) );
+    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->pointIndicesD) );
+}
+
+void CudaMemoryManager::cudaAllocProbeQuantity(Probe* probe, int level, int index)
+{
+    size_t tmp = sizeof(real)*probe->getProbeStruct(level)->nPoints;
+    checkCudaErrors( cudaMallocHost( &probe->getProbeStruct(level)->quantitiesH[index], tmp) );
+    checkCudaErrors( cudaMalloc    ( &probe->getProbeStruct(level)->quantitiesD[index], tmp) );
+    setMemsizeGPU(1.f*tmp, false);
+}
+
+void CudaMemoryManager::cudaCopyProbeQuantityHtoD(Probe* probe, int level, int index)
+{
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->quantitiesD[index], probe->getProbeStruct(level)->quantitiesH[index], sizeof(real)*probe->getProbeStruct(level)->nPoints, cudaMemcpyHostToDevice) );
+
+}
+void CudaMemoryManager::cudaCopyProbeQuantityDtoH(Probe* probe, int level, int index)
+{
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->quantitiesH[index], probe->getProbeStruct(level)->quantitiesD[index], sizeof(real)*probe->getProbeStruct(level)->nPoints, cudaMemcpyDeviceToHost) );
+}
+void CudaMemoryManager::cudaFreeProbeQuantity(Probe* probe, int level, int index)
+{
+    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->quantitiesH[index]) );
+
+    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->quantitiesD[index]) );
+}
 
 
 
