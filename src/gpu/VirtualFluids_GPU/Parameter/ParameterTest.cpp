@@ -136,7 +136,6 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
     EXPECT_THAT(para.getDistX(), testing::ElementsAreArray({400, 401}));
     EXPECT_THAT(para.getDistY(), testing::ElementsAreArray({500, 501}));
     EXPECT_THAT(para.getDistZ(), testing::ElementsAreArray({600, 601}));
-    EXPECT_THAT(para.getNeedInterface(), testing::ElementsAreArray({true, true, true, true, true, true}));
 
     EXPECT_THAT(para.getMainKernel(), testing::Eq("KernelName"));
     EXPECT_THAT(para.getMultiKernelOn(), testing::Eq(true));

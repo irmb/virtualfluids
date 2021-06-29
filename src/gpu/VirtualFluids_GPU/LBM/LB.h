@@ -78,7 +78,6 @@ struct InitCondition
    std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;
    std::vector<real> scaleLBMtoSI, translateLBMtoSI;
    std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
-   std::vector<bool> NeedInterface;
    std::string fname, oPath;
    std::string oPrefix {"MyFile"};
    std::string geometryFileC, geometryFileM, geometryFileF;

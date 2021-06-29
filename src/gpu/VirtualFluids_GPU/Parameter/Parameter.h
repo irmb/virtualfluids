@@ -318,9 +318,6 @@ public:
     std::shared_ptr<LBMSimulationParameter> getParH(int level);
     std::shared_ptr<LBMSimulationParameter> getParD(int level);
     
-    void fillSparse(int level);
-
-    // measure points
     void copyMeasurePointsArrayToVector(int lev);
 
     //////////////////////////////////////////////////////////////////////////
@@ -333,7 +330,6 @@ public:
     void setOutputCount(unsigned int outputCount);
     void setlimitOfNodesForVTK(unsigned int limitOfNodesForVTK);
     void setStartTurn(unsigned int inStartTurn);
-    void setSizeMatSparse(int level);
     void setDiffOn(bool isDiff);
     void setCompOn(bool isComp);
     void setDiffMod(int DiffMod);
@@ -473,7 +469,6 @@ public:
     void setMaxCoordX(std::vector<real> MaxCoordX);
     void setMaxCoordY(std::vector<real> MaxCoordY);
     void setMaxCoordZ(std::vector<real> MaxCoordZ);
-    void setNeedInterface(std::vector<bool> NeedInterface);
     void setTempH(TempforBoundaryConditions *TempH);
     void setTempD(TempforBoundaryConditions *TempD);
     void setTempVelH(TempVelforBoundaryConditions *TempVelH);
@@ -677,7 +672,6 @@ public:
     std::vector<real> getMaxCoordX();
     std::vector<real> getMaxCoordY();
     std::vector<real> getMaxCoordZ();
-    std::vector<bool> getNeedInterface();
     TempforBoundaryConditions *getTempH();
     TempforBoundaryConditions *getTempD();
     TempVelforBoundaryConditions *getTempVelH();
@@ -759,12 +753,12 @@ public:
     std::vector<std::shared_ptr<LBMSimulationParameter>> parH;
     std::vector<std::shared_ptr<LBMSimulationParameter>> parD;
 private:
-	void readConfigData(const vf::basics::ConfigurationFile &configData);
+    void readConfigData(const vf::basics::ConfigurationFile &configData);
     void initLBMSimulationParameter();
 
-    bool compOn;
+    bool compOn { false };
     bool diffOn { false };
-    bool isF3;
+    bool isF3 { false };
     bool calcDragLift { false };
     bool calcCp { false };
     bool writeVeloASCII { false };
@@ -783,8 +777,8 @@ private:
     unsigned int timestep;
 
     // Kernel
-    std::string mainKernel{ "CumulantK17Comp" };
-    bool multiKernelOn{ false };
+    std::string mainKernel { "CumulantK17Comp" };
+    bool multiKernelOn { false };
     std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;
 
@@ -818,9 +812,6 @@ private:
     // Step of Ensight writing//
     unsigned int stepEnsight;
 
-    // LogWriter output;
-
-    void initInterfaceParameter(int level);
     real TrafoXtoWorld(int CoordX, int level);
     real TrafoYtoWorld(int CoordY, int level);
     real TrafoZtoWorld(int CoordZ, int level);

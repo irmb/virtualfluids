@@ -376,10 +376,9 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     {
         maxlevel = configData.getValue<int>("NOGL") - 1;
         fine = maxlevel;
-
-        parH.resize(maxlevel + 1);
-        parD.resize(maxlevel + 1);
     }
+    parH.resize(maxlevel + 1);
+    parD.resize(maxlevel + 1);
 
     this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
     this->setGridY(std::vector<int>(this->getMaxLevel() + 1, 32));
@@ -388,8 +387,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     this->setDistX(std::vector<int>(this->getMaxLevel() + 1, 32));
     this->setDistY(std::vector<int>(this->getMaxLevel() + 1, 32));
     this->setDistZ(std::vector<int>(this->getMaxLevel() + 1, 32));
-
-    this->setNeedInterface(std::vector<bool>(6, true));
 
     if (configData.contains("GridX"))
         this->setGridX(configData.getVector<int>("GridX"));
@@ -408,9 +405,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 
     if (configData.contains("DistZ"))
         this->setDistZ(configData.getVector<int>("DistZ"));
-
-    if (configData.contains("NeedInterface"))
-        this->setNeedInterface(configData.getVector<bool>("NeedInterface"));
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Kernel
@@ -475,7 +469,7 @@ void Parameter::initLBMSimulationParameter()
 		parH[i]->XdistKn               = getDistX().at(i);
 		parH[i]->YdistKn               = getDistY().at(i);
 		parH[i]->ZdistKn               = getDistZ().at(i);
-		if (i==coarse)
+		if (i == coarse)
 		{
 			parH[i]->distX                 = (real)getDistX().at(i);
 			parH[i]->distY                 = (real)getDistY().at(i);
@@ -513,12 +507,6 @@ void Parameter::initLBMSimulationParameter()
 			//parH[i]->cStartz               = (real)parH[i]->XdistKn;
 			////////////////////////////////////////////////////////////////////////////
 		}
-		parH[i]->need_interface[INTERFACE_E]=getNeedInterface().at(INTERFACE_E);
-		parH[i]->need_interface[INTERFACE_W]=getNeedInterface().at(INTERFACE_W);
-		parH[i]->need_interface[INTERFACE_N]=getNeedInterface().at(INTERFACE_N);
-		parH[i]->need_interface[INTERFACE_S]=getNeedInterface().at(INTERFACE_S);
-		parH[i]->need_interface[INTERFACE_T]=getNeedInterface().at(INTERFACE_T);
-		parH[i]->need_interface[INTERFACE_B]=getNeedInterface().at(INTERFACE_B);
 	}
 
 	//device
@@ -812,10 +800,6 @@ void Parameter::setGeometryFileM(std::string GeometryFileM)
 void Parameter::setGeometryFileF(std::string GeometryFileF)
 {
 	ic.geometryFileF = GeometryFileF;
-}
-void Parameter::setNeedInterface(std::vector<bool> NeedInterface)
-{
-	ic.NeedInterface = NeedInterface;
 }
 void Parameter::setRe(real Re)
 {
@@ -1817,10 +1801,6 @@ std::string Parameter::getGeometryFileF()
 {
 	return ic.geometryFileF;
 }
-std::vector<bool> Parameter::getNeedInterface()
-{
-	return ic.NeedInterface;
-}
 real Parameter::getRe()
 {
 	return ic.Re;
@@ -2464,65 +2444,6 @@ std::function<void(real,real,real,real&,real&,real&,real&)>& Parameter::getIniti
     return this->initialCondition;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//private methods
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void Parameter::initInterfaceParameter(int level)
-{
-	///////////////////////////////////////////////////////////////////////////////////////////////////
-	//host
-	parH[level]->K_CF               = 0;
-	parH[level]->K_FC               = 0;
-	if (parH[level]->need_interface[INTERFACE_E]==true)
-	{
-		parH[level]->K_CF           += ( parH[level+1]->gridNY   /2)*( parH[level+1]->gridNZ   /2);
-		parH[level]->K_FC           += ((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNZ-6)/2);
-	} 
-	if (parH[level]->need_interface[INTERFACE_W]==true)
-	{
-		parH[level]->K_CF           += ( parH[level+1]->gridNY   /2)*( parH[level+1]->gridNZ   /2); 
-		parH[level]->K_FC           += ((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNZ-6)/2);
-	}
-	if (parH[level]->need_interface[INTERFACE_N]==true)
-	{
-		parH[level]->K_CF           += ( parH[level+1]->gridNX   /2)*( parH[level+1]->gridNZ   /2); 
-		parH[level]->K_FC           += ((parH[level+1]->gridNX-6)/2)*((parH[level+1]->gridNZ-6)/2);
-	}
-	if (parH[level]->need_interface[INTERFACE_S]==true)
-	{
-		parH[level]->K_CF           += ( parH[level+1]->gridNX   /2)*( parH[level+1]->gridNZ   /2); 
-		parH[level]->K_FC           += ((parH[level+1]->gridNX-6)/2)*((parH[level+1]->gridNZ-6)/2);
-	}
-	if (parH[level]->need_interface[INTERFACE_T]==true)
-	{
-		parH[level]->K_CF           += ( parH[level+1]->gridNY   /2)*( parH[level+1]->gridNX   /2); 
-		parH[level]->K_FC           += ((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNX-6)/2);
-	}
-	if (parH[level]->need_interface[INTERFACE_B]==true)
-	{
-		parH[level]->K_CF           += ( parH[level+1]->gridNY   /2)*( parH[level+1]->gridNX   /2); 
-		parH[level]->K_FC           += ((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNX-6)/2);
-	}
-	//parH[level]->K_CF               = (( parH[level+1]->gridNY   /2)*( parH[level+1]->gridNZ   /2)*2)+
-	//                                  (( parH[level+1]->gridNX   /2)*( parH[level+1]->gridNZ   /2)*2)+
-	//                                  (( parH[level+1]->gridNY   /2)*( parH[level+1]->gridNX   /2)*2);
-	//parH[level]->K_FC               = (((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNZ-6)/2)*2)+
-	//                                  (((parH[level+1]->gridNX-6)/2)*((parH[level+1]->gridNZ-6)/2)*2)+
-	//                                  (((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNX-6)/2)*2);
-	parH[level]->mem_size_kCF       = sizeof(unsigned int)*parH[level]->K_CF;
-	parH[level]->mem_size_kFC       = sizeof(unsigned int)*parH[level]->K_FC;
-	parH[level]->mem_size_kCF_off   = sizeof(real)*parH[level]->K_CF;
-	parH[level]->mem_size_kFC_off   = sizeof(real)*parH[level]->K_FC;
-	///////////////////////////////////////////////////////////////////////////////////////////////////
-	//device
-	parD[level]->K_CF               = parH[level]->K_CF;
-	parD[level]->K_FC               = parH[level]->K_FC;
-	parD[level]->mem_size_kCF       = parH[level]->mem_size_kCF;
-	parD[level]->mem_size_kFC       = parH[level]->mem_size_kFC;
-	parD[level]->mem_size_kCF_off   = parH[level]->mem_size_kCF_off;
-	parD[level]->mem_size_kFC_off   = parH[level]->mem_size_kFC_off;
-	///////////////////////////////////////////////////////////////////////////////////////////////////
-}
 real Parameter::TrafoXtoWorld(int CoordX, int level)
 {
 	return (parH[level]->mTtoWx*CoordX+parH[level]->cTtoWx);
