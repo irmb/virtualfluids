@@ -290,7 +290,8 @@ void GbVoxelMatrix3D::readBufferedMatrixFromRawFile(std::string filename, GbVoxe
     CbArray3D<T> readMatrix(nodesX1, nodesX2, nodesX3);
 
     UBLOG(logINFO, "  - read file to matrix");
-    fread(readMatrix.getStartAdressOfSortedArray(0, 0, 0), sizeof(T), readMatrix.getDataVector().size(), file);
+    auto read_values = fread(readMatrix.getStartAdressOfSortedArray(0, 0, 0), sizeof(T), readMatrix.getDataVector().size(), file);
+    (void) read_values;
     fclose(file);
 
     UBLOG(logINFO, "  - init values");
