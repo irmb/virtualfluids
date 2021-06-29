@@ -114,18 +114,23 @@ void multipleLevel(const std::string& configPath)
     std::string bivalveType = "MUSSEL"; // "MUSSEL" "OYSTER"
     gridPath                = gridPath + "/" + bivalveType + "/";
 
-    real dx = (real)0.5;
-    real vx = (real)0.005;
-    real Re = (real)50.0;
+    real dxGrid = (real)1.0;
+    real vxLB = (real)0.051; // LB units
+    real Re = (real)3000.0;
+    real viscosityLB = (vxLB * dxGrid) / Re;
 
-    para->setVelocity(vx);
-    para->setViscosity((vx * dx) / Re);
-    para->setVelocityRatio(1.0);
+    para->setVelocity(vxLB);
+    para->setViscosity(viscosityLB);
+    para->setVelocityRatio((real)58.82352941);
+    para->setViscosityRatio((real)0.058823529);
 
-    para->setTOut(10);
-    para->setTEnd(100);
-    //para->setTOut(50000);
-    //para->setTEnd(100000);
+    *logging::out << logging::Logger::INFO_HIGH << "velocity LB [dx/dt] = " << vxLB << " \n";
+    *logging::out << logging::Logger::INFO_HIGH << "viscosity LB [dx^2/dt] = " << viscosityLB << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "velocity real [m/s] = " << vxLB * para->getVelocityRatio()<< " \n";
+    *logging::out << logging::Logger::INFO_HIGH << "viscosity real [m^2/s] = " << viscosityLB * para->getViscosityRatio() << "\n";
+
+    para->setTOut(10000);
+    para->setTEnd(100000);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -182,14 +187,14 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->addGeometry(bivalveSTL);
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, true);
-            gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dx);
+            gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
 
         gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
         //////////////////////////////////////////////////////////////////////////
-        gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx, 0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
         gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
 
         gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
