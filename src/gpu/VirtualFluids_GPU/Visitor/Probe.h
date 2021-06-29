@@ -29,7 +29,7 @@ public:
         
     }
 
-    void visit(Parameter* para, int level, unsigned int t);
+    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
 
     void setProbePointsFromList(std::vector<real> &_pointCoordsX, std::vector<real> &_pointCoordsY, std::vector<real> &_pointCoordsZ);

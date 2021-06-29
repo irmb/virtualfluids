@@ -101,7 +101,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
 }
 
 
-void Probe::visit(Parameter* para, int level, unsigned int t)
+void Probe::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
 {
 
 }

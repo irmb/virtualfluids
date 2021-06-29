@@ -423,7 +423,10 @@ public:
 	void setViscosityRatio(real ViscosityRatio);
 	void setVelocityRatio(real VelocityRatio);
 	void setDensityRatio(real DensityRatio);
-	void setPressRatio(real PressRatio);
+	void setPressRatio(real PressRatio);	
+	void setTimeRatio(real TimeRatio);
+	void setLengthRatio(real LengthRatio);
+	void setForceRatio(real ForceRatio);
 	void setRealX(real RealX);
 	void setRealY(real RealY);
 	void setRe(real Re);
@@ -648,6 +651,9 @@ public:
 	real getVelocityRatio();
 	real getDensityRatio();
 	real getPressRatio();
+	real getTimeRatio();
+	real getLengthRatio();
+	real getForceRatio();
 	real getRealX();
 	real getRealY();
 	real getRe();
@@ -772,6 +778,7 @@ private:
 	unsigned int limitOfNodesForVTK;
 	unsigned int outputCount;
 	unsigned int timestep;
+	real timeRatio, lengthRatio, forceRatio;
 
 
 	//Kernel

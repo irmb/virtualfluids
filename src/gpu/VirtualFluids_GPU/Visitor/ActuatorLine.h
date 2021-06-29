@@ -5,7 +5,6 @@
 #include "Parameter/Parameter.h"
 #include "PointerDefinitions.h"
 #include "GridGenerator/grid/GridBuilder/GridBuilder.h"
-#include "basics/geometry3d/CoordinateTransformation3D.h"
 
 class ActuatorLine : public Visitor
 {
@@ -40,56 +39,31 @@ public:
 
     virtual  ~ActuatorLine()
     {
-        this->freeBladeCoords();
-        this->freeBladeVelocities();
-        this->freeBladeForces();
-        this->freeBladeIndices();
-        this->freeSphereIndices();
+        
     }
 
-    void visit(Parameter* para, int level, unsigned int t);
-    void initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager);
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
+    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+    void free(CudaMemoryManager* cudaManager);
+
+    uint getNBladeNodes(){return this->nBladeNodes;};
+    uint getNBlades(){return this->nBlades;};
+    uint getNumberOfIndices(){return this->numberOfIndices;};
+    uint getNumberOfNodes(){return this->numberOfNodes;};
 
 private:
+    void initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager);
 
-    void allocBladeRadii(CudaMemoryManager* cudaManager);
-    void initBladeRadii();
-    void copyBladeRadiiHtoD();
-    void copyBladeRadiiDtoH();
-    void freeBladeRadii();
+    void initBladeRadii(CudaMemoryManager* cudaManager);
+    void initBladeCoords(CudaMemoryManager* cudaManager);
+    void initBladeVelocities(CudaMemoryManager* cudaManager);
+    void initBladeForces(CudaMemoryManager* cudaManager);
+    void initBladeIndices(Parameter* para, CudaMemoryManager* cudaManager);
 
-    void allocBladeCoords(CudaMemoryManager* cudaManager);
-    void initBladeCoords();
-    void copyBladeCoordsHtoD();
-    void copyBladeCoordsDtoH();
-    void freeBladeCoords();
+    void calcForcesEllipticWing(Parameter* para);
     void rotateBlades(real angle);
 
-    void allocBladeVelocities(CudaMemoryManager* cudaManager);
-    void initBladeVelocities();
-    void copyBladeVelocitiesHtoD();
-    void copyBladeVelocitiesDtoH();
-    void freeBladeVelocities();
-
-    void allocBladeForces(CudaMemoryManager* cudaManager);
-    void initBladeForces();
-    void copyBladeForcesHtoD();
-    void copyBladeForcesDtoH();
-    void freeBladeForces();
-
-    void allocBladeIndices(CudaMemoryManager* cudaManager);
-    void initBladeIndices(Parameter* para);
-    void copyBladeIndicesHtoD();
-    void freeBladeIndices();
-
-    void allocSphereIndices(CudaMemoryManager* cudaManager);
-    void copySphereIndices();
-    void freeSphereIndices();
-    
-private:
-    const real density;
-    real turbinePosX, turbinePosY, turbinePosZ;
+public:
     real* bladeRadiiH;
     real* bladeRadiiD;
     real* bladeCoordsXH, * bladeCoordsYH, * bladeCoordsZH;
@@ -100,7 +74,12 @@ private:
     real* bladeForcesXD, * bladeForcesYD, * bladeForcesZD;
     uint* bladeIndicesH;
     uint* bladeIndicesD; 
-    int* boundingSphereIndicesH, * boundingSphereIndicesD;
+    uint* boundingSphereIndicesH;
+    uint* boundingSphereIndicesD;
+    
+private:
+    const real density;
+    real turbinePosX, turbinePosY, turbinePosZ;
     real omega, azimuth, delta_t, delta_x;
     const real diameter;
     const unsigned int nBladeNodes;
@@ -109,8 +88,6 @@ private:
     const int level;
     int numberOfIndices;
     int numberOfNodes;
-    
-    unsigned int* indicesBoundingBox;
 };
 
 #endif

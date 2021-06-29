@@ -30,7 +30,7 @@ protected:
 public:
     virtual ~Visitor() {}
 
-    virtual void visit(Parameter* para, int level, unsigned int t)=0;
+    virtual void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)=0;
     virtual void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)=0;
 
     ////////////////////////////////////////////////////////////////////////////
