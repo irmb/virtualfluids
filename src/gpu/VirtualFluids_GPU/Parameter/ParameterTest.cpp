@@ -1,6 +1,8 @@
 #include <gmock/gmock.h>
 
+#include <iostream>
 #include <string>
+#include <filesystem>
 
 #include "Parameter.h"
 #include <basics/config/ConfigurationFile.h>
@@ -17,12 +19,12 @@ auto RealEq = [](auto value) {
 
 TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldThrow)
 {
-    vf::basics::ConfigurationFile config;
-    std::string targetPath = __FILE__;
-    targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
-    targetPath += "parameterTest_emptyfile.cfg";
+    // assuming that the config files is stored parallel to this file.
+    std::filesystem::path filePath = __FILE__;
+    filePath.replace_filename("parameterTest_emptyfile.cfg");
 
-    config.load(targetPath);
+    vf::basics::ConfigurationFile config;
+    config.load(filePath.string());
 
     EXPECT_THROW(Parameter para(config, 1, 0), std::runtime_error);
 }
@@ -32,12 +34,12 @@ TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldThrow)
 
 TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
 {
-    vf::basics::ConfigurationFile config;
-    std::string targetPath = __FILE__;
-    targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
-    targetPath += "parameterTest.cfg";
+    // assuming that the config files is stored parallel to this file.
+    std::filesystem::path filePath = __FILE__;
+    filePath.replace_filename("parameterTest.cfg");
 
-    config.load(targetPath);
+    vf::basics::ConfigurationFile config;
+    config.load(filePath.string());
 
     Parameter para(config, 1, 0);
 

@@ -8,6 +8,7 @@
 #include <fstream>
 #include <exception>
 #include <memory>
+#include <filesystem>
 
 #include "mpi.h"
 
@@ -96,10 +97,6 @@ const real dt = (real)1.0e-3; //0.5e-3;
 
 const uint nx = 64;
 
-//std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
-//std::string path("D:/out/DrivenCavity"); //Mollok
-std::string path("/home/sopeters/Computations/out/DrivenCavity64_unified"); // phoenix
-
 std::string simulationName("DrivenCavityChim");
 
 const uint timeStepOut = 10000;
@@ -171,7 +168,6 @@ void multipleLevel(const std::string& configPath)
 
 		para->setDevices(std::vector<uint>{(uint)0});
 
-        para->setOutputPath( path );
         para->setOutputPrefix( simulationName );
 
         para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
@@ -341,39 +337,26 @@ void multipleLevel(const std::string& configPath)
 int main( int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
-    std::string str, str2; 
-    if ( argv != NULL )
+
+    try
     {
-        //str = static_cast<std::string>(argv[0]);
-        
-        try
-        {
-            //////////////////////////////////////////////////////////////////////////
+        // assuming that the config files is stored parallel to this file.
+        std::filesystem::path filePath = __FILE__;
+        filePath.replace_filename("configDrivenCavity.txt");
 
-			std::string targetPath;
-
-			targetPath = __FILE__;
-
-			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
-
-			std::cout << targetPath << std::endl;
-
-			multipleLevel(targetPath + "configDrivenCavity.txt");
-
-            //////////////////////////////////////////////////////////////////////////
-		}
-        catch (const std::bad_alloc& e)
-        { 
-            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
-        }
-        catch (const std::exception& e)
-        {   
-            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-        }
-        catch (...)
-        {
-            *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
-        }
+		multipleLevel(filePath.string());
+	}
+    catch (const std::bad_alloc& e)
+    { 
+        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+    }
+    catch (const std::exception& e)
+    {   
+        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
+    }
+    catch (...)
+    {
+        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
     }
 
    MPI_Finalize();
