@@ -115,13 +115,13 @@ void GridReader::allocArrays_BoundaryValues()
 	this->setChannelBoundaryCondition();
 	int level = BC_Values[0]->getLevel();
 
-	for (size_t i = 0; i <= level; i++) {
+	for (int i = 0; i <= level; i++) {
         velocityX_BCvalues.push_back(std::vector<real>());
         velocityY_BCvalues.push_back(std::vector<real>());
         velocityZ_BCvalues.push_back(std::vector<real>());
         velocityQs.push_back(std::vector<std::vector<real>>());
         velocityIndex.push_back(std::vector<int>());
-        for (size_t j = 0; j < para->getD3Qxx(); j++) {
+        for (int j = 0; j < para->getD3Qxx(); j++) {
             velocityQs[i].push_back(std::vector<real>());
         }
     }
@@ -260,15 +260,15 @@ void GridReader::fillVelocityVectors(int channelSide)
             std::cout << "size velocity level " << level << " : " << sizePerLevel << std::endl;
             BC_Values[channelSide]->setVelocityValues(veloX_ValuesPerSide, veloY_ValuesPerSide, veloZ_ValuesPerSide, level);
 
-            for (size_t i = 0; i < sizePerLevel; i++) {
+            for (int i = 0; i < sizePerLevel; i++) {
                 this->velocityX_BCvalues[level].push_back(veloX_ValuesPerSide[i]);
                 this->velocityY_BCvalues[level].push_back(veloY_ValuesPerSide[i]);
                 this->velocityZ_BCvalues[level].push_back(veloZ_ValuesPerSide[i]);
             }
 
-			delete veloX_ValuesPerSide;
-            delete veloY_ValuesPerSide;
-            delete veloZ_ValuesPerSide;
+			delete[] veloX_ValuesPerSide;
+            delete[] veloY_ValuesPerSide;
+            delete[] veloZ_ValuesPerSide;
         }        
 	}
 
@@ -276,9 +276,9 @@ void GridReader::fillVelocityVectors(int channelSide)
 }
 
 void GridReader::setVelocityValues() { 
-    for (size_t level = 0; level < velocityX_BCvalues.size(); level++) {
+    for (int level = 0; level < (int)(velocityX_BCvalues.size()); level++) {
         
-		int sizePerLevel = velocityX_BCvalues[level].size();
+		int sizePerLevel = (int) velocityX_BCvalues[level].size();
         std::cout << "complete size velocity level " << level << " : " << sizePerLevel << std::endl;
         setVelocitySizePerLevel(level, sizePerLevel);
         
@@ -548,7 +548,6 @@ void GridReader::allocArrays_BoundaryQs()
 
 	std::vector<std::shared_ptr<BoundaryQs> > BC_Qs(channelDirections.size());
 	this->makeReader(BC_Qs, para);
-    int level = BC_Values[0]->getLevel();
 
 	for (std::size_t i = 0; i < channelBoundaryConditions.size(); i++)
 	{
@@ -558,7 +557,7 @@ void GridReader::allocArrays_BoundaryQs()
 		else if (this->channelBoundaryConditions[i] == "outflow" ) { setOutflowQs(BC_Qs[i]);  }
 	}
 
-	for (size_t lev = 0; lev < velocityIndex.size(); lev++) {
+	for (int lev = 0; lev < (int)(velocityIndex.size()); lev++) {
         if (velocityIndex[lev].size() > 1) {
             copyVectorsToQStruct(velocityQs[lev], velocityIndex[lev], para->getParH(lev)->Qinflow);
             cudaMemoryManager->cudaCopyVeloBC(lev);
@@ -670,9 +669,9 @@ void GridReader::copyVectorsToQStruct(std::vector<std::vector<real>> &Qs,
     QforBoundaryConditions qTemp;
     this->setQ27Size(qTemp, Q.q27[0], Q.kQ);
 
-	uint sizeOfValues = index.size();
+	uint sizeOfValues = (uint)index.size();
 
-	for (size_t direction = 0; direction < para->getD3Qxx(); direction++) {
+	for (int direction = 0; direction < para->getD3Qxx(); direction++) {
         for (size_t indexQ = 0; indexQ < sizeOfValues; indexQ++) {
             qTemp.q27[direction][indexQ] = Qs[direction][indexQ]; 
         }
