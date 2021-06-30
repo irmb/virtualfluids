@@ -14,7 +14,7 @@
 ##################################################
 #informations for reading
 ##################################################
-GridPath="E:/temp/GridMussel"
+GridPath="E:/temp/GridMussel/MUSSEL"
 #GridPath="C:"
 
 ##################################################

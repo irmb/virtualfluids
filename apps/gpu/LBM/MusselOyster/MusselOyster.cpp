@@ -69,7 +69,7 @@
 
 std::string path("E:/temp/MusselOyster");
 std::string gridPathParent = "E:/temp/GridMussel/";
-std::string simulationName("MusselOyster");
+std::string simulationName("MusselOysterTestNewBC");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     std::string bivalveType = "MUSSEL"; // "MUSSEL" "OYSTER"
-    std::string gridPath(gridPathParent + "/" + bivalveType + "/");
+    std::string gridPath(gridPathParent + "/" + bivalveType + "/"); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
     real dxGrid = (real)1.0;
     real vxLB = (real)0.051; // LB units
@@ -181,13 +181,13 @@ void multipleLevel(const std::string& configPath)
         const real zGridMin  = bbzm - 30.0;
         const real zGridMax  = bbzp + 30.0;
 
+        gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
         gridBuilder->setNumberOfLayers(6, 8);
         gridBuilder->addGrid(bivalveRef_1_STL, 1);
 
         gridBuilder->addGeometry(bivalveSTL);
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, true);
-            gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
 
         gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
         //////////////////////////////////////////////////////////////////////////
