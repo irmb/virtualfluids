@@ -42,13 +42,17 @@ extern "C" __global__ void LBCalcMac27( real* vxD,
 
    const unsigned int k = nx*(ny*z + y) + x; // Zugriff auf arrays im device
 
+
+   if(k >= size_Mat)
+      return;
+
+   if(!vf::gpu::isValidFluidNode(geoD[k]))
+      return;
+
    rhoD[k] = c0o1;
    vxD[k]  = c0o1;
    vyD[k]  = c0o1;
    vzD[k]  = c0o1;
-
-   if(!vf::gpu::isValidFluidNode(k, size_Mat, geoD[k]))
-      return;
 
    vf::gpu::DistributionWrapper distr_wrapper(distributions, size_Mat, isEvenTimestep, k, neighborX, neighborY, neighborZ);
    const auto& distribution = distr_wrapper.distribution;
@@ -266,7 +270,14 @@ extern "C" __global__ void LBCalcMacCompSP27(real *vxD, real *vyD, real *vzD, re
 {
     const unsigned k = vf::gpu::getNodeIndex();
 
+<<<<<<< HEAD
     if (!vf::gpu::isValidFluidNode(k, size_Mat, geoD[k]))
+=======
+    if(k >= size_Mat)
+        return;
+
+    if (!vf::gpu::isValidFluidNode(geoD[k]))
+>>>>>>> 94f4b537d6adf1d8bb7ce39a0287a7462453bc69
         return;
 
     pressD[k] = c0o1;
