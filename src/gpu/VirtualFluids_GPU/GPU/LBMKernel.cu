@@ -353,6 +353,7 @@ extern "C" void KernelKumNewCompSP27(unsigned int numberOfThreads,
 		//													EvenOrOdd); 
 		//getLastCudaError("LB_Kernel_Kum_New_Comp_SP_27 execution failed"); 
 }
+
 //////////////////////////////////////////////////////////////////////////
 extern "C" void CumulantOnePreconditionedErrorDiffusionChimCompSP27(unsigned int numberOfThreads,
 																	real s9,

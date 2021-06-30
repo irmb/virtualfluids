@@ -144,7 +144,7 @@ typedef struct  Distri19{
 // Distribution functions f 27
 typedef struct  Distri27{
    real* f[27];
-} Distributions27;
+} Distributions27, DistributionReferences27;
 
 //Q for second order BCs
 typedef struct QforBC{

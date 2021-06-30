@@ -186,6 +186,7 @@ struct ParameterStruct{
 	//velocities to fit the force
 	real *VxForce, *VyForce, *VzForce;
 	//////////////////////////////////////////////////////////////////////////
+	real *forcing;
 
 	//Measure Points/////////
 	std::vector<MeasurePoints> MP; 

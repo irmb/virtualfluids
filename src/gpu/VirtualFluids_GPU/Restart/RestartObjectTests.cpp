@@ -8,7 +8,7 @@ void saveAndLoad()
 {
     std::shared_ptr<RestartObject> write_object = std::make_shared<Type>();
 
-    write_object->fs = std::vector<std::vector<float>> {
+    write_object->fs = std::vector<std::vector<real>> {
                 { 1,2,3 },
                 { 4,5,6 }
             };

@@ -137,8 +137,7 @@ void pf1()
    grid->accept(initVisitor);
 
    //set connectors
-   InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-   SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+   OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
    grid->accept(setConnsVisitor);
 
    SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));

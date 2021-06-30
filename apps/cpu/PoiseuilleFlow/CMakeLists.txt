@@ -1,25 +1,6 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-
-########################################################
-## C++ PROJECT                                       ###
-########################################################
 PROJECT(pf)
 
-INCLUDE(${APPS_ROOT}/IncludsList.cmake) 
+vf_add_library(BUILDTYPE binary PRIVATE_LINK VirtualFluidsCore muparser basics ${MPI_CXX_LIBRARIES} FILES pf.cpp pf1.cpp )
 
-#################################################################
-###   LOCAL FILES                                             ###
-#################################################################
-FILE(GLOB SPECIFIC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.h
-                         ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-                         ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp  )
- 
-SET(ALL_SOURCES ${ALL_SOURCES} ${SPECIFIC_FILES})
-SOURCE_GROUP(src FILES ${SPECIFIC_FILES})
-  
-SET(CAB_ADDITIONAL_LINK_LIBRARIES VirtualFluids)
-
-#################################################################
-###   CREATE PROJECT                                          ###
-#################################################################
-CREATE_CAB_PROJECT(pf BINARY)
+vf_get_library_name (library_name)
+target_include_directories(${library_name} PRIVATE ${APPS_ROOT_CPU})

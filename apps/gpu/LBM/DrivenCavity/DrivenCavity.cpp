@@ -97,7 +97,8 @@ const real dt = (real)1.0e-3; //0.5e-3;
 const uint nx = 64;
 
 //std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
-std::string path("D:/out/DrivenCavity"); //Mollok
+//std::string path("D:/out/DrivenCavity"); //Mollok
+std::string path("/home/sopeters/Computations/out/DrivenCavity64_unified"); // phoenix
 
 std::string simulationName("DrivenCavityChim");
 
@@ -186,7 +187,7 @@ void multipleLevel(const std::string& configPath)
 
         para->setVelocityRatio(velocity/ velocityLB);
 
-		para->setMainKernel("CumulantK17CompChim");
+		//para->setMainKernel("CumulantK17CompChim");
 
 		para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
             rho = (real)0.0;
