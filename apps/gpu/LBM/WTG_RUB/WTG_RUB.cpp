@@ -28,6 +28,7 @@
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
+#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
 #include "GridGenerator/grid/GridFactory.h"
 #include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
 #include "GridGenerator/geometries/Conglomerate/Conglomerate.h"
@@ -67,25 +68,23 @@ LbmOrGks lbmOrGks = LBM;
 
 const real L  = 1.0;
 
-const real Re = 500.0;// 1000.0;
-
 const real velocity  = 1.0;
 
 int variant = 1;
 real rotationOfCity;
 real z_offset = 0.0; // only if baseplate is in use (currently not!! not important)
+int dataN;
+std::vector<real> dataZ;
+std::vector<real> dataVelocity;
+std::string simulationName("");
 
 // 1: original setup of Lennard Lux (6 level, 4.0 cm -> 1.25 mm)
 // 2: setup 1 of MSch               (4 level, 1.0 cm -> 1.25 mm)
 // 3: setup 2 of MSch               (5 level, 1.6 cm -> 1.0  mm)
 int setupDomain = 3;
 
-
-
 std::string path("D:/out/WTG_RUB"); //Mollok
 std::string inputPath("D:/out/WTG_RUB/input/");
-
-std::string simulationName("RUB");
 
 const uint timeStepStartOut = 0;
 const uint timeStepOut = 10000;
@@ -95,6 +94,8 @@ const uint timeStepEnd = 100000;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &rotationOfCity);
+
+void readVelocityProfile();
 
 std::string chooseVariation();
 
@@ -149,6 +150,26 @@ void multipleLevel(const std::string& configPath)
     TriangularMesh *RubSTL      = TriangularMesh::make(inputPath + "stl/" + chooseVariation() + ".stl");
     // vector<real> originOfCityXY = { 600.0, y_max / 2, z_offset };
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // OPTIONS
+
+    int maxLevelAtInflow = maxLevel;
+    // there are max. 3 levels (0,1,2) at inflow-/x_min-Side if maxLevel >= 3; OTHERWISE: maxLevel
+    if (maxLevel >= 3)
+        maxLevelAtInflow = 2;
+
+    // MeasurePoints [MP01-15: lvl maxLevel],[MP16-41: lvl 1]; disable when reducing numberOfLevels --> dx might be too
+    // large if MP01-15 are used with low resolution dx, MPs might be placed in solid City-geometry
+    bool useMP                   = true;
+    bool measureVeloProfilesOnly = false;
+
+    // Two Components: true->DiffOn, false->DiffOff
+    bool diffOnOff = false;
+
+    // Resetting diff or flow field, e.g. after restart, do not reset diff/flow at start of measureRun ;-)
+    bool reset_diff = true;
+    bool reset_flow = true;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     gridBuilder->addCoarseGrid(x_min, y_min, z_min, 
                                x_max, y_max, z_max, dx);
@@ -227,6 +248,67 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    readVelocityProfile();
+    for (int level = 0; level <= maxLevelAtInflow; level++) {
+        auto inflowBC = std::dynamic_pointer_cast<VelocityBoundaryCondition>(
+            gridBuilder->getBoundaryCondition(SideType::MX, level));
+
+        // lambda function [capture list](parameter list){function body}
+        // for every z, loop is being run;
+        if (inflowBC) {
+            inflowBC->setVelocityProfile(
+                gridBuilder->getGrid(level), [&](real x, real y, real z, real &vx, real &vy, real &vz) {
+                    int i;
+                    for (i = 0; i < dataN; i++) {
+                        if ((z < dataZ[i]) || (z == dataZ[i]))
+                            break;
+                    } // remembers i
+
+                    // if z is below current data point --> interpolation between previous and current datapoint
+                    if (z < dataZ[i]) {
+                        vx = velocityLB * (dataVelocity[i] + (dataVelocity[i + 1] - dataVelocity[i]) /
+                                                                 (dataZ[i + 1] - dataZ[i]) * (z - dataZ[i]));
+                    } else if (z == dataZ[i]) {
+                        vx = velocityLB * dataVelocity[i];
+                    }
+
+                    // vx << std::endl; vx = velocityLB;
+                    vy = 0.0;
+                    vz = 0.0;
+                });
+        }
+    }
+
+    // Resetting Velocity Profile (returning to intial state; do not combine with restart)
+    if (reset_flow) {
+        para->setInitialCondition([&](real x, real y, real z, real &rho, real &vx, real &vy, real &vz) {
+            int i;
+            for (i = 0; i < dataN; i++) {
+                if ((z < dataZ[i]) || (z == dataZ[i]))
+                    break;
+            }
+            if (z < dataZ[i]) {
+                vx = velocityLB * 0.588 *
+                     (dataVelocity[i] +
+                      (dataVelocity[i + 1] - dataVelocity[i]) / (dataZ[i + 1] - dataZ[i]) * (z - dataZ[i]));
+            } else if (z == dataZ[i]) {
+                vx = velocityLB * 0.588 * dataVelocity[i];
+            }
+
+            // std::cout << "LINE : " << __LINE__ << "\tdataZ = " << dataZ[i] << "\tz = " << z << "\tvx = " << vx <<
+            // std::endl;
+
+            // vx = velocityLB;
+            vy  = 0.0;
+            vz  = 0.0;
+            rho = 0.0;
+        });
+    }
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
@@ -240,6 +322,35 @@ void multipleLevel(const std::string& configPath)
     sim.run();
     sim.free();
 
+}
+
+void readVelocityProfile()
+{
+    // reads velocityProfile.txt, containing values for relative velocity (u_h) in relation to height (z). also fills
+    // dataZ,dataVelocity vectors
+
+    std::ifstream inFile;
+    inFile.open(inputPath + "VeloProfile.txt");
+    //inFile.open(inputPath + "velocityProfile.txt");
+
+    if (inFile.fail()) {
+        std::cerr << "Error opening File" << std::endl;
+        exit(1);
+    }
+
+    int z;
+    real velocity;
+
+    // read
+    inFile >> dataN;
+    for (int k = 0; k < dataN; k++) {
+        inFile >> z;
+        dataZ.push_back(z + z_offset);
+
+        inFile >> velocity;
+        dataVelocity.push_back(velocity);
+    }
+    inFile.close();
 }
 
 void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &rotationOfCity)
