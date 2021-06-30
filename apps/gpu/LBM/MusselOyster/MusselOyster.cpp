@@ -68,7 +68,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::string path("E:/temp/MusselOyster");
-std::string gridPath("E:/temp/GridMussel/");
+std::string gridPathParent = "E:/temp/GridMussel/";
 std::string simulationName("MusselOyster");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,12 +107,12 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     SPtr<Parameter>    para         = Parameter::make(configData, comm);
-    bool useGridGenerator = false;
+    bool useGridGenerator = true;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     std::string bivalveType = "MUSSEL"; // "MUSSEL" "OYSTER"
-    gridPath                = gridPath + "/" + bivalveType + "/";
+    std::string gridPath(gridPathParent + "/" + bivalveType + "/");
 
     real dxGrid = (real)1.0;
     real vxLB = (real)0.051; // LB units
@@ -176,7 +176,7 @@ void multipleLevel(const std::string& configPath)
 
         const real xGridMin  = bbxm - 40.0;
         const real xGridMax  = bbxp + 250.0;
-        const real yGridMin  = bbym + 0.5;
+        const real yGridMin  = bbym + 1.0;
         const real yGridMax  = bbyp + 60.0;
         const real zGridMin  = bbzm - 30.0;
         const real zGridMax  = bbzp + 30.0;
