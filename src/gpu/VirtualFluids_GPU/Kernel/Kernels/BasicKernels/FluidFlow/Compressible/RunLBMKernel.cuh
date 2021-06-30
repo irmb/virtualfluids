@@ -32,11 +32,9 @@ template<typename KernelFunctor>
 __global__ void runKernel(KernelFunctor kernel, GPUKernelParameter kernelParameter)
 {
     const uint k = getNodeIndex();
+    const uint nodeType = kernelParameter.typeOfGridNode[k];
 
-    if (k >= kernelParameter.size_Mat)
-        return;
-
-    if (!isValidFluidNode(kernelParameter.typeOfGridNode[k]))
+    if (!isValidFluidNode(k, kernelParameter.size_Mat, nodeType))
         return;
 
     DistributionWrapper distributionWrapper {

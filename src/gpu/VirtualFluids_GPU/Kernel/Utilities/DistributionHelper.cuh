@@ -90,7 +90,7 @@ struct DistributionWrapper
 
 __device__ unsigned int getNodeIndex();
 
-__device__ bool isValidFluidNode(uint nodeType);
+__device__ bool isValidFluidNode(uint k, int size_Mat, uint nodeType);
 
 }
 }

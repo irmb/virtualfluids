@@ -42,13 +42,13 @@ extern "C" __global__ void LBCalcMac27( real* vxD,
 
    const unsigned int k = nx*(ny*z + y) + x; // Zugriff auf arrays im device
 
-   if(!(k < size_Mat) && !vf::gpu::isValidFluidNode(geoD[k]))
-      return;
-
    rhoD[k] = c0o1;
    vxD[k]  = c0o1;
    vyD[k]  = c0o1;
    vzD[k]  = c0o1;
+
+   if(!vf::gpu::isValidFluidNode(k, size_Mat, geoD[k]))
+      return;
 
    vf::gpu::DistributionWrapper distr_wrapper(distributions, size_Mat, isEvenTimestep, k, neighborX, neighborY, neighborZ);
    const auto& distribution = distr_wrapper.distribution;
@@ -264,29 +264,206 @@ extern "C" __global__ void LBCalcMacCompSP27(real *vxD, real *vyD, real *vzD, re
                                              unsigned int *neighborZ, unsigned int size_Mat, real *distributions,
                                              bool isEvenTimestep)
 {
-    const unsigned k = vf::gpu::getNodeIndex();
+    //const unsigned k = vf::gpu::getNodeIndex();
 
-    if (k >= size_Mat)
-        return;
+    //pressD[k] = c0o1;
+    //rhoD[k]   = c0o1;
+    //vxD[k]    = c0o1;
+    //vyD[k]    = c0o1;
+    //vzD[k]    = c0o1;
 
-    if (!vf::gpu::isValidFluidNode(geoD[k]))
-        return;
+    //if (!vf::gpu::isValidFluidNode(k, size_Mat, geoD[k]))
+    //    return;
 
-    pressD[k] = c0o1;
-    rhoD[k]   = c0o1;
-    vxD[k]    = c0o1;
-    vyD[k]    = c0o1;
-    vzD[k]    = c0o1;
+    //vf::gpu::DistributionWrapper distr_wrapper(distributions, size_Mat, isEvenTimestep, k, neighborX, neighborY,
+    //                                           neighborZ);
+    //const auto &distribution = distr_wrapper.distribution;
 
-    vf::gpu::DistributionWrapper distr_wrapper(distributions, size_Mat, isEvenTimestep, k, neighborX, neighborY,
-                                               neighborZ);
-    const auto &distribution = distr_wrapper.distribution;
+    //rhoD[k]   = vf::lbm::getDensity(distribution.f);
+    //vxD[k]    = vf::lbm::getCompressibleVelocityX1(distribution.f, rhoD[k]);
+    //vyD[k]    = vf::lbm::getCompressibleVelocityX2(distribution.f, rhoD[k]);
+    //vzD[k]    = vf::lbm::getCompressibleVelocityX3(distribution.f, rhoD[k]);
+    //pressD[k] = vf::lbm::getPressure(distribution.f, rhoD[k], vxD[k], vyD[k], vzD[k]); 
 
-    rhoD[k]   = vf::lbm::getDensity(distribution.f);
-    vxD[k]    = vf::lbm::getCompressibleVelocityX1(distribution.f, rhoD[k]);
-    vyD[k]    = vf::lbm::getCompressibleVelocityX2(distribution.f, rhoD[k]);
-    vzD[k]    = vf::lbm::getCompressibleVelocityX3(distribution.f, rhoD[k]);
-    pressD[k] = vf::lbm::getPressure(distribution.f, rhoD[k], vxD[k], vyD[k], vzD[k]); 
+
+   // old stuff
+   Distributions27 D;
+    if (isEvenTimestep == true)
+   {
+      D.f[dirE   ] = &distributions[dirE   *size_Mat];
+      D.f[dirW   ] = &distributions[dirW   *size_Mat];
+      D.f[dirN   ] = &distributions[dirN   *size_Mat];
+      D.f[dirS   ] = &distributions[dirS   *size_Mat];
+      D.f[dirT   ] = &distributions[dirT   *size_Mat];
+      D.f[dirB   ] = &distributions[dirB   *size_Mat];
+      D.f[dirNE  ] = &distributions[dirNE  *size_Mat];
+      D.f[dirSW  ] = &distributions[dirSW  *size_Mat];
+      D.f[dirSE  ] = &distributions[dirSE  *size_Mat];
+      D.f[dirNW  ] = &distributions[dirNW  *size_Mat];
+      D.f[dirTE  ] = &distributions[dirTE  *size_Mat];
+      D.f[dirBW  ] = &distributions[dirBW  *size_Mat];
+      D.f[dirBE  ] = &distributions[dirBE  *size_Mat];
+      D.f[dirTW  ] = &distributions[dirTW  *size_Mat];
+      D.f[dirTN  ] = &distributions[dirTN  *size_Mat];
+      D.f[dirBS  ] = &distributions[dirBS  *size_Mat];
+      D.f[dirBN  ] = &distributions[dirBN  *size_Mat];
+      D.f[dirTS  ] = &distributions[dirTS  *size_Mat];
+      D.f[dirZERO] = &distributions[dirZERO*size_Mat];
+      D.f[dirTNE ] = &distributions[dirTNE *size_Mat];
+      D.f[dirTSW ] = &distributions[dirTSW *size_Mat];
+      D.f[dirTSE ] = &distributions[dirTSE *size_Mat];
+      D.f[dirTNW ] = &distributions[dirTNW *size_Mat];
+      D.f[dirBNE ] = &distributions[dirBNE *size_Mat];
+      D.f[dirBSW ] = &distributions[dirBSW *size_Mat];
+      D.f[dirBSE ] = &distributions[dirBSE *size_Mat];
+      D.f[dirBNW ] = &distributions[dirBNW *size_Mat];
+   } 
+   else
+   {
+      D.f[dirW   ] = &distributions[dirE   *size_Mat];
+      D.f[dirE   ] = &distributions[dirW   *size_Mat];
+      D.f[dirS   ] = &distributions[dirN   *size_Mat];
+      D.f[dirN   ] = &distributions[dirS   *size_Mat];
+      D.f[dirB   ] = &distributions[dirT   *size_Mat];
+      D.f[dirT   ] = &distributions[dirB   *size_Mat];
+      D.f[dirSW  ] = &distributions[dirNE  *size_Mat];
+      D.f[dirNE  ] = &distributions[dirSW  *size_Mat];
+      D.f[dirNW  ] = &distributions[dirSE  *size_Mat];
+      D.f[dirSE  ] = &distributions[dirNW  *size_Mat];
+      D.f[dirBW  ] = &distributions[dirTE  *size_Mat];
+      D.f[dirTE  ] = &distributions[dirBW  *size_Mat];
+      D.f[dirTW  ] = &distributions[dirBE  *size_Mat];
+      D.f[dirBE  ] = &distributions[dirTW  *size_Mat];
+      D.f[dirBS  ] = &distributions[dirTN  *size_Mat];
+      D.f[dirTN  ] = &distributions[dirBS  *size_Mat];
+      D.f[dirTS  ] = &distributions[dirBN  *size_Mat];
+      D.f[dirBN  ] = &distributions[dirTS  *size_Mat];
+      D.f[dirZERO] = &distributions[dirZERO*size_Mat];
+      D.f[dirTNE ] = &distributions[dirBSW *size_Mat];
+      D.f[dirTSW ] = &distributions[dirBNE *size_Mat];
+      D.f[dirTSE ] = &distributions[dirBNW *size_Mat];
+      D.f[dirTNW ] = &distributions[dirBSE *size_Mat];
+      D.f[dirBNE ] = &distributions[dirTSW *size_Mat];
+      D.f[dirBSW ] = &distributions[dirTNE *size_Mat];
+      D.f[dirBSE ] = &distributions[dirTNW *size_Mat];
+      D.f[dirBNW ] = &distributions[dirTSE *size_Mat];
+   }
+   ////////////////////////////////////////////////////////////////////////////////
+   const unsigned  x = threadIdx.x;  // Globaler x-Index 
+   const unsigned  y = blockIdx.x;   // Globaler y-Index 
+   const unsigned  z = blockIdx.y;   // Globaler z-Index 
+
+   const unsigned nx = blockDim.x;
+   const unsigned ny = gridDim.x;
+
+   const unsigned k = nx*(ny*z + y) + x;
+   //////////////////////////////////////////////////////////////////////////
+   if(k<size_Mat)
+   {
+      //////////////////////////////////////////////////////////////////////////
+      //index
+      unsigned int kzero= k;
+      unsigned int ke   = k;
+      unsigned int kw   = neighborX[k];
+      unsigned int kn   = k;
+      unsigned int ks   = neighborY[k];
+      unsigned int kt   = k;
+      unsigned int kb   = neighborZ[k];
+      unsigned int ksw  = neighborY[kw];
+      unsigned int kne  = k;
+      unsigned int kse  = ks;
+      unsigned int knw  = kw;
+      unsigned int kbw  = neighborZ[kw];
+      unsigned int kte  = k;
+      unsigned int kbe  = kb;
+      unsigned int ktw  = kw;
+      unsigned int kbs  = neighborZ[ks];
+      unsigned int ktn  = k;
+      unsigned int kbn  = kb;
+      unsigned int kts  = ks;
+      unsigned int ktse = ks;
+      unsigned int kbnw = kbw;
+      unsigned int ktnw = kw;
+      unsigned int kbse = kbs;
+      unsigned int ktsw = ksw;
+      unsigned int kbne = kb;
+      unsigned int ktne = k;
+      unsigned int kbsw = neighborZ[ksw];
+      //////////////////////////////////////////////////////////////////////////
+      pressD[k] = c0o1;
+	  rhoD[k]   = c0o1;
+	  vxD[k]    = c0o1;
+	  vyD[k]    = c0o1;
+	  vzD[k]    = c0o1;
+
+      if(geoD[k] == GEO_FLUID)
+      {
+         rhoD[k]    =   (D.f[dirE   ])[ke  ]+ (D.f[dirW   ])[kw  ]+ 
+                        (D.f[dirN   ])[kn  ]+ (D.f[dirS   ])[ks  ]+
+                        (D.f[dirT   ])[kt  ]+ (D.f[dirB   ])[kb  ]+
+                        (D.f[dirNE  ])[kne ]+ (D.f[dirSW  ])[ksw ]+
+                        (D.f[dirSE  ])[kse ]+ (D.f[dirNW  ])[knw ]+
+                        (D.f[dirTE  ])[kte ]+ (D.f[dirBW  ])[kbw ]+
+                        (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
+                        (D.f[dirTN  ])[ktn ]+ (D.f[dirBS  ])[kbs ]+
+                        (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ]+
+                        (D.f[dirZERO])[kzero]+ 
+                        (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
+                        (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
+                        (D.f[dirBNE ])[kbne]+ (D.f[dirBSW ])[kbsw]+ 
+                        (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw];
+
+         vxD[k]     =  ((D.f[dirE   ])[ke  ]- (D.f[dirW   ])[kw  ]+ 
+                        (D.f[dirNE  ])[kne ]- (D.f[dirSW  ])[ksw ]+
+                        (D.f[dirSE  ])[kse ]- (D.f[dirNW  ])[knw ]+
+                        (D.f[dirTE  ])[kte ]- (D.f[dirBW  ])[kbw ]+
+                        (D.f[dirBE  ])[kbe ]- (D.f[dirTW  ])[ktw ]+
+                        (D.f[dirTNE ])[ktne]- (D.f[dirTSW ])[ktsw]+ 
+                        (D.f[dirTSE ])[ktse]- (D.f[dirTNW ])[ktnw]+ 
+                        (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]+ 
+                        (D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw])/(c1o1+rhoD[k]);
+
+         vyD[k]     =  ((D.f[dirN   ])[kn  ]- (D.f[dirS   ])[ks  ]+
+                        (D.f[dirNE  ])[kne ]- (D.f[dirSW  ])[ksw ]-
+                        (D.f[dirSE  ])[kse ]+ (D.f[dirNW  ])[knw ]+
+                        (D.f[dirTN  ])[ktn ]- (D.f[dirBS  ])[kbs ]+
+                        (D.f[dirBN  ])[kbn ]- (D.f[dirTS  ])[kts ]+
+                        (D.f[dirTNE ])[ktne]- (D.f[dirTSW ])[ktsw]- 
+                        (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
+                        (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]- 
+                        (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw])/(c1o1+rhoD[k]);
+
+         vzD[k]     =  ((D.f[dirT   ])[kt  ]- (D.f[dirB   ])[kb  ]+
+                        (D.f[dirTE  ])[kte ]- (D.f[dirBW  ])[kbw ]-
+                        (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
+                        (D.f[dirTN  ])[ktn ]- (D.f[dirBS  ])[kbs ]-
+                        (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ]+
+                        (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
+                        (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]- 
+                        (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]- 
+                        (D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw])/(c1o1+rhoD[k]);
+
+         pressD[k]  =  ((D.f[dirE   ])[ke  ]+ (D.f[dirW   ])[kw  ]+ 
+                        (D.f[dirN   ])[kn  ]+ (D.f[dirS   ])[ks  ]+
+                        (D.f[dirT   ])[kt  ]+ (D.f[dirB   ])[kb  ]+
+                        2.f*(
+                        (D.f[dirNE  ])[kne ]+ (D.f[dirSW  ])[ksw ]+
+                        (D.f[dirSE  ])[kse ]+ (D.f[dirNW  ])[knw ]+
+                        (D.f[dirTE  ])[kte ]+ (D.f[dirBW  ])[kbw ]+
+                        (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
+                        (D.f[dirTN  ])[ktn ]+ (D.f[dirBS  ])[kbs ]+
+                        (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ])+
+                        3.f*(
+                        (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
+                        (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
+                        (D.f[dirBNE ])[kbne]+ (D.f[dirBSW ])[kbsw]+ 
+                        (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw])-
+                        rhoD[k]-(vxD[k] * vxD[k] + vyD[k] * vyD[k] + vzD[k] * vzD[k]) * (c1o1+rhoD[k])) * c1o2+rhoD[k]; // times zero for incompressible case   
+         //achtung op hart gesetzt Annahme op = 1 ;                                                    ^^^^(1.0/op-0.5)=0.5
+
+      }
+   }
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
