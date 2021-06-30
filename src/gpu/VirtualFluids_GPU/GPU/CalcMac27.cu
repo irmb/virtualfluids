@@ -270,14 +270,10 @@ extern "C" __global__ void LBCalcMacCompSP27(real *vxD, real *vyD, real *vzD, re
 {
     const unsigned k = vf::gpu::getNodeIndex();
 
-<<<<<<< HEAD
-    if (!vf::gpu::isValidFluidNode(k, size_Mat, geoD[k]))
-=======
     if(k >= size_Mat)
         return;
 
     if (!vf::gpu::isValidFluidNode(geoD[k]))
->>>>>>> 94f4b537d6adf1d8bb7ce39a0287a7462453bc69
         return;
 
     pressD[k] = c0o1;
