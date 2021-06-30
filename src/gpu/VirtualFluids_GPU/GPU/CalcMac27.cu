@@ -266,14 +266,14 @@ extern "C" __global__ void LBCalcMacCompSP27(real *vxD, real *vyD, real *vzD, re
 {
     const unsigned k = vf::gpu::getNodeIndex();
 
+    if (!vf::gpu::isValidFluidNode(k, size_Mat, geoD[k]))
+        return;
+
     pressD[k] = c0o1;
     rhoD[k]   = c0o1;
     vxD[k]    = c0o1;
     vyD[k]    = c0o1;
     vzD[k]    = c0o1;
-
-    if (!vf::gpu::isValidFluidNode(k, size_Mat, geoD[k]))
-        return;
 
     vf::gpu::DistributionWrapper distr_wrapper(distributions, size_Mat, isEvenTimestep, k, neighborX, neighborY,
                                                neighborZ);
