@@ -46,6 +46,7 @@
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Visitor/ActuatorLine.h"
+#include "VirtualFluids_GPU/Visitor/Probe.h"
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
@@ -99,7 +100,7 @@ const real velocity  = 9.0;
 
 const real mach = 0.1;
 
-const uint nodes_per_D = 32;
+const uint nodes_per_D = 8;
 
 //std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
 //std::string path("D:/out/DrivenCavity"); //Mollok
@@ -108,7 +109,7 @@ std::string path(".");
 std::string simulationName("ActuatorLine");
 
 const uint timeStepOut = 500;
-const uint timeStepEnd = 2500;
+const uint timeStepEnd = 1000;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -227,6 +228,14 @@ void multipleLevel(const std::string& configPath)
 
         ActuatorLine* actuator_line = new ActuatorLine((unsigned int) 3, density, (unsigned int)32, epsilon, turbPos[0], turbPos[1], turbPos[2], D, level, dt, dx);
         para->addActuator( actuator_line );
+
+        Probe* probe = new Probe("probe", 100, 100);
+        std::vector<real> probeCoordsX = {D,2*D,5*D};
+        std::vector<real> probeCoordsY = {3*D,3*D,3*D};
+        std::vector<real> probeCoordsZ = {3*D,3*D,3*D};
+        probe->setProbePointsFromList(probeCoordsX,probeCoordsY,probeCoordsZ);
+        probe->addPostProcessingVariable(PostProcessingVariable::Means);
+        para->addProbe( probe );
 
         Simulation sim;
         SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());

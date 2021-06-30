@@ -6,26 +6,41 @@
 #include "PointerDefinitions.h"
 #include "GridGenerator/grid/GridBuilder/GridBuilder.h"
 
+enum class PostProcessingVariable{ 
+    // Enum val is index in pointer array -> increment between enum1 and enum2 is number of quantities allocated for enum1
+    // LAST is for counting total number of arrays
+    // HowTo add new PostProcessingVariable: Add enum here, assign it value of LAST, assign LAST previous number+ number of quantities needed for new postProc Variable
+    // In interpQuantities add computation of quantity in switch statement
+    // In init add number of arrays + offset in switch statement
+    // If new quantity depends on other quantities i.e. mean, catch in addPostProcessingVariable
+    Means = 0,
+    Variances = 4,
+    LAST = 8,
+};
 struct ProbeStruct{
-    int nPoints;
+    int nPoints, nArrays;
     int *pointIndicesH, *pointIndicesD;
+    real *pointCoordsX, *pointCoordsY, *pointCoordsZ;
     real *distXH, *distYH, *distZH, *distXD, *distYD, *distZD;
-    std::vector<void*> quantitiesH, quantitiesD;
+    real* quantitiesArrayH, *quantitiesArrayD;
+    PostProcessingVariable* quantitiesH,* quantitiesD; 
+    int* arrayOffsetsH, *arrayOffsetsD;
 };
 
-enum class PostProcessingVariable{ 
-    //Enum val is index in pointer array -> increment between enum1 and enum2 is number of quantities allocated for enum1
-    Means = 0,
-    Variances = 4
-};
+
 
 class Probe : public Visitor 
 {
 public:
     Probe(
-        const std::string _probeName
+        const std::string _probeName,
+        uint _tStart,
+        uint _tOut
 
-    ):  probeName(_probeName)
+    ):  probeName(_probeName),
+        tStart(_tStart),
+        tOut(_tOut),
+        Visitor()
 
     {
         
@@ -35,9 +50,15 @@ public:
     void free(Parameter* para, CudaMemoryManager* cudaManager);
 
     ProbeStruct* getProbeStruct(int level){ return this->probeParams[level]; }
+    std::vector<PostProcessingVariable> getPostProcessingVariables(){return this->postProcessingVariables; }
 
     void setProbePointsFromList(std::vector<real> &_pointCoordsX, std::vector<real> &_pointCoordsY, std::vector<real> &_pointCoordsZ);
     void addPostProcessingVariable(PostProcessingVariable _variable);
+
+    void write(Parameter* para, int level, int t);
+    void writeCollectionFile(Parameter* para, int t);
+    void writeGridFile(Parameter* para, int level, std::vector<std::string >& fnames);
+    std::vector<std::string> getVarNames();
 
     
 private:
@@ -47,6 +68,10 @@ private:
 
     std::vector<ProbeStruct*> probeParams;
     std::vector<PostProcessingVariable> postProcessingVariables;
+    std::vector<std::string> fileNamesForCollectionFile;
+
+    uint tStart;
+    uint tOut;
     // int* pointIndicesH, *pointIndicesD;
     // std::vector< std::vector<int> > probeIndices;
     // std::vector< std::vector<real> > distX, distY, distZ;
