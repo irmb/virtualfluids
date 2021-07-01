@@ -69,6 +69,7 @@ private:
     std::vector<ProbeStruct*> probeParams;
     std::vector<PostProcessingVariable> postProcessingVariables;
     std::vector<std::string> fileNamesForCollectionFile;
+    std::vector<std::string> varNames;
 
     uint tStart;
     uint tOut;

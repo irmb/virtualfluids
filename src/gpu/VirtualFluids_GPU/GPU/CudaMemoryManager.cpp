@@ -2916,14 +2916,15 @@ void CudaMemoryManager::cudaFreeProbeQuantityArray(Probe* probe, int level)
 
 void CudaMemoryManager::cudaAllocProbeQuantities(Probe* probe, int level)
 {
-    size_t tmp = probe->getPostProcessingVariables().size()*sizeof(int);
+    size_t tmpV = probe->getPostProcessingVariables().size()*sizeof(int);
+    size_t tmpO = int(PostProcessingVariable::LAST)*sizeof(int);
     
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->arrayOffsetsH, tmp) );    
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->quantitiesH, tmp) );
+    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->arrayOffsetsH, tmpO) );    
+    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->quantitiesH, tmpV) );
 
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->arrayOffsetsD, tmp) );
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->quantitiesD, tmp) );
-    setMemsizeGPU(2.f*tmp, false);
+    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->arrayOffsetsD, tmpO) );
+    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->quantitiesD, tmpV) );
+    setMemsizeGPU(tmpO+tmpV, false);
 }
 
 void CudaMemoryManager::cudaCopyProbeQuantitiesHtoD(Probe* probe, int level)
