@@ -57,7 +57,7 @@ public:
 
     void write(Parameter* para, int level, int t);
     void writeCollectionFile(Parameter* para, int t);
-    void writeGridFile(Parameter* para, int level, std::vector<std::string >& fnames);
+    void writeGridFile(Parameter* para, int level, std::vector<std::string >& fnames, int t);
     std::vector<std::string> getVarNames();
 
     

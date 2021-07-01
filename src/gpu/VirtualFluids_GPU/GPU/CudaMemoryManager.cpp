@@ -2878,11 +2878,11 @@ void CudaMemoryManager::cudaAllocProbeIndices(Probe* probe, int level)
 }
 void CudaMemoryManager::cudaCopyProbeIndicesHtoD(Probe* probe, int level)
 {
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distXD, probe->getProbeStruct(level)->distXH, sizeof(int)*probe->getProbeStruct(level)->nPoints, cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->pointIndicesD, probe->getProbeStruct(level)->pointIndicesH, sizeof(int)*probe->getProbeStruct(level)->nPoints, cudaMemcpyHostToDevice) );
 }
 void CudaMemoryManager::cudaCopyProbeIndicesDtoH(Probe* probe, int level)
 {
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->distXH, probe->getProbeStruct(level)->distXD, sizeof(int)*probe->getProbeStruct(level)->nPoints, cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->pointIndicesH, probe->getProbeStruct(level)->pointIndicesD, sizeof(int)*probe->getProbeStruct(level)->nPoints, cudaMemcpyDeviceToHost) );
 }
 void CudaMemoryManager::cudaFreeProbeIndices(Probe* probe, int level)
 {
