@@ -526,7 +526,7 @@ clang-tidy:
 
 ###############################################################################
 # doxgen
-doxygen:
+pages:
   stage: analyze
 
   image: alpine
