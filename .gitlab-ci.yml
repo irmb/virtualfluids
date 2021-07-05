@@ -542,9 +542,8 @@ doxygen:
   - mv docs/build/html/ public/
 
   artifacts:
-    expire_in: 1 week
+    expire_in: 1 hrs
     paths:
-    - docs/build/html/
     - public
 
 
