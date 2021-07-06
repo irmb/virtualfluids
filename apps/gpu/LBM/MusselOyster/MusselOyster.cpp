@@ -193,46 +193,49 @@ void multipleLevel(const std::string& configPath)
                 TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
             
             real overlap      = 10.0 * dxGrid;            
-            const real xSplit = bbxm + (bbxm + bbxp) / 2;
+            const real zSplit = bbzm + (bbzm + bbzp) / 2;
 
             if (generatePart == 0) {
-                gridBuilder->addCoarseGrid( xGridMin,           yGridMin,   zGridMin, 
-                                            xSplit + overlap,   yGridMax,   zGridMax, dxGrid);
+                gridBuilder->addCoarseGrid( xGridMin,   yGridMin,   zGridMin, 
+                                            xGridMax,   yGridMax,   zSplit + overlap,   dxGrid);
             }
             if (generatePart == 1) {
-                gridBuilder->addCoarseGrid(xSplit - overlap,    yGridMin,   zGridMin, 
-                                           xGridMax,            yGridMax,   zGridMax, dxGrid);
+                gridBuilder->addCoarseGrid(xGridMin,    yGridMin,   zSplit - overlap, 
+                                           xGridMax,    yGridMax,   zGridMax,           dxGrid);
             }
 
             gridBuilder->addGeometry(bivalveSTL);
 
             if (generatePart == 0)
-                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xGridMin, xSplit,
-                                                                           yGridMin, yGridMax, 
-                                                                           zGridMin, zGridMax));
+                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xGridMin,    xGridMax,
+                                                                           yGridMin,    yGridMax, 
+                                                                           zGridMin,    zSplit));
             if (generatePart == 1)
-                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xSplit,   xGridMax, 
-                                                                           yGridMin, yGridMax, 
-                                                                           zGridMin, zGridMax));
+                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xGridMin,    xGridMax, 
+                                                                           yGridMin,    yGridMax, 
+                                                                           zSplit,      zGridMax));
+            // falsch, siehe unten 
             gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
             if (generatePart == 0) {
-                gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 1);
+                gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::PZ, 1);
             }
 
             if (generatePart == 1) {
-                gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
+                gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, LBM);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::MZ, 0);
             }
 
             //////////////////////////////////////////////////////////////////////////
             gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-            if (generatePart == 0)
-                gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
-            if (generatePart == 1)
-                gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);           
+            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+            // if (generatePart == 0)
+            //     gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+            // if (generatePart == 1)
+            //     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);           
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
             
@@ -266,7 +269,6 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-
             //////////////////////////////////////////////////////////////////////////
             SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
             //////////////////////////////////////////////////////////////////////////
