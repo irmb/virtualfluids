@@ -34,7 +34,10 @@ set (VF_THIRD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
 set (VF_SRC_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set (VF_ROOT_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
 
-include(${VF_CMAKE_DIR}/PreventInSourceBuilds.cmake)
+if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+  message(FATAL_ERROR "In-source builds are prohibited. "
+    "Create a new directory and build there.")
+endif ()
 
 #################################################################################
 #  OPTIONS

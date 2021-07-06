@@ -1,10 +1,12 @@
-project(lbm LANGUAGES CXX)
+if(BUILD_VF_CPU)
+    project(lbm LANGUAGES CXX)
 
-vf_add_library(NAME lbm PUBLIC_LINK basics)
+    vf_add_library(NAME lbm PUBLIC_LINK basics)
+    target_link_libraries(lbm PRIVATE project_warnings)
+
+    vf_add_tests()
+endif()
 
 if(BUILD_VF_GPU)
     add_subdirectory(cuda)
 endif()
-
-
-vf_add_tests()
