@@ -1,4 +1,7 @@
-image: irmb/virtualfluids-python-deps:latest
+###############################################################################
+##                       VirtualFluids CI Pipeline                           ##
+###############################################################################
+image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
 
 stages:
   - build
@@ -118,6 +121,8 @@ msvc_16:
 gcc_9_python:
   stage: build_python
 
+  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
   needs: ["gcc_9"]
 
   cache:
@@ -144,6 +149,8 @@ gcc_9_python:
 build_singularity_image:
   stage: container_upload
 
+  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
   needs:
     - gcc_9_python
 
@@ -163,6 +170,8 @@ build_singularity_image:
 ###############################################################################
 gcc_9_unit_tests:
   stage: test
+
+  image: irmb/virtualfluids-deps-ubuntu20.04:latest
 
   needs: ["gcc_9"]
 
@@ -194,6 +203,8 @@ msvc_16_unit_tests:
 gcc_9_python_bindings_test:
   stage: test
 
+  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
   needs: ["gcc_9_python"]
 
   before_script:
@@ -208,6 +219,8 @@ gcc_9_python_bindings_test:
 ###############################################################################
 gcc_9_python_slurm_test:
   stage: test
+
+  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
 
   needs: ["gcc_9_python"]
 
@@ -252,13 +265,13 @@ gcc_9_python_slurm_test:
 nvidia_test:
   stage: benchmark
 
+  image: nvidia/cuda:11.1.1-devel-ubuntu20.04
+
   needs: []
 
   tags:
     - gpu
     - linux
-
-  image: nvidia/cuda:11.1.1-devel-ubuntu20.04
 
   script:
   - echo NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
@@ -381,10 +394,10 @@ include_what_you_use_clang_10:
 cppcheck:
   stage: analyze
 
+  image: irmb/virtualfluids-deps-ubuntu20.04
+
   only:
     - develop@irmb/VirtualFluids_dev
-
-  image: irmb/virtualfluids-deps-ubuntu20.04
 
   needs: []
 
@@ -409,10 +422,10 @@ cppcheck:
 lizard:
   stage: analyze
 
+  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
   only:
     - develop@irmb/VirtualFluids_dev
-
-  image: irmb/virtualfluids-python-deps-ubuntu20.04
 
   needs: []
 
@@ -437,10 +450,10 @@ lizard:
 gcov_gcc_9:
   stage: analyze
 
+  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
   only:
     - develop@irmb/VirtualFluids_dev
-
-  image: irmb/virtualfluids-python-deps-ubuntu20.04
 
   needs: []
 
@@ -481,10 +494,10 @@ gcov_gcc_9:
 clang-tidy:
   stage: analyze
 
+  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
   only:
     - develop@irmb/VirtualFluids_dev
-
-  image: irmb/virtualfluids-python-deps-ubuntu20.04
 
   needs: []
 
@@ -513,15 +526,15 @@ clang-tidy:
 
 ###############################################################################
 # doxgen
-doxygen:
+pages:
   stage: analyze
+
+  image: alpine
 
   only:
     - develop@irmb/VirtualFluids_dev
 
   needs: []
-
-  image: alpine
 
   script:
   - apk update && apk add doxygen
@@ -529,9 +542,8 @@ doxygen:
   - mv docs/build/html/ public/
 
   artifacts:
-    expire_in: 1 week
+    expire_in: 1 hrs
     paths:
-    - docs/build/html/
     - public
 
 
@@ -540,6 +552,8 @@ doxygen:
 ###############################################################################
 .deploy_template:
   stage: deploy
+
+  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
 
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -601,6 +615,9 @@ vf_wheel_to_jupyterhub:
 # This job only run on the development branch of the parent repository, not on forks!
 sonar-scanner:
   stage: deploy
+
+  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
   tags:
     - linux
 
@@ -633,9 +650,12 @@ sonar-scanner:
 ##                              Release                                      ##
 ###############################################################################
 create_release:
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
   stage: release
+
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+
   needs: ["build_singularity_image"]
+
   rules:
     - if: $CI_COMMIT_TAG
 
