@@ -114,11 +114,11 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     std::string bivalveType = "MUSSEL"; // "MUSSEL" "OYSTER"
-    std::string gridPath(gridPathParent + "/" + bivalveType + "/"); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
+    std::string gridPath(gridPathParent + bivalveType + "/"); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
     real dxGrid = (real)1.0;
     real vxLB = (real)0.051; // LB units
-    real Re = (real)3000.0;
+    real Re = (real)300.0;
     real viscosityLB = (vxLB * dxGrid) / Re;
 
     para->setVelocity(vxLB);
@@ -150,7 +150,6 @@ void multipleLevel(const std::string& configPath)
     if (useMultiGPU) {
         para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
         para->setMaxDev(2);
-        gridPath = gridPath + "MultiGPU/" ;
     } else 
         para->setDevices(std::vector<uint>{ (uint)0 });
 
@@ -182,18 +181,17 @@ void multipleLevel(const std::string& configPath)
         const real zGridMin  = bbzm - 30.0;
         const real zGridMax  = bbzp + 30.0;
 
+        TriangularMesh *bivalveSTL =
+            TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
+        // TriangularMesh* bivalveRef_1_STL =
+        //       TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
+
         if (useMultiGPU) {
             // const uint generatePart = 1;
             const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
-            std::ofstream logFile2;
-            logFile2.open(gridPath + "/" + std::to_string(generatePart) + "/gridGeneratorLog.txt");
-            logging::Logger::addStream(&logFile2);
-
-            TriangularMesh *bivalveSTL =
-                TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
             
-            real overlap      = 10.0 * dxGrid;            
-            const real zSplit = bbzm + (bbzm + bbzp) / 2;
+            real overlap      = (real)12.0 * dxGrid;            
+            const real zSplit = bbzm + (bbzp - bbzm) / (real)2.0;
 
             if (generatePart == 0) {
                 gridBuilder->addCoarseGrid( xGridMin,   yGridMin,   zGridMin, 
@@ -203,6 +201,9 @@ void multipleLevel(const std::string& configPath)
                 gridBuilder->addCoarseGrid(xGridMin,    yGridMin,   zSplit - overlap, 
                                            xGridMax,    yGridMax,   zGridMax,           dxGrid);
             }
+
+            // gridBuilder->setNumberOfLayers(6, 8);
+            // gridBuilder->addGrid(bivalveRef_1_STL, 1);
 
             gridBuilder->addGeometry(bivalveSTL);
 
@@ -215,7 +216,9 @@ void multipleLevel(const std::string& configPath)
                                                                            yGridMin,    yGridMax, 
                                                                            zSplit,      zGridMax));
             // falsch, siehe unten 
-            gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+            gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+
+            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
 
             if (generatePart == 0) {
                 gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, LBM);
@@ -238,19 +241,14 @@ void multipleLevel(const std::string& configPath)
             //     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);           
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
-            
-            //SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
-            
-            gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/" + std::to_string(generatePart) + " /grid/");
+
+            gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
+            //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/" + std::to_string(generatePart) + "/grid/");
             //gridBuilder->writeArrows(path + "/" + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
 
             SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder, FILEFORMAT::BINARY);
            
         } else {
-            TriangularMesh *bivalveSTL =
-                TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
-            // TriangularMesh* bivalveRef_1_STL =
-            //       TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
 
             gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
 
