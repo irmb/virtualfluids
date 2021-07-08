@@ -10,7 +10,7 @@ void bflow(string configname)
 {
    try
    {
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          outputPath = config.getValue<string>("outputPath");
@@ -35,7 +35,7 @@ void bflow(string configname)
       double          scaleFactor = config.getValue<double>("scaleFactor");
       double          resolution = config.getValue<double>("resolution");
 
-      ConfigurationFile   viscosity;
+      vf::basics::ConfigurationFile   viscosity;
       //viscosity.load(viscosityPath + "/viscosity.cfg");
       //double nuLB = viscosity.getValue<double>("nuLB");
 

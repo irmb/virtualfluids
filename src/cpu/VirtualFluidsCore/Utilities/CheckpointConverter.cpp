@@ -133,7 +133,9 @@ void CheckpointConverter::convert(int step, int procCount)
 
 void CheckpointConverter::convertBlocks(int step, int procCount)
 {
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     start = MPI_Wtime();
 
     // file to read from
@@ -295,7 +297,9 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
     if (rcW != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filenameW);
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     start = MPI_Wtime();
 
     int blocksCount = 0;
@@ -429,7 +433,9 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
 
 void CheckpointConverter::convert___Array(int /*step*/, int procCount, std::string filenameR, std::string filenameW)
 {
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -523,7 +529,8 @@ void CheckpointConverter::convertBC(int step, int procCount)
     if (rcW != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filenameW);
 
-    double start, finish;
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 

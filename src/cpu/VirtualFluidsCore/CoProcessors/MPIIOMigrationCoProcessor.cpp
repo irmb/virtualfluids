@@ -318,7 +318,9 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -533,7 +535,9 @@ void MPIIOMigrationCoProcessor::write4DArray(int step, Arrays arrayType, std::st
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -655,7 +659,9 @@ void MPIIOMigrationCoProcessor::write3DArray(int step, Arrays arrayType, std::st
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -779,7 +785,9 @@ averageDensityArray->getDataVector().begin(), averageDensityArray->getDataVector
 1073741824.0 << " GB");
    }
 
-   double start, finish;
+   
+    double start {0.};
+    double finish {0.};
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_Info info = MPI_INFO_NULL;
@@ -894,7 +902,9 @@ AverageVelocityArray3DPtr->getDataVector().begin(), AverageVelocityArray3DPtr->g
 1073741824.0 << " GB");
    }
 
-   double start, finish;
+   
+    double start {0.};
+    double finish {0.};
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_Info info = MPI_INFO_NULL;
@@ -1009,7 +1019,9 @@ AverageFluctArray3DPtr->getDataVector().begin(), AverageFluctArray3DPtr->getData
 1073741824.0 << " GB");
    }
 
-   double start, finish;
+   
+    double start {0.};
+    double finish {0.};
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_Info info = MPI_INFO_NULL;
@@ -1129,7 +1141,9 @@ AverageTripleArray3DPtr->getDataVector().begin(), AverageTripleArray3DPtr->getDa
 1073741824.0 << " GB");
    }
 
-   double start, finish;
+   
+    double start {0.};
+    double finish {0.};
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_Info info = MPI_INFO_NULL;
@@ -1250,7 +1264,9 @@ ShearStressValArray3DPtr->getDataVector().begin(), ShearStressValArray3DPtr->get
 1073741824.0 << " GB");
    }
 
-   double start, finish;
+   
+    double start {0.};
+    double finish {0.};
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_Info info = MPI_INFO_NULL;
@@ -1371,7 +1387,9 @@ relaxationFactor3DPtr->getDataVector().begin(), relaxationFactor3DPtr->getDataVe
 1073741824.0 << " GB");
    }
 
-   double start, finish;
+   
+    double start {0.};
+    double finish {0.};
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_Info info = MPI_INFO_NULL;
@@ -1530,7 +1548,9 @@ void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: "<< Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1642,7 +1662,9 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
         UBLOG(logINFO, "MPIIOMigrationCoProcessor::readDataSet start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1910,7 +1932,9 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
         UBLOG(logINFO, "MPIIOMigrationCoProcessor::readArray start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -2055,7 +2079,9 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() /
 1073741824.0 << " GB");
    }
-   double start, finish;
+   
+    double start {0.};
+    double finish {0.};
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_File file_handler;
@@ -2161,7 +2187,9 @@ void MPIIOMigrationCoProcessor::readAverageVelocityArray(int step)
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() /
 1073741824.0 << " GB");
    }
-   double start, finish;
+   
+    double start {0.};
+    double finish {0.};
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_File file_handler;
@@ -2266,7 +2294,9 @@ void MPIIOMigrationCoProcessor::readAverageFluktuationsArray(int step)
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() /
 1073741824.0 << " GB");
    }
-   double start, finish;
+   
+    double start {0.};
+    double finish {0.};
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_File file_handler;
@@ -2371,7 +2401,9 @@ void MPIIOMigrationCoProcessor::readAverageTripleArray(int step)
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() /
 1073741824.0 << " GB");
    }
-   double start, finish;
+   
+    double start {0.};
+    double finish {0.};
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_File file_handler;
@@ -2476,7 +2508,9 @@ void MPIIOMigrationCoProcessor::readShearStressValArray(int step)
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() /
 1073741824.0 << " GB");
    }
-   double start, finish;
+   
+    double start {0.};
+    double finish {0.};
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_File file_handler;
@@ -2581,7 +2615,9 @@ void MPIIOMigrationCoProcessor::readRelaxationFactor(int step)
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() /
 1073741824.0 << " GB");
    }
-   double start, finish;
+   
+    double start {0.};
+    double finish {0.};
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_File file_handler;
@@ -2685,7 +2721,9 @@ void MPIIOMigrationCoProcessor::readBoundaryConds(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
