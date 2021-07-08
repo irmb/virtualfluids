@@ -190,16 +190,16 @@ void multipleLevel(const std::string& configPath)
             // const uint generatePart = 1;
             const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
             
-            real overlap      = (real)12.0 * dxGrid;            
-            const real xSplit = bbxp - 20.0;
+            real overlap      = (real)8.0 * dxGrid;            
+            const real ySplit = bbyp - 10.0;
 
             if (generatePart == 0) {
-                gridBuilder->addCoarseGrid( xGridMin,           yGridMin,     zGridMin, 
-                                            xSplit + overlap,   yGridMax,     zGridMax,   dxGrid);
+                gridBuilder->addCoarseGrid( xGridMin,   yGridMin,           zGridMin, 
+                                            xGridMax,   ySplit+overlap,     zGridMax,   dxGrid);
             }
             if (generatePart == 1) {
-                gridBuilder->addCoarseGrid(xSplit - overlap,    yGridMin,     zGridMin, 
-                                           xGridMax,            yGridMax,     zGridMax,   dxGrid);
+                gridBuilder->addCoarseGrid(xGridMin,    ySplit-overlap,     zGridMin, 
+                                           xGridMax,    yGridMax,           zGridMax,   dxGrid);
             }
 
             // gridBuilder->setNumberOfLayers(6, 8);
@@ -208,12 +208,12 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->addGeometry(bivalveSTL);
 
             if (generatePart == 0)
-                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xGridMin,    xSplit,
-                                                                           yGridMin,    yGridMax, 
+                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xGridMin,    xGridMax,
+                                                                           yGridMin,    ySplit, 
                                                                            zGridMin,    zGridMax));
             if (generatePart == 1)
-                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xSplit,      xGridMax, 
-                                                                           yGridMin,    yGridMax, 
+                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xGridMin,    xGridMax, 
+                                                                           ySplit,      yGridMax, 
                                                                            zGridMin,    zGridMax));
             // falsch, siehe unten 
             gridBuilder->setPeriodicBoundaryCondition(false, false, true);
@@ -221,22 +221,22 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
 
             if (generatePart == 0) {
-                gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 1);
+                gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 1);
             }
 
             if (generatePart == 1) {
-                gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
+                gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 0);
             }
 
-            //////////////////////////////////////////////////////////////////////////
-            gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
-            gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);            
+            //////////////////////////////////////////////////////////////////////////                       
+            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); 
             if (generatePart == 0)
-                gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+                gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0); 
             if (generatePart == 1)
-                gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);   
+                gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);  
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
 
