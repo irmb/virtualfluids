@@ -7,6 +7,7 @@
 #include <fstream>
 #include <exception>
 #include <memory>
+#include <filesystem>
 
 #include "mpi.h"
 
@@ -16,12 +17,12 @@
 #include "PointerDefinitions.h"
 
 #include "Core/LbmOrGks.h"
-#include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
-#include "Core/Input/ConfigFileReader/ConfigFileReader.h"
 
 #include "Core/VectorTypes.h"
 #include "Core/Logger/Logger.h"
+
+#include <basics/config/ConfigurationFile.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -111,12 +112,6 @@ void multipleLevel(const std::string& configPath)
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    
-	vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
-	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
-
-    std::cout << configPath << std::endl;
-	SPtr<ConfigData> configData = configReader->readConfigFile(configPath.c_str());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -194,7 +189,12 @@ void multipleLevel(const std::string& configPath)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<Parameter>    para         = Parameter::make(configData, comm);
+    vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
+
+    vf::basics::ConfigurationFile config;
+    config.load(configPath);
+
+    SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const real velocityLB = (real)0.0844; // LB units
@@ -583,29 +583,16 @@ std::string chooseVariation()
 int main( int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
-    std::string str, str2; 
     if ( argv != NULL )
     {
-        //str = static_cast<std::string>(argv[0]);
-        
         try
         {
-            //////////////////////////////////////////////////////////////////////////
+            // assuming that the config files is stored parallel to this file.
+            std::filesystem::path filePath = __FILE__;
+            filePath.replace_filename("configDrivenCavity.txt");
 
-			std::string targetPath;
-
-			targetPath = __FILE__;
-
-			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
-
-
-
-			std::cout << targetPath << std::endl;
-
-			multipleLevel(targetPath + "configDrivenCavity.txt");
-
-            //////////////////////////////////////////////////////////////////////////
-		}
+            multipleLevel(filePath.string());
+        }
         catch (const std::bad_alloc& e)
         { 
             *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
