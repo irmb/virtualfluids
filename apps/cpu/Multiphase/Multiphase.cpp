@@ -70,7 +70,7 @@ void run(string configname)
             }
         }
 
-         //Sleep(30000);
+        // Sleep(20000);
 
         // LBMReal dLB = 0; // = length[1] / dx;
         LBMReal rhoLB = 0.0;
