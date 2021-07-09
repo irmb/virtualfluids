@@ -27,6 +27,8 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
                                       real* bladeVelocitiesX, real* bladeVelocitiesY, real* bladeVelocitiesZ, 
                                       uint* bladeIndices, int numberOfNodes)
 {
+    // Possibly restructure this to check every cell whether it is bsw of some blade node and then do interpolation
+    // --> no need to save closest nodes and search new closest node
     const uint x = threadIdx.x; 
     const uint y = blockIdx.x;
     const uint z = blockIdx.y;
