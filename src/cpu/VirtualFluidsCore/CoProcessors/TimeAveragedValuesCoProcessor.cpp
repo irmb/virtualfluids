@@ -384,7 +384,7 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                 maxX2 -= 2;
                 maxX3 -= 2;
 
-                LBMReal rho, ux, uy, uz, uxx, uzz, uyy, uxy, uxz, uyz, rhof;
+                LBMReal rho {0.}, ux {0.}, uy {0.}, uz {0.}, uxx {0.}, uzz {0.}, uyy {0.}, uxy {0.}, uxz {0.}, uyz {0.}, rhof {0.};
 
                 for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
                     for (int ix2 = minX2; ix2 <= maxX2; ix2++) {

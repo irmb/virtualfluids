@@ -155,8 +155,8 @@ void Communicator::exchngDataGeo(int *sbuf_t, int *rbuf_t, int *sbuf_b, int *rbu
     MPI_Isend(sbuf_b, count, MPI_INT, nbrbottom, 0, comm1d, &request[3]);
     MPI_Waitall(4, request, status);
 }
-int Communicator::getPID() { return PID; }
-int Communicator::getNummberOfProcess() { return numprocs; }
+int Communicator::getPID() const { return PID; }
+int Communicator::getNummberOfProcess() const { return numprocs; }
 int Communicator::getNeighbourTop() { return nbrtop; }
 int Communicator::getNeighbourBottom() { return nbrbottom; }
 MPI_Comm Communicator::getCommunicator() { return comm1d; }

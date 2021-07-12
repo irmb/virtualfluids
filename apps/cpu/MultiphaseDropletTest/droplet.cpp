@@ -9,7 +9,7 @@ using namespace std;
 void run(string configname)
 {
     try {
-        ConfigurationFile config;
+        vf::basics::ConfigurationFile config;
         config.load(configname);
 
         string pathname            = config.getValue<string>("pathname");

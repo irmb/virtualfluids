@@ -1,12 +1,5 @@
 #include "CudaTimer.h"
 
-CudaTimer::CudaTimer()
-{
-    sdkTimer = 0;
-    ftimeE = 0.0f;
-    ftimeS = 0.0f;
-}
-
 void CudaTimer::createSdkTimer()
 {
     sdkCreateTimer(&sdkTimer);
