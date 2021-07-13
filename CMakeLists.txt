@@ -12,7 +12,11 @@
 #################################################################################
 cmake_minimum_required(VERSION 3.15..3.20 FATAL_ERROR)
 
-project(VirtualFluids CXX)
+project(VirtualFluids
+        VERSION 1.0.0
+        DESCRIPTION "CFD code based on the Lattice Boltzmann Method"
+        HOMEPAGE_URL "https://www.tu-braunschweig.de/irmb/forschung/virtualfluids"
+        LANGUAGES CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
