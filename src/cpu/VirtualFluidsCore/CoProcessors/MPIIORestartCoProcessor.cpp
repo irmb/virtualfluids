@@ -1489,11 +1489,6 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
                     bouCond->bcVelocityX2           = (float)bcArr->bcvector[bc]->getBoundaryVelocityX2();
                     bouCond->bcVelocityX3           = (float)bcArr->bcvector[bc]->getBoundaryVelocityX3();
                     bouCond->bcDensity              = (float)bcArr->bcvector[bc]->getBoundaryDensity();
-                    bouCond->bcLodiDensity          = (float)bcArr->bcvector[bc]->getDensityLodiDensity();
-                    bouCond->bcLodiVelocityX1       = (float)bcArr->bcvector[bc]->getDensityLodiVelocityX1();
-                    bouCond->bcLodiVelocityX2       = (float)bcArr->bcvector[bc]->getDensityLodiVelocityX2();
-                    bouCond->bcLodiVelocityX3       = (float)bcArr->bcvector[bc]->getDensityLodiVelocityX3();
-                    bouCond->bcLodiLentgh           = (float)bcArr->bcvector[bc]->getDensityLodiLength();
                     bouCond->nx1                    = (float)bcArr->bcvector[bc]->nx1;
                     bouCond->nx2                    = (float)bcArr->bcvector[bc]->nx2;
                     bouCond->nx3                    = (float)bcArr->bcvector[bc]->nx3;
@@ -2704,11 +2699,6 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
                 bc->bcVelocityX2           = bcArray[index].bcVelocityX2;
                 bc->bcVelocityX3           = bcArray[index].bcVelocityX3;
                 bc->bcDensity              = bcArray[index].bcDensity;
-                bc->bcLodiDensity          = bcArray[index].bcLodiDensity;
-                bc->bcLodiVelocityX1       = bcArray[index].bcLodiVelocityX1;
-                bc->bcLodiVelocityX2       = bcArray[index].bcLodiVelocityX2;
-                bc->bcLodiVelocityX3       = bcArray[index].bcLodiVelocityX3;
-                bc->bcLodiLentgh           = bcArray[index].bcLodiLentgh;
 
                 bc->nx1 = bcArray[index].nx1;
                 bc->nx2 = bcArray[index].nx2;
