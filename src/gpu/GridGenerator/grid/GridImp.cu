@@ -1554,6 +1554,29 @@ void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, i
 	}
 }
 
+bool GridImp::isSendNode(int index) const
+{
+    bool isSendNode = false;
+    for (size_t direction = 0; direction < this->communicationIndices.size(); direction++) {
+        if (std::find(this->communicationIndices[direction].sendIndices.begin(),
+                      this->communicationIndices[direction].sendIndices.end(), index) != this->communicationIndices[direction].sendIndices.end())
+            isSendNode = true;
+    }
+    return isSendNode;
+}
+
+bool GridImp::isReceiveNode(int index) const
+{
+    bool isReceiveNode = false;
+    for (size_t direction = 0; direction < this->communicationIndices.size(); direction++) {
+        if (std::find(this->communicationIndices[direction].receiveIndices.begin(),
+                      this->communicationIndices[direction].receiveIndices.end(),
+                      index) != this->communicationIndices[direction].receiveIndices.end())
+            isReceiveNode = true;
+    }
+    return isReceiveNode;
+}
+
 uint GridImp::getNumberOfSendNodes(int direction)
 {
     return (uint)this->communicationIndices[direction].sendIndices.size();
@@ -1574,7 +1597,7 @@ uint GridImp::getReceiveIndex(int direction, uint index)
     return this->communicationIndices[direction].receiveIndices[ index ];
 }
 
-void GridImp::repairCommunicationInices(int direction )
+void GridImp::repairCommunicationInices(int direction)
 {
     this->communicationIndices[direction].sendIndices.insert( this->communicationIndices[direction].sendIndices.end(), 
                                                               this->communicationIndices[direction+1].sendIndices.begin(), 

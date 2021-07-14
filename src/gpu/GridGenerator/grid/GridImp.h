@@ -308,6 +308,9 @@ public:
     uint getSendIndex(int direction, uint index) override;
     uint getReceiveIndex(int direction, uint index) override;
 
+    bool isSendNode(int index) const override;
+    bool isReceiveNode(int index) const override;
+
     void repairCommunicationInices(int direction) override;
 
 public:

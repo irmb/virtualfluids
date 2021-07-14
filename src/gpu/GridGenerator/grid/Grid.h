@@ -133,6 +133,9 @@ public:
     virtual uint getNumberOfSendNodes(int direction) = 0;
     virtual uint getNumberOfReceiveNodes(int direction)  = 0;
 
+    virtual bool isSendNode(int index) const = 0;
+    virtual bool isReceiveNode(int index) const = 0;
+
     virtual uint getSendIndex(int direction, uint index)  = 0;
     virtual uint getReceiveIndex(int direction, uint index)  = 0;
 
