@@ -13,16 +13,14 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "Core/DataTypes.h"
-#include "PointerDefinitions.h"
+#include "basics/Core/DataTypes.h"
+#include "basics/PointerDefinitions.h"
+#include "basics/Core/VectorTypes.h"
 
-#include "Core/LbmOrGks.h"
-#include "Core/Input/Input.h"
-#include "Core/StringUtilities/StringUtil.h"
-#include "Core/Input/ConfigFileReader/ConfigFileReader.h"
-
-#include "Core/VectorTypes.h"
-#include "Core/Logger/Logger.h"
+#include "basics/Core/LbmOrGks.h"
+#include "basics/Core/StringUtilities/StringUtil.h"
+#include "basics/config/ConfigurationFile.h"
+#include "basics/Core/Logger/Logger.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -90,9 +88,11 @@ void multipleLevel(const std::string& configPath)
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     
 	vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
-	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
+    vf::basics::ConfigurationFile config;
     std::cout << configPath << std::endl;
-	SPtr<ConfigData> configData = configReader->readConfigFile(configPath.c_str());
+    config.load(configPath);
+    SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
+
 
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,7 +107,6 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<Parameter>    para         = Parameter::make(configData, comm);
     bool useGridGenerator = true;
     bool useMultiGPU = true;
 
@@ -131,8 +130,8 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "velocity real [m/s] = " << vxLB * para->getVelocityRatio()<< " \n";
     *logging::out << logging::Logger::INFO_HIGH << "viscosity real [m^2/s] = " << viscosityLB * para->getViscosityRatio() << "\n";
 
-    para->setTOut(10000);
-    para->setTEnd(100000);
+    para->setTOut(5000);
+    para->setTEnd(50000);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -215,7 +214,7 @@ void multipleLevel(const std::string& configPath)
                 gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xGridMin,    xGridMax, 
                                                                            ySplit,      yGridMax, 
                                                                            zGridMin,    zGridMax));
-            // falsch, siehe unten 
+            
             gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
