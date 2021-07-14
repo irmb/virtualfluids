@@ -1,5 +1,5 @@
-#ifndef Configuration_h__
-#define Configuration_h__
+#ifndef BASICS_CONFIGURATIONFILE_H
+#define BASICS_CONFIGURATIONFILE_H
 
 #include <map>
 #include <vector>
@@ -8,6 +8,8 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
+
+#include <basics/basics/utilities/UbException.h>
 
 //! \brief  Simple configuration file
 //! \details The Configuration class presented here can read and keep values of any configuration file written in a format like this:
@@ -36,6 +38,11 @@
 //!vector<double> origin       = config.getVector<double>("origin");
 //!            
 //! \author  Konstantin Kutscher
+
+
+namespace vf::basics
+{
+
 
 class ConfigurationFile
 {
@@ -75,96 +82,6 @@ private:
 };
 
 
-// ----------------------------------
-// method implementations
-// ----------------------------------
-
-void ConfigurationFile::clear()
-{
-   data.clear();
-}
-//////////////////////////////////////////////////////////////////////////
-bool ConfigurationFile::load(const std::string& file)
-{
-   std::ifstream inFile(file.c_str());
-
-   if (!inFile.good())
-   {
-      UB_THROW(UbException(UB_EXARGS, "Cannot read configuration file "+file+"!"));
-   }
-
-   while (inFile.good() && ! inFile.eof())
-   {
-      std::string line;
-      getline(inFile, line);
-
-      // filter out comments
-      if (!line.empty())
-      {
-         size_t pos = line.find('#');
-
-         if (pos != std::string::npos)
-         {
-            line = line.substr(0, pos);
-         }
-      }
-
-      // split line into key and value
-      if (!line.empty())
-      {
-         size_t pos = line.find('=');
-
-         if (pos != std::string::npos)
-         {
-            std::string key = trim(line.substr(0, pos));
-            std::string value = trim(line.substr(pos + 1));
-
-            if (!key.empty() && !value.empty())
-            {
-               data[key] = value;
-            }
-         }
-      }
-   }
-
-   return true;
-}
-//////////////////////////////////////////////////////////////////////////
-bool ConfigurationFile::contains(const std::string& key) const
-{
-   return data.find(key) != data.end();
-}
-//////////////////////////////////////////////////////////////////////////
-std::string ConfigurationFile::getString(const std::string& key) const
-{
-   std::map<std::string, std::string>::const_iterator iter = data.find(key);
-
-   if (iter != data.end())
-   {
-      std::string value = iter->second;
-      return value;
-   }
-   else
-   {
-      UB_THROW(UbException(UB_EXARGS, "The parameter \"" + key + "\" is missing!"));
-   }
-}
-//////////////////////////////////////////////////////////////////////////
-std::string ConfigurationFile::trim(const std::string& str)
-{
-   size_t first = str.find_first_not_of(" \t\n\r");
-
-   if (first != std::string::npos)
-   {
-      size_t last = str.find_last_not_of(" \t\n\r");
-
-      return str.substr(first, last - first + 1);
-   }
-   else
-   {
-      return "";
-   }
-}
 //////////////////////////////////////////////////////////////////////////
 template<class T>
 std::vector<T> ConfigurationFile::getVector(const std::string& key) const
@@ -183,38 +100,18 @@ std::vector<T> ConfigurationFile::getVector(const std::string& key) const
    return v;
 }
 //////////////////////////////////////////////////////////////////////////
-void ConfigurationFile::split(std::vector<std::string>& lst, const std::string& input, const std::string& separators, bool remove_empty) const
-{
-   std::ostringstream word;
-   for (size_t n = 0; n < input.size(); ++n)
-   {
-      if (std::string::npos == separators.find(input[n]))
-         word << input[n];
-      else
-      {
-         if (!word.str().empty() || !remove_empty)
-            lst.push_back(word.str());
-         word.str("");
-      }
-   }
-   if (!word.str().empty() || !remove_empty)
-      lst.push_back(word.str());
-}
-//////////////////////////////////////////////////////////////////////////
 template<class T>
 T ConfigurationFile::fromString(const std::string& str) const
 {
-   //boolean hack
-   if (str == "true")
-      return true;
-   else if (str == "false")
-      return false;
-   //////////////
    std::istringstream stream(str);
    T t;
    stream >> t;
    return t;
 }
+
+template<>
+bool ConfigurationFile::fromString<bool>(const std::string& str) const;
+
 //////////////////////////////////////////////////////////////////////////
 template<class T>
 T ConfigurationFile::getValue(const std::string& key) const
@@ -225,7 +122,7 @@ T ConfigurationFile::getValue(const std::string& key) const
    {
       bFlag = true;
    }
-      
+
    std::istringstream iss(str);
    T x;
    iss >> x;
@@ -240,4 +137,7 @@ T ConfigurationFile::getValue(const std::string& key) const
 
    return x;
 }
-#endif // Configuration_h__
+
+}
+
+#endif

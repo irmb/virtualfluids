@@ -6,6 +6,8 @@
 #include "Kernel/Utilities/KernelGroup.h"
 #include "PreProcessor/PreProcessorType.h"
 
+#include <helper_cuda.h>
+
 class Kernel
 {
 public:

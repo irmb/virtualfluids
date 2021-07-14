@@ -36,8 +36,8 @@ public:
 	void exchngTopToBottom(float* sbuf, float* rbuf, int count);
    void waitAll();
    void distributeGeometry(unsigned int* dataRoot, unsigned int* dataNode, int dataSizePerNode);
-	int getPID();
-	int getNummberOfProcess();
+	int getPID() const;
+	int getNummberOfProcess() const;
 	int getNeighbourTop();
 	int getNeighbourBottom();
    void exchngData(float* sbuf_t, float* rbuf_t, float* sbuf_b, float* rbuf_b, int count);

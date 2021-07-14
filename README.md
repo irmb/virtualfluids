@@ -62,7 +62,7 @@ The doxygen generated documentation can be found [here](https://irmb.gitlab-page
 
 
 ## Known Issues
-If you notice any problems on your platform, please report an issue. 
+If you notice any problems on your platform, please report an [issue](https://git.rz.tu-bs.de/irmb/virtualfluids/-/issues/new). 
 
 
 ## Authors

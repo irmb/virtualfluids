@@ -53,7 +53,7 @@ void run(string configname)
 {
    try
    {
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathOut = config.getValue<string>("pathOut");
@@ -207,7 +207,8 @@ void run(string configname)
       bcProc = SPtr<BCProcessor>(new ThinWallBCProcessor());
 
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      //t = 21.8, P = 1.0145 atm, Relative Humidity = 45.8, Second Coefficient of Viscosity = 3120      //Ash, R. L., Zuckerwar, A. J., & Zheng, Z. (1991). Second coefficient of viscosity in air.
+      //t = 21.8, P = 1.0145 atm, Relative Humidity = 45.8, Second Coefficient of Viscosity = 3120
+      //Ash, R. L., Zuckerwar, A. J., & Zheng, Z. (1991). Second coefficient of viscosity in air.
       double bulckViscosity = 3120 * nuLB;
       dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
       kernel->setBCProcessor(bcProc);

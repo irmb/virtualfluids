@@ -6,6 +6,8 @@
 
 #include <Parameter/Parameter.h>
 
+#include "Calculation/PorousMedia.h"
+
 #include <lbm/constants/NumericConstants.h>
 
 void CudaMemoryManager::cudaAllocFull(int lev)

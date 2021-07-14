@@ -12,7 +12,7 @@ void run(string configname)
 
         //Sleep(20000);
 
-        ConfigurationFile config;
+        vf::basics::ConfigurationFile config;
         config.load(configname);
 
         string pathname            = config.getValue<string>("pathname");

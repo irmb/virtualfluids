@@ -197,7 +197,7 @@ void thermoplast(string configname)
    SPtr<Communicator> comm = MPICommunicator::getInstance();
    int myid = comm->getProcessID();
 
-   ConfigurationFile   config;
+   vf::basics::ConfigurationFile   config;
    config.load(configname);
 
    vector<int>     blocknx = config.getVector<int>("blocknx");

@@ -14,7 +14,7 @@ void run(string configname)
       //DEBUG///////////////////////////////////////
       //Sleep(30000);
       /////////////////////////////////////////////
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathOut = config.getValue<string>("pathOut");
