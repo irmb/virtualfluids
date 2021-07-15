@@ -600,6 +600,31 @@ void MultipleGridBuilder::findCommunicationIndices(int direction, LbmOrGks lbmOr
     *logging::out << logging::Logger::INFO_HIGH << "Done with findCommunicationIndices()\n";
 }
 
+void MultipleGridBuilder::findGeoFluidNodes()
+{
+    //for (uint i = 0; i < grids.size(); i++)
+    //    grids[i]->findMatrixIDsGEO_FLUID();
+}
+
+const std::vector<uint> *MultipleGridBuilder::getGeoFluidSizes() const
+{
+    std::vector<uint> geoFluidSizes;
+    for (uint i = 0; i < grids.size(); i++) {
+        geoFluidSizes.push_back(grids[i]->getGeoFluidSize());
+    }
+    return &geoFluidSizes;
+}
+
+const std::vector<const std::vector<uint>*> *MultipleGridBuilder::getGeoFluidNodeIndices() const
+{
+    std::vector<const std::vector<uint> *> getGeoFluidNodes;
+    for (uint i = 0; i < grids.size(); i++) {
+        getGeoFluidNodes.push_back(grids[i]->getGeoFluidNodes());
+    }
+    return &getGeoFluidNodes;
+}
+
+
 void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
 {
     for(uint level = 0; level < grids.size(); level++)
