@@ -245,11 +245,10 @@ void multipleLevel(const std::string& configPath)
             //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/" + std::to_string(generatePart) + "/grid/");
             //gridBuilder->writeArrows(path + "/" + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
 
-            std::cout << "number of grids in gridBuilder.................... " << gridBuilder->getGrids().size()
-                      << std::endl;
-
-            SPtr<NodeIndicesMultiGPU> paraMultiGPU = std::make_shared<NodeIndicesMultiGPU>(NodeIndicesMultiGPU(gridBuilder));
-            
+            gridBuilder->findGeoFluidNodes();
+            std::shared_ptr<NodeIndicesMultiGPU> nodeIndicesMultiGPU = std::make_shared<NodeIndicesMultiGPU>(gridBuilder->getGeoFluidSizes(), 
+                                                                                                             gridBuilder->getGeoFluidNodeIndices());
+            para->setNodeIndicesMultiGPU(nodeIndicesMultiGPU);
 
             SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder, FILEFORMAT::BINARY);
            
@@ -279,7 +278,6 @@ void multipleLevel(const std::string& configPath)
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
         }
-
         
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -316,7 +314,6 @@ void multipleLevel(const std::string& configPath)
 
        //return;
     }
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
