@@ -1,15 +1,14 @@
 #include <vector>
 #include <memory>
-
-#include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
+#include "basics/Core/DataTypes.h"
 
 class NodeIndicesMultiGPU
 {
-    std::vector<uint> geoFluidSize;
-    std::vector<const std::vector<uint>*> geoFluidNodeIndices; 
+    const std::vector<uint> *geoFluidSizes;
+    const std::vector<const std::vector<uint>*> *geoFluidNodeIndices; 
 
 public:
-    NodeIndicesMultiGPU(SPtr<MultipleGridBuilder> gridBuilder);
+    NodeIndicesMultiGPU(const std::vector<uint> *geoFluidSizes, const std::vector<const std::vector<uint> *> * geoFluidNodes);
 
     uint getGeoFluidSize(uint gridNumber);
     const std::vector<uint>* getGeoFluidNodeIndices(uint gridNumber);

@@ -1,20 +1,18 @@
 #include "NodeIndicesMultiGPU.h"
 
-NodeIndicesMultiGPU::NodeIndicesMultiGPU(SPtr<MultipleGridBuilder> gridBuilder)
+NodeIndicesMultiGPU::NodeIndicesMultiGPU(const std::vector<uint> *geoFluidSizes,
+                                         const std::vector<const std::vector<uint> *> *geoFluidNodesIndices)
 {
-    std::vector<std::shared_ptr<Grid>> grids = gridBuilder->getGrids();
-    for (uint i = 0; i < grids.size(); i++) {
-        geoFluidSize.push_back(grids[i]->getGeoFluidSize());
-        geoFluidNodeIndices.push_back(grids[i]->getGeoFluidNodes());
-    }
+    this->geoFluidSizes = geoFluidSizes;
+    this->geoFluidNodeIndices = geoFluidNodesIndices;
 }
 
 uint NodeIndicesMultiGPU::getGeoFluidSize(uint gridNumber) 
 { 
-    return this->geoFluidSize[gridNumber]; 
+    return (*this->geoFluidSizes)[gridNumber];
 }
 
 const std::vector<uint>* NodeIndicesMultiGPU::getGeoFluidNodeIndices(uint gridNumber)
 {
-    return this->geoFluidNodeIndices[gridNumber];
+    return (*this->geoFluidNodeIndices)[gridNumber];
 }
