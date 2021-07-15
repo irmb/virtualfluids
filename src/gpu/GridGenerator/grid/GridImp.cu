@@ -25,6 +25,7 @@
 
 #include "utilities/communication.h"
 #include "utilities/math/Math.h"
+#include <gpu/VirtualFluids_GPU/LBM/LB.h>
 
 CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
@@ -856,6 +857,18 @@ CUDA_HOST void GridImp::updateSparseIndices()
         }
     }
     sparseSize = size - removedNodes;
+}
+
+CUDA_HOST void GridImp::findMatrixIDsGEO_FLUID(uint *typeOfGridNode) // typeOfGridNode = para->getParD(level)->geoSP[index]
+{
+    int removedNodes = 0;
+    for (uint index = 0; index < size; index++) {
+        if (typeOfGridNode[index] == GEO_FLUID)            
+            geoFluidNodes.push_back(index);           
+        else
+            removedNodes++;        
+    }
+    geoFluidSize = size - removedNodes;
 }
 
 HOSTDEVICE void GridImp::setNeighborIndices(uint index)
@@ -1744,7 +1757,15 @@ HOSTDEVICE uint GridImp::getSize() const
 
 HOSTDEVICE uint GridImp::getSparseSize() const
 {
-    return this->sparseSize;
+    return this->sparseSize; 
+}
+
+HOSTDEVICE uint GridImp::getGeoFluidSize() const { 
+    return this->geoFluidSize; 
+}
+
+HOSTDEVICE const std::vector<uint> &GridImp::getGeoFluidNodes() const{ 
+    return this->geoFluidNodes; 
 }
 
 HOSTDEVICE Field GridImp::getField() const
@@ -1946,3 +1967,5 @@ void GridImp::print() const
     if(this->gridInterface)
         this->gridInterface->print();
 }
+
+
