@@ -144,7 +144,7 @@ void multipleLevel(const std::string& configPath)
     // para->setMaxLevel(2);
 
     // para->setMainKernel("CumulantK15Comp");
-    para->setMainKernel("CumulantK17CompChim");
+    para->setMainKernel("CumulantK17CompChimSparse");
 
     if (useMultiGPU) {
         para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
@@ -264,8 +264,6 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-            //////////////////////////////////////////////////////////////////////////
-            SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
             //////////////////////////////////////////////////////////////////////////
 
             gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");
