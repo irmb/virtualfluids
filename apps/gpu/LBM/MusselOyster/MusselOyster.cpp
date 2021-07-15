@@ -56,6 +56,8 @@
 
 #include "utilities/communication.h"
 
+#include "VirtualFluids_GPU/Parameter/NodeIndicesMultiGPU.h"
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,6 +244,12 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
             //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/" + std::to_string(generatePart) + "/grid/");
             //gridBuilder->writeArrows(path + "/" + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
+
+            std::cout << "number of grids in gridBuilder.................... " << gridBuilder->getGrids().size()
+                      << std::endl;
+
+            SPtr<NodeIndicesMultiGPU> paraMultiGPU = std::make_shared<NodeIndicesMultiGPU>(NodeIndicesMultiGPU(gridBuilder));
+            
 
             SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder, FILEFORMAT::BINARY);
            

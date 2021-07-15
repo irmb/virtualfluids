@@ -196,7 +196,7 @@ public:
     HOSTDEVICE uint getSize() const override;
     HOSTDEVICE uint getSparseSize() const override;
     HOSTDEVICE uint getGeoFluidSize() const override;
-    HOSTDEVICE const std::vector<uint> &getGeoFluidNodes() const override;
+    HOSTDEVICE const std::vector<uint> *getGeoFluidNodes() const override;
     HOSTDEVICE int getSparseIndex(uint matrixIndex) const override;
     CUDA_HOST real* getDistribution() const override;
     CUDA_HOST int* getDirection() const override;

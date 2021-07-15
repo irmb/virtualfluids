@@ -1764,8 +1764,8 @@ HOSTDEVICE uint GridImp::getGeoFluidSize() const {
     return this->geoFluidSize; 
 }
 
-HOSTDEVICE const std::vector<uint> &GridImp::getGeoFluidNodes() const{ 
-    return this->geoFluidNodes; 
+HOSTDEVICE const std::vector<uint> *GridImp::getGeoFluidNodes() const{ 
+    return &this->geoFluidNodes; 
 }
 
 HOSTDEVICE Field GridImp::getField() const

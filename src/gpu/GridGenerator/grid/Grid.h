@@ -30,7 +30,7 @@ public:
 
     CUDA_HOST virtual void findMatrixIDsGEO_FLUID(uint *typeOfGridNode) = 0;
     HOSTDEVICE virtual uint getGeoFluidSize() const = 0;
-    HOSTDEVICE virtual const std::vector<uint> &getGeoFluidNodes() const = 0;
+    HOSTDEVICE virtual const std::vector<uint> *getGeoFluidNodes() const = 0;
 
     HOSTDEVICE virtual real getStartX() const = 0;
     HOSTDEVICE virtual real getStartY() const = 0;
