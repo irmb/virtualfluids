@@ -50,7 +50,7 @@ Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int number
     ic.myid = myId;
 
     readConfigData(configData);
-    initLBMSimulationParameter();
+    //initLBMSimulationParameter();
 }
 
 void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
@@ -373,12 +373,7 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
         this->setDoRestart(configData.getValue<bool>("DoRestart"));
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (configData.contains("NOGL"))
-    {
-        maxlevel = configData.getValue<int>("NOGL") - 1;
-        fine = maxlevel;
-    }
-    parH.resize(maxlevel + 1);
-    parD.resize(maxlevel + 1);
+        setMaxLevel(configData.getValue<int>("NOGL"));
 
     this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
     this->setGridY(std::vector<int>(this->getMaxLevel() + 1, 32));
@@ -622,6 +617,9 @@ void Parameter::setD3Qxx(int d3qxx)
 void Parameter::setMaxLevel(int maxlevel)
 {
     this->maxlevel = maxlevel-1;
+    this->fine     = this->maxlevel;
+    parH.resize(this->maxlevel + 1);
+    parD.resize(this->maxlevel + 1);
 }
 void Parameter::setParticleBasicLevel(int pbl)
 {
