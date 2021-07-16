@@ -650,7 +650,7 @@ void convertMPFile(SPtr<MultipleGridBuilder> gridBuilder, real &phi, std::vector
     std::ofstream outFile(inputPath + "measurePoints.dat");
 
     outFile << numberOfMeasurePoints << std::endl;
-    for (int j = 0; j < numberOfMeasurePoints; j++) {
+    for (uint j = 0; j < numberOfMeasurePoints; j++) {
         outFile << MP_name[j] << " " << MP_k[j] << " " << MP_level[j] << std::endl;
         // std::cout << MP_name[j] << "\t" << MP_k[j] << "\t" << MP_level[j] << std::endl;
     }
