@@ -144,7 +144,7 @@ public:
     // needed for CUDA Streams MultiGPU
     virtual void findMatrixIDsGEO_FLUID()                     = 0;
     virtual uint getGeoFluidSize() const                      = 0;
-    virtual const std::vector<uint> *getGeoFluidNodes() const = 0;
+    virtual const uint* getGeoFluidNodes() const = 0;
 
 };
 

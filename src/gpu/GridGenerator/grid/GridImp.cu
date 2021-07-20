@@ -862,16 +862,18 @@ CUDA_HOST void GridImp::findMatrixIDsGEO_FLUID() // typeOfGridNode = para->getPa
 {
     // auf Basis von getNodeValues und updateSparseIndices
     int removedNodes = 0;
+    int geoFluidNodesIndex = 0;
     for (uint index = 0; index < size; index++) {
         if (this->sparseIndices[index] == -1) {
             removedNodes++;
             continue;
         }
 
-        if (this->field.isFluid(index))
+        if (this->field.isFluid(index)) {
             // + 1 for numbering shift between GridGenerator and VF_GPU
-            geoFluidNodes.push_back(index+1); //+1 notwendig?
-
+            geoFluidNodes[geoFluidNodesIndex] = index + 1; //+1 notwendig?
+            geoFluidNodesIndex++;
+        }
         /*if (typeOfGridNode[index] == GEO_FLUID)            
             geoFluidNodes.push_back(index);  */         
         else
@@ -1773,8 +1775,8 @@ HOSTDEVICE uint GridImp::getGeoFluidSize() const {
     return this->geoFluidSize; 
 }
 
-HOSTDEVICE const std::vector<uint> *GridImp::getGeoFluidNodes() const{ 
-    return &this->geoFluidNodes; 
+HOSTDEVICE const uint* GridImp::getGeoFluidNodes() const{ 
+    return this->geoFluidNodes; 
 }
 
 HOSTDEVICE Field GridImp::getField() const

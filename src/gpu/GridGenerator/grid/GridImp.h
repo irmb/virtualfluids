@@ -86,7 +86,7 @@ private:
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
     int *sparseIndices;
 
-    std::vector<uint> geoFluidNodes;
+    uint *geoFluidNodes;
     uint geoFluidSize;
 
 	uint *qIndices;     //maps from matrix index to qIndex
@@ -319,7 +319,7 @@ public:
     // needed for CUDA Streams MultiGPU
     void findMatrixIDsGEO_FLUID() override;
     uint getGeoFluidSize() const override;
-    const std::vector<uint> *getGeoFluidNodes() const override;
+    const uint* getGeoFluidNodes() const override;
 
 public:
 
