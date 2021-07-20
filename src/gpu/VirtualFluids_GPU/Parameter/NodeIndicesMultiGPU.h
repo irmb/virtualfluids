@@ -13,8 +13,8 @@ class NodeIndicesMultiGPU
 public:
     NodeIndicesMultiGPU(const std::vector<uint> *geoFluidSizes, const std::vector<const uint*> * geoFluidNodes);
 
-    uint getGeoFluidSize(uint gridNumber);
-    const uint* getGeoFluidNodeIndices(uint gridNumber);
+    uint getGeoFluidSize(uint level);
+    const uint *getGeoFluidNodeIndices(uint level);
 };
 
 #endif

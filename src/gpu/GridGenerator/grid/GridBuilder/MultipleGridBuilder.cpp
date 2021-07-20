@@ -609,8 +609,8 @@ void MultipleGridBuilder::findGeoFluidNodes()
 const std::vector<uint> *MultipleGridBuilder::getGeoFluidSizes() const
 {
     std::vector<uint> geoFluidSizes;
-    for (uint i = 0; i < grids.size(); i++) {
-        geoFluidSizes.push_back(grids[i]->getGeoFluidSize());
+    for (uint level = 0; level < grids.size(); level++) {
+        geoFluidSizes.push_back(grids[level]->getGeoFluidSize());
     }
     return &geoFluidSizes;
 }
@@ -618,8 +618,8 @@ const std::vector<uint> *MultipleGridBuilder::getGeoFluidSizes() const
 const std::vector<const uint*> *MultipleGridBuilder::getGeoFluidNodeIndices() const
 {
     std::vector<const uint*> getGeoFluidNodes;
-    for (uint i = 0; i < grids.size(); i++) {
-        getGeoFluidNodes.push_back(grids[i]->getGeoFluidNodes());
+    for (uint level = 0; level < grids.size(); level++) {
+        getGeoFluidNodes.push_back(grids[level]->getGeoFluidNodes());
     }
     return &getGeoFluidNodes;
 }

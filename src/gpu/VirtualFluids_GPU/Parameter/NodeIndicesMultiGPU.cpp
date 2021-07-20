@@ -7,12 +7,12 @@ NodeIndicesMultiGPU::NodeIndicesMultiGPU(const std::vector<uint> *geoFluidSizes,
     this->geoFluidNodeIndices = geoFluidNodesIndices;
 }
 
-uint NodeIndicesMultiGPU::getGeoFluidSize(uint gridNumber) 
+uint NodeIndicesMultiGPU::getGeoFluidSize(uint level) 
 { 
-    return (*this->geoFluidSizes)[gridNumber];
+    return (*this->geoFluidSizes)[level];
 }
 
-const uint* NodeIndicesMultiGPU::getGeoFluidNodeIndices(uint gridNumber)
+const uint* NodeIndicesMultiGPU::getGeoFluidNodeIndices(uint level)
 {
-    return (*this->geoFluidNodeIndices)[gridNumber];
+    return (*this->geoFluidNodeIndices)[level];
 }
