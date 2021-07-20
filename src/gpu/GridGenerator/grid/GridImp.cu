@@ -861,25 +861,21 @@ CUDA_HOST void GridImp::updateSparseIndices()
 CUDA_HOST void GridImp::findMatrixIDsGEO_FLUID() // typeOfGridNode = para->getParD(level)->geoSP[index]
 {
     // auf Basis von getNodeValues und updateSparseIndices
-    int removedNodes = 0;
+    int geoFluidSize = 0;
     int geoFluidNodesIndex = 0;
     for (uint index = 0; index < size; index++) {
-        if (this->sparseIndices[index] == -1) {
-            removedNodes++;
+        if (this->sparseIndices[index] == -1) //unnötig?
             continue;
-        }
 
         if (this->field.isFluid(index)) {
             // + 1 for numbering shift between GridGenerator and VF_GPU
             geoFluidNodes[geoFluidNodesIndex] = index + 1; //+1 notwendig?
             geoFluidNodesIndex++;
+            geoFluidSize++;
         }
         /*if (typeOfGridNode[index] == GEO_FLUID)            
-            geoFluidNodes.push_back(index);  */         
-        else
-            removedNodes++;        
+            geoFluidNodes.push_back(index);  */                 
     }
-    geoFluidSize = size - removedNodes;
 }
 
 HOSTDEVICE void GridImp::setNeighborIndices(uint index)
