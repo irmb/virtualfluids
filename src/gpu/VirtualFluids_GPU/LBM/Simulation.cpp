@@ -81,6 +81,8 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    this->para = para;
 
    devCheck(comm->mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
+   
+   para->initLBMSimulationParameter();
 
    gridProvider->allocAndCopyForcing();
    gridProvider->allocAndCopyQuadricLimiters();

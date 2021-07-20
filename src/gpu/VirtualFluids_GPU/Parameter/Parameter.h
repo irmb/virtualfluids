@@ -315,6 +315,7 @@ class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
     Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId);
+    void initLBMSimulationParameter();
 
     std::shared_ptr<LBMSimulationParameter> getParH(int level);
     std::shared_ptr<LBMSimulationParameter> getParD(int level);
@@ -751,11 +752,10 @@ public:
     void setInitialCondition(std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition);
     std::function<void(real, real, real, real &, real &, real &, real &)> &getInitialCondition();
 
-    std::vector<std::shared_ptr<LBMSimulationParameter>> parH;
-    std::vector<std::shared_ptr<LBMSimulationParameter>> parD;
+    std::vector<std::shared_ptr<LBMSimulationParameter>> parH = std::vector<std::shared_ptr<LBMSimulationParameter>>(1);
+    std::vector<std::shared_ptr<LBMSimulationParameter>> parD = std::vector<std::shared_ptr<LBMSimulationParameter>>(1);
 private:
     void readConfigData(const vf::basics::ConfigurationFile &configData);
-    void initLBMSimulationParameter();
 
     bool compOn { false };
     bool diffOn { false };
