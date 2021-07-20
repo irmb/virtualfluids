@@ -840,7 +840,6 @@ private:
     
     // CUDA Streams Multi GPU
     std::shared_ptr<NodeIndicesMultiGPU> nodeIndicesMultiGPU;
-
 public:
     void setNodeIndicesMultiGPU(std::shared_ptr<NodeIndicesMultiGPU> nodeIndicesMultiGPU);
     std::shared_ptr<NodeIndicesMultiGPU> getNodeIndicesMultiGPU();

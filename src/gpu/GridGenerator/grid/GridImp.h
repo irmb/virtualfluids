@@ -195,8 +195,6 @@ public:
     HOSTDEVICE real getDelta() const override;
     HOSTDEVICE uint getSize() const override;
     HOSTDEVICE uint getSparseSize() const override;
-    HOSTDEVICE uint getGeoFluidSize() const override;
-    HOSTDEVICE const std::vector<uint> *getGeoFluidNodes() const override;
     HOSTDEVICE int getSparseIndex(uint matrixIndex) const override;
     CUDA_HOST real* getDistribution() const override;
     CUDA_HOST int* getDirection() const override;
@@ -246,7 +244,6 @@ public:
     CUDA_HOST virtual void findSparseIndices(SPtr<Grid> fineGrid) override;
 
     CUDA_HOST void updateSparseIndices();
-    CUDA_HOST void findMatrixIDsGEO_FLUID(uint *typeOfGridNode) override;
     HOSTDEVICE void setNeighborIndices(uint index);
     HOSTDEVICE real getFirstFluidNode(real coords[3], int direction, real startCoord) const override;
     HOSTDEVICE real getLastFluidNode(real coords[3], int direction, real startCoord) const override;
@@ -318,6 +315,11 @@ public:
     bool isReceiveNode(int index) const override;
 
     void repairCommunicationInices(int direction) override;
+
+    // needed for CUDA Streams MultiGPU
+    void findMatrixIDsGEO_FLUID() override;
+    uint getGeoFluidSize() const override;
+    const std::vector<uint> *getGeoFluidNodes() const override;
 
 public:
 

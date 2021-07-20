@@ -602,8 +602,8 @@ void MultipleGridBuilder::findCommunicationIndices(int direction, LbmOrGks lbmOr
 
 void MultipleGridBuilder::findGeoFluidNodes()
 {
-    //for (uint i = 0; i < grids.size(); i++)
-    //    grids[i]->findMatrixIDsGEO_FLUID();
+    for (uint i = 0; i < grids.size(); i++)
+        grids[i]->findMatrixIDsGEO_FLUID();
 }
 
 const std::vector<uint> *MultipleGridBuilder::getGeoFluidSizes() const

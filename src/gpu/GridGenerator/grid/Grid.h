@@ -28,10 +28,6 @@ public:
     HOSTDEVICE virtual uint getSparseSize() const = 0;
     HOSTDEVICE virtual uint getSize() const = 0;
 
-    CUDA_HOST virtual void findMatrixIDsGEO_FLUID(uint *typeOfGridNode) = 0;
-    HOSTDEVICE virtual uint getGeoFluidSize() const = 0;
-    HOSTDEVICE virtual const std::vector<uint> *getGeoFluidNodes() const = 0;
-
     HOSTDEVICE virtual real getStartX() const = 0;
     HOSTDEVICE virtual real getStartY() const = 0;
     HOSTDEVICE virtual real getStartZ() const = 0;
@@ -144,6 +140,11 @@ public:
     virtual uint getReceiveIndex(int direction, uint index)  = 0;
 
     virtual void repairCommunicationInices(int direction) = 0;
+
+    // needed for CUDA Streams MultiGPU
+    virtual void findMatrixIDsGEO_FLUID()                     = 0;
+    virtual uint getGeoFluidSize() const                      = 0;
+    virtual const std::vector<uint> *getGeoFluidNodes() const = 0;
 
 };
 

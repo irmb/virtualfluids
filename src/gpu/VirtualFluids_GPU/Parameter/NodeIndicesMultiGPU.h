@@ -1,3 +1,6 @@
+#ifndef INDICES_MULTIGPU_H
+#define INDICES_MULTIGPU_H
+
 #include <vector>
 #include <memory>
 #include "basics/Core/DataTypes.h"
@@ -13,3 +16,5 @@ public:
     uint getGeoFluidSize(uint gridNumber);
     const std::vector<uint>* getGeoFluidNodeIndices(uint gridNumber);
 };
+
+#endif

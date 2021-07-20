@@ -25,7 +25,6 @@
 
 #include "utilities/communication.h"
 #include "utilities/math/Math.h"
-#include <gpu/VirtualFluids_GPU/LBM/LB.h>
 
 CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
@@ -859,12 +858,22 @@ CUDA_HOST void GridImp::updateSparseIndices()
     sparseSize = size - removedNodes;
 }
 
-CUDA_HOST void GridImp::findMatrixIDsGEO_FLUID(uint *typeOfGridNode) // typeOfGridNode = para->getParD(level)->geoSP[index]
+CUDA_HOST void GridImp::findMatrixIDsGEO_FLUID() // typeOfGridNode = para->getParD(level)->geoSP[index]
 {
+    // auf Basis von getNodeValues und updateSparseIndices
     int removedNodes = 0;
     for (uint index = 0; index < size; index++) {
-        if (typeOfGridNode[index] == GEO_FLUID)            
-            geoFluidNodes.push_back(index);           
+        if (this->sparseIndices[index] == -1) {
+            removedNodes++;
+            continue;
+        }
+
+        if (this->field.isFluid(index))
+            // + 1 for numbering shift between GridGenerator and VF_GPU
+            geoFluidNodes.push_back(index+1); //+1 notwendig?
+
+        /*if (typeOfGridNode[index] == GEO_FLUID)            
+            geoFluidNodes.push_back(index);  */         
         else
             removedNodes++;        
     }
