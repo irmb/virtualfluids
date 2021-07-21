@@ -15,5 +15,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChimSparse(
 	int level,
 	real* forces,
 	real* quadricLimiters,
-	bool isEvenTimestep);
+	bool isEvenTimestep,
+	const uint* fluidNodeIndices,
+	uint numberOfFluidNodes);
 #endif

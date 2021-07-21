@@ -50,7 +50,9 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChimSparse(
 	int level,
 	real* forces,
 	real* quadricLimiters,
-	bool isEvenTimestep)
+	bool isEvenTimestep,
+    const uint *fluidNodeIndices, 
+    uint numberOfFluidNodes)
 {
     //////////////////////////////////////////////////////////////////////////
     //! Cumulant K17 Kernel is based on \ref
@@ -70,17 +72,19 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChimSparse(
     const unsigned nx = blockDim.x;
     const unsigned ny = gridDim.x;
 
-    const unsigned k = nx * (ny * z + y) + x;
+    const unsigned k_thread = nx * (ny * z + y) + x;
 
     //////////////////////////////////////////////////////////////////////////
-    // run for all indices in size_Mat and fluid nodes
-    if ((k < size_Mat) && (typeOfGridNode[k] == GEO_FLUID)) {
+    // run for all indices in fluidNodeIndices
+    if (k_thread < numberOfFluidNodes) {
         //////////////////////////////////////////////////////////////////////////
         //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on
         //! timestep is based on the esoteric twist algorithm \ref <a
         //! href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
         //! DOI:10.3390/computation5020019 ]</b></a>
-        //!
+
+        const unsigned k = fluidNodeIndices[k_thread];
+
         Distributions27 dist;
         if (isEvenTimestep) {
             dist.f[dirE]    = &distributions[dirE * size_Mat];

@@ -29,7 +29,7 @@ void CumulantK17CompChimSparse::run()
 	dim3 grid(Grid1, Grid2);
 	dim3 threads(numberOfThreads, 1, 1);
 
-	LB_Kernel_CumulantK17CompChimSparse<<<grid, threads>>>(
+	LB_Kernel_CumulantK17CompChimSparse <<< grid, threads >>>(
 		para->getParD(level)->omega,
 		para->getParD(level)->geoSP,
 		para->getParD(level)->neighborX_SP,
@@ -40,7 +40,9 @@ void CumulantK17CompChimSparse::run()
 		level,
 		para->getForcesDev(),
         para->getQuadricLimitersDev(),
-		para->getParD(level)->evenOrOdd);
+		para->getParD(level)->evenOrOdd,
+        para->getParD(level)->fluidNodeIndices,
+		para->getParD(level)->numberOfFluidNodes);
 	getLastCudaError("LB_Kernel_CumulantK17CompChim execution failed");
 }
 
