@@ -146,6 +146,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setMainKernel("CumulantK17CompChim");
     //para->setMainKernel("CumulantK17CompChimSparse");
+   *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
     if (useMultiGPU) {
         para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
