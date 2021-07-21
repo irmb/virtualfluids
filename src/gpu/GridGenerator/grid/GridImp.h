@@ -318,7 +318,7 @@ public:
 
     void findFluidNodeIndices() override;
     uint getNumberOfFluidNodes() const override;
-    CUDA_HOST void getFluidNodeIndices(uint *fluidNodeIndices) const;
+    CUDA_HOST void getFluidNodeIndices(uint *fluidNodeIndices) const override;
 
 
 public:
