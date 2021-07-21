@@ -323,7 +323,9 @@ public:
     void cudaFreeProcessNeighborADZ(int lev, unsigned int processNeighbor);
 
     
-    
+    void cudaAllocFluidNodeIndices(int lev);
+    void cudaCopyFluidNodeIndices(int lev);
+    void cudaFreeFluidNodeIndices(int lev);
     
     
     

@@ -87,8 +87,6 @@ public:
 
     // needed for CUDA Streams MultiGPU
     void findGeoFluidNodes();
-    GRIDGENERATOR_EXPORT const std::vector<uint> *getGeoFluidSizes() const;
-    GRIDGENERATOR_EXPORT const std::vector<const uint*> *getGeoFluidNodeIndices() const;
 };
 
 #endif

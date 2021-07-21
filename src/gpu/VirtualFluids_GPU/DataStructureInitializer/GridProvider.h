@@ -25,6 +25,8 @@ public:
 	virtual void allocArrays_BoundaryValues() = 0;
 	virtual void allocArrays_BoundaryQs() = 0;
     virtual void allocArrays_OffsetScale() = 0;
+    virtual void allocArrays_fluidNodeIndices() = 0;
+
 	virtual void setDimensions() = 0;
 	virtual void setBoundingBox() = 0;
 	virtual void initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned int> > > periodV, std::vector<std::vector<unsigned int> > periodIndex, std::string way) = 0;
@@ -39,6 +41,7 @@ public:
 
 protected:
 	void setNumberOfNodes(const int numberOfNodes, const int level) const;
+    void setNumberOfFluidNodes(const int numberOfNodes, const int level) const;
     virtual void setInitalNodeValues(const int numberOfNodes, const int level) const;
 
 	void setPressSizePerLevel(int level, int sizePerLevel) const;

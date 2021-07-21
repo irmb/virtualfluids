@@ -29,6 +29,7 @@ public:
 	void allocArrays_BoundaryValues() override;
 	void allocArrays_BoundaryQs() override;
     void allocArrays_OffsetScale() override;
+    void allocArrays_fluidNodeIndices() override;
 
 	virtual void setDimensions() override;
 	virtual void setBoundingBox() override;

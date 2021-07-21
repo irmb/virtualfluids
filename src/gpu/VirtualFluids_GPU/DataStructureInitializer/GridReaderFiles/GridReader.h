@@ -39,6 +39,7 @@ public:
 	void allocArrays_CoordNeighborGeo() override;
 	void allocArrays_BoundaryValues() override;
     void allocArrays_OffsetScale() override;
+    void allocArrays_fluidNodeIndices() override;
 
 	void initalValuesDomainDecompostion(int level);
 

@@ -86,6 +86,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
 
    gridProvider->allocAndCopyForcing();
    gridProvider->allocAndCopyQuadricLimiters();
+   gridProvider->allocArrays_fluidNodeIndices();
    gridProvider->setDimensions();
    gridProvider->setBoundingBox();
 

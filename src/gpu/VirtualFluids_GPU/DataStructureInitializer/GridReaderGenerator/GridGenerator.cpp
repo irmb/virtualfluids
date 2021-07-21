@@ -87,6 +87,16 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 	std::cout << "-----finish Coord, Neighbor, Geo------" << std::endl;
 }
 
+void GridGenerator::allocArrays_fluidNodeIndices() {
+    const uint numberOfLevels = builder->getNumberOfGridLevels();
+    for (uint level = 0; level < numberOfLevels; level++) {
+        setNumberOfFluidNodes(builder->getNumberOfFluidNodes(level), level);
+        cudaMemoryManager->cudaAllocFluidNodeIndices(level);
+        builder->getFluidNodeIndices(para->getParH(level)->fluidNodeIndices, level);
+        cudaMemoryManager->cudaCopyFluidNodeIndices(level);
+    }    
+}
+
 void GridGenerator::allocArrays_BoundaryValues()
 {
 	std::cout << "------read BoundaryValues------" << std::endl;

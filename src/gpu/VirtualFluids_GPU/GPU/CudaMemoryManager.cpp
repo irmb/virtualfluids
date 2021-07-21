@@ -2606,6 +2606,7 @@ void CudaMemoryManager::cudaFreeProcessNeighborADZ(int lev, unsigned int process
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].index  ));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].f[0]     ));
 }
+
 void CudaMemoryManager::cudaAlloc2ndOrderDerivitivesIsoTest(int lev)
 {
     //Host
@@ -2644,9 +2645,27 @@ void CudaMemoryManager::cudaFree2ndOrderDerivitivesIsoTest(int lev)
     
 }
 
+void CudaMemoryManager::cudaAllocFluidNodeIndices(int lev) {
+    uint mem_size_geo_fluid_nodes = sizeof(uint) * parameter->getParH(lev)->numberOfFluidNodes;
+    // Host
+    checkCudaErrors(cudaMallocHost((void **)&(parameter->getParH(lev)->fluidNodeIndices), mem_size_geo_fluid_nodes));
+    // Device
+    checkCudaErrors(cudaMalloc((void **)&(parameter->getParD(lev)->fluidNodeIndices), mem_size_geo_fluid_nodes));
+    //////////////////////////////////////////////////////////////////////////
+    double tmp = (double)mem_size_geo_fluid_nodes;
+    setMemsizeGPU(tmp, false);
+}
 
+void CudaMemoryManager::cudaCopyFluidNodeIndices(int lev) {
+    uint mem_size_geo_fluid_nodes = sizeof(uint) * parameter->getParH(lev)->numberOfFluidNodes;
+    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->fluidNodeIndices,
+                               parameter->getParH(lev)->fluidNodeIndices,
+                               mem_size_geo_fluid_nodes, cudaMemcpyHostToDevice));
+}
 
-
+void CudaMemoryManager::cudaFreeFluidNodeIndices(int lev) {
+    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->fluidNodeIndices));
+}
 
 
 

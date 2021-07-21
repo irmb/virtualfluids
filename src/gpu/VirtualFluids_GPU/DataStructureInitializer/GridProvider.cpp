@@ -29,6 +29,12 @@ void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) co
     para->getParD(level)->mem_size_int_SP = sizeof(uint) * para->getParD(level)->size_Mat_SP;
 }
 
+void GridProvider::setNumberOfFluidNodes(const int numberOfNodes, const int level) const
+{
+    para->getParH(level)->numberOfFluidNodes = numberOfNodes;
+    para->getParD(level)->numberOfFluidNodes = numberOfNodes;
+}
+
 void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level) const
 {
     for (int j = 1; j <= numberOfNodes; j++)

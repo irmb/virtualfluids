@@ -84,6 +84,9 @@ public:
     virtual void getSendIndices( int* sendIndices, int direction, int level ) = 0;
     virtual void getReceiveIndices( int* sendIndices, int direction, int level ) = 0;
 
+    virtual uint getNumberOfFluidNodes(unsigned int level) const = 0;
+    virtual void getFluidNodeIndices(uint *fluidNodeIndices, const int level) const = 0;
+
 };
 
 #endif

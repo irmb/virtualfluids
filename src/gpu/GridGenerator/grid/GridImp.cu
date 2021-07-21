@@ -858,24 +858,18 @@ CUDA_HOST void GridImp::updateSparseIndices()
     sparseSize = size - removedNodes;
 }
 
-CUDA_HOST void GridImp::findMatrixIDsGEO_FLUID() // typeOfGridNode = para->getParD(level)->geoSP[index]
+CUDA_HOST void GridImp::findFluidNodeIndices() 
 {
     // auf Basis von getNodeValues und updateSparseIndices
-    int geoFluidSize = 0;
-    int geoFluidNodesIndex = 0;
     for (uint index = 0; index < size; index++) {
-        if (this->sparseIndices[index] == -1) //unnötig?
+        uint sparseIndex = sparseIndices[index];
+        if (sparseIndex == -1)
             continue;
 
-        if (this->field.isFluid(index)) {
-            // + 1 for numbering shift between GridGenerator and VF_GPU
-            geoFluidNodes[geoFluidNodesIndex] = index + 1; //+1 notwendig?
-            geoFluidNodesIndex++;
-            geoFluidSize++;
-        }
-        /*if (typeOfGridNode[index] == GEO_FLUID)            
-            geoFluidNodes.push_back(index);  */                 
+        if (this->field.isFluid(index))
+            fluidNodeIndices.push_back(sparseIndex);            
     }
+    numberOfFluidNodes = fluidNodeIndices.size();
 }
 
 HOSTDEVICE void GridImp::setNeighborIndices(uint index)
@@ -1767,12 +1761,8 @@ HOSTDEVICE uint GridImp::getSparseSize() const
     return this->sparseSize; 
 }
 
-HOSTDEVICE uint GridImp::getGeoFluidSize() const { 
-    return this->geoFluidSize; 
-}
-
-HOSTDEVICE const uint* GridImp::getGeoFluidNodes() const{ 
-    return this->geoFluidNodes; 
+HOSTDEVICE uint GridImp::getNumberOfFluidNodes() const { 
+    return this->numberOfFluidNodes; 
 }
 
 HOSTDEVICE Field GridImp::getField() const
@@ -1935,7 +1925,7 @@ CUDA_HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoord
     geo[0] = GEOSOLID;
 
     int nodeNumber = 0;
-    for (uint i = 0; i < this->getSize(); i++)
+    for (uint i = 0; i < this->size; i++)
     {
         if (this->sparseIndices[i] == -1)
             continue;
@@ -1966,6 +1956,12 @@ CUDA_HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoord
         nodeNumber++;
     }
 }
+
+CUDA_HOST void GridImp::getFluidNodeIndices(uint *fluidNodeIndices) const { 
+  for (uint nodeNumber = 0; nodeNumber < this->numberOfFluidNodes; nodeNumber++)
+        fluidNodeIndices[nodeNumber] = this->fluidNodeIndices[nodeNumber];
+}
+
 
 void GridImp::print() const
 {

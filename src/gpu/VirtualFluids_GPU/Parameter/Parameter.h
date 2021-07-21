@@ -41,8 +41,6 @@
 #include "LBM/D3Q27.h"
 #include "LBM/LB.h"
 
-#include "VirtualFluids_GPU/Parameter/NodeIndicesMultiGPU.h"
-
 #include "VirtualFluids_GPU_export.h"
 
 
@@ -309,6 +307,9 @@ struct LBMSimulationParameter
     std::vector<ProcessNeighborF3> recvProcessNeighborF3Y;
     std::vector<ProcessNeighborF3> recvProcessNeighborF3Z;
     ////////////////////////////////////////////////////////////////////////////
+
+    uint *fluidNodeIndices;
+    uint numberOfFluidNodes;
 };
 
 class VIRTUALFLUIDS_GPU_EXPORT Parameter
@@ -837,12 +838,6 @@ private:
     // initial condition
     std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition;
 
-    
-    // CUDA Streams Multi GPU
-    std::shared_ptr<NodeIndicesMultiGPU> nodeIndicesMultiGPU;
-public:
-    void setNodeIndicesMultiGPU(std::shared_ptr<NodeIndicesMultiGPU> nodeIndicesMultiGPU);
-    std::shared_ptr<NodeIndicesMultiGPU> getNodeIndicesMultiGPU();
 };
 
 #endif

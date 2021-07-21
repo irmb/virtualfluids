@@ -263,6 +263,10 @@ uint LevelGridBuilder::getNumberOfNodes(unsigned int level) const
     return grids[level]->getSparseSize();
 }
 
+uint LevelGridBuilder::getNumberOfFluidNodes(unsigned int level) const 
+{ 
+    return grids[level]->getNumberOfFluidNodes(); 
+}
 
 std::shared_ptr<Grid> LevelGridBuilder::getGrid(int level, int box)
 {
@@ -294,6 +298,9 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
 
 //TODO: add getSlipSize...
 
+GRIDGENERATOR_EXPORT void LevelGridBuilder::getFluidNodeIndices(uint *fluidNodeIndices, const int level) const { 
+    grids[level]->getFluidNodeIndices(fluidNodeIndices);
+}
 
 uint LevelGridBuilder::getVelocitySize(int level) const
 {

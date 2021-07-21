@@ -216,6 +216,10 @@ void GridReader::allocArrays_OffsetScale()
     std::cout << "-----Ende OffsetScale------" << std::endl;
 }
 
+void GridReader::allocArrays_fluidNodeIndices() {
+	// TODO
+}
+
 
 void GridReader::setPressureValues(int channelSide) const
 {

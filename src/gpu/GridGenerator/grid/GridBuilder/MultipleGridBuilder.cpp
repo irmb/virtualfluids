@@ -604,28 +604,9 @@ void MultipleGridBuilder::findGeoFluidNodes()
 {
     *logging::out << logging::Logger::INFO_HIGH << "Start findGeoFluidNodes()\n";
     for (uint i = 0; i < grids.size(); i++)
-        grids[i]->findMatrixIDsGEO_FLUID();
+        grids[i]->findFluidNodeIndices();
     *logging::out << logging::Logger::INFO_HIGH << "Done with findGeoFluidNodes()\n";
 }
-
-const std::vector<uint> *MultipleGridBuilder::getGeoFluidSizes() const
-{
-    std::vector<uint> geoFluidSizes;
-    for (uint level = 0; level < grids.size(); level++) {
-        geoFluidSizes.push_back(grids[level]->getGeoFluidSize());
-    }
-    return &geoFluidSizes;
-}
-
-const std::vector<const uint*> *MultipleGridBuilder::getGeoFluidNodeIndices() const
-{
-    std::vector<const uint*> getGeoFluidNodes;
-    for (uint level = 0; level < grids.size(); level++) {
-        getGeoFluidNodes.push_back(grids[level]->getGeoFluidNodes());
-    }
-    return &getGeoFluidNodes;
-}
-
 
 void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
 {

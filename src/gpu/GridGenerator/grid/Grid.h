@@ -142,10 +142,9 @@ public:
     virtual void repairCommunicationInices(int direction) = 0;
 
     // needed for CUDA Streams MultiGPU
-    virtual void findMatrixIDsGEO_FLUID()                     = 0;
-    virtual uint getGeoFluidSize() const                      = 0;
-    virtual const uint* getGeoFluidNodes() const = 0;
-
+    virtual void findFluidNodeIndices() = 0;
+    virtual uint getNumberOfFluidNodes() const = 0;
+    virtual void getFluidNodeIndices(uint *fluidNodeIndices) const = 0;
 };
 
 #endif

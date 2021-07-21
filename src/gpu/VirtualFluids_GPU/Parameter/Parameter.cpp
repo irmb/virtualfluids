@@ -2485,15 +2485,4 @@ real Parameter::TrafoZtoMGsWorld(int CoordZ, int level)
 	return temp;
 }
 
-// CUDA Streams Multi GPU
-void Parameter::setNodeIndicesMultiGPU(std::shared_ptr<NodeIndicesMultiGPU> nodeIndicesMultiGPU)
-{
-    this->nodeIndicesMultiGPU = nodeIndicesMultiGPU;
-}
-
-std::shared_ptr<NodeIndicesMultiGPU> Parameter::getNodeIndicesMultiGPU()
-{
-    return this->nodeIndicesMultiGPU;
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

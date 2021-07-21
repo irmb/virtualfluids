@@ -56,7 +56,6 @@
 
 #include "utilities/communication.h"
 
-#include "VirtualFluids_GPU/Parameter/NodeIndicesMultiGPU.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +109,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator = true;
-    bool useMultiGPU = true;
+    bool useMultiGPU = false;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,8 +144,8 @@ void multipleLevel(const std::string& configPath)
 
     // para->setMaxLevel(2);
 
-    // para->setMainKernel("CumulantK15Comp");
-    para->setMainKernel("CumulantK17CompChimSparse");
+    para->setMainKernel("CumulantK17CompChim");
+    //para->setMainKernel("CumulantK17CompChimSparse");
 
     if (useMultiGPU) {
         para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
@@ -241,14 +240,11 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
+            //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
             //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/" + std::to_string(generatePart) + "/grid/");
             //gridBuilder->writeArrows(path + "/" + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
 
             gridBuilder->findGeoFluidNodes();
-            std::shared_ptr<NodeIndicesMultiGPU> nodeIndicesMultiGPU = std::make_shared<NodeIndicesMultiGPU>(gridBuilder->getGeoFluidSizes(), 
-                                                                                                             gridBuilder->getGeoFluidNodeIndices());
-            para->setNodeIndicesMultiGPU(nodeIndicesMultiGPU);
 
             SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder, FILEFORMAT::BINARY);
            
@@ -273,7 +269,9 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");
+            gridBuilder->findGeoFluidNodes();
+
+            //gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");
             // gridBuilder->writeArrows ("E:/temp/MusselOyster/" + bivalveType + "/arrow");
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);

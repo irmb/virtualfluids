@@ -86,8 +86,8 @@ private:
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
     int *sparseIndices;
 
-    uint *geoFluidNodes;
-    uint geoFluidSize;
+    std::vector<uint> fluidNodeIndices;
+    uint numberOfFluidNodes;
 
 	uint *qIndices;     //maps from matrix index to qIndex
 	real *qValues;
@@ -316,10 +316,10 @@ public:
 
     void repairCommunicationInices(int direction) override;
 
-    // needed for CUDA Streams MultiGPU
-    void findMatrixIDsGEO_FLUID() override;
-    uint getGeoFluidSize() const override;
-    const uint* getGeoFluidNodes() const override;
+    void findFluidNodeIndices() override;
+    uint getNumberOfFluidNodes() const override;
+    CUDA_HOST void getFluidNodeIndices(uint *fluidNodeIndices) const;
+
 
 public:
 

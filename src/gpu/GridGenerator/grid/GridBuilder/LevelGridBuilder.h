@@ -54,9 +54,10 @@ public:
 
     GRIDGENERATOR_EXPORT virtual std::shared_ptr<Grid> getGrid(int level, int box);
 
-
     GRIDGENERATOR_EXPORT virtual unsigned int getNumberOfNodes(unsigned int level) const override;
 
+    GRIDGENERATOR_EXPORT virtual uint getNumberOfFluidNodes(unsigned int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getFluidNodeIndices(uint* fluidNodeIndices, const int level) const override;
 
     GRIDGENERATOR_EXPORT virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords,
                                          uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, 
