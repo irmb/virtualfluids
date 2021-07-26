@@ -58,11 +58,11 @@ A GPU computation generates a the time series of output files directly in the ou
 
 
 ## Documentation
-The doxygen generated documentation can be found [here](https://git.irmb.bau.tu-bs.de/doku/CPU).
+The doxygen generated documentation can be found [here](https://irmb.gitlab-pages.rz.tu-bs.de/VirtualFluids_dev).
 
 
 ## Known Issues
-If you notice any problems on your platform, please report an issue. 
+If you notice any problems on your platform, please report an [issue](https://git.rz.tu-bs.de/irmb/virtualfluids/-/issues/new). 
 
 
 ## Authors

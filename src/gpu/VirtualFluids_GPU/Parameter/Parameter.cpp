@@ -1,601 +1,440 @@
-//  _    ___      __              __________      _     __        ______________   __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
 //
-//////////////////////////////////////////////////////////////////////////
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file Parameter.h
+//! \ingroup Parameter
+//! \author Martin Schoenherr
+//=======================================================================================
 #include "Parameter.h"
 
-//#include <cuda_runtime.h>
-//#include <helper_cuda.h>
-//
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
+#include <curand_kernel.h>
 
-#include "Core/Input/ConfigData/ConfigData.h"
 #include "Core/StringUtilities/StringUtil.h"
-#include "Communication/Communicator.h"
-#include "Visitor/Visitor.h"
-
-//#ifdef WIN32
-//   #include <Winsock2.h>
-//#endif
-//lib for windows Ws2_32.lib
+#include <basics/config/ConfigurationFile.h>
 
 
-SPtr<Parameter> Parameter::make()
+
+Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId)
 {
-    return SPtr<Parameter>(new Parameter());
+    ic.numprocs = numberOfProcesses;
+    ic.myid = myId;
+
+    readConfigData(configData);
+    //initLBMSimulationParameter();
 }
 
-SPtr<Parameter> Parameter::make(SPtr<ConfigData> configData, vf::gpu::Communicator* comm)
+void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 {
-	return SPtr<Parameter>(new Parameter(configData, comm));
-}
+   if (configData.contains("NumberOfDevices"))
+        this->setMaxDev(configData.getValue<int>("NumberOfDevices"));
 
-Parameter::Parameter()
-{
-}
-Parameter::Parameter(SPtr<ConfigData> configData, vf::gpu::Communicator* comm)
-{
-	//////////////////////////////////////////////////////////////////////////
-	this->setNumprocs(comm->getNummberOfProcess());
-	this->setMyID(comm->getPID());
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isNumberOfDevicesInConfigFile())
-		this->setMaxDev(configData->getNumberOfDevices());
-	else
-		this->setMaxDev((int)1);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isDevicesInConfigFile())
-		this->setDevices(configData->getDevices());
-	else
-		this->setDevices(std::vector<uint>{(uint)0});
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isOutputPathInConfigFile())
-		this->setOutputPath(configData->getOutputPath());
-	else
-		this->setOutputPath("C:/Output/");
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isPrefixInConfigFile())
-		this->setOutputPrefix(configData->getPrefix());
-	else
-		this->setOutputPrefix("MyFile");
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isPrintOutputFilesInConfigFile())
-		this->setPrintFiles(configData->getPrintOutputFiles());
-	else
-		this->setPrintFiles(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isGeometryValuesInConfigFile())
-		this->setGeometryValues(configData->getGeometryValues());
-	else
-		this->setGeometryValues(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isCalc2ndOrderMomentsInConfigFile())
-		this->setCalc2ndOrderMoments(configData->getCalc2ndOrderMoments());
-	else
-		this->setCalc2ndOrderMoments(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isCalc3rdOrderMomentsInConfigFile())
-		this->setCalc3rdOrderMoments(configData->getCalc3rdOrderMoments());
-	else
-		this->setCalc3rdOrderMoments(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isCalcHighOrderMomentsInConfigFile())
-		this->setCalcHighOrderMoments(configData->getCalcHighOrderMoments());
-	else
-		this->setCalcHighOrderMoments(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isCalcMedianInConfigFile())
-		this->setCalcMedian(configData->getCalcMedian());
-	else
-		this->setCalcMedian(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isCalcDragLiftInConfigFile())
-		this->setCalcDragLift(configData->getCalcDragLift());
-	else
-		this->setCalcDragLift(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isCalcCpInConfigFile())
-		this->setCalcCp(configData->getCalcCp());
-	else
-		this->setCalcCp(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isWriteVeloASCIIfilesInConfigFile())
-		this->setWriteVeloASCIIfiles(configData->getWriteVeloASCIIfiles());
-	else
-		this->setWriteVeloASCIIfiles(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isCalcPlaneConcInConfigFile())
-		this->setCalcPlaneConc(configData->getCalcPlaneConc());
-	else
-		this->setCalcPlaneConc(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isConcFileInConfigFile())
-		this->setConcFile(configData->getConcFile());
-	else
-		this->setConcFile(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isStreetVelocityFileInConfigFile())
-		this->setStreetVelocityFile(configData->getStreetVelocityFile());
-	else
-		this->setStreetVelocityFile(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isUseMeasurePointsInConfigFile())
-		this->setUseMeasurePoints(configData->getUseMeasurePoints());
-	else
-		this->setUseMeasurePoints(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isUseWaleInConfigFile())
-		this->setUseWale(configData->getUseWale());
-	else
-		this->setUseWale(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isUseInitNeqInConfigFile())
-		this->setUseInitNeq(configData->getUseInitNeq());
-	else
-		this->setUseInitNeq(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isSimulatePorousMediaInConfigFile())
-		this->setSimulatePorousMedia(configData->getSimulatePorousMedia());
-	else
-		this->setSimulatePorousMedia(false);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isD3QxxInConfigFile())
-		this->setD3Qxx(configData->getD3Qxx());
-	else
-		this->setD3Qxx((int)27);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isTEndInConfigFile())
-		this->setTEnd(configData->getTEnd());
-	else
-		this->setTEnd((uint)10);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isTOutInConfigFile())
-		this->setTOut(configData->getTOut());
-	else
-		this->setTOut((uint)1);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isTStartOutInConfigFile())
-		this->setTStartOut(configData->getTStartOut());
-	else
-		this->setTStartOut((uint)0);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isTimeCalcMedStartInConfigFile())
-		this->setTimeCalcMedStart(configData->getTimeCalcMedStart());
-	else
-		this->setTimeCalcMedStart((int)0);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isTimeCalcMedEndInConfigFile())
-		this->setTimeCalcMedEnd(configData->getTimeCalcMedEnd());
-	else
-		this->setTimeCalcMedEnd((int)10);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isPressInIDInConfigFile())
-		this->setPressInID(configData->getPressInID());
-	else
-		this->setPressInID((uint)0);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isPressOutIDInConfigFile())
-		this->setPressOutID(configData->getPressOutID());
-	else
-		this->setPressOutID((uint)0);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isPressInZInConfigFile())
-		this->setPressInZ(configData->getPressInZ());
-	else
-		this->setPressInZ((uint)1);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isPressOutZInConfigFile())
-		this->setPressOutZ(configData->getPressOutZ());
-	else
-		this->setPressOutZ((uint)2);
-	//////////////////////////////////////////////////////////////////////////
-	//second component
-	if (configData->isDiffOnInConfigFile())
-		this->setDiffOn(configData->getDiffOn());
-	else
-		this->setDiffOn(false);
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("Devices"))
+        this->setDevices(configData.getVector<uint>("Devices"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("Path"))
+        this->setOutputPath(configData.getValue<std::string>("Path"));
+    else
+        throw std::runtime_error("<Path> need to be defined in config file!");
 
-	if (configData->isDiffModInConfigFile())
-		this->setDiffMod(configData->getDiffMod());
-	else
-		this->setDiffMod((int)27);
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("Prefix"))
+        this->setOutputPrefix(configData.getValue<std::string>("Prefix"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("WriteGrid"))
+        this->setPrintFiles(configData.getValue<bool>("WriteGrid"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("GeometryValues"))
+        this->setGeometryValues(configData.getValue<bool>("GeometryValues"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("calc2ndOrderMoments"))
+        this->setCalc2ndOrderMoments(configData.getValue<bool>("calc2ndOrderMoments"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("calc3rdOrderMoments"))
+        this->setCalc3rdOrderMoments(configData.getValue<bool>("calc3rdOrderMoments"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("calcHigherOrderMoments"))
+        this->setCalcHighOrderMoments(configData.getValue<bool>("calcHigherOrderMoments"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("calcMedian"))
+        this->setCalcMedian(configData.getValue<bool>("calcMedian"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("calcCp"))
+        this->calcCp = configData.getValue<bool>("calcCp");
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("calcDrafLift"))
+        this->calcDragLift = configData.getValue<bool>("calcDrafLift");
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("writeVeloASCIIfiles"))
+        this->writeVeloASCII = configData.getValue<bool>("writeVeloASCIIfiles");
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("calcPlaneConc"))
+        this->calcPlaneConc = configData.getValue<bool>("calcPlaneConc");
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("UseConcFile"))
+        this->setConcFile(configData.getValue<bool>("UseConcFile"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("UseStreetVelocityFile"))
+        this->setStreetVelocityFile(configData.getValue<bool>("UseStreetVelocityFile"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("UseMeasurePoints"))
+        this->setUseMeasurePoints(configData.getValue<bool>("UseMeasurePoints"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("UseWale"))
+        this->setUseWale(configData.getValue<bool>("UseWale"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("UseInitNeq"))
+        this->setUseInitNeq(configData.getValue<bool>("UseInitNeq"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("SimulatePorousMedia"))
+        this->setSimulatePorousMedia(configData.getValue<bool>("SimulatePorousMedia"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("D3Qxx"))
+        this->setD3Qxx(configData.getValue<int>("D3Qxx"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("TimeEnd"))
+        this->setTEnd(configData.getValue<int>("TimeEnd"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("TimeOut"))
+        this->setTOut(configData.getValue<int>("TimeOut"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("TimeStartOut"))
+        this->setTStartOut(configData.getValue<int>("TimeStartOut"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("TimeStartCalcMedian"))
+        this->setTimeCalcMedStart(configData.getValue<int>("TimeStartCalcMedian"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("TimeEndCalcMedian"))
+        this->setTimeCalcMedEnd(configData.getValue<int>("TimeEndCalcMedian"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("PressInID"))
+        this->setPressInID(configData.getValue<int>("PressInID"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("PressOutID"))
+        this->setPressOutID(configData.getValue<int>("PressOutID"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("PressInZ"))
+        this->setPressInZ(configData.getValue<int>("PressInZ"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("PressOutZ"))
+        this->setPressOutZ(configData.getValue<int>("PressOutZ"));
 
-	if (configData->isDiffusivityInConfigFile())
-		this->setDiffusivity(configData->getDiffusivity());
-	else
-		this->setDiffusivity((real)0.001);
+    //////////////////////////////////////////////////////////////////////////
+    //second component
+    if (configData.contains("DiffOn"))
+        this->setDiffOn(configData.getValue<bool>("DiffOn"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("DiffMod"))
+        this->setDiffMod(configData.getValue<int>("DiffMod"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("Diffusivity"))
+        this->setDiffusivity(configData.getValue<real>("Diffusivity"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("Temp"))
+        this->setTemperatureInit(configData.getValue<real>("Temp"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("TempBC"))
+        this->setTemperatureBC(configData.getValue<real>("TempBC"));
 
-	if (configData->isTemperatureInitInConfigFile())
-		this->setTemperatureInit(configData->getTemperatureInit());
-	else
-		this->setTemperatureInit((real)0.0);
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("Viscosity_LB"))
+        this->setViscosity(configData.getValue<real>("Viscosity_LB"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("Velocity_LB"))
+        this->setVelocity(configData.getValue<real>("Velocity_LB"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("Viscosity_Ratio_World_to_LB"))
+        this->setViscosityRatio(configData.getValue<real>("Viscosity_Ratio_World_to_LB"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("Velocity_Ratio_World_to_LB"))
+        this->setVelocityRatio(configData.getValue<real>("Velocity_Ratio_World_to_LB"));
+    // //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("Density_Ratio_World_to_LB"))
+        this->setDensityRatio(configData.getValue<real>("Density_Ratio_World_to_LB"));
 
-	if (configData->isTemperatureBCInConfigFile())
-		this->setTemperatureBC(configData->getTemperatureBC());
-	else
-		this->setTemperatureBC((real)1.0);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isViscosityInConfigFile())
-		this->setViscosity(configData->getViscosity());
-	else
-		this->setViscosity((real)0.001);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isVelocityInConfigFile())
-		this->setVelocity(configData->getVelocity());
-	else
-		this->setVelocity((real)0.01);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isViscosityRatioInConfigFile())
-		this->setViscosityRatio(configData->getViscosityRatio());
-	else
-		this->setViscosityRatio((real)1.0);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isVelocityRatioInConfigFile())
-		this->setVelocityRatio(configData->getVelocityRatio());
-	else
-		this->setVelocityRatio((real)1.0);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isDensityRatioInConfigFile())
-		this->setDensityRatio(configData->getDensityRatio());
-	else
-		this->setDensityRatio((real)1.0);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isPressRatioInConfigFile())
-		this->setPressRatio(configData->getPressRatio());
-	else
-		this->setPressRatio((real)1.0);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isRealXInConfigFile())
-		this->setRealX(configData->getRealX());
-	else
-		this->setRealX((real)1.0);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isRealYInConfigFile())
-		this->setRealY(configData->getRealY());
-	else
-		this->setRealY((real)1.0);
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isFactorPressBCInConfigFile())
-		this->setFactorPressBC(configData->getFactorPressBC());
-	else
-		this->setFactorPressBC((real)1.0);
-	//////////////////////////////////////////////////////////////////////////
-	//read Geometry (STL)
-	if (configData->isReadGeoInConfigFile())
-		this->setReadGeo(configData->getReadGeo());
-	else
-		this->setReadGeo(false);
+    if (configData.contains("Delta_Press"))
+        this->setPressRatio(configData.getValue<real>("Delta_Press"));
 
-	if (configData->isGeometryFileCInConfigFile())
-		this->setGeometryFileC(configData->getGeometryFileC());
-	else if (this->getReadGeo())
-	{
-		std::cout << "GeometryFileC has to be defined!" << std::endl;
-		exit(1);
-	}
-	else
-		this->setGeometryFileC("");
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("SliceRealX"))
+        this->setRealX(configData.getValue<real>("SliceRealX"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("SliceRealY"))
+        this->setRealY(configData.getValue<real>("SliceRealY"));
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("FactorPressBC"))
+        this->setFactorPressBC(configData.getValue<real>("FactorPressBC"));
 
-	if (configData->isGeometryFileMInConfigFile())
-		this->setGeometryFileM(configData->getGeometryFileM());
-	else if (this->getReadGeo())
-	{
-		std::cout << "GeometryFileM has to be defined!" << std::endl;
-		exit(1);
-	}
-	else
-		this->setGeometryFileM("");
+    //////////////////////////////////////////////////////////////////////////
+    //read Geometry (STL)
+    if (configData.contains("ReadGeometry"))
+        this->setReadGeo(configData.getValue<bool>("ReadGeometry"));
 
-	if (configData->isGeometryFileFInConfigFile())
-		this->setGeometryFileF(configData->getGeometryFileF());
-	else if (this->getReadGeo())
-	{
-		std::cout << "GeometryFileF has to be defined!" << std::endl;
-		exit(1);
-	}
-	else
-		this->setGeometryFileF("");
-	//////////////////////////////////////////////////////////////////////////
-	if (configData->isClockCycleForMPInConfigFile())
-		this->setclockCycleForMP(configData->getClockCycleForMP());
-	else
-		this->setclockCycleForMP((real)1.0);
+    if (configData.contains("GeometryC"))
+        this->setGeometryFileC(configData.getValue<std::string>("GeometryC"));
+    else if (this->getReadGeo())
+        throw std::runtime_error("readGeo is true, GeometryC has to be set as well!");
 
-	if (configData->isTimestepForMPInConfigFile())
-		this->settimestepForMP(configData->getTimestepForMP());
-	else
-		this->settimestepForMP((uint)10);
-	//////////////////////////////////////////////////////////////////////////
-	std::string gridPath = "";
-	if (configData->isGridPathInConfigFile())
-		gridPath = configData->getGridPath();
-	else
-	{
-		std::cout << "GridPath has to be defined!" << std::endl;
-		exit(1);
-	}
+    if (configData.contains("GeometryM"))
+        this->setGeometryFileM(configData.getValue<std::string>("GeometryM"));
+    else if (this->getReadGeo())
+        throw std::runtime_error("readGeo is true, GeometryM has to be set as well!");
 
-	if (this->getNumprocs() == 1)
-		gridPath += "/";
-	else
-		gridPath += "/" + StringUtil::toString(this->getMyID()) + "/";
-	//////////////////////////////////////////////////////////////////////////
-	this->setFName(this->getOutputPath() + "/" + this->getOutputPrefix());
-	//////////////////////////////////////////////////////////////////////////
-	this->setgeoVec(				gridPath + "geoVec.dat");
-	this->setcoordX(				gridPath + "coordX.dat");
-	this->setcoordY(				gridPath + "coordY.dat");
-	this->setcoordZ(				gridPath + "coordZ.dat");
-	this->setneighborX(				gridPath + "neighborX.dat");
-	this->setneighborY(				gridPath + "neighborY.dat");
-	this->setneighborZ(				gridPath + "neighborZ.dat");
-	this->setneighborWSB(			gridPath + "neighborWSB.dat");
-	this->setscaleCFC(				gridPath + "scaleCFC.dat");
-	this->setscaleCFF(				gridPath + "scaleCFF.dat");
-	this->setscaleFCC(				gridPath + "scaleFCC.dat");
-	this->setscaleFCF(				gridPath + "scaleFCF.dat");
-	this->setscaleOffsetCF(			gridPath + "offsetVecCF.dat");
-	this->setscaleOffsetFC(			gridPath + "offsetVecFC.dat");
-	this->setgeomBoundaryBcQs(		gridPath + "geomBoundaryQs.dat");
-	this->setgeomBoundaryBcValues(	gridPath + "geomBoundaryValues.dat");
-	this->setinletBcQs(				gridPath + "inletBoundaryQs.dat");
-	this->setinletBcValues(			gridPath + "inletBoundaryValues.dat");
-	this->setoutletBcQs(			gridPath + "outletBoundaryQs.dat");
-	this->setoutletBcValues(		gridPath + "outletBoundaryValues.dat");
-	this->settopBcQs(				gridPath + "topBoundaryQs.dat");
-	this->settopBcValues(			gridPath + "topBoundaryValues.dat");
-	this->setbottomBcQs(			gridPath + "bottomBoundaryQs.dat");
-	this->setbottomBcValues(		gridPath + "bottomBoundaryValues.dat");
-	this->setfrontBcQs(				gridPath + "frontBoundaryQs.dat");
-	this->setfrontBcValues(			gridPath + "frontBoundaryValues.dat");
-	this->setbackBcQs(				gridPath + "backBoundaryQs.dat");
-	this->setbackBcValues(			gridPath + "backBoundaryValues.dat");
-	this->setnumberNodes(			gridPath + "numberNodes.dat");
-	this->setLBMvsSI(				gridPath + "LBMvsSI.dat");
-	this->setmeasurePoints(			gridPath + "measurePoints.dat");
-	this->setpropellerValues(		gridPath + "propellerValues.dat");
-	this->setcpTop(					gridPath + "cpTop.dat");
-	this->setcpBottom(				gridPath + "cpBottom.dat");
-	this->setcpBottom2(				gridPath + "cpBottom2.dat");
-	this->setConcentration(			gridPath + "conc.dat");
-	this->setStreetVelocity(		gridPath + "streetVector.dat");
-	//////////////////////////////////////////////////////////////////////////
-	//Normals - Geometry
-	this->setgeomBoundaryNormalX(gridPath + "geomBoundaryNormalX.dat");
-	this->setgeomBoundaryNormalY(gridPath + "geomBoundaryNormalY.dat");
-	this->setgeomBoundaryNormalZ(gridPath + "geomBoundaryNormalZ.dat");
-	//Normals - Inlet
-	this->setInflowBoundaryNormalX(gridPath + "inletBoundaryNormalX.dat");
-	this->setInflowBoundaryNormalY(gridPath + "inletBoundaryNormalY.dat");
-	this->setInflowBoundaryNormalZ(gridPath + "inletBoundaryNormalZ.dat");
-	//Normals - Outlet
-	this->setOutflowBoundaryNormalX(gridPath + "outletBoundaryNormalX.dat");
-	this->setOutflowBoundaryNormalY(gridPath + "outletBoundaryNormalY.dat");
-	this->setOutflowBoundaryNormalZ(gridPath + "outletBoundaryNormalZ.dat");
-	//////////////////////////////////////////////////////////////////////////
-	//Forcing
-	real forcingX = 0.0;
-	real forcingY = 0.0;
-	real forcingZ = 0.0;
+    if (configData.contains("GeometryF"))
+        this->setGeometryFileF(configData.getValue<std::string>("GeometryF"));
+    else if (this->getReadGeo())
+        throw std::runtime_error("readGeo is true, GeometryF has to be set as well!");
 
-	if (configData->isForcingXInConfigFile())
-		forcingX = configData->getForcingX();
-	if (configData->isForcingYInConfigFile())
-		forcingY = configData->getForcingY();
-	if (configData->isForcingZInConfigFile())
-		forcingZ = configData->getForcingZ();
+    //////////////////////////////////////////////////////////////////////////
+    if (configData.contains("measureClockCycle"))
+        this->setclockCycleForMP(configData.getValue<real>("measureClockCycle"));
 
-	this->setForcing(forcingX, forcingY, forcingZ);
-	//////////////////////////////////////////////////////////////////////////
-	//quadricLimiters
-	real quadricLimiterP = (real)0.01;
-	real quadricLimiterM = (real)0.01;
-	real quadricLimiterD = (real)0.01;
+    if (configData.contains("measureTimestep"))
+        this->settimestepForMP(configData.getValue<uint>("measureTimestep"));
 
-	if (configData->isQuadricLimiterPInConfigFile())
-		quadricLimiterP = configData->getQuadricLimiterP();
-	if (configData->isQuadricLimiterMInConfigFile())
-		quadricLimiterM = configData->getQuadricLimiterM();
-	if (configData->isQuadricLimiterDInConfigFile())
-		quadricLimiterD = configData->getQuadricLimiterD();
+    //////////////////////////////////////////////////////////////////////////
 
-	this->setQuadricLimiters(quadricLimiterP, quadricLimiterM, quadricLimiterD);
-	//////////////////////////////////////////////////////////////////////////
-	//Particles
-	if (configData->isCalcParticlesInConfigFile())
-		this->setCalcParticles(configData->getCalcParticles());
-	else
-		this->setCalcParticles(false);
+    std::string gridPath{ "" };
+    if (configData.contains("GridPath"))
+        gridPath = configData.getValue<std::string>("GridPath");
+    else
+        throw std::runtime_error("GridPath has to be defined in config file!");
 
-	if (configData->isParticleBasicLevelInConfigFile())
-		this->setParticleBasicLevel(configData->getParticleBasicLevel());
-	else
-		this->setParticleBasicLevel((int)0);
+    if (this->getNumprocs() == 1)
+        gridPath += "/";
+    else
+        gridPath += "/" + StringUtil::toString(this->getMyID()) + "/";
 
-	if (configData->isParticleInitLevelInConfigFile())
-		this->setParticleInitLevel(configData->getParticleInitLevel());
-	else
-		this->setParticleInitLevel((int)0);
+    // //////////////////////////////////////////////////////////////////////////
+    this->setFName(this->getOutputPath() + "/" + this->getOutputPrefix());
+    //////////////////////////////////////////////////////////////////////////
+    this->setgeoVec(gridPath + "geoVec.dat");
+    this->setcoordX(gridPath + "coordX.dat");
+    this->setcoordY(gridPath + "coordY.dat");
+    this->setcoordZ(gridPath + "coordZ.dat");
+    this->setneighborX(gridPath + "neighborX.dat");
+    this->setneighborY(gridPath + "neighborY.dat");
+    this->setneighborZ(gridPath + "neighborZ.dat");
+    this->setneighborWSB(gridPath + "neighborWSB.dat");
+    this->setscaleCFC(gridPath + "scaleCFC.dat");
+    this->setscaleCFF(gridPath + "scaleCFF.dat");
+    this->setscaleFCC(gridPath + "scaleFCC.dat");
+    this->setscaleFCF(gridPath + "scaleFCF.dat");
+    this->setscaleOffsetCF(gridPath + "offsetVecCF.dat");
+    this->setscaleOffsetFC(gridPath + "offsetVecFC.dat");
+    this->setgeomBoundaryBcQs(gridPath + "geomBoundaryQs.dat");
+    this->setgeomBoundaryBcValues(gridPath + "geomBoundaryValues.dat");
+    this->setinletBcQs(gridPath + "inletBoundaryQs.dat");
+    this->setinletBcValues(gridPath + "inletBoundaryValues.dat");
+    this->setoutletBcQs(gridPath + "outletBoundaryQs.dat");
+    this->setoutletBcValues(gridPath + "outletBoundaryValues.dat");
+    this->settopBcQs(gridPath + "topBoundaryQs.dat");
+    this->settopBcValues(gridPath + "topBoundaryValues.dat");
+    this->setbottomBcQs(gridPath + "bottomBoundaryQs.dat");
+    this->setbottomBcValues(gridPath + "bottomBoundaryValues.dat");
+    this->setfrontBcQs(gridPath + "frontBoundaryQs.dat");
+    this->setfrontBcValues(gridPath + "frontBoundaryValues.dat");
+    this->setbackBcQs(gridPath + "backBoundaryQs.dat");
+    this->setbackBcValues(gridPath + "backBoundaryValues.dat");
+    this->setnumberNodes(gridPath + "numberNodes.dat");
+    this->setLBMvsSI(gridPath + "LBMvsSI.dat");
+    this->setmeasurePoints(gridPath + "measurePoints.dat");
+    this->setpropellerValues(gridPath + "propellerValues.dat");
+    this->setcpTop(gridPath + "cpTop.dat");
+    this->setcpBottom(gridPath + "cpBottom.dat");
+    this->setcpBottom2(gridPath + "cpBottom2.dat");
+    this->setConcentration(gridPath + "conc.dat");
+    this->setStreetVelocity(gridPath + "streetVector.dat");
+    //////////////////////////////////////////////////////////////////////////
+    // Normals - Geometry
+    this->setgeomBoundaryNormalX(gridPath + "geomBoundaryNormalX.dat");
+    this->setgeomBoundaryNormalY(gridPath + "geomBoundaryNormalY.dat");
+    this->setgeomBoundaryNormalZ(gridPath + "geomBoundaryNormalZ.dat");
+    // Normals - Inlet
+    this->setInflowBoundaryNormalX(gridPath + "inletBoundaryNormalX.dat");
+    this->setInflowBoundaryNormalY(gridPath + "inletBoundaryNormalY.dat");
+    this->setInflowBoundaryNormalZ(gridPath + "inletBoundaryNormalZ.dat");
+    // Normals - Outlet
+    this->setOutflowBoundaryNormalX(gridPath + "outletBoundaryNormalX.dat");
+    this->setOutflowBoundaryNormalY(gridPath + "outletBoundaryNormalY.dat");
+    this->setOutflowBoundaryNormalZ(gridPath + "outletBoundaryNormalZ.dat");
+    //////////////////////////////////////////////////////////////////////////
+    // //Forcing
+    real forcingX = 0.0;
+    real forcingY = 0.0;
+    real forcingZ = 0.0;
 
-	if (configData->isNumberOfParticlesInConfigFile())
-		this->setNumberOfParticles(configData->getNumberOfParticles());
-	else
-		this->setNumberOfParticles((int)0);
+    if (configData.contains("ForcingX"))
+        forcingX = configData.getValue<real>("ForcingX");
+    if (configData.contains("ForcingY"))
+        forcingY = configData.getValue<real>("ForcingY");
+    if (configData.contains("ForcingZ"))
+        forcingZ = configData.getValue<real>("ForcingZ");
 
-	if (configData->isStartXHotWallInConfigFile())
-		this->setStartXHotWall(configData->getStartXHotWall());
-	else
-		this->setStartXHotWall((real)0);
+    this->setForcing(forcingX, forcingY, forcingZ);
+    //////////////////////////////////////////////////////////////////////////
+    // quadricLimiters
+    real quadricLimiterP = (real)0.01;
+    real quadricLimiterM = (real)0.01;
+    real quadricLimiterD = (real)0.01;
 
-	if (configData->isEndXHotWallInConfigFile())
-		this->setEndXHotWall(configData->getEndXHotWall());
-	else
-		this->setEndXHotWall((real)0);
-	//////////////////////////////////////////////////////////////////////////
-	//for Multi GPU
-	if (this->getNumprocs() > 1)
-	{
-		//////////////////////////////////////////////////////////////////////////
-		//3D domain decomposition
-		std::vector<std::string> sendProcNeighborsX, sendProcNeighborsY, sendProcNeighborsZ;
-		std::vector<std::string> recvProcNeighborsX, recvProcNeighborsY, recvProcNeighborsZ;
-		for (int i = 0; i < this->getNumprocs(); i++)
-		{
-			sendProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xs.dat");
-			sendProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Ys.dat");
-			sendProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zs.dat");
-			recvProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xr.dat");
-			recvProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Yr.dat");
-			recvProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zr.dat");
-		}
-		this->setPossNeighborFilesX(sendProcNeighborsX, "send");
-		this->setPossNeighborFilesY(sendProcNeighborsY, "send");
-		this->setPossNeighborFilesZ(sendProcNeighborsZ, "send");
-		this->setPossNeighborFilesX(recvProcNeighborsX, "recv");
-		this->setPossNeighborFilesY(recvProcNeighborsY, "recv");
-		this->setPossNeighborFilesZ(recvProcNeighborsZ, "recv");
-	}
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//Restart
-	if (configData->isTimeDoCheckPointInConfigFile())
-		this->setTimeDoCheckPoint(configData->getTimeDoCheckPoint());
-	else
-		this->setTimeDoCheckPoint((uint)0);
+    if (configData.contains("QuadricLimiterP"))
+        quadricLimiterP = configData.getValue<real>("QuadricLimiterP");
+    if (configData.contains("QuadricLimiterM"))
+        quadricLimiterM = configData.getValue<real>("QuadricLimiterM");
+    if (configData.contains("QuadricLimiterD"))
+        quadricLimiterD = configData.getValue<real>("QuadricLimiterD");
 
-	if (configData->isTimeDoRestartInConfigFile())
-		this->setTimeDoRestart(configData->getTimeDoRestart());
-	else
-		this->setTimeDoRestart((uint)0);
+    this->setQuadricLimiters(quadricLimiterP, quadricLimiterM, quadricLimiterD);
+    //////////////////////////////////////////////////////////////////////////
+    // Particles
+    if (configData.contains("calcParticles"))
+        this->setCalcParticles(configData.getValue<bool>("calcParticles"));
 
-	if (configData->isDoCheckPointInConfigFile())
-		this->setDoCheckPoint(configData->getDoCheckPoint());
-	else
-		this->setDoCheckPoint(false);
+    if (configData.contains("baseLevel"))
+        this->setParticleBasicLevel(configData.getValue<int>("baseLevel"));
 
-	if (configData->isDoRestartInConfigFile())
-		this->setDoRestart(configData->getDoRestart());
-	else
-		this->setDoRestart(false);
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	if (configData->isMaxLevelInConfigFile())
-		this->setMaxLevel(configData->getMaxLevel());
-	else
-		this->setMaxLevel((int)1);
+    if (configData.contains("initLevel"))
+        this->setParticleInitLevel(configData.getValue<int>("initLevel"));
 
-	if (configData->isGridXInConfigFile())
-		this->setGridX(configData->getGridX());
-	else
-		this->setGridX(std::vector<int>(this->getMaxLevel()+1, 32));
+    if (configData.contains("numberOfParticles"))
+        this->setNumberOfParticles(configData.getValue<int>("numberOfParticles"));
 
-	if (configData->isGridYInConfigFile())
-		this->setGridY(configData->getGridY());
-	else
-		this->setGridY(std::vector<int>(this->getMaxLevel()+1, 32));
+    if (configData.contains("startXHotWall"))
+        this->setStartXHotWall(configData.getValue<real>("startXHotWall"));
 
-	if (configData->isGridZInConfigFile())
-		this->setGridZ(configData->getGridZ());
-	else
-		this->setGridZ(std::vector<int>(this->getMaxLevel()+1, 32));
+    if (configData.contains("endXHotWall"))
+        this->setEndXHotWall(configData.getValue<real>("endXHotWall"));
+    //////////////////////////////////////////////////////////////////////////
+    // for Multi GPU
+    if (this->getNumprocs() > 1) {
+        //////////////////////////////////////////////////////////////////////////
+        // 3D domain decomposition
+        std::vector<std::string> sendProcNeighborsX, sendProcNeighborsY, sendProcNeighborsZ;
+        std::vector<std::string> recvProcNeighborsX, recvProcNeighborsY, recvProcNeighborsZ;
+        for (int i = 0; i < this->getNumprocs(); i++) {
+            sendProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xs.dat");
+            sendProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Ys.dat");
+            sendProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zs.dat");
+            recvProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xr.dat");
+            recvProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Yr.dat");
+            recvProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zr.dat");
+        }
+        this->setPossNeighborFilesX(sendProcNeighborsX, "send");
+        this->setPossNeighborFilesY(sendProcNeighborsY, "send");
+        this->setPossNeighborFilesZ(sendProcNeighborsZ, "send");
+        this->setPossNeighborFilesX(recvProcNeighborsX, "recv");
+        this->setPossNeighborFilesY(recvProcNeighborsY, "recv");
+        this->setPossNeighborFilesZ(recvProcNeighborsZ, "recv");
+    }
 
-	if (configData->isDistXInConfigFile())
-		this->setDistX(configData->getDistX());
-	else
-		this->setDistX(std::vector<int>(this->getMaxLevel()+1, 32));
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Restart
+    if (configData.contains("TimeDoCheckPoint"))
+        this->setTimeDoCheckPoint(configData.getValue<uint>("TimeDoCheckPoint"));
 
-	if (configData->isDistYInConfigFile())
-		this->setDistY(configData->getDistY());
-	else
-		this->setDistY(std::vector<int>(this->getMaxLevel()+1, 32));
+    if (configData.contains("TimeDoRestart"))
+        this->setTimeDoRestart(configData.getValue<uint>("TimeDoRestart"));
 
-	if (configData->isDistZInConfigFile())
-		this->setDistZ(configData->getDistZ());
-	else
-		this->setDistZ(std::vector<int>(this->getMaxLevel()+1, 32));
+    if (configData.contains("DoCheckPoint"))
+        this->setDoCheckPoint(configData.getValue<bool>("DoCheckPoint"));
 
-	if (configData->isNeedInterfaceInConfigFile())
-		this->setNeedInterface(configData->getNeedInterface());
-	else
-		this->setNeedInterface(std::vector<bool>(6, true));
+    if (configData.contains("DoRestart"))
+        this->setDoRestart(configData.getValue<bool>("DoRestart"));
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    if (configData.contains("NOGL"))
+        setMaxLevel(configData.getValue<int>("NOGL"));
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Kernel
-	if (configData->isMainKernelInConfigFile())
-		this->setMainKernel(configData->getMainKernel());
-	else
-		this->setMainKernel("CumulantK15Comp");
+    this->setGridX(std::vector<int>(this->getMaxLevel() + 1, 32));
+    this->setGridY(std::vector<int>(this->getMaxLevel() + 1, 32));
+    this->setGridZ(std::vector<int>(this->getMaxLevel() + 1, 32));
 
-	if (configData->isMultiKernelOnInConfigFile())
-		this->setMultiKernelOn(configData->getMultiKernelOn());
-	else
-		this->setMultiKernelOn(false);
+    this->setDistX(std::vector<int>(this->getMaxLevel() + 1, 32));
+    this->setDistY(std::vector<int>(this->getMaxLevel() + 1, 32));
+    this->setDistZ(std::vector<int>(this->getMaxLevel() + 1, 32));
 
-	if (configData->isMultiKernelLevelInConfigFile())
-		this->setMultiKernelLevel(configData->getMultiKernelLevel());
-	else if (this->getMultiKernelOn())
-	{
-		std::vector<int> tmp;
-		for (int i = 0; i < this->getMaxLevel()+1; i++)
-		{
-			tmp.push_back(i);
-		}
-		this->setMultiKernelLevel(tmp);
-	} 
-	else
-		this->setMultiKernelLevel(std::vector<int>(0));
+    if (configData.contains("GridX"))
+        this->setGridX(configData.getVector<int>("GridX"));
 
-	if (configData->isMultiKernelNameInConfigFile()) {
-        std::vector<std::string> kernels;
-		for (std::size_t i = 0; i < configData->getMultiKernelName().size(); i++) {
-			kernels.push_back(configData->getMultiKernelName().at(i));
-		}
-		this->setMultiKernel(kernels);
-	}
-	else if (this->getMultiKernelOn())
-	{
+    if (configData.contains("GridY"))
+        this->setGridY(configData.getVector<int>("GridY"));
+
+    if (configData.contains("GridZ"))
+        this->setGridZ(configData.getVector<int>("GridZ"));
+
+    if (configData.contains("DistX"))
+        this->setDistX(configData.getVector<int>("DistX"));
+
+    if (configData.contains("DistY"))
+        this->setDistY(configData.getVector<int>("DistY"));
+
+    if (configData.contains("DistZ"))
+        this->setDistZ(configData.getVector<int>("DistZ"));
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Kernel
+    if (configData.contains("MainKernelName"))
+        this->setMainKernel(configData.getValue<std::string>("MainKernelName"));
+
+    if (configData.contains("MultiKernelOn"))
+        this->setMultiKernelOn(configData.getValue<bool>("MultiKernelOn"));
+
+    if (configData.contains("MultiKernelLevel"))
+        this->setMultiKernelLevel(configData.getVector<int>("MultiKernelLevel"));
+    else if (this->getMultiKernelOn()) {
+        std::vector<int> tmp;
+        for (int i = 0; i < this->getMaxLevel() + 1; i++) {
+            tmp.push_back(i);
+        }
+        this->setMultiKernelLevel(tmp);
+    }
+
+    if (configData.contains("MultiKernelName"))
+        this->setMultiKernel(configData.getVector<std::string>("MultiKernelName"));
+    else if (this->getMultiKernelOn()) {
         std::vector<std::string> tmp;
-		for (int i = 0; i < this->getMaxLevel()+1; i++)
-		{
-			tmp.push_back("CumulantK15Comp");
-		}
-		this->setMultiKernel(tmp);
-	}
-	else {
-        std::vector<std::string> tmp;
-		this->setMultiKernel(tmp);
-	}		
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        for (int i = 0; i < this->getMaxLevel() + 1; i++) {
+            tmp.push_back("CumulantK17Comp");
+        }
+        this->setMultiKernel(tmp);
+    }
 }
-Parameter::~Parameter()
-{
-}
-Parameter* Parameter::instanz = 0;
-Parameter* Parameter::getInstanz()
-{
-	if( instanz == 0 )
-		instanz = new Parameter();
-	return instanz;
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//init-method
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void Parameter::initParameter()
-{
-	factor_gridNZ  = 2;
-	coarse         = 0;
-	fine           = this->maxlevel;
-	parH.resize(this->maxlevel+1);
-	parD.resize(this->maxlevel+1);
 
+void Parameter::initLBMSimulationParameter()
+{
 	//host
 	for (int i = coarse; i <= fine; i++)
 	{
-		parH[i]                        = new ParameterStruct;
+		parH[i]                        = std::make_shared<LBMSimulationParameter>();
 		parH[i]->numberofthreads       = 64;// 128;
 		parH[i]->gridNX                = getGridX().at(i);
 		parH[i]->gridNY                = getGridY().at(i);
@@ -624,7 +463,7 @@ void Parameter::initParameter()
 		parH[i]->XdistKn               = getDistX().at(i);
 		parH[i]->YdistKn               = getDistY().at(i);
 		parH[i]->ZdistKn               = getDistZ().at(i);
-		if (i==coarse)
+		if (i == coarse)
 		{
 			parH[i]->distX                 = (real)getDistX().at(i);
 			parH[i]->distY                 = (real)getDistY().at(i);
@@ -662,18 +501,12 @@ void Parameter::initParameter()
 			//parH[i]->cStartz               = (real)parH[i]->XdistKn;
 			////////////////////////////////////////////////////////////////////////////
 		}
-		parH[i]->need_interface[INTERFACE_E]=getNeedInterface().at(INTERFACE_E);
-		parH[i]->need_interface[INTERFACE_W]=getNeedInterface().at(INTERFACE_W);
-		parH[i]->need_interface[INTERFACE_N]=getNeedInterface().at(INTERFACE_N);
-		parH[i]->need_interface[INTERFACE_S]=getNeedInterface().at(INTERFACE_S);
-		parH[i]->need_interface[INTERFACE_T]=getNeedInterface().at(INTERFACE_T);
-		parH[i]->need_interface[INTERFACE_B]=getNeedInterface().at(INTERFACE_B);
 	}
 
 	//device
 	for (int i = coarse; i <= fine; i++)
 	{
-		parD[i]                        = new ParameterStruct;
+		parD[i]                        = std::make_shared<LBMSimulationParameter>();
 		parD[i]->numberofthreads       = parH[i]->numberofthreads;
 		parD[i]->gridNX                = parH[i]->gridNX;
 		parD[i]->gridNY                = parH[i]->gridNY;
@@ -706,249 +539,8 @@ void Parameter::initParameter()
 		parD[i]->distY                 = parH[i]->distY;
 		parD[i]->distZ                 = parH[i]->distZ;
 	}
-
-	//Interface
-	//comment out for geller
-	//for (int i = coarse; i < fine; i++)
-	//{
-	//   initInterfaceParameter(i);
-	//}
 }
-void Parameter::setSizeMatSparse(int level)
-{
-	parH[level]->size_Mat_SP = 1;
-	parD[level]->size_Mat_SP = 1;
-	parH[level]->sizePlaneSB = 0;
-	parH[level]->sizePlaneST = 0;
-	parH[level]->sizePlaneRB = 0;
-	parH[level]->sizePlaneRT = 0;
-	parH[level]->isSetSendB  = false;
-	parH[level]->isSetSendT  = false;
-	parH[level]->isSetRecvB  = false;
-	parH[level]->isSetRecvT  = false;
-	unsigned int mm[8];
 
-	for (unsigned int k=1; k<parH[level]->gridNZ + 2 * STARTOFFZ - 1; k++)
-	{
-		for (unsigned int j=1; j<parH[level]->gridNY + 2 * STARTOFFY - 1; j++)
-		{
-			for (unsigned int i=1; i<parH[level]->gridNX + 2 * STARTOFFX - 1; i++)
-			{
-				mm[0]= parH[level]->nx*(parH[level]->ny*k + j) + i;
-				mm[1]= mm[0]                                                  -1; //W
-				mm[2]= mm[0]                                  -parH[level]->nx-1; //SW
-				mm[3]= mm[0]                                  -parH[level]->nx;   //S
-				mm[4]= mm[0]-(parH[level]->nx*parH[level]->ny);                   //B
-				mm[5]= mm[0]-(parH[level]->nx*parH[level]->ny)                -1; //BW
-				mm[6]= mm[0]-(parH[level]->nx*parH[level]->ny)-parH[level]->nx;   //BS
-				mm[7]= mm[0]-(parH[level]->nx*parH[level]->ny)-parH[level]->nx-1; //BSW
-
-				if ( parH[level]->geo[mm[0]] != GEO_VOID ||
-					parH[level]->geo[mm[1]] != GEO_VOID ||
-					parH[level]->geo[mm[2]] != GEO_VOID ||
-					parH[level]->geo[mm[3]] != GEO_VOID ||
-					parH[level]->geo[mm[4]] != GEO_VOID ||
-					parH[level]->geo[mm[5]] != GEO_VOID ||
-					parH[level]->geo[mm[6]] != GEO_VOID ||
-					parH[level]->geo[mm[7]] != GEO_VOID )
-				{
-					//////////////////////////////////////////////////////////////////////////
-					//add some stuff for the data exchange between the GPUs //////////////////
-					if (k == STARTOFFZ)
-					{
-						parH[level]->sizePlaneSB  += 1;
-						if (parH[level]->isSetSendB == false)
-						{
-							parH[level]->startB = mm[0];
-							parH[level]->isSetSendB = true;
-						}
-					} 
-					else if (k == parH[level]->gridNZ + STARTOFFZ - 1)
-					{
-						parH[level]->sizePlaneST  += 1;
-						if (parH[level]->isSetSendT == false)
-						{
-							parH[level]->startT = mm[0];
-							parH[level]->isSetSendT = true;
-						}
-					}
-					else if (k == parH[level]->gridNZ + STARTOFFZ)
-					{
-						parH[level]->sizePlaneRB  += 1;
-						if (parH[level]->isSetRecvB == false)
-						{
-							parH[level]->endB = mm[0];
-							parH[level]->isSetRecvB = true;
-						}
-					}
-					else if (k == STARTOFFZ-1)
-					{
-						parH[level]->sizePlaneRT  += 1;
-						if (parH[level]->isSetRecvT == false)
-						{
-							parH[level]->endT = mm[0];
-							parH[level]->isSetRecvT = true;
-						}
-					}
-					//////////////////////////////////////////////////////////////////////////
-					parH[level]->k[mm[0]]    = parH[level]->size_Mat_SP;
-					parH[level]->size_Mat_SP = parH[level]->size_Mat_SP + 1;               
-					parD[level]->size_Mat_SP = parD[level]->size_Mat_SP + 1;  
-				}
-				else parH[level]->k[mm[0]] = 0;
-			}
-		}
-	}
-	parH[level]->mem_size_real_SP    = sizeof(real     ) * parH[level]->size_Mat_SP;
-	parH[level]->mem_size_int_SP        = sizeof(unsigned int) * parH[level]->size_Mat_SP;
-	parD[level]->mem_size_real_SP    = sizeof(real     ) * parD[level]->size_Mat_SP;
-	parD[level]->mem_size_int_SP        = sizeof(unsigned int) * parD[level]->size_Mat_SP;
-}
-void Parameter::fillSparse(int level)
-{
-    //nsigned int li = ((parH[level]->gridNX+STARTOFFX-2)-(STARTOFFX+1)-1);
-    //unsigned int lj = ((parH[level]->gridNY+STARTOFFY-2)-(STARTOFFY+1)-1);
-	// real globalX, globalY, globalZ;
-
-	real PI = 3.141592653589793238462643383279f;
-
-	for (unsigned int k=1; k<parH[level]->gridNZ + 2 * STARTOFFZ - 1; k++)
-	{
-		for (unsigned int j=1; j<parH[level]->gridNY + 2 * STARTOFFY - 1; j++)
-		{
-			for (unsigned int i=1; i<parH[level]->gridNX + 2 * STARTOFFX - 1; i++)
-			{
-				int m = parH[level]->nx*(parH[level]->ny*k + j) + i;
-				if ((k < parH[level]->gridNZ + 2 * STARTOFFZ - 2) && (j < parH[level]->gridNY + 2 * STARTOFFY - 2) && (i < parH[level]->gridNX + 2 * STARTOFFX - 2))
-				{
-					if ((X1PERIODIC == true) && (level==coarse) && (i==parH[level]->gridNX + STARTOFFX - 1)) 
-					{
-						int mm = parH[level]->nx*(parH[level]->ny*k + j) + STARTOFFX;
-						parH[level]->neighborX_SP[parH[level]->k[m]] = parH[level]->k[mm];
-					}
-					else
-					{
-						parH[level]->neighborX_SP[parH[level]->k[m]] = parH[level]->k[m+1];
-					}
-					if ((X2PERIODIC == true) && (level==coarse) && (j==parH[level]->gridNY + STARTOFFY - 1)) 
-					{
-						int mm = parH[level]->nx*(parH[level]->ny*k + STARTOFFY) + i;
-						parH[level]->neighborY_SP[parH[level]->k[m]] = parH[level]->k[mm];
-					}
-					else
-					{
-						parH[level]->neighborY_SP[parH[level]->k[m]] = parH[level]->k[m+parH[level]->nx];
-					}
-					if ((X3PERIODIC == true) && (level==coarse) && (k==parH[level]->gridNZ + STARTOFFZ - 1)) 
-					{
-						int mm = parH[level]->nx*(parH[level]->ny*STARTOFFZ + j) + i;
-						parH[level]->neighborZ_SP[parH[level]->k[m]] = parH[level]->k[mm];
-					}
-					else
-					{
-						parH[level]->neighborZ_SP[parH[level]->k[m]] = parH[level]->k[m+(parH[level]->nx*parH[level]->ny)];
-					}
-				}
-				parH[level]->geoSP[parH[level]->k[m]]        = parH[level]->geo[m];
-				////////////////////////////////////////////////////////////////////////////
-				////Coordinates
-				//parH[level]->coordX_SP[parH[level]->k[m]]    = i;
-				//parH[level]->coordY_SP[parH[level]->k[m]]    = j;
-				//parH[level]->coordZ_SP[parH[level]->k[m]]    = k;
-				////////////////////////////////////////////////////////////////////////////
-				if (diffOn==true)
-				{
-					parH[level]->Conc[parH[level]->k[m]]         = parH[level]->Conc_Full[m];
-				}
-				////////////////////////////////////////////////////////////////////////////
-				////set pressure in the middle of the fine grid
-				//if (level == getFine())
-				//{
-				//   if(   i == parH[level]->gridNX/2 + STARTOFFX
-				//      && j == parH[level]->gridNY/2 + STARTOFFY 
-				//      && k == parH[level]->gridNZ/2 + STARTOFFZ) 
-				//      parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.1f;             
-				//   else 
-				//      parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.0f;
-				//} 
-				//else
-				//{
-				//   parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.0f;
-				//}
-				// globalX = TrafoXtoWorld(i,level);
-				// globalY = TrafoYtoWorld(j,level);
-				// globalZ = TrafoZtoWorld(k,level);
-				//without setting a pressure
-				parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.0f;       //parH[level]->Conc_Full[m];//bitte schnell wieder entfernen!!!
-				//////////////////////////////////////////////////////////////////////////
-				parH[level]->vx_SP[parH[level]->k[m]]        = (real)0.0f;
-				//parH[level]->vx_SP[parH[level]->k[m]]        = u0/3.0;
-				parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0f;
-				//parH[level]->vy_SP[parH[level]->k[m]]        = u0/3.0;
-				parH[level]->vz_SP[parH[level]->k[m]]        = (real)0.0f;
-				//parH[level]->vz_SP[parH[level]->k[m]]        = u0/3.0;
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)(u0*2.f)*((-4.f*globalX*globalX + parH[level]->gridNX*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + globalX*(-4.f + 4.f*parH[level]->gridNX + 8.f*STARTOFFX))*(-4.f*globalY*globalY + parH[level]->gridNY*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + globalY*(-4.f + 4.f*parH[level]->gridNY + 8.f*STARTOFFY)))/((2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNY)*(2.f - parH[level]->gridNY));
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)(u0*2.f)*((-4.f*i*i + parH[level]->gridNX*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*parH[level]->gridNX + 8.f*STARTOFFX))*(-4.f*j*j + parH[level]->gridNY*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*parH[level]->gridNY + 8.f*STARTOFFY)))/((2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNY)*(2.f - parH[level]->gridNY));
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);//(16.f*(u0*2.f)*i*j*(parH[level]->nx-i)*(parH[level]->ny-j))/(parH[level]->nx*parH[level]->nx*parH[level]->ny*parH[level]->ny); //u0;
-				//////////////////////////////////////////////////////////////////////////
-				////gerade
-				//parH[level]->vx_SP[parH[level]->k[m]] = (real)((32. * 32. * 3.) / (1000.*(real)parH[level]->gridNX));//(real)parH[level]->gridNX / (real)1000 * 3.0;
-				//parH[level]->vy_SP[parH[level]->k[m]] = (real)((getVelocity() * sin(2.0 * i / parH[level]->gridNX * PI) * cos(2.0 * k / parH[level]->gridNZ * PI)) * (32. / (real)parH[level]->gridNX));
-				//parH[level]->vz_SP[parH[level]->k[m]] = (real)0.0f;
-				//schraeg x
-				// 			parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNX) + (getVelocity() * cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
-				// 			parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
-				// 			parH[level]->vz_SP[parH[level]->k[m]]        = (real)(getVelocity() * cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
-				//schraeg z
-				//parH[level]->vx_SP[parH[level]->k[m]]        = (real)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
-				//parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNZ) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
-
-				  			//Taylor Green Vortex uniform
-				  			parH[level]->rho_SP[parH[level]->k[m]]       = (real)((getVelocity()*getVelocity())*3.0/4.0*(cos((i)*4.0*PI/(real)parH[level]->gridNX)+cos((k)*4.0*PI/(real)parH[level]->gridNZ)))*(real)(parH[level]->gridNZ)/(real)(parH[level]->gridNX);
-				  			//inkl. ueberlagerter Geschwindigkeit
-				  // 			parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNX) + getVelocity()*sin(((i)*2.0*PI/(real)parH[level]->gridNX))*cos((k)*2.0*PI/(real)parH[level]->gridNZ));
-				  			parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000. * 32.) * getVelocity() / 0.001 + getVelocity()*sin(((i)*2.0*PI/(real)parH[level]->gridNX))*cos((k)*2.0*PI/(real)parH[level]->gridNZ));
-				  			//ohne ueberlagerter Geschwindigkeit
-				  //			parH[level]->vx_SP[parH[level]->k[m]]        = (real)(getVelocity()*sin(((i)*2.0*PI/(real)parH[level]->gridNX))*cos((k)*2.0*PI/(real)parH[level]->gridNZ));
-				  			parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
-				  			parH[level]->vz_SP[parH[level]->k[m]]        = (real)(-getVelocity()*cos(((i)*2.0*PI/(real)parH[level]->gridNX))*sin((k)*2.0*PI/(real)parH[level]->gridNZ))*(real)(parH[level]->gridNZ)/(real)(parH[level]->gridNX);            
-
-				//Kernel Fix Test
-				//parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNX) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
-				//parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
-				////parH[level]->vx_SP[parH[level]->k[m]]        = (real)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
-				////parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
-				////parH[level]->vz_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNZ) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
-				//////////////////////////////////////////////////////////////////////////
-				//Taylor Green Vortex
-				//InitglobalX = TrafoXtoMGsWorld(i,level);
-				//InitglobalY = TrafoYtoMGsWorld(j,level);
-				//InitglobalZ = TrafoZtoMGsWorld(k,level);
-				//parH[level]->rho_SP[parH[level]->k[m]]       = (real)((u0*u0)*3.f/4.f*(cos((InitglobalX)*4.f*PI/parH[level]->gridNX)+cos((InitglobalY)*4.f*PI/parH[level]->gridNY)));
-				//parH[level]->vx_SP[parH[level]->k[m]]        = (real)( u0*sin(((InitglobalX)*2.f*PI/parH[level]->gridNX))*cos((InitglobalY)*2.f*PI/parH[level]->gridNY));
-				//parH[level]->vy_SP[parH[level]->k[m]]        = (real)(-u0*cos(((InitglobalX)*2.f*PI/parH[level]->gridNX))*sin((InitglobalY)*2.f*PI/parH[level]->gridNY));
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)0.0f;            
-				//////////////////////////////////////////////////////////////////////////
-			}
-		}
-	}
-	parH[level]->neighborX_SP[parH[level]->k[0]] = 0;
-	parH[level]->neighborY_SP[parH[level]->k[0]] = 0;
-	parH[level]->neighborZ_SP[parH[level]->k[0]] = 0;
-	parH[level]->geoSP[       parH[level]->k[0]] = GEO_VOID;
-	parH[level]->rho_SP[      parH[level]->k[0]] = (real)0.f;
-	parH[level]->vx_SP[       parH[level]->k[0]] = (real)0.f;
-	parH[level]->vy_SP[       parH[level]->k[0]] = (real)0.f;
-	parH[level]->vz_SP[       parH[level]->k[0]] = (real)0.f;
-	////////////////////////////////////////////////////////////////////////////
-	////Coordinates
-	//parH[level]->coordX_SP[parH[level]->k[0]]    = 0;
-	//parH[level]->coordY_SP[parH[level]->k[0]]    = 0;
-	//parH[level]->coordZ_SP[parH[level]->k[0]]    = 0;
-	////////////////////////////////////////////////////////////////////////////
-}
 void Parameter::copyMeasurePointsArrayToVector(int lev)
 {
 	int valuesPerClockCycle = (int)(getclockCycleForMP()/getTimestepForMP());
@@ -964,12 +556,6 @@ void Parameter::copyMeasurePointsArrayToVector(int lev)
 		}
 	}
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1029,7 +615,10 @@ void Parameter::setD3Qxx(int d3qxx)
 }
 void Parameter::setMaxLevel(int maxlevel)
 {
-	this->maxlevel = maxlevel-1;
+    this->maxlevel = maxlevel-1;
+    this->fine     = this->maxlevel;
+    parH.resize(this->maxlevel + 1);
+    parD.resize(this->maxlevel + 1);
 }
 void Parameter::setParticleBasicLevel(int pbl)
 {
@@ -1208,10 +797,6 @@ void Parameter::setGeometryFileM(std::string GeometryFileM)
 void Parameter::setGeometryFileF(std::string GeometryFileF)
 {
 	ic.geometryFileF = GeometryFileF;
-}
-void Parameter::setNeedInterface(std::vector<bool> NeedInterface)
-{
-	ic.NeedInterface = NeedInterface;
 }
 void Parameter::setRe(real Re)
 {
@@ -1975,11 +1560,11 @@ unsigned int Parameter::getStartTurn()
 {
 	return startTurn;
 }
-ParameterStruct* Parameter::getParD(int level)
+std::shared_ptr<LBMSimulationParameter> Parameter::getParD(int level)
 {
 	return parD[level];
 }
-ParameterStruct* Parameter::getParH(int level)
+std::shared_ptr<LBMSimulationParameter> Parameter::getParH(int level)
 {
 	return parH[level];
 }
@@ -2236,10 +1821,6 @@ std::string Parameter::getGeometryFileM()
 std::string Parameter::getGeometryFileF()
 {
 	return ic.geometryFileF;
-}
-std::vector<bool> Parameter::getNeedInterface()
-{
-	return ic.NeedInterface;
 }
 real Parameter::getRe()
 {
@@ -2688,16 +2269,9 @@ bool Parameter::getIsProp()
 {
 	return ic.isProp;
 }
-bool Parameter::overWritingRestart(unsigned int t)
+bool Parameter::overWritingRestart(uint t)
 {
-	if (t == getTimeDoRestart())
-	{
-		return true;
-	} 
-	else
-	{
-		return false;
-	}
+	return t == getTimeDoRestart();
 }
 unsigned int Parameter::getTimestepForMP()
 {
@@ -2879,7 +2453,7 @@ std::vector< int> Parameter::getMultiKernelLevel()
 {
 	return multiKernelLevel;
 }
-std::vector< std::string> Parameter::getMultiKernel()
+std::vector<std::string> Parameter::getMultiKernel()
 {
 	return multiKernel;
 }
@@ -2900,65 +2474,6 @@ std::function<void(real,real,real,real&,real&,real&,real&)>& Parameter::getIniti
     return this->initialCondition;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//private methods
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void Parameter::initInterfaceParameter(int level)
-{
-	///////////////////////////////////////////////////////////////////////////////////////////////////
-	//host
-	parH[level]->K_CF               = 0;
-	parH[level]->K_FC               = 0;
-	if (parH[level]->need_interface[INTERFACE_E]==true)
-	{
-		parH[level]->K_CF           += ( parH[level+1]->gridNY   /2)*( parH[level+1]->gridNZ   /2);
-		parH[level]->K_FC           += ((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNZ-6)/2);
-	} 
-	if (parH[level]->need_interface[INTERFACE_W]==true)
-	{
-		parH[level]->K_CF           += ( parH[level+1]->gridNY   /2)*( parH[level+1]->gridNZ   /2); 
-		parH[level]->K_FC           += ((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNZ-6)/2);
-	}
-	if (parH[level]->need_interface[INTERFACE_N]==true)
-	{
-		parH[level]->K_CF           += ( parH[level+1]->gridNX   /2)*( parH[level+1]->gridNZ   /2); 
-		parH[level]->K_FC           += ((parH[level+1]->gridNX-6)/2)*((parH[level+1]->gridNZ-6)/2);
-	}
-	if (parH[level]->need_interface[INTERFACE_S]==true)
-	{
-		parH[level]->K_CF           += ( parH[level+1]->gridNX   /2)*( parH[level+1]->gridNZ   /2); 
-		parH[level]->K_FC           += ((parH[level+1]->gridNX-6)/2)*((parH[level+1]->gridNZ-6)/2);
-	}
-	if (parH[level]->need_interface[INTERFACE_T]==true)
-	{
-		parH[level]->K_CF           += ( parH[level+1]->gridNY   /2)*( parH[level+1]->gridNX   /2); 
-		parH[level]->K_FC           += ((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNX-6)/2);
-	}
-	if (parH[level]->need_interface[INTERFACE_B]==true)
-	{
-		parH[level]->K_CF           += ( parH[level+1]->gridNY   /2)*( parH[level+1]->gridNX   /2); 
-		parH[level]->K_FC           += ((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNX-6)/2);
-	}
-	//parH[level]->K_CF               = (( parH[level+1]->gridNY   /2)*( parH[level+1]->gridNZ   /2)*2)+
-	//                                  (( parH[level+1]->gridNX   /2)*( parH[level+1]->gridNZ   /2)*2)+
-	//                                  (( parH[level+1]->gridNY   /2)*( parH[level+1]->gridNX   /2)*2);
-	//parH[level]->K_FC               = (((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNZ-6)/2)*2)+
-	//                                  (((parH[level+1]->gridNX-6)/2)*((parH[level+1]->gridNZ-6)/2)*2)+
-	//                                  (((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNX-6)/2)*2);
-	parH[level]->mem_size_kCF       = sizeof(unsigned int)*parH[level]->K_CF;
-	parH[level]->mem_size_kFC       = sizeof(unsigned int)*parH[level]->K_FC;
-	parH[level]->mem_size_kCF_off   = sizeof(real)*parH[level]->K_CF;
-	parH[level]->mem_size_kFC_off   = sizeof(real)*parH[level]->K_FC;
-	///////////////////////////////////////////////////////////////////////////////////////////////////
-	//device
-	parD[level]->K_CF               = parH[level]->K_CF;
-	parD[level]->K_FC               = parH[level]->K_FC;
-	parD[level]->mem_size_kCF       = parH[level]->mem_size_kCF;
-	parD[level]->mem_size_kFC       = parH[level]->mem_size_kFC;
-	parD[level]->mem_size_kCF_off   = parH[level]->mem_size_kCF_off;
-	parD[level]->mem_size_kFC_off   = parH[level]->mem_size_kFC_off;
-	///////////////////////////////////////////////////////////////////////////////////////////////////
-}
 real Parameter::TrafoXtoWorld(int CoordX, int level)
 {
 	return (parH[level]->mTtoWx*CoordX+parH[level]->cTtoWx);

@@ -13,11 +13,6 @@
 #include "GPU/devCheck.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
-#include "Input/ConfigFile.h"
-#include "Input/VtkGeometryReader.h"
-#include "Input/kFullReader.h"
-#include "Input/PositionReader.h"
-//////////////////////////////////////////////////////////////////////////
 #include "Output/MeasurePointWriter.hpp"
 #include "Output/AnalysisData.hpp"
 #include "Output/InterfaceDebugWriter.hpp"
@@ -27,8 +22,6 @@
 #include "Core/StringUtilities/StringUtil.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Init/InitLattice.h"
-#include "Init/DefineGrid.h"
-#include "Init/SetParameter.h"
 #include "Init/VfReader.h"
 //////////////////////////////////////////////////////////////////////////
 #include "FindQ/FindQ.h"
@@ -87,11 +80,9 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    comm = vf::gpu::Communicator::getInstanz();
    this->para = para;
 
-   para->setMyID(comm->getPID());
-   para->setNumprocs(comm->getNummberOfProcess());
    devCheck(comm->mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
-
-   para->initParameter();
+   
+   para->initLBMSimulationParameter();
 
    gridProvider->allocAndCopyForcing();
    gridProvider->allocAndCopyQuadricLimiters();
@@ -99,7 +90,6 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    gridProvider->setBoundingBox();
 
    para->setRe(para->getVelocity() * (real)1.0 / para->getViscosity());
-   para->setPhi((real) 0.0);
    para->setlimitOfNodesForVTK(30000000); //max 30 Million nodes per VTK file
    if (para->getDoRestart())
        para->setStartTurn(para->getTimeDoRestart());

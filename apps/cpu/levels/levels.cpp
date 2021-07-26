@@ -20,7 +20,7 @@ void run(string configname)
       int mybundle = comm->getBundleID();
       int root = comm->getRoot();
 
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string pathname = config.getValue<string>("path");

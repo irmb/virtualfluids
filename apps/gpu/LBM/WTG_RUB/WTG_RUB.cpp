@@ -7,6 +7,7 @@
 #include <fstream>
 #include <exception>
 #include <memory>
+#include <filesystem>
 
 #include "mpi.h"
 
@@ -16,18 +17,19 @@
 #include "PointerDefinitions.h"
 
 #include "Core/LbmOrGks.h"
-#include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
-#include "Core/Input/ConfigFileReader/ConfigFileReader.h"
 
 #include "Core/VectorTypes.h"
 #include "Core/Logger/Logger.h"
+
+#include <basics/config/ConfigurationFile.h>
 
 //////////////////////////////////////////////////////////////////////////
 
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
+#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
 #include "GridGenerator/grid/GridFactory.h"
 #include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
 #include "GridGenerator/geometries/Conglomerate/Conglomerate.h"
@@ -67,25 +69,23 @@ LbmOrGks lbmOrGks = LBM;
 
 const real L  = 1.0;
 
-const real Re = 500.0;// 1000.0;
-
 const real velocity  = 1.0;
 
 int variant = 1;
 real rotationOfCity;
 real z_offset = 0.0; // only if baseplate is in use (currently not!! not important)
+int dataN;
+std::vector<real> dataZ;
+std::vector<real> dataVelocity;
+std::string simulationName("");
 
 // 1: original setup of Lennard Lux (6 level, 4.0 cm -> 1.25 mm)
 // 2: setup 1 of MSch               (4 level, 1.0 cm -> 1.25 mm)
 // 3: setup 2 of MSch               (5 level, 1.6 cm -> 1.0  mm)
 int setupDomain = 3;
 
-
-
 std::string path("D:/out/WTG_RUB"); //Mollok
 std::string inputPath("D:/out/WTG_RUB/input/");
-
-std::string simulationName("RUB");
 
 const uint timeStepStartOut = 0;
 const uint timeStepOut = 10000;
@@ -94,7 +94,11 @@ const uint timeStepEnd = 100000;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void convertMPFile(SPtr <MultipleGridBuilder> gridBuilder, real& phi, std::vector<real>& origin, bool& measureVeloProfilesOnly, uint& maxLevel);
+
 void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &rotationOfCity);
+
+void readVelocityProfile();
 
 std::string chooseVariation();
 
@@ -110,12 +114,6 @@ void multipleLevel(const std::string& configPath)
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    
-	vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
-	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
-
-    std::cout << configPath << std::endl;
-	SPtr<ConfigData> configData = configReader->readConfigFile(configPath.c_str());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,8 +145,28 @@ void multipleLevel(const std::string& configPath)
 
     //TriangularMesh *RubSTL      = TriangularMesh::make(inputPath + "stl/Var02_0deg_FD_b.stl");
     TriangularMesh *RubSTL      = TriangularMesh::make(inputPath + "stl/" + chooseVariation() + ".stl");
-    // vector<real> originOfCityXY = { 600.0, y_max / 2, z_offset };
+    std::vector<real> originOfCityXY = { 600.0, y_max / 2, z_offset };
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // OPTIONS
+
+    int maxLevelAtInflow = maxLevel;
+    // there are max. 3 levels (0,1,2) at inflow-/x_min-Side if maxLevel >= 3; OTHERWISE: maxLevel
+    if (maxLevel >= 3)
+        maxLevelAtInflow = 2;
+
+    // MeasurePoints [MP01-15: lvl maxLevel],[MP16-41: lvl 1]; disable when reducing numberOfLevels --> dx might be too
+    // large if MP01-15 are used with low resolution dx, MPs might be placed in solid City-geometry
+    bool useMP                   = true;
+    bool measureVeloProfilesOnly = false;
+
+    // Two Components: true->DiffOn, false->DiffOff
+    bool diffOnOff = false;
+
+    // Resetting diff or flow field, e.g. after restart, do not reset diff/flow at start of measureRun ;-)
+    bool reset_diff = true;
+    bool reset_flow = true;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     gridBuilder->addCoarseGrid(x_min, y_min, z_min, 
                                x_max, y_max, z_max, dx);
@@ -173,7 +191,12 @@ void multipleLevel(const std::string& configPath)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<Parameter>    para         = Parameter::make(configData, comm);
+    vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
+
+    vf::basics::ConfigurationFile config;
+    config.load(configPath);
+
+    SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const real velocityLB = (real)0.0844; // LB units
@@ -189,7 +212,7 @@ void multipleLevel(const std::string& configPath)
 	para->setDevices(std::vector<uint>{(uint)0});
 
     para->setOutputPath( path );
-    para->setOutputPrefix( simulationName );
+    para->setOutputPrefix( "Unified_" + simulationName );
 
     para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
 
@@ -202,7 +225,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setVelocityRatio(velocity/ velocityLB);
 
-	para->setMainKernel("CumulantK17CompChim");
+	para->setMainKernel("CumulantK17CompChim"); // CumulantK17Unified, CumulantK17CompChim
 
 	para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
@@ -227,6 +250,79 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    readVelocityProfile();
+    for (int level = 0; level <= maxLevelAtInflow; level++) {
+        auto inflowBC = std::dynamic_pointer_cast<VelocityBoundaryCondition>(
+            gridBuilder->getBoundaryCondition(SideType::MX, level));
+
+        // lambda function [capture list](parameter list){function body}
+        // for every z, loop is being run;
+        if (inflowBC) {
+            inflowBC->setVelocityProfile(
+                gridBuilder->getGrid(level), [&](real x, real y, real z, real &vx, real &vy, real &vz) {
+                    int i;
+                    for (i = 0; i < dataN; i++) {
+                        if ((z < dataZ[i]) || (z == dataZ[i]))
+                            break;
+                    } // remembers i
+
+                    // if z is below current data point --> interpolation between previous and current datapoint
+                    if (z < dataZ[i]) {
+                        vx = velocityLB * (dataVelocity[i] + (dataVelocity[i + 1] - dataVelocity[i]) /
+                                                                 (dataZ[i + 1] - dataZ[i]) * (z - dataZ[i]));
+                    } else if (z == dataZ[i]) {
+                        vx = velocityLB * dataVelocity[i];
+                    }
+
+                    // vx << std::endl; vx = velocityLB;
+                    vy = 0.0;
+                    vz = 0.0;
+                });
+        }
+    }
+
+    // Resetting Velocity Profile (returning to intial state; do not combine with restart)
+    if (reset_flow) {
+        para->setInitialCondition([&](real x, real y, real z, real &rho, real &vx, real &vy, real &vz) {
+            int i;
+            for (i = 0; i < dataN; i++) {
+                if ((z < dataZ[i]) || (z == dataZ[i]))
+                    break;
+            }
+            if (z < dataZ[i]) {
+                vx = velocityLB * 0.588 *
+                     (dataVelocity[i] +
+                      (dataVelocity[i + 1] - dataVelocity[i]) / (dataZ[i + 1] - dataZ[i]) * (z - dataZ[i]));
+            } else if (z == dataZ[i]) {
+                vx = velocityLB * 0.588 * dataVelocity[i];
+            }
+
+            // std::cout << "LINE : " << __LINE__ << "\tdataZ = " << dataZ[i] << "\tz = " << z << "\tvx = " << vx <<
+            // std::endl;
+
+            // vx = velocityLB;
+            vy  = 0.0;
+            vz  = 0.0;
+            rho = 0.0;
+        });
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Intializing MeasurePoints
+    para->setUseMeasurePoints(useMP);
+    if (para->getUseMeasurePoints()) {
+        convertMPFile(gridBuilder, rotationOfCity, originOfCityXY, measureVeloProfilesOnly, maxLevel);
+        // Number log-Files for each MeasurePoint: numberOfMPFiles = timeStepEnd/ClockCycle
+        para->setclockCycleForMP(timeStepEnd);
+        // Number of  logged Timesteps for each file
+        para->settimestepForMP(timeStepOut / 100);
+        // para->settimestepForMP(timeStepOut);
+        para->setmeasurePoints(inputPath + "measurePoints.dat");
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
@@ -240,6 +336,35 @@ void multipleLevel(const std::string& configPath)
     sim.run();
     sim.free();
 
+}
+
+void readVelocityProfile()
+{
+    // reads velocityProfile.txt, containing values for relative velocity (u_h) in relation to height (z). also fills
+    // dataZ,dataVelocity vectors
+
+    std::ifstream inFile;
+    inFile.open(inputPath + "VeloProfile.txt");
+    //inFile.open(inputPath + "velocityProfile.txt");
+
+    if (inFile.fail()) {
+        std::cerr << "Error opening File" << std::endl;
+        exit(1);
+    }
+
+    int z;
+    real velocity;
+
+    // read
+    inFile >> dataN;
+    for (int k = 0; k < dataN; k++) {
+        inFile >> z;
+        dataZ.push_back(z + z_offset);
+
+        inFile >> velocity;
+        dataVelocity.push_back(velocity);
+    }
+    inFile.close();
 }
 
 void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &rotationOfCity)
@@ -411,6 +536,131 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
 
 }
 
+void convertMPFile(SPtr<MultipleGridBuilder> gridBuilder, real &phi, std::vector<real> &originXY, bool &measureVeloProfilesOnly, uint &maxLevel)
+{
+    // File Reader&Writer for converting MP-Coordinates to Index: MeasurePoint placement requires "measurePoints.dat"
+    // with name, node-ID and level. This function can read a txt-File containing the name, X-Y-Z-Coordinates and level
+    // of measurePoints. After reading the txt-File and converting X-Y-Z to the node-ID, it writes "measurePoints.dat".
+    // Justification for this function: Human Readability and no changes in measurepoint core functions
+
+    // File Opening Procedure
+    std::ifstream inFile;
+    if (measureVeloProfilesOnly)
+        inFile.open(inputPath + "measurePoints_veloProfiles.txt");
+    else
+        inFile.open(inputPath + "measurePoints.txt");
+
+    // Check for error
+    if (inFile.fail()) {
+        std::cerr << "Error opening File" << std::endl;
+        exit(1);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Reading Procedure
+    std::cout << "phi in degrees:" << phi << std::endl;
+    phi = phi * M_PI / 180;
+    std::cout << "phi in radians:" << phi << std::endl;
+
+    std::vector<std::string> MP_name;
+    std::vector<real> MP_X, MP_Y, MP_Z;
+    std::vector<int> MP_level, MP_k;
+
+    std::string name;
+    real X, Y, Z;
+    uint level, numberOfMeasurePoints;
+
+    inFile >> numberOfMeasurePoints;
+    std::cout << "numberOfMeasurePoints: " << numberOfMeasurePoints << " ";
+    std::cout << "Coordinates from File\n";
+    for (uint k = 0; k < numberOfMeasurePoints; k++) {
+        inFile >> name;
+        MP_name.push_back(name);
+        std::cout << "Name: " << MP_name[k] << " ";
+
+        inFile >> X;
+        MP_X.push_back(X);
+        std::cout << "\t\tX: " << MP_X[k] << " ";
+
+        inFile >> Y;
+        MP_Y.push_back(Y);
+        std::cout << "\t\tY: " << MP_Y[k] << " ";
+
+        inFile >> Z;
+        if (((variant > 3 && variant < 7) || (variant > 9 && variant <= 12)) && k == 14)
+            Z += 2.25; // account for angled roof
+        MP_Z.push_back(Z);
+        std::cout << "\t\tZ: " << MP_Z[k] + z_offset << " ";
+
+        inFile >> level;
+        if (level > maxLevel)
+            level = maxLevel;
+        MP_level.push_back(level);
+        std::cout << "\t\tLevel: " << MP_level[k] << std::endl;
+    }
+    inFile.close();
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    real X_temp, Y_temp;
+    // Transformation for phi radians around centre of city for MP[1..15]
+    if (!phi == 0) {
+        std::cout << "Calculating new Coordinates for MP01 to MP15 after Rotation of " << phi * 180 / M_PI
+                  << "degrees (+: counter-clockwise / -: clockwise)\n";
+        for (uint k = 0; k < 15; k++) {
+            X_temp = originXY[0] + (MP_X[k] - originXY[0]) * cos(phi) - (MP_Y[k] - originXY[1]) * sin(phi);
+            Y_temp = originXY[1] + (MP_X[k] - originXY[0]) * sin(phi) + (MP_Y[k] - originXY[1]) * cos(phi);
+            std::cout << "Name:  " << MP_name[k] << " ";
+            std::cout << "\t\tX: " << X_temp << " ";
+            std::cout << "\t\tY: " << Y_temp << " ";
+            std::cout << "\t\tZ: " << MP_Z[k] << " " << std::endl;
+
+            MP_X[k] = X_temp;
+            MP_Y[k] = Y_temp;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Coordinates to Index Procedure
+    // std::cout << "Converting Coordinates to Index..." << std::endl;
+    for (uint k = 0; k < numberOfMeasurePoints; k++) {
+        MP_k.push_back(
+            gridBuilder->getGrid(MP_level[k])
+                ->getSparseIndex(gridBuilder->getGrid(MP_level[k])->transCoordToIndex(MP_X[k], MP_Y[k], MP_Z[k])));
+        if (MP_k[k] == -1) {
+            std::cerr << "Error: Could not convert Coordinate to Sparse Index for MP " << k + 1 << std::endl;
+        }
+        std::cout << MP_name[k] << "\tID = "
+                  << gridBuilder->getGrid(MP_level[k])
+                         ->getSparseIndex(
+                             gridBuilder->getGrid(MP_level[k])->transCoordToIndex(MP_X[k], MP_Y[k], MP_Z[k]))
+                  << std::endl;
+        // std::cout << "ID = " <<
+        // gridBuilder->getGrid(0)->getSparseIndex(gridBuilder->getGrid(0)->transCoordToIndex(-0.500000,
+        // -0.500000, 9.500000)) << std::endl;
+    }
+    // std::cout << "Done Converting Coordinates to Index..." << std::endl;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Writing Procedure
+    // std::cout << "Writing new file..." << std::endl;
+    std::ofstream outFile(inputPath + "measurePoints.dat");
+
+    outFile << numberOfMeasurePoints << std::endl;
+    for (uint j = 0; j < numberOfMeasurePoints; j++) {
+        outFile << MP_name[j] << " " << MP_k[j] << " " << MP_level[j] << std::endl;
+        // std::cout << MP_name[j] << "\t" << MP_k[j] << "\t" << MP_level[j] << std::endl;
+    }
+    // std::cout << "Done writing new file..." << std::endl;
+    outFile.close();
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+
 std::string chooseVariation()
 {
     switch (variant) {
@@ -472,29 +722,16 @@ std::string chooseVariation()
 int main( int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
-    std::string str, str2; 
     if ( argv != NULL )
     {
-        //str = static_cast<std::string>(argv[0]);
-        
         try
         {
-            //////////////////////////////////////////////////////////////////////////
+            // assuming that the config files is stored parallel to this file.
+            std::filesystem::path filePath = __FILE__;
+            filePath.replace_filename("configDrivenCavity.txt");
 
-			std::string targetPath;
-
-			targetPath = __FILE__;
-
-			targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
-
-
-
-			std::cout << targetPath << std::endl;
-
-			multipleLevel(targetPath + "configDrivenCavity.txt");
-
-            //////////////////////////////////////////////////////////////////////////
-		}
+            multipleLevel(filePath.string());
+        }
         catch (const std::bad_alloc& e)
         { 
             *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";

@@ -8,6 +8,8 @@
 #include <Visitor/ActuatorLine.h>
 #include <Visitor/Probe.h>
 
+#include "Calculation/PorousMedia.h"
+
 #include <lbm/constants/NumericConstants.h>
 
 void CudaMemoryManager::cudaAllocFull(int lev)
