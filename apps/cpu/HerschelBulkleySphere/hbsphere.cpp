@@ -10,7 +10,7 @@ void bflow(string configname)
 {
    try
    {
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile config;
       config.load(configname);
 
       string          outputPath = config.getValue<string>("outputPath");

@@ -12,9 +12,18 @@
 #################################################################################
 cmake_minimum_required(VERSION 3.15..3.20 FATAL_ERROR)
 
-project(VirtualFluids CXX)
+project(VirtualFluids
+        VERSION 1.0.0
+        DESCRIPTION "CFD code based on the Lattice Boltzmann Method"
+        HOMEPAGE_URL "https://www.tu-braunschweig.de/irmb/forschung/virtualfluids"
+        LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -86,18 +95,10 @@ if(BUILD_VF_GPU)
         message(FATAL_ERROR "CUDA Compiler was requested but is not found on the system.")
     endif()
 
-    if(MSVC) 
-        # With the MSVC compiler we got this warning: nvcc : The -std=c++14 flag is not supported with the configured host compiler. Flag will be ignored.
-        # But we build the c++ code with C++14. Until we have not a solution here, we set the standard to 11 here.
-        set(CMAKE_CUDA_STANDARD 11)
-    else()
-        set(CMAKE_CUDA_STANDARD 14)
-    endif()
-
+    set(CMAKE_CUDA_STANDARD 17)
     set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
 
     enable_language(CUDA)
-
 
     if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
         message(WARNING "CMAKE_CUDA_ARCHITECTURES was not defined and is set to 30 (CUDA support until 10.1 only).")
@@ -106,7 +107,6 @@ if(BUILD_VF_GPU)
 
 
     if(BUILD_CUDA_LTO)
-        
        if(CMAKE_CUDA_ARCHITECTURES LESS 50)
             message(FATAL_ERROR "CUDA Link time optimization requires CUDA 11.2 and CC 5.0.")
        else()
@@ -121,8 +121,8 @@ if(BUILD_VF_GPU)
 
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --extended-lambda")
 
-    message("CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
-    message("CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
+    message(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
+    message(STATUS "CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
 endif()
 
 

@@ -10,8 +10,6 @@
 class CudaTimer
 {
 public:
-    CudaTimer();
-
     void createSdkTimer();
     void startSdkTimer();
     void stopSdkTimer(float &timeSinceLastStop,double &totalTime);
@@ -24,11 +22,11 @@ public:
 
 private:
     StopWatchInterface *sdkTimer;
-    double ftimeS;
+    double ftimeS = {0.0};
 
     cudaEvent_t stop_t;
     cudaEvent_t start_t;
-    double ftimeE;
+    double ftimeE {0.0};
 
 };
 

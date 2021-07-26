@@ -44,31 +44,42 @@
 #define INTERFACE_T 4
 #define INTERFACE_B 5
 
-//////////////////////////////////////////////////////////////////////////
-// precision                             (change between double and float)
-//
+
 #include "Core/DataTypes.h"
-//////////////////////////////////////////////////////////////////////////
 
 #include <string>
 #include <vector>
 
-// Initial condition
-typedef struct InitCond{
+
+struct InitCondition
+{
    real Re;
-   real factorPressBC;
-   real Diffusivity, Temp, TempBC;
-   real RealX, RealY;
-   int numprocs, myid, maxdev;
-   unsigned int tend, tout, tStartOut, tCalcMedStart, tCalcMedEnd, tDoCheckPoint, tDoRestart;
-   unsigned int PressInID, PressOutID;
-   unsigned int PressInZ, PressOutZ;
-   std::vector<uint> devices;
+   real factorPressBC {1.0};
+   real Diffusivity {0.001};
+   real Temp {0.0};
+   real TempBC {1.0};
+   real RealX {1.0};
+   real RealY {1.0};
+   int numprocs {1};
+   int myid {0};
+   int maxdev {1};
+   uint tDoCheckPoint {0};
+   uint tDoRestart {0};
+   uint tCalcMedStart {0};
+   uint tCalcMedEnd {10};
+   uint tend {10};
+   uint tout {1};
+   uint tStartOut {0};
+   uint PressInID {0};
+   uint PressOutID {0};
+   uint PressInZ {1};
+   uint PressOutZ {2};
+   std::vector<uint> devices {1, 0}; // one device with ID = 0
    std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;
    std::vector<real> scaleLBMtoSI, translateLBMtoSI;
    std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
-   std::vector<bool> NeedInterface;
-   std::string fname, oPath, oPrefix;
+   std::string fname, oPath;
+   std::string oPrefix {"MyFile"};
    std::string geometryFileC, geometryFileM, geometryFileF;
    std::string kFull, geoFull, geoVec, coordX, coordY, coordZ, neighborX, neighborY, neighborZ, neighborWSB, scaleCFC, scaleCFF, scaleFCC, scaleFCF, scaleOffsetCF, scaleOffsetFC;
    std::string noSlipBcPos, noSlipBcQs, noSlipBcValue;
@@ -89,16 +100,32 @@ typedef struct InitCond{
    std::string cpTop, cpBottom, cpBottom2;
    std::string concentration, streetVelocity;
    std::string geomNormalX, geomNormalY, geomNormalZ, inflowNormalX, inflowNormalY, inflowNormalZ, outflowNormalX, outflowNormalY, outflowNormalZ;
-   unsigned int timeStepForMP;
-   real clockCycleForMP;
-   real vis, vis_ratio;
-   real u0, u0_ratio;
-   real delta_rho, delta_press;
-   bool  printFiles, readGeo, doRestart, doCheckPoint, isGeo, isProp, isCp, calcMedian, GeometryValues, isConc, is2ndOrderMoments, is3rdOrderMoments, isHighOrderMoments, isWale, isMeasurePoints, isInitNeq;
+   uint timeStepForMP {10};
+   real clockCycleForMP {1.0};
+   real vis {0.001};
+   real vis_ratio {1.0};
+   real u0 {0.01};
+   real u0_ratio {1.0};
+   real delta_rho {0.0};
+   real delta_press {1.0};
+   bool printFiles {false};
+   bool doRestart {false};
+   bool doCheckPoint {false};
+   bool readGeo {false};
+   bool isGeo, isProp, isCp;
+   bool GeometryValues {false};
+   bool is2ndOrderMoments {false};
+   bool is3rdOrderMoments {false};
+   bool isHighOrderMoments {false};
+   bool calcMedian {false};
+   bool isConc {false};
+   bool isWale {false};
+   bool isMeasurePoints {false};
+   bool isInitNeq {false};
    bool isGeoNormal, isInflowNormal, isOutflowNormal;
-   bool simulatePorousMedia;
-   bool streetVelocityFile;
-} InitCondition;
+   bool simulatePorousMedia {false};
+   bool streetVelocityFile {false};
+};
 
 //Interface Cells
 typedef struct ICellCF{

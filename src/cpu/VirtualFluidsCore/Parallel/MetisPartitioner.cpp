@@ -24,7 +24,7 @@ void MetisPartitioner::setMetisOptions(int option, idx_t value) { options[option
 //////////////////////////////////////////////////////////////////////////
 int MetisPartitioner::partition(int nofParts, MetisPartitioner::PartType ptype)
 {
-    int rc;
+    int rc {0};
     idx_t nvtxs = (idx_t)xadj.size() - 1;     // number of nodes
     idx_t ncon  = (idx_t)vwgt.size() / nvtxs; // number Of node constraints;
     part.resize(nvtxs);

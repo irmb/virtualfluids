@@ -38,6 +38,7 @@ list(APPEND CS_COMPILER_FLAGS_CXX "-Wno-unused-parameter")
 list(APPEND CS_COMPILER_FLAGS_CXX "-Wno-reorder")
 list(APPEND CS_COMPILER_FLAGS_CXX "-Wno-unknown-pragmas")
 list(APPEND CS_COMPILER_FLAGS_CXX "-Wno-cast-function-type")
+list(APPEND CS_COMPILER_FLAGS_CXX "-Wno-strict-aliasing")
 
 #############################################################################################################
 # linker options

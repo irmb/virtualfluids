@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
          return EXIT_FAILURE;
       }
 
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(argv[1]);
 
       string          pathname     = config.getString("pathname");

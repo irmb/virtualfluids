@@ -15,7 +15,7 @@ void run(string configname)
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       bool            newStart = config.getValue<bool>("newStart");
