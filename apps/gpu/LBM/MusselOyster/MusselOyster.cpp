@@ -221,6 +221,8 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
 
+            gridBuilder->findGeoFluidNodes();
+
             if (generatePart == 0) {
                 gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
                 gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 1);
@@ -245,8 +247,6 @@ void multipleLevel(const std::string& configPath)
             //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/" + std::to_string(generatePart) + "/grid/");
             //gridBuilder->writeArrows(path + "/" + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
 
-            gridBuilder->findGeoFluidNodes();
-
             SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder, FILEFORMAT::BINARY);
            
         } else {
@@ -261,6 +261,8 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            gridBuilder->findGeoFluidNodes();
+
             //////////////////////////////////////////////////////////////////////////
             gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
@@ -269,8 +271,6 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
-
-            gridBuilder->findGeoFluidNodes();
 
             //gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");
             // gridBuilder->writeArrows ("E:/temp/MusselOyster/" + bivalveType + "/arrow");

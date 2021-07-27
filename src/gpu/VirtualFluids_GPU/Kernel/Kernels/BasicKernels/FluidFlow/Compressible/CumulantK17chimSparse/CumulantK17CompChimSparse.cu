@@ -31,7 +31,6 @@ void CumulantK17CompChimSparse::run()
 
 	LB_Kernel_CumulantK17CompChimSparse <<< grid, threads >>>(
 		para->getParD(level)->omega,
-		para->getParD(level)->geoSP,
 		para->getParD(level)->neighborX_SP,
 		para->getParD(level)->neighborY_SP,
 		para->getParD(level)->neighborZ_SP,

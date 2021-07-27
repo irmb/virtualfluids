@@ -41,7 +41,6 @@ using namespace vf::lbm::constant;
 ////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void LB_Kernel_CumulantK17CompChimSparse(
 	real omega,
-	uint* typeOfGridNode,
 	uint* neighborX,
 	uint* neighborY,
 	uint* neighborZ,

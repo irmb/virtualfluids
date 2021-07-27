@@ -860,13 +860,14 @@ CUDA_HOST void GridImp::updateSparseIndices()
 
 CUDA_HOST void GridImp::findFluidNodeIndices() 
 {
-    for (uint index = 0; index < size; index++) {
+    fluidNodeIndices.clear();
+    for (uint index = 0; index < this->sparseSize; index++) {
         int sparseIndex = sparseIndices[index];
         if (sparseIndex == -1)
             continue;
 
         if (this->field.isFluid(index))
-            fluidNodeIndices.push_back(sparseIndex);            
+            fluidNodeIndices.push_back((uint)sparseIndex);  
     }
     numberOfFluidNodes = (uint) fluidNodeIndices.size();
 }
