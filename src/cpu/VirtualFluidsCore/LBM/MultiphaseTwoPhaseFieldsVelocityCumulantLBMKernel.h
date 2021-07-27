@@ -58,7 +58,7 @@ public:
 
    ///refactor
    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure;
-   //CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressureOld;
+   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressureOld;
 
    double getCalculationTime() override { return .0; }
 protected:

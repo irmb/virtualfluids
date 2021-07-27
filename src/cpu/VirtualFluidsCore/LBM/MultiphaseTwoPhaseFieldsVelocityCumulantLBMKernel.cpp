@@ -52,7 +52,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::initDataSet()
     SPtr<DistributionArray3D> h2(new D3Q27EsoTwist3DSplittedVector(nx[0] + 2, nx[1] + 2, nx[2] + 2, -999.9)); // For phase-field
     SPtr<PhaseFieldArray3D> divU(new PhaseFieldArray3D(nx[0] + 2, nx[1] + 2, nx[2] + 2, 0.0));
 	 pressure= CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 2, nx[1] + 2, nx[2] + 2, 0.0));
-	// pressureOld = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 2, nx[1] + 2, nx[2] + 2, 0.0));
+	 pressureOld = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 2, nx[1] + 2, nx[2] + 2, 0.0));
     dataSet->setFdistributions(f);
     dataSet->setHdistributions(h); // For phase-field
     dataSet->setH2distributions(h2); // For phase-field
@@ -299,7 +299,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 						(*pressure)(x1, x2, x3) = (*pressure)(x1, x2, x3) + rho * c1o3 * drho;
 
 						////!!!!!! relplace by pointer swap!
-						//(*pressureOld)(x1, x2, x3) = (*pressure)(x1, x2, x3);
+						(*pressureOld)(x1, x2, x3) = (*pressure)(x1, x2, x3);
                     }
                 }
             }
@@ -308,6 +308,130 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
         LBMReal collFactorM;
         //LBMReal forcingTerm[D3Q27System::ENDF + 1];
 
+		////filter
+
+		//for (int x3 = minX3; x3 < maxX3; x3++) {
+		//	for (int x2 = minX2; x2 < maxX2; x2++) {
+		//		for (int x1 = minX1; x1 < maxX1; x1++) {
+		//			if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
+
+		//				LBMReal sum = 0.;
+
+		//				//Lapalce pressure
+		//				//sum += WEIGTH[TNE] * (((((*pressure)(x1+1, x2+1, x3+1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2-1, x3-1) - (*pressure)(x1, x2, x3))) + (((*pressure)(x1+1, x2+1, x3-1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2-1, x3+1) - (*pressure)(x1, x2, x3))))
+		//				//	+ ((((*pressure)(x1+1, x2-1, x3+1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2+1, x3-1) - (*pressure)(x1, x2, x3))) + (((*pressure)(x1+1, x2-1, x3-1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2+1, x3+1) - (*pressure)(x1, x2, x3)))));
+		//				//sum += WEIGTH[TN] * (
+		//				//	((((*pressure)(x1+1, x2+1, x3) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2-1, x3) - (*pressure)(x1, x2, x3))) + (((*pressure)(x1+1, x2-1, x3) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2+1, x3) - (*pressure)(x1, x2, x3))))
+		//				//	+ ((((*pressure)(x1+1, x2, x3+1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2, x3-1) - (*pressure)(x1, x2, x3))) + (((*pressure)(x1+1, x2, x3-1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2, x3+1) - (*pressure)(x1, x2, x3))))
+		//				//	+ ((((*pressure)(x1, x2+1, x3+1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1, x2-1, x3-1) - (*pressure)(x1, x2, x3))) + (((*pressure)(x1, x2+1, x3-1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1, x2-1, x3+1) - (*pressure)(x1, x2, x3))))
+		//				//	);
+		//				//sum += WEIGTH[T] * (
+		//				//	(((*pressure)(x1+1, x2, x3) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2, x3) - (*pressure)(x1, x2, x3)))
+		//				//	+ (((*pressure)(x1, x2+1, x3) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1, x2-1, x3) - (*pressure)(x1, x2, x3)))
+		//				//	+ (((*pressure)(x1, x2, x3+1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1, x2, x3-1) - (*pressure)(x1, x2, x3)))
+		//				//	);
+
+
+		//				//LBMReal pressureFilter = 100;
+		//				//(*pressureOld)(x1, x2, x3) = (*pressure)(x1, x2, x3) + pressureFilter * sum * (sqrt(fabs(sum)));
+
+		//				//Situpol Eq. 81
+		//				sum += WEIGTH[TNE] * (((((*pressure)(x1+1, x2+1, x3+1)) + ((*pressure)(x1-1, x2-1, x3-1) )) + (((*pressure)(x1+1, x2+1, x3-1) ) + ((*pressure)(x1-1, x2-1, x3+1) )))
+		//					+ ((((*pressure)(x1+1, x2-1, x3+1) ) + ((*pressure)(x1-1, x2+1, x3-1) )) + (((*pressure)(x1+1, x2-1, x3-1) ) + ((*pressure)(x1-1, x2+1, x3+1) ))));
+		//				sum += WEIGTH[TN] * (
+		//					((((*pressure)(x1+1, x2+1, x3) ) + ((*pressure)(x1-1, x2-1, x3) )) + (((*pressure)(x1+1, x2-1, x3) ) + ((*pressure)(x1-1, x2+1, x3) )))
+		//					+ ((((*pressure)(x1+1, x2, x3+1) ) + ((*pressure)(x1-1, x2, x3-1) )) + (((*pressure)(x1+1, x2, x3-1) ) + ((*pressure)(x1-1, x2, x3+1) )))
+		//					+ ((((*pressure)(x1, x2+1, x3+1) ) + ((*pressure)(x1, x2-1, x3-1) )) + (((*pressure)(x1, x2+1, x3-1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1, x2-1, x3+1) )))
+		//					);
+		//				sum += WEIGTH[T] * (
+		//					(((*pressure)(x1+1, x2, x3) ) + ((*pressure)(x1-1, x2, x3) ))
+		//					+ (((*pressure)(x1, x2+1, x3) ) + ((*pressure)(x1, x2-1, x3) ))
+		//					+ (((*pressure)(x1, x2, x3+1)) + ((*pressure)(x1, x2, x3-1) ))
+		//					);
+		//				sum += WEIGTH[REST] * (*pressure)(x1, x2, x3);
+		//				(*pressureOld)(x1, x2, x3) = sum;
+
+
+
+
+		//			}
+		//		}
+		//	}
+		//}
+
+		////Periodic Filter
+		for (int x3 = 0; x3 <= maxX3; x3++) {
+			for (int x2 = 0; x2 <= maxX2; x2++) {
+				for (int x1 = 0; x1 <= maxX1; x1++) {
+					if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
+
+						LBMReal sum = 0.;
+
+						int x1p = (x1<maxX1) ? x1 + 1: 0;
+						int x1m = (x1 > 0) ? x1 - 1 : maxX1;
+						int x2p = (x2 < maxX2) ? x2 + 1 : 0;
+						int x2m = (x2 > 0) ? x2 - 1 : maxX2;
+						int x3p = (x3 < maxX3) ? x3 + 1 : 0;
+						int x3m = (x3 > 0) ? x3 - 1 : maxX3;
+
+						//Lapalce pressure
+						//sum += WEIGTH[TNE] * (((((*pressure)(x1+1, x2+1, x3+1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2-1, x3-1) - (*pressure)(x1, x2, x3))) + (((*pressure)(x1+1, x2+1, x3-1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2-1, x3+1) - (*pressure)(x1, x2, x3))))
+						//	+ ((((*pressure)(x1+1, x2-1, x3+1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2+1, x3-1) - (*pressure)(x1, x2, x3))) + (((*pressure)(x1+1, x2-1, x3-1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2+1, x3+1) - (*pressure)(x1, x2, x3)))));
+						//sum += WEIGTH[TN] * (
+						//	((((*pressure)(x1+1, x2+1, x3) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2-1, x3) - (*pressure)(x1, x2, x3))) + (((*pressure)(x1+1, x2-1, x3) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2+1, x3) - (*pressure)(x1, x2, x3))))
+						//	+ ((((*pressure)(x1+1, x2, x3+1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2, x3-1) - (*pressure)(x1, x2, x3))) + (((*pressure)(x1+1, x2, x3-1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2, x3+1) - (*pressure)(x1, x2, x3))))
+						//	+ ((((*pressure)(x1, x2+1, x3+1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1, x2-1, x3-1) - (*pressure)(x1, x2, x3))) + (((*pressure)(x1, x2+1, x3-1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1, x2-1, x3+1) - (*pressure)(x1, x2, x3))))
+						//	);
+						//sum += WEIGTH[T] * (
+						//	(((*pressure)(x1+1, x2, x3) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2, x3) - (*pressure)(x1, x2, x3)))
+						//	+ (((*pressure)(x1, x2+1, x3) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1, x2-1, x3) - (*pressure)(x1, x2, x3)))
+						//	+ (((*pressure)(x1, x2, x3+1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1, x2, x3-1) - (*pressure)(x1, x2, x3)))
+						//	);
+
+
+						//LBMReal pressureFilter = 100;
+						//(*pressureOld)(x1, x2, x3) = (*pressure)(x1, x2, x3) + pressureFilter * sum * (sqrt(fabs(sum)));
+
+						//Situpol Eq. 81
+						sum += WEIGTH[TNE] * (((((*pressure)(x1p, x2p, x3p)) + ((*pressure)(x1m, x2m, x3m))) + (((*pressure)(x1p, x2p, x3m)) + ((*pressure)(x1m, x2m, x3p))))
+							+ ((((*pressure)(x1p, x2m, x3p)) + ((*pressure)(x1m, x2p, x3m))) + (((*pressure)(x1p, x2m, x3m)) + ((*pressure)(x1m, x2p, x3p)))));
+						sum += WEIGTH[TN] * (
+							((((*pressure)(x1p, x2p, x3)) + ((*pressure)(x1m, x2m, x3))) + (((*pressure)(x1p, x2m, x3)) + ((*pressure)(x1m, x2p, x3))))
+							+ ((((*pressure)(x1p, x2, x3p)) + ((*pressure)(x1m, x2, x3m))) + (((*pressure)(x1p, x2, x3m)) + ((*pressure)(x1m, x2, x3p))))
+							+ ((((*pressure)(x1, x2p, x3p)) + ((*pressure)(x1, x2m, x3m))) + (((*pressure)(x1, x2p, x3m) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1, x2m, x3p))))
+							);
+						sum += WEIGTH[T] * (
+							(((*pressure)(x1p, x2, x3)) + ((*pressure)(x1m, x2, x3)))
+							+ (((*pressure)(x1, x2p, x3)) + ((*pressure)(x1, x2m, x3)))
+							+ (((*pressure)(x1, x2, x3p)) + ((*pressure)(x1, x2, x3m)))
+							);
+						sum += WEIGTH[REST] * (*pressure)(x1, x2, x3);
+						(*pressureOld)(x1, x2, x3) = sum;
+
+
+
+
+					}
+				}
+			}
+		}
+
+
+		for (int x3 = 0; x3 <= maxX3; x3++) {
+			for (int x2 = 0; x2 <= maxX2; x2++) {
+				for (int x1 = 0; x1 <= maxX1; x1++) {
+					if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
+						///filter!
+
+						(*pressure)(x1, x2, x3) = (*pressureOld)(x1, x2, x3);
+					}
+				}
+			}
+		}
+		////!filter
+
+
+
         for (int x3 = minX3; x3 < maxX3; x3++) {
             for (int x2 = minX2; x2 < maxX2; x2++) {
                 for (int x1 = minX1; x1 < maxX1; x1++) {
@@ -315,6 +439,8 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
                         int x1p = x1 + 1;
                         int x2p = x2 + 1;
                         int x3p = x3 + 1;
+
+
 
                         //////////////////////////////////////////////////////////////////////////
                         // Read distributions and phase field
@@ -493,9 +619,13 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 				   // muX2 = static_cast<double>(x2-1+ix2*maxX2);
 				   // muX3 = static_cast<double>(x3-1+ix3*maxX3);
 
-				   forcingX1 = muForcingX1.Eval()-gradPx/rho;
-				   forcingX2 = muForcingX2.Eval()-gradPy/rho;
-				   forcingX3 = muForcingX3.Eval()-gradPz/rho;
+				  // forcingX1 = muForcingX1.Eval()+c1o3*drho*dX1_phi*rhoToPhi/rho;//-gradPx/rho;
+				  // forcingX2 = muForcingX2.Eval() + c1o3*drho*dX2_phi * rhoToPhi / rho;//-gradPy/rho;
+				   //forcingX3 = muForcingX3.Eval() + c1o3*drho*dX3_phi * rhoToPhi / rho;//-gradPz/rho;
+
+				   forcingX1 = muForcingX1.Eval() -gradPx/rho;
+				   forcingX2 = muForcingX2.Eval() -gradPy/rho;
+				   forcingX3 = muForcingX3.Eval() -gradPz/rho;
 
 				   //LBMReal rho_m = 1.0 / densityRatio;
 				   //forcingX1 = forcingX1 * (rho - rho_m);
@@ -1063,7 +1193,10 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 			   //2.
 			   // linear combinations
 			   LBMReal mxxPyyPzz = mfcaa + mfaca + mfaac;
-				mxxPyyPzz-=mfaaa;//12.03.21 shifted by mfaaa
+
+			//  LBMReal mfaaaS = (mfaaa * (-4 - 3 * OxxPyyPzz * (-1 + rho)) + 6 * mxxPyyPzz * OxxPyyPzz * (-1 + rho)) / (-4 + 3 * OxxPyyPzz * (-1 + rho));
+			  mxxPyyPzz -= mfaaa ;//12.03.21 shifted by mfaaa
+				//mxxPyyPzz-=(mfaaa+mfaaaS)*c1o2;//12.03.21 shifted by mfaaa
 			   LBMReal mxxMyy = mfcaa - mfaca;
 			   LBMReal mxxMzz = mfcaa - mfaac;
 
@@ -1110,9 +1243,13 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 
                ////updated pressure
                //mfaaa += (dX1_phi * vvx + dX2_phi * vvy + dX3_phi * vvz) * correctionScaling;
-			   mfaaa = 0.0;
+			   mfaaa = 0.0; // Pressure elimination as in standard velocity model
+			 //  mfaaa += (rho - c1) * (dxux + dyuy + dzuz);
 
                mxxPyyPzz += mfaaa; // 12.03.21 shifted by mfaaa
+
+			  // mxxPyyPzz += (mfaaa + mfaaaS) * c1o2;
+			   //mfaaa = mfaaaS;
 			   // linear combinations back
 			   mfcaa = c1o3 * (mxxMyy + mxxMzz + mxxPyyPzz);
 			   mfaca = c1o3 * (-2. * mxxMyy + mxxMzz + mxxPyyPzz);
