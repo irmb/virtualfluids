@@ -602,10 +602,10 @@ void MultipleGridBuilder::findCommunicationIndices(int direction, LbmOrGks lbmOr
 
 void MultipleGridBuilder::findGeoFluidNodes()
 {
-    *logging::out << logging::Logger::INFO_HIGH << "Start findGeoFluidNodes()\n";
+    *logging::out << logging::Logger::INFO_HIGH << "Start findFluidNodes()\n";
     for (uint i = 0; i < grids.size(); i++)
         grids[i]->findFluidNodeIndices();
-    *logging::out << logging::Logger::INFO_HIGH << "Done with findGeoFluidNodes()\n";
+    *logging::out << logging::Logger::INFO_HIGH << "Done with findFluidNodes()\n";
 }
 
 void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const

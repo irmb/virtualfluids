@@ -67,9 +67,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::string path("E:/temp/MusselOyster");
+std::string path("E:/temp/MusselOysterResults");
 std::string gridPathParent = "E:/temp/GridMussel/";
-std::string simulationName("MusselOysterTestNewBC");
+std::string simulationName("MusselOyster");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,10 +142,10 @@ void multipleLevel(const std::string& configPath)
     para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
     para->setPrintFiles(true);
 
-    // para->setMaxLevel(2);
+    para->setMaxLevel(2);
 
-    para->setMainKernel("CumulantK17CompChim");
-    //para->setMainKernel("CumulantK17CompChimSparse");
+    //para->setMainKernel("CumulantK17CompChim");
+    para->setMainKernel("CumulantK17CompChimSparse");
    *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
     if (useMultiGPU) {
@@ -184,11 +184,10 @@ void multipleLevel(const std::string& configPath)
 
         TriangularMesh *bivalveSTL =
             TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
-        // TriangularMesh* bivalveRef_1_STL =
-        //       TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
+         TriangularMesh* bivalveRef_1_STL =
+             TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
 
         if (useMultiGPU) {
-            // const uint generatePart = 1;
             const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
             
             real overlap      = (real)8.0 * dxGrid;            
@@ -203,8 +202,8 @@ void multipleLevel(const std::string& configPath)
                                            xGridMax,    yGridMax,           zGridMax,   dxGrid);
             }
 
-            // gridBuilder->setNumberOfLayers(6, 8);
-            // gridBuilder->addGrid(bivalveRef_1_STL, 1);
+             gridBuilder->setNumberOfLayers(6, 8);
+             gridBuilder->addGrid(bivalveRef_1_STL, 1);
 
             gridBuilder->addGeometry(bivalveSTL);
 
@@ -253,8 +252,8 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
 
-            // gridBuilder->setNumberOfLayers(6, 8);
-            // gridBuilder->addGrid(bivalveRef_1_STL, 1);
+            gridBuilder->setNumberOfLayers(6, 8);
+            gridBuilder->addGrid(bivalveRef_1_STL, 1);
 
             gridBuilder->addGeometry(bivalveSTL);
 
@@ -272,7 +271,7 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
 
-            //gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");
+            // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");
             // gridBuilder->writeArrows ("E:/temp/MusselOyster/" + bivalveType + "/arrow");
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
