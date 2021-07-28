@@ -329,6 +329,41 @@ void multipleLevel(const std::string& configPath)
     SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
     sim.setFactories(kernelFactory, preProcessorFactory);
     sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
+
+    uint *geoSP   = para->getParH(0)->geoSP;
+    uint numGeoFluid = 0;
+    std::vector<int> sparseIndicesFluid;
+    for (uint i = 0; i < para->getParH(0)->size_Mat_SP; i++) {
+        if (geoSP[i] == GEO_FLUID) {
+            numGeoFluid++;
+            sparseIndicesFluid.push_back(i);
+        }
+    }
+    std::cout << ".....geoFluid level 0 " << numGeoFluid << ", num fluid nodes (new kernel)  " << para->getParH(0)->numberOfFluidNodes
+              << std::endl;
+
+
+    for (uint i = 300000; i < 300003; i++)
+        std::cout << ".....level 0: sparse index geoFluid \t" << sparseIndicesFluid[i] << ",    fluid nodes index  \t"
+                  << para->getParH(0)->fluidNodeIndices[i] << std::endl;
+
+    uint *geoSP1      = para->getParH(1)->geoSP;
+    uint numGeoFluid1 = 0;
+    std::vector<int> sparseIndicesFluid1;
+    for (uint i = 0; i < para->getParH(1)->size_Mat_SP; i++) {
+        if (geoSP1[i] == GEO_FLUID) {
+            numGeoFluid1++;
+            sparseIndicesFluid1.push_back(i);
+        }
+    }
+    std::cout << ".....geoFluid level 1 " << numGeoFluid1 << ", num fluid nodes (new kernel)  "
+              << para->getParH(1)->numberOfFluidNodes << std::endl;
+
+    for (uint i = 300000; i < 300003; i++)
+        std::cout << ".....level 1: sparse index geoFluid \t" << sparseIndicesFluid[i] << ",    fluid nodes index  \t"
+                  << para->getParH(0)->fluidNodeIndices[i] << std::endl;
+
+
     sim.run();
     sim.free();
 
