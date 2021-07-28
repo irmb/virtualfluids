@@ -17,12 +17,13 @@
 #include "PointerDefinitions.h"
 
 #include "Core/LbmOrGks.h"
-#include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
-#include "Core/Input/ConfigFileReader/ConfigFileReader.h"
 
 #include "Core/VectorTypes.h"
 #include "Core/Logger/Logger.h"
+
+#include <basics/config/ConfigurationFile.h>
+
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -102,8 +103,6 @@ const real mach = 0.1;
 
 const uint nodes_per_D = 8;
 
-//std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
-//std::string path("D:/out/DrivenCavity"); //Mollok
 std::string path(".");
 
 std::string simulationName("ActuatorLine");
@@ -117,6 +116,7 @@ const uint timeStepEnd = 1000;
 
 void multipleLevel(const std::string& configPath)
 {
+
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
@@ -128,11 +128,7 @@ void multipleLevel(const std::string& configPath)
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     
-	vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
-	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
 
-    std::cout << configPath << std::endl;
-	SPtr<ConfigData> configData = configReader->readConfigFile(configPath.c_str());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,10 +154,12 @@ void multipleLevel(const std::string& configPath)
 
     if( lbmOrGks == LBM )
     {
+        vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
 
+        vf::basics::ConfigurationFile config;
+        config.load(configPath);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        SPtr<Parameter>    para         = Parameter::make(configData, comm);
+        SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -178,7 +176,6 @@ void multipleLevel(const std::string& configPath)
 
 		para->setDevices(std::vector<uint>{(uint)0});
 
-        para->setOutputPath( path );
         para->setOutputPrefix( simulationName );
 
         para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
@@ -235,6 +232,7 @@ void multipleLevel(const std::string& configPath)
         std::vector<real> probeCoordsZ = {3*D,3*D,3*D};
         probe->setProbePointsFromList(probeCoordsX,probeCoordsY,probeCoordsZ);
         probe->addPostProcessingVariable(PostProcessingVariable::Means);
+        probe->addPostProcessingVariable(PostProcessingVariable::Variances);
         para->addProbe( probe );
 
         Simulation sim;
@@ -381,7 +379,7 @@ int main( int argc, char* argv[])
 
 			// targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
 
-
+            if( argc > 1){ path = argv[1]; }
 
 			// std::cout << targetPath << std::endl;
 
