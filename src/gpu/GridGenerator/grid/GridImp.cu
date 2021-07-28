@@ -860,16 +860,16 @@ CUDA_HOST void GridImp::updateSparseIndices()
 
 CUDA_HOST void GridImp::findFluidNodeIndices() 
 {
-    fluidNodeIndices.clear();
-    for (uint index = 0; index < this->sparseSize; index++) {
-        int sparseIndex = sparseIndices[index];
+    this->fluidNodeIndices.clear();
+    for (uint index = 0; index < this->size; index++) {
+        int sparseIndex = this->getSparseIndex(index);
         if (sparseIndex == -1)
             continue;
 
         if (this->field.isFluid(index))
-            fluidNodeIndices.push_back((uint)sparseIndex);  
+            this->fluidNodeIndices.push_back((uint)sparseIndex + 1);   // + 1 for numbering shift between GridGenerator and VF_GPU
     }
-    numberOfFluidNodes = (uint) fluidNodeIndices.size();
+    this->numberOfFluidNodes = (uint)this->fluidNodeIndices.size();
 }
 
 HOSTDEVICE void GridImp::setNeighborIndices(uint index)

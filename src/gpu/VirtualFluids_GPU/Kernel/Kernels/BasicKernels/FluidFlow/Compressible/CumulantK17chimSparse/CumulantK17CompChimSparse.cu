@@ -12,7 +12,7 @@ std::shared_ptr<CumulantK17CompChimSparse> CumulantK17CompChimSparse::getNewInst
 void CumulantK17CompChimSparse::run()
 {
 	int numberOfThreads = para->getParD(level)->numberofthreads;
-	int size_Mat = para->getParD(level)->size_Mat_SP;
+    int size_Mat = para->getParD(level)->numberOfFluidNodes;
 
 	int Grid = (size_Mat / numberOfThreads) + 1;
 	int Grid1, Grid2;
