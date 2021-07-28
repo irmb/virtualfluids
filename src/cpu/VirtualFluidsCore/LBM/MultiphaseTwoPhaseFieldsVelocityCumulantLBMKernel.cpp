@@ -174,8 +174,8 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
         CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr divU(
             new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, 0.0));
 
-
-        for (int x3 = 0; x3 <= maxX3; x3++) {
+#pragma omp parallel for
+	  for (int x3 = 0; x3 <= maxX3; x3++) {
             for (int x2 = 0; x2 <= maxX2; x2++) {
                 for (int x1 = 0; x1 <= maxX1; x1++) {
                     if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
@@ -360,6 +360,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 		//}
 
 		////Periodic Filter
+#pragma omp parallel for
 		for (int x3 = 0; x3 <= maxX3; x3++) {
 			for (int x2 = 0; x2 <= maxX2; x2++) {
 				for (int x1 = 0; x1 <= maxX1; x1++) {
@@ -367,12 +368,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 
 						LBMReal sum = 0.;
 
-						int x1p = (x1<maxX1) ? x1 + 1: 0;
-						int x1m = (x1 > 0) ? x1 - 1 : maxX1;
-						int x2p = (x2 < maxX2) ? x2 + 1 : 0;
-						int x2m = (x2 > 0) ? x2 - 1 : maxX2;
-						int x3p = (x3 < maxX3) ? x3 + 1 : 0;
-						int x3m = (x3 > 0) ? x3 - 1 : maxX3;
+
 
 						//Lapalce pressure
 						//sum += WEIGTH[TNE] * (((((*pressure)(x1+1, x2+1, x3+1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2-1, x3-1) - (*pressure)(x1, x2, x3))) + (((*pressure)(x1+1, x2+1, x3-1) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1-1, x2-1, x3+1) - (*pressure)(x1, x2, x3))))
@@ -393,21 +389,49 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 						//(*pressureOld)(x1, x2, x3) = (*pressure)(x1, x2, x3) + pressureFilter * sum * (sqrt(fabs(sum)));
 
 						//Situpol Eq. 81
-						sum += WEIGTH[TNE] * (((((*pressure)(x1p, x2p, x3p)) + ((*pressure)(x1m, x2m, x3m))) + (((*pressure)(x1p, x2p, x3m)) + ((*pressure)(x1m, x2m, x3p))))
-							+ ((((*pressure)(x1p, x2m, x3p)) + ((*pressure)(x1m, x2p, x3m))) + (((*pressure)(x1p, x2m, x3m)) + ((*pressure)(x1m, x2p, x3p)))));
-						sum += WEIGTH[TN] * (
-							((((*pressure)(x1p, x2p, x3)) + ((*pressure)(x1m, x2m, x3))) + (((*pressure)(x1p, x2m, x3)) + ((*pressure)(x1m, x2p, x3))))
-							+ ((((*pressure)(x1p, x2, x3p)) + ((*pressure)(x1m, x2, x3m))) + (((*pressure)(x1p, x2, x3m)) + ((*pressure)(x1m, x2, x3p))))
-							+ ((((*pressure)(x1, x2p, x3p)) + ((*pressure)(x1, x2m, x3m))) + (((*pressure)(x1, x2p, x3m) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1, x2m, x3p))))
-							);
-						sum += WEIGTH[T] * (
-							(((*pressure)(x1p, x2, x3)) + ((*pressure)(x1m, x2, x3)))
-							+ (((*pressure)(x1, x2p, x3)) + ((*pressure)(x1, x2m, x3)))
-							+ (((*pressure)(x1, x2, x3p)) + ((*pressure)(x1, x2, x3m)))
-							);
-						sum += WEIGTH[REST] * (*pressure)(x1, x2, x3);
-						(*pressureOld)(x1, x2, x3) = sum;
 
+						//int x1p = (x1 < maxX1) ? x1 + 1 : 0;
+						//int x1m = (x1 > 0) ? x1 - 1 : maxX1;
+						//int x2p = (x2 < maxX2) ? x2 + 1 : 0;
+						//int x2m = (x2 > 0) ? x2 - 1 : maxX2;
+						//int x3p = (x3 < maxX3) ? x3 + 1 : 0;
+						//int x3m = (x3 > 0) ? x3 - 1 : maxX3;
+						//sum += WEIGTH[TNE] * (((((*pressure)(x1p, x2p, x3p)) + ((*pressure)(x1m, x2m, x3m))) + (((*pressure)(x1p, x2p, x3m)) + ((*pressure)(x1m, x2m, x3p))))
+						//	+ ((((*pressure)(x1p, x2m, x3p)) + ((*pressure)(x1m, x2p, x3m))) + (((*pressure)(x1p, x2m, x3m)) + ((*pressure)(x1m, x2p, x3p)))));
+						//sum += WEIGTH[TN] * (
+						//	((((*pressure)(x1p, x2p, x3)) + ((*pressure)(x1m, x2m, x3))) + (((*pressure)(x1p, x2m, x3)) + ((*pressure)(x1m, x2p, x3))))
+						//	+ ((((*pressure)(x1p, x2, x3p)) + ((*pressure)(x1m, x2, x3m))) + (((*pressure)(x1p, x2, x3m)) + ((*pressure)(x1m, x2, x3p))))
+						//	+ ((((*pressure)(x1, x2p, x3p)) + ((*pressure)(x1, x2m, x3m))) + (((*pressure)(x1, x2p, x3m) - (*pressure)(x1, x2, x3)) + ((*pressure)(x1, x2m, x3p))))
+						//	);
+						//sum += WEIGTH[T] * (
+						//	(((*pressure)(x1p, x2, x3)) + ((*pressure)(x1m, x2, x3)))
+						//	+ (((*pressure)(x1, x2p, x3)) + ((*pressure)(x1, x2m, x3)))
+						//	+ (((*pressure)(x1, x2, x3p)) + ((*pressure)(x1, x2, x3m)))
+						//	);
+						//sum += WEIGTH[REST] * (*pressure)(x1, x2, x3);
+						//(*pressureOld)(x1, x2, x3) = sum;
+						 
+						///Version for boundaries
+						for (int xx = -1; xx <= 1; xx++) {
+							int xxx = (xx+x1 <= maxX1) ? ((xx + x1 > 0) ? xx + x1 : maxX1) : 0;
+
+							for (int yy = -1; yy <= 1; yy++) {
+								int yyy = (yy+x2 <= maxX2) ?( (yy + x2 > 0) ? yy + x2 : maxX2) : 0;
+
+								for (int zz = -1; zz <= 1; zz++) {
+									int zzz = (zz+x3 <= maxX3) ? zzz = ((zz + x3 > 0) ? zz + x3 : maxX3 ): 0;
+
+									if (!bcArray->isSolid(xxx, yyy, zzz) && !bcArray->isUndefined(xxx, yyy, zzz)) {
+										sum+= 64.0/(216.0*(c1+c3*abs(xx))* (c1 + c3 * abs(yy))* (c1 + c3 * abs(zz)))*(*pressure)(xxx, yyy, zzz);
+									}
+									else{ sum+= 64.0 / (216.0 * (c1 + c3 * abs(xx)) * (c1 + c3 * abs(yy)) * (c1 + c3 * abs(zz))) * (*pressure)(x1, x2, x3);
+									}
+
+
+								}
+							}
+						}
+						(*pressureOld)(x1, x2, x3) = sum;
 
 
 
@@ -416,7 +440,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 			}
 		}
 
-
+#pragma omp parallel for
 		for (int x3 = 0; x3 <= maxX3; x3++) {
 			for (int x2 = 0; x2 <= maxX2; x2++) {
 				for (int x1 = 0; x1 <= maxX1; x1++) {
@@ -431,7 +455,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 		////!filter
 
 
-
+#pragma omp parallel for
         for (int x3 = minX3; x3 < maxX3; x3++) {
             for (int x2 = minX2; x2 < maxX2; x2++) {
                 for (int x1 = minX1; x1 < maxX1; x1++) {
@@ -585,30 +609,81 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 			   //LBMReal gradPy = c1o2 * ((*pressure)(x1, x2 + 1, x3) - (*pressure)(x1, x2 - 1, x3));
 			   //LBMReal gradPz = c1o2 * ((*pressure)(x1, x2, x3 + 1) - (*pressure)(x1, x2, x3 - 1));
 
-			   LBMReal gradPx = 3.0 * (WEIGTH[TNE] * (
-				   (((*pressure)(x1 + 1, x2 + 1, x3 + 1) - (*pressure)(x1 - 1, x2 - 1, x3 - 1)) + ((*pressure)(x1 + 1, x2 - 1, x3 + 1) - (*pressure)(x1 - 1, x2 + 1, x3 - 1)))
-				   + (((*pressure)(x1 + 1, x2 - 1, x3 - 1) - (*pressure)(x1 - 1, x2 + 1, x3 + 1)) + ((*pressure)(x1 + 1, x2 + 1, x3 - 1) - (*pressure)(x1 - 1, x2 - 1, x3 + 1))))
-				   + WEIGTH[NE] * (
-				   (((*pressure)(x1 + 1, x2 + 1, x3) - (*pressure)(x1 - 1, x2 - 1, x3)) + ((*pressure)(x1 + 1, x2 - 1, x3) - (*pressure)(x1 - 1, x2 + 1, x3)))
-					   + (((*pressure)(x1 + 1, x2, x3 - 1) - (*pressure)(x1 - 1, x2, x3 + 1)) + ((*pressure)(x1 + 1, x2, x3 + 1) - (*pressure)(x1 - 1, x2, x3 - 1))))
-				   + WEIGTH[E] * ((*pressure)(x1 + 1, x2, x3) - (*pressure)(x1 - 1, x2, x3)));
+			   //LBMReal gradPx = 3.0 * (WEIGTH[TNE] * (
+				  // (((*pressure)(x1 + 1, x2 + 1, x3 + 1) - (*pressure)(x1 - 1, x2 - 1, x3 - 1)) + ((*pressure)(x1 + 1, x2 - 1, x3 + 1) - (*pressure)(x1 - 1, x2 + 1, x3 - 1)))
+				  // + (((*pressure)(x1 + 1, x2 - 1, x3 - 1) - (*pressure)(x1 - 1, x2 + 1, x3 + 1)) + ((*pressure)(x1 + 1, x2 + 1, x3 - 1) - (*pressure)(x1 - 1, x2 - 1, x3 + 1))))
+				  // + WEIGTH[NE] * (
+				  // (((*pressure)(x1 + 1, x2 + 1, x3) - (*pressure)(x1 - 1, x2 - 1, x3)) + ((*pressure)(x1 + 1, x2 - 1, x3) - (*pressure)(x1 - 1, x2 + 1, x3)))
+					 //  + (((*pressure)(x1 + 1, x2, x3 - 1) - (*pressure)(x1 - 1, x2, x3 + 1)) + ((*pressure)(x1 + 1, x2, x3 + 1) - (*pressure)(x1 - 1, x2, x3 - 1))))
+				  // + WEIGTH[E] * ((*pressure)(x1 + 1, x2, x3) - (*pressure)(x1 - 1, x2, x3)));
 
-			   LBMReal gradPy = 3.0 * (WEIGTH[TNE] * (
-				   (((*pressure)(x1 + 1, x2 + 1, x3 + 1) - (*pressure)(x1 - 1, x2 - 1, x3 - 1)) + ((*pressure)(x1 - 1, x2 + 1, x3 + 1) - (*pressure)(x1 + 1, x2 - 1, x3 - 1)))
-				   + (((*pressure)(x1 - 1, x2 + 1, x3 - 1) - (*pressure)(x1 + 1, x2 - 1, x3 + 1)) + ((*pressure)(x1 + 1, x2 + 1, x3 - 1) - (*pressure)(x1 - 1, x2 - 1, x3 + 1))))
-				   + WEIGTH[NE] * (
-				   (((*pressure)(x1 + 1, x2 + 1, x3) - (*pressure)(x1 - 1, x2 - 1, x3)) + ((*pressure)(x1 - 1, x2 + 1, x3) - (*pressure)(x1 + 1, x2 - 1, x3)))
-					   + (((*pressure)(x1, x2+1, x3 - 1) - (*pressure)(x1, x2-1, x3 + 1)) + ((*pressure)(x1, x2+1, x3 + 1) - (*pressure)(x1, x2-1, x3 - 1))))
-				   + WEIGTH[E] * ((*pressure)(x1, x2+1, x3) - (*pressure)(x1, x2-1, x3)));
+			   //LBMReal gradPy = 3.0 * (WEIGTH[TNE] * (
+				  // (((*pressure)(x1 + 1, x2 + 1, x3 + 1) - (*pressure)(x1 - 1, x2 - 1, x3 - 1)) + ((*pressure)(x1 - 1, x2 + 1, x3 + 1) - (*pressure)(x1 + 1, x2 - 1, x3 - 1)))
+				  // + (((*pressure)(x1 - 1, x2 + 1, x3 - 1) - (*pressure)(x1 + 1, x2 - 1, x3 + 1)) + ((*pressure)(x1 + 1, x2 + 1, x3 - 1) - (*pressure)(x1 - 1, x2 - 1, x3 + 1))))
+				  // + WEIGTH[NE] * (
+				  // (((*pressure)(x1 + 1, x2 + 1, x3) - (*pressure)(x1 - 1, x2 - 1, x3)) + ((*pressure)(x1 - 1, x2 + 1, x3) - (*pressure)(x1 + 1, x2 - 1, x3)))
+					 //  + (((*pressure)(x1, x2+1, x3 - 1) - (*pressure)(x1, x2-1, x3 + 1)) + ((*pressure)(x1, x2+1, x3 + 1) - (*pressure)(x1, x2-1, x3 - 1))))
+				  // + WEIGTH[E] * ((*pressure)(x1, x2+1, x3) - (*pressure)(x1, x2-1, x3)));
 
-			   LBMReal gradPz = 3.0 * (WEIGTH[TNE] * (
-				   (((*pressure)(x1 + 1, x2 + 1, x3 + 1) - (*pressure)(x1 - 1, x2 - 1, x3 - 1)) + ((*pressure)(x1 - 1, x2 + 1, x3 + 1) - (*pressure)(x1 + 1, x2 - 1, x3 - 1)))
-				   + (((*pressure)(x1 - 1, x2 - 1, x3 + 1) - (*pressure)(x1 + 1, x2 + 1, x3 - 1)) + ((*pressure)(x1 + 1, x2 - 1, x3 + 1) - (*pressure)(x1 - 1, x2 + 1, x3 - 1))))
-				   + WEIGTH[NE] * (
-				   (((*pressure)(x1 + 1, x2, x3+1) - (*pressure)(x1 - 1, x2, x3-1)) + ((*pressure)(x1 - 1, x2, x3+1) - (*pressure)(x1 + 1, x2, x3-1)))
-					   + (((*pressure)(x1, x2 - 1, x3 + 1) - (*pressure)(x1, x2 + 1, x3 - 1)) + ((*pressure)(x1, x2 + 1, x3 + 1) - (*pressure)(x1, x2 - 1, x3 - 1))))
-				   + WEIGTH[E] * ((*pressure)(x1, x2, x3+1) - (*pressure)(x1, x2, x3-1)));
+			   //LBMReal gradPz = 3.0 * (WEIGTH[TNE] * (
+				  // (((*pressure)(x1 + 1, x2 + 1, x3 + 1) - (*pressure)(x1 - 1, x2 - 1, x3 - 1)) + ((*pressure)(x1 - 1, x2 + 1, x3 + 1) - (*pressure)(x1 + 1, x2 - 1, x3 - 1)))
+				  // + (((*pressure)(x1 - 1, x2 - 1, x3 + 1) - (*pressure)(x1 + 1, x2 + 1, x3 - 1)) + ((*pressure)(x1 + 1, x2 - 1, x3 + 1) - (*pressure)(x1 - 1, x2 + 1, x3 - 1))))
+				  // + WEIGTH[NE] * (
+				  // (((*pressure)(x1 + 1, x2, x3+1) - (*pressure)(x1 - 1, x2, x3-1)) + ((*pressure)(x1 - 1, x2, x3+1) - (*pressure)(x1 + 1, x2, x3-1)))
+					 //  + (((*pressure)(x1, x2 - 1, x3 + 1) - (*pressure)(x1, x2 + 1, x3 - 1)) + ((*pressure)(x1, x2 + 1, x3 + 1) - (*pressure)(x1, x2 - 1, x3 - 1))))
+				  // + WEIGTH[E] * ((*pressure)(x1, x2, x3+1) - (*pressure)(x1, x2, x3-1)));
+			  
+			   
+			   LBMReal gradPx = 0.0;
+			   LBMReal gradPy = 0.0;
+			   LBMReal gradPz = 0.0;
+			   for (int dir1 = -1; dir1 <= 1; dir1++) {
+				   for (int dir2 = -1; dir2 <= 1; dir2++) {
+					   int yyy = x2 + dir1;
+					   int zzz = x3 + dir2;
+					   if (!bcArray->isSolid(x1-1, yyy, zzz) && !bcArray->isUndefined(x1-1, yyy, zzz)) {
+						   gradPx -= (*pressure)(x1 - 1, yyy, zzz) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+					   }
+					   else {
+						   gradPx -= (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+					   }
+					   if (!bcArray->isSolid(x1 + 1, yyy, zzz) && !bcArray->isUndefined(x1 - 1, yyy, zzz)) {
+						   gradPx += (*pressure)(x1 + 1, yyy, zzz) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+					   }
+					   else {
+						   gradPx += (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+					   }
 
+					   int xxx = x1 + dir1;
+					   if (!bcArray->isSolid(xxx, x2-1, zzz) && !bcArray->isUndefined(xxx, x2-1, zzz)) {
+						   gradPy -= (*pressure)(xxx, x2-1, zzz) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+					   }
+					   else {
+						   gradPy -= (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+					   }
+					   if (!bcArray->isSolid(xxx, x2+1, zzz) && !bcArray->isUndefined(xxx, x2-1, zzz)) {
+						   gradPy += (*pressure)(xxx, x2+1, zzz) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+					   }
+					   else {
+						   gradPy += (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+					   }
+
+					   yyy = x2 + dir2;
+					   if (!bcArray->isSolid(xxx, yyy, x3-1) && !bcArray->isUndefined(xxx, yyy, x3-1)) {
+						   gradPz -= (*pressure)(xxx, yyy, x3-1) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+					   }
+					   else {
+						   gradPz -= (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+					   }
+					   if (!bcArray->isSolid(xxx, yyy, x3+1) && !bcArray->isUndefined(xxx, yyy, x3+1)) {
+						   gradPz += (*pressure)(xxx, yyy, x3+1) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+					   }
+					   else {
+						   gradPz += (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
+					   }
+
+				   }
+			   }
 
 			   //3.0 * ((WEIGTH[TNE] * (((phi2[TNE] - phi2[BSW]) - (phi2[BSE] - phi2[TNW])) + ((phi2[TSE] - phi2[BNW]) - (phi2[BNE] - phi2[TSW])))
 			   //+WEIGTH[NE] * (((phi2[TE] - phi2[BW]) - (phi2[BE] - phi2[TW])) + ((phi2[TS] - phi2[BN]) + (phi2[TN] - phi2[BS])))) +

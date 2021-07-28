@@ -88,6 +88,7 @@ void run(string configname)
         kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
+                kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
@@ -388,11 +389,11 @@ void run(string configname)
                 UBLOG(logINFO, "Restart - end");
         }
 
-        TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-        grid->accept(setConnsVisitor);
+      //  TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+      //  grid->accept(setConnsVisitor);
 
-        //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-        //grid->accept(setConnsVisitor);
+        ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+        grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
