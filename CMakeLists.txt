@@ -6,10 +6,6 @@
 # |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
 #
 #################################################################################
-#  required cmake versions
-#  CMAKE 3.13: target_link_options
-#  CMAKE 3.15: CMAKE_MSVC_RUNTIME_LIBRARY
-#################################################################################
 cmake_minimum_required(VERSION 3.15..3.20 FATAL_ERROR)
 
 project(VirtualFluids
@@ -37,6 +33,11 @@ set (VF_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
 set (VF_THIRD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
 set (VF_SRC_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set (VF_ROOT_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
+
+if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+  message(FATAL_ERROR "In-source builds are prohibited. "
+    "Create a new directory and build there.")
+endif ()
 
 #################################################################################
 #  OPTIONS
@@ -80,6 +81,15 @@ option(BUILD_VF_DOUBLE_ACCURACY "Use double accuracy" OFF)
 #################################################################################
 #  MACROS
 #################################################################################
+add_library(project_warnings INTERFACE)
+
+# standard compiler warnings - Link this 'library' to use the warnings specified in CompilerWarnings.cmake
+include(${VF_CMAKE_DIR}/CompilerWarnings.cmake)
+set_project_warnings(project_warnings)
+
+# enable cache system
+include(${VF_CMAKE_DIR}/Cache.cmake)
+
 include(CMakePrintHelpers)
 include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
 
