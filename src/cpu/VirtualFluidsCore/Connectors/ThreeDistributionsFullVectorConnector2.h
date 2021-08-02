@@ -41,6 +41,7 @@
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "basics/container/CbArray3D.h"
 #include "basics/container/CbArray4D.h"
+#include "DataSet3D.h"
 
 class EsoTwist3D;
 class Block3D;
@@ -61,6 +62,8 @@ public:
 
 protected:
    inline void updatePointers() override;
+   void fillData() override;
+   void distributeData() override;
    inline void fillData(vector_type &sdata, int &index, int x1, int x2, int x3) override;
    inline void distributeData(vector_type &rdata, int &index, int x1, int x2, int x3) override;
 
@@ -82,6 +85,8 @@ private:
    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroH2distributions;
 
    SPtr<EsoTwist3D> h2Dis;
+
+   SPtr<PressureFieldArray3D> pressure;
 
 };
 //////////////////////////////////////////////////////////////////////////
@@ -192,6 +197,8 @@ inline void ThreeDistributionsFullVectorConnector2::fillData(vector_type& sdata,
    sdata[index++] = (*this->nonLocalH2distributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1);
 
    sdata[index++] = (*this->zeroH2distributions)(x1, x2, x3);
+
+   sdata[index++] = (*this->pressure)(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
 inline void ThreeDistributionsFullVectorConnector2::distributeData(vector_type& rdata, int& index, int x1, int x2, int x3)
@@ -286,6 +293,8 @@ inline void ThreeDistributionsFullVectorConnector2::distributeData(vector_type& 
    (*this->nonLocalH2distributions)(D3Q27System::ET_BNE, x1, x2, x3 + 1)         = rdata[index++];
 
    (*this->zeroH2distributions)(x1, x2, x3) = rdata[index++];
+
+   (*this->pressure)(x1, x2, x3) = rdata[index++];
 }
 
 

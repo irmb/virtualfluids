@@ -151,16 +151,16 @@ void run(string configname)
             SPtr<WriteBlocksCoProcessor> ppblocks(new WriteBlocksCoProcessor(
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
-            //SPtr<Grid3DVisitor> metisVisitor(
-            //    new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW));
-            //InteractorsHelper intHelper(grid, metisVisitor);
-            //intHelper.selectBlocks();
+            SPtr<Grid3DVisitor> metisVisitor(
+                new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
+            InteractorsHelper intHelper(grid, metisVisitor, true);
+            intHelper.selectBlocks();
 
             ppblocks->process(0);
             ppblocks.reset();
 
             unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
-            int ghostLayer                    = 3;
+            int ghostLayer                    = 5;
             unsigned long long numberOfNodesPerBlock =
                 (unsigned long long)(blocknx[0]) * (unsigned long long)(blocknx[1]) * (unsigned long long)(blocknx[2]);
             unsigned long long numberOfNodes = numberOfBlocks * numberOfNodesPerBlock;
@@ -196,7 +196,7 @@ void run(string configname)
             }
 
 
-            //intHelper.setBC();
+            intHelper.setBC();
 
             //grid->accept(bcVisitor);
 
