@@ -51,7 +51,7 @@ class Communicator;
 class Block3D;
 class Interactor3D;
 
-#define OFFSET 0.5
+#define OFFSET 1.5
 
 //! A class implements block grid
 //////////////////////////////////////////////////////////////////////////

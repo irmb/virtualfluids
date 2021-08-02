@@ -36,7 +36,7 @@
 #include "LBMKernel.h"
 #include <string>
 #include <vector>
-#include "MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel.h"
+#include "MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2.h"
 
 #include "BCArray3D.h"
 #include "Block3D.h"
@@ -157,7 +157,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     datanames.push_back("Vz");
     datanames.push_back("P1");
     datanames.push_back("Phi2");
-    if (dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel>(kernel)->pressure) datanames.push_back("Pressure");
+    if (dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2>(kernel)->pressure) datanames.push_back("Pressure");
 
     data.resize(datanames.size());
 
@@ -195,9 +195,9 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     int maxX2 = (int)(distributionsF->getNX2());
     int maxX3 = (int)(distributionsF->getNX3());
 
-    int minX1 = 0;
-    int minX2 = 0;
-    int minX3 = 0;
+    int minX1 = 1;
+    int minX2 = 1;
+    int minX3 = 1;
 
     // int maxX1 = (int)(distributions->getNX1());
     // int maxX2 = (int)(distributions->getNX2());
@@ -235,9 +235,9 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
         }
     }
 
-    maxX1 -= 2;
-    maxX2 -= 2;
-    maxX3 -= 2;
+    maxX1 -= 3;
+    maxX2 -= 3;
+    maxX3 -= 3;
 
     // maxX1 -= 1;
     // maxX2 -= 1;
@@ -347,7 +347,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     // rho = phi[ZERO] + (1.0 - phi[ZERO])*1.0/densityRatio;
                     rho = rhoH + rhoToPhi * (phi[REST] - phiH);
 
-                    if (dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel>(kernel)->pressure) {
+                    if (dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2>(kernel)->pressure) {
                         vx1 =
                             ((((f[TNE] - f[BSW]) + (f[TSE] - f[BNW])) + ((f[BSE] - f[TNW]) + (f[BNE] - f[TSW]))) +
                             (((f[BE] - f[TW]) + (f[TE] - f[BW])) + ((f[SE] - f[NW]) + (f[NE] - f[SW]))) + (f[E] - f[W])) ;
@@ -429,8 +429,8 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     data[index++].push_back(vx3);
                     data[index++].push_back(p1);
                     data[index++].push_back(phi2[REST]);
-                    if (dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel>(kernel)->pressure) {
-                        data[index++].push_back((*dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel>(kernel)->pressure)(ix1, ix2, ix3));
+                    if (dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2>(kernel)->pressure) {
+                        data[index++].push_back((*dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2>(kernel)->pressure)(ix1, ix2, ix3));
                     }
                    // else { data[index++].push_back(999); }
                 }

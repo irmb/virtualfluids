@@ -80,7 +80,7 @@ void run(string configname)
 
         //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
-        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(gr);
@@ -231,7 +231,7 @@ void run(string configname)
                 SPtr<UbScheduler> geoSch(new UbScheduler(1));
                 SPtr<WriteBoundaryConditionsCoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(
                     grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-                ppgeo->process(0);
+                //ppgeo->process(0);
                 ppgeo.reset();
             }
 
@@ -260,12 +260,13 @@ void run(string configname)
         //TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
         //grid->accept(setConnsVisitor);
 
-        ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+        ThreeDistributionsSetConnectorsBlockVisitor2 setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
             grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+        //pp->process(0);
         //SPtr<WriteMacroscopicQuantitiesCoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(
         //    grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
