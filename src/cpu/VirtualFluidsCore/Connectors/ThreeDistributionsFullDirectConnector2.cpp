@@ -51,6 +51,8 @@ void ThreeDistributionsFullDirectConnector2::init()
 	hTo = dynamicPointerCast<EsoTwist3D>(to.lock()->getKernel()->getDataSet()->getHdistributions());
     hFrom2 = dynamicPointerCast<EsoTwist3D>(from.lock()->getKernel()->getDataSet()->getH2distributions());
     hTo2  = dynamicPointerCast<EsoTwist3D>(to.lock()->getKernel()->getDataSet()->getH2distributions());
+    pressureFrom = from.lock()->getKernel()->getDataSet()->getPressureField();
+    pressureTo   = to.lock()->getKernel()->getDataSet()->getPressureField();
 }
 //////////////////////////////////////////////////////////////////////////
 void ThreeDistributionsFullDirectConnector2::sendVectors()
@@ -151,6 +153,8 @@ void ThreeDistributionsFullDirectConnector2::exchangeData()
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             exchangeData(maxX1m3, maxX2m3, x3, minX1, minX2, x3);
             exchangeData(maxX1m2, maxX2m2, x3, minX1p1, minX2p1, x3);
+            exchangeData(maxX1m3, maxX2m2, x3, minX1, minX2p1, x3);
+            exchangeData(maxX1m2, maxX2m3, x3, minX1p1, minX2, x3);
         }
     }
     // NORTHWEST
@@ -158,6 +162,8 @@ void ThreeDistributionsFullDirectConnector2::exchangeData()
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             exchangeData(minX1p3, maxX2m3, x3, maxX1, minX2, x3);
             exchangeData(minX1p2, maxX2m2, x3, maxX1m1, minX2p1, x3);
+            exchangeData(minX1p3, maxX2m2, x3, maxX1, minX2p1, x3);
+            exchangeData(minX1p2, maxX2m3, x3, maxX1m1, minX2, x3);
         }
     }
     // SOUTHWEST
@@ -165,6 +171,8 @@ void ThreeDistributionsFullDirectConnector2::exchangeData()
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             exchangeData(minX1p3, minX2p3, x3, maxX1, maxX2, x3);
             exchangeData(minX1p2, minX2p2, x3, maxX1m1, maxX2m1, x3);
+            exchangeData(minX1p3, minX2p2, x3, maxX1, maxX2m1, x3);
+            exchangeData(minX1p2, minX2p3, x3, maxX1m1, maxX2, x3);
         }
     }
     // SOUTHEAST
@@ -172,71 +180,137 @@ void ThreeDistributionsFullDirectConnector2::exchangeData()
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             exchangeData(maxX1m3, minX2p3, x3, minX1, maxX2, x3);
             exchangeData(maxX1m2, minX2p2, x3, minX1p1, maxX2m1, x3);
+            exchangeData(maxX1m3, minX2p2, x3, minX1, maxX2m1, x3);
+            exchangeData(maxX1m2, minX2p3, x3, minX1p1, maxX2, x3);
         }
     } else if (sendDir == D3Q27System::TE)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             exchangeData(maxX1m3, x2, maxX3m3, minX1, x2, minX3);
             exchangeData(maxX1m2, x2, maxX3m2, minX1p1, x2, minX3p1);
+            exchangeData(maxX1m3, x2, maxX3m2, minX1, x2, minX3p1);
+            exchangeData(maxX1m2, x2, maxX3m3, minX1p1, x2, minX3);
         }
     else if (sendDir == D3Q27System::BW)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             exchangeData(minX1p3, x2, minX3p3, maxX1, x2, maxX3);
             exchangeData(minX1p2, x2, minX3p2, maxX1m1, x2, maxX3m1);
+            exchangeData(minX1p3, x2, minX3p2, maxX1, x2, maxX3m1);
+            exchangeData(minX1p2, x2, minX3p3, maxX1m1, x2, maxX3);
         }
     else if (sendDir == D3Q27System::BE)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             exchangeData(maxX1m3, x2, minX3p3, minX1, x2, maxX3);
             exchangeData(maxX1m2, x2, minX3p2, minX1p1, x2, maxX3m1);
+            exchangeData(maxX1m3, x2, minX3p2, minX1, x2, maxX3m1);
+            exchangeData(maxX1m2, x2, minX3p3, minX1p1, x2, maxX3);
         }
     else if (sendDir == D3Q27System::TW)
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             exchangeData(minX1p3, x2, maxX3m3, maxX1, x2, minX3);
             exchangeData(minX1p2, x2, maxX3m2, maxX1m1, x2, minX3p1);
+            exchangeData(minX1p3, x2, maxX3m2, maxX1, x2, minX3p1);
+            exchangeData(minX1p2, x2, maxX3m3, maxX1m1, x2, minX3);
         }
     else if (sendDir == D3Q27System::TN)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             exchangeData(x1, maxX2m3, maxX3m3, x1, minX2, minX3);
             exchangeData(x1, maxX2m2, maxX3m2, x1, minX2p1, minX3p1);
+            exchangeData(x1, maxX2m3, maxX3m2, x1, minX2, minX3p1);
+            exchangeData(x1, maxX2m2, maxX3m3, x1, minX2p1, minX3);
         }
     else if (sendDir == D3Q27System::BS)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             exchangeData(x1, minX2p3, minX3p3, x1, maxX2, maxX3);
             exchangeData(x1, minX2p2, minX3p2, x1, maxX2m1, maxX3m1);
+            exchangeData(x1, minX2p3, minX3p2, x1, maxX2, maxX3m1);
+            exchangeData(x1, minX2p2, minX3p3, x1, maxX2m1, maxX3);
         }
     else if (sendDir == D3Q27System::BN)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             exchangeData(x1, maxX2m3, minX3p3, x1, minX2, maxX3);
             exchangeData(x1, maxX2m2, minX3p2, x1, minX2p1, maxX3m1);
+            exchangeData(x1, maxX2m3, minX3p2, x1, minX2, maxX3m1);
+            exchangeData(x1, maxX2m2, minX3p3, x1, minX2p1, maxX3);
         }
     else if (sendDir == D3Q27System::TS)
         for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
             exchangeData(x1, minX2p3, maxX3m3, x1, maxX2, minX3);
             exchangeData(x1, minX2p2, maxX3m2, x1, maxX2m1, minX3p1);
+            exchangeData(x1, minX2p3, maxX3m2, x1, maxX2, minX3p1);
+            exchangeData(x1, minX2p2, maxX3m3, x1, maxX2m1, minX3);
         }
     else if (sendDir == D3Q27System::TSW) {
         exchangeData(minX1p3, minX2p3, maxX3m3, maxX1, maxX2, minX3);
         exchangeData(minX1p2, minX2p2, maxX3m2, maxX1m1, maxX2m1, minX3p1);
+        exchangeData(minX1p3, minX2p2, maxX3m2, maxX1, maxX2m1, minX3p1);
+        exchangeData(minX1p2, minX2p3, maxX3m2, maxX1m1, maxX2, minX3p1);
+        exchangeData(minX1p2, minX2p2, maxX3m3, maxX1m1, maxX2m1, minX3);
+        exchangeData(minX1p3, minX2p3, maxX3m2, maxX1, maxX2, minX3p1);
+        exchangeData(minX1p3, minX2p2, maxX3m3, maxX1, maxX2m1, minX3);
+        exchangeData(minX1p2, minX2p3, maxX3m3, maxX1m1, maxX2, minX3);
     } else if (sendDir == D3Q27System::TSE) {
         exchangeData(maxX1m3, minX1p3, maxX3m3, minX1, maxX2, minX3);
         exchangeData(maxX1m2, minX1p2, maxX3m2, minX1p1, maxX2m1, minX3p1);
+        exchangeData(maxX1m3, minX1p2, maxX3m2, minX1, maxX2m1, minX3p1);
+        exchangeData(maxX1m2, minX1p3, maxX3m2, minX1p1, maxX2, minX3p1);
+        exchangeData(maxX1m2, minX1p2, maxX3m3, minX1p1, maxX2m1, minX3);
+        exchangeData(maxX1m3, minX1p3, maxX3m2, minX1, maxX2, minX3p1);
+        exchangeData(maxX1m3, minX1p2, maxX3m3, minX1, maxX2m1, minX3);
+        exchangeData(maxX1m2, minX1p3, maxX3m3, minX1p1, maxX2, minX3);
     } else if (sendDir == D3Q27System::TNW) {
         exchangeData(minX1p3, maxX2m3, maxX3m3, maxX1, minX2, minX3);
         exchangeData(minX1p2, maxX2m2, maxX3m2, maxX1m1, minX2p1, minX3p1);
+        exchangeData(minX1p3, maxX2m2, maxX3m2, maxX1, minX2p1, minX3p1);
+        exchangeData(minX1p2, maxX2m3, maxX3m2, maxX1m1, minX2, minX3p1);
+        exchangeData(minX1p2, maxX2m2, maxX3m3, maxX1m1, minX2p1, minX3);
+        exchangeData(minX1p3, maxX2m3, maxX3m2, maxX1, minX2, minX3p1);
+        exchangeData(minX1p3, maxX2m2, maxX3m3, maxX1, minX2p1, minX3);
+        exchangeData(minX1p2, maxX2m3, maxX3m3, maxX1m1, minX2, minX3);
     } else if (sendDir == D3Q27System::TNE) {
         exchangeData(maxX1m3, maxX2m3, maxX3m3, minX1, minX2, minX3);
         exchangeData(maxX1m2, maxX2m2, maxX3m2, minX1p1, minX2p1, minX3p1);
+        exchangeData(maxX1m3, maxX2m2, maxX3m2, minX1, minX2p1, minX3p1);
+        exchangeData(maxX1m2, maxX2m3, maxX3m2, minX1p1, minX2, minX3p1);
+        exchangeData(maxX1m2, maxX2m2, maxX3m3, minX1p1, minX2p1, minX3);
+        exchangeData(maxX1m3, maxX2m3, maxX3m2, minX1, minX2, minX3p1);
+        exchangeData(maxX1m3, maxX2m2, maxX3m3, minX1, minX2p1, minX3);
+        exchangeData(maxX1m2, maxX2m3, maxX3m3, minX1p1, minX2, minX3);
     } else if (sendDir == D3Q27System::BSW) {
         exchangeData(minX1p3, minX2p3, minX3p3, maxX1, maxX2, maxX3);
         exchangeData(minX1p2, minX2p2, minX3p2, maxX1m1, maxX2m1, maxX3m1);
+        exchangeData(minX1p3, minX2p2, minX3p2, maxX1, maxX2m1, maxX3m1);
+        exchangeData(minX1p2, minX2p3, minX3p2, maxX1m1, maxX2, maxX3m1);
+        exchangeData(minX1p2, minX2p2, minX3p3, maxX1m1, maxX2m1, maxX3);
+        exchangeData(minX1p3, minX2p3, minX3p2, maxX1, maxX2, maxX3m1);
+        exchangeData(minX1p3, minX2p2, minX3p3, maxX1, maxX2m1, maxX3);
+        exchangeData(minX1p2, minX2p3, minX3p3, maxX1m1, maxX2, maxX3);
     } else if (sendDir == D3Q27System::BSE) {
         exchangeData(maxX1m3, minX2p3, minX3p3, minX1, maxX2, maxX3);
         exchangeData(maxX1m2, minX2p2, minX3p2, minX1p1, maxX2m1, maxX3m1);
+        exchangeData(maxX1m3, minX2p2, minX3p2, minX1, maxX2m1, maxX3m1);
+        exchangeData(maxX1m2, minX2p3, minX3p2, minX1p1, maxX2, maxX3m1);
+        exchangeData(maxX1m2, minX2p2, minX3p3, minX1p1, maxX2m1, maxX3);
+        exchangeData(maxX1m3, minX2p3, minX3p2, minX1, maxX2, maxX3m1);
+        exchangeData(maxX1m3, minX2p2, minX3p3, minX1, maxX2m1, maxX3);
+        exchangeData(maxX1m2, minX2p3, minX3p3, minX1p1, maxX2, maxX3);
     } else if (sendDir == D3Q27System::BNW) {
         exchangeData(minX1p3, maxX2m3, minX3p3, maxX1, minX2, maxX3);
         exchangeData(minX1p2, maxX2m2, minX3p2, maxX1m1, minX2p1, maxX3m1);
+        exchangeData(minX1p3, maxX2m2, minX3p2, maxX1, minX2p1, maxX3m1);
+        exchangeData(minX1p2, maxX2m3, minX3p2, maxX1m1, minX2, maxX3m1);
+        exchangeData(minX1p2, maxX2m2, minX3p3, maxX1m1, minX2p1, maxX3);
+        exchangeData(minX1p3, maxX2m3, minX3p2, maxX1, minX2, maxX3m1);
+        exchangeData(minX1p3, maxX2m2, minX3p3, maxX1, minX2p1, maxX3);
+        exchangeData(minX1p2, maxX2m3, minX3p3, maxX1m1, minX2, maxX3);
     } else if (sendDir == D3Q27System::BNE) {
         exchangeData(maxX1m3, maxX2m3, minX3p3, minX1, minX2, maxX3);
         exchangeData(maxX1m2, maxX2m2, minX3p2, minX1p1, minX2p1, maxX3m1);
+        exchangeData(maxX1m3, maxX2m2, minX3p2, minX1, minX2p1, maxX3m1);
+        exchangeData(maxX1m2, maxX2m3, minX3p2, minX1p1, minX2, maxX3m1);
+        exchangeData(maxX1m2, maxX2m2, minX3p3, minX1p1, minX2p1, maxX3);
+        exchangeData(maxX1m3, maxX2m3, minX3p2, minX1, minX2, maxX3m1);
+        exchangeData(maxX1m3, maxX2m2, minX3p3, minX1, minX2p1, maxX3);
+        exchangeData(maxX1m2, maxX2m3, minX3p3, minX1p1, minX2, maxX3);
     } else
         UB_THROW(UbException(UB_EXARGS, "unknown dir"));
 

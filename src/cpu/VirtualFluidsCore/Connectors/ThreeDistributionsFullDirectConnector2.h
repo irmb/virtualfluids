@@ -40,6 +40,7 @@
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "basics/container/CbArray3D.h"
 #include "basics/container/CbArray4D.h"
+#include "DataSet3D.h"
 
 //! \brief   Exchange data between blocks. 
 //! \details Connector send and receive full distributions between two blocks in shared memory.
@@ -53,7 +54,7 @@ public:
 
 protected:
     inline void updatePointers() override;
-    void exchangeData();
+    void exchangeData() override;
     inline void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To) override;
 
 private:
@@ -83,6 +84,8 @@ private:
 
 	SPtr<EsoTwist3D> fFrom, hFrom, hFrom2;
     SPtr<EsoTwist3D> fTo, hTo, hTo2;
+
+    SPtr<PressureFieldArray3D> pressureFrom, pressureTo;
 };
 //////////////////////////////////////////////////////////////////////////
 inline void ThreeDistributionsFullDirectConnector2::updatePointers()
@@ -230,5 +233,7 @@ inline void ThreeDistributionsFullDirectConnector2::exchangeData(int x1From, int
         (*this->nonLocalDistributionsFromh2)(D3Q27System::ET_BNE, x1From, x2From, x3From + 1);
 
     (*this->zeroDistributionsToh2)(x1To, x2To, x3To) = (*this->zeroDistributionsFromh2)(x1From, x2From, x3From);
+
+    (*this->pressureTo)(x1To, x2To, x3To) = (*this->pressureFrom)(x1From, x2From, x3From);
 }
 #endif

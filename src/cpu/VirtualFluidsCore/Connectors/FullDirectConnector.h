@@ -49,7 +49,7 @@ public:
 
 protected:
     virtual void updatePointers() = 0;
-    void exchangeData();
+    virtual void exchangeData();
     virtual void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To) = 0;
 
     int maxX1;

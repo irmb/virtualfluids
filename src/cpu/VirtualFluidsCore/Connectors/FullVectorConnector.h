@@ -56,8 +56,8 @@ public:
 
 protected:
     virtual void updatePointers() = 0;
-    void fillData();
-    void distributeData();
+    virtual void fillData();
+    virtual void distributeData();
     virtual void fillData(vector_type &sdata, int &index, int x1, int x2, int x3) = 0;
     virtual void distributeData(vector_type &rdata, int &index, int x1, int x2, int x3) = 0;
     

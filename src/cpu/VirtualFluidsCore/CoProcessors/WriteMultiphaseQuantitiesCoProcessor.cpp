@@ -157,7 +157,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     datanames.push_back("Vz");
     datanames.push_back("P1");
     datanames.push_back("Phi2");
-    if (dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2>(kernel)->pressure) datanames.push_back("Pressure");
+    if (kernel->getDataSet()->getPressureField()) datanames.push_back("Pressure");
 
     data.resize(datanames.size());
 
@@ -167,6 +167,9 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     SPtr<DistributionArray3D> distributionsH = kernel->getDataSet()->getHdistributions();
     SPtr<DistributionArray3D> distributionsH2 = kernel->getDataSet()->getH2distributions();
     SPtr<PhaseFieldArray3D> divU             = kernel->getDataSet()->getPhaseField();
+
+    SPtr<PressureFieldArray3D> pressure;
+    if (kernel->getDataSet()->getPressureField()) pressure = kernel->getDataSet()->getPressureField();
 
     LBMReal f[D3Q27System::ENDF + 1];
     LBMReal phi[D3Q27System::ENDF + 1];
@@ -347,7 +350,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     // rho = phi[ZERO] + (1.0 - phi[ZERO])*1.0/densityRatio;
                     rho = rhoH + rhoToPhi * (phi[REST] - phiH);
 
-                    if (dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2>(kernel)->pressure) {
+                    if (pressure) {
                         vx1 =
                             ((((f[TNE] - f[BSW]) + (f[TSE] - f[BNW])) + ((f[BSE] - f[TNW]) + (f[BNE] - f[TSW]))) +
                             (((f[BE] - f[TW]) + (f[TE] - f[BW])) + ((f[SE] - f[NW]) + (f[NE] - f[SW]))) + (f[E] - f[W])) ;
@@ -429,10 +432,7 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
                     data[index++].push_back(vx3);
                     data[index++].push_back(p1);
                     data[index++].push_back(phi2[REST]);
-                    if (dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2>(kernel)->pressure) {
-                        data[index++].push_back((*dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2>(kernel)->pressure)(ix1, ix2, ix3));
-                    }
-                   // else { data[index++].push_back(999); }
+                    if (pressure) data[index++].push_back((*pressure)(ix1, ix2, ix3));
                 }
             }
         }

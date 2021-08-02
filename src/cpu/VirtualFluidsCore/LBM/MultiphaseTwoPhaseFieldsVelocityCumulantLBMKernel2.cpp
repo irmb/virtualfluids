@@ -51,12 +51,13 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::initDataSet()
     SPtr<DistributionArray3D> h(new D3Q27EsoTwist3DSplittedVector( nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9)); // For phase-field
     SPtr<DistributionArray3D> h2(new D3Q27EsoTwist3DSplittedVector(nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9)); // For phase-field
     SPtr<PhaseFieldArray3D> divU(new PhaseFieldArray3D(            nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
-	pressure= CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<LBMReal, IndexerX3X2X1>(    nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
+	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure(new  CbArray3D<LBMReal, IndexerX3X2X1>(    nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
 	pressureOld = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
     dataSet->setFdistributions(f);
     dataSet->setHdistributions(h); // For phase-field
     dataSet->setH2distributions(h2); // For phase-field
     dataSet->setPhaseField(divU);
+	dataSet->setPressureField(pressure);
 }
 //////////////////////////////////////////////////////////////////////////
 SPtr<LBMKernel> MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::clone()
@@ -153,6 +154,8 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::calculate(int step)
     nonLocalDistributionsH2 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getH2distributions())->getNonLocalDistributions();
     zeroDistributionsH2     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getH2distributions())->getZeroDistributions();
 
+	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure = dataSet->getPressureField();
+
     SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
 
     const int bcArrayMaxX1 = (int)bcArray->getNX1();
@@ -176,9 +179,9 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::calculate(int step)
             new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, 0.0));
 
 //#pragma omp parallel for
-	  for (int x3 = minX3-1; x3 <= maxX3; x3++) {
-            for (int x2 = minX2-1; x2 <= maxX2; x2++) {
-                for (int x1 = minX1-1; x1 <= maxX1; x1++) {
+	  for (int x3 = minX3-ghostLayerWidth; x3 < maxX3+ghostLayerWidth; x3++) {
+            for (int x2 = minX2-ghostLayerWidth; x2 < maxX2+ghostLayerWidth; x2++) {
+                for (int x1 = minX1-ghostLayerWidth; x1 < maxX1+ghostLayerWidth; x1++) {
                     if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
                         int x1p = x1 + 1;
                         int x2p = x2 + 1;
