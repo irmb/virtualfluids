@@ -26,13 +26,13 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file ThreeDistributionsFullDirectConnector2.h
+//! \file ThreeDistributionsDoubleGhostLayerFullDirectConnector.h
 //! \ingroup Connectors
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef ThreeDistributionsFullDirectConnector2_H
-#define ThreeDistributionsFullDirectConnector2_H
+#ifndef ThreeDistributionsDoubleGhostLayerFullDirectConnector_H
+#define ThreeDistributionsDoubleGhostLayerFullDirectConnector_H
 
 #include "FullDirectConnector.h"
 #include "Block3D.h"
@@ -45,10 +45,10 @@
 //! \brief   Exchange data between blocks. 
 //! \details Connector send and receive full distributions between two blocks in shared memory.
 
-class ThreeDistributionsFullDirectConnector2 : public FullDirectConnector
+class ThreeDistributionsDoubleGhostLayerFullDirectConnector : public FullDirectConnector
 {
 public:
-	ThreeDistributionsFullDirectConnector2(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
+	ThreeDistributionsDoubleGhostLayerFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
     void init() override;
     void sendVectors() override;
 
@@ -88,7 +88,7 @@ private:
     SPtr<PressureFieldArray3D> pressureFrom, pressureTo;
 };
 //////////////////////////////////////////////////////////////////////////
-inline void ThreeDistributionsFullDirectConnector2::updatePointers()
+inline void ThreeDistributionsDoubleGhostLayerFullDirectConnector::updatePointers()
 {
     localDistributionsFromf = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fFrom)->getLocalDistributions();
     nonLocalDistributionsFromf = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fFrom)->getNonLocalDistributions();
@@ -115,7 +115,7 @@ inline void ThreeDistributionsFullDirectConnector2::updatePointers()
     zeroDistributionsToh2     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->hTo2)->getZeroDistributions();
 }
 //////////////////////////////////////////////////////////////////////////
-inline void ThreeDistributionsFullDirectConnector2::exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
+inline void ThreeDistributionsDoubleGhostLayerFullDirectConnector::exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
 {
 	(*this->localDistributionsTof)(D3Q27System::ET_E, x1To, x2To, x3To) = (*this->localDistributionsFromf)(D3Q27System::ET_E, x1From, x2From, x3From);
 	(*this->localDistributionsTof)(D3Q27System::ET_N, x1To, x2To, x3To) = (*this->localDistributionsFromf)(D3Q27System::ET_N, x1From, x2From, x3From);

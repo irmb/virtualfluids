@@ -26,13 +26,13 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2.h
+//! \file MultiphaseTwoPhaseFieldsPressureFilterLBMKernel.h
 //! \ingroup LBMKernel
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#ifndef MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2_H
-#define MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2_H
+#ifndef MultiphaseTwoPhaseFieldsPressureFilterLBMKernel_H
+#define MultiphaseTwoPhaseFieldsPressureFilterLBMKernel_H
 
 #include "LBMKernel.h"
 #include "BCProcessor.h"
@@ -44,11 +44,11 @@
 //! \brief  Multiphase Cascaded Cumulant LBM kernel. 
 //! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
 //! \author  H. Safari, K. Kutscher, M. Geier
-class MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2 : public LBMKernel
+class MultiphaseTwoPhaseFieldsPressureFilterLBMKernel : public LBMKernel
 {
 public:
-   MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2();
-   virtual ~MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2(void) = default;
+   MultiphaseTwoPhaseFieldsPressureFilterLBMKernel();
+   virtual ~MultiphaseTwoPhaseFieldsPressureFilterLBMKernel(void) = default;
    void calculate(int step) override;
    SPtr<LBMKernel> clone() override;
    void forwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho);

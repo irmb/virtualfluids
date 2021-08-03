@@ -26,19 +26,19 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file ThreeDistributionsFullVectorConnector2.cpp
+//! \file ThreeDistributionsDoubleGhostLayerFullVectorConnector.cpp
 //! \ingroup Connectors
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#include "ThreeDistributionsFullVectorConnector2.h"
+#include "ThreeDistributionsDoubleGhostLayerFullVectorConnector.h"
 #include "Block3D.h"
 #include "LBMKernel.h"
 #include "EsoTwist3D.h"
 #include "DataSet3D.h"
 
 //////////////////////////////////////////////////////////////////////////
-ThreeDistributionsFullVectorConnector2::ThreeDistributionsFullVectorConnector2(SPtr<Block3D> block,
+ThreeDistributionsDoubleGhostLayerFullVectorConnector::ThreeDistributionsDoubleGhostLayerFullVectorConnector(SPtr<Block3D> block,
                                                                          VectorTransmitterPtr sender,
                                                                          VectorTransmitterPtr receiver, int sendDir)
     : FullVectorConnector(block, sender, receiver, sendDir)
@@ -48,7 +48,7 @@ ThreeDistributionsFullVectorConnector2::ThreeDistributionsFullVectorConnector2(S
 
 }
 //////////////////////////////////////////////////////////////////////////
-void ThreeDistributionsFullVectorConnector2::init()
+void ThreeDistributionsDoubleGhostLayerFullVectorConnector::init()
 {
    FullVectorConnector::init();
 
@@ -96,13 +96,13 @@ void ThreeDistributionsFullVectorConnector2::init()
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void ThreeDistributionsFullVectorConnector2::fillSendVectors() 
+void ThreeDistributionsDoubleGhostLayerFullVectorConnector::fillSendVectors() 
 { 
     updatePointers();
     fillData();
 }
 ////////////////////////////////////////////////////////////////////////
-void ThreeDistributionsFullVectorConnector2::fillData()
+void ThreeDistributionsDoubleGhostLayerFullVectorConnector::fillData()
 {
     ////////////////////////////////////////////////////////////
     // relation between ghost layer and regular nodes
@@ -359,13 +359,13 @@ void ThreeDistributionsFullVectorConnector2::fillData()
         UB_THROW(UbException(UB_EXARGS, "unknown dir"));
 }
 ////////////////////////////////////////////////////////////////////////
-void ThreeDistributionsFullVectorConnector2::distributeReceiveVectors() 
+void ThreeDistributionsDoubleGhostLayerFullVectorConnector::distributeReceiveVectors() 
 {
     updatePointers();
     distributeData();
 }
 ////////////////////////////////////////////////////////////////////////
-void ThreeDistributionsFullVectorConnector2::distributeData()
+void ThreeDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
 {
     vector_type &rdata = receiver->getData();
 
@@ -400,7 +400,6 @@ void ThreeDistributionsFullVectorConnector2::distributeData()
     int maxX3m2 = maxX3 - 2;
     int maxX3m3 = maxX3 - 3;
 
-    // EAST
     if (sendDir == D3Q27System::W) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
@@ -409,7 +408,6 @@ void ThreeDistributionsFullVectorConnector2::distributeData()
             }
         }
     }
-    // WEST
     else if (sendDir == D3Q27System::E) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
@@ -418,7 +416,6 @@ void ThreeDistributionsFullVectorConnector2::distributeData()
             }
         }
     }
-    // NORTH
     else if (sendDir == D3Q27System::S) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
@@ -427,7 +424,6 @@ void ThreeDistributionsFullVectorConnector2::distributeData()
             }
         }
     }
-    // SOUTH
     else if (sendDir == D3Q27System::N) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
@@ -436,8 +432,6 @@ void ThreeDistributionsFullVectorConnector2::distributeData()
             }
         }
     }
-
-    // TOP
     else if (sendDir == D3Q27System::B) {
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
@@ -446,7 +440,6 @@ void ThreeDistributionsFullVectorConnector2::distributeData()
             }
         }
     }
-    // BOTTOM
     else if (sendDir == D3Q27System::T) {
         for (int x2 = minX2p2; x2 <= maxX2m2; x2++) {
             for (int x1 = minX1p2; x1 <= maxX1m2; x1++) {
@@ -455,7 +448,6 @@ void ThreeDistributionsFullVectorConnector2::distributeData()
             }
         }
     }
-    // NORTHEAST
     else if (sendDir == D3Q27System::SW) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             distributeData(rdata, index, minX1, minX2, x3);
@@ -464,7 +456,6 @@ void ThreeDistributionsFullVectorConnector2::distributeData()
             distributeData(rdata, index, minX1p1, minX2, x3);
         }
     }
-    // NORTHWEST
     else if (sendDir == D3Q27System::SE) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             distributeData(rdata, index, maxX1, minX2, x3);
@@ -473,7 +464,6 @@ void ThreeDistributionsFullVectorConnector2::distributeData()
             distributeData(rdata, index, maxX1m1, minX2, x3);
         }
     }
-    // SOUTHWEST
     else if (sendDir == D3Q27System::NE) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             distributeData(rdata, index, maxX1, maxX2, x3);
@@ -482,7 +472,6 @@ void ThreeDistributionsFullVectorConnector2::distributeData()
             distributeData(rdata, index, maxX1m1, maxX2, x3);
         }
     }
-    // SOUTHEAST
     else if (sendDir == D3Q27System::NW) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {
             distributeData(rdata, index, minX1, maxX2, x3);

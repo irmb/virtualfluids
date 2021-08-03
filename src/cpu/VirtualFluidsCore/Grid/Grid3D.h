@@ -51,8 +51,6 @@ class Communicator;
 class Block3D;
 class Interactor3D;
 
-#define OFFSET 1.5
-
 //! A class implements block grid
 //////////////////////////////////////////////////////////////////////////
 class Grid3D : public enableSharedFromThis<Grid3D>
@@ -214,9 +212,10 @@ public:
     int getNX1() const;
     int getNX2() const;
     int getNX3() const;
-    void calcStartCoordinatesAndDelta(SPtr<Block3D> block, double &worldX1, double &worldX2, double &worldX3,
-                                      double &deltaX);
+    void calcStartCoordinatesAndDelta(SPtr<Block3D> block, double &worldX1, double &worldX2, double &worldX3, double &deltaX);
     void calcStartCoordinatesWithOutOverlap(SPtr<Block3D> block, double &worldX1, double &worldX2, double &worldX3);
+    int getGhostLayerWidth() const;
+    void setGhostLayerWidth(int ghostLayerWidth);
     //////////////////////////////////////////////////////////////////////////
     // LBM
     // double getDeltaT(SPtr<Block3D>) const;
@@ -313,6 +312,8 @@ private:
     double orgDeltaX{ 1.0 };
 
     double timeStep{ 0.0 };
+
+    double offset{ 0.5 };
 };
 
 #endif

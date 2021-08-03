@@ -26,12 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2.cpp
+//! \file MultiphaseTwoPhaseFieldsPressureFilterLBMKernel.cpp
 //! \ingroup LBMKernel
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#include "MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2.h"
+#include "MultiphaseTwoPhaseFieldsPressureFilterLBMKernel.h"
 #include "BCArray3D.h"
 #include "Block3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
@@ -43,9 +43,9 @@
 #define PROOF_CORRECTNESS
 
 //////////////////////////////////////////////////////////////////////////
-MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2() { this->compressible = false; }
+MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::MultiphaseTwoPhaseFieldsPressureFilterLBMKernel() { this->compressible = false; }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::initDataSet()
+void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::initDataSet()
 {
     SPtr<DistributionArray3D> f(new D3Q27EsoTwist3DSplittedVector( nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9));
     SPtr<DistributionArray3D> h(new D3Q27EsoTwist3DSplittedVector( nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9)); // For phase-field
@@ -60,11 +60,11 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::initDataSet()
 	dataSet->setPressureField(pressure);
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<LBMKernel> MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::clone()
+SPtr<LBMKernel> MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::clone()
 {
-    SPtr<LBMKernel> kernel(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2());
+    SPtr<LBMKernel> kernel(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
     kernel->setNX(nx);
-    dynamicPointerCast<MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2>(kernel)->initDataSet();
+    dynamicPointerCast<MultiphaseTwoPhaseFieldsPressureFilterLBMKernel>(kernel)->initDataSet();
     kernel->setCollisionFactorMultiphase(this->collFactorL, this->collFactorG);
     kernel->setDensityRatio(this->densityRatio);
     kernel->setMultiphaseModelParameters(this->beta, this->kappa);
@@ -86,7 +86,7 @@ SPtr<LBMKernel> MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::clone()
     return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
- void  MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::forwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho) {
+ void  MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::forwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho) {
 	using namespace UbMath;
     LBMReal m2 = mfa + mfc;
 	LBMReal m1 = mfc - mfa;
@@ -99,7 +99,7 @@ SPtr<LBMKernel> MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::clone()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
- void  MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::backwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho) {
+ void  MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::backwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho) {
 	using namespace UbMath;
     LBMReal m0 = (((mfc - mfb) * c1o2 + mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (v2 - vv) * c1o2) * K;
 	LBMReal m1 = (((mfa - mfc) - c2 * mfb * vv) * Kinverse + (mfa * Kinverse + oneMinusRho) * (-v2)) * K;
@@ -110,7 +110,7 @@ SPtr<LBMKernel> MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::clone()
 
 
 ////////////////////////////////////////////////////////////////////////////////
- void  MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2) {
+ void  MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2) {
 	using namespace UbMath;
     LBMReal m1 = (mfa + mfc) + mfb;
 	LBMReal m2 = mfc - mfa;
@@ -120,7 +120,7 @@ SPtr<LBMKernel> MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::clone()
 }
 
 
- void  MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2) {
+ void  MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2) {
 	using namespace UbMath;
     LBMReal ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
 	LBMReal mb = ((mfa - mfc) - mfa * v2) - c2 * mfb * vv;
@@ -130,7 +130,7 @@ SPtr<LBMKernel> MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::clone()
 }
 
 
-void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::calculate(int step)
+void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 {
     using namespace D3Q27System;
     using namespace UbMath;
@@ -3291,7 +3291,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::calculate(int step)
 }
 //////////////////////////////////////////////////////////////////////////
 
-LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::gradX1_phi()
+LBMReal MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::gradX1_phi()
 {
     using namespace D3Q27System;
 	return 3.0* ((WEIGTH[TNE] * (((phi[TNE] - phi[BSW]) + (phi[BSE] - phi[TNW])) + ((phi[TSE] - phi[BNW]) + (phi[BNE] - phi[TSW])))
@@ -3304,7 +3304,7 @@ LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::gradX1_phi()
     //return 3.0 * sum;
 }
 
-LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::gradX2_phi()
+LBMReal MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::gradX2_phi()
 {
     using namespace D3Q27System;
 	return 3.0 * ((WEIGTH[TNE] * (((phi[TNE] - phi[BSW]) - (phi[BSE] - phi[TNW])) + ((phi[BNE] - phi[TSW])- (phi[TSE] - phi[BNW])))
@@ -3317,7 +3317,7 @@ LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::gradX2_phi()
     //return 3.0 * sum;
 }
 
-LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::gradX3_phi()
+LBMReal MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::gradX3_phi()
 {
     using namespace D3Q27System;
 	return 3.0 * ((WEIGTH[TNE] * (((phi[TNE] - phi[BSW]) - (phi[BSE] - phi[TNW])) + ((phi[TSE] - phi[BNW]) - (phi[BNE] - phi[TSW])))
@@ -3330,7 +3330,7 @@ LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::gradX3_phi()
     //return 3.0 * sum;
 }
 
-LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::gradX1_phi2()
+LBMReal MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::gradX1_phi2()
 {
 	using namespace D3Q27System;
 	return 3.0 * ((WEIGTH[TNE] * (((phi2[TNE] - phi2[BSW]) + (phi2[BSE] - phi2[TNW])) + ((phi2[TSE] - phi2[BNW]) + (phi2[BNE] - phi2[TSW])))
@@ -3343,7 +3343,7 @@ LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::gradX1_phi2()
 	//return 3.0 * sum;
 }
 
-LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::gradX2_phi2()
+LBMReal MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::gradX2_phi2()
 {
 	using namespace D3Q27System;
 	return 3.0 * ((WEIGTH[TNE] * (((phi2[TNE] - phi2[BSW]) - (phi2[BSE] - phi2[TNW])) + ((phi2[BNE] - phi2[TSW]) - (phi2[TSE] - phi2[BNW])))
@@ -3356,7 +3356,7 @@ LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::gradX2_phi2()
 	//return 3.0 * sum;
 }
 
-LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::gradX3_phi2()
+LBMReal MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::gradX3_phi2()
 {
 	using namespace D3Q27System;
 	return 3.0 * ((WEIGTH[TNE] * (((phi2[TNE] - phi2[BSW]) - (phi2[BSE] - phi2[TNW])) + ((phi2[TSE] - phi2[BNW]) - (phi2[BNE] - phi2[TSW])))
@@ -3373,7 +3373,7 @@ LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::gradX3_phi2()
 
 
 
-LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::nabla2_phi()
+LBMReal MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::nabla2_phi()
 {
     using namespace D3Q27System;
     LBMReal sum = 0.0;
@@ -3395,7 +3395,7 @@ LBMReal MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::nabla2_phi()
     return 6.0 * sum;
 }
 
-void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::computePhasefield()
+void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::computePhasefield()
 {
     using namespace D3Q27System;
     SPtr<DistributionArray3D> distributionsH = dataSet->getHdistributions();
@@ -3452,7 +3452,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::computePhasefield()
     }
 }
 
-void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::findNeighbors(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
+void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::findNeighbors(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
                                                 int x3)
 {
     using namespace D3Q27System;
@@ -3472,7 +3472,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::findNeighbors(CbArray3D
     }
 }
 
-void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::findNeighbors2(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
+void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::findNeighbors2(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
 	int x3)
 {
 	using namespace D3Q27System;
@@ -3493,7 +3493,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::findNeighbors2(CbArray3
 	}
 }
 
-void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2::swapDistributions()
+void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::swapDistributions()
 {
     LBMKernel::swapDistributions();
     dataSet->getHdistributions()->swap();

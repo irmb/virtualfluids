@@ -80,7 +80,7 @@ void run(string configname)
 
         //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
-        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2());
+        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(gr);
@@ -103,6 +103,7 @@ void run(string configname)
         grid->setPeriodicX1(true);
         grid->setPeriodicX2(true);
         grid->setPeriodicX3(true);
+        grid->setGhostLayerWidth(2);
 
         //////////////////////////////////////////////////////////////////////////
         // restart
@@ -260,7 +261,7 @@ void run(string configname)
         //TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
         //grid->accept(setConnsVisitor);
 
-        ThreeDistributionsSetConnectorsBlockVisitor2 setConnsVisitor(comm);
+        ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));

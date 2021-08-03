@@ -153,7 +153,7 @@
 #include <Connectors/RemoteBlock3DConnector.h>
 #include <Connectors/TwoDistributionsFullDirectConnector.h>
 #include <Connectors/TwoDistributionsFullVectorConnector.h>
-#include <Connectors/ThreeDistributionsFullDirectConnector2.h>
+
 
 #include <Data/D3Q27EsoTwist3DSplittedVector.h>
 #include <Data/D3Q27EsoTwist3DSplittedVectorEx.h>
@@ -246,7 +246,7 @@
 #include <LBM/MultiphaseScratchCumulantLBMKernel.h>
 #include <LBM/MultiphaseTwoPhaseFieldsCumulantLBMKernel.h>
 #include <LBM/MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel.h>
-#include <LBM/MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2.h>
+#include <LBM/MultiphaseTwoPhaseFieldsPressureFilterLBMKernel.h>
 
 
 

@@ -26,22 +26,22 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file ThreeDistributionsFullDirectConnector2.cpp
+//! \file ThreeDistributionsDoubleGhostLayerFullDirectConnector.cpp
 //! \ingroup Connectors
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#include "ThreeDistributionsFullDirectConnector2.h"
+#include "ThreeDistributionsDoubleGhostLayerFullDirectConnector.h"
 #include "LBMKernel.h"
 #include "DataSet3D.h"
 
-ThreeDistributionsFullDirectConnector2::ThreeDistributionsFullDirectConnector2(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir)
+ThreeDistributionsDoubleGhostLayerFullDirectConnector::ThreeDistributionsDoubleGhostLayerFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir)
     : FullDirectConnector(from, to, sendDir)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-void ThreeDistributionsFullDirectConnector2::init()
+void ThreeDistributionsDoubleGhostLayerFullDirectConnector::init()
 {
     FullDirectConnector::init();
 
@@ -55,13 +55,13 @@ void ThreeDistributionsFullDirectConnector2::init()
     pressureTo   = to.lock()->getKernel()->getDataSet()->getPressureField();
 }
 //////////////////////////////////////////////////////////////////////////
-void ThreeDistributionsFullDirectConnector2::sendVectors()
+void ThreeDistributionsDoubleGhostLayerFullDirectConnector::sendVectors()
 {
     updatePointers();
     exchangeData();
 }
 //////////////////////////////////////////////////////////////////////////
-void ThreeDistributionsFullDirectConnector2::exchangeData()
+void ThreeDistributionsDoubleGhostLayerFullDirectConnector::exchangeData()
 {
     ////////////////////////////////////////////////////////////
     // relation between ghost layer and regular nodes

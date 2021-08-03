@@ -85,10 +85,11 @@ void run(string configname)
 
         SPtr<LBMKernel> kernel;
 
-        kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
-                kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
@@ -109,15 +110,16 @@ void run(string configname)
         // grid->setPeriodicX1(true);
         // grid->setPeriodicX2(true);
         // grid->setPeriodicX3(true);
+        grid->setGhostLayerWidth(2);
         //////////////////////////////////////////////////////////////////////////
         // restart
         SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
         //SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
-        //SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, pathname, comm));
-        SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
-        rcp->setNu(nuLB);
-        rcp->setNuLG(nuL, nuG);
-        rcp->setDensityRatio(densityRatio);
+        SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, pathname, comm));
+        //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
+        //rcp->setNu(nuLB);
+        //rcp->setNuLG(nuL, nuG);
+        //rcp->setDensityRatio(densityRatio);
 
         rcp->setLBMKernel(kernel);
         rcp->setBCProcessor(bcProc);
@@ -392,7 +394,9 @@ void run(string configname)
       //  TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
       //  grid->accept(setConnsVisitor);
 
-        ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+       //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+
+        ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));

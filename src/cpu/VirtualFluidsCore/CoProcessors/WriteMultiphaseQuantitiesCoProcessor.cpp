@@ -36,7 +36,6 @@
 #include "LBMKernel.h"
 #include <string>
 #include <vector>
-#include "MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel2.h"
 
 #include "BCArray3D.h"
 #include "Block3D.h"
@@ -198,9 +197,16 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
     int maxX2 = (int)(distributionsF->getNX2());
     int maxX3 = (int)(distributionsF->getNX3());
 
-    int minX1 = 1;
-    int minX2 = 1;
-    int minX3 = 1;
+    int minX1 = 0;
+    int minX2 = 0;
+    int minX3 = 0;
+    
+    if (kernel->getGhostLayerWidth() == 2)
+    {
+        minX1 = 1;
+        minX2 = 1;
+        minX3 = 1;
+    }
 
     // int maxX1 = (int)(distributions->getNX1());
     // int maxX2 = (int)(distributions->getNX2());
@@ -238,15 +244,19 @@ void WriteMultiphaseQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
         }
     }
 
-    maxX1 -= 3;
-    maxX2 -= 3;
-    maxX3 -= 3;
+    if (kernel->getGhostLayerWidth() == 1)
+    {
+        maxX1 -= 2;
+        maxX2 -= 2;
+        maxX3 -= 2;
+    }
+    else if (kernel->getGhostLayerWidth() == 2)
+    {
+        maxX1 -= 3;
+        maxX2 -= 3;
+        maxX3 -= 3;
+    }
 
-    // maxX1 -= 1;
-    // maxX2 -= 1;
-    // maxX3 -= 1;
-
-    // D3Q27BoundaryConditionPtr bcPtr;
     int nr = (int)nodes.size();
     LBMReal dX1_phi;
     LBMReal dX2_phi;
