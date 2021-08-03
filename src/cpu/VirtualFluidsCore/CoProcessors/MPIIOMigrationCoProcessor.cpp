@@ -22,10 +22,11 @@
 
 using namespace MPIIODataStructures;
 
-MPIIOMigrationCoProcessor::MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<Communicator> comm)
+MPIIOMigrationCoProcessor::MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, SPtr<Communicator> comm)
     : MPIIOCoProcessor(grid, s, path, comm)
 {
     memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));
+    metisVisitor = mV;
 
     //-------------------------   define MPI types  ---------------------------------
 
@@ -145,6 +146,7 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
     bool multiPhase1 = false;
     bool multiPhase2 = false;
     DSArraysPresence arrPresence;
+    memset(&arrPresence, 0, sizeof(arrPresence));
     bool firstBlock           = true;
     size_t doubleCountInBlock = 0;
     int ic                    = 0;
@@ -1614,7 +1616,6 @@ void MPIIOMigrationCoProcessor::restart(int step)
 
     readBlocks(step);
 
-    SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
     grid->accept(metisVisitor);
 
     readDataSet(step);

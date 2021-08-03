@@ -25,10 +25,11 @@ using namespace MPIIODataStructures;
 #define MESSAGE_TAG 80
 #define SEND_BLOCK_SIZE 100000
 
-MPIIOMigrationBECoProcessor::MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<Communicator> comm)
+MPIIOMigrationBECoProcessor::MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, SPtr<Communicator> comm)
     : MPIIOCoProcessor(grid, s, path, comm), nue(-999.999), nuL(-999.999), nuG(-999.999), densityRatio(-999.999)
 {
     memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));
+    metisVisitor = mV;
 
     //-------------------------   define MPI types  ---------------------------------
 
@@ -831,8 +832,7 @@ void MPIIOMigrationBECoProcessor::restart(int step)
         UBLOG(logINFO, "Load check point - start");
 
     readBlocks(step);
-    SPtr<Grid3DVisitor> newMetisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
-    grid->accept(newMetisVisitor);
+    grid->accept(metisVisitor);
 
     readDataSet(step);
     readBoundaryConds(step);
