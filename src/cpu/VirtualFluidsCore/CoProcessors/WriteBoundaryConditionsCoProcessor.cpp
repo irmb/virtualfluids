@@ -37,7 +37,7 @@
 #include <string>
 #include <vector>
 
-#include <basics/logger/Logger.h>
+#include <logger/Logger.h>
 
 #include "BCArray3D.h"
 #include "Block3D.h"

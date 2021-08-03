@@ -49,6 +49,8 @@ void run(string configname)
             stringstream logFilename;
             logFilename << pathname + "/logfile" + UbSystem::toString(UbSystem::getTimeStamp()) + ".txt";
             UbLog::output_policy::setStream(logFilename.str());
+
+            vf::logging::Logger::changeLogPath(pathname);
          }
       }
 
@@ -347,7 +349,7 @@ void run(string configname)
 int main(int argc, char *argv[])
 {
     try {
-        vf::basics::logging::initalizeLogger();
+        vf::logging::Logger::initalizeLogger();
 
         VF_LOG_INFO("Starting VirtualFluids...");
 

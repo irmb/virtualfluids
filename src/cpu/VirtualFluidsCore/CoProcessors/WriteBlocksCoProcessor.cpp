@@ -33,7 +33,7 @@
 
 #include "WriteBlocksCoProcessor.h"
 #include "basics/writer/WbWriterVtkXmlASCII.h"
-#include <basics/logger/Logger.h>
+#include <logger/Logger.h>
 
 #include "Block3D.h"
 #include "Communicator.h"

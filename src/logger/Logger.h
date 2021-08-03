@@ -28,11 +28,22 @@
 //
 //! \author Soeren Peters
 //=======================================================================================
-#ifndef VF_BASICS_LOGGER_H
-#define VF_BASICS_LOGGER_H
+#ifndef VF_LOGGER_H
+#define VF_LOGGER_H
 
-
+// VirtualFluids is using the spdlog logger https://github.com/gabime/spdlog
 #include <spdlog/spdlog.h>
+// To initialize spdlog initalizeLogger() must be called.
+// spdlog supports 5 log level, which can be changed at runtime e.g.:
+// spdlog::set_level(spdlog::level::debug)
+// The default log level is set to trace. Supported levels: trace < debug < info < warning < critical
+// 
+// The logging is realized in 3 different log sinks:
+// 1. colorded console output
+// 2. a daily log file
+// 3. a log file from the last run of VirtualFluids
+// The default file path is relativ to executed command logs/
+// File path can be changed via changeLogPath()
 
 #define VF_LOG_TRACE(...) spdlog::trace(__VA_ARGS__)
 #define VF_LOG_DEBUG(...) spdlog::debug(__VA_ARGS__)
@@ -41,9 +52,22 @@
 #define VF_LOG_CRITICAL(...) spdlog::critical(__VA_ARGS__)
 
 
-namespace vf::basics::logging
+namespace vf::logging
 {
-    void initalizeLogger();
+    class Logger
+    {
+    public:
+        // initalizing the above named logger
+        static void initalizeLogger();
+
+        // changing the path of the log files
+        static void changeLogPath(const std::string& path);
+
+    private:
+        static void updateDefaultLogger();
+
+        static std::string logPath;
+    };
 }
 
 #endif

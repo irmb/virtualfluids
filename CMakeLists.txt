@@ -139,24 +139,6 @@ endif()
 #################################################################################
 #  COMMON LIBRARIES
 #################################################################################
-if(BUILD_VF_UNIT_TESTS)
-    add_subdirectory(${VF_THIRD_DIR}/googletest)
-    include(GoogleTest)
-    enable_testing()
-endif()
-
-if(BUILD_USE_OPENMP)
-    find_package(OpenMP REQUIRED)
-endif()
-
-find_package(MPI REQUIRED)
-
-
-add_subdirectory(src/basics)
-#add_subdirectory(src/mpi)
-#add_subdirectory(src/cuda)
-add_subdirectory(src/lbm)
-
 include(FetchContent)
 
 set(spdlog_version "v1.9.1")
@@ -169,6 +151,24 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(spdlog)
+
+if(BUILD_VF_UNIT_TESTS)
+    add_subdirectory(${VF_THIRD_DIR}/googletest)
+    include(GoogleTest)
+    enable_testing()
+endif()
+
+if(BUILD_USE_OPENMP)
+    find_package(OpenMP REQUIRED)
+endif()
+
+find_package(MPI REQUIRED)
+
+add_subdirectory(src/logger)
+add_subdirectory(src/basics)
+#add_subdirectory(src/mpi)
+#add_subdirectory(src/cuda)
+add_subdirectory(src/lbm)
 
 
 #################################################################################
