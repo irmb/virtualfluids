@@ -26,64 +26,33 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file WriteBoundaryConditionsCoProcessor.h
-//! \ingroup CoProcessors
-//! \author Konstantin Kutscher
+//! \author Soeren Peters
 //=======================================================================================
 
-#ifndef WriteBoundaryConditionsCoProcessor_H
-#define WriteBoundaryConditionsCoProcessor_H
+#ifndef BASICS_SINGELTON_H
+#define BASICS_SINGELTON_H
 
-#include <PointerDefinitions.h>
-#include <string>
-#include <vector>
+namespace vf::basics
+{
 
-#include "CoProcessor.h"
-#include "UbTuple.h"
-
-namespace vf::mpi {class Communicator;}
-class Grid3D;
-class UbScheduler;
-class WbWriter;
-class Block3D;
-class LBMUnitConverter;
-
-//! \brief A class writes boundary conditions information to a VTK-file
-class WriteBoundaryConditionsCoProcessor : public CoProcessor
+template<typename T>
+class Singleton
 {
 public:
-    WriteBoundaryConditionsCoProcessor();
-    //! \brief Construct WriteBoundaryConditionsCoProcessor object
-    //! \pre The Grid3D and UbScheduler objects must exist
-    //! \param grid is observable Grid3D object
-    //! \param s is UbScheduler object for scheduling of observer
-    //! \param path is path of folder for output
-    //! \param writer is WbWriter object
-    //! \param comm is Communicator object
-    WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                       WbWriter *const writer, std::shared_ptr<vf::mpi::Communicator> comm);
-    ~WriteBoundaryConditionsCoProcessor() override = default;
-
-    void process(double step) override;
+   Singleton(const Singleton&) = delete;
+   Singleton & operator=(const Singleton& rhs) = delete;
 
 protected:
-    //! Collect data for VTK-file
-    //! \param step is a time step
-    void collectData(double step);
-    void addDataGeo(SPtr<Block3D> block);
-    void clearData();
+   Singleton() = default;
 
-private:
-    std::vector<UbTupleFloat3> nodes;
-    std::vector<UbTupleUInt8> cells;
-    std::vector<std::string> datanames;
-    std::vector<std::vector<double>> data;
-    std::string path;
-    WbWriter *writer;
-    std::vector<std::vector<SPtr<Block3D>>> blockVector;
-    int minInitLevel;
-    int maxInitLevel;
-    int gridRank;
-    std::shared_ptr<vf::mpi::Communicator> comm;
+public:
+   static std::shared_ptr<Singleton> getInstance()
+   {
+     static std::shared_ptr<Singleton> s{new T};
+     return s;
+   }
 };
+
+}
+
 #endif

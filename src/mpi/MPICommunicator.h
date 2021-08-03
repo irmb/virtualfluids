@@ -1,7 +1,7 @@
 #if defined VF_MPI
 
-#ifndef MPICOMMUNICATOR_H
-#define MPICOMMUNICATOR_H
+#ifndef MPI_MPICOMMUNICATOR_H
+#define MPI_MPICOMMUNICATOR_H
 
 #include "Communicator.h"
 #include <PointerDefinitions.h>
@@ -11,19 +11,20 @@
 #include <string>
 #include <vector>
 
+namespace vf::mpi 
+{
+
 //! \brief A class uses MPI library to communication.
 //! \details Support MPI communication. Implements singleton pattern.
 //! \author K. Kutscher
-
 class MPICommunicator : public Communicator
 {
-private:
-    MPICommunicator();
-    MPICommunicator(const MPICommunicator &) = default;
-
 public:
+    MPICommunicator(MPICommunicator const&) = delete;
+    MPICommunicator& operator=(MPICommunicator const&) = delete;
+
     ~MPICommunicator() override;
-    static SPtr<Communicator> getInstance();
+    static std::shared_ptr<Communicator> getInstance();
     int getBundleID() override;
     int getNumberOfBundles() override;
     int getProcessID() override;
@@ -75,6 +76,8 @@ public:
     void broadcast(T &value);
 
 private:
+    MPICommunicator();
+
     int numprocs, PID;
     MPI_Comm comm;
     int root;
@@ -200,5 +203,7 @@ void MPICommunicator::broadcast(T &value)
 //////////////////////////////////////////////////////////////////////////
 
 #endif
+
+}
 
 #endif

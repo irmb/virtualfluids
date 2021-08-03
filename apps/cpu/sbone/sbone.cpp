@@ -23,7 +23,7 @@ void sbonepd(const char *configname)
          throw exceptionText;
       }
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if(machine == "BOMBADIL") 
@@ -71,8 +71,8 @@ void sbonepd(const char *configname)
       LBMReal rho_LB = 0.0;
       //nueWasser = 1e-6 m^2/s
       double nu_real = 1e-6;
-      LBMReal dt = 5e-8; // s (frei gewählt)
-      //dx - frei gewählt
+      LBMReal dt = 5e-8; // s (frei gewï¿½hlt)
+      //dx - frei gewï¿½hlt
       //
       LBMReal nu_LB = nu_real/(dx*dx/dt);
 

@@ -14,7 +14,7 @@
 
 class Grid3D;
 class UbScheduler;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class DemCoProcessor;
 class GbObject3D;
 class BCAdapter;
@@ -24,7 +24,7 @@ class PhysicsEngineMaterialAdapter;
 class CreateDemObjectsCoProcessor : public CoProcessor
 {
 public:
-    CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, std::shared_ptr<Communicator> comm,
+    CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm,
                                 SPtr<DemCoProcessor> demCoProcessor,
                                 SPtr<PhysicsEngineMaterialAdapter> geoObjectMaterial, double tolerance = 0);
     void process(double step) override;
@@ -36,7 +36,7 @@ public:
 
 protected:
 private:
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     SPtr<DemCoProcessor> demCoProcessor;
     std::vector<SPtr<GbObject3D>> geoObjectPrototypeVector;
     SPtr<PhysicsEngineMaterialAdapter> demObjectMaterial;

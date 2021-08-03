@@ -24,7 +24,7 @@ private:
 
     std::shared_ptr<LBMKernel> lbmKernel;
     std::shared_ptr<AbstractLBMSystem> lbmSystem;
-    std::shared_ptr<Communicator> communicator;
+    std::shared_ptr<vf::mpi::Communicator> communicator;
 
     std::shared_ptr<Grid3D> grid;
     std::vector<std::shared_ptr<Interactor3D>> interactors;

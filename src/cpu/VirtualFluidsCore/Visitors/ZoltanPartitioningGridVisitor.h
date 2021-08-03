@@ -10,14 +10,14 @@
 
 #if defined VF_ZOLTAN && defined VF_MPI
 
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "Grid3DVisitor.h"
 #include "ZoltanPartitioner.h"
 
 class ZoltanPartitioningGridVisitor : public Grid3DVisitor
 {
 public:
-    ZoltanPartitioningGridVisitor(SPtr<Communicator> comm, int numOfDirs, int numOfLocalParts = 1);
+    ZoltanPartitioningGridVisitor(std::shared_ptr<vf::mpi::Communicator> comm, int numOfDirs, int numOfLocalParts = 1);
     ~ZoltanPartitioningGridVisitor();
     void visit(SPtr<Grid3D> grid);
 
@@ -26,7 +26,7 @@ protected:
     void repartGrid(SPtr<Grid3D> grid, ZoltanPartitioner &zp);
 
 private:
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     int numOfDirs;
     int numOfLocalParts;
     ZoltanGraph *graph;

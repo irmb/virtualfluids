@@ -14,7 +14,7 @@ void run(string configname)
 
       string machine = QUOTEME(CAB_MACHINE);
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
 
       int myid = comm->getProcessID();
       int mybundle = comm->getBundleID();

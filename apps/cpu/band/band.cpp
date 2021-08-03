@@ -20,7 +20,7 @@ void run(const char *cstr)
 
       //UbLog::reportingLevel() = logDEBUG5;
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       string machine = string(cstr);
@@ -80,9 +80,9 @@ void run(const char *cstr)
 
       ///////////////Knotenabmessungen:
       int nx[3], blocknx[3];
-      nx[0]      = 10;//240;//120;//60;//86;//43;//65;//50;  //länge
+      nx[0]      = 10;//240;//120;//60;//86;//43;//65;//50;  //lï¿½nge
       nx[1]      = 1;//2;//6;///1;//5;// //breite
-      nx[2]      = 2;//64;//32;//18;//5;//15;//15; //höhe gebiet
+      nx[2]      = 2;//64;//32;//18;//5;//15;//15; //hï¿½he gebiet
       blocknx[0] = 10;//10;//6;
       blocknx[1] = 10;//10;//6;
       blocknx[2] = 10;//10;//6;
@@ -90,12 +90,12 @@ void run(const char *cstr)
       int baseLevel   = 0;
       int refineLevel = 0;
 
-      double H = 0.6; // Kanalhöhe [mm]
+      double H = 0.6; // Kanalhï¿½he [mm]
       //double cdx = H/blocknx[2];
       double cdx = 0.0390625;
       double fdx = cdx/double(1<<refineLevel);
 
-      //double h = 200.0; // gewünschte Plattenhöhe in Gitterpunkten
+      //double h = 200.0; // gewï¿½nschte Plattenhï¿½he in Gitterpunkten
       //double fdx = plate->getLengthX3()/h;
       //double cdx = fdx*double(1<<refineLevel);
 
@@ -107,7 +107,7 @@ void run(const char *cstr)
       double Re            = 680; 
       double rhoLB         = 0.0;
       double uLB           = 0.1; 
-      double lReal         = 0.6; //Zackenhöhe in mm
+      double lReal         = 0.6; //Zackenhï¿½he in mm
       double nuLB          = (uLB*(lReal/cdx))/Re;
 
       Grid3DPtr grid(new Grid3D(comm));

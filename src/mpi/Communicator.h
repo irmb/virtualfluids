@@ -31,20 +31,29 @@
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef COMMUNICATOR_H
-#define COMMUNICATOR_H
+#ifndef MPI_COMMUNICATOR_H
+#define MPI_COMMUNICATOR_H
 
 #include <string>
 #include <vector>
+#include <memory>
+#include <sstream>
+#include <mutex>
 
-#include <PointerDefinitions.h>
+
+namespace vf::mpi 
+{
 
 //! \brief An abstract class for communication between processes in parallel computation
 class Communicator
 {
 public:
+    Communicator(const Communicator&) = delete;
+    Communicator & operator=(const Communicator& rhs) = delete;
+    static std::shared_ptr<Communicator> getInstance();
+
     virtual ~Communicator() = default;
-    static SPtr<Communicator> getInstance();
+
     virtual int getBundleID()                      = 0;
     virtual int getNumberOfBundles()               = 0;
     virtual int getProcessID()                     = 0;
@@ -84,9 +93,13 @@ public:
     virtual void broadcast(std::vector<long int> &values) = 0;
 
 protected:
-    Communicator()                     = default;
-    Communicator(const Communicator &) = default;
-    static SPtr<Communicator> instance;
+    Communicator() = default;
+
+    static std::mutex instantiation_mutex;
+
+    static std::shared_ptr<Communicator> instance;
 };
+
+}
 
 #endif
