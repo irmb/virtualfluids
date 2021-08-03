@@ -37,6 +37,8 @@
 #include <string>
 #include <vector>
 
+#include <basics/logger/Logger.h>
+
 #include "BCArray3D.h"
 #include "Block3D.h"
 #include "CbArray3D.h"
@@ -114,7 +116,7 @@ void WriteBoundaryConditionsCoProcessor::collectData(double step)
         } else {
             WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(cfilePath, filenames, istep, false);
         }
-        UBLOG(logINFO, "WriteBoundaryConditionsCoProcessor step: " << istep);
+        VF_LOG_INFO("WriteBoundaryConditionsCoProcessor step: {}", istep);
     }
 
     clearData();

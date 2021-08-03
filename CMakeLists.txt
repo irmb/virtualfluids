@@ -153,7 +153,22 @@ find_package(MPI REQUIRED)
 
 
 add_subdirectory(src/basics)
+#add_subdirectory(src/mpi)
+#add_subdirectory(src/cuda)
 add_subdirectory(src/lbm)
+
+include(FetchContent)
+
+set(spdlog_version "v1.9.1")
+set(spdlog_url "https://github.com/gabime/spdlog")
+message(STATUS "Fetching spdlog: ${spdlog_version}")
+FetchContent_Declare(
+        spdlog
+        GIT_REPOSITORY ${spdlog_url}
+        GIT_TAG        ${spdlog_version}
+)
+
+FetchContent_MakeAvailable(spdlog)
 
 
 #################################################################################
