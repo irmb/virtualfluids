@@ -151,6 +151,7 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(spdlog)
+target_compile_options(spdlog PRIVATE "-fPIC")
 
 if(BUILD_VF_UNIT_TESTS)
     add_subdirectory(${VF_THIRD_DIR}/googletest)
