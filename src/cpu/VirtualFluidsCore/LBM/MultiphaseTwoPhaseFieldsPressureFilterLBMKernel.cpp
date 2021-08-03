@@ -299,7 +299,10 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
-						LBMReal rho = rhoH + rhoToPhi * ((*pressure)(x1, x2, x3) - phiH);
+						//LBMReal rho = rhoH + rhoToPhi * ((*pressure)(x1, x2, x3) - phiH);
+						//! variable density -> TRANSFER!
+						LBMReal rho = rhoH * ((*phaseField)(x1, x2, x3)) + rhoL * ((*phaseField2)(x1, x2, x3));
+
 						(*pressure)(x1, x2, x3) = (*pressure)(x1, x2, x3) + rho * c1o3 * drho;
 
 						////!!!!!! relplace by pointer swap!
@@ -558,7 +561,11 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
                         LBMReal mu = 2 * beta * phi[REST] * (phi[REST] - 1) * (2 * phi[REST] - 1) - kappa * nabla2_phi();
 
                         //----------- Calculating Macroscopic Values -------------
-                        LBMReal rho = rhoH + rhoToPhi * (phi[REST] - phiH);
+                       // LBMReal rho = rhoH + rhoToPhi * (phi[REST] - phiH);
+
+						//! variable density -> TRANSFER!
+						LBMReal rho = rhoH * ((*phaseField)(x1, x2, x3)) + rhoL * ((*phaseField2)(x1, x2, x3));
+
 
                             			   ////Incompressible Kernal
 
