@@ -50,8 +50,8 @@ MultiphaseInitDistributionsBlockVisitorVelocity::MultiphaseInitDistributionsBloc
 	this->setRho(0.0);
 }
 //////////////////////////////////////////////////////////////////////////
-MultiphaseInitDistributionsBlockVisitorVelocity::MultiphaseInitDistributionsBlockVisitorVelocity( LBMReal densityRatio, LBMReal intThickness, LBMReal radius, LBMReal vx1, LBMReal vx2, LBMReal vx3)
-	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL), densityRatio(densityRatio) /*, intThickness(intThickness), radius(radius) */
+MultiphaseInitDistributionsBlockVisitorVelocity::MultiphaseInitDistributionsBlockVisitorVelocity( /*LBMReal densityRatio,*/ LBMReal intThickness, LBMReal radius, LBMReal vx1, LBMReal vx2, LBMReal vx3)
+	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL)/*, densityRatio(densityRatio), intThickness(intThickness), radius(radius) */
 {
     (void) intThickness;
     (void) radius;
