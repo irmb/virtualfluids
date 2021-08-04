@@ -139,6 +139,21 @@ endif()
 #################################################################################
 #  COMMON LIBRARIES
 #################################################################################
+include(FetchContent)
+
+set(spdlog_version "v1.9.1")
+set(spdlog_url "https://github.com/gabime/spdlog")
+message(STATUS "Fetching spdlog: ${spdlog_version}")
+FetchContent_Declare(
+        spdlog
+        GIT_REPOSITORY ${spdlog_url}
+        GIT_TAG        ${spdlog_version}
+)
+
+FetchContent_MakeAvailable(spdlog)
+target_compile_options(spdlog PRIVATE "-fPIC")
+groupTarget(spdlog ${thirdFolder})
+
 if(BUILD_VF_UNIT_TESTS)
     add_subdirectory(${VF_THIRD_DIR}/googletest)
     include(GoogleTest)
@@ -151,8 +166,10 @@ endif()
 
 find_package(MPI REQUIRED)
 
-
+add_subdirectory(src/logger)
 add_subdirectory(src/basics)
+#add_subdirectory(src/mpi)
+#add_subdirectory(src/cuda)
 add_subdirectory(src/lbm)
 
 
