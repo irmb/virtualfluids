@@ -165,7 +165,7 @@ void MultiphaseInitDistributionsBlockVisitorVelocity::visit(const SPtr<Grid3D> g
 	this->muRho.DefineVar("x1",&x1); this->muRho.DefineVar("x2",&x2); this->muRho.DefineVar("x3",&x3);
 	this->muPhi.DefineVar("x1",&x1); this->muPhi.DefineVar("x2",&x2); this->muPhi.DefineVar("x3",&x3);
 
-	LBMReal vx1, vx2, vx3, rho, p1, phi;
+	LBMReal vx1 = 0, vx2 = 0, vx3 = 0, rho = 0, p1 = 0, phi = 0;
 
 	int gridRank = grid->getRank();
 	int blockRank = block->getRank();
