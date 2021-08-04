@@ -4,13 +4,15 @@
 #include <string>
 #include <memory>
 #include <set>
+
+#include <mpi/Communicator.h>
+
 #include <geometry3d/GbPoint3D.h>
 #include <Interactors/Interactor3D.h>
 #include <BoundaryConditions/BCAdapter.h>
 #include <Visitors/BoundaryConditionsBlockVisitor.h>
 #include <CoProcessors/CoProcessor.h>
 #include <LBM/LBMUnitConverter.h>
-#include <Parallel/Communicator.h>
 #include "KernelFactory.h"
 #include "AbstractLBMSystem.h"
 #include "KernelConfigStructs.h"
