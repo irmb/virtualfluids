@@ -43,6 +43,8 @@
 
 #include "VirtualFluids_GPU_export.h"
 
+#include <cuda_runtime.h>
+#include <helper_cuda.h>
 
 struct curandStateXORWOW;
 typedef struct curandStateXORWOW curandState;
@@ -755,6 +757,14 @@ public:
 
     std::vector<std::shared_ptr<LBMSimulationParameter>> parH = std::vector<std::shared_ptr<LBMSimulationParameter>>(1);
     std::vector<std::shared_ptr<LBMSimulationParameter>> parD = std::vector<std::shared_ptr<LBMSimulationParameter>>(1);
+
+    ////////////////////////////////////////////////////////////////////////////
+    // cuda streams
+    bool useStreams = false;
+    void launchStreams(uint numberOfStreams);
+    void terminateStreams();
+    cudaStream_t& getStream(uint streamIndex);
+
 private:
     void readConfigData(const vf::basics::ConfigurationFile &configData);
 
@@ -833,6 +843,8 @@ private:
     std::vector<std::string> possNeighborFilesSendX, possNeighborFilesSendY, possNeighborFilesSendZ;
     std::vector<std::string> possNeighborFilesRecvX, possNeighborFilesRecvY, possNeighborFilesRecvZ;
     bool isNeigborX, isNeigborY, isNeigborZ;
+
+    std::vector<cudaStream_t> cudaStreams;
 
     ////////////////////////////////////////////////////////////////////////////
     // initial condition

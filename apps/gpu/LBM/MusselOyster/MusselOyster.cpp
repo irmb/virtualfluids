@@ -110,6 +110,7 @@ void multipleLevel(const std::string& configPath)
 
     bool useGridGenerator = true;
     bool useMultiGPU = false;
+    bool useStreams= true;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,9 +143,10 @@ void multipleLevel(const std::string& configPath)
     para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
     para->setPrintFiles(true);
 
-    para->setMaxLevel(2);
+    para->setMaxLevel(1);
 
     //para->setMainKernel("CumulantK17CompChim");
+    para->useStreams = useStreams;
     para->setMainKernel("CumulantK17CompChimSparse");
    *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
@@ -252,8 +254,8 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
 
-            gridBuilder->setNumberOfLayers(6, 8);
-            gridBuilder->addGrid(bivalveRef_1_STL, 1);
+            //gridBuilder->setNumberOfLayers(6, 8);
+            //gridBuilder->addGrid(bivalveRef_1_STL, 1);
 
             gridBuilder->addGeometry(bivalveSTL);
 
@@ -347,21 +349,22 @@ void multipleLevel(const std::string& configPath)
         std::cout << ".....level 0: sparse index geoFluid \t" << sparseIndicesFluid[i] << ",    fluid nodes index  \t"
                   << para->getParH(0)->fluidNodeIndices[i] << std::endl;
 
-    uint *geoSP1      = para->getParH(1)->geoSP;
-    uint numGeoFluid1 = 0;
-    std::vector<int> sparseIndicesFluid1;
-    for (uint i = 0; i < para->getParH(1)->size_Mat_SP; i++) {
-        if (geoSP1[i] == GEO_FLUID) {
-            numGeoFluid1++;
-            sparseIndicesFluid1.push_back(i);
-        }
-    }
-    std::cout << ".....geoFluid level 1 " << numGeoFluid1 << ", num fluid nodes (new kernel)  "
-              << para->getParH(1)->numberOfFluidNodes << std::endl;
+    //// Level 1
+    //uint *geoSP1      = para->getParH(1)->geoSP;
+    //uint numGeoFluid1 = 0;
+    //std::vector<int> sparseIndicesFluid1;
+    //for (uint i = 0; i < para->getParH(1)->size_Mat_SP; i++) {
+    //    if (geoSP1[i] == GEO_FLUID) {
+    //        numGeoFluid1++;
+    //        sparseIndicesFluid1.push_back(i);
+    //    }
+    //}
+    //std::cout << ".....geoFluid level 1 " << numGeoFluid1 << ", num fluid nodes (new kernel)  "
+    //          << para->getParH(1)->numberOfFluidNodes << std::endl;
 
-    for (uint i = 300000; i < 300003; i++)
-        std::cout << ".....level 1: sparse index geoFluid \t" << sparseIndicesFluid[i] << ",    fluid nodes index  \t"
-                  << para->getParH(0)->fluidNodeIndices[i] << std::endl;
+    //for (uint i = 300000; i < 300003; i++)
+    //    std::cout << ".....level 1: sparse index geoFluid \t" << sparseIndicesFluid[i] << ",    fluid nodes index  \t"
+    //              << para->getParH(0)->fluidNodeIndices[i] << std::endl;
 
 
     sim.run();

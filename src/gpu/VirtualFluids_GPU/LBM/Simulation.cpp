@@ -103,6 +103,11 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    if(para->getMyID() == 0) output.setConsoleOut(true);
    output.clearLogFile();
    //////////////////////////////////////////////////////////////////////////
+   // CUDA streams
+   if(para->useStreams)
+	   para->launchStreams((uint)1);
+   //////////////////////////////////////////////////////////////////////////
+   // 
    //output << para->getNeedInterface().at(0) << "\n";
    //output << para->getNeedInterface().at(1) << "\n";
    //output << para->getNeedInterface().at(2) << "\n";
@@ -1150,6 +1155,10 @@ void Simulation::definePMarea(std::shared_ptr<PorousMedia> pMedia)
 
 void Simulation::free()
 {
+	// Cuda Streams
+    if (para->useStreams)
+        para->terminateStreams();
+
 	//CudaFreeHostMemory
 	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{

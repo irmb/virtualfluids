@@ -53,6 +53,24 @@ Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int number
     //initLBMSimulationParameter();
 }
 
+void Parameter::launchStreams(uint numberOfStreams)
+{
+    cudaStreams.resize(numberOfStreams);
+    for (cudaStream_t &stream : cudaStreams) {
+        cudaStreamCreate(&stream);
+    }
+}
+
+void Parameter::terminateStreams() {
+    for (cudaStream_t &stream : cudaStreams) {
+        cudaStreamDestroy(stream);
+    }
+}
+
+cudaStream_t& Parameter::getStream(uint streamIndex) { 
+	return cudaStreams[streamIndex]; 
+}
+
 void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 {
    if (configData.contains("NumberOfDevices"))
