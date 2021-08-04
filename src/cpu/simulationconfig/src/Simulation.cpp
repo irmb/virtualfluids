@@ -23,7 +23,7 @@
 #include <LBM/CompressibleOffsetMomentsInterpolationProcessor.h>
 #include <LBM/LBMKernel.h>
 #include <LBM/LBMUnitConverter.h>
-#include <Parallel/MPICommunicator.h>
+#include <mpi/Communicator.h>
 #include <Visitors/GenBlocksGridVisitor.h>
 #include <Visitors/InitDistributionsBlockVisitor.h>
 #include <Visitors/MetisPartitioningGridVisitor.h>
