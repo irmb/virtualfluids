@@ -165,7 +165,7 @@ void MultiphaseInitDistributionsBlockVisitorVelocity::visit(const SPtr<Grid3D> g
 	this->muRho.DefineVar("x1",&x1); this->muRho.DefineVar("x2",&x2); this->muRho.DefineVar("x3",&x3);
 	this->muPhi.DefineVar("x1",&x1); this->muPhi.DefineVar("x2",&x2); this->muPhi.DefineVar("x3",&x3);
 
-	LBMReal vx1 = 0, vx2 = 0, vx3 = 0, rho = 0, p1 = 0, phi = 0;
+	
 
 	int gridRank = grid->getRank();
 	int blockRank = block->getRank();
@@ -181,8 +181,8 @@ void MultiphaseInitDistributionsBlockVisitorVelocity::visit(const SPtr<Grid3D> g
 		SPtr<EsoTwist3D> distributionsH = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getHdistributions());
         SPtr<EsoTwist3D> distributionsH2 = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getH2distributions());
 
-		LBMReal phiL = kernel->getPhiL();
-		LBMReal phiH = kernel->getPhiH();
+		//LBMReal phiL = kernel->getPhiL();
+		//LBMReal phiH = kernel->getPhiH();
 
 		LBMReal f[D3Q27System::ENDF+1];
 
@@ -195,7 +195,7 @@ void MultiphaseInitDistributionsBlockVisitorVelocity::visit(const SPtr<Grid3D> g
                     x2              = coords[1];
                     x3              = coords[2];
 
-					
+					LBMReal vx1 = 0, vx2 = 0, vx3 = 0, p1 = 0, phi = 0;
 					p1  = 0.0;
 					//p1 = muRho.Eval();
 					vx1 = muVx1.Eval();
@@ -204,9 +204,9 @@ void MultiphaseInitDistributionsBlockVisitorVelocity::visit(const SPtr<Grid3D> g
 					phi = muPhi.Eval();
 					
 					//rho = phi*1.0 + (1.0-phi)/densityRatio;
-					LBMReal rhoH = 1.0;
-					LBMReal rhoL = 1.0/densityRatio;
-					rho = rhoH + (rhoH - rhoL)*(phi - phiH)/(phiH - phiL);
+					//LBMReal rhoH = 1.0;
+					//LBMReal rhoL = 1.0/densityRatio;
+					//LBMReal rho = rhoH + (rhoH - rhoL)*(phi - phiH)/(phiH - phiL);
 
 			
 					LBMReal feq[27];
