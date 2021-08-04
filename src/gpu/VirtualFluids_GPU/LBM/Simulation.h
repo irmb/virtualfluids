@@ -13,12 +13,8 @@
 
 #include "VirtualFluids_GPU_export.h"
 
-namespace vf
-{
-namespace gpu
-{
+namespace vf::gpu {
 class Communicator;
-}
 }
 
 class CudaMemoryManager;

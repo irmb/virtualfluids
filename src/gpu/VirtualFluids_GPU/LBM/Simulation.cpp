@@ -10,7 +10,6 @@
 #include "Communication/ExchangeData27.h"
 #include "Parameter/Parameter.h"
 #include "GPU/GPU_Interface.h"
-#include "GPU/devCheck.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Output/MeasurePointWriter.hpp"
@@ -46,6 +45,10 @@
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
 #include "Kernel/Kernel.h"
 
+#include <cuda/DeviceInfo.h>
+
+#include <logger/Logger.h>
+
 
 
 std::string getFileName(const std::string& fname, int step, int myID)
@@ -80,7 +83,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    comm = vf::gpu::Communicator::getInstanz();
    this->para = para;
 
-   devCheck(comm->mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
+   vf::cuda::verifyAndSetDevice(comm->mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
    
    para->initLBMSimulationParameter();
 
