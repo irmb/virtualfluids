@@ -22,6 +22,7 @@ public:
     HOSTDEVICE bool isCoarseToFineNode(uint index) const;
     HOSTDEVICE bool isFineToCoarseNode(uint index) const;
 	HOSTDEVICE bool isFluid(uint index) const;
+    HOSTDEVICE bool isFluidBulk(uint index) const;
 	HOSTDEVICE bool isInvalidSolid(uint index) const;
 	HOSTDEVICE bool isQ(uint index) const;
     HOSTDEVICE bool isBoundaryConditionNode(uint index) const;

@@ -87,7 +87,6 @@ private:
     int *sparseIndices;
 
     std::vector<uint> fluidNodeIndices;
-    uint numberOfFluidNodes;
 
 	uint *qIndices;     //maps from matrix index to qIndex
 	real *qValues;
@@ -316,7 +315,7 @@ public:
 
     void repairCommunicationInices(int direction) override;
 
-    void findFluidNodeIndices() override;
+    void findFluidNodeIndices(bool onlyBulk) override;
     uint getNumberOfFluidNodes() const override;
     CUDA_HOST void getFluidNodeIndices(uint *fluidNodeIndices) const override;
 

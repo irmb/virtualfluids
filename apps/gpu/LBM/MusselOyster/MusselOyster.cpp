@@ -222,7 +222,7 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
 
-            gridBuilder->findGeoFluidNodes();
+            gridBuilder->findFluidNodes(useStreams);
 
             if (generatePart == 0) {
                 gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
@@ -262,7 +262,7 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-            gridBuilder->findGeoFluidNodes();
+            gridBuilder->findFluidNodes(useStreams);
 
             //////////////////////////////////////////////////////////////////////////
             gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);

@@ -858,19 +858,18 @@ CUDA_HOST void GridImp::updateSparseIndices()
     sparseSize = size - removedNodes;
 }
 
-CUDA_HOST void GridImp::findFluidNodeIndices() 
+CUDA_HOST void GridImp::findFluidNodeIndices(bool onlyBulk) 
 {
     this->fluidNodeIndices.clear();
     for (uint index = 0; index < this->size; index++) {
         int sparseIndex = this->getSparseIndex(index);
         if (sparseIndex == -1)
             continue;
-
-        if (this->field.isFluid(index))
+        if ((onlyBulk && this->field.isFluidBulk(index)) || (!onlyBulk && this->field.isFluid(index)))
             this->fluidNodeIndices.push_back((uint)sparseIndex + 1);   // + 1 for numbering shift between GridGenerator and VF_GPU
     }
-    this->numberOfFluidNodes = (uint)this->fluidNodeIndices.size();
 }
+
 
 HOSTDEVICE void GridImp::setNeighborIndices(uint index)
 {
@@ -1762,7 +1761,7 @@ HOSTDEVICE uint GridImp::getSparseSize() const
 }
 
 HOSTDEVICE uint GridImp::getNumberOfFluidNodes() const { 
-    return this->numberOfFluidNodes; 
+    return (uint)this->fluidNodeIndices.size(); 
 }
 
 HOSTDEVICE Field GridImp::getField() const
@@ -1958,10 +1957,9 @@ CUDA_HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoord
 }
 
 CUDA_HOST void GridImp::getFluidNodeIndices(uint *fluidNodeIndices) const { 
-  for (uint nodeNumber = 0; nodeNumber < this->numberOfFluidNodes; nodeNumber++)
+    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndices.size(); nodeNumber++)
         fluidNodeIndices[nodeNumber] = this->fluidNodeIndices[nodeNumber];
 }
-
 
 void GridImp::print() const
 {

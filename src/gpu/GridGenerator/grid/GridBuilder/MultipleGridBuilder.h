@@ -86,7 +86,7 @@ public:
     GRIDGENERATOR_EXPORT void findCommunicationIndices( int direction, LbmOrGks lbmOrGks );
 
     // needed for CUDA Streams MultiGPU
-    void findGeoFluidNodes();
+    void findFluidNodes(bool onlyBulk);
 };
 
 #endif

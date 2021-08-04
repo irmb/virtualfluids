@@ -142,9 +142,10 @@ public:
     virtual void repairCommunicationInices(int direction) = 0;
 
     // needed for CUDA Streams MultiGPU
-    virtual void findFluidNodeIndices() = 0;
-    virtual uint getNumberOfFluidNodes() const = 0;
+    virtual void findFluidNodeIndices(bool onlyBulk) = 0;
+    virtual uint getNumberOfFluidNodes() const = 0;;
     virtual void getFluidNodeIndices(uint *fluidNodeIndices) const = 0;
+
 };
 
 #endif
