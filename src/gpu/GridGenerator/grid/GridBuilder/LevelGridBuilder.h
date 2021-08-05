@@ -58,6 +58,8 @@ public:
 
     GRIDGENERATOR_EXPORT virtual uint getNumberOfFluidNodes(unsigned int level) const override;
     GRIDGENERATOR_EXPORT virtual void getFluidNodeIndices(uint* fluidNodeIndices, const int level) const override;
+    GRIDGENERATOR_EXPORT virtual uint getNumberOfFluidNodesBorder(unsigned int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getFluidNodeIndicesBorder(uint *fluidNodeIndices, const int level) const override;
 
     GRIDGENERATOR_EXPORT virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords,
                                          uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, 

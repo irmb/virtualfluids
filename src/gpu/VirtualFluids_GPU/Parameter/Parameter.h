@@ -312,6 +312,8 @@ struct LBMSimulationParameter
 
     uint *fluidNodeIndices;
     uint numberOfFluidNodes;
+    uint *fluidNodeIndicesBorder;
+    uint numberOffluidNodesBorder;
 };
 
 class VIRTUALFLUIDS_GPU_EXPORT Parameter

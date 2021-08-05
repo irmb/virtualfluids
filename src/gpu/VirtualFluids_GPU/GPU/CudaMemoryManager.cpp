@@ -2652,8 +2652,7 @@ void CudaMemoryManager::cudaAllocFluidNodeIndices(int lev) {
     // Device
     checkCudaErrors(cudaMalloc((void **)&(parameter->getParD(lev)->fluidNodeIndices), mem_size_geo_fluid_nodes));
     //////////////////////////////////////////////////////////////////////////
-    double tmp = (double)mem_size_geo_fluid_nodes;
-    setMemsizeGPU(tmp, false);
+    setMemsizeGPU((double)mem_size_geo_fluid_nodes, false);
 }
 
 void CudaMemoryManager::cudaCopyFluidNodeIndices(int lev) {
@@ -2665,6 +2664,29 @@ void CudaMemoryManager::cudaCopyFluidNodeIndices(int lev) {
 
 void CudaMemoryManager::cudaFreeFluidNodeIndices(int lev) {
     checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->fluidNodeIndices));
+}
+
+void CudaMemoryManager::cudaAllocFluidNodeIndicesBorder(int lev) {
+    uint mem_size_fluid_nodes_border = sizeof(uint) * parameter->getParH(lev)->numberOffluidNodesBorder;
+    // Host
+    checkCudaErrors(
+        cudaMallocHost((void **)&(parameter->getParH(lev)->fluidNodeIndicesBorder), mem_size_fluid_nodes_border));
+    // Device
+    checkCudaErrors(
+        cudaMalloc((void **)&(parameter->getParD(lev)->fluidNodeIndicesBorder), mem_size_fluid_nodes_border));
+    //////////////////////////////////////////////////////////////////////////
+    setMemsizeGPU((double)mem_size_fluid_nodes_border, false);
+}
+
+void CudaMemoryManager::cudaCopyFluidNodeIndicesBorder(int lev) {
+    uint mem_size_fluid_nodes_border = sizeof(uint) * parameter->getParH(lev)->numberOffluidNodesBorder;
+    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->fluidNodeIndicesBorder,
+                               parameter->getParH(lev)->fluidNodeIndicesBorder,
+                               mem_size_fluid_nodes_border, cudaMemcpyHostToDevice));
+}
+
+void CudaMemoryManager::cudaFreeFluidNodeIndicesBorder(int lev) {
+    checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->fluidNodeIndicesBorder));
 }
 
 

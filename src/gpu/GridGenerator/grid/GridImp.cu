@@ -865,11 +865,21 @@ CUDA_HOST void GridImp::findFluidNodeIndices(bool onlyBulk)
         int sparseIndex = this->getSparseIndex(index);
         if (sparseIndex == -1)
             continue;
-        if ((onlyBulk && this->field.isFluidBulk(index)) || (!onlyBulk && this->field.isFluid(index)))
-            this->fluidNodeIndices.push_back((uint)sparseIndex + 1);   // + 1 for numbering shift between GridGenerator and VF_GPU
+
+        // + 1 for numbering shift between GridGenerator and VF_GPU
+        // When onlyBulk: push indices of fluid nodes in bulk to "fluidNodeIndices" and push indices of special fluid nodes (not in bulk) to fluidNodeIndicesBorder
+        // When not onlyBulk: push indices of all fluid nodes to "fluidNodeIndices"
+        if (this->field.isFluid(index)) {
+            if (onlyBulk)
+                if (this->field.isFluidNodeOfSpecialInterest(index))
+                    this->fluidNodeIndicesBorder.push_back((uint)sparseIndex + 1);    
+                else 
+                    this->fluidNodeIndices.push_back((uint)sparseIndex + 1);        
+            else
+                this->fluidNodeIndices.push_back((uint)sparseIndex + 1);
+        }
     }
 }
-
 
 HOSTDEVICE void GridImp::setNeighborIndices(uint index)
 {
@@ -1956,9 +1966,21 @@ CUDA_HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoord
     }
 }
 
-CUDA_HOST void GridImp::getFluidNodeIndices(uint *fluidNodeIndices) const { 
+CUDA_HOST void GridImp::getFluidNodeIndices(uint *fluidNodeIndices) const 
+{ 
     for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndices.size(); nodeNumber++)
         fluidNodeIndices[nodeNumber] = this->fluidNodeIndices[nodeNumber];
+}
+
+uint GridImp::getNumberOfFluidNodesBorder() const 
+{ 
+    return this->fluidNodeIndicesBorder.size(); 
+}
+
+void GridImp::getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const 
+{
+    for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesBorder.size(); nodeNumber++)
+        fluidNodeIndicesBorder[nodeNumber] = this->fluidNodeIndicesBorder[nodeNumber];
 }
 
 void GridImp::print() const

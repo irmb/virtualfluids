@@ -26,9 +26,12 @@ void updateGrid27(Parameter* para,
 
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->useStreams)
+    if (para->useStreams) {
         collision(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
                   para->getParD(level)->numberOfFluidNodes);
+        collision(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
+                  para->getParD(level)->numberOffluidNodesBorder);
+    }
     else
         collision(para, pm, level, t, kernels);
 

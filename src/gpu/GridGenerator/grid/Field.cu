@@ -67,10 +67,10 @@ HOSTDEVICE bool Field::isFluid(uint index) const
     return type == FLUID || type == FLUID_CFC || type == FLUID_CFF || type == FLUID_FCC || type == FLUID_FCF || isBoundaryConditionNode(index);
 }
 
-HOSTDEVICE bool Field::isFluidBulk(uint index) const
+HOSTDEVICE bool Field::isFluidNodeOfSpecialInterest(uint index) const
 {
     const char type = field[index];
-    return type == FLUID || type == FLUID_CFC || type == FLUID_CFF || type == FLUID_FCC || type == FLUID_FCF;
+    return isBoundaryConditionNode(index);
 }
 
 HOSTDEVICE bool Field::isInvalidSolid(uint index) const

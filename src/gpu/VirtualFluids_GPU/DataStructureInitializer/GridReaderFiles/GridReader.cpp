@@ -217,7 +217,13 @@ void GridReader::allocArrays_OffsetScale()
 }
 
 void GridReader::allocArrays_fluidNodeIndices() {
+    std::cout << "GridReader::allocArrays_fluidNodeIndices not imlemented" << std::endl;
 	// TODO
+}
+
+void GridReader::allocArrays_fluidNodeIndicesBorder() {
+    std::cout << "GridReader::allocArrays_fluidNodeIndicesBorder not imlemented" << std::endl;
+    // TODO
 }
 
 

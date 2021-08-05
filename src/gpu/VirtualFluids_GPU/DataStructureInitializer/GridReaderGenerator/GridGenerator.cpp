@@ -88,13 +88,21 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 }
 
 void GridGenerator::allocArrays_fluidNodeIndices() {
-    const uint numberOfLevels = builder->getNumberOfGridLevels();
-    for (uint level = 0; level < numberOfLevels; level++) {
+    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         setNumberOfFluidNodes(builder->getNumberOfFluidNodes(level), level);
         cudaMemoryManager->cudaAllocFluidNodeIndices(level);
         builder->getFluidNodeIndices(para->getParH(level)->fluidNodeIndices, level);
         cudaMemoryManager->cudaCopyFluidNodeIndices(level);
     }    
+}
+
+void GridGenerator::allocArrays_fluidNodeIndicesBorder() {
+    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
+        setNumberOfFluidNodesBorder(builder->getNumberOfFluidNodesBorder(level), level);
+        cudaMemoryManager->cudaAllocFluidNodeIndicesBorder(level);
+        builder->getFluidNodeIndicesBorder(para->getParH(level)->fluidNodeIndicesBorder, level);
+        cudaMemoryManager->cudaCopyFluidNodeIndicesBorder(level);
+    }
 }
 
 void GridGenerator::allocArrays_BoundaryValues()

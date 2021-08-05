@@ -86,6 +86,8 @@ public:
 
     virtual uint getNumberOfFluidNodes(unsigned int level) const = 0;
     virtual void getFluidNodeIndices(uint *fluidNodeIndices, const int level) const = 0;
+    virtual uint getNumberOfFluidNodesBorder(unsigned int level) const = 0;
+    virtual void getFluidNodeIndicesBorder(uint *fluidNodeIndices, const int level) const = 0;
 
 };
 
