@@ -27,10 +27,10 @@ void updateGrid27(Parameter* para,
     //////////////////////////////////////////////////////////////////////////
 
     if (para->useStreams) {
-        collision(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
-                  para->getParD(level)->numberOfFluidNodes);
-        collision(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
-                  para->getParD(level)->numberOffluidNodesBorder);
+        collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
+                            para->getParD(level)->numberOfFluidNodes, 0);
+        collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
+                            para->getParD(level)->numberOffluidNodesBorder, 1);
     }
     else
         collision(para, pm, level, t, kernels);
@@ -68,15 +68,30 @@ void updateGrid27(Parameter* para,
     }
 }
 
-void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels, uint* fluidNodeIndices, uint numberOfFluidNodes)
+void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels)
 {
-    if (para->useStreams)
-        if (fluidNodeIndices != nullptr && numberOfFluidNodes != 0)
-            kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes);
-        else
-            std::cout << "in collision: fluidNodeIndices or numberOfFluidNodes not definded" << std::endl; // better use logger
+    kernels.at(level)->run();
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getSimulatePorousMedia())
+        collisionPorousMedia(para, pm, level);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if (para->getDiffOn())
+        collisionAdvectionDiffusion(para, level);
+}
+
+void collisionUsingIndex(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
+                          std::vector<SPtr<Kernel>> &kernels, 
+               uint *fluidNodeIndices, uint numberOfFluidNodes, int stream)
+{
+    if (fluidNodeIndices != nullptr && numberOfFluidNodes != 0)
+        kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes, stream);
     else
-        kernels.at(level)->run();
+        std::cout << "in collision: fluidNodeIndices or numberOfFluidNodes not definded"
+                      << std::endl;
 
     //////////////////////////////////////////////////////////////////////////
 

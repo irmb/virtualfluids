@@ -13,7 +13,7 @@ class Kernel
 public:
     virtual ~Kernel()  = default;
     virtual void run() = 0;
-    virtual void runOnIndices(const unsigned int *indices, unsigned int size_indices) = 0;
+    virtual void runOnIndices(const unsigned int *indices, unsigned int size_indices, int stream = -1) = 0; //if stream == -1: run on default stream
 
     virtual bool checkParameter()                                = 0;
     virtual std::vector<PreProcessorType> getPreProcessorTypes() = 0;

@@ -1974,7 +1974,7 @@ CUDA_HOST void GridImp::getFluidNodeIndices(uint *fluidNodeIndices) const
 
 uint GridImp::getNumberOfFluidNodesBorder() const 
 { 
-    return this->fluidNodeIndicesBorder.size(); 
+    return (uint)this->fluidNodeIndicesBorder.size(); 
 }
 
 void GridImp::getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const 

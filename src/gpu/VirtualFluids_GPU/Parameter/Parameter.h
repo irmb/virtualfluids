@@ -43,8 +43,8 @@
 
 #include "VirtualFluids_GPU_export.h"
 
+#include <cuda.h>
 #include <cuda_runtime.h>
-#include <helper_cuda.h>
 
 struct curandStateXORWOW;
 typedef struct curandStateXORWOW curandState;

@@ -106,7 +106,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    // CUDA streams
    if(para->useStreams)
-	   para->launchStreams((uint)1);
+	   para->launchStreams((uint)2);
    //////////////////////////////////////////////////////////////////////////
    // 
    //output << para->getNeedInterface().at(0) << "\n";

@@ -3,6 +3,8 @@
 #include "Parameter/Parameter.h"
 #include "CumulantK17CompChimSparse_Device.cuh"
 
+#include <cuda.h>
+
 std::shared_ptr<CumulantK17CompChimSparse> CumulantK17CompChimSparse::getNewInstance(std::shared_ptr<Parameter> para,
                                                                                int level)
 {
@@ -30,25 +32,32 @@ void CumulantK17CompChimSparse::run()
 	getLastCudaError("LB_Kernel_CumulantK17CompChim execution failed");
 }
 
-void CumulantK17CompChimSparse::runOnIndices(const unsigned int *indices, unsigned int size_indices)
+void CumulantK17CompChimSparse::runOnIndices(const unsigned int *indices, unsigned int size_indices, int streamIndex)
 {
     dim3 grid, threads;
     std::tie(grid, threads) = *calcGridDimensions(para->getParD(level)->numberOfFluidNodes);
 
-    LB_Kernel_CumulantK17CompChimSparse<<<grid, threads, 0, para->getStream(0)>>>(
+    cudaStream_t stream;
+    if (streamIndex == -1)
+        stream = CU_STREAM_LEGACY;
+    else
+        stream = para->getStream(streamIndex);
+
+    LB_Kernel_CumulantK17CompChimSparse<<<grid, threads, 0, stream>>>(
         para->getParD(level)->omega, 
-		para->getParD(level)->neighborX_SP, 
-		para->getParD(level)->neighborY_SP,
+	    para->getParD(level)->neighborX_SP, 
+	    para->getParD(level)->neighborY_SP,
         para->getParD(level)->neighborZ_SP, 
-		para->getParD(level)->d0SP.f[0], 
-		para->getParD(level)->size_Mat_SP, 
-		level,
+	    para->getParD(level)->d0SP.f[0], 
+	    para->getParD(level)->size_Mat_SP, 
+	    level,
         para->getForcesDev(), 
-		para->getQuadricLimitersDev(), 
-		para->getParD(level)->evenOrOdd,
+	    para->getQuadricLimitersDev(), 
+	    para->getParD(level)->evenOrOdd,
         indices,
-		size_indices);
+	    size_indices);
     getLastCudaError("LB_Kernel_CumulantK17CompChim execution failed");
+    
 }
 
 CumulantK17CompChimSparse::CumulantK17CompChimSparse(std::shared_ptr<Parameter> para, int level)

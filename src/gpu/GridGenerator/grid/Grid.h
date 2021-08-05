@@ -143,7 +143,7 @@ public:
 
     // needed for CUDA Streams 
     virtual void findFluidNodeIndices(bool onlyBulk) = 0;
-    virtual uint getNumberOfFluidNodes() const = 0;;
+    virtual uint getNumberOfFluidNodes() const = 0;
     virtual void getFluidNodeIndices(uint *fluidNodeIndices) const = 0;
 
     virtual uint getNumberOfFluidNodesBorder() const = 0;
