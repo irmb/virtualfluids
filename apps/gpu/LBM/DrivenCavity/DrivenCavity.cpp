@@ -143,12 +143,12 @@ void multipleLevel(const std::string& configPath)
     {
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
+        vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
         vf::basics::ConfigurationFile config;
         config.load(configPath);
 
-        SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
+        SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -206,7 +206,7 @@ void multipleLevel(const std::string& configPath)
 
         SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
-        Simulation sim;
+        Simulation sim(communicator);
         SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
         SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
         SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
@@ -334,8 +334,6 @@ void multipleLevel(const std::string& configPath)
 
 int main( int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
-
     try
     {
         vf::logging::Logger::initalizeLogger();
@@ -362,6 +360,5 @@ int main( int argc, char* argv[])
         VF_LOG_CRITICAL("Unknown exception!");
     }
 
-   MPI_Finalize();
    return 0;
 }
