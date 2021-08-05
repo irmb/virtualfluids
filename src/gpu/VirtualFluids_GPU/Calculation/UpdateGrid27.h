@@ -18,7 +18,7 @@ extern "C" void updateGrid27(Parameter* para,
                              unsigned int t, 
                              std::vector < SPtr< Kernel>>& kernels);
 
-extern "C" void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels);
+extern "C" void collision(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,  std::vector<SPtr<Kernel>> &kernels, uint *fluidNodeIndices = nullptr, uint numberOfFluidNodes = 0);
 
 extern "C" void collisionPorousMedia(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level);
 

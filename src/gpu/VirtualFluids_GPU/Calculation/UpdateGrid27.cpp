@@ -26,7 +26,11 @@ void updateGrid27(Parameter* para,
 
     //////////////////////////////////////////////////////////////////////////
 
-    collision(para, pm, level, t, kernels);
+    if (para->useStreams)
+        collision(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
+                  para->getParD(level)->numberOfFluidNodes);
+    else
+        collision(para, pm, level, t, kernels);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -61,9 +65,15 @@ void updateGrid27(Parameter* para,
     }
 }
 
-void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels)
+void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels, uint* fluidNodeIndices, uint numberOfFluidNodes)
 {
-    kernels.at(level)->run();
+    if (para->useStreams)
+        if (fluidNodeIndices != nullptr && numberOfFluidNodes != 0)
+            kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes);
+        else
+            std::cout << "in collision: fluidNodeIndices or numberOfFluidNodes not definded" << std::endl; // better use logger
+    else
+        kernels.at(level)->run();
 
     //////////////////////////////////////////////////////////////////////////
 
