@@ -1733,7 +1733,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
-    fs = MPI_File_get_size(file_handler, &fsize);
+    MPI_File_get_size(file_handler, &fsize);
     if (fsize > 0)
     {
         multiPhase2 = true;
