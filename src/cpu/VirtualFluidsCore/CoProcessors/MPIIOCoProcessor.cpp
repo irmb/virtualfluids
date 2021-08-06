@@ -55,7 +55,7 @@ MPIIOCoProcessor::MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const
     //-----------------------------------------------------------------------
 
     MPI_Datatype typesBC[3] = { MPI_LONG_LONG_INT, MPI_FLOAT, MPI_CHAR };
-    int blocksBC[3]         = { 5, 38, 1 };
+    int blocksBC[3]         = { 5, 33, 1 };
     MPI_Aint offsetsBC[3], lbBC, extentBC;
 
     offsetsBC[0] = 0;
@@ -422,8 +422,7 @@ void MPIIOCoProcessor::clearAllFiles(int step)
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename6 =
-        path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageFluktuationsArray.bin";
+    std::string filename6 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpAverageFluktuationsArray.bin";
     // MPI_File_delete(filename6.c_str(), info);
     int rc6 = MPI_File_open(MPI_COMM_WORLD, filename6.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc6 != MPI_SUCCESS)
