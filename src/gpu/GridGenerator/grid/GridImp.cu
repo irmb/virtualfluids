@@ -858,7 +858,7 @@ CUDA_HOST void GridImp::updateSparseIndices()
     sparseSize = size - removedNodes;
 }
 
-CUDA_HOST void GridImp::findFluidNodeIndices(bool onlyBulk) 
+CUDA_HOST void GridImp::findFluidNodeIndices(bool splitDomain) 
 {
     this->fluidNodeIndices.clear();
     for (uint index = 0; index < this->size; index++) {
@@ -867,10 +867,10 @@ CUDA_HOST void GridImp::findFluidNodeIndices(bool onlyBulk)
             continue;
 
         // + 1 for numbering shift between GridGenerator and VF_GPU
-        // When onlyBulk: push indices of fluid nodes in bulk to "fluidNodeIndices" and push indices of special fluid nodes (not in bulk) to fluidNodeIndicesBorder
-        // When not onlyBulk: push indices of all fluid nodes to "fluidNodeIndices"
+        // When splitDomain: push indices of fluid nodes in bulk to "fluidNodeIndices" and push indices of special fluid nodes (not in bulk) to fluidNodeIndicesBorder
+        // When not splitDomain: push indices of all fluid nodes to "fluidNodeIndices"
         if (this->field.isFluid(index)) {
-            if (onlyBulk)
+            if (splitDomain)
                 if (this->field.isFluidNodeOfSpecialInterest(index))
                     this->fluidNodeIndicesBorder.push_back((uint)sparseIndex + 1);    
                 else 

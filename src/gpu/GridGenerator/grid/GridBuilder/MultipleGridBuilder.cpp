@@ -600,11 +600,11 @@ void MultipleGridBuilder::findCommunicationIndices(int direction, LbmOrGks lbmOr
     *logging::out << logging::Logger::INFO_HIGH << "Done with findCommunicationIndices()\n";
 }
 
-void MultipleGridBuilder::findFluidNodes(bool onlyBulk)
+void MultipleGridBuilder::findFluidNodes(bool splitDomain)
 {
     *logging::out << logging::Logger::INFO_HIGH << "Start findFluidNodes()\n";
     for (uint i = 0; i < grids.size(); i++)
-        grids[i]->findFluidNodeIndices(onlyBulk);
+        grids[i]->findFluidNodeIndices(splitDomain);
     *logging::out << logging::Logger::INFO_HIGH << "Done with findFluidNodes()\n";
 }
 

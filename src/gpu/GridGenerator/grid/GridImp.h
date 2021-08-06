@@ -316,7 +316,7 @@ public:
 
     void repairCommunicationInices(int direction) override;
 
-    void findFluidNodeIndices(bool onlyBulk) override;
+    void findFluidNodeIndices(bool splitDomain) override;
 
     uint getNumberOfFluidNodes() const override;
     CUDA_HOST void getFluidNodeIndices(uint *fluidNodeIndices) const override;

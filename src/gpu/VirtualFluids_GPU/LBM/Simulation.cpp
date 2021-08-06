@@ -1161,7 +1161,7 @@ void Simulation::free()
         para->terminateStreams();
 
 	//CudaFreeHostMemory
-	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
+    for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		//para->cudaFreeFull(lev);
 		cudaManager->cudaFreeCoord(lev);
