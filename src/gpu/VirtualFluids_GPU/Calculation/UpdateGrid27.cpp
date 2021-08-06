@@ -27,17 +27,20 @@ void updateGrid27(Parameter* para,
     //////////////////////////////////////////////////////////////////////////
 
     if (para->useStreams) {
-        collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
-                            para->getParD(level)->numberOfFluidNodes, 0);
         collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
                             para->getParD(level)->numberOffluidNodesBorder, 1);
+        collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
+                            para->getParD(level)->numberOfFluidNodes, 0);
     }
     else
         collision(para, pm, level, t, kernels);
 
     //////////////////////////////////////////////////////////////////////////
 
-    exchangeMultiGPU(para, comm, cudaManager, level);
+    if (para->useStreams)
+        exchangeMultiGPU(para, comm, cudaManager, level, 1);
+    else
+        exchangeMultiGPU(para, comm, cudaManager, level, -1);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -62,7 +65,10 @@ void updateGrid27(Parameter* para,
     {
         fineToCoarse(para, level);
 
-        exchangeMultiGPU(para, comm, cudaManager, level);
+        if (para->useStreams)
+            exchangeMultiGPU(para, comm, cudaManager, level, 1);
+        else
+            exchangeMultiGPU(para, comm, cudaManager, level, -1);
 
         coarseToFine(para, level);
     }
@@ -177,7 +183,8 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
 	}
 }
 
-void exchangeMultiGPU(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
+                      int streamIndex)
 {
     if (para->getNumprocs() > 1)
 	{
@@ -186,7 +193,7 @@ void exchangeMultiGPU(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryMa
 		//////////////////////////////////////////////////////////////////////////
 		//3D domain decomposition
 		exchangePostCollDataXGPU27(para, comm, cudaManager, level);
-		exchangePostCollDataYGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataYGPU27(para, comm, cudaManager, level, streamIndex);
 		exchangePostCollDataZGPU27(para, comm, cudaManager, level);
 
 		//////////////////////////////////////////////////////////////////////////

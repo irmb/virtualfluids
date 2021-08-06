@@ -96,7 +96,7 @@ public:
 	//
 	void cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor);
 	void cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor);
-	void cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor);
+    void cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, int streamIndex);
 	void cudaCopyProcessNeighborYIndex(int lev, unsigned int processNeighbor);
 	void cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor);
 	//

@@ -109,7 +109,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator = true;
-    bool useMultiGPU = false;
+    bool useMultiGPU = true;
     bool useStreams= true;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,8 +132,8 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "velocity real [m/s] = " << vxLB * para->getVelocityRatio()<< " \n";
     *logging::out << logging::Logger::INFO_HIGH << "viscosity real [m^2/s] = " << viscosityLB * para->getViscosityRatio() << "\n";
 
-    para->setTOut(5000);
-    para->setTEnd(50000);
+    para->setTOut(100);
+    para->setTEnd(100);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -148,7 +148,7 @@ void multipleLevel(const std::string& configPath)
     //para->setMainKernel("CumulantK17CompChim");
     para->useStreams = useStreams;
     para->setMainKernel("CumulantK17CompChimSparse");
-   *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
     if (useMultiGPU) {
         para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
@@ -186,8 +186,8 @@ void multipleLevel(const std::string& configPath)
 
         TriangularMesh *bivalveSTL =
             TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
-         TriangularMesh* bivalveRef_1_STL =
-             TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
+         //TriangularMesh* bivalveRef_1_STL =
+         //    TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
 
         if (useMultiGPU) {
             const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
@@ -204,8 +204,8 @@ void multipleLevel(const std::string& configPath)
                                            xGridMax,    yGridMax,           zGridMax,   dxGrid);
             }
 
-             gridBuilder->setNumberOfLayers(6, 8);
-             gridBuilder->addGrid(bivalveRef_1_STL, 1);
+             //gridBuilder->setNumberOfLayers(6, 8);
+             //gridBuilder->addGrid(bivalveRef_1_STL, 1);
 
             gridBuilder->addGeometry(bivalveSTL);
 
@@ -221,8 +221,6 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-
-            gridBuilder->findFluidNodes(useStreams);
 
             if (generatePart == 0) {
                 gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
@@ -244,6 +242,8 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
 
+            gridBuilder->findFluidNodes(useStreams);
+
             //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
             //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/" + std::to_string(generatePart) + "/grid/");
             //gridBuilder->writeArrows(path + "/" + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
@@ -262,7 +262,6 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-            gridBuilder->findFluidNodes(useStreams);
 
             //////////////////////////////////////////////////////////////////////////
             gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
@@ -272,6 +271,8 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
+
+            gridBuilder->findFluidNodes(useStreams);
 
             // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");
             // gridBuilder->writeArrows ("E:/temp/MusselOyster/" + bivalveType + "/arrow");
