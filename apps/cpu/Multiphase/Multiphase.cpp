@@ -111,11 +111,14 @@ void run(string configname)
         // grid->setPeriodicX2(true);
         // grid->setPeriodicX3(true);
         grid->setGhostLayerWidth(2);
+        
+        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
+
         //////////////////////////////////////////////////////////////////////////
         // restart
         SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
         //SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
-        SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, pathname, comm));
+        SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, metisVisitor, pathname, comm));
         //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
         //rcp->setNu(nuLB);
         //rcp->setNuLG(nuL, nuG);
@@ -289,8 +292,7 @@ void run(string configname)
             cylInt->addBCAdapter(velBCAdapterF2);
             //SPtr<D3Q27Interactor> cyl2Int(new D3Q27Interactor(cylinder2, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
-            SPtr<Grid3DVisitor> metisVisitor(
-                new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW));
+
             InteractorsHelper intHelper(grid, metisVisitor, true);
             intHelper.addInteractor(cylInt);
             intHelper.addInteractor(tubes);
