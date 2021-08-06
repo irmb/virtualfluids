@@ -871,7 +871,8 @@ CUDA_HOST void GridImp::findFluidNodeIndices(bool splitDomain)
         // When not splitDomain: push indices of all fluid nodes to "fluidNodeIndices"
         if (this->field.isFluid(index)) {
             if (splitDomain)
-                if (this->field.isFluidNodeOfSpecialInterest(index))
+                //if (this->field.isFluidNodeOfSpecialInterest(index))
+                if (this->isSendNode(index))
                     this->fluidNodeIndicesBorder.push_back((uint)sparseIndex + 1);    
                 else 
                     this->fluidNodeIndices.push_back((uint)sparseIndex + 1);        
@@ -1580,23 +1581,21 @@ void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, i
 bool GridImp::isSendNode(int index) const
 {
     bool isSendNode = false;
-    for (size_t direction = 0; direction < this->communicationIndices.size(); direction++) {
+    for (size_t direction = 0; direction < this->communicationIndices.size(); direction++)
         if (std::find(this->communicationIndices[direction].sendIndices.begin(),
                       this->communicationIndices[direction].sendIndices.end(), index) != this->communicationIndices[direction].sendIndices.end())
             isSendNode = true;
-    }
     return isSendNode;
 }
 
 bool GridImp::isReceiveNode(int index) const
 {
     bool isReceiveNode = false;
-    for (size_t direction = 0; direction < this->communicationIndices.size(); direction++) {
+    for (size_t direction = 0; direction < this->communicationIndices.size(); direction++)
         if (std::find(this->communicationIndices[direction].receiveIndices.begin(),
                       this->communicationIndices[direction].receiveIndices.end(),
                       index) != this->communicationIndices[direction].receiveIndices.end())
             isReceiveNode = true;
-    }
     return isReceiveNode;
 }
 
