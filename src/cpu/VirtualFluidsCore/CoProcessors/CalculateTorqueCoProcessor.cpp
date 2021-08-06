@@ -13,7 +13,7 @@
 #include "EsoTwist3D.h"
 #include "DistributionArray3D.h"
 
-CalculateTorqueCoProcessor::CalculateTorqueCoProcessor( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path_, SPtr<Communicator> comm) : CoProcessor(grid, s), path(path_), comm(comm), forceX1global(0), forceX2global(0), forceX3global(0)
+CalculateTorqueCoProcessor::CalculateTorqueCoProcessor( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path_, SPtr<Communicator> comm) : CoProcessor(grid, s), path(path_), comm(comm), torqueX1global(0), torqueX2global(0), torqueX3global(0)
 {
    if (comm->getProcessID() == comm->getRoot())
    {
@@ -68,9 +68,9 @@ void CalculateTorqueCoProcessor::collectData( double step )
       }
 
       ostr << istep << ";";
-      ostr << forceX1global << ";";
-      ostr << forceX2global << ";";
-      ostr << forceX3global;
+      ostr << torqueX1global << ";";
+      ostr << torqueX2global << ";";
+      ostr << torqueX3global;
       ostr << std::endl;
       ostr.close();
    }
@@ -78,9 +78,11 @@ void CalculateTorqueCoProcessor::collectData( double step )
 //////////////////////////////////////////////////////////////////////////
 void CalculateTorqueCoProcessor::calculateForces()
 {
-   forceX1global = 0.0;
-   forceX2global = 0.0;
-   forceX3global = 0.0;
+   torqueX1global = 0.0;
+   torqueX2global = 0.0;
+   torqueX3global = 0.0;
+
+   int counter = 0;
 
    for(SPtr<D3Q27Interactor> interactor : interactors)
    {
@@ -96,6 +98,8 @@ void CalculateTorqueCoProcessor::calculateForces()
 
          SPtr<Block3D> block = t.first;
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
+
+         double deltaX = grid->getDeltaX(block);
 
          SPtr<ILBMKernel> kernel = block->getKernel();
 
@@ -128,11 +132,6 @@ void CalculateTorqueCoProcessor::calculateForces()
             int x2 = node[1];
             int x3 = node[2];
 
-            Vector3D worldCoordinates = grid->getNodeCoordinates(block, x1, x2, x3);
-            double rx                 = worldCoordinates[0] - x1Centre;
-            double ry                 = worldCoordinates[1] - x2Centre;
-            double rz                 = worldCoordinates[2] - x3Centre;
-
             //without ghost nodes
             if (x1 < minX1 || x1 > maxX1 || x2 < minX2 || x2 > maxX2 ||x3 < minX3 || x3 > maxX3 ) continue;
 
@@ -144,16 +143,23 @@ void CalculateTorqueCoProcessor::calculateForces()
                double Fy                   = val<2>(forceVec);
                double Fz                   = val<3>(forceVec);
 
+               Vector3D worldCoordinates = grid->getNodeCoordinates(block, x1, x2, x3);
+               double rx                 = (worldCoordinates[0] - x1Centre) / deltaX;
+               double ry                 = (worldCoordinates[1] - x2Centre) / deltaX;
+               double rz                 = (worldCoordinates[2] - x3Centre) / deltaX;
+
                torqueX1 += ry * Fz - rz * Fy;
                torqueX2 += rz * Fx - rx * Fz;
                torqueX3 += rx * Fy - ry * Fx;
-               //counter++;
+               
+               
+               counter++;
                //UBLOG(logINFO, "x1="<<(worldCoordinates[1] - x2Centre)<<",x2=" << (worldCoordinates[2] - x3Centre)<< ",x3=" << (worldCoordinates[0] - x1Centre) <<" forceX3 = " << forceX3);
             }
          }
          //if we have got discretization with more level
          // deltaX is LBM deltaX and equal LBM deltaT 
-         double deltaX = LBMSystem::getDeltaT(block->getLevel()); //grid->getDeltaT(block);
+         //double deltaX = 0.5; // LBMSystem::getDeltaT(block->getLevel()); //grid->getDeltaT(block);
          double deltaXquadrat = deltaX*deltaX;
          torqueX1 *= deltaXquadrat;
          torqueX2 *= deltaXquadrat;
@@ -161,31 +167,33 @@ void CalculateTorqueCoProcessor::calculateForces()
 
          distributions->swap();
 
-         forceX1global += torqueX1;
-         forceX2global += torqueX2;
-         forceX3global += torqueX3;
+         torqueX1global += torqueX1;
+         torqueX2global += torqueX2;
+         torqueX3global += torqueX3;
 
-         //UBLOG(logINFO, "forceX3global = " << forceX3global);
+         UBLOG(logINFO, "torqueX1global = " << torqueX1global);
+
+         UBLOG(logINFO, "counter = " << counter);
       }
    }
    std::vector<double> values;
    std::vector<double> rvalues;
-   values.push_back(forceX1global);
-   values.push_back(forceX2global);
-   values.push_back(forceX3global);
+   values.push_back(torqueX1global);
+   values.push_back(torqueX2global);
+   values.push_back(torqueX3global);
 
    rvalues = comm->gather(values);
    if (comm->getProcessID() == comm->getRoot())
    {
-      forceX1global = 0.0;
-      forceX2global = 0.0;
-      forceX3global = 0.0;
+      torqueX1global = 0.0;
+      torqueX2global = 0.0;
+      torqueX3global = 0.0;
       
       for (int i = 0; i < (int)rvalues.size(); i+=3)
       {
-         forceX1global += rvalues[i];
-         forceX2global += rvalues[i+1];
-         forceX3global += rvalues[i+2];
+         torqueX1global += rvalues[i];
+         torqueX2global += rvalues[i+1];
+         torqueX3global += rvalues[i+2];
       }
    }
 }
@@ -229,9 +237,9 @@ UbTupleDouble3 CalculateTorqueCoProcessor::getForces(int x1, int x2, int x3,  SP
                correction[2] = forceTerm * boundaryVelocity[2];
             }
 
-            forceX1 += (f + fnbr) * D3Q27System::DX1[invDir] - 2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[0];
-            forceX2 += (f + fnbr) * D3Q27System::DX2[invDir] - 2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[1];
-            forceX3 += (f + fnbr) * D3Q27System::DX3[invDir] - 2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[2];
+            forceX1 += (f + fnbr) * D3Q27System::DX1[invDir];// -2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[0];
+            forceX2 += (f + fnbr) * D3Q27System::DX2[invDir];// -2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[1];
+            forceX3 += (f + fnbr) * D3Q27System::DX3[invDir];// -2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[2];
          }
       }
    }
