@@ -70,7 +70,7 @@ MPIIOCoProcessor::MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const
 
     //---------------------------------------
 
-    MPI_Type_contiguous(8, MPI_CHAR, &arrayPresenceType);
+    MPI_Type_contiguous(9, MPI_CHAR, &arrayPresenceType);
     MPI_Type_commit(&arrayPresenceType);
 }
 
@@ -465,6 +465,13 @@ void MPIIOCoProcessor::clearAllFiles(int step)
     int rc11 = MPI_File_open(MPI_COMM_WORLD, filename11.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc11 != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename11);
+    MPI_File_set_size(file_handler, new_size);
+    MPI_File_close(&file_handler);
+
+    std::string filename12 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpPressureField.bin";
+    int rc12 = MPI_File_open(MPI_COMM_WORLD, filename12.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+    if (rc12 != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename12);
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
