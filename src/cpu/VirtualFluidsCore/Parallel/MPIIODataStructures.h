@@ -166,6 +166,7 @@ struct DSArraysPresence {
     bool isRelaxationFactorPresent;
     bool isPhaseField1Present;
     bool isPhaseField2Present;
+    bool isPressureFieldPresent;
 };
 } // namespace MPIIODataStructures
 #endif

@@ -278,6 +278,12 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
                 else
                     arrPresence.isPhaseField2Present = false;
 
+                SPtr<CbArray3D<LBMReal, IndexerX3X2X1>> pressureFieldPtr = block->getKernel()->getDataSet()->getPressureField();
+                if (pressureFieldPtr)
+                    arrPresence.isPressureFieldPresent = true;
+                else
+                    arrPresence.isPressureFieldPresent = false;
+
                 firstBlock = false;
             }
 
@@ -445,6 +451,9 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
 
     if (arrPresence.isPhaseField2Present)
         write3DArray(step, PhaseField2, std::string("/cpPhaseField2.bin"));
+
+    if (arrPresence.isPressureFieldPresent)
+        write3DArray(step, PressureField, std::string("/cpPressureField.bin"));
 
 }
 
@@ -624,6 +633,9 @@ void MPIIOMigrationCoProcessor::write3DArray(int step, Arrays arrayType, std::st
                     break;
                 case PhaseField2:
                     ___Array = block->getKernel()->getDataSet()->getPhaseField2();
+                    break;
+                case PressureField:
+                    ___Array = block->getKernel()->getDataSet()->getPressureField();
                     break;
                 default:
                     UB_THROW(UbException(UB_EXARGS, "MPIIOMigrationCoProcessor::write3DArray : 3D array type does not exist!"));
@@ -1909,6 +1921,9 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
     if (arrPresence.isPhaseField2Present)
         readArray(step, PhaseField2, std::string("/cpPhaseField2.bin"));
 
+    if (arrPresence.isPressureFieldPresent)
+        readArray(step, PressureField, std::string("/cpPressureField.bin"));
+
 }
 
 void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string fname)
@@ -2039,6 +2054,11 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
                 ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
                     vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
                 block->getKernel()->getDataSet()->setPhaseField2(___3DArray);
+                break;
+            case PressureField:
+                ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
+                    vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
+                block->getKernel()->getDataSet()->setPressureField(___3DArray);
                 break;
             default:
                 UB_THROW(UbException(UB_EXARGS, "MPIIOMigrationCoProcessor::readArray : array type does not exist!"));

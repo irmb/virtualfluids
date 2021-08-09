@@ -27,7 +27,8 @@ public:
         ShearStressVal      = 5,
         RelaxationFactor = 6,
         PhaseField1 = 7,
-        PhaseField2 = 8
+        PhaseField2 = 8,
+        PressureField = 9
     };
 
     MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, SPtr<Communicator> comm);
