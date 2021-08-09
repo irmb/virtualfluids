@@ -377,7 +377,7 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
         }
 
         //-------------------------------------- H1 -----------------------------
-        int fs = MPI_File_get_size(file_handlerR1, &fsize);
+        MPI_File_get_size(file_handlerR1, &fsize);
         if (fsize > 0)
         {
             doubleValuesArrayH1.resize(blocksCount * doubleCountInBlock);
