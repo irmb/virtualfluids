@@ -12,6 +12,8 @@
 #include <DataTypes.h>
 #include "LBM/LB.h"
 
+#ifndef GPU_INTERFACE_H
+#define GPU_INTERFACE_H
 
 //////////////////////////////////////////////////////////////////////////
 //Kernel
@@ -2346,7 +2348,8 @@ extern "C" void GetSendFsPreDev27(real* DD,
 								  unsigned int* neighborZ,
 								  unsigned int size_Mat, 
 								  bool evenOrOdd,
-								  unsigned int numberOfThreads);
+								  unsigned int numberOfThreads, 
+	                              cudaStream_t stream = CU_STREAM_LEGACY);
 
 extern "C" void GetSendFsPostDev27(real* DD,
 								   real* bufferFs,
@@ -2357,7 +2360,8 @@ extern "C" void GetSendFsPostDev27(real* DD,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat, 
 								   bool evenOrOdd,
-								   unsigned int numberOfThreads);
+								   unsigned int numberOfThreads, 
+	                               cudaStream_t stream = CU_STREAM_LEGACY);
 
 extern "C" void SetRecvFsPreDev27(real* DD,
 								  real* bufferFs,
@@ -2518,3 +2522,4 @@ extern "C" void generateRandomValuesDevice(curandState* state,
 										   real* randArray,
 										   unsigned int numberOfThreads);
 
+#endif
