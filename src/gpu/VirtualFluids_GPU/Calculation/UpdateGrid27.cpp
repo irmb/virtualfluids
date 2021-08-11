@@ -26,21 +26,22 @@ void updateGrid27(Parameter* para,
 
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->useStreams) {
+    if (para->useStreams)
         collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
                             para->getParD(level)->numberOffluidNodesBorder, 1);
-        collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
-                            para->getParD(level)->numberOfFluidNodes, 0);
-    }
     else
         collision(para, pm, level, t, kernels);
-
+   
     //////////////////////////////////////////////////////////////////////////
 
     if (para->useStreams)
         exchangeMultiGPU(para, comm, cudaManager, level, 1);
     else
         exchangeMultiGPU(para, comm, cudaManager, level, -1);
+
+    if (para->useStreams)
+        collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
+                            para->getParD(level)->numberOfFluidNodes, 0);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -65,10 +66,7 @@ void updateGrid27(Parameter* para,
     {
         fineToCoarse(para, level);
 
-        if (para->useStreams)
-            exchangeMultiGPU(para, comm, cudaManager, level, 1);
-        else
-            exchangeMultiGPU(para, comm, cudaManager, level, -1);
+        exchangeMultiGPU(para, comm, cudaManager, level, -1);
 
         coarseToFine(para, level);
     }

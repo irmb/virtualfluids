@@ -243,7 +243,7 @@ void exchangePreCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, Cud
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		cudaManager->cudaCopyProcessNeighborYFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborYFsHD(level, i, streamIndex);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPreDev27(para->getParD(level)->d0SP.f[0],
 						  para->getParD(level)->recvProcessNeighborY[i].f[0],
@@ -254,7 +254,8 @@ void exchangePreCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, Cud
 						  para->getParD(level)->neighborZ_SP,
 						  para->getParD(level)->size_Mat_SP, 
 						  para->getParD(level)->evenOrOdd,
-						  para->getParD(level)->numberofthreads);
+						  para->getParD(level)->numberofthreads,
+			              stream);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
@@ -327,7 +328,7 @@ void exchangePostCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, Cu
 	//copy Host to Device
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		cudaManager->cudaCopyProcessNeighborYFsHD(level, i);
+		cudaManager->cudaCopyProcessNeighborYFsHD(level, i, streamIndex);
 		//////////////////////////////////////////////////////////////////////////
 		SetRecvFsPostDev27(para->getParD(level)->d0SP.f[0],
 						   para->getParD(level)->recvProcessNeighborY[i].f[0],
@@ -338,7 +339,8 @@ void exchangePostCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, Cu
 						   para->getParD(level)->neighborZ_SP,
 						   para->getParD(level)->size_Mat_SP, 
 						   para->getParD(level)->evenOrOdd,
-						   para->getParD(level)->numberofthreads);
+						   para->getParD(level)->numberofthreads,
+			               stream);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

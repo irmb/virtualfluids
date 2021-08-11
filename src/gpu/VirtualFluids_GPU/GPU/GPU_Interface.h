@@ -2371,8 +2371,8 @@ extern "C" void SetRecvFsPreDev27(real* DD,
 								  unsigned int* neighborY,
 								  unsigned int* neighborZ,
 								  unsigned int size_Mat, 
-								  bool evenOrOdd,
-								  unsigned int numberOfThreads);
+								  bool evenOrOdd, unsigned int numberOfThreads, 
+	                              cudaStream_t stream = CU_STREAM_LEGACY);
 
 extern "C" void SetRecvFsPostDev27(real* DD,
 								   real* bufferFs,
@@ -2383,7 +2383,8 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat, 
 								   bool evenOrOdd,
-								   unsigned int numberOfThreads);
+								   unsigned int numberOfThreads,
+                                   cudaStream_t stream = CU_STREAM_LEGACY);
 
 extern "C" void getSendGsDevF3(
 	real* G6,

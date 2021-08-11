@@ -6858,7 +6858,8 @@ extern "C" void SetRecvFsPreDev27(real* DD,
 								  unsigned int* neighborZ,
 								  unsigned int size_Mat, 
 								  bool evenOrOdd,
-								  unsigned int numberOfThreads)
+								  unsigned int numberOfThreads, 
+	                              cudaStream_t stream)
 {
 	int Grid = (buffmax / numberOfThreads)+1;
 	int Grid1, Grid2;
@@ -6875,7 +6876,7 @@ extern "C" void SetRecvFsPreDev27(real* DD,
 	dim3 grid(Grid1, Grid2);
 	dim3 threads(numberOfThreads, 1, 1 );
 
-	setRecvFsPre27<<< grid, threads >>>(DD, 
+	setRecvFsPre27<<< grid, threads, 0, stream >>>(DD, 
 										bufferFs, 
 										recvIndex, 
 										buffmax,
@@ -6895,8 +6896,9 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 								   unsigned int* neighborY,
 								   unsigned int* neighborZ,
 								   unsigned int size_Mat, 
-								   bool evenOrOdd,
-								   unsigned int numberOfThreads)
+								   bool evenOrOdd, 
+	                               unsigned int numberOfThreads, 
+	                               cudaStream_t stream)
 {
 	int Grid = (buffmax / numberOfThreads)+1;
 	int Grid1, Grid2;
@@ -6913,7 +6915,7 @@ extern "C" void SetRecvFsPostDev27(real* DD,
 	dim3 grid(Grid1, Grid2);
 	dim3 threads(numberOfThreads, 1, 1 );
 
-	setRecvFsPost27<<< grid, threads >>>(DD, 
+	setRecvFsPost27<<< grid, threads, 0, stream >>>(DD, 
 										 bufferFs, 
 										 recvIndex, 
 										 buffmax,
