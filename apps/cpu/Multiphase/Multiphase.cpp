@@ -101,6 +101,13 @@ void run(string configname)
         kernel->setPhaseFieldRelaxation(tauH);
         kernel->setMobility(mob);
 
+        //nuL, nuG, densityRatio, beta, kappa, theta,
+
+        kernel->setCollisionFactorMultiphase(nuL, nuG);
+        kernel->setDensityRatio(densityRatio);
+        kernel->setMultiphaseModelParameters(beta, kappa);
+        kernel->setContactAngle(theta);
+
         SPtr<BCProcessor> bcProc(new BCProcessor());
         // BCProcessorPtr bcProc(new ThinWallBCProcessor());
 

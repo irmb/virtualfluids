@@ -36,10 +36,10 @@ void MultiphaseSetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> blo
 		LBMReal collFactorL = LBMSystem::calcCollisionFactor(nuL, block->getLevel());
 		LBMReal collFactorG = LBMSystem::calcCollisionFactor(nuG, block->getLevel());
 
-		kernel->setCollisionFactorMultiphase(collFactorL, collFactorG);
-		kernel->setDensityRatio(densityRatio);
-		kernel->setMultiphaseModelParameters(beta, kappa);
-		kernel->setContactAngle(contactAngle);
+		//kernel->setCollisionFactorMultiphase(collFactorL, collFactorG);
+		//kernel->setDensityRatio(densityRatio);
+		//kernel->setMultiphaseModelParameters(beta, kappa);
+		//kernel->setContactAngle(contactAngle);
 
 		kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
 		kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));
