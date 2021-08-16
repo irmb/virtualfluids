@@ -26,7 +26,7 @@ void updateGrid27(Parameter* para,
 
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->useStreams)
+    if (para->getUseStreams())
         collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
                             para->getParD(level)->numberOffluidNodesBorder, 1);
     else
@@ -34,12 +34,12 @@ void updateGrid27(Parameter* para,
    
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->useStreams)
+    if (para->getUseStreams())
         exchangeMultiGPU(para, comm, cudaManager, level, 1);
     else
         exchangeMultiGPU(para, comm, cudaManager, level, -1);
 
-    if (para->useStreams)
+    if (para->getUseStreams())
         collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
                             para->getParD(level)->numberOfFluidNodes, 0);
 
@@ -69,7 +69,7 @@ void updateGrid27(Parameter* para,
         exchangeMultiGPU(para, comm, cudaManager, level, -1);
 
         coarseToFine(para, level);
-    }
+    }    
 }
 
 void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels)

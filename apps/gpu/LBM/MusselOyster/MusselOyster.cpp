@@ -146,7 +146,8 @@ void multipleLevel(const std::string& configPath)
     para->setMaxLevel(1);
 
     //para->setMainKernel("CumulantK17CompChim");
-    para->useStreams = useStreams;
+    if (useStreams)
+        para->setUseStreams();
     para->setMainKernel("CumulantK17CompChimSparse");
     *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 

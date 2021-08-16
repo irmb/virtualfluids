@@ -53,24 +53,6 @@ Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int number
     //initLBMSimulationParameter();
 }
 
-void Parameter::launchStreams(uint numberOfStreams)
-{
-    cudaStreams.resize(numberOfStreams);
-    for (cudaStream_t &stream : cudaStreams) {
-        cudaStreamCreate(&stream);
-    }
-}
-
-void Parameter::terminateStreams() {
-    for (cudaStream_t &stream : cudaStreams) {
-        cudaStreamDestroy(stream);
-    }
-}
-
-cudaStream_t& Parameter::getStream(uint streamIndex) { 
-	return cudaStreams[streamIndex]; 
-}
-
 void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 {
    if (configData.contains("NumberOfDevices"))
@@ -2502,5 +2484,15 @@ real Parameter::TrafoZtoMGsWorld(int CoordZ, int level)
 	temp += (real)((CoordZ) * parH[level]->dx);
 	return temp;
 }
+
+void Parameter::setUseStreams() {
+	this->useStreams = true;
+    this->cudaStreamManager = CudaStreamManager();
+}
+
+bool Parameter::getUseStreams() { return this->useStreams; }
+
+CudaStreamManager &Parameter::getStreamManager()
+{ return this->cudaStreamManager; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

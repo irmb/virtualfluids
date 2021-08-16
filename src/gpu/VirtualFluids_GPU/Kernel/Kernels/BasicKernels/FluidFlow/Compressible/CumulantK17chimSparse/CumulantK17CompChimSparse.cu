@@ -37,7 +37,7 @@ void CumulantK17CompChimSparse::runOnIndices(const unsigned int *indices, unsign
     dim3 grid, threads;
     std::tie(grid, threads) = *calcGridDimensions(para->getParD(level)->numberOfFluidNodes);
 
-    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStream(streamIndex);
+    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager().getStream(streamIndex);
 
     LB_Kernel_CumulantK17CompChimSparse<<<grid, threads, 0, stream>>>(
         para->getParD(level)->omega, 

@@ -176,9 +176,10 @@ void exchangePostCollDataXGPU27(Parameter* para, vf::gpu::Communicator* comm, Cu
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Y
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level, int streamIndex)
+void exchangePreCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
+                               int streamIndex)
 {
-    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStream(streamIndex);
+    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager().getStream(streamIndex);
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
@@ -219,7 +220,11 @@ void exchangePreCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, Cud
 	//{
 	//	comm->waitallGPU();
 	//}
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // wait for memcopy host to device to finish before sending data
+    if (para->getUseStreams())
+        cudaStreamSynchronize(stream);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
@@ -263,7 +268,7 @@ void exchangePreCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, Cud
 void exchangePostCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
                                 int streamIndex)
 {
-    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStream(streamIndex);
+    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager().getStream(streamIndex);
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
@@ -304,7 +309,12 @@ void exchangePostCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, Cu
 	//{
 	//	comm->waitallGPU();
 	//}
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // wait for memcopy host to device to finish before sending data
+    if (para->getUseStreams())
+        cudaStreamSynchronize(stream);
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// 
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{

@@ -105,8 +105,8 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    output.clearLogFile();
    //////////////////////////////////////////////////////////////////////////
    // CUDA streams
-   if(para->useStreams)
-	   para->launchStreams((uint)2);
+   if (para->getUseStreams())
+       para->getStreamManager().launchStreams(2u);
    //////////////////////////////////////////////////////////////////////////
    // 
    //output << para->getNeedInterface().at(0) << "\n";
@@ -1157,8 +1157,8 @@ void Simulation::definePMarea(std::shared_ptr<PorousMedia> pMedia)
 void Simulation::free()
 {
 	// Cuda Streams
-    if (para->useStreams)
-        para->terminateStreams();
+    if (para->getUseStreams())
+        para->getStreamManager().terminateStreams();
 
 	//CudaFreeHostMemory
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
