@@ -89,8 +89,8 @@ public:
     SPtr<PhaseFieldArray3D> getPhaseField2() const;
     void setPhaseField2(SPtr<PhaseFieldArray3D> values);
 
-    SPtr<PressureFieldArray3D> DataSet3D::getPressureField() const;
-    void DataSet3D::setPressureField(SPtr<PressureFieldArray3D> values);
+    SPtr<PressureFieldArray3D> getPressureField() const;
+    void setPressureField(SPtr<PressureFieldArray3D> values);
 
 protected:
 private:

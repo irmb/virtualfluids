@@ -111,26 +111,26 @@ void ThreeDistributionsDoubleGhostLayerFullVectorConnector::fillData()
     ////////////////////////////////////////////////////////////
 
     int minX1   = 0;
-    int minX1p1 = minX1 + 1;
+    //int minX1p1 = minX1 + 1;
     int minX1p2 = minX1 + 2;
     int minX1p3 = minX1 + 3;
-    int maxX1m1 = maxX1 - 1;
+    //int maxX1m1 = maxX1 - 1;
     int maxX1m2 = maxX1 - 2;
     int maxX1m3 = maxX1 - 3;
 
     int minX2   = 0;
-    int minX2p1 = minX2 + 1;
+    //int minX2p1 = minX2 + 1;
     int minX2p2 = minX2 + 2;
     int minX2p3 = minX2 + 3;
-    int maxX2m1 = maxX2 - 1;
+    //int maxX2m1 = maxX2 - 1;
     int maxX2m2 = maxX2 - 2;
     int maxX2m3 = maxX2 - 3;
 
     int minX3   = 0;
-    int minX3p1 = minX3 + 1;
+    //int minX3p1 = minX3 + 1;
     int minX3p2 = minX3 + 2;
     int minX3p3 = minX3 + 3;
-    int maxX3m1 = maxX3 - 1;
+    //int maxX3m1 = maxX3 - 1;
     int maxX3m2 = maxX3 - 2;
     int maxX3m3 = maxX3 - 3;
 
@@ -379,26 +379,26 @@ void ThreeDistributionsDoubleGhostLayerFullVectorConnector::distributeData()
     int minX1   = 0;
     int minX1p1 = minX1 + 1;
     int minX1p2 = minX1 + 2;
-    int minX1p3 = minX1 + 3;
+    //int minX1p3 = minX1 + 3;
     int maxX1m1 = maxX1 - 1;
     int maxX1m2 = maxX1 - 2;
-    int maxX1m3 = maxX1 - 3;
+    //int maxX1m3 = maxX1 - 3;
 
     int minX2   = 0;
     int minX2p1 = minX2 + 1;
     int minX2p2 = minX2 + 2;
-    int minX2p3 = minX2 + 3;
+    //int minX2p3 = minX2 + 3;
     int maxX2m1 = maxX2 - 1;
     int maxX2m2 = maxX2 - 2;
-    int maxX2m3 = maxX2 - 3;
+    //int maxX2m3 = maxX2 - 3;
 
     int minX3   = 0;
     int minX3p1 = minX3 + 1;
     int minX3p2 = minX3 + 2;
-    int minX3p3 = minX3 + 3;
+    //int minX3p3 = minX3 + 3;
     int maxX3m1 = maxX3 - 1;
     int maxX3m2 = maxX3 - 2;
-    int maxX3m3 = maxX3 - 3;
+    //int maxX3m3 = maxX3 - 3;
 
     if (sendDir == D3Q27System::W) {
         for (int x3 = minX3p2; x3 <= maxX3m2; x3++) {

@@ -56,7 +56,7 @@ public:
 	//! \param vx1 - velocity in x
 	//! \param vx2 - velocity in y
 	//! \param vx3 - velocity in z
-	MultiphaseInitDistributionsBlockVisitorVelocity( LBMReal densityRatio, LBMReal intThickness, LBMReal radius, LBMReal vx1=0.0, LBMReal vx2=0.0, LBMReal vx3=0.0);
+	MultiphaseInitDistributionsBlockVisitorVelocity( /*LBMReal densityRatio, */LBMReal intThickness, LBMReal radius, LBMReal vx1=0.0, LBMReal vx2=0.0, LBMReal vx3=0.0);
 	//////////////////////////////////////////////////////////////////////////
 	//automatic vars are: x1,x2, x3
 	//ussage example: setVx1("x1*0.01+x2*0.003")
@@ -94,7 +94,7 @@ private:
 	mu::Parser muPhi;
 
 	LBMReal nu;
-	LBMReal densityRatio;
+	//LBMReal densityRatio;
 	//LBMReal intThickness;
 	//LBMReal radius;
 };
