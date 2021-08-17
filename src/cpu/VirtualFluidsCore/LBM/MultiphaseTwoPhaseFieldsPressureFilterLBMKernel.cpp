@@ -139,7 +139,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
     forcingX2 = 0.0;
     forcingX3 = 0.0;
 
-	LBMReal oneOverInterfaceScale = 1.0;
+	LBMReal oneOverInterfaceScale = 1.5;
     /////////////////////////////////////
 
     localDistributionsF    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
@@ -299,9 +299,9 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
-						//LBMReal rho = rhoH + rhoToPhi * ((*pressure)(x1, x2, x3) - phiH);
+						LBMReal rho = rhoH + rhoToPhi * ((*pressure)(x1, x2, x3) - phiH);
 						//! variable density -> TRANSFER!
-						LBMReal rho = rhoH * ((*phaseField)(x1, x2, x3)) + rhoL * ((*phaseField2)(x1, x2, x3));
+						//LBMReal rho = rhoH * ((*phaseField)(x1, x2, x3)) + rhoL * ((*phaseField2)(x1, x2, x3));
 
 						(*pressure)(x1, x2, x3) = (*pressure)(x1, x2, x3) + rho * c1o3 * drho;
 
@@ -561,10 +561,10 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
                         LBMReal mu = 2 * beta * phi[REST] * (phi[REST] - 1) * (2 * phi[REST] - 1) - kappa * nabla2_phi();
 
                         //----------- Calculating Macroscopic Values -------------
-                       // LBMReal rho = rhoH + rhoToPhi * (phi[REST] - phiH);
+                        LBMReal rho = rhoH + rhoToPhi * (phi[REST] - phiH);
 
 						//! variable density -> TRANSFER!
-						LBMReal rho = rhoH * ((*phaseField)(x1, x2, x3)) + rhoL * ((*phaseField2)(x1, x2, x3));
+						//LBMReal rho = rhoH * ((*phaseField)(x1, x2, x3)) + rhoL * ((*phaseField2)(x1, x2, x3));
 
 
                             			   ////Incompressible Kernal
@@ -661,7 +661,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 					   else {
 						   gradPx -= (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
 					   }
-					   if (!bcArray->isSolid(x1 + 1, yyy, zzz) && !bcArray->isUndefined(x1 - 1, yyy, zzz)) {
+					   if (!bcArray->isSolid(x1 + 1, yyy, zzz) && !bcArray->isUndefined(x1 + 1, yyy, zzz)) {
 						   gradPx += (*pressure)(x1 + 1, yyy, zzz) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
 					   }
 					   else {
@@ -675,7 +675,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 					   else {
 						   gradPy -= (*pressure)(x1, x2, x3) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
 					   }
-					   if (!bcArray->isSolid(xxx, x2+1, zzz) && !bcArray->isUndefined(xxx, x2-1, zzz)) {
+					   if (!bcArray->isSolid(xxx, x2+1, zzz) && !bcArray->isUndefined(xxx, x2+1, zzz)) {
 						   gradPy += (*pressure)(xxx, x2+1, zzz) * c2o9 / ((c1 + c3 * abs(dir1)) * (c1 + c3 * abs(dir2)));
 					   }
 					   else {
@@ -698,6 +698,14 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 
 				   }
 			   }
+
+			   //Viscosity increase by pressure gradient
+			   LBMReal errPhi = (((1.0 - phi[REST]) * (phi[REST]) * oneOverInterfaceScale)- denom);
+			   LBMReal limVis = 0.0000001;//0.01;
+			  // collFactorM =collFactorM/(c1+limVis*(errPhi*errPhi)*collFactorM);
+			  // collFactorM = (collFactorM < 1.8) ? 1.8 : collFactorM;
+			   errPhi = errPhi * errPhi* errPhi * errPhi * errPhi * errPhi;
+			   collFactorM = collFactorM + (1.8 - collFactorM) * errPhi / (errPhi + limVis);
 
 			   //3.0 * ((WEIGTH[TNE] * (((phi2[TNE] - phi2[BSW]) - (phi2[BSE] - phi2[TNW])) + ((phi2[TSE] - phi2[BNW]) - (phi2[BNE] - phi2[TSW])))
 			   //+WEIGTH[NE] * (((phi2[TE] - phi2[BW]) - (phi2[BE] - phi2[TW])) + ((phi2[TS] - phi2[BN]) + (phi2[TN] - phi2[BS])))) +
@@ -2744,6 +2752,13 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
                     normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
                cz = cz * (c1 - omegaD) + omegaD * vvz * concentration +
                     normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * c1o3 * oneOverInterfaceScale;
+
+			   //cx = cx * (c1 - omegaD) + omegaD * vvx * concentration +
+				  // normX1 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST])*(phi[REST]+phi2[REST]) * c1o3 * oneOverInterfaceScale;
+			   //cy = cy * (c1 - omegaD) + omegaD * vvy * concentration +
+				  // normX2 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * (phi[REST] + phi2[REST]) * c1o3 * oneOverInterfaceScale;
+			   //cz = cz * (c1 - omegaD) + omegaD * vvz * concentration +
+				  // normX3 * (c1 - 0.5 * omegaD) * (1.0 - phi[REST]) * (phi[REST]) * (phi[REST] + phi2[REST]) * c1o3 * oneOverInterfaceScale;
 
 			   //mhx = (ux * phi[REST] + normX1 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhx;
 			   //mhy = (uy * phi[REST] + normX2 * (tauH - 0.5) * (1.0 - phi[REST]) * (phi[REST])) / tauH + (1.0 - 1.0 / tauH) * mhy;
