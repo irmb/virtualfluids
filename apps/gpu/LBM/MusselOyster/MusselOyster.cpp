@@ -132,8 +132,8 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "velocity real [m/s] = " << vxLB * para->getVelocityRatio()<< " \n";
     *logging::out << logging::Logger::INFO_HIGH << "viscosity real [m^2/s] = " << viscosityLB * para->getViscosityRatio() << "\n";
 
-    para->setTOut(100);
-    para->setTEnd(100);
+    para->setTOut(11);
+    para->setTEnd(10);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);

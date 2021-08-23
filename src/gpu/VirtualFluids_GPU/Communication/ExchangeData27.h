@@ -18,6 +18,7 @@ extern "C" void exchangePreCollDataYGPU27(Parameter *para, vf::gpu::Communicator
                                           int level, int streamIndex = -1);
 extern "C" void exchangePreCollDataZGPU27(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);
 extern "C" void exchangePostCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level);
+extern "C" void prepareExchangePostCollDataYGPU27(Parameter *para, int level, int streamIndex = -1);
 extern "C" void exchangePostCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
                                            int level, int streamIndex = -1);
 extern "C" void exchangePostCollDataZGPU27(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);

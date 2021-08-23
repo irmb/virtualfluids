@@ -40,6 +40,7 @@ class CudaStreamManager
 {
 private:
     std::vector<cudaStream_t> cudaStreams;
+    cudaEvent_t startBulkKernel;
 
 public:
     CudaStreamManager();
@@ -47,6 +48,11 @@ public:
     void launchStreams(uint numberOfStreams);
     void terminateStreams();
     cudaStream_t &getStream(uint streamIndex);
+
+    void createCudaEvents();
+    void destroyCudaEvents();
+    void triggerStartBulkKernel(int streamIndex);
+    void waitOnStartBulkKernelEvent(int streamIndex);
 };
 
 #endif

@@ -28,6 +28,7 @@
 //
 //=======================================================================================
 #include "CudaStreamManager.h"
+#include <helper_cuda.h>
 
 CudaStreamManager::CudaStreamManager() {}
 
@@ -48,5 +49,22 @@ void CudaStreamManager::terminateStreams()
 
 cudaStream_t &CudaStreamManager::getStream(uint streamIndex)
 {
-    return cudaStreams[streamIndex];
+    return cudaStreams[streamIndex]; }
+
+void CudaStreamManager::createCudaEvents()
+{
+    checkCudaErrors(cudaEventCreateWithFlags(&startBulkKernel, cudaEventDisableTiming));
+}
+
+void CudaStreamManager::destroyCudaEvents() {checkCudaErrors(cudaEventDestroy(startBulkKernel));
+}
+
+void CudaStreamManager::triggerStartBulkKernel(int streamIndex)
+{
+    checkCudaErrors(cudaEventRecord(startBulkKernel, cudaStreams[streamIndex]));
+}
+
+void CudaStreamManager::waitOnStartBulkKernelEvent(int streamIndex)
+{
+    checkCudaErrors(cudaStreamWaitEvent(cudaStreams[streamIndex], startBulkKernel));
 }

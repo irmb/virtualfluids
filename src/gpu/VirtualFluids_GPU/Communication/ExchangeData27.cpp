@@ -198,6 +198,10 @@ void exchangePreCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, Cud
 		//////////////////////////////////////////////////////////////////////////);
 		cudaManager->cudaCopyProcessNeighborYFsDH(level, i, streamIndex);
 	}
+
+	//if (para->getUseStreams() && startBulkKernel!=nullptr)
+	//	cudaEventRecord(*startBulkKernel, stream);
+
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
@@ -264,7 +268,21 @@ void exchangePreCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, Cud
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void prepareExchangePostCollDataYGPU27(Parameter *para, int level, int streamIndex)
+{
+    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager().getStream(streamIndex);
+    for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
+        GetSendFsPostDev27(para->getParD(level)->d0SP.f[0], para->getParD(level)->sendProcessNeighborY[i].f[0],
+                           para->getParD(level)->sendProcessNeighborY[i].index,
+                           para->getParD(level)->sendProcessNeighborY[i].numberOfNodes,
+                           para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP,
+                           para->getParD(level)->neighborZ_SP, para->getParD(level)->size_Mat_SP,
+                           para->getParD(level)->evenOrOdd, para->getParD(level)->numberofthreads, stream);
+    if (para->getUseStreams())
+        para->getStreamManager().triggerStartBulkKernel(streamIndex);
+}
+
 void exchangePostCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
                                 int streamIndex)
 {
@@ -272,21 +290,8 @@ void exchangePostCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, Cu
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
-	{
-		GetSendFsPostDev27(para->getParD(level)->d0SP.f[0],
-						   para->getParD(level)->sendProcessNeighborY[i].f[0],
-						   para->getParD(level)->sendProcessNeighborY[i].index,
-						   para->getParD(level)->sendProcessNeighborY[i].numberOfNodes,
-						   para->getParD(level)->neighborX_SP, 
-						   para->getParD(level)->neighborY_SP, 
-						   para->getParD(level)->neighborZ_SP,
-						   para->getParD(level)->size_Mat_SP, 
-						   para->getParD(level)->evenOrOdd,
-						   para->getParD(level)->numberofthreads,
-						   stream);
-		//////////////////////////////////////////////////////////////////////////
 		cudaManager->cudaCopyProcessNeighborYFsDH(level, i, streamIndex);
-	}
+
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)

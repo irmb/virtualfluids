@@ -26,22 +26,30 @@ void updateGrid27(Parameter* para,
 
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getUseStreams())
+    if (para->getUseStreams()) {
+        // launch border kernel
         collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
                             para->getParD(level)->numberOffluidNodesBorder, 1);
-    else
+        para->getStreamManager().createCudaEvents();
+    } else
         collision(para, pm, level, t, kernels);
    
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getUseStreams())
-        exchangeMultiGPU(para, comm, cudaManager, level, 1);
-    else
-        exchangeMultiGPU(para, comm, cudaManager, level, -1);
+    if (para->getUseStreams()) {
+        prepareExchangeMultiGPU(para, level, 1);
 
-    if (para->getUseStreams())
+        // launch bulk kernel
+        para->getStreamManager().waitOnStartBulkKernelEvent(0);
         collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
                             para->getParD(level)->numberOfFluidNodes, 0);
+
+        exchangeMultiGPU(para, comm, cudaManager, level, 1);
+    } else {
+        prepareExchangeMultiGPU(para, level, -1);
+        exchangeMultiGPU(para, comm, cudaManager, level, -1);
+    }
+
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -66,10 +74,14 @@ void updateGrid27(Parameter* para,
     {
         fineToCoarse(para, level);
 
+        prepareExchangeMultiGPU(para, level, -1);
         exchangeMultiGPU(para, comm, cudaManager, level, -1);
 
         coarseToFine(para, level);
-    }    
+    }
+
+    if (para->getUseStreams())
+        para->getStreamManager().destroyCudaEvents();
 }
 
 void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels)
@@ -179,6 +191,13 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
         //            para->getParD(level)->evenOrOdd); 
 		//getLastCudaError("KernelThS27 execution failed");
 	}
+}
+
+void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex)
+{
+    if (para->getNumprocs() > 1) {
+        prepareExchangePostCollDataYGPU27(para, level, streamIndex);
+    }
 }
 
 void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
