@@ -13,15 +13,22 @@ extern "C" void exchangePreCollDataGPU27(Parameter* para, vf::gpu::Communicator*
 extern "C" void exchangePostCollDataGPU27(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);
 //////////////////////////////////////////////////////////////////////////
 //3D domain decomposition
-extern "C" void exchangePreCollDataXGPU27(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);
-extern "C" void exchangePreCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
-                                          int level, int streamIndex = -1);
-extern "C" void exchangePreCollDataZGPU27(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);
-extern "C" void exchangePostCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level);
-extern "C" void prepareExchangePostCollDataYGPU27(Parameter *para, int level, int streamIndex = -1);
+// unused functions - should be removed?
+// extern "C" void exchangePreCollDataXGPU27(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);
+// extern "C" void exchangePreCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level);
+// extern "C" void exchangePreCollDataZGPU27(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);
+
+extern "C" void prepareExchangePostCollDataXGPU27(Parameter *para, int level, int streamIndex = -1,
+                                                  std::string eventToTrigger = "");
+extern "C" void exchangePostCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+                                           int level, int streamIndex = -1);
+extern "C" void prepareExchangePostCollDataYGPU27(Parameter *para, int level, int streamIndex = -1,
+                                                  std::string eventToTrigger = "");
 extern "C" void exchangePostCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
                                            int level, int streamIndex = -1);
-extern "C" void exchangePostCollDataZGPU27(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);
+extern "C" void prepareExchangePostCollDataZGPU27(Parameter *para, int level, int streamIndex = -1);
+extern "C" void exchangePostCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+                                           int level, int streamIndex = -1);
 //////////////////////////////////////////////////////////////////////////
 //3D domain decomposition convection diffusion
 extern "C" void exchangePreCollDataADXGPU27(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);

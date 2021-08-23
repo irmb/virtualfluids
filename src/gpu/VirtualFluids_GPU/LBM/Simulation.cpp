@@ -433,7 +433,10 @@ void Simulation::run()
         // run Analyzers for kinetic energy and enstrophy for TGV in 3D
         // these analyzers only work on level 0
 	    ////////////////////////////////////////////////////////////////////////////////
-        if( this->kineticEnergyAnalyzer || this->enstrophyAnalyzer ) exchangeMultiGPU(para.get(), comm, cudaManager.get(), 0, -1);
+        if (this->kineticEnergyAnalyzer || this->enstrophyAnalyzer) {
+            prepareExchangeMultiGPU(para.get(), 0, -1, "");
+            exchangeMultiGPU(para.get(), comm, cudaManager.get(), 0, -1);
+        }
 
 	    if( this->kineticEnergyAnalyzer ) this->kineticEnergyAnalyzer->run(t);
 	    if( this->enstrophyAnalyzer     ) this->enstrophyAnalyzer->run(t);
@@ -673,6 +676,7 @@ void Simulation::run()
             {
 		        //////////////////////////////////////////////////////////////////////////
 		        //exchange data for valid post process
+                prepareExchangeMultiGPU(para.get(), lev, -1, "");
 		        exchangeMultiGPU(para.get(), comm, cudaManager.get(), lev, -1);
                 //////////////////////////////////////////////////////////////////////////
                //if (para->getD3Qxx()==19)

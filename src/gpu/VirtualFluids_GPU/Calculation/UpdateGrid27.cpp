@@ -36,8 +36,8 @@ void updateGrid27(Parameter* para,
    
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getUseStreams()) {
-        prepareExchangeMultiGPU(para, level, 1);
+    if (para->getUseStreams() && para->getNumprocs() > 1) {
+        prepareExchangeMultiGPU(para, level, 1, "startBulkKernel");
 
         // launch bulk kernel
         para->getStreamManager().waitOnStartBulkKernelEvent(0);
@@ -46,10 +46,9 @@ void updateGrid27(Parameter* para,
 
         exchangeMultiGPU(para, comm, cudaManager, level, 1);
     } else {
-        prepareExchangeMultiGPU(para, level, -1);
+        prepareExchangeMultiGPU(para, level, -1, "");
         exchangeMultiGPU(para, comm, cudaManager, level, -1);
     }
-
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -74,7 +73,7 @@ void updateGrid27(Parameter* para,
     {
         fineToCoarse(para, level);
 
-        prepareExchangeMultiGPU(para, level, -1);
+        prepareExchangeMultiGPU(para, level, -1, "");
         exchangeMultiGPU(para, comm, cudaManager, level, -1);
 
         coarseToFine(para, level);
@@ -106,7 +105,7 @@ void collisionUsingIndex(Parameter *para, std::vector<std::shared_ptr<PorousMedi
     if (fluidNodeIndices != nullptr && numberOfFluidNodes != 0)
         kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes, stream);
     else
-        std::cout << "in collision: fluidNodeIndices or numberOfFluidNodes not definded"
+        std::cout << "In collision: fluidNodeIndices or numberOfFluidNodes not definded"
                       << std::endl;
 
     //////////////////////////////////////////////////////////////////////////
@@ -193,10 +192,10 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
 	}
 }
 
-void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex)
+void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex, std::string eventToTrigger)
 {
     if (para->getNumprocs() > 1) {
-        prepareExchangePostCollDataYGPU27(para, level, streamIndex);
+        prepareExchangePostCollDataYGPU27(para, level, streamIndex, eventToTrigger);
     }
 }
 

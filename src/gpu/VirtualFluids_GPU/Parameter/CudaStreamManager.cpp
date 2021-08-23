@@ -29,6 +29,7 @@
 //=======================================================================================
 #include "CudaStreamManager.h"
 #include <helper_cuda.h>
+#include <iostream>
 
 CudaStreamManager::CudaStreamManager() {}
 
@@ -62,6 +63,14 @@ void CudaStreamManager::destroyCudaEvents() {checkCudaErrors(cudaEventDestroy(st
 void CudaStreamManager::triggerStartBulkKernel(int streamIndex)
 {
     checkCudaErrors(cudaEventRecord(startBulkKernel, cudaStreams[streamIndex]));
+}
+
+void CudaStreamManager::triggerEventByName(std::string eventName, int streamIndex)
+{
+    if (eventName == "startBulkKernel")
+        checkCudaErrors(cudaEventRecord(startBulkKernel, cudaStreams[streamIndex]));
+    else
+        std::cout << "unknown event name" << std::endl;
 }
 
 void CudaStreamManager::waitOnStartBulkKernelEvent(int streamIndex)
