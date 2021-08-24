@@ -196,7 +196,9 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
 void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex)
 {
     if (para->getNumprocs() > 1) {
+        prepareExchangePostCollDataXGPU27(para, level, streamIndex);
         prepareExchangePostCollDataYGPU27(para, level, streamIndex);
+        prepareExchangePostCollDataZGPU27(para, level, streamIndex);
     }
 }
 
@@ -209,14 +211,16 @@ void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryMa
 
 		//////////////////////////////////////////////////////////////////////////
 		//3D domain decomposition
-		exchangePostCollDataXGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataXGPU27(para, comm, cudaManager, level, streamIndex);
         exchangePostCollDataYGPU27(para, comm, cudaManager, level, streamIndex);
-		exchangePostCollDataZGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataZGPU27(para, comm, cudaManager, level, streamIndex);
 
 		//////////////////////////////////////////////////////////////////////////
 		//3D domain decomposition convection diffusion
-		if (para->getDiffOn()==true)
+		if (para->getDiffOn())
 		{
+            if (para->getUseStreams())
+                std::cout << "Warning: Cuda streams not yet implemented for convection diffusion" << std::endl;
 			exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
 			exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
 			exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
