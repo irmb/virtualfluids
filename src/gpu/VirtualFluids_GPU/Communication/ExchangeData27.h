@@ -18,15 +18,15 @@ extern "C" void exchangePostCollDataGPU27(Parameter* para, vf::gpu::Communicator
 // extern "C" void exchangePreCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level);
 // extern "C" void exchangePreCollDataZGPU27(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);
 
-extern "C" void prepareExchangePostCollDataXGPU27(Parameter *para, int level, int streamIndex = -1);
+extern "C" void prepareExchangePostCollDataXGPU27(Parameter *para, int level, int streamIndex);
 extern "C" void exchangePostCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
-                                           int level, int streamIndex = -1);
-extern "C" void prepareExchangePostCollDataYGPU27(Parameter *para, int level, int streamIndex = -1);
+                                           int level, int streamIndex);
+extern "C" void prepareExchangePostCollDataYGPU27(Parameter *para, int level, int streamIndex);
 extern "C" void exchangePostCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
-                                           int level, int streamIndex = -1);
-extern "C" void prepareExchangePostCollDataZGPU27(Parameter *para, int level, int streamIndex = -1);
+                                           int level, int streamIndex);
+extern "C" void prepareExchangePostCollDataZGPU27(Parameter *para, int level, int streamIndex);
 extern "C" void exchangePostCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
-                                           int level, int streamIndex = -1);
+                                           int level, int streamIndex);
 //////////////////////////////////////////////////////////////////////////
 //3D domain decomposition convection diffusion
 extern "C" void exchangePreCollDataADXGPU27(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);
