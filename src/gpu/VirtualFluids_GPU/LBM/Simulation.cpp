@@ -105,8 +105,10 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    output.clearLogFile();
    //////////////////////////////////////////////////////////////////////////
    // CUDA streams
-   if (para->getUseStreams())
+   if (para->getUseStreams()) {
        para->getStreamManager().launchStreams(2u);
+       para->getStreamManager().createCudaEvents();
+   }
    //////////////////////////////////////////////////////////////////////////
    // 
    //output << para->getNeedInterface().at(0) << "\n";
@@ -434,7 +436,7 @@ void Simulation::run()
         // these analyzers only work on level 0
 	    ////////////////////////////////////////////////////////////////////////////////
         if (this->kineticEnergyAnalyzer || this->enstrophyAnalyzer) {
-            prepareExchangeMultiGPU(para.get(), 0, -1, "");
+            prepareExchangeMultiGPU(para.get(), 0, -1);
             exchangeMultiGPU(para.get(), comm, cudaManager.get(), 0, -1);
         }
 
@@ -676,7 +678,7 @@ void Simulation::run()
             {
 		        //////////////////////////////////////////////////////////////////////////
 		        //exchange data for valid post process
-                prepareExchangeMultiGPU(para.get(), lev, -1, "");
+                prepareExchangeMultiGPU(para.get(), lev, -1);
 		        exchangeMultiGPU(para.get(), comm, cudaManager.get(), lev, -1);
                 //////////////////////////////////////////////////////////////////////////
                //if (para->getD3Qxx()==19)
@@ -1161,8 +1163,10 @@ void Simulation::definePMarea(std::shared_ptr<PorousMedia> pMedia)
 void Simulation::free()
 {
 	// Cuda Streams
-    if (para->getUseStreams())
+    if (para->getUseStreams()) {
+        para->getStreamManager().destroyCudaEvents();
         para->getStreamManager().terminateStreams();
+	}
 
 	//CudaFreeHostMemory
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)

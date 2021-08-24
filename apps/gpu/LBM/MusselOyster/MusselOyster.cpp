@@ -115,7 +115,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     std::string bivalveType = "MUSSEL"; // "MUSSEL" "OYSTER"
-    std::string gridPath(gridPathParent + bivalveType + "/"); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
+    std::string gridPath(gridPathParent + bivalveType); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
     real dxGrid = (real)1.0;
     real vxLB = (real)0.051; // LB units
@@ -132,7 +132,7 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "velocity real [m/s] = " << vxLB * para->getVelocityRatio()<< " \n";
     *logging::out << logging::Logger::INFO_HIGH << "viscosity real [m^2/s] = " << viscosityLB * para->getViscosityRatio() << "\n";
 
-    para->setTOut(5);
+    para->setTOut(11);
     para->setTEnd(10);
 
     para->setCalcDragLift(false);
@@ -278,7 +278,7 @@ void multipleLevel(const std::string& configPath)
             // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");
             // gridBuilder->writeArrows ("E:/temp/MusselOyster/" + bivalveType + "/arrow");
 
-            SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
+            //SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
         }
         
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

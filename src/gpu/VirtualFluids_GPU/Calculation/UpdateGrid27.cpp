@@ -25,28 +25,32 @@ void updateGrid27(Parameter* para,
     }
 
     //////////////////////////////////////////////////////////////////////////
+    int borderStreamIndex = 1;
+    int bulkStreamIndex   = 0;
 
     if (para->getUseStreams()) {
         // launch border kernel
         collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
-                            para->getParD(level)->numberOffluidNodesBorder, 1);
-        para->getStreamManager().createCudaEvents();
+                            para->getParD(level)->numberOffluidNodesBorder, borderStreamIndex);
     } else
         collision(para, pm, level, t, kernels);
    
     //////////////////////////////////////////////////////////////////////////
 
     if (para->getUseStreams() && para->getNumprocs() > 1) {
-        prepareExchangeMultiGPU(para, level, 1, "startBulkKernel");
+        //prepare exchange and trigger bulk kernel when finished
+        prepareExchangeMultiGPU(para, level, borderStreamIndex);
+        if (para->getUseStreams())
+            para->getStreamManager().triggerStartBulkKernel(borderStreamIndex);
 
         // launch bulk kernel
-        para->getStreamManager().waitOnStartBulkKernelEvent(0);
+        para->getStreamManager().waitOnStartBulkKernelEvent(bulkStreamIndex);
         collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
-                            para->getParD(level)->numberOfFluidNodes, 0);
+                            para->getParD(level)->numberOfFluidNodes, bulkStreamIndex);
 
-        exchangeMultiGPU(para, comm, cudaManager, level, 1);
+        exchangeMultiGPU(para, comm, cudaManager, level, borderStreamIndex);
     } else {
-        prepareExchangeMultiGPU(para, level, -1, "");
+        prepareExchangeMultiGPU(para, level, -1);
         exchangeMultiGPU(para, comm, cudaManager, level, -1);
     }
 
@@ -73,14 +77,11 @@ void updateGrid27(Parameter* para,
     {
         fineToCoarse(para, level);
 
-        prepareExchangeMultiGPU(para, level, -1, "");
+        prepareExchangeMultiGPU(para, level, -1);
         exchangeMultiGPU(para, comm, cudaManager, level, -1);
 
         coarseToFine(para, level);
     }
-
-    if (para->getUseStreams())
-        para->getStreamManager().destroyCudaEvents();
 }
 
 void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels)
@@ -192,10 +193,10 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
 	}
 }
 
-void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex, std::string eventToTrigger)
+void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex)
 {
     if (para->getNumprocs() > 1) {
-        prepareExchangePostCollDataYGPU27(para, level, streamIndex, eventToTrigger);
+        prepareExchangePostCollDataYGPU27(para, level, streamIndex);
     }
 }
 

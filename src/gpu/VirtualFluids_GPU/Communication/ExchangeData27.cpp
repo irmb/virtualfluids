@@ -270,7 +270,7 @@ void exchangePostCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, Cu
 //    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //}
 
-void prepareExchangePostCollDataYGPU27(Parameter *para, int level, int streamIndex, std::string eventToTrigger)
+void prepareExchangePostCollDataYGPU27(Parameter *para, int level, int streamIndex)
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager().getStream(streamIndex);   
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
@@ -280,8 +280,6 @@ void prepareExchangePostCollDataYGPU27(Parameter *para, int level, int streamInd
                            para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP,
                            para->getParD(level)->neighborZ_SP, para->getParD(level)->size_Mat_SP,
                            para->getParD(level)->evenOrOdd, para->getParD(level)->numberofthreads, stream);
-    if (para->getUseStreams() && !eventToTrigger.empty())
-        para->getStreamManager().triggerStartBulkKernel(streamIndex);
 }
 
 void exchangePostCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
