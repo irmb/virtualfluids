@@ -117,7 +117,7 @@ void multipleLevel(const std::string& configPath)
     std::string bivalveType = "MUSSEL"; // "MUSSEL" "OYSTER"
     std::string gridPath(gridPathParent + bivalveType); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
-    real dxGrid = (real)1.0;
+    real dxGrid = (real)0.5;
     real vxLB = (real)0.051; // LB units
     real Re = (real)300.0;
     real viscosityLB = (vxLB * dxGrid) / Re;
@@ -132,8 +132,8 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "velocity real [m/s] = " << vxLB * para->getVelocityRatio()<< " \n";
     *logging::out << logging::Logger::INFO_HIGH << "viscosity real [m^2/s] = " << viscosityLB * para->getViscosityRatio() << "\n";
 
-    para->setTOut(10);
-    para->setTEnd(10);
+    para->setTOut(10000);
+    para->setTEnd(10000);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -278,7 +278,7 @@ void multipleLevel(const std::string& configPath)
             // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");
             // gridBuilder->writeArrows ("E:/temp/MusselOyster/" + bivalveType + "/arrow");
 
-            //SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
+            SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
         }
         
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -334,22 +334,23 @@ void multipleLevel(const std::string& configPath)
     sim.setFactories(kernelFactory, preProcessorFactory);
     sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
 
-    uint *geoSP   = para->getParH(0)->geoSP;
-    uint numGeoFluid = 0;
-    std::vector<int> sparseIndicesFluid;
-    for (uint i = 0; i < para->getParH(0)->size_Mat_SP; i++) {
-        if (geoSP[i] == GEO_FLUID) {
-            numGeoFluid++;
-            sparseIndicesFluid.push_back(i);
-        }
-    }
-    std::cout << ".....geoFluid level 0 " << numGeoFluid << ", num fluid nodes (new kernel)  " << para->getParH(0)->numberOfFluidNodes
-              << std::endl;
+    //// Level 0
+    //uint *geoSP   = para->getParH(0)->geoSP;
+    //uint numGeoFluid = 0;
+    //std::vector<int> sparseIndicesFluid;
+    //for (uint i = 0; i < para->getParH(0)->size_Mat_SP; i++) {
+    //    if (geoSP[i] == GEO_FLUID) {
+    //        numGeoFluid++;
+    //        sparseIndicesFluid.push_back(i);
+    //    }
+    //}
+    //std::cout << ".....geoFluid level 0 " << numGeoFluid << ", num fluid nodes (new kernel)  " << para->getParH(0)->numberOfFluidNodes
+    //          << std::endl;
 
 
-    for (uint i = 300000; i < 300003; i++)
-        std::cout << ".....level 0: sparse index geoFluid \t" << sparseIndicesFluid[i] << ",    fluid nodes index  \t"
-                  << para->getParH(0)->fluidNodeIndices[i] << std::endl;
+    //for (uint i = 300000; i < 300003; i++)
+    //    std::cout << ".....level 0: sparse index geoFluid \t" << sparseIndicesFluid[i] << ",    fluid nodes index  \t"
+    //              << para->getParH(0)->fluidNodeIndices[i] << std::endl;
 
     //// Level 1
     //uint *geoSP1      = para->getParH(1)->geoSP;
