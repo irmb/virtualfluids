@@ -863,33 +863,22 @@ CUDA_HOST void GridImp::findFluidNodeIndices(bool splitDomain)
 {
     findFluidNodeIndicesBorder();
     this->fluidNodeIndices.clear();
-    this->fluidNodeIndicesBorder.clear();
     for (uint index = 0; index < this->size; index++) {
         int sparseIndex = this->getSparseIndex(index);
         if (sparseIndex == -1)
             continue;
-
-        // + 1 for numbering shift between GridGenerator and VF_GPU
-        // When splitDomain: push indices of fluid nodes in bulk to "fluidNodeIndices" and push indices of special fluid nodes (not in bulk) to fluidNodeIndicesBorder
-        // When not splitDomain: push indices of all fluid nodes to "fluidNodeIndices"
-        //if (this->field.isFluid(index)) {
-        //    this->fluidNodeIndices.push_back((uint)sparseIndex + 1);
-        //}
-
-        if (this->field.isFluid(index)) {
-            if (splitDomain)
-                //if (this->field.isFluidNodeOfSpecialInterest(index))
-                if (this->isSendNode(index))
-                    this->fluidNodeIndicesBorder.push_back((uint)sparseIndex + 1);    
-                else 
-                    this->fluidNodeIndices.push_back((uint)sparseIndex + 1);        
-            else
-                this->fluidNodeIndices.push_back((uint)sparseIndex + 1);
-        }
+        if (this->field.isFluid(index))
+            this->fluidNodeIndices.push_back((uint)sparseIndex+1);
     }
-    std::sort(this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end());
-    printf("old size: %i \n", this->fluidNodeIndicesBorder.size());
-    printf("old: %i \n", this->fluidNodeIndicesBorder.back());
+
+    // If splitDomain: remove all indices in fluidNodeIndicesBorder from fluidNodeIndices
+    if (splitDomain) {
+        std::sort(this->fluidNodeIndices.begin(), this->fluidNodeIndices.end());
+        auto it = std::set_difference(this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
+                            this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end(),
+                            this->fluidNodeIndices.begin());
+        this->fluidNodeIndices.resize(it - this->fluidNodeIndices.begin());
+    }
 }
 
 void GridImp::findFluidNodeIndicesBorder() {
@@ -902,7 +891,6 @@ void GridImp::findFluidNodeIndicesBorder() {
 
     for (CommunicationIndices& ci : this->communicationIndices)
         std::copy(ci.sendIndices.begin(), ci.sendIndices.end(), std::back_inserter(this->fluidNodeIndicesBorder));
-    printf("new size 1: %i \n", this->fluidNodeIndicesBorder.size());
 
     // remove duplicate elements
     std::sort(this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end());
@@ -911,8 +899,6 @@ void GridImp::findFluidNodeIndicesBorder() {
         this->fluidNodeIndicesBorder.end());
 
     // + 1 for numbering shift between GridGenerator and VF_GPU
-    printf("new size 2: %i \n", this->fluidNodeIndicesBorder.size());
-    printf("new: %i \n", this->fluidNodeIndicesBorder.back());
     for (size_t i = 0; i < this->fluidNodeIndicesBorder.size(); i++)
         this->fluidNodeIndicesBorder[i] = this->getSparseIndex(this->fluidNodeIndicesBorder[i])+1;
 }
