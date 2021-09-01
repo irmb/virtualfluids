@@ -10,23 +10,9 @@ std::shared_ptr<CumulantK17CompChim> CumulantK17CompChim::getNewInstance(std::sh
 
 void CumulantK17CompChim::run()
 {
-	int numberOfThreads = para->getParD(level)->numberofthreads;
-	int size_Mat = para->getParD(level)->size_Mat_SP;
-
-	int Grid = (size_Mat / numberOfThreads) + 1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid / Grid1) + 1;
-	}
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1);
+    dim3 grid, threads;
+    std::tie(grid, threads) =
+        *calcGridDimensions(para->getParD(level)->size_Mat_SP, para->getParD(level)->numberofthreads);
 
 	LB_Kernel_CumulantK17CompChim <<< grid, threads >>>(
 		para->getParD(level)->omega,

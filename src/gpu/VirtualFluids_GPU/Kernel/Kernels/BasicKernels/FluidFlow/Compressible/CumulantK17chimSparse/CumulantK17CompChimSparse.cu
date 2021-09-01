@@ -14,7 +14,8 @@ std::shared_ptr<CumulantK17CompChimSparse> CumulantK17CompChimSparse::getNewInst
 void CumulantK17CompChimSparse::run()
 {
     dim3 grid, threads;
-    std::tie(grid, threads) = *calcGridDimensions(para->getParD(level)->numberOfFluidNodes);
+    std::tie(grid, threads) =
+        *calcGridDimensions(para->getParD(level)->numberOfFluidNodes, para->getParD(level)->numberofthreads);
 
 	LB_Kernel_CumulantK17CompChimSparse <<< grid, threads >>>(
 		para->getParD(level)->omega,
@@ -35,7 +36,8 @@ void CumulantK17CompChimSparse::run()
 void CumulantK17CompChimSparse::runOnIndices(const unsigned int *indices, unsigned int size_indices, int streamIndex)
 {
     dim3 grid, threads;
-    std::tie(grid, threads) = *calcGridDimensions(para->getParD(level)->numberOfFluidNodes);
+    std::tie(grid, threads) =
+        *calcGridDimensions(para->getParD(level)->numberOfFluidNodes, para->getParD(level)->numberofthreads);
 
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager().getStream(streamIndex);
 
@@ -66,21 +68,3 @@ CumulantK17CompChimSparse::CumulantK17CompChimSparse(std::shared_ptr<Parameter> 
 	myKernelGroup = BasicKernel;
 }
 
-std::unique_ptr<std::pair<dim3, dim3>> CumulantK17CompChimSparse::calcGridDimensions(unsigned int size_Mat)
-{
-    int numberOfThreads = para->getParD(level)->numberofthreads;
-
-    int Grid = (size_Mat / numberOfThreads) + 1;
-    int Grid1, Grid2;
-    if (Grid > 512) {
-        Grid1 = 512;
-        Grid2 = (Grid / Grid1) + 1;
-    } else {
-        Grid1 = 1;
-        Grid2 = Grid;
-    }
-    dim3 grid(Grid1, Grid2);
-    dim3 threads(numberOfThreads, 1, 1);
-    std::pair<dim3, dim3> dimensions(grid, threads);
-    return std::make_unique<std::pair<dim3, dim3>>(dimensions);
-}

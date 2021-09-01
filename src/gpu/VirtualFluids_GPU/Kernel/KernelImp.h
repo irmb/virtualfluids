@@ -33,6 +33,8 @@ protected:
     KernelGroup myKernelGroup;
 
     vf::gpu::CudaGrid cudaGrid;
+    
+    std::unique_ptr<std::pair<dim3, dim3>> calcGridDimensions(unsigned int size_Mat, int numberOfThreads);
 };
 
 #endif
