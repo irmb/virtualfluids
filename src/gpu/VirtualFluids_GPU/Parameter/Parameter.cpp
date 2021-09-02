@@ -2330,7 +2330,7 @@ unsigned int Parameter::getNumberOfProcessNeighborsX(int level, std::string sor)
 	{
 		return (unsigned int)parH[level]->recvProcessNeighborX.size();
 	}
-    throw std::runtime_error("Parameter string invalid.");
+    throw std::runtime_error("getNumberOfProcessNeighborsX: Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighborsY(int level, std::string sor)
 {
@@ -2342,7 +2342,7 @@ unsigned int Parameter::getNumberOfProcessNeighborsY(int level, std::string sor)
 	{
 		return (unsigned int)parH[level]->recvProcessNeighborY.size();
 	}
-    throw std::runtime_error("Parameter string invalid.");
+    throw std::runtime_error("getNumberOfProcessNeighborsY: Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighborsZ(int level, std::string sor)
 {
@@ -2354,7 +2354,7 @@ unsigned int Parameter::getNumberOfProcessNeighborsZ(int level, std::string sor)
 	{
 		return (unsigned int)parH[level]->recvProcessNeighborZ.size();
 	}
-    throw std::runtime_error("Parameter string invalid.");
+    throw std::runtime_error("getNumberOfProcessNeighborsZ: Parameter string invalid.");
 }
 
 bool Parameter::getIsNeighborX()
@@ -2503,7 +2503,7 @@ void Parameter::findCornerNodesCommMultiGPU() {
 
 void Parameter::findCornerNodesXY(int level)
 {
-    for (uint i = 0; i < (unsigned int)(this->getNumberOfProcessNeighborsX(level, "receive")); i++)
+    for (uint i = 0; i < (unsigned int)(this->getNumberOfProcessNeighborsX(level, "recv")); i++)
         for (int j = 0; j < parH[level]->recvProcessNeighborX[i].numberOfNodes; j++) {
             int index = parH[level]->recvProcessNeighborX[i].index[j];
             bool foundIndex = findIndexInSendNodesXY(level, index);
@@ -2525,7 +2525,7 @@ bool Parameter::findIndexInSendNodesXY(int level, int index)
 
 void Parameter::findCornerNodesXZ(int level)
 {
-    for (uint i = 0; i < (unsigned int)(this->getNumberOfProcessNeighborsX(level, "receive")); i++)
+    for (uint i = 0; i < (unsigned int)(this->getNumberOfProcessNeighborsX(level, "recv")); i++)
         for (int j = 0; j < parH[level]->recvProcessNeighborX[i].numberOfNodes; j++) {
             int index       = parH[level]->recvProcessNeighborX[i].index[j];
             bool foundIndex = findIndexInSendNodesXZ(level, index);
@@ -2547,7 +2547,7 @@ bool Parameter::findIndexInSendNodesXZ(int level, int index)
 
 void Parameter::findCornerNodesYZ(int level) 
 {
-    for (uint i = 0; i < (unsigned int)(this->getNumberOfProcessNeighborsY(level, "receive")); i++)
+    for (uint i = 0; i < (unsigned int)(this->getNumberOfProcessNeighborsY(level, "recv")); i++)
         for (int j = 0; j < parH[level]->recvProcessNeighborY[i].numberOfNodes; j++) {
             int index = parH[level]->recvProcessNeighborY[i].index[j];
             bool foundIndex = findIndexInSendNodesYZ(level, index);

@@ -161,7 +161,7 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
         cudaStreamSynchronize(stream);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // copy corner received node values from x 
-    if (para->getNumberOfProcessNeighborsX(level, "receive") > 0) {
+    if (para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
         for (uint i = 0; i < para->getParH(level)->cornerNodesXtoY.recvPos.size(); i++) {
             std::pair<int, int> & recvPosX = para->getParH(level)->cornerNodesXtoY.recvPos[i];
             std::pair<int, int> & sendPosY = para->getParH(level)->cornerNodesXtoY.sendPos[i];
@@ -270,7 +270,7 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
         cudaStreamSynchronize(stream);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // copy corner received node values from x
-    if (para->getNumberOfProcessNeighborsX(level, "receive") > 0) {
+    if (para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
         for (uint i = 0; i < para->getParH(level)->cornerNodesXtoZ.recvPos.size(); i++) {
             std::pair<int, int> &recvPosX = para->getParH(level)->cornerNodesXtoZ.recvPos[i];
             std::pair<int, int> &sendPosZ = para->getParH(level)->cornerNodesXtoZ.sendPos[i];
@@ -280,7 +280,7 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // copy corner received node values from y
-    if (para->getNumberOfProcessNeighborsY(level, "receive") > 0) {
+    if (para->getNumberOfProcessNeighborsY(level, "recv") > 0) {
         for (uint i = 0; i < para->getParH(level)->cornerNodesYtoZ.recvPos.size(); i++) {
             std::pair<int, int> &recvPosY = para->getParH(level)->cornerNodesYtoZ.recvPos[i];
             std::pair<int, int> &sendPosZ = para->getParH(level)->cornerNodesYtoZ.sendPos[i];
