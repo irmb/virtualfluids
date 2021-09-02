@@ -308,7 +308,16 @@ struct LBMSimulationParameter
     std::vector<ProcessNeighborF3> recvProcessNeighborF3Y;
     std::vector<ProcessNeighborF3> recvProcessNeighborF3Z;
     ////////////////////////////////////////////////////////////////////////////
+    // 3D domain decomposition: position (index in array) of corner nodes in ProcessNeighbor27
+    struct cornerNodePostions {
+        std::vector<std::pair<int, int>> recvPos;
+        std::vector<std::pair<int, int>> sendPos;
+    };
+    cornerNodePostions cornerNodesXtoY;
+    cornerNodePostions cornerNodesXtoZ;
+    cornerNodePostions cornerNodesYtoZ;
 
+    ///////////////////////////////////////////////////////
     uint *fluidNodeIndices;
     uint numberOfFluidNodes;
     uint *fluidNodeIndicesBorder;
@@ -854,6 +863,14 @@ public:
     void setUseStreams();
     bool getUseStreams();
     CudaStreamManager &getStreamManager();
+
+    void findCornerNodesCommMultiGPU();
+    void findCornerNodesXY(int level);
+    bool findIndexInSendNodesXY(int level, int index);
+    void findCornerNodesXZ(int level);
+    bool findIndexInSendNodesXZ(int level, int index);
+    void findCornerNodesYZ(int level);
+    bool findIndexInSendNodesYZ(int level, int index);
 };
 
 #endif

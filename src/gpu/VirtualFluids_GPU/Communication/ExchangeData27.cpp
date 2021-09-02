@@ -160,6 +160,16 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     if (para->getUseStreams())
         cudaStreamSynchronize(stream);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // copy corner received node values from x 
+    if (para->getNumberOfProcessNeighborsX(level, "receive") > 0) {
+        for (uint i = 0; i < para->getParH(level)->cornerNodesXtoY.recvPos.size(); i++) {
+            std::pair<int, int> & recvPosX = para->getParH(level)->cornerNodesXtoY.recvPos[i];
+            std::pair<int, int> & sendPosY = para->getParH(level)->cornerNodesXtoY.sendPos[i];
+            real &f = para->getParH(level)->recvProcessNeighborX[recvPosX.first].f[0][recvPosX.second];
+            para->getParH(level)->sendProcessNeighborY[sendPosY.first].f[0][sendPosY.second] = f;
+        }    
+    }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 
     //start blocking MPI send
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
@@ -258,6 +268,27 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     // wait for memcopy device to host to finish before sending data
     if (para->getUseStreams())
         cudaStreamSynchronize(stream);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // copy corner received node values from x
+    if (para->getNumberOfProcessNeighborsX(level, "receive") > 0) {
+        for (uint i = 0; i < para->getParH(level)->cornerNodesXtoZ.recvPos.size(); i++) {
+            std::pair<int, int> &recvPosX = para->getParH(level)->cornerNodesXtoZ.recvPos[i];
+            std::pair<int, int> &sendPosZ = para->getParH(level)->cornerNodesXtoZ.sendPos[i];
+            real &f = para->getParH(level)->recvProcessNeighborX[recvPosX.first].f[0][recvPosX.second];
+            para->getParH(level)->sendProcessNeighborZ[sendPosZ.first].f[0][sendPosZ.second] = f;
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // copy corner received node values from y
+    if (para->getNumberOfProcessNeighborsY(level, "receive") > 0) {
+        for (uint i = 0; i < para->getParH(level)->cornerNodesYtoZ.recvPos.size(); i++) {
+            std::pair<int, int> &recvPosY = para->getParH(level)->cornerNodesYtoZ.recvPos[i];
+            std::pair<int, int> &sendPosZ = para->getParH(level)->cornerNodesYtoZ.sendPos[i];
+            real &f = para->getParH(level)->recvProcessNeighborY[recvPosY.first].f[0][recvPosY.second];
+            para->getParH(level)->sendProcessNeighborZ[sendPosZ.first].f[0][sendPosZ.second] = f;
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //start blocking MPI send
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)

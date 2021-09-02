@@ -299,7 +299,14 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //findPressQShip(para);
    //output << "done.\n";
 
-
+   //////////////////////////////////////////////////////////////////////////
+   // find indices of corner nodes for multiGPU communication
+   //////////////////////////////////////////////////////////////////////////
+   if (para->getDevices().size() > 2) {
+       output << "Find indices of corner nodes for multiGPU communication ...";
+       para->findCornerNodesCommMultiGPU();
+       output << "done.\n";
+   }
    //////////////////////////////////////////////////////////////////////////
    //Memory alloc for CheckPoint / Restart
    //////////////////////////////////////////////////////////////////////////
