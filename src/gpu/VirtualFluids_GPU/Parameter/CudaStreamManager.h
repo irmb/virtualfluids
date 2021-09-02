@@ -33,7 +33,6 @@
 #include <vector>
 #include "Core/DataTypes.h"
 
-#include <cuda.h>
 #include <cuda_runtime.h>
 
 class CudaStreamManager
