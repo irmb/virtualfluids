@@ -39,7 +39,7 @@ using namespace vf::lbm::constant;
 #include "Kernel/ChimeraTransformation.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_CumulantK17CompChimSparse(
+extern "C" __global__ void LB_Kernel_CumulantK17CompChimStream(
 	real omega,
 	uint* neighborX,
 	uint* neighborY,

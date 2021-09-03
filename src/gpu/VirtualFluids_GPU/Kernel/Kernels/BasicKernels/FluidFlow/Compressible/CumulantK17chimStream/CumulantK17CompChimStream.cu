@@ -1,24 +1,24 @@
-#include "CumulantK17CompChimSparse.h"
+#include "CumulantK17CompChimStream.h"
 
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
-#include "CumulantK17CompChimSparse_Device.cuh"
+#include "CumulantK17CompChimStream_Device.cuh"
 
 #include <cuda.h>
 
-std::shared_ptr<CumulantK17CompChimSparse> CumulantK17CompChimSparse::getNewInstance(std::shared_ptr<Parameter> para,
+std::shared_ptr<CumulantK17CompChimStream> CumulantK17CompChimStream::getNewInstance(std::shared_ptr<Parameter> para,
                                                                                int level)
 {
-    return std::shared_ptr<CumulantK17CompChimSparse>(new CumulantK17CompChimSparse(para, level));
+    return std::shared_ptr<CumulantK17CompChimStream>(new CumulantK17CompChimStream(para, level));
 }
 
-void CumulantK17CompChimSparse::run()
+void CumulantK17CompChimStream::run()
 {
     dim3 grid, threads;
     std::tie(grid, threads) =
         *calcGridDimensions(para->getParD(level)->numberOfFluidNodes, para->getParD(level)->numberofthreads);
 
-	LB_Kernel_CumulantK17CompChimSparse <<< grid, threads >>>(
+	LB_Kernel_CumulantK17CompChimStream <<< grid, threads >>>(
 		para->getParD(level)->omega,
 		para->getParD(level)->neighborX_SP,
 		para->getParD(level)->neighborY_SP,
@@ -34,7 +34,7 @@ void CumulantK17CompChimSparse::run()
 	getLastCudaError("LB_Kernel_CumulantK17CompChim execution failed");
 }
 
-void CumulantK17CompChimSparse::runOnIndices(const unsigned int *indices, unsigned int size_indices, int streamIndex)
+void CumulantK17CompChimStream::runOnIndices(const unsigned int *indices, unsigned int size_indices, int streamIndex)
 {
     dim3 grid, threads;
     std::tie(grid, threads) =
@@ -42,7 +42,7 @@ void CumulantK17CompChimSparse::runOnIndices(const unsigned int *indices, unsign
 
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 
-    LB_Kernel_CumulantK17CompChimSparse<<<grid, threads, 0, stream>>>(
+    LB_Kernel_CumulantK17CompChimStream<<<grid, threads, 0, stream>>>(
         para->getParD(level)->omega, 
 	    para->getParD(level)->neighborX_SP, 
 	    para->getParD(level)->neighborY_SP,
@@ -59,7 +59,7 @@ void CumulantK17CompChimSparse::runOnIndices(const unsigned int *indices, unsign
     
 }
 
-CumulantK17CompChimSparse::CumulantK17CompChimSparse(std::shared_ptr<Parameter> para, int level)
+CumulantK17CompChimStream::CumulantK17CompChimStream(std::shared_ptr<Parameter> para, int level)
 {
 	this->para = para;
 	this->level = level;
