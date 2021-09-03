@@ -327,6 +327,7 @@ class VIRTUALFLUIDS_GPU_EXPORT Parameter
 {
 public:
     Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId);
+    ~Parameter();
     void initLBMSimulationParameter();
 
     std::shared_ptr<LBMSimulationParameter> getParH(int level);
@@ -856,12 +857,12 @@ private:
 
     // cuda streams
     bool useStreams { false };
-    std::shared_ptr<CudaStreamManager> cudaStreamManager;
+    std::unique_ptr<CudaStreamManager> cudaStreamManager;
 
 public:
     void setUseStreams();
     bool getUseStreams();
-    std::shared_ptr<CudaStreamManager> &getStreamManager();
+    std::unique_ptr<CudaStreamManager> &getStreamManager();
 
     void findCornerNodesCommMultiGPU();
     void findCornerNodesXY(int level);

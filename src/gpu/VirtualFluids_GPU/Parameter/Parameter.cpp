@@ -55,6 +55,8 @@ Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int number
     //initLBMSimulationParameter();
 }
 
+Parameter::~Parameter() = default;
+
 void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
 {
    if (configData.contains("NumberOfDevices"))
@@ -2494,7 +2496,7 @@ void Parameter::setUseStreams() {
 
 bool Parameter::getUseStreams() { return this->useStreams; }
 
-std::shared_ptr<CudaStreamManager> &Parameter::getStreamManager() { return this->cudaStreamManager; }
+std::unique_ptr<CudaStreamManager> &Parameter::getStreamManager() { return this->cudaStreamManager; }
 
 void Parameter::findCornerNodesCommMultiGPU() { 
 	for (uint level = 0; level < parH.size(); level++) {
