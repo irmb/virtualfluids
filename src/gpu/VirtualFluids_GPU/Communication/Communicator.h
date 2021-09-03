@@ -60,6 +60,8 @@ public:
     void stopTimer();
     double getTime();
     int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev);
+    std::vector<double> gatherNUPS(double processNups);
+
 protected:
 private:
      static Communicator* instanz;

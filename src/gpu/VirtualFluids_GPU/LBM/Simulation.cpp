@@ -988,6 +988,21 @@ void Simulation::run()
     output << "Nups in Mio: " << fnups << "\n";
     output << "Durchsatz in GB/sec: " << durchsatz << "\n";
 	//////////////////////////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////////////////////////
+    // When using multiple GPUs, get Nups of all processes
+	if (para->getMaxDev() > 1) {
+        std::vector<double> nups = comm->gatherNUPS(fnups);
+        if (comm->getPID() == 0) {
+			double sum = 0;
+            for (uint pid = 0; pid < nups.size(); pid++) {
+                output << "Process " << pid << ": Nups in Mio: " << nups[pid] << "\n";
+                sum += nups[pid];
+			}
+            output << "Sum of all processes: Nups in Mio: " << sum << "\n";
+		}
+	}
+    //////////////////////////////////////////////////////////////////////////
 
 	////////////////////////////////////////////////////////////////////////////////
 	//printDragLift(para);
