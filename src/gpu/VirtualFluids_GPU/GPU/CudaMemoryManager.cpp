@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include <Parameter/Parameter.h>
+#include "Parameter/CudaStreamManager.h"
 
 #include "Calculation/PorousMedia.h"
 
@@ -520,7 +521,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborXFsHD(int lev, unsigned int proce
                          parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].f[0],
                          parameter->getD3Qxx() * parameter->getParD(lev)->recvProcessNeighborX[processNeighbor].memsizeFs,
                          cudaMemcpyHostToDevice,
-                         parameter->getStreamManager().getStream(streamIndex)));
+                         parameter->getStreamManager()->getStream(streamIndex)));
 }
 void CudaMemoryManager::cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor, int streamIndex)
 {
@@ -534,7 +535,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborXFsDH(int lev, unsigned int proce
     								     parameter->getParD(lev)->sendProcessNeighborX[processNeighbor].f[0], 
     								     parameter->getD3Qxx() * parameter->getParD(lev)->sendProcessNeighborX[processNeighbor].memsizeFs, 
     								     cudaMemcpyDeviceToHost,
-                                         parameter->getStreamManager().getStream(streamIndex)));
+                                         parameter->getStreamManager()->getStream(streamIndex)));
 }
 void CudaMemoryManager::cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor)
 {
@@ -588,7 +589,8 @@ void CudaMemoryManager::cudaCopyProcessNeighborYFsHD(int lev, unsigned int proce
         checkCudaErrors(cudaMemcpyAsync(parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].f[0],
                         parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].f[0],
                         parameter->getD3Qxx() * parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].memsizeFs,
-                        cudaMemcpyHostToDevice, parameter->getStreamManager().getStream(streamIndex)));
+                        cudaMemcpyHostToDevice, 
+                        parameter->getStreamManager()->getStream(streamIndex)));
 }
 void CudaMemoryManager::cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, int streamIndex)
 {
@@ -602,7 +604,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborYFsDH(int lev, unsigned int proce
             cudaMemcpyAsync(parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].f[0],
                             parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].f[0],
                             parameter->getD3Qxx() * parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].memsizeFs,
-                                        cudaMemcpyDeviceToHost, parameter->getStreamManager().getStream(streamIndex)));
+                            cudaMemcpyDeviceToHost, parameter->getStreamManager()->getStream(streamIndex)));
 }
 void CudaMemoryManager::cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor)
 {
@@ -657,7 +659,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborZFsHD(int lev, unsigned int proce
 	    				                 parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].f[0], 
 	    				                 parameter->getD3Qxx() * parameter->getParD(lev)->recvProcessNeighborZ[processNeighbor].memsizeFs, 
 	    				                 cudaMemcpyHostToDevice, 
-                                         parameter->getStreamManager().getStream(streamIndex)));
+                                         parameter->getStreamManager()->getStream(streamIndex)));
 }
 void CudaMemoryManager::cudaCopyProcessNeighborZFsDH(int lev, unsigned int processNeighbor, int streamIndex)
 {   
@@ -671,7 +673,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborZFsDH(int lev, unsigned int proce
 	        						     parameter->getParD(lev)->sendProcessNeighborZ[processNeighbor].f[0], 
 	        						     parameter->getD3Qxx() * parameter->getParD(lev)->sendProcessNeighborZ[processNeighbor].memsizeFs, 
 	        						     cudaMemcpyDeviceToHost, 
-                                         parameter->getStreamManager().getStream(streamIndex)));
+                                         parameter->getStreamManager()->getStream(streamIndex)));
 }
 void CudaMemoryManager::cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor)
 {

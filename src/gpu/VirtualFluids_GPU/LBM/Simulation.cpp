@@ -9,6 +9,7 @@
 #include "Communication/Communicator.h"
 #include "Communication/ExchangeData27.h"
 #include "Parameter/Parameter.h"
+#include "Parameter/CudaStreamManager.h"
 #include "GPU/GPU_Interface.h"
 #include "GPU/devCheck.h"
 #include "basics/utilities/UbFileOutputASCII.h"
@@ -106,8 +107,8 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    // CUDA streams
    if (para->getUseStreams()) {
-       para->getStreamManager().launchStreams(2u);
-       para->getStreamManager().createCudaEvents();
+       para->getStreamManager()->launchStreams(2u);
+       para->getStreamManager()->createCudaEvents();
    }
    //////////////////////////////////////////////////////////////////////////
    // 
@@ -1171,8 +1172,8 @@ void Simulation::free()
 {
 	// Cuda Streams
     if (para->getUseStreams()) {
-        para->getStreamManager().destroyCudaEvents();
-        para->getStreamManager().terminateStreams();
+        para->getStreamManager()->destroyCudaEvents();
+        para->getStreamManager()->terminateStreams();
 	}
 
 	//CudaFreeHostMemory

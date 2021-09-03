@@ -7,6 +7,7 @@
 //#include "Output/UnstructuredGridWriter.hpp"
 #include "Communication/ExchangeData27.h"
 #include "Kernel/Kernel.h"
+#include "Parameter/CudaStreamManager.h"
 
 void updateGrid27(Parameter* para, 
                   vf::gpu::Communicator* comm, 
@@ -41,10 +42,10 @@ void updateGrid27(Parameter* para,
         //prepare exchange and trigger bulk kernel when finished
         prepareExchangeMultiGPU(para, level, borderStreamIndex);
         if (para->getUseStreams())
-            para->getStreamManager().triggerStartBulkKernel(borderStreamIndex);
+            para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
 
         // launch bulk kernel
-        para->getStreamManager().waitOnStartBulkKernelEvent(bulkStreamIndex);
+        para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
         collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
                             para->getParD(level)->numberOfFluidNodes, bulkStreamIndex);
 

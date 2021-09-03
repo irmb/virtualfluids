@@ -42,6 +42,8 @@
 
 #include <basics/config/ConfigurationFile.h>
 
+#include "Parameter/CudaStreamManager.h"
+
 
 
 Parameter::Parameter(const vf::basics::ConfigurationFile &configData, int numberOfProcesses, int myId)
@@ -2487,12 +2489,12 @@ real Parameter::TrafoZtoMGsWorld(int CoordZ, int level)
 
 void Parameter::setUseStreams() {
 	this->useStreams = true;
-    this->cudaStreamManager = CudaStreamManager();
+    this->cudaStreamManager = std::make_unique<CudaStreamManager>();
 }
 
 bool Parameter::getUseStreams() { return this->useStreams; }
 
-CudaStreamManager &Parameter::getStreamManager() { return this->cudaStreamManager; }
+std::shared_ptr<CudaStreamManager> &Parameter::getStreamManager() { return this->cudaStreamManager; }
 
 void Parameter::findCornerNodesCommMultiGPU() { 
 	for (uint level = 0; level < parH.size(); level++) {

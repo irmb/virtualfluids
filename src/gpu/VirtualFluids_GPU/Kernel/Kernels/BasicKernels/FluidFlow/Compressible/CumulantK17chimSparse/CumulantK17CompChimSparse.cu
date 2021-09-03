@@ -1,6 +1,7 @@
 #include "CumulantK17CompChimSparse.h"
 
 #include "Parameter/Parameter.h"
+#include "Parameter/CudaStreamManager.h"
 #include "CumulantK17CompChimSparse_Device.cuh"
 
 #include <cuda.h>
@@ -39,7 +40,7 @@ void CumulantK17CompChimSparse::runOnIndices(const unsigned int *indices, unsign
     std::tie(grid, threads) =
         *calcGridDimensions(para->getParD(level)->numberOfFluidNodes, para->getParD(level)->numberofthreads);
 
-    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager().getStream(streamIndex);
+    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 
     LB_Kernel_CumulantK17CompChimSparse<<<grid, threads, 0, stream>>>(
         para->getParD(level)->omega, 

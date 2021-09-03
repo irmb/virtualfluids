@@ -43,8 +43,6 @@
 
 #include "VirtualFluids_GPU_export.h"
 
-#include "Parameter/CudaStreamManager.h"
-
 struct curandStateXORWOW;
 typedef struct curandStateXORWOW curandState;
 namespace vf
@@ -53,7 +51,8 @@ namespace basics
 {
 class ConfigurationFile;
 }
-}
+} 
+class CudaStreamManager;
 
 //! \struct LBMSimulationParameter
 //! \brief struct holds and manages the LB-parameter of the simulation
@@ -857,12 +856,12 @@ private:
 
     // cuda streams
     bool useStreams { false };
-    CudaStreamManager cudaStreamManager;
+    std::shared_ptr<CudaStreamManager> cudaStreamManager;
 
 public:
     void setUseStreams();
     bool getUseStreams();
-    CudaStreamManager &getStreamManager();
+    std::shared_ptr<CudaStreamManager> &getStreamManager();
 
     void findCornerNodesCommMultiGPU();
     void findCornerNodesXY(int level);
