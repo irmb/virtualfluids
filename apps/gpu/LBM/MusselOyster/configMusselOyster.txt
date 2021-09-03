@@ -7,14 +7,14 @@
 ##################################################
 #informations for Writing
 ##################################################
-Path="E:/MusselOyster/results"
+Path=E:/temp/MusselOysterResults
 #Path="F:/Work/Computations/out/MusselOyster/"
 #Prefix="MusselOyster" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
-GridPath="E:/temp/GridMussel/MUSSEL"
+GridPath=E:/temp/GridMussel/MUSSEL
 #GridPath="C:"
 
 ##################################################

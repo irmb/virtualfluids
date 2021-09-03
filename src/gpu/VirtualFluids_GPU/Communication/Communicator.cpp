@@ -208,7 +208,7 @@ int Communicator::mapCudaDevice(const int &rank, const int &size, const std::vec
 std::vector<double> Communicator::gatherNUPS(double processNups)
 { 
     double *buffer_send = &processNups;
-    double *buffer_recv = buffer_recv = (double *)malloc(sizeof(double) * this->numprocs);
+    double *buffer_recv = (double *)malloc(sizeof(double) * this->numprocs);
 
     MPI_Gather(buffer_send, 1, MPI_DOUBLE, buffer_recv, 1, MPI_DOUBLE, 0, commGPU);
 

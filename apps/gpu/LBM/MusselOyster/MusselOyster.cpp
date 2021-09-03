@@ -117,7 +117,7 @@ void multipleLevel(const std::string& configPath)
     std::string bivalveType = "MUSSEL"; // "MUSSEL" "OYSTER"
     std::string gridPath(gridPathParent + bivalveType); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
-    real dxGrid = (real)2.0;
+    real dxGrid = (real)1.0;
     real vxLB = (real)0.051; // LB units
     real Re = (real)300.0;
     real viscosityLB = (vxLB * dxGrid) / Re;
@@ -131,9 +131,14 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "viscosity LB [dx^2/dt] = " << viscosityLB << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "velocity real [m/s] = " << vxLB * para->getVelocityRatio()<< " \n";
     *logging::out << logging::Logger::INFO_HIGH << "viscosity real [m^2/s] = " << viscosityLB * para->getViscosityRatio() << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "dxGrid = " << dxGrid << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "useGridGenerator = " << useGridGenerator << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "useMultiGPU = " << useMultiGPU << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
 
-    para->setTOut(10);
-    para->setTEnd(10);
+    
+    para->setTOut(10000);
+    para->setTEnd(10000);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -242,8 +247,8 @@ void multipleLevel(const std::string& configPath)
                 gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);  
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
-
-            gridBuilder->findFluidNodes(useStreams);
+            if (useStreams)
+                gridBuilder->findFluidNodes(useStreams);
 
             //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
             //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/" + std::to_string(generatePart) + "/grid/");
@@ -272,8 +277,8 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
-
-            gridBuilder->findFluidNodes(useStreams);
+            if (useStreams)
+                gridBuilder->findFluidNodes(useStreams);
 
             // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");
             // gridBuilder->writeArrows ("E:/temp/MusselOyster/" + bivalveType + "/arrow");
