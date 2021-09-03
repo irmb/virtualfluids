@@ -1473,6 +1473,8 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 void Parameter::setMainKernel(std::string kernel)
 {
 	this->mainKernel = kernel;
+    if (kernel.find("Stream") != std::string::npos)
+        this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
 {
@@ -2497,6 +2499,8 @@ void Parameter::setUseStreams() {
 bool Parameter::getUseStreams() { return this->useStreams; }
 
 std::unique_ptr<CudaStreamManager> &Parameter::getStreamManager() { return this->cudaStreamManager; }
+
+bool Parameter::getKernelNeedsFluidNodeIndicesToRun() { return this->kernelNeedsFluidNodeIndicesToRun; }
 
 void Parameter::findCornerNodesCommMultiGPU() { 
 	for (uint level = 0; level < parH.size(); level++) {

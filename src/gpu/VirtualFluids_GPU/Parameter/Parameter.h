@@ -799,7 +799,7 @@ private:
     bool multiKernelOn { false };
     std::vector<int> multiKernelLevel;
     std::vector<std::string> multiKernel;
-
+    bool kernelNeedsFluidNodeIndicesToRun = false;
     std::string adKernel;
 
     //////////////////////////////////////////////////////////////////////////
@@ -863,6 +863,7 @@ public:
     void setUseStreams();
     bool getUseStreams();
     std::unique_ptr<CudaStreamManager> &getStreamManager();
+    bool getKernelNeedsFluidNodeIndicesToRun();
 
     void findCornerNodesCommMultiGPU();
     void findCornerNodesXY(int level);

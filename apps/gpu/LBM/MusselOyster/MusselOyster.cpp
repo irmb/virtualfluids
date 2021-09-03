@@ -247,7 +247,7 @@ void multipleLevel(const std::string& configPath)
                 gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);  
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
-            if (useStreams)
+            if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
 
             //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
@@ -277,7 +277,7 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
-            if (useStreams)
+            if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
 
             // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");

@@ -9,33 +9,29 @@
 #include "Kernel/Kernel.h"
 #include "Parameter/CudaStreamManager.h"
 
-void updateGrid27(Parameter* para, 
-                  vf::gpu::Communicator* comm, 
-                  CudaMemoryManager* cudaManager, 
-                  std::vector<std::shared_ptr<PorousMedia>>& pm, 
-                  int level, 
-                  unsigned int t, 
-                  std::vector < SPtr< Kernel>>& kernels)
+void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+                  std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
+                  std::vector<SPtr<Kernel>> &kernels)
 {
     //////////////////////////////////////////////////////////////////////////
 
-    if( level != para->getFine() )
-    {
-        updateGrid27(para, comm, cudaManager, pm, level+1, t, kernels);
-        updateGrid27(para, comm, cudaManager, pm, level+1, t, kernels);
+    if (level != para->getFine()) {
+        updateGrid27(para, comm, cudaManager, pm, level + 1, t, kernels);
+        updateGrid27(para, comm, cudaManager, pm, level + 1, t, kernels);
     }
 
     //////////////////////////////////////////////////////////////////////////
     int borderStreamIndex = 1;
-    int bulkStreamIndex   = 0;      
-   
+    int bulkStreamIndex   = 0;
+
     //////////////////////////////////////////////////////////////////////////
 
     if (para->getUseStreams() && para->getNumprocs() > 1) {
         // launch border kernel
         collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
                             para->getParD(level)->numberOffluidNodesBorder, borderStreamIndex);
-        //prepare exchange and trigger bulk kernel when finished
+
+        // prepare exchange and trigger bulk kernel when finished
         prepareExchangeMultiGPU(para, level, borderStreamIndex);
         if (para->getUseStreams())
             para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
@@ -47,7 +43,11 @@ void updateGrid27(Parameter* para,
 
         exchangeMultiGPU(para, comm, cudaManager, level, borderStreamIndex);
     } else {
-        collision(para, pm, level, t, kernels);
+        if (para->getKernelNeedsFluidNodeIndicesToRun())
+            collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
+                                para->getParD(level)->numberOfFluidNodes, -1);
+        else
+            collision(para, pm, level, t, kernels);
         prepareExchangeMultiGPU(para, level, -1);
         exchangeMultiGPU(para, comm, cudaManager, level, -1);
     }
