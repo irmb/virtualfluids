@@ -27,18 +27,14 @@ void updateGrid27(Parameter* para,
 
     //////////////////////////////////////////////////////////////////////////
     int borderStreamIndex = 1;
-    int bulkStreamIndex   = 0;
-
-    if (para->getUseStreams()) {
-        // launch border kernel
-        collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
-                            para->getParD(level)->numberOffluidNodesBorder, borderStreamIndex);
-    } else
-        collision(para, pm, level, t, kernels);
+    int bulkStreamIndex   = 0;      
    
     //////////////////////////////////////////////////////////////////////////
 
     if (para->getUseStreams() && para->getNumprocs() > 1) {
+        // launch border kernel
+        collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
+                            para->getParD(level)->numberOffluidNodesBorder, borderStreamIndex);
         //prepare exchange and trigger bulk kernel when finished
         prepareExchangeMultiGPU(para, level, borderStreamIndex);
         if (para->getUseStreams())
@@ -51,6 +47,7 @@ void updateGrid27(Parameter* para,
 
         exchangeMultiGPU(para, comm, cudaManager, level, borderStreamIndex);
     } else {
+        collision(para, pm, level, t, kernels);
         prepareExchangeMultiGPU(para, level, -1);
         exchangeMultiGPU(para, comm, cudaManager, level, -1);
     }
