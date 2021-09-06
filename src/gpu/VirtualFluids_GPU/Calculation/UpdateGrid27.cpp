@@ -1151,7 +1151,7 @@ void fineToCoarseUsingIndex(Parameter *para, int level, uint *fluidNodeIndices, 
         para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC,
         para->getParD(level)->omega, para->getParD(level + 1)->omega, para->getParD(level)->vis,
         para->getParD(level)->nx, para->getParD(level)->ny, para->getParD(level + 1)->nx, para->getParD(level + 1)->ny,
-        para->getParD(level)->offFC, fluidNodeIndices, numberOfFluidNodes, stream);
+        para->getParD(level)->numberofthreads, para->getParD(level)->offFC, fluidNodeIndices, numberOfFluidNodes, stream);
     getLastCudaError("ScaleFC27_RhoSq_comp_Stream execution failed");
 
     //////////////////////////////////////////////////////////////////////////
