@@ -109,8 +109,9 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator = true;
-    bool useMultiGPU = true;
-    bool useStreams  = true;
+    bool useMultiGPU = false;
+    bool useStreams  = false;
+    bool useLevels = true;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,8 +138,8 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
 
     
-    para->setTOut(10000);
-    para->setTEnd(10000);
+    para->setTOut(1000);
+    para->setTEnd(1000);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -148,7 +149,11 @@ void multipleLevel(const std::string& configPath)
     para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
     para->setPrintFiles(true);
 
-    para->setMaxLevel(1);
+    if (useLevels)
+        para->setMaxLevel(2);
+    else
+        para->setMaxLevel(1);
+
 
     //para->setMainKernel("CumulantK17CompChim");
     if (useStreams)
@@ -192,8 +197,9 @@ void multipleLevel(const std::string& configPath)
 
         TriangularMesh *bivalveSTL =
             TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
-         //TriangularMesh* bivalveRef_1_STL =
-         //    TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
+        TriangularMesh *bivalveRef_1_STL = nullptr;
+        if (useLevels)
+            bivalveRef_1_STL = TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
 
         if (useMultiGPU) {
             const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
@@ -210,8 +216,10 @@ void multipleLevel(const std::string& configPath)
                                            xGridMax,    yGridMax,           zGridMax,   dxGrid);
             }
 
-             //gridBuilder->setNumberOfLayers(6, 8);
-             //gridBuilder->addGrid(bivalveRef_1_STL, 1);
+            if (useLevels) {
+            gridBuilder->setNumberOfLayers(6, 8);
+            gridBuilder->addGrid(bivalveRef_1_STL, 1);
+            }
 
             gridBuilder->addGeometry(bivalveSTL);
 
@@ -260,8 +268,10 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
 
-            //gridBuilder->setNumberOfLayers(6, 8);
-            //gridBuilder->addGrid(bivalveRef_1_STL, 1);
+            if (useLevels) {
+                gridBuilder->setNumberOfLayers(6, 8);
+                gridBuilder->addGrid(bivalveRef_1_STL, 1);
+            }
 
             gridBuilder->addGeometry(bivalveSTL);
 
@@ -338,47 +348,10 @@ void multipleLevel(const std::string& configPath)
     SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
     sim.setFactories(kernelFactory, preProcessorFactory);
     sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);
-
-    //// Level 0
-    //uint *geoSP   = para->getParH(0)->geoSP;
-    //uint numGeoFluid = 0;
-    //std::vector<int> sparseIndicesFluid;
-    //for (uint i = 0; i < para->getParH(0)->size_Mat_SP; i++) {
-    //    if (geoSP[i] == GEO_FLUID) {
-    //        numGeoFluid++;
-    //        sparseIndicesFluid.push_back(i);
-    //    }
-    //}
-    //std::cout << ".....geoFluid level 0 " << numGeoFluid << ", num fluid nodes (new kernel)  " << para->getParH(0)->numberOfFluidNodes
-    //          << std::endl;
-
-
-    //for (uint i = 300000; i < 300003; i++)
-    //    std::cout << ".....level 0: sparse index geoFluid \t" << sparseIndicesFluid[i] << ",    fluid nodes index  \t"
-    //              << para->getParH(0)->fluidNodeIndices[i] << std::endl;
-
-    //// Level 1
-    //uint *geoSP1      = para->getParH(1)->geoSP;
-    //uint numGeoFluid1 = 0;
-    //std::vector<int> sparseIndicesFluid1;
-    //for (uint i = 0; i < para->getParH(1)->size_Mat_SP; i++) {
-    //    if (geoSP1[i] == GEO_FLUID) {
-    //        numGeoFluid1++;
-    //        sparseIndicesFluid1.push_back(i);
-    //    }
-    //}
-    //std::cout << ".....geoFluid level 1 " << numGeoFluid1 << ", num fluid nodes (new kernel)  "
-    //          << para->getParH(1)->numberOfFluidNodes << std::endl;
-
-    //for (uint i = 300000; i < 300003; i++)
-    //    std::cout << ".....level 1: sparse index geoFluid \t" << sparseIndicesFluid[i] << ",    fluid nodes index  \t"
-    //              << para->getParH(0)->fluidNodeIndices[i] << std::endl;
-
-
     sim.run();
     sim.free();
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
 }
 
