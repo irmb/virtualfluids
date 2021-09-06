@@ -174,12 +174,12 @@ void multipleLevel(const std::string& configPath)
 
     if (useGridGenerator) {
         // bounding box mussel:
-        const real bbxm = -18.0;
-        const real bbxp = 58.0;
-        const real bbym = -17.0;
-        const real bbyp = 18.0;
-        const real bbzm = -5.0;
-        const real bbzp = 13.0;
+        const real bbxm = 0.0;
+        const real bbxp = 76.0;
+        const real bbym = 0.0;
+        const real bbyp = 35.0;
+        const real bbzm = 0.0;
+        const real bbzp = 18.3;
         // bounding box oyster:
         // const real bbxm = 0.0;
         // const real bbxp = 115.0;
