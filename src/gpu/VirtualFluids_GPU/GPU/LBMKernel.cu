@@ -6242,6 +6242,48 @@ extern "C" void ScaleFC_RhoSq_comp_27(real* DC,
 													   offFC);
       getLastCudaError("scaleFC_RhoSq_27 execution failed"); 
 }
+extern "C" void ScaleFC_RhoSq_comp_27_Stream(real *DC, 
+											 real * DF, 
+											 unsigned int * neighborCX, 
+											 unsigned int * neighborCY, 
+											 unsigned int * neighborCZ, 
+											 unsigned int * neighborFX, 
+											 unsigned int * neighborFY, 
+											 unsigned int * neighborFZ, 
+											 unsigned int size_MatC, 
+											 unsigned int size_MatF, 
+											 bool evenOrOdd, 
+											 unsigned int * posC, 
+											 unsigned int * posFSWB, 
+											 unsigned int kFC, 
+											 real omCoarse, 
+											 real omFine, 
+											 real nu, 
+											 unsigned int nxC, 
+											 unsigned int nyC, 
+											 unsigned int nxF, 
+											 unsigned int nyF, 
+											 OffFC offFC,
+											 unsigned int *fluidNodeIndices,
+											 unsigned int numberOfFluidNodes, 
+											 CUstream_st* stream)
+{
+    int Grid = (kFC / numberOfFluidNodes) + 1;
+    int Grid1, Grid2;
+    if (Grid > 512) {
+        Grid1 = 512;
+        Grid2 = (Grid / Grid1) + 1;
+    } else {
+        Grid1 = 1;
+        Grid2 = Grid;
+    }
+    dim3 gridINT_FC(Grid1, Grid2);
+    dim3 threads(numberOfFluidNodes, 1, 1);
+
+    scaleFC_RhoSq_comp_27_Stream<<<gridINT_FC, threads, 0, stream>>>(DC, DF, neighborCX, neighborCY, neighborCZ, neighborFX, neighborFY, neighborFZ, size_MatC, size_MatF, evenOrOdd,
+        posC, posFSWB, kFC, omCoarse, omFine, nu, nxC, nyC, nxF, nyF, offFC, fluidNodeIndices, numberOfFluidNodes);
+    getLastCudaError("scaleFC_RhoSq_27_Stream execution failed");
+}
 //////////////////////////////////////////////////////////////////////////
 extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 

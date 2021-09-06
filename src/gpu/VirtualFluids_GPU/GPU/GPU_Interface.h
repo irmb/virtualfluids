@@ -8,6 +8,7 @@
 //random numbers
 #include <curand.h>
 #include <curand_kernel.h>
+#include <cuda_runtime.h>
 
 #include <DataTypes.h>
 #include "LBM/LB.h"
@@ -2092,6 +2093,32 @@ extern "C" void ScaleFC_RhoSq_comp_27(  real* DC,
 										unsigned int nyF,
 										unsigned int numberOfThreads,
 										OffFC offFC);
+
+extern "C" void ScaleFC_RhoSq_comp_27_Stream(	real* DC, 
+												real* DF, 
+												unsigned int* neighborCX,
+												unsigned int* neighborCY,
+												unsigned int* neighborCZ,
+												unsigned int* neighborFX,
+												unsigned int* neighborFY,
+												unsigned int* neighborFZ,
+												unsigned int size_MatC, 
+												unsigned int size_MatF, 
+												bool evenOrOdd,
+												unsigned int* posC, 
+												unsigned int* posFSWB, 
+												unsigned int kFC, 
+												real omCoarse, 
+												real omFine, 
+												real nu, 
+												unsigned int nxC, 
+												unsigned int nyC, 
+												unsigned int nxF, 
+												unsigned int nyF, 
+												OffFC offFC, 
+												unsigned int *fluidNodeIndices, 
+											    unsigned int numberOfFluidNodes,                                                
+												CUstream_st *stream);
 
 extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 
