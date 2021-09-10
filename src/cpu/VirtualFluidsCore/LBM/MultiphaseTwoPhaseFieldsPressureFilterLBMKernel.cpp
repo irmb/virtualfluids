@@ -293,7 +293,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 						LBMReal rhoH = 1.0;
 						LBMReal rhoL = 1.0 / densityRatio;
 
-						//LBMReal rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
+						LBMReal rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
 
 						LBMReal drho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
 							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
@@ -532,7 +532,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
                         LBMReal rhoH = 1.0;
                         LBMReal rhoL = 1.0 / densityRatio;
 
-                        //LBMReal rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
+                        LBMReal rhoToPhi = (rhoH - rhoL) / (phiH - phiL);
 
                         LBMReal dX1_phi = gradX1_phi();
                         LBMReal dX2_phi = gradX2_phi();

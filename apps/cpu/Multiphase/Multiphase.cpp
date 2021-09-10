@@ -118,7 +118,8 @@ void run(string configname)
         // grid->setPeriodicX2(true);
         // grid->setPeriodicX3(true);
         grid->setGhostLayerWidth(2);
-        
+
+       
         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
 
         //////////////////////////////////////////////////////////////////////////
@@ -134,7 +135,8 @@ void run(string configname)
         rcp->setLBMKernel(kernel);
         rcp->setBCProcessor(bcProc);
         //////////////////////////////////////////////////////////////////////////
-
+        // BC Adapter
+        //////////////////////////////////////////////////////////////////////////////
         mu::Parser fctF1;
         // fctF1.SetExpr("vy1*(1-((x1-x0)^2+(x3-z0)^2)/(R^2))");
         // fctF1.SetExpr("vy1*(1-(sqrt((x1-x0)^2+(x3-z0)^2)/R))^0.1");
@@ -153,6 +155,32 @@ void run(string configname)
         double startTime = 30;
         SPtr<BCAdapter> velBCAdapterF1(new MultiphaseVelocityBCAdapter(true, false, false, fctF1, phiH, 0.0, startTime));
         SPtr<BCAdapter> velBCAdapterF2(new MultiphaseVelocityBCAdapter(true, false, false, fctF2, phiH, startTime, endTime));
+
+        SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+        noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
+
+        SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
+        denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
+
+        mu::Parser fctPhi_F1;
+        fctPhi_F1.SetExpr("phiH");
+        fctPhi_F1.DefineConst("phiH", phiH);
+
+        mu::Parser fctPhi_F2;
+        fctPhi_F2.SetExpr("phiL");
+        fctPhi_F2.DefineConst("phiL", phiL);
+
+        mu::Parser fctvel_F2_init;
+        fctvel_F2_init.SetExpr("U");
+        fctvel_F2_init.DefineConst("U", 0);
+
+        velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+        //////////////////////////////////////////////////////////////////////////////////
+        // BC visitor
+        MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
+        bcVisitor.addBC(noSlipBCAdapter);
+        bcVisitor.addBC(denBCAdapter); //Ohne das BB?
+        bcVisitor.addBC(velBCAdapterF1);
 
         SPtr<D3Q27Interactor> inflowF1Int;
         SPtr<D3Q27Interactor> cylInt;
@@ -232,34 +260,6 @@ void run(string configname)
 
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
-
-            // BC Adapter
-            //////////////////////////////////////////////////////////////////////////////
-            SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-            noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
-
-            SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
-            denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
-
-            mu::Parser fctPhi_F1;
-            fctPhi_F1.SetExpr("phiH");
-            fctPhi_F1.DefineConst("phiH", phiH);
-
-            mu::Parser fctPhi_F2;
-            fctPhi_F2.SetExpr("phiL");
-            fctPhi_F2.DefineConst("phiL", phiL);
-
-            mu::Parser fctvel_F2_init;
-            fctvel_F2_init.SetExpr("U");
-            fctvel_F2_init.DefineConst("U", 0);
-
-            velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
-            //////////////////////////////////////////////////////////////////////////////////
-            // BC visitor
-            MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-            bcVisitor.addBC(noSlipBCAdapter);
-            bcVisitor.addBC(denBCAdapter); //Ohne das BB?
-            bcVisitor.addBC(velBCAdapterF1);
 
             SPtr<WriteBlocksCoProcessor> ppblocks(new WriteBlocksCoProcessor(
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
@@ -359,8 +359,6 @@ void run(string configname)
 
             intHelper.setBC();
 
-            grid->accept(bcVisitor);
-
             // initialization of distributions
             mu::Parser fct1;
             fct1.SetExpr("phiL");
@@ -404,6 +402,8 @@ void run(string configname)
       //  grid->accept(setConnsVisitor);
 
        //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+
+       grid->accept(bcVisitor);
 
         ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
