@@ -777,6 +777,7 @@ void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
                     bouCond->bcVelocityX2           = (float)bcArr->bcvector[bc]->getBoundaryVelocityX2();
                     bouCond->bcVelocityX3           = (float)bcArr->bcvector[bc]->getBoundaryVelocityX3();
                     bouCond->bcDensity              = (float)bcArr->bcvector[bc]->getBoundaryDensity();
+                    bouCond->bcPhaseField           = (float)bcArr->bcvector[bc]->getBoundaryPhaseField();
                     bouCond->nx1                    = (float)bcArr->bcvector[bc]->nx1;
                     bouCond->nx2                    = (float)bcArr->bcvector[bc]->nx2;
                     bouCond->nx3                    = (float)bcArr->bcvector[bc]->nx3;
@@ -1459,6 +1460,7 @@ void MPIIOMigrationCoProcessor::readBoundaryConds(int step)
                     bc->bcVelocityX2           = bcArray[ibc].bcVelocityX2;
                     bc->bcVelocityX3           = bcArray[ibc].bcVelocityX3;
                     bc->bcDensity              = bcArray[ibc].bcDensity;
+                    bc->bcPhaseField           = bcArray[ibc].bcPhaseField;
 
                     bc->nx1 = bcArray[ibc].nx1;
                     bc->nx2 = bcArray[ibc].nx2;

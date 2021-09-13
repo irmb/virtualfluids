@@ -117,6 +117,7 @@ struct BoundaryCondition {
     float bcVelocityX2;
     float bcVelocityX3;
     float bcDensity;
+    float bcPhaseField;
 
     float nx1, nx2, nx3;
     float q[26];

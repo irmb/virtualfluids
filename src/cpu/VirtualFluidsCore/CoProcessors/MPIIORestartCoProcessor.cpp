@@ -1489,6 +1489,7 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
                     bouCond->bcVelocityX2           = (float)bcArr->bcvector[bc]->getBoundaryVelocityX2();
                     bouCond->bcVelocityX3           = (float)bcArr->bcvector[bc]->getBoundaryVelocityX3();
                     bouCond->bcDensity              = (float)bcArr->bcvector[bc]->getBoundaryDensity();
+                    bouCond->bcPhaseField           = (float)bcArr->bcvector[bc]->getBoundaryPhaseField();
                     bouCond->nx1                    = (float)bcArr->bcvector[bc]->nx1;
                     bouCond->nx2                    = (float)bcArr->bcvector[bc]->nx2;
                     bouCond->nx3                    = (float)bcArr->bcvector[bc]->nx3;
@@ -2699,6 +2700,7 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
                 bc->bcVelocityX2           = bcArray[index].bcVelocityX2;
                 bc->bcVelocityX3           = bcArray[index].bcVelocityX3;
                 bc->bcDensity              = bcArray[index].bcDensity;
+                bc->bcPhaseField           = bcArray[ibc].bcPhaseField;
 
                 bc->nx1 = bcArray[index].nx1;
                 bc->nx2 = bcArray[index].nx2;
