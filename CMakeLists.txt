@@ -46,7 +46,7 @@ option(BUILD_VF_CPU "Build VirtualFluids cpu variant" OFF)
 option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 
 option(BUILD_USE_OPENMP "Build VirtualFluids with openmp" ON)
-
+option(BUILD_USE_BOOST "Build VirtualFluids with boost" OFF)
 
 # vf gpu
 option(BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
@@ -165,6 +165,19 @@ if(BUILD_USE_OPENMP)
 endif()
 
 find_package(MPI REQUIRED)
+
+# boost
+IF(BUILD_USE_BOOST)
+    list(APPEND VF_COMPILER_DEFINITION BUILD_USE_BOOST)
+
+    set(Boost_USE_STATIC_LIBS ON)
+    set(Boost_USE_MULTITHREADED ON)
+    set(Boost_USE_STATIC_RUNTIME ON)
+
+    # minimum boost version: 1.60
+    # no packages specfied - only headeronly libraries
+    find_package(Boost 1.60 REQUIRED)
+ENDIF()
 
 add_subdirectory(src/logger)
 add_subdirectory(src/basics)
