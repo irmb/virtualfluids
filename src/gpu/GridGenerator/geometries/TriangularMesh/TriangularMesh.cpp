@@ -128,7 +128,7 @@ void TriangularMesh::initalizeDataFromTriangles()
 	this->triangles = triangleVec.data();
 	this->size = long(triangleVec.size());
 
-    for (std::size_t i = 0; i < this->size; i++) {
+    for (std::size_t i = 0; i < (size_t)this->size; i++) {
         this->minmax.setMinMax(this->triangleVec[i]);
     }
 }
@@ -162,7 +162,7 @@ GRIDGENERATOR_EXPORT void TriangularMesh::generateGbTriFaceMesh3D()
     std::vector<GbTriFaceMesh3D::Vertex>  *gbVertices = new std::vector<GbTriFaceMesh3D::Vertex>(this->triangleVec.size() * 3);
     std::vector<GbTriFaceMesh3D::TriFace> *gbTriangles = new std::vector<GbTriFaceMesh3D::TriFace>(this->triangleVec.size());
 
-    for (int i = 0; i < this->triangleVec.size(); i++)
+    for (std::size_t i = 0; i < this->triangleVec.size(); i++)
     {
         (*gbVertices)[i * 3] = GbTriFaceMesh3D::Vertex(triangles[i].v1.x, triangles[i].v1.y, triangles[i].v1.z);
         (*gbVertices)[i * 3 + 1] = GbTriFaceMesh3D::Vertex(triangles[i].v2.x, triangles[i].v2.y, triangles[i].v2.z);
@@ -276,8 +276,8 @@ std::vector<Vertex> TriangularMesh::getAverrageNormalsPerVertex(std::vector<std:
 
 void TriangularMesh::eliminateTriangleswithIdenticialNormal(std::vector<Triangle> &triangles)
 {
-    for (int i = 0; i < triangles.size() - 1; i++) {
-        for (int j = i + 1; j < triangles.size(); j++) {
+    for (std::size_t i = 0; i < triangles.size() - 1; i++) {
+        for (std::size_t j = i + 1; j < triangles.size(); j++) {
             if (triangles[i].normal == triangles[j].normal)
                 triangles.erase(triangles.begin() + i);
         }
