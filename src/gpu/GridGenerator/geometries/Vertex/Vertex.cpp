@@ -120,7 +120,7 @@ real Vertex::getInnerAngle(const Vertex &w) const
 
     real mag = this->getMagnitude() * w.getMagnitude();
     real skal = *this * w;
-    if (mag - fabs(skal) < 0.0001)
+    if (mag - std::abs(skal) < 0.0001)
         return 0.0f;
     return  vf::Math::acosReal(skal / mag) * 180.0f / vf::Math::acosReal(-1.0f); // acos(-1.0f) = PI 
 }
