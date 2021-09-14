@@ -213,17 +213,17 @@ std::vector<Triangle> STLReader::readBinarySTL(const std::string& name)
     FILE *file = fopen(name.c_str(), mode.c_str());
 
     char header_info[80] = "";
-    fread(header_info, sizeof(char), 80, file);
+    size_t sizef         = fread(header_info, sizeof(char), 80, file);
 
     char nTri[4];
-    fread(nTri, sizeof(char), 4, file);
+    sizef                  = fread(nTri, sizeof(char), 4, file);
     unsigned long nTriLong = *((unsigned long*)nTri);
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles: " << nTriLong << "\n";
     std::vector<Triangle> triangles;
 
     char facet[50];
     for (unsigned int i = 0; i < nTriLong; i++){
-        fread(facet, sizeof(char), 50, file);
+        sizef = fread(facet, sizeof(char), 50, file);
 
         Vertex normal = getVertexFromChar(facet);
 
@@ -304,10 +304,10 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
     char nTri[4];
     unsigned long nTriLong;
   
-    fread(header_info, sizeof(char), 80, file);
+    size_t sizef = fread(header_info, sizeof(char), 80, file);
 
 
-    fread(nTri, sizeof(char), 4, file);
+    sizef    = fread(nTri, sizeof(char), 4, file);
     nTriLong = *((unsigned long*)nTri);
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles complete geometry: " << nTriLong << "\n";
@@ -315,7 +315,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
 
     char facet[50];
     for (unsigned int i = 0; i < nTriLong; i++){
-        fread(facet, sizeof(char), 50, file);
+        sizef = fread(facet, sizeof(char), 50, file);
 
         Vertex normal = getVertexFromChar(facet);
 

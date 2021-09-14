@@ -732,17 +732,17 @@ void GridImp::setPeriodicity(bool periodicityX, bool periodicityY, bool periodic
 
 void GridImp::setPeriodicityX(bool periodicity)
 {
-    this->periodicityX = periodicityX;
+    this->periodicityX = periodicity;
 }
 
 void GridImp::setPeriodicityY(bool periodicity)
 {
-    this->periodicityY = periodicityY;
+    this->periodicityY = periodicity;
 }
 
 void GridImp::setPeriodicityZ(bool periodicity)
 {
-    this->periodicityZ = periodicityZ;
+    this->periodicityZ = periodicity;
 }
 
 bool GridImp::getPeriodicityX()
