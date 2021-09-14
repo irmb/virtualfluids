@@ -162,7 +162,7 @@ GRIDGENERATOR_EXPORT void TriangularMesh::generateGbTriFaceMesh3D()
     std::vector<GbTriFaceMesh3D::Vertex>  *gbVertices = new std::vector<GbTriFaceMesh3D::Vertex>(this->triangleVec.size() * 3);
     std::vector<GbTriFaceMesh3D::TriFace> *gbTriangles = new std::vector<GbTriFaceMesh3D::TriFace>(this->triangleVec.size());
 
-    for (std::size_t i = 0; i < this->triangleVec.size(); i++)
+    for (int i = 0; i < (int)this->triangleVec.size(); i++)
     {
         (*gbVertices)[i * 3] = GbTriFaceMesh3D::Vertex(triangles[i].v1.x, triangles[i].v1.y, triangles[i].v1.z);
         (*gbVertices)[i * 3 + 1] = GbTriFaceMesh3D::Vertex(triangles[i].v2.x, triangles[i].v2.y, triangles[i].v2.z);
