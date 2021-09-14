@@ -40,10 +40,8 @@ extern "C" void calcMacroscopicQuantities(Parameter* para, int level);
 extern "C" void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
 
 extern "C" void fineToCoarse(Parameter* para, int level);
-extern "C" void fineToCoarseUsingIndex(Parameter *para, int level, int stream = -1);
+extern "C" void fineToCoarseWithStream(Parameter *para, int level, uint *iCellFCC, uint k_FC, int streamIndex);
 
 extern "C" void coarseToFine(Parameter* para, int level);
-extern "C" void coarseToFineUsingIndex(Parameter *para, int level, uint *fluidNodeIndices = nullptr,
-                                       uint numberOfFluidNodes = 0, int stream = -1);
 
 #endif

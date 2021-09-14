@@ -1943,6 +1943,35 @@ void GridImp::getGridInterface(uint* gridInterfaceList, const uint* oldGridInter
         gridInterfaceList[i] = oldGridInterfaceList[i] + 1; // + 1 for numbering shift between GridGenerator and VF_GPU
 }
 
+void GridImp::getGridInterfaceIndicesFCCBorderBulk(uint *iCellFccBorder, uint &intFCBorderKfc, uint *&iCellFccBulk,
+                                                   uint &intFCBulkKfc, int level) const
+{
+    // reorder the array of FCC indices and return pointers and sizes of the new subarrays
+
+    uint *iCellFccAll = iCellFccBorder;
+    uint intFCKfcAll = this->gridInterface->fc.numberOfEntries;
+    std::vector<uint> iCellFccBorderVector;
+    std::vector<uint> iCellFccBulkVector;
+
+    for (uint i = 0; i < intFCKfcAll; i++)
+        if (std::find(this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end(), iCellFccAll[i]) !=
+            this->fluidNodeIndicesBorder.end())
+            iCellFccBorderVector.push_back(iCellFccAll[i]);
+        else
+            iCellFccBulkVector.push_back(iCellFccAll[i]);
+
+    intFCBorderKfc = (uint)iCellFccBorderVector.size();
+    intFCBulkKfc   = (uint)iCellFccBulkVector.size();
+    iCellFccBulk   = iCellFccBorder + intFCBorderKfc; 
+
+    for (uint i = 0; i < (uint)iCellFccBorderVector.size(); i++)
+        iCellFccBorder[i] = iCellFccBorderVector[i];
+    for (uint i = 0; i < (uint)iCellFccBulkVector.size(); i++)
+        iCellFccBulk[i] = iCellFccBulkVector[i];
+    std::cout << iCellFccBulk[0] << std::endl;
+    std::cout << iCellFccBulk[iCellFccBulkVector.size()-1] << std::endl;
+}
+
 #define GEOFLUID 19
 #define GEOSOLID 16
 

@@ -206,6 +206,11 @@ void LevelGridBuilder::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, u
     this->grids[level]->getGridInterfaceIndices(iCellCfc, iCellCff, iCellFcc, iCellFcf);
 }
 
+void LevelGridBuilder::getGridInterfaceIndicesFCCBorderBulk(uint *iCellFccBorder, uint &intFCBorderKfc, uint *&iCellFccBulk, uint &intFCBulkKfc, int level) const
+{
+    this->grids[level]->getGridInterfaceIndicesFCCBorderBulk(iCellFccBorder, intFCBorderKfc, iCellFccBulk, intFCBulkKfc, level);
+}
+
 void LevelGridBuilder::getOffsetFC(real * xOffFC, real * yOffFC, real * zOffFC, int level)
 {
     for (uint i = 0; i < getNumberOfNodesFC(level); i++)

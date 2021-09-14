@@ -181,6 +181,9 @@ struct LBMSimulationParameter
     unsigned int mem_size_kCF;
     unsigned int mem_size_kFC;
 
+    InterpolationCellFCBorderBulk intFCBorder;
+    InterpolationCellFCBorderBulk intFCBulk;
+
     // offset//////////////////
     OffsetCF offCF;
     OffsetFC offFC;

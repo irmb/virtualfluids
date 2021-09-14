@@ -920,6 +920,39 @@ void GridGenerator::allocArrays_OffsetScale()
         builder->getOffsetCF(para->getParH(level)->offCF.xOffCF, para->getParH(level)->offCF.yOffCF, para->getParH(level)->offCF.zOffCF, level);
         builder->getOffsetFC(para->getParH(level)->offFC.xOffFC, para->getParH(level)->offFC.yOffFC, para->getParH(level)->offFC.zOffFC, level);
         builder->getGridInterfaceIndices(para->getParH(level)->intCF.ICellCFC, para->getParH(level)->intCF.ICellCFF, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.ICellFCF, level);
+        
+        if (para->getUseStreams()) {
+            // split fine-to-coarse-coarse indices into border and bulk
+            para->getParH(level)->intFCBorder.ICellFCC = para->getParH(level)->intFC.ICellFCC; 
+            para->getParD(level)->intFCBorder.ICellFCC = para->getParD(level)->intFC.ICellFCC;
+            builder->getGridInterfaceIndicesFCCBorderBulk(para->getParH(level)->intFCBorder.ICellFCC, para->getParH(level)->intFCBorder.kFC, para->getParH(level)->intFCBulk.ICellFCC, para->getParH(level)->intFCBulk.kFC, level);
+            para->getParD(level)->intFCBorder.kFC = para->getParH(level)->intFCBorder.kFC;
+            para->getParD(level)->intFCBulk.kFC = para->getParH(level)->intFCBulk.kFC;
+            para->getParD(level)->intFCBulk.ICellFCC = para->getParD(level)->intFCBorder.ICellFCC + para->getParD(level)->intFCBulk.kFC;
+        }
+        std::cout << "sizeOld  " << para->getParH(level)->K_FC << std::endl;
+        std::cout << "sizeNew  " << para->getParH(level)->intFCBorder.kFC + para->getParH(level)->intFCBulk.kFC
+                  << " = border " << para->getParH(level)->intFCBorder.kFC << " + bulk "
+                  << para->getParH(level)->intFCBulk.kFC << std::endl;
+        std::cout << "first old  " << para->getParH(level)->intFC.ICellFCC[0] << std::endl;
+        std::cout << "first new  " << para->getParH(level)->intFCBorder.ICellFCC[0]
+                  << std::endl;
+        //std::cout << "last border old  " << para->getParH(level)->intFC.ICellFCC[para->getParH(level)->intFCBorder.kFC - 1]
+        //          << std::endl; //if (para->getParH(level)->intFCBorder.kFC > 0)
+        //std::cout << "last border new  " << para->getParH(level)->intFCBorder.ICellFCC[para->getParH(level)->intFCBorder.kFC - 1]
+        //          << std::endl;
+        std::cout << "old pointer " << para->getParH(level)->intFC.ICellFCC << std::endl;
+        std::cout << "border pointer (= old pointer) " << para->getParH(level)->intFCBorder.ICellFCC << std::endl;
+        std::cout << "bulk pointer new " << para->getParH(level)->intFCBulk.ICellFCC << std::endl;
+        std::cout << "first bulk old  "
+                  << para->getParH(level)->intFC.ICellFCC[para->getParH(level)->intFCBorder.kFC] << std::endl;
+        std::cout << "first bulk new  "
+                  << para->getParH(level)->intFCBulk.ICellFCC[0] << std::endl;
+        std::cout << "last bulk old  "
+                  << para->getParH(level)->intFC.ICellFCC[para->getParH(level)->K_FC - 1] << std::endl;
+        std::cout << "last bulk new  "
+                  << para->getParH(level)->intFCBulk.ICellFCC[para->getParH(level)->intFCBulk.kFC - 1] << std::endl;
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy
 		cudaMemoryManager->cudaCopyInterfaceCF(level);

@@ -75,21 +75,17 @@ void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManage
     {
         if (para->getUseStreams() && para->getNumprocs() > 1) {
         } else {
-            if (para->getKernelNeedsFluidNodeIndicesToRun()) {
-                fineToCoarseUsingIndex(para, level, -1);
+            //fineToCoarse(para, level);
 
-                prepareExchangeMultiGPU(para, level, -1);
-                exchangeMultiGPU(para, comm, cudaManager, level, -1);
+            fineToCoarseWithStream(para, level, para->getParD(level)->intFCBorder.ICellFCC,
+                                   para->getParD(level)->intFCBorder.kFC, -1);
+            fineToCoarseWithStream(para, level, para->getParD(level)->intFCBulk.ICellFCC,
+                                   para->getParD(level)->intFCBulk.kFC, -1);
 
-                coarseToFine(para, level);
-            } else {
-                fineToCoarse(para, level);
+            prepareExchangeMultiGPU(para, level, -1);
+            exchangeMultiGPU(para, comm, cudaManager, level, -1);
 
-                prepareExchangeMultiGPU(para, level, -1);
-                exchangeMultiGPU(para, comm, cudaManager, level, -1);
-
-                coarseToFine(para, level);
-            }
+            coarseToFine(para, level);
         }
     }
 }
@@ -110,8 +106,7 @@ void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, i
 }
 
 void collisionUsingIndex(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
-                          std::vector<SPtr<Kernel>> &kernels, 
-               uint *fluidNodeIndices, uint numberOfFluidNodes, int stream)
+                         std::vector<SPtr<Kernel>> &kernels, uint *fluidNodeIndices, uint numberOfFluidNodes, int stream)
 {
     if (fluidNodeIndices != nullptr && numberOfFluidNodes != 0)
         kernels.at(level)->runOnIndices(fluidNodeIndices, numberOfFluidNodes, stream);
@@ -1138,18 +1133,19 @@ void fineToCoarse(Parameter* para, int level)
 
 }
 
-void fineToCoarseUsingIndex(Parameter *para, int level, int streamIndex)
+void fineToCoarseWithStream(Parameter *para, int level, uint *iCellFCC, uint k_FC, int streamIndex)
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
-    ScaleFC_RhoSq_comp_27_Stream(
-        para->getParD(level)->d0SP.f[0], para->getParD(level + 1)->d0SP.f[0], para->getParD(level)->neighborX_SP,
-        para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP, para->getParD(level + 1)->neighborX_SP,
-        para->getParD(level + 1)->neighborY_SP, para->getParD(level + 1)->neighborZ_SP,
-        para->getParD(level)->size_Mat_SP, para->getParD(level + 1)->size_Mat_SP, para->getParD(level)->evenOrOdd,
-        para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC,
-        para->getParD(level)->omega, para->getParD(level + 1)->omega, para->getParD(level)->vis,
-        para->getParD(level)->nx, para->getParD(level)->ny, para->getParD(level + 1)->nx, para->getParD(level + 1)->ny,
-        para->getParD(level)->numberofthreads, para->getParD(level)->offFC, stream);
+    getLastCudaError("ScaleFC27_RhoSq_comp execution failed");
+    ScaleFC_RhoSq_comp_27_Stream( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0], 
+							      para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
+							      para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
+							      para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
+                                  iCellFCC,                             para->getParD(level)->intFC.ICellFCF, 
+							      k_FC,                                 para->getParD(level)->omega,           para->getParD(level + 1)->omega, 
+							      para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
+							      para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,
+							      para->getParD(level)->offFC,          stream);
     getLastCudaError("ScaleFC27_RhoSq_comp_Stream execution failed");
 
     //////////////////////////////////////////////////////////////////////////
@@ -1159,7 +1155,7 @@ void fineToCoarseUsingIndex(Parameter *para, int level, int streamIndex)
     if (para->getDiffOn()) {
         if (para->getDiffMod() == 7) {
             // TODO
-            printf("fineToCoarseUsingIndex Advection Diffusion not implemented");
+            printf("fineToCoarseWithStream Advection Diffusion not implemented");
             //ScaleFCThSMG7(para->getParD(level)->d0SP.f[0], para->getParD(level + 1)->d0SP.f[0],
             //              para->getParD(level)->d7.f[0], para->getParD(level + 1)->d7.f[0],
             //              para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP,
@@ -1173,7 +1169,7 @@ void fineToCoarseUsingIndex(Parameter *para, int level, int streamIndex)
             //getLastCudaError("ScaleFCTh7 execution failed");
         } else if (para->getDiffMod() == 27) {
             // TODO
-            printf("fineToCoarseUsingIndex Advection Diffusion not implemented");
+            printf("fineToCoarseWithStream Advection Diffusion not implemented");
             //ScaleFCThS27(para->getParD(level)->d0SP.f[0], para->getParD(level + 1)->d0SP.f[0],
             //             para->getParD(level)->d27.f[0], para->getParD(level + 1)->d27.f[0],
             //             para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP,

@@ -110,7 +110,7 @@ void multipleLevel(const std::string& configPath)
 
     bool useGridGenerator = true;
     bool useMultiGPU = false;
-    bool useStreams  = false;
+    bool useStreams  = true;
     bool useLevels = true;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ void multipleLevel(const std::string& configPath)
     std::string bivalveType = "MUSSEL"; // "MUSSEL" "OYSTER"
     std::string gridPath(gridPathParent + bivalveType); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
-    real dxGrid = (real)2.0;
+    real dxGrid = (real)1.0;
     real vxLB = (real)0.051; // LB units
     real Re = (real)300.0;
     real viscosityLB = (vxLB * dxGrid) / Re;
@@ -139,7 +139,7 @@ void multipleLevel(const std::string& configPath)
 
     
     para->setTOut(1000);
-    para->setTEnd(1000);
+    para->setTEnd(10000);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
