@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GridInterface.cpp
+//! \ingroup grid
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #include "GridInterface.h"
 
 #include <iostream>
@@ -256,7 +288,7 @@ void GridInterface::findForGridInterfaceSparseIndexFC(GridImp* coarseGrid, GridI
     findSparseIndex(fc.fine, fineGrid, index);
 }
 
-CUDA_HOST void GRIDGENERATOR_EXPORT GridInterface::repairGridInterfaceOnMultiGPU(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid)
+void GRIDGENERATOR_EXPORT GridInterface::repairGridInterfaceOnMultiGPU(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid)
 {
     {
         std::vector<uint> tmpCFC;
@@ -332,7 +364,7 @@ void GridInterface::findSparseIndex(uint* indices, GridImp* grid, uint index)
     indices[index] = sparseIndex;
 }
 
-HOSTDEVICE uint GridInterface::findOffsetCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex)
+uint GridInterface::findOffsetCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex)
 {
     real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
@@ -367,7 +399,7 @@ HOSTDEVICE uint GridInterface::findOffsetCF(const uint& indexOnCoarseGrid, GridI
 	return indexOnCoarseGrid;
 }
 
-HOSTDEVICE uint GridInterface::findOffsetFC(const uint& indexOnFineGrid, GridImp* fineGrid, uint interfaceIndex)
+uint GridInterface::findOffsetFC(const uint& indexOnFineGrid, GridImp* fineGrid, uint interfaceIndex)
 {
     real x, y, z;
     fineGrid->transIndexToCoords(indexOnFineGrid, x, y, z);

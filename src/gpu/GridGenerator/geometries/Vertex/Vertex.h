@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file Vertex.h
+//! \ingroup geometries
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #ifndef VERTEX_H
 #define VERTEX_H
 
@@ -8,48 +40,42 @@
 
 #include "global.h"
 
-class VertexMemento;
-
 struct GRIDGENERATOR_EXPORT Vertex
 {
 public:
     real x, y, z;
 
-	HOSTDEVICE Vertex(real x, real y, real z);
-	HOSTDEVICE Vertex();
-	HOSTDEVICE Vertex(const Vertex& v);
-    HOSTDEVICE Vertex& operator=(const Vertex&);
-	HOSTDEVICE ~Vertex() {}
+	Vertex(real x, real y, real z);
+	Vertex();
+	Vertex(const Vertex& v);
+	~Vertex() {}
 
-	HOSTDEVICE real getEuclideanDistanceTo(const Vertex &w) const;
-	HOSTDEVICE Vertex operator-(const Vertex &v) const;
-	HOSTDEVICE Vertex operator+(const Vertex &v) const;
-	HOSTDEVICE Vertex operator*(const real& value) const;
-    HOSTDEVICE Vertex operator/(const real& value) const;
+	real getEuclideanDistanceTo(const Vertex &w) const;
+	Vertex operator-(const Vertex &v) const;
+	Vertex operator+(const Vertex &v) const;
+	Vertex operator*(const real& value) const;
+    Vertex operator/(const real& value) const;
 
-	HOSTDEVICE real operator*(const Vertex &w) const;
-	HOSTDEVICE struct Vertex crossProduct(const Vertex &w) const;
-	HOSTDEVICE real length() const;
-	HOSTDEVICE void normalize();
-	HOSTDEVICE real getMagnitude() const;
-	HOSTDEVICE int isEqual(const Vertex &w) const;
-	HOSTDEVICE real getInnerAngle(const Vertex &w) const;
+	real operator*(const Vertex &w) const;
+	struct Vertex crossProduct(const Vertex &w) const;
+	real length() const;
+	void normalize();
+	real getMagnitude() const;
+	int isEqual(const Vertex &w) const;
+	real getInnerAngle(const Vertex &w) const;
 
-	HOSTDEVICE bool operator==(const Vertex &v) const;
+	bool operator==(const Vertex &v) const;
 
-    CUDA_HOST VertexMemento getState() const;
-    CUDA_HOST void setState(const VertexMemento &memento);
+    bool isXbetween(real min, real max) const;
+    bool isYbetween(real min, real max) const;
+    bool isZbetween(real min, real max) const;
 
-    CUDA_HOST bool isXbetween(real min, real max) const;
-    CUDA_HOST bool isYbetween(real min, real max) const;
-    CUDA_HOST bool isZbetween(real min, real max) const;
+    static void setMinMax(real &minX, real &maxX, real &minY, real &maxY, real &minZ, real &maxZ, const Vertex &v1, const Vertex &v2, const Vertex &v3); 
+    static void calculateMinMax(const real &value1, const real &value2, const real &value3, real &min, real &max);
 
-    HOSTDEVICE static void setMinMax(real &minX, real &maxX, real &minY, real &maxY, real &minZ, real &maxZ, const Vertex &v1, const Vertex &v2, const Vertex &v3); 
-    HOSTDEVICE static void calculateMinMax(const real &value1, const real &value2, const real &value3, real &min, real &max);
-
-    HOSTDEVICE void print() const;
-    CUDA_HOST void print(std::ostream &ost) const;
-    CUDA_HOST void printFormatted(std::ostream &ost) const;
+    void print() const;
+    void print(std::ostream &ost) const;
+    void printFormatted(std::ostream &ost) const;
 
 };
 

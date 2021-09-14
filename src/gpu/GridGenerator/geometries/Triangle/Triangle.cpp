@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file Triangle.cpp
+//! \ingroup geometries
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #include "Triangle.h"
 #include "TriangleException.h"
 
@@ -7,11 +39,11 @@
 
 using namespace vf::gpu;
 
-HOSTDEVICE Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &normal) : v1(v1), v2(v2), v3(v3), normal(normal), patchIndex(INVALID_INDEX) {}
-HOSTDEVICE Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3) : v1(v1), v2(v2), v3(v3), patchIndex(INVALID_INDEX) { calcNormal(); }
-HOSTDEVICE Triangle::Triangle(){}
+Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &normal) : v1(v1), v2(v2), v3(v3), normal(normal), patchIndex(INVALID_INDEX) {}
+Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3) : v1(v1), v2(v2), v3(v3), patchIndex(INVALID_INDEX) { calcNormal(); }
+Triangle::Triangle(){}
 
-HOSTDEVICE void Triangle::set(const Vertex &v1, const Vertex &v2, const Vertex &v3)
+void Triangle::set(const Vertex &v1, const Vertex &v2, const Vertex &v3)
 {
     this->v1 = v1;
     this->v2 = v2;
@@ -19,7 +51,7 @@ HOSTDEVICE void Triangle::set(const Vertex &v1, const Vertex &v2, const Vertex &
     this->calcNormal();
 }
 
-HOSTDEVICE void Triangle::set(int index, Vertex value)
+void Triangle::set(int index, Vertex value)
 {
     if (index == 0)
         v1 = value;
@@ -29,7 +61,7 @@ HOSTDEVICE void Triangle::set(int index, Vertex value)
         v3 = value;
 }
 
-HOSTDEVICE Vertex Triangle::get(int index)
+Vertex Triangle::get(int index)
 {
     if (index == 0)
         return v1;
@@ -41,7 +73,7 @@ HOSTDEVICE Vertex Triangle::get(int index)
         return Vertex((real)-999999999999999, (real)-99999999999999, (real)-9999999999999);
 }
 
-HOSTDEVICE void Triangle::calcNormal()
+void Triangle::calcNormal()
 {
     Vertex edge1 = v2 - v1;
     Vertex edge2 = v3 - v1;
@@ -49,13 +81,13 @@ HOSTDEVICE void Triangle::calcNormal()
     normal.normalize();
 }
 
-HOSTDEVICE void Triangle::initalLayerThickness(real delta)
+void Triangle::initalLayerThickness(real delta)
 {
     this->layerThickness = delta*(abs(this->normal.x) + abs(this->normal.y) + abs(this->normal.z));
 }
 
 
-HOSTDEVICE char Triangle::isUnderFace(const Vertex &point) const
+char Triangle::isUnderFace(const Vertex &point) const
 {
     real s;
 
@@ -78,36 +110,36 @@ HOSTDEVICE char Triangle::isUnderFace(const Vertex &point) const
     return FLUID;
 }
 
-HOSTDEVICE bool Triangle::isUnterExtendedFace(const Vertex & point, real &s) const
+bool Triangle::isUnterExtendedFace(const Vertex & point, real &s) const
 {
     s = this->getPerpedicularDistanceFrom(point);
     return ((vf::Math::greaterEqual(s, 0.0f)) && s < this->layerThickness);
 }
 
-HOSTDEVICE real Triangle::getPerpedicularDistanceFrom(const Vertex &P) const
+real Triangle::getPerpedicularDistanceFrom(const Vertex &P) const
 {
     Vertex v = P - v1;
     return  (v * -1.0f) * normal;
 }
 
-HOSTDEVICE Vertex Triangle::getPerpedicularPointFrom(const Vertex &P) const
+Vertex Triangle::getPerpedicularPointFrom(const Vertex &P) const
 {
     return P + normal * getPerpedicularDistanceFrom(P);
 }
 
-HOSTDEVICE bool Triangle::isQNode(const Vertex & point, const real &s) const
+bool Triangle::isQNode(const Vertex & point, const real &s) const
 {
     return (s < 0 && vf::Math::lessEqual(-s, this->layerThickness));
     //calculateQs(actualPoint, actualTriangle);
 }
 
-HOSTDEVICE bool Triangle::isNegativeDirectionBorder(const Vertex &point) const
+bool Triangle::isNegativeDirectionBorder(const Vertex &point) const
 {
     return normal.x < 0.0f || normal.y < 0.0f || normal.z < 0.0f;
     //return (sVector.x < 0.0f && sVector.y < 0.0f && sVector.z < 0.0f);
 }
 
-HOSTDEVICE bool Triangle::isNotNextToFace(const Vertex &point) const
+bool Triangle::isNotNextToFace(const Vertex &point) const
 {
     Vertex Pb = getPerpedicularPointFrom(point);
 
@@ -126,7 +158,7 @@ HOSTDEVICE bool Triangle::isNotNextToFace(const Vertex &point) const
     return vf::Math::lessEqual(g1, 0.0f) && vf::Math::lessEqual(g2, 0.0f) && vf::Math::lessEqual(g3, 0.0f);
 }
 
-HOSTDEVICE bool Triangle::isUnderAngleToNeighbors(const Vertex &point) const
+bool Triangle::isUnderAngleToNeighbors(const Vertex &point) const
 {
     Vertex Pci[3];
     this->getClosestPointsOnEdges(Pci, point);
@@ -147,7 +179,7 @@ HOSTDEVICE bool Triangle::isUnderAngleToNeighbors(const Vertex &point) const
     return (vf::Math::lessEqual(betaAngles[0], alphaAngles[0], eps) && vf::Math::lessEqual(betaAngles[1], alphaAngles[1], eps) && vf::Math::lessEqual(betaAngles[2], alphaAngles[2], eps));
 }
 
-HOSTDEVICE void Triangle::getClosestPointsOnEdges(Vertex arr[], const Vertex &P) const
+void Triangle::getClosestPointsOnEdges(Vertex arr[], const Vertex &P) const
 {
     Vertex Pc1, Pc2, Pc3;
     Vertex v4 = P - v1;
@@ -235,7 +267,7 @@ bool Triangle::contains(const Vertex& v) const
 }
 
 
-HOSTDEVICE int Triangle::getNumberOfCommonEdge(const Triangle &t2) const
+int Triangle::getNumberOfCommonEdge(const Triangle &t2) const
 {
 	int commonEdge = 0;
 	if (t2.contains(v1))
@@ -250,7 +282,7 @@ HOSTDEVICE int Triangle::getNumberOfCommonEdge(const Triangle &t2) const
 }
 
 
-HOSTDEVICE int Triangle::getTriangleIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnTri, real &qVal) const
+int Triangle::getTriangleIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnTri, real &qVal) const
 {
 	///// taken from /////
 	//http://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
@@ -295,7 +327,7 @@ HOSTDEVICE int Triangle::getTriangleIntersection(const Vertex &P, const Vertex &
     return 0;
 }
 
-HOSTDEVICE void Triangle::print() const
+void Triangle::print() const
 {
     printf("v1: ");
     v1.print();
@@ -307,14 +339,14 @@ HOSTDEVICE void Triangle::print() const
     normal.print();
 }
 
-CUDA_HOST bool Triangle::operator==(const Triangle &t) const
+bool Triangle::operator==(const Triangle &t) const
 {
     return v1 == t.v1 && v2 == t.v2 && v3 == t.v3
         && vf::Math::equal(alphaAngles[0], t.alphaAngles[0]) && vf::Math::equal(alphaAngles[1], t.alphaAngles[1]) && vf::Math::equal(alphaAngles[2], t.alphaAngles[2]);
 }
 
 
-HOSTDEVICE void Triangle::setMinMax(real &minX, real &maxX, real &minY, real &maxY, real &minZ, real &maxZ) const
+void Triangle::setMinMax(real &minX, real &maxX, real &minY, real &maxY, real &minZ, real &maxZ) const
 {
     Vertex::setMinMax(minX, maxX, minY, maxY, minZ, maxZ, v1, v2, v3);
 }
