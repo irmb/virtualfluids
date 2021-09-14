@@ -33,6 +33,7 @@
 #include "GridInterface.h"
 
 #include <iostream>
+#include <cstring>
 
 #include "grid/distributions/D3Q27.h"
 #include "grid/GridImp.h"
@@ -164,7 +165,7 @@ void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coar
 
     for (const auto dir : coarseGrid->distribution)
     {
-        const int neighborIndex = coarseGrid->transCoordToIndex(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta());
+        const uint neighborIndex = coarseGrid->transCoordToIndex(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta());
 		if (neighborIndex != INVALID_INDEX)
 		{
 			const bool neighborBelongsToCoarseToFineInterpolationCell = coarseGrid->getField().isCoarseToFineNode(neighborIndex);
@@ -195,7 +196,7 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
     if (indexOnFineGridFC == -1)
         return;
 
-	real x, y, z;
+    real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
 
     bool neighborBelongsToFineToCoarseInterpolationCell = false;
@@ -204,7 +205,7 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
         //if (dir[0] > 0 || dir[1] > 0 || dir[2] > 0)  //only Esoteric Twist stopper, not perfectly implemented
         //    continue;								   //should not be here, should be made conditional
 
-        const int neighborIndex = coarseGrid->transCoordToIndex(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta());
+        const uint neighborIndex = coarseGrid->transCoordToIndex(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta());
         neighborBelongsToFineToCoarseInterpolationCell = neighborIndex != INVALID_INDEX ? coarseGrid->getField().isFineToCoarseNode(neighborIndex) : false;
         if (neighborBelongsToFineToCoarseInterpolationCell)
         {

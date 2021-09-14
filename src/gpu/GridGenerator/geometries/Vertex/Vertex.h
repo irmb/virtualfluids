@@ -47,7 +47,6 @@ public:
 
 	Vertex(real x, real y, real z);
 	Vertex();
-	Vertex(const Vertex& v);
 	~Vertex() {}
 
 	real getEuclideanDistanceTo(const Vertex &w) const;

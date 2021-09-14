@@ -37,6 +37,7 @@
 #include <iostream>
 #include <omp.h>
 #include <sstream>
+#include <cmath>
 
 #include "global.h"
 
@@ -383,7 +384,7 @@ void GridImp::fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int d
     
     //////////////////////////////////////////////////////////////////////////
 
-    real dx, dy, dz;
+    real dx{ 0.0 }, dy{ 0.0 }, dz{ 0.0 };
 
     if      ( dir ==  1 ){ dx =   this->delta; dy = 0.0;           dz = 0.0;           }
     else if ( dir == -1 ){ dx = - this->delta; dy = 0.0;           dz = 0.0;           }
@@ -996,7 +997,7 @@ real GridImp::getNegativeNeighborCoord(bool periodicity, real startCoord, real c
     {
         real neighborCoords[3] = {coords[0], coords[1] , coords[2] };
         neighborCoords[direction] = neighborCoords[direction] - delta;
-        const int neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
+        const uint neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
 
         if(neighborIndex != INVALID_INDEX && !field.isStopperOutOfGrid(neighborIndex) && !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) )
             return coords[direction] - delta;
@@ -1011,7 +1012,7 @@ real GridImp::getNegativeNeighborCoord(bool periodicity, real startCoord, real c
 real GridImp::getLastFluidNode(real coords[3], int direction, real startCoord) const
 {
     coords[direction] = startCoord;
-    int index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
+    uint index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
     while (index != INVALID_INDEX && !field.isFluid(index))
     {
         coords[direction] -= delta;
@@ -1702,13 +1703,13 @@ BoundingBox GridImp::getBoundingBoxOnNodes(Triangle &triangle) const
     real minX, maxX, minY, maxY, minZ, maxZ;
     triangle.setMinMax(minX, maxX, minY, maxY, minZ, maxZ);
 
-    int minXIndex = lround(floor((minX - this->startX) / this->delta)) - 1;
-    int minYIndex = lround(floor((minY - this->startY) / this->delta)) - 1;
-    int minZIndex = lround(floor((minZ - this->startZ) / this->delta)) - 1;
+    int minXIndex = std::lround(floor((minX - this->startX) / this->delta)) - 1;
+    int minYIndex = std::lround(floor((minY - this->startY) / this->delta)) - 1;
+    int minZIndex = std::lround(floor((minZ - this->startZ) / this->delta)) - 1;
 
-    int maxXIndex = lround(ceil((maxX - this->startX) / this->delta)) + 1;
-    int maxYIndex = lround(ceil((maxY - this->startY) / this->delta)) + 1;
-    int maxZIndex = lround(ceil((maxZ - this->startZ) / this->delta)) + 1;
+    int maxXIndex = std::lround(ceil((maxX - this->startX) / this->delta)) + 1;
+    int maxYIndex = std::lround(ceil((maxY - this->startY) / this->delta)) + 1;
+    int maxZIndex = std::lround(ceil((maxZ - this->startZ) / this->delta)) + 1;
 
     minX = this->startX + minXIndex * this->delta;
     minY = this->startY + minYIndex * this->delta;
@@ -1759,18 +1760,19 @@ real GridImp::getMaximumOnNodes(const real &maxExact, const real &decimalStart, 
     return maxNode;
 }
 
-uint GridImp::getXIndex(real x) const {
-    return lround((x - startX) / delta);
+uint GridImp::getXIndex(real x) const 
+{ 
+    return std::lround((x - startX) / delta); 
 }
 
 uint GridImp::getYIndex(real y) const
-{
-    return lround((y - startY) / delta);
+{ 
+    return std::lround((y - startY) / delta); 
 }
 
 uint GridImp::getZIndex(real z) const
-{
-	return lround((z - startZ) / delta);
+{ 
+    return std::lround((z - startZ) / delta); 
 }
 
 real GridImp::getDelta() const
@@ -1955,8 +1957,6 @@ void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *n
         const uint neighborYIndex        = uint(this->neighborIndexY[i] + 1);
         const uint neighborZIndex        = uint(this->neighborIndexZ[i] + 1);
         const uint neighborNegativeIndex = uint(this->neighborIndexNegative[i] + 1);
-
-        const char type2 = this->field.getFieldEntry(i);
 
         const uint type = uint(this->field.isFluid(i) ? GEOFLUID : GEOSOLID);
 

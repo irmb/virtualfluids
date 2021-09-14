@@ -37,13 +37,6 @@
 Vertex::Vertex(real x, real y, real z) : x(x), y(y), z(z){}
 Vertex::Vertex() { x = 0.0f; y = 0.0f; z = 0.0f; }
 
-Vertex::Vertex(const Vertex& v)
-{
-	this->x = v.x;
-	this->y = v.y;
-	this->z = v.z;
-}
-
  real Vertex::getEuclideanDistanceTo(const Vertex &w) const
 {
     return vf::Math::sqrtReal((x - w.x)*(x - w.x) + (y - w.y)*(y - w.y) + (z - w.z)*(z - w.z));
