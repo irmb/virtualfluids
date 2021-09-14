@@ -31,7 +31,6 @@
 //! \author Soeren Peters, Stephan Lenz
 //=======================================================================================
 #include "Triangle.h"
-#include "TriangleException.h"
 
 #include "utilities/math/Math.h"
 
@@ -83,7 +82,7 @@ void Triangle::calcNormal()
 
 void Triangle::initalLayerThickness(real delta)
 {
-    this->layerThickness = delta*(abs(this->normal.x) + abs(this->normal.y) + abs(this->normal.z));
+    this->layerThickness = delta * (std::abs(this->normal.x) + std::abs(this->normal.y) + std::abs(this->normal.z));
 }
 
 
@@ -91,17 +90,21 @@ char Triangle::isUnderFace(const Vertex &point) const
 {
     real s;
 
-    if (this->isUnterExtendedFace(point, s))
-        if (this->isNotNextToFace(point))
-            if (this->isUnderAngleToNeighbors(point))
-                if (this->isNegativeDirectionBorder(point))
+    if (this->isUnterExtendedFace(point, s)) {
+        if (this->isNotNextToFace(point)) {
+            if (this->isUnderAngleToNeighbors(point)) {
+                if (this->isNegativeDirectionBorder(point)) {
                     return NEGATIVE_DIRECTION_BORDER;
-                else
+                } else {
                     return INSIDE;
-            else 
+                }
+            } else {
                 return 4;
-        else
+            }
+        } else {
             return 3;
+        }
+    }
 
 
     if (this->isQNode(point, s))

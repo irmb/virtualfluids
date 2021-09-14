@@ -34,6 +34,7 @@
 
 #include <algorithm>    // std::min
 #include <float.h>
+#include <cmath>
 
 #include "geometries/Vertex/Vertex.h"
 
