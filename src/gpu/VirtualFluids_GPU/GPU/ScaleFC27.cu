@@ -11094,31 +11094,6 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC,
                                      nyC, nxF, nyF, offFC, k);
 }
 
-extern "C" __global__ void scaleFC_RhoSq_comp_27_Stream(real *DC, real *DF, unsigned int *neighborCX, unsigned int *neighborCY,
-                                                        unsigned int *neighborCZ, unsigned int *neighborFX,
-                                                        unsigned int *neighborFY, unsigned int *neighborFZ,
-                                                        unsigned int size_MatC, unsigned int size_MatF, bool evenOrOdd,
-                                                        unsigned int *posC, unsigned int *posFSWB, unsigned int kFC,
-                                                        real omCoarse, real omFine, real nu, unsigned int nxC, unsigned int nyC, unsigned int nxF, unsigned int nyF,
-                                                        OffFC offFC, const unsigned int *fluidNodeIndices, unsigned int numberOfFluidNodes)
-{
-    ////////////////////////////////////////////////////////////////////////////////
-    const unsigned ix = threadIdx.x; // Globaler x-Index
-    const unsigned iy = blockIdx.x;  // Globaler y-Index
-    const unsigned iz = blockIdx.y;  // Globaler z-Index
-
-    const unsigned nx = blockDim.x;
-    const unsigned ny = gridDim.x;
-
-    const unsigned k_thread = nx * (ny * iz + iy) + ix;
-
-    if (k_thread < numberOfFluidNodes) {
-        const unsigned k = fluidNodeIndices[k_thread]; 
-        scaleFC_RhoSq_comp_27_Calculation(DC, DF, neighborCX, neighborCY, neighborCZ, neighborFX, neighborFY,
-                                          neighborFZ, size_MatC, size_MatF, evenOrOdd, posC, posFSWB, kFC, omCoarse,
-                                          omFine, nu, nxC, nyC, nxF, nyF, offFC, k);
-    }
-}
 
 
 

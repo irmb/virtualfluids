@@ -76,8 +76,7 @@ void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManage
         if (para->getUseStreams() && para->getNumprocs() > 1) {
         } else {
             if (para->getKernelNeedsFluidNodeIndicesToRun()) {
-                fineToCoarseUsingIndex(para, level, para->getParD(level)->fluidNodeIndices,
-                                       para->getParD(level)->numberOfFluidNodes, -1);
+                fineToCoarseUsingIndex(para, level, -1);
 
                 prepareExchangeMultiGPU(para, level, -1);
                 exchangeMultiGPU(para, comm, cudaManager, level, -1);
@@ -1139,8 +1138,7 @@ void fineToCoarse(Parameter* para, int level)
 
 }
 
-void fineToCoarseUsingIndex(Parameter *para, int level, uint *fluidNodeIndices, uint numberOfFluidNodes,
-                            int streamIndex)
+void fineToCoarseUsingIndex(Parameter *para, int level, int streamIndex)
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
     ScaleFC_RhoSq_comp_27_Stream(
@@ -1151,7 +1149,7 @@ void fineToCoarseUsingIndex(Parameter *para, int level, uint *fluidNodeIndices, 
         para->getParD(level)->intFC.ICellFCC, para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC,
         para->getParD(level)->omega, para->getParD(level + 1)->omega, para->getParD(level)->vis,
         para->getParD(level)->nx, para->getParD(level)->ny, para->getParD(level + 1)->nx, para->getParD(level + 1)->ny,
-        para->getParD(level)->numberofthreads, para->getParD(level)->offFC, fluidNodeIndices, numberOfFluidNodes, stream);
+        para->getParD(level)->numberofthreads, para->getParD(level)->offFC, stream);
     getLastCudaError("ScaleFC27_RhoSq_comp_Stream execution failed");
 
     //////////////////////////////////////////////////////////////////////////

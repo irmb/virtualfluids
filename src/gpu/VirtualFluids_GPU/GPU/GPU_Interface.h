@@ -2116,9 +2116,7 @@ extern "C" void ScaleFC_RhoSq_comp_27_Stream(	real* DC,
 												unsigned int nxF, 
 												unsigned int nyF, 
 											    unsigned int numberOfThreads,
-												OffFC offFC, 
-												unsigned int *fluidNodeIndices, 
-											    unsigned int numberOfFluidNodes,                                                
+												OffFC offFC,                                              
 												CUstream_st *stream);
 
 extern "C" void ScaleFC_RhoSq_3rdMom_comp_27( real* DC, 
