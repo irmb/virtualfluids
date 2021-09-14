@@ -11,19 +11,18 @@
 class LaunchParameter
 {
 public:
-	CUDA_HOST GRIDGENERATOR_EXPORT LaunchParameter();
+    GRIDGENERATOR_EXPORT LaunchParameter();
 
-	CUDA_HOST GRIDGENERATOR_EXPORT static LaunchParameter make_2D1D_launchParameter(int size, int threadDim);
-	CUDA_HOST GRIDGENERATOR_EXPORT static LaunchParameter make_1D1D_launchParameter(int size, int threadDim);
+    GRIDGENERATOR_EXPORT static LaunchParameter make_2D1D_launchParameter(int size, int threadDim);
+    GRIDGENERATOR_EXPORT static LaunchParameter make_1D1D_launchParameter(int size, int threadDim);
 
-	DEVICE static int getGlobalIdx_2D_1D();
-	DEVICE static int getGlobalIdx_1D_1D();
+    GRIDGENERATOR_EXPORT static int getGlobalIdx_2D_1D();
+    GRIDGENERATOR_EXPORT static int getGlobalIdx_1D_1D();
 
-	CUDA_HOST void print() const;
+    void print() const;
 
-	dim3 threads;
-	dim3 blocks;
+    dim3 threads;
+    dim3 blocks;
 };
-
 
 #endif
