@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file BoundingBox.cpp
+//! \ingroup geometries
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #include "BoundingBox.h"
 
 #include "../Triangle/Triangle.h"
@@ -10,18 +42,7 @@
 
  BoundingBox::BoundingBox(real minX, real maxX, real minY, real maxY, real minZ, real maxZ) : minX(minX), maxX(maxX), minY(minY), maxY(maxY), minZ(minZ), maxZ(maxZ) {}
 
- HOSTDEVICE BoundingBox::BoundingBox() :
-     minX(0),
-     maxX(0),
-     minY(0),
-     maxY(0),
-     minZ(0),
-     maxZ(0) {}
-
- BoundingBox::BoundingBox(const BoundingBox &t) : minX(t.minX), maxX(t.maxX), minY(t.minY), maxY(t.maxY), minZ(t.minZ), maxZ(t.maxZ) {}
-
-
- CUDA_HOST BoundingBox BoundingBox::makeInvalidMinMaxBox()
+ BoundingBox BoundingBox::makeInvalidMinMaxBox()
  {
      BoundingBox box = BoundingBox(std::numeric_limits<real>::max(),
          std::numeric_limits<real>::lowest(),
@@ -32,11 +53,11 @@
      return box;
  }
 
- void BoundingBox::setMinMax(const Triangle& t)
+ void BoundingBox::setMinMax(const Triangle &t)
  {
      real minX, maxX, minY, maxY, minZ, maxZ;
      t.setMinMax(minX, maxX, minY, maxY, minZ, maxZ);
-     if(minX < this->minX)
+     if (minX < this->minX)
          this->minX = minX;
      if (minY < this->minY)
          this->minY = minY;
@@ -51,20 +72,18 @@
          this->maxZ = maxZ;
  }
 
-
  bool BoundingBox::intersect(const Triangle &t) const
  {
-	 if (isInside(t.v1) || isInside(t.v2) || isInside(t.v3))
-		 return true;
-	 return false;
+     if (isInside(t.v1) || isInside(t.v2) || isInside(t.v3))
+         return true;
+     return false;
  }
-
 
  bool BoundingBox::isInside(const Triangle &t) const
  {
-	 if (isInside(t.v1) && isInside(t.v2) && isInside(t.v3))
-		 return true;
-	 return false;
+     if (isInside(t.v1) && isInside(t.v2) && isInside(t.v3))
+         return true;
+     return false;
  }
 
  bool BoundingBox::isInside(const real x, const real y, const real z) const
@@ -157,7 +176,7 @@
  }
 
 
- CUDA_HOST bool BoundingBox::operator==(const BoundingBox &box) const
+ bool BoundingBox::operator==(const BoundingBox &box) const
  {
      return vf::Math::equal(minX, box.minX)
          && vf::Math::equal(maxX, box.maxX)

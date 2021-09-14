@@ -26,54 +26,58 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file Field.h
-//! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schoenherr
+//! \file Math.cpp
+//! \ingroup utilities
+//! \author Soeren Peters, Stephan Lenz
 //=======================================================================================
-#ifndef FIELD_H
-#define FIELD_H
+#include "Math.h"
 
-#include "global.h"
+#include <cmath>
 
-struct Vertex;
 
-class GRIDGENERATOR_EXPORT Field : public enableSharedFromThis<Field>
+
+bool vf::Math::equal(const real& val1, const real& val2, real maxRelDiff)
 {
-public:
-    Field(uint size);
-    Field() = default;
-    void allocateMemory();
-    void freeMemory();
+	const real diff = std::fabs(val1 - val2);
+	const real val1_abs = std::fabs(val1);
+	const real val2_abs = std::fabs(val2);
 
-    uint getSize() const;
-    char getFieldEntry(uint index) const;
+	const real largest = (val2_abs > val1_abs) ? val2_abs : val1_abs;
+	if (diff <= largest * maxRelDiff)
+		return true;
+	return false;
+}
 
-    bool is(uint index, char type) const;
-    bool isCoarseToFineNode(uint index) const;
-    bool isFineToCoarseNode(uint index) const;
-	bool isFluid(uint index) const;
-	bool isInvalidSolid(uint index) const;
-    bool isQ(uint index) const;
-    bool isBoundaryConditionNode(uint index) const;
-    bool isInvalidCoarseUnderFine(uint index) const;
-    bool isStopperOutOfGrid(uint index) const;
-    bool isStopperCoarseUnderFine(uint index) const;
-	bool isStopperSolid(uint index) const;
-	bool isStopper(uint index) const;
-    bool isInvalidOutOfGrid(uint index) const;
+bool vf::Math::lessEqual(const real& val1, const real& val2, real maxRelDiff)
+{
+	if (val1 < val2 || equal(val1, val2, maxRelDiff))
+		return true;
+	return false;
+}
 
-    void setFieldEntry(uint index, char val);
-	void setFieldEntryToFluid(uint index);
-	void setFieldEntryToInvalidSolid(uint index);
-    void setFieldEntryToStopperOutOfGrid(uint index);
-    void setFieldEntryToStopperOutOfGridBoundary(uint index);
-    void setFieldEntryToStopperCoarseUnderFine(uint index);
-    void setFieldEntryToInvalidCoarseUnderFine(uint index);
-    void setFieldEntryToInvalidOutOfGrid(uint index);
+bool vf::Math::greaterEqual(const real& val1, const real& val2, real maxRelDiff)
+{
+	if (val1 > val2 || equal(val1, val2, maxRelDiff))
+		return true;
+	return false;
+}
 
-private:
-    char *field;
-    uint size;
-};
-
+real vf::Math::sqrtReal(const real& val)
+{
+#ifdef VF_DOUBLE_ACCURACY
+    return sqrt(val);
+#else
+    return sqrtf(val);
 #endif
+}
+
+real vf::Math::acosReal(const real& val)
+{
+#ifdef VF_DOUBLE_ACCURACY
+    return acos(val);
+#else
+    return acosf(val);
+#endif
+}
+
+

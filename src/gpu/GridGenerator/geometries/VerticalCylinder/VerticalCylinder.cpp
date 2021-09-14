@@ -26,54 +26,97 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file Field.h
-//! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schoenherr
+//! \file VerticalCylinder.cpp
+//! \ingroup geometries
+//! \author Soeren Peters, Stephan Lenz
 //=======================================================================================
-#ifndef FIELD_H
-#define FIELD_H
+#include "VerticalCylinder.h"
 
-#include "global.h"
-
-struct Vertex;
-
-class GRIDGENERATOR_EXPORT Field : public enableSharedFromThis<Field>
+VerticalCylinder::VerticalCylinder(const double& centerX, const double& centerY, const double& centerZ, const double& radius, const double& height)
+    : centerX(centerX), centerY(centerY), centerZ(centerZ), radius(radius), height(height)
 {
-public:
-    Field(uint size);
-    Field() = default;
-    void allocateMemory();
-    void freeMemory();
 
-    uint getSize() const;
-    char getFieldEntry(uint index) const;
+}
 
-    bool is(uint index, char type) const;
-    bool isCoarseToFineNode(uint index) const;
-    bool isFineToCoarseNode(uint index) const;
-	bool isFluid(uint index) const;
-	bool isInvalidSolid(uint index) const;
-    bool isQ(uint index) const;
-    bool isBoundaryConditionNode(uint index) const;
-    bool isInvalidCoarseUnderFine(uint index) const;
-    bool isStopperOutOfGrid(uint index) const;
-    bool isStopperCoarseUnderFine(uint index) const;
-	bool isStopperSolid(uint index) const;
-	bool isStopper(uint index) const;
-    bool isInvalidOutOfGrid(uint index) const;
+VerticalCylinder::~VerticalCylinder()
+{
+}
 
-    void setFieldEntry(uint index, char val);
-	void setFieldEntryToFluid(uint index);
-	void setFieldEntryToInvalidSolid(uint index);
-    void setFieldEntryToStopperOutOfGrid(uint index);
-    void setFieldEntryToStopperOutOfGridBoundary(uint index);
-    void setFieldEntryToStopperCoarseUnderFine(uint index);
-    void setFieldEntryToInvalidCoarseUnderFine(uint index);
-    void setFieldEntryToInvalidOutOfGrid(uint index);
+SPtr<VerticalCylinder> VerticalCylinder::makeShared(double centerX, double centerY, double centerZ, double radius, double height)
+{
+    return SPtr<VerticalCylinder>(new VerticalCylinder(centerX, centerY, centerZ, radius, height));
+}
 
-private:
-    char *field;
-    uint size;
-};
+Object* VerticalCylinder::clone() const
+{
+    return new VerticalCylinder(centerX, centerY, centerZ, radius, height);
+}
 
-#endif
+double VerticalCylinder::getX1Centroid()
+{
+    return centerX;
+}
+
+double VerticalCylinder::getX1Minimum()
+{
+    return centerX - radius;
+}
+
+double VerticalCylinder::getX1Maximum()
+{
+    return centerX + radius;
+}
+
+double VerticalCylinder::getX2Centroid()
+{
+    return centerY;
+}
+
+double VerticalCylinder::getX2Minimum()
+{
+    return centerY - radius;
+}
+
+double VerticalCylinder::getX2Maximum()
+{
+    return centerY + radius;
+}
+
+double VerticalCylinder::getX3Centroid()
+{
+    return centerZ;
+}
+
+double VerticalCylinder::getX3Minimum()
+{
+    return centerZ - 0.5 * height;
+}
+
+double VerticalCylinder::getX3Maximum()
+{
+    return centerZ + 0.5 * height;
+}
+
+bool VerticalCylinder::isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset)
+{
+    double offset = maxOffset;
+    if (x1 < centerX || x2 < centerY || x3 < centerZ)
+        offset = minOffset;
+        
+
+    const double deltaX1 = x1 - centerX;
+    const double deltaX2 = x2 - centerY;
+    const double deltaX3 = x3 - centerZ;
+
+    if( deltaX3 > 0.5 * height || deltaX3 < - 0.5 * height )
+        return false;
+
+    return (deltaX1*deltaX1 + deltaX2*deltaX2) < ((this->radius - offset) * (this->radius - offset));
+}
+
+
+void VerticalCylinder::scale(double delta)
+{
+    this->radius += delta;
+    this->height += delta;
+}

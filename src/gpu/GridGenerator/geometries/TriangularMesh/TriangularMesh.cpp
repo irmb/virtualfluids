@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file TriangularMesh.cpp
+//! \ingroup geometries
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #include "TriangularMesh.h"
 
 #include "Core/Timer/Timer.h"
@@ -96,12 +128,12 @@ void TriangularMesh::initalizeDataFromTriangles()
 	this->triangles = triangleVec.data();
 	this->size = long(triangleVec.size());
 
-    for (std::size_t i = 0; i < this->size; i++) {
+    for (std::size_t i = 0; i < (size_t)this->size; i++) {
         this->minmax.setMinMax(this->triangleVec[i]);
     }
 }
 
-CUDA_HOST bool TriangularMesh::operator==(const TriangularMesh &geometry) const
+bool TriangularMesh::operator==(const TriangularMesh &geometry) const
 {
     if (!(minmax == geometry.minmax))
         return false;
@@ -116,12 +148,12 @@ CUDA_HOST bool TriangularMesh::operator==(const TriangularMesh &geometry) const
 }
 
 
-HOSTDEVICE GbTriFaceMesh3D* TriangularMesh::getGbTriFaceMesh3D() const
+GbTriFaceMesh3D* TriangularMesh::getGbTriFaceMesh3D() const
 {
     return this->VF_GbTriFaceMesh3D.get();
 }
 
-CUDA_HOST GRIDGENERATOR_EXPORT void TriangularMesh::generateGbTriFaceMesh3D()
+GRIDGENERATOR_EXPORT void TriangularMesh::generateGbTriFaceMesh3D()
 {
     if( this->VF_GbTriFaceMesh3D ) return;
 
@@ -130,7 +162,7 @@ CUDA_HOST GRIDGENERATOR_EXPORT void TriangularMesh::generateGbTriFaceMesh3D()
     std::vector<GbTriFaceMesh3D::Vertex>  *gbVertices = new std::vector<GbTriFaceMesh3D::Vertex>(this->triangleVec.size() * 3);
     std::vector<GbTriFaceMesh3D::TriFace> *gbTriangles = new std::vector<GbTriFaceMesh3D::TriFace>(this->triangleVec.size());
 
-    for (int i = 0; i < this->triangleVec.size(); i++)
+    for (int i = 0; i < (int)this->triangleVec.size(); i++)
     {
         (*gbVertices)[i * 3] = GbTriFaceMesh3D::Vertex(triangles[i].v1.x, triangles[i].v1.y, triangles[i].v1.z);
         (*gbVertices)[i * 3 + 1] = GbTriFaceMesh3D::Vertex(triangles[i].v2.x, triangles[i].v2.y, triangles[i].v2.z);
@@ -244,8 +276,8 @@ std::vector<Vertex> TriangularMesh::getAverrageNormalsPerVertex(std::vector<std:
 
 void TriangularMesh::eliminateTriangleswithIdenticialNormal(std::vector<Triangle> &triangles)
 {
-    for (int i = 0; i < triangles.size() - 1; i++) {
-        for (int j = i + 1; j < triangles.size(); j++) {
+    for (std::size_t i = 0; i < triangles.size() - 1; i++) {
+        for (std::size_t j = i + 1; j < triangles.size(); j++) {
             if (triangles[i].normal == triangles[j].normal)
                 triangles.erase(triangles.begin() + i);
         }
