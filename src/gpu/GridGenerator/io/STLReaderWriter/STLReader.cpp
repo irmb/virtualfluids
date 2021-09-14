@@ -233,6 +233,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const std::string& name)
 
         triangles.push_back(Triangle(p1, p2, p3, normal));
     }
+    (void)sizef;
 	fclose(file);
 
     return triangles;
@@ -330,7 +331,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
     int size = (int)triangles.size();
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles in process: " << size << "\n";
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Complete reading STL file. \n";
-
+    (void)sizef;
 	fclose(file);
 
     return triangles;
