@@ -37,7 +37,6 @@
 
 #include "geometries/Cuboid/Cuboid.h"
 
-#include "grid/distributions/Distribution.h"
 #include "grid/GridImp.h"
 
 enum class TriangularMeshDiscretizationMethod
@@ -55,8 +54,6 @@ public:
 
     SPtr<Grid> makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level, const std::string& d3Qxx = "D3Q27")
     {
-        Distribution distribution = DistributionHelper::getDistribution(d3Qxx);
-
         return GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, d3Qxx, level);
     }
 };
