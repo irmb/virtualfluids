@@ -53,8 +53,7 @@ public:
 	real maxZ;
 
 	BoundingBox(real minX, real maxX, real minY, real maxY, real minZ, real maxZ);
-    BoundingBox();
-	BoundingBox(const BoundingBox &t);
+    BoundingBox() = default;
 
 public:
     static BoundingBox makeInvalidMinMaxBox();

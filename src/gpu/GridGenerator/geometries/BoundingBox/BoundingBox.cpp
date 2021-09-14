@@ -42,17 +42,6 @@
 
  BoundingBox::BoundingBox(real minX, real maxX, real minY, real maxY, real minZ, real maxZ) : minX(minX), maxX(maxX), minY(minY), maxY(maxY), minZ(minZ), maxZ(maxZ) {}
 
- BoundingBox::BoundingBox() :
-     minX(0),
-     maxX(0),
-     minY(0),
-     maxY(0),
-     minZ(0),
-     maxZ(0) {}
-
- BoundingBox::BoundingBox(const BoundingBox &t) : minX(t.minX), maxX(t.maxX), minY(t.minY), maxY(t.maxY), minZ(t.minZ), maxZ(t.maxZ) {}
-
-
  BoundingBox BoundingBox::makeInvalidMinMaxBox()
  {
      BoundingBox box = BoundingBox(std::numeric_limits<real>::max(),
