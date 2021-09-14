@@ -861,7 +861,7 @@ CUDA_HOST void GridImp::updateSparseIndices()
 
 CUDA_HOST void GridImp::findFluidNodeIndices(bool splitDomain) 
 {
-    findFluidNodeIndicesBorder();
+    // find sparse index of all fluid nodes
     this->fluidNodeIndices.clear();
     for (uint index = 0; index < this->size; index++) {
         int sparseIndex = this->getSparseIndex(index);
@@ -871,24 +871,27 @@ CUDA_HOST void GridImp::findFluidNodeIndices(bool splitDomain)
             this->fluidNodeIndices.push_back((uint)sparseIndex+1);
     }
 
-    // If splitDomain: remove all indices in fluidNodeIndicesBorder from fluidNodeIndices
+    // If splitDomain: find fluidNodeIndicesBorder and remove all indices in fluidNodeIndicesBorder from fluidNodeIndices
     if (splitDomain) {
+        findFluidNodeIndicesBorder();
         std::sort(this->fluidNodeIndices.begin(), this->fluidNodeIndices.end());
-        auto it = std::set_difference(this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
+        auto iterator = std::set_difference(this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
                             this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end(),
                             this->fluidNodeIndices.begin());
-        this->fluidNodeIndices.resize(it - this->fluidNodeIndices.begin());
+        this->fluidNodeIndices.resize(iterator - this->fluidNodeIndices.begin());
     }
 }
 
 void GridImp::findFluidNodeIndicesBorder() {
     this->fluidNodeIndicesBorder.clear();
 
+    // resize fluidNodeIndicesBorder (for better performance in copy operation)
     size_t newSize = 0;
     for (CommunicationIndices& ci : this->communicationIndices)
         newSize += ci.sendIndices.size();    
     this->fluidNodeIndicesBorder.reserve(newSize);
 
+    // copy all send indices to fluidNodeIndicesBorder
     for (CommunicationIndices& ci : this->communicationIndices)
         std::copy(ci.sendIndices.begin(), ci.sendIndices.end(), std::back_inserter(this->fluidNodeIndicesBorder));
 
