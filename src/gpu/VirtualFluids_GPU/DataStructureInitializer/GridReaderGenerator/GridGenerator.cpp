@@ -924,11 +924,12 @@ void GridGenerator::allocArrays_OffsetScale()
         if (para->getUseStreams()) {
             // split fine-to-coarse-coarse indices into border and bulk
             para->getParH(level)->intFCBorder.ICellFCC = para->getParH(level)->intFC.ICellFCC; 
-            para->getParD(level)->intFCBorder.ICellFCC = para->getParD(level)->intFC.ICellFCC;
             builder->getGridInterfaceIndicesFCCBorderBulk(para->getParH(level)->intFCBorder.ICellFCC, para->getParH(level)->intFCBorder.kFC, para->getParH(level)->intFCBulk.ICellFCC, para->getParH(level)->intFCBulk.kFC, level);
+            
             para->getParD(level)->intFCBorder.kFC = para->getParH(level)->intFCBorder.kFC;
             para->getParD(level)->intFCBulk.kFC = para->getParH(level)->intFCBulk.kFC;
-            para->getParD(level)->intFCBulk.ICellFCC = para->getParD(level)->intFCBorder.ICellFCC + para->getParD(level)->intFCBulk.kFC;
+            para->getParD(level)->intFCBorder.ICellFCC = para->getParD(level)->intFC.ICellFCC;
+            para->getParD(level)->intFCBulk.ICellFCC = para->getParD(level)->intFCBorder.ICellFCC + para->getParD(level)->intFCBorder.kFC;
         }
         std::cout << "sizeOld  " << para->getParH(level)->K_FC << std::endl;
         std::cout << "sizeNew  " << para->getParH(level)->intFCBorder.kFC + para->getParH(level)->intFCBulk.kFC
