@@ -149,6 +149,7 @@ public:
     
     void cudaAllocInterfaceFC(int lev);
     void cudaCopyInterfaceFC(int lev);
+    void cudaCheckInterfaceFCBulk(int lev);
     void cudaFreeInterfaceFC(int lev);
     
     void cudaAllocInterfaceOffCF(int lev);

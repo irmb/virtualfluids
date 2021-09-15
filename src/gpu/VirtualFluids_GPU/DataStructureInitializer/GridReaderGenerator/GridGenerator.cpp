@@ -960,6 +960,20 @@ void GridGenerator::allocArrays_OffsetScale()
 		cudaMemoryManager->cudaCopyInterfaceFC(level);
 		cudaMemoryManager->cudaCopyInterfaceOffCF(level);
 		cudaMemoryManager->cudaCopyInterfaceOffFC(level);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        if (para->getUseStreams())
+            cudaMemoryManager->cudaCheckInterfaceFCBulk(level);
+
+        std::cout << "...Device " << std::endl;
+        std::cout << "old pointer " << para->getParD(level)->intFC.ICellFCC << std::endl;
+        std::cout << "border pointer (= old pointer) " << para->getParD(level)->intFCBorder.ICellFCC << std::endl;
+        std::cout << "bulk pointer new " << para->getParD(level)->intFCBulk.ICellFCC << std::endl;
+        std::cout << "sizeOld  " << para->getParD(level)->K_FC << std::endl;
+        std::cout << "sizeNew  " << para->getParD(level)->intFCBorder.kFC + para->getParD(level)->intFCBulk.kFC
+                  << " = border " << para->getParD(level)->intFCBorder.kFC << " + bulk "
+                  << para->getParD(level)->intFCBulk.kFC << std::endl;
     }
 }
 

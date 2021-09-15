@@ -1063,6 +1063,14 @@ void CudaMemoryManager::cudaCopyInterfaceFC(int lev)
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->intFC.ICellFCF, parameter->getParH(lev)->intFC.ICellFCF, parameter->getParH(lev)->mem_size_kFC, cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->intFC.ICellFCC, parameter->getParH(lev)->intFC.ICellFCC, parameter->getParH(lev)->mem_size_kFC, cudaMemcpyHostToDevice));
 }
+void CudaMemoryManager::cudaCheckInterfaceFCBulk(int lev)
+{
+    // only use for testing!
+    size_t memsize = sizeof(uint) * parameter->getParH(lev)->intFCBulk.kFC;
+    checkCudaErrors(cudaMemcpy(parameter->getParD(lev)->intFCBulk.ICellFCC, parameter->getParH(lev)->intFCBulk.ICellFCC, memsize, cudaMemcpyDeviceToDevice));
+    for (int i = 0; i < parameter->getParH(lev)->intFCBulk.kFC; i++)
+        printf("%d %d\n", i, parameter->getParH(lev)->intFCBulk.ICellFCC[i]);
+}
 void CudaMemoryManager::cudaFreeInterfaceFC(int lev)
 {
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->intFC.ICellFCF));
