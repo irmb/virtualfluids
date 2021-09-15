@@ -74,13 +74,21 @@ void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManage
     if( level != para->getFine() )
     {
         if (para->getUseStreams() && para->getNumprocs() > 1) {
-        } else {
-            //fineToCoarse(para, level);
-
-            //fineToCoarseWithStream(para, level, para->getParD(level)->intFCBorder.ICellFCC,
-                                   //para->getParD(level)->intFCBorder.kFC, -1);
-            fineToCoarseWithStream(para, level, para->getParD(level)->intFCBulk.ICellFCC,
+            fineToCoarseWithStream(para, level, 
+                                   para->getParD(level)->intFCBorder.ICellFCC,
+                                   para->getParD(level)->intFCBorder.ICellFCF,
+                                   para->getParD(level)->intFCBorder.kFC, -1);
+            fineToCoarseWithStream(para, level, 
+                                   para->getParD(level)->intFCBulk.ICellFCC,
+                                   para->getParD(level)->intFCBulk.ICellFCF,
                                    para->getParD(level)->intFCBulk.kFC, -1);
+
+            prepareExchangeMultiGPU(para, level, -1);
+            exchangeMultiGPU(para, comm, cudaManager, level, -1);
+
+            coarseToFine(para, level);
+        } else {
+            fineToCoarse(para, level);
 
             prepareExchangeMultiGPU(para, level, -1);
             exchangeMultiGPU(para, comm, cudaManager, level, -1);
@@ -1133,7 +1141,7 @@ void fineToCoarse(Parameter* para, int level)
 
 }
 
-void fineToCoarseWithStream(Parameter *para, int level, uint *iCellFCC, uint k_FC, int streamIndex)
+void fineToCoarseWithStream(Parameter *para, int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex)
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 
@@ -1141,7 +1149,7 @@ void fineToCoarseWithStream(Parameter *para, int level, uint *iCellFCC, uint k_F
 							para->getParD(level)->neighborX_SP,   para->getParD(level)->neighborY_SP,    para->getParD(level)->neighborZ_SP, 
 							para->getParD(level+1)->neighborX_SP, para->getParD(level+1)->neighborY_SP,  para->getParD(level+1)->neighborZ_SP, 
 							para->getParD(level)->size_Mat_SP,    para->getParD(level+1)->size_Mat_SP,   para->getParD(level)->evenOrOdd,
-							iCellFCC,                             para->getParD(level)->intFC.ICellFCF, 
+							iCellFCC,                             iCellFCF, 
 							k_FC,                                 para->getParD(level)->omega,           para->getParD(level + 1)->omega, 
 							para->getParD(level)->vis,            para->getParD(level)->nx,              para->getParD(level)->ny, 
 							para->getParD(level+1)->nx,           para->getParD(level+1)->ny,            para->getParD(level)->numberofthreads,

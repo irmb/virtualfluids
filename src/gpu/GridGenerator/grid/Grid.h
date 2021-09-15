@@ -51,7 +51,10 @@ public:
     HOSTDEVICE virtual void setFieldEntry(uint matrixIndex, char type) = 0;
 
     CUDA_HOST virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const = 0;
-    CUDA_HOST virtual void getGridInterfaceIndicesFCCBorderBulk(uint *iCellFccBorder, uint &intFCBorderKfc, uint *&iCellFccBulk, uint &intFCBulkKfc, int level) const = 0;
+    CUDA_HOST virtual void getGridInterfaceIndicesFCCBorderBulk(uint *iCellFccBorder, uint *&iCellFccBulk,
+                                                                uint *iCellFcfBorder, uint *&iCellFcfBulk,
+                                                                uint &intFCBorderKfc, uint &intFCBulkKfc,
+                                                                int level) const = 0;
 
     CUDA_HOST virtual int *getNeighborsX() const = 0;
     CUDA_HOST virtual int *getNeighborsY() const = 0;

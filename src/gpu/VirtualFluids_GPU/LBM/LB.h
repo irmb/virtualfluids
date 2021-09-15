@@ -140,11 +140,6 @@ typedef struct ICellFC{
    uint kFC;
 } InterpolationCellFC;
 
-typedef struct ICellFCBB {
-    uint *ICellFCC;
-    uint kFC;
-} InterpolationCellFCBorderBulk;
-
 //Offset of the interface cells at the wall
 typedef struct OffCF{
    real* xOffCF;

@@ -109,7 +109,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator = true;
-    bool useMultiGPU = false;
+    bool useMultiGPU = true;
     bool useStreams  = true;
     bool useLevels = true;
 
