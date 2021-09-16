@@ -95,9 +95,6 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
     this->postProcessingVariables.assign(s.begin(), s.end());
     this->addPostProcessingVariable(PostProcessingVariable::LAST);
 
-    
-
-
     for(int level=0; level<=para->getMaxLevel(); level++)
     {
         std::vector<int> probeIndices_level;
@@ -128,9 +125,9 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
                     pointCoordsX_level.push_back( pointCoordX );
                     pointCoordsY_level.push_back( pointCoordY );
                     pointCoordsZ_level.push_back( pointCoordZ );
-                    printf("Found Point %i, x: %f, y: %f,z: %f, \n For %f %f %f, \n distx: %f, disty: %f, distz: %f \n", j, para->getParH(level)->coordX_SP[j],para->getParH(level)->coordY_SP[j],para->getParH(level)->coordZ_SP[j],
-                    this->pointCoordsX[point], this->pointCoordsY[point], this->pointCoordsZ[point], 
-                    distX, distY, distZ);
+                    // printf("Found Point %i, x: %f, y: %f,z: %f, \n For %f %f %f, \n distx: %f, disty: %f, distz: %f \n", j, para->getParH(level)->coordX_SP[j],para->getParH(level)->coordY_SP[j],para->getParH(level)->coordZ_SP[j],
+                    // this->pointCoordsX[point], this->pointCoordsY[point], this->pointCoordsZ[point], 
+                    // distX, distY, distZ);
                 }
             }
         }
@@ -172,6 +169,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         cudaManager->cudaAllocProbeQuantityArray(this, level);
         std::copy(this->postProcessingVariables.begin(), this->postProcessingVariables.end(), probeParams[level]->quantitiesH);
         cudaManager->cudaCopyProbeQuantitiesHtoD(this, level);
+
         for(int arr=0; arr<probeParams[level]->nArrays; arr++)
         {
             for( int point=0; point<probeParams[level]->nPoints; point++)
@@ -179,6 +177,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
                 probeParams[level]->quantitiesArrayH[arr*probeParams[level]->nPoints+point] = 0.0f;
             }
         }
+        
         cudaManager->cudaCopyProbeQuantityArrayHtoD(this, level);
     }
 }
@@ -224,7 +223,30 @@ void Probe::setProbePointsFromList(std::vector<real> &_pointCoordsX, std::vector
     this->pointCoordsY = _pointCoordsY;
     this->pointCoordsZ = _pointCoordsZ;
     this->nProbePoints = _pointCoordsX.size();
-    printf("Added list of %u  points", this->nProbePoints );
+    printf("Added list of %u  points \n", this->nProbePoints );
+}
+
+void Probe::setProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, real delta_y, real delta_z)
+{
+    int n_points_y = int((pos1_y-pos0_y)/delta_y);
+    int n_points_z = int((pos1_z-pos0_z)/delta_z);
+    int n_points = n_points_y*n_points_z;
+
+    std::vector<real> pointCoordsXtmp, pointCoordsYtmp, pointCoordsZtmp;
+    pointCoordsXtmp.reserve(n_points);
+    pointCoordsYtmp.reserve(n_points);
+    pointCoordsZtmp.reserve(n_points);
+
+    for(int n_y=0; n_y<n_points_y; n_y++)
+    {
+        for(int n_z=0; n_z<n_points_z; n_z++)
+        {
+            pointCoordsXtmp.push_back(pos_x);
+            pointCoordsYtmp.push_back(pos0_y+delta_y*n_y);
+            pointCoordsZtmp.push_back(pos0_z+delta_z*n_z);
+        }
+    }
+    this->setProbePointsFromList(pointCoordsXtmp, pointCoordsYtmp, pointCoordsZtmp);
 }
 
 void Probe::addPostProcessingVariable(PostProcessingVariable _variable)

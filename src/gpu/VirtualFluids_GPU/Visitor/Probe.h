@@ -53,6 +53,7 @@ public:
     std::vector<PostProcessingVariable> getPostProcessingVariables(){return this->postProcessingVariables; }
 
     void setProbePointsFromList(std::vector<real> &_pointCoordsX, std::vector<real> &_pointCoordsY, std::vector<real> &_pointCoordsZ);
+    void setProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, real delta_y, real delta_z);
     void addPostProcessingVariable(PostProcessingVariable _variable);
 
     void write(Parameter* para, int level, int t);
