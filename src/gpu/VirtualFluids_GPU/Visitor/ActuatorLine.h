@@ -10,9 +10,9 @@ class ActuatorLine : public Visitor
 {
 public:
     ActuatorLine(
-        const unsigned int _nBlades,
+        const uint _nBlades,
         const real _density,
-        const unsigned int _nBladeNodes,
+        const uint _nBladeNodes,
         const real _epsilon,
         real _turbinePosX, real _turbinePosY, real _turbinePosZ,
         const real _diameter,
@@ -43,7 +43,7 @@ public:
     }
 
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
-    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t);
     void free(Parameter* para, CudaMemoryManager* cudaManager);
     void write(uint t);
 
@@ -88,12 +88,12 @@ private:
     real turbinePosX, turbinePosY, turbinePosZ;
     real omega, azimuth, delta_t, delta_x;
     const real diameter;
-    const unsigned int nBladeNodes;
-    const unsigned int nBlades;
+    const uint nBladeNodes;
+    const uint nBlades;
     const real epsilon; // in m
     const int level;
-    int numberOfIndices;
-    int numberOfNodes;
+    uint numberOfIndices;
+    uint numberOfNodes;
     };
 
 #endif

@@ -15,14 +15,14 @@
 #include "GPU/CudaMemoryManager.h"
 
 
-__global__ void interpQuantities(   int* pointIndices,
+__global__ void interpQuantities(   uint* pointIndices,
                                     uint nPoints,
                                     real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     // real* vx_point, real* vy_point, real* vz_point, real* rho_point,
                                     PostProcessingVariable* PostProcessingVariables,
-                                    int* quantityArrayOffsets, real* quantityArray
+                                    uint* quantityArrayOffsets, real* quantityArray
                                 )
 {
     const uint x = threadIdx.x; 
@@ -64,7 +64,7 @@ __global__ void interpQuantities(   int* pointIndices,
     for( int variableIndex = 0; PostProcessingVariables[variableIndex] != PostProcessingVariable::LAST; variableIndex++)
     {
         PostProcessingVariable variable = PostProcessingVariables[variableIndex];
-        int arrayOffset = quantityArrayOffsets[int(variable)]*nPoints;
+        uint arrayOffset = quantityArrayOffsets[int(variable)]*nPoints;
 
         switch(variable)
         {
@@ -153,7 +153,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         cudaManager->cudaCopyProbeDistancesHtoD(this, level);
         cudaManager->cudaCopyProbeIndicesHtoD(this, level);
 
-        int arrOffset = 0;
+        uint arrOffset = 0;
 
         cudaManager->cudaAllocProbeQuantities(this, level);
 
@@ -265,11 +265,11 @@ void Probe::addPostProcessingVariable(PostProcessingVariable _variable)
 
 void Probe::write(Parameter* para, int level, int t)
 {
-    const unsigned int numberOfParts = this->getProbeStruct(level)->nPoints / para->getlimitOfNodesForVTK() + 1;
+    const uint numberOfParts = this->getProbeStruct(level)->nPoints / para->getlimitOfNodesForVTK() + 1;
 
 
     std::vector<std::string> fnames;
-    for (unsigned int i = 1; i <= numberOfParts; i++)
+    for (uint i = 1; i <= numberOfParts; i++)
 	{
 		fnames.push_back(this->probeName + "_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(t) + ".vtk");
         this->fileNamesForCollectionFile.push_back(fnames.back());
@@ -328,13 +328,13 @@ void Probe::writeGridFile(Parameter* para, int level, std::vector<std::string>& 
     std::vector< UbTupleFloat3 > nodes;
     std::vector< std::string > nodedatanames = this->getVarNames();
 
-    unsigned int startpos = 0;
-    unsigned int endpos = 0;
-    unsigned int sizeOfNodes = 0;
+    uint startpos = 0;
+    uint endpos = 0;
+    uint sizeOfNodes = 0;
     std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     real inv_t = 1/(real(max(t,1))*pow(2,level));
-    for (unsigned int part = 0; part < fnames.size(); part++)
+    for (uint part = 0; part < fnames.size(); part++)
     {        
         startpos = part * para->getlimitOfNodesForVTK();
         sizeOfNodes = min(para->getlimitOfNodesForVTK(), this->getProbeStruct(level)->nPoints - startpos);
@@ -410,4 +410,3 @@ std::vector<std::string> Probe::getVarNames()
     }
     return varNames;
 }
-   

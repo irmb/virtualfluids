@@ -26,10 +26,10 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
                                       uint* neighborsX, uint* neighborsY, uint* neighborsZ, 
                                       uint* neighborsWSB, 
                                       real* vx, real* vy, real* vz, 
-                                      int numberOfIndices, 
+                                      uint numberOfIndices, 
                                       real* bladeCoordsX, real* bladeCoordsY, real* bladeCoordsZ, 
                                       real* bladeVelocitiesX, real* bladeVelocitiesY, real* bladeVelocitiesZ, 
-                                      uint* bladeIndices, int numberOfNodes)
+                                      uint* bladeIndices, uint numberOfNodes)
 {
     // Possibly restructure this to check every cell whether it is bsw of some blade node and then do interpolation
     // --> no need to save closest nodes and search new closest node
@@ -89,12 +89,12 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
 
 __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* gridCoordsZ,
                            real* gridForcesX, real* gridForcesY, real* gridForcesZ, 
-                           uint* gridIndices, int numberOfIndices, 
+                           uint* gridIndices, uint numberOfIndices, 
                            real* bladeCoordsX, real* bladeCoordsY, real* bladeCoordsZ, 
                            real* bladeForcesX, real* bladeForcesY,real* bladeForcesZ,
                            real* bladeRadii,
                            real radius,
-                           int nBlades, int nBladeNodes,
+                           uint nBlades, uint nBladeNodes,
                            real epsilon, real delta_x)
 {
     const uint x = threadIdx.x; 
@@ -253,7 +253,7 @@ void ActuatorLine::calcForcesEllipticWing(Parameter* para)
 
     real forceRatio = this->density*pow(this->delta_x,4)*pow(this->delta_t,-2);
 
-    for( int blade=0; blade<this->nBlades; blade++)
+    for( uint blade=0; blade<this->nBlades; blade++)
     {
         localAzimuth = this->azimuth+2*blade*vf::lbm::constant::cPi/this->nBlades;
         for( uint bladeNode=0; bladeNode<this->nBladeNodes; bladeNode++)
@@ -312,7 +312,7 @@ void ActuatorLine::calcForcesEllipticWing(Parameter* para)
 
 void ActuatorLine::rotateBlades(real angle)
 {
-    for(unsigned int node=0; node<this->nBladeNodes*this->nBlades; node++)
+    for(uint node=0; node<this->nBladeNodes*this->nBlades; node++)
     {
         real oldCoordX = this->bladeCoordsXH[node];
         real oldCoordY = this->bladeCoordsYH[node];
@@ -343,10 +343,10 @@ void ActuatorLine::initBladeCoords(CudaMemoryManager* cudaManager)
 {   
     cudaManager->cudaAllocBladeCoords(this);
 
-    for( unsigned int blade=0; blade<this->nBlades; blade++)
+    for( uint blade=0; blade<this->nBlades; blade++)
     {
         real localAzimuth = this->azimuth+(2*vf::lbm::constant::cPi/this->nBlades)*blade;
-        for(unsigned int node=0; node<this->nBladeNodes; node++)
+        for(uint node=0; node<this->nBladeNodes; node++)
         {
             real coordX, coordY, coordZ;
             real x,y,z;
@@ -367,7 +367,7 @@ void ActuatorLine::initBladeVelocities(CudaMemoryManager* cudaManager)
 {   
     cudaManager->cudaAllocBladeVelocities(this);
 
-    for(unsigned int node=0; node<this->numberOfNodes; node++)
+    for(uint node=0; node<this->numberOfNodes; node++)
     {
         this->bladeVelocitiesXH[node] = 0.f;
         this->bladeVelocitiesYH[node] = 0.f;
@@ -380,7 +380,7 @@ void ActuatorLine::initBladeForces(CudaMemoryManager* cudaManager)
 {   
     cudaManager->cudaAllocBladeForces(this);
 
-    for(unsigned int node=0; node<this->numberOfNodes; node++)
+    for(uint node=0; node<this->numberOfNodes; node++)
     {
         this->bladeForcesXH[node] = 0.f;
         this->bladeForcesYH[node] = 0.f;
@@ -397,7 +397,7 @@ void ActuatorLine::initBladeIndices(Parameter* para, CudaMemoryManager* cudaMana
     real* coordsY = para->getParH(this->level)->coordY_SP;
     real* coordsZ = para->getParH(this->level)->coordZ_SP;
 
-    for(unsigned int node=0; node<this->numberOfNodes; node++)
+    for(uint node=0; node<this->numberOfNodes; node++)
     {
         this->bladeIndicesH[node] = findNearestCellBSW(1, coordsX, coordsY, coordsZ, 
                                                        this->bladeCoordsXH[node], this->bladeCoordsYH[node], this->bladeCoordsZH[node],
@@ -413,7 +413,7 @@ void ActuatorLine::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMa
     // Actuator line exists only on 1 level
     std::vector<int> nodesInSphere;
 
-    for (int j = 1; j <= para->getParH(this->level)->size_Mat_SP; j++)
+    for (uint j = 1; j <= para->getParH(this->level)->size_Mat_SP; j++)
     {
         const real coordX = para->getParH(this->level)->coordX_SP[j];
         const real coordY = para->getParH(this->level)->coordY_SP[j];

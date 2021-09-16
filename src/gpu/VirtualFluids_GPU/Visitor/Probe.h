@@ -17,13 +17,13 @@ enum class PostProcessingVariable{
     LAST = 8,
 };
 struct ProbeStruct{
-    int nPoints, nArrays;
-    int *pointIndicesH, *pointIndicesD;
+    uint nPoints, nArrays;
+    uint *pointIndicesH, *pointIndicesD;
     real *pointCoordsX, *pointCoordsY, *pointCoordsZ;
     real *distXH, *distYH, *distZH, *distXD, *distYD, *distZD;
     real* quantitiesArrayH, *quantitiesArrayD;
     PostProcessingVariable* quantitiesH,* quantitiesD; 
-    int* arrayOffsetsH, *arrayOffsetsD;
+    uint* arrayOffsetsH, *arrayOffsetsD;
 };
 
 
