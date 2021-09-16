@@ -1,4 +1,3 @@
-
 if(BUILD_NUMERIC_TESTS)
     set(CMAKE_CXX_STANDARD 17)
 endif()
@@ -43,7 +42,7 @@ IF (BUILD_VF_GPU)
     #add_subdirectory(apps/gpu/LBM/gridGeneratorTest)
     #add_subdirectory(apps/gpu/LBM/TGV_3D)
     #add_subdirectory(apps/gpu/LBM/TGV_3D_MultiGPU)
-    #add_subdirectory(apps/gpu/LBM/ActuatorLine)
+    add_subdirectory(apps/gpu/LBM/ActuatorLine)
 ELSE()
     MESSAGE( STATUS "exclude Virtual Fluids GPU." )
 ENDIF()
