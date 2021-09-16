@@ -2,9 +2,8 @@
 #define Probe_H
 
 #include "Visitor.h"
-#include "Parameter/Parameter.h"
 #include "PointerDefinitions.h"
-#include "GridGenerator/grid/GridBuilder/GridBuilder.h"
+
 
 enum class PostProcessingVariable{ 
     // Enum val is index in pointer array -> increment between enum1 and enum2 is number of quantities allocated for enum1
@@ -26,7 +25,6 @@ struct ProbeStruct{
     PostProcessingVariable* quantitiesH,* quantitiesD; 
     int* arrayOffsetsH, *arrayOffsetsD;
 };
-
 
 
 class Probe : public Visitor 
@@ -78,9 +76,5 @@ private:
     // std::vector< std::vector<int> > probeIndices;
     // std::vector< std::vector<real> > distX, distY, distZ;
 };
-
-
-
-
 
 #endif

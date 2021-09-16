@@ -10,6 +10,10 @@
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include <Core/StringUtilities/StringUtil.h>
 
+#include "Parameter/Parameter.h"
+#include "DataStructureInitializer/GridProvider.h"
+#include "GPU/CudaMemoryManager.h"
+
 
 __global__ void interpQuantities(   int* pointIndices,
                                     uint nPoints,

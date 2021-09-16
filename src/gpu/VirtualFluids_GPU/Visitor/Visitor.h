@@ -7,12 +7,12 @@
 #include "PointerDefinitions.h"
 #include "Core/DataTypes.h"
 #include "VirtualFluids_GPU_export.h"
-#include "DataStructureInitializer/GridProvider.h"
-#include "GPU/CudaMemoryManager.h"
 
 #include <cassert>
 
 class Parameter;
+class GridProvider;
+class CudaMemoryManager;
 
 
 class VIRTUALFLUIDS_GPU_EXPORT Visitor
@@ -52,7 +52,7 @@ public:
     }
 
 protected:
-    uint updateInterval;                                                        ///< update interval in number of timesteps of the coars patch (1 = each time step)
+    uint updateInterval;                                                        ///< update interval in number of timesteps of the coarse patch (1 = each time step)
 
 };
 

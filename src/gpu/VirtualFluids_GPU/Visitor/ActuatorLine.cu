@@ -8,6 +8,10 @@
 #include "lbm/constants/NumericConstants.h"
 #include "VirtualFluids_GPU/GPU/GeometryUtils.h"
 
+#include "Parameter/Parameter.h"
+#include "DataStructureInitializer/GridProvider.h"
+#include "GPU/CudaMemoryManager.h"
+
 __host__ __device__ __inline__ real calcGaussian3D(real posX, real posY, real posZ, real destX, real destY, real destZ, real epsilon)
 {
     real distX = destX-posX;
