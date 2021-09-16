@@ -80,7 +80,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    comm = vf::gpu::Communicator::getInstanz();
    this->para = para;
 
-	printf("para ID %d, numProcs: %d, nDevices: %ld, devices: %d, maxDev: %d \n", para->getMyID(), para->getNumprocs(), para->getDevices().size(), para->getDevices()[0], para->getMaxDev());
+	printf("para ID %d, numProcs: %d, nDevices: %zd, devices: %d, maxDev: %d \n", para->getMyID(), para->getNumprocs(), para->getDevices().size(), para->getDevices()[0], para->getMaxDev());
 	printf("comm numproces %d, pid %d \n", comm->getNummberOfProcess(), comm->getPID());
 	int dev = comm->mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev());
 	printf("dev: %d \n", dev);
