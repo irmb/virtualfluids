@@ -423,7 +423,7 @@ void ActuatorLine::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMa
         if(dist < 0.6*this->diameter) nodesInSphere.push_back(j);
     }
 
-    this->numberOfIndices = nodesInSphere.size();
+    this->numberOfIndices = uint(nodesInSphere.size());
     cudaManager->cudaAllocSphereIndices(this);
     std::copy(nodesInSphere.begin(), nodesInSphere.end(), this->boundingSphereIndicesH);
     cudaManager->cudaCopySphereIndicesHtoD(this);

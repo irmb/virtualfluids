@@ -137,7 +137,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         }
         
         probeParams[level] = new ProbeStruct;
-        probeParams[level]->nPoints = probeIndices_level.size();
+        probeParams[level]->nPoints = uint(probeIndices_level.size());
         probeParams[level]->pointCoordsX = pointCoordsX_level.data();
         probeParams[level]->pointCoordsY = pointCoordsY_level.data();
         probeParams[level]->pointCoordsZ = pointCoordsZ_level.data();
@@ -173,9 +173,9 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         std::copy(this->postProcessingVariables.begin(), this->postProcessingVariables.end(), probeParams[level]->quantitiesH);
         cudaManager->cudaCopyProbeQuantitiesHtoD(this, level);
 
-        for(int arr=0; arr<probeParams[level]->nArrays; arr++)
+        for(uint arr=0; arr<probeParams[level]->nArrays; arr++)
         {
-            for( int point=0; point<probeParams[level]->nPoints; point++)
+            for( uint point=0; point<probeParams[level]->nPoints; point++)
             {
                 probeParams[level]->quantitiesArrayH[arr*probeParams[level]->nPoints+point] = 0.0f;
             }
@@ -225,7 +225,7 @@ void Probe::setProbePointsFromList(std::vector<real> &_pointCoordsX, std::vector
     this->pointCoordsX = _pointCoordsX;
     this->pointCoordsY = _pointCoordsY;
     this->pointCoordsZ = _pointCoordsZ;
-    this->nProbePoints = _pointCoordsX.size();
+    this->nProbePoints = uint(_pointCoordsX.size());
     printf("Added list of %u  points \n", this->nProbePoints );
 }
 
