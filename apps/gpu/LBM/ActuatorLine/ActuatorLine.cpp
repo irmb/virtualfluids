@@ -122,13 +122,7 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
-    auto gridFactory = GridFactory::make();
-    gridFactory->setGridStrategy(Device::CPU);
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    
-
+    auto gridBuilder = MultipleGridBuilder::makeShared();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
