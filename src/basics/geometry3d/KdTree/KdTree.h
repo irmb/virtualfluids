@@ -75,7 +75,7 @@ public:
             new std::vector<GbTriFaceMesh3D::TriFace>(*mesh.getTriangles()));
 
         const int maxLevel =
-            static_cast<int>(lround(8.0 + 1.3 * std::log((double)triFaces->size()))); // TODO: remove magic numbers
+            static_cast<int>(std::lround(8.0 + 1.3 * std::log((double)triFaces->size()))); // TODO: remove magic numbers
 
         rootNode =
             new Node<T>(T(mesh.getX1Minimum()), T(mesh.getX2Minimum()), T(mesh.getX3Minimum()), T(mesh.getX1Maximum()),

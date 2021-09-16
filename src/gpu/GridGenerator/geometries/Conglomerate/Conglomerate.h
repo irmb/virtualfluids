@@ -1,9 +1,35 @@
-//  _    ___      __              __________      _     __
-// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____
-// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/
-// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
-// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file Conglomerate.h
+//! \ingroup geometries
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #ifndef CONGLOMERATE_H
 #define CONGLOMERATE_H
 
@@ -16,16 +42,16 @@
 class GRIDGENERATOR_EXPORT Conglomerate : public Object
 {
 public:              
-    HOSTDEVICE Conglomerate();
-    HOSTDEVICE virtual ~Conglomerate();
+    Conglomerate();
+    virtual ~Conglomerate();
 
-    CUDA_HOST static SPtr<Conglomerate> makeShared();
+    static SPtr<Conglomerate> makeShared();
 
-    HOSTDEVICE void add(Object* object);
-    HOSTDEVICE void subtract(Object* objectStub);
+    void add(Object* object);
+    void subtract(Object* objectStub);
 
 
-    HOSTDEVICE    Object* clone() const override;
+    Object* clone() const override;
 
     double getX1Centroid() override;
     double getX1Minimum() override;
@@ -39,9 +65,9 @@ public:
 
     void scale(double delta) override;
 
-    HOSTDEVICE    bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
+    bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
 
-    CUDA_HOST void findInnerNodes(SPtr<GridImp> grid) override;
+    void findInnerNodes(SPtr<GridImp> grid) override;
 
 protected:
     static double getMinimum(double val1, double val2);

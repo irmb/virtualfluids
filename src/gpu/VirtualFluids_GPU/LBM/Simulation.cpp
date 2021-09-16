@@ -556,7 +556,7 @@ void Simulation::run()
                     {
                         MeasurePointWriter::writeMeasurePoints(para.get(), lev, j, t);
                     }
-                    MeasurePointWriter::calcAndWriteMeanAndFluctuations(para.get(), lev, t, para->getTStartOut());
+                    //MeasurePointWriter::calcAndWriteMeanAndFluctuations(para.get(), lev, t, para->getTStartOut());
                 }
                 t_MP = 0;
             }

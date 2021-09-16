@@ -1,54 +1,79 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file Field.h
+//! \ingroup grid
+//! \author Soeren Peters, Stephan Lenz, Martin Schoenherr
+//=======================================================================================
 #ifndef FIELD_H
 #define FIELD_H
 
 #include "global.h"
 
 struct Vertex;
-class GridStrategy;
 
 class GRIDGENERATOR_EXPORT Field : public enableSharedFromThis<Field>
 {
 public:
-    CUDA_HOST Field(SPtr<GridStrategy> gridStrategy, uint size);
-    HOSTDEVICE Field();
-    HOSTDEVICE ~Field();
-    CUDA_HOST void allocateMemory();
-    CUDA_HOST void freeMemory();
+    Field(uint size);
+    Field() = default;
+    void allocateMemory();
+    void freeMemory();
 
-    HOSTDEVICE uint getSize() const;
-    HOSTDEVICE char getFieldEntry(uint index) const;
+    uint getSize() const;
+    char getFieldEntry(uint index) const;
 
-    HOSTDEVICE bool is(uint index, char type) const;
-    HOSTDEVICE bool isCoarseToFineNode(uint index) const;
-    HOSTDEVICE bool isFineToCoarseNode(uint index) const;
-	HOSTDEVICE bool isFluid(uint index) const;
-	HOSTDEVICE bool isInvalidSolid(uint index) const;
-	HOSTDEVICE bool isQ(uint index) const;
-    HOSTDEVICE bool isBoundaryConditionNode(uint index) const;
-    HOSTDEVICE bool isInvalidCoarseUnderFine(uint index) const;
-    HOSTDEVICE bool isStopperOutOfGrid(uint index) const;
-    HOSTDEVICE bool isStopperCoarseUnderFine(uint index) const;
-	HOSTDEVICE bool isStopperSolid(uint index) const;
-	HOSTDEVICE bool isStopper(uint index) const;
-    HOSTDEVICE bool isInvalidOutOfGrid(uint index) const;
+    bool is(uint index, char type) const;
+    bool isCoarseToFineNode(uint index) const;
+    bool isFineToCoarseNode(uint index) const;
+	bool isFluid(uint index) const;
+	bool isInvalidSolid(uint index) const;
+    bool isQ(uint index) const;
+    bool isBoundaryConditionNode(uint index) const;
+    bool isInvalidCoarseUnderFine(uint index) const;
+    bool isStopperOutOfGrid(uint index) const;
+    bool isStopperCoarseUnderFine(uint index) const;
+	bool isStopperSolid(uint index) const;
+	bool isStopper(uint index) const;
+    bool isInvalidOutOfGrid(uint index) const;
 
-    HOSTDEVICE void setFieldEntry(uint index, char val);
-	HOSTDEVICE void setFieldEntryToFluid(uint index);
-	HOSTDEVICE void setFieldEntryToInvalidSolid(uint index);
-    HOSTDEVICE void setFieldEntryToStopperOutOfGrid(uint index);
-    HOSTDEVICE void setFieldEntryToStopperOutOfGridBoundary(uint index);
-    HOSTDEVICE void setFieldEntryToStopperCoarseUnderFine(uint index);
-    HOSTDEVICE void setFieldEntryToInvalidCoarseUnderFine(uint index);
-    HOSTDEVICE void setFieldEntryToInvalidOutOfGrid(uint index);
+    void setFieldEntry(uint index, char val);
+	void setFieldEntryToFluid(uint index);
+	void setFieldEntryToInvalidSolid(uint index);
+    void setFieldEntryToStopperOutOfGrid(uint index);
+    void setFieldEntryToStopperOutOfGridBoundary(uint index);
+    void setFieldEntryToStopperCoarseUnderFine(uint index);
+    void setFieldEntryToInvalidCoarseUnderFine(uint index);
+    void setFieldEntryToInvalidOutOfGrid(uint index);
 
 private:
-    SPtr<GridStrategy> gridStrategy;
-
     char *field;
     uint size;
-
-    friend class GridGpuStrategy;
-    friend class GridCpuStrategy;
 };
 
 #endif

@@ -1,14 +1,44 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file Cell.h
+//! \ingroup grid
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #ifndef CELL_H
 #define CELL_H
 
 #include "global.h"
 
-#include "utilities/cuda/cudaDefines.h"
-
 struct Point
 {
-    HOSTDEVICE Point() : x(0.0), y(0.0), z(0.0) {}
-    HOSTDEVICE Point(real x, real y, real z) : x(x), y(y), z(z) {}
+    Point() : x(0.0), y(0.0), z(0.0) {}
+    Point(real x, real y, real z) : x(x), y(y), z(z) {}
     real x, y, z;
 };
 
@@ -18,7 +48,7 @@ public:
     typedef Point* iterator;
     typedef const Point* const_iterator;
 
-    HOSTDEVICE Cell(real startX, real startY, real startZ, real delta)
+    Cell(real startX, real startY, real startZ, real delta)
     {
         points = new Point[size];
         points[0] = Point(startX, startY, startZ); // 0,0,0
@@ -32,15 +62,15 @@ public:
         points[7] = Point(startX + delta, startY + delta, startZ + delta); // 1,1,1
     }
 
-    HOSTDEVICE ~Cell()
+    ~Cell()
     {
         delete[] points;
     }
 
-    HOSTDEVICE iterator begin() { return &points[0]; }
-    HOSTDEVICE const_iterator begin() const { return &points[0]; }
-    HOSTDEVICE iterator end() { return &points[size]; }
-    HOSTDEVICE const_iterator end() const { return &points[size]; }
+    iterator begin() { return &points[0]; }
+    const_iterator begin() const { return &points[0]; }
+    iterator end() { return &points[size]; }
+    const_iterator end() const { return &points[size]; }
 
 private:
     Point* points;

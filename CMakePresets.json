@@ -2,7 +2,7 @@
     "version": 2,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 19,
+        "minor": 20,
         "patch": 0
     },
     "configurePresets": [
@@ -19,16 +19,6 @@
             "inherits": "default",
             "hidden": true,
             "generator": "Unix Makefiles"
-        },
-        {
-            "name": "default_ccache_make",
-            "inherits": "default_make",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
-                "CMAKE_CUDA_COMPILER_LAUNCHER": "ccache",
-                "CMAKE_C_COMPILER_LAUNCHER": "ccache"
-            }
         },
         {
             "name": "default_msvc",
@@ -88,14 +78,6 @@
             "displayName": "cpu make configuration"
         },
         {
-            "name": "cpu_make_ccache",
-            "inherits": [
-                "default_ccache_make",
-                "default_cpu"
-            ],
-            "displayName": "cpu ccache make configuration"
-        },
-        {
             "name": "cpu_msvc",
             "inherits": [
                 "default_msvc",
@@ -110,14 +92,6 @@
                 "default_gpu"
             ],
             "displayName": "gpu make configuration"
-        },
-        {
-            "name": "gpu_make_ccache",
-            "inherits": [
-                "default_ccache_make",
-                "default_gpu"
-            ],
-            "displayName": "gpu ccache make configuration"
         },
         {
             "name": "gpu_msvc",
@@ -136,14 +110,6 @@
             "displayName": "all make configuration"
         },
         {
-            "name": "all_make_ccache",
-            "inherits": [
-                "default_ccache_make",
-                "default_all"
-            ],
-            "displayName": "all ccache make configuration"
-        },
-        {
             "name": "all_msvc",
             "inherits": [
                 "default_msvc",
@@ -158,14 +124,6 @@
                 "default_gpu_numerical_tests"
             ],
             "displayName": "gpu numerical tests make configuration"
-        },
-        {
-            "name": "gpu_numerical_tests_ccache_make",
-            "inherits": [
-                "default_ccache_make",
-                "default_gpu_numerical_tests"
-            ],
-            "displayName": "gpu numerical tests ccache make configuration"
         },
         {
             "name": "gpu_numerical_tests_msvc",

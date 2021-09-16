@@ -51,7 +51,7 @@ stages:
     - cd $CI_PROJECT_DIR/$BUILD_FOLDER
     - rm -r -f ./*
     - cmake .. -LAH
-      --preset=all_make_ccache
+      --preset=all_make
       -DBUILD_WARNINGS_AS_ERRORS=ON
       -DCMAKE_CUDA_ARCHITECTURES=60
     - make -j4
@@ -301,7 +301,7 @@ gpu_numerical_tests:
     - cd $CI_PROJECT_DIR/build
     - rm -r -f ./*
     - cmake ..
-      --preset=gpu_numerical_tests_ccache_make
+      --preset=gpu_numerical_tests_make
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu
     - make -j4

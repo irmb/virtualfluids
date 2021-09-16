@@ -6,10 +6,6 @@
 # |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
 #
 #################################################################################
-#  required cmake versions
-#  CMAKE 3.13: target_link_options
-#  CMAKE 3.15: CMAKE_MSVC_RUNTIME_LIBRARY
-#################################################################################
 cmake_minimum_required(VERSION 3.15..3.20 FATAL_ERROR)
 
 project(VirtualFluids
@@ -38,6 +34,11 @@ set (VF_THIRD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
 set (VF_SRC_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set (VF_ROOT_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
 
+if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+  message(FATAL_ERROR "In-source builds are prohibited. "
+    "Create a new directory and build there.")
+endif ()
+
 #################################################################################
 #  OPTIONS
 #################################################################################
@@ -45,7 +46,7 @@ option(BUILD_VF_CPU "Build VirtualFluids cpu variant" OFF)
 option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 
 option(BUILD_USE_OPENMP "Build VirtualFluids with openmp" ON)
-
+option(BUILD_USE_BOOST "Build VirtualFluids with boost" OFF)
 
 # vf gpu
 option(BUILD_VF_GPU          "Build VirtualFluids GPU"     ON )
@@ -80,6 +81,15 @@ option(BUILD_VF_DOUBLE_ACCURACY "Use double accuracy" OFF)
 #################################################################################
 #  MACROS
 #################################################################################
+add_library(project_warnings INTERFACE)
+
+# standard compiler warnings - Link this 'library' to use the warnings specified in CompilerWarnings.cmake
+include(${VF_CMAKE_DIR}/CompilerWarnings.cmake)
+set_project_warnings(project_warnings)
+
+# enable cache system
+include(${VF_CMAKE_DIR}/Cache.cmake)
+
 include(CMakePrintHelpers)
 include(${VF_CMAKE_DIR}/VirtualFluidsMacros.cmake)
 
@@ -129,6 +139,21 @@ endif()
 #################################################################################
 #  COMMON LIBRARIES
 #################################################################################
+include(FetchContent)
+
+set(spdlog_version "v1.9.1")
+set(spdlog_url "https://github.com/gabime/spdlog")
+message(STATUS "Fetching spdlog: ${spdlog_version}")
+FetchContent_Declare(
+        spdlog
+        GIT_REPOSITORY ${spdlog_url}
+        GIT_TAG        ${spdlog_version}
+)
+
+FetchContent_MakeAvailable(spdlog)
+target_compile_options(spdlog PRIVATE "-fPIC")
+groupTarget(spdlog ${thirdFolder})
+
 if(BUILD_VF_UNIT_TESTS)
     add_subdirectory(${VF_THIRD_DIR}/googletest)
     include(GoogleTest)
@@ -141,8 +166,23 @@ endif()
 
 find_package(MPI REQUIRED)
 
+# boost
+IF(BUILD_USE_BOOST)
+    list(APPEND VF_COMPILER_DEFINITION BUILD_USE_BOOST)
 
+    set(Boost_USE_STATIC_LIBS ON)
+    set(Boost_USE_MULTITHREADED ON)
+    set(Boost_USE_STATIC_RUNTIME ON)
+
+    # minimum boost version: 1.60
+    # no packages specfied - only headeronly libraries
+    find_package(Boost 1.60 REQUIRED)
+ENDIF()
+
+add_subdirectory(src/logger)
 add_subdirectory(src/basics)
+#add_subdirectory(src/mpi)
+#add_subdirectory(src/cuda)
 add_subdirectory(src/lbm)
 
 
