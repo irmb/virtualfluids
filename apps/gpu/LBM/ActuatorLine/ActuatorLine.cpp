@@ -24,6 +24,8 @@
 
 #include <basics/config/ConfigurationFile.h>
 
+#include <logger/Logger.h>
+
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -54,28 +56,6 @@
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
-//////////////////////////////////////////////////////////////////////////
-
-//#include "GksMeshAdapter/GksMeshAdapter.h"
-
-//#include "GksVtkAdapter/VTKInterface.h"
-//
-//#include "GksGpu/DataBase/DataBase.h"
-//#include "GksGpu/Parameters/Parameters.h"
-//#include "GksGpu/Initializer/Initializer.h"
-//
-//#include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
-//
-//#include "GksGpu/BoundaryConditions/BoundaryCondition.h"
-//#include "GksGpu/BoundaryConditions/IsothermalWall.h"
-//
-//#include "GksGpu/TimeStepping/NestedTimeStep.h"
-//
-//#include "GksGpu/Analyzer/CupsAnalyzer.h"
-//#include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
-//
-//#include "GksGpu/CudaUtility/CudaUtility.h"
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +66,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//LbmOrGks lbmOrGks = GKS;
 LbmOrGks lbmOrGks = LBM;
 
 const real D = 126.0; // diameter in m
@@ -163,8 +142,8 @@ void multipleLevel(const std::string& configPath)
 
         const real viscosityLB = viscosity * dt / (dx * dx); // LB units
 
-        *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
-        *logging::out << logging::Logger::INFO_HIGH << "viscosity [10^8 dx^2/dt] = " << viscosityLB*1e8 << "\n";
+        VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
+        VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -241,119 +220,6 @@ void multipleLevel(const std::string& configPath)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
-    else
-    {
-     //   CudaUtility::setCudaDevice(0);
-     //   
-     //   Parameters parameters;
-
-     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	    //const real vx = velocity / sqrt(2.0);
-	    //const real vy = velocity / sqrt(2.0);
-    
-     //   parameters.K  = 2.0;
-     //   parameters.Pr = 1.0;
-     //   
-     //   const real Ma = 0.1;
-
-     //   real rho = 1.0;
-
-     //   real cs = velocity / Ma;
-     //   real lambda = c1o2 * ( ( parameters.K + 5.0 ) / ( parameters.K + 3.0 ) ) / ( cs * cs );
-
-     //   const real mu = velocity * L * rho / Re;
-
-     //   *logging::out << logging::Logger::INFO_HIGH << "mu  = " << mu << " m^2/s\n";
-
-     //   *logging::out << logging::Logger::INFO_HIGH << "CFL = " << dt * ( velocity + cs ) / dx << "\n";
-
-     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-     //   parameters.mu = mu;
-
-     //   parameters.dt = dt;
-     //   parameters.dx = dx;
-
-     //   parameters.lambdaRef = lambda;
-
-     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-     //   GksMeshAdapter meshAdapter( gridBuilder );
-
-     //   meshAdapter.inputGrid();
-
-     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-     //   auto dataBase = std::make_shared<DataBase>( "GPU" );
-
-     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-     //   SPtr<BoundaryCondition> bcLid  = std::make_shared<IsothermalWall>( dataBase, Vec3(  vx,  vy, 0.0 ), lambda, false );
-     //   SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, false );
-
-     //   bcLid->findBoundaryCells ( meshAdapter, true,  [&](Vec3 center){ return center.z > 0.5; } );
-     //   bcWall->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.z < 0.5; } );
-
-     //   dataBase->boundaryConditions.push_back( bcLid  );
-     //   dataBase->boundaryConditions.push_back( bcWall );
-    
-     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-     //   dataBase->setMesh( meshAdapter );
-
-     //   Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables {
-
-     //       return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda ), parameters.K );
-     //   });
-
-     //   dataBase->copyDataHostToDevice();
-
-     //   Initializer::initializeDataUpdate(dataBase);
-
-     //   writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
-
-     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-     //   CupsAnalyzer cupsAnalyzer( dataBase, false, 60.0, true, 10000 );
-
-     //   ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
-
-     //   cupsAnalyzer.start();
-
-     //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-     //   for( uint iter = 1; iter <= timeStepEnd; iter++ )
-     //   {
-     //       TimeStepping::nestedTimeStep(dataBase, parameters, 0);
-
-     //       if( iter % timeStepOut == 0 )
-     //       {
-     //           dataBase->copyDataDeviceToHost();
-
-     //           writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
-     //       }
-     //       
-     //       int crashCellIndex = dataBase->getCrashCellIndex();
-     //       if( crashCellIndex >= 0 )
-     //       {
-     //           *logging::out << logging::Logger::LOGGER_ERROR << "Simulation Crashed at CellIndex = " << crashCellIndex << "\n";
-     //           dataBase->copyDataDeviceToHost();
-     //           writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
-
-     //           break;
-     //       }
-
-     //       dataBase->getCrashCellIndex();
-
-     //       cupsAnalyzer.run( iter, parameters.dt );
-
-     //       convergenceAnalyzer.run( iter );
-     //   }
-    }
 }
 
 int main( int argc, char* argv[])
@@ -368,31 +234,29 @@ int main( int argc, char* argv[])
         {
             //////////////////////////////////////////////////////////////////////////
 
-			// std::string targetPath;
-
-			// targetPath = __FILE__;
-
-			// targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
+            vf::logging::Logger::initalizeLogger();
 
             if( argc > 1){ path = argv[1]; }
-
-			// std::cout << targetPath << std::endl;
 
 			multipleLevel(path + "/configActuatorLine.txt");
 
             //////////////////////////////////////////////////////////////////////////
 		}
+        catch (const spdlog::spdlog_ex &ex) {
+            std::cout << "Log initialization failed: " << ex.what() << std::endl;
+        }
+
         catch (const std::bad_alloc& e)
         { 
-            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+            VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
         }
         catch (const std::exception& e)
         {   
-            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
+            VF_LOG_CRITICAL("exception: {}", e.what());
         }
         catch (...)
         {
-            *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
+            VF_LOG_CRITICAL("Unknown exception!");
         }
     }
 

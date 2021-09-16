@@ -149,7 +149,6 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         cudaManager->cudaCopyProbeDistancesHtoD(this, level);
         cudaManager->cudaCopyProbeIndicesHtoD(this, level);
 
-        int arrayOffsets[int(PostProcessingVariable::LAST)];
         int arrOffset = 0;
 
         cudaManager->cudaAllocProbeQuantities(this, level);
