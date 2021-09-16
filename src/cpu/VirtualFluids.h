@@ -43,6 +43,7 @@
 #include <basics/PointerDefinitions.h>
 
 #include <basics/config/ConfigurationFile.h>
+#include <logger/Logger.h>
 
 #include <basics/container/CbArray2D.h>
 #include <basics/container/CbArray3D.h>

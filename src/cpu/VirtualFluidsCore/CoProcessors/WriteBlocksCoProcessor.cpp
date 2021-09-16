@@ -33,6 +33,7 @@
 
 #include "WriteBlocksCoProcessor.h"
 #include "basics/writer/WbWriterVtkXmlASCII.h"
+#include <logger/Logger.h>
 
 #include "Block3D.h"
 #include "Communicator.h"
@@ -180,6 +181,6 @@ void WriteBlocksCoProcessor::collectData(double step)
                                                                      istep, false);
         }
 
-        UBLOG(logINFO, "WriteBlocksCoProcessor step: " << istep);
+        VF_LOG_INFO("WriteBlocksCoProcessor step: {}", istep);
     }
 }

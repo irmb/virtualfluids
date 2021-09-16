@@ -25,6 +25,8 @@
 
 #include <basics/config/ConfigurationFile.h>
 
+#include <logger/Logger.h>
+
 //////////////////////////////////////////////////////////////////////////
 
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
@@ -117,11 +119,7 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
-    auto gridFactory = GridFactory::make();
-    gridFactory->setGridStrategy(Device::CPU);
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+    auto gridBuilder = MultipleGridBuilder::makeShared();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,8 +163,8 @@ void multipleLevel(const std::string& configPath)
 
         const real viscosityLB = nx * velocityLB / Re; // LB units
 
-        *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
-        *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
+        VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
+        VF_LOG_INFO("viscosity [dx^2/dt] = {}", viscosityLB);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -344,23 +342,28 @@ int main( int argc, char* argv[])
 
     try
     {
+        vf::logging::Logger::initalizeLogger();
+
         // assuming that the config files is stored parallel to this file.
         std::filesystem::path filePath = __FILE__;
         filePath.replace_filename("configDrivenCavity.txt");
 
-		multipleLevel(filePath.string());
-	}
+        multipleLevel(filePath.string());
+    }
+    catch (const spdlog::spdlog_ex &ex) {
+        std::cout << "Log initialization failed: " << ex.what() << std::endl;
+    }
     catch (const std::bad_alloc& e)
     { 
-        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+        VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
     }
     catch (const std::exception& e)
     {   
-        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
+        VF_LOG_CRITICAL("exception: {}", e.what());
     }
     catch (...)
     {
-        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
+        VF_LOG_CRITICAL("Unknown exception!");
     }
 
    MPI_Finalize();
