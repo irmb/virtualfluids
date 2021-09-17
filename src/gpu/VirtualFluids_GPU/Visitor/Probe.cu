@@ -14,9 +14,32 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 
+std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable variable)
+{
+    std::vector<std::string> varNames;
+    switch (variable)
+    {
+    case PostProcessingVariable::Means:
+        varNames.push_back("vx_mean");
+        varNames.push_back("vy_mean");
+        varNames.push_back("vz_mean");
+        varNames.push_back("rho_mean");
+        break;
+    case PostProcessingVariable::Variances:
+        varNames.push_back("vx_var");
+        varNames.push_back("vy_var");
+        varNames.push_back("vz_var");
+        varNames.push_back("rho_var");
+        break;
+    default:
+        break;
+    }
+    return varNames;
+}
+
 
 __global__ void interpQuantities(   uint* pointIndices,
-                                    uint nPoints,
+                                    uint nPoints, uint n,
                                     real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
@@ -45,38 +68,53 @@ __global__ void interpQuantities(   uint* pointIndices,
     real dW, dE, dN, dS, dT, dB;
     getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX[node], distY[node], distZ[node]);
 
-    // vx_point [node] = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
-    // vy_point [node] = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
-    // vz_point [node] = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
-    // rho_point[node] = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
-
     real u_interpX, u_interpY, u_interpZ, rho_interp;
 
-    // printf("k %i, u %f \n",k, vx[k]);
     u_interpX = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
     u_interpY = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
     u_interpZ = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
     rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
 
-    //TODO change computation of  means and variances to something more stable, see https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm
-
+    //"https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm"
+    // also has extensions for higher order and covariances
+    real inv_n = 1/real(n);
     if(quantities[int(PostProcessingVariable::Means)])
     {
-        uint arrayOffset = quantityArrayOffsets[int(PostProcessingVariable::Means)]*nPoints;
+        uint arrOff = quantityArrayOffsets[int(PostProcessingVariable::Means)];
+        real u_oldX  = quantityArray[(arrOff+0)*nPoints+node];
+        real u_oldY  = quantityArray[(arrOff+1)*nPoints+node];
+        real u_oldZ  = quantityArray[(arrOff+2)*nPoints+node];
+        real rho_old = quantityArray[(arrOff+3)*nPoints+node];
 
-        quantityArray[arrayOffset+node] += u_interpX; arrayOffset += nPoints;
-        quantityArray[arrayOffset+node] += u_interpY; arrayOffset += nPoints;
-        quantityArray[arrayOffset+node] += u_interpZ; arrayOffset += nPoints;
-        quantityArray[arrayOffset+node] += rho_interp;
-    }
-    if(quantities[int(PostProcessingVariable::Variances)])
-    {
-        uint arrayOffset = quantityArrayOffsets[int(PostProcessingVariable::Variances)]*nPoints;
+        real u_newX  = ( (n-1)*u_oldX +u_interpX  )*inv_n;
+        real u_newY  = ( (n-1)*u_oldY +u_interpY  )*inv_n;
+        real u_newZ  = ( (n-1)*u_oldZ +u_interpZ  )*inv_n;
+        real rho_new = ( (n-1)*rho_old+rho_interp )*inv_n;
 
-        quantityArray[arrayOffset+node] += pow(u_interpX, 2.f); arrayOffset += nPoints;
-        quantityArray[arrayOffset+node] += pow(u_interpY, 2.f); arrayOffset += nPoints;
-        quantityArray[arrayOffset+node] += pow(u_interpZ, 2.f); arrayOffset += nPoints;
-        quantityArray[arrayOffset+node] += pow(rho_interp, 2.f); 
+        quantityArray[(arrOff+0)*nPoints+node] = u_newX;
+        quantityArray[(arrOff+1)*nPoints+node] = u_newY;
+        quantityArray[(arrOff+2)*nPoints+node] = u_newZ;
+        quantityArray[(arrOff+3)*nPoints+node] = rho_new;
+    
+        if(quantities[int(PostProcessingVariable::Variances)])
+        {
+            arrOff = quantityArrayOffsets[int(PostProcessingVariable::Variances)];
+
+            real u_var_oldX  = quantityArray[(arrOff+0)*nPoints+node];
+            real u_var_oldY  = quantityArray[(arrOff+1)*nPoints+node];
+            real u_var_oldZ  = quantityArray[(arrOff+2)*nPoints+node];
+            real rho_var_old = quantityArray[(arrOff+3)*nPoints+node];
+
+            real u_var_newX  = ( (n-1)*(u_var_oldX )+(u_interpX -u_oldX )*(u_interpX -u_newX ) )*inv_n;
+            real u_var_newY  = ( (n-1)*(u_var_oldY )+(u_interpY -u_oldY )*(u_interpY -u_newY ) )*inv_n;
+            real u_var_newZ  = ( (n-1)*(u_var_oldZ )+(u_interpZ -u_oldZ )*(u_interpZ -u_newZ ) )*inv_n;
+            real rho_var_new = ( (n-1)*(rho_var_old)+(rho_interp-rho_old)*(rho_interp-rho_new) )*inv_n;
+
+            quantityArray[(arrOff+0)*nPoints+node] = u_var_newX;
+            quantityArray[(arrOff+1)*nPoints+node] = u_var_newY;
+            quantityArray[(arrOff+2)*nPoints+node] = u_var_newZ;
+            quantityArray[(arrOff+3)*nPoints+node] = rho_var_new; 
+        }
     }
 }
 
@@ -116,18 +154,31 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
                     pointCoordsX_level.push_back( pointCoordX );
                     pointCoordsY_level.push_back( pointCoordY );
                     pointCoordsZ_level.push_back( pointCoordZ );
-                    // printf("Found Point %i, x: %f, y: %f,z: %f, \n For %f %f %f, \n distx: %f, disty: %f, distz: %f \n", j, para->getParH(level)->coordX_SP[j],para->getParH(level)->coordY_SP[j],para->getParH(level)->coordZ_SP[j],
-                    // this->pointCoordsX[point], this->pointCoordsY[point], this->pointCoordsZ[point], 
-                    // distX, distY, distZ);
+                    // printf("x %f y %f z %f", pointCoordX, pointCoordY, pointCoordZ);
                 }
             }
         }
         
         probeParams[level] = new ProbeStruct;
+        probeParams[level]->vals = 1;
         probeParams[level]->nPoints = uint(probeIndices_level.size());
-        probeParams[level]->pointCoordsX = pointCoordsX_level.data();
-        probeParams[level]->pointCoordsY = pointCoordsY_level.data();
-        probeParams[level]->pointCoordsZ = pointCoordsZ_level.data();
+
+        probeParams[level]->pointCoordsX = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
+        probeParams[level]->pointCoordsY = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
+        probeParams[level]->pointCoordsZ = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
+
+        std::copy(pointCoordsX_level.begin(), pointCoordsX_level.end(), probeParams[level]->pointCoordsX);
+        std::copy(pointCoordsY_level.begin(), pointCoordsY_level.end(), probeParams[level]->pointCoordsY);
+        std::copy(pointCoordsZ_level.begin(), pointCoordsZ_level.end(), probeParams[level]->pointCoordsZ);
+
+
+        // probeParams[level]->pointCoordsY = pointCoordsY_level.data();
+        // probeParams[level]->pointCoordsZ = pointCoordsZ_level.data();
+
+        // for(int i=0; i<probeParams[level]->nPoints; i++)
+        // {
+        //     printf("x %f",probeParams[level]->pointCoordsX[i]);
+        // }
         // Might have to catch nPoints=0 ?!?!
         cudaManager->cudaAllocProbeDistances(this, level);
         cudaManager->cudaAllocProbeIndices(this, level);
@@ -144,20 +195,16 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
 
         cudaManager->cudaAllocProbeQuantitiesAndOffsets(this, level);
 
-        for( int var=0; var<int(PostProcessingVariable::LAST); var++)
+        for( int var=0; var<int(PostProcessingVariable::LAST); var++){
+        if(this->quantities[var])
         {
-            if(this->quantities[var])
-            {
-                probeParams[level]->quantitiesH[var] = true;
-                probeParams[level]->arrayOffsetsH[var] = arrOffset;
-                switch(static_cast<PostProcessingVariable>(var))
-                {
-                    case PostProcessingVariable::Means: arrOffset += 4; break;                
-                    case PostProcessingVariable::Variances: arrOffset += 4; break;
-                    default: break;
-                }
-            }
-        }
+
+            probeParams[level]->quantitiesH[var] = true;
+            probeParams[level]->arrayOffsetsH[var] = arrOffset;
+
+            arrOffset += getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var)).size();
+
+        }}
         
         cudaManager->cudaCopyProbeQuantitiesAndOffsetsHtoD(this, level);
 
@@ -172,27 +219,36 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
                 probeParams[level]->quantitiesArrayH[arr*probeParams[level]->nPoints+point] = 0.0f;
             }
         }
-        
         cudaManager->cudaCopyProbeQuantityArrayHtoD(this, level);
+
     }
 }
 
 
 void Probe::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
-{    
+{
+
     ProbeStruct* probeStruct = this->getProbeStruct(level);
 
     vf::gpu::CudaGrid grid = vf::gpu::CudaGrid(128, probeStruct->nPoints);
 
-    interpQuantities<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints,
-                                                    probeStruct->distXD, probeStruct->distYD, probeStruct->distZD,
-                                                    para->getParD(level)->vx_SP, para->getParD(level)->vy_SP, para->getParD(level)->vz_SP, para->getParD(level)->rho_SP, 
-                                                    para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP, 
-                                                    probeStruct->quantitiesD, probeStruct->arrayOffsetsD, probeStruct->quantitiesArrayD  );
-    if(max(int(t) - int(this->tStart), -1) % this->tOut == 0)
+    if(t>this->tStartAvg)
     {
-        cudaManager->cudaCopyProbeQuantityArrayDtoH(this, level);
-        this->write(para, level, t);
+        
+        interpQuantities<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints, probeStruct->vals,
+                                                        probeStruct->distXD, probeStruct->distYD, probeStruct->distZD,
+                                                        para->getParD(level)->vx_SP, para->getParD(level)->vy_SP, para->getParD(level)->vz_SP, para->getParD(level)->rho_SP, 
+                                                        para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP, 
+                                                        probeStruct->quantitiesD, probeStruct->arrayOffsetsD, probeStruct->quantitiesArrayD  );
+        probeStruct->vals++;
+
+        if(max(int(t) - int(this->tStartOut), -1) % this->tOut == 0)
+        {
+            cudaManager->cudaCopyProbeQuantityArrayDtoH(this, level);
+         
+            this->write(para, level, t);
+        }
+
     }
 }
 
@@ -204,7 +260,6 @@ void Probe::free(Parameter* para, CudaMemoryManager* cudaManager)
         cudaManager->cudaFreeProbeIndices(this, level);
         cudaManager->cudaFreeProbeQuantityArray(this, level);
         cudaManager->cudaFreeProbeQuantitiesAndOffsets(this, level);
-
     }
 }
 
@@ -223,12 +278,8 @@ void Probe::setProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z,
 {
     int n_points_y = int((pos1_y-pos0_y)/delta_y);
     int n_points_z = int((pos1_z-pos0_z)/delta_z);
-    int n_points = n_points_y*n_points_z;
 
     std::vector<real> pointCoordsXtmp, pointCoordsYtmp, pointCoordsZtmp;
-    pointCoordsXtmp.reserve(n_points);
-    pointCoordsYtmp.reserve(n_points);
-    pointCoordsZtmp.reserve(n_points);
 
     for(int n_y=0; n_y<n_points_y; n_y++)
     {
@@ -245,9 +296,8 @@ void Probe::setProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z,
 void Probe::addPostProcessingVariable(PostProcessingVariable variable)
 {
     this->quantities[int(variable)] = true;
-    switch(static_cast<PostProcessingVariable>(variable))
+    switch(variable)
     {
-        case PostProcessingVariable::Means: break;
         case PostProcessingVariable::Variances: 
             this->addPostProcessingVariable(PostProcessingVariable::Means); break;
         default: break;
@@ -258,23 +308,27 @@ void Probe::write(Parameter* para, int level, int t)
 {
     const uint numberOfParts = this->getProbeStruct(level)->nPoints / para->getlimitOfNodesForVTK() + 1;
 
-
     std::vector<std::string> fnames;
     for (uint i = 1; i <= numberOfParts; i++)
 	{
-		fnames.push_back(this->probeName + "_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(t) + ".vtk");
-        this->fileNamesForCollectionFile.push_back(fnames.back());
-        this->writeGridFile(para, level, fnames, t);
+        std::string fname = this->probeName + "_bin_lev_" + StringUtil::toString<int>(level)
+                                         + "_ID_" + StringUtil::toString<int>(para->getMyID())
+                                         + "_Part_" + StringUtil::toString<int>(i) 
+                                         + "_t_" + StringUtil::toString<int>(t) 
+                                         + ".vtk";
+		fnames.push_back(fname);
+        this->fileNamesForCollectionFile.push_back(fname);
     }
+    this->writeGridFiles(para, level, fnames, t);
 
-    this->writeCollectionFile(para, t);
-
-
+    if(level == 0) this->writeCollectionFile(para, t);
 }
 
 void Probe::writeCollectionFile(Parameter* para, int t)
 {
-    std::string filename = this->probeName + "_bin_ID_" + StringUtil::toString<int>(para->getMyID()) + "_t_" + StringUtil::toString<int>(t) + ".vtk";
+    std::string filename = this->probeName + "_bin_ID_" + StringUtil::toString<int>(para->getMyID()) 
+                                           + "_t_" + StringUtil::toString<int>(t) 
+                                           + ".vtk";
 
     std::ofstream file;
 
@@ -289,9 +343,8 @@ void Probe::writeCollectionFile(Parameter* para, int t)
 
     for(std::string varName: this->getVarNames())
     {
-        file << "       <DataArray type=\"Float32\" Name=\""<< varName << "\" /> " << std::endl;
+        file << "       <DataArray type=\"Float64\" Name=\""<< varName << "\" /> " << std::endl;
     }
-    
     file << "    </PPointData>" << std::endl;
 
     file << "    <PPoints>" << std::endl;
@@ -314,7 +367,7 @@ void Probe::writeCollectionFile(Parameter* para, int t)
     this->fileNamesForCollectionFile.clear();
 }
 
-void Probe::writeGridFile(Parameter* para, int level, std::vector<std::string>& fnames, int t)
+void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>& fnames, int t)
 {
     std::vector< UbTupleFloat3 > nodes;
     std::vector< std::string > nodedatanames = this->getVarNames();
@@ -324,11 +377,12 @@ void Probe::writeGridFile(Parameter* para, int level, std::vector<std::string>& 
     uint sizeOfNodes = 0;
     std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
-    real inv_t = 1/(real(max(t,1))*pow(2,level));
+    ProbeStruct* probeStruct = this->getProbeStruct(level);
+
     for (uint part = 0; part < fnames.size(); part++)
     {        
         startpos = part * para->getlimitOfNodesForVTK();
-        sizeOfNodes = min(para->getlimitOfNodesForVTK(), this->getProbeStruct(level)->nPoints - startpos);
+        sizeOfNodes = min(para->getlimitOfNodesForVTK(), probeStruct->nPoints - startpos);
         endpos = startpos + sizeOfNodes;
 
         //////////////////////////////////////////////////////////////////////////
@@ -336,47 +390,42 @@ void Probe::writeGridFile(Parameter* para, int level, std::vector<std::string>& 
 
         for (uint pos = startpos; pos < endpos; pos++)
         {
-            nodes[pos-startpos] = makeUbTuple(  float(this->getProbeStruct(level)->pointCoordsX[pos]),
-                                                float(this->getProbeStruct(level)->pointCoordsY[pos]),
-                                                float(this->getProbeStruct(level)->pointCoordsZ[pos]));
+            nodes[pos-startpos] = makeUbTuple(  float(probeStruct->pointCoordsX[pos]),
+                                                float(probeStruct->pointCoordsY[pos]),
+                                                float(probeStruct->pointCoordsZ[pos]));
         }
 
         for( auto it=nodedata.begin(); it!=nodedata.end(); it++) it->resize(sizeOfNodes);
 
-        //TODO maybe change order of loops, could be faster, maybe not important, also still very ugly
-        for (uint pos = startpos; pos < endpos; pos++)
+        for( int var=0; var < int(PostProcessingVariable::LAST); var++){
+        if(this->quantities[var])
         {
-            int dn = pos-startpos;
-            //////////////////////////////////////////////////////////////////////////
-            int offset = 0;
-            for( int var=0; var < int(PostProcessingVariable::LAST); var++)
-            {
-                if(this->quantities[var])
-                {
-                    int arrOffset = this->getProbeStruct(level)->arrayOffsetsH[var]*this->getProbeStruct(level)->nPoints;
-                    switch(static_cast<PostProcessingVariable>(var))
-                    {
-                    case PostProcessingVariable::Means:
-                    {
-                        nodedata[offset][dn] = (double)this->getProbeStruct(level)->quantitiesArrayH[arrOffset+pos]*para->getVelocityRatio()*inv_t; arrOffset+=probeParams[level]->nPoints; offset++;
-                        nodedata[offset][dn] = (double)this->getProbeStruct(level)->quantitiesArrayH[arrOffset+pos]*para->getVelocityRatio()*inv_t; arrOffset+=probeParams[level]->nPoints; offset++;
-                        nodedata[offset][dn] = (double)this->getProbeStruct(level)->quantitiesArrayH[arrOffset+pos]*para->getVelocityRatio()*inv_t; arrOffset+=probeParams[level]->nPoints; offset++;
-                        nodedata[offset][dn] = (double)this->getProbeStruct(level)->quantitiesArrayH[arrOffset+pos]*para->getVelocityRatio()*inv_t; arrOffset+=probeParams[level]->nPoints; offset++;
-                    } break;
-                    case PostProcessingVariable::Variances:
-                    {
-                        int meansShift = this->getProbeStruct(level)->arrayOffsetsH[int(PostProcessingVariable::Means)]*this->getProbeStruct(level)->nPoints-arrOffset;
-                        nodedata[offset][dn] = double(this->getProbeStruct(level)->quantitiesArrayH[arrOffset+pos]*inv_t - pow(this->getProbeStruct(level)->quantitiesArrayH[arrOffset+meansShift+pos]*inv_t,2))*pow(para->getVelocityRatio(),2); arrOffset+=probeParams[level]->nPoints; offset++;
-                        nodedata[offset][dn] = double(this->getProbeStruct(level)->quantitiesArrayH[arrOffset+pos]*inv_t - pow(this->getProbeStruct(level)->quantitiesArrayH[arrOffset+meansShift+pos]*inv_t,2))*pow(para->getVelocityRatio(),2); arrOffset+=probeParams[level]->nPoints; offset++;
-                        nodedata[offset][dn] = double(this->getProbeStruct(level)->quantitiesArrayH[arrOffset+pos]*inv_t - pow(this->getProbeStruct(level)->quantitiesArrayH[arrOffset+meansShift+pos]*inv_t,2))*pow(para->getVelocityRatio(),2); arrOffset+=probeParams[level]->nPoints; offset++;
-                        nodedata[offset][dn] = double(this->getProbeStruct(level)->quantitiesArrayH[arrOffset+pos]*inv_t - pow(this->getProbeStruct(level)->quantitiesArrayH[arrOffset+meansShift+pos]*inv_t,2))*pow(para->getVelocityRatio(),2); arrOffset+=probeParams[level]->nPoints; offset++;
-                    } break;
-                    default: break;
-                    }
-                }
+            PostProcessingVariable quantity = static_cast<PostProcessingVariable>(var);
+            real coeff;
+            uint n_arrs = getPostProcessingVariableNames(quantity).size();
 
+            switch(quantity)
+            {
+            case PostProcessingVariable::Means:
+                coeff = para->getVelocityRatio();
+            break;
+            case PostProcessingVariable::Variances:
+                coeff = pow(para->getVelocityRatio(),2);
+            break;
+            default: break;
             }
-        }
+
+            uint arrOff = probeStruct->arrayOffsetsH[var];
+            uint arrLen = probeStruct->nPoints;
+
+            for(uint arr=0; arr<n_arrs; arr++)
+            {
+                for (uint pos = startpos; pos < endpos; pos++)
+                {
+                    nodedata[arrOff+arr][pos-startpos] = double(probeStruct->quantitiesArrayH[(arrOff+arr)*arrLen+pos]*coeff);
+                }
+            }
+        }}
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(fnames[part], nodes, nodedatanames, nodedata);
     }
 }
@@ -384,20 +433,12 @@ void Probe::writeGridFile(Parameter* para, int level, std::vector<std::string>& 
 std::vector<std::string> Probe::getVarNames()
 {
     std::vector<std::string> varNames;
-    if(this->quantities[int(PostProcessingVariable::Means)])
+    for( int var=0; var < int(PostProcessingVariable::LAST); var++){
+    if(this->quantities[var])
     {
-        varNames.push_back("vx_mean");
-        varNames.push_back("vy_mean");
-        varNames.push_back("vz_mean");
-        varNames.push_back("rho_mean");
-    }
-
-    if(this->quantities[int(PostProcessingVariable::Variances)])
-    {
-        varNames.push_back("vx_var");
-        varNames.push_back("vy_var");
-        varNames.push_back("vz_var");
-        varNames.push_back("rho_var");
-    }
+        std::vector<std::string> names = getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var));
+        varNames.insert(varNames.end(), names.begin(), names.end());
+    }}
     return varNames;
 }
+

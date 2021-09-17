@@ -2835,13 +2835,14 @@ void CudaMemoryManager::cudaFreeSphereIndices(ActuatorLine* actuatorLine)
 void CudaMemoryManager::cudaAllocProbeDistances(Probe* probe, int level)
 {
     size_t tmp = sizeof(real)*probe->getProbeStruct(level)->nPoints;
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->distXH,        tmp) );
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->distYH,        tmp) );
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->distZH,        tmp) );
 
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->distXD,        tmp) );
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->distYD,        tmp) );
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->distZD,        tmp) );
+    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->distXH, tmp) );
+    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->distYH, tmp) );
+    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->distZH, tmp) );
+
+    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->distXD, tmp) );
+    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->distYD, tmp) );
+    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->distZD, tmp) );
     setMemsizeGPU(3.f*tmp, false);
 }
 void CudaMemoryManager::cudaCopyProbeDistancesHtoD(Probe* probe, int level)
@@ -2895,6 +2896,7 @@ void CudaMemoryManager::cudaFreeProbeIndices(Probe* probe, int level)
 void CudaMemoryManager::cudaAllocProbeQuantityArray(Probe* probe, int level)
 {
     size_t tmp = sizeof(real)*probe->getProbeStruct(level)->nArrays*probe->getProbeStruct(level)->nPoints;
+
     checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->quantitiesArrayH, tmp) );
     checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->quantitiesArrayD, tmp) );
     setMemsizeGPU(1.f*tmp, false);
@@ -2903,7 +2905,6 @@ void CudaMemoryManager::cudaAllocProbeQuantityArray(Probe* probe, int level)
 void CudaMemoryManager::cudaCopyProbeQuantityArrayHtoD(Probe* probe, int level)
 {
     checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->quantitiesArrayD, probe->getProbeStruct(level)->quantitiesArrayH, probe->getProbeStruct(level)->nArrays*sizeof(real)*probe->getProbeStruct(level)->nPoints, cudaMemcpyHostToDevice) );
-
 }
 void CudaMemoryManager::cudaCopyProbeQuantityArrayDtoH(Probe* probe, int level)
 {
@@ -2912,7 +2913,6 @@ void CudaMemoryManager::cudaCopyProbeQuantityArrayDtoH(Probe* probe, int level)
 void CudaMemoryManager::cudaFreeProbeQuantityArray(Probe* probe, int level)
 {
     checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->quantitiesArrayH) );
-
     checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->quantitiesArrayD) );
 }
 
