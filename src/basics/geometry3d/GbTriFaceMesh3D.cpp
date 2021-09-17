@@ -1143,22 +1143,23 @@ void GbTriFaceMesh3D::readMeshFromSTLFileBinary(string filename, bool removeRedu
     }
     char title[80];
     int nFaces;
-    fread(title, 80, 1, f);
-    fread((void *)&nFaces, 4, 1, f);
+    size_t sizef = fread(title, 80, 1, f);
+    sizef        = fread((void *)&nFaces, 4, 1, f);
     float v[12]; // normal=3, vertices=3*3 = 12
     unsigned short uint16;
     // Every Face is 50 Bytes: Normal(3*float), Vertices(9*float), 2 Bytes Spacer
     for (int i = 0; i < nFaces; ++i) {
         for (size_t j = 0; j < 12; ++j) {
-            fread((void *)&v[j], sizeof(float), 1, f);
+            sizef = fread((void *)&v[j], sizeof(float), 1, f);
         }
-        fread((void *)&uint16, sizeof(unsigned short), 1, f); // spacer between successive faces
+        sizef = fread((void *)&uint16, sizeof(unsigned short), 1, f); // spacer between successive faces
         nodes->push_back(GbTriFaceMesh3D::Vertex(v[3], v[4], v[5]));
         nodes->push_back(GbTriFaceMesh3D::Vertex(v[6], v[7], v[8]));
         nodes->push_back(GbTriFaceMesh3D::Vertex(v[9], v[10], v[11]));
         triangles->push_back(GbTriFaceMesh3D::TriFace(nr, nr + 1, nr + 2));
         nr += 3;
     }
+    (void)sizef;
     fclose(f);
 
     if (removeRedundantNodes) {
