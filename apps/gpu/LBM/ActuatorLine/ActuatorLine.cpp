@@ -80,7 +80,7 @@ const real velocity  = 9.0;
 
 const real mach = 0.1;
 
-const uint nodes_per_D = 8;
+const uint nodes_per_D = 32;
 
 std::string path(".");
 
@@ -88,7 +88,7 @@ std::string simulationName("ActuatorLine");
 
 const uint timeStepOut = 500;
 const uint timeStepEnd = 1000;
-
+const float tEnd = 200;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,7 +172,7 @@ void multipleLevel(const std::string& configPath)
         });
 
         para->setTOut( timeStepOut );
-        para->setTEnd( timeStepEnd );
+        para->setTEnd( uint(tEnd/dt) );
 
         para->setIsBodyForce( true );
 
@@ -199,12 +199,12 @@ void multipleLevel(const std::string& configPath)
         ActuatorLine* actuator_line = new ActuatorLine((unsigned int) 3, density, (unsigned int)32, epsilon, turbPos[0], turbPos[1], turbPos[2], D, level, dt, dx);
         para->addActuator( actuator_line );
 
-        Probe* probe = new Probe("probe", 100, 100);
+        Probe* probe = new Probe("probe", 100, 500, 100);
         std::vector<real> probeCoordsX = {D,2*D,5*D};
         std::vector<real> probeCoordsY = {3*D,3*D,3*D};
         std::vector<real> probeCoordsZ = {3*D,3*D,3*D};
-        // probe->setProbePointsFromList(probeCoordsX,probeCoordsY,probeCoordsZ);
-        probe->setProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, dx, dx);
+        probe->setProbePointsFromList(probeCoordsX,probeCoordsY,probeCoordsZ);
+        // probe->setProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, dx, dx);
         probe->addPostProcessingVariable(PostProcessingVariable::Means);
         probe->addPostProcessingVariable(PostProcessingVariable::Variances);
         para->addProbe( probe );

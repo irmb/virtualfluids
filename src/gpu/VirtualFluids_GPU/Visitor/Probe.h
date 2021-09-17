@@ -46,7 +46,7 @@ public:
     }
 
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
-    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t);
     void free(Parameter* para, CudaMemoryManager* cudaManager);
 
     ProbeStruct* getProbeStruct(int level){ return this->probeParams[level]; }

@@ -37,6 +37,51 @@ std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable v
     return varNames;
 }
 
+__device__ void calculateQuantities(uint n, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
+{
+    //"https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm"
+    // also has extensions for higher order and covariances
+    real inv_n = 1/real(n);
+
+    if(quantities[int(PostProcessingVariable::Means)])
+    {
+        uint arrOff = quantityArrayOffsets[int(PostProcessingVariable::Means)];
+        real vx_m_old  = quantityArray[(arrOff+0)*nPoints+node];
+        real vy_m_old  = quantityArray[(arrOff+1)*nPoints+node];
+        real vz_m_old  = quantityArray[(arrOff+2)*nPoints+node];
+        real rho_m_old = quantityArray[(arrOff+3)*nPoints+node];
+
+        real vx_m_new  = ( (n-1)*vx_m_old + vx  )*inv_n;
+        real vy_m_new  = ( (n-1)*vy_m_old + vy  )*inv_n;
+        real vz_m_new  = ( (n-1)*vz_m_old + vz  )*inv_n;
+        real rho_m_new = ( (n-1)*rho_m_old+ rho )*inv_n;
+
+        quantityArray[(arrOff+0)*nPoints+node] = vx_m_new;
+        quantityArray[(arrOff+1)*nPoints+node] = vy_m_new;
+        quantityArray[(arrOff+2)*nPoints+node] = vz_m_new;
+        quantityArray[(arrOff+3)*nPoints+node] = rho_m_new;
+    
+        if(quantities[int(PostProcessingVariable::Variances)])
+        {
+            arrOff = quantityArrayOffsets[int(PostProcessingVariable::Variances)];
+
+            real vx_var_old  = quantityArray[(arrOff+0)*nPoints+node];
+            real vy_var_old  = quantityArray[(arrOff+1)*nPoints+node];
+            real vz_var_old  = quantityArray[(arrOff+2)*nPoints+node];
+            real rho_var_old = quantityArray[(arrOff+3)*nPoints+node];
+
+            real vx_var_new  = ( (n-1)*(vx_var_old )+(vx  - vx_m_old )*(vx  - vx_m_new ) )*inv_n;
+            real vy_var_new  = ( (n-1)*(vy_var_old )+(vy  - vy_m_old )*(vy  - vy_m_new ) )*inv_n;
+            real vz_var_new  = ( (n-1)*(vz_var_old )+(vz  - vz_m_old )*(vz  - vz_m_new ) )*inv_n;
+            real rho_var_new = ( (n-1)*(rho_var_old)+(rho - rho_m_old)*(rho - rho_m_new) )*inv_n;
+
+            quantityArray[(arrOff+0)*nPoints+node] = vx_var_new;
+            quantityArray[(arrOff+1)*nPoints+node] = vy_var_new;
+            quantityArray[(arrOff+2)*nPoints+node] = vz_var_new;
+            quantityArray[(arrOff+3)*nPoints+node] = rho_var_new; 
+        }
+    }
+}
 
 __global__ void interpQuantities(   uint* pointIndices,
                                     uint nPoints, uint n,
@@ -70,52 +115,13 @@ __global__ void interpQuantities(   uint* pointIndices,
 
     real u_interpX, u_interpY, u_interpZ, rho_interp;
 
-    u_interpX = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
-    u_interpY = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
-    u_interpZ = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
+    u_interpX  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
+    u_interpY  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
+    u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
     rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
 
-    //"https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm"
-    // also has extensions for higher order and covariances
-    real inv_n = 1/real(n);
-    if(quantities[int(PostProcessingVariable::Means)])
-    {
-        uint arrOff = quantityArrayOffsets[int(PostProcessingVariable::Means)];
-        real u_oldX  = quantityArray[(arrOff+0)*nPoints+node];
-        real u_oldY  = quantityArray[(arrOff+1)*nPoints+node];
-        real u_oldZ  = quantityArray[(arrOff+2)*nPoints+node];
-        real rho_old = quantityArray[(arrOff+3)*nPoints+node];
+    calculateQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
 
-        real u_newX  = ( (n-1)*u_oldX +u_interpX  )*inv_n;
-        real u_newY  = ( (n-1)*u_oldY +u_interpY  )*inv_n;
-        real u_newZ  = ( (n-1)*u_oldZ +u_interpZ  )*inv_n;
-        real rho_new = ( (n-1)*rho_old+rho_interp )*inv_n;
-
-        quantityArray[(arrOff+0)*nPoints+node] = u_newX;
-        quantityArray[(arrOff+1)*nPoints+node] = u_newY;
-        quantityArray[(arrOff+2)*nPoints+node] = u_newZ;
-        quantityArray[(arrOff+3)*nPoints+node] = rho_new;
-    
-        if(quantities[int(PostProcessingVariable::Variances)])
-        {
-            arrOff = quantityArrayOffsets[int(PostProcessingVariable::Variances)];
-
-            real u_var_oldX  = quantityArray[(arrOff+0)*nPoints+node];
-            real u_var_oldY  = quantityArray[(arrOff+1)*nPoints+node];
-            real u_var_oldZ  = quantityArray[(arrOff+2)*nPoints+node];
-            real rho_var_old = quantityArray[(arrOff+3)*nPoints+node];
-
-            real u_var_newX  = ( (n-1)*(u_var_oldX )+(u_interpX -u_oldX )*(u_interpX -u_newX ) )*inv_n;
-            real u_var_newY  = ( (n-1)*(u_var_oldY )+(u_interpY -u_oldY )*(u_interpY -u_newY ) )*inv_n;
-            real u_var_newZ  = ( (n-1)*(u_var_oldZ )+(u_interpZ -u_oldZ )*(u_interpZ -u_newZ ) )*inv_n;
-            real rho_var_new = ( (n-1)*(rho_var_old)+(rho_interp-rho_old)*(rho_interp-rho_new) )*inv_n;
-
-            quantityArray[(arrOff+0)*nPoints+node] = u_var_newX;
-            quantityArray[(arrOff+1)*nPoints+node] = u_var_newY;
-            quantityArray[(arrOff+2)*nPoints+node] = u_var_newZ;
-            quantityArray[(arrOff+3)*nPoints+node] = rho_var_new; 
-        }
-    }
 }
 
 
@@ -171,14 +177,6 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         std::copy(pointCoordsY_level.begin(), pointCoordsY_level.end(), probeParams[level]->pointCoordsY);
         std::copy(pointCoordsZ_level.begin(), pointCoordsZ_level.end(), probeParams[level]->pointCoordsZ);
 
-
-        // probeParams[level]->pointCoordsY = pointCoordsY_level.data();
-        // probeParams[level]->pointCoordsZ = pointCoordsZ_level.data();
-
-        // for(int i=0; i<probeParams[level]->nPoints; i++)
-        // {
-        //     printf("x %f",probeParams[level]->pointCoordsX[i]);
-        // }
         // Might have to catch nPoints=0 ?!?!
         cudaManager->cudaAllocProbeDistances(this, level);
         cudaManager->cudaAllocProbeIndices(this, level);
@@ -225,7 +223,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
 }
 
 
-void Probe::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
+void Probe::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
 {
 
     ProbeStruct* probeStruct = this->getProbeStruct(level);
