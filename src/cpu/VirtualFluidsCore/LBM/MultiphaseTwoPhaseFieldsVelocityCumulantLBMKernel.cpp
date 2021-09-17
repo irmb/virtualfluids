@@ -714,7 +714,7 @@ void MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel::calculate(int step)
 
 
 			   ///surface tension force
-			   vvx += mu * dX1_phi*c1o2;
+			   vvx += mu * dX1_phi * c1o2;
 			   vvy += mu * dX2_phi * c1o2 ;
 			   vvz += mu * dX3_phi * c1o2;
 

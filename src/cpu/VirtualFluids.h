@@ -341,7 +341,7 @@
 #include <Visitors/MultiphaseSetKernelBlockVisitor.h>
 #include <Visitors/MultiphaseBoundaryConditionsBlockVisitor.h>
 #include <Visitors/MultiphaseInitDistributionsBlockVisitor.h>
-#include <Visitors/MultiphaseInitDistributionsBlockVisitorVelocity.h>
+#include <Visitors/MultiphaseVelocityFormInitDistributionsBlockVisitor.h>
 #include <Visitors/SetInterpolationConnectorsBlockVisitor.h>
 
 #include <RefineAroundGbObjectHelper.h>

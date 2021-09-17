@@ -363,7 +363,7 @@ void run(string configname)
             mu::Parser fct1;
             fct1.SetExpr("phiL");
             fct1.DefineConst("phiL", phiL);
-            MultiphaseInitDistributionsBlockVisitor initVisitor(densityRatio, interfaceThickness, radius);
+            MultiphaseInitDistributionsBlockVisitor initVisitor(interfaceThickness);
             initVisitor.setPhi(fct1);
             grid->accept(initVisitor);
 

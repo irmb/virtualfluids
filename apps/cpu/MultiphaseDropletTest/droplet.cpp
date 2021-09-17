@@ -72,6 +72,8 @@ void run(string configname)
         LBMReal rhoLB = 0.0;
         LBMReal nuLB  = nuL; //(uLB*dLB) / Re;
 
+        LBMReal D  = 2.0*radius;
+
         SPtr<LBMUnitConverter> conv(new LBMUnitConverter());
 
         //const int baseLevel = 0;
@@ -82,9 +84,10 @@ void run(string configname)
         //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
 
+
         kernel->setWithForcing(true);
-        kernel->setForcingX1(gr);
-        kernel->setForcingX2(0.0);
+        kernel->setForcingX1(0.0);
+        kernel->setForcingX2(gr);
         kernel->setForcingX3(0.0);
 
         kernel->setPhiL(phiL);
@@ -92,16 +95,28 @@ void run(string configname)
         kernel->setPhaseFieldRelaxation(tauH);
         kernel->setMobility(mob);
 
+        kernel->setCollisionFactorMultiphase(nuL, nuG);
+        kernel->setDensityRatio(densityRatio);
+        kernel->setMultiphaseModelParameters(beta, kappa);
+        kernel->setContactAngle(theta);
+
         SPtr<BCProcessor> bcProc(new BCProcessor());
         // BCProcessorPtr bcProc(new ThinWallBCProcessor());
 
         kernel->setBCProcessor(bcProc);
 
+        SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+        noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
+        //////////////////////////////////////////////////////////////////////////////////
+        // BC visitor
+        MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
+        bcVisitor.addBC(noSlipBCAdapter);
+
         SPtr<Grid3D> grid(new Grid3D(comm));
         grid->setDeltaX(dx);
         grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
         grid->setPeriodicX1(true);
-        grid->setPeriodicX2(true);
+        grid->setPeriodicX2(false);
         grid->setPeriodicX3(true);
         grid->setGhostLayerWidth(2);
 
@@ -148,6 +163,14 @@ void run(string configname)
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
 
+            double dx2 = 2.0 * dx;
+            GbCuboid3DPtr wallYmin(new GbCuboid3D(g_minX1 - dx2, g_minX2 - dx2, g_minX3 - dx2, g_maxX1 + dx2, g_minX2, g_maxX3 + dx2));
+            GbSystem3D::writeGeoObject(wallYmin.get(), pathname + "/geo/wallYmin", WbWriterVtkXmlASCII::getInstance());
+            GbCuboid3DPtr wallYmax(new GbCuboid3D(g_minX1 - dx2, g_maxX2, g_minX3 - dx2, g_maxX1 + dx2, g_maxX2 + dx2, g_maxX3 + dx2));
+            GbSystem3D::writeGeoObject(wallYmax.get(), pathname + "/geo/wallYmax", WbWriterVtkXmlASCII::getInstance());
+
+            SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
  
             SPtr<WriteBlocksCoProcessor> ppblocks(new WriteBlocksCoProcessor(
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
@@ -155,6 +178,8 @@ void run(string configname)
             SPtr<Grid3DVisitor> metisVisitor(
                 new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
             InteractorsHelper intHelper(grid, metisVisitor, true);
+            intHelper.addInteractor(wallYminInt);
+            intHelper.addInteractor(wallYmaxInt);
             intHelper.selectBlocks();
 
             ppblocks->process(0);
@@ -199,12 +224,10 @@ void run(string configname)
 
             intHelper.setBC();
 
-            //grid->accept(bcVisitor);
-
             // initialization of distributions
-            LBMReal x1c = (g_maxX1 - g_minX1-1)/2;
-            LBMReal x2c = (g_maxX2 - g_minX2-1)/2;
-            LBMReal x3c = (g_maxX3 - g_minX3-1)/2;
+            LBMReal x1c = 2.5 * D; // (g_maxX1 - g_minX1-1)/2; //
+            LBMReal x2c = 12.5 * D; //(g_maxX2 - g_minX2-1)/2;
+            LBMReal x3c = 2.5 * D; //(g_maxX3 - g_minX3-1)/2;
             mu::Parser fct1;
             fct1.SetExpr("0.5-0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
             fct1.DefineConst("x1c", x1c);
@@ -222,7 +245,7 @@ void run(string configname)
             fct2.DefineConst("radius", radius);
             fct2.DefineConst("interfaceThickness", interfaceThickness);
 
-            MultiphaseInitDistributionsBlockVisitorVelocity initVisitor(densityRatio, interfaceThickness, radius);
+            MultiphaseInitDistributionsBlockVisitor initVisitor(densityRatio);
             initVisitor.setPhi(fct1);
             initVisitor.setVx1(fct2);
             grid->accept(initVisitor);
@@ -232,7 +255,7 @@ void run(string configname)
                 SPtr<UbScheduler> geoSch(new UbScheduler(1));
                 SPtr<WriteBoundaryConditionsCoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(
                     grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-                //ppgeo->process(0);
+                ppgeo->process(0);
                 ppgeo.reset();
             }
 
@@ -257,6 +280,8 @@ void run(string configname)
             if (myid == 0)
                 UBLOG(logINFO, "Restart - end");
         }
+
+        grid->accept(bcVisitor);
 
         //TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
         //grid->accept(setConnsVisitor);

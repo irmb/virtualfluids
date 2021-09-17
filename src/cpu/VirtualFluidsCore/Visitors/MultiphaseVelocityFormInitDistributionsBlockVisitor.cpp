@@ -26,12 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file MultiphaseInitDistributionsBlockVisitorVelocity.cpp
+//! \file MultiphaseVelocityFormInitDistributionsBlockVisitor.cpp
 //! \ingroup Visitors
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#include "MultiphaseInitDistributionsBlockVisitorVelocity.h"
+#include "MultiphaseVelocityFormInitDistributionsBlockVisitor.h"
 #include "BCArray3D.h"
 #include "BCProcessor.h"
 #include "Block3D.h"
@@ -41,7 +41,7 @@
 #include "Grid3DSystem.h"
 #include "LBMKernel.h"
 
-MultiphaseInitDistributionsBlockVisitorVelocity::MultiphaseInitDistributionsBlockVisitorVelocity() 
+MultiphaseVelocityFormInitDistributionsBlockVisitor::MultiphaseVelocityFormInitDistributionsBlockVisitor() 
 	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
 {
 	this->setVx1(0.0);
@@ -50,108 +50,97 @@ MultiphaseInitDistributionsBlockVisitorVelocity::MultiphaseInitDistributionsBloc
 	this->setRho(0.0);
 }
 //////////////////////////////////////////////////////////////////////////
-MultiphaseInitDistributionsBlockVisitorVelocity::MultiphaseInitDistributionsBlockVisitorVelocity( /*LBMReal densityRatio,*/ LBMReal intThickness, LBMReal radius, LBMReal vx1, LBMReal vx2, LBMReal vx3)
-	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL)/*, densityRatio(densityRatio), intThickness(intThickness), radius(radius) */
-{
-    (void) intThickness;
-    (void) radius;
-
-	this->setVx1(vx1);
-	this->setVx2(vx2);
-	this->setVx3(vx3);
-}
-//////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setVx1( const mu::Parser& parser)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx1( const mu::Parser& parser)  
 { 
 	this->checkFunction(parser); 
 	this->muVx1 = parser;  
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setVx2( const mu::Parser& parser)
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx2( const mu::Parser& parser)
 { 
 	this->checkFunction(parser); 
 	this->muVx2 = parser;  
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setVx3( const mu::Parser& parser)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx3( const mu::Parser& parser)  
 { 
 	this->checkFunction(parser); 
 	this->muVx3 = parser;  
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setRho( const mu::Parser& parser)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setRho( const mu::Parser& parser)  
 { 
 	this->checkFunction(parser); 
 	this->muRho = parser;  
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setPhi( const mu::Parser& parser)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setPhi( const mu::Parser& parser)  
 { 
 	this->checkFunction(parser); 
 	this->muPhi = parser;  
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setVx1( const std::string& muParserString)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx1( const std::string& muParserString)  
 { 
 	this->muVx1.SetExpr(muParserString); 
 	this->checkFunction(muVx1); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setVx2( const std::string& muParserString) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx2( const std::string& muParserString) 
 { 
 	this->muVx2.SetExpr(muParserString); 
 	this->checkFunction(muVx2); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setVx3( const std::string& muParserString)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx3( const std::string& muParserString)  
 { 
 	this->muVx3.SetExpr(muParserString); 
 	this->checkFunction(muVx3); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setRho( const std::string& muParserString)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setRho( const std::string& muParserString)  
 { 
 	this->muRho.SetExpr(muParserString); 
 	this->checkFunction(muRho); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setPhi( const std::string& muParserString)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setPhi( const std::string& muParserString)  
 { 
 	this->muPhi.SetExpr(muParserString); 
 	this->checkFunction(muPhi); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setVx1( LBMReal vx1 ) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx1( LBMReal vx1 ) 
 { 
 	this->muVx1.SetExpr( UbSystem::toString(vx1,D3Q27RealLim::digits10) );  
 	this->checkFunction(muVx1); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setVx2( LBMReal vx2 ) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx2( LBMReal vx2 ) 
 { 
 	this->muVx2.SetExpr( UbSystem::toString(vx2,D3Q27RealLim::digits10) );  
 	this->checkFunction(muVx2); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setVx3( LBMReal vx3 ) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx3( LBMReal vx3 ) 
 { 
 	this->muVx3.SetExpr( UbSystem::toString(vx3,D3Q27RealLim::digits10) );  
 	this->checkFunction(muVx3); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setRho( LBMReal rho ) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setRho( LBMReal rho ) 
 { 
 	this->muRho.SetExpr( UbSystem::toString(rho,D3Q27RealLim::digits10) );  
 	this->checkFunction(muRho); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setPhi( LBMReal phi ) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setPhi( LBMReal phi ) 
 { 
 	this->muPhi.SetExpr( UbSystem::toString(phi,D3Q27RealLim::digits10) );  
 	this->checkFunction(muPhi); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block) 
 {
 	using namespace D3Q27System;
 
@@ -336,7 +325,7 @@ void MultiphaseInitDistributionsBlockVisitorVelocity::visit(const SPtr<Grid3D> g
 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::checkFunction(mu::Parser fct)
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::checkFunction(mu::Parser fct)
 {
 	double x1=1.0,x2=1.0,x3=1.0;
 	fct.DefineVar("x1",&x1); 
@@ -355,7 +344,7 @@ void MultiphaseInitDistributionsBlockVisitorVelocity::checkFunction(mu::Parser f
 	}
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitorVelocity::setNu( LBMReal nu )
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setNu( LBMReal nu )
 {
 	this->nu = nu;
 }
