@@ -13,17 +13,17 @@ enum class PostProcessingVariable{
     // In init add number of arrays + offset in switch statement
     // If new quantity depends on other quantities i.e. mean, catch in addPostProcessingVariable
     Means = 0,
-    Variances = 4,
-    LAST = 8,
+    Variances = 1,
+    LAST = 2,
 };
 struct ProbeStruct{
     uint nPoints, nArrays;
     uint *pointIndicesH, *pointIndicesD;
     real *pointCoordsX, *pointCoordsY, *pointCoordsZ;
     real *distXH, *distYH, *distZH, *distXD, *distYD, *distZD;
-    real* quantitiesArrayH, *quantitiesArrayD;
-    PostProcessingVariable* quantitiesH,* quantitiesD; 
-    uint* arrayOffsetsH, *arrayOffsetsD;
+    real *quantitiesArrayH, *quantitiesArrayD;
+    bool *quantitiesH, *quantitiesD;
+    uint *arrayOffsetsH, *arrayOffsetsD;
 };
 
 
@@ -48,7 +48,6 @@ public:
     void free(Parameter* para, CudaMemoryManager* cudaManager);
 
     ProbeStruct* getProbeStruct(int level){ return this->probeParams[level]; }
-    std::vector<PostProcessingVariable> getPostProcessingVariables(){return this->postProcessingVariables; }
 
     void setProbePointsFromList(std::vector<real> &_pointCoordsX, std::vector<real> &_pointCoordsY, std::vector<real> &_pointCoordsZ);
     void setProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, real delta_y, real delta_z);
@@ -66,15 +65,12 @@ private:
     uint nProbePoints;
 
     std::vector<ProbeStruct*> probeParams;
-    std::vector<PostProcessingVariable> postProcessingVariables;
+    bool quantities[int(PostProcessingVariable::LAST)];
     std::vector<std::string> fileNamesForCollectionFile;
     std::vector<std::string> varNames;
 
     uint tStart;
     uint tOut;
-    // int* pointIndicesH, *pointIndicesD;
-    // std::vector< std::vector<int> > probeIndices;
-    // std::vector< std::vector<real> > distX, distY, distZ;
 };
 
 #endif

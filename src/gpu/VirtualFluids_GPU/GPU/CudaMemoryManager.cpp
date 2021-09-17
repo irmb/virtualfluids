@@ -2916,37 +2916,34 @@ void CudaMemoryManager::cudaFreeProbeQuantityArray(Probe* probe, int level)
     checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->quantitiesArrayD) );
 }
 
-void CudaMemoryManager::cudaAllocProbeQuantities(Probe* probe, int level)
+void CudaMemoryManager::cudaAllocProbeQuantitiesAndOffsets(Probe* probe, int level)
 {
-    size_t tmpV = probe->getPostProcessingVariables().size()*sizeof(int);
-    size_t tmpO = int(PostProcessingVariable::LAST)*sizeof(int);
-    
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->arrayOffsetsH, tmpO) );    
-    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->quantitiesH, tmpV) );
-
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->arrayOffsetsD, tmpO) );
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->quantitiesD, tmpV) );
-    setMemsizeGPU(tmpO+tmpV, false);
+    size_t tmpA = int(PostProcessingVariable::LAST)*sizeof(int);
+    size_t tmpQ = int(PostProcessingVariable::LAST)*sizeof(bool);
+    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->quantitiesH, tmpQ) );    
+    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->quantitiesD, tmpQ) );
+    checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->arrayOffsetsH, tmpA) );    
+    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->arrayOffsetsD, tmpA) );
+    setMemsizeGPU(tmpA+tmpQ, false);
 }
 
-void CudaMemoryManager::cudaCopyProbeQuantitiesHtoD(Probe* probe, int level)
-{
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->arrayOffsetsD, probe->getProbeStruct(level)->arrayOffsetsH, probe->getPostProcessingVariables().size()*sizeof(real), cudaMemcpyHostToDevice) );
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->quantitiesD, probe->getProbeStruct(level)->quantitiesH, probe->getPostProcessingVariables().size()*sizeof(real), cudaMemcpyHostToDevice) );
+void CudaMemoryManager::cudaCopyProbeQuantitiesAndOffsetsHtoD(Probe* probe, int level)
+{    
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->quantitiesD, probe->getProbeStruct(level)->quantitiesH, int(PostProcessingVariable::LAST)*sizeof(bool), cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->arrayOffsetsD, probe->getProbeStruct(level)->arrayOffsetsH, int(PostProcessingVariable::LAST)*sizeof(int), cudaMemcpyHostToDevice) );
+}
 
-}
-void CudaMemoryManager::cudaCopyProbeQuantitiesDtoH(Probe* probe, int level)
+void CudaMemoryManager::cudaCopyProbeQuantitiesAndOffsetsDtoH(Probe* probe, int level)
 {
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->arrayOffsetsH, probe->getProbeStruct(level)->arrayOffsetsD, probe->getPostProcessingVariables().size()*sizeof(real), cudaMemcpyDeviceToHost) );
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->quantitiesH, probe->getProbeStruct(level)->quantitiesD, probe->getPostProcessingVariables().size()*sizeof(real), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->quantitiesH, probe->getProbeStruct(level)->quantitiesD, int(PostProcessingVariable::LAST)*sizeof(bool), cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->arrayOffsetsH, probe->getProbeStruct(level)->arrayOffsetsD, int(PostProcessingVariable::LAST)*sizeof(int), cudaMemcpyDeviceToHost) );
 }
-void CudaMemoryManager::cudaFreeProbeQuantities(Probe* probe, int level)
+void CudaMemoryManager::cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int level)
 {
-    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->arrayOffsetsH) );
     checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->quantitiesH) );
-
-    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->arrayOffsetsD) );
+    checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->arrayOffsetsH) );
     checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->quantitiesD) );
+    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->arrayOffsetsD) );
 }
 
 

@@ -367,10 +367,10 @@ public:
     void cudaCopyProbeQuantityArrayDtoH(Probe* probe, int level);
     void cudaFreeProbeQuantityArray(Probe* probe, int level);
     
-    void cudaAllocProbeQuantities(Probe* probe, int level);
-    void cudaCopyProbeQuantitiesHtoD(Probe* probe, int level);
-    void cudaCopyProbeQuantitiesDtoH(Probe* probe, int level);
-    void cudaFreeProbeQuantities(Probe* probe, int level);
+    void cudaAllocProbeQuantitiesAndOffsets(Probe* probe, int level);
+    void cudaCopyProbeQuantitiesAndOffsetsHtoD(Probe* probe, int level);
+    void cudaCopyProbeQuantitiesAndOffsetsDtoH(Probe* probe, int level);
+    void cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int level);
 
 private:
     CudaMemoryManager(std::shared_ptr<Parameter> parameter);

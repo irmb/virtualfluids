@@ -20,8 +20,7 @@ __global__ void interpQuantities(   uint* pointIndices,
                                     real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
-                                    // real* vx_point, real* vy_point, real* vz_point, real* rho_point,
-                                    PostProcessingVariable* PostProcessingVariables,
+                                    bool* quantities,
                                     uint* quantityArrayOffsets, real* quantityArray
                                 )
 {
@@ -61,30 +60,23 @@ __global__ void interpQuantities(   uint* pointIndices,
 
     //TODO change computation of  means and variances to something more stable, see https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm
 
-    for( int variableIndex = 0; PostProcessingVariables[variableIndex] != PostProcessingVariable::LAST; variableIndex++)
+    if(quantities[int(PostProcessingVariable::Means)])
     {
-        PostProcessingVariable variable = PostProcessingVariables[variableIndex];
-        uint arrayOffset = quantityArrayOffsets[int(variable)]*nPoints;
+        uint arrayOffset = quantityArrayOffsets[int(PostProcessingVariable::Means)]*nPoints;
 
-        switch(variable)
-        {
-            case PostProcessingVariable::Means:
-            {
-                // printf("u_interp: %f \n", u_interpX);
-                quantityArray[arrayOffset+node] += u_interpX; arrayOffset += nPoints;
-                quantityArray[arrayOffset+node] += u_interpY; arrayOffset += nPoints;
-                quantityArray[arrayOffset+node] += u_interpZ; arrayOffset += nPoints;
-                quantityArray[arrayOffset+node] += rho_interp;
-            } break;
-            case PostProcessingVariable::Variances:
-            { 
-                quantityArray[arrayOffset+node] += pow(u_interpX, 2.f); arrayOffset += nPoints;
-                quantityArray[arrayOffset+node] += pow(u_interpY, 2.f); arrayOffset += nPoints;
-                quantityArray[arrayOffset+node] += pow(u_interpZ, 2.f); arrayOffset += nPoints;
-                quantityArray[arrayOffset+node] += pow(rho_interp, 2.f); 
-            } break;
-            default: break;
-        }
+        quantityArray[arrayOffset+node] += u_interpX; arrayOffset += nPoints;
+        quantityArray[arrayOffset+node] += u_interpY; arrayOffset += nPoints;
+        quantityArray[arrayOffset+node] += u_interpZ; arrayOffset += nPoints;
+        quantityArray[arrayOffset+node] += rho_interp;
+    }
+    if(quantities[int(PostProcessingVariable::Variances)])
+    {
+        uint arrayOffset = quantityArrayOffsets[int(PostProcessingVariable::Variances)]*nPoints;
+
+        quantityArray[arrayOffset+node] += pow(u_interpX, 2.f); arrayOffset += nPoints;
+        quantityArray[arrayOffset+node] += pow(u_interpY, 2.f); arrayOffset += nPoints;
+        quantityArray[arrayOffset+node] += pow(u_interpZ, 2.f); arrayOffset += nPoints;
+        quantityArray[arrayOffset+node] += pow(rho_interp, 2.f); 
     }
 }
 
@@ -93,11 +85,6 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
 {
 
     probeParams.resize(para->getMaxLevel()+1);
-
-    //Remove double entries
-    std::unordered_set<PostProcessingVariable> s(this->postProcessingVariables.begin(), this->postProcessingVariables.end());
-    this->postProcessingVariables.assign(s.begin(), s.end());
-    this->addPostProcessingVariable(PostProcessingVariable::LAST);
 
     for(int level=0; level<=para->getMaxLevel(); level++)
     {
@@ -155,23 +142,28 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
 
         uint arrOffset = 0;
 
-        cudaManager->cudaAllocProbeQuantities(this, level);
+        cudaManager->cudaAllocProbeQuantitiesAndOffsets(this, level);
 
-        for(PostProcessingVariable variable: this->postProcessingVariables)
+        for( int var=0; var<int(PostProcessingVariable::LAST); var++)
         {
-            probeParams[level]->arrayOffsetsH[int(variable)] = arrOffset;
-            switch(variable)
+            if(this->quantities[var])
             {
-                case PostProcessingVariable::Means: arrOffset += 4; break;                
-                case PostProcessingVariable::Variances: arrOffset += 4; break;
-                default: break;
+                probeParams[level]->quantitiesH[var] = true;
+                probeParams[level]->arrayOffsetsH[var] = arrOffset;
+                switch(static_cast<PostProcessingVariable>(var))
+                {
+                    case PostProcessingVariable::Means: arrOffset += 4; break;                
+                    case PostProcessingVariable::Variances: arrOffset += 4; break;
+                    default: break;
+                }
             }
         }
+        
+        cudaManager->cudaCopyProbeQuantitiesAndOffsetsHtoD(this, level);
 
         probeParams[level]->nArrays = arrOffset;
+
         cudaManager->cudaAllocProbeQuantityArray(this, level);
-        std::copy(this->postProcessingVariables.begin(), this->postProcessingVariables.end(), probeParams[level]->quantitiesH);
-        cudaManager->cudaCopyProbeQuantitiesHtoD(this, level);
 
         for(uint arr=0; arr<probeParams[level]->nArrays; arr++)
         {
@@ -211,7 +203,7 @@ void Probe::free(Parameter* para, CudaMemoryManager* cudaManager)
         cudaManager->cudaFreeProbeDistances(this, level);
         cudaManager->cudaFreeProbeIndices(this, level);
         cudaManager->cudaFreeProbeQuantityArray(this, level);
-        cudaManager->cudaFreeProbeQuantities(this, level);
+        cudaManager->cudaFreeProbeQuantitiesAndOffsets(this, level);
 
     }
 }
@@ -250,13 +242,14 @@ void Probe::setProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z,
     this->setProbePointsFromList(pointCoordsXtmp, pointCoordsYtmp, pointCoordsZtmp);
 }
 
-void Probe::addPostProcessingVariable(PostProcessingVariable _variable)
+void Probe::addPostProcessingVariable(PostProcessingVariable variable)
 {
-    this->postProcessingVariables.push_back(_variable);
-    switch(_variable)
+    this->quantities[int(variable)] = true;
+    switch(static_cast<PostProcessingVariable>(variable))
     {
         case PostProcessingVariable::Means: break;
-        case PostProcessingVariable::Variances: this->postProcessingVariables.push_back(PostProcessingVariable::Means); break;
+        case PostProcessingVariable::Variances: 
+            this->addPostProcessingVariable(PostProcessingVariable::Means); break;
         default: break;
     }
 }
@@ -351,16 +344,18 @@ void Probe::writeGridFile(Parameter* para, int level, std::vector<std::string>& 
         for( auto it=nodedata.begin(); it!=nodedata.end(); it++) it->resize(sizeOfNodes);
 
         //TODO maybe change order of loops, could be faster, maybe not important, also still very ugly
-        for (unsigned int pos = startpos; pos < endpos; pos++)
+        for (uint pos = startpos; pos < endpos; pos++)
         {
             int dn = pos-startpos;
             //////////////////////////////////////////////////////////////////////////
             int offset = 0;
-            for(PostProcessingVariable variable: this->postProcessingVariables)
+            for( int var=0; var < int(PostProcessingVariable::LAST); var++)
             {
-                int arrOffset = this->getProbeStruct(level)->arrayOffsetsH[int(variable)]*this->getProbeStruct(level)->nPoints;
-                switch(variable)
+                if(this->quantities[var])
                 {
+                    int arrOffset = this->getProbeStruct(level)->arrayOffsetsH[var]*this->getProbeStruct(level)->nPoints;
+                    switch(static_cast<PostProcessingVariable>(var))
+                    {
                     case PostProcessingVariable::Means:
                     {
                         nodedata[offset][dn] = (double)this->getProbeStruct(level)->quantitiesArrayH[arrOffset+pos]*para->getVelocityRatio()*inv_t; arrOffset+=probeParams[level]->nPoints; offset++;
@@ -377,7 +372,9 @@ void Probe::writeGridFile(Parameter* para, int level, std::vector<std::string>& 
                         nodedata[offset][dn] = double(this->getProbeStruct(level)->quantitiesArrayH[arrOffset+pos]*inv_t - pow(this->getProbeStruct(level)->quantitiesArrayH[arrOffset+meansShift+pos]*inv_t,2))*pow(para->getVelocityRatio(),2); arrOffset+=probeParams[level]->nPoints; offset++;
                     } break;
                     default: break;
+                    }
                 }
+
             }
         }
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(fnames[part], nodes, nodedatanames, nodedata);
@@ -387,24 +384,20 @@ void Probe::writeGridFile(Parameter* para, int level, std::vector<std::string>& 
 std::vector<std::string> Probe::getVarNames()
 {
     std::vector<std::string> varNames;
-    for(PostProcessingVariable variable: this->postProcessingVariables)
+    if(this->quantities[int(PostProcessingVariable::Means)])
     {
-        switch(variable)
-        {
-            case PostProcessingVariable::Means:
-                varNames.push_back("vx_mean");
-                varNames.push_back("vy_mean");
-                varNames.push_back("vz_mean");
-                varNames.push_back("rho_mean");
-                break;            
-            case PostProcessingVariable::Variances:
-                varNames.push_back("vx_var");
-                varNames.push_back("vy_var");
-                varNames.push_back("vz_var");
-                varNames.push_back("rho_var");
-                break;
-            default: break;
-        }
+        varNames.push_back("vx_mean");
+        varNames.push_back("vy_mean");
+        varNames.push_back("vz_mean");
+        varNames.push_back("rho_mean");
+    }
+
+    if(this->quantities[int(PostProcessingVariable::Variances)])
+    {
+        varNames.push_back("vx_var");
+        varNames.push_back("vy_var");
+        varNames.push_back("vz_var");
+        varNames.push_back("rho_var");
     }
     return varNames;
 }
