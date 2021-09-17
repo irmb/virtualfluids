@@ -181,7 +181,7 @@ void ActuatorLine::visit(Parameter* para, CudaMemoryManager* cudaManager, int le
     
     cudaManager->cudaCopyBladeCoordsHtoD(this);
 
-    unsigned int numberOfThreads = 128;
+    uint numberOfThreads = 128;
     vf::gpu::CudaGrid bladeGrid = vf::gpu::CudaGrid(numberOfThreads, this->numberOfNodes);
 
     interpolateVelocities<<< bladeGrid.grid, bladeGrid.threads >>>(

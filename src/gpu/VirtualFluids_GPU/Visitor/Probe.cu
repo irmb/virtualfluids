@@ -109,7 +109,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         std::vector<real> pointCoordsY_level;
         std::vector<real> pointCoordsZ_level;
         real dx = abs(para->getParH(level)->coordX_SP[1]-para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[1]]);
-        for(uint j=0; j<para->getParH(level)->size_Mat_SP; j++ )
+        for(uint j=1; j<para->getParH(level)->size_Mat_SP; j++ )
         {    
             for(uint point=0; point<this->nProbePoints; point++)
             {
@@ -190,7 +190,7 @@ void Probe::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, un
 {    
     ProbeStruct* probeStruct = this->getProbeStruct(level);
 
-    vf::gpu::CudaGrid grid = vf::gpu::CudaGrid(probeStruct->nPoints, 128);
+    vf::gpu::CudaGrid grid = vf::gpu::CudaGrid(128, probeStruct->nPoints);
 
     interpQuantities<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints,
                                                     probeStruct->distXD, probeStruct->distYD, probeStruct->distZD,
@@ -202,8 +202,6 @@ void Probe::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, un
         cudaManager->cudaCopyProbeQuantityArrayDtoH(this, level);
         this->write(para, level, t);
     }
-
-
 }
 
 void Probe::free(Parameter* para, CudaMemoryManager* cudaManager)
