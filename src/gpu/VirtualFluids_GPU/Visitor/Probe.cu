@@ -223,9 +223,7 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int> prob
 
         probeParams[level]->quantitiesH[var] = true;
         probeParams[level]->arrayOffsetsH[var] = arrOffset;
-
-        arrOffset += getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var)).size();
-
+        arrOffset += uint(getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var)).size());
     }}
     
     cudaManager->cudaCopyProbeQuantitiesAndOffsetsHtoD(this, level);
@@ -422,7 +420,7 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
         {
             PostProcessingVariable quantity = static_cast<PostProcessingVariable>(var);
             real coeff;
-            uint n_arrs = getPostProcessingVariableNames(quantity).size();
+            uint n_arrs = uint(getPostProcessingVariableNames(quantity).size());
 
             switch(quantity)
             {
