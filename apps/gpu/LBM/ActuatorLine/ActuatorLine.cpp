@@ -49,7 +49,8 @@
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Visitor/ActuatorLine.h"
-#include "VirtualFluids_GPU/Visitor/Probe.h"
+#include "VirtualFluids_GPU/Visitor/Probes/PointProbe.h"
+#include "VirtualFluids_GPU/Visitor/Probes/PlaneProbe.h"
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
@@ -199,15 +200,23 @@ void multipleLevel(const std::string& configPath)
         ActuatorLine* actuator_line = new ActuatorLine((unsigned int) 3, density, (unsigned int)32, epsilon, turbPos[0], turbPos[1], turbPos[2], D, level, dt, dx);
         para->addActuator( actuator_line );
 
-        Probe* probe = new Probe("probe", 100, 500, 100);
+        PointProbe* pointProbe = new PointProbe("pointProbe", 100, 500, 100);
         std::vector<real> probeCoordsX = {D,2*D,5*D};
         std::vector<real> probeCoordsY = {3*D,3*D,3*D};
         std::vector<real> probeCoordsZ = {3*D,3*D,3*D};
-        probe->setProbePointsFromList(probeCoordsX,probeCoordsY,probeCoordsZ);
-        // probe->setProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, dx, dx);
-        probe->addPostProcessingVariable(PostProcessingVariable::Means);
-        probe->addPostProcessingVariable(PostProcessingVariable::Variances);
-        para->addProbe( probe );
+        pointProbe->setProbePointsFromList(probeCoordsX,probeCoordsY,probeCoordsZ);
+        // pointProbe->setProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, dx, dx);
+        pointProbe->addPostProcessingVariable(PostProcessingVariable::Means);
+        pointProbe->addPostProcessingVariable(PostProcessingVariable::Variances);
+        para->addProbe( pointProbe );
+
+        PlaneProbe* planeProbe = new PlaneProbe("planeProbe", 100, 500, 100);
+        planeProbe->setProbePlane(5*D, 0, 0, dx, L_y, L_z);
+        planeProbe->addPostProcessingVariable(PostProcessingVariable::Means);
+        para->addProbe( planeProbe );
+
+
+
 
         Simulation sim;
         SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());

@@ -1,7 +1,7 @@
 #ifndef Probe_H
 #define Probe_H
 
-#include "Visitor.h"
+#include "Visitor/Visitor.h"
 #include "PointerDefinitions.h"
 
 
@@ -27,6 +27,15 @@ struct ProbeStruct{
     uint *arrayOffsetsH, *arrayOffsetsD;
 };
 
+__global__ void interpQuantities(   uint* pointIndices,
+                                    uint nPoints, uint n,
+                                    real* distX, real* distY, real* distZ,
+                                    real* vx, real* vy, real* vz, real* rho,            
+                                    uint* neighborX, uint* neighborY, uint* neighborZ,
+                                    bool* quantities,
+                                    uint* quantityArrayOffsets, real* quantityArray,
+                                    bool interpolate
+                                );
 
 class Probe : public Visitor 
 {
@@ -50,9 +59,8 @@ public:
     void free(Parameter* para, CudaMemoryManager* cudaManager);
 
     ProbeStruct* getProbeStruct(int level){ return this->probeParams[level]; }
+    
 
-    void setProbePointsFromList(std::vector<real> &_pointCoordsX, std::vector<real> &_pointCoordsY, std::vector<real> &_pointCoordsZ);
-    void setProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, real delta_y, real delta_z);
     void addPostProcessingVariable(PostProcessingVariable _variable);
 
     void write(Parameter* para, int level, int t);
@@ -61,16 +69,20 @@ public:
     std::vector<std::string> getVarNames();
 
 private:
-    void addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int> probeIndices,
-                                   std::vector<real> distX, std::vector<real> distY, std::vector<real> distZ,   
-                                   std::vector<real> pointCoordsX, std::vector<real> pointCoordsY, std::vector<real> pointCoordsZ,
-                                   int level);
+    virtual void findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
+                       std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
+                       std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
+                       int level) = 0;
+    void addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& probeIndices,
+                        std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
+                        std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
+                        int level);
+    virtual void calculateQuantities(ProbeStruct* probeStruct, Parameter* para, int level) = 0;
+
 
     
 private:
     const std::string probeName;
-    std::vector<real> pointCoordsX, pointCoordsY, pointCoordsZ; 
-    uint nProbePoints;
 
     std::vector<ProbeStruct*> probeParams;
     bool quantities[int(PostProcessingVariable::LAST)];

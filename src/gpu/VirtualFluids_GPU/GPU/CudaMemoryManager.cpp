@@ -6,7 +6,7 @@
 
 #include <Parameter/Parameter.h>
 #include <Visitor/ActuatorLine.h>
-#include <Visitor/Probe.h>
+#include <Visitor/Probes/Probe.h>
 
 #include "Calculation/PorousMedia.h"
 
