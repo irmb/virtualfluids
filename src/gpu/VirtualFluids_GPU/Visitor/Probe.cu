@@ -89,7 +89,8 @@ __global__ void interpQuantities(   uint* pointIndices,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray
+                                    uint* quantityArrayOffsets, real* quantityArray,
+                                    bool interpolate
                                 )
 {
     const uint x = threadIdx.x; 
@@ -106,19 +107,29 @@ __global__ void interpQuantities(   uint* pointIndices,
     // Get indices of neighbor nodes. 
     // node referring to BSW cell as seen from probe point
     uint k = pointIndices[node];
-    uint ke, kn, kt, kne, kte, ktn, ktne;
-    getNeighborIndicesBSW(  k, ke, kn, kt, kne, kte, ktn, ktne, neighborX, neighborY, neighborZ);
-
-    // Trilinear interpolation of macroscopic quantities to probe point
-    real dW, dE, dN, dS, dT, dB;
-    getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX[node], distY[node], distZ[node]);
-
     real u_interpX, u_interpY, u_interpZ, rho_interp;
 
-    u_interpX  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
-    u_interpY  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
-    u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
-    rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
+    if(interpolate)
+    {
+        uint ke, kn, kt, kne, kte, ktn, ktne;
+        getNeighborIndicesBSW(  k, ke, kn, kt, kne, kte, ktn, ktne, neighborX, neighborY, neighborZ);
+
+        // Trilinear interpolation of macroscopic quantities to probe point
+        real dW, dE, dN, dS, dT, dB;
+        getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX[node], distY[node], distZ[node]);
+
+
+        u_interpX  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
+        u_interpY  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
+        u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
+        rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
+    } else 
+    {
+        u_interpX = vx[k];
+        u_interpY = vy[k];
+        u_interpZ = vz[k];
+        rho_interp = rho[k];
+    }
 
     calculateQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
 
@@ -160,66 +171,77 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
                     pointCoordsX_level.push_back( pointCoordX );
                     pointCoordsY_level.push_back( pointCoordY );
                     pointCoordsZ_level.push_back( pointCoordZ );
+                    break;
                     // printf("x %f y %f z %f", pointCoordX, pointCoordY, pointCoordZ);
                 }
             }
         }
         
-        probeParams[level] = new ProbeStruct;
-        probeParams[level]->vals = 1;
-        probeParams[level]->nPoints = uint(probeIndices_level.size());
-
-        probeParams[level]->pointCoordsX = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
-        probeParams[level]->pointCoordsY = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
-        probeParams[level]->pointCoordsZ = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
-
-        std::copy(pointCoordsX_level.begin(), pointCoordsX_level.end(), probeParams[level]->pointCoordsX);
-        std::copy(pointCoordsY_level.begin(), pointCoordsY_level.end(), probeParams[level]->pointCoordsY);
-        std::copy(pointCoordsZ_level.begin(), pointCoordsZ_level.end(), probeParams[level]->pointCoordsZ);
-
-        // Might have to catch nPoints=0 ?!?!
-        cudaManager->cudaAllocProbeDistances(this, level);
-        cudaManager->cudaAllocProbeIndices(this, level);
-
-        std::copy(distX_level.begin(), distX_level.end(), probeParams[level]->distXH);
-        std::copy(distY_level.begin(), distY_level.end(), probeParams[level]->distYH);
-        std::copy(distZ_level.begin(), distZ_level.end(), probeParams[level]->distZH);
-        std::copy(probeIndices_level.begin(), probeIndices_level.end(), probeParams[level]->pointIndicesH);
-
-        cudaManager->cudaCopyProbeDistancesHtoD(this, level);
-        cudaManager->cudaCopyProbeIndicesHtoD(this, level);
-
-        uint arrOffset = 0;
-
-        cudaManager->cudaAllocProbeQuantitiesAndOffsets(this, level);
-
-        for( int var=0; var<int(PostProcessingVariable::LAST); var++){
-        if(this->quantities[var])
-        {
-
-            probeParams[level]->quantitiesH[var] = true;
-            probeParams[level]->arrayOffsetsH[var] = arrOffset;
-
-            arrOffset += getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var)).size();
-
-        }}
-        
-        cudaManager->cudaCopyProbeQuantitiesAndOffsetsHtoD(this, level);
-
-        probeParams[level]->nArrays = arrOffset;
-
-        cudaManager->cudaAllocProbeQuantityArray(this, level);
-
-        for(uint arr=0; arr<probeParams[level]->nArrays; arr++)
-        {
-            for( uint point=0; point<probeParams[level]->nPoints; point++)
-            {
-                probeParams[level]->quantitiesArrayH[arr*probeParams[level]->nPoints+point] = 0.0f;
-            }
-        }
-        cudaManager->cudaCopyProbeQuantityArrayHtoD(this, level);
-
+        this->addProbeStruct(cudaManager, probeIndices_level, 
+                            distX_level, distY_level, distZ_level, 
+                            pointCoordsX_level, pointCoordsX_level, pointCoordsX_level, 
+                            level);
     }
+}
+
+void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int> probeIndices,
+                                      std::vector<real> distX, std::vector<real> distY, std::vector<real> distZ,   
+                                      std::vector<real> pointCoordsX, std::vector<real> pointCoordsY, std::vector<real> pointCoordsZ,
+                                      int level)
+{
+    probeParams[level] = new ProbeStruct;
+    probeParams[level]->vals = 1;
+    probeParams[level]->nPoints = uint(probeIndices.size());
+
+    probeParams[level]->pointCoordsX = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
+    probeParams[level]->pointCoordsY = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
+    probeParams[level]->pointCoordsZ = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
+
+    std::copy(pointCoordsX.begin(), pointCoordsX.end(), probeParams[level]->pointCoordsX);
+    std::copy(pointCoordsY.begin(), pointCoordsY.end(), probeParams[level]->pointCoordsY);
+    std::copy(pointCoordsZ.begin(), pointCoordsZ.end(), probeParams[level]->pointCoordsZ);
+
+    // Might have to catch nPoints=0 ?!?!
+    cudaManager->cudaAllocProbeDistances(this, level);
+    cudaManager->cudaAllocProbeIndices(this, level);
+
+    std::copy(distX.begin(), distX.end(), probeParams[level]->distXH);
+    std::copy(distY.begin(), distY.end(), probeParams[level]->distYH);
+    std::copy(distZ.begin(), distZ.end(), probeParams[level]->distZH);
+    std::copy(probeIndices.begin(), probeIndices.end(), probeParams[level]->pointIndicesH);
+
+    cudaManager->cudaCopyProbeDistancesHtoD(this, level);
+    cudaManager->cudaCopyProbeIndicesHtoD(this, level);
+
+    uint arrOffset = 0;
+
+    cudaManager->cudaAllocProbeQuantitiesAndOffsets(this, level);
+
+    for( int var=0; var<int(PostProcessingVariable::LAST); var++){
+    if(this->quantities[var])
+    {
+
+        probeParams[level]->quantitiesH[var] = true;
+        probeParams[level]->arrayOffsetsH[var] = arrOffset;
+
+        arrOffset += getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var)).size();
+
+    }}
+    
+    cudaManager->cudaCopyProbeQuantitiesAndOffsetsHtoD(this, level);
+
+    probeParams[level]->nArrays = arrOffset;
+
+    cudaManager->cudaAllocProbeQuantityArray(this, level);
+
+    for(uint arr=0; arr<probeParams[level]->nArrays; arr++)
+    {
+        for( uint point=0; point<probeParams[level]->nPoints; point++)
+        {
+            probeParams[level]->quantitiesArrayH[arr*probeParams[level]->nPoints+point] = 0.0f;
+        }
+    }
+    cudaManager->cudaCopyProbeQuantityArrayHtoD(this, level);
 }
 
 
@@ -237,7 +259,7 @@ void Probe::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, ui
                                                         probeStruct->distXD, probeStruct->distYD, probeStruct->distZD,
                                                         para->getParD(level)->vx_SP, para->getParD(level)->vy_SP, para->getParD(level)->vz_SP, para->getParD(level)->rho_SP, 
                                                         para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP, 
-                                                        probeStruct->quantitiesD, probeStruct->arrayOffsetsD, probeStruct->quantitiesArrayD  );
+                                                        probeStruct->quantitiesD, probeStruct->arrayOffsetsD, probeStruct->quantitiesArrayD, true);
         probeStruct->vals++;
 
         if(max(int(t) - int(this->tStartOut), -1) % this->tOut == 0)

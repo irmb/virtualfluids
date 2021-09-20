@@ -51,6 +51,15 @@ public:
     uint getNBlades(){return this->nBlades;};
     uint getNumberOfIndices(){return this->numberOfIndices;};
     uint getNumberOfNodes(){return this->numberOfNodes;};
+    real* getBladeCoordsX(){return this->bladeCoordsXH;};
+    real* getBladeCoordsY(){return this->bladeCoordsYH;};
+    real* getBladeCoordsZ(){return this->bladeCoordsZH;};
+    real* getBladeVelocitiesX(){return this->bladeVelocitiesXH;};
+    real* getBladeVelocitiesY(){return this->bladeVelocitiesYH;};
+    real* getBladeVelocitiesZ(){return this->bladeVelocitiesZH;};
+    real* getBladeForcesX(){return this->bladeForcesXH;};
+    real* getBladeForcesY(){return this->bladeForcesYH;};
+    real* getBladeForcesZ(){return this->bladeForcesZH;};
 
 private:
     void initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager);

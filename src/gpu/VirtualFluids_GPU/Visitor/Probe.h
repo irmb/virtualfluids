@@ -60,6 +60,12 @@ public:
     void writeGridFiles(Parameter* para, int level, std::vector<std::string >& fnames, int t);
     std::vector<std::string> getVarNames();
 
+private:
+    void addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int> probeIndices,
+                                   std::vector<real> distX, std::vector<real> distY, std::vector<real> distZ,   
+                                   std::vector<real> pointCoordsX, std::vector<real> pointCoordsY, std::vector<real> pointCoordsZ,
+                                   int level);
+
     
 private:
     const std::string probeName;
