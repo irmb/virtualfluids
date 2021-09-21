@@ -149,6 +149,11 @@ public:
     GRIDGENERATOR_EXPORT uint getNumberOfReceiveIndices( int direction, uint level ) override;
     GRIDGENERATOR_EXPORT void getSendIndices( int* sendIndices, int direction, int level ) override;
     GRIDGENERATOR_EXPORT void getReceiveIndices( int* sendIndices, int direction, int level ) override;
+    GRIDGENERATOR_EXPORT void reorderSendRecvIndexForCommAfterFtoC(int *sendIndices, int *recvIndices,
+                                                                   int &numberOfSendNeighborsAfterFtoC,
+                                                                   int &numberOfRecvNeighborsAfterFtoC,
+                                                                   uint *iCellFCCBorder, uint sizeOfICellFCCBorder,
+                                                                   int direction, int level) override;
 
 };
 
