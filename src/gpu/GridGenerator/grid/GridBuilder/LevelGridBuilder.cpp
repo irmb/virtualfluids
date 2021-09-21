@@ -266,7 +266,7 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::getReceiveIndices(int * receiveIndic
     }
 }
 GRIDGENERATOR_EXPORT void LevelGridBuilder::getAndReorderSendIndices(int *sendIndices,
-                                                                     int &numberOfSendNeighborsAfterFtoC,
+                                                                     uint &numberOfSendNeighborsAfterFtoC,
                                                                      uint *iCellFCCBorder, uint sizeOfICellFCCBorder,
                                                                      int direction, int level,
                                                                      bool sendIndicesNeedToBeReordered)
@@ -277,7 +277,7 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::getAndReorderSendIndices(int *sendIn
                                          sizeOfICellFCCBorder, direction, level);
 }
 GRIDGENERATOR_EXPORT void LevelGridBuilder::getAndReorderReceiveIndices(int *recvIndices,
-                                                                        int &numberOfRecvNeighborsAfterFtoC,
+                                                                        uint &numberOfRecvNeighborsAfterFtoC,
                                                                         uint *iCellFCCBorder, uint sizeOfICellFCCBorder,
                                                                         int direction, int level,
                                                                         bool receiveIndicesNeedToBeReordered)
@@ -288,7 +288,7 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::getAndReorderReceiveIndices(int *rec
                                          sizeOfICellFCCBorder, direction, level);
 }
 
-GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndexForCommAfterFtoC(int *sendIndices, int &numberOfSendNeighborsAfterFtoC,
+GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndexForCommAfterFtoC(int *sendIndices, uint &numberOfSendNeighborsAfterFtoC,
                                                                              uint* iCellFCCBorder,  uint sizeOfICellFCCBorder,
                                                                              int direction, int level)
 {
@@ -316,11 +316,14 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndexForCommAfterFtoC(int
 
         // check if sparse index is in ICellFCC border
         isInICellFCCBorder = false;
-        for (uint j = 0; j < sizeOfICellFCCBorder; j++)
-            if (iCellFCCBorder[j] == sparseIndexSend) {
+        for (uint j = 0; j < sizeOfICellFCCBorder; j++) {
+            if (sparseIndexSend < 0)
+                continue;
+            if (iCellFCCBorder[j] == (uint) sparseIndexSend) {
                 isInICellFCCBorder = true;
                 break;
             }
+        }
 
         // add index to corresponding vector
         if (isInICellFCCBorder)
@@ -344,7 +347,7 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndexForCommAfterFtoC(int
     std::cout << "correct number of nodes?: " << numberOfNodesIsCorrect << std::endl;
 }
 
-GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderRecvIndexForCommAfterFtoC(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC,
+GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderRecvIndexForCommAfterFtoC(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
                                                                              uint *iCellFCCBorder, uint sizeOfICellFCCBorder, 
                                                                              int direction, int level)
 {
@@ -374,11 +377,14 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderRecvIndexForCommAfterFtoC(int
 
         // check if sparse index is in ICellFCC border
         isInICellFCCBorder = false;
-        for (uint j = 0; j < sizeOfICellFCCBorder; j++)
-            if (iCellFCCBorder[j] == sparseIndexRecv) {
+        for (uint j = 0; j < sizeOfICellFCCBorder; j++) {
+            if (sparseIndexRecv < 0)
+                continue;
+            if (iCellFCCBorder[j] == (uint) sparseIndexRecv) {
                 isInICellFCCBorder = true;
                 break;
             }
+        }
 
         // add index to corresponding vector
         if (isInICellFCCBorder)

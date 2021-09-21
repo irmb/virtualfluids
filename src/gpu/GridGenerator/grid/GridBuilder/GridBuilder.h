@@ -86,16 +86,16 @@ public:
     virtual uint getNumberOfReceiveIndices( int direction, uint level ) = 0;
     virtual void getSendIndices( int* sendIndices, int direction, int level ) = 0;
     virtual void getReceiveIndices( int* sendIndices, int direction, int level ) = 0;
-    virtual void reorderSendIndexForCommAfterFtoC(int *sendIndices, int &numberOfSendNeighborsAfterFtoC,
+    virtual void reorderSendIndexForCommAfterFtoC(int *sendIndices, uint &numberOfSendNeighborsAfterFtoC,
                                                   uint *iCellFCCBorder, uint sizeOfICellFCCBorder, int direction,
                                                   int level)                       = 0;
-    virtual void reorderRecvIndexForCommAfterFtoC(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC,
+    virtual void reorderRecvIndexForCommAfterFtoC(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
                                                   uint *iCellFCCBorder, uint sizeOfICellFCCBorder, int direction,
                                                   int level)                       = 0;
-    virtual void getAndReorderSendIndices(int *sendIndices, int &numberOfSendNeighborsAfterFtoC, uint *iCellFCCBorder,
+    virtual void getAndReorderSendIndices(int *sendIndices, uint &numberOfSendNeighborsAfterFtoC, uint *iCellFCCBorder,
                                           uint sizeOfICellFCCBorder, int direction, int level,
                                           bool sendIndicesNeedToBeReordered)       = 0;
-    virtual void getAndReorderReceiveIndices(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC,
+    virtual void getAndReorderReceiveIndices(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
                                              uint *iCellFCCBorder, uint sizeOfICellFCCBorder, int direction, int level,
                                              bool receiveIndicesNeedToBeReordered) = 0;
 
