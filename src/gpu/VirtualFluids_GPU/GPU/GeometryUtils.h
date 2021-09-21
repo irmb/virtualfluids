@@ -180,7 +180,7 @@ __inline__ __host__ __device__ uint findNearestCellBSW(uint index,
                                               real posX, real posY, real posZ, 
                                               uint* neighborsX, uint* neighborsY, uint* neighborsZ, uint* neighborsWSB)
 {
-        uint new_index = index;
+    uint new_index = index;
 
     while(coordsX[new_index] > posX && coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = max(1, neighborsWSB[new_index]);}
 

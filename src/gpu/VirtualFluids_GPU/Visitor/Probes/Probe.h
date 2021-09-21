@@ -36,6 +36,7 @@ __global__ void interpQuantities(   uint* pointIndices,
                                     bool interpolate
                                 );
 
+
 class Probe : public Visitor 
 {
 public:
@@ -52,20 +53,12 @@ public:
     {
         assert("Output starts before averaging!" && tStartOut>=tStartAvg);
     }
-
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
     void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t);
     void free(Parameter* para, CudaMemoryManager* cudaManager);
 
-    ProbeStruct* getProbeStruct(int level){ return this->probeParams[level]; }
     
-
     void addPostProcessingVariable(PostProcessingVariable _variable);
-
-    void write(Parameter* para, int level, int t);
-    void writeCollectionFile(Parameter* para, int t);
-    void writeGridFiles(Parameter* para, int level, std::vector<std::string >& fnames, int t);
-    std::vector<std::string> getVarNames();
 
 private:
     virtual void findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
@@ -78,7 +71,12 @@ private:
                         int level);
     virtual void calculateQuantities(ProbeStruct* probeStruct, Parameter* para, int level) = 0;
 
+    ProbeStruct* getProbeStruct(int level){ return this->probeParams[level]; }
 
+    void write(Parameter* para, int level, int t);
+    void writeCollectionFile(Parameter* para, int t);
+    void writeGridFiles(Parameter* para, int level, std::vector<std::string >& fnames, int t);
+    std::vector<std::string> getVarNames();
     
 private:
     const std::string probeName;

@@ -29,9 +29,9 @@ public:
 
 private:
     void findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
-                       std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
-                       std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
-                       int level) override;
+                    std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
+                    std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
+                    int level) override;
     void calculateQuantities(ProbeStruct* probeStruct, Parameter* para, int level) override;
 
 private:

@@ -12,6 +12,7 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 
+
 std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable variable)
 {
     std::vector<std::string> varNames;
@@ -43,6 +44,7 @@ __device__ void calculateQuantities(uint n, real* quantityArray, bool* quantitie
 
     if(quantities[int(PostProcessingVariable::Means)])
     {
+        
         uint arrOff = quantityArrayOffsets[int(PostProcessingVariable::Means)];
         real vx_m_old  = quantityArray[(arrOff+0)*nPoints+node];
         real vy_m_old  = quantityArray[(arrOff+1)*nPoints+node];

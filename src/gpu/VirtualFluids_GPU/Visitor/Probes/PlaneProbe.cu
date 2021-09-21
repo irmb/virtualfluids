@@ -11,9 +11,9 @@
 #include "GPU/CudaMemoryManager.h"
 
 void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
-                       std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
-                       std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
-                       int level)
+                            std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
+                            std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
+                            int level)
 {
     real dx = abs(para->getParH(level)->coordX_SP[1]-para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[1]]);
     for(uint j=1; j<para->getParH(level)->size_Mat_SP; j++ )
@@ -38,6 +38,7 @@ void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
         }
     }
 }
+
 void PlaneProbe::calculateQuantities(ProbeStruct* probeStruct, Parameter* para, int level)
 {
     vf::gpu::CudaGrid grid = vf::gpu::CudaGrid(128, probeStruct->nPoints);
