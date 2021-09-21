@@ -921,7 +921,7 @@ void GridGenerator::allocArrays_OffsetScale()
         builder->getOffsetFC(para->getParH(level)->offFC.xOffFC, para->getParH(level)->offFC.yOffFC, para->getParH(level)->offFC.zOffFC, level);
         builder->getGridInterfaceIndices(para->getParH(level)->intCF.ICellCFC, para->getParH(level)->intCF.ICellCFF, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.ICellFCF, level);
         
-        if (para->getUseStreams()) {
+        if (para->getUseStreams() || para->getNumprocs() > 1) {
             // split fine-to-coarse indices into border and bulk
             para->getParH(level)->intFCBorder.ICellFCC = para->getParH(level)->intFC.ICellFCC; 
             para->getParH(level)->intFCBorder.ICellFCF = para->getParH(level)->intFC.ICellFCF; 

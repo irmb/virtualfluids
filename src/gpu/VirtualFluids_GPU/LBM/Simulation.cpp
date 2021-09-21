@@ -139,10 +139,9 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    cudaManager->setMemsizeGPU(0, true);
    //////////////////////////////////////////////////////////////////////////
    gridProvider->allocArrays_CoordNeighborGeo();
+   gridProvider->allocArrays_OffsetScale();
    gridProvider->allocArrays_BoundaryValues();
    gridProvider->allocArrays_BoundaryQs();
-   gridProvider->allocArrays_OffsetScale();
-
 
    //////////////////////////////////////////////////////////////////////////
    //Kernel init
