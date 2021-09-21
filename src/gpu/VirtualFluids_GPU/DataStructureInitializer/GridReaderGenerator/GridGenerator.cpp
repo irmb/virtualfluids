@@ -926,7 +926,7 @@ void GridGenerator::allocArrays_OffsetScale()
             para->getParH(level)->intFCBorder.ICellFCC = para->getParH(level)->intFC.ICellFCC; 
             para->getParH(level)->intFCBorder.ICellFCF = para->getParH(level)->intFC.ICellFCF; 
 
-            builder->getGridInterfaceIndicesFCCBorderBulk(
+            builder->getGridInterfaceIndicesFCBorderBulk(
                 para->getParH(level)->intFCBorder.ICellFCC, para->getParH(level)->intFCBulk.ICellFCC,
                 para->getParH(level)->intFCBorder.ICellFCF, para->getParH(level)->intFCBulk.ICellFCF,
                 para->getParH(level)->intFCBorder.kFC, para->getParH(level)->intFCBulk.kFC, level);

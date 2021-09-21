@@ -1943,7 +1943,7 @@ void GridImp::getGridInterface(uint* gridInterfaceList, const uint* oldGridInter
         gridInterfaceList[i] = oldGridInterfaceList[i] + 1; // + 1 for numbering shift between GridGenerator and VF_GPU
 }
 
-void GridImp::getGridInterfaceIndicesFCCBorderBulk(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder,
+void GridImp::getGridInterfaceIndicesFCBorderBulk(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder,
                                                    uint *&iCellFcfBulk, uint &intFCBorderKfc, uint &intFCBulkKfc,
                                                    int level) const
 {
