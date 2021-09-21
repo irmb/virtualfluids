@@ -11,7 +11,11 @@ public:
         uint _tStartAvg,
         uint _tStartOut,
         uint _tOut
-    ): Probe(_probeName, _tStartAvg, _tStartOut, _tOut){}
+    ): Probe(_probeName, 
+             _tStartAvg, 
+             _tStartOut, 
+             _tOut)
+    {}
 
     void setProbePlane(real _posX, real _posY, real _posZ, real _deltaX, real _deltaY, real _deltaZ)
     {

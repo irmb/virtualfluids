@@ -2,6 +2,10 @@
 
 #include "Kernel/Utilities/CudaGrid.h"
 
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <helper_cuda.h>
+
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
@@ -22,7 +26,7 @@ void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
         real distZ = pointCoordZ - this->posZ;
 
         if( distX <= this->deltaX && distY <= this->deltaY && distZ <= this->deltaZ &&
-            distX >0.f && distY >0.f && distZ >0.f)
+            distX >=0.f && distY >=0.f && distZ >=0.f)
         {
             probeIndices_level.push_back(j);
             distX_level.push_back( distX/dx );
@@ -31,7 +35,6 @@ void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
             pointCoordsX_level.push_back( pointCoordX );
             pointCoordsY_level.push_back( pointCoordY );
             pointCoordsZ_level.push_back( pointCoordZ );
-            // printf("x %f y %f z %f", pointCoordX, pointCoordY, pointCoordZ);
         }
     }
 }

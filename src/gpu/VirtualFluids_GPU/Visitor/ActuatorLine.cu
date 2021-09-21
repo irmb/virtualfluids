@@ -31,8 +31,6 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
                                       real* bladeVelocitiesX, real* bladeVelocitiesY, real* bladeVelocitiesZ, 
                                       uint* bladeIndices, uint numberOfNodes)
 {
-    // Possibly restructure this to check every cell whether it is bsw of some blade node and then do interpolation
-    // --> no need to save closest nodes and search new closest node
     const uint x = threadIdx.x; 
     const uint y = blockIdx.x;
     const uint z = blockIdx.y;
@@ -49,10 +47,7 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
     real bladePosZ = bladeCoordsZ[node];
 
     uint old_index = bladeIndices[node];
-    // if(node==0 or node==90)
-    // {
-    //     printf("before: blade (%f, %f, %f), node BSW (%f, %f, %f), nodeTNE (%f, %f, %f)\n", bladePosX, bladePosY, bladePosZ, gridCoordsX[old_index], gridCoordsY[old_index], gridCoordsZ[old_index], gridCoordsX[neighborsX[old_index]], gridCoordsY[neighborsY[old_index]], gridCoordsZ[neighborsZ[old_index]]);
-    // }
+
     uint k, ke, kn, kt;
     uint kne, kte, ktn, ktne;
 
@@ -78,11 +73,6 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
     bladeVelocitiesX[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx);
     bladeVelocitiesY[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy);
     bladeVelocitiesZ[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz);
-
-    // if(node==numberOfNodes-1)
-    // {
-    //     printf("after: blade (%f, %f, %f), node BSW (%f, %f, %f), nodeTNE (%f, %f, %f)\n", bladePosX, bladePosY, bladePosZ, gridCoordsX[kBSW], gridCoordsY[kBSW], gridCoordsZ[kBSW], gridCoordsX[neighborsX[kBSW]], gridCoordsY[neighborsY[kBSW]], gridCoordsZ[neighborsZ[kBSW]]);
-    // }
 
 }
 
@@ -138,19 +128,6 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
             fXYZ_Z += bladeForcesZ[node]*(r-last_r)*eta;
 
             last_r = r;
-
-            // if(node==16||node==48||node==80)
-            // {            
-                // printf("uRTZ: %f %f %f \n", uRTZ_X, uRTZ_Y, uRTZ_Z);
-                // printf("uXYZ: %f %f %f \n", uXYZ_X, uXYZ_Y, uXYZ_Z);
-                // printf("omega: %f radius: %f \n", this->omega, r);
-                // printf("force ratio %f \n", forceRatio);
-                // printf("u_rel: %f v_rel: %f \n", u_rel, v_rel);
-                // printf("c: %f, cn: %f ct: %f \n", c, Cn, Ct);
-                // printf("fXYZ: %f %f %f \n", fXYZ_X, fXYZ_Y, fXYZ_Z);
-                // printf("fRTZ: %f %f %f \n", fRTZ_X, fRTZ_Y, fRTZ_Z);
-                // printf("X Y Z: %f %f %f \n", this->bladeCoordsXH[node],this->bladeCoordsYH[node],this->bladeCoordsZH[node]);
-            // }
         }    
 
         fXYZ_X += bladeForcesX[nBladeNodes-1]*(radius-last_r)*eta;
@@ -284,30 +261,8 @@ void ActuatorLine::calcForcesEllipticWing(Parameter* para)
             this->bladeForcesXH[node] = fXYZ_X/forceRatio;
             this->bladeForcesYH[node] = fXYZ_Y/forceRatio;
             this->bladeForcesZH[node] = fXYZ_Z/forceRatio;
-
-            // if(node==16||node==48||node==80)
-            // {            
-            // printf("uRTZ: %f %f %f \n", uRTZ_X, uRTZ_Y, uRTZ_Z);
-            // printf("uXYZ: %f %f %f \n", uXYZ_X, uXYZ_Y, uXYZ_Z);
-            // printf("omega: %f radius: %f \n", this->omega, r);
-            // printf("force ratio %f \n", forceRatio);
-            // printf("u_rel: %f v_rel: %f \n", u_rel, v_rel);
-            // printf("c: %f, cn: %f ct: %f \n", c, Cn, Ct);
-            // printf("fXYZ: %f %f %f \n", fXYZ_X, fXYZ_Y, fXYZ_Z);
-            // printf("fRTZ: %f %f %f \n", fRTZ_X, fRTZ_Y, fRTZ_Z);
-            // printf("X Y Z: %f %f %f \n", this->bladeCoordsXH[node],this->bladeCoordsYH[node],this->bladeCoordsZH[node]);
-            // }
         }
     }
-    // printf("uRTZ: %f %f %f \n", uRTZ_X, uRTZ_Y, uRTZ_Z);
-    // printf("uXYZ: %f %f %f \n", uXYZ_X, uXYZ_Y, uXYZ_Z);
-    // printf("omega: %f radius: %f \n", this->omega, r);
-
-    // printf("u_rel: %f v_rel: %f \n", u_rel, v_rel);
-    // printf("c: %f, cn: %f ct: %f \n", c, Cn, Ct);
-    // printf("fXYZ: %f %f %f \n", fXYZ_X, fXYZ_Y, fXYZ_Z);
-    // printf("fRTZ: %f %f %f \n", fRTZ_X, fRTZ_Y, fRTZ_Z);
-
 }
 
 void ActuatorLine::rotateBlades(real angle)
@@ -357,7 +312,6 @@ void ActuatorLine::initBladeCoords(CudaMemoryManager* cudaManager)
             this->bladeCoordsXH[node+this->nBladeNodes*blade] = coordX+this->turbinePosX;
             this->bladeCoordsYH[node+this->nBladeNodes*blade] = coordY+this->turbinePosY;
             this->bladeCoordsZH[node+this->nBladeNodes*blade] = coordZ+this->turbinePosZ;
-            // printf("blade: %i, az %f , x %f, y %f , z %f \n", blade, localAzimuth, coordX, coordY, coordZ);
         }
     }
     cudaManager->cudaCopyBladeCoordsHtoD(this);

@@ -6,7 +6,6 @@
 
 
 enum class PostProcessingVariable{ 
-    // LAST is for counting total number of arrays
     // HowTo add new PostProcessingVariable: Add enum here, LAST has to stay last
     // In interpQuantities add computation of quantity in switch statement
     // In writeGridFiles add lb->rw conversion factor

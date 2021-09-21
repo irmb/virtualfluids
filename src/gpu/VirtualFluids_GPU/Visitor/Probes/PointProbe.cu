@@ -1,5 +1,9 @@
 #include "PointProbe.h"
 
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <helper_cuda.h>
+
 #include "Kernel/Utilities/CudaGrid.h"
 
 #include "Parameter/Parameter.h"
@@ -33,7 +37,6 @@ void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
                 pointCoordsX_level.push_back( pointCoordX );
                 pointCoordsY_level.push_back( pointCoordY );
                 pointCoordsZ_level.push_back( pointCoordZ );
-                // printf("x %f y %f z %f", pointCoordX, pointCoordY, pointCoordZ);
             }
         }
     }
