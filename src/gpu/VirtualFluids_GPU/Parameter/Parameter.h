@@ -875,6 +875,10 @@ public:
     std::unique_ptr<CudaStreamManager> &getStreamManager();
     bool getKernelNeedsFluidNodeIndicesToRun();
 
+    void initNumberOfProcessNeighborsAfterFtoCX(int level);
+    void initNumberOfProcessNeighborsAfterFtoCY(int level);
+    void initNumberOfProcessNeighborsAfterFtoCZ(int level);
+
     void findCornerNodesCommMultiGPU();
     void findCornerNodesXY(int level);
     bool findIndexInSendNodesXY(int level, int index);
