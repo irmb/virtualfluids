@@ -103,7 +103,7 @@ private:
     static void emitNoCoarseGridExistsWarning();
     static void emitGridIsNotInCoarseGridWarning();
 
-    Object *solidObject = nullptr;
+    Object *solidObject;// = nullptr;
 
     uint numberOfLayersFine;
     uint numberOfLayersBetweenLevels;
