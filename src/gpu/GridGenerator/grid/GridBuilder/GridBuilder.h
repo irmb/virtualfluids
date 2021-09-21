@@ -86,10 +86,12 @@ public:
     virtual uint getNumberOfReceiveIndices( int direction, uint level ) = 0;
     virtual void getSendIndices( int* sendIndices, int direction, int level ) = 0;
     virtual void getReceiveIndices( int* sendIndices, int direction, int level ) = 0;
-    virtual void reorderSendRecvIndexForCommAfterFtoC(int *sendIndices, int *recvIndices,
-                                                      int &numberOfSendNeighborsAfterFtoC,
-                                                      int &numberOfRecvNeighborsAfterFtoC, uint *iCellFCCBorder,
-                                                      uint sizeOfICellFCCBorder, int direction, int level) = 0;
+    virtual void reorderSendIndexForCommAfterFtoC(int *sendIndices, int &numberOfSendNeighborsAfterFtoC,
+                                                  uint *iCellFCCBorder, uint sizeOfICellFCCBorder, int direction,
+                                                  int level) = 0;
+    virtual void reorderRecvIndexForCommAfterFtoC(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC,
+                                                  uint *iCellFCCBorder, uint sizeOfICellFCCBorder, int direction,
+                                                  int level) = 0;
 
     virtual uint getNumberOfFluidNodes(unsigned int level) const = 0;
     virtual void getFluidNodeIndices(uint *fluidNodeIndices, const int level) const = 0;
