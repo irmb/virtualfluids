@@ -265,19 +265,47 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::getReceiveIndices(int * receiveIndic
         receiveIndices[i] = grid->getSparseIndex( grid->getReceiveIndex(direction, i) ) + 1;
     }
 }
+GRIDGENERATOR_EXPORT void LevelGridBuilder::getAndReorderSendIndices(int *sendIndices,
+                                                                     int &numberOfSendNeighborsAfterFtoC,
+                                                                     uint *iCellFCCBorder, uint sizeOfICellFCCBorder,
+                                                                     int direction, int level,
+                                                                     bool sendIndicesNeedToBeReordered)
+{
+    getSendIndices(sendIndices, direction, level);
+    if (sendIndicesNeedToBeReordered)
+        reorderSendIndexForCommAfterFtoC(sendIndices, numberOfSendNeighborsAfterFtoC, iCellFCCBorder,
+                                         sizeOfICellFCCBorder, direction, level);
+}
+GRIDGENERATOR_EXPORT void LevelGridBuilder::getAndReorderReceiveIndices(int *recvIndices,
+                                                                        int &numberOfRecvNeighborsAfterFtoC,
+                                                                        uint *iCellFCCBorder, uint sizeOfICellFCCBorder,
+                                                                        int direction, int level,
+                                                                        bool receiveIndicesNeedToBeReordered)
+{
+    getReceiveIndices(recvIndices, direction, level);
+    if (receiveIndicesNeedToBeReordered)
+        reorderRecvIndexForCommAfterFtoC(recvIndices, numberOfRecvNeighborsAfterFtoC, iCellFCCBorder,
+                                         sizeOfICellFCCBorder, direction, level);
+}
 
 GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndexForCommAfterFtoC(int *sendIndices, int &numberOfSendNeighborsAfterFtoC,
                                                                              uint* iCellFCCBorder,  uint sizeOfICellFCCBorder,
                                                                              int direction, int level)
 {
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "reorder send indices for communication after fine to coarse " << "\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
+                  << "reorder send indices for communication after fine to coarse: level: " << level
+                  << " direction: " << direction;
     if (sizeOfICellFCCBorder == 0)
         *logging::out << logging::Logger::LOGGER_ERROR
                       << "reorderSendIndexForCommAfterFtoC(): iCellFCCBorder needs to be inititalized before calling "
                          "this function "
                       << "\n";
-
     uint numberOfIndices = getNumberOfSendIndices(direction, level);
+    if (numberOfIndices == 0) {
+        numberOfSendNeighborsAfterFtoC = 0;
+        return;
+    }
+
     int sparseIndexSend;
     bool isInICellFCCBorder;
     std::vector<int> sendIndicesAfterFtoC;
@@ -288,12 +316,11 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndexForCommAfterFtoC(int
 
         // check if sparse index is in ICellFCC border
         isInICellFCCBorder = false;
-        for (uint j = 0; j < sizeOfICellFCCBorder; j++) {
+        for (uint j = 0; j < sizeOfICellFCCBorder; j++)
             if (iCellFCCBorder[j] == sparseIndexSend) {
                 isInICellFCCBorder = true;
                 break;
             }
-        }
 
         // add index to corresponding vector
         if (isInICellFCCBorder)
@@ -302,21 +329,29 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndexForCommAfterFtoC(int
             sendIndicesOther.push_back(sparseIndexSend);
     }
 
-    numberOfSendNeighborsAfterFtoC = sendIndicesAfterFtoC.size();
+    numberOfSendNeighborsAfterFtoC = (uint) sendIndicesAfterFtoC.size();
 
     // copy new vectors back to sendIndices array
     for (uint i = 0; i < numberOfSendNeighborsAfterFtoC; i++)
         sendIndices[i] = sendIndicesAfterFtoC[i];
-    for (uint i = 0; i < sendIndicesOther.size(); i++) {
+    for (uint i = 0; i < sendIndicesOther.size(); i++)
         sendIndices[i + numberOfSendNeighborsAfterFtoC] = sendIndicesOther[i];
-    }
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
+                  << "... numberOfSendNeighborsAfterFtoC: " << numberOfSendNeighborsAfterFtoC << "\n";
+
+    bool numberOfNodesIsCorrect = numberOfSendNeighborsAfterFtoC + sendIndicesOther.size() == numberOfIndices;
+    std::cout << "correct number of nodes?: " << numberOfNodesIsCorrect << std::endl;
 }
 
 GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderRecvIndexForCommAfterFtoC(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC,
                                                                              uint *iCellFCCBorder, uint sizeOfICellFCCBorder, 
                                                                              int direction, int level)
 {
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "reorder receive indices for communication after fine to coarse " << "\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
+                  << "reorder receive indices for communication after fine to coarse: level: " << level
+                  << " direction: " << direction;
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "   sizeOfICellFCCBorder: " << sizeOfICellFCCBorder;
     if (sizeOfICellFCCBorder == 0)
         *logging::out << logging::Logger::LOGGER_ERROR
                       << "reorderRecvIndexForCommAfterFtoC(): iCellFCCBorder needs to be inititalized before calling "
@@ -324,6 +359,11 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderRecvIndexForCommAfterFtoC(int
                       << "\n";
 
     uint numberOfIndices = getNumberOfReceiveIndices(direction, level);
+    if (numberOfIndices == 0) {
+        numberOfRecvNeighborsAfterFtoC = 0;
+        return;
+    }
+
     int sparseIndexRecv;
     bool isInICellFCCBorder;
     std::vector<int> recvIndicesAfterFtoC;
@@ -334,12 +374,11 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderRecvIndexForCommAfterFtoC(int
 
         // check if sparse index is in ICellFCC border
         isInICellFCCBorder = false;
-        for (uint j = 0; j < sizeOfICellFCCBorder; j++) {
+        for (uint j = 0; j < sizeOfICellFCCBorder; j++)
             if (iCellFCCBorder[j] == sparseIndexRecv) {
                 isInICellFCCBorder = true;
                 break;
             }
-        }
 
         // add index to corresponding vector
         if (isInICellFCCBorder)
@@ -348,13 +387,19 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderRecvIndexForCommAfterFtoC(int
             recvIndicesOther.push_back(sparseIndexRecv);
     }
 
-    numberOfRecvNeighborsAfterFtoC = recvIndicesAfterFtoC.size();
+    numberOfRecvNeighborsAfterFtoC = (uint) recvIndicesAfterFtoC.size();
 
     // copy new vectors back to receiveIndices array
     for (uint i = 0; i < numberOfRecvNeighborsAfterFtoC; i++)
         recvIndices[i] = recvIndicesAfterFtoC[i];
     for (uint i = 0; i < recvIndicesOther.size(); i++)
         recvIndices[i + numberOfRecvNeighborsAfterFtoC] = recvIndicesOther[i];
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
+                  << "... numberOfRecvNeighborsAfterFtoC: " << numberOfRecvNeighborsAfterFtoC << "\n";
+
+    bool numberOfNodesIsCorrect = numberOfRecvNeighborsAfterFtoC + recvIndicesOther.size() == numberOfIndices;
+    std::cout << "correct number of nodes?: " << numberOfNodesIsCorrect << std::endl;
 }
 
 uint LevelGridBuilder::getNumberOfNodes(unsigned int level) const

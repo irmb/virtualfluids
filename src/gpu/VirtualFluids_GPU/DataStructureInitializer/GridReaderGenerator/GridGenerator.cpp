@@ -321,8 +321,21 @@ void GridGenerator::allocArrays_BoundaryValues()
                         cudaMemoryManager->cudaAllocProcessNeighborX(level, j);
 					    ////////////////////////////////////////////////////////////////////////////////////////
 					    //init index arrays
-                        builder->getSendIndices   (para->getParH(level)->sendProcessNeighborX[j].index, direction, level);
-                        builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborX[j].index, direction, level);
+                        para->initNumberOfProcessNeighborsAfterFtoCX(level);
+                        builder->getAndReorderSendIndices(
+                            para->getParH(level)->sendProcessNeighborX[j].index,
+                            para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX[j],
+                            para->getParH(level)->intFCBorder.ICellFCC, para->getParH(level)->intFCBorder.kFC,
+                            direction, level, level != builder->getNumberOfGridLevels() - 1);
+                        builder->getAndReorderReceiveIndices(
+                            para->getParH(level)->recvProcessNeighborX[j].index,
+                            para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCX[j],
+                            para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.kFC, direction, level,
+                            level!=builder->getNumberOfGridLevels()-1);
+                        para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCX[j] =
+                            para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX[j];
+                        para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCX[j] =
+                            para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCX[j];
 					    ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborXIndex(level, j);
 					    ////////////////////////////////////////////////////////////////////////////////////////
@@ -381,8 +394,21 @@ void GridGenerator::allocArrays_BoundaryValues()
                         cudaMemoryManager->cudaAllocProcessNeighborY(level, j);
 					    ////////////////////////////////////////////////////////////////////////////////////////
 					    //init index arrays
-                        builder->getSendIndices   (para->getParH(level)->sendProcessNeighborY[j].index, direction, level);
-                        builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborY[j].index, direction, level);
+                        para->initNumberOfProcessNeighborsAfterFtoCY(level);
+                        builder->getAndReorderSendIndices(
+                            para->getParH(level)->sendProcessNeighborY[j].index,
+                            para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j],
+                            para->getParH(level)->intFCBorder.ICellFCC, para->getParH(level)->intFCBorder.kFC,
+                            direction, level, level != builder->getNumberOfGridLevels() - 1);
+                        builder->getAndReorderReceiveIndices(
+                            para->getParH(level)->recvProcessNeighborY[j].index,
+                            para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY[j],
+                            para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF, direction, level,
+                            level != builder->getNumberOfGridLevels() - 1);
+                        para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCY[j] =
+                            para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j];
+                        para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCY[j] =
+                            para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY[j];
 					    ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborYIndex(level, j);
 					    ////////////////////////////////////////////////////////////////////////////////////////
@@ -441,8 +467,21 @@ void GridGenerator::allocArrays_BoundaryValues()
                         cudaMemoryManager->cudaAllocProcessNeighborZ(level, j);
 					    ////////////////////////////////////////////////////////////////////////////////////////
 					    //init index arrays
-                        builder->getSendIndices   (para->getParH(level)->sendProcessNeighborZ[j].index, direction, level);
-                        builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborZ[j].index, direction, level);
+                        para->initNumberOfProcessNeighborsAfterFtoCZ(level);
+                        builder->getAndReorderSendIndices(
+                            para->getParH(level)->sendProcessNeighborZ[j].index,
+                            para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ[j],
+                            para->getParH(level)->intFCBorder.ICellFCC, para->getParH(level)->intFCBorder.kFC,
+                            direction, level, level != builder->getNumberOfGridLevels() - 1);
+                        builder->getAndReorderReceiveIndices(
+                            para->getParH(level)->recvProcessNeighborZ[j].index,
+                            para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j],
+                            para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.kFC, direction, level,
+                            level != builder->getNumberOfGridLevels() - 1);
+                        para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCZ[j] =
+                            para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ[j];
+                        para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j] =
+                            para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j];
 					    ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborZIndex(level, j);
 					    ////////////////////////////////////////////////////////////////////////////////////////
