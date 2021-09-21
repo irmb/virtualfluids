@@ -39,6 +39,7 @@
 #include <curand_kernel.h>
 
 #include "Core/StringUtilities/StringUtil.h"
+
 #include <basics/config/ConfigurationFile.h>
 
 
@@ -2461,7 +2462,6 @@ std::string Parameter::getADKernel()
 {
 	return adKernel;
 }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Parameter::setInitialCondition(std::function<void(real,real,real,real&,real&,real&,real&)> initialCondition)

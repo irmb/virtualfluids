@@ -1,9 +1,10 @@
 #ifndef Probe_H
 #define Probe_H
 
+#include <cuda.h>
+
 #include "Visitor/Visitor.h"
 #include "PointerDefinitions.h"
-
 
 enum class PostProcessingVariable{ 
     // HowTo add new PostProcessingVariable: Add enum here, LAST has to stay last
@@ -57,7 +58,8 @@ public:
     void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t);
     void free(Parameter* para, CudaMemoryManager* cudaManager);
 
-    
+    ProbeStruct* getProbeStruct(int level){ return this->probeParams[level]; }
+
     void addPostProcessingVariable(PostProcessingVariable _variable);
 
 private:
@@ -70,8 +72,6 @@ private:
                         std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
                         int level);
     virtual void calculateQuantities(ProbeStruct* probeStruct, Parameter* para, int level) = 0;
-
-    ProbeStruct* getProbeStruct(int level){ return this->probeParams[level]; }
 
     void write(Parameter* para, int level, int t);
     void writeCollectionFile(Parameter* para, int t);
