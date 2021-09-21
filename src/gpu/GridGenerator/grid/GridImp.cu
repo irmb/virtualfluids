@@ -1643,7 +1643,7 @@ uint GridImp::getReceiveIndex(int direction, uint index)
     return this->communicationIndices[direction].receiveIndices[ index ];
 }
 
-void GridImp::repairCommunicationInices(int direction)
+void GridImp::repairCommunicationIndices(int direction)
 {
     this->communicationIndices[direction].sendIndices.insert( this->communicationIndices[direction].sendIndices.end(), 
                                                               this->communicationIndices[direction+1].sendIndices.begin(), 

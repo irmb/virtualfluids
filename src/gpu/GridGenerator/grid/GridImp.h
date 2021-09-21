@@ -317,7 +317,7 @@ public:
     bool isSendNode(int index) const override;
     bool isReceiveNode(int index) const override;
 
-    void repairCommunicationInices(int direction) override;
+    void repairCommunicationIndices(int direction) override;
 
     void findFluidNodeIndices(bool splitDomain) override;
     void findFluidNodeIndicesBorder() override;

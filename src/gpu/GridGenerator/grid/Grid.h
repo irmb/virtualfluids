@@ -143,7 +143,7 @@ public:
     virtual uint getSendIndex(int direction, uint index)  = 0;
     virtual uint getReceiveIndex(int direction, uint index)  = 0;
 
-    virtual void repairCommunicationInices(int direction) = 0;
+    virtual void repairCommunicationIndices(int direction) = 0;
 
     // needed for CUDA Streams 
     virtual void findFluidNodeIndices(bool onlyBulk) = 0;
