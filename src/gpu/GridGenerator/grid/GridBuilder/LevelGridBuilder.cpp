@@ -270,6 +270,13 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndexForCommAfterFtoC(int
                                                                              uint* iCellFCCBorder,  uint sizeOfICellFCCBorder,
                                                                              int direction, int level)
 {
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "reorder send indices for communication after fine to coarse " << "\n";
+    if (sizeOfICellFCCBorder == 0)
+        *logging::out << logging::Logger::LOGGER_ERROR
+                      << "reorderSendIndexForCommAfterFtoC(): iCellFCCBorder needs to be inititalized before calling "
+                         "this function "
+                      << "\n";
+
     uint numberOfIndices = getNumberOfSendIndices(direction, level);
     int sparseIndexSend;
     bool isInICellFCCBorder;
@@ -309,6 +316,13 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderRecvIndexForCommAfterFtoC(int
                                                                              uint *iCellFCCBorder, uint sizeOfICellFCCBorder, 
                                                                              int direction, int level)
 {
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "reorder receive indices for communication after fine to coarse " << "\n";
+    if (sizeOfICellFCCBorder == 0)
+        *logging::out << logging::Logger::LOGGER_ERROR
+                      << "reorderRecvIndexForCommAfterFtoC(): iCellFCCBorder needs to be inititalized before calling "
+                         "this function "
+                      << "\n";
+
     uint numberOfIndices = getNumberOfReceiveIndices(direction, level);
     int sparseIndexRecv;
     bool isInICellFCCBorder;
