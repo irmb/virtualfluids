@@ -1156,7 +1156,7 @@ void GridImp::findInvalidBoundaryNodes(uint index)
 // --------------------------------------------------------- //
 void GridImp::mesh(Object* object)
 {
-    TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
+    TriangularMesh *triangularMesh = dynamic_cast<TriangularMesh *>(object);
     if (triangularMesh)
         triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, INVALID_SOLID, FLUID);
     else
