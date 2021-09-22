@@ -254,7 +254,7 @@ public:
         case SideType::PZ:
             return SPtr<Side>(new PZ());
         case SideType::GEOMETRY:
-            throw std::runtime_error("SideFactory::make() - SideType::GEOMETRY not supported.");
+            return SPtr<Side>(new Geometry());
         default:
             throw std::runtime_error("SideFactory::make() - SideType not valid.");
         }
