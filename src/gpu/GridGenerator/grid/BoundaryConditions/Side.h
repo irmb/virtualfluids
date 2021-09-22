@@ -84,6 +84,27 @@ private:
     static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2);
 };
 
+class Geometry : public Side
+{
+public:
+    void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
+
+    int getCoordinate() const override
+    {
+        return X_INDEX;
+    }
+
+    int getDirection() const override
+    {
+        return NEGATIVE_DIR;
+    }
+
+    SideType whoAmI() const override
+    {
+        return SideType::GEOMETRY;
+    }
+};
+
 class MX : public Side
 {
 public:

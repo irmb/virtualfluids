@@ -130,6 +130,47 @@ uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, 
 }
 
 
+void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<BoundaryCondition> boundaryCondition)
+{
+    auto geometryBoundaryCondition = std::dynamic_pointer_cast<GeometryBoundaryCondition>(boundaryCondition);
+
+    std::vector<real> qNode(grids[level]->getEndDirection() + 1);
+
+    for (uint index = 0; index < grids[level]->getSize(); index++)
+    {
+        if (grids[level]->getFieldEntry(index) != vf::gpu::BC_SOLID)
+            continue;
+
+        for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
+        {
+			const real q = grids[level]->getQValue(index, dir);
+
+            qNode[dir] = q;
+
+            // also the neighbor if any Qs are required
+            real x,y,z;
+            grids[level]->transIndexToCoords( index, x, y, z );
+
+            x += grids[level]->getDirection()[dir * DIMENSION + 0] * grids[level]->getDelta();
+            y += grids[level]->getDirection()[dir * DIMENSION + 1] * grids[level]->getDelta();
+            z += grids[level]->getDirection()[dir * DIMENSION + 2] * grids[level]->getDelta();
+
+            uint neighborIndex = grids[level]->transCoordToIndex( x, y, z );
+
+            if( qNode[dir] < -0.5 && ( grids[level]->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
+                                       grids[level]->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID ||
+                                       grids[level]->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_SOLID ) )
+                qNode[dir] = 0.5;
+        }
+
+        geometryBoundaryCondition->indices.push_back(index);
+        geometryBoundaryCondition->qs.push_back(qNode);
+        geometryBoundaryCondition->patches.push_back( grids[level]->getQPatch(index) );
+    }
+}
+
+
+
 void MX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid[level]->getStartY();
