@@ -1223,6 +1223,7 @@ void GridImp::closeNeedleCells()
     uint numberOfClosedNeedleCells = 0;
 
     do{
+        numberOfClosedNeedleCells = 0;
 #pragma omp parallel for reduction(+ : numberOfClosedNeedleCells)
         for (int index = 0; index < (int)this->size; index++) {
             if (this->closeCellIfNeedle(index))
@@ -1263,6 +1264,7 @@ void GridImp::closeNeedleCellsThinWall()
     uint numberOfClosedNeedleCells = 0;
 
     do{
+        numberOfClosedNeedleCells = 0;
 #pragma omp parallel for reduction(+ : numberOfClosedNeedleCells)
         for (int index = 0; index < (int)this->size; index++) {
             if (this->closeCellIfNeedleThinWall(index))
