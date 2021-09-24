@@ -185,7 +185,7 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<Bound
 
         geometryBoundaryCondition->indices.push_back(index);
         geometryBoundaryCondition->qs.push_back(qNode);
-        geometryBoundaryCondition->patches.push_back( grids[level]->getQPatch(index) );
+        geometryBoundaryCondition->patches.push_back(grids[level]->getQPatch(index));
     }
 }
 
