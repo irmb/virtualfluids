@@ -126,7 +126,7 @@ private:
 
     TriangularMeshDiscretizationStrategy *triangularMeshDiscretizationStrategy;
 
-    uint numberOfSolidBoundaryNodes;
+    uint numberOfSolidBoundaryNodes = 0;
 
     bool enableFixRefinementIntoTheWall;
 
