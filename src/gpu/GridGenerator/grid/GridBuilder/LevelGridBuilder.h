@@ -152,7 +152,7 @@ public:
     GRIDGENERATOR_EXPORT std::vector<uint> GRIDGENERATOR_EXPORT getAndReorderSendIndices(
         int *sendIndices, uint &numberOfSendNeighborsAfterFtoC, uint *iCellFCC, uint sizeOfICellFCCBorder,
         uint *iCellCFC, uint sizeOfICellCFC, uint *neighborX, uint *neighborY, uint *neighborZ, int direction,
-        int level, bool sendIndicesNeedToBeReordered) override;
+        int level) override;
     GRIDGENERATOR_EXPORT void getAndReorderReceiveIndices(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
                                                           uint *iCellFCCBorder, uint sizeOfICellFCCBorder,
                                                           int direction, int level,

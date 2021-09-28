@@ -321,24 +321,30 @@ void GridGenerator::allocArrays_BoundaryValues()
                         cudaMemoryManager->cudaAllocProcessNeighborX(level, j);
 					    ////////////////////////////////////////////////////////////////////////////////////////
 					    //init index arrays
-                        para->initNumberOfProcessNeighborsAfterFtoCX(level);
-                        std::vector<uint> sendIndicesForCommAfterFtoCPositions = builder->getAndReorderSendIndices(
-                            para->getParH(level)->sendProcessNeighborX[j].index,
-                            para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX[j],
-                            para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF,
-                            para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
-                            para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP,
-                            para->getParH(level)->neighborZ_SP,
-                            direction, level, level != builder->getNumberOfGridLevels() - 1);
-                        builder->getAndReorderReceiveIndices(
-                            para->getParH(level)->recvProcessNeighborX[j].index,
-                            para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCX[j],
-                            para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.kFC, direction, level,
-                            level != builder->getNumberOfGridLevels() - 1);
-                        para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCX[j] =
-                            para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX[j];
-                        para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCX[j] =
-                            para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCX[j];
+                        if (level == builder->getNumberOfGridLevels() - 1) {
+                            builder->getSendIndices(para->getParH(level)->sendProcessNeighborX[j].index, direction,
+                                                    level);
+                            builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborX[j].index, direction,
+                                                       level);
+                        } else {
+                            para->initNumberOfProcessNeighborsAfterFtoCX(level);
+                            std::vector<uint> sendIndicesForCommAfterFtoCPositions = builder->getAndReorderSendIndices(
+                                para->getParH(level)->sendProcessNeighborX[j].index,
+                                para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX[j],
+                                para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF,
+                                para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
+                                para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP,
+                                para->getParH(level)->neighborZ_SP, direction, level);
+                            builder->getAndReorderReceiveIndices(
+                                para->getParH(level)->recvProcessNeighborX[j].index,
+                                para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCX[j],
+                                para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.kFC, direction, level,
+                                level != builder->getNumberOfGridLevels() - 1);
+                            para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCX[j] =
+                                para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX[j];
+                            para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCX[j] =
+                                para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCX[j];
+                        }
 					    ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborXIndex(level, j);
 					    ////////////////////////////////////////////////////////////////////////////////////////
@@ -397,24 +403,31 @@ void GridGenerator::allocArrays_BoundaryValues()
                         cudaMemoryManager->cudaAllocProcessNeighborY(level, j);
 					    ////////////////////////////////////////////////////////////////////////////////////////
 					    //init index arrays
-                        para->initNumberOfProcessNeighborsAfterFtoCY(level);
-                        std::vector<uint> sendIndicesForCommAfterFtoCPositions = builder->getAndReorderSendIndices(
-                            para->getParH(level)->sendProcessNeighborY[j].index,
-                            para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j],
-                            para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF,
-                            para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
-                            para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP,
-                            para->getParH(level)->neighborZ_SP,
-                            direction, level, level != builder->getNumberOfGridLevels() - 1);
-                        builder->getAndReorderReceiveIndices(
-                            para->getParH(level)->recvProcessNeighborY[j].index,
-                            para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY[j],
-                            para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF, direction, level,
-                            level != builder->getNumberOfGridLevels() - 1);
-                        para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCY[j] =
-                            para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j];
-                        para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCY[j] =
-                            para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY[j];
+                        if (level == builder->getNumberOfGridLevels() - 1) {
+                            builder->getSendIndices(para->getParH(level)->sendProcessNeighborY[j].index, direction,
+                                                    level);
+                            builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborY[j].index, direction,
+                                                       level);
+                        } else {
+                            para->initNumberOfProcessNeighborsAfterFtoCY(level);
+                            std::vector<uint> sendIndicesForCommAfterFtoCPositions = builder->getAndReorderSendIndices(
+                                para->getParH(level)->sendProcessNeighborY[j].index,
+                                para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j],
+                                para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF,
+                                para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
+                                para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP,
+                                para->getParH(level)->neighborZ_SP,
+                                direction, level);
+                            builder->getAndReorderReceiveIndices(
+                                para->getParH(level)->recvProcessNeighborY[j].index,
+                                para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY[j],
+                                para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF, direction, level,
+                                level != builder->getNumberOfGridLevels() - 1);
+                            para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCY[j] =
+                                para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j];
+                            para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCY[j] =
+                                para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY[j];
+                        }
 					    ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborYIndex(level, j);
 					    ////////////////////////////////////////////////////////////////////////////////////////
@@ -473,24 +486,31 @@ void GridGenerator::allocArrays_BoundaryValues()
                         cudaMemoryManager->cudaAllocProcessNeighborZ(level, j);
 					    ////////////////////////////////////////////////////////////////////////////////////////
 					    //init index arrays
-                        para->initNumberOfProcessNeighborsAfterFtoCZ(level);
-                        std::vector<uint> sendIndicesForCommAfterFtoCPositions = builder->getAndReorderSendIndices(
-                            para->getParH(level)->sendProcessNeighborZ[j].index,
-                            para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ[j],
-                            para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF,
-                            para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
-                            para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP,
-                            para->getParH(level)->neighborZ_SP,
-                            direction, level, level != builder->getNumberOfGridLevels() - 1);
-                        builder->getAndReorderReceiveIndices(
-                            para->getParH(level)->recvProcessNeighborZ[j].index,
-                            para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j],
-                            para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.kFC, direction, level,
-                            level != builder->getNumberOfGridLevels() - 1);
-                        para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCZ[j] =
-                            para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ[j];
-                        para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j] =
-                            para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j];
+                        if (level == builder->getNumberOfGridLevels() - 1) {
+                            builder->getSendIndices(para->getParH(level)->sendProcessNeighborZ[j].index, direction,
+                                                    level);
+                            builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborZ[j].index, direction,
+                                                       level);
+                        } else {
+                            para->initNumberOfProcessNeighborsAfterFtoCZ(level);
+                            std::vector<uint> sendIndicesForCommAfterFtoCPositions = builder->getAndReorderSendIndices(
+                                para->getParH(level)->sendProcessNeighborZ[j].index,
+                                para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ[j],
+                                para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF,
+                                para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
+                                para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP,
+                                para->getParH(level)->neighborZ_SP,
+                                direction, level);
+                            builder->getAndReorderReceiveIndices(
+                                para->getParH(level)->recvProcessNeighborZ[j].index,
+                                para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j],
+                                para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.kFC, direction, level,
+                                level != builder->getNumberOfGridLevels() - 1);
+                            para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCZ[j] =
+                                para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ[j];
+                            para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j] =
+                                para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j];
+                        }
 					    ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborZIndex(level, j);
 					    ////////////////////////////////////////////////////////////////////////////////////////

@@ -270,15 +270,13 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::getReceiveIndices(int * receiveIndic
 GRIDGENERATOR_EXPORT std::vector<uint>
 LevelGridBuilder::getAndReorderSendIndices(int *sendIndices, uint &numberOfSendNeighborsAfterFtoC, uint *iCellFCC,
                                            uint sizeOfICellFCCBorder, uint *iCellCFC, uint sizeOfICellCFC,
-                                           uint *neighborX, uint *neighborY, uint *neighborZ, int direction, int level,
-                                           bool sendIndicesNeedToBeReordered)
+                                           uint *neighborX, uint *neighborY, uint *neighborZ, int direction, int level)
 {
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
     getSendIndices(sendIndices, direction, level);
-    if (sendIndicesNeedToBeReordered)
-        reorderSendIndecesForCommAfterFtoC(sendIndices, numberOfSendNeighborsAfterFtoC, iCellFCC, sizeOfICellCFC,
-                                         iCellCFC, sizeOfICellCFC, neighborX, neighborY, neighborZ, direction, level,
-                                         sendIndicesForCommAfterFtoCPositions);
+    reorderSendIndecesForCommAfterFtoC(sendIndices, numberOfSendNeighborsAfterFtoC, iCellFCC, sizeOfICellCFC, iCellCFC,
+                                       sizeOfICellCFC, neighborX, neighborY, neighborZ, direction, level,
+                                       sendIndicesForCommAfterFtoCPositions);
     return sendIndicesForCommAfterFtoCPositions;
 }
 
@@ -340,8 +338,7 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndecesForCommAfterFtoC(
                 if (sparseIndexSend < 0)
                     continue;
                 if (iCellCFC[j] == (uint)sparseIndexSend) {
-                    isInICells = true;
-                    std::cout << "found sparse index in ICellCF" << std::endl;
+                    isInICells = true;                   
                     // also find neighbors
                     if (direction != 1)
                         neighborToAddX = neighborX[sparseIndexSend];
@@ -417,7 +414,6 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderRecvIndexForCommAfterFtoC(int
     *logging::out << logging::Logger::INFO_INTERMEDIATE
                   << "reorder receive indices for communication after fine to coarse: level: " << level
                   << " direction: " << direction;
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "   sizeOfICellFCC: " << sizeOfICellFCCBorder;
     if (sizeOfICellFCCBorder == 0)
         *logging::out << logging::Logger::LOGGER_ERROR
                       << "reorderRecvIndexForCommAfterFtoC(): iCellFCC needs to be inititalized before calling "
