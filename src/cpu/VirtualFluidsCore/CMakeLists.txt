@@ -25,10 +25,12 @@ if(BUILD_USE_OPENMP)
    list(APPEND VF_LIBRARIES OpenMP::OpenMP_CXX)
 endif()
 
-vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser MPI::MPI_CXX ${VF_LIBRARIES})
-
+vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser MPI::MPI_CXX ${VF_LIBRARIES} liggghts)
 
 vf_get_library_name(library_name)
+
+target_link_directories(${library_name} PUBLIC d:/Tools/LIGGGHTS/build/Debug)
+target_include_directories(${library_name} PUBLIC d:/Tools/LIGGGHTS/src)
 
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/BoundaryConditions)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Connectors)
