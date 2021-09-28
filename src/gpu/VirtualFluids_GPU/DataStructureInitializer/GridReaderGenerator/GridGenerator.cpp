@@ -326,6 +326,9 @@ void GridGenerator::allocArrays_BoundaryValues()
                             para->getParH(level)->sendProcessNeighborX[j].index,
                             para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX[j],
                             para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF,
+                            para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
+                            para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP,
+                            para->getParH(level)->neighborZ_SP,
                             direction, level, level != builder->getNumberOfGridLevels() - 1);
                         builder->getAndReorderReceiveIndices(
                             para->getParH(level)->recvProcessNeighborX[j].index,
@@ -399,6 +402,9 @@ void GridGenerator::allocArrays_BoundaryValues()
                             para->getParH(level)->sendProcessNeighborY[j].index,
                             para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j],
                             para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF,
+                            para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
+                            para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP,
+                            para->getParH(level)->neighborZ_SP,
                             direction, level, level != builder->getNumberOfGridLevels() - 1);
                         builder->getAndReorderReceiveIndices(
                             para->getParH(level)->recvProcessNeighborY[j].index,
@@ -472,6 +478,9 @@ void GridGenerator::allocArrays_BoundaryValues()
                             para->getParH(level)->sendProcessNeighborZ[j].index,
                             para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ[j],
                             para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF,
+                            para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
+                            para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP,
+                            para->getParH(level)->neighborZ_SP,
                             direction, level, level != builder->getNumberOfGridLevels() - 1);
                         builder->getAndReorderReceiveIndices(
                             para->getParH(level)->recvProcessNeighborZ[j].index,

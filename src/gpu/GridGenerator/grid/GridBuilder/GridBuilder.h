@@ -87,8 +87,10 @@ public:
     virtual void getSendIndices( int* sendIndices, int direction, int level ) = 0;
     virtual void getReceiveIndices( int* sendIndices, int direction, int level ) = 0;
     virtual std::vector<uint> getAndReorderSendIndices(int *sendIndices, uint &numberOfSendNeighborsAfterFtoC,
-                                                       uint *iCellFCCBorder, uint sizeOfICellFCCBorder, int direction,
-                                                       int level, bool sendIndicesNeedToBeReordered) = 0;
+                                                       uint *iCellFCC, uint sizeOfICellFCCBorder, uint *iCellCFC,
+                                                       uint sizeOfICellCFC, uint *neighborX, uint *neighborY,
+                                                       uint *neighborZ, int direction, int level,
+                                                       bool sendIndicesNeedToBeReordered) = 0;
     virtual void getAndReorderReceiveIndices(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
                                              uint *iCellFCCBorder, uint sizeOfICellFCCBorder, int direction, int level,
                                              bool receiveIndicesNeedToBeReordered) = 0;
