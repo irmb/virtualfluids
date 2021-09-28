@@ -322,7 +322,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 					    ////////////////////////////////////////////////////////////////////////////////////////
 					    //init index arrays
                         para->initNumberOfProcessNeighborsAfterFtoCX(level);
-                        builder->getAndReorderSendIndices(
+                        std::vector<uint> sendIndicesForCommAfterFtoCPositions = builder->getAndReorderSendIndices(
                             para->getParH(level)->sendProcessNeighborX[j].index,
                             para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX[j],
                             para->getParH(level)->intFCBorder.ICellFCC, para->getParH(level)->intFCBorder.kFC,
@@ -331,7 +331,7 @@ void GridGenerator::allocArrays_BoundaryValues()
                             para->getParH(level)->recvProcessNeighborX[j].index,
                             para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCX[j],
                             para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.kFC, direction, level,
-                            level!=builder->getNumberOfGridLevels()-1);
+                            level != builder->getNumberOfGridLevels() - 1);
                         para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCX[j] =
                             para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX[j];
                         para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCX[j] =
@@ -395,7 +395,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 					    ////////////////////////////////////////////////////////////////////////////////////////
 					    //init index arrays
                         para->initNumberOfProcessNeighborsAfterFtoCY(level);
-                        builder->getAndReorderSendIndices(
+                        std::vector<uint> sendIndicesForCommAfterFtoCPositions = builder->getAndReorderSendIndices(
                             para->getParH(level)->sendProcessNeighborY[j].index,
                             para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j],
                             para->getParH(level)->intFCBorder.ICellFCC, para->getParH(level)->intFCBorder.kFC,
@@ -468,7 +468,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 					    ////////////////////////////////////////////////////////////////////////////////////////
 					    //init index arrays
                         para->initNumberOfProcessNeighborsAfterFtoCZ(level);
-                        builder->getAndReorderSendIndices(
+                        std::vector<uint> sendIndicesForCommAfterFtoCPositions = builder->getAndReorderSendIndices(
                             para->getParH(level)->sendProcessNeighborZ[j].index,
                             para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ[j],
                             para->getParH(level)->intFCBorder.ICellFCC, para->getParH(level)->intFCBorder.kFC,

@@ -149,19 +149,23 @@ public:
     GRIDGENERATOR_EXPORT uint getNumberOfReceiveIndices( int direction, uint level ) override;
     GRIDGENERATOR_EXPORT void getSendIndices( int* sendIndices, int direction, int level ) override;
     GRIDGENERATOR_EXPORT void getReceiveIndices( int* sendIndices, int direction, int level ) override;
-    GRIDGENERATOR_EXPORT void getAndReorderSendIndices(int *sendIndices, uint &numberOfSendNeighborsAfterFtoC,
-                                                       uint *iCellFCCBorder, uint sizeOfICellFCCBorder, int direction,
-                                                       int level, bool sendIndicesNeedToBeReordered) override;
-    GRIDGENERATOR_EXPORT void getAndReorderReceiveIndices(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
+    GRIDGENERATOR_EXPORT std::vector<uint> getAndReorderSendIndices(int *sendIndices,
+                                                                    uint &numberOfSendNeighborsAfterFtoC,
+                                                                   uint *iCellFCCBorder, uint sizeOfICellFCCBorder, int direction, int level,
+                                                                    bool sendIndicesNeedToBeReordered) override;
+    ;
+    GRIDGENERATOR_EXPORT void getAndReorderReceiveIndices(int *recvIndices,
+                                                                       uint &numberOfRecvNeighborsAfterFtoC,
                                                           uint *iCellFCCBorder, uint sizeOfICellFCCBorder,
                                                           int direction, int level,
                                                           bool receiveIndicesNeedToBeReordered) override;
     GRIDGENERATOR_EXPORT void reorderSendIndexForCommAfterFtoC(int *sendIndices, uint &numberOfSendNeighborsAfterFtoC,
                                                                uint *iCellFCCBorder, uint sizeOfICellFCCBorder,
-                                                               int direction, int level) override;
+                                                               int direction, int level,
+                                                               std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
     GRIDGENERATOR_EXPORT void reorderRecvIndexForCommAfterFtoC(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
                                                                uint *iCellFCCBorder, uint sizeOfICellFCCBorder,
-                                                               int direction, int level) override;
+                                                               int direction, int level);
 
 };
 
