@@ -154,9 +154,8 @@ public:
         uint *iCellCFC, uint sizeOfICellCFC, uint *neighborX, uint *neighborY, uint *neighborZ, int direction,
         int level) override;
     GRIDGENERATOR_EXPORT void getAndReorderReceiveIndices(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
-                                                          uint *iCellFCCBorder, uint sizeOfICellFCCBorder,
-                                                          int direction, int level,
-                                                          bool receiveIndicesNeedToBeReordered) override;
+                                                          std::vector<uint> &sendIndicesForCommAfterFtoCPositions,
+                                                          int direction, int level) override;
     GRIDGENERATOR_EXPORT void reorderSendIndicesForCommAfterFtoC(int *sendIndices, uint &numberOfSendNeighborsAfterFtoC,
                                                                uint *iCellFCC, uint sizeOfICellFCC, uint *iCellCFC,
                                                                uint sizeOfICellCFC, uint *neighborX, uint *neighborY,
@@ -165,8 +164,8 @@ public:
     void findIfSparseIndexIsInSendIndicesAndAddToVectors(int sparseIndex, int *sendIndices, uint numberOfSendIndices,
                                                          std::vector<int> &sendIndicesAfterFtoC,
                                                          std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    GRIDGENERATOR_EXPORT void reorderRecvIndexForCommAfterFtoC(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
-                                                               uint *iCellFCCBorder, uint sizeOfICellFCCBorder,
+    GRIDGENERATOR_EXPORT void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
+                                                               std::vector<uint> &sendIndicesForCommAfterFtoCPositions,
                                                                int direction, int level);
 
 };

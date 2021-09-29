@@ -338,8 +338,7 @@ void GridGenerator::allocArrays_BoundaryValues()
                             builder->getAndReorderReceiveIndices(
                                 para->getParH(level)->recvProcessNeighborX[j].index,
                                 para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCX[j],
-                                para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.kFC, direction, level,
-                                level != builder->getNumberOfGridLevels() - 1);
+                                sendIndicesForCommAfterFtoCPositions, direction, level);
                             para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCX[j] =
                                 para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX[j];
                             para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCX[j] =
@@ -421,8 +420,7 @@ void GridGenerator::allocArrays_BoundaryValues()
                             builder->getAndReorderReceiveIndices(
                                 para->getParH(level)->recvProcessNeighborY[j].index,
                                 para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY[j],
-                                para->getParH(level)->intFC.ICellFCC, para->getParH(level)->K_CF, direction, level,
-                                level != builder->getNumberOfGridLevels() - 1);
+                                sendIndicesForCommAfterFtoCPositions, direction, level);
                             para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCY[j] =
                                 para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j];
                             para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCY[j] =
@@ -504,8 +502,7 @@ void GridGenerator::allocArrays_BoundaryValues()
                             builder->getAndReorderReceiveIndices(
                                 para->getParH(level)->recvProcessNeighborZ[j].index,
                                 para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j],
-                                para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.kFC, direction, level,
-                                level != builder->getNumberOfGridLevels() - 1);
+                                sendIndicesForCommAfterFtoCPositions, direction, level);
                             para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCZ[j] =
                                 para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ[j];
                             para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j] =

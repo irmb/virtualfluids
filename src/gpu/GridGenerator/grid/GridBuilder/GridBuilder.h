@@ -91,8 +91,8 @@ public:
                                                        uint sizeOfICellCFC, uint *neighborX, uint *neighborY,
                                                        uint *neighborZ, int direction, int level) = 0;
     virtual void getAndReorderReceiveIndices(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
-                                             uint *iCellFCCBorder, uint sizeOfICellFCCBorder, int direction, int level,
-                                             bool receiveIndicesNeedToBeReordered) = 0;
+                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions, int direction,
+                                             int level)                                           = 0;
 
 
     virtual uint getNumberOfFluidNodes(unsigned int level) const = 0;
