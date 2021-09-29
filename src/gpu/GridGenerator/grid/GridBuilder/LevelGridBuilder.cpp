@@ -274,7 +274,7 @@ LevelGridBuilder::getAndReorderSendIndices(int *sendIndices, uint &numberOfSendN
 {
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
     getSendIndices(sendIndices, direction, level);
-    reorderSendIndecesForCommAfterFtoC(sendIndices, numberOfSendNeighborsAfterFtoC, iCellFCC, sizeOfICellCFC, iCellCFC,
+    reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNeighborsAfterFtoC, iCellFCC, sizeOfICellCFC, iCellCFC,
                                        sizeOfICellCFC, neighborX, neighborY, neighborZ, direction, level,
                                        sendIndicesForCommAfterFtoCPositions);
     return sendIndicesForCommAfterFtoCPositions;
@@ -292,7 +292,7 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::getAndReorderReceiveIndices(int *rec
                                          sizeOfICellFCCBorder, direction, level);
 }
 
-GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndecesForCommAfterFtoC(
+GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndicesForCommAfterFtoC(
     int *sendIndices, uint &numberOfSendNeighborsAfterFtoC, uint *iCellFCC, uint sizeOfICellFCC, uint *iCellCFC,
     uint sizeOfICellCFC, uint *neighborX, uint *neighborY, uint *neighborZ, int direction, int level,
     std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
@@ -302,7 +302,7 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndecesForCommAfterFtoC(
                   << " direction: " << direction;
     if (sizeOfICellFCC == 0 || sizeOfICellCFC == 0)
         *logging::out << logging::Logger::LOGGER_ERROR
-                      << "reorderSendIndecesForCommAfterFtoC(): iCellFCC needs to be inititalized before calling "
+                      << "reorderSendIndicesForCommAfterFtoC(): iCellFCC needs to be inititalized before calling "
                          "this function "
                       << "\n";
     uint numberOfSendIndices = getNumberOfSendIndices(direction, level);
@@ -315,7 +315,6 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndecesForCommAfterFtoC(
     bool isInICells;
     std::vector<int> sendIndicesAfterFtoC;
     std::vector<int> sendIndicesOther;
-
     int neighborToAddX, neighborToAddY, neighborToAddZ;
 
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
@@ -326,34 +325,36 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndecesForCommAfterFtoC(
         isInICells = false;
         for (uint j = 0; j < sizeOfICellFCC; j++) {
             if (sparseIndexSend < 0)
-                continue;
+                break;
             if (iCellFCC[j] == (uint) sparseIndexSend) {
                 isInICells = true;
                 break;
             }
         }
-        // check if sparse index is in ICellCFC
-        if (!isInICells) 
-            for (uint j = 0; j < sizeOfICellCFC; j++) {
-                if (sparseIndexSend < 0)
-                    continue;
-                if (iCellCFC[j] == (uint)sparseIndexSend) {
-                    isInICells = true;                   
-                    // also find neighbors
-                    if (direction != 1)
-                        neighborToAddX = neighborX[sparseIndexSend];
-                    if (direction != 2)
-                        neighborToAddY = neighborY[sparseIndexSend];
-                    if (direction != 3)
-                        neighborToAddZ = neighborZ[sparseIndexSend];
-                    break;
-                }
+        // check if sparse index is in ICellCFC 
+        for (uint j = 0; j < sizeOfICellCFC; j++) {
+            if (sparseIndexSend < 0)
+                break;
+            if (iCellCFC[j] == (uint)sparseIndexSend) {
+                isInICells = true;                   
+                // also find neighbors
+                if (direction != 0 && direction != 1)
+                    neighborToAddX = neighborX[sparseIndexSend];
+                if (direction != 2 && direction != 3)
+                    neighborToAddY = neighborY[sparseIndexSend];
+                if (direction != 4 && direction != 5)
+                    neighborToAddZ = neighborZ[sparseIndexSend];
+                break;
             }
+        }
 
-        // add index to corresponding vectors
+        // add index to corresponding vectors but omit indices which are already in sendIndicesAfterFtoC
         if (isInICells) {
-            sendIndicesAfterFtoC.push_back(sparseIndexSend);
-            sendIndicesForCommAfterFtoCPositions.push_back(posInSendIndices);
+            if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSend) ==
+                sendIndicesAfterFtoC.end()) {
+                sendIndicesAfterFtoC.push_back(sparseIndexSend);
+                sendIndicesForCommAfterFtoCPositions.push_back(posInSendIndices);
+            }
         }   
 
         // also add neighbors
@@ -373,7 +374,7 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndecesForCommAfterFtoC(
     // add sparseIndices not in sendIndicesAfterFtoC to sendIndicesOther
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
         sparseIndexSend = sendIndices[posInSendIndices];
-        if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSend) !=
+        if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSend) ==
             sendIndicesAfterFtoC.end())
             sendIndicesOther.push_back(sparseIndexSend);
     }
@@ -387,8 +388,15 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndecesForCommAfterFtoC(
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE
                   << "... numberOfSendNeighborsAfterFtoC: " << numberOfSendNeighborsAfterFtoC << "\n";
-    bool numberOfNodesIsCorrect = numberOfSendNeighborsAfterFtoC + sendIndicesOther.size() == numberOfSendIndices;
-    std::cout << "correct number of nodes?: " << numberOfNodesIsCorrect << std::endl;
+
+    if (numberOfSendNeighborsAfterFtoC + sendIndicesOther.size() != numberOfSendIndices) {
+        *logging::out << logging::Logger::LOGGER_ERROR
+                      << "reorderSendIndicesForCommAfterFtoC(): incorrect number of nodes"
+                      << "\n";
+        std::cout << "numberOfSendNeighborsAfterFtoC = " << numberOfSendNeighborsAfterFtoC
+                  << ", sendIndicesOther.size() = " << sendIndicesOther.size()
+                  << ", numberOfSendIndices = " << numberOfSendIndices << std::endl;
+    }
 }
 
 void LevelGridBuilder::findIfSparseIndexIsInSendIndicesAndAddToVectors(
@@ -400,8 +408,12 @@ void LevelGridBuilder::findIfSparseIndexIsInSendIndicesAndAddToVectors(
     for (uint j = 0; j < numberOfSendIndices; j++) {
         sparseIndexSendForNeighborSearch = sendIndices[j];
         if (sparseIndex == sparseIndexSendForNeighborSearch) {
-            sendIndicesAfterFtoC.push_back(sparseIndexSendForNeighborSearch);
-            sendIndicesForCommAfterFtoCPositions.push_back(j);
+            if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSendForNeighborSearch) ==
+                sendIndicesAfterFtoC.end()) {
+                sendIndicesAfterFtoC.push_back(sparseIndexSendForNeighborSearch);
+                sendIndicesForCommAfterFtoCPositions.push_back(j);
+            } 
+            break;
         }
     }
 }

@@ -157,7 +157,7 @@ public:
                                                           uint *iCellFCCBorder, uint sizeOfICellFCCBorder,
                                                           int direction, int level,
                                                           bool receiveIndicesNeedToBeReordered) override;
-    GRIDGENERATOR_EXPORT void reorderSendIndecesForCommAfterFtoC(int *sendIndices, uint &numberOfSendNeighborsAfterFtoC,
+    GRIDGENERATOR_EXPORT void reorderSendIndicesForCommAfterFtoC(int *sendIndices, uint &numberOfSendNeighborsAfterFtoC,
                                                                uint *iCellFCC, uint sizeOfICellFCC, uint *iCellCFC,
                                                                uint sizeOfICellCFC, uint *neighborX, uint *neighborY,
                                                                uint *neighborZ, int direction, int level,
