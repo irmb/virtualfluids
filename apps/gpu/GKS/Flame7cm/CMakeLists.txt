@@ -1,6 +1,5 @@
-PROJECT(Flame7cm)
+PROJECT(Flame7cm LANGUAGES CUDA CXX)
 
-vf_add_library(BUILDTYPE binary PRIVATE_LINK basics GridGenerator GksMeshAdapter GksVtkAdapter GksGpu FILES Flame7cm.cpp )
+vf_add_library(BUILDTYPE binary PRIVATE_LINK basics GridGenerator GksMeshAdapter GksVtkAdapter GksGpu MPI::MPI_CXX FILES Flame7cm.cpp )
 
-include (${VF_CMAKE_DIR}/3rd/cuda.cmake)
-include (${VF_CMAKE_DIR}/3rd/mpi.cmake)
+set_source_files_properties(Flame7cm.cpp PROPERTIES LANGUAGE CUDA)
