@@ -14,6 +14,10 @@
 #include "GksMeshAdapter/GksMeshAdapter.h"
 #include "Communication/Communicator.h"
 
+#include <lbm/constants/NumericConstants.h>
+
+using namespace vf::lbm::constant;
+
 namespace GksGpu {
 
 DataBase::DataBase( std::string type ) 

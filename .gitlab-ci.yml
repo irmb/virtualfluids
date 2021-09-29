@@ -54,6 +54,7 @@ stages:
       --preset=all_make
       -DBUILD_WARNINGS_AS_ERRORS=ON
       -DCMAKE_CUDA_ARCHITECTURES=60
+      -DBUILD_VF_GKS=ON
     - make -j4
     - ccache --show-stats
 
@@ -101,7 +102,7 @@ msvc_16:
     - cd $CI_PROJECT_DIR
     - md -force $env:BUILD_FOLDER
     - cd $env:BUILD_FOLDER
-    - cmake .. --preset=all_msvc -DCMAKE_CUDA_ARCHITECTURES=61 -DBUILD_WARNINGS_AS_ERRORS=ON
+    - cmake .. --preset=all_msvc -DCMAKE_CUDA_ARCHITECTURES=61 -DBUILD_WARNINGS_AS_ERRORS=ON -DBUILD_VF_GKS=ON
     - MSBuild.exe VirtualFluids.sln /property:Configuration=$env:BUILD_CONFIGURATION /verbosity:minimal /maxcpucount:4
 
   cache:
