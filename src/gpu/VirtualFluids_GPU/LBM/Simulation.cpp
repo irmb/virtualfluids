@@ -138,10 +138,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    /////////////////////////////////////////////////////////////////////////
    cudaManager->setMemsizeGPU(0, true);
    //////////////////////////////////////////////////////////////////////////
-   gridProvider->allocArrays_CoordNeighborGeo();
-   gridProvider->allocArrays_OffsetScale();
-   gridProvider->allocArrays_BoundaryValues();
-   gridProvider->allocArrays_BoundaryQs();
+   allocNeighborsOffsetsScalesAndBoundaries(gridProvider);
 
    //////////////////////////////////////////////////////////////////////////
    //Kernel init
@@ -376,6 +373,14 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
 
    //InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
    //InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
+}
+
+void Simulation::allocNeighborsOffsetsScalesAndBoundaries(SPtr<GridProvider> &gridProvider)
+{
+    gridProvider->allocArrays_CoordNeighborGeo();
+    gridProvider->allocArrays_OffsetScale();
+    gridProvider->allocArrays_BoundaryValues(); // allocArrays_BoundaryValues() has to be called after allocArrays_OffsetScale() because of initCommunicationArraysForCommAfterFinetoCoarse() 
+    gridProvider->allocArrays_BoundaryQs();
 }
 
 void Simulation::bulk()

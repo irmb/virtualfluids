@@ -26,7 +26,11 @@ public:
 	VIRTUALFLUIDS_GPU_EXPORT virtual ~GridGenerator();
 
 	void allocArrays_CoordNeighborGeo() override;
-	void allocArrays_BoundaryValues() override;
+    void allocArrays_BoundaryValues() override;
+    void initalValuesDomainDecompostion();
+    void initCommunicationArraysForCommAfterFinetoCoarseZ(const uint &level, int j, int direction);
+    void initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction);
+    void initCommunicationArraysForCommAfterFinetoCoarseX(const uint &level, int j, int direction);
 	void allocArrays_BoundaryQs() override;
     void allocArrays_OffsetScale() override;
     void allocArrays_fluidNodeIndices() override;

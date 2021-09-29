@@ -39,7 +39,9 @@ class VIRTUALFLUIDS_GPU_EXPORT Simulation
 {
 public:
 	void run();
-	void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter, std::shared_ptr<CudaMemoryManager> cudaManager);
+    void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter,
+              std::shared_ptr<CudaMemoryManager> cudaManager);
+    void allocNeighborsOffsetsScalesAndBoundaries(SPtr<GridProvider> &gridProvider);
 	void free();
 	void bulk();
 	void porousMedia();

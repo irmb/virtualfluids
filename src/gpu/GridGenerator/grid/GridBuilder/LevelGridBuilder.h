@@ -149,24 +149,17 @@ public:
     GRIDGENERATOR_EXPORT uint getNumberOfReceiveIndices( int direction, uint level ) override;
     GRIDGENERATOR_EXPORT void getSendIndices( int* sendIndices, int direction, int level ) override;
     GRIDGENERATOR_EXPORT void getReceiveIndices( int* sendIndices, int direction, int level ) override;
-    GRIDGENERATOR_EXPORT std::vector<uint> GRIDGENERATOR_EXPORT getAndReorderSendIndices(
-        int *sendIndices, uint &numberOfSendNeighborsAfterFtoC, uint *iCellFCC, uint sizeOfICellFCCBorder,
-        uint *iCellCFC, uint sizeOfICellCFC, uint *neighborX, uint *neighborY, uint *neighborZ, int direction,
-        int level) override;
-    GRIDGENERATOR_EXPORT void getAndReorderReceiveIndices(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
-                                                          std::vector<uint> &sendIndicesForCommAfterFtoCPositions,
-                                                          int direction, int level) override;
     GRIDGENERATOR_EXPORT void reorderSendIndicesForCommAfterFtoC(int *sendIndices, uint &numberOfSendNeighborsAfterFtoC,
                                                                uint *iCellFCC, uint sizeOfICellFCC, uint *iCellCFC,
                                                                uint sizeOfICellCFC, uint *neighborX, uint *neighborY,
                                                                uint *neighborZ, int direction, int level,
-                                                               std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+                                                               std::vector<uint> &sendIndicesForCommAfterFtoCPositions) override;
     void findIfSparseIndexIsInSendIndicesAndAddToVectors(int sparseIndex, int *sendIndices, uint numberOfSendIndices,
                                                          std::vector<int> &sendIndicesAfterFtoC,
                                                          std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
     GRIDGENERATOR_EXPORT void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
                                                                std::vector<uint> &sendIndicesForCommAfterFtoCPositions,
-                                                               int direction, int level);
+                                                               int direction, int level) override;
 
 };
 
