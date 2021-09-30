@@ -2,9 +2,10 @@
 #define ActuatorLine_H
 
 #include "PreCollisionInteractor.h"
-#include "Parameter/Parameter.h"
 #include "PointerDefinitions.h"
-#include "GridGenerator/grid/GridBuilder/GridBuilder.h"
+
+class Parameter;
+class GridProvider;
 
 class ActuatorLine : public PreCollisionInteractor
 {

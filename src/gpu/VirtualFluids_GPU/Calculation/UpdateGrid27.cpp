@@ -63,7 +63,7 @@ void updateGrid27(Parameter* para,
         coarseToFine(para, level);
     }
 
-    visitPreCollisionInteractors(para, cudaManager, level, t);
+    visitActuators(para, cudaManager, level, t);
 
     visitProbes(para, cudaManager, level, t);
 }
@@ -1269,7 +1269,7 @@ void coarseToFine(Parameter* para, int level)
 
 void visitActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
 {
-    for( PreCollisionInteractor* actuator: para->getActuators() )
+    for( SPtr<PreCollisionInteractor> actuator: para->getActuators() )
     {
         actuator->visit(para, cudaManager, level, t);
     }
@@ -1277,7 +1277,7 @@ void visitActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 
 void visitProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
 {
-    for( PreCollisionInteractor* probe: para->getProbes() )
+    for( SPtr<PreCollisionInteractor> probe: para->getProbes() )
     {
         probe->visit(para, cudaManager, level, t);
     }

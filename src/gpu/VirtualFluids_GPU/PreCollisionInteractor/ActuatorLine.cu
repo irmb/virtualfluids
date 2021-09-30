@@ -58,7 +58,7 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
         
     bladeIndices[node] = k;
 
-    getNeighborIndicesBSW(k, ke, kn, kt, kne, kte, ktn, ktne, neighborsX, neighborsY, neighborsZ);
+    getNeighborIndicesOfBSW(k, ke, kn, kt, kne, kte, ktn, ktne, neighborsX, neighborsY, neighborsZ);
 
     real dW, dE, dN, dS, dT, dB;
 
@@ -158,7 +158,7 @@ void ActuatorLine::visit(Parameter* para, CudaMemoryManager* cudaManager, int le
     
     cudaManager->cudaCopyBladeCoordsHtoD(this);
 
-    uint numberOfThreads = 128;
+    uint numberOfThreads = para->getParH(level)->numberofthreads;
     vf::gpu::CudaGrid bladeGrid = vf::gpu::CudaGrid(numberOfThreads, this->numberOfNodes);
 
     interpolateVelocities<<< bladeGrid.grid, bladeGrid.threads >>>(
@@ -206,7 +206,6 @@ void ActuatorLine::free(Parameter* para, CudaMemoryManager* cudaManager)
     cudaManager->cudaFreeBladeVelocities(this);
     cudaManager->cudaFreeBladeForces(this);
     cudaManager->cudaFreeBladeIndices(this);
-
     cudaManager->cudaFreeSphereIndices(this);
 }
 

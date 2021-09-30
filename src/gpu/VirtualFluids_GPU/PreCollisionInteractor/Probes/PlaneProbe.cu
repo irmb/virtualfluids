@@ -41,7 +41,7 @@ void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
 
 void PlaneProbe::calculateQuantities(ProbeStruct* probeStruct, Parameter* para, int level)
 {
-    vf::gpu::CudaGrid grid = vf::gpu::CudaGrid(128, probeStruct->nPoints);
+    vf::gpu::CudaGrid grid = vf::gpu::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
     interpQuantities<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints, probeStruct->vals,
                                                     probeStruct->distXD, probeStruct->distYD, probeStruct->distZD,
                                                     para->getParD(level)->vx_SP, para->getParD(level)->vy_SP, para->getParD(level)->vz_SP, para->getParD(level)->rho_SP, 

@@ -112,7 +112,7 @@ __global__ void interpQuantities(   uint* pointIndices,
     if(interpolate)
     {
         uint ke, kn, kt, kne, kte, ktn, ktne;
-        getNeighborIndicesBSW(  k, ke, kn, kt, kne, kte, ktn, ktne, neighborX, neighborY, neighborZ);
+        getNeighborIndicesOfBSW(  k, ke, kn, kt, kne, kte, ktn, ktne, neighborX, neighborY, neighborZ);
 
         // Trilinear interpolation of macroscopic quantities to probe point
         real dW, dE, dN, dS, dT, dB;

@@ -1492,11 +1492,11 @@ void Parameter::setADKernel(std::string adKernel)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //add-methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void Parameter::addActuator(PreCollisionInteractor* actuator)
+void Parameter::addActuator(SPtr<PreCollisionInteractor> actuator)
 {
 	actuators.push_back(actuator);
 }
-void Parameter::addProbe(PreCollisionInteractor* probe)
+void Parameter::addProbe(SPtr<PreCollisionInteractor> probe)
 {
 	probes.push_back(probe);
 }
@@ -1911,11 +1911,11 @@ TempPressforBoundaryConditions* Parameter::getTempPressD()
 {
 	return this->TempPressD;
 }
-std::vector<PreCollisionInteractor*> Parameter::getActuators()
+std::vector<SPtr<PreCollisionInteractor>> Parameter::getActuators()
 {
 	return actuators;
 }
-std::vector<PreCollisionInteractor*> Parameter::getProbes()
+std::vector<SPtr<PreCollisionInteractor>> Parameter::getProbes()
 {
 	return probes;
 }

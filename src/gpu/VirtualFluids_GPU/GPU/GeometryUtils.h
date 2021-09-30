@@ -1,7 +1,7 @@
 #ifndef _GEOMETRYUTILS_H
 #define _GEOMETRYUTILS_H
 
-__inline__ __host__ __device__ void getNeighborIndicesBSW(  uint k, //index of BSW node
+__inline__ __host__ __device__ void getNeighborIndicesOfBSW(  uint k, //index of BSW node
                                         uint &ke, uint &kn, uint &kt, uint &kne, uint &kte,uint &ktn, uint &ktne,
                                         uint* neighborX, uint* neighborY, uint* neighborZ)
 {
@@ -12,6 +12,30 @@ __inline__ __host__ __device__ void getNeighborIndicesBSW(  uint k, //index of B
     kte  = neighborZ[ke];
     ktn  = neighborZ[kn];
     ktne = neighborX[ktn];
+}
+
+__inline__ __host__ __device__ uint findNearestCellBSW(uint index, 
+                                              real* coordsX, real* coordsY, real* coordsZ, 
+                                              real posX, real posY, real posZ, 
+                                              uint* neighborsX, uint* neighborsY, uint* neighborsZ, uint* neighborsWSB)
+{
+    uint new_index = index;
+
+    while(coordsX[new_index] > posX && coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = max(1, neighborsWSB[new_index]);}
+
+    while(coordsX[new_index] > posX && coordsY[new_index] > posY ){ new_index = max(1, neighborsZ[neighborsWSB[new_index]]);}
+    while(coordsX[new_index] > posX && coordsZ[new_index] > posZ ){ new_index = max(1, neighborsY[neighborsWSB[new_index]]);}
+    while(coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = max(1, neighborsX[neighborsWSB[new_index]]);}
+
+    while(coordsX[new_index] > posX){ new_index = max(1, neighborsY[neighborsZ[neighborsWSB[new_index]]]);}
+    while(coordsY[new_index] > posY){ new_index = max(1, neighborsX[neighborsZ[neighborsWSB[new_index]]]);}
+    while(coordsZ[new_index] > posZ){ new_index = max(1, neighborsX[neighborsY[neighborsWSB[new_index]]]);}
+
+    while(coordsX[new_index] < posX){ new_index = max(1, neighborsX[new_index]);}
+    while(coordsY[new_index] < posY){ new_index = max(1, neighborsY[new_index]);}
+    while(coordsZ[new_index] < posZ){ new_index = max(1, neighborsZ[new_index]);}
+
+    return neighborsWSB[new_index];
 }
 
 __inline__ __host__ __device__ void getInterpolationWeights(real &dW, real &dE, real &dN, real &dS, real &dT, real &dB,
@@ -175,28 +199,5 @@ __inline__ __host__ __device__ void invRotateAboutZ3D(real &angle, real &posX, r
     translate3D(tmpX, tmpY, tmpZ, newPosX, newPosY, newPosZ, originX, originY, originZ);
 }
 
-__inline__ __host__ __device__ uint findNearestCellBSW(uint index, 
-                                              real* coordsX, real* coordsY, real* coordsZ, 
-                                              real posX, real posY, real posZ, 
-                                              uint* neighborsX, uint* neighborsY, uint* neighborsZ, uint* neighborsWSB)
-{
-    uint new_index = index;
-
-    while(coordsX[new_index] > posX && coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = max(1, neighborsWSB[new_index]);}
-
-    while(coordsX[new_index] > posX && coordsY[new_index] > posY ){ new_index = max(1, neighborsZ[neighborsWSB[new_index]]);}
-    while(coordsX[new_index] > posX && coordsZ[new_index] > posZ ){ new_index = max(1, neighborsY[neighborsWSB[new_index]]);}
-    while(coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = max(1, neighborsX[neighborsWSB[new_index]]);}
-
-    while(coordsX[new_index] > posX){ new_index = max(1, neighborsY[neighborsZ[neighborsWSB[new_index]]]);}
-    while(coordsY[new_index] > posY){ new_index = max(1, neighborsX[neighborsZ[neighborsWSB[new_index]]]);}
-    while(coordsZ[new_index] > posZ){ new_index = max(1, neighborsX[neighborsY[neighborsWSB[new_index]]]);}
-
-    while(coordsX[new_index] < posX){ new_index = max(1, neighborsX[new_index]);}
-    while(coordsY[new_index] < posY){ new_index = max(1, neighborsY[new_index]);}
-    while(coordsZ[new_index] < posZ){ new_index = max(1, neighborsZ[new_index]);}
-
-    return neighborsWSB[new_index];
-}
 
 #endif

@@ -526,8 +526,8 @@ public:
 
     //adder
 
-	void addActuator(PreCollisionInteractor* actuator);
-	void addProbe(PreCollisionInteractor* probes);
+	void addActuator(SPtr<PreCollisionInteractor> actuator);
+	void addProbe(SPtr<PreCollisionInteractor> probes);
 
     // getter
     double *getForcesDouble();
@@ -687,8 +687,8 @@ public:
     TempVelforBoundaryConditions *getTempVelD();
     TempPressforBoundaryConditions *getTempPressH();
     TempPressforBoundaryConditions *getTempPressD();
-    std::vector<PreCollisionInteractor*> getActuators();
-    std::vector<PreCollisionInteractor*> getProbes();
+    std::vector<SPtr<PreCollisionInteractor>> getActuators();
+    std::vector<SPtr<PreCollisionInteractor>> getProbes();
     unsigned int getTimeDoCheckPoint();
     unsigned int getTimeDoRestart();
     bool getDoCheckPoint();
@@ -820,8 +820,8 @@ private:
     unsigned int startTurn;
 
     // PreCollisionInteractors //////////////
-    std::vector<PreCollisionInteractor*> actuators;
-	std::vector<PreCollisionInteractor*> probes;
+    std::vector<SPtr<PreCollisionInteractor>> actuators;
+	std::vector<SPtr<PreCollisionInteractor>> probes;
 
     // Step of Ensight writing//
     unsigned int stepEnsight;
