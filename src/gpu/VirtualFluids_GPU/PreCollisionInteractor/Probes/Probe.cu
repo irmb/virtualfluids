@@ -170,7 +170,7 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
                                       std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
                                       int level)
 {
-    probeParams[level] = new ProbeStruct;
+    probeParams[level] = SPtr<ProbeStruct>(new ProbeStruct);
     probeParams[level]->vals = 1;
     probeParams[level]->nPoints = uint(probeIndices.size());
 
@@ -229,7 +229,7 @@ void Probe::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, ui
 
     if(t>this->tStartAvg)
     {
-        ProbeStruct* probeStruct = this->getProbeStruct(level);
+        SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 
         this->calculateQuantities(probeStruct, para, level);
         probeStruct->vals++;
@@ -341,7 +341,7 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
     uint sizeOfNodes = 0;
     std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
-    ProbeStruct* probeStruct = this->getProbeStruct(level);
+    SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 
     for (uint part = 0; part < fnames.size(); part++)
     {        

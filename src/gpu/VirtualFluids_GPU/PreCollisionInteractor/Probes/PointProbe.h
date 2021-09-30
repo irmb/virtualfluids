@@ -17,8 +17,8 @@ public:
              _tOut)
     {}
 
-    void setProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ);
-    void setProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, real delta_y, real delta_z);
+    void addProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ);
+    void addProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, real delta_y, real delta_z);
     
 private:
     void findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
@@ -26,7 +26,7 @@ private:
                     std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                     int level) override;
 
-    void calculateQuantities(ProbeStruct* probeStruct, Parameter* para, int level) override;
+    void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level) override;
 
 private:
     uint nProbePoints;

@@ -58,7 +58,7 @@ public:
     void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t);
     void free(Parameter* para, CudaMemoryManager* cudaManager);
 
-    ProbeStruct* getProbeStruct(int level){ return this->probeParams[level]; }
+    SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }
 
     void addPostProcessingVariable(PostProcessingVariable _variable);
 
@@ -71,7 +71,7 @@ private:
                         std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
                         std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
                         int level);
-    virtual void calculateQuantities(ProbeStruct* probeStruct, Parameter* para, int level) = 0;
+    virtual void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level) = 0;
 
     void write(Parameter* para, int level, int t);
     void writeCollectionFile(Parameter* para, int t);
@@ -81,7 +81,7 @@ private:
 private:
     const std::string probeName;
 
-    std::vector<ProbeStruct*> probeParams;
+    std::vector<SPtr<ProbeStruct>> probeParams;
     bool quantities[int(PostProcessingVariable::LAST)];
     std::vector<std::string> fileNamesForCollectionFile;
     std::vector<std::string> varNames;

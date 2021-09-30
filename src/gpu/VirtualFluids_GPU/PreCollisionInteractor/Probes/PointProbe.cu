@@ -42,7 +42,7 @@ void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
     }
 }
 
-void PointProbe::calculateQuantities(ProbeStruct* probeStruct, Parameter* para, int level)
+void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level)
 {
     vf::gpu::CudaGrid grid = vf::gpu::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
 
@@ -53,18 +53,17 @@ void PointProbe::calculateQuantities(ProbeStruct* probeStruct, Parameter* para, 
                                                     probeStruct->quantitiesD, probeStruct->arrayOffsetsD, probeStruct->quantitiesArrayD, true);
 }
 
-void PointProbe::setProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ)
+void PointProbe::addProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ)
 {
     bool isSameLength = ( (_pointCoordsX.size()==_pointCoordsY.size()) && (_pointCoordsY.size()==_pointCoordsZ.size()));
     assert("Probe: point lists have different lengths" && isSameLength);
-    this->pointCoordsX = _pointCoordsX;
-    this->pointCoordsY = _pointCoordsY;
-    this->pointCoordsZ = _pointCoordsZ;
-    this->nProbePoints = uint(_pointCoordsX.size());
-    printf("Added list of %u  points \n", this->nProbePoints );
+    this->pointCoordsX.insert(this->pointCoordsX.end(), _pointCoordsX.begin(),  _pointCoordsX.end());
+    this->pointCoordsY.insert(this->pointCoordsY.end(), _pointCoordsY.begin(),  _pointCoordsY.end());
+    this->pointCoordsZ.insert(this->pointCoordsZ.end(), _pointCoordsZ.begin(),  _pointCoordsZ.end());
+    printf("Added list of %u  points \n", _pointCoordsX.size() );
 }
 
-void PointProbe::setProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, real delta_y, real delta_z)
+void PointProbe::addProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, real delta_y, real delta_z)
 {
     int n_points_y = int((pos1_y-pos0_y)/delta_y);
     int n_points_z = int((pos1_z-pos0_z)/delta_z);
@@ -75,10 +74,11 @@ void PointProbe::setProbePointsFromXNormalPlane(real pos_x, real pos0_y, real po
     {
         for(int n_z=0; n_z<n_points_z; n_z++)
         {
-            pointCoordsXtmp.push_back(pos_x);
-            pointCoordsYtmp.push_back(pos0_y+delta_y*n_y);
-            pointCoordsZtmp.push_back(pos0_z+delta_z*n_z);
+            this->pointCoordsX.push_back(pos_x);
+            this->pointCoordsY.push_back(pos0_y+delta_y*n_y);
+            this->pointCoordsZ.push_back(pos0_z+delta_z*n_z);
         }
     }
-    this->setProbePointsFromList(pointCoordsXtmp, pointCoordsYtmp, pointCoordsZtmp);
+    printf("Added %u  points \n",  n_points_y*n_points_z);
+
 }
