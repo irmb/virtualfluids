@@ -40,7 +40,7 @@
 
 #include "LBM/D3Q27.h"
 #include "LBM/LB.h"
-#include "Visitor/Visitor.h"
+#include "PreCollisionInteractor/PreCollisionInteractor.h"
 
 #include "VirtualFluids_GPU_export.h"
 
@@ -526,8 +526,8 @@ public:
 
     //adder
 
-	void addActuator(Visitor* actuator);
-	void addProbe(Visitor* probes);
+	void addActuator(PreCollisionInteractor* actuator);
+	void addProbe(PreCollisionInteractor* probes);
 
     // getter
     double *getForcesDouble();
@@ -687,8 +687,8 @@ public:
     TempVelforBoundaryConditions *getTempVelD();
     TempPressforBoundaryConditions *getTempPressH();
     TempPressforBoundaryConditions *getTempPressD();
-    std::vector<Visitor*> getActuators();
-    std::vector<Visitor*> getProbes();
+    std::vector<PreCollisionInteractor*> getActuators();
+    std::vector<PreCollisionInteractor*> getProbes();
     unsigned int getTimeDoCheckPoint();
     unsigned int getTimeDoRestart();
     bool getDoCheckPoint();
@@ -773,7 +773,7 @@ private:
     bool calcCp { false };
     bool writeVeloASCII { false };
     bool calcPlaneConc { false };
-    bool isBodyForce;
+    bool isBodyForce { false };
     int diffMod {27};
     int maxlevel {0};
     int coarse {0};
@@ -819,9 +819,9 @@ private:
 	real angularVelocity;
     unsigned int startTurn;
 
-    // Visitors //////////////
-    std::vector<Visitor*> actuators;
-	std::vector<Visitor*> probes;
+    // PreCollisionInteractors //////////////
+    std::vector<PreCollisionInteractor*> actuators;
+	std::vector<PreCollisionInteractor*> probes;
 
     // Step of Ensight writing//
     unsigned int stepEnsight;

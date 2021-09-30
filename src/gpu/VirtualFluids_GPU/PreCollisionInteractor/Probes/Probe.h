@@ -3,7 +3,7 @@
 
 #include <cuda.h>
 
-#include "Visitor/Visitor.h"
+#include "PreCollisionInteractor/PreCollisionInteractor.h"
 #include "PointerDefinitions.h"
 
 enum class PostProcessingVariable{ 
@@ -38,7 +38,7 @@ __global__ void interpQuantities(   uint* pointIndices,
                                 );
 
 
-class Probe : public Visitor 
+class Probe : public PreCollisionInteractor 
 {
 public:
     Probe(
@@ -50,7 +50,7 @@ public:
         tStartAvg(_tStartAvg),
         tStartOut(_tStartOut),
         tOut(_tOut),
-        Visitor()
+        PreCollisionInteractor()
     {
         assert("Output starts before averaging!" && tStartOut>=tStartAvg);
     }

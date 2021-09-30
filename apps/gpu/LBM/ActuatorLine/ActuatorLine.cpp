@@ -48,9 +48,9 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
-#include "VirtualFluids_GPU/Visitor/ActuatorLine.h"
-#include "VirtualFluids_GPU/Visitor/Probes/PointProbe.h"
-#include "VirtualFluids_GPU/Visitor/Probes/PlaneProbe.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
@@ -197,10 +197,10 @@ void multipleLevel(const std::string& configPath)
         real density = 1.225f;
         int level = 0;
 
-        ActuatorLine* actuator_line = new ActuatorLine((unsigned int) 3, density, (unsigned int)32, epsilon, turbPos[0], turbPos[1], turbPos[2], D, level, dt, dx);
+        SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine((unsigned int) 3, density, (unsigned int)32, epsilon, turbPos[0], turbPos[1], turbPos[2], D, level, dt, dx) );
         para->addActuator( actuator_line );
 
-        PointProbe* pointProbe = new PointProbe("pointProbe", 100, 500, 100);
+        SPtr<PointProbe> pointProbe = SPtr<PointProbe>( new PointProbe("pointProbe", 100, 500, 100) );
         std::vector<real> probeCoordsX = {D,2*D,5*D};
         std::vector<real> probeCoordsY = {3*D,3*D,3*D};
         std::vector<real> probeCoordsZ = {3*D,3*D,3*D};
@@ -210,7 +210,7 @@ void multipleLevel(const std::string& configPath)
         pointProbe->addPostProcessingVariable(PostProcessingVariable::Variances);
         para->addProbe( pointProbe );
 
-        PlaneProbe* planeProbe = new PlaneProbe("planeProbe", 100, 500, 100);
+        SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", 100, 500, 100) );
         planeProbe->setProbePlane(5*D, 0, 0, dx, L_y, L_z);
         planeProbe->addPostProcessingVariable(PostProcessingVariable::Means);
         para->addProbe( planeProbe );

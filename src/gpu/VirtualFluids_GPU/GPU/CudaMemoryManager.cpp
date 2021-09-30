@@ -5,8 +5,8 @@
 #include <math.h>
 
 #include <Parameter/Parameter.h>
-#include <Visitor/ActuatorLine.h>
-#include <Visitor/Probes/Probe.h>
+#include <PreCollisionInteractor/ActuatorLine.h>
+#include <PreCollisionInteractor/Probes/Probe.h>
 
 #include "Calculation/PorousMedia.h"
 

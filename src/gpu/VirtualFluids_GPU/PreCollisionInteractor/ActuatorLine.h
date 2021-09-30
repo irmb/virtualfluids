@@ -1,12 +1,12 @@
 #ifndef ActuatorLine_H
 #define ActuatorLine_H
 
-#include "Visitor.h"
+#include "PreCollisionInteractor.h"
 #include "Parameter/Parameter.h"
 #include "PointerDefinitions.h"
 #include "GridGenerator/grid/GridBuilder/GridBuilder.h"
 
-class ActuatorLine : public Visitor
+class ActuatorLine : public PreCollisionInteractor
 {
 public:
     ActuatorLine(
@@ -27,7 +27,7 @@ public:
         diameter(_diameter),
         level(_level),
         delta_x(_delta_x),
-        Visitor()
+        PreCollisionInteractor()
     {
         this->delta_t = _delta_t/pow(2,this->level);
         this->delta_x = _delta_x/pow(2,this->level);

@@ -130,11 +130,11 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    gridProvider->allocArrays_BoundaryQs();
    gridProvider->allocArrays_OffsetScale();
 
-	for( Visitor* actuator: para->getActuators()){
+	for( PreCollisionInteractor* actuator: para->getActuators()){
 		actuator->init(para.get(), gridProvider.get(), cudaManager.get());
 	}
 
-	for( Visitor* probe: para->getProbes()){
+	for( PreCollisionInteractor* probe: para->getProbes()){
 		probe->init(para.get(), gridProvider.get(), cudaManager.get());
 	}
 
@@ -1287,12 +1287,12 @@ void Simulation::free()
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////
-	//Visitors
-	for( Visitor* actuator: para->getActuators()){
+	//PreCollisionInteractors
+	for( PreCollisionInteractor* actuator: para->getActuators()){
 		actuator->free(para.get(), cudaManager.get());
 	}
 
-	for( Visitor* probe: para->getProbes()){
+	for( PreCollisionInteractor* probe: para->getProbes()){
 		probe->free(para.get(), cudaManager.get());
 	}
 	//////////////////////////////////////////////////////////////////////////

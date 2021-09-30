@@ -1,5 +1,5 @@
-#ifndef Visitor_H
-#define Visitor_H
+#ifndef PreCollisionInteractor_H
+#define PreCollisionInteractor_H
 
 #include <string>
 #include <vector>
@@ -14,19 +14,19 @@ class Parameter;
 class GridProvider;
 class CudaMemoryManager;
 
-class VIRTUALFLUIDS_GPU_EXPORT Visitor
+class VIRTUALFLUIDS_GPU_EXPORT PreCollisionInteractor
 {
 private:
     SPtr<Parameter> para;
 
 protected:
-    Visitor()
+    PreCollisionInteractor()
     {
         this->updateInterval = 1;
     }
 
 public:
-    virtual ~Visitor()
+    virtual ~PreCollisionInteractor()
     {
     }
 
