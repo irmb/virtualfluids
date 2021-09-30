@@ -81,14 +81,14 @@ const real velocity  = 9.0;
 
 const real mach = 0.1;
 
-const uint nodes_per_diameter = 32;
+const uint nodes_per_diameter = 16;
 
 std::string path(".");
 
 std::string simulationName("ActuatorLine");
 
 const uint timeStepOut = 500;
-const float tEnd = 200; // total time of simulation
+const float tEnd = 280; // total time of simulation in s
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -206,8 +206,8 @@ void multipleLevel(const std::string& configPath)
         std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
         std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
         std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
-        pointProbe->setProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
-        // pointProbe->setProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, dx, dx);
+        pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+        // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, dx, dx);
         pointProbe->addPostProcessingVariable(PostProcessingVariable::Means);
         pointProbe->addPostProcessingVariable(PostProcessingVariable::Variances);
         para->addProbe( pointProbe );
