@@ -8,6 +8,9 @@
 #include "Communication/ExchangeData27.h"
 #include "Kernel/Kernel.h"
 
+void visitActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+void visitProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+
 void updateGrid27(Parameter* para, 
                   vf::gpu::Communicator* comm, 
                   CudaMemoryManager* cudaManager, 
@@ -60,7 +63,7 @@ void updateGrid27(Parameter* para,
         coarseToFine(para, level);
     }
 
-    visitVisitors(para, cudaManager, level, t);
+    visitPreCollisionInteractors(para, cudaManager, level, t);
 
     visitProbes(para, cudaManager, level, t);
 }
@@ -1264,9 +1267,9 @@ void coarseToFine(Parameter* para, int level)
 
 }
 
-void visitVisitors(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
+void visitActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
 {
-    for( Visitor* actuator: para->getActuators() )
+    for( PreCollisionInteractor* actuator: para->getActuators() )
     {
         actuator->visit(para, cudaManager, level, t);
     }
@@ -1274,7 +1277,7 @@ void visitVisitors(Parameter* para, CudaMemoryManager* cudaManager, int level, u
 
 void visitProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
 {
-    for( Visitor* probe: para->getProbes() )
+    for( PreCollisionInteractor* probe: para->getProbes() )
     {
         probe->visit(para, cudaManager, level, t);
     }
