@@ -207,7 +207,7 @@ void multipleLevel(const std::string& configPath)
         std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
         std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
         pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
-        // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, dx, dx);
+        // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
         pointProbe->addPostProcessingVariable(PostProcessingVariable::Means);
         pointProbe->addPostProcessingVariable(PostProcessingVariable::Variances);
         para->addProbe( pointProbe );

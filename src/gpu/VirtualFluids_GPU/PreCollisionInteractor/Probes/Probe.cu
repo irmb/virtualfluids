@@ -237,7 +237,7 @@ void Probe::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, ui
         if(max(int(t) - int(this->tStartOut), -1) % this->tOut == 0)
         {
             cudaManager->cudaCopyProbeQuantityArrayDtoH(this, level);
-         
+
             this->write(para, level, t);
         }
 

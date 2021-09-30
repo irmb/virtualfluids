@@ -18,7 +18,7 @@ public:
     {}
 
     void addProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ);
-    void addProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, real delta_y, real delta_z);
+    void addProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, uint n_y, uint n_z);
     
 private:
     void findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
@@ -29,7 +29,6 @@ private:
     void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level) override;
 
 private:
-    uint nProbePoints;
     std::vector<real> pointCoordsX, pointCoordsY, pointCoordsZ; 
 
 };
