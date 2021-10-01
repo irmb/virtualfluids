@@ -152,7 +152,7 @@ void ActuatorLine::init(Parameter* para, GridProvider* gridProvider, CudaMemoryM
 }
 
 
-void ActuatorLine::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
+void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
 {
     if (level != this->level) return;
     

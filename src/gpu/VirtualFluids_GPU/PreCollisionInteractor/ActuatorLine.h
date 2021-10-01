@@ -44,7 +44,7 @@ public:
     }
 
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
-    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t);
+    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t);
     void free(Parameter* para, CudaMemoryManager* cudaManager);
     void write(uint t);
 
