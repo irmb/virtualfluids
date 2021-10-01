@@ -8,6 +8,9 @@
 #include "Communication/ExchangeData27.h"
 #include "Kernel/Kernel.h"
 
+void interactWithActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+void interactWithProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+
 void updateGrid27(Parameter* para, 
                   vf::gpu::Communicator* comm, 
                   CudaMemoryManager* cudaManager, 
@@ -59,6 +62,10 @@ void updateGrid27(Parameter* para,
 
         coarseToFine(para, level);
     }
+
+    interactWithActuators(para, cudaManager, level, t);
+
+    interactWithProbes(para, cudaManager, level, t);
 }
 
 void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels)
@@ -1258,4 +1265,20 @@ void coarseToFine(Parameter* para, int level)
         }
     } 
 
+}
+
+void interactWithActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
+{
+    for( SPtr<PreCollisionInteractor> actuator: para->getActuators() )
+    {
+        actuator->interact(para, cudaManager, level, t);
+    }
+}
+
+void interactWithProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
+{
+    for( SPtr<PreCollisionInteractor> probe: para->getProbes() )
+    {
+        probe->interact(para, cudaManager, level, t);
+    }
 }

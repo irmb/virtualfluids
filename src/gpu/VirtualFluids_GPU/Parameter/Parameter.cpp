@@ -1489,6 +1489,18 @@ void Parameter::setADKernel(std::string adKernel)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//add-methods
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void Parameter::addActuator(SPtr<PreCollisionInteractor> actuator)
+{
+	actuators.push_back(actuator);
+}
+void Parameter::addProbe(SPtr<PreCollisionInteractor> probe)
+{
+	probes.push_back(probe);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //get-methods
@@ -1747,6 +1759,18 @@ real Parameter::getPressRatio()
 {
 	return ic.delta_press;
 }
+real Parameter::getTimeRatio()
+{
+	return this->getViscosityRatio()*pow(this->getVelocityRatio(),-2);
+}
+real Parameter::getLengthRatio()
+{
+	return this->getViscosityRatio()/this->getVelocityRatio();
+}
+real Parameter::getForceRatio()
+{
+	return this->getDensityRatio()*pow(this->getViscosityRatio(),2);
+}
 real Parameter::getRealX()
 {
 	return ic.RealX;
@@ -1886,6 +1910,14 @@ TempPressforBoundaryConditions* Parameter::getTempPressH()
 TempPressforBoundaryConditions* Parameter::getTempPressD()
 {
 	return this->TempPressD;
+}
+std::vector<SPtr<PreCollisionInteractor>> Parameter::getActuators()
+{
+	return actuators;
+}
+std::vector<SPtr<PreCollisionInteractor>> Parameter::getProbes()
+{
+	return probes;
 }
 //unsigned int Parameter::getkInflowQ()
 //{
