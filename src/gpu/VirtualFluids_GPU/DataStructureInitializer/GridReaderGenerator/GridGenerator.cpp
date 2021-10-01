@@ -12,6 +12,7 @@
 
 #include "utilities/communication.h"
 
+#include "Communication/Communicator.h"
 
 
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager)
@@ -261,8 +262,7 @@ void GridGenerator::allocArrays_BoundaryValues()
         }
     }//ende geo
 
-initalValuesDomainDecompostion();
-
+    initalValuesDomainDecompostion();
 }
 
 void GridGenerator::initalValuesDomainDecompostion()
@@ -715,6 +715,7 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseZ(const uint 
 
 void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction)
 {
+    // init send indices
     para->initNumberOfProcessNeighborsAfterFtoCY(level);
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
     builder->reorderSendIndicesForCommAfterFtoC(
@@ -723,11 +724,26 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint 
         para->getParH(level)->K_CF, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
         para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP, para->getParH(level)->neighborZ_SP,
         direction, level, sendIndicesForCommAfterFtoCPositions);
-    builder->reorderRecvIndicesForCommAfterFtoC(para->getParH(level)->recvProcessNeighborY[j].index,
-                                                para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY[j],
-                                                sendIndicesForCommAfterFtoCPositions, direction, level);
     para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCY[j] =
         para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j];
+
+
+    // send sendIndicesForCommAfterFtoCPositions to receiving process
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions; 
+    recvIndicesForCommAfterFtoCPositions.resize(para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j] * 2); // give vector an arbitraty size (larger than needed)
+    auto comm = vf::gpu::Communicator::getInstanz();
+    comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), recvIndicesForCommAfterFtoCPositions.size(),
+                          para->getParH(level)->recvProcessNeighborY[j].rankNeighbor,
+                          sendIndicesForCommAfterFtoCPositions.data(), sendIndicesForCommAfterFtoCPositions.size(),
+                          para->getParH(level)->sendProcessNeighborY[j].rankNeighbor);
+    // resize vector to correct size
+    auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
+    recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end());
+
+    // init receive indices
+    builder->reorderRecvIndicesForCommAfterFtoC(para->getParH(level)->recvProcessNeighborY[j].index,
+                                                para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY[j],
+                                                recvIndicesForCommAfterFtoCPositions, direction, level);
     para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCY[j] =
         para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY[j];
 }

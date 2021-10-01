@@ -219,3 +219,16 @@ std::vector<double> Communicator::gatherNUPS(double processNups)
 
 } // namespace GPU
 } // namespace VF
+
+void vf::gpu::Communicator::exchangeIndices(uint *rbuf, int count_r, int nb_rank_r, uint *sbuf, int count_s,
+                                            int nb_rank_s)
+{
+    MPI_Request recv_request;
+    MPI_Irecv(rbuf, count_r, MPI_UNSIGNED, nb_rank_r, 0, commGPU, &recv_request);
+    //printf("exchangeIndices PID: %i,   nbRev: nb_rank_recv: %i", this->getPID(), nb_rank_r);
+    //fflush(stdout);
+    MPI_Send(sbuf, count_s, MPI_UNSIGNED, nb_rank_s, 0, commGPU);
+    //printf("exchangeIndices PID: %i,   sendUintGPU: nb_rank_send: %i", this->getPID(), nb_rank_s);
+    //fflush(stdout);
+    MPI_Wait(&recv_request, MPI_STATUSES_IGNORE);
+}

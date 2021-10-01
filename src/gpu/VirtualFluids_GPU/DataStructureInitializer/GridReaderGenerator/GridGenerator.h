@@ -11,6 +11,13 @@
 
 class Parameter;
 class GridBuilder;
+namespace vf
+{
+	namespace gpu
+	{
+		class Communicator;
+	}
+} // namespace vf
 
 class GridGenerator
 	: public GridProvider
