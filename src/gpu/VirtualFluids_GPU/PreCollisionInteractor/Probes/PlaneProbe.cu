@@ -1,6 +1,6 @@
 #include "PlaneProbe.h"
 
-#include "Kernel/Utilities/CudaGrid.h"
+#include <cuda/CudaGrid.h>
 
 #include <cuda.h>
 #include <cuda_runtime.h>
