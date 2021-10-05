@@ -10,18 +10,14 @@
 #include <memory>
 #include <filesystem>
 
-#include "mpi.h"
-
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
 #include "PointerDefinitions.h"
 
-#include "Core/LbmOrGks.h"
 #include "Core/StringUtilities/StringUtil.h"
 
 #include "Core/VectorTypes.h"
-#include "Core/Logger/Logger.h"
 
 #include <basics/config/ConfigurationFile.h>
 
@@ -99,8 +95,6 @@ const real dt = (real)1.0e-3; //0.5e-3;
 
 const uint nx = 64;
 
-//std::string path("F:/Work/Computations/out/DrivenCavity/"); //LEGOLAS
-//std::string path("D:/out/DrivenCavity"); //Mollok
 std::string path(".");
 
 std::string simulationName("DrivenCavityChim");
