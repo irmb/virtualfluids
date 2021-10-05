@@ -36,14 +36,14 @@ inline __host__ __device__ real getTurbulentViscosityDeardorff(const DataBaseStr
         real uHead = c1o2 * prim.U;
 
         {
-            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 0, dataBase.numberOfCells)];
+            // uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 0, dataBase.numberOfCells)];
             readCellData(cellIndex, dataBase, neighborCons);
             neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
 
             uHead += c1o4 * neighborPrim.U;
         }
         {
-            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 1, dataBase.numberOfCells)];
+            // uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 1, dataBase.numberOfCells)];
             readCellData(cellIndex, dataBase, neighborCons);
             neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
 
@@ -57,14 +57,14 @@ inline __host__ __device__ real getTurbulentViscosityDeardorff(const DataBaseStr
         real vHead = c1o2 * prim.V;
 
         {
-            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 2, dataBase.numberOfCells)];
+            // uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 2, dataBase.numberOfCells)];
             readCellData(cellIndex, dataBase, neighborCons);
             neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
 
             vHead += c1o4 * neighborPrim.V;
         }
         {
-            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 3, dataBase.numberOfCells)];
+            // uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 3, dataBase.numberOfCells)];
             readCellData(cellIndex, dataBase, neighborCons);
             neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
 
@@ -78,14 +78,14 @@ inline __host__ __device__ real getTurbulentViscosityDeardorff(const DataBaseStr
         real wHead = c1o2 * prim.W;
 
         {
-            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 4, dataBase.numberOfCells)];
+            // uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 4, dataBase.numberOfCells)];
             readCellData(cellIndex, dataBase, neighborCons);
             neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
 
             wHead += c1o4 * neighborPrim.W;
         }
         {
-            uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 5, dataBase.numberOfCells)];
+            // uint neighborCellIndex = dataBase.cellToCell[CELL_TO_CELL(cellIndex, 5, dataBase.numberOfCells)];
             readCellData(cellIndex, dataBase, neighborCons);
             neighborPrim = toPrimitiveVariables(neighborCons, parameters.K);
 

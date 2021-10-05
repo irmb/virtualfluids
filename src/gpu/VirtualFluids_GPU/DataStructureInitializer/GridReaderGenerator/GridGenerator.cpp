@@ -63,6 +63,9 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 
         if(para->getUseWale())
             cudaMemoryManager->cudaAllocTurbulentViscosity(level);
+        
+        if(para->getIsBodyForce())
+            cudaMemoryManager->cudaAllocBodyForce(level);
 
 		builder->getNodeValues(
 			para->getParH(level)->coordX_SP,
@@ -80,6 +83,8 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
         cudaMemoryManager->cudaCopyNeighborWSB(level);
         cudaMemoryManager->cudaCopySP(level);
         cudaMemoryManager->cudaCopyCoord(level);
+        if(para->getIsBodyForce())
+            cudaMemoryManager->cudaCopyBodyForce(level);
 
         //std::cout << verifyNeighborIndices(level);
 	}

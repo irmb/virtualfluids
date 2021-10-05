@@ -4,8 +4,12 @@
 #ifdef __CUDACC__
 #include <cuda_runtime.h>
 #else
+#ifndef __host__
 #define __host__
+#endif
+#ifndef __device__
 #define __device__
+#endif
 #endif
 
 #include <math.h>

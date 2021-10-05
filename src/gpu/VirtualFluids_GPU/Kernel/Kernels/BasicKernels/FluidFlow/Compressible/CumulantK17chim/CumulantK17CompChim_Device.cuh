@@ -13,7 +13,11 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChim(
 	real* distributions,
 	int size_Mat,
 	int level,
+	bool bodyForce,
 	real* forces,
+	real* bodyForceX,
+	real* bodyForceY,
+	real* bodyForceZ,
 	real* quadricLimiters,
 	bool isEvenTimestep);
 #endif
