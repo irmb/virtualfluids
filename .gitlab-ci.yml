@@ -125,8 +125,6 @@ gcc_9_python:
 
   needs: ["gcc_9"]
 
-  only: ["schedules"]
-
   cache:
     key: "gcc_9-$CI_COMMIT_REF_SLUG"
     paths:
@@ -208,8 +206,6 @@ gcc_9_python_bindings_test:
   image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
 
   needs: ["gcc_9_python"]
-
-  only: ["schedules"]
 
   before_script:
     - export PYTHONPATH="Python"
