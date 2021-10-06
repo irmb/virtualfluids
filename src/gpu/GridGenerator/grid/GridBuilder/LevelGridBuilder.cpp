@@ -340,7 +340,7 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndicesForCommAfterFtoC(
                                                             sendIndicesAfterFtoC, sendIndicesForCommAfterFtoCPositions);
     }
 
-    numberOfSendNeighborsAfterFtoC = (uint) sendIndicesAfterFtoC.size();
+    numberOfSendNeighborsAfterFtoC = (int) sendIndicesAfterFtoC.size();
     
     // add sparseIndices not in sendIndicesAfterFtoC to sendIndicesOther
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
@@ -352,9 +352,9 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndicesForCommAfterFtoC(
 
 
     // copy new vectors back to sendIndices array
-    for (uint i = 0; i < numberOfSendNeighborsAfterFtoC; i++)
+    for (int i = 0; i < numberOfSendNeighborsAfterFtoC; i++)
         sendIndices[i] = sendIndicesAfterFtoC[i];
-    for (uint i = 0; i < sendIndicesOther.size(); i++)
+    for (uint i = 0; i < (uint) sendIndicesOther.size(); i++)
         sendIndices[i + numberOfSendNeighborsAfterFtoC] = sendIndicesOther[i];
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE
@@ -418,12 +418,12 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderRecvIndicesForCommAfterFtoC(i
             recvIndicesOther.push_back(sparseIndexRecv);
     }
 
-    numberOfRecvNeighborsAfterFtoC = (uint)recvIndicesAfterFtoC.size();
+    numberOfRecvNeighborsAfterFtoC = (int)recvIndicesAfterFtoC.size();
     
     // copy new vectors back to sendIndices array
-    for (uint i = 0; i < numberOfRecvNeighborsAfterFtoC; i++)
+    for (int i = 0; i < numberOfRecvNeighborsAfterFtoC; i++)
         recvIndices[i] = recvIndicesAfterFtoC[i];
-    for (uint i = 0; i < recvIndicesOther.size(); i++)
+    for (uint i = 0; i < (uint) recvIndicesOther.size(); i++)
         recvIndices[i + numberOfRecvNeighborsAfterFtoC] = recvIndicesOther[i];
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE
