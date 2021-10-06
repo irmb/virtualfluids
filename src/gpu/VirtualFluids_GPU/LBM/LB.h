@@ -237,7 +237,6 @@ typedef struct PN27{
 
 typedef struct PN27AfterFtoC {
     uint memsizeFs;
-    uint memsizeIndex;
     int numberOfNodes;
 } ProcessNeighbor27AfterFtoC;
 

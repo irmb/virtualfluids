@@ -524,6 +524,12 @@ public:
     void setIsNeighborX(bool isNeighbor);
     void setIsNeighborY(bool isNeighbor);
     void setIsNeighborZ(bool isNeighbor);
+    void setSendProcessNeighborsAfterFtoCX(int numberOfNodes, int level, int arrayIndex);
+    void setSendProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex);
+    void setSendProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex);
+    void setRecvProcessNeighborsAfterFtoCX(int numberOfNodes, int level, int arrayIndex);
+    void setRecvProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex);
+    void setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex);
     // void setkInflowQ(unsigned int kInflowQ);
     // void setkOutflowQ(unsigned int kOutflowQ);
     // void setQinflowH(QforBoundaryConditions* QinflowH);
