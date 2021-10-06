@@ -92,12 +92,15 @@ void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManage
             }
 
             coarseToFine(para, level);
-        } else {
+        } else if (para->getNumprocs() > 1) {
             fineToCoarse(para, level);
 
-            prepareExchangeMultiGPU(para, level, -1);
-            exchangeMultiGPU(para, comm, cudaManager, level, -1);
+             prepareExchangeMultiGPU(para, level, -1);
+             exchangeMultiGPU(para, comm, cudaManager, level, -1);
 
+            coarseToFine(para, level);
+        } else {
+            fineToCoarse(para, level);
             coarseToFine(para, level);
         }
     }
