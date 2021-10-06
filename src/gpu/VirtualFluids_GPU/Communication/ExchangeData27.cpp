@@ -43,20 +43,6 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
                             para->getParH(level)->recvProcessNeighborX[i].rankNeighbor);
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////start non blocking MPI send
-    //for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
-    //{
-    //    comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0],
-    //                        para->getParH(level)->sendProcessNeighborX[i].numberOfFs,
-    //                        para->getParH(level)->sendProcessNeighborX[i].rankNeighbor);
-    //}
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////Waitall
-    //if (0 < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")))
-    //{
-    //    comm->waitallGPU();
-    //}
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // wait for memcopy device to host to finish before sending data
     if (para->getUseStreams())
         cudaStreamSynchronize(stream); 
@@ -151,20 +137,6 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
                             para->getParH(level)->recvProcessNeighborY[i].numberOfFs,
                             para->getParH(level)->recvProcessNeighborY[i].rankNeighbor);
     }
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////start non blocking MPI send
-    //for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
-    //{
-    //    comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0],
-    //                        para->getParH(level)->sendProcessNeighborY[i].numberOfFs,
-    //                        para->getParH(level)->sendProcessNeighborY[i].rankNeighbor);
-    //}
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////Waitall
-    //if (0 < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")))
-    //{
-    //    comm->waitallGPU();
-    //}
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // wait for memcopy device to host to finish before sending data
     if (para->getUseStreams())
@@ -278,20 +250,6 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
                             para->getParH(level)->recvProcessNeighborZ[i].numberOfFs,
                             para->getParH(level)->recvProcessNeighborZ[i].rankNeighbor);
     }
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////start non blocking MPI send
-    //for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
-    //{
-    //    comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0],
-    //                        para->getParH(level)->sendProcessNeighborZ[i].numberOfFs,
-    //                        para->getParH(level)->sendProcessNeighborZ[i].rankNeighbor);
-    //}
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////Waitall
-    //if (0 < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")))
-    //{
-    //    comm->waitallGPU();
-    //}
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // wait for memcopy device to host to finish before sending data
     if (para->getUseStreams())
