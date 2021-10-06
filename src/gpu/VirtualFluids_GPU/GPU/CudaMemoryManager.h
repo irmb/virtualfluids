@@ -95,16 +95,19 @@ public:
 	void cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor);
 	//
 	void cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, int streamIndex);
-    void cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, int streamIndex);
+    void cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv,
+                                      int streamIndex);
+    void cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend,
+                                      int streamIndex);
 	void cudaCopyProcessNeighborYIndex(int lev, unsigned int processNeighbor);
-	void cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor);
+    void cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor);
 	//
 	void cudaAllocProcessNeighborZ(int lev, unsigned int processNeighbor);
     void cudaCopyProcessNeighborZFsHD(int lev, unsigned int processNeighbor, int streamIndex);
     void cudaCopyProcessNeighborZFsDH(int lev, unsigned int processNeighbor, int streamIndex);
 	void cudaCopyProcessNeighborZIndex(int lev, unsigned int processNeighbor);
 	void cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor);
+
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////

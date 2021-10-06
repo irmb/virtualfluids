@@ -83,24 +83,16 @@ void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManage
                                    para->getParD(level)->intFCBulk.ICellFCF,
                                    para->getParD(level)->intFCBulk.kFC, -1);
 
-            if (para->useReducedCommunicationAfterFtoC) {
-                prepareExchangeMultiGPU(para, level, -1); // TODO
-                exchangeMultiGPU(para, comm, cudaManager, level, -1); // TODO
-            } else {
-                prepareExchangeMultiGPU(para, level, -1);
-                exchangeMultiGPU(para, comm, cudaManager, level, -1);
-            }
-
-            coarseToFine(para, level);
-        } else if (para->getNumprocs() > 1) {
-            fineToCoarse(para, level);
-
-             prepareExchangeMultiGPU(para, level, -1);
-             exchangeMultiGPU(para, comm, cudaManager, level, -1);
+            prepareExchangeMultiGPUAfterFtoC(para, level, -1);
+            exchangeMultiGPUAfterFtoC(para, comm, cudaManager, level, -1);
 
             coarseToFine(para, level);
         } else {
             fineToCoarse(para, level);
+
+            prepareExchangeMultiGPUAfterFtoC(para, level, -1);
+            exchangeMultiGPUAfterFtoC(para, comm, cudaManager, level, -1);
+
             coarseToFine(para, level);
         }
     }
@@ -214,25 +206,22 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
 	}
 }
 
-void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex)
+void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex, bool useReducedCommunicationAfterFtoC)
 {
     if (para->getNumprocs() > 1) {
-        prepareExchangeCollDataXGPU27(para, level, streamIndex);
-        prepareExchangeCollDataYGPU27(para, level, streamIndex);
-        prepareExchangeCollDataZGPU27(para, level, streamIndex);
+        prepareExchangeCollDataXGPU27(para, level, streamIndex); // TODO
+        prepareExchangeCollDataYGPU27(para, level, streamIndex, useReducedCommunicationAfterFtoC);
+        prepareExchangeCollDataZGPU27(para, level, streamIndex); // TODO
     }   
 }
 
-void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamIndex) {
-    if (para->getNumprocs() > 1) {
-        prepareExchangeCollDataXGPU27(para, level, streamIndex);
-        prepareExchangeCollDataYGPU27(para, level, streamIndex, true);
-        prepareExchangeCollDataZGPU27(para, level, streamIndex);
-    }
+void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamIndex)
+{
+    prepareExchangeMultiGPU(para, level, streamIndex, para->useReducedCommunicationAfterFtoC);
 }
 
 void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
-                      int streamIndex)
+                      int streamIndex, bool useReducedCommunicationAfterFtoC)
 {
     if (para->getNumprocs() > 1)
 	{
@@ -241,7 +230,7 @@ void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryMa
 		//////////////////////////////////////////////////////////////////////////
 		//3D domain decomposition
         exchangeCollDataXGPU27(para, comm, cudaManager, level, streamIndex);
-        exchangeCollDataYGPU27(para, comm, cudaManager, level, streamIndex);
+        exchangeCollDataYGPU27(para, comm, cudaManager, level, streamIndex, useReducedCommunicationAfterFtoC);
         exchangeCollDataZGPU27(para, comm, cudaManager, level, streamIndex);
 
 		//////////////////////////////////////////////////////////////////////////
@@ -263,6 +252,11 @@ void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryMa
 		//1D domain decomposition
 		//exchangePostCollDataGPU27(para, comm, level);
 	}
+}
+void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
+                               int streamIndex)
+{
+    exchangeMultiGPU(para, comm, cudaManager, level, streamIndex, para->useReducedCommunicationAfterFtoC);
 }
 
 void postCollisionBC(Parameter* para, int level, unsigned int t)

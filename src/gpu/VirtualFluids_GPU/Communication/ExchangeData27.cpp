@@ -98,7 +98,7 @@ void prepareExchangeCollDataYGPU27(Parameter *para, int level, int streamIndex, 
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);   
     std::vector<ProcessNeighbor27> *sendProcessNeighbor =
-        getSendProcessNeighborY(useReducedCommunicationAfterFtoC, para, level);
+        getSendProcessNeighborDevY(useReducedCommunicationAfterFtoC, para, level);
 
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
         GetSendFsPostDev27(para->getParD(level)->d0SP.f[0], 
@@ -118,23 +118,26 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
                             int streamIndex, bool useReducedCommunicationAfterFtoC)
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
-    std::vector<ProcessNeighbor27> *sendProcessNeighbor =
-        getSendProcessNeighborY(useReducedCommunicationAfterFtoC, para, level);
-    std::vector<ProcessNeighbor27> *recvProcessNeighbor =
-        getRecvProcessNeighborY(useReducedCommunicationAfterFtoC, para, level);
+    std::vector<ProcessNeighbor27> *sendProcessNeighborDev =
+        getSendProcessNeighborDevY(useReducedCommunicationAfterFtoC, para, level);
+    std::vector<ProcessNeighbor27> *recvProcessNeighborDev =
+        getRecvProcessNeighborDevY(useReducedCommunicationAfterFtoC, para, level);
+    std::vector<ProcessNeighbor27> *sendProcessNeighborHost =
+        getSendProcessNeighborHostY(useReducedCommunicationAfterFtoC, para, level);
+    std::vector<ProcessNeighbor27> *recvProcessNeighborHost =
+        getRecvProcessNeighborHostY(useReducedCommunicationAfterFtoC, para, level);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //copy Device to Host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
-        cudaManager->cudaCopyProcessNeighborYFsDH(level, i, streamIndex);
-    // todo: vorher pointer auf para->getParD(level)->sendProcessNeighborY[i].f[0] für sendProcessNeighborsAfterFtoCY übernehmen
+        cudaManager->cudaCopyProcessNeighborYFsDH(level, i, (*sendProcessNeighborDev)[i].memsizeFs, streamIndex);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //start non blocking MPI receive
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
     {
         comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborY[i].f[0],
-                            para->getParH(level)->recvProcessNeighborY[i].numberOfFs,
+                            (*recvProcessNeighborHost)[i].numberOfFs,
                             para->getParH(level)->recvProcessNeighborY[i].rankNeighbor);
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,8 +159,8 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     //start blocking MPI send
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
     {
-        comm->sendDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0],
-                          para->getParH(level)->sendProcessNeighborY[i].numberOfFs,
+        comm->sendDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0], 
+                          (*sendProcessNeighborHost)[i].numberOfFs,
                           para->getParH(level)->sendProcessNeighborY[i].rankNeighbor);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,13 +179,13 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     //copy Host to Device
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
     {
-        cudaManager->cudaCopyProcessNeighborYFsHD(level, i, streamIndex);
+        cudaManager->cudaCopyProcessNeighborYFsHD(level, i, (*recvProcessNeighborDev)[i].memsizeFs, streamIndex);
         //////////////////////////////////////////////////////////////////////////
         SetRecvFsPostDev27(para->getParD(level)->d0SP.f[0],
                            para->getParD(level)->recvProcessNeighborY[i].f[0],
                            para->getParD(level)->recvProcessNeighborY[i].index,
-                           para->getParD(level)->recvProcessNeighborY[i].numberOfNodes,
-                           para->getParD(level)->neighborX_SP, 
+                           (*recvProcessNeighborDev)[i].numberOfNodes,
+                           para->getParD(level)->neighborX_SP,
                            para->getParD(level)->neighborY_SP, 
                            para->getParD(level)->neighborZ_SP,
                            para->getParD(level)->size_Mat_SP, 
@@ -193,7 +196,7 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
-std::vector<ProcessNeighbor27> *getSendProcessNeighborY(bool useReducedCommunicationAfterFtoC, Parameter *para,
+std::vector<ProcessNeighbor27> *getSendProcessNeighborDevY(bool useReducedCommunicationAfterFtoC, Parameter *para,
                                                         int level)
 {
     if (useReducedCommunicationAfterFtoC)
@@ -202,13 +205,30 @@ std::vector<ProcessNeighbor27> *getSendProcessNeighborY(bool useReducedCommunica
         return &para->getParD(level)->sendProcessNeighborY;
 }
 
-std::vector<ProcessNeighbor27> *getRecvProcessNeighborY(bool useReducedCommunicationAfterFtoC, Parameter *para,
+std::vector<ProcessNeighbor27> *getRecvProcessNeighborDevY(bool useReducedCommunicationAfterFtoC, Parameter *para,
                                                         int level)
 {
     if (useReducedCommunicationAfterFtoC)
         return &para->getParD(level)->recvProcessNeighborsAfterFtoCY;
     else
         return &para->getParD(level)->recvProcessNeighborY;
+}
+std::vector<ProcessNeighbor27> *getSendProcessNeighborHostY(bool useReducedCommunicationAfterFtoC, Parameter *para,
+                                                           int level)
+{
+    if (useReducedCommunicationAfterFtoC)
+        return &para->getParH(level)->sendProcessNeighborsAfterFtoCY;
+    else
+        return &para->getParH(level)->sendProcessNeighborY;
+}
+
+std::vector<ProcessNeighbor27> *getRecvProcessNeighborHostY(bool useReducedCommunicationAfterFtoC, Parameter *para,
+                                                           int level)
+{
+    if (useReducedCommunicationAfterFtoC)
+        return &para->getParH(level)->recvProcessNeighborsAfterFtoCY;
+    else
+        return &para->getParH(level)->recvProcessNeighborY;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

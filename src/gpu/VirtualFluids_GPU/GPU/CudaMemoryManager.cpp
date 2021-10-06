@@ -578,32 +578,34 @@ void CudaMemoryManager::cudaCopyProcessNeighborYIndex(int lev, unsigned int proc
 								parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].memsizeIndex, 
 								cudaMemcpyHostToDevice));
 }
-void CudaMemoryManager::cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, int streamIndex)
+void CudaMemoryManager::cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv,
+                                                     int streamIndex)
 {
     if (streamIndex == -1)
 	    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].f[0], 
 								    parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].f[0], 
-								    parameter->getD3Qxx() * parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].memsizeFs, 
+								    parameter->getD3Qxx() * memsizeFsRecv, 
 								    cudaMemcpyHostToDevice));
     else
         checkCudaErrors(cudaMemcpyAsync(parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].f[0],
                         parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].f[0],
-                        parameter->getD3Qxx() * parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].memsizeFs,
+                        parameter->getD3Qxx() * memsizeFsRecv,
                         cudaMemcpyHostToDevice, 
                         parameter->getStreamManager()->getStream(streamIndex)));
 }
-void CudaMemoryManager::cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, int streamIndex)
+void CudaMemoryManager::cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend,
+                                                     int streamIndex)
 {
     if (streamIndex == -1)
 	    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].f[0], 
 	    							parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].f[0], 
-	    							parameter->getD3Qxx() * parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].memsizeFs, 
+	    							parameter->getD3Qxx() * memsizeFsSend, 
 	    							cudaMemcpyDeviceToHost));
     else
         checkCudaErrors(
             cudaMemcpyAsync(parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].f[0],
                             parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].f[0],
-                            parameter->getD3Qxx() * parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].memsizeFs,
+                            parameter->getD3Qxx() * memsizeFsSend,
                             cudaMemcpyDeviceToHost, parameter->getStreamManager()->getStream(streamIndex)));
 }
 void CudaMemoryManager::cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor)
