@@ -111,11 +111,8 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
 void prepareExchangeCollDataYGPU27(Parameter *para, int level, int streamIndex, bool useReducedCommunicationAfterFtoC)
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);   
-    std::vector<ProcessNeighbor27> *sendProcessNeighbor;
-    if (useReducedCommunicationAfterFtoC)
-        sendProcessNeighbor = &para->getParD(level)->sendProcessNeighborsAfterFtoCY;
-    else
-        sendProcessNeighbor = &para->getParD(level)->sendProcessNeighborY;
+    std::vector<ProcessNeighbor27> *sendProcessNeighbor =
+        getSendProcessNeighborY(useReducedCommunicationAfterFtoC, para, level);
 
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
         GetSendFsPostDev27(para->getParD(level)->d0SP.f[0], 
@@ -132,9 +129,14 @@ void prepareExchangeCollDataYGPU27(Parameter *para, int level, int streamIndex, 
 }
 
 void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
-                                int streamIndex)
+                            int streamIndex, bool useReducedCommunicationAfterFtoC)
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+    std::vector<ProcessNeighbor27> *sendProcessNeighbor =
+        getSendProcessNeighborY(useReducedCommunicationAfterFtoC, para, level);
+    std::vector<ProcessNeighbor27> *recvProcessNeighbor =
+        getRecvProcessNeighborY(useReducedCommunicationAfterFtoC, para, level);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //copy Device to Host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
@@ -217,6 +219,24 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
                            stream);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+
+std::vector<ProcessNeighbor27> *getSendProcessNeighborY(bool useReducedCommunicationAfterFtoC, Parameter *para,
+                                                        int level)
+{
+    if (useReducedCommunicationAfterFtoC)
+        return &para->getParD(level)->sendProcessNeighborsAfterFtoCY;
+    else
+        return &para->getParD(level)->sendProcessNeighborY;
+}
+
+std::vector<ProcessNeighbor27> *getRecvProcessNeighborY(bool useReducedCommunicationAfterFtoC, Parameter *para,
+                                                        int level)
+{
+    if (useReducedCommunicationAfterFtoC)
+        return &para->getParD(level)->recvProcessNeighborsAfterFtoCY;
+    else
+        return &para->getParD(level)->recvProcessNeighborY;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

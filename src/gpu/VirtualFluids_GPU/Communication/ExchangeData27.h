@@ -17,9 +17,11 @@ extern "C" void exchangePostCollDataGPU27(Parameter* para, vf::gpu::Communicator
 extern "C" void prepareExchangeCollDataXGPU27(Parameter *para, int level, int streamIndex);
 extern "C" void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
                                        int level, int streamIndex);
-extern "C" void prepareExchangeCollDataYGPU27(Parameter *para, int level, int streamIndex, bool useReducedCommunicationAfterFtoC = false);
+extern "C" void prepareExchangeCollDataYGPU27(Parameter *para, int level, int streamIndex,
+                                              bool useReducedCommunicationAfterFtoC = false);
+std::vector<ProcessNeighbor27> *getSendProcessNeighborY(bool useReducedCommunicationAfterFtoC, Parameter *para, int level);
 extern "C" void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
-                                       int level, int streamIndex);
+                                       int level, int streamIndex, bool useReducedCommunicationAfterFtoC = false);
 extern "C" void prepareExchangeCollDataZGPU27(Parameter *para, int level, int streamIndex);
 extern "C" void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
                                        int level, int streamIndex);
