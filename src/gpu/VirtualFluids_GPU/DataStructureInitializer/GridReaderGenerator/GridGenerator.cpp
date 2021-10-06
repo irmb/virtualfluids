@@ -700,17 +700,17 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseZ(const uint 
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
     builder->reorderSendIndicesForCommAfterFtoC(
         para->getParH(level)->sendProcessNeighborZ[j].index,
-        para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ[j], para->getParH(level)->intFC.ICellFCC,
+        para->getParH(level)->sendProcessNeighborsAfterFtoCZ[j].numberOfNodes, para->getParH(level)->intFC.ICellFCC,
         para->getParH(level)->K_CF, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
         para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP, para->getParH(level)->neighborZ_SP,
         direction, level, sendIndicesForCommAfterFtoCPositions);
     builder->reorderRecvIndicesForCommAfterFtoC(para->getParH(level)->recvProcessNeighborZ[j].index,
-                                                para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j],
+                                                para->getParH(level)->recvProcessNeighborsAfterFtoCZ[j].numberOfNodes,
                                                 sendIndicesForCommAfterFtoCPositions, direction, level);
-    para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCZ[j] =
-        para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ[j];
-    para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j] =
-        para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCZ[j];
+    para->getParD(level)->sendProcessNeighborsAfterFtoCZ[j].numberOfNodes =
+        para->getParH(level)->sendProcessNeighborsAfterFtoCZ[j].numberOfNodes;
+    para->getParD(level)->recvProcessNeighborsAfterFtoCZ[j].numberOfNodes =
+        para->getParH(level)->recvProcessNeighborsAfterFtoCZ[j].numberOfNodes;
 }
 
 void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction)
@@ -720,17 +720,18 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint 
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
     builder->reorderSendIndicesForCommAfterFtoC(
         para->getParH(level)->sendProcessNeighborY[j].index,
-        para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j], para->getParH(level)->intFC.ICellFCC,
+        para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].numberOfNodes, para->getParH(level)->intFC.ICellFCC,
         para->getParH(level)->K_CF, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
         para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP, para->getParH(level)->neighborZ_SP,
         direction, level, sendIndicesForCommAfterFtoCPositions);
-    para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCY[j] =
-        para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j];
+    para->getParD(level)->sendProcessNeighborsAfterFtoCY[j].numberOfNodes =
+        para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].numberOfNodes;
 
 
     // send sendIndicesForCommAfterFtoCPositions to receiving process
     std::vector<uint> recvIndicesForCommAfterFtoCPositions; 
-    recvIndicesForCommAfterFtoCPositions.resize(para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY[j] * 2); // give vector an arbitraty size (larger than needed)
+    recvIndicesForCommAfterFtoCPositions.resize(para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].numberOfNodes *
+                                                2); // give vector an arbitraty size (larger than needed)
     auto comm = vf::gpu::Communicator::getInstanz();
     comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborY[j].rankNeighbor,
@@ -742,10 +743,10 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint 
 
     // init receive indices
     builder->reorderRecvIndicesForCommAfterFtoC(para->getParH(level)->recvProcessNeighborY[j].index,
-                                                para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY[j],
+                                                para->getParH(level)->recvProcessNeighborsAfterFtoCY[j].numberOfNodes,
                                                 recvIndicesForCommAfterFtoCPositions, direction, level);
-    para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCY[j] =
-        para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY[j];
+    para->getParD(level)->recvProcessNeighborsAfterFtoCY[j].numberOfNodes =
+        para->getParH(level)->recvProcessNeighborsAfterFtoCY[j].numberOfNodes;
 }
 
 void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseX(const uint &level, int j, int direction)
@@ -754,17 +755,17 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseX(const uint 
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
     builder->reorderSendIndicesForCommAfterFtoC(
         para->getParH(level)->sendProcessNeighborX[j].index,
-        para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX[j], para->getParH(level)->intFC.ICellFCC,
+        para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].numberOfNodes, para->getParH(level)->intFC.ICellFCC,
         para->getParH(level)->K_CF, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
         para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP, para->getParH(level)->neighborZ_SP,
         direction, level, sendIndicesForCommAfterFtoCPositions);
     builder->reorderRecvIndicesForCommAfterFtoC(para->getParH(level)->recvProcessNeighborX[j].index,
-                                                para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCX[j],
+                                                para->getParH(level)->recvProcessNeighborsAfterFtoCX[j].numberOfNodes,
                                                 sendIndicesForCommAfterFtoCPositions, direction, level);
-    para->getParD(level)->numberOfSendProcessNeighborsAfterFtoCX[j] =
-        para->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX[j];
-    para->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCX[j] =
-        para->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCX[j];
+    para->getParD(level)->sendProcessNeighborsAfterFtoCX[j].numberOfNodes =
+        para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].numberOfNodes;
+    para->getParD(level)->recvProcessNeighborsAfterFtoCX[j].numberOfNodes =
+        para->getParH(level)->recvProcessNeighborsAfterFtoCX[j].numberOfNodes;
 }
 
 

@@ -86,10 +86,10 @@ public:
     virtual uint getNumberOfReceiveIndices( int direction, uint level ) = 0;
     virtual void getSendIndices( int* sendIndices, int direction, int level ) = 0;
     virtual void getReceiveIndices( int* sendIndices, int direction, int level ) = 0;
-    virtual void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
+    virtual void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC,
                                                     std::vector<uint> &sendIndicesForCommAfterFtoCPositions,
                                                     int direction, int level) = 0;
-    virtual void reorderSendIndicesForCommAfterFtoC(int *sendIndices, uint &numberOfSendNeighborsAfterFtoC,
+    virtual void reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &numberOfSendNeighborsAfterFtoC,
                                                     uint *iCellFCC, uint sizeOfICellFCC, uint *iCellCFC,
                                                     uint sizeOfICellCFC, uint *neighborX, uint *neighborY,
                                                     uint *neighborZ, int direction, int level,

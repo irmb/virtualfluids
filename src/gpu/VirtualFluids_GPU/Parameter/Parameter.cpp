@@ -2505,7 +2505,8 @@ bool Parameter::getKernelNeedsFluidNodeIndicesToRun() { return this->kernelNeeds
 void Parameter::findCornerNodesCommMultiGPU() { 
 	for (uint level = 0; level < parH.size(); level++) {
         findCornerNodesXY(level);
-		findCornerNodesXY(level);
+		findCornerNodesXZ(level);
+        findCornerNodesYZ(level);
 	}
 }
 
@@ -2577,37 +2578,37 @@ bool Parameter::findIndexInSendNodesYZ(int level, int index)
 
 void Parameter::initNumberOfProcessNeighborsAfterFtoCX(int level)
 {
-    this->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX.resize(
+    this->getParH(level)->sendProcessNeighborsAfterFtoCX.resize(
         this->getParH(level)->sendProcessNeighborX.size());
-    this->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCX.resize(
+    this->getParH(level)->recvProcessNeighborsAfterFtoCX.resize(
         this->getParH(level)->recvProcessNeighborX.size());
-    this->getParD(level)->numberOfSendProcessNeighborsAfterFtoCX.resize(
-        this->getParH(level)->numberOfSendProcessNeighborsAfterFtoCX.size());
-    this->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCX.resize(
-        this->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCX.size());
+    this->getParD(level)->sendProcessNeighborsAfterFtoCX.resize(
+        this->getParH(level)->sendProcessNeighborsAfterFtoCX.size());
+    this->getParD(level)->recvProcessNeighborsAfterFtoCX.resize(
+        this->getParH(level)->recvProcessNeighborsAfterFtoCX.size());
 }
 
 void Parameter::initNumberOfProcessNeighborsAfterFtoCY(int level)
 {
-    this->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY.resize(
+    this->getParH(level)->sendProcessNeighborsAfterFtoCY.resize(
         this->getParH(level)->sendProcessNeighborY.size());
-    this->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY.resize(
+    this->getParH(level)->recvProcessNeighborsAfterFtoCY.resize(
         this->getParH(level)->recvProcessNeighborY.size());
-    this->getParD(level)->numberOfSendProcessNeighborsAfterFtoCY.resize(
-        this->getParH(level)->numberOfSendProcessNeighborsAfterFtoCY.size());
-    this->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCY.resize(
-        this->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCY.size());
+    this->getParD(level)->sendProcessNeighborsAfterFtoCY.resize(
+        this->getParH(level)->sendProcessNeighborsAfterFtoCY.size());
+    this->getParD(level)->recvProcessNeighborsAfterFtoCY.resize(
+        this->getParH(level)->recvProcessNeighborsAfterFtoCY.size());
 }
 
 void Parameter::initNumberOfProcessNeighborsAfterFtoCZ(int level)
 {
-    this->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ.resize(
+    this->getParH(level)->sendProcessNeighborsAfterFtoCZ.resize(
         this->getParH(level)->sendProcessNeighborZ.size());
-    this->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCZ.resize(
+    this->getParH(level)->recvProcessNeighborsAfterFtoCZ.resize(
         this->getParH(level)->recvProcessNeighborZ.size());
-    this->getParD(level)->numberOfSendProcessNeighborsAfterFtoCZ.resize(
-        this->getParH(level)->numberOfSendProcessNeighborsAfterFtoCZ.size());
-    this->getParD(level)->numberOfRecvProcessNeighborsAfterFtoCZ.resize(
-        this->getParH(level)->numberOfRecvProcessNeighborsAfterFtoCZ.size());
+    this->getParD(level)->sendProcessNeighborsAfterFtoCZ.resize(
+        this->getParH(level)->sendProcessNeighborsAfterFtoCZ.size());
+    this->getParD(level)->recvProcessNeighborsAfterFtoCZ.resize(
+        this->getParH(level)->recvProcessNeighborsAfterFtoCZ.size());
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

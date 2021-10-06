@@ -235,6 +235,12 @@ typedef struct PN27{
 	int numberOfFs;
 }ProcessNeighbor27;
 
+typedef struct PN27AfterFtoC {
+    uint memsizeFs;
+    uint memsizeIndex;
+    int numberOfNodes;
+} ProcessNeighbor27AfterFtoC;
+
 typedef struct PN_F3 {
 	real* g[6];
 	uint memsizeGs;

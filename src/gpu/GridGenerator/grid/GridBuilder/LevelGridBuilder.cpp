@@ -268,7 +268,7 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::getReceiveIndices(int * receiveIndic
 }
 
 GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderSendIndicesForCommAfterFtoC(
-    int *sendIndices, uint &numberOfSendNeighborsAfterFtoC, uint *iCellFCC, uint sizeOfICellFCC, uint *iCellCFC,
+    int *sendIndices, int &numberOfSendNeighborsAfterFtoC, uint *iCellFCC, uint sizeOfICellFCC, uint *iCellCFC,
     uint sizeOfICellCFC, uint *neighborX, uint *neighborY, uint *neighborZ, int direction, int level,
     std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
@@ -389,7 +389,7 @@ void LevelGridBuilder::findIfSparseIndexIsInSendIndicesAndAddToVectors(
     }
 }
 
-GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderRecvIndicesForCommAfterFtoC(int *recvIndices, uint &numberOfRecvNeighborsAfterFtoC,
+GRIDGENERATOR_EXPORT void LevelGridBuilder::reorderRecvIndicesForCommAfterFtoC(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC,
                                                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions,
                                                                              int direction, int level)
 {

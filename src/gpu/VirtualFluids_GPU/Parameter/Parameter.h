@@ -294,12 +294,12 @@ struct LBMSimulationParameter
     std::vector<ProcessNeighbor27> recvProcessNeighborY;
     std::vector<ProcessNeighbor27> recvProcessNeighborZ;
 
-    std::vector<uint> numberOfSendProcessNeighborsAfterFtoCX;
-    std::vector<uint> numberOfSendProcessNeighborsAfterFtoCY;
-    std::vector<uint> numberOfSendProcessNeighborsAfterFtoCZ;
-    std::vector<uint> numberOfRecvProcessNeighborsAfterFtoCX;
-    std::vector<uint> numberOfRecvProcessNeighborsAfterFtoCY;
-    std::vector<uint> numberOfRecvProcessNeighborsAfterFtoCZ;
+    std::vector<ProcessNeighbor27AfterFtoC> sendProcessNeighborsAfterFtoCX;
+    std::vector<ProcessNeighbor27AfterFtoC> sendProcessNeighborsAfterFtoCY;
+    std::vector<ProcessNeighbor27AfterFtoC> sendProcessNeighborsAfterFtoCZ;
+    std::vector<ProcessNeighbor27AfterFtoC> recvProcessNeighborsAfterFtoCX;
+    std::vector<ProcessNeighbor27AfterFtoC> recvProcessNeighborsAfterFtoCY;
+    std::vector<ProcessNeighbor27AfterFtoC> recvProcessNeighborsAfterFtoCZ;
     ///////////////////////////////////////////////////////
     // 3D domain decomposition convection diffusion
     std::vector<ProcessNeighbor27> sendProcessNeighborADX;
