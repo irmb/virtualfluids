@@ -336,7 +336,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                         builder->getSendIndices(para->getParH(level)->sendProcessNeighborX[j].index, direction, level);
                         builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborX[j].index, direction,
                                                    level);
-                        if (level != builder->getNumberOfGridLevels() - 1)
+                        if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
                             initCommunicationArraysForCommAfterFinetoCoarseX(level, j, direction);                        
                         ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborXIndex(level, j);
@@ -405,7 +405,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                         builder->getSendIndices(para->getParH(level)->sendProcessNeighborY[j].index, direction, level);
                         builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborY[j].index, direction,
                                                    level);
-                        if (level != builder->getNumberOfGridLevels() - 1)
+                        if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
                             initCommunicationArraysForCommAfterFinetoCoarseY(level, j, direction);                       
                         ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborYIndex(level, j);
@@ -474,7 +474,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                         builder->getSendIndices(para->getParH(level)->sendProcessNeighborZ[j].index, direction, level);
                         builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborZ[j].index, direction,
                                                    level);
-                        if (level != builder->getNumberOfGridLevels() - 1)
+                        if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
                             initCommunicationArraysForCommAfterFinetoCoarseZ(level, j, direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborZIndex(level, j);

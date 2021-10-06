@@ -866,7 +866,7 @@ private:
     std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition;
 
     // cuda streams
-    bool useStreams { false };
+    bool useStreams{ false };
     std::unique_ptr<CudaStreamManager> cudaStreamManager;
 
 public:
@@ -886,6 +886,8 @@ public:
     bool findIndexInSendNodesXZ(int level, int index);
     void findCornerNodesYZ(int level);
     bool findIndexInSendNodesYZ(int level, int index);
+
+    bool useReducedCommunicationAfterFtoC{ true };
 };
 
 #endif
