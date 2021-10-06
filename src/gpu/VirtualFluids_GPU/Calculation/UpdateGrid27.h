@@ -27,6 +27,7 @@ extern "C" void collisionPorousMedia(Parameter* para, std::vector<std::shared_pt
 extern "C" void collisionAdvectionDiffusion(Parameter* para, int level);
 
 extern "C" void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex);
+extern "C" void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamIndex);
 
 extern "C" void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
                                  int level, int streamIndex);

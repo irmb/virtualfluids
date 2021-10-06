@@ -1436,7 +1436,7 @@ void Parameter::setIsNeighborZ(bool isNeigbor)
 void Parameter::setSendProcessNeighborsAfterFtoCX(int numberOfNodes, int level, int arrayIndex) {
     this->getParH(level)->sendProcessNeighborsAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
     this->getParD(level)->sendProcessNeighborsAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
-    this->getParH(level)->sendProcessNeighborsAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) *numberOfNodes;
+    this->getParH(level)->sendProcessNeighborsAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
     this->getParD(level)->sendProcessNeighborsAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
 }
 void Parameter::setSendProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex)

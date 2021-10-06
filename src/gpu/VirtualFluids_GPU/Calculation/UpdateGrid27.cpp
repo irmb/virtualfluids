@@ -86,9 +86,10 @@ void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManage
             if (para->useReducedCommunicationAfterFtoC) {
                 prepareExchangeMultiGPU(para, level, -1); // TODO
                 exchangeMultiGPU(para, comm, cudaManager, level, -1); // TODO
+            } else {
+                prepareExchangeMultiGPU(para, level, -1);
+                exchangeMultiGPU(para, comm, cudaManager, level, -1);
             }
-            prepareExchangeMultiGPU(para, level, -1);
-            exchangeMultiGPU(para, comm, cudaManager, level, -1);
 
             coarseToFine(para, level);
         } else {
@@ -215,6 +216,14 @@ void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex)
     if (para->getNumprocs() > 1) {
         prepareExchangeCollDataXGPU27(para, level, streamIndex);
         prepareExchangeCollDataYGPU27(para, level, streamIndex);
+        prepareExchangeCollDataZGPU27(para, level, streamIndex);
+    }   
+}
+
+void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamIndex) {
+    if (para->getNumprocs() > 1) {
+        prepareExchangeCollDataXGPU27(para, level, streamIndex);
+        prepareExchangeCollDataYGPU27(para, level, streamIndex, true);
         prepareExchangeCollDataZGPU27(para, level, streamIndex);
     }
 }
