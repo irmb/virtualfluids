@@ -128,6 +128,7 @@ public:
     void setPhaseFieldRelaxation(double tauH);
     double getPhaseFieldRelaxation() const;
     void setMobility(double mob);
+    void setInterfaceWidth(double w);
 
 protected:
     SPtr<DataSet3D> dataSet;
@@ -163,6 +164,7 @@ protected:
     LBMReal phiH;
     LBMReal tauH;
     LBMReal mob;
+    LBMReal interfaceWidth;
 
 private:
     void checkFunction(mu::Parser fct);

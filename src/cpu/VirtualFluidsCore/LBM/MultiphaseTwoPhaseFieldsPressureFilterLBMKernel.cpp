@@ -73,6 +73,7 @@ SPtr<LBMKernel> MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::clone()
     kernel->setPhiH(this->phiH);
     kernel->setPhaseFieldRelaxation(this->tauH);
     kernel->setMobility(this->mob);
+	kernel->setInterfaceWidth(this->interfaceWidth);
 
     kernel->setBCProcessor(bcProcessor->clone(kernel));
     kernel->setWithForcing(withForcing);
@@ -139,7 +140,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
     forcingX2 = 0.0;
     forcingX3 = 0.0;
 
-	LBMReal oneOverInterfaceScale = 1.0;//1.5;
+	LBMReal oneOverInterfaceScale = c4 / interfaceWidth; //1.0;//1.5;
     /////////////////////////////////////
 
     localDistributionsF    = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
@@ -215,7 +216,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
                         LBMReal mfcca = (*this->nonLocalDistributionsH1)(D3Q27System::ET_BNE, x1, x2, x3p);
 
                         LBMReal mfbbb = (*this->zeroDistributionsH1)(x1, x2, x3);
-						LBMReal testPhi1 = (*phaseField)(x1, x2, x3) = (((mfaaa + mfccc) + (mfaca + mfcac)) + ((mfaac + mfcca)  + (mfcaa + mfacc))  ) +
+						(*phaseField)(x1, x2, x3) = (((mfaaa + mfccc) + (mfaca + mfcac)) + ((mfaac + mfcca)  + (mfcaa + mfacc))  ) +
                                                     (((mfaab + mfacb) + (mfcab + mfccb)) + ((mfaba + mfabc) + (mfcba + mfcbc)) +
                                                     ((mfbaa + mfbac) + (mfbca + mfbcc))) + ((mfabb + mfcbb) +
                                                     (mfbab + mfbcb) + (mfbba + mfbbc)) + mfbbb;
@@ -248,7 +249,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
                         mfcca = (*this->nonLocalDistributionsH2)(D3Q27System::ET_BNE, x1, x2, x3p);
 
                         mfbbb = (*this->zeroDistributionsH2)(x1, x2, x3);
-						LBMReal testPhi2 = (*phaseField2)(x1, x2, x3) =
+						(*phaseField2)(x1, x2, x3) =
                             (((mfaaa + mfccc) + (mfaca + mfcac)) + ((mfaac + mfcca) + (mfcaa + mfacc))) +
                             (((mfaab + mfacb) + (mfcab + mfccb)) + ((mfaba + mfabc) + (mfcba + mfcbc)) +
                              ((mfbaa + mfbac) + (mfbca + mfbcc))) +
@@ -604,9 +605,9 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 			   LBMReal rhoRef=c1;
 
 			  //LBMReal 
-			   LBMReal drho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
-				   + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
-				   + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
+			//    LBMReal drho = (mfaaa + mfaac + mfaca + mfcaa + mfacc + mfcac + mfccc + mfcca)
+			// 	   + (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
+			// 	   + (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
 			   LBMReal vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 				   (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
@@ -702,11 +703,11 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 
 			   //Viscosity increase by pressure gradient
 			   LBMReal errPhi = (((1.0 - phi[REST]) * (phi[REST]) * oneOverInterfaceScale)- denom);
-			   LBMReal limVis = 0.0000001*10;//0.01;
+			   //LBMReal limVis = 0.0000001*10;//0.01;
 			  // collFactorM =collFactorM/(c1+limVis*(errPhi*errPhi)*collFactorM);
 			  // collFactorM = (collFactorM < 1.8) ? 1.8 : collFactorM;
 			   errPhi = errPhi * errPhi* errPhi * errPhi * errPhi * errPhi;
-			   collFactorM = collFactorM + (1.8 - collFactorM) * errPhi / (errPhi + limVis);
+			   //collFactorM = collFactorM + (1.8 - collFactorM) * errPhi / (errPhi + limVis);
 
 			   //3.0 * ((WEIGTH[TNE] * (((phi2[TNE] - phi2[BSW]) - (phi2[BSE] - phi2[TNW])) + ((phi2[TSE] - phi2[BNW]) - (phi2[BNE] - phi2[TSW])))
 			   //+WEIGTH[NE] * (((phi2[TE] - phi2[BW]) - (phi2[BE] - phi2[TW])) + ((phi2[TS] - phi2[BN]) + (phi2[TN] - phi2[BS])))) +
@@ -721,9 +722,15 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 				  // forcingX2 = muForcingX2.Eval() + c1o3*drho*dX2_phi * rhoToPhi / rho;//-gradPy/rho;
 				   //forcingX3 = muForcingX3.Eval() + c1o3*drho*dX3_phi * rhoToPhi / rho;//-gradPz/rho;
 
-				   forcingX1 = muForcingX1.Eval() -gradPx/rho;
-				   forcingX2 = muForcingX2.Eval() -gradPy/rho;
-				   forcingX3 = muForcingX3.Eval() -gradPz/rho;
+				   muForcingX1.DefineVar("rho",&muRho); 
+				   muForcingX2.DefineVar("rho",&muRho); 
+				   muForcingX3.DefineVar("rho",&muRho); 
+
+				   muRho = rho;
+
+				   forcingX1 = muForcingX1.Eval()/rho - gradPx/rho;
+				   forcingX2 = muForcingX2.Eval()/rho - gradPy/rho;
+				   forcingX3 = muForcingX3.Eval()/rho - gradPz/rho;
 
 				   //LBMReal rho_m = 1.0 / densityRatio;
 				   //forcingX1 = forcingX1 * (rho - rho_m);
@@ -737,9 +744,9 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 
 
 			   ///surface tension force
-			   vvx += mu * dX1_phi*c1o2;
-			   vvy += mu * dX2_phi * c1o2 ;
-			   vvz += mu * dX3_phi * c1o2;
+			   vvx += mu * dX1_phi * c1o2 / rho;
+			   vvy += mu * dX2_phi * c1o2 / rho ;
+			   vvz += mu * dX3_phi * c1o2 / rho;
 
 			   //////classic source term
 			   ///----Classic source term 8.4.2021
@@ -1251,7 +1258,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 
 			   LBMReal OxyyPxzz = 8.0 * (collFactorM - 2.0) * (OxxPyyPzz * (3.0 * collFactorM - 1.0) - 5.0 * collFactorM) / (8.0 * (5.0 - 2.0 * collFactorM) * collFactorM + OxxPyyPzz * (8.0 + collFactorM * (9.0 * collFactorM - 26.0)));
 			   LBMReal OxyyMxzz = 8.0 * (collFactorM - 2.0) * (collFactorM + OxxPyyPzz * (3.0 * collFactorM - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * collFactorM + 9.0 * collFactorM * collFactorM) - 8.0 * collFactorM);
-			   LBMReal Oxyz = 24.0 * (collFactorM - 2.0) * (4.0 * collFactorM * collFactorM + collFactorM * OxxPyyPzz * (18.0 - 13.0 * collFactorM) + OxxPyyPzz * OxxPyyPzz * (2.0 + collFactorM * (6.0 * collFactorM - 11.0))) / (16.0 * collFactorM * collFactorM * (collFactorM - 6.0) - 2.0 * collFactorM * OxxPyyPzz * (216.0 + 5.0 * collFactorM * (9.0 * collFactorM - 46.0)) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (3.0 * collFactorM - 10.0) * (15.0 * collFactorM - 28.0) - 48.0));
+			//    LBMReal Oxyz = 24.0 * (collFactorM - 2.0) * (4.0 * collFactorM * collFactorM + collFactorM * OxxPyyPzz * (18.0 - 13.0 * collFactorM) + OxxPyyPzz * OxxPyyPzz * (2.0 + collFactorM * (6.0 * collFactorM - 11.0))) / (16.0 * collFactorM * collFactorM * (collFactorM - 6.0) - 2.0 * collFactorM * OxxPyyPzz * (216.0 + 5.0 * collFactorM * (9.0 * collFactorM - 46.0)) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (3.0 * collFactorM - 10.0) * (15.0 * collFactorM - 28.0) - 48.0));
 			   LBMReal A = (4.0 * collFactorM * collFactorM + 2.0 * collFactorM * OxxPyyPzz * (collFactorM - 6.0) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (10.0 - 3.0 * collFactorM) - 4.0)) / ((collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
 			   //FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::B' )
 			   LBMReal BB = (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
@@ -1287,6 +1294,14 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 				   - c1o9 * (mfcaa + mfaca + mfaac) * oMdrho * (1. - 2. * oMdrho) - c1o27 * oMdrho * oMdrho * (-2. * oMdrho)
 				   + (2. * (mfbab * mfbab + mfabb * mfabb + mfbba * mfbba)
 					   + (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa)) * c2o3 * oMdrho) + c1o27 * oMdrho;
+
+				///storing pre collision second moments
+				LBMReal mbxx = mfcaa;
+				LBMReal mbyy = mfaca;
+				LBMReal mbzz = mfaac;
+				LBMReal mbxy = mfbba;
+				LBMReal mbxz = mfbab;
+				LBMReal mbyz = mfabb;
 
 			   //2.
 			   // linear combinations
@@ -1453,7 +1468,9 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 			   mfaba = -mfaba;
 			   mfaab = -mfaab;
 			   //////////////////////////////////////////////////////////////////////////////////////
-
+			   mfbaa += -rho * rhoToPhi * c1o2 * ((mbxx + mfcaa) * dX1_phi + (mbxy + mfbba) * dX2_phi + (mbxz + mfbab) * dX3_phi);
+			   mfaba += -rho * rhoToPhi * c1o2 * ((mbxy + mfbba) * dX1_phi + (mbyy + mfaca) * dX2_phi + (mbyz + mfabb) * dX3_phi);
+			   mfaab += -rho * rhoToPhi * c1o2 * ((mbxz + mfbab) * dX1_phi + (mbyz + mfabb) * dX2_phi + (mbzz + mfaac) * dX3_phi);
 			   ////////////////////////////////////////////////////////////////////////////////////
 			   //back
 			   ////////////////////////////////////////////////////////////////////////////////////

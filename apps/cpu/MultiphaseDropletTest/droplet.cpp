@@ -2,6 +2,11 @@
 #include <string>
 #include <memory>
 
+#if defined(__unix__)
+#include <stdio.h>
+#include <stdlib.h>
+#endif
+
 #include "VirtualFluids.h"
 
 using namespace std;
@@ -24,7 +29,7 @@ void run(string configname)
         int interfaceThickness = config.getValue<int>("interfaceThickness");
         double radius          = config.getValue<double>("radius");
         double theta           = config.getValue<double>("contactAngle");
-        double gr              = config.getValue<double>("gravity");
+        //double gr              = config.getValue<double>("gravity");
         double phiL            = config.getValue<double>("phi_L");
         double phiH            = config.getValue<double>("phi_H");
         double tauH            = config.getValue<double>("Phase-field Relaxation");
@@ -37,13 +42,11 @@ void run(string configname)
         double Re          = config.getValue<double>("Re");
         double dx          = config.getValue<double>("dx");
         bool logToFile     = config.getValue<bool>("logToFile");
-        //double restartStep = config.getValue<double>("restartStep");
-        //double cpStart     = config.getValue<double>("cpStart");
-        //double cpStep      = config.getValue<double>("cpStep");
+        double restartStep = config.getValue<double>("restartStep");
+        double cpStart     = config.getValue<double>("cpStart");
+        double cpStep      = config.getValue<double>("cpStep");
         bool newStart      = config.getValue<bool>("newStart");
-
-        double beta  = 12 * sigma / interfaceThickness;
-        double kappa = 1.5 * interfaceThickness * sigma;
+        double rStep = config.getValue<double>("rStep");
 
         SPtr<Communicator> comm = MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
@@ -65,6 +68,22 @@ void run(string configname)
                 UbLog::output_policy::setStream(logFilename.str());
             }
         }
+        
+        std::string fileName = "./LastTimeStep" + std::to_string((int)boundingBox[1]) + ".txt";
+
+#if defined(__unix__)
+         double lastTimeStep = 0;
+         if (!newStart) 
+         {
+             std::ifstream ifstr(fileName);
+             ifstr >> lastTimeStep;
+             restartStep = lastTimeStep;
+             if(endTime >= lastTimeStep)
+                endTime = lastTimeStep + rStep;
+             else
+                return;
+         }    
+#endif
 
         //Sleep(30000);
 
@@ -72,7 +91,48 @@ void run(string configname)
         LBMReal rhoLB = 0.0;
         LBMReal nuLB  = nuL; //(uLB*dLB) / Re;
 
+        //diameter of circular droplet
         LBMReal D  = 2.0*radius;
+
+        //density retio
+        LBMReal r_rho = densityRatio;
+
+        //density of heavy fluid
+        LBMReal rho_h = 1.0;
+        //density of light fluid
+        LBMReal rho_l = rho_h / r_rho;
+
+        //kinimatic viscosity
+        LBMReal nu_h = nuL;
+        //LBMReal nu_l = nuG;
+        //#dynamic viscosity
+        LBMReal mu_h = rho_h * nu_h;
+        
+        //gravity
+        LBMReal g_y = Re*Re*mu_h*mu_h/(rho_h*(rho_h-rho_l)*D*D*D);
+        //Eotvos number
+        LBMReal Eo = 100;
+        //surface tension
+        sigma = rho_h*g_y*D*D/Eo;
+
+        //g_y = 0;
+
+        double beta  = 12.0 * sigma / interfaceThickness;
+        double kappa = 1.5 * interfaceThickness * sigma;
+
+        if (myid == 0) {
+                //UBLOG(logINFO, "uLb = " << uLB);
+                //UBLOG(logINFO, "rho = " << rhoLB);
+                UBLOG(logINFO, "D = " << D);
+                UBLOG(logINFO, "nuL = " << nuL);
+                UBLOG(logINFO, "nuL = " << nuG);
+                UBLOG(logINFO, "Re = " << Re);
+                UBLOG(logINFO, "Eo = " << Eo);
+                UBLOG(logINFO, "g_y = " << g_y);
+                UBLOG(logINFO, "sigma = " << sigma);
+                UBLOG(logINFO, "dx = " << dx);
+                UBLOG(logINFO, "Preprocess - start");
+        }
 
         SPtr<LBMUnitConverter> conv(new LBMUnitConverter());
 
@@ -84,16 +144,22 @@ void run(string configname)
         //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
 
+        mu::Parser fgr;
+        fgr.SetExpr("-(rho-rho_l)*g_y");
+        fgr.DefineConst("rho_l", rho_l);
+        fgr.DefineConst("g_y", g_y);
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
-        kernel->setForcingX2(gr);
+        kernel->setForcingX2(fgr);
         kernel->setForcingX3(0.0);
 
         kernel->setPhiL(phiL);
         kernel->setPhiH(phiH);
         kernel->setPhaseFieldRelaxation(tauH);
         kernel->setMobility(mob);
+        kernel->setInterfaceWidth(interfaceThickness);
+
 
         kernel->setCollisionFactorMultiphase(nuL, nuG);
         kernel->setDensityRatio(densityRatio);
@@ -116,22 +182,24 @@ void run(string configname)
         grid->setDeltaX(dx);
         grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
         grid->setPeriodicX1(true);
-        grid->setPeriodicX2(false);
+        grid->setPeriodicX2(true);
         grid->setPeriodicX3(true);
         grid->setGhostLayerWidth(2);
 
+        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
+
         //////////////////////////////////////////////////////////////////////////
         // restart
-        //SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
-        ////SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
-        ////SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, pathname, comm));
+        SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
+        //SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
+        SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, metisVisitor, pathname, comm));
         //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
-        //rcp->setNu(nuLB);
-        //rcp->setNuLG(nuL, nuG);
-        //rcp->setDensityRatio(densityRatio);
+        // rcp->setNu(nuLB);
+        // rcp->setNuLG(nuL, nuG);
+        // rcp->setDensityRatio(densityRatio);
 
-        //rcp->setLBMKernel(kernel);
-        //rcp->setBCProcessor(bcProc);
+        rcp->setLBMKernel(kernel);
+        rcp->setBCProcessor(bcProc);
         //////////////////////////////////////////////////////////////////////////
 
         if (newStart) {
@@ -151,14 +219,7 @@ void run(string configname)
                 GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube",
                     WbWriterVtkXmlBinary::getInstance());
 
-            if (myid == 0) {
-                UBLOG(logINFO, "uLb = " << uLB);
-                UBLOG(logINFO, "rho = " << rhoLB);
-                UBLOG(logINFO, "nuLb = " << nuLB);
-                UBLOG(logINFO, "Re = " << Re);
-                UBLOG(logINFO, "dx = " << dx);
-                UBLOG(logINFO, "Preprocess - start");
-            }
+
 
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
@@ -175,8 +236,6 @@ void run(string configname)
             SPtr<WriteBlocksCoProcessor> ppblocks(new WriteBlocksCoProcessor(
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
-            SPtr<Grid3DVisitor> metisVisitor(
-                new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
             InteractorsHelper intHelper(grid, metisVisitor, true);
             intHelper.addInteractor(wallYminInt);
             intHelper.addInteractor(wallYmaxInt);
@@ -227,7 +286,8 @@ void run(string configname)
             // initialization of distributions
             LBMReal x1c = 2.5 * D; // (g_maxX1 - g_minX1-1)/2; //
             LBMReal x2c = 12.5 * D; //(g_maxX2 - g_minX2-1)/2;
-            LBMReal x3c = 2.5 * D; //(g_maxX3 - g_minX3-1)/2;
+            LBMReal x3c = 1.5; //2.5 * D; //(g_maxX3 - g_minX3-1)/2;
+            //LBMReal x3c = 2.5 * D;
             mu::Parser fct1;
             fct1.SetExpr("0.5-0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
             fct1.DefineConst("x1c", x1c);
@@ -274,8 +334,8 @@ void run(string configname)
                 UBLOG(logINFO, "path = " << pathname);
             }
 
-            //rcp->restart((int)restartStep);
-            //grid->setTimeStep(restartStep);
+            rcp->restart((int)restartStep);
+            grid->setTimeStep(restartStep);
 
             if (myid == 0)
                 UBLOG(logINFO, "Restart - end");
@@ -283,8 +343,8 @@ void run(string configname)
 
         grid->accept(bcVisitor);
 
-        //TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-        //grid->accept(setConnsVisitor);
+        // TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+        // grid->accept(setConnsVisitor);
 
         ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
@@ -292,9 +352,8 @@ void run(string configname)
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
             grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
-        pp->process(0);
-        //SPtr<WriteMacroscopicQuantitiesCoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(
-        //    grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+        if(grid->getTimeStep() == 0) 
+            pp->process(0);
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
         SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
@@ -305,7 +364,7 @@ void run(string configname)
         SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
         calculator->addCoProcessor(npr);
         calculator->addCoProcessor(pp);
-        //calculator->addCoProcessor(rcp);
+        calculator->addCoProcessor(rcp);
 
 
 
@@ -314,6 +373,25 @@ void run(string configname)
         calculator->calculate();
         if (myid == 0)
             UBLOG(logINFO, "Simulation-end");
+            
+#if defined(__unix__)
+         if (!newStart) 
+         {
+            if (myid == 0) 
+            {
+                std::ofstream ostr(fileName);
+                ostr << endTime;
+                cout << "start sbatch\n";
+                //system("./start.sh");
+                //system("echo test!");
+                std::string str = "sbatch startJob" + std::to_string((int)boundingBox[1]) + ".sh";
+                //system("sbatch startJob512.sh");
+                system(str.c_str());
+            }   
+            //MPI_Barrier((MPI_Comm)comm->getNativeCommunicator()); 
+         }
+#endif
+
     } catch (std::exception &e) {
         cerr << e.what() << endl << flush;
     } catch (std::string &s) {

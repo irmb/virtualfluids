@@ -29,7 +29,7 @@ void run(string configname)
         double densityRatio    = config.getValue<double>("densityRatio");
         double sigma           = config.getValue<double>("sigma");
         int interfaceThickness = config.getValue<int>("interfaceThickness");
-        double radius          = config.getValue<double>("radius");
+        //double radius          = config.getValue<double>("radius");
         double theta           = config.getValue<double>("contactAngle");
         double gr              = config.getValue<double>("gravity");
         double phiL            = config.getValue<double>("phi_L");
