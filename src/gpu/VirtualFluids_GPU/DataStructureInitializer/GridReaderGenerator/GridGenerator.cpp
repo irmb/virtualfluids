@@ -698,15 +698,9 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseX(const uint 
 {
     para->initNumberOfProcessNeighborsAfterFtoCX(level);
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
-    builder->reorderSendIndicesForCommAfterFtoC(
-        para->getParH(level)->sendProcessNeighborX[j].index,
-        para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].numberOfNodes, para->getParH(level)->intFC.ICellFCC,
-        para->getParH(level)->K_CF, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
-        para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP, para->getParH(level)->neighborZ_SP,
-        direction, level, sendIndicesForCommAfterFtoCPositions);
-    builder->reorderRecvIndicesForCommAfterFtoC(para->getParH(level)->recvProcessNeighborX[j].index,
-                                                para->getParH(level)->recvProcessNeighborsAfterFtoCX[j].numberOfNodes,
-                                                sendIndicesForCommAfterFtoCPositions, direction, level);
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions;
+    reorderSendIndicesForCommAfterFtoCX(direction, level, j, sendIndicesForCommAfterFtoCPositions);
+    reorderRecvIndicesForCommAfterFtoCX(direction, level, j, recvIndicesForCommAfterFtoCPositions);
     para->setSendProcessNeighborsAfterFtoCX(para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].numberOfNodes,
                                             level, j);
     para->setRecvProcessNeighborsAfterFtoCX(para->getParH(level)->recvProcessNeighborsAfterFtoCX[j].numberOfNodes,
@@ -720,37 +714,29 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseX(const uint 
 
 void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction)
 {
-    // init send indices
+    // init send indices for communication after coarse to fine
     para->initNumberOfProcessNeighborsAfterFtoCY(level);
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
-    builder->reorderSendIndicesForCommAfterFtoC(
-        para->getParH(level)->sendProcessNeighborY[j].index,
-        para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].numberOfNodes, para->getParH(level)->intFC.ICellFCC,
-        para->getParH(level)->K_CF, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
-        para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP, para->getParH(level)->neighborZ_SP,
-        direction, level, sendIndicesForCommAfterFtoCPositions);
+    this->reorderSendIndicesForCommAfterFtoCY(direction, level, j, sendIndicesForCommAfterFtoCPositions);
     para->setSendProcessNeighborsAfterFtoCY(para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].numberOfNodes,
                                             level, j);
-
 
     // send sendIndicesForCommAfterFtoCPositions to receiving process and receive recvIndicesForCommAfterFtoCPositions from sending process
     std::vector<uint> recvIndicesForCommAfterFtoCPositions; 
     recvIndicesForCommAfterFtoCPositions.resize((size_t) para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].numberOfNodes *
-                                                2); // give vector an arbitraty size (larger than needed) // TODO: find a better way
+                                                2); // give vector an arbitraty size (larger than needed) // TODO: This is stupid! Find a better way
     auto comm = vf::gpu::Communicator::getInstanz();
     comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborY[j].rankNeighbor,
                           sendIndicesForCommAfterFtoCPositions.data(), sendIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->sendProcessNeighborY[j].rankNeighbor);
-    // resize vector to correct size
+    // resize receiving vector to correct size
     auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
     recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end());
 
     
-    // init receive indices
-    builder->reorderRecvIndicesForCommAfterFtoC(para->getParH(level)->recvProcessNeighborY[j].index,
-                                                para->getParH(level)->recvProcessNeighborsAfterFtoCY[j].numberOfNodes,
-                                                recvIndicesForCommAfterFtoCPositions, direction, level);
+    // init receive indices for communication after coarse to fine
+    reorderRecvIndicesForCommAfterFtoCY(direction, level, j, recvIndicesForCommAfterFtoCPositions);
     para->setRecvProcessNeighborsAfterFtoCY(para->getParH(level)->recvProcessNeighborsAfterFtoCY[j].numberOfNodes,
                                             level, j);
 
@@ -765,15 +751,9 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseZ(const uint 
 {
     para->initNumberOfProcessNeighborsAfterFtoCZ(level);
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
-    builder->reorderSendIndicesForCommAfterFtoC(
-        para->getParH(level)->sendProcessNeighborZ[j].index,
-        para->getParH(level)->sendProcessNeighborsAfterFtoCZ[j].numberOfNodes, para->getParH(level)->intFC.ICellFCC,
-        para->getParH(level)->K_CF, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->K_FC,
-        para->getParH(level)->neighborX_SP, para->getParH(level)->neighborY_SP, para->getParH(level)->neighborZ_SP,
-        direction, level, sendIndicesForCommAfterFtoCPositions);
-    builder->reorderRecvIndicesForCommAfterFtoC(para->getParH(level)->recvProcessNeighborZ[j].index,
-                                                para->getParH(level)->recvProcessNeighborsAfterFtoCZ[j].numberOfNodes,
-                                                sendIndicesForCommAfterFtoCPositions, direction, level);
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions;
+    reorderSendIndicesForCommAfterFtoCZ(direction, level, j, sendIndicesForCommAfterFtoCPositions);
+    reorderRecvIndicesForCommAfterFtoCZ(direction, level, j, recvIndicesForCommAfterFtoCPositions);
     para->setSendProcessNeighborsAfterFtoCZ(para->getParH(level)->sendProcessNeighborsAfterFtoCZ[j].numberOfNodes,
                                             level, j);
     para->setRecvProcessNeighborsAfterFtoCZ(para->getParH(level)->recvProcessNeighborsAfterFtoCZ[j].numberOfNodes,
@@ -784,6 +764,236 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseZ(const uint 
     para->getParH(level)->sendProcessNeighborsAfterFtoCZ[j].f[0] = para->getParH(level)->sendProcessNeighborZ[j].f[0];
     para->getParD(level)->recvProcessNeighborsAfterFtoCZ[j].f[0] = para->getParD(level)->recvProcessNeighborZ[j].f[0];
     para->getParH(level)->recvProcessNeighborsAfterFtoCZ[j].f[0] = para->getParH(level)->recvProcessNeighborZ[j].f[0];
+}
+
+void GridGenerator::reorderSendIndicesForCommAfterFtoCX(int direction, int level, int j,
+                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
+{
+    int *sendIndices                    = para->getParH(level)->sendProcessNeighborX[j].index;
+    int &numberOfSendNeighborsAfterFtoC = para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].numberOfNodes;
+    reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNeighborsAfterFtoC, direction, level, j,
+                                       sendIndicesForCommAfterFtoCPositions);
+}
+
+void GridGenerator::reorderSendIndicesForCommAfterFtoCY(int direction, int level, int j,
+                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
+{
+    int *sendIndices                    = para->getParH(level)->sendProcessNeighborY[j].index;
+    int &numberOfSendNeighborsAfterFtoC = para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].numberOfNodes;
+    reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNeighborsAfterFtoC, direction, level, j,
+                                       sendIndicesForCommAfterFtoCPositions);
+}
+
+void GridGenerator::reorderSendIndicesForCommAfterFtoCZ(int direction, int level, int j,
+                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions) 
+{
+    int *sendIndices                    = para->getParH(level)->sendProcessNeighborZ[j].index;
+    int &numberOfSendNeighborsAfterFtoC = para->getParH(level)->sendProcessNeighborsAfterFtoCZ[j].numberOfNodes;
+    reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNeighborsAfterFtoC, direction, level, j,
+                                       sendIndicesForCommAfterFtoCPositions);
+}
+
+void GridGenerator::reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &numberOfSendNeighborsAfterFtoC,
+                                                       int direction, int level, int j,
+                                                       std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
+{
+    uint sizeOfICellFCC                 = para->getParH(level)->K_CF;
+    uint sizeOfICellCFC                 = para->getParH(level)->K_FC;
+    uint *neighborX                     = para->getParH(level)->neighborX_SP;
+    uint *neighborY                     = para->getParH(level)->neighborY_SP;
+    uint *neighborZ                     = para->getParH(level)->neighborZ_SP;
+        
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
+                  << "reorder send indices for communication after fine to coarse: level: " << level
+                  << " direction: " << direction;
+    if (sizeOfICellFCC == 0 || sizeOfICellCFC == 0)
+        *logging::out << logging::Logger::LOGGER_ERROR
+                      << "reorderSendIndicesForCommAfterFtoC(): iCellFCC needs to be inititalized before calling "
+                         "this function "
+                      << "\n";
+
+    int sparseIndexSend;
+    bool isInICells;
+    std::vector<int> sendIndicesAfterFtoC;
+    std::vector<int> sendIndicesOther;
+    int neighborToAddX, neighborToAddY, neighborToAddZ;
+    uint numberOfSendIndices = builder->getNumberOfSendIndices(direction, level);
+
+    for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
+        neighborToAddX = neighborToAddY = neighborToAddZ = -1;
+        sparseIndexSend                                  = sendIndices[posInSendIndices];
+
+        // check if sparse index is in ICellFCC
+        isInICells = false;
+        for (uint j = 0; j < sizeOfICellFCC; j++) {
+            if (sparseIndexSend < 0)
+                break;
+            if (para->getParH(level)->intFC.ICellFCC[j] == (uint)sparseIndexSend) {
+                isInICells = true;
+                break;
+            }
+        }
+        // check if sparse index is in ICellCFC
+        for (uint j = 0; j < sizeOfICellCFC; j++) {
+            if (sparseIndexSend < 0)
+                break;
+            if (para->getParH(level)->intCF.ICellCFC[j] == (uint)sparseIndexSend) {
+                isInICells = true;
+                // also find neighbors
+                if (direction != 0 && direction != 1)
+                    neighborToAddX = neighborX[sparseIndexSend];
+                if (direction != 2 && direction != 3)
+                    neighborToAddY = neighborY[sparseIndexSend];
+                if (direction != 4 && direction != 5)
+                    neighborToAddZ = neighborZ[sparseIndexSend];
+                break;
+            }
+        }
+
+        // add index to corresponding vectors but omit indices which are already in sendIndicesAfterFtoC
+        if (isInICells) {
+            if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSend) ==
+                sendIndicesAfterFtoC.end()) {
+                sendIndicesAfterFtoC.push_back(sparseIndexSend);
+                sendIndicesForCommAfterFtoCPositions.push_back(posInSendIndices);
+            }
+        }
+
+        // also add neighbors
+        if (neighborToAddX != -1)
+            findIfSparseIndexIsInSendIndicesAndAddToCommVectors(neighborToAddX, sendIndices, numberOfSendIndices,
+                                                            sendIndicesAfterFtoC, sendIndicesForCommAfterFtoCPositions);
+        if (neighborToAddY != -1)
+            findIfSparseIndexIsInSendIndicesAndAddToCommVectors(neighborToAddY, sendIndices, numberOfSendIndices,
+                                                            sendIndicesAfterFtoC, sendIndicesForCommAfterFtoCPositions);
+        if (neighborToAddZ != -1)
+            findIfSparseIndexIsInSendIndicesAndAddToCommVectors(neighborToAddZ, sendIndices, numberOfSendIndices,
+                                                            sendIndicesAfterFtoC, sendIndicesForCommAfterFtoCPositions);
+    }
+
+    numberOfSendNeighborsAfterFtoC = (int)sendIndicesAfterFtoC.size();
+
+    // add sparseIndices not in sendIndicesAfterFtoC to sendIndicesOther
+    for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
+        sparseIndexSend = sendIndices[posInSendIndices];
+        if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSend) ==
+            sendIndicesAfterFtoC.end())
+            sendIndicesOther.push_back(sparseIndexSend);
+    }
+
+    // copy new vectors back to sendIndices array
+    for (int i = 0; i < numberOfSendNeighborsAfterFtoC; i++)
+        sendIndices[i] = sendIndicesAfterFtoC[i];
+    for (uint i = 0; i < (uint)sendIndicesOther.size(); i++)
+        sendIndices[i + numberOfSendNeighborsAfterFtoC] = sendIndicesOther[i];
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
+                  << "... numberOfSendNeighborsAfterFtoC: " << numberOfSendNeighborsAfterFtoC << "\n";
+
+    if (numberOfSendNeighborsAfterFtoC + sendIndicesOther.size() != numberOfSendIndices) {
+        *logging::out << logging::Logger::LOGGER_ERROR
+                      << "reorderSendIndicesForCommAfterFtoC(): incorrect number of nodes"
+                      << "\n";
+        std::cout << "numberOfSendNeighborsAfterFtoC = " << numberOfSendNeighborsAfterFtoC
+                  << ", sendIndicesOther.size() = " << sendIndicesOther.size()
+                  << ", numberOfSendIndices = " << numberOfSendIndices << std::endl;
+    }
+}
+
+void GridGenerator::findIfSparseIndexIsInSendIndicesAndAddToCommVectors(
+    int sparseIndex, int *sendIndices, uint numberOfSendIndices, std::vector<int> &sendIndicesAfterFtoC,
+    std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
+{
+    int sparseIndexSendForNeighborSearch;
+    for (uint j = 0; j < numberOfSendIndices; j++) {
+        sparseIndexSendForNeighborSearch = sendIndices[j];
+        if (sparseIndex == sparseIndexSendForNeighborSearch) {
+            if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSendForNeighborSearch) ==
+                sendIndicesAfterFtoC.end()) {
+                sendIndicesAfterFtoC.push_back(sparseIndexSendForNeighborSearch);
+                sendIndicesForCommAfterFtoCPositions.push_back(j);
+            }
+            break;
+        }
+    }
+}
+
+void GridGenerator::reorderRecvIndicesForCommAfterFtoCX(int direction, int level, int j,
+                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
+{
+    int *recvIndices                    = para->getParH(level)->recvProcessNeighborX[j].index;
+    int &numberOfRecvNeighborsAfterFtoC = para->getParH(level)->recvProcessNeighborsAfterFtoCX[j].numberOfNodes;
+    reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNeighborsAfterFtoC, direction, level, j,
+                                       sendIndicesForCommAfterFtoCPositions);
+}
+
+void GridGenerator::reorderRecvIndicesForCommAfterFtoCY(int direction, int level, int j,
+                                                       std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
+{
+    int *recvIndices                    = para->getParH(level)->recvProcessNeighborY[j].index;
+    int &numberOfRecvNeighborsAfterFtoC = para->getParH(level)->recvProcessNeighborsAfterFtoCY[j].numberOfNodes;
+    reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNeighborsAfterFtoC, direction, level, j,
+                                       sendIndicesForCommAfterFtoCPositions);
+}
+
+void GridGenerator::reorderRecvIndicesForCommAfterFtoCZ(int direction, int level, int j,
+                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
+{
+    int *recvIndices                    = para->getParH(level)->recvProcessNeighborZ[j].index;
+    int &numberOfRecvNeighborsAfterFtoC = para->getParH(level)->recvProcessNeighborsAfterFtoCZ[j].numberOfNodes;
+    reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNeighborsAfterFtoC, direction, level, j,
+                                       sendIndicesForCommAfterFtoCPositions);
+}
+
+void GridGenerator::reorderRecvIndicesForCommAfterFtoC(int *recvIndices,
+                                                       int &numberOfRecvNeighborsAfterFtoC, int direction, int level,
+                                                       int j,
+                                                       std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
+                  << "reorder receive indices for communication after fine to coarse: level: " << level
+                  << " direction: " << direction;
+    if (sendIndicesForCommAfterFtoCPositions.size() == 0)
+        *logging::out << logging::Logger::LOGGER_ERROR
+                      << "reorderRecvIndicesForCommAfterFtoC(): sendIndicesForCommAfterFtoCPositions is empty."
+                      << "\n";
+
+    uint numberOfRecvIndices = builder->getNumberOfReceiveIndices(direction, level);
+    std::vector<int> recvIndicesAfterFtoC;
+    std::vector<int> recvIndicesOther;
+    int sparseIndexRecv;
+
+    // find recvIndices for Communication after fine to coarse
+    for (uint vectorPos : sendIndicesForCommAfterFtoCPositions)
+        recvIndicesAfterFtoC.push_back(recvIndices[vectorPos]);
+
+    // add sparseIndices not in recvIndicesAfterFtoC to recvIndicesOther
+    for (uint posInRecvIndices = 0; posInRecvIndices < numberOfRecvIndices; posInRecvIndices++) {
+        sparseIndexRecv = recvIndices[posInRecvIndices];
+        if (std::find(recvIndicesAfterFtoC.begin(), recvIndicesAfterFtoC.end(), sparseIndexRecv) ==
+            recvIndicesAfterFtoC.end())
+            recvIndicesOther.push_back(sparseIndexRecv);
+    }
+
+    numberOfRecvNeighborsAfterFtoC = (int)recvIndicesAfterFtoC.size();
+
+    // copy new vectors back to sendIndices array
+    for (int i = 0; i < numberOfRecvNeighborsAfterFtoC; i++)
+        recvIndices[i] = recvIndicesAfterFtoC[i];
+    for (uint i = 0; i < (uint)recvIndicesOther.size(); i++)
+        recvIndices[i + numberOfRecvNeighborsAfterFtoC] = recvIndicesOther[i];
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
+                  << "... numberOfRecvNeighborsAfterFtoC: " << numberOfRecvNeighborsAfterFtoC << "\n";
+
+    if (numberOfRecvNeighborsAfterFtoC + recvIndicesOther.size() != numberOfRecvIndices) {
+        *logging::out << logging::Logger::LOGGER_ERROR
+                      << "reorderRecvIndicesForCommAfterFtoC(): incorrect number of nodes"
+                      << "\n";
+        std::cout << "numberOfRecvNeighborsAfterFtoC = " << numberOfRecvNeighborsAfterFtoC
+                  << ", recvIndicesOther.size() = " << recvIndicesOther.size()
+                  << ", numberOfRecvIndices = " << numberOfRecvIndices << std::endl;
+    }
 }
 
 void GridGenerator::allocArrays_BoundaryQs()

@@ -126,8 +126,9 @@ void multipleLevel(const std::string& configPath)
 
     para->setVelocity(vxLB);
     para->setViscosity(viscosityLB);
-    para->setVelocityRatio((real)58.82352941);
-    para->setViscosityRatio((real)0.058823529);
+    para->setVelocityRatio((real) 58.82352941);
+    para->setViscosityRatio((real) 0.058823529);
+    para->setDensityRatio((real) 1.0); // TODO fix this ratio
 
     *logging::out << logging::Logger::INFO_HIGH << "velocity LB [dx/dt] = " << vxLB << " \n";
     *logging::out << logging::Logger::INFO_HIGH << "viscosity LB [dx^2/dt] = " << viscosityLB << "\n";

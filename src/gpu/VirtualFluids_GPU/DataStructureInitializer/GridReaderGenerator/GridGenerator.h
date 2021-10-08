@@ -35,9 +35,31 @@ public:
 	void allocArrays_CoordNeighborGeo() override;
     void allocArrays_BoundaryValues() override;
     void initalValuesDomainDecompostion();
-    void initCommunicationArraysForCommAfterFinetoCoarseZ(const uint &level, int j, int direction);
-    void initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction);
+
+	// communication after coarse to finne
     void initCommunicationArraysForCommAfterFinetoCoarseX(const uint &level, int j, int direction);
+    void initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction);
+    void initCommunicationArraysForCommAfterFinetoCoarseZ(const uint &level, int j, int direction);
+    void reorderSendIndicesForCommAfterFtoCX(int direction, int level, int j,
+                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+    void reorderSendIndicesForCommAfterFtoCY(int direction, int level, int j,
+                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+    void reorderSendIndicesForCommAfterFtoCZ(int direction, int level, int j,
+                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+    void reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &numberOfSendNeighborsAfterFtoC, int direction,
+                                            int level, int j, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+    void reorderRecvIndicesForCommAfterFtoCX(int direction, int level, int j,
+                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+    void reorderRecvIndicesForCommAfterFtoCY(int direction, int level, int j,
+                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+    void reorderRecvIndicesForCommAfterFtoCZ(int direction, int level, int j,
+                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+    void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC, int direction,
+                                            int level, int j, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+    void findIfSparseIndexIsInSendIndicesAndAddToCommVectors(int sparseIndex, int *sendIndices, uint numberOfSendIndices,
+                                                         std::vector<int> &sendIndicesAfterFtoC,
+                                                         std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
+
 	void allocArrays_BoundaryQs() override;
     void allocArrays_OffsetScale() override;
     void allocArrays_fluidNodeIndices() override;
