@@ -797,11 +797,8 @@ void GridGenerator::reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &nu
                                                        int direction, int level, int j,
                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
-    uint sizeOfICellFCC                 = para->getParH(level)->K_CF;
-    uint sizeOfICellCFC                 = para->getParH(level)->K_FC;
-    uint *neighborX                     = para->getParH(level)->neighborX_SP;
-    uint *neighborY                     = para->getParH(level)->neighborY_SP;
-    uint *neighborZ                     = para->getParH(level)->neighborZ_SP;
+    uint sizeOfICellFCC = para->getParH(level)->K_CF;
+    uint sizeOfICellCFC = para->getParH(level)->K_FC;
         
     *logging::out << logging::Logger::INFO_INTERMEDIATE
                   << "reorder send indices for communication after fine to coarse: level: " << level
@@ -813,73 +810,32 @@ void GridGenerator::reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &nu
                       << "\n";
 
     int sparseIndexSend;
-    bool isInICells;
+    bool isInICellFCC;
+    bool isInICellCFC;
     std::vector<int> sendIndicesAfterFtoC;
     std::vector<int> sendIndicesOther;
-    int neighborToAddX, neighborToAddY, neighborToAddZ;
+    std::array<int, 7> neighbors;
     uint numberOfSendIndices = builder->getNumberOfSendIndices(direction, level);
 
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
-        neighborToAddX = neighborToAddY = neighborToAddZ = -1;
-        sparseIndexSend                                  = sendIndices[posInSendIndices];
+        neighbors.fill(-1);
+        sparseIndexSend = sendIndices[posInSendIndices];
 
-        // check if sparse index is in ICellFCC
-        isInICells = false;
-        for (uint j = 0; j < sizeOfICellFCC; j++) {
-            if (sparseIndexSend < 0)
-                break;
-            if (para->getParH(level)->intFC.ICellFCC[j] == (uint)sparseIndexSend) {
-                isInICells = true;
-                break;
-            }
-        }
-        // check if sparse index is in ICellCFC
-        for (uint j = 0; j < sizeOfICellCFC; j++) {
-            if (sparseIndexSend < 0)
-                break;
-            if (para->getParH(level)->intCF.ICellCFC[j] == (uint)sparseIndexSend) {
-                isInICells = true;
-                // also find neighbors
-                if (direction != 0 && direction != 1)
-                    neighborToAddX = neighborX[sparseIndexSend];
-                if (direction != 2 && direction != 3)
-                    neighborToAddY = neighborY[sparseIndexSend];
-                if (direction != 4 && direction != 5)
-                    neighborToAddZ = neighborZ[sparseIndexSend];
-                break;
-            }
-        }
+        isInICellFCC = isSparseIndexInICellFCC(sizeOfICellFCC, sparseIndexSend, level);       
+        isInICellCFC = findIndexInICellCFCandNeighbors(sizeOfICellCFC, sparseIndexSend, level, neighbors);
 
-        // add index to corresponding vectors but omit indices which are already in sendIndicesAfterFtoC
-        if (isInICells) {
-            if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSend) ==
-                sendIndicesAfterFtoC.end()) {
-                sendIndicesAfterFtoC.push_back(sparseIndexSend);
-                sendIndicesForCommAfterFtoCPositions.push_back(posInSendIndices);
-            }
+        if (isInICellFCC || isInICellCFC)
+            addUniqueIndexToCommunicationVectors(sendIndicesAfterFtoC, sparseIndexSend,
+                                                 sendIndicesForCommAfterFtoCPositions, posInSendIndices);
+        for (int neighbor : neighbors) {
+            findIfSparseIndexIsInSendIndicesAndAddToCommVectors(
+                neighbor, sendIndices, numberOfSendIndices, sendIndicesAfterFtoC, sendIndicesForCommAfterFtoCPositions);
         }
-
-        // also add neighbors
-        if (neighborToAddX != -1)
-            findIfSparseIndexIsInSendIndicesAndAddToCommVectors(neighborToAddX, sendIndices, numberOfSendIndices,
-                                                            sendIndicesAfterFtoC, sendIndicesForCommAfterFtoCPositions);
-        if (neighborToAddY != -1)
-            findIfSparseIndexIsInSendIndicesAndAddToCommVectors(neighborToAddY, sendIndices, numberOfSendIndices,
-                                                            sendIndicesAfterFtoC, sendIndicesForCommAfterFtoCPositions);
-        if (neighborToAddZ != -1)
-            findIfSparseIndexIsInSendIndicesAndAddToCommVectors(neighborToAddZ, sendIndices, numberOfSendIndices,
-                                                            sendIndicesAfterFtoC, sendIndicesForCommAfterFtoCPositions);
     }
 
     numberOfSendNeighborsAfterFtoC = (int)sendIndicesAfterFtoC.size();
 
-    // add sparseIndices not in sendIndicesAfterFtoC to sendIndicesOther
-    for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
-        sparseIndexSend = sendIndices[posInSendIndices];
-        if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSend) ==
-            sendIndicesAfterFtoC.end())
-            sendIndicesOther.push_back(sparseIndexSend);
-    }
+    findIndicesNotInCommAfterFtoC(numberOfSendIndices, sendIndices, sendIndicesAfterFtoC, sendIndicesOther);
 
     // copy new vectors back to sendIndices array
     for (int i = 0; i < numberOfSendNeighborsAfterFtoC; i++)
@@ -895,8 +851,55 @@ void GridGenerator::reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &nu
                       << "reorderSendIndicesForCommAfterFtoC(): incorrect number of nodes"
                       << "\n";
         std::cout << "numberOfSendNeighborsAfterFtoC = " << numberOfSendNeighborsAfterFtoC
-                  << ", sendIndicesOther.size() = " << sendIndicesOther.size()
-                  << ", numberOfSendIndices = " << numberOfSendIndices << std::endl;
+                  << ", sendOrIndicesOther.size() = " << sendIndicesOther.size()
+                  << ", numberOfSendOrRecvIndices = " << numberOfSendIndices << std::endl;
+    }
+}
+
+bool GridGenerator::isSparseIndexInICellFCC(uint sizeOfICellFCC, int sparseIndex, int level)
+{
+    for (uint j = 0; j < sizeOfICellFCC; j++) {
+        if (sparseIndex < 0)
+            return false;
+        if (para->getParH(level)->intFC.ICellFCC[j] == (uint)sparseIndex) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool GridGenerator::findIndexInICellCFCandNeighbors(uint sizeOfICellCFC, int sparseIndex, int level,
+                                                    std::array<int, 7> &neighbors)
+{
+    // check if sparse index is in ICellCFC. If true also return all 7 neighbors
+    uint *neighborX = para->getParH(level)->neighborX_SP;
+    uint *neighborY = para->getParH(level)->neighborY_SP;
+    uint *neighborZ = para->getParH(level)->neighborZ_SP;
+    for (uint j = 0; j < sizeOfICellCFC; j++) {
+        if (sparseIndex < 0)
+            return false;
+        if (para->getParH(level)->intCF.ICellCFC[j] == (uint)sparseIndex) {
+            neighbors[0] = neighborX[sparseIndex];
+            neighbors[1] = neighborY[sparseIndex];
+            neighbors[2] = neighborZ[sparseIndex];
+            neighbors[3] = neighborY[neighborX[sparseIndex]];
+            neighbors[4] = neighborZ[neighborX[sparseIndex]];
+            neighbors[5] = neighborZ[neighborY[sparseIndex]];
+            neighbors[6] = neighborZ[neighborY[neighborX[sparseIndex]]];
+            return true;
+        }
+    }
+    return false;
+}
+
+void GridGenerator::addUniqueIndexToCommunicationVectors(
+    std::vector<int> &sendIndicesAfterFtoC, int &sparseIndexSend,
+    std::vector<unsigned int> &sendIndicesForCommAfterFtoCPositions, uint &posInSendIndices) const
+{
+    // add index to corresponding vectors but omit indices which are already in sendIndicesAfterFtoC
+    if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSend) == sendIndicesAfterFtoC.end()) {
+        sendIndicesAfterFtoC.push_back(sparseIndexSend);
+        sendIndicesForCommAfterFtoCPositions.push_back(posInSendIndices);
     }
 }
 
@@ -904,17 +907,27 @@ void GridGenerator::findIfSparseIndexIsInSendIndicesAndAddToCommVectors(
     int sparseIndex, int *sendIndices, uint numberOfSendIndices, std::vector<int> &sendIndicesAfterFtoC,
     std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
-    int sparseIndexSendForNeighborSearch;
-    for (uint j = 0; j < numberOfSendIndices; j++) {
-        sparseIndexSendForNeighborSearch = sendIndices[j];
-        if (sparseIndex == sparseIndexSendForNeighborSearch) {
-            if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSendForNeighborSearch) ==
-                sendIndicesAfterFtoC.end()) {
-                sendIndicesAfterFtoC.push_back(sparseIndexSendForNeighborSearch);
-                sendIndicesForCommAfterFtoCPositions.push_back(j);
-            }
+    int sparseIndexSend;
+    for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
+        sparseIndexSend = sendIndices[posInSendIndices];
+        if (sparseIndex == sparseIndexSend) {
+            addUniqueIndexToCommunicationVectors(sendIndicesAfterFtoC, sparseIndex,
+                                                 sendIndicesForCommAfterFtoCPositions, posInSendIndices);
             break;
         }
+    }
+}
+
+void GridGenerator::findIndicesNotInCommAfterFtoC(const uint &numberOfSendOrRecvIndices, 
+                                                      int *sendOrReceiveIndices, std::vector<int> &sendOrReceiveIndicesAfterFtoC,
+                                                      std::vector<int> &sendOrIndicesOther)
+{
+    int sparseIndexSend;
+    for (uint posInSendIndices = 0; posInSendIndices < numberOfSendOrRecvIndices; posInSendIndices++) {
+        sparseIndexSend = sendOrReceiveIndices[posInSendIndices];
+        if (std::find(sendOrReceiveIndicesAfterFtoC.begin(), sendOrReceiveIndicesAfterFtoC.end(), sparseIndexSend) ==
+            sendOrReceiveIndicesAfterFtoC.end())
+            sendOrIndicesOther.push_back(sparseIndexSend);
     }
 }
 
@@ -961,19 +974,12 @@ void GridGenerator::reorderRecvIndicesForCommAfterFtoC(int *recvIndices,
     uint numberOfRecvIndices = builder->getNumberOfReceiveIndices(direction, level);
     std::vector<int> recvIndicesAfterFtoC;
     std::vector<int> recvIndicesOther;
-    int sparseIndexRecv;
 
     // find recvIndices for Communication after fine to coarse
     for (uint vectorPos : sendIndicesForCommAfterFtoCPositions)
         recvIndicesAfterFtoC.push_back(recvIndices[vectorPos]);
 
-    // add sparseIndices not in recvIndicesAfterFtoC to recvIndicesOther
-    for (uint posInRecvIndices = 0; posInRecvIndices < numberOfRecvIndices; posInRecvIndices++) {
-        sparseIndexRecv = recvIndices[posInRecvIndices];
-        if (std::find(recvIndicesAfterFtoC.begin(), recvIndicesAfterFtoC.end(), sparseIndexRecv) ==
-            recvIndicesAfterFtoC.end())
-            recvIndicesOther.push_back(sparseIndexRecv);
-    }
+    findIndicesNotInCommAfterFtoC(numberOfRecvIndices, recvIndices, recvIndicesAfterFtoC, recvIndicesOther);
 
     numberOfRecvNeighborsAfterFtoC = (int)recvIndicesAfterFtoC.size();
 

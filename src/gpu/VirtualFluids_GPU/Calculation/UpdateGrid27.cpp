@@ -82,6 +82,7 @@ void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManage
                                    para->getParD(level)->intFCBulk.ICellFCC,
                                    para->getParD(level)->intFCBulk.ICellFCF,
                                    para->getParD(level)->intFCBulk.kFC, -1);
+            //fineToCoarse(para, level);
 
             prepareExchangeMultiGPUAfterFtoC(para, level, -1);
             exchangeMultiGPUAfterFtoC(para, comm, cudaManager, level, -1);
