@@ -812,8 +812,6 @@ void GridGenerator::reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &nu
                       << "\n";
 
     int sparseIndexSend;
-    bool isInICellFCC;
-    bool isInICellCFC;
     std::vector<int> sendIndicesAfterFtoC;
     std::vector<int> sendIndicesOther;
     std::array<int, 7> neighbors;
@@ -877,7 +875,7 @@ void GridGenerator::aggregateNodesInICellCFC(int level, std::vector<uint> &nodes
     uint *neighborY = para->getParH(level)->neighborY_SP;
     uint *neighborZ = para->getParH(level)->neighborZ_SP;
 
-    for (int x = 0; x < para->getParH(level)->K_FC; x++) {
+    for (uint x = 0; x < para->getParH(level)->K_FC; x++) {
         sparseIndex = para->getParH(level)->intCF.ICellCFC[x];
         nodesCFC.push_back(sparseIndex);
         nodesCFC.push_back(neighborX[sparseIndex]);

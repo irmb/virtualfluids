@@ -289,7 +289,7 @@ void FileWriter::testForCommunicationNode(std::shared_ptr<Parameter> &para, int 
 {
     for (uint direction = 0; direction < (uint)sendOrRecvProcessNeighbor->size(); direction++) {
         for (int i = 0; i < (*sendOrRecvProcessNeighbor)[direction].numberOfNodes; i++) {
-            if (pos == (*sendOrRecvProcessNeighbor)[direction].index[i]) {
+            if (pos == (uint)(*sendOrRecvProcessNeighbor)[direction].index[i]) {
                 sendNode = 1;
 				//std::cout << "send/recv Node found: " << pos << std::endl;
                 if (level < para->getMaxLevel() && i < (*sendOrRecvProcessNeighborAfterFtoC)[direction].numberOfNodes) {
