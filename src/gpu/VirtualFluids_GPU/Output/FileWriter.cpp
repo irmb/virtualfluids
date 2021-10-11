@@ -181,8 +181,8 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
     nodedatanames.push_back("vx2");
     nodedatanames.push_back("vx3");
     nodedatanames.push_back("geo");
-    nodedatanames.push_back("sendNodes");
-    nodedatanames.push_back("sparseIndex");
+    //nodedatanames.push_back("sendNodes");
+    //nodedatanames.push_back("sparseIndex");
     unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
     uint dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
     bool neighborsAreFluid;
@@ -229,10 +229,10 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
                 nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
                 nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
 
-				int sendNode = 0; // 0 - not a sendNode; 1 - sendNode; 2 - sendNode in communication after fine to coarse
-                testForSendNodeY(para, level, pos, sendNode); // slow, doesn't need to be done multiple times --> use for debugging only!
-				nodedata[6][dn1] = (double) sendNode;
-                nodedata[7][dn1] = (double) pos;
+				//int sendNode = 0; // 0 - not a sendNode; 1 - sendNode; 2 - sendNode in communication after fine to coarse
+    //            testForSendNodeY(para, level, pos, sendNode); // slow and should not be done multiple times --> use for debugging only!
+				//nodedata[6][dn1] = (double) sendNode;
+    //            nodedata[7][dn1] = (double) pos;
                 //////////////////////////////////////////////////////////////////////////
                 number2 = para->getParH(level)->neighborX_SP[number1];
                 number3 = para->getParH(level)->neighborY_SP[number2];
@@ -281,12 +281,6 @@ void FileWriter::testForSendNodeY(std::shared_ptr<Parameter> &para, int level, u
 {
     testForCommunicationNode(para, level, pos, sendNode, &para->getParH(level)->sendProcessNeighborY,
                         &para->getParH(level)->sendProcessNeighborsAfterFtoCY);
-}
-
-void FileWriter::testForRecvNodeY(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode)
-{
-    testForCommunicationNode(para, level, pos, sendNode, &para->getParH(level)->recvProcessNeighborY,
-                        &para->getParH(level)->recvProcessNeighborsAfterFtoCY);
 }
 
 void FileWriter::testForCommunicationNode(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode,

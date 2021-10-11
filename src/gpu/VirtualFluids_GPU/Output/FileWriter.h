@@ -27,7 +27,6 @@ private:
     void VIRTUALFLUIDS_GPU_EXPORT writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int level,
                                                          std::vector<std::string> &fname);
     void testForSendNodeY(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode);
-    void testForRecvNodeY(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode);
     void testForCommunicationNode(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode,
                              std::vector<PN27> *sendOrRecvProcessNeighbor,
                              std::vector<PN27> *sendOrRecvProcessNeighborAfterFtoC);
