@@ -77,16 +77,21 @@ void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManage
             fineToCoarseWithStream(para, level, 
                                    para->getParD(level)->intFCBorder.ICellFCC,
                                    para->getParD(level)->intFCBorder.ICellFCF,
-                                   para->getParD(level)->intFCBorder.kFC, -1);
+                                   para->getParD(level)->intFCBorder.kFC, borderStreamIndex);
+
+            // prepare exchange and trigger bulk kernel when finished
+            prepareExchangeMultiGPUAfterFtoC(para, level, borderStreamIndex);
+            if (para->getUseStreams())
+                para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
+
+            // launch bulk kernel
+            para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
             fineToCoarseWithStream(para, level, 
                                    para->getParD(level)->intFCBulk.ICellFCC,
                                    para->getParD(level)->intFCBulk.ICellFCF,
-                                   para->getParD(level)->intFCBulk.kFC, -1);
-            //fineToCoarse(para, level);
+                                   para->getParD(level)->intFCBulk.kFC, bulkStreamIndex);
 
-            prepareExchangeMultiGPUAfterFtoC(para, level, -1);
-            exchangeMultiGPUAfterFtoC(para, comm, cudaManager, level, -1);
-
+            exchangeMultiGPUAfterFtoC(para, comm, cudaManager, level, borderStreamIndex);
             coarseToFine(para, level);
         } else {
             fineToCoarse(para, level);
