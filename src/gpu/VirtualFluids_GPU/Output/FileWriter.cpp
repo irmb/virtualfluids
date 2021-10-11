@@ -202,12 +202,9 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
         //////////////////////////////////////////////////////////////////////////
         cells.clear();
         nodes.resize(sizeOfNodes);
-        nodedata[0].resize(sizeOfNodes);
-        nodedata[1].resize(sizeOfNodes);
-        nodedata[2].resize(sizeOfNodes);
-        nodedata[3].resize(sizeOfNodes);
-        nodedata[4].resize(sizeOfNodes);
-        nodedata[5].resize(sizeOfNodes);
+        for (uint i = 0; i < (uint)nodedatanames.size(); i++)
+			nodedata[i].resize(sizeOfNodes);
+
         //////////////////////////////////////////////////////////////////////////
         for (unsigned int pos = startpos; pos < endpos; pos++)
         {
