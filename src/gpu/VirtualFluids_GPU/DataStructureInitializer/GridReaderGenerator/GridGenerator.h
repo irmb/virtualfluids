@@ -49,7 +49,7 @@ public:
     void reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &numberOfSendNeighborsAfterFtoC, int direction,
                                             int level, int j, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
     bool isSparseIndexInICellFCC(uint sizeOfICellFCC, int sparseIndexSend, int level);
-    bool findIndexInICellCFCandNeighbors(uint sizeOfICellCFC, int sparseIndexSend, int level, std::array<int, 7> &neighbors);
+    void aggregateNodesInICellCFC(int level, std::vector<uint> &nodesCFC);
     void addUniqueIndexToCommunicationVectors(std::vector<int> &sendIndicesAfterFtoC, int &sparseIndexSend,
                                               std::vector<unsigned int> &sendIndicesForCommAfterFtoCPositions,
                                               uint &posInSendIndices) const;

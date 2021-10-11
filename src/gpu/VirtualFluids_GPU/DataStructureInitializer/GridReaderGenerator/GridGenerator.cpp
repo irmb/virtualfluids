@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 #include "utilities/math/Math.h"
 #include "LBM/LB.h"
 #include "Output/QDebugWriter.hpp"
@@ -801,13 +802,10 @@ void GridGenerator::reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &nu
                                                        int direction, int level, int j,
                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
-    uint sizeOfICellFCC = para->getParH(level)->K_CF;
-    uint sizeOfICellCFC = para->getParH(level)->K_FC;
-        
     *logging::out << logging::Logger::INFO_INTERMEDIATE
                   << "reorder send indices for communication after fine to coarse: level: " << level
                   << " direction: " << direction;
-    if (sizeOfICellFCC == 0 || sizeOfICellCFC == 0)
+    if (para->getParH(level)->K_CF == 0 || para->getParH(level)->K_FC == 0)
         *logging::out << logging::Logger::LOGGER_ERROR
                       << "reorderSendIndicesForCommAfterFtoC(): iCellFCC needs to be inititalized before calling "
                          "this function "
@@ -821,21 +819,21 @@ void GridGenerator::reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &nu
     std::array<int, 7> neighbors;
     uint numberOfSendIndices = builder->getNumberOfSendIndices(direction, level);
 
+    //iCellFCC
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
         neighbors.fill(-1);
-        sparseIndexSend = sendIndices[posInSendIndices];
-
-        isInICellFCC = isSparseIndexInICellFCC(sizeOfICellFCC, sparseIndexSend, level);       
-        isInICellCFC = findIndexInICellCFCandNeighbors(sizeOfICellCFC, sparseIndexSend, level, neighbors);
-
-        if (isInICellFCC || isInICellCFC)
+        sparseIndexSend = sendIndices[posInSendIndices];  
+        if (isSparseIndexInICellFCC(para->getParH(level)->K_CF, sparseIndexSend, level))
             addUniqueIndexToCommunicationVectors(sendIndicesAfterFtoC, sparseIndexSend,
                                                  sendIndicesForCommAfterFtoCPositions, posInSendIndices);
-        for (int neighbor : neighbors) {
-            findIfSparseIndexIsInSendIndicesAndAddToCommVectors(
-                neighbor, sendIndices, numberOfSendIndices, sendIndicesAfterFtoC, sendIndicesForCommAfterFtoCPositions);
-        }
     }
+
+     // iCellCFC
+    std::vector<uint> nodesCFC;
+    aggregateNodesInICellCFC(level, nodesCFC);
+    for (auto sparseIndex : nodesCFC)
+        findIfSparseIndexIsInSendIndicesAndAddToCommVectors(sparseIndex, sendIndices, numberOfSendIndices,
+                                                            sendIndicesAfterFtoC, sendIndicesForCommAfterFtoCPositions);
 
     numberOfSendNeighborsAfterFtoC = (int)sendIndicesAfterFtoC.size();
 
@@ -872,28 +870,27 @@ bool GridGenerator::isSparseIndexInICellFCC(uint sizeOfICellFCC, int sparseIndex
     return false;
 }
 
-bool GridGenerator::findIndexInICellCFCandNeighbors(uint sizeOfICellCFC, int sparseIndex, int level,
-                                                    std::array<int, 7> &neighbors)
+void GridGenerator::aggregateNodesInICellCFC(int level, std::vector<uint> &nodesCFC)
 {
-    // check if sparse index is in ICellCFC. If true also return all 7 neighbors
+    uint sparseIndex;
     uint *neighborX = para->getParH(level)->neighborX_SP;
     uint *neighborY = para->getParH(level)->neighborY_SP;
     uint *neighborZ = para->getParH(level)->neighborZ_SP;
-    for (uint j = 0; j < sizeOfICellCFC; j++) {
-        if (sparseIndex < 0)
-            return false;
-        if (para->getParH(level)->intCF.ICellCFC[j] == (uint)sparseIndex) {
-            neighbors[0] = neighborX[sparseIndex];
-            neighbors[1] = neighborY[sparseIndex];
-            neighbors[2] = neighborZ[sparseIndex];
-            neighbors[3] = neighborY[neighborX[sparseIndex]];
-            neighbors[4] = neighborZ[neighborX[sparseIndex]];
-            neighbors[5] = neighborZ[neighborY[sparseIndex]];
-            neighbors[6] = neighborZ[neighborY[neighborX[sparseIndex]]];
-            return true;
-        }
+
+    for (int x = 0; x < para->getParH(level)->K_FC; x++) {
+        sparseIndex = para->getParH(level)->intCF.ICellCFC[x];
+        nodesCFC.push_back(sparseIndex);
+        nodesCFC.push_back(neighborX[sparseIndex]);
+        nodesCFC.push_back(neighborY[sparseIndex]);
+        nodesCFC.push_back(neighborZ[sparseIndex]);
+        nodesCFC.push_back(neighborY[neighborX[sparseIndex]]);
+        nodesCFC.push_back(neighborZ[neighborX[sparseIndex]]);
+        nodesCFC.push_back(neighborZ[neighborY[sparseIndex]]);
+        nodesCFC.push_back(neighborZ[neighborY[neighborX[sparseIndex]]]);           
     }
-    return false;
+    std::sort(nodesCFC.begin(), nodesCFC.end());
+    auto iterator = std::unique(nodesCFC.begin(), nodesCFC.end());
+    nodesCFC.erase(iterator, nodesCFC.end());
 }
 
 void GridGenerator::addUniqueIndexToCommunicationVectors(
