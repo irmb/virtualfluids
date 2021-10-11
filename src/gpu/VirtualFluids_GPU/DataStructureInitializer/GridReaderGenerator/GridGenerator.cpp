@@ -715,6 +715,7 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseX(const uint 
 void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction)
 {
     // init send indices for communication after coarse to fine
+    std::cout << "communication: reorder send indices ";
     para->initNumberOfProcessNeighborsAfterFtoCY(level);
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
     this->reorderSendIndicesForCommAfterFtoCY(direction, level, j, sendIndicesForCommAfterFtoCPositions);
@@ -722,6 +723,7 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint 
                                             level, j);
 
     // send sendIndicesForCommAfterFtoCPositions to receiving process and receive recvIndicesForCommAfterFtoCPositions from sending process
+    std::cout << "mpi send and receive ";
     std::vector<uint> recvIndicesForCommAfterFtoCPositions; 
     recvIndicesForCommAfterFtoCPositions.resize((size_t) para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].numberOfNodes *
                                                 2); // give vector an arbitraty size (larger than needed) // TODO: This is stupid! Find a better way
@@ -734,8 +736,8 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint 
     auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
     recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end());
 
-    
     // init receive indices for communication after coarse to fine
+    std::cout << "reorder receive indices ";
     reorderRecvIndicesForCommAfterFtoCY(direction, level, j, recvIndicesForCommAfterFtoCPositions);
     para->setRecvProcessNeighborsAfterFtoCY(para->getParH(level)->recvProcessNeighborsAfterFtoCY[j].numberOfNodes,
                                             level, j);
@@ -745,6 +747,8 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint 
     para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].f[0] = para->getParH(level)->sendProcessNeighborY[j].f[0];
     para->getParD(level)->recvProcessNeighborsAfterFtoCY[j].f[0] = para->getParD(level)->recvProcessNeighborY[j].f[0];
     para->getParH(level)->recvProcessNeighborsAfterFtoCY[j].f[0] = para->getParH(level)->recvProcessNeighborY[j].f[0];
+
+    std::cout << "done." << std::endl;
 }
 
 void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseZ(const uint &level, int j, int direction)
