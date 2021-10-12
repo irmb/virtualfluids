@@ -38,8 +38,11 @@ public:
 
 	// communication after coarse to fine
     void initCommunicationArraysForCommAfterFinetoCoarseX(const uint &level, int j, int direction);
+    void copyProcessNeighborToAfterFtoCX(const uint &level, int j);
     void initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction);
+    void copyProcessNeighborToAfterFtoCY(const uint &level, int j);
     void initCommunicationArraysForCommAfterFinetoCoarseZ(const uint &level, int j, int direction);
+    void copyProcessNeighborToAfterFtoCZ(const uint &level, int j);
     void reorderSendIndicesForCommAfterFtoCX(int direction, int level, int j,
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
     void reorderSendIndicesForCommAfterFtoCY(int direction, int level, int j,
