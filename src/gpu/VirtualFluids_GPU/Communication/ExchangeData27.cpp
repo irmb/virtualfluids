@@ -24,6 +24,9 @@ void prepareExchangeCollDataXGPU27(Parameter *para, int level, int streamIndex)
                            para->getParD(level)->numberofthreads,
                            stream);    
 }
+void prepareExchangeCollDataXGPU27AllNodes(Parameter *para, int level, int streamIndex) {}
+
+void prepareExchangeCollDataXGPU27AfterFtoC(Parameter *para, int level, int streamIndex) {}
 
 void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
                                 int streamIndex)
@@ -86,6 +89,14 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
+void exchangeCollDataXGPU27AllNodes(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+                                    int level, int streamIndex)
+{
+}
+void exchangeCollDataXGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+                                     int level, int streamIndex)
+{
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -94,11 +105,10 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Y
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void prepareExchangeCollDataYGPU27(Parameter *para, int level, int streamIndex, bool useReducedCommunicationAfterFtoC)
+void prepareExchangeCollDataYGPU27(Parameter *para, int level, int streamIndex,
+                                   std::vector<ProcessNeighbor27> *sendProcessNeighbor)
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);   
-    std::vector<ProcessNeighbor27> *sendProcessNeighbor =
-        getSendProcessNeighborDevY(useReducedCommunicationAfterFtoC, para, level);
 
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
         GetSendFsPostDev27(para->getParD(level)->d0SP.f[0], 
@@ -114,18 +124,38 @@ void prepareExchangeCollDataYGPU27(Parameter *para, int level, int streamIndex, 
                            stream);
 }
 
+void prepareExchangeCollDataYGPU27AllNodes(Parameter* para, int level, int streamIndex) {
+    prepareExchangeCollDataYGPU27(para, level, streamIndex, &para->getParD(level)->sendProcessNeighborY);
+}
+
+void prepareExchangeCollDataYGPU27AfterFtoC(Parameter* para, int level, int streamIndex) {    
+     prepareExchangeCollDataYGPU27(para, level, streamIndex, &para->getParD(level)->sendProcessNeighborsAfterFtoCY);
+}
+
+void exchangeCollDataYGPU27AllNodes(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+                                    int level, int streamIndex)
+{
+    exchangeCollDataYGPU27(para, comm, cudaManager, level, streamIndex, &para->getParD(level)->sendProcessNeighborY,
+                           &para->getParD(level)->recvProcessNeighborY, &para->getParH(level)->sendProcessNeighborY,
+                           &para->getParH(level)->recvProcessNeighborY);
+}
+    
+void exchangeCollDataYGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+                                     int level, int streamIndex)
+{
+    exchangeCollDataYGPU27(
+        para, comm, cudaManager, level, streamIndex, &para->getParD(level)->sendProcessNeighborsAfterFtoCY,
+        &para->getParD(level)->recvProcessNeighborsAfterFtoCY, &para->getParH(level)->sendProcessNeighborsAfterFtoCY,
+        &para->getParH(level)->recvProcessNeighborsAfterFtoCY);
+}
+
 void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
-                            int streamIndex, bool useReducedCommunicationAfterFtoC)
+                            int streamIndex, std::vector<ProcessNeighbor27> *sendProcessNeighborDev,
+                            std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
+                            std::vector<ProcessNeighbor27> *sendProcessNeighborHost,
+                            std::vector<ProcessNeighbor27> *recvProcessNeighborHost)
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
-    std::vector<ProcessNeighbor27> *sendProcessNeighborDev =
-        getSendProcessNeighborDevY(useReducedCommunicationAfterFtoC, para, level);
-    std::vector<ProcessNeighbor27> *recvProcessNeighborDev =
-        getRecvProcessNeighborDevY(useReducedCommunicationAfterFtoC, para, level);
-    std::vector<ProcessNeighbor27> *sendProcessNeighborHost =
-        getSendProcessNeighborHostY(useReducedCommunicationAfterFtoC, para, level);
-    std::vector<ProcessNeighbor27> *recvProcessNeighborHost =
-        getRecvProcessNeighborHostY(useReducedCommunicationAfterFtoC, para, level);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //copy Device to Host
@@ -195,44 +225,7 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
-
-std::vector<ProcessNeighbor27> *getSendProcessNeighborDevY(bool useReducedCommunicationAfterFtoC, Parameter *para,
-                                                        int level)
-{
-    if (useReducedCommunicationAfterFtoC)
-        return &para->getParD(level)->sendProcessNeighborsAfterFtoCY;
-    else
-        return &para->getParD(level)->sendProcessNeighborY;
-}
-
-std::vector<ProcessNeighbor27> *getRecvProcessNeighborDevY(bool useReducedCommunicationAfterFtoC, Parameter *para,
-                                                        int level)
-{
-    if (useReducedCommunicationAfterFtoC)
-        return &para->getParD(level)->recvProcessNeighborsAfterFtoCY;
-    else
-        return &para->getParD(level)->recvProcessNeighborY;
-}
-std::vector<ProcessNeighbor27> *getSendProcessNeighborHostY(bool useReducedCommunicationAfterFtoC, Parameter *para,
-                                                           int level)
-{
-    if (useReducedCommunicationAfterFtoC)
-        return &para->getParH(level)->sendProcessNeighborsAfterFtoCY;
-    else
-        return &para->getParH(level)->sendProcessNeighborY;
-}
-
-std::vector<ProcessNeighbor27> *getRecvProcessNeighborHostY(bool useReducedCommunicationAfterFtoC, Parameter *para,
-                                                           int level)
-{
-    if (useReducedCommunicationAfterFtoC)
-        return &para->getParH(level)->recvProcessNeighborsAfterFtoCY;
-    else
-        return &para->getParH(level)->recvProcessNeighborY;
-}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,7 +245,11 @@ void prepareExchangeCollDataZGPU27(Parameter *para, int level, int streamIndex) 
                            para->getParD(level)->evenOrOdd,
                            para->getParD(level)->numberofthreads,
                            stream);
-} 
+}
+void prepareExchangeCollDataZGPU27AllNodes(Parameter *para, int level, int streamIndex) {}
+
+void prepareExchangeCollDataZGPU27AfterFtoC(Parameter *para, int level, int streamIndex) {}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
                                 int streamIndex)
@@ -334,6 +331,14 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
                            stream);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+void exchangeCollDataZGPU27AllNodes(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+                                    int level, int streamIndex)
+{
+}
+void exchangeCollDataZGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+                                     int level, int streamIndex)
+{
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

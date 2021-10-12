@@ -212,22 +212,26 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
 	}
 }
 
-void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex, bool useReducedCommunicationAfterFtoC)
+void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex)
 {
     if (para->getNumprocs() > 1) {
-        prepareExchangeCollDataXGPU27(para, level, streamIndex); // TODO
-        prepareExchangeCollDataYGPU27(para, level, streamIndex, useReducedCommunicationAfterFtoC);
-        prepareExchangeCollDataZGPU27(para, level, streamIndex); // TODO
+        prepareExchangeCollDataXGPU27AllNodes(para, level, streamIndex);
+        prepareExchangeCollDataYGPU27AllNodes(para, level, streamIndex);
+        prepareExchangeCollDataZGPU27AllNodes(para, level, streamIndex);
     }   
 }
 
 void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamIndex)
 {
-    prepareExchangeMultiGPU(para, level, streamIndex, para->useReducedCommunicationAfterFtoC);
+    if (para->getNumprocs() > 1) {
+        prepareExchangeCollDataXGPU27AfterFtoC(para, level, streamIndex);
+        prepareExchangeCollDataYGPU27AfterFtoC(para, level, streamIndex);
+        prepareExchangeCollDataZGPU27AfterFtoC(para, level, streamIndex);
+    }
 }
 
 void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
-                      int streamIndex, bool useReducedCommunicationAfterFtoC)
+                      int streamIndex)
 {
     if (para->getNumprocs() > 1)
 	{
@@ -235,9 +239,9 @@ void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryMa
 
 		//////////////////////////////////////////////////////////////////////////
 		//3D domain decomposition
-        exchangeCollDataXGPU27(para, comm, cudaManager, level, streamIndex);
-        exchangeCollDataYGPU27(para, comm, cudaManager, level, streamIndex, useReducedCommunicationAfterFtoC);
-        exchangeCollDataZGPU27(para, comm, cudaManager, level, streamIndex);
+        exchangeCollDataXGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
+        exchangeCollDataYGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
+        exchangeCollDataZGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
 
 		//////////////////////////////////////////////////////////////////////////
 		//3D domain decomposition convection diffusion
@@ -262,7 +266,24 @@ void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryMa
 void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
                                int streamIndex)
 {
-    exchangeMultiGPU(para, comm, cudaManager, level, streamIndex, para->useReducedCommunicationAfterFtoC);
+    if (para->getNumprocs() > 1) {
+
+        //////////////////////////////////////////////////////////////////////////
+        // 3D domain decomposition
+        exchangeCollDataXGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
+        exchangeCollDataYGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
+        exchangeCollDataZGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
+
+        //////////////////////////////////////////////////////////////////////////
+        // 3D domain decomposition convection diffusion
+        if (para->getDiffOn()) {
+            if (para->getUseStreams())
+                std::cout << "Warning: Cuda streams not yet implemented for convection diffusion" << std::endl;
+            exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
+            exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
+            exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
+        }
+    }
 }
 
 void postCollisionBC(Parameter* para, int level, unsigned int t)

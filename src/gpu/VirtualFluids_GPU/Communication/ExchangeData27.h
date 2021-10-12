@@ -15,19 +15,40 @@ extern "C" void exchangePostCollDataGPU27(Parameter* para, vf::gpu::Communicator
 //3D domain decomposition
 
 extern "C" void prepareExchangeCollDataXGPU27(Parameter *para, int level, int streamIndex);
+extern "C" void prepareExchangeCollDataXGPU27AllNodes(Parameter *para, int level, int streamIndex);
+extern "C" void prepareExchangeCollDataXGPU27AfterFtoC(Parameter *para, int level, int streamIndex);
 extern "C" void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
                                        int level, int streamIndex);
+extern "C" void exchangeCollDataXGPU27AllNodes(Parameter *para, vf::gpu::Communicator *comm,
+                                               CudaMemoryManager *cudaManager, int level, int streamIndex);
+extern "C" void exchangeCollDataXGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator *comm,
+                                                CudaMemoryManager *cudaManager, int level, int streamIndex);
+//y
 extern "C" void prepareExchangeCollDataYGPU27(Parameter *para, int level, int streamIndex,
-                                              bool useReducedCommunicationAfterFtoC);
-std::vector<ProcessNeighbor27> *getSendProcessNeighborDevY(bool useReducedCommunicationAfterFtoC, Parameter *para, int level);
-std::vector<ProcessNeighbor27> *getRecvProcessNeighborDevY(bool useReducedCommunicationAfterFtoC, Parameter *para, int level);
-std::vector<ProcessNeighbor27> *getSendProcessNeighborHostY(bool useReducedCommunicationAfterFtoC, Parameter *para, int level);
-std::vector<ProcessNeighbor27> *getRecvProcessNeighborHostY(bool useReducedCommunicationAfterFtoC, Parameter *para, int level);
+                                              std::vector<ProcessNeighbor27> *sendProcessNeighbor);
+extern "C" void prepareExchangeCollDataYGPU27AllNodes(Parameter *para, int level,
+                                                      int streamIndex);
+extern "C" void prepareExchangeCollDataYGPU27AfterFtoC(Parameter *para, int level, int streamIndex);
 extern "C" void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
-                                       int level, int streamIndex, bool useReducedCommunicationAfterFtoC = false);
+                                       int level, int streamIndex,
+                                       std::vector<ProcessNeighbor27> *sendProcessNeighborDev,
+                                       std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
+                                       std::vector<ProcessNeighbor27> *sendProcessNeighborHost,
+                                       std::vector<ProcessNeighbor27> *recvProcessNeighborHos);
+extern "C" void exchangeCollDataYGPU27AllNodes(Parameter *para, vf::gpu::Communicator *comm,
+                                               CudaMemoryManager *cudaManager, int level, int streamIndex);
+extern "C" void exchangeCollDataYGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator *comm,
+                                                CudaMemoryManager *cudaManager, int level, int streamIndex);
+//z
 extern "C" void prepareExchangeCollDataZGPU27(Parameter *para, int level, int streamIndex);
+extern "C" void prepareExchangeCollDataZGPU27AllNodes(Parameter *para, int level, int streamIndex);
+extern "C" void prepareExchangeCollDataZGPU27AfterFtoC(Parameter *para, int level, int streamIndex);
 extern "C" void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
                                        int level, int streamIndex);
+extern "C" void exchangeCollDataZGPU27AllNodes(Parameter *para, vf::gpu::Communicator *comm,
+                                               CudaMemoryManager *cudaManager, int level, int streamIndex);
+extern "C" void exchangeCollDataZGPU27AfterFtoC(Parameter *para, vf::gpu::Communicator *comm,
+                                                CudaMemoryManager *cudaManager, int level, int streamIndex);
 //////////////////////////////////////////////////////////////////////////
 //3D domain decomposition convection diffusion
 extern "C" void exchangePreCollDataADXGPU27(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level);
