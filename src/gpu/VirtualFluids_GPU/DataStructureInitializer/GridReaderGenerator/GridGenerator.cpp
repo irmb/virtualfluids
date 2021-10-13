@@ -871,7 +871,7 @@ void GridGenerator::reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &nu
                                                  sendIndicesForCommAfterFtoCPositions, posInSendIndices);
     }
 
-     // iCellCFC
+    // iCellCFC
     std::vector<uint> nodesCFC;
     aggregateNodesInICellCFC(level, nodesCFC);
     for (auto sparseIndex : nodesCFC)
