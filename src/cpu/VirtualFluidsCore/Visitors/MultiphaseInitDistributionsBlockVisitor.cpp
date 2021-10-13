@@ -50,13 +50,13 @@ MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor
 	this->setRho(0.0);
 }
 //////////////////////////////////////////////////////////////////////////
-MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor( LBMReal densityRatio, LBMReal vx1, LBMReal vx2, LBMReal vx3)
+MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor( LBMReal densityRatio, LBMReal vx1, LBMReal vx2, LBMReal vx3, LBMReal rho)
 	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL), densityRatio(densityRatio) 
 {
 	this->setVx1(vx1);
 	this->setVx2(vx2);
 	this->setVx3(vx3);
-}
+	this->setRho(rho);}
 //////////////////////////////////////////////////////////////////////////
 void MultiphaseInitDistributionsBlockVisitor::setVx1( const mu::Parser& parser)  
 { 
@@ -194,7 +194,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 
 					
 					p1  = 0.0;
-					//p1 = muRho.Eval();
+					p1 = muRho.Eval();
 					vx1 = muVx1.Eval();
 					vx2 = muVx2.Eval();
 					vx3 = muVx3.Eval();
@@ -220,8 +220,10 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 						LBMReal gamma = WEIGTH[dir]*(3*velProd + 4.5*velSq1 - 1.5*(vx1Sq+vx2Sq+vx3Sq));
 
 						feq[dir] = rho*WEIGTH[dir]*(1 + 3*velProd + 4.5*velSq1 - 1.5*(vx1Sq+vx2Sq+vx3Sq));
-						//geq[dir] = p1*WEIGTH1[dir] + gamma;
-						geq[dir] = p1*WEIGTH[dir]/(rho*UbMath::c1o3) + gamma*rho;
+						//geq[dir] = p1*WEIGTH[dir] + gamma;
+						//geq[dir] = p1*WEIGTH[dir]/(rho*UbMath::c1o3) + gamma*rho;
+						//geq[dir] = (p1*WEIGTH[dir]/(rho*UbMath::c1o3) + gamma*rho)*UbMath::c1o3;
+						geq[dir] = (gamma*rho)*UbMath::c1o3;
 					}
 
 
