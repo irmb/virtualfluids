@@ -32,6 +32,7 @@ void bflow(string configname)
       double          OmegaLB = config.getValue<double>("OmegaLB");
       double          tau0 = config.getValue<double>("tau0");
       double          N = config.getValue<double>("N");
+      double          mu = config.getValue<double>("mu");
 
 
       ConfigurationFile   viscosity;
@@ -61,14 +62,15 @@ void bflow(string configname)
 
       //double N  = 70; //rpm
       double Omega = 2 * UbMath::PI / 60.0 * N; //rad/s
-      double mu    = 1; //Pa s
+      //double mu    = 5; //Pa s
       double R     = 0.165 / 2.0; //m
       double rho   = 970; //kg/m^3
       double Re    = Omega * R * R * rho / mu;
 
       //double nuLB = OmegaLB * R * 1e3 * R * 1e3 / Re;
 
-      double nuLB = OmegaLB * (R / deltax)*(R / deltax) / Re;
+      double dx = deltax * 1e-3;
+      double nuLB = OmegaLB * (R / dx)*(R / dx) / Re;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
@@ -244,12 +246,13 @@ void bflow(string configname)
          UBLOG(logINFO, "Parameters:");
          UBLOG(logINFO, "N = " << N << " rpm");
          UBLOG(logINFO, "Omega = " << Omega << " rad/s");
+         UBLOG(logINFO, "mu = " << mu << " Pa s");
          UBLOG(logINFO, "Re = " << Re);
          UBLOG(logINFO, "rho = " << rhoLB);
          UBLOG(logINFO, "uLB = " << OmegaLB);
          UBLOG(logINFO, "nuLB = " << nuLB);
          UBLOG(logINFO, "tau0 = " << tau0);
-         UBLOG(logINFO, "deltax = " << deltax);
+         UBLOG(logINFO, "deltax = " << deltax << " mm");
          UBLOG(logINFO, "number of levels = " << refineLevel + 1);
          UBLOG(logINFO, "number of threads = " << numOfThreads);
          UBLOG(logINFO, "number of processes = " << comm->getNumberOfProcesses());

@@ -196,9 +196,9 @@ UbTupleDouble3 CalculateTorqueCoProcessor::getForces(int x1, int x2, int x3,  SP
 
    LBMReal fs[D3Q27System::ENDF + 1];
    distributions->getDistributionInv(fs, x1, x2, x3);
-   LBMReal rho = 0.0, vx1 = 0.0, vx2 = 0.0, vx3 = 0.0, drho = 0.0;
+   LBMReal /*rho = 0.0,*/ vx1 = 0.0, vx2 = 0.0, vx3 = 0.0, drho = 0.0;
    calcMacrosFct(fs, drho, vx1, vx2, vx3);
-   rho = 1.0 + drho * compressibleFactor;
+   //rho = 1.0 + drho * compressibleFactor;
    
    if(bc)
    {
@@ -216,22 +216,22 @@ UbTupleDouble3 CalculateTorqueCoProcessor::getForces(int x1, int x2, int x3,  SP
             f = dynamicPointerCast<EsoTwist3D>(distributions)->getDistributionInvForDirection(x1, x2, x3, invDir);
             fnbr = dynamicPointerCast<EsoTwist3D>(distributions)->getDistributionInvForDirection(x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
 
-            Vector3D boundaryVelocity;
-            boundaryVelocity[0] = bc->getBoundaryVelocityX1();
-            boundaryVelocity[1] = bc->getBoundaryVelocityX2();
-            boundaryVelocity[2] = bc->getBoundaryVelocityX3();
-            double correction[3] = { 0.0, 0.0, 0.0 };
-            if (bc->hasVelocityBoundaryFlag(fdir))
-            {
-               const double forceTerm = f - fnbr;
-               correction[0] = forceTerm * boundaryVelocity[0];
-               correction[1] = forceTerm * boundaryVelocity[1];
-               correction[2] = forceTerm * boundaryVelocity[2];
-            }
+            // Vector3D boundaryVelocity;
+            // boundaryVelocity[0] = bc->getBoundaryVelocityX1();
+            // boundaryVelocity[1] = bc->getBoundaryVelocityX2();
+            // boundaryVelocity[2] = bc->getBoundaryVelocityX3();
+            //double correction[3] = { 0.0, 0.0, 0.0 };
+            // if (bc->hasVelocityBoundaryFlag(fdir))
+            // {
+            //    const double forceTerm = f - fnbr;
+            //    correction[0] = forceTerm * boundaryVelocity[0];
+            //    correction[1] = forceTerm * boundaryVelocity[1];
+            //    correction[2] = forceTerm * boundaryVelocity[2];
+            // }
 
-            forceX1 += (f + fnbr) * D3Q27System::DX1[invDir] - 2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[0];
-            forceX2 += (f + fnbr) * D3Q27System::DX2[invDir] - 2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[1];
-            forceX3 += (f + fnbr) * D3Q27System::DX3[invDir] - 2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[2];
+            forceX1 += (f + fnbr) * D3Q27System::DX1[invDir];// - 2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[0];
+            forceX2 += (f + fnbr) * D3Q27System::DX2[invDir];// - 2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[1];
+            forceX3 += (f + fnbr) * D3Q27System::DX3[invDir];// - 2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[2];
          }
       }
    }

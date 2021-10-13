@@ -522,7 +522,8 @@ void D3Q27TriFaceMeshInteractor::setQs(const double &timeStep)
                                         bc = SPtr<BoundaryConditions>(new BoundaryConditions);
                                         ;
                                         bcMatrix->setBC(ix1, ix2, ix3, bc);
-                                    } else if (UbMath::less(bc->getQ(fdir), q)) // schon ein kuerzeres q voehanden?
+                                    } else if (UbMath::less(bc->getQ(fdir), q) &&
+                                               UbMath::equal(-999.0, q)) // schon ein kuerzeres q voehanden?
                                     {
                                         // neu:: 18.05.2010
                                         // um falsche qs die evtl durch die "wand" gehen zu vermeiden
