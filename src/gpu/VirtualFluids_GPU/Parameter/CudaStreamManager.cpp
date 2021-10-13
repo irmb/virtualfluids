@@ -57,7 +57,9 @@ void CudaStreamManager::createCudaEvents()
     checkCudaErrors(cudaEventCreateWithFlags(&startBulkKernel, cudaEventDisableTiming));
 }
 
-void CudaStreamManager::destroyCudaEvents() {checkCudaErrors(cudaEventDestroy(startBulkKernel));
+void CudaStreamManager::destroyCudaEvents() 
+{ 
+    checkCudaErrors(cudaEventDestroy(startBulkKernel)); 
 }
 
 void CudaStreamManager::triggerStartBulkKernel(int streamIndex)

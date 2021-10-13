@@ -9,7 +9,7 @@
 #include "Kernel/Kernel.h"
 #include "Parameter/CudaStreamManager.h"
 
-void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+void UpdateGrid27::updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
                   std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
                   std::vector<SPtr<Kernel>> &kernels)
 {
@@ -26,33 +26,7 @@ void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManage
 
     //////////////////////////////////////////////////////////////////////////
 
-    if (para->getUseStreams() && para->getNumprocs() > 1) {
-        // launch border kernel
-        collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
-                            para->getParD(level)->numberOffluidNodesBorder, borderStreamIndex);
-
-        // prepare exchange and trigger bulk kernel when finished
-        prepareExchangeMultiGPU(para, level, borderStreamIndex);
-        if (para->getUseStreams())
-            para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
-
-        // launch bulk kernel
-        para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
-        collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
-                            para->getParD(level)->numberOfFluidNodes, bulkStreamIndex);
-
-        exchangeMultiGPU(para, comm, cudaManager, level, borderStreamIndex);
-    } else {
-        if (para->getKernelNeedsFluidNodeIndicesToRun())
-            collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
-                                para->getParD(level)->numberOfFluidNodes, -1);
-        else
-            collision(para, pm, level, t, kernels);
-
-        prepareExchangeMultiGPU(para, level, -1);
-        exchangeMultiGPU(para, comm, cudaManager, level, -1);
-    }
-
+    collisionAndExchange(para, pm, level, t, kernels, comm, cudaManager);
     //////////////////////////////////////////////////////////////////////////
 
     postCollisionBC(para, level, t);
@@ -102,6 +76,47 @@ void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManage
             coarseToFine(para, level);
         }
     }
+}
+
+void collisionAndExchange_noStreams_indexKernel(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm,
+                                                       int level, unsigned int t, std::vector<SPtr<Kernel>> &kernels,
+                                                       vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager)
+{
+    collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
+                            para->getParD(level)->numberOfFluidNodes, -1);
+    prepareExchangeMultiGPU(para, level, -1);
+    exchangeMultiGPU(para, comm, cudaManager, level, -1);
+}
+
+void collisionAndExchange_noStreams_oldKernel(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm,
+                                                 int level, unsigned int t, std::vector<SPtr<Kernel>> &kernels,
+                                                 vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager)
+{
+    collision(para, pm, level, t, kernels);
+    prepareExchangeMultiGPU(para, level, -1);
+    exchangeMultiGPU(para, comm, cudaManager, level, -1);
+}
+
+void collisionAndExchange_streams(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level,
+                                     unsigned int t, std::vector<SPtr<Kernel>> &kernels, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager)
+{
+    int borderStreamIndex = 1;
+    int bulkStreamIndex   = 0;
+    // launch border kernel
+    collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
+                        para->getParD(level)->numberOffluidNodesBorder, borderStreamIndex);
+
+    // prepare exchange and trigger bulk kernel when finished
+    prepareExchangeMultiGPU(para, level, borderStreamIndex);
+    if (para->getUseStreams())
+        para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
+
+    // launch bulk kernel
+    para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
+    collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndices,
+                        para->getParD(level)->numberOfFluidNodes, bulkStreamIndex);
+
+    exchangeMultiGPU(para, comm, cudaManager, level, borderStreamIndex);
 }
 
 void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels)
@@ -1416,4 +1431,51 @@ void coarseToFine(Parameter* para, int level)
         }
     } 
 
+}
+
+UpdateGrid27::UpdateGrid27() = default;
+UpdateGrid27::~UpdateGrid27() = default;
+UpdateGrid27::UpdateGrid27(const UpdateGrid27 &updateGrid) {}
+UpdateGrid27::UpdateGrid27(UpdateGrid27 &&updateGrid27) {}
+
+UpdateGrid27::UpdateGrid27(Parameter *para) { 
+    chooseFunctionForCollisionAndExchange(para); }
+
+
+void UpdateGrid27::chooseFunctionForCollisionAndExchange(Parameter *para)
+{
+    std::cout << "Function used for collisionAndExchange: ";
+    if (para->getUseStreams() && para->getNumprocs() > 1 && para->getKernelNeedsFluidNodeIndicesToRun()) {
+        this->collisionAndExchange = [](Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level,
+                                        unsigned int t, std::vector<SPtr<Kernel>> &kernels, vf::gpu::Communicator *comm,
+                                        CudaMemoryManager *cudaManager) {
+            collisionAndExchange_streams(para, pm, level, t, kernels, comm, cudaManager);
+        };
+        std::cout << "collisionAndExchange_streams()" << std::endl;
+
+    } else if (para->getUseStreams() && !para->getKernelNeedsFluidNodeIndicesToRun()) {
+        std::cout << "Cuda Streams can only be used with kernels which run using fluidNodesIndices." << std::endl;
+
+    } else if (para->getUseStreams() && para->getNumprocs() <= 1) {
+        std::cout << "Cuda Streams can only be with multiple MPI processes." << std::endl;
+    
+    } else if (!para->getUseStreams() && para->getKernelNeedsFluidNodeIndicesToRun()) {
+        this->collisionAndExchange = [](Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level,
+                                        unsigned int t, std::vector<SPtr<Kernel>> &kernels, vf::gpu::Communicator *comm,
+                                        CudaMemoryManager *cudaManager) {
+            collisionAndExchange_noStreams_indexKernel(para, pm, level, t, kernels, comm, cudaManager);
+        };
+        std::cout << "collisionAndExchange_noStreams_indexKernel()" << std::endl;
+    
+    } else if (!para->getUseStreams() && !para->getKernelNeedsFluidNodeIndicesToRun()) {
+        this->collisionAndExchange = [](Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level,
+                                        unsigned int t, std::vector<SPtr<Kernel>> &kernels, vf::gpu::Communicator *comm,
+                                        CudaMemoryManager *cudaManager) {
+            collisionAndExchange_noStreams_oldKernel(para, pm, level, t, kernels, comm, cudaManager);
+        };
+        std::cout << "collisionAndExchange_noStreams_oldKernel()" << std::endl;
+    
+    } else {
+        std::cout << "Invalid Configuration for collision and exchange" << std::endl;
+    }
 }

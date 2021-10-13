@@ -34,6 +34,7 @@ class KernelFactory;
 class PreProcessor;
 class PreProcessorFactory;
 class TrafficMovementFactory;
+class UpdateGrid27;
 
 class VIRTUALFLUIDS_GPU_EXPORT Simulation
 {
@@ -111,5 +112,6 @@ protected:
 	SPtr<EnstrophyAnalyzer> enstrophyAnalyzer;
 	////////////////////////////////////////////////////////////////////////////
 
+	UPtr<UpdateGrid27> updateGrid27;
  };
 #endif
