@@ -248,6 +248,12 @@ void MultiphaseCumulantLBMKernel::calculate(int step)
                             // muX2 = static_cast<double>(x2-1+ix2*maxX2);
                             // muX3 = static_cast<double>(x3-1+ix3*maxX3);
 
+                            muForcingX1.DefineVar("rho",&muRho); 
+				            muForcingX2.DefineVar("rho",&muRho); 
+				            muForcingX3.DefineVar("rho",&muRho); 
+
+				            muRho = rho;
+
                             forcingX1 = muForcingX1.Eval();
                             forcingX2 = muForcingX2.Eval();
                             forcingX3 = muForcingX3.Eval();

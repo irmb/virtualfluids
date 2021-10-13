@@ -501,7 +501,7 @@ double Grid3D::getDeltaX(SPtr<Block3D> block) const { return getDeltaX(block->ge
 UbTupleDouble3 Grid3D::getNodeOffset(SPtr<Block3D> block) const
 {
     double delta = this->getDeltaX(block);
-    return makeUbTuple(OFFSET * delta, OFFSET * delta, OFFSET * delta);
+    return makeUbTuple(offset * delta, offset * delta, offset * delta);
 }
 ////////////////////////////////////////////////////////////////////////////
 Vector3D Grid3D::getNodeCoordinates(SPtr<Block3D> block, int ix1, int ix2, int ix3) const
@@ -2219,6 +2219,16 @@ void Grid3D::calcStartCoordinatesWithOutOverlap(SPtr<Block3D> block, double &wor
         worldX2 = this->trafo->transformBackwardToX2Coordinate(x1tmp, x2tmp, x3tmp);
         worldX3 = this->trafo->transformBackwardToX3Coordinate(x1tmp, x2tmp, x3tmp);
     }
+}
+//////////////////////////////////////////////////////////////////////////
+int Grid3D::getGhostLayerWidth() const
+{
+    return static_cast<int>(offset + 0.5);
+}
+//////////////////////////////////////////////////////////////////////////
+void Grid3D::setGhostLayerWidth(int ghostLayerWidth)
+{
+    this->offset = static_cast<double>(ghostLayerWidth) - 0.5;
 }
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::setTimeStep(double step) { timeStep = step; }

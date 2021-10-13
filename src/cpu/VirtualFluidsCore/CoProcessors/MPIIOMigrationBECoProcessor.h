@@ -13,6 +13,7 @@ class UbScheduler;
 class Communicator;
 class BCProcessor;
 class LBMKernel;
+class Grid3DVisitor;
 
 //! \class MPIWriteBlocksBECoProcessor
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating
@@ -30,8 +31,7 @@ class MPIIOMigrationBECoProcessor : public MPIIOCoProcessor
     };
 
 public:
-    MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                SPtr<Communicator> comm);
+    MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, SPtr<Communicator> comm);
     ~MPIIOMigrationBECoProcessor() override;
     //! Each timestep writes the grid into the files
     void process(double step) override;
@@ -93,11 +93,11 @@ private:
     MPIIODataStructures::boundCondParam boundCondParamStr;
     SPtr<LBMKernel> lbmKernel;
     SPtr<BCProcessor> bcProcessor;
+    SPtr<Grid3DVisitor> metisVisitor;
     double nue;
     double nuL;
     double nuG;
     double densityRatio;
-
 };
 
 #endif

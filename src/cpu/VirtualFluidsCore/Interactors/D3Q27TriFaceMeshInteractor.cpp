@@ -523,7 +523,11 @@ void D3Q27TriFaceMeshInteractor::setQs(const double &timeStep)
                                         ;
                                         bcMatrix->setBC(ix1, ix2, ix3, bc);
                                     } else if (UbMath::less(bc->getQ(fdir), q) &&
+<<<<<<< HEAD
                                                UbMath::equal(-999.0, q)) // schon ein kuerzeres q voehanden?
+=======
+                                        UbMath::equal(-999.0, q)) // schon ein kuerzeres q voehanden?
+>>>>>>> 27138b35e2fb7db7637caf13179316787ebf7cc7
                                     {
                                         // neu:: 18.05.2010
                                         // um falsche qs die evtl durch die "wand" gehen zu vermeiden

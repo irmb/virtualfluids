@@ -32,7 +32,7 @@ protected:
 private:
     MPI_Datatype gridParamType, block3dType;
     MPI_Datatype dataSetParamType, dataSetTypeRead, dataSetTypeWrite;
-    MPI_Datatype boundCondType, boundCondType1000;
+    MPI_Datatype boundCondType, boundCondType1000, dataSetDoubleType;
 
     MPIIODataStructures::boundCondParam boundCondParamStr;
 };

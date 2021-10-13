@@ -280,30 +280,6 @@ public:
     void setBoundaryDensity(float density) { this->bcDensity = density; }
     float getBoundaryDensity() { return this->bcDensity; }
 
-    ////Lodi extension
-    void setDensityLodiDensity(const float &bcLodiDensity) { this->bcLodiDensity = bcLodiDensity; }
-    void setDensityLodiVelocityX1(const float &bcLodiVelocityX1) { this->bcLodiVelocityX1 = bcLodiVelocityX1; }
-    void setDensityLodiVelocityX2(const float &bcLodiVelocityX2) { this->bcLodiVelocityX2 = bcLodiVelocityX2; }
-    void setDensityLodiVelocityX3(const float &bcLodiVelocityX3) { this->bcLodiVelocityX3 = bcLodiVelocityX3; }
-    void setDensityLodiLength(const float &bcLodiLentgh) { this->bcLodiLentgh = bcLodiLentgh; }
-    float getDensityLodiDensity() const { return this->bcLodiDensity; }
-    float getDensityLodiVelocityX1() const { return this->bcLodiVelocityX1; }
-    float getDensityLodiVelocityX2() const { return this->bcLodiVelocityX2; }
-    float getDensityLodiVelocityX3() const { return this->bcLodiVelocityX3; }
-    float getDensityLodiLength() const { return this->bcLodiLentgh; }
-
-    float &densityLodiDensity() { return this->bcLodiDensity; }
-    float &densityLodiVelocityX1() { return this->bcLodiVelocityX1; }
-    float &densityLodiVelocityX2() { return this->bcLodiVelocityX2; }
-    float &densityLodiVelocityX3() { return this->bcLodiVelocityX3; }
-    float &densityLodiLentgh() { return this->bcLodiLentgh; }
-
-    const float &densityLodiDensity() const { return this->bcLodiDensity; }
-    const float &densityLodiVelocityX1() const { return this->bcLodiVelocityX1; }
-    const float &densityLodiVelocityX2() const { return this->bcLodiVelocityX2; }
-    const float &densityLodiVelocityX3() const { return this->bcLodiVelocityX3; }
-    const float &densityLodiLentgh() const { return this->bcLodiLentgh; }
-
     /*======================= Qs =============================*/
     void setQ(const float &val, const int &direction) { q[direction] = val; }
     float getQ(const int &direction) { return q[direction]; }
@@ -353,13 +329,6 @@ protected:
     float bcVelocityX3{ 0.0f };
     float bcDensity{ 0.0f };
     float bcPhaseField{ 0.0f };
-
-    //FIXME: remove LODI variables, don't forget to adjust MPIIOCoProcessors
-    float bcLodiDensity{ 0.0f };
-    float bcLodiVelocityX1{ 0.0f };
-    float bcLodiVelocityX2{ 0.0f };
-    float bcLodiVelocityX3{ 0.0f };
-    float bcLodiLentgh{ 0.0f };
 
     float nx1{ 0.0f }, nx2{ 0.0f }, nx3{ 0.0f };
 

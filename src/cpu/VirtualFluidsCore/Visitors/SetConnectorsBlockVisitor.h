@@ -47,7 +47,9 @@
 #include "TwoDistributionsFullDirectConnector.h"
 #include "TwoDistributionsFullVectorConnector.h"
 #include "ThreeDistributionsFullDirectConnector.h"
+#include "ThreeDistributionsDoubleGhostLayerFullDirectConnector.h"
 #include "ThreeDistributionsFullVectorConnector.h"
+#include "ThreeDistributionsDoubleGhostLayerFullVectorConnector.h"
 #include <basics/transmitter/TbTransmitterLocal.h>
 
 //! \brief  A class sets connectors between blocks.
@@ -158,5 +160,6 @@ void SetConnectorsBlockVisitor<T1, T2>::setRemoteConnectors(SPtr<Block3D> sblock
 using OneDistributionSetConnectorsBlockVisitor  = SetConnectorsBlockVisitor<OneDistributionFullDirectConnector, OneDistributionFullVectorConnector>;
 using TwoDistributionsSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<TwoDistributionsFullDirectConnector, TwoDistributionsFullVectorConnector>;
 using ThreeDistributionsSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<ThreeDistributionsFullDirectConnector, ThreeDistributionsFullVectorConnector>;
+using ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<ThreeDistributionsDoubleGhostLayerFullDirectConnector, ThreeDistributionsDoubleGhostLayerFullVectorConnector>;
 
 #endif // SETCONNECTORSBLOCKVISITOR_H
