@@ -10,7 +10,7 @@ void run(string configname)
 {
     try {
 
-        //Sleep(20000);
+        //Sleep(30000);
 
         ConfigurationFile config;
         config.load(configname);
@@ -29,7 +29,7 @@ void run(string configname)
         double densityRatio    = config.getValue<double>("densityRatio");
         double sigma           = config.getValue<double>("sigma");
         int interfaceThickness = config.getValue<int>("interfaceThickness");
-        double radius          = config.getValue<double>("radius");
+        //double radius          = config.getValue<double>("radius");
         double theta           = config.getValue<double>("contactAngle");
         double gr              = config.getValue<double>("gravity");
         double phiL            = config.getValue<double>("phi_L");
@@ -85,9 +85,11 @@ void run(string configname)
 
         SPtr<LBMKernel> kernel;
 
-        kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
@@ -99,6 +101,13 @@ void run(string configname)
         kernel->setPhaseFieldRelaxation(tauH);
         kernel->setMobility(mob);
 
+        //nuL, nuG, densityRatio, beta, kappa, theta,
+
+        kernel->setCollisionFactorMultiphase(nuL, nuG);
+        kernel->setDensityRatio(densityRatio);
+        kernel->setMultiphaseModelParameters(beta, kappa);
+        kernel->setContactAngle(theta);
+
         SPtr<BCProcessor> bcProc(new BCProcessor());
         // BCProcessorPtr bcProc(new ThinWallBCProcessor());
 
@@ -108,20 +117,26 @@ void run(string configname)
         // grid->setPeriodicX1(true);
         // grid->setPeriodicX2(true);
         // grid->setPeriodicX3(true);
+        grid->setGhostLayerWidth(2);
+
+       
+        SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
+
         //////////////////////////////////////////////////////////////////////////
         // restart
         SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
         //SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
-        //SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, pathname, comm));
-        SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
-        rcp->setNu(nuLB);
-        rcp->setNuLG(nuL, nuG);
-        rcp->setDensityRatio(densityRatio);
+        SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, metisVisitor, pathname, comm));
+        //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
+        //rcp->setNu(nuLB);
+        //rcp->setNuLG(nuL, nuG);
+        //rcp->setDensityRatio(densityRatio);
 
         rcp->setLBMKernel(kernel);
         rcp->setBCProcessor(bcProc);
         //////////////////////////////////////////////////////////////////////////
-
+        // BC Adapter
+        //////////////////////////////////////////////////////////////////////////////
         mu::Parser fctF1;
         // fctF1.SetExpr("vy1*(1-((x1-x0)^2+(x3-z0)^2)/(R^2))");
         // fctF1.SetExpr("vy1*(1-(sqrt((x1-x0)^2+(x3-z0)^2)/R))^0.1");
@@ -137,9 +152,35 @@ void run(string configname)
         fctF2.SetExpr("vy1");
         fctF2.DefineConst("vy1", uLB);
 
-        double startTime = 500;
+        double startTime = 30;
         SPtr<BCAdapter> velBCAdapterF1(new MultiphaseVelocityBCAdapter(true, false, false, fctF1, phiH, 0.0, startTime));
         SPtr<BCAdapter> velBCAdapterF2(new MultiphaseVelocityBCAdapter(true, false, false, fctF2, phiH, startTime, endTime));
+
+        SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+        noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
+
+        SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
+        denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
+
+        mu::Parser fctPhi_F1;
+        fctPhi_F1.SetExpr("phiH");
+        fctPhi_F1.DefineConst("phiH", phiH);
+
+        mu::Parser fctPhi_F2;
+        fctPhi_F2.SetExpr("phiL");
+        fctPhi_F2.DefineConst("phiL", phiL);
+
+        mu::Parser fctvel_F2_init;
+        fctvel_F2_init.SetExpr("U");
+        fctvel_F2_init.DefineConst("U", 0);
+
+        velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
+        //////////////////////////////////////////////////////////////////////////////////
+        // BC visitor
+        MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
+        bcVisitor.addBC(noSlipBCAdapter);
+        bcVisitor.addBC(denBCAdapter); //Ohne das BB?
+        bcVisitor.addBC(velBCAdapterF1);
 
         SPtr<D3Q27Interactor> inflowF1Int;
         SPtr<D3Q27Interactor> cylInt;
@@ -220,34 +261,6 @@ void run(string configname)
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
 
-            // BC Adapter
-            //////////////////////////////////////////////////////////////////////////////
-            SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-            noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
-
-            SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
-            denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNonReflectingOutflowBCAlgorithm()));
-
-            mu::Parser fctPhi_F1;
-            fctPhi_F1.SetExpr("phiH");
-            fctPhi_F1.DefineConst("phiH", phiH);
-
-            mu::Parser fctPhi_F2;
-            fctPhi_F2.SetExpr("phiL");
-            fctPhi_F2.DefineConst("phiL", phiL);
-
-            mu::Parser fctvel_F2_init;
-            fctvel_F2_init.SetExpr("U");
-            fctvel_F2_init.DefineConst("U", 0);
-
-            velBCAdapterF1->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseVelocityBCAlgorithm()));
-            //////////////////////////////////////////////////////////////////////////////////
-            // BC visitor
-            MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
-            bcVisitor.addBC(noSlipBCAdapter);
-            bcVisitor.addBC(denBCAdapter); //Ohne das BB?
-            bcVisitor.addBC(velBCAdapterF1);
-
             SPtr<WriteBlocksCoProcessor> ppblocks(new WriteBlocksCoProcessor(
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
@@ -286,8 +299,7 @@ void run(string configname)
             cylInt->addBCAdapter(velBCAdapterF2);
             //SPtr<D3Q27Interactor> cyl2Int(new D3Q27Interactor(cylinder2, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
-            SPtr<Grid3DVisitor> metisVisitor(
-                new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW));
+
             InteractorsHelper intHelper(grid, metisVisitor, true);
             intHelper.addInteractor(cylInt);
             intHelper.addInteractor(tubes);
@@ -347,13 +359,11 @@ void run(string configname)
 
             intHelper.setBC();
 
-            grid->accept(bcVisitor);
-
             // initialization of distributions
             mu::Parser fct1;
             fct1.SetExpr("phiL");
             fct1.DefineConst("phiL", phiL);
-            MultiphaseInitDistributionsBlockVisitor initVisitor(densityRatio, interfaceThickness, radius);
+            MultiphaseInitDistributionsBlockVisitor initVisitor(interfaceThickness);
             initVisitor.setPhi(fct1);
             grid->accept(initVisitor);
 
@@ -388,11 +398,15 @@ void run(string configname)
                 UBLOG(logINFO, "Restart - end");
         }
 
-        TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-        grid->accept(setConnsVisitor);
+      //  TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+      //  grid->accept(setConnsVisitor);
 
-        //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-        //grid->accept(setConnsVisitor);
+       //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
+
+       grid->accept(bcVisitor);
+
+        ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(

@@ -154,6 +154,7 @@
 #include <Connectors/TwoDistributionsFullDirectConnector.h>
 #include <Connectors/TwoDistributionsFullVectorConnector.h>
 
+
 #include <Data/D3Q27EsoTwist3DSplittedVector.h>
 #include <Data/D3Q27EsoTwist3DSplittedVectorEx.h>
 #include <Data/DataSet3D.h>
@@ -244,6 +245,8 @@
 #include <LBM/MultiphaseCumulantLBMKernel.h>
 #include <LBM/MultiphaseScratchCumulantLBMKernel.h>
 #include <LBM/MultiphaseTwoPhaseFieldsCumulantLBMKernel.h>
+#include <LBM/MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel.h>
+#include <LBM/MultiphaseTwoPhaseFieldsPressureFilterLBMKernel.h>
 
 
 
@@ -338,6 +341,7 @@
 #include <Visitors/MultiphaseSetKernelBlockVisitor.h>
 #include <Visitors/MultiphaseBoundaryConditionsBlockVisitor.h>
 #include <Visitors/MultiphaseInitDistributionsBlockVisitor.h>
+#include <Visitors/MultiphaseVelocityFormInitDistributionsBlockVisitor.h>
 #include <Visitors/SetInterpolationConnectorsBlockVisitor.h>
 
 #include <RefineAroundGbObjectHelper.h>

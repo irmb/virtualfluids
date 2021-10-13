@@ -26,13 +26,13 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file MultiphaseInitDistributionsBlockVisitor.h
+//! \file MultiphaseVelocityFormInitDistributionsBlockVisitor.h
 //! \ingroup Visitors
-//! \author Hesameddin Safari
+//! \author Hesameddin Safari, Martin Geier, Konstantin Kutscher
 //=======================================================================================
 
-#ifndef MultiphaseInitDistributionsBlockVisitor_H
-#define MultiphaseInitDistributionsBlockVisitor_H
+#ifndef MultiphaseVelocityFormInitDistributionsBlockVisitor_H
+#define MultiphaseVelocityFormInitDistributionsBlockVisitor_H
 
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
@@ -42,13 +42,13 @@
 
 
 
-class MultiphaseInitDistributionsBlockVisitor : public Block3DVisitor
+class MultiphaseVelocityFormInitDistributionsBlockVisitor : public Block3DVisitor
 {
 public:
 	typedef std::numeric_limits<LBMReal> D3Q27RealLim;
 
 public:
-	MultiphaseInitDistributionsBlockVisitor();
+	MultiphaseVelocityFormInitDistributionsBlockVisitor();
 	//D3Q27ETInitDistributionsBlockVisitor(LBMReal rho, LBMReal vx1=0.0, LBMReal vx2=0.0, LBMReal vx3=0.0);
 	//! Constructor
 	//! \param nu - viscosity
@@ -56,7 +56,6 @@ public:
 	//! \param vx1 - velocity in x
 	//! \param vx2 - velocity in y
 	//! \param vx3 - velocity in z
-	MultiphaseInitDistributionsBlockVisitor( LBMReal densityRatio, LBMReal vx1=0.0, LBMReal vx2=0.0, LBMReal vx3=0.0, LBMReal rho=0.0);
 	//////////////////////////////////////////////////////////////////////////
 	//automatic vars are: x1,x2, x3
 	//ussage example: setVx1("x1*0.01+x2*0.003")
@@ -94,7 +93,6 @@ private:
 	mu::Parser muPhi;
 
 	LBMReal nu;
-	LBMReal densityRatio;
 };
 
 #endif //D3Q27INITDISTRIBUTIONSPATCHVISITOR_H

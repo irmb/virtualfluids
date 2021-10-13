@@ -169,7 +169,7 @@ void pf1()
 
    //grid=SPtr<Grid3D>(new Grid3D(comm));
    //restartCoProcessor->restart(200);
-   SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, pathOut + "/mig", comm));
+   SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, metisVisitor, pathOut + "/mig", comm));
    migCoProcessor->setLBMKernel(kernel);
    migCoProcessor->setBCProcessor(bcProc);
    migCoProcessor->setNu(nuLB);

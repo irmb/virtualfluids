@@ -106,11 +106,16 @@ void run(string configname)
       kernel->setBCProcessor(bcProc);
 
       //////////////////////////////////////////////////////////////////////////
+      SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
       //restart
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
-      SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathname + "/mig", comm));
+      //SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, metisVisitor, pathname + "/mig", comm));
+      SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, metisVisitor, pathname + "/mig", comm));
       migCoProcessor->setLBMKernel(kernel);
       migCoProcessor->setBCProcessor(bcProc);
+      migCoProcessor->setNu(nuLB);
+      migCoProcessor->setNuLG(0.01, 0.01);
+      migCoProcessor->setDensityRatio(1);
       //////////////////////////////////////////////////////////////////////////
 
       SPtr<D3Q27Interactor> inflowInt;
@@ -213,7 +218,7 @@ void run(string configname)
          //outflow
          SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBCAdapter, Interactor3D::SOLID));
 
-         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
+         //SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
          InteractorsHelper intHelper(grid, metisVisitor);
          intHelper.addInteractor(cylinderInt);
          intHelper.addInteractor(inflowInt);

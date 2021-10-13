@@ -26,13 +26,13 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file MultiphaseTwoPhaseFieldsCumulantLBMKernel.h
+//! \file MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel.h
 //! \ingroup LBMKernel
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#ifndef MultiphaseTwoPhaseFieldsCumulantLBMKernel_H
-#define MultiphaseTwoPhaseFieldsCumulantLBMKernel_H
+#ifndef MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel_H
+#define MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel_H
 
 #include "LBMKernel.h"
 #include "BCProcessor.h"
@@ -44,17 +44,21 @@
 //! \brief  Multiphase Cascaded Cumulant LBM kernel. 
 //! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
 //! \author  H. Safari, K. Kutscher, M. Geier
-class MultiphaseTwoPhaseFieldsCumulantLBMKernel : public LBMKernel
+class MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel : public LBMKernel
 {
 public:
-   MultiphaseTwoPhaseFieldsCumulantLBMKernel();
-   virtual ~MultiphaseTwoPhaseFieldsCumulantLBMKernel(void) = default;
+   MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel();
+   virtual ~MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel(void) = default;
    void calculate(int step) override;
    SPtr<LBMKernel> clone() override;
    void forwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho);
    void backwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho);
    void forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
    void backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
+
+   ///refactor
+   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure;
+   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressureOld;
 
    double getCalculationTime() override { return .0; }
 protected:
@@ -75,6 +79,7 @@ protected:
    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsH2;
 
    //CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   phaseField;
+
 
    LBMReal h  [D3Q27System::ENDF+1];
    LBMReal h2[D3Q27System::ENDF + 1];

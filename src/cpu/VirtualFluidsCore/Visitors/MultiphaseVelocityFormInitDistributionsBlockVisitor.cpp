@@ -26,12 +26,12 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file MultiphaseInitDistributionsBlockVisitor.cpp
+//! \file MultiphaseVelocityFormInitDistributionsBlockVisitor.cpp
 //! \ingroup Visitors
 //! \author Hesameddin Safari
 //=======================================================================================
 
-#include "MultiphaseInitDistributionsBlockVisitor.h"
+#include "MultiphaseVelocityFormInitDistributionsBlockVisitor.h"
 #include "BCArray3D.h"
 #include "BCProcessor.h"
 #include "Block3D.h"
@@ -41,7 +41,7 @@
 #include "Grid3DSystem.h"
 #include "LBMKernel.h"
 
-MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor() 
+MultiphaseVelocityFormInitDistributionsBlockVisitor::MultiphaseVelocityFormInitDistributionsBlockVisitor() 
 	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
 {
 	this->setVx1(0.0);
@@ -50,105 +50,97 @@ MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor
 	this->setRho(0.0);
 }
 //////////////////////////////////////////////////////////////////////////
-MultiphaseInitDistributionsBlockVisitor::MultiphaseInitDistributionsBlockVisitor( LBMReal densityRatio, LBMReal vx1, LBMReal vx2, LBMReal vx3, LBMReal rho)
-	: Block3DVisitor(0, Grid3DSystem::MAXLEVEL), densityRatio(densityRatio) 
-{
-	this->setVx1(vx1);
-	this->setVx2(vx2);
-	this->setVx3(vx3);
-	this->setRho(rho);}
-//////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setVx1( const mu::Parser& parser)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx1( const mu::Parser& parser)  
 { 
 	this->checkFunction(parser); 
 	this->muVx1 = parser;  
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setVx2( const mu::Parser& parser)
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx2( const mu::Parser& parser)
 { 
 	this->checkFunction(parser); 
 	this->muVx2 = parser;  
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setVx3( const mu::Parser& parser)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx3( const mu::Parser& parser)  
 { 
 	this->checkFunction(parser); 
 	this->muVx3 = parser;  
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setRho( const mu::Parser& parser)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setRho( const mu::Parser& parser)  
 { 
 	this->checkFunction(parser); 
 	this->muRho = parser;  
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setPhi( const mu::Parser& parser)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setPhi( const mu::Parser& parser)  
 { 
 	this->checkFunction(parser); 
 	this->muPhi = parser;  
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setVx1( const std::string& muParserString)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx1( const std::string& muParserString)  
 { 
 	this->muVx1.SetExpr(muParserString); 
 	this->checkFunction(muVx1); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setVx2( const std::string& muParserString) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx2( const std::string& muParserString) 
 { 
 	this->muVx2.SetExpr(muParserString); 
 	this->checkFunction(muVx2); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setVx3( const std::string& muParserString)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx3( const std::string& muParserString)  
 { 
 	this->muVx3.SetExpr(muParserString); 
 	this->checkFunction(muVx3); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setRho( const std::string& muParserString)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setRho( const std::string& muParserString)  
 { 
 	this->muRho.SetExpr(muParserString); 
 	this->checkFunction(muRho); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setPhi( const std::string& muParserString)  
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setPhi( const std::string& muParserString)  
 { 
 	this->muPhi.SetExpr(muParserString); 
 	this->checkFunction(muPhi); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setVx1( LBMReal vx1 ) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx1( LBMReal vx1 ) 
 { 
 	this->muVx1.SetExpr( UbSystem::toString(vx1,D3Q27RealLim::digits10) );  
 	this->checkFunction(muVx1); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setVx2( LBMReal vx2 ) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx2( LBMReal vx2 ) 
 { 
 	this->muVx2.SetExpr( UbSystem::toString(vx2,D3Q27RealLim::digits10) );  
 	this->checkFunction(muVx2); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setVx3( LBMReal vx3 ) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setVx3( LBMReal vx3 ) 
 { 
 	this->muVx3.SetExpr( UbSystem::toString(vx3,D3Q27RealLim::digits10) );  
 	this->checkFunction(muVx3); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setRho( LBMReal rho ) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setRho( LBMReal rho ) 
 { 
 	this->muRho.SetExpr( UbSystem::toString(rho,D3Q27RealLim::digits10) );  
 	this->checkFunction(muRho); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setPhi( LBMReal phi ) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setPhi( LBMReal phi ) 
 { 
 	this->muPhi.SetExpr( UbSystem::toString(phi,D3Q27RealLim::digits10) );  
 	this->checkFunction(muPhi); 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block) 
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block) 
 {
 	using namespace D3Q27System;
 
@@ -162,7 +154,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 	this->muRho.DefineVar("x1",&x1); this->muRho.DefineVar("x2",&x2); this->muRho.DefineVar("x3",&x3);
 	this->muPhi.DefineVar("x1",&x1); this->muPhi.DefineVar("x2",&x2); this->muPhi.DefineVar("x3",&x3);
 
-	LBMReal vx1, vx2, vx3, rho, p1, phi;
+	
 
 	int gridRank = grid->getRank();
 	int blockRank = block->getRank();
@@ -178,8 +170,8 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 		SPtr<EsoTwist3D> distributionsH = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getHdistributions());
         SPtr<EsoTwist3D> distributionsH2 = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getH2distributions());
 
-		LBMReal phiL = kernel->getPhiL();
-		LBMReal phiH = kernel->getPhiH();
+		//LBMReal phiL = kernel->getPhiL();
+		//LBMReal phiH = kernel->getPhiH();
 
 		LBMReal f[D3Q27System::ENDF+1];
 
@@ -192,18 +184,18 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
                     x2              = coords[1];
                     x3              = coords[2];
 
-					
+					LBMReal vx1 = 0, vx2 = 0, vx3 = 0, p1 = 0, phi = 0;
 					p1  = 0.0;
-					p1 = muRho.Eval();
+					//p1 = muRho.Eval();
 					vx1 = muVx1.Eval();
 					vx2 = muVx2.Eval();
 					vx3 = muVx3.Eval();
 					phi = muPhi.Eval();
 					
 					//rho = phi*1.0 + (1.0-phi)/densityRatio;
-					LBMReal rhoH = 1.0;
-					LBMReal rhoL = 1.0/densityRatio;
-					rho = rhoH + (rhoH - rhoL)*(phi - phiH)/(phiH - phiL);
+					//LBMReal rhoH = 1.0;
+					//LBMReal rhoL = 1.0/densityRatio;
+					//LBMReal rho = rhoH + (rhoH - rhoL)*(phi - phiH)/(phiH - phiL);
 
 			
 					LBMReal feq[27];
@@ -219,11 +211,11 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 						LBMReal velSq1 = velProd*velProd;
 						LBMReal gamma = WEIGTH[dir]*(3*velProd + 4.5*velSq1 - 1.5*(vx1Sq+vx2Sq+vx3Sq));
 
-						feq[dir] = rho*WEIGTH[dir]*(1 + 3*velProd + 4.5*velSq1 - 1.5*(vx1Sq+vx2Sq+vx3Sq));
-						//geq[dir] = p1*WEIGTH[dir] + gamma;
+						//feq[dir] = rho*WEIGTH[dir]*(1 + 3*velProd + 4.5*velSq1 - 1.5*(vx1Sq+vx2Sq+vx3Sq));
+						feq[dir] =  WEIGTH[dir] * (1 + 3 * velProd + 4.5 * velSq1 - 1.5 * (vx1Sq + vx2Sq + vx3Sq));
+						//geq[dir] = p1*WEIGTH1[dir] + gamma;
 						//geq[dir] = p1*WEIGTH[dir]/(rho*UbMath::c1o3) + gamma*rho;
-						//geq[dir] = (p1*WEIGTH[dir]/(rho*UbMath::c1o3) + gamma*rho)*UbMath::c1o3;
-						geq[dir] = (gamma*rho)*UbMath::c1o3;
+						geq[dir] = p1 * WEIGTH[dir] / ( UbMath::c1o3) + gamma ;
 					}
 
 
@@ -258,66 +250,66 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 					distributionsF->setDistribution(f, ix1, ix2, ix3);
 					distributionsF->setDistributionInv(f, ix1, ix2, ix3);
 
-					f[E]    =  phi * feq[E]    / rho;
-					f[W]    =  phi * feq[W]    / rho;
-					f[N]    =  phi * feq[N]    / rho;
-					f[S]    =  phi * feq[S]    / rho;
-					f[T]    =  phi * feq[T]    / rho;
-					f[B]    =  phi * feq[B]    / rho;
-					f[NE]   =  phi * feq[NE]   / rho;
-					f[SW]   =  phi * feq[SW]   / rho;
-					f[SE]   =  phi * feq[SE]   / rho;
-					f[NW]   =  phi * feq[NW]   / rho;
-					f[TE]   =  phi * feq[TE]   / rho;
-					f[BW]   =  phi * feq[BW]   / rho;
-					f[BE]   =  phi * feq[BE]   / rho;
-					f[TW]   =  phi * feq[TW]   / rho;
-					f[TN]   =  phi * feq[TN]   / rho;
-					f[BS]   =  phi * feq[BS]   / rho;
-					f[BN]   =  phi * feq[BN]   / rho;
-					f[TS]   =  phi * feq[TS]   / rho;
-					f[TNE]  =  phi * feq[TNE]  / rho;
-					f[TNW]  =  phi * feq[TNW]  / rho;
-					f[TSE]  =  phi * feq[TSE]  / rho;
-					f[TSW]  =  phi * feq[TSW]  / rho;
-					f[BNE]  =  phi * feq[BNE]  / rho;
-					f[BNW]  =  phi * feq[BNW]  / rho;
-					f[BSE]  =  phi * feq[BSE]  / rho;
-					f[BSW]  =  phi * feq[BSW]  / rho;
-					f[REST] =  phi * feq[REST] / rho;
+					f[E]    =  phi * feq[E]    ;// / rho;
+					f[W]    =  phi * feq[W]    ;// / rho;
+					f[N]    =  phi * feq[N]    ;// / rho;
+					f[S]    =  phi * feq[S]    ;// / rho;
+					f[T]    =  phi * feq[T]    ;// / rho;
+					f[B]    =  phi * feq[B]    ;// / rho;
+					f[NE]   =  phi * feq[NE]   ;// / rho;
+					f[SW]   =  phi * feq[SW]   ;// / rho;
+					f[SE]   =  phi * feq[SE]   ;// / rho;
+					f[NW]   =  phi * feq[NW]   ;// / rho;
+					f[TE]   =  phi * feq[TE]   ;// / rho;
+					f[BW]   =  phi * feq[BW]   ;// / rho;
+					f[BE]   =  phi * feq[BE]   ;// / rho;
+					f[TW]   =  phi * feq[TW]   ;// / rho;
+					f[TN]   =  phi * feq[TN]   ;// / rho;
+					f[BS]   =  phi * feq[BS]   ;// / rho;
+					f[BN]   =  phi * feq[BN]   ;// / rho;
+					f[TS]   =  phi * feq[TS]   ;// / rho;
+					f[TNE]  =  phi * feq[TNE]  ;// / rho;
+					f[TNW]  =  phi * feq[TNW]  ;// / rho;
+					f[TSE]  =  phi * feq[TSE]  ;// / rho;
+					f[TSW]  =  phi * feq[TSW]  ;// / rho;
+					f[BNE]  =  phi * feq[BNE]  ;// / rho;
+					f[BNW]  =  phi * feq[BNW]  ;// / rho;
+					f[BSE]  =  phi * feq[BSE]  ;// / rho;
+					f[BSW]  =  phi * feq[BSW]  ;// / rho;
+					f[REST] =  phi * feq[REST] ;// / rho;
 
 					distributionsH->setDistribution(f, ix1, ix2, ix3);
 					distributionsH->setDistributionInv(f, ix1, ix2, ix3);
 
 					if (distributionsH2) {
 
-						f[E]    = (1.-phi) * feq[E] / rho;
-						f[W]    = (1.-phi) * feq[W] / rho;
-						f[N]    = (1.-phi) * feq[N] / rho;
-						f[S]    = (1.-phi) * feq[S] / rho;
-						f[T]    = (1.-phi) * feq[T] / rho;
-						f[B]    = (1.-phi) * feq[B] / rho;
-						f[NE]   = (1.-phi) * feq[NE] / rho;
-						f[SW]   = (1.-phi) * feq[SW] / rho;
-						f[SE]   = (1.-phi) * feq[SE] / rho;
-						f[NW]   = (1.-phi) * feq[NW] / rho;
-						f[TE]   = (1.-phi) * feq[TE] / rho;
-						f[BW]   = (1.-phi) * feq[BW] / rho;
-						f[BE]   = (1.-phi) * feq[BE] / rho;
-						f[TW]   = (1.-phi) * feq[TW] / rho;
-						f[TN]   = (1.-phi) * feq[TN] / rho;
-						f[BS]   = (1.-phi) * feq[BS] / rho;
-						f[BN]   = (1.-phi) * feq[BN] / rho;
-						f[TS]   = (1.-phi) * feq[TS] / rho;
-						f[TNE]  = (1.-phi) * feq[TNE] / rho;
-						f[TNW]  = (1.-phi) * feq[TNW] / rho;
-						f[TSE]  = (1.-phi) * feq[TSE] / rho;
-						f[TSW]  = (1.-phi) * feq[TSW] / rho;
-						f[BNE]  = (1.-phi) * feq[BNE] / rho;
-						f[BNW]  = (1.-phi) * feq[BNW] / rho;
-						f[BSE]  = (1.-phi) * feq[BSE] / rho;
-						f[BSW]  = (1.-phi) * feq[BSW] / rho;
-						f[REST] = (1.-phi) * feq[REST] / rho;
+						f[E]    = (1.-phi) * feq[E]   ;// / rho;
+						f[W]    = (1.-phi) * feq[W]   ;// / rho;
+						f[N]    = (1.-phi) * feq[N]   ;// / rho;
+						f[S]    = (1.-phi) * feq[S]   ;// / rho;
+						f[T]    = (1.-phi) * feq[T]   ;// / rho;
+						f[B]    = (1.-phi) * feq[B]   ;// / rho;
+						f[NE]   = (1.-phi) * feq[NE]  ;// / rho;
+						f[SW]   = (1.-phi) * feq[SW]  ;// / rho;
+						f[SE]   = (1.-phi) * feq[SE]  ;// / rho;
+						f[NW]   = (1.-phi) * feq[NW]  ;// / rho;
+						f[TE]   = (1.-phi) * feq[TE]  ;// / rho;
+						f[BW]   = (1.-phi) * feq[BW]  ;// / rho;
+						f[BE]   = (1.-phi) * feq[BE]  ;// / rho;
+						f[TW]   = (1.-phi) * feq[TW]  ;// / rho;
+						f[TN]   = (1.-phi) * feq[TN]  ;// / rho;
+						f[BS]   = (1.-phi) * feq[BS]  ;// / rho;
+						f[BN]   = (1.-phi) * feq[BN]  ;// / rho;
+						f[TS]   = (1.-phi) * feq[TS]  ;// / rho;
+						f[TNE]  = (1.-phi) * feq[TNE] ;// / rho;
+						f[TNW]  = (1.-phi) * feq[TNW] ;// / rho;
+						f[TSE]  = (1.-phi) * feq[TSE] ;// / rho;
+						f[TSW]  = (1.-phi) * feq[TSW] ;// / rho;
+						f[BNE]  = (1.-phi) * feq[BNE] ;// / rho;
+						f[BNW]  = (1.-phi) * feq[BNW] ;// / rho;
+						f[BSE]  = (1.-phi) * feq[BSE] ;// / rho;
+						f[BSW]  = (1.-phi) * feq[BSW] ;// / rho;
+						f[REST] = (1.-phi) * feq[REST];//  / rho;
 
                         distributionsH2->setDistribution(f, ix1, ix2, ix3);
                         distributionsH2->setDistributionInv(f, ix1, ix2, ix3);                    
@@ -333,7 +325,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::checkFunction(mu::Parser fct)
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::checkFunction(mu::Parser fct)
 {
 	double x1=1.0,x2=1.0,x3=1.0;
 	fct.DefineVar("x1",&x1); 
@@ -352,7 +344,7 @@ void MultiphaseInitDistributionsBlockVisitor::checkFunction(mu::Parser fct)
 	}
 }
 //////////////////////////////////////////////////////////////////////////
-void MultiphaseInitDistributionsBlockVisitor::setNu( LBMReal nu )
+void MultiphaseVelocityFormInitDistributionsBlockVisitor::setNu( LBMReal nu )
 {
 	this->nu = nu;
 }
