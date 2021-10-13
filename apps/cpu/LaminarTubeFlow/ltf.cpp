@@ -73,7 +73,7 @@ void run(string configname)
       denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
       //denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
 
-      double startTime = 5;
+      //double startTime = 5;
       mu::Parser fct1;
       fct1.SetExpr("U");
       fct1.DefineConst("U", uLB);

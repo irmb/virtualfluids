@@ -224,7 +224,6 @@ UbTupleDouble3 CalculateTorqueCoProcessor::getForces(int x1, int x2, int x3,  SP
             f = dynamicPointerCast<EsoTwist3D>(distributions)->getDistributionInvForDirection(x1, x2, x3, invDir);
             fnbr = dynamicPointerCast<EsoTwist3D>(distributions)->getDistributionInvForDirection(x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
 
-<<<<<<< HEAD
             // Vector3D boundaryVelocity;
             // boundaryVelocity[0] = bc->getBoundaryVelocityX1();
             // boundaryVelocity[1] = bc->getBoundaryVelocityX2();
@@ -241,24 +240,6 @@ UbTupleDouble3 CalculateTorqueCoProcessor::getForces(int x1, int x2, int x3,  SP
             forceX1 += (f + fnbr) * D3Q27System::DX1[invDir];// - 2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[0];
             forceX2 += (f + fnbr) * D3Q27System::DX2[invDir];// - 2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[1];
             forceX3 += (f + fnbr) * D3Q27System::DX3[invDir];// - 2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[2];
-=======
-            Vector3D boundaryVelocity;
-            boundaryVelocity[0] = bc->getBoundaryVelocityX1();
-            boundaryVelocity[1] = bc->getBoundaryVelocityX2();
-            boundaryVelocity[2] = bc->getBoundaryVelocityX3();
-            double correction[3] = { 0.0, 0.0, 0.0 };
-            if (bc->hasVelocityBoundaryFlag(fdir))
-            {
-               const double forceTerm = f - fnbr;
-               correction[0] = forceTerm * boundaryVelocity[0];
-               correction[1] = forceTerm * boundaryVelocity[1];
-               correction[2] = forceTerm * boundaryVelocity[2];
-            }
-
-            forceX1 += (f + fnbr) * D3Q27System::DX1[invDir];// -2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[0];
-            forceX2 += (f + fnbr) * D3Q27System::DX2[invDir];// -2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[1];
-            forceX3 += (f + fnbr) * D3Q27System::DX3[invDir];// -2.0 * D3Q27System::WEIGTH[invDir] * rho - correction[2];
->>>>>>> 27138b35e2fb7db7637caf13179316787ebf7cc7
          }
       }
    }
