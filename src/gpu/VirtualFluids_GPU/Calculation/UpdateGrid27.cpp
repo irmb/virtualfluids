@@ -1434,9 +1434,7 @@ void coarseToFine(Parameter* para, int level)
 }
 
 UpdateGrid27::UpdateGrid27() = default;
-UpdateGrid27::~UpdateGrid27() = default;
-UpdateGrid27::UpdateGrid27(const UpdateGrid27 &updateGrid) {}
-UpdateGrid27::UpdateGrid27(UpdateGrid27 &&updateGrid27) {}
+UpdateGrid27::~UpdateGrid27(){}
 
 UpdateGrid27::UpdateGrid27(Parameter *para) { 
     chooseFunctionForCollisionAndExchange(para); }

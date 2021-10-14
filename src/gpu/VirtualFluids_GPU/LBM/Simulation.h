@@ -112,6 +112,6 @@ protected:
 	SPtr<EnstrophyAnalyzer> enstrophyAnalyzer;
 	////////////////////////////////////////////////////////////////////////////
 
-	UPtr<UpdateGrid27> updateGrid27;
+	SPtr<UpdateGrid27> updateGrid27;
  };
 #endif
