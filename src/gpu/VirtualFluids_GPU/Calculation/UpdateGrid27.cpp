@@ -23,6 +23,7 @@ void UpdateGrid27::updateGrid27(Parameter *para, vf::gpu::Communicator *comm, Cu
     //////////////////////////////////////////////////////////////////////////
 
     collisionAndExchange(para, pm, level, t, kernels, comm, cudaManager);
+
     //////////////////////////////////////////////////////////////////////////
 
     postCollisionBC(para, level, t);
@@ -43,38 +44,62 @@ void UpdateGrid27::updateGrid27(Parameter *para, vf::gpu::Communicator *comm, Cu
     //////////////////////////////////////////////////////////////////////////
     if( level != para->getFine() )
     {
-        if (para->getUseStreams() && para->getNumprocs() > 1) {
-            int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
-            int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
-
-            fineToCoarseWithStream(para, level, 
-                                   para->getParD(level)->intFCBorder.ICellFCC,
-                                   para->getParD(level)->intFCBorder.ICellFCF,
-                                   para->getParD(level)->intFCBorder.kFC, borderStreamIndex);
-
-            // prepare exchange and trigger bulk kernel when finished
-            prepareExchangeMultiGPUAfterFtoC(para, level, borderStreamIndex);
-            if (para->getUseStreams())
-                para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
-
-            // launch bulk kernel
-            para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
-            fineToCoarseWithStream(para, level, 
-                                   para->getParD(level)->intFCBulk.ICellFCC,
-                                   para->getParD(level)->intFCBulk.ICellFCF,
-                                   para->getParD(level)->intFCBulk.kFC, bulkStreamIndex);
-
-            exchangeMultiGPUAfterFtoC(para, comm, cudaManager, level, borderStreamIndex);
-            coarseToFine(para, level);
-        } else {
-            fineToCoarse(para, level);
-
-            prepareExchangeMultiGPUAfterFtoC(para, level, -1);
-            exchangeMultiGPUAfterFtoC(para, comm, cudaManager, level, -1);
-
-            coarseToFine(para, level);
-        }
+        refinementAndExchange(para, level, comm, cudaManager);
     }
+}
+
+void refinementAndExchange_streams(Parameter *para, int level, vf::gpu::Communicator *comm,
+                                   CudaMemoryManager *cudaManager)
+{
+    int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
+    int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
+
+    fineToCoarseWithStream(para, level, para->getParD(level)->intFCBorder.ICellFCC,
+                           para->getParD(level)->intFCBorder.ICellFCF, para->getParD(level)->intFCBorder.kFC,
+                           borderStreamIndex);
+
+    // prepare exchange and trigger bulk kernel when finished
+    prepareExchangeMultiGPUAfterFtoC(para, level, borderStreamIndex);
+    if (para->getUseStreams())
+        para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
+
+    // launch bulk kernel
+    para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
+    fineToCoarseWithStream(para, level, para->getParD(level)->intFCBulk.ICellFCC,
+                           para->getParD(level)->intFCBulk.ICellFCF, para->getParD(level)->intFCBulk.kFC,
+                           bulkStreamIndex);
+
+    exchangeMultiGPUAfterFtoC(para, comm, cudaManager, level, borderStreamIndex);
+    coarseToFine(para, level);
+}
+
+void refinementAndExchange_noStreams_onlyExchangeInterface(Parameter *para, int level, vf::gpu::Communicator *comm,
+                                                           CudaMemoryManager *cudaManager)
+{
+    fineToCoarse(para, level);
+
+    prepareExchangeMultiGPUAfterFtoC(para, level, -1);
+    exchangeMultiGPUAfterFtoC(para, comm, cudaManager, level, -1);
+
+    coarseToFine(para, level);
+}
+
+void refinementAndExchange_noStreams_completeExchange(Parameter *para, int level, vf::gpu::Communicator *comm,
+                                                      CudaMemoryManager *cudaManager)
+{
+    fineToCoarse(para, level);
+
+    prepareExchangeMultiGPU(para, level, -1);
+    exchangeMultiGPU(para, comm, cudaManager, level, -1);
+
+    coarseToFine(para, level);
+}
+
+void refinementAndExchange_noExchange(Parameter *para, int level, vf::gpu::Communicator *comm,
+                                      CudaMemoryManager *cudaManager)
+{
+    fineToCoarse(para, level);
+    coarseToFine(para, level);
 }
 
 void collisionAndExchange_noStreams_indexKernel(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm,
@@ -228,75 +253,64 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
 
 void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex)
 {
-    if (para->getNumprocs() > 1) {
-        prepareExchangeCollDataXGPU27AllNodes(para, level, streamIndex);
-        prepareExchangeCollDataYGPU27AllNodes(para, level, streamIndex);
-        prepareExchangeCollDataZGPU27AllNodes(para, level, streamIndex);
-    }   
+    prepareExchangeCollDataXGPU27AllNodes(para, level, streamIndex);
+    prepareExchangeCollDataYGPU27AllNodes(para, level, streamIndex);
+    prepareExchangeCollDataZGPU27AllNodes(para, level, streamIndex);
 }
 
 void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamIndex)
 {
-    if (para->getNumprocs() > 1) {
-        prepareExchangeCollDataXGPU27AfterFtoC(para, level, streamIndex);
-        prepareExchangeCollDataYGPU27AfterFtoC(para, level, streamIndex);
-        prepareExchangeCollDataZGPU27AfterFtoC(para, level, streamIndex);
-    }
+    prepareExchangeCollDataXGPU27AfterFtoC(para, level, streamIndex);
+    prepareExchangeCollDataYGPU27AfterFtoC(para, level, streamIndex);
+    prepareExchangeCollDataZGPU27AfterFtoC(para, level, streamIndex);
 }
 
 void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
                       int streamIndex)
 {
-    if (para->getNumprocs() > 1)
-	{
-        // St. Lenz: exchange for post-collision data and pre-collision data are identical!
+    // St. Lenz: exchange for post-collision data and pre-collision data are identical!
 
-		//////////////////////////////////////////////////////////////////////////
-		//3D domain decomposition
-        exchangeCollDataXGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
-        exchangeCollDataYGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
-        exchangeCollDataZGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
+    //////////////////////////////////////////////////////////////////////////
+    // 3D domain decomposition
+    exchangeCollDataXGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
+    exchangeCollDataYGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
+    exchangeCollDataZGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
 
-		//////////////////////////////////////////////////////////////////////////
-		//3D domain decomposition convection diffusion
-		if (para->getDiffOn())
-		{
-            if (para->getUseStreams())
-                std::cout << "Warning: Cuda streams not yet implemented for convection diffusion" << std::endl;
-			exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
-			exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
-			exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
-		}
+    //////////////////////////////////////////////////////////////////////////
+    // 3D domain decomposition convection diffusion
+    if (para->getDiffOn()) {
+        if (para->getUseStreams())
+            std::cout << "Warning: Cuda streams not yet implemented for convection diffusion" << std::endl;
+        exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
+    }
 
-        //////////////////////////////////////////////////////////////////////////
-        // D E P R E C A T E D
-        //////////////////////////////////////////////////////////////////////////
-		
-		//////////////////////////////////////////////////////////////////////////
-		//1D domain decomposition
-		//exchangePostCollDataGPU27(para, comm, level);
-	}
+    //////////////////////////////////////////////////////////////////////////
+    // D E P R E C A T E D
+    //////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////
+    // 1D domain decomposition
+    // exchangePostCollDataGPU27(para, comm, level);
 }
 void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
                                int streamIndex)
 {
-    if (para->getNumprocs() > 1) {
+    //////////////////////////////////////////////////////////////////////////
+    // 3D domain decomposition
+    exchangeCollDataXGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
+    exchangeCollDataYGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
+    exchangeCollDataZGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
 
-        //////////////////////////////////////////////////////////////////////////
-        // 3D domain decomposition
-        exchangeCollDataXGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
-        exchangeCollDataYGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
-        exchangeCollDataZGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
-
-        //////////////////////////////////////////////////////////////////////////
-        // 3D domain decomposition convection diffusion
-        if (para->getDiffOn()) {
-            if (para->getUseStreams())
-                std::cout << "Warning: Cuda streams not yet implemented for convection diffusion" << std::endl;
-            exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
-            exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
-            exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
-        }
+    //////////////////////////////////////////////////////////////////////////
+    // 3D domain decomposition convection diffusion
+    if (para->getDiffOn()) {
+        if (para->getUseStreams())
+            std::cout << "Warning: Cuda streams not yet implemented for convection diffusion" << std::endl;
+        exchangePostCollDataADXGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataADYGPU27(para, comm, cudaManager, level);
+        exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
     }
 }
 
@@ -1436,7 +1450,9 @@ UpdateGrid27::UpdateGrid27() = default;
 UpdateGrid27::~UpdateGrid27(){}
 
 UpdateGrid27::UpdateGrid27(Parameter *para) { 
-    chooseFunctionForCollisionAndExchange(para); }
+    chooseFunctionForCollisionAndExchange(para);
+    chooseFunctionForRefinementAndExchange(para);
+}
 
 
 void UpdateGrid27::chooseFunctionForCollisionAndExchange(Parameter *para)
@@ -1470,9 +1486,43 @@ void UpdateGrid27::chooseFunctionForCollisionAndExchange(Parameter *para)
                                         CudaMemoryManager *cudaManager) {
             collisionAndExchange_noStreams_oldKernel(para, pm, level, t, kernels, comm, cudaManager);
         };
-        std::cout << "collisionAndExchange_noStreams_oldKernel()" << std::endl;
+        
     
     } else {
         std::cout << "Invalid Configuration for collision and exchange" << std::endl;
+    }
+}
+
+void UpdateGrid27::chooseFunctionForRefinementAndExchange(Parameter *para)
+{
+    std::cout << "Function used for refinementAndExchange: ";
+    if (para->getMaxLevel() == 0) {
+        this->refinementAndExchange = [](Parameter *para, int level, vf::gpu::Communicator *comm,
+                                         CudaMemoryManager *cudaManager) {};
+        std::cout << "only one level - no function needed." << std::endl;
+    } else if (para->getNumprocs() == 1){
+        this->refinementAndExchange = [](Parameter *para, int level, vf::gpu::Communicator *comm,
+                                         CudaMemoryManager *cudaManager) {
+            refinementAndExchange_noExchange(para, level, comm, cudaManager);
+        };
+        std::cout << "refinementAndExchange_noExchange()" << std::endl;
+    } else if (para->getUseStreams() && para->getNumprocs() > 1 && para->useReducedCommunicationAfterFtoC) {
+        this->refinementAndExchange = [](Parameter *para, int level, vf::gpu::Communicator *comm,
+                                         CudaMemoryManager *cudaManager) {
+            refinementAndExchange_streams(para, level, comm, cudaManager);
+        };
+        std::cout << "refinementAndExchange_streams()" << std::endl;
+    } else if (para->getNumprocs() > 1 && para->useReducedCommunicationAfterFtoC) {
+        this->refinementAndExchange = [](Parameter *para, int level, vf::gpu::Communicator *comm,
+                                         CudaMemoryManager *cudaManager) {
+            refinementAndExchange_noStreams_onlyExchangeInterface(para, level, comm, cudaManager);
+        };
+        std::cout << "refinementAndExchange_noStreams_onlyExchangeInterface()" << std::endl;
+    } else {
+        this->refinementAndExchange = [](Parameter *para, int level, vf::gpu::Communicator *comm,
+                                         CudaMemoryManager *cudaManager) {
+            refinementAndExchange_noStreams_completeExchange(para, level, comm, cudaManager);
+        };
+        std::cout << "refinementAndExchange_noStreams_completeExchange()" << std::endl;
     }
 }
