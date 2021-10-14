@@ -21,10 +21,6 @@ void UpdateGrid27::updateGrid27(Parameter *para, vf::gpu::Communicator *comm, Cu
     }
 
     //////////////////////////////////////////////////////////////////////////
-    int borderStreamIndex = 1;
-    int bulkStreamIndex   = 0;
-
-    //////////////////////////////////////////////////////////////////////////
 
     collisionAndExchange(para, pm, level, t, kernels, comm, cudaManager);
     //////////////////////////////////////////////////////////////////////////
@@ -48,6 +44,9 @@ void UpdateGrid27::updateGrid27(Parameter *para, vf::gpu::Communicator *comm, Cu
     if( level != para->getFine() )
     {
         if (para->getUseStreams() && para->getNumprocs() > 1) {
+            int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
+            int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
+
             fineToCoarseWithStream(para, level, 
                                    para->getParD(level)->intFCBorder.ICellFCC,
                                    para->getParD(level)->intFCBorder.ICellFCF,
@@ -100,8 +99,8 @@ void collisionAndExchange_noStreams_oldKernel(Parameter *para, std::vector<std::
 void collisionAndExchange_streams(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level,
                                      unsigned int t, std::vector<SPtr<Kernel>> &kernels, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager)
 {
-    int borderStreamIndex = 1;
-    int bulkStreamIndex   = 0;
+    int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
+    int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
     // launch border kernel
     collisionUsingIndex(para, pm, level, t, kernels, para->getParD(level)->fluidNodeIndicesBorder,
                         para->getParD(level)->numberOffluidNodesBorder, borderStreamIndex);

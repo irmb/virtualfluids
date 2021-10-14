@@ -49,8 +49,11 @@ void CudaStreamManager::terminateStreams()
 }
 
 cudaStream_t &CudaStreamManager::getStream(uint streamIndex)
-{
-    return cudaStreams[streamIndex]; }
+{ return cudaStreams[streamIndex]; }
+
+int CudaStreamManager::getBorderStreamIndex() { return borderStreamIndex; }
+
+int CudaStreamManager::getBulkStreamIndex() { return bulkStreamIndex; }
 
 void CudaStreamManager::createCudaEvents()
 {
