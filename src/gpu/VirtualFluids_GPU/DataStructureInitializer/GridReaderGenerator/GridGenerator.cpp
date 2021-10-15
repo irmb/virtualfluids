@@ -697,44 +697,46 @@ void GridGenerator::initalValuesDomainDecompostion()
 
 void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseX(const uint &level, int j, int direction)
 {
+    // init send indices for communication after coarse to fine
+    std::cout << "communication: reorder send indices X ";
     para->initNumberOfProcessNeighborsAfterFtoCX(level);
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions;
     reorderSendIndicesForCommAfterFtoCX(direction, level, j, sendIndicesForCommAfterFtoCPositions);
-    reorderRecvIndicesForCommAfterFtoCX(direction, level, j, recvIndicesForCommAfterFtoCPositions);
     para->setSendProcessNeighborsAfterFtoCX(para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].numberOfNodes,
                                             level, j);
+
+    // send sendIndicesForCommAfterFtoCPositions to receiving process and receive recvIndicesForCommAfterFtoCPositions from sending process
+    std::cout << "mpi send and receive ";
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions;
+    recvIndicesForCommAfterFtoCPositions.resize(
+        (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].numberOfNodes *
+        2); // give vector an arbitraty size (larger than needed) // TODO: This is stupid! Find a better way
+    auto comm = vf::gpu::Communicator::getInstanz();
+    comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), recvIndicesForCommAfterFtoCPositions.size(),
+                          para->getParH(level)->recvProcessNeighborX[j].rankNeighbor,
+                          sendIndicesForCommAfterFtoCPositions.data(), sendIndicesForCommAfterFtoCPositions.size(),
+                          para->getParH(level)->sendProcessNeighborX[j].rankNeighbor);
+    // resize receiving vector to correct size
+    auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
+    recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end());
+
+    // init receive indices for communication after coarse to fine
+    std::cout << "reorder receive indices ";
+    reorderRecvIndicesForCommAfterFtoCX(direction, level, j, recvIndicesForCommAfterFtoCPositions);
     para->setRecvProcessNeighborsAfterFtoCX(para->getParH(level)->recvProcessNeighborsAfterFtoCX[j].numberOfNodes,
                                             level, j);
     copyProcessNeighborToAfterFtoCX(level, j);
-}
 
-void GridGenerator::copyProcessNeighborToAfterFtoCX(const uint &level, int j)
-{
-    // init f[0]*
-    para->getParD(level)->sendProcessNeighborsAfterFtoCX[j].f[0] = para->getParD(level)->sendProcessNeighborX[j].f[0];
-    para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].f[0] = para->getParH(level)->sendProcessNeighborX[j].f[0];
-    para->getParD(level)->recvProcessNeighborsAfterFtoCX[j].f[0] = para->getParD(level)->recvProcessNeighborX[j].f[0];
-    para->getParH(level)->recvProcessNeighborsAfterFtoCX[j].f[0] = para->getParH(level)->recvProcessNeighborX[j].f[0];
-
-    // init index*
-    para->getParD(level)->sendProcessNeighborsAfterFtoCX[j].index = para->getParD(level)->sendProcessNeighborX[j].index;
-    para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].index = para->getParH(level)->sendProcessNeighborX[j].index;
-    para->getParD(level)->recvProcessNeighborsAfterFtoCX[j].index = para->getParD(level)->recvProcessNeighborX[j].index;
-    para->getParH(level)->recvProcessNeighborsAfterFtoCX[j].index = para->getParH(level)->recvProcessNeighborX[j].index;
-
-    // rank neighbor
-    para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].rankNeighbor = para->getParH(level)->sendProcessNeighborX[j].rankNeighbor;
-    para->getParH(level)->recvProcessNeighborsAfterFtoCX[j].rankNeighbor = para->getParH(level)->recvProcessNeighborX[j].rankNeighbor;
+    std::cout << "done." << std::endl;
 }
 
 void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction)
 {
     // init send indices for communication after coarse to fine
-    std::cout << "communication: reorder send indices ";
+    std::cout << "communication: reorder send indices Y ";
     para->initNumberOfProcessNeighborsAfterFtoCY(level);
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
-    this->reorderSendIndicesForCommAfterFtoCY(direction, level, j, sendIndicesForCommAfterFtoCPositions);
+    reorderSendIndicesForCommAfterFtoCY(direction, level, j, sendIndicesForCommAfterFtoCPositions);
     para->setSendProcessNeighborsAfterFtoCY(para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].numberOfNodes,
                                             level, j);
 
@@ -763,6 +765,60 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint 
     std::cout << "done." << std::endl;
 }
 
+void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseZ(const uint &level, int j, int direction)
+{
+    // init send indices for communication after coarse to fine
+    std::cout << "communication: reorder send indices Z ";
+    para->initNumberOfProcessNeighborsAfterFtoCZ(level);
+    std::vector<uint> sendIndicesForCommAfterFtoCPositions;
+    reorderSendIndicesForCommAfterFtoCZ(direction, level, j, sendIndicesForCommAfterFtoCPositions);
+    para->setSendProcessNeighborsAfterFtoCZ(para->getParH(level)->sendProcessNeighborsAfterFtoCZ[j].numberOfNodes,
+                                            level, j);
+
+    // send sendIndicesForCommAfterFtoCPositions to receiving process and receive recvIndicesForCommAfterFtoCPositions from sending process
+    std::cout << "mpi send and receive ";
+    std::vector<uint> recvIndicesForCommAfterFtoCPositions; 
+    recvIndicesForCommAfterFtoCPositions.resize((size_t) para->getParH(level)->sendProcessNeighborsAfterFtoCZ[j].numberOfNodes *
+                                                2); // give vector an arbitraty size (larger than needed) // TODO: This is stupid! Find a better way
+    auto comm = vf::gpu::Communicator::getInstanz();
+    comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), recvIndicesForCommAfterFtoCPositions.size(),
+                          para->getParH(level)->recvProcessNeighborZ[j].rankNeighbor,
+                          sendIndicesForCommAfterFtoCPositions.data(), sendIndicesForCommAfterFtoCPositions.size(),
+                          para->getParH(level)->sendProcessNeighborZ[j].rankNeighbor);
+    // resize receiving vector to correct size
+    auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
+    recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end());
+
+    // init receive indices for communication after coarse to fine
+    std::cout << "reorder receive indices ";
+    reorderRecvIndicesForCommAfterFtoCZ(direction, level, j, recvIndicesForCommAfterFtoCPositions);
+    para->setRecvProcessNeighborsAfterFtoCZ(para->getParH(level)->recvProcessNeighborsAfterFtoCZ[j].numberOfNodes,
+                                            level, j);
+
+    copyProcessNeighborToAfterFtoCZ(level, j);
+
+    std::cout << "done." << std::endl;
+}
+
+void GridGenerator::copyProcessNeighborToAfterFtoCX(const uint &level, int j)
+{
+    // init f[0]*
+    para->getParD(level)->sendProcessNeighborsAfterFtoCX[j].f[0] = para->getParD(level)->sendProcessNeighborX[j].f[0];
+    para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].f[0] = para->getParH(level)->sendProcessNeighborX[j].f[0];
+    para->getParD(level)->recvProcessNeighborsAfterFtoCX[j].f[0] = para->getParD(level)->recvProcessNeighborX[j].f[0];
+    para->getParH(level)->recvProcessNeighborsAfterFtoCX[j].f[0] = para->getParH(level)->recvProcessNeighborX[j].f[0];
+
+    // init index*
+    para->getParD(level)->sendProcessNeighborsAfterFtoCX[j].index = para->getParD(level)->sendProcessNeighborX[j].index;
+    para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].index = para->getParH(level)->sendProcessNeighborX[j].index;
+    para->getParD(level)->recvProcessNeighborsAfterFtoCX[j].index = para->getParD(level)->recvProcessNeighborX[j].index;
+    para->getParH(level)->recvProcessNeighborsAfterFtoCX[j].index = para->getParH(level)->recvProcessNeighborX[j].index;
+
+    // rank neighbor
+    para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].rankNeighbor = para->getParH(level)->sendProcessNeighborX[j].rankNeighbor;
+    para->getParH(level)->recvProcessNeighborsAfterFtoCX[j].rankNeighbor = para->getParH(level)->recvProcessNeighborX[j].rankNeighbor;
+}
+
 void GridGenerator::copyProcessNeighborToAfterFtoCY(const uint &level, int j)
 {
     // init f[0]*
@@ -780,21 +836,6 @@ void GridGenerator::copyProcessNeighborToAfterFtoCY(const uint &level, int j)
     // rank neighbor
     para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].rankNeighbor = para->getParH(level)->sendProcessNeighborY[j].rankNeighbor;
     para->getParH(level)->recvProcessNeighborsAfterFtoCY[j].rankNeighbor = para->getParH(level)->recvProcessNeighborY[j].rankNeighbor;
-}
-
-void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseZ(const uint &level, int j, int direction)
-{
-    para->initNumberOfProcessNeighborsAfterFtoCZ(level);
-    std::vector<uint> sendIndicesForCommAfterFtoCPositions;
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions;
-    reorderSendIndicesForCommAfterFtoCZ(direction, level, j, sendIndicesForCommAfterFtoCPositions);
-    reorderRecvIndicesForCommAfterFtoCZ(direction, level, j, recvIndicesForCommAfterFtoCPositions);
-    para->setSendProcessNeighborsAfterFtoCZ(para->getParH(level)->sendProcessNeighborsAfterFtoCZ[j].numberOfNodes,
-                                            level, j);
-    para->setRecvProcessNeighborsAfterFtoCZ(para->getParH(level)->recvProcessNeighborsAfterFtoCZ[j].numberOfNodes,
-                                            level, j);
-
-   copyProcessNeighborToAfterFtoCZ(level, j);
 }
 
 void GridGenerator::copyProcessNeighborToAfterFtoCZ(const uint &level, int j)
