@@ -42,6 +42,8 @@ target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Gr
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Visitors)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/CoProcessors)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Utilities)
+target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/LiggghtsCoupling)
+target_include_directories(${library_name} PUBLIC src/LiggghtsCoupling/Rconstructor)
 
 
 IF(${USE_METIS} AND METIS_INCLUDEDIR)
