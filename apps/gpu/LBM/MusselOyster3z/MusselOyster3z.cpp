@@ -206,7 +206,7 @@ void multipleLevel(const std::string& configPath)
         if (useMultiGPU) {
             const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
             
-            real overlap      = (real)8.0 * dxGrid;            
+            real overlap      = (real)10.0 * dxGrid;            
             const real zSplit = round(((double)bbzp + bbzm) * 0.5);
 
             if (generatePart == 0) {
@@ -219,7 +219,7 @@ void multipleLevel(const std::string& configPath)
             }
 
             if (useLevels) {
-            gridBuilder->setNumberOfLayers(6, 8);
+            gridBuilder->setNumberOfLayers(8, 10);
             gridBuilder->addGrid(bivalveRef_1_STL, 1);
             }
 

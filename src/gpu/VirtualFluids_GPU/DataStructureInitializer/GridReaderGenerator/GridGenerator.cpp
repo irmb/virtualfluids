@@ -891,7 +891,7 @@ void GridGenerator::reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &nu
     *logging::out << logging::Logger::INFO_INTERMEDIATE
                   << "reorder send indices for communication after fine to coarse: level: " << level
                   << " direction: " << direction;
-    if (para->getParH(level)->K_CF == 0 || para->getParH(level)->K_FC == 0)
+    if (para->getParH(level)->intCF.kCF == 0 || para->getParH(level)->intFC.kFC == 0)
         *logging::out << logging::Logger::LOGGER_ERROR
                       << "reorderSendIndicesForCommAfterFtoC(): iCellFCC needs to be inititalized before calling "
                          "this function "
@@ -907,7 +907,7 @@ void GridGenerator::reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &nu
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
         neighbors.fill(-1);
         sparseIndexSend = sendIndices[posInSendIndices];  
-        if (isSparseIndexInICellFCC(para->getParH(level)->K_CF, sparseIndexSend, level))
+        if (isSparseIndexInICellFCC(para->getParH(level)->intFC.kFC, sparseIndexSend, level))
             addUniqueIndexToCommunicationVectors(sendIndicesAfterFtoC, sparseIndexSend,
                                                  sendIndicesForCommAfterFtoCPositions, posInSendIndices);
     }
@@ -961,7 +961,7 @@ void GridGenerator::aggregateNodesInICellCFC(int level, std::vector<uint> &nodes
     uint *neighborY = para->getParH(level)->neighborY_SP;
     uint *neighborZ = para->getParH(level)->neighborZ_SP;
 
-    for (uint x = 0; x < para->getParH(level)->K_FC; x++) {
+    for (uint x = 0; x < para->getParH(level)->intCF.kCF; x++) {
         sparseIndex = para->getParH(level)->intCF.ICellCFC[x];
         nodesCFC.push_back(sparseIndex);
         nodesCFC.push_back(neighborX[sparseIndex]);

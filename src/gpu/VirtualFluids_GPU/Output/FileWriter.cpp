@@ -230,9 +230,10 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
                 nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
 
 				//int sendNode = 0; // 0 - not a sendNode; 1 - sendNode; 2 - sendNode in communication after fine to coarse
-    //            testForSendNodeY(para, level, pos, sendNode); // slow and should not be done multiple times --> use for debugging only!
+    //            testForSendNodeZ(para, level, pos, sendNode); // slow and should not be done multiple times --> use for debugging only!
 				//nodedata[6][dn1] = (double) sendNode;
     //            nodedata[7][dn1] = (double) pos;
+
                 //////////////////////////////////////////////////////////////////////////
                 number2 = para->getParH(level)->neighborX_SP[number1];
                 number3 = para->getParH(level)->neighborY_SP[number2];
@@ -281,6 +282,12 @@ void FileWriter::testForSendNodeY(std::shared_ptr<Parameter> &para, int level, u
 {
     testForCommunicationNode(para, level, pos, sendNode, &para->getParH(level)->sendProcessNeighborY,
                         &para->getParH(level)->sendProcessNeighborsAfterFtoCY);
+}
+
+void FileWriter::testForSendNodeZ(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode)
+{
+    testForCommunicationNode(para, level, pos, sendNode, &para->getParH(level)->sendProcessNeighborZ,
+                             &para->getParH(level)->sendProcessNeighborsAfterFtoCZ);
 }
 
 void FileWriter::testForCommunicationNode(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode,
