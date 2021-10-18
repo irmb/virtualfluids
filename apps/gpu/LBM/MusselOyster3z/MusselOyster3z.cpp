@@ -139,7 +139,6 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "useMultiGPU = " << useMultiGPU << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
 
-    
     para->setTOut(1000);
     para->setTEnd(10000);
 

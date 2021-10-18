@@ -183,6 +183,8 @@ struct LBMSimulationParameter
 
     InterpolationCellFC intFCBorder;
     InterpolationCellFC intFCBulk;
+    InterpolationCellCF intCFBorder;
+    InterpolationCellCF intCFBulk;
 
     // offset//////////////////
     OffsetCF offCF;

@@ -58,7 +58,11 @@ public:
     virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const = 0;
     virtual void getGridInterfaceIndicesFCBorderBulk(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder,
                                                       uint *&iCellFcfBulk, uint &intFCBorderKfc, uint &intFCBulkKfc,
-                                                      int level) const           = 0;
+                                                      int level) const = 0;
+    virtual void getGridInterfaceIndicesCFBorderBulk(uint *iCellCfcBorder, uint *&iCellCfcBulk, uint *iCellCffBorder,
+                                                     uint *&iCellCffBulk, uint &intCFBorderKfc, uint &intCFBulkKfc,
+                                                     uint *neighborX_SP, uint *neighborY_SP, uint *neighborZ_SP,
+                                                     int level) const = 0;
 
     virtual void getOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) = 0;
     virtual void getOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) = 0;

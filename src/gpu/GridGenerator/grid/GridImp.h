@@ -57,6 +57,7 @@ private:
     HOSTDEVICE bool isOutSideOfGrid(Cell &cell) const;
     HOSTDEVICE bool contains(Cell &cell, char type) const;
     HOSTDEVICE void setNodeTo(Cell &cell, char type);
+    CUDA_HOST bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const;
 
     HOSTDEVICE bool nodeInPreviousCellIs(int index, char type) const;
     HOSTDEVICE bool nodeInCellIs(Cell& cell, char type) const override;
@@ -221,7 +222,11 @@ public:
     CUDA_HOST static void getGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size);
     CUDA_HOST void getGridInterfaceIndicesFCBorderBulk(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder,
                                                         uint *&iCellFcfBulk, uint &intFCBorderKfc, uint &intFCBulkKfc,
-                                                        int level) const override;
+                                                       int level) const override;
+    CUDA_HOST void getGridInterfaceIndicesCFBorderBulk(uint *iCellCfcBorder, uint *&iCellCfcBulk, uint *iCellCffBorder,
+                                                       uint *&iCellCffBulk, uint &intCFBorderKfc, uint &intCFBulkKfc,
+                                                       uint *neighborX_SP, uint *neighborY_SP, uint *neighborZ_SP,
+                                                       int level) const override;
 
     int* getNeighborsX() const override;
     int* getNeighborsY() const override;

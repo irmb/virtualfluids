@@ -1392,6 +1392,27 @@ void GridGenerator::allocArrays_OffsetScale()
             para->getParD(level)->intFCBulk.ICellFCC = para->getParD(level)->intFCBorder.ICellFCC + para->getParD(level)->intFCBorder.kFC;
             para->getParD(level)->intFCBorder.ICellFCF = para->getParD(level)->intFC.ICellFCF;
             para->getParD(level)->intFCBulk.ICellFCF = para->getParD(level)->intFCBorder.ICellFCF + para->getParD(level)->intFCBorder.kFC;
+
+            // split coarse-to-fine indices into border and bulk
+            para->getParH(level)->intCFBorder.ICellCFC = para->getParH(level)->intCF.ICellCFC;
+            para->getParH(level)->intCFBorder.ICellCFF = para->getParH(level)->intCF.ICellCFF;
+
+            builder->getGridInterfaceIndicesCFBorderBulk(
+                para->getParH(level)->intCFBorder.ICellCFC, para->getParH(level)->intCFBulk.ICellCFC,
+                para->getParH(level)->intCFBorder.ICellCFF, para->getParH(level)->intCFBulk.ICellCFF,
+                para->getParH(level)->intCFBorder.kCF, para->getParH(level)->intCFBulk.kCF,
+                this->para->getParH(level)->neighborX_SP, this->para->getParH(level)->neighborY_SP,
+                this->para->getParH(level)->neighborZ_SP, level);
+            
+            para->getParD(level)->intCFBorder.kCF = para->getParH(level)->intCFBorder.kCF;
+            para->getParD(level)->intCFBulk.kCF = para->getParH(level)->intCFBulk.kCF;
+            para->getParD(level)->intCFBorder.ICellCFC = para->getParD(level)->intCF.ICellCFC;
+            para->getParD(level)->intCFBulk.ICellCFC = para->getParD(level)->intCFBorder.ICellCFC + para->getParD(level)->intCFBorder.kCF;
+            para->getParD(level)->intCFBorder.ICellCFF = para->getParD(level)->intCF.ICellCFF;
+            para->getParD(level)->intCFBulk.ICellCFF = para->getParD(level)->intCFBorder.ICellCFF + para->getParD(level)->intCFBorder.kCF;
+
+            
+
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy
