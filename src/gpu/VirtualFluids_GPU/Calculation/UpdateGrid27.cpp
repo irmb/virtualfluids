@@ -1470,7 +1470,7 @@ void UpdateGrid27::chooseFunctionForCollisionAndExchange(Parameter *para)
         std::cout << "Cuda Streams can only be used with kernels which run using fluidNodesIndices." << std::endl;
 
     } else if (para->getUseStreams() && para->getNumprocs() <= 1) {
-        std::cout << "Cuda Streams can only be with multiple MPI processes." << std::endl;
+        std::cout << "Cuda Streams can only be used with multiple MPI processes." << std::endl;
     
     } else if (!para->getUseStreams() && para->getKernelNeedsFluidNodeIndicesToRun()) {
         this->collisionAndExchange = [](Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level,
