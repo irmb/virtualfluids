@@ -7,4 +7,4 @@ set_source_files_properties(MusselOyster2x.cpp PROPERTIES LANGUAGE CUDA)
 set_target_properties(MusselOyster2x PROPERTIES 
 	CUDA_SEPARABLE_COMPILATION ON
 	VS_DEBUGGER_COMMAND "C:/Program Files/Microsoft MPI/Bin/mpiexec.exe"
-    VS_DEBUGGER_COMMAND_ARGUMENTS "-n 2 C:/Users/Master/Documents/MasterAnna/VirtualFluids_dev/build/bin/Release/MusselOyster2x.exe")
+    VS_DEBUGGER_COMMAND_ARGUMENTS "-n 2 C:/Users/Master/Documents/MasterAnna/VirtualFluids_dev/build/bin/Debug/MusselOyster2x.exe")
