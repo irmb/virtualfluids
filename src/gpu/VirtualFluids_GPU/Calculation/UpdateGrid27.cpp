@@ -22,7 +22,7 @@ void UpdateGrid27::updateGrid27(Parameter *para, vf::gpu::Communicator *comm, Cu
 
     //////////////////////////////////////////////////////////////////////////
 
-    collisionAndExchange(para, pm, level, t, kernels, comm, cudaManager);
+    this->collisionAndExchange(para, pm, level, t, kernels, comm, cudaManager);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -44,7 +44,7 @@ void UpdateGrid27::updateGrid27(Parameter *para, vf::gpu::Communicator *comm, Cu
     //////////////////////////////////////////////////////////////////////////
     if( level != para->getFine() )
     {
-        refinementAndExchange(para, level, comm, cudaManager);
+        this->refinementAndExchange(para, level, comm, cudaManager);
     }
 }
 
@@ -1486,7 +1486,7 @@ void UpdateGrid27::chooseFunctionForCollisionAndExchange(Parameter *para)
                                         CudaMemoryManager *cudaManager) {
             collisionAndExchange_noStreams_oldKernel(para, pm, level, t, kernels, comm, cudaManager);
         };
-        
+        std::cout << "collisionAndExchange_noStreams_oldKernel()" << std::endl;
     
     } else {
         std::cout << "Invalid Configuration for collision and exchange" << std::endl;
