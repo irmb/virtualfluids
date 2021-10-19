@@ -1951,13 +1951,12 @@ void GridImp::getGridInterfaceIndicesFCBorderBulk(uint *iCellFccBorder, uint *&i
 
     uint *iCellFccAll = iCellFccBorder;
     uint *iCellFcfAll = iCellFcfBorder;
-    uint intFCKfcAll = this->gridInterface->fc.numberOfEntries;
     std::vector<uint> iCellFccBorderVector;
     std::vector<uint> iCellFccBulkVector;
     std::vector<uint> iCellFcfBorderVector;
     std::vector<uint> iCellFcfBulkVector;
 
-    for (uint i = 0; i < intFCKfcAll; i++)
+    for (uint i = 0; i < this->gridInterface->fc.numberOfEntries; i++)
         if (isSparseIndexInFluidNodeIndicesBorder(iCellFccAll[i])) {
             iCellFccBorderVector.push_back(iCellFccAll[i]);
             iCellFcfBorderVector.push_back(iCellFcfAll[i]);
@@ -1968,7 +1967,7 @@ void GridImp::getGridInterfaceIndicesFCBorderBulk(uint *iCellFccBorder, uint *&i
 
     intFCBorderKfc = (uint)iCellFccBorderVector.size();
     intFCBulkKfc   = (uint)iCellFccBulkVector.size();
-    iCellFccBulk   = iCellFccBorder + intFCBorderKfc; 
+    iCellFccBulk   = iCellFccBorder + intFCBorderKfc;
     iCellFcfBulk   = iCellFcfBorder + intFCBorderKfc; 
 
     for (uint i = 0; i < (uint)iCellFccBorderVector.size(); i++) {
@@ -1982,31 +1981,33 @@ void GridImp::getGridInterfaceIndicesFCBorderBulk(uint *iCellFccBorder, uint *&i
 }
 
 void GridImp::getGridInterfaceIndicesCFBorderBulk(uint *iCellCfcBorder, uint *&iCellCfcBulk, uint *iCellCffBorder,
-                                                  uint *&iCellCffBulk, uint &intCFBorderKfc, uint &intCFBulkKfc,
+                                                  uint *&iCellCffBulk, uint &intCFBorderKcf, uint &intCFBulkKcf,
                                                   uint *neighborX_SP, uint *neighborY_SP, uint *neighborZ_SP,
                                                   int level) const
 {
     // reorder the array of CFC/CFF indices and return pointers and sizes of the new subarrays
     uint *iCellCfcAll = iCellCfcBorder;
     uint *iCellCffAll = iCellCffBorder;
-    uint intCFKfcAll  = this->gridInterface->fc.numberOfEntries;
     std::vector<uint> iCellCfcBorderVector;
     std::vector<uint> iCellCfcBulkVector;
     std::vector<uint> iCellCffBorderVector;
     std::vector<uint> iCellCffBulkVector;
 
-    uint sparseIndexOfICellBSW;
-    for (uint i = 0; i < intCFKfcAll; i++) {
-        sparseIndexOfICellBSW = iCellCfcAll[i];
+    std::vector<uint> sparseIndexOld;
 
-        if (isSparseIndexInFluidNodeIndicesBorder(sparseIndexOfICellBSW) 
+    uint sparseIndexOfICellBSW;
+    for (uint i = 0; i < this->gridInterface->cf.numberOfEntries; i++) {
+        sparseIndexOfICellBSW = iCellCfcAll[i];
+        sparseIndexOld.push_back(sparseIndexOfICellBSW);
+
+        if (i>1000/*isSparseIndexInFluidNodeIndicesBorder(sparseIndexOfICellBSW) 
             || isSparseIndexInFluidNodeIndicesBorder(neighborX_SP[sparseIndexOfICellBSW])
             || isSparseIndexInFluidNodeIndicesBorder(neighborY_SP[sparseIndexOfICellBSW])
             || isSparseIndexInFluidNodeIndicesBorder(neighborZ_SP[sparseIndexOfICellBSW])
             || isSparseIndexInFluidNodeIndicesBorder(neighborY_SP[neighborX_SP[sparseIndexOfICellBSW]])
             || isSparseIndexInFluidNodeIndicesBorder(neighborZ_SP[neighborX_SP[sparseIndexOfICellBSW]])
             || isSparseIndexInFluidNodeIndicesBorder(neighborZ_SP[neighborY_SP[sparseIndexOfICellBSW]])
-            || isSparseIndexInFluidNodeIndicesBorder(neighborZ_SP[neighborY_SP[neighborX_SP[sparseIndexOfICellBSW]]])) {
+            || isSparseIndexInFluidNodeIndicesBorder(neighborZ_SP[neighborY_SP[neighborX_SP[sparseIndexOfICellBSW]]])*/) {
 
             iCellCfcBorderVector.push_back(iCellCfcAll[i]);
             iCellCffBorderVector.push_back(iCellCffAll[i]);
@@ -2016,10 +2017,10 @@ void GridImp::getGridInterfaceIndicesCFBorderBulk(uint *iCellCfcBorder, uint *&i
         }
     }
 
-    intCFBorderKfc = (uint)iCellCfcBorderVector.size();
-    intCFBulkKfc   = (uint)iCellCfcBulkVector.size();
-    iCellCfcBulk   = iCellCfcBorder + intCFBorderKfc;
-    iCellCffBulk   = iCellCffBorder + intCFBorderKfc;
+    intCFBorderKcf = (uint)iCellCfcBorderVector.size();
+    intCFBulkKcf   = (uint)iCellCfcBulkVector.size();
+    iCellCfcBulk   = iCellCfcBorder + intCFBorderKcf;
+    iCellCffBulk   = iCellCffBorder + intCFBorderKcf;
 
     for (uint i = 0; i < (uint)iCellCfcBorderVector.size(); i++) {
         iCellCfcBorder[i] = iCellCfcBorderVector[i];
@@ -2029,6 +2030,28 @@ void GridImp::getGridInterfaceIndicesCFBorderBulk(uint *iCellCfcBorder, uint *&i
         iCellCfcBulk[i] = iCellCfcBulkVector[i];
         iCellCffBulk[i] = iCellCffBulkVector[i];
     }
+
+    uint inBorder=0;
+    uint inBulk=0;
+    bool notFound;
+    for (auto x : sparseIndexOld) {
+        notFound = true;
+        for (uint i = 0; i < intCFBorderKcf; i++)
+            if (iCellCfcBorder[i] == x) {
+                inBorder++;
+                notFound = false;
+                break;
+            }
+        for (uint i = 0; i < intCFBulkKcf; i++)
+            if (iCellCfcBulk[i] == x) {
+                inBulk++;
+                notFound = false;
+                break;
+            }
+        if (notFound)
+            std::cout << x << std::endl;
+    }
+
 }
 
 bool GridImp::isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const
