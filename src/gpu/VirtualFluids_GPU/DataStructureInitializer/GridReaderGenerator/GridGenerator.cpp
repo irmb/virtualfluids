@@ -1378,38 +1378,9 @@ void GridGenerator::allocArrays_OffsetScale()
         
         if (para->getUseStreams() || para->getNumprocs() > 1) {
             // split fine-to-coarse indices into border and bulk
-            para->getParH(level)->intFCBorder.ICellFCC = para->getParH(level)->intFC.ICellFCC; 
-            para->getParH(level)->intFCBorder.ICellFCF = para->getParH(level)->intFC.ICellFCF; 
-
-            builder->getGridInterfaceIndicesFCBorderBulk(
-                para->getParH(level)->intFCBorder.ICellFCC, para->getParH(level)->intFCBulk.ICellFCC,
-                para->getParH(level)->intFCBorder.ICellFCF, para->getParH(level)->intFCBulk.ICellFCF,
-                para->getParH(level)->intFCBorder.kFC, para->getParH(level)->intFCBulk.kFC, level);
-            
-            para->getParD(level)->intFCBorder.kFC = para->getParH(level)->intFCBorder.kFC;
-            para->getParD(level)->intFCBulk.kFC = para->getParH(level)->intFCBulk.kFC;
-            para->getParD(level)->intFCBorder.ICellFCC = para->getParD(level)->intFC.ICellFCC;
-            para->getParD(level)->intFCBulk.ICellFCC = para->getParD(level)->intFCBorder.ICellFCC + para->getParD(level)->intFCBorder.kFC;
-            para->getParD(level)->intFCBorder.ICellFCF = para->getParD(level)->intFC.ICellFCF;
-            para->getParD(level)->intFCBulk.ICellFCF = para->getParD(level)->intFCBorder.ICellFCF + para->getParD(level)->intFCBorder.kFC;
-
+            splitFineToCoarseIntoBorderAndBulk(level);
             // split coarse-to-fine indices into border and bulk
-            para->getParH(level)->intCFBorder.ICellCFC = para->getParH(level)->intCF.ICellCFC;
-            para->getParH(level)->intCFBorder.ICellCFF = para->getParH(level)->intCF.ICellCFF;
-
-            builder->getGridInterfaceIndicesCFBorderBulk(
-                para->getParH(level)->intCFBorder.ICellCFC, para->getParH(level)->intCFBulk.ICellCFC,
-                para->getParH(level)->intCFBorder.ICellCFF, para->getParH(level)->intCFBulk.ICellCFF,
-                para->getParH(level)->intCFBorder.kCF, para->getParH(level)->intCFBulk.kCF,
-                this->para->getParH(level)->neighborX_SP, this->para->getParH(level)->neighborY_SP,
-                this->para->getParH(level)->neighborZ_SP, level);
-            
-            para->getParD(level)->intCFBorder.kCF = para->getParH(level)->intCFBorder.kCF;
-            para->getParD(level)->intCFBulk.kCF = para->getParH(level)->intCFBulk.kCF;
-            para->getParD(level)->intCFBorder.ICellCFC = para->getParD(level)->intCF.ICellCFC;
-            para->getParD(level)->intCFBulk.ICellCFC = para->getParD(level)->intCFBorder.ICellCFC + para->getParD(level)->intCFBorder.kCF;
-            para->getParD(level)->intCFBorder.ICellCFF = para->getParD(level)->intCF.ICellCFF;
-            para->getParD(level)->intCFBulk.ICellCFF = para->getParD(level)->intCFBorder.ICellCFF + para->getParD(level)->intCFBorder.kCF;
+            splitCoarseToFineIntoBorderAndBulk(level);
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy
@@ -1419,6 +1390,48 @@ void GridGenerator::allocArrays_OffsetScale()
 		cudaMemoryManager->cudaCopyInterfaceOffFC(level);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
+}
+
+void GridGenerator::splitCoarseToFineIntoBorderAndBulk(const uint &level)
+{
+    para->getParH(level)->intCFBorder.ICellCFC = para->getParH(level)->intCF.ICellCFC;
+    para->getParH(level)->intCFBorder.ICellCFF = para->getParH(level)->intCF.ICellCFF;
+
+    builder->getGridInterfaceIndicesBorderBulkCF(
+        para->getParH(level)->intCFBorder.ICellCFC, para->getParH(level)->intCFBulk.ICellCFC,
+        para->getParH(level)->intCFBorder.ICellCFF, para->getParH(level)->intCFBulk.ICellCFF,
+        para->getParH(level)->intCFBorder.kCF, para->getParH(level)->intCFBulk.kCF,
+        this->para->getParH(level)->neighborX_SP, this->para->getParH(level)->neighborY_SP,
+        this->para->getParH(level)->neighborZ_SP, level);
+
+    para->getParD(level)->intCFBorder.kCF      = para->getParH(level)->intCFBorder.kCF;
+    para->getParD(level)->intCFBulk.kCF        = para->getParH(level)->intCFBulk.kCF;
+    para->getParD(level)->intCFBorder.ICellCFC = para->getParD(level)->intCF.ICellCFC;
+    para->getParD(level)->intCFBulk.ICellCFC =
+        para->getParD(level)->intCFBorder.ICellCFC + para->getParD(level)->intCFBorder.kCF;
+    para->getParD(level)->intCFBorder.ICellCFF = para->getParD(level)->intCF.ICellCFF;
+    para->getParD(level)->intCFBulk.ICellCFF =
+        para->getParD(level)->intCFBorder.ICellCFF + para->getParD(level)->intCFBorder.kCF;
+}
+
+void GridGenerator::splitFineToCoarseIntoBorderAndBulk(const uint &level)
+{
+    para->getParH(level)->intFCBorder.ICellFCC = para->getParH(level)->intFC.ICellFCC;
+    para->getParH(level)->intFCBorder.ICellFCF = para->getParH(level)->intFC.ICellFCF;
+
+    builder->getGridInterfaceIndicesBorderBulkFC(
+        para->getParH(level)->intFCBorder.ICellFCC, para->getParH(level)->intFCBulk.ICellFCC,
+        para->getParH(level)->intFCBorder.ICellFCF, para->getParH(level)->intFCBulk.ICellFCF,
+        para->getParH(level)->intFCBorder.kFC, para->getParH(level)->intFCBulk.kFC, level);
+
+    para->getParD(level)->intFCBorder.kFC      = para->getParH(level)->intFCBorder.kFC;
+    para->getParD(level)->intFCBulk.kFC        = para->getParH(level)->intFCBulk.kFC;
+    para->getParD(level)->intFCBorder.ICellFCC = para->getParD(level)->intFC.ICellFCC;
+    para->getParD(level)->intFCBulk.ICellFCC =
+        para->getParD(level)->intFCBorder.ICellFCC + para->getParD(level)->intFCBorder.kFC;
+    para->getParD(level)->intFCBorder.ICellFCF = para->getParD(level)->intFC.ICellFCF;
+    para->getParD(level)->intFCBulk.ICellFCF =
+        para->getParD(level)->intFCBorder.ICellFCF + para->getParD(level)->intFCBorder.kFC;
 }
 
 

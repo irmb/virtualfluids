@@ -220,10 +220,10 @@ public:
     HOSTDEVICE uint getNumberOfNodesFC() const override;
     CUDA_HOST void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const override;
     CUDA_HOST static void getGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size);
-    CUDA_HOST void getGridInterfaceIndicesFCBorderBulk(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder,
+    CUDA_HOST void getGridInterfaceIndicesBorderBulkFC(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder,
                                                         uint *&iCellFcfBulk, uint &intFCBorderKfc, uint &intFCBulkKfc,
                                                        int level) const override;
-    CUDA_HOST void getGridInterfaceIndicesCFBorderBulk(uint *iCellCfcBorder, uint *&iCellCfcBulk, uint *iCellCffBorder,
+    CUDA_HOST void getGridInterfaceIndicesBorderBulkCF(uint *iCellCfcBorder, uint *&iCellCfcBulk, uint *iCellCffBorder,
                                                        uint *&iCellCffBulk, uint &intCFBorderKfc, uint &intCFBulkKfc,
                                                        uint *neighborX_SP, uint *neighborY_SP, uint *neighborZ_SP,
                                                        int level) const override;

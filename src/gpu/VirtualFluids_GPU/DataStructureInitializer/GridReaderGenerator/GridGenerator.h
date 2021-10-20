@@ -70,6 +70,9 @@ private:
 	void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
 	bool hasQs(int channelSide, unsigned int level) const;
 
+    void splitCoarseToFineIntoBorderAndBulk(const uint &level);
+    void splitFineToCoarseIntoBorderAndBulk(const uint &level);
+
 	// communication after coarse to fine
     void initCommunicationArraysForCommAfterFinetoCoarseX(const uint &level, int j, int direction);
     void initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction);

@@ -207,20 +207,20 @@ void LevelGridBuilder::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, u
     this->grids[level]->getGridInterfaceIndices(iCellCfc, iCellCff, iCellFcc, iCellFcf);
 }
 
-void LevelGridBuilder::getGridInterfaceIndicesFCBorderBulk(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder, uint *&iCellFcfBulk,
+void LevelGridBuilder::getGridInterfaceIndicesBorderBulkFC(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder, uint *&iCellFcfBulk,
                                                             uint &intFCBorderKfc, uint &intFCBulkKfc, int level) const
 {
-    this->grids[level]->getGridInterfaceIndicesFCBorderBulk(iCellFccBorder, iCellFccBulk,
+    this->grids[level]->getGridInterfaceIndicesBorderBulkFC(iCellFccBorder, iCellFccBulk,
                                                              iCellFcfBorder, iCellFcfBulk,
                                                              intFCBorderKfc, intFCBulkKfc, level);
 }
 
-void LevelGridBuilder::getGridInterfaceIndicesCFBorderBulk(uint *iCellCfcBorder, uint *&iCellCfcBulk,
+void LevelGridBuilder::getGridInterfaceIndicesBorderBulkCF(uint *iCellCfcBorder, uint *&iCellCfcBulk,
                                                            uint *iCellCffBorder,
                                                   uint *&iCellCffBulk, uint &intCFBorderKfc, uint &intCFBulkKfc,
                                                   uint *neighborX_SP, uint *neighborY_SP, uint *neighborZ_SP, int level) const
 {
-    this->grids[level]->getGridInterfaceIndicesCFBorderBulk(iCellCfcBorder, iCellCfcBulk, 
+    this->grids[level]->getGridInterfaceIndicesBorderBulkCF(iCellCfcBorder, iCellCfcBulk, 
                                                             iCellCffBorder, iCellCffBulk,
                                                             intCFBorderKfc, intCFBulkKfc, 
                                                             neighborX_SP, neighborY_SP, neighborZ_SP,

@@ -56,10 +56,10 @@ public:
     virtual uint getNumberOfNodesCF(int level) = 0;
     virtual uint getNumberOfNodesFC(int level) = 0;
     virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const = 0;
-    virtual void getGridInterfaceIndicesFCBorderBulk(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder,
+    virtual void getGridInterfaceIndicesBorderBulkFC(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder,
                                                       uint *&iCellFcfBulk, uint &intFCBorderKfc, uint &intFCBulkKfc,
                                                       int level) const = 0;
-    virtual void getGridInterfaceIndicesCFBorderBulk(uint *iCellCfcBorder, uint *&iCellCfcBulk, uint *iCellCffBorder,
+    virtual void getGridInterfaceIndicesBorderBulkCF(uint *iCellCfcBorder, uint *&iCellCfcBulk, uint *iCellCffBorder,
                                                      uint *&iCellCffBulk, uint &intCFBorderKfc, uint &intCFBulkKfc,
                                                      uint *neighborX_SP, uint *neighborY_SP, uint *neighborZ_SP,
                                                      int level) const = 0;

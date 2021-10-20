@@ -1943,7 +1943,7 @@ void GridImp::getGridInterface(uint* gridInterfaceList, const uint* oldGridInter
         gridInterfaceList[i] = oldGridInterfaceList[i] + 1; // + 1 for numbering shift between GridGenerator and VF_GPU
 }
 
-void GridImp::getGridInterfaceIndicesFCBorderBulk(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder,
+void GridImp::getGridInterfaceIndicesBorderBulkFC(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder,
                                                    uint *&iCellFcfBulk, uint &intFCBorderKfc, uint &intFCBulkKfc,
                                                    int level) const
 {
@@ -1980,7 +1980,7 @@ void GridImp::getGridInterfaceIndicesFCBorderBulk(uint *iCellFccBorder, uint *&i
     }
 }
 
-void GridImp::getGridInterfaceIndicesCFBorderBulk(uint *iCellCfcBorder, uint *&iCellCfcBulk, uint *iCellCffBorder,
+void GridImp::getGridInterfaceIndicesBorderBulkCF(uint *iCellCfcBorder, uint *&iCellCfcBulk, uint *iCellCffBorder,
                                                   uint *&iCellCffBulk, uint &intCFBorderKcf, uint &intCFBulkKcf,
                                                   uint *neighborX_SP, uint *neighborY_SP, uint *neighborZ_SP,
                                                   int level) const
