@@ -1410,9 +1410,6 @@ void GridGenerator::allocArrays_OffsetScale()
             para->getParD(level)->intCFBulk.ICellCFC = para->getParD(level)->intCFBorder.ICellCFC + para->getParD(level)->intCFBorder.kCF;
             para->getParD(level)->intCFBorder.ICellCFF = para->getParD(level)->intCF.ICellCFF;
             para->getParD(level)->intCFBulk.ICellCFF = para->getParD(level)->intCFBorder.ICellCFF + para->getParD(level)->intCFBorder.kCF;
-
-            
-
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy
