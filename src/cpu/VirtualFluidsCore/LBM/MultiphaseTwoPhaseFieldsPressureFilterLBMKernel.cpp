@@ -1308,12 +1308,12 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 					   + (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa)) * c2o3 * oMdrho) + c1o27 * oMdrho;
 
 				///storing pre collision second moments
-				LBMReal mbxx = mfcaa - c1o3 * mfaaa;
-				LBMReal mbyy = mfaca - c1o3 * mfaaa;
-				LBMReal mbzz = mfaac - c1o3 * mfaaa;
-				LBMReal mbxy = mfbba;
-				LBMReal mbxz = mfbab;
-				LBMReal mbyz = mfabb;
+				// LBMReal mbxx = mfcaa - c1o3 * mfaaa;
+				// LBMReal mbyy = mfaca - c1o3 * mfaaa;
+				// LBMReal mbzz = mfaac - c1o3 * mfaaa;
+				// LBMReal mbxy = mfbba;
+				// LBMReal mbxz = mfbab;
+				// LBMReal mbyz = mfabb;
 
 			   //2.
 			   // linear combinations
