@@ -109,11 +109,11 @@ void run(string configname)
         LBMReal mu_h = rho_h * nu_h;
         
         //gravity
-        LBMReal g_y = Re*Re*mu_h*mu_h/(rho_h*(rho_h-rho_l)*D*D*D);
+        LBMReal g_y = Re* Re* mu_h* mu_h / (rho_h * (rho_h - rho_l) * D * D * D);
         //Eotvos number
         LBMReal Eo = 100;
         //surface tension
-        sigma = rho_h*g_y*D*D/Eo;
+        sigma = rho_h* g_y* D* D / Eo;
 
         //g_y = 0;
 
@@ -125,7 +125,7 @@ void run(string configname)
                 //UBLOG(logINFO, "rho = " << rhoLB);
                 UBLOG(logINFO, "D = " << D);
                 UBLOG(logINFO, "nuL = " << nuL);
-                UBLOG(logINFO, "nuL = " << nuG);
+                UBLOG(logINFO, "nuG = " << nuG);
                 UBLOG(logINFO, "Re = " << Re);
                 UBLOG(logINFO, "Eo = " << Eo);
                 UBLOG(logINFO, "g_y = " << g_y);
@@ -141,18 +141,18 @@ void run(string configname)
         SPtr<LBMKernel> kernel;
 
         //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
-        kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
-        //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
+       // kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
 
-        //mu::Parser fgr;
-        //fgr.SetExpr("-(rho-rho_l)*g_y");
-        //fgr.DefineConst("rho_l", rho_l);
-        //fgr.DefineConst("g_y", g_y);
+        mu::Parser fgr;
+        fgr.SetExpr("-(rho-rho_l)*g_y");
+        fgr.DefineConst("rho_l", rho_l);
+        fgr.DefineConst("g_y", g_y);
 
-        //kernel->setWithForcing(true);
-        //kernel->setForcingX1(0.0);
-        //kernel->setForcingX2(fgr);
-        //kernel->setForcingX3(0.0);
+        kernel->setWithForcing(true);
+        kernel->setForcingX1(0.0);
+        kernel->setForcingX2(fgr);
+        kernel->setForcingX3(0.0);
 
         kernel->setPhiL(phiL);
         kernel->setPhiH(phiH);
@@ -184,7 +184,7 @@ void run(string configname)
         grid->setPeriodicX1(true);
         grid->setPeriodicX2(true);
         grid->setPeriodicX3(true);
-        grid->setGhostLayerWidth(1);
+        grid->setGhostLayerWidth(2);
 
         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
 
@@ -298,6 +298,7 @@ void run(string configname)
 
             mu::Parser fct2;
             fct2.SetExpr("0.5*uLB-uLB*0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
+            //fct2.SetExpr("uLB");
             fct2.DefineConst("uLB", uLB);
             fct2.DefineConst("x1c", x1c);
             fct2.DefineConst("x2c", x2c);
@@ -305,8 +306,8 @@ void run(string configname)
             fct2.DefineConst("radius", radius);
             fct2.DefineConst("interfaceThickness", interfaceThickness);
 
-            MultiphaseInitDistributionsBlockVisitor initVisitor(densityRatio);
-            //MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
+            //MultiphaseInitDistributionsBlockVisitor initVisitor(densityRatio);
+            MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
             initVisitor.setPhi(fct1);
             initVisitor.setVx1(fct2);
             grid->accept(initVisitor);
@@ -344,11 +345,11 @@ void run(string configname)
 
         grid->accept(bcVisitor);
 
-        TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
-        grid->accept(setConnsVisitor);
-
-        //ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        //TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
         //grid->accept(setConnsVisitor);
+
+        ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(

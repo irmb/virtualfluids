@@ -51,10 +51,7 @@ public:
    virtual ~MultiphaseTwoPhaseFieldsPressureFilterLBMKernel(void) = default;
    void calculate(int step) override;
    SPtr<LBMKernel> clone() override;
-   void forwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho);
-   void backwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho);
-   void forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
-   void backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
+
 
    ///refactor
    //CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure;
@@ -64,6 +61,14 @@ public:
 protected:
    virtual void initDataSet();
    void swapDistributions() override;
+
+   void initForcing();
+
+   void forwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho);
+   void backwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho);
+   void forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
+   void backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
+
    LBMReal f1[D3Q27System::ENDF+1];
 
    CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;
@@ -81,6 +86,10 @@ protected:
    //CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   phaseField;
 
    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressureOld;
+
+   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField;
+   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField2; 
+   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr divU; 
 
    LBMReal h  [D3Q27System::ENDF+1];
    LBMReal h2[D3Q27System::ENDF + 1];
