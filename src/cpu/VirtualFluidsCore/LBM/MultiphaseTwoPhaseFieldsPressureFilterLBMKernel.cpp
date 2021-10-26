@@ -50,14 +50,21 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::initDataSet()
     SPtr<DistributionArray3D> f(new D3Q27EsoTwist3DSplittedVector( nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9));
     SPtr<DistributionArray3D> h(new D3Q27EsoTwist3DSplittedVector( nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9)); // For phase-field
     SPtr<DistributionArray3D> h2(new D3Q27EsoTwist3DSplittedVector(nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9)); // For phase-field
-    SPtr<PhaseFieldArray3D> divU(new PhaseFieldArray3D(            nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
+    //SPtr<PhaseFieldArray3D> divU(new PhaseFieldArray3D(            nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
+	SPtr<PhaseFieldArray3D> divU1(new PhaseFieldArray3D(            nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
 	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure(new  CbArray3D<LBMReal, IndexerX3X2X1>(    nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
 	pressureOld = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
     dataSet->setFdistributions(f);
     dataSet->setHdistributions(h); // For phase-field
     dataSet->setH2distributions(h2); // For phase-field
-    dataSet->setPhaseField(divU);
+    //dataSet->setPhaseField(divU);
+	dataSet->setPhaseField(divU1);
 	dataSet->setPressureField(pressure);
+
+	phaseField = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.0));
+	phaseField2 = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.0));
+	divU = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
+
 }
 //////////////////////////////////////////////////////////////////////////
 SPtr<LBMKernel> MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::clone()
@@ -83,6 +90,7 @@ SPtr<LBMKernel> MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::clone()
     kernel->setIndex(ix1, ix2, ix3);
     kernel->setDeltaT(deltaT);
 	kernel->setGhostLayerWidth(2);
+	dynamicPointerCast<MultiphaseTwoPhaseFieldsPressureFilterLBMKernel>(kernel)->initForcing();
 
     return kernel;
 }
@@ -170,14 +178,16 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
     int maxX2 = bcArrayMaxX2 - ghostLayerWidth;
     int maxX3 = bcArrayMaxX3 - ghostLayerWidth;
 
+
+
     //TODO
 	//very expensive !!!!!
-	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField(
-            new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, -999.0));
-    CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField2(
-        new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, -999.0));
-        CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr divU(
-            new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, 0.0));
+	//CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField(
+ //           new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, -999.0));
+ //   CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr phaseField2(
+ //       new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, -999.0));
+ //       CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr divU(
+ //           new CbArray3D<LBMReal, IndexerX3X2X1>(bcArrayMaxX1, bcArrayMaxX2, bcArrayMaxX3, 0.0));
 
 //#pragma omp parallel for
 	  for (int x3 = minX3-ghostLayerWidth; x3 < maxX3+ghostLayerWidth; x3++) {
@@ -713,7 +723,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 			   //+WEIGTH[NE] * (((phi2[TE] - phi2[BW]) - (phi2[BE] - phi2[TW])) + ((phi2[TS] - phi2[BN]) + (phi2[TN] - phi2[BS])))) +
 			   //+WEIGTH[N] * (phi2[T] - phi2[B]));
 
-			   if (withForcing) {
+			   //if (withForcing) {
 				   // muX1 = static_cast<double>(x1-1+ix1*maxX1);
 				   // muX2 = static_cast<double>(x2-1+ix2*maxX2);
 				   // muX3 = static_cast<double>(x3-1+ix3*maxX3);
@@ -722,11 +732,13 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 				  // forcingX2 = muForcingX2.Eval() + c1o3*drho*dX2_phi * rhoToPhi / rho;//-gradPy/rho;
 				   //forcingX3 = muForcingX3.Eval() + c1o3*drho*dX3_phi * rhoToPhi / rho;//-gradPz/rho;
 
-				   muForcingX1.DefineVar("rho",&muRho); 
-				   muForcingX2.DefineVar("rho",&muRho); 
-				   muForcingX3.DefineVar("rho",&muRho); 
 
 				   muRho = rho;
+				   
+			       //muForcingX1.DefineConst("rho", rho);
+			       //muForcingX2.DefineConst("rho", rho);
+			       //muForcingX3.DefineConst("rho", rho);
+				   			   
 
 				   forcingX1 = muForcingX1.Eval()/rho - gradPx/rho;
 				   forcingX2 = muForcingX2.Eval()/rho - gradPy/rho;
@@ -740,7 +752,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 				   vvy += forcingX2 * deltaT * 0.5; // Y
 				   vvz += forcingX3 * deltaT * 0.5; // Z
 
-			   }
+			   //}
 
 
 			   ///surface tension force
@@ -958,20 +970,20 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 
 			   //forcing 
 			   ///////////////////////////////////////////////////////////////////////////////////////////
-			   if (withForcing)
-			   {
-				   muX1 = static_cast<double>(x1 - 1 + ix1 * maxX1);
-				   muX2 = static_cast<double>(x2 - 1 + ix2 * maxX2);
-				   muX3 = static_cast<double>(x3 - 1 + ix3 * maxX3);
+			   //if (withForcing)
+			   //{
+				  // muX1 = static_cast<double>(x1 - 1 + ix1 * maxX1);
+				  // muX2 = static_cast<double>(x2 - 1 + ix2 * maxX2);
+				  // muX3 = static_cast<double>(x3 - 1 + ix3 * maxX3);
 
-				   //forcingX1 = muForcingX1.Eval();
-				   //forcingX2 = muForcingX2.Eval();
-				   //forcingX3 = muForcingX3.Eval();
+				  // //forcingX1 = muForcingX1.Eval();
+				  // //forcingX2 = muForcingX2.Eval();
+				  // //forcingX3 = muForcingX3.Eval();
 
-				   //vvx += forcingX1 * deltaT * 0.5; // X
-				   //vvy += forcingX2 * deltaT * 0.5; // Y
-				   //vvz += forcingX3 * deltaT * 0.5; // Z
-			   }
+				  // //vvx += forcingX1 * deltaT * 0.5; // X
+				  // //vvy += forcingX2 * deltaT * 0.5; // Y
+				  // //vvz += forcingX3 * deltaT * 0.5; // Z
+			   //}
 
 			   LBMReal vx2;
                LBMReal vy2;
@@ -1296,9 +1308,9 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 					   + (mfaac * mfaca + mfaac * mfcaa + mfaca * mfcaa)) * c2o3 * oMdrho) + c1o27 * oMdrho;
 
 				///storing pre collision second moments
-				LBMReal mbxx = mfcaa;
-				LBMReal mbyy = mfaca;
-				LBMReal mbzz = mfaac;
+				LBMReal mbxx = mfcaa - c1o3 * mfaaa;
+				LBMReal mbyy = mfaca - c1o3 * mfaaa;
+				LBMReal mbzz = mfaac - c1o3 * mfaaa;
 				LBMReal mbxy = mfbba;
 				LBMReal mbxz = mfbab;
 				LBMReal mbyz = mfabb;
@@ -1468,9 +1480,12 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 			   mfaba = -mfaba;
 			   mfaab = -mfaab;
 			   //////////////////////////////////////////////////////////////////////////////////////
-			   mfbaa += -rho * rhoToPhi * c1o2 * ((mbxx + mfcaa) * dX1_phi + (mbxy + mfbba) * dX2_phi + (mbxz + mfbab) * dX3_phi);
-			   mfaba += -rho * rhoToPhi * c1o2 * ((mbxy + mfbba) * dX1_phi + (mbyy + mfaca) * dX2_phi + (mbyz + mfabb) * dX3_phi);
-			   mfaab += -rho * rhoToPhi * c1o2 * ((mbxz + mfbab) * dX1_phi + (mbyz + mfabb) * dX2_phi + (mbzz + mfaac) * dX3_phi);
+			   //mfbaa += -rho * rhoToPhi * c1o2 * ((mbxx + mfcaa) * dX1_phi + (mbxy + mfbba) * dX2_phi + (mbxz + mfbab) * dX3_phi);
+			   //mfaba += -rho * rhoToPhi * c1o2 * ((mbxy + mfbba) * dX1_phi + (mbyy + mfaca) * dX2_phi + (mbyz + mfabb) * dX3_phi);
+			   //mfaab += -rho * rhoToPhi * c1o2 * ((mbxz + mfbab) * dX1_phi + (mbyz + mfabb) * dX2_phi + (mbzz + mfaac) * dX3_phi);
+			   mfbaa += c1o3 * (c1 / collFactorM - c1o2) * rhoToPhi * (2 * dxux * dX1_phi + Dxy * dX2_phi + Dxz * dX3_phi) / (rho);
+			   mfaba += c1o3 * (c1 / collFactorM - c1o2) * rhoToPhi * (Dxy * dX1_phi + 2 * dyuy * dX2_phi + Dyz * dX3_phi) / (rho);
+			   mfaab += c1o3 * (c1 / collFactorM - c1o2) * rhoToPhi * (Dxz * dX1_phi + Dyz * dX2_phi + 2 * dyuy * dX3_phi) / (rho);
 			   ////////////////////////////////////////////////////////////////////////////////////
 			   //back
 			   ////////////////////////////////////////////////////////////////////////////////////
@@ -3538,4 +3553,28 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::swapDistributions()
     LBMKernel::swapDistributions();
     dataSet->getHdistributions()->swap();
 	dataSet->getH2distributions()->swap();
+}
+
+void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::initForcing()
+{
+	muForcingX1.DefineVar("x1", &muX1); muForcingX1.DefineVar("x2", &muX2); muForcingX1.DefineVar("x3", &muX3);
+	muForcingX2.DefineVar("x1", &muX1); muForcingX2.DefineVar("x2", &muX2); muForcingX2.DefineVar("x3", &muX3);
+	muForcingX3.DefineVar("x1", &muX1); muForcingX3.DefineVar("x2", &muX2); muForcingX3.DefineVar("x3", &muX3);
+
+	muDeltaT = deltaT;
+
+	muForcingX1.DefineVar("dt", &muDeltaT);
+	muForcingX2.DefineVar("dt", &muDeltaT);
+	muForcingX3.DefineVar("dt", &muDeltaT);
+
+	muNu = (1.0 / 3.0) * (1.0 / collFactor - 1.0 / 2.0);
+
+	muForcingX1.DefineVar("nu", &muNu);
+	muForcingX2.DefineVar("nu", &muNu);
+	muForcingX3.DefineVar("nu", &muNu);
+
+	muForcingX1.DefineVar("rho",&muRho); 
+	muForcingX2.DefineVar("rho",&muRho); 
+	muForcingX3.DefineVar("rho",&muRho); 
+
 }
