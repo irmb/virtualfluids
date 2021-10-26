@@ -162,7 +162,7 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
 	this->muRho.DefineVar("x1",&x1); this->muRho.DefineVar("x2",&x2); this->muRho.DefineVar("x3",&x3);
 	this->muPhi.DefineVar("x1",&x1); this->muPhi.DefineVar("x2",&x2); this->muPhi.DefineVar("x3",&x3);
 
-	LBMReal vx1, vx2, vx3, rho, p1, phi;
+	LBMReal vx1, vx2, vx3, rho, /*p1,*/ phi;
 
 	int gridRank = grid->getRank();
 	int blockRank = block->getRank();
@@ -193,8 +193,8 @@ void MultiphaseInitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPt
                     x3              = coords[2];
 
 					
-					p1  = 0.0;
-					p1 = muRho.Eval();
+					//p1  = 0.0;
+					//p1 = muRho.Eval();
 					vx1 = muVx1.Eval();
 					vx2 = muVx2.Eval();
 					vx3 = muVx3.Eval();
