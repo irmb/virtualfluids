@@ -394,7 +394,7 @@ void bflow(string configname)
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
       //writeMQCoProcessor->process(100);
 
-      SPtr<UbScheduler> forceSch(new UbScheduler(10));
+      SPtr<UbScheduler> forceSch(new UbScheduler(1000));
       SPtr<CalculateTorqueCoProcessor> fp = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueRotor.csv", comm);
       fp->addInteractor(rotorInt);
       SPtr<CalculateTorqueCoProcessor> fp2 = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueStator.csv", comm);
@@ -404,12 +404,12 @@ void bflow(string configname)
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
-      //calculator->addCoProcessor(npr);
-      //calculator->addCoProcessor(fp);
+      calculator->addCoProcessor(npr);
+      calculator->addCoProcessor(fp);
       calculator->addCoProcessor(fp2);
-      //calculator->addCoProcessor(writeMQCoProcessor);
+      calculator->addCoProcessor(writeMQCoProcessor);
       //calculator->addCoProcessor(writeThixotropicMQCoProcessor);
-      //calculator->addCoProcessor(restartCoProcessor);
+      calculator->addCoProcessor(restartCoProcessor);
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculator->calculate();

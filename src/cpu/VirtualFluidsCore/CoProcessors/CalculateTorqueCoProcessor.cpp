@@ -171,9 +171,9 @@ void CalculateTorqueCoProcessor::calculateForces()
          torqueX2global += torqueX2;
          torqueX3global += torqueX3;
 
-         UBLOG(logINFO, "torqueX1global = " << torqueX1global);
+         //UBLOG(logINFO, "torqueX1global = " << torqueX1global);
 
-         UBLOG(logINFO, "counter = " << counter);
+         //UBLOG(logINFO, "counter = " << counter);
       }
    }
    std::vector<double> values;
