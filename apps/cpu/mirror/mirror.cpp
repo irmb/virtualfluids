@@ -49,7 +49,7 @@ void run(string configname)
       string          VRES1100_Spiegel_fein = config.getValue<string>("VRES1100_Spiegel_fein");
 
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

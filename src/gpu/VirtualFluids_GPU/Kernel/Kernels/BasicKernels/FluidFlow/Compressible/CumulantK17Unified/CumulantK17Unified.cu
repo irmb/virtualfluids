@@ -4,7 +4,6 @@
 
 #include "Parameter/Parameter.h"
 #include "../RunLBMKernel.cuh"
-#include "Kernel/Utilities/CudaGrid.h"
 
 #include <lbm/CumulantChimera.h>
 
@@ -25,7 +24,7 @@ CumulantK17Unified::CumulantK17Unified(std::shared_ptr<Parameter> para, int leve
 
     myKernelGroup = BasicKernel;
 
-    this->cudaGrid = CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->size_Mat_SP);
+    this->cudaGrid = cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->size_Mat_SP);
 }
 
 

@@ -16,7 +16,7 @@
 #include "UbTuple.h"
 
 class ForceCalculator;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class D3Q27Interactor;
@@ -29,7 +29,7 @@ public:
     //! Constructor
     //! \param v - velocity of fluid in LB units
     //! \param a - area of object in LB units
-    CalculateForcesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<Communicator> comm,
+    CalculateForcesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm,
                                double v, double a);
     ~CalculateForcesCoProcessor() override;
     void process(double step) override;
@@ -45,7 +45,7 @@ protected:
 
 private:
     std::string path;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     std::vector<SPtr<D3Q27Interactor>> interactors;
     double forceX1global;
     double forceX2global;

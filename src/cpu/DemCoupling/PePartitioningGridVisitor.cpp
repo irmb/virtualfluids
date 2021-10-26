@@ -2,7 +2,7 @@
 
 #include "PePartitioningGridVisitor.h"
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "CoordinateTransformation3D.h"
 #include "Grid3D.h"
 #include "UbLogger.h"
@@ -13,7 +13,7 @@
 
 using namespace std;
 
-PePartitioningGridVisitor::PePartitioningGridVisitor(SPtr<Communicator> comm, std::shared_ptr<DemCoProcessor> dem)
+PePartitioningGridVisitor::PePartitioningGridVisitor(std::shared_ptr<vf::mpi::Communicator> comm, std::shared_ptr<DemCoProcessor> dem)
     : Grid3DVisitor(), comm(comm), dem(dem)
 {
     forest = dynamicPointerCast<PePhysicsEngineSolverAdapter>(dem->getPhysicsEngineSolver())->getForest();

@@ -7,11 +7,11 @@
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 
 #include "BCArray3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "UbScheduler.h"
 
 QCriterionCoProcessor::QCriterionCoProcessor(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer,
-                                             SPtr<UbScheduler> s, SPtr<Communicator> comm)
+                                             SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), path(path), comm(comm), writer(writer)
 {
     init();

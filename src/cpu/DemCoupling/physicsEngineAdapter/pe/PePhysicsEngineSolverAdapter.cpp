@@ -8,7 +8,7 @@
 #include <pe/basic.h>
 #include <pe/rigidbody/UnionFactory.h>
 //#include "geometry/GeometricalFunctions.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "PeAdapter.h"
 #include "PeLoadBalancerAdapter.h"
 #include "PePhysicsEngineGeometryAdapter.h"

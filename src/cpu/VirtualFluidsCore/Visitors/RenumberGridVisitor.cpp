@@ -4,7 +4,7 @@
 #include "Grid3DSystem.h"
 //#include <mpi.h>
 
-RenumberGridVisitor::RenumberGridVisitor(SPtr<Communicator> com) : comm(com) {}
+RenumberGridVisitor::RenumberGridVisitor(std::shared_ptr<vf::mpi::Communicator> com) : comm(com) {}
 
 //////////////////////////////////////////////////////////////////////////
 void RenumberGridVisitor::visit(SPtr<Grid3D> grid)

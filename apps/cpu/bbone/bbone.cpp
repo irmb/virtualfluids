@@ -33,7 +33,7 @@ void sbonepd(string configname)
       bool            logToFile         = config.getBool("logToFile");
       double          deltaT            = config.getDouble("deltaT");
       
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)
@@ -70,8 +70,8 @@ void sbonepd(string configname)
       LBMReal rho_LB = 0.0;
       //nueWasser = 1e-6 m^2/s
       double nu_real = 1e-6;
-      LBMReal dt = deltaT; //1e-5; // s (frei gewählt)
-      //dx - frei gewählt
+      LBMReal dt = deltaT; //1e-5; // s (frei gewï¿½hlt)
+      //dx - frei gewï¿½hlt
       //
       LBMReal nu_LB = nu_real / (dx*dx / dt);
 

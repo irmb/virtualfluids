@@ -29,7 +29,7 @@ void pflowdp(string configname)
       double          deltax = config.getValue<double>("deltax");
 
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       LBMReal rhoLB = 0.0;

@@ -8,14 +8,14 @@
 
 class Grid3D;
 class UbScheduler;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 
 //! \class MPIWriteBlocksBECoProcessor
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating
 class MPIIOCoProcessor : public CoProcessor
 {
 public:
-    MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<Communicator> comm);
+    MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
     ~MPIIOCoProcessor() override;
 
     //! Each timestep writes the grid into the files
@@ -37,7 +37,7 @@ public:
 
 protected:
     std::string path;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     MPI_Datatype gridParamType, block3dType, dataSetParamType, boundCondType, arrayPresenceType;
 };
 #endif // ! _MPIIOCoProcessor_H_

@@ -47,6 +47,7 @@ option(BUILD_VF_GPU "Build VirtualFluids gpu variant" OFF)
 
 option(BUILD_USE_OPENMP "Build VirtualFluids with openmp" ON)
 option(BUILD_USE_BOOST "Build VirtualFluids with boost" OFF)
+option(BUILD_USE_MPI "include MPI library support" ON)
 
 # vf gpu
 option(BUILD_VF_GKS          "Build VirtualFluids GKS"     OFF )
@@ -132,6 +133,7 @@ if(BUILD_VF_GPU OR BUILD_VF_GKS)
 
     message(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
     message(STATUS "CUDA Architecture: ${CMAKE_CUDA_ARCHITECTURES}")
+    set(CMAKE_CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}" CACHE STRING "Cuda Architecture (compute capabilitiy)")
 endif()
 
 
@@ -163,7 +165,10 @@ if(BUILD_USE_OPENMP)
     find_package(OpenMP REQUIRED)
 endif()
 
-find_package(MPI REQUIRED)
+if(BUILD_USE_MPI)
+    find_package(MPI REQUIRED)
+    list(APPEND VF_COMPILER_DEFINITION VF_MPI)
+endif()
 
 # boost
 IF(BUILD_USE_BOOST)
@@ -180,8 +185,7 @@ ENDIF()
 
 add_subdirectory(src/logger)
 add_subdirectory(src/basics)
-#add_subdirectory(src/mpi)
-#add_subdirectory(src/cuda)
+add_subdirectory(src/mpi)
 add_subdirectory(src/lbm)
 
 
@@ -192,5 +196,6 @@ if (BUILD_VF_CPU)
     include (cpu.cmake)
 endif()
 if(BUILD_VF_GPU OR BUILD_VF_GKS)
+    add_subdirectory(src/cuda)
     include (gpu.cmake)
 endif()

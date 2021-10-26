@@ -9,7 +9,7 @@
 
 class Grid3D;
 class UbScheduler;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class BCProcessor;
 class LBMKernel;
 
@@ -29,7 +29,7 @@ public:
         PhaseField2 = 8
     };
 
-    MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<Communicator> comm);
+    MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
     ~MPIIOMigrationCoProcessor() override;
     //! Each timestep writes the grid into the files
     void process(double step) override;
@@ -73,7 +73,7 @@ public:
 
 protected:
     // std::string path;
-    // SPtr<Communicator> comm;
+    // std::shared_ptr<vf::mpi::Communicator> comm;
 
 private:
     // MPI_Datatype gridParamType, block3dType;

@@ -1,4 +1,4 @@
-#include "Calculation/UpdateGrid27.h"
+#include "UpdateGrid27.h"
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 #include "Calculation/DragLift.h"
@@ -12,7 +12,7 @@ void interactWithActuators(Parameter* para, CudaMemoryManager* cudaManager, int 
 void interactWithProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
 
 void updateGrid27(Parameter* para, 
-                  vf::gpu::Communicator* comm, 
+                  vf::gpu::Communicator& comm, 
                   CudaMemoryManager* cudaManager, 
                   std::vector<std::shared_ptr<PorousMedia>>& pm, 
                   int level, 
@@ -156,7 +156,7 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
 	}
 }
 
-void exchangeMultiGPU(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangeMultiGPU(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
     if (para->getNumprocs() > 1)
 	{

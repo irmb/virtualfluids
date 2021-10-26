@@ -4,7 +4,7 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-#include "Kernel/Utilities/CudaGrid.h"
+#include <cuda/CudaGrid.h>
 
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
@@ -44,7 +44,7 @@ void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
 
 void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level)
 {
-    vf::gpu::CudaGrid grid = vf::gpu::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
 
     interpQuantities<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints, probeStruct->vals,
                                                     probeStruct->distXD, probeStruct->distYD, probeStruct->distZD,

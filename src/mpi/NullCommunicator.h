@@ -31,20 +31,20 @@
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#ifndef NullCommunicator_H
-#define NullCommunicator_H
+#ifndef MPI_NullCommunicator_H
+#define MPI_NullCommunicator_H
 
 #include "Communicator.h"
 
-#include <PointerDefinitions.h>
+namespace vf::mpi 
+{
 
 //! \brief A class implements Communicator for shared memory.
 //! \details NullCommunicator is only a place-holder. It is only one process in shared memory.
 class NullCommunicator : public Communicator
 {
 public:
-    NullCommunicator();
-    ~NullCommunicator() override;
+    // static std::shared_ptr<Communicator> getInstance();
     int getBundleID() override;
     int getNumberOfBundles() override;
     int getProcessID() override;
@@ -59,8 +59,9 @@ public:
     void sendSerializedObject(std::stringstream &ss, int target) override;
     void receiveSerializedObject(std::stringstream &ss, int source) override;
 
-protected:
-private:
+    
 };
+
+}
 
 #endif
