@@ -712,9 +712,9 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseX(const uint 
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].numberOfNodes *
         2); // give vector an arbitraty size (larger than needed) // TODO: This is stupid! Find a better way
     auto comm = vf::gpu::Communicator::getInstanz();
-    comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), recvIndicesForCommAfterFtoCPositions.size(),
+    comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborX[j].rankNeighbor,
-                          sendIndicesForCommAfterFtoCPositions.data(), sendIndicesForCommAfterFtoCPositions.size(),
+                          sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->sendProcessNeighborX[j].rankNeighbor);
     // resize receiving vector to correct size
     auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
@@ -746,9 +746,9 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseY(const uint 
     recvIndicesForCommAfterFtoCPositions.resize((size_t) para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].numberOfNodes *
                                                 2); // give vector an arbitraty size (larger than needed) // TODO: This is stupid! Find a better way
     auto comm = vf::gpu::Communicator::getInstanz();
-    comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), recvIndicesForCommAfterFtoCPositions.size(),
+    comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborY[j].rankNeighbor,
-                          sendIndicesForCommAfterFtoCPositions.data(), sendIndicesForCommAfterFtoCPositions.size(),
+                          sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->sendProcessNeighborY[j].rankNeighbor);
     // resize receiving vector to correct size
     auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
@@ -781,9 +781,9 @@ void GridGenerator::initCommunicationArraysForCommAfterFinetoCoarseZ(const uint 
     recvIndicesForCommAfterFtoCPositions.resize((size_t) para->getParH(level)->sendProcessNeighborsAfterFtoCZ[j].numberOfNodes *
                                                 2); // give vector an arbitraty size (larger than needed) // TODO: This is stupid! Find a better way
     auto comm = vf::gpu::Communicator::getInstanz();
-    comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), recvIndicesForCommAfterFtoCPositions.size(),
+    comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborZ[j].rankNeighbor,
-                          sendIndicesForCommAfterFtoCPositions.data(), sendIndicesForCommAfterFtoCPositions.size(),
+                          sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->sendProcessNeighborZ[j].rankNeighbor);
     // resize receiving vector to correct size
     auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
