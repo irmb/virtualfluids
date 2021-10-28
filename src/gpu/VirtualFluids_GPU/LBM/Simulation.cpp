@@ -440,7 +440,7 @@ void Simulation::run()
 	////////////////////////////////////////////////////////////////////////////////
 	for(t=para->getTStart();t<=para->getTEnd();t++)
 	{
-        this->updateGrid27->updateGrid27(para.get(), comm, cudaManager.get(), pm, 0, t, kernels);
+        this->updateGrid27->updateGrid(para.get(), comm, cudaManager.get(), pm, 0, t, kernels);
 
 	    ////////////////////////////////////////////////////////////////////////////////
 	    //Particles

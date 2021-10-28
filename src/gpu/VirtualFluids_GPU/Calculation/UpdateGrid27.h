@@ -14,13 +14,11 @@ class UpdateGrid27
 {
 public:
     UpdateGrid27(Parameter *para);
-    ~UpdateGrid27();
-    void updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
-                      std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
-                      std::vector<SPtr<Kernel>> &kernels);
+    void updateGrid(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+                    std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
+                    std::vector<SPtr<Kernel>> &kernels);
 
 private:
-    UpdateGrid27();
     std::function<void(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
                        std::vector<SPtr<Kernel>> &kernels, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager)>
         collisionAndExchange = nullptr;

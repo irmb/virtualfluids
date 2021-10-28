@@ -9,15 +9,15 @@
 #include "Kernel/Kernel.h"
 #include "Parameter/CudaStreamManager.h"
 
-void UpdateGrid27::updateGrid27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
-                  std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
-                  std::vector<SPtr<Kernel>> &kernels)
+void UpdateGrid27::updateGrid(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+                              std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
+                              std::vector<SPtr<Kernel>> &kernels)
 {
     //////////////////////////////////////////////////////////////////////////
 
     if (level != para->getFine()) {
-        updateGrid27(para, comm, cudaManager, pm, level + 1, t, kernels);
-        updateGrid27(para, comm, cudaManager, pm, level + 1, t, kernels);
+        updateGrid(para, comm, cudaManager, pm, level + 1, t, kernels);
+        updateGrid(para, comm, cudaManager, pm, level + 1, t, kernels);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -1446,8 +1446,6 @@ void coarseToFine(Parameter* para, int level)
 
 }
 
-UpdateGrid27::UpdateGrid27() = default;
-UpdateGrid27::~UpdateGrid27(){}
 
 UpdateGrid27::UpdateGrid27(Parameter *para) { 
     chooseFunctionForCollisionAndExchange(para);
