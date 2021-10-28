@@ -966,7 +966,7 @@ void Simulation::run()
 			{
                 uint t_diff = t - t_turbulenceIntensity;
                 calcTurbulenceIntensity(para.get(), cudaManager.get(), t_diff, para->getParH(para->getFine())->QGeom.kQ);
-
+				writeTurbulenceIntensityToFile(para.get(), t, para->getParH(para->getFine())->QGeom.k);
 				t_turbulenceIntensity = t;
                 resetTurbulenceIntensity(para.get(), cudaManager.get(), para->getParH(para->getFine())->QGeom.kQ);
             }

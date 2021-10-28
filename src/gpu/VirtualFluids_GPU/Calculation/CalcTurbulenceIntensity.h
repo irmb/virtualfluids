@@ -11,4 +11,6 @@ extern "C" void calcVelocityAndFluctuations(Parameter *para, CudaMemoryManager *
 extern "C" void calcTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, uint tdiff, uint size);
 extern "C" void resetTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, uint size);
 
+void writeTurbulenceIntensityToFile(Parameter *para, uint timestep, int *vectorOfSparseIndices);
+
 #endif

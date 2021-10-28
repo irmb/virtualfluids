@@ -8,6 +8,7 @@
 #include "Calculation/CalcTurbulenceIntensity.h"
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
+#include <basics/Core/StringUtilities/StringUtil.h>
 
 void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, uint size)
 {
@@ -76,3 +77,33 @@ void resetTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, u
     cudaManager->cudaCopyTurbulenceIntensityHD(lev, size);
 }
 
+void writeTurbulenceIntensityToFile(Parameter *para, uint timestep, int *vectorOfSparseIndices)
+{
+    //////////////////////////////////////////////////////////////////////////
+    // set level
+    int lev = para->getFine();
+    //////////////////////////////////////////////////////////////////////////
+    // set filename
+    std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyID()) + "_" +
+                         StringUtil::toString<int>(timestep) + "_TurbulenIntensity.txt";
+    const char *fname = ffname.c_str();
+    //////////////////////////////////////////////////////////////////////////
+    // set ofstream
+    std::ofstream ostr;
+    //////////////////////////////////////////////////////////////////////////
+    // open file
+    ostr.open(fname);
+    //////////////////////////////////////////////////////////////////////////
+    // add header
+    ostr << "index_sp" << "\t" << "ti" << std::endl;
+    //////////////////////////////////////////////////////////////////////////
+    // fill file with data
+    for (size_t i = 0; i < para->getParH(lev)->turbulenceIntensity.size(); i++) {
+        ostr << vectorOfSparseIndices[i] << "\t" << para->getParH(lev)->turbulenceIntensity[i]
+             << std::endl;
+    }
+    //////////////////////////////////////////////////////////////////////////
+    // close file
+    ostr.close();
+    //////////////////////////////////////////////////////////////////////////
+}
