@@ -55,11 +55,7 @@ public:
                                                                 uint *iCellFcfBorder, uint *&iCellFcfBulk,
                                                                 uint &intFCBorderKfc, uint &intFCBulkKfc,
                                                                 int level) const = 0;
-    CUDA_HOST virtual void getGridInterfaceIndicesBorderBulkCF(uint *iCellCfcBorder, uint *&iCellCfcBulk,
-                                                               uint *iCellCffBorder, uint *&iCellCffBulk,
-                                                               uint &intCFBorderKfc, uint &intCFBulkKfc,
-                                                               uint *neighborX_SP, uint *neighborY_SP,
-                                                               uint *neighborZ_SP, int level) const = 0;
+    CUDA_HOST virtual bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const = 0;
 
     CUDA_HOST virtual int *getNeighborsX() const = 0;
     CUDA_HOST virtual int *getNeighborsY() const = 0;
