@@ -11,6 +11,8 @@
 
 class Parameter;
 class GridBuilder;
+class IndexRearrangementForStreams;
+
 namespace vf
 {
 	namespace gpu
@@ -27,6 +29,7 @@ private:
 	std::vector<std::string> channelBoundaryConditions;
 
 	std::shared_ptr<GridBuilder> builder;
+    std::unique_ptr<IndexRearrangementForStreams> indexRearrangement;
 
 public:
     VIRTUALFLUIDS_GPU_EXPORT GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
@@ -69,45 +72,7 @@ private:
 	void setSizeGeoQs(unsigned int level) const;
 	void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
 	bool hasQs(int channelSide, unsigned int level) const;
-
-    void splitCoarseToFineIntoBorderAndBulk(const uint &level);
-    void splitFineToCoarseIntoBorderAndBulk(const uint &level);
-
-	// communication after coarse to fine
-    void initCommunicationArraysForCommAfterFinetoCoarseX(const uint &level, int j, int direction);
-    void initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction);
-    void initCommunicationArraysForCommAfterFinetoCoarseZ(const uint &level, int j, int direction);
     
-    void copyProcessNeighborToAfterFtoCX(const uint &level, int j);
-    void copyProcessNeighborToAfterFtoCY(const uint &level, int j);
-    void copyProcessNeighborToAfterFtoCZ(const uint &level, int j);
-    void reorderSendIndicesForCommAfterFtoCX(int direction, int level, int j,
-                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    void reorderSendIndicesForCommAfterFtoCY(int direction, int level, int j,
-                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    void reorderSendIndicesForCommAfterFtoCZ(int direction, int level, int j,
-                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    void reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &numberOfSendNeighborsAfterFtoC, int direction,
-                                            int level, int j, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    bool isSparseIndexInICellFCC(uint sizeOfICellFCC, int sparseIndexSend, int level);
-    void aggregateNodesInICellCFC(int level, std::vector<uint> &nodesCFC);
-    void addUniqueIndexToCommunicationVectors(std::vector<int> &sendIndicesAfterFtoC, int &sparseIndexSend,
-                                              std::vector<unsigned int> &sendIndicesForCommAfterFtoCPositions,
-                                              uint &posInSendIndices) const;
-    void findIfSparseIndexIsInSendIndicesAndAddToCommVectors(int sparseIndex, int *sendIndices, uint numberOfSendIndices,
-                                                         std::vector<int> &sendIndicesAfterFtoC,
-                                                         std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    void findIndicesNotInCommAfterFtoC(const uint &numberOfSendIndices, int *sendIndices,
-                                       std::vector<int> &sendIndicesAfterFtoC, std::vector<int> &sendIndicesOther);
-    void reorderRecvIndicesForCommAfterFtoCX(int direction, int level, int j,
-                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    void reorderRecvIndicesForCommAfterFtoCY(int direction, int level, int j,
-                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    void reorderRecvIndicesForCommAfterFtoCZ(int direction, int level, int j,
-                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC, int direction,
-                                            int level, int j, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-
 public:
     void initalGridInformations() override;
 
