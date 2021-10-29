@@ -14,7 +14,8 @@ void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, u
 {
     int lev = para->getFine();
 	cudaManager->cudaAllocTurbulenceIntensity(lev, size);
-    resetTurbulenceIntensity(para, cudaManager, size);
+    resetVelocityFluctuationsAndMeans(para, cudaManager, size);
+    para->getParH(lev)->turbulenceIntensity.resize(size);
 }
 
 
@@ -43,10 +44,9 @@ void calcVelocityAndFluctuations(Parameter *para, CudaMemoryManager *cudaManager
 
 
 void calcTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, uint tdiff, uint size) {
+    
     calcVelocityAndFluctuations(para, cudaManager, tdiff, size);
     int lev = para->getFine();
-
-    para->getParH(lev)->turbulenceIntensity.resize(size);
 
     real fluc_squared;
     real v_mean_squared;
@@ -61,7 +61,7 @@ void calcTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, ui
 }
 
 
-void resetTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, uint size)
+void resetVelocityFluctuationsAndMeans(Parameter *para, CudaMemoryManager *cudaManager, uint size)
 {
     int lev = para->getFine();
 

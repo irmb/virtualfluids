@@ -968,7 +968,7 @@ void Simulation::run()
                 calcTurbulenceIntensity(para.get(), cudaManager.get(), t_diff, para->getParH(para->getFine())->QGeom.kQ);
 				writeTurbulenceIntensityToFile(para.get(), t, para->getParH(para->getFine())->QGeom.k);
 				t_turbulenceIntensity = t;
-                resetTurbulenceIntensity(para.get(), cudaManager.get(), para->getParH(para->getFine())->QGeom.kQ);
+                resetVelocityFluctuationsAndMeans(para.get(), cudaManager.get(), para->getParH(para->getFine())->QGeom.kQ);
             }
 			////////////////////////////////////////////////////////////////////////
 			dataWriter->writeTimestep(para, t);
