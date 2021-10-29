@@ -77,17 +77,54 @@ void resetVelocityFluctuationsAndMeans(Parameter *para, CudaMemoryManager *cudaM
     cudaManager->cudaCopyTurbulenceIntensityHD(lev, size);
 }
 
-void writeTurbulenceIntensityToFile(Parameter *para, uint timestep, int *vectorOfSparseIndices)
+void writeTurbulenceIntensityToFile(Parameter *para, uint timestep, int *vectorOfSparseIndices, int size)
+{
+    int lev = para->getFine();
+    std::vector<real *> data = { para->getParH(lev)->turbulenceIntensity.data() };
+    std::vector<std::string> datanames = { "ti" };
+    writeTiStuffToFile(para, timestep, vectorOfSparseIndices, size, data, datanames);
+}
+
+void writeVeloFluctuationToFile(Parameter *para, uint timestep, int *vectorOfSparseIndices, int size) 
+{
+    int lev                            = para->getFine();
+    std::vector<real *> data           = { para->getParH(lev)->vxx, para->getParH(lev)->vyy, para->getParH(lev)->vzz };
+    std::vector<std::string> datanames = { "vxx", "vyy", "vzz" };
+    writeTiStuffToFile(para, timestep, vectorOfSparseIndices, size, data, datanames);
+}
+
+void writeVeloMeansToFile(Parameter *para, uint timestep, int *vectorOfSparseIndices, int size) {
+    int lev                            = para->getFine();
+    std::vector<real *> data           = { para->getParH(lev)->vx_mean, para->getParH(lev)->vy_mean, para->getParH(lev)->vz_mean };
+    std::vector<std::string> datanames = { "vx_mean", "vy_mean", "vz_mean" };
+    writeTiStuffToFile(para, timestep, vectorOfSparseIndices, size, data, datanames);
+}
+
+void writeAllTiDatafToFile(Parameter *para, uint timestep, int *vectorOfSparseIndices, int size)
+{
+    int lev                            = para->getFine();
+    std::vector<real *> data           = { para->getParH(lev)->vxx,
+                                           para->getParH(lev)->vyy,
+                                           para->getParH(lev)->vzz,
+                                           para->getParH(lev)->vx_mean,
+                                           para->getParH(lev)->vy_mean,
+                                           para->getParH(lev)->vz_mean,
+                                           para->getParH(lev)->turbulenceIntensity.data() };
+    std::vector<std::string> datanames = { "vxx", "vyy", "vzz", "vx_mean", "vy_mean", "vz_mean", "ti" };
+    writeTiStuffToFile(para, timestep, vectorOfSparseIndices, size, data, datanames);
+}
+
+void writeTiStuffToFile(Parameter *para, uint timestep, int *vectorOfSparseIndices, int size, std::vector<real *> &data,
+                        std::vector<std::string> &datanames)
 {
     //////////////////////////////////////////////////////////////////////////
-    // set level
-    int lev = para->getFine();
-    //////////////////////////////////////////////////////////////////////////
     // set filename
+    std::string names;
+    std::for_each(datanames.begin(), datanames.end(), [&names](const std::string &s) { return names += "_" + s; });
     std::string ffname = para->getFName() + StringUtil::toString<int>(para->getMyID()) + "_" +
-                         StringUtil::toString<int>(timestep) + "_TurbulenIntensity.txt";
+                         StringUtil::toString<int>(timestep) + names + "_ti.txt";
     const char *fname = ffname.c_str();
-    //////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
     // set ofstream
     std::ofstream ostr;
     //////////////////////////////////////////////////////////////////////////
@@ -95,12 +132,16 @@ void writeTurbulenceIntensityToFile(Parameter *para, uint timestep, int *vectorO
     ostr.open(fname);
     //////////////////////////////////////////////////////////////////////////
     // add header
-    ostr << "index_sp" << "\t" << "ti" << std::endl;
-    //////////////////////////////////////////////////////////////////////////
+    ostr << "index_sp";
+        for (auto name : datanames) ostr << "\t" << name;
+    ostr << std::endl;
+    ////////////////////////////////////////////////////////////////////////
     // fill file with data
-    for (size_t i = 0; i < para->getParH(lev)->turbulenceIntensity.size(); i++) {
-        ostr << vectorOfSparseIndices[i] << "\t" << para->getParH(lev)->turbulenceIntensity[i]
-             << std::endl;
+    for (int i = 0; i < size; i++) {
+        ostr << vectorOfSparseIndices[i];
+        for (auto dataset : data)
+            ostr << "\t" << dataset[i];
+        ostr << std::endl;
     }
     //////////////////////////////////////////////////////////////////////////
     // close file
