@@ -118,6 +118,11 @@ struct LBMSimulationParameter
     real *turbViscosity;
     real *gSij, *gSDij, *gDxvx, *gDyvx, *gDzvx, *gDxvy, *gDyvy, *gDzvy, *gDxvz, *gDyvz, *gDzvz; // DebugInformation
 
+    // turbulence intensity //
+    real *vx_mean, *vy_mean, *vz_mean; // means
+    real *vxx, *vyy, *vzz; // fluctuations
+    std::vector<real> turbulenceIntensity;
+
     // macroscopic values//////
     real *vx, *vy, *vz, *rho;
     real *vx_SP, *vy_SP, *vz_SP, *rho_SP, *press_SP;
@@ -373,6 +378,7 @@ public:
     void setTOut(unsigned int tout);
     void setTStartOut(unsigned int tStartOut);
     void setTimestepOfCoarseLevel(unsigned int timestep);
+    void setCalcTurbulenceIntensity(bool calcVelocityAndFluctuations);
     void setCalcMedian(bool calcMedian);
     void setCalcDragLift(bool calcDragLift);
     void setCalcCp(bool calcCp);
@@ -576,6 +582,7 @@ public:
     bool getCompOn();
     bool getPrintFiles();
     bool getReadGeo();
+    bool getCalcTurbulenceIntensity();
     bool getCalcMedian();
     bool getCalcDragLift();
     bool getCalcCp();
@@ -799,6 +806,7 @@ private:
     bool calcCp { false };
     bool writeVeloASCII { false };
     bool calcPlaneConc { false };
+    bool calcVelocityAndFluctuations{ false };
     bool isBodyForce;
     int diffMod {27};
     int maxlevel {0};

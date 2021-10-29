@@ -1380,7 +1380,7 @@ void GridGenerator::allocArrays_OffsetScale()
             // split fine-to-coarse indices into border and bulk
             splitFineToCoarseIntoBorderAndBulk(level);
             // split coarse-to-fine indices into border and bulk
-            splitCoarseToFineIntoBorderAndBulk(level);
+            //splitCoarseToFineIntoBorderAndBulk(level);
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy

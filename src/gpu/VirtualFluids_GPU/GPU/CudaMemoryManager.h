@@ -135,6 +135,11 @@ public:
     void cudaCopyTurbulentViscosityHD(int lev);
     void cudaCopyTurbulentViscosityDH(int lev);
     void cudaFreeTurbulentViscosity(int lev);
+
+    void cudaAllocTurbulenceIntensity(int lev, uint size);
+    void cudaCopyTurbulenceIntensityHD(int lev, uint size);
+    void cudaCopyTurbulenceIntensityDH(int lev, uint size);
+    void cudaFreeTurbulenceIntensity(int lev);
     
     void cudaAllocMedianSP(int lev);
     void cudaCopyMedianSP(int lev);

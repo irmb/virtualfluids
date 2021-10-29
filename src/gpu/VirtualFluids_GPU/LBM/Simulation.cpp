@@ -36,6 +36,7 @@
 #include "Calculation/Cp.h"
 #include "Calculation/Calc2ndMoments.h"
 #include "Calculation/CalcMedian.h"
+#include "Calculation/CalcTurbulenceIntensity.h"
 #include "Calculation/ForceCalculations.h"
 #include "Calculation/PorousMedia.h"
 //////////////////////////////////////////////////////////////////////////
@@ -202,11 +203,19 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    if (para->getCalcMedian())
    {
-       output << "alloc Calculation for Mean Valus  " << "\n";
+       output << "alloc Calculation for Mean Values  " << "\n";
 	   if (para->getDiffOn())	allocMedianAD(para.get(), cudaManager.get());
 	   else						allocMedian(para.get(), cudaManager.get());
    }
 
+
+   //////////////////////////////////////////////////////////////////////////
+   // Turbulence Intensity
+   //////////////////////////////////////////////////////////////////////////
+   if (para->getCalcTurbulenceIntensity()) {
+       output << "alloc arrays for calculating Turbulence Intensity  " << "\n";
+       allocTurbulenceIntensity(para.get(), cudaManager.get(), para->getParH(para->getFine())->QGeom.kQ);
+   }
 
    //////////////////////////////////////////////////////////////////////////
    //allocate memory and initialize 2nd, 3rd and higher order moments
@@ -402,6 +411,7 @@ void Simulation::run()
    ftimeE   = 0.0f;
    ftimeS   = 0.0f;
    unsigned int t, t_prev;
+   uint t_turbulenceIntensity = 0;
    unsigned int t_MP = 0;
    //////////////////////////////////////////////////////////////////////////
    para->setStepEnsight(0);
@@ -952,6 +962,14 @@ void Simulation::run()
 				resetMedian(para.get());
 				/////////////////////////////////
 			}
+            if (para->getCalcTurbulenceIntensity()) 
+			{
+                uint t_diff = t - t_turbulenceIntensity;
+                calcTurbulenceIntensity(para.get(), cudaManager.get(), t_diff, para->getParH(para->getFine())->QGeom.kQ);
+
+				t_turbulenceIntensity = t;
+                resetTurbulenceIntensity(para.get(), cudaManager.get(), para->getParH(para->getFine())->QGeom.kQ);
+            }
 			////////////////////////////////////////////////////////////////////////
 			dataWriter->writeTimestep(para, t);
 			////////////////////////////////////////////////////////////////////////

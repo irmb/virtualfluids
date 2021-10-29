@@ -971,6 +971,59 @@ void CudaMemoryManager::cudaFreeTurbulentViscosity(int lev)
     checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->gDyvz));
     checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->gDzvz));
 }
+//turbulence intensity
+void CudaMemoryManager::cudaAllocTurbulenceIntensity(int lev, uint size)
+{
+    uint mem_size = sizeof(real) * size;
+    // Host
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->vxx        ), mem_size));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->vyy        ), mem_size));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->vzz        ), mem_size));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->vx_mean    ), mem_size));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->vy_mean    ), mem_size));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->vz_mean    ), mem_size));
+    //Device
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->vxx            ), mem_size));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->vyy            ), mem_size));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->vzz            ), mem_size));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->vx_mean        ), mem_size));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->vy_mean        ), mem_size));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->vz_mean        ), mem_size));
+    //////////////////////////////////////////////////////////////////////////
+    double tmp = 6. * (double)mem_size;
+    setMemsizeGPU(tmp, false);
+}
+void CudaMemoryManager::cudaCopyTurbulenceIntensityHD(int lev, uint size)
+{
+    uint mem_size = sizeof(real) * size;
+    //copy host to device
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->vxx    ,  parameter->getParH(lev)->vxx    ,  mem_size , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->vyy    ,  parameter->getParH(lev)->vyy    ,  mem_size , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->vzz    ,  parameter->getParH(lev)->vzz    ,  mem_size , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->vx_mean,  parameter->getParH(lev)->vx_mean,  mem_size , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->vy_mean,  parameter->getParH(lev)->vy_mean,  mem_size , cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->vz_mean,  parameter->getParH(lev)->vz_mean,  mem_size , cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaCopyTurbulenceIntensityDH(int lev, uint size)
+{
+    uint mem_size = sizeof(real) * size;
+    //copy device to host
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->vxx    ,  parameter->getParD(lev)->vxx    ,  mem_size , cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->vyy    ,  parameter->getParD(lev)->vyy    ,  mem_size , cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->vzz    ,  parameter->getParD(lev)->vzz    ,  mem_size , cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->vx_mean,  parameter->getParD(lev)->vx_mean,  mem_size , cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->vy_mean,  parameter->getParD(lev)->vy_mean,  mem_size , cudaMemcpyDeviceToHost));
+    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->vz_mean,  parameter->getParD(lev)->vz_mean,  mem_size , cudaMemcpyDeviceToHost));
+}
+void CudaMemoryManager::cudaFreeTurbulenceIntensity(int lev)
+{
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->vxx     ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->vyy     ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->vzz     ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->vx_mean ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->vy_mean ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->vz_mean ));
+}
 //median
 void CudaMemoryManager::cudaAllocMedianSP(int lev)
 {

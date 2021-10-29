@@ -2407,6 +2407,22 @@ extern "C" __global__ void initRandom(curandState* state);
 extern "C" __global__ void generateRandomValues(curandState* state, 
 												real* randArray);
 
+extern "C" __global__ void CalcTurbulenceIntensity(
+   real* vxx,
+   real* vyy,
+   real* vzz,
+   real* vx_mean,
+   real* vy_mean,
+   real* vz_mean,
+   real* DD, 
+   int* k_Q, 
+   uint sizeQ,
+   real om1, 
+   unsigned int* neighborX,
+   unsigned int* neighborY,
+   unsigned int* neighborZ,
+   unsigned int size_Mat, 
+   bool evenOrOdd);
 
 #endif
 							 
