@@ -440,6 +440,12 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level
     std::vector<uint> iCellCfcBulkVector;
     std::vector<uint> iCellCffBorderVector;
     std::vector<uint> iCellCffBulkVector;
+    std::vector<real> xOffCFBorderVector;
+    std::vector<real> yOffCFBorderVector;
+    std::vector<real> zOffCFBorderVector;
+    std::vector<real> xOffCFBulkVector;
+    std::vector<real> yOffCFBulkVector;
+    std::vector<real> zOffCFBulkVector;
     uint sparseIndexOfICellBSW;
 
     // fill border and bulk vectors with iCellCFs
@@ -457,9 +463,15 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level
 
             iCellCfcBorderVector.push_back(iCellCfcAll[i]);
             iCellCffBorderVector.push_back(iCellCffAll[i]);
+            xOffCFBorderVector.push_back(para->getParH(level)->offCF.xOffCF[i]);
+            yOffCFBorderVector.push_back(para->getParH(level)->offCF.yOffCF[i]);
+            zOffCFBorderVector.push_back(para->getParH(level)->offCF.zOffCF[i]);
         } else {
             iCellCfcBulkVector.push_back(iCellCfcAll[i]);
             iCellCffBulkVector.push_back(iCellCffAll[i]);
+            xOffCFBulkVector.push_back(para->getParH(level)->offCF.xOffCF[i]);
+            yOffCFBulkVector.push_back(para->getParH(level)->offCF.yOffCF[i]);
+            zOffCFBulkVector.push_back(para->getParH(level)->offCF.zOffCF[i]);
         }
     }
 
@@ -473,12 +485,18 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level
 
     // copy the created vectors to the memory addresses of the old arrays
     for (uint i = 0; i < (uint)iCellCfcBorderVector.size(); i++) {
-        iCellCfcAll[i] = iCellCfcBorderVector[i];
-        iCellCffAll[i] = iCellCffBorderVector[i];
+        iCellCfcAll[i]                        = iCellCfcBorderVector[i];
+        iCellCffAll[i]                        = iCellCffBorderVector[i];
+        para->getParH(level)->offCF.xOffCF[i] = xOffCFBorderVector[i];
+        para->getParH(level)->offCF.yOffCF[i] = yOffCFBorderVector[i];
+        para->getParH(level)->offCF.zOffCF[i] = zOffCFBorderVector[i];
     }
     for (uint i = 0; i < (uint)iCellCfcBulkVector.size(); i++) {
-        para->getParH(level)->intCFBulk.ICellCFC[i] = iCellCfcBulkVector[i];
-        para->getParH(level)->intCFBulk.ICellCFF[i] = iCellCffBulkVector[i];
+        para->getParH(level)->intCFBulk.ICellCFC[i]                       = iCellCfcBulkVector[i];
+        para->getParH(level)->intCFBulk.ICellCFF[i]                       = iCellCffBulkVector[i];
+        para->getParH(level)->offCF.xOffCF[i + xOffCFBorderVector.size()] = xOffCFBulkVector[i];
+        para->getParH(level)->offCF.yOffCF[i + yOffCFBorderVector.size()] = yOffCFBulkVector[i];
+        para->getParH(level)->offCF.zOffCF[i + zOffCFBorderVector.size()] = zOffCFBulkVector[i];
     }
 }
 
