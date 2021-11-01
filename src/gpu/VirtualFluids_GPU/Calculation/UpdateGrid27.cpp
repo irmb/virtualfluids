@@ -70,7 +70,10 @@ void refinementAndExchange_streams(Parameter *para, int level, vf::gpu::Communic
                            bulkStreamIndex);
 
     exchangeMultiGPUAfterFtoC(para, comm, cudaManager, level, borderStreamIndex);
-    coarseToFine(para, level);
+
+    coarseToFineWithStream(para, level, para->getParD(level)->intCF.ICellCFC,
+                           para->getParD(level)->intCF.ICellCFF, para->getParD(level)->intCF.kCF,
+                           -1);
 }
 
 void refinementAndExchange_noStreams_onlyExchangeInterface(Parameter *para, int level, vf::gpu::Communicator *comm,
@@ -1226,35 +1229,7 @@ void fineToCoarseWithStream(Parameter *para, int level, uint *iCellFCC, uint *iC
     //////////////////////////////////////////////////////////////////////////
 
     if (para->getDiffOn()) {
-        if (para->getDiffMod() == 7) {
-            // TODO
-            printf("fineToCoarseWithStream Advection Diffusion not implemented");
-            //ScaleFCThSMG7(para->getParD(level)->d0SP.f[0], para->getParD(level + 1)->d0SP.f[0],
-            //              para->getParD(level)->d7.f[0], para->getParD(level + 1)->d7.f[0],
-            //              para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP,
-            //              para->getParD(level)->neighborZ_SP, para->getParD(level + 1)->neighborX_SP,
-            //              para->getParD(level + 1)->neighborY_SP, para->getParD(level + 1)->neighborZ_SP,
-            //              para->getParD(level)->size_Mat_SP, para->getParD(level + 1)->size_Mat_SP,
-            //              para->getParD(level)->evenOrOdd, para->getParD(level)->intFC.ICellFCC,
-            //              para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC, para->getParD(level)->vis,
-            //              para->getParD(level)->diffusivity, para->getParD(level)->numberofthreads,
-            //              para->getParD(level)->offFC);
-            //getLastCudaError("ScaleFCTh7 execution failed");
-        } else if (para->getDiffMod() == 27) {
-            // TODO
-            printf("fineToCoarseWithStream Advection Diffusion not implemented");
-            //ScaleFCThS27(para->getParD(level)->d0SP.f[0], para->getParD(level + 1)->d0SP.f[0],
-            //             para->getParD(level)->d27.f[0], para->getParD(level + 1)->d27.f[0],
-            //             para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP,
-            //             para->getParD(level)->neighborZ_SP, para->getParD(level + 1)->neighborX_SP,
-            //             para->getParD(level + 1)->neighborY_SP, para->getParD(level + 1)->neighborZ_SP,
-            //             para->getParD(level)->size_Mat_SP, para->getParD(level + 1)->size_Mat_SP,
-            //             para->getParD(level)->evenOrOdd, para->getParD(level)->intFC.ICellFCC,
-            //             para->getParD(level)->intFC.ICellFCF, para->getParD(level)->K_FC, para->getParD(level)->vis,
-            //             para->getParD(level)->diffusivity, para->getParD(level)->numberofthreads,
-            //             para->getParD(level)->offFC);
-            //getLastCudaError("ScaleFCTh27 execution failed");
-        }
+        printf("fineToCoarseWithStream Advection Diffusion not implemented"); // TODO
     }
 }
 
@@ -1301,7 +1276,7 @@ void coarseToFine(Parameter* para, int level)
                           para->getParD(level)->K_CF,             para->getParD(level)->omega,            para->getParD(level + 1)->omega,
                           para->getParD(level)->vis,              para->getParD(level)->nx,               para->getParD(level)->ny,
                           para->getParD(level + 1)->nx,           para->getParD(level + 1)->ny,           para->getParD(level)->numberofthreads,
-                          para->getParD(level)->offCF);
+                          para->getParD(level)->offCF,            cudaStreamLegacy);
     getLastCudaError("ScaleCF27_RhoSq_comp execution failed");
 
     //ScaleCF_AA2016_comp_27( para->getParD(level)->d0SP.f[0],      para->getParD(level+1)->d0SP.f[0],                
@@ -1444,6 +1419,26 @@ void coarseToFine(Parameter* para, int level)
         }
     } 
 
+}
+
+void coarseToFineWithStream(Parameter *para, int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, int streamIndex)
+{
+    cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
+
+	ScaleCF_RhoSq_comp_27(para->getParD(level)->d0SP.f[0],        para->getParD(level + 1)->d0SP.f[0],
+                          para->getParD(level)->neighborX_SP,     para->getParD(level)->neighborY_SP,     para->getParD(level)->neighborZ_SP,
+                          para->getParD(level + 1)->neighborX_SP, para->getParD(level + 1)->neighborY_SP, para->getParD(level + 1)->neighborZ_SP,
+                          para->getParD(level)->size_Mat_SP,      para->getParD(level + 1)->size_Mat_SP,  para->getParD(level)->evenOrOdd,
+                          iCellCFC,                               iCellCFF,
+                          k_CF,                                   para->getParD(level)->omega,            para->getParD(level + 1)->omega,
+                          para->getParD(level)->vis,              para->getParD(level)->nx,               para->getParD(level)->ny,
+                          para->getParD(level + 1)->nx,           para->getParD(level + 1)->ny,           para->getParD(level)->numberofthreads,
+                          para->getParD(level)->offCF,            stream);
+    getLastCudaError("ScaleCF27_RhoSq_comp execution failed");
+
+    if (para->getDiffOn()) {
+        printf("CoarseToFineWithStream Advection Diffusion not implemented"); // TODO
+    }
 }
 
 

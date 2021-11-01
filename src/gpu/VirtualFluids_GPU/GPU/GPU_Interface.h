@@ -1850,7 +1850,8 @@ extern "C" void ScaleCF_RhoSq_comp_27(  real* DC,
 										unsigned int nxF, 
 										unsigned int nyF,
 										unsigned int numberOfThreads,
-										OffCF offCF);
+										OffCF offCF,
+                                        CUstream_st *stream);
 
 extern "C" void ScaleCF_RhoSq_3rdMom_comp_27( real* DC, 
 											  real* DF, 

@@ -5131,7 +5131,8 @@ extern "C" void ScaleCF_RhoSq_comp_27(   real* DC,
 										 unsigned int nxF, 
 										 unsigned int nyF,
 										 unsigned int numberOfThreads,
-										 OffCF offCF)
+										 OffCF offCF,
+                                         CUstream_st *stream)
 {
    int Grid = (kCF / numberOfThreads)+1;
    int Grid1, Grid2;
@@ -5148,7 +5149,7 @@ extern "C" void ScaleCF_RhoSq_comp_27(   real* DC,
    dim3 gridINT_CF(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
 
-      scaleCF_RhoSq_comp_27<<< gridINT_CF, threads >>>( DC,  
+      scaleCF_RhoSq_comp_27<<< gridINT_CF, threads, 0, stream >>>( DC,  
 														DF, 
 														neighborCX,
 														neighborCY,
