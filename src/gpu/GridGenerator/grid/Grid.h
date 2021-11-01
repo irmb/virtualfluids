@@ -51,10 +51,6 @@ public:
     HOSTDEVICE virtual void setFieldEntry(uint matrixIndex, char type) = 0;
 
     CUDA_HOST virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const = 0;
-    CUDA_HOST virtual void getGridInterfaceIndicesBorderBulkFC(uint *iCellFccBorder, uint *&iCellFccBulk,
-                                                                uint *iCellFcfBorder, uint *&iCellFcfBulk,
-                                                                uint &intFCBorderKfc, uint &intFCBulkKfc,
-                                                                int level) const = 0;
     CUDA_HOST virtual bool isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const = 0;
 
     CUDA_HOST virtual int *getNeighborsX() const = 0;
@@ -152,7 +148,6 @@ public:
     virtual void getFluidNodeIndices(uint *fluidNodeIndices) const = 0;
 
     virtual void findFluidNodeIndicesBorder() = 0;
-
     virtual uint getNumberOfFluidNodesBorder() const = 0;
     virtual void getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const = 0;
 };

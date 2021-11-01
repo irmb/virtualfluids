@@ -137,10 +137,6 @@ public:
     GRIDGENERATOR_EXPORT uint getNumberOfNodesFC(int level) override;
 
     GRIDGENERATOR_EXPORT void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const override;
-    GRIDGENERATOR_EXPORT void getGridInterfaceIndicesBorderBulkFC(uint *iCellFccBorder, uint *&iCellFccBulk,
-                                                                   uint *iCellFcfBorder, uint *&iCellFcfBulk,
-                                                                   uint &intFCBorderKfc, uint &intFCBulkKfc,
-                                                                  int level) const override;
 
     GRIDGENERATOR_EXPORT void getOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
     GRIDGENERATOR_EXPORT void getOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;

@@ -35,6 +35,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
                           para->getParH(level)->recvProcessNeighborX[j].rankNeighbor,
                           sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->sendProcessNeighborX[j].rankNeighbor);
+    
     // resize receiving vector to correct size
     auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
     recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end());
@@ -69,6 +70,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
                           para->getParH(level)->recvProcessNeighborY[j].rankNeighbor,
                           sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->sendProcessNeighborY[j].rankNeighbor);
+    
     // resize receiving vector to correct size
     auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
     recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end());
@@ -104,6 +106,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
                           para->getParH(level)->recvProcessNeighborZ[j].rankNeighbor,
                           sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->sendProcessNeighborZ[j].rankNeighbor);
+    
     // resize receiving vector to correct size
     auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
     recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end());
@@ -423,15 +426,15 @@ void IndexRearrangementForStreams::splitCoarseToFineIntoBorderAndBulk(const uint
 
 void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level) 
 { 
-    // this function reorders the array of CFC/CFF indices and sets pointers and sizes of the new subarrays
+    // this function reorders the arrays of CFC/CFF indices and sets pointers and sizes of the new subarrays
      
     // create some local variables for better readability
-    uint *iCellCfcAll = para->getParH(level)->intCF.ICellCFC;
+    uint *iCellCfcAll    = para->getParH(level)->intCF.ICellCFC;
     uint *iCellCffAll    = para->getParH(level)->intCF.ICellCFF;
     uint *neighborX_SP   = this->para->getParH(level)->neighborX_SP;
     uint *neighborY_SP   = this->para->getParH(level)->neighborY_SP;
     uint *neighborZ_SP   = this->para->getParH(level)->neighborZ_SP;
-    auto grid = this->builder->getGrid((uint) level);   
+    auto grid            = this->builder->getGrid((uint)level);
 
     std::vector<uint> iCellCfcBorderVector;
     std::vector<uint> iCellCfcBulkVector;
@@ -462,11 +465,11 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level
 
     // set new sizes and pointers
     para->getParH(level)->intCFBorder.ICellCFC = iCellCfcAll;
-    para->getParH(level)->intCFBorder.ICellCFC  = iCellCffAll;
-    para->getParH(level)->intCFBorder.kCF = (uint)iCellCfcBorderVector.size();
-    para->getParH(level)->intCFBulk.kCF = (uint)iCellCfcBulkVector.size();
-    para->getParH(level)->intCFBulk.ICellCFC = iCellCfcAll + para->getParH(level)->intCFBorder.kCF;
-    para->getParH(level)->intCFBulk.ICellCFF = iCellCffAll + para->getParH(level)->intCFBorder.kCF;
+    para->getParH(level)->intCFBorder.ICellCFC = iCellCffAll;
+    para->getParH(level)->intCFBorder.kCF      = (uint)iCellCfcBorderVector.size();
+    para->getParH(level)->intCFBulk.kCF        = (uint)iCellCfcBulkVector.size();
+    para->getParH(level)->intCFBulk.ICellCFC   = iCellCfcAll + para->getParH(level)->intCFBorder.kCF;
+    para->getParH(level)->intCFBulk.ICellCFF   = iCellCffAll + para->getParH(level)->intCFBorder.kCF;
 
     // copy the created vectors to the memory addresses of the old arrays
     for (uint i = 0; i < (uint)iCellCfcBorderVector.size(); i++) {
@@ -481,13 +484,7 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level
 
 void IndexRearrangementForStreams::splitFineToCoarseIntoBorderAndBulk(const uint &level)
 {
-    para->getParH(level)->intFCBorder.ICellFCC = para->getParH(level)->intFC.ICellFCC;
-    para->getParH(level)->intFCBorder.ICellFCF = para->getParH(level)->intFC.ICellFCF;
-
-    builder->getGridInterfaceIndicesBorderBulkFC(
-        para->getParH(level)->intFCBorder.ICellFCC, para->getParH(level)->intFCBulk.ICellFCC,
-        para->getParH(level)->intFCBorder.ICellFCF, para->getParH(level)->intFCBulk.ICellFCF,
-        para->getParH(level)->intFCBorder.kFC, para->getParH(level)->intFCBulk.kFC, level);
+    this->getGridInterfaceIndicesBorderBulkFC(level);
 
     para->getParD(level)->intFCBorder.kFC      = para->getParH(level)->intFCBorder.kFC;
     para->getParD(level)->intFCBulk.kFC        = para->getParH(level)->intFCBulk.kFC;
@@ -499,3 +496,44 @@ void IndexRearrangementForStreams::splitFineToCoarseIntoBorderAndBulk(const uint
         para->getParD(level)->intFCBorder.ICellFCF + para->getParD(level)->intFCBorder.kFC;
 }
 
+void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkFC(int level) {
+    // this function reorders the arrays of FCC/FCF indices and return pointers and sizes of the new subarrays
+
+    // create some local variables for better readability
+    uint *iCellFccAll = para->getParH(level)->intFC.ICellFCC;
+    uint *iCellFcfAll = para->getParH(level)->intFC.ICellFCF;
+    auto grid         = this->builder->getGrid((uint)level); 
+
+    std::vector<uint> iCellFccBorderVector;
+    std::vector<uint> iCellFccBulkVector;
+    std::vector<uint> iCellFcfBorderVector;
+    std::vector<uint> iCellFcfBulkVector;
+
+    // fill border and bulk vectors with iCellFCs
+    for (uint i = 0; i < para->getParH(level)->intFC.kFC; i++)
+        if (grid->isSparseIndexInFluidNodeIndicesBorder(iCellFccAll[i])) {
+            iCellFccBorderVector.push_back(iCellFccAll[i]);
+            iCellFcfBorderVector.push_back(iCellFcfAll[i]);
+        } else {
+            iCellFccBulkVector.push_back(iCellFccAll[i]);
+            iCellFcfBulkVector.push_back(iCellFcfAll[i]);
+        }
+
+    // set new sizes and pointers
+    para->getParH(level)->intFCBorder.ICellFCC = iCellFccAll;
+    para->getParH(level)->intFCBorder.ICellFCF = iCellFcfAll;
+    para->getParH(level)->intFCBorder.kFC      = (uint)iCellFccBorderVector.size();
+    para->getParH(level)->intFCBulk.kFC        = (uint)iCellFccBulkVector.size();
+    para->getParH(level)->intFCBulk.ICellFCC   = iCellFccAll + para->getParH(level)->intFCBorder.kFC;
+    para->getParH(level)->intFCBulk.ICellFCF   = iCellFcfAll + para->getParH(level)->intFCBorder.kFC;
+
+    // copy the created vectors to the memory addresses of the old arrays
+    for (uint i = 0; i < (uint)iCellFccBorderVector.size(); i++) {
+        iCellFccAll[i] = iCellFccBorderVector[i];
+        iCellFcfAll[i] = iCellFcfBorderVector[i];
+    }
+    for (uint i = 0; i < (uint)iCellFccBulkVector.size(); i++) {
+        para->getParH(level)->intFCBulk.ICellFCC[i] = iCellFccBulkVector[i];
+        para->getParH(level)->intFCBulk.ICellFCF[i] = iCellFcfBulkVector[i];
+    }
+}

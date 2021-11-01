@@ -70,8 +70,10 @@ private:
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
     void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC, int direction,
                                             int level, int j, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+    
     // split interpolation cells
     void getGridInterfaceIndicesBorderBulkCF(int level);
+    void getGridInterfaceIndicesBorderBulkFC(int level);
 };
 
 #endif

@@ -1943,43 +1943,6 @@ void GridImp::getGridInterface(uint* gridInterfaceList, const uint* oldGridInter
         gridInterfaceList[i] = oldGridInterfaceList[i] + 1; // + 1 for numbering shift between GridGenerator and VF_GPU
 }
 
-void GridImp::getGridInterfaceIndicesBorderBulkFC(uint *iCellFccBorder, uint *&iCellFccBulk, uint *iCellFcfBorder,
-                                                   uint *&iCellFcfBulk, uint &intFCBorderKfc, uint &intFCBulkKfc,
-                                                   int level) const
-{
-    // reorder the array of FCC/FCF indices and return pointers and sizes of the new subarrays
-
-    uint *iCellFccAll = iCellFccBorder;
-    uint *iCellFcfAll = iCellFcfBorder;
-    std::vector<uint> iCellFccBorderVector;
-    std::vector<uint> iCellFccBulkVector;
-    std::vector<uint> iCellFcfBorderVector;
-    std::vector<uint> iCellFcfBulkVector;
-
-    for (uint i = 0; i < this->gridInterface->fc.numberOfEntries; i++)
-        if (isSparseIndexInFluidNodeIndicesBorder(iCellFccAll[i])) {
-            iCellFccBorderVector.push_back(iCellFccAll[i]);
-            iCellFcfBorderVector.push_back(iCellFcfAll[i]);
-        } else {
-            iCellFccBulkVector.push_back(iCellFccAll[i]);
-            iCellFcfBulkVector.push_back(iCellFcfAll[i]);
-        }
-
-    intFCBorderKfc = (uint)iCellFccBorderVector.size();
-    intFCBulkKfc   = (uint)iCellFccBulkVector.size();
-    iCellFccBulk   = iCellFccBorder + intFCBorderKfc; 
-    iCellFcfBulk   = iCellFcfBorder + intFCBorderKfc; 
-
-    for (uint i = 0; i < (uint)iCellFccBorderVector.size(); i++) {
-        iCellFccBorder[i] = iCellFccBorderVector[i];
-        iCellFcfBorder[i] = iCellFcfBorderVector[i];
-    }
-    for (uint i = 0; i < (uint)iCellFccBulkVector.size(); i++) {
-        iCellFccBulk[i] = iCellFccBulkVector[i];
-        iCellFcfBulk[i] = iCellFcfBulkVector[i];
-    }
-}
-
 bool GridImp::isSparseIndexInFluidNodeIndicesBorder(uint &sparseIndex) const
 {
     return std::find(this->fluidNodeIndicesBorder.begin(), this->fluidNodeIndicesBorder.end(), sparseIndex) !=
