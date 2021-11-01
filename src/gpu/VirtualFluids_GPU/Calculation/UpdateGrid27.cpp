@@ -70,7 +70,7 @@ void refinementAndExchange_streams(Parameter *para, int level, vf::gpu::Communic
                            para->getParD(level)->intFCBulk.ICellFCF, para->getParD(level)->intFCBulk.kFC,
                            bulkStreamIndex);
     coarseToFineWithStream(para, level, para->getParD(level)->intCFBulk.ICellCFC,
-                           para->getParD(level)->intCFBulk.ICellCFF, para->getParD(level)->intCFBulk.kCF,
+                           para->getParD(level)->intCFBulk.ICellCFF, para->getParD(level)->intCFBulk.kCF, para->getParD(level)->offCFBulk,
                            bulkStreamIndex);
 
     // exchange
@@ -78,7 +78,7 @@ void refinementAndExchange_streams(Parameter *para, int level, vf::gpu::Communic
 
     // coarse to fine border
     coarseToFineWithStream(para, level, para->getParD(level)->intCFBorder.ICellCFC,
-                           para->getParD(level)->intCFBorder.ICellCFF, para->getParD(level)->intCFBorder.kCF,
+                           para->getParD(level)->intCFBorder.ICellCFF, para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF,
                            borderStreamIndex);
 }
 
@@ -1427,7 +1427,8 @@ void coarseToFine(Parameter* para, int level)
 
 }
 
-void coarseToFineWithStream(Parameter *para, int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, int streamIndex)
+void coarseToFineWithStream(Parameter *para, int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, OffCF &offCF,
+                            int streamIndex)
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
 
@@ -1439,7 +1440,7 @@ void coarseToFineWithStream(Parameter *para, int level, uint *iCellCFC, uint *iC
                           k_CF,                                   para->getParD(level)->omega,            para->getParD(level + 1)->omega,
                           para->getParD(level)->vis,              para->getParD(level)->nx,               para->getParD(level)->ny,
                           para->getParD(level + 1)->nx,           para->getParD(level + 1)->ny,           para->getParD(level)->numberofthreads,
-                          para->getParD(level)->offCF,            stream);
+                          offCF,                                  stream);
     getLastCudaError("ScaleCF27_RhoSq_comp execution failed");
 
     if (para->getDiffOn()) {

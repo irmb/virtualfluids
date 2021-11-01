@@ -70,7 +70,8 @@ extern "C" void fineToCoarse(Parameter* para, int level);
 extern "C" void fineToCoarseWithStream(Parameter *para, int level, uint *iCellFCC, uint *iCellFCF, uint k_FC, int streamIndex);
 
 extern "C" void coarseToFine(Parameter* para, int level);
-extern "C" void coarseToFineWithStream(Parameter *para, int level, uint *iCellCFC, uint *iCellCFF, uint k_CF, int streamIndex);
+extern "C" void coarseToFineWithStream(Parameter *para, int level, uint *iCellCFC, uint *iCellCFF, uint k_CF,
+                                       OffCF &offCF, int streamIndex);
 
 extern "C" void refinementAndExchange_streams(Parameter *para, int level, vf::gpu::Communicator *comm,
                                               CudaMemoryManager *cudaManager);
