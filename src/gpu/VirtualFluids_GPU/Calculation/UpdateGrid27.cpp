@@ -54,6 +54,7 @@ void refinementAndExchange_streams(Parameter *para, int level, vf::gpu::Communic
     int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
     int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
 
+    // fine to coarse border
     fineToCoarseWithStream(para, level, para->getParD(level)->intFCBorder.ICellFCC,
                            para->getParD(level)->intFCBorder.ICellFCF, para->getParD(level)->intFCBorder.kFC,
                            borderStreamIndex);
@@ -63,17 +64,22 @@ void refinementAndExchange_streams(Parameter *para, int level, vf::gpu::Communic
     if (para->getUseStreams())
         para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
 
-    // launch bulk kernel
+    // launch bulk kernels (f to c and c to f)
     para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
     fineToCoarseWithStream(para, level, para->getParD(level)->intFCBulk.ICellFCC,
                            para->getParD(level)->intFCBulk.ICellFCF, para->getParD(level)->intFCBulk.kFC,
                            bulkStreamIndex);
+    coarseToFineWithStream(para, level, para->getParD(level)->intCFBulk.ICellCFC,
+                           para->getParD(level)->intCFBulk.ICellCFF, para->getParD(level)->intCFBulk.kCF,
+                           bulkStreamIndex);
 
+    // exchange
     exchangeMultiGPUAfterFtoC(para, comm, cudaManager, level, borderStreamIndex);
 
-    coarseToFineWithStream(para, level, para->getParD(level)->intCF.ICellCFC,
-                           para->getParD(level)->intCF.ICellCFF, para->getParD(level)->intCF.kCF,
-                           -1);
+    // coarse to fine border
+    coarseToFineWithStream(para, level, para->getParD(level)->intCFBorder.ICellCFC,
+                           para->getParD(level)->intCFBorder.ICellCFF, para->getParD(level)->intCFBorder.kCF,
+                           borderStreamIndex);
 }
 
 void refinementAndExchange_noStreams_onlyExchangeInterface(Parameter *para, int level, vf::gpu::Communicator *comm,
