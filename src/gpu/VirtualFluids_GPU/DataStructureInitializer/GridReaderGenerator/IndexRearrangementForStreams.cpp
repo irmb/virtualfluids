@@ -422,9 +422,9 @@ void IndexRearrangementForStreams::splitCoarseToFineIntoBorderAndBulk(const uint
     para->getParD(level)->intCFBorder.ICellCFF = para->getParD(level)->intCF.ICellCFF;
     para->getParD(level)->intCFBulk.ICellCFF =
         para->getParD(level)->intCFBorder.ICellCFF + para->getParD(level)->intCFBorder.kCF;
-    para->getParD(level)->offCFBulk.xOffCF = para->getParD(level)->offCF.xOffCF + para->getParD(level)->intFCBorder.kFC;
-    para->getParD(level)->offCFBulk.yOffCF = para->getParD(level)->offCF.yOffCF + para->getParD(level)->intFCBorder.kFC;
-    para->getParD(level)->offCFBulk.zOffCF = para->getParD(level)->offCF.zOffCF + para->getParD(level)->intFCBorder.kFC;
+    para->getParD(level)->offCFBulk.xOffCF = para->getParD(level)->offCF.xOffCF + para->getParD(level)->intCFBorder.kCF;
+    para->getParD(level)->offCFBulk.yOffCF = para->getParD(level)->offCF.yOffCF + para->getParD(level)->intCFBorder.kCF;
+    para->getParD(level)->offCFBulk.zOffCF = para->getParD(level)->offCF.zOffCF + para->getParD(level)->intCFBorder.kCF;
 }
 
 void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level) 
@@ -479,23 +479,23 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level
     }
 
     // set new sizes and pointers
-    para->getParH(level)->intCFBorder.ICellCFC = iCellCfcAll;
-    para->getParH(level)->intCFBorder.ICellCFC = iCellCffAll;
+    para->getParH(level)->intCFBorder.ICellCFC = para->getParH(level)->intCF.ICellCFC;
+    para->getParH(level)->intCFBorder.ICellCFF = para->getParH(level)->intCF.ICellCFF;
     para->getParH(level)->intCFBorder.kCF      = (uint)iCellCfcBorderVector.size();
     para->getParH(level)->intCFBulk.kCF        = (uint)iCellCfcBulkVector.size();
-    para->getParH(level)->intCFBulk.ICellCFC   = iCellCfcAll + para->getParH(level)->intCFBorder.kCF;
-    para->getParH(level)->intCFBulk.ICellCFF   = iCellCffAll + para->getParH(level)->intCFBorder.kCF;
-    para->getParH(level)->offCFBulk.xOffCF = para->getParH(level)->offCF.xOffCF + para->getParH(level)->intFCBorder.kFC;
-    para->getParH(level)->offCFBulk.yOffCF = para->getParH(level)->offCF.yOffCF + para->getParH(level)->intFCBorder.kFC;
-    para->getParH(level)->offCFBulk.zOffCF = para->getParH(level)->offCF.zOffCF + para->getParH(level)->intFCBorder.kFC;
+    para->getParH(level)->intCFBulk.ICellCFC   = para->getParH(level)->intCF.ICellCFC + para->getParH(level)->intCFBorder.kCF;
+    para->getParH(level)->intCFBulk.ICellCFF   = para->getParH(level)->intCF.ICellCFF + para->getParH(level)->intCFBorder.kCF;
+    para->getParH(level)->offCFBulk.xOffCF     = para->getParH(level)->offCF.xOffCF + para->getParH(level)->intCFBorder.kCF;
+    para->getParH(level)->offCFBulk.yOffCF     = para->getParH(level)->offCF.yOffCF + para->getParH(level)->intCFBorder.kCF;
+    para->getParH(level)->offCFBulk.zOffCF     = para->getParH(level)->offCF.zOffCF + para->getParH(level)->intCFBorder.kCF;
 
     // copy the created vectors to the memory addresses of the old arrays
     for (uint i = 0; i < (uint)iCellCfcBorderVector.size(); i++) {
-        iCellCfcAll[i]                        = iCellCfcBorderVector[i];
-        iCellCffAll[i]                        = iCellCffBorderVector[i];
-        para->getParH(level)->offCF.xOffCF[i] = xOffCFBorderVector[i];
-        para->getParH(level)->offCF.yOffCF[i] = yOffCFBorderVector[i];
-        para->getParH(level)->offCF.zOffCF[i] = zOffCFBorderVector[i];
+        para->getParH(level)->intCFBorder.ICellCFC[i] = iCellCfcBorderVector[i];
+        para->getParH(level)->intCFBorder.ICellCFF[i] = iCellCffBorderVector[i];
+        para->getParH(level)->offCF.xOffCF[i]         = xOffCFBorderVector[i];
+        para->getParH(level)->offCF.yOffCF[i]         = yOffCFBorderVector[i];
+        para->getParH(level)->offCF.zOffCF[i]         = zOffCFBorderVector[i];
     }
     for (uint i = 0; i < (uint)iCellCfcBulkVector.size(); i++) {
         para->getParH(level)->intCFBulk.ICellCFC[i]                       = iCellCfcBulkVector[i];
