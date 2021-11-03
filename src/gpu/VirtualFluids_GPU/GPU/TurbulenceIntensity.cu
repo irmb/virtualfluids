@@ -22,8 +22,7 @@ extern "C" __global__ void CalcTurbulenceIntensity(
    real* vy_mean,
    real* vz_mean,
    real* DD, 
-   int* k_Q, 
-   uint sizeQ,
+   uint* typeOfGridNode, 
    real om1, 
    unsigned int* neighborX,
    unsigned int* neighborY,
@@ -103,10 +102,10 @@ extern "C" __global__ void CalcTurbulenceIntensity(
    const unsigned k = nx*(ny*z + y) + x;
    //////////////////////////////////////////////////////////////////////////
 
-   if (k < sizeQ) {
+   if (k < size_Mat && (typeOfGridNode[k] == GEO_FLUID)) {
        ////////////////////////////////////////////////////////////////////////////////
        // index
-       unsigned int KQK   = k_Q[k];
+       unsigned int KQK   = k;
        unsigned int kzero = KQK;
        unsigned int ke    = KQK;
        unsigned int kw    = neighborX[KQK];

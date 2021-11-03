@@ -214,7 +214,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    if (para->getCalcTurbulenceIntensity()) {
        output << "alloc arrays for calculating Turbulence Intensity  " << "\n";
-       allocTurbulenceIntensity(para.get(), cudaManager.get(), para->getParH(para->getFine())->QGeom.kQ);
+       allocTurbulenceIntensity(para.get(), cudaManager.get());
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -965,11 +965,10 @@ void Simulation::run()
             if (para->getCalcTurbulenceIntensity()) 
 			{
                 uint t_diff = t - t_turbulenceIntensity;
-                calcTurbulenceIntensity(para.get(), cudaManager.get(), t_diff, para->getParH(para->getFine())->QGeom.kQ);
-                writeAllTiDatafToFile(para.get(), t, para->getParH(para->getFine())->QGeom.k,
-                                               para->getParH(para->getFine())->QGeom.kQ);
+                calcTurbulenceIntensity(para.get(), cudaManager.get(), t_diff);
+                writeAllTiDatafToFile(para.get(), t);
 				t_turbulenceIntensity = t;
-                resetVelocityFluctuationsAndMeans(para.get(), cudaManager.get(), para->getParH(para->getFine())->QGeom.kQ);
+                resetVelocityFluctuationsAndMeans(para.get(), cudaManager.get());
             }
 			////////////////////////////////////////////////////////////////////////
 			dataWriter->writeTimestep(para, t);
