@@ -1352,6 +1352,10 @@ void Simulation::free()
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////
+	// Turbulence Intensity
+	if (para->getCalcTurbulenceIntensity()) {
+        cudaFreeTurbulenceIntensityArrays(para.get(), cudaManager.get());
+	}
 
     delete comm;
 

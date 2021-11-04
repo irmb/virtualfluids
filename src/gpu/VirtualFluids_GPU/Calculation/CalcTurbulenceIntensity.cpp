@@ -84,6 +84,13 @@ void resetVelocityFluctuationsAndMeans(Parameter *para, CudaMemoryManager *cudaM
     }
 }
 
+void cudaFreeTurbulenceIntensityArrays(Parameter *para, CudaMemoryManager *cudaManager)
+{
+    for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
+        cudaManager->cudaFreeTurbulenceIntensity(lev);
+    }
+}
+
 void writeTurbulenceIntensityToFile(Parameter *para, uint timestep)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {

@@ -10,6 +10,8 @@ extern "C" void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cud
 extern "C" void calcVelocityAndFluctuations(Parameter *para, CudaMemoryManager *cudaManager, uint tdiff);
 extern "C" void calcTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager, uint tdiff);
 extern "C" void resetVelocityFluctuationsAndMeans(Parameter *para, CudaMemoryManager *cudaManager);
+extern "C" void cudaFreeTurbulenceIntensityArrays(Parameter *para, CudaMemoryManager *cudaManager);
+
 
 void writeTurbulenceIntensityToFile(Parameter *para, uint timestep);
 void writeVeloFluctuationToFile(Parameter *para, uint timeste);
