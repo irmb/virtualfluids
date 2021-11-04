@@ -966,12 +966,15 @@ void Simulation::run()
 			{
                 uint t_diff = t - t_turbulenceIntensity;
                 calcTurbulenceIntensity(para.get(), cudaManager.get(), t_diff);
-                writeAllTiDatafToFile(para.get(), t);
-				t_turbulenceIntensity = t;
-                resetVelocityFluctuationsAndMeans(para.get(), cudaManager.get());
+                //writeAllTiDatafToFile(para.get(), t);
             }
 			////////////////////////////////////////////////////////////////////////
 			dataWriter->writeTimestep(para, t);
+			////////////////////////////////////////////////////////////////////////
+            if (para->getCalcTurbulenceIntensity()) {
+                t_turbulenceIntensity = t;
+                resetVelocityFluctuationsAndMeans(para.get(), cudaManager.get());
+            }
 			////////////////////////////////////////////////////////////////////////
             if (para->getCalcDragLift()) printDragLift(para.get(), cudaManager.get(), t);
 			////////////////////////////////////////////////////////////////////////

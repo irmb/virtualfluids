@@ -182,7 +182,12 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
     nodedatanames.push_back("vx3");
     nodedatanames.push_back("geo");
     //nodedatanames.push_back("sendNodes");
-    nodedatanames.push_back("sparseIndex");
+    //nodedatanames.push_back("sparseIndex");
+    if (para->getCalcTurbulenceIntensity()) {
+        nodedatanames.push_back("vxx");
+        nodedatanames.push_back("vyy");
+        nodedatanames.push_back("vzz");
+	}
     unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
     uint dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
     bool neighborsAreFluid;
@@ -228,11 +233,18 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
                 nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
                 nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
                 nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
-                nodedata[6][dn1] = (double) pos;
+
+                //nodedata[6][dn1] = (double) pos;
 
 				//int sendNode = 0; // 0 - not a sendNode; 1 - sendNode; 2 - sendNode in communication after fine to coarse
     //            testForSendNodeZ(para, level, pos, sendNode); // slow and should not be done multiple times --> use for debugging only!
 				//nodedata[6][dn1] = (double) sendNode;
+
+                if (para->getCalcTurbulenceIntensity()) {
+                    nodedata[nodedata.size() - 3][dn1] = (double)para->getParH(level)->vxx[pos];
+                    nodedata[nodedata.size() - 2][dn1] = (double)para->getParH(level)->vyy[pos];
+                    nodedata[nodedata.size() - 1][dn1] = (double)para->getParH(level)->vzz[pos];
+                }
 
                 //////////////////////////////////////////////////////////////////////////
                 number2 = para->getParH(level)->neighborX_SP[number1];
