@@ -120,7 +120,7 @@ struct LBMSimulationParameter
 
     // turbulence intensity //
     real *vx_mean, *vy_mean, *vz_mean; // means
-    real *vxx, *vyy, *vzz; // fluctuations
+    real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
     std::vector<real> turbulenceIntensity;
 
     // macroscopic values//////

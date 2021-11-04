@@ -18,6 +18,9 @@ extern "C" __global__ void CalcTurbulenceIntensity(
    real* vxx,
    real* vyy,
    real* vzz,
+   real* vxy,
+   real* vxz,
+   real* vyz,
    real* vx_mean,
    real* vy_mean,
    real* vz_mean,
@@ -185,6 +188,9 @@ extern "C" __global__ void CalcTurbulenceIntensity(
        vxx[k] = vxx[k] + vx * vx;
        vyy[k] = vyy[k] + vy * vy;
        vzz[k] = vzz[k] + vz * vz;
+       vxy[k] = vxy[k] + vx * vy;
+       vxz[k] = vxz[k] + vx * vz;
+       vyz[k] = vyz[k] + vy * vz;
 
        // velocity (for mean velocity)
        vx_mean[k] = vx_mean[k] + vx;

@@ -13,7 +13,7 @@
 void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaManager)
 {
     for (int lev=para->getCoarse(); lev <= para->getFine(); lev++) {
-        cudaManager->cudaAllocTurbulenceIntensity(lev, para->getParH(lev)->size_Mat_SP+1);
+        cudaManager->cudaAllocTurbulenceIntensity(lev, para->getParH(lev)->size_Mat_SP);
         para->getParH(lev)->turbulenceIntensity.resize(para->getParH(lev)->size_Mat_SP);    
     }
         resetVelocityFluctuationsAndMeans(para, cudaManager);
@@ -35,6 +35,9 @@ void calcVelocityAndFluctuations(Parameter *para, CudaMemoryManager *cudaManager
             para->getParH(lev)->vxx[i] = para->getParH(lev)->vxx[i] / (real)tdiff;
             para->getParH(lev)->vyy[i] = para->getParH(lev)->vyy[i] / (real)tdiff;
             para->getParH(lev)->vzz[i] = para->getParH(lev)->vzz[i] / (real)tdiff;
+            para->getParH(lev)->vxy[i] = para->getParH(lev)->vxy[i] / (real)tdiff;
+            para->getParH(lev)->vxz[i] = para->getParH(lev)->vxz[i] / (real)tdiff;
+            para->getParH(lev)->vyz[i] = para->getParH(lev)->vyz[i] / (real)tdiff;
 
             para->getParH(lev)->vxx[i] =
                 para->getParH(lev)->vxx[i] - para->getParH(lev)->vx_mean[i] * para->getParH(lev)->vx_mean[i];
@@ -42,6 +45,12 @@ void calcVelocityAndFluctuations(Parameter *para, CudaMemoryManager *cudaManager
                 para->getParH(lev)->vyy[i] - para->getParH(lev)->vy_mean[i] * para->getParH(lev)->vy_mean[i];
             para->getParH(lev)->vzz[i] =
                 para->getParH(lev)->vzz[i] - para->getParH(lev)->vz_mean[i] * para->getParH(lev)->vz_mean[i];
+            para->getParH(lev)->vxy[i] =
+                para->getParH(lev)->vxy[i] - para->getParH(lev)->vx_mean[i] * para->getParH(lev)->vy_mean[i];
+            para->getParH(lev)->vxz[i] =
+                para->getParH(lev)->vxz[i] - para->getParH(lev)->vx_mean[i] * para->getParH(lev)->vz_mean[i];
+            para->getParH(lev)->vyz[i] =
+                para->getParH(lev)->vyz[i] - para->getParH(lev)->vy_mean[i] * para->getParH(lev)->vz_mean[i];
         }
     }
 }
@@ -75,6 +84,9 @@ void resetVelocityFluctuationsAndMeans(Parameter *para, CudaMemoryManager *cudaM
             para->getParH(lev)->vxx[i]     = (real)0.0;
             para->getParH(lev)->vyy[i]     = (real)0.0;
             para->getParH(lev)->vzz[i]     = (real)0.0;
+            para->getParH(lev)->vxy[i]     = (real)0.0;
+            para->getParH(lev)->vxz[i]     = (real)0.0;
+            para->getParH(lev)->vyz[i]     = (real)0.0;
             para->getParH(lev)->vx_mean[i] = (real)0.0;
             para->getParH(lev)->vy_mean[i] = (real)0.0;
             para->getParH(lev)->vz_mean[i] = (real)0.0;
