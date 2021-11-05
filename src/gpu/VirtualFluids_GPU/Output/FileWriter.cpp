@@ -183,10 +183,15 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
     nodedatanames.push_back("geo");
     //nodedatanames.push_back("sendNodes");
     //nodedatanames.push_back("sparseIndex");
+
+    uint firstTurbNode = nodedatanames.size();
     if (para->getCalcTurbulenceIntensity()) {
         nodedatanames.push_back("vxx");
         nodedatanames.push_back("vyy");
         nodedatanames.push_back("vzz");
+        nodedatanames.push_back("vxy");
+        nodedatanames.push_back("vxz");
+        nodedatanames.push_back("vyz");
 	}
     unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
     uint dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
@@ -241,9 +246,12 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
 				//nodedata[6][dn1] = (double) sendNode;
 
                 if (para->getCalcTurbulenceIntensity()) {
-                    nodedata[nodedata.size() - 3][dn1] = (double)para->getParH(level)->vxx[pos];
-                    nodedata[nodedata.size() - 2][dn1] = (double)para->getParH(level)->vyy[pos];
-                    nodedata[nodedata.size() - 1][dn1] = (double)para->getParH(level)->vzz[pos];
+                    nodedata[firstTurbNode    ][dn1] = (double)para->getParH(level)->vxx[pos];
+                    nodedata[firstTurbNode + 1][dn1] = (double)para->getParH(level)->vyy[pos];
+                    nodedata[firstTurbNode + 2][dn1] = (double)para->getParH(level)->vzz[pos];
+                    nodedata[firstTurbNode + 3][dn1] = (double)para->getParH(level)->vxy[pos];
+                    nodedata[firstTurbNode + 4][dn1] = (double)para->getParH(level)->vxz[pos];
+                    nodedata[firstTurbNode + 5][dn1] = (double)para->getParH(level)->vyz[pos];
                 }
 
                 //////////////////////////////////////////////////////////////////////////
