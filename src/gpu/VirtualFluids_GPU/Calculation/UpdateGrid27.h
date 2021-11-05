@@ -13,34 +13,39 @@ class Kernel;
 class UpdateGrid27
 {
 public:
-    UpdateGrid27(Parameter *para);
+    UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator *comm, SPtr<CudaMemoryManager> cudaManager,
+                 std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels);
     void updateGrid(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
                     std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
                     std::vector<SPtr<Kernel>> &kernels);
 
 private:
-    std::function<void(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
-                       std::vector<SPtr<Kernel>> &kernels, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager)>
-        collisionAndExchange = nullptr;
-    std::function<void(Parameter *para, int level, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager)>
-        refinementAndExchange = nullptr;
+    std::function<void(int level, unsigned int t)> collisionAndExchange = nullptr;
+    std::function<void(int level)> refinementAndExchange                = nullptr;
 
-    void chooseFunctionForCollisionAndExchange(Parameter *para);
-    void chooseFunctionForRefinementAndExchange(Parameter *para);
+    void chooseFunctionForCollisionAndExchange();
+    void chooseFunctionForRefinementAndExchange();
+
+    // functions for collision and exchange
+    void collisionAndExchange_noStreams_indexKernel(int level, unsigned int t);
+    void collisionAndExchange_noStreams_oldKernel(int level, unsigned int t);
+    void collisionAndExchange_streams(int level, unsigned int t);
+
+    // functions for refinement and exchange
+    void refinementAndExchange_streams(int level);
+    void refinementAndExchange_noStreams_onlyExchangeInterface(int level);
+    void refinementAndExchange_noStreams_completeExchange(int level);
+    void refinementAndExchange_noExchange(int level);
 
 
+    SPtr<Parameter> para;
+    vf::gpu::Communicator *comm;
+    SPtr<CudaMemoryManager> cudaManager;
+    std::vector<std::shared_ptr<PorousMedia>> pm;
+    std::vector<SPtr<Kernel>> kernels;
 };
 
-extern "C" void collisionAndExchange_noStreams_indexKernel(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm,
-                                                       int level, unsigned int t, std::vector<SPtr<Kernel>> &kernels,
-                                                       vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager);
 
-extern "C" void collisionAndExchange_noStreams_oldKernel(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm,
-                                                       int level, unsigned int t, std::vector<SPtr<Kernel>> &kernels,
-                                                       vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager);
-
-extern "C" void collisionAndExchange_streams(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level,
-                                     unsigned int t, std::vector<SPtr<Kernel>> &kernels, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager);
 
 extern "C" void collision(Parameter *para, std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,  std::vector<SPtr<Kernel>> &kernels);
 
@@ -73,15 +78,6 @@ extern "C" void coarseToFine(Parameter* para, int level);
 extern "C" void coarseToFineWithStream(Parameter *para, int level, uint *iCellCFC, uint *iCellCFF, uint k_CF,
                                        OffCF &offCF, int streamIndex);
 
-extern "C" void refinementAndExchange_streams(Parameter *para, int level, vf::gpu::Communicator *comm,
-                                              CudaMemoryManager *cudaManager);
-extern "C" void refinementAndExchange_noStreams_onlyExchangeInterface(Parameter *para, int level,
-                                                                      vf::gpu::Communicator *comm,
-                                                                      CudaMemoryManager *cudaManager);
-extern "C" void refinementAndExchange_noStreams_completeExchange(Parameter *para, int level,
-                                                                 vf::gpu::Communicator *comm,
-                                                                 CudaMemoryManager *cudaManager);
-extern "C" void refinementAndExchange_noExchange(Parameter *para, int level, vf::gpu::Communicator *comm,
-                                                  CudaMemoryManager *cudaManager);
+
 
 #endif
