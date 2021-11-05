@@ -207,11 +207,11 @@ void multipleLevel(const std::string& configPath)
         const real zGridMin  = bbzm - 30.0;
         const real zGridMax  = bbzp + 30.0;
 
-        TriangularMesh *bivalveSTL =
-            TriangularMesh::make(stlPath + bivalveType + ".stl");
+        TriangularMesh *bivalveSTL       = TriangularMesh::make(stlPath + bivalveType + ".stl");
         TriangularMesh *bivalveRef_1_STL = nullptr;
         if (useLevels)
             bivalveRef_1_STL = TriangularMesh::make(stlPath + bivalveType + "_Level1.stl");
+
 
         if (useMultiGPU) {
             const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
