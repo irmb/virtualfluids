@@ -110,7 +110,7 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //copy Device to Host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
-        cudaManager->cudaCopyProcessNeighborXFsDH(level, i, streamIndex);
+        cudaManager->cudaCopyProcessNeighborXFsDH(level, i, (*sendProcessNeighborDev)[i].memsizeFs, streamIndex);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     startNonBlockingMpiReceive((unsigned int)(*sendProcessNeighborHost).size(), comm, recvProcessNeighborHost);
@@ -129,7 +129,7 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     //copy Host to Device
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
     {
-        cudaManager->cudaCopyProcessNeighborXFsHD(level, i, streamIndex);
+        cudaManager->cudaCopyProcessNeighborXFsHD(level, i, (*recvProcessNeighborDev)[i].memsizeFs, streamIndex);
         setRecvFsPostDev27ex(para, level, recvProcessNeighborDev, i, stream);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,7 +270,7 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //copy Device to Host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
-        cudaManager->cudaCopyProcessNeighborZFsDH(level, i, streamIndex);
+        cudaManager->cudaCopyProcessNeighborZFsDH(level, i, (*sendProcessNeighborDev)[i].memsizeFs, streamIndex);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     startNonBlockingMpiReceive((unsigned int)(*sendProcessNeighborHost).size(), comm, recvProcessNeighborHost);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -308,7 +308,7 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     //copy Host to Device
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
     {
-        cudaManager->cudaCopyProcessNeighborZFsHD(level, i, streamIndex);
+        cudaManager->cudaCopyProcessNeighborZFsHD(level, i, (*recvProcessNeighborDev)[i].memsizeFs, streamIndex);
         setRecvFsPostDev27ex(para, level, recvProcessNeighborDev, i, stream);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
