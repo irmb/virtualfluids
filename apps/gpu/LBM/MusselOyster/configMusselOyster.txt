@@ -1,8 +1,13 @@
+# Tesla 03
+# mpiexec -n 2 "C:/Users/Master/Documents/MasterAnna/VirtualFluids_dev/build/bin/Release/MusselOyster.exe" "C:/Users/Master/Documents/MasterAnna/VirtualFluids_dev/apps/gpu/LBM/MusselOyster/configMusselOyster.txt"
+# Phoenix
+# mpirun -np 2 "./VirtualFluids_dev/build/bin/MusselOyster" "./VirtualFluids_dev/apps/gpu/LBM/MusselOyster/configMusselOyster.txt"
+
 ##################################################
 #GPU Mapping
 ##################################################
-#Devices="0 1 2 3"
-#NumberOfDevices=4
+Devices="0 1 2 3"
+NumberOfDevices=2
 
 ##################################################
 #informations for Writing
@@ -31,6 +36,6 @@ GridPath=E:/temp/GridMussel/MUSSEL
 ##################################################
 #simulation parameter
 ##################################################
-#TimeEnd=100000
-#TimeOut=1000 
+TimeEnd=10000
+TimeOut=1000 
 #TimeStartOut=0

@@ -67,7 +67,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::string path("E:/temp/MusselOysterResults");
+std::string outPath("E:/temp/MusselOysterResults");
 std::string gridPathParent = "E:/temp/GridMussel/";
 std::string simulationName("MusselOyster");
 
@@ -140,13 +140,15 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
 
     
-    para->setTOut(1000);
-    para->setTEnd(10000);
+    //para->setTOut(1000);
+    //para->setTEnd(10000);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
 
-    para->setOutputPath(path);
+    if (para->getOutputPath().size() == 0) {
+        para->setOutputPath(outPath);
+    }
     para->setOutputPrefix(simulationName);
     para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
     para->setPrintFiles(true);
@@ -163,11 +165,11 @@ void multipleLevel(const std::string& configPath)
     para->setMainKernel("CumulantK17CompChimStream");
     *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
-    if (useMultiGPU) {
-        para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
-        para->setMaxDev(2);
-    } else 
-        para->setDevices(std::vector<uint>{ (uint)0 });
+    //if (useMultiGPU) {
+    //    para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
+    //    para->setMaxDev(2);
+    //} else 
+    //    para->setDevices(std::vector<uint>{ (uint)0 });
 
 
 
@@ -260,9 +262,9 @@ void multipleLevel(const std::string& configPath)
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
 
-            //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
-            //gridBuilder->writeGridsToVtk(path + "/" + bivalveType + "/" + std::to_string(generatePart) + "/grid/");
-            //gridBuilder->writeArrows(path + "/" + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
+            //gridBuilder->writeGridsToVtk(outPath + "/" + bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
+            //gridBuilder->writeGridsToVtk(outPath + "/" + bivalveType + "/" + std::to_string(generatePart) + "/grid/");
+            //gridBuilder->writeArrows(outPath + "/" + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
 
             SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder, FILEFORMAT::BINARY);
            
@@ -360,7 +362,8 @@ void multipleLevel(const std::string& configPath)
 int main( int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
-    std::string str, str2; 
+    std::string str, str2, configFile;
+
     if ( argv != NULL )
     {
         //str = static_cast<std::string>(argv[0]);
@@ -373,6 +376,13 @@ int main( int argc, char* argv[])
 
 			targetPath = __FILE__;
 
+            if (argc == 2) {
+                configFile = argv[1];
+                std::cout << "Using configFile command line argument: " << configFile << std::endl;
+            } else {
+                configFile = targetPath + "configMusselOyster.txt";
+            }
+
 #ifdef _WIN32
             targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
 #else
@@ -381,7 +391,9 @@ int main( int argc, char* argv[])
 
 			std::cout << targetPath << std::endl;
 
-			multipleLevel(targetPath + "configMusselOyster.txt");
+
+
+			multipleLevel(configFile);
 
             //////////////////////////////////////////////////////////////////////////
 		}
