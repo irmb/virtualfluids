@@ -215,67 +215,158 @@ void multipleLevel(const std::string& configPath)
 
         if (useMultiGPU) {
             const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
-            
-            real overlap      = (real)8.0 * dxGrid;            
-            const real ySplit = bbyp - 10.0;
 
-            if (generatePart == 0) {
-                gridBuilder->addCoarseGrid( xGridMin,   yGridMin,           zGridMin, 
-                                            xGridMax,   ySplit+overlap,     zGridMax,   dxGrid);
-            }
-            if (generatePart == 1) {
-                gridBuilder->addCoarseGrid(xGridMin,    ySplit-overlap,     zGridMin, 
-                                           xGridMax,    yGridMax,           zGridMax,   dxGrid);
-            }
-
-            if (useLevels) {
+            real overlap = (real)8.0 * dxGrid;
             gridBuilder->setNumberOfLayers(6, 8);
-            gridBuilder->addGrid(bivalveRef_1_STL, 1);
+            if (comm->getNummberOfProcess() == 2) {
+                const real ySplit = bbyp - 10.0;
+
+                if (generatePart == 0) {
+                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, ySplit + overlap, zGridMax,
+                                               dxGrid);
+                }
+                if (generatePart == 1) {
+                    gridBuilder->addCoarseGrid(xGridMin, ySplit - overlap, zGridMin, xGridMax, yGridMax, zGridMax,
+                                               dxGrid);
+                }
+
+                if (useLevels) {
+                    gridBuilder->addGrid(bivalveRef_1_STL, 1);
+                }
+
+                gridBuilder->addGeometry(bivalveSTL);
+
+                if (generatePart == 0)
+                    gridBuilder->setSubDomainBox(
+                        std::make_shared<BoundingBox>(xGridMin, xGridMax, yGridMin, ySplit, zGridMin, zGridMax));
+                if (generatePart == 1)
+                    gridBuilder->setSubDomainBox(
+                        std::make_shared<BoundingBox>(xGridMin, xGridMax, ySplit, yGridMax, zGridMin, zGridMax));
+
+                gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+
+                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+
+                if (generatePart == 0) {
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 1);
+                }
+
+                if (generatePart == 1) {
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 0);
+                }
+
+                //////////////////////////////////////////////////////////////////////////
+                gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+                gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+                if (generatePart == 0)
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
+                if (generatePart == 1)
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
+                gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+                //////////////////////////////////////////////////////////////////////////
+           
+            } else if (comm->getNummberOfProcess() == 4) {
+
+                const real ySplit = bbyp - 10.0;
+                const real xSplit = 170.0;
+
+                if (generatePart == 0) {
+                    gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, ySplit + overlap,
+                                               zGridMax, dxGrid);
+                }
+                if (generatePart == 1) {
+                    gridBuilder->addCoarseGrid(xGridMin, ySplit - overlap, zGridMin, xSplit + overlap, yGridMax,
+                                               zGridMax, dxGrid);
+                }
+                if (generatePart == 2) {
+                    gridBuilder->addCoarseGrid(xSplit - overlap, yGridMin, zGridMin, xGridMax, ySplit + overlap,
+                                               zGridMax, dxGrid);
+                }
+                if (generatePart == 3) {
+                    gridBuilder->addCoarseGrid(xSplit - overlap, ySplit - overlap, zGridMin, xGridMax, yGridMax,
+                                               zGridMax, dxGrid);
+                }
+
+                if (useLevels) {
+                    gridBuilder->addGrid(bivalveRef_1_STL, 1);
+                }
+
+                gridBuilder->addGeometry(bivalveSTL);
+
+                if (generatePart == 0)
+                    gridBuilder->setSubDomainBox(
+                        std::make_shared<BoundingBox>(xGridMin, xSplit, yGridMin, ySplit, zGridMin, zGridMax));
+                if (generatePart == 1)
+                    gridBuilder->setSubDomainBox(
+                        std::make_shared<BoundingBox>(xGridMin, xSplit, ySplit, yGridMax, zGridMin, zGridMax));
+                if (generatePart == 2)
+                    gridBuilder->setSubDomainBox(
+                        std::make_shared<BoundingBox>(xSplit, xGridMax, yGridMin, ySplit, zGridMin, zGridMax));
+                if (generatePart == 3)
+                    gridBuilder->setSubDomainBox(
+                        std::make_shared<BoundingBox>(xSplit, xGridMax, ySplit, yGridMax, zGridMin, zGridMax));
+
+                gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+
+                gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+
+                if (generatePart == 0) {
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 1);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                    gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 2);
+                }
+                if (generatePart == 1) {
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 0);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PX, LBM);
+                    gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 3);
+                }
+                if (generatePart == 2) {
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
+                    gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 3);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                    gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
+                }
+                if (generatePart == 3) {
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
+                    gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 2);
+                    gridBuilder->findCommunicationIndices(CommunicationDirections::MX, LBM);
+                    gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 1);
+                }
+
+                //////////////////////////////////////////////////////////////////////////
+                if (generatePart == 0) {
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
+                }
+                if (generatePart == 1) {
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
+                }
+                if (generatePart == 2) {
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
+                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+                }
+                if (generatePart == 3) {
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
+                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+                }
+                gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+                //////////////////////////////////////////////////////////////////////////
             }
-
-            gridBuilder->addGeometry(bivalveSTL);
-
-            if (generatePart == 0)
-                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xGridMin,    xGridMax,
-                                                                           yGridMin,    ySplit, 
-                                                                           zGridMin,    zGridMax));
-            if (generatePart == 1)
-                gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xGridMin,    xGridMax, 
-                                                                           ySplit,      yGridMax, 
-                                                                           zGridMin,    zGridMax));
-            
-            gridBuilder->setPeriodicBoundaryCondition(false, false, true);
-
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-
-            if (generatePart == 0) {
-                gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 1);
-            }
-
-            if (generatePart == 1) {
-                gridBuilder->findCommunicationIndices(CommunicationDirections::MY, LBM);
-                gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 0);
-            }
-
-            //////////////////////////////////////////////////////////////////////////                       
-            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
-            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); 
-            if (generatePart == 0)
-                gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0); 
-            if (generatePart == 1)
-                gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);  
-            gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-            //////////////////////////////////////////////////////////////////////////
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
 
-            //gridBuilder->writeGridsToVtk(outPath + "/" + bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
-            //gridBuilder->writeGridsToVtk(outPath + "/" + bivalveType + "/" + std::to_string(generatePart) + "/grid/");
-            //gridBuilder->writeArrows(outPath + "/" + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
+            // gridBuilder->writeGridsToVtk(outPath + "/" + bivalveType + "/grid/part" +
+            // std::to_string(generatePart) + "_"); gridBuilder->writeGridsToVtk(outPath + "/" + bivalveType + "/" +
+            // std::to_string(generatePart) + "/grid/"); gridBuilder->writeArrows(outPath + "/" + bivalveType + "/" +
+            // std::to_string(generatePart) + " /arrow");
 
-            SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder, FILEFORMAT::BINARY);
-           
+            SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder,
+                                        FILEFORMAT::BINARY);
         } else {
 
             gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
