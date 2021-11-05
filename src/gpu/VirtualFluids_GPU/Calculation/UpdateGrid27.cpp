@@ -22,7 +22,7 @@ void UpdateGrid27::updateGrid(Parameter *para, vf::gpu::Communicator *comm, Cuda
 
     //////////////////////////////////////////////////////////////////////////
 
-    this->collisionAndExchange(level, t);
+    (this->*collisionAndExchange)(level, t);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -44,9 +44,11 @@ void UpdateGrid27::updateGrid(Parameter *para, vf::gpu::Communicator *comm, Cuda
     //////////////////////////////////////////////////////////////////////////
     if( level != para->getFine() )
     {
-        this->refinementAndExchange(level);
+        (this->*refinementAndExchange)(level);
     }
 }
+
+void UpdateGrid27::refinementAndExchange_noRefinementAndExchange(int level) {}
 
 void UpdateGrid27::refinementAndExchange_streams(int level)
 {
@@ -1453,7 +1455,7 @@ void UpdateGrid27::chooseFunctionForCollisionAndExchange()
 {
     std::cout << "Function used for collisionAndExchange: ";
     if (para->getUseStreams() && para->getNumprocs() > 1 && para->getKernelNeedsFluidNodeIndicesToRun()) {
-        this->collisionAndExchange = [this](int level, unsigned int t) { collisionAndExchange_streams(level, t); };
+        this->collisionAndExchange = &UpdateGrid27::collisionAndExchange_streams; 
         std::cout << "collisionAndExchange_streams()" << std::endl;
 
     } else if (para->getUseStreams() && !para->getKernelNeedsFluidNodeIndicesToRun()) {
@@ -1463,15 +1465,11 @@ void UpdateGrid27::chooseFunctionForCollisionAndExchange()
         std::cout << "Cuda Streams can only be used with multiple MPI processes." << std::endl;
 
     } else if (!para->getUseStreams() && para->getKernelNeedsFluidNodeIndicesToRun()) {
-        this->collisionAndExchange = [this](int level, unsigned int t) {
-            collisionAndExchange_noStreams_indexKernel(level, t);
-        };
+        this->collisionAndExchange = &UpdateGrid27::collisionAndExchange_noStreams_indexKernel;
         std::cout << "collisionAndExchange_noStreams_indexKernel()" << std::endl;
 
     } else if (!para->getUseStreams() && !para->getKernelNeedsFluidNodeIndicesToRun()) {
-        this->collisionAndExchange = [this](int level, unsigned int t) {
-            collisionAndExchange_noStreams_oldKernel(level, t);
-        };
+        this->collisionAndExchange = &UpdateGrid27::collisionAndExchange_noStreams_oldKernel;
         std::cout << "collisionAndExchange_noStreams_oldKernel()" << std::endl;
 
     } else {
@@ -1483,25 +1481,23 @@ void UpdateGrid27::chooseFunctionForRefinementAndExchange()
 {
     std::cout << "Function used for refinementAndExchange: ";
     if (para->getMaxLevel() == 0) {
-        this->refinementAndExchange = [](int level) {};
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noRefinementAndExchange;
         std::cout << "only one level - no function needed." << std::endl;
 
     } else if (para->getNumprocs() == 1) {
-        this->refinementAndExchange = [this](int level) { this->refinementAndExchange_noExchange(level); };
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noExchange;
         std::cout << "refinementAndExchange_noExchange()" << std::endl;
     
     } else if (para->getUseStreams() && para->getNumprocs() > 1 && para->useReducedCommunicationAfterFtoC) {
-        this->refinementAndExchange = [this](int level) { refinementAndExchange_streams(level); };
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_streams;
         std::cout << "refinementAndExchange_streams()" << std::endl;
     
     } else if (para->getNumprocs() > 1 && para->useReducedCommunicationAfterFtoC) {
-        this->refinementAndExchange = [this](int level) {
-            refinementAndExchange_noStreams_onlyExchangeInterface(level);
-        };
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noStreams_onlyExchangeInterface;
         std::cout << "refinementAndExchange_noStreams_onlyExchangeInterface()" << std::endl;
     
     } else {
-        this->refinementAndExchange = [this](int level) { refinementAndExchange_noStreams_completeExchange(level); };
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noStreams_completeExchange;
         std::cout << "refinementAndExchange_noStreams_completeExchange()" << std::endl;
     }
 }

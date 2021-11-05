@@ -20,8 +20,10 @@ public:
                     std::vector<SPtr<Kernel>> &kernels);
 
 private:
-    std::function<void(int level, unsigned int t)> collisionAndExchange = nullptr;
-    std::function<void(int level)> refinementAndExchange                = nullptr;
+    typedef void (UpdateGrid27::*collisionAndExchangeFun)(int level, unsigned int t);
+    typedef void (UpdateGrid27::*refinementAndExchangeFun)(int level);
+    collisionAndExchangeFun collisionAndExchange   = nullptr;
+    refinementAndExchangeFun refinementAndExchange  = nullptr;
 
     void chooseFunctionForCollisionAndExchange();
     void chooseFunctionForRefinementAndExchange();
@@ -32,6 +34,7 @@ private:
     void collisionAndExchange_streams(int level, unsigned int t);
 
     // functions for refinement and exchange
+    void refinementAndExchange_noRefinementAndExchange(int level);
     void refinementAndExchange_streams(int level);
     void refinementAndExchange_noStreams_onlyExchangeInterface(int level);
     void refinementAndExchange_noStreams_completeExchange(int level);
