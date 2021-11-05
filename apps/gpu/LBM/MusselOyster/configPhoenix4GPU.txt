@@ -1,0 +1,36 @@
+##################################################
+#GPU Mapping
+##################################################
+Devices="0 1 2 3"
+NumberOfDevices=4
+
+##################################################
+#informations for Writing
+##################################################
+Path=/work/y0078217/Results/MusselOysterResults/4GPU/
+#Path="F:/Work/Computations/out/MusselOyster/"
+#Prefix="MusselOyster" 
+#WriteGrid=true
+##################################################
+#informations for reading
+##################################################
+GridPath=/work/y0078217/Grids/GridMusselOyster/MUSSEL4GPU
+#GridPath="C:"
+
+##################################################
+#number of grid levels
+##################################################
+#NOGL=1
+
+##################################################
+#LBM Version
+##################################################
+#D3Qxx=27
+#MainKernelName=CumulantK17CompChim
+
+##################################################
+#simulation parameter
+##################################################
+TimeEnd=100000
+TimeOut=1000 
+#TimeStartOut=0

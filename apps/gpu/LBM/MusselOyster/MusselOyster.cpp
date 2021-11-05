@@ -67,8 +67,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::string outPath("E:/temp/MusselOysterResults");
-std::string gridPathParent = "E:/temp/GridMussel/";
+//  Tesla 03
+// std::string outPath("E:/temp/MusselOysterResults");
+// std::string gridPathParent = "E:/temp/GridMussel/";
+// std::string stlPath("C:/Users/Master/Documents/MasterAnna/STL/");
+// std::string simulationName("MusselOyster");
+
+// Phoenix
+std::string outPath("/work/y0078217/Results/MusselOysterResults/");
+std::string gridPathParent = "/work/y0078217/Grids/GridMusselOyster/";
+std::string stlPath("/home/y0078217/STL/MusselOyster/");
 std::string simulationName("MusselOyster");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,8 +148,8 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
 
     
-    //para->setTOut(1000);
-    //para->setTEnd(10000);
+    // para->setTOut(1000);
+    // para->setTEnd(10000);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -165,11 +173,11 @@ void multipleLevel(const std::string& configPath)
     para->setMainKernel("CumulantK17CompChimStream");
     *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
-    //if (useMultiGPU) {
-    //    para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
-    //    para->setMaxDev(2);
-    //} else 
-    //    para->setDevices(std::vector<uint>{ (uint)0 });
+    // if (useMultiGPU) {
+    //     para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
+    //     para->setMaxDev(2);
+    // } else 
+    //     para->setDevices(std::vector<uint>{ (uint)0 });
 
 
 
@@ -200,10 +208,10 @@ void multipleLevel(const std::string& configPath)
         const real zGridMax  = bbzp + 30.0;
 
         TriangularMesh *bivalveSTL =
-            TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + ".stl");
+            TriangularMesh::make(stlPath + bivalveType + ".stl");
         TriangularMesh *bivalveRef_1_STL = nullptr;
         if (useLevels)
-            bivalveRef_1_STL = TriangularMesh::make("C:/Users/Master/Documents/MasterAnna/STL/" + bivalveType + "_Level1.stl");
+            bivalveRef_1_STL = TriangularMesh::make(stlPath + bivalveType + "_Level1.stl");
 
         if (useMultiGPU) {
             const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
