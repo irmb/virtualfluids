@@ -117,7 +117,6 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator = true;
-    bool useMultiGPU      = true;
     bool useStreams       = true;
     bool useLevels        = true;
     para->useReducedCommunicationAfterFtoC = true;
@@ -144,7 +143,6 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "viscosity real [m^2/s] = " << viscosityLB * para->getViscosityRatio() << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "dxGrid = " << dxGrid << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "useGridGenerator = " << useGridGenerator << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "useMultiGPU = " << useMultiGPU << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
 
     
@@ -173,7 +171,7 @@ void multipleLevel(const std::string& configPath)
     para->setMainKernel("CumulantK17CompChimStream");
     *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
-    // if (useMultiGPU) {
+    // if (para->getNumprocs() > 1) {
     //     para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
     //     para->setMaxDev(2);
     // } else 
@@ -213,7 +211,7 @@ void multipleLevel(const std::string& configPath)
             bivalveRef_1_STL = TriangularMesh::make(stlPath + bivalveType + "_Level1.stl");
 
 
-        if (useMultiGPU) {
+        if (para->getNumprocs() > 1) {
             const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
 
             real overlap = (real)8.0 * dxGrid;
