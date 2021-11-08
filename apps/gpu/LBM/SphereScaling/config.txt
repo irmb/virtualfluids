@@ -1,0 +1,40 @@
+# Tesla 03
+# mpiexec -n 2 "C:/Users/Master/Documents/MasterAnna/VirtualFluids_dev/build/bin/Release/SphereScaling.exe" "C:/Users/Master/Documents/MasterAnna/VirtualFluids_dev/apps/gpu/LBM/SphereScaling/config.txt"
+# Phoenix
+# mpirun -np 2 "./VirtualFluids_dev/build/bin/SphereScaling" "./VirtualFluids_dev/apps/gpu/LBM/SphereScaling/config.txt"
+
+##################################################
+#GPU Mapping
+##################################################
+#Devices="0 1 2 3"
+#NumberOfDevices=2
+
+##################################################
+#informations for Writing
+##################################################
+Path=E:/temp/SphereScalingResults
+#Path="F:/Work/Computations/out/SphereScaling/"
+#Prefix="SphereScaling" 
+#WriteGrid=true
+##################################################
+#informations for reading
+##################################################
+GridPath="E:/temp/GridSphereScaling/"
+
+##################################################
+#number of grid levels
+##################################################
+#NOGL=1
+
+##################################################
+#LBM Version
+##################################################
+#D3Qxx=27
+#MainKernelName=CumulantK17CompChim
+
+##################################################
+#simulation parameter
+##################################################
+#TimeEnd=10
+#TimeOut=10 
+#TimeStartOut=0
