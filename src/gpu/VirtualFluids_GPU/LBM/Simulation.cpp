@@ -516,6 +516,31 @@ void Simulation::run()
         
           }
         }
+
+		if (para->getCalcTurbulenceIntensity()) {
+            for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
+				CalcTurbulenceIntensityDevice(
+				    para->getParD(lev)->vxx,
+				    para->getParD(lev)->vyy,
+				    para->getParD(lev)->vzz,
+				    para->getParD(lev)->vxy,
+				    para->getParD(lev)->vxz,
+				    para->getParD(lev)->vyz,
+				    para->getParD(lev)->vx_mean,
+				    para->getParD(lev)->vy_mean,
+				    para->getParD(lev)->vz_mean,
+				    para->getParD(lev)->d0SP.f[0], 
+				    para->getParD(lev)->geoSP,
+				    para->getParD(lev)->omega,
+				    para->getParD(lev)->neighborX_SP,
+				    para->getParD(lev)->neighborY_SP, 
+				    para->getParD(lev)->neighborZ_SP,
+				    para->getParD(lev)->size_Mat_SP,
+				    para->getParD(lev)->evenOrOdd,
+				    para->getParD(lev)->numberofthreads
+				);
+			}
+		}
         ////////////////////////////////////////////////////////////////////////////////
 
 

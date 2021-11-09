@@ -45,29 +45,7 @@ void UpdateGrid27::updateGrid(Parameter *para, vf::gpu::Communicator *comm, Cuda
     if( level != para->getFine() )
     {
         this->refinementAndExchange(para, level, comm, cudaManager);
-    }
-    if (para->getCalcTurbulenceIntensity()) {
-        CalcTurbulenceIntensityDevice(
-            para->getParD(level)->vxx,
-            para->getParD(level)->vyy,
-            para->getParD(level)->vzz,
-            para->getParD(level)->vxy,
-            para->getParD(level)->vxz,
-            para->getParD(level)->vyz,
-            para->getParD(level)->vx_mean,
-            para->getParD(level)->vy_mean,
-            para->getParD(level)->vz_mean,
-            para->getParD(level)->d0SP.f[0], 
-            para->getParD(level)->geoSP,
-            para->getParD(level)->omega,
-            para->getParD(level)->neighborX_SP,
-            para->getParD(level)->neighborY_SP, 
-            para->getParD(level)->neighborZ_SP,
-            para->getParD(level)->size_Mat_SP,
-            para->getParD(level)->evenOrOdd,
-            para->getParD(level)->numberofthreads
-        );
-    }
+    }    
 }
 
 void refinementAndExchange_streams(Parameter *para, int level, vf::gpu::Communicator *comm,
