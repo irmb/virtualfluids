@@ -31,7 +31,6 @@ extern "C" __global__ void CalcTurbulenceIntensity(
    real* vz_mean, 
    real *distributions, 
    uint* typeOfGridNode, 
-   real om1, 
    unsigned int* neighborX,
    unsigned int* neighborY,
    unsigned int* neighborZ,

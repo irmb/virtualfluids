@@ -531,7 +531,6 @@ void Simulation::run()
 				    para->getParD(lev)->vz_mean,
 				    para->getParD(lev)->d0SP.f[0], 
 				    para->getParD(lev)->geoSP,
-				    para->getParD(lev)->omega,
 				    para->getParD(lev)->neighborX_SP,
 				    para->getParD(lev)->neighborY_SP, 
 				    para->getParD(lev)->neighborZ_SP,

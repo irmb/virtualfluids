@@ -2537,7 +2537,6 @@ extern "C" void CalcTurbulenceIntensityDevice(
    real* vz_mean,
    real* DD, 
    uint *typeOfGridNode, 
-   real om1, 
    unsigned int* neighborX,
    unsigned int* neighborY,
    unsigned int* neighborZ,
