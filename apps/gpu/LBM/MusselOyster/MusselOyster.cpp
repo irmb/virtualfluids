@@ -68,7 +68,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //  Tesla 03
-// std::string outPath("E:/temp/MusselOysterResults");
+// std::string outPath("E:/temp/MusselOysterResults/");
 // std::string gridPathParent = "E:/temp/GridMussel/";
 // std::string stlPath("C:/Users/Master/Documents/MasterAnna/STL/");
 // std::string simulationName("MusselOyster");
@@ -161,8 +161,10 @@ void multipleLevel(const std::string& configPath)
         para->setOutputPath(outPath);
     }
     para->setOutputPrefix(simulationName);
-    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+    para->setFName(para->getOutputPath() + para->getOutputPrefix());
     para->setPrintFiles(true);
+    std::cout << "Write result files to " << para->getFName() << std::endl;
+
 
     if (useLevels)
         para->setMaxLevel(2);
@@ -363,9 +365,9 @@ void multipleLevel(const std::string& configPath)
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
 
-            // gridBuilder->writeGridsToVtk(outPath + "/" + bivalveType + "/grid/part" +
-            // std::to_string(generatePart) + "_"); gridBuilder->writeGridsToVtk(outPath + "/" + bivalveType + "/" +
-            // std::to_string(generatePart) + "/grid/"); gridBuilder->writeArrows(outPath + "/" + bivalveType + "/" +
+            // gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" +
+            // std::to_string(generatePart) + "_"); gridBuilder->writeGridsToVtk(outPath + bivalveType + "/" +
+            // std::to_string(generatePart) + "/grid/"); gridBuilder->writeArrows(outPath + bivalveType + "/" +
             // std::to_string(generatePart) + " /arrow");
 
             SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder,

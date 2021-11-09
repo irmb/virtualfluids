@@ -12,14 +12,15 @@
 ##################################################
 #informations for Writing
 ##################################################
-Path=E:/temp/SphereScalingResults
-#Path="F:/Work/Computations/out/SphereScaling/"
+#Path="E:/temp/SphereScalingResults/"
+Path=/work/y0078217/Results/SphereScalingResults/
 #Prefix="SphereScaling" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
-GridPath="E:/temp/GridSphereScaling/"
+GridPath=/work/y0078217/Grids/GridSphereScaling/
+#GridPath=E:/temp/GridSphereScaling/
 
 ##################################################
 #number of grid levels

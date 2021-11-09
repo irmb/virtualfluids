@@ -14,7 +14,7 @@ Path=/work/y0078217/Results/SphereScalingResults/1GPU/
 ##################################################
 #informations for reading
 ##################################################
-GridPath=/work/y0078217/Grids/GridSphereScaling/Sphere1GPU
+GridPath=/work/y0078217/Grids/GridSphereScaling/SphereScaling1GPU/
 #GridPath="C:"
 
 ##################################################

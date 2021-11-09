@@ -68,14 +68,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //  Tesla 03
- std::string outPath("E:/temp/SphereScalingResults");
- std::string gridPathParent = "E:/temp/GridSphereScaling/";
- std::string simulationName("SphereScaling");
+//  std::string outPath("E:/temp/SphereScalingResults/");
+//  std::string gridPathParent = "E:/temp/GridSphereScaling/";
+//  std::string simulationName("SphereScaling");
 
-//// Phoenix
-//std::string outPath("/work/y0078217/Results/SphereScalingResults/");
-//std::string gridPathParent = "/work/y0078217/Grids/GridSphereScaling/";
-//std::string simulationName("SphereScaling");
+// Phoenix
+std::string outPath("/work/y0078217/Results/SphereScalingResults/");
+std::string gridPathParent = "/work/y0078217/Grids/GridSphereScaling/";
+std::string simulationName("SphereScaling");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,8 +153,9 @@ void multipleLevel(const std::string& configPath)
         para->setOutputPath(outPath);
     }
     para->setOutputPrefix(simulationName);
-    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+    para->setFName(para->getOutputPath() + para->getOutputPrefix());
     para->setPrintFiles(true);
+    std::cout << "Write result files to " << para->getFName() << std::endl;
 
     if (useLevels)
         para->setMaxLevel(2);
@@ -185,8 +186,8 @@ void multipleLevel(const std::string& configPath)
 
     if (useGridGenerator) {
 
-        const real xGridMin    = -32;
-        const real xGridMax    = 32;
+        const real xGridMin    = -20; //-37
+        const real xGridMax    = -xGridMin;
         const real yGridMin    = xGridMin;
         const real yGridMax    = xGridMax;
         const real zGridMin    = xGridMin;
@@ -342,9 +343,9 @@ void multipleLevel(const std::string& configPath)
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
 
-            // gridBuilder->writeGridsToVtk(outPath + "/" + "/grid/part" +
-            // std::to_string(generatePart) + "_"); gridBuilder->writeGridsToVtk(outPath + "/" + "/" +
-            // std::to_string(generatePart) + "/grid/"); gridBuilder->writeArrows(outPath + "/" +  "/" +
+            // gridBuilder->writeGridsToVtk(outPath + "grid/part" +
+            // std::to_string(generatePart) + "_"); gridBuilder->writeGridsToVtk(outPath +
+            // std::to_string(generatePart) + "/grid/"); gridBuilder->writeArrows(outPath + 
             // std::to_string(generatePart) + " /arrow");
 
             SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder,

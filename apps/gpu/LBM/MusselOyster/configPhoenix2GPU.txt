@@ -14,7 +14,7 @@ Path=/work/y0078217/Results/MusselOysterResults/2GPU/
 ##################################################
 #informations for reading
 ##################################################
-GridPath=/work/y0078217/Grids/GridMusselOyster/MUSSEL2GPU
+GridPath=/work/y0078217/Grids/GridMusselOyster/MUSSEL2GPU/
 #GridPath="C:"
 
 ##################################################

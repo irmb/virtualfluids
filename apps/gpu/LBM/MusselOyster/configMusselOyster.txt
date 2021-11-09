@@ -12,14 +12,16 @@ NumberOfDevices=2
 ##################################################
 #informations for Writing
 ##################################################
-Path=E:/temp/MusselOysterResults
+Path=/work/y0078217/Results/MusselOysterResults/
+#Path=E:/temp/MusselOysterResults/
 #Path="F:/Work/Computations/out/MusselOyster/"
 #Prefix="MusselOyster" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
-GridPath=E:/temp/GridMussel/MUSSEL
+GridPath=E/work/y0078217/Grids/GridMusselOyster/
+#GridPath=E:/temp/GridMussel/MUSSEL/
 #GridPath="C:"
 
 ##################################################
