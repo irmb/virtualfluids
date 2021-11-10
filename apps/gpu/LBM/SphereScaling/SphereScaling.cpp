@@ -119,12 +119,17 @@ void multipleLevel(const std::string& configPath)
     bool useLevels                         = true;
     para->useReducedCommunicationAfterFtoC = true;
 
+    if (para->getNumprocs() == 1) {
+       useStreams       = false;
+       para->useReducedCommunicationAfterFtoC = false;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     std::string gridPath(gridPathParent); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
     real dxGrid      = (real)0.2;
     real vxLB = (real)0.051; // LB units
-    real Re = (real)300.0;
+    real Re = (real)3.0;
     real viscosityLB = (vxLB * dxGrid) / Re;
 
     para->setVelocity(vxLB);
