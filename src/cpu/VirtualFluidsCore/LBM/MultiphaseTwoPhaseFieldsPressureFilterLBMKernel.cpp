@@ -314,7 +314,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 						//! variable density -> TRANSFER!
 						//LBMReal rho = rhoH * ((*phaseField)(x1, x2, x3)) + rhoL * ((*phaseField2)(x1, x2, x3));
 
-						(*pressure)(x1, x2, x3) = (*pressure)(x1, x2, x3) + rho * c1o3 * drho;
+						(*pressureOld)(x1, x2, x3) = (*pressure)(x1, x2, x3) + rho * c1o3 * drho;
 
 						//(*pressure)(x1, x2, x3) = (((*phaseField)(x1, x2, x3)) + ((*phaseField2)(x1, x2, x3)) - c1) * c1o3;
 						////!!!!!! relplace by pointer swap!
@@ -444,16 +444,16 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 									int zzz = zz + x3;
 									
 									if (!bcArray->isSolid(xxx, yyy, zzz) && !bcArray->isUndefined(xxx, yyy, zzz)) {
-										sum+= 64.0/(216.0*(c1+c3*abs(xx))* (c1 + c3 * abs(yy))* (c1 + c3 * abs(zz)))*(*pressure)(xxx, yyy, zzz);
+										sum+= 64.0/(216.0*(c1+c3*abs(xx))* (c1 + c3 * abs(yy))* (c1 + c3 * abs(zz)))*(*pressureOld)(xxx, yyy, zzz);
 									}
-									else{ sum+= 64.0 / (216.0 * (c1 + c3 * abs(xx)) * (c1 + c3 * abs(yy)) * (c1 + c3 * abs(zz))) * (*pressure)(x1, x2, x3);
+									else{ sum+= 64.0 / (216.0 * (c1 + c3 * abs(xx)) * (c1 + c3 * abs(yy)) * (c1 + c3 * abs(zz))) * (*pressureOld)(x1, x2, x3);
 									}
 
 
 								}
 							}
 						}
-						(*pressureOld)(x1, x2, x3) = sum;
+						(*pressure)(x1, x2, x3) = sum;
 
 
 
@@ -463,17 +463,17 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 		}
 
 //#pragma omp parallel for
-		for (int x3 = minX3-1; x3 <= maxX3; x3++) {
-			for (int x2 = minX2-1; x2 <= maxX2; x2++) {
-				for (int x1 = minX1-1; x1 <= maxX1; x1++) {
-					if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
-						///filter!
+		// for (int x3 = minX3-1; x3 <= maxX3; x3++) {
+		// 	for (int x2 = minX2-1; x2 <= maxX2; x2++) {
+		// 		for (int x1 = minX1-1; x1 <= maxX1; x1++) {
+		// 			if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3)) {
+		// 				///filter!
 
-						(*pressure)(x1, x2, x3) = (*pressureOld)(x1, x2, x3);
-					}
-				}
-			}
-		}
+		// 				(*pressure)(x1, x2, x3) = (*pressureOld)(x1, x2, x3);
+		// 			}
+		// 		}
+		// 	}
+		// }
 		////!filter
 
 

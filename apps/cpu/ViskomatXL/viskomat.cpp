@@ -405,9 +405,9 @@ void bflow(string configname)
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(npr);
-      calculator->addCoProcessor(fp);
+      //calculator->addCoProcessor(fp);
       calculator->addCoProcessor(fp2);
-      calculator->addCoProcessor(writeMQCoProcessor);
+      //calculator->addCoProcessor(writeMQCoProcessor);
       //calculator->addCoProcessor(writeThixotropicMQCoProcessor);
       calculator->addCoProcessor(restartCoProcessor);
 
