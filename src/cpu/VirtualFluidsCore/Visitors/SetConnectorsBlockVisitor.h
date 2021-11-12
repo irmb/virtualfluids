@@ -46,9 +46,11 @@
 #include "OneDistributionFullVectorConnector.h"
 #include "TwoDistributionsFullDirectConnector.h"
 #include "TwoDistributionsFullVectorConnector.h"
+#include "TwoDistributionsDoubleGhostLayerFullDirectConnector.h"
+#include "TwoDistributionsDoubleGhostLayerFullVectorConnector.h"
 #include "ThreeDistributionsFullDirectConnector.h"
-#include "ThreeDistributionsDoubleGhostLayerFullDirectConnector.h"
 #include "ThreeDistributionsFullVectorConnector.h"
+#include "ThreeDistributionsDoubleGhostLayerFullDirectConnector.h"
 #include "ThreeDistributionsDoubleGhostLayerFullVectorConnector.h"
 #include <basics/transmitter/TbTransmitterLocal.h>
 
@@ -159,6 +161,7 @@ void SetConnectorsBlockVisitor<T1, T2>::setRemoteConnectors(SPtr<Block3D> sblock
 
 using OneDistributionSetConnectorsBlockVisitor  = SetConnectorsBlockVisitor<OneDistributionFullDirectConnector, OneDistributionFullVectorConnector>;
 using TwoDistributionsSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<TwoDistributionsFullDirectConnector, TwoDistributionsFullVectorConnector>;
+using TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<TwoDistributionsDoubleGhostLayerFullDirectConnector, TwoDistributionsDoubleGhostLayerFullVectorConnector>;
 using ThreeDistributionsSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<ThreeDistributionsFullDirectConnector, ThreeDistributionsFullVectorConnector>;
 using ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<ThreeDistributionsDoubleGhostLayerFullDirectConnector, ThreeDistributionsDoubleGhostLayerFullVectorConnector>;
 

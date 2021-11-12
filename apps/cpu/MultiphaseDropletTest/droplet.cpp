@@ -142,7 +142,8 @@ void run(string configname)
 
         //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
        // kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
-        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
 
         mu::Parser fgr;
         fgr.SetExpr("-(rho-rho_l)*g_y");
@@ -348,7 +349,10 @@ void run(string configname)
         //TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
         //grid->accept(setConnsVisitor);
 
-        ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        //ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        //grid->accept(setConnsVisitor);
+
+        TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
