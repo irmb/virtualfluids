@@ -868,7 +868,7 @@ CUDA_HOST void GridImp::findFluidNodeIndices(bool splitDomain)
         if (sparseIndex == -1)
             continue;
         if (this->field.isFluid(index))
-            this->fluidNodeIndices.push_back((uint)sparseIndex+1);
+            this->fluidNodeIndices.push_back((uint)sparseIndex+1); // + 1 for numbering shift between GridGenerator and VF_GPU
     }
 
     // If splitDomain: find fluidNodeIndicesBorder and remove all indices in fluidNodeIndicesBorder from fluidNodeIndices
