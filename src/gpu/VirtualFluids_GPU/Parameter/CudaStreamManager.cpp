@@ -70,14 +70,6 @@ void CudaStreamManager::triggerStartBulkKernel(int streamIndex)
     checkCudaErrors(cudaEventRecord(startBulkKernel, cudaStreams[streamIndex]));
 }
 
-void CudaStreamManager::triggerEventByName(std::string eventName, int streamIndex)
-{
-    if (eventName == "startBulkKernel")
-        checkCudaErrors(cudaEventRecord(startBulkKernel, cudaStreams[streamIndex]));
-    else
-        std::cout << "unknown event name" << std::endl;
-}
-
 void CudaStreamManager::waitOnStartBulkKernelEvent(int streamIndex)
 {
     checkCudaErrors(cudaStreamWaitEvent(cudaStreams[streamIndex], startBulkKernel));

@@ -58,7 +58,6 @@ public:
     void createCudaEvents();
     void destroyCudaEvents();
     void triggerStartBulkKernel(int streamIndex);
-    void triggerEventByName(std::string eventName, int streamIndex);
     void waitOnStartBulkKernelEvent(int strteamIndex);
 };
 
