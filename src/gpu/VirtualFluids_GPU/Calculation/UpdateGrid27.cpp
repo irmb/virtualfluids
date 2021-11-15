@@ -278,6 +278,10 @@ void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryMa
     exchangeCollDataYGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
     exchangeCollDataZGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
 
+    scatterNodesFromRecvBufferXGPU27AllNodes(para, level, streamIndex);
+    scatterNodesFromRecvBufferYGPU27AllNodes(para, level, streamIndex);
+    scatterNodesFromRecvBufferZGPU27AllNodes(para, level, streamIndex);
+
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition convection diffusion
     if (para->getDiffOn()) {
@@ -304,6 +308,10 @@ void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator *comm, Cud
     exchangeCollDataXGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
     exchangeCollDataYGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
     exchangeCollDataZGPU27AfterFtoC(para, comm, cudaManager, level, streamIndex);
+
+    scatterNodesFromRecvBufferXGPU27AfterFtoC(para, level, streamIndex);
+    scatterNodesFromRecvBufferYGPU27AfterFtoC(para, level, streamIndex);
+    scatterNodesFromRecvBufferZGPU27AfterFtoC(para, level, streamIndex);
 
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition convection diffusion
