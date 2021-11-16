@@ -148,8 +148,8 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "number of processes = " << para->getNumprocs() << "\n";
 
     
-    para->setTOut(10);
-    para->setTEnd(10);
+    // para->setTOut(10);
+    // para->setTEnd(10);
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -178,10 +178,10 @@ void multipleLevel(const std::string& configPath)
     //     para->setDevices(std::vector<uint>{ 0u, 1u, 2u, 3u });
     //     para->setMaxDev(4);
     // } else if (para->getNumprocs() == 2) {
-    //     para->setDevices(std::vector<uint>{ 0u, 1u });
+    //     para->setDevices(std::vector<uint>{ 2u, 3u });
     //     para->setMaxDev(2);
     // } else 
-    //     para->setDevices(std::vector<uint>{ 2u });
+    //     para->setDevices(std::vector<uint>{ 0u });
     //     para->setMaxDev(1);
 
 
@@ -191,14 +191,14 @@ void multipleLevel(const std::string& configPath)
 
     if (useGridGenerator) {
 
-        const real xGridMin    = -20; //-37
+        const real xGridMin    = -38; //-37 13702.1 MB // -38: 14388.2 MB // -39: 15111 MB  bei Level 1 mit Durchmesser 20
         const real xGridMax    = -xGridMin;
         const real yGridMin    = xGridMin;
         const real yGridMax    = xGridMax;
         const real zGridMin    = xGridMin;
         const real zGridMax    = xGridMax;
         const real dSphere     = 10.0;
-        const real dSphereLev1 = 20.0;
+        const real dSphereLev1 = 22.0;
 
         if (para->getNumprocs() > 1) {
             const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();

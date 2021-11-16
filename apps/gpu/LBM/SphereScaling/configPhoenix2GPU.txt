@@ -3,7 +3,7 @@
 ##################################################
 #GPU Mapping
 ##################################################
-Devices="0 1 2 3"
+Devices="3 2 1 0"
 NumberOfDevices=2
 
 ##################################################
@@ -34,5 +34,5 @@ GridPath=/work/y0078217/Grids/GridSphereScaling/SphereScaling2GPU/
 #simulation parameter
 ##################################################
 TimeEnd=100000
-TimeOut=1000 
+TimeOut=100000 
 #TimeStartOut=0
