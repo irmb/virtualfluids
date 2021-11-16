@@ -115,7 +115,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator                  = true;
-    bool useStreams                        = false;
+    bool useStreams                        = true;
     bool useLevels                         = true;
     para->useReducedCommunicationAfterFtoC = true;
 
@@ -174,15 +174,15 @@ void multipleLevel(const std::string& configPath)
     para->setMainKernel("CumulantK17CompChimStream");
     *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
-    if (para->getNumprocs() == 4) {
-        para->setDevices(std::vector<uint>{ 0u, 1u, 2u, 3u });
-        para->setMaxDev(4);
-    } else if (para->getNumprocs() == 2) {
-        para->setDevices(std::vector<uint>{ 0u, 1u });
-        para->setMaxDev(2);
-    } else 
-        para->setDevices(std::vector<uint>{ 0u });
-        para->setMaxDev(1);
+    // if (para->getNumprocs() == 4) {
+    //     para->setDevices(std::vector<uint>{ 0u, 1u, 2u, 3u });
+    //     para->setMaxDev(4);
+    // } else if (para->getNumprocs() == 2) {
+    //     para->setDevices(std::vector<uint>{ 0u, 1u });
+    //     para->setMaxDev(2);
+    // } else 
+    //     para->setDevices(std::vector<uint>{ 2u });
+    //     para->setMaxDev(1);
 
 
 
@@ -219,10 +219,10 @@ void multipleLevel(const std::string& configPath)
                 }
 
                 if (useLevels) {
-                    gridBuilder->addGrid(new Sphere(0.0, 0.0, 0.0, dSphere), 1);
+                    gridBuilder->addGrid(new Sphere(0.0, 0.0, 0.0, dSphereLev1), 1);
                 }
 
-                gridBuilder->addGeometry(new Sphere(0.0, 0.0, 0.0, dSphereLev1));
+                gridBuilder->addGeometry(new Sphere(0.0, 0.0, 0.0, dSphere));
 
                 if (generatePart == 0)
                     gridBuilder->setSubDomainBox(
@@ -278,10 +278,10 @@ void multipleLevel(const std::string& configPath)
                 }
 
                 if (useLevels) {
-                    gridBuilder->addGrid(new Sphere(0.0, 0.0, 0.0, dSphere), 1);
+                    gridBuilder->addGrid(new Sphere(0.0, 0.0, 0.0, dSphereLev1), 1);
                 }
 
-                gridBuilder->addGeometry(new Sphere(0.0, 0.0, 0.0, dSphereLev1));
+                gridBuilder->addGeometry(new Sphere(0.0, 0.0, 0.0, dSphere));
 
                 if (generatePart == 0)
                     gridBuilder->setSubDomainBox(
@@ -442,7 +442,7 @@ int main( int argc, char* argv[])
 
             if (configFile.size()==0) {
                 configFile = targetPath + "config.txt";
-            }
+            }        
 
 			multipleLevel(configFile);
 

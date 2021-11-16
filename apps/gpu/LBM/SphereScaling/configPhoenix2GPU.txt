@@ -1,3 +1,5 @@
+# Phoenix
+# mpirun -np 2 "./VirtualFluids_dev/build/bin/SphereScaling" "./VirtualFluids_dev/apps/gpu/LBM/SphereScaling/configPhoenix2GPU.txt"
 ##################################################
 #GPU Mapping
 ##################################################

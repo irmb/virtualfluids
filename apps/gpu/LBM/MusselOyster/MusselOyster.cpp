@@ -149,6 +149,7 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "dxGrid = " << dxGrid << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "useGridGenerator = " << useGridGenerator << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "number of processes = " << para->getNumprocs() << "\n";
 
     
     // para->setTOut(1000);
