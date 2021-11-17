@@ -119,7 +119,7 @@ void multipleLevel(const std::string& configPath)
     bool useGridGenerator = true;
     bool useStreams       = true;
     bool useLevels        = true;
-    para->useReducedCommunicationAfterFtoC = false;
+    para->useReducedCommunicationAfterFtoC = true;
 
     if (para->getNumprocs() == 1) {
        useStreams       = false;
@@ -223,7 +223,7 @@ void multipleLevel(const std::string& configPath)
             const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
 
             real overlap = (real)8.0 * dxGrid;
-            gridBuilder->setNumberOfLayers(6, 8);
+            gridBuilder->setNumberOfLayers(10, 8);
             if (comm->getNummberOfProcess() == 2) {
                 const real ySplit = bbyp - 10.0;
 
@@ -276,7 +276,7 @@ void multipleLevel(const std::string& configPath)
             } else if (comm->getNummberOfProcess() == 4) {
 
                 const real ySplit = bbyp - 10.0;
-                const real xSplit = 170.0;
+                const real xSplit = 90.0;
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, ySplit + overlap,
@@ -378,7 +378,7 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
 
             if (useLevels) {
-                gridBuilder->setNumberOfLayers(6, 8);
+                gridBuilder->setNumberOfLayers(10, 8);
                 gridBuilder->addGrid(bivalveRef_1_STL, 1);
             }
 
