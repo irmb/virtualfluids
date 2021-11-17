@@ -223,10 +223,8 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     // copy corner received node values from x 
     if (para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
         for (uint i = 0; i < para->getParH(level)->cornerNodesXtoY.recvPos.size(); i++) {
-            std::pair<int, int> & recvPosX = para->getParH(level)->cornerNodesXtoY.recvPos[i];
-            std::pair<int, int> & sendPosY = para->getParH(level)->cornerNodesXtoY.sendPos[i];
-            real &f = para->getParH(level)->recvProcessNeighborX[recvPosX.first].f[0][recvPosX.second];
-            para->getParH(level)->sendProcessNeighborY[sendPosY.first].f[0][sendPosY.second] = f;
+            para->getParH(level)->sendProcessNeighborY[para->getParH(level)->cornerNodesXtoY.sendPos[i].first].f[0][para->getParH(level)->cornerNodesXtoY.sendPos[i].second] = 
+                para->getParH(level)->recvProcessNeighborX[para->getParH(level)->cornerNodesXtoY.recvPos[i].first].f[0][para->getParH(level)->cornerNodesXtoY.recvPos[i].second];
         }    
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -316,20 +314,16 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     // copy corner received node values from x
     if (para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
         for (uint i = 0; i < para->getParH(level)->cornerNodesXtoZ.recvPos.size(); i++) {
-            std::pair<int, int> &recvPosX = para->getParH(level)->cornerNodesXtoZ.recvPos[i];
-            std::pair<int, int> &sendPosZ = para->getParH(level)->cornerNodesXtoZ.sendPos[i];
-            real &f = para->getParH(level)->recvProcessNeighborX[recvPosX.first].f[0][recvPosX.second];
-            para->getParH(level)->sendProcessNeighborZ[sendPosZ.first].f[0][sendPosZ.second] = f;
+                para->getParH(level)->sendProcessNeighborZ[para->getParH(level)->cornerNodesXtoZ.sendPos[i].first].f[0][para->getParH(level)->cornerNodesXtoZ.sendPos[i].second] = 
+                    para->getParH(level)->recvProcessNeighborX[para->getParH(level)->cornerNodesXtoZ.recvPos[i].first].f[0][para->getParH(level)->cornerNodesXtoZ.recvPos[i].second];
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // copy corner received node values from y
     if (para->getNumberOfProcessNeighborsY(level, "recv") > 0) {
-        for (uint i = 0; i < para->getParH(level)->cornerNodesYtoZ.recvPos.size(); i++) {
-            std::pair<int, int> &recvPosY = para->getParH(level)->cornerNodesYtoZ.recvPos[i];
-            std::pair<int, int> &sendPosZ = para->getParH(level)->cornerNodesYtoZ.sendPos[i];
-            real &f = para->getParH(level)->recvProcessNeighborY[recvPosY.first].f[0][recvPosY.second];
-            para->getParH(level)->sendProcessNeighborZ[sendPosZ.first].f[0][sendPosZ.second] = f;
+        for (uint i = 0; i < para->getParH(level)->cornerNodesYtoZ.recvPos.size(); i++) {       
+            para->getParH(level)->sendProcessNeighborZ[para->getParH(level)->cornerNodesYtoZ.sendPos[i].first].f[0][para->getParH(level)->cornerNodesYtoZ.sendPos[i].second] = 
+                para->getParH(level)->recvProcessNeighborY[para->getParH(level)->cornerNodesYtoZ.recvPos[i].first].f[0][para->getParH(level)->cornerNodesYtoZ.recvPos[i].second];
         }
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
