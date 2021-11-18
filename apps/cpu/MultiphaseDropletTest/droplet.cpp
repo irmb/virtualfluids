@@ -14,7 +14,7 @@ using namespace std;
 void run(string configname)
 {
     try {
-        ConfigurationFile config;
+        vf::basics::ConfigurationFile config;
         config.load(configname);
 
         string pathname            = config.getValue<string>("pathname");
@@ -48,7 +48,7 @@ void run(string configname)
         bool newStart      = config.getValue<bool>("newStart");
         double rStep = config.getValue<double>("rStep");
 
-        SPtr<Communicator> comm = MPICommunicator::getInstance();
+        SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
 
         if (myid == 0)

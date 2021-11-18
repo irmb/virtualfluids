@@ -18,6 +18,8 @@
 
 class Parameter;
 class PorousMedia;
+class ActuatorLine;
+class Probe;
 
 class VIRTUALFLUIDS_GPU_EXPORT CudaMemoryManager
 {
@@ -78,6 +80,10 @@ public:
 	void cudaCopyForcingToHost();
 	void cudaFreeForcing();
 
+    void cudaAllocLevelForcing(int level);
+	void cudaCopyLevelForcingToDevice(int level);
+	void cudaFreeLevelForcing(int level);
+
 	void cudaAllocQuadricLimiters();
 	void cudaCopyQuadricLimitersToDevice();
 	void cudaFreeQuadricLimiters();
@@ -135,6 +141,9 @@ public:
     
     void cudaAllocMedianOut(int lev);
     void cudaFreeMedianOut(int lev);
+
+    void cudaAllocMedianOutAD(int lev);
+    void cudaFreeMedianOutAD(int lev);
     
     void cudaAllocInterfaceCF(int lev);
     void cudaCopyInterfaceCF(int lev);
@@ -315,13 +324,54 @@ public:
     void cudaCopyProcessNeighborADZIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborADZ(int lev, unsigned int processNeighbor);
 
+    void cudaAllocBladeRadii(ActuatorLine* actuatorLine);
+    void cudaCopyBladeRadiiHtoD(ActuatorLine* actuatorLine);
+    void cudaCopyBladeRadiiDtoH(ActuatorLine* actuatorLine);
+    void cudaFreeBladeRadii(ActuatorLine* actuatorLine);
+
+    void cudaAllocBladeCoords(ActuatorLine* actuatorLine);
+    void cudaCopyBladeCoordsHtoD(ActuatorLine* actuatorLine);
+    void cudaCopyBladeCoordsDtoH(ActuatorLine* actuatorLine);
+    void cudaFreeBladeCoords(ActuatorLine* actuatorLine);
+
+    void cudaAllocBladeIndices(ActuatorLine* actuatorLine);
+    void cudaCopyBladeIndicesHtoD(ActuatorLine* actuatorLine);
+    void cudaFreeBladeIndices(ActuatorLine* actuatorLine);
+
+    void cudaAllocBladeVelocities(ActuatorLine* actuatorLine);
+    void cudaCopyBladeVelocitiesHtoD(ActuatorLine* actuatorLine);
+    void cudaCopyBladeVelocitiesDtoH(ActuatorLine* actuatorLine);
+    void cudaFreeBladeVelocities(ActuatorLine* actuatorLine);
+
+    void cudaAllocBladeForces(ActuatorLine* actuatorLine);
+    void cudaCopyBladeForcesHtoD(ActuatorLine* actuatorLine);
+    void cudaCopyBladeForcesDtoH(ActuatorLine* actuatorLine);
+    void cudaFreeBladeForces(ActuatorLine* actuatorLine);
+
+    void cudaAllocSphereIndices(ActuatorLine* actuatorLine);
+    void cudaCopySphereIndicesHtoD(ActuatorLine* actuatorLine);
+    void cudaFreeSphereIndices(ActuatorLine* actuatorLine);
+
+    void cudaAllocProbeDistances(Probe* probe, int level);
+    void cudaCopyProbeDistancesHtoD(Probe* probe, int level);
+    void cudaCopyProbeDistancesDtoH(Probe* probe, int level);
+    void cudaFreeProbeDistances(Probe* probe, int level);
+
+    void cudaAllocProbeIndices(Probe* probe, int level);
+    void cudaCopyProbeIndicesHtoD(Probe* probe, int level);
+    void cudaCopyProbeIndicesDtoH(Probe* probe, int level);
+    void cudaFreeProbeIndices(Probe* probe, int level);
+
+    void cudaAllocProbeQuantityArray(Probe* probe, int level);
+    void cudaCopyProbeQuantityArrayHtoD(Probe* probe, int level);
+    void cudaCopyProbeQuantityArrayDtoH(Probe* probe, int level);
+    void cudaFreeProbeQuantityArray(Probe* probe, int level);
     
-    
-    
-    
-    
-    
-    
+    void cudaAllocProbeQuantitiesAndOffsets(Probe* probe, int level);
+    void cudaCopyProbeQuantitiesAndOffsetsHtoD(Probe* probe, int level);
+    void cudaCopyProbeQuantitiesAndOffsetsDtoH(Probe* probe, int level);
+    void cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int level);
+
 private:
     CudaMemoryManager(std::shared_ptr<Parameter> parameter);
     CudaMemoryManager(const CudaMemoryManager&);

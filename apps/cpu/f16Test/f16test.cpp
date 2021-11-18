@@ -16,7 +16,7 @@ void run(string configname)
 {
    try
    {
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathOut = config.getString("pathOut");
@@ -42,7 +42,7 @@ void run(string configname)
       double          refineDistance = config.getDouble("refineDistance");
       vector<double>  nupsStep = config.getVector<double>("nupsStep");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

@@ -39,7 +39,7 @@
 
 #include "BCArray3D.h"
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "LBMUnitConverter.h"
@@ -52,7 +52,7 @@ WriteMultiphaseQuantitiesCoProcessor::WriteMultiphaseQuantitiesCoProcessor(SPtr<
                                                                              const std::string &path,
                                                                              WbWriter *const writer,
                                                                              SPtr<LBMUnitConverter> conv,
-                                                                             SPtr<Communicator> comm)
+                                                                             std::shared_ptr<vf::mpi::Communicator> comm)
         : CoProcessor(grid, s), path(path), writer(writer), conv(conv), comm(comm)
 {
     gridRank = comm->getProcessID();

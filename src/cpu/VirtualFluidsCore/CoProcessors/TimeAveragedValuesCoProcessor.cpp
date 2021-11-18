@@ -4,7 +4,7 @@
 #include "LBMKernel.h"
 
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "UbScheduler.h"
@@ -16,7 +16,7 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string &path,
                                                              WbWriter *const writer, SPtr<UbScheduler> s,
-                                                             SPtr<Communicator> comm, int options)
+                                                             std::shared_ptr<vf::mpi::Communicator> comm, int options)
     : CoProcessor(grid, s), path(path), writer(writer), comm(comm), options(options)
 {
     init();
@@ -26,7 +26,7 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, 
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string &path,
                                                              WbWriter *const writer, SPtr<UbScheduler> s,
-                                                             SPtr<Communicator> comm, int options,
+                                                             std::shared_ptr<vf::mpi::Communicator> comm, int options,
                                                              std::vector<int> levels, std::vector<double> &levelCoords,
                                                              std::vector<double> &bounds, bool timeAveraging)
     : CoProcessor(grid, s), path(path), writer(writer), comm(comm), options(options), levels(levels),
@@ -384,7 +384,7 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                 maxX2 -= 2;
                 maxX3 -= 2;
 
-                LBMReal rho, ux, uy, uz, uxx, uzz, uyy, uxy, uxz, uyz, rhof;
+                LBMReal rho {0.}, ux {0.}, uy {0.}, uz {0.}, uxx {0.}, uzz {0.}, uyy {0.}, uxy {0.}, uxz {0.}, uyz {0.}, rhof {0.};
 
                 for (int ix3 = minX3; ix3 <= maxX3; ix3++) {
                     for (int ix2 = minX2; ix2 <= maxX2; ix2++) {

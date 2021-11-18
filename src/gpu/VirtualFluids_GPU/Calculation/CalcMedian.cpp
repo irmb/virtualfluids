@@ -74,7 +74,7 @@ void allocMedianAD(Parameter* para, CudaMemoryManager* cudaManager)
 {
 	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 	{
-		para->cudaAllocMedianOutAD(lev);
+        cudaManager->cudaAllocMedianOutAD(lev);
 		for (unsigned int i = 0; i < para->getParH(lev)->size_Mat_SP; i++)
 		{
 			para->getParH(lev)->vx_SP_Med_Out[i]    = (real)0.0;

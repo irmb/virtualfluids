@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file MultipleGridBuilder.cpp
+//! \ingroup grid
+//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//=======================================================================================
 #include "MultipleGridBuilder.h"
 
 #include <sstream>
@@ -14,18 +46,17 @@
 #include "grid/Grid.h"
 #include "grid/GridFactory.h"
 
-#include "io/STLReaderWriter/STLWriter.h"
 #include "io/GridVTKWriter/GridVTKWriter.h"
+#include "io/STLReaderWriter/STLWriter.h"
 
-MultipleGridBuilder::MultipleGridBuilder(SPtr<GridFactory> gridFactory, Device device, const std::string &d3qxx) :
-    LevelGridBuilder(device, d3qxx), gridFactory(gridFactory), solidObject(nullptr), numberOfLayersFine(12), numberOfLayersBetweenLevels(8), subDomainBox(nullptr)
+MultipleGridBuilder::MultipleGridBuilder() : LevelGridBuilder(), numberOfLayersFine(12), numberOfLayersBetweenLevels(8), subDomainBox(nullptr)
 {
 
 }
 
-SPtr<MultipleGridBuilder> MultipleGridBuilder::makeShared(SPtr<GridFactory> gridFactory)
+SPtr<MultipleGridBuilder> MultipleGridBuilder::makeShared()
 {
-    return SPtr<MultipleGridBuilder>(new MultipleGridBuilder(gridFactory));
+    return SPtr<MultipleGridBuilder>(new MultipleGridBuilder());
 }
 
 void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
@@ -59,9 +90,6 @@ void MultipleGridBuilder::addGeometry(Object* solidObject, uint level)
     this->solidObject = solidObject;
     auto gridShape = solidObject->clone();
     gridShape->scale(4.0);
-
-    //TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(gridShape);
-    //STLWriter::writeSTL(triangularMesh->triangleVec, "D:/GRIDGENERATION/STL/bridge.stl");
 
     this->addGrid(gridShape, level);
 }
@@ -124,7 +152,6 @@ void MultipleGridBuilder::addIntermediateGridsToList(uint levelDifference, uint 
     {
         auto spacings = getSpacingFactors(levelDifference);
 
-        // start = startFine - SUM(nodesBetweenGrids * 2^i * dxfine) 
         uint level = getNumberOfLevels();
         for (int i = levelDifference - 1; i >= 0; i--)
         {
@@ -166,10 +193,9 @@ void MultipleGridBuilder::addGridToListIfValid(SPtr<Grid> grid)
     addGridToList(grid);
 }
 
-
 SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const
 {
-    return gridFactory->makeGrid(gridShape, startX, startY, startZ, endX, endY, endZ, delta, level);
+    return GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, "D3Q27", level);
 }
 
 bool MultipleGridBuilder::coarseGridExists() const
@@ -365,6 +391,7 @@ bool MultipleGridBuilder::isGridInCoarseGrid(SPtr<Grid> grid) const
         vf::Math::lessEqual(grid->getEndY(), grids[0]->getEndY()) &&
         vf::Math::lessEqual(grid->getEndZ(), grids[0]->getEndZ());
 }
+
 
 uint MultipleGridBuilder::getNumberOfLevels() const
 {
@@ -577,7 +604,6 @@ GRIDGENERATOR_EXPORT void MultipleGridBuilder::setNumberOfLayers(uint numberOfLa
     this->numberOfLayersBetweenLevels = numberOfLayersBetweenLevels;
 }
 
-
 void MultipleGridBuilder::emitNoCoarseGridExistsWarning()
 {
     *logging::out << logging::Logger::WARNING << "No Coarse grid was added before. Actual Grid is not added, please create coarse grid before.\n";
@@ -609,12 +635,6 @@ void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
 
         GridVTKWriter::writeGridToVTKXML(grids[level], ss.str());
 
-        //if( level != 0 )
-        //    GridVTKWriter::writeInterpolationCellsToVTKXML(grids[level], grids[level-1], ss.str() + ".InterpolationCells");
-        //else
-        //    GridVTKWriter::writeInterpolationCellsToVTKXML(grids[level], nullptr       , ss.str() + ".InterpolationCells");
-
-        //GridVTKWriter::writeSparseGridToVTK(grids[level], ss.str());
     }
 }
 
@@ -622,3 +642,4 @@ GRIDGENERATOR_EXPORT void MultipleGridBuilder::setSubDomainBox(SPtr<BoundingBox>
 {
     this->subDomainBox = subDomainBox;
 }
+

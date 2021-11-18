@@ -10,7 +10,7 @@ using namespace std;
 //{
 //   try
 //   {
-//      ConfigurationFile   config;
+//      vf::basics::ConfigurationFile   config;
 //      config.load(configname);
 //
 //      string          pathname = config.getString("pathname");
@@ -29,7 +29,7 @@ using namespace std;
 //      double          deltax = config.getDouble("deltax");
 //
 //
-//      SPtr<Communicator> comm = MPICommunicator::getInstance();
+//      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
 //      int myid = comm->getProcessID();
 //
 //      if (logToFile)
@@ -301,7 +301,7 @@ void pflowdp(string configname)
 {
    try
    {
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathname = config.getValue<string>("pathname");
@@ -322,7 +322,7 @@ void pflowdp(string configname)
       double          cpStepStart = config.getValue<double>("cpStepStart");
       bool            newStart = config.getValue<bool>("newStart");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       LBMReal rhoLB = 0.0;
@@ -544,7 +544,7 @@ void pflowdp(string configname)
 
          intHelper.addInteractor(outflowInt);
 
-         //die Geschwindigkeit Randbedingung soll Ausflüß überdecken !!!!!
+         //die Geschwindigkeit Randbedingung soll Ausflï¿½ï¿½ ï¿½berdecken !!!!!
 
 
 

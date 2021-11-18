@@ -11,7 +11,7 @@ void run(string configname)
 {
    try
    {
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathname = config.getValue<string>("pathname");
@@ -31,7 +31,7 @@ void run(string configname)
       double          cpStep = config.getValue<double>("cpStep");
       bool            newStart = config.getValue<bool>("newStart");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)
@@ -49,6 +49,8 @@ void run(string configname)
             stringstream logFilename;
             logFilename << pathname + "/logfile" + UbSystem::toString(UbSystem::getTimeStamp()) + ".txt";
             UbLog::output_policy::setStream(logFilename.str());
+
+            vf::logging::Logger::changeLogPath(pathname);
          }
       }
 
@@ -149,12 +151,12 @@ void run(string configname)
 
          if (myid == 0)
          {
-            UBLOG(logINFO, "uLb = " << uLB);
-            UBLOG(logINFO, "rho = " << rhoLB);
-            UBLOG(logINFO, "nuLb = " << nuLB);
-            UBLOG(logINFO, "Re = " << Re);
-            UBLOG(logINFO, "dx = " << dx);
-            UBLOG(logINFO, "Preprocess - start");
+            VF_LOG_INFO("uLb = {}", uLB);
+            VF_LOG_INFO("rho = {}", rhoLB);
+            VF_LOG_INFO("nuLb = {}", nuLB);
+            VF_LOG_INFO("Re = {}", Re);
+            VF_LOG_INFO("dx = {}", dx);
+            VF_LOG_INFO("Preprocess - start");
          }
 
          grid->setDeltaX(dx);
@@ -238,19 +240,19 @@ void run(string configname)
 
          if (myid == 0)
          {
-            UBLOG(logINFO, "Number of blocks = " << numberOfBlocks);
-            UBLOG(logINFO, "Number of nodes  = " << numberOfNodes);
+            VF_LOG_INFO("Number of blocks = {}", numberOfBlocks);
+            VF_LOG_INFO("Number of nodes  = {}", numberOfNodes);
             int minInitLevel = grid->getCoarsestInitializedLevel();
             int maxInitLevel = grid->getFinestInitializedLevel();
             for (int level = minInitLevel; level <= maxInitLevel; level++)
             {
                int nobl = grid->getNumberOfBlocks(level);
-               UBLOG(logINFO, "Number of blocks for level " << level << " = " << nobl);
-               UBLOG(logINFO, "Number of nodes for level " << level << " = " << nobl*numberOfNodesPerBlock);
+               VF_LOG_INFO("Number of blocks for level {} = {}", level, nobl);
+               VF_LOG_INFO("Number of nodes for level {} = {}", level, nobl*numberOfNodesPerBlock);
             }
-            UBLOG(logINFO, "Necessary memory  = " << needMemAll << " bytes");
-            UBLOG(logINFO, "Necessary memory per process = " << needMem << " bytes");
-            UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
+            VF_LOG_INFO("Necessary memory  = {} bytes", needMemAll);
+            VF_LOG_INFO("Necessary memory per process = {} bytes", needMem);
+            VF_LOG_INFO("Available memory per process = {} bytes", availMem);
          }
 
          SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
@@ -281,27 +283,27 @@ void run(string configname)
             ppgeo.reset();
          }
 
-         if (myid == 0) UBLOG(logINFO, "Preprocess - end");
+         if (myid == 0) VF_LOG_INFO("Preprocess - end");
       }
       else
       {
          if (myid == 0)
          {
-            UBLOG(logINFO, "Parameters:");
-            UBLOG(logINFO, "uLb = " << uLB);
-            UBLOG(logINFO, "rho = " << rhoLB);
-            UBLOG(logINFO, "nuLb = " << nuLB);
-            UBLOG(logINFO, "Re = " << Re);
-            UBLOG(logINFO, "dx = " << dx);
-            UBLOG(logINFO, "number of levels = " << refineLevel + 1);
-            UBLOG(logINFO, "numOfThreads = " << numOfThreads);
-            UBLOG(logINFO, "path = " << pathname);
+            VF_LOG_INFO("Parameters:");
+            VF_LOG_INFO("uLb = {}", uLB);
+            VF_LOG_INFO("rho = {}", rhoLB);
+            VF_LOG_INFO("nuLb = {}", nuLB);
+            VF_LOG_INFO("Re = {}", Re);
+            VF_LOG_INFO("dx = {}", dx);
+            VF_LOG_INFO("number of levels = {}", refineLevel + 1);
+            VF_LOG_INFO("numOfThreads = {}", numOfThreads);
+            VF_LOG_INFO("path = {}", pathname);
          }
 
          migCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
 
-         if (myid == 0) UBLOG(logINFO, "Restart - end");
+         if (myid == 0) VF_LOG_INFO("Restart - end");
       }
 
       OneDistributionSetConnectorsBlockVisitor setConnsVisitor(comm);
@@ -330,10 +332,9 @@ void run(string configname)
       calculator->addCoProcessor(migCoProcessor);
       //calculator->addCoProcessor(timeDepBC);
 
-      if (myid == 0) UBLOG(logINFO, "Simulation-start");
+      if (myid == 0) VF_LOG_INFO("Simulation-start");
       calculator->calculate();
-      if (myid == 0)
-          UBLOG(logINFO, "Simulation-end");
+      if (myid == 0) VF_LOG_INFO("Simulation-end");
    }
    catch (std::exception& e)
    {
@@ -349,19 +350,23 @@ void run(string configname)
    }
 
 }
-int main(int  /*argc*/, char* argv[])
+
+
+int main(int argc, char *argv[])
 {
-   if (argv != NULL)
-   {
-      if (argv[1] != NULL)
-      {
-         run(string(argv[1]));
-      }
-      else
-      {
-         cout << "Configuration file is missing!" << endl;
-      }
-   }
+    try {
+        vf::logging::Logger::initalizeLogger();
 
+        VF_LOG_INFO("Starting VirtualFluids...");
+
+        if (argc > 1)
+            run(std::string(argv[1]));
+        else
+            VF_LOG_CRITICAL("Configuration file is missing!");
+
+        VF_LOG_INFO("VirtualFluids is finished.");
+
+    } catch (const spdlog::spdlog_ex &ex) {
+        std::cout << "Log initialization failed: " << ex.what() << std::endl;
+    }
 }
-

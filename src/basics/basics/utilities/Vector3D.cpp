@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file UbVector3D.cpp
+//! \file Vector3D.cpp
 //! \ingroup utilities
 //! \author Soeren Freudiger, Sebastian Geller
 //=======================================================================================

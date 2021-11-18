@@ -15,7 +15,7 @@
 
 #include <pe/basic.h>
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class WbWriter;
@@ -24,7 +24,7 @@ class WritePeBlocksCoProcessor : public CoProcessor
 {
 public:
     WritePeBlocksCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, WbWriter *const writer,
-                             SPtr<Communicator> comm, SPtr<walberla::blockforest::BlockForest> forest);
+                             std::shared_ptr<vf::mpi::Communicator> comm, SPtr<walberla::blockforest::BlockForest> forest);
     virtual ~WritePeBlocksCoProcessor();
 
     void process(double step) override;
@@ -34,7 +34,7 @@ protected:
 
     std::string path;
     WbWriter *writer;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     SPtr<walberla::blockforest::BlockForest> forest;
 };
 

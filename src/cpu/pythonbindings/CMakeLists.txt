@@ -12,4 +12,5 @@ target_compile_definitions(pymuparser PRIVATE VF_METIS VF_MPI)
 target_link_libraries(pyfluids PRIVATE simulationconfig VirtualFluidsCore muparser basics)
 target_link_libraries(pymuparser PRIVATE muparser)
 
-
+target_include_directories(pyfluids PRIVATE ${CMAKE_SOURCE_DIR}/src/)
+target_include_directories(pyfluids PRIVATE ${CMAKE_BINARY_DIR})

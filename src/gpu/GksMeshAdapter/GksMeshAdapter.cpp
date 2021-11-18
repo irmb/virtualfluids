@@ -22,6 +22,12 @@
 #include "MeshCell.h"
 #include "MeshFace.h"
 
+#include <lbm/constants/NumericConstants.h>
+
+using namespace vf::lbm::constant;
+
+using namespace vf::gpu;
+
 GksMeshAdapter::GksMeshAdapter(SPtr<MultipleGridBuilder> gridBuilder)
     : gridBuilder(gridBuilder)
 {}
@@ -516,7 +522,7 @@ void GksMeshAdapter::sortFaces()
     // sort into blocks
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    std::array<char, 3> orientations = {'x', 'y', 'z'};
+    // std::array<char, 3> orientations = {'x', 'y', 'z'};
 
     for( uint level = 0; level < this->gridBuilder->getNumberOfLevels(); level++ )
     {
@@ -525,17 +531,17 @@ void GksMeshAdapter::sortFaces()
             uint start =         this->startOfFacesPerLevelXYZ [ 3 * level + idx];
             uint end   = start + this->numberOfFacesPerLevelXYZ[ 3 * level + idx];
 
-            real xMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.x < rhs.faceCenter.x; })).faceCenter.x;
-            real yMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.y < rhs.faceCenter.y; })).faceCenter.y;
-            real zMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.z < rhs.faceCenter.z; })).faceCenter.z;
+            // real xMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.x < rhs.faceCenter.x; })).faceCenter.x;
+            // real yMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.y < rhs.faceCenter.y; })).faceCenter.y;
+            // real zMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.z < rhs.faceCenter.z; })).faceCenter.z;
 
             real xMin = (*std::min_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.x < rhs.faceCenter.x; })).faceCenter.x;
             real yMin = (*std::min_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.y < rhs.faceCenter.y; })).faceCenter.y;
             real zMin = (*std::min_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.z < rhs.faceCenter.z; })).faceCenter.z;
 
-            real xRange = xMax - xMin;
-            real yRange = yMax - yMin;
-            real zRange = zMax - zMin;
+            // real xRange = xMax - xMin;
+            // real yRange = yMax - yMin;
+            // real zRange = zMax - zMin;
 
             uint blockDim = 8;
 

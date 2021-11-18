@@ -29,7 +29,7 @@ void block_test_incompressible(const char *cstr1, const char *cstr2)
       int numOfThreads = UbSystem::stringTo<int>(cf.getValue("numOfThreads"));
       double availMem = 0;
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if(machine == "BOMBADIL") 

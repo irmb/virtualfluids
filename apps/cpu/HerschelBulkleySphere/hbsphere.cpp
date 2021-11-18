@@ -10,7 +10,7 @@ void bflow(string configname)
 {
    try
    {
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile config;
       config.load(configname);
 
       string          outputPath = config.getValue<string>("outputPath");
@@ -35,7 +35,7 @@ void bflow(string configname)
       double          Bn = config.getValue<double>("Bn");
       vector<double>  sphereCenter = config.getVector<double>("sphereCenter");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

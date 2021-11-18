@@ -18,7 +18,7 @@ void run(const char *cstr1, const char *cstr2)
       stringstream logFilename;
       double availMem = 0;
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       string machine = string(cstr1);
@@ -102,9 +102,9 @@ void run(const char *cstr1, const char *cstr2)
 
       /////////////////Knotenabmessungen:
       //int nx[3], blocknx[3];
-      //nx[0]      = 90;//240;//120;//60;//86;//43;//65;//50;  //länge
+      //nx[0]      = 90;//240;//120;//60;//86;//43;//65;//50;  //lï¿½nge
       //nx[1]      = 2;//2;//6;///1;//5;// //breite
-      //nx[2]      = 30;//64;//32;//18;//5;//15;//15; //höhe gebiet
+      //nx[2]      = 30;//64;//32;//18;//5;//15;//15; //hï¿½he gebiet
       //blocknx[0] = 16;//10;//6;
       //blocknx[1] = 16;//10;//6;
       //blocknx[2] = 16;//10;//6;
@@ -112,11 +112,11 @@ void run(const char *cstr1, const char *cstr2)
       //int baseLevel   = 0;
       //int refineLevel = 4;
 
-      //double H = 600.0; // Kanalhöhe [mm]
+      //double H = 600.0; // Kanalhï¿½he [mm]
       //double cdx = H/(double)(nx[2]*blocknx[2]);
       //double fdx = cdx/double(1<<refineLevel);
 
-      ////double h = 200.0; // gewünschte Plattenhöhe in Gitterpunkten
+      ////double h = 200.0; // gewï¿½nschte Plattenhï¿½he in Gitterpunkten
       ////double fdx = plate->getLengthX3()/h;
       ////double cdx = fdx*double(1<<refineLevel);
 
@@ -128,7 +128,7 @@ void run(const char *cstr1, const char *cstr2)
       //double Re            = 1133333.3333333335; 
       //double rhoLB         = 0.0;
       //double uLB           = 0.1; 
-      //double lReal         = 1000; //Plattenlänge in mm
+      //double lReal         = 1000; //Plattenlï¿½nge in mm
       //double nuLB          = (uLB*(lReal/cdx))/Re;
 
       //int sizeSP=4;

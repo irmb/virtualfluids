@@ -25,7 +25,7 @@ if(BUILD_USE_OPENMP)
    list(APPEND VF_LIBRARIES OpenMP::OpenMP_CXX)
 endif()
 
-vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser MPI::MPI_CXX ${VF_LIBRARIES})
+vf_add_library(BUILDTYPE static PUBLIC_LINK basics muparser ${VF_LIBRARIES} PRIVATE_LINK lbm mpi logger)
 
 
 vf_get_library_name(library_name)

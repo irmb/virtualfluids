@@ -7,7 +7,7 @@
 
 #include "BCArray3D.h"
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "UbScheduler.h"
@@ -185,7 +185,7 @@ void AverageValuesCoProcessor::collectData(double step)
     piece           = subfolder + "/" + piece;
 
     vector<string> cellDataNames;
-    SPtr<Communicator> comm = Communicator::getInstance();
+    std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::Communicator::getInstance();
     vector<string> pieces   = comm->gather(piece);
     if (comm->getProcessID() == comm->getRoot()) {
         string pname =
@@ -448,7 +448,7 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
 ////////////////////////////////////////////////////////////////////////////
 // void AverageValuesCoProcessor::initPlotData(double step)
 //{
-//   SPtr<Communicator> comm = Communicator::getInstance();
+//   std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::Communicator::getInstance();
 //	if (comm->getProcessID() == comm->getRoot())
 //	{
 //		std::ofstream ostr;

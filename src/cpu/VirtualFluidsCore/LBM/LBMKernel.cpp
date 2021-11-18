@@ -202,13 +202,13 @@ void LBMKernel::setDensityRatio(double densityRatio) { this->densityRatio = dens
 //////////////////////////////////////////////////////////////////////////
 double LBMKernel::getDensityRatio() const { return densityRatio; }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setMultiphaseModelParameters(double beta, double kappa)
+void LBMKernel::setMultiphaseModelParameters(LBMReal beta, LBMReal kappa)
 {
     this->beta  = beta;
     this->kappa = kappa;
 }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::getMultiphaseModelParameters(double &beta, double &kappa)
+void LBMKernel::getMultiphaseModelParameters(LBMReal &beta, LBMReal &kappa)
 {
     beta  = this->beta;
     kappa = this->kappa;

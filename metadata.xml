@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.3/metadata.xsd">
+	<identifier identifierType="DOI">PLACEHOLDER</identifier>
+	<titles>
+		<title xml:lang="en">VirtualFluids</title>
+	</titles>
+	<language>en</language>
+	<creators>
+		<creator>
+			<creatorName nameType="Personal">Krafczyk, Manfred</creatorName>
+			<givenName>Manfred</givenName>
+			<familyName>Krafczyk</familyName>
+			<nameIdentifier nameIdentifierScheme="ORCID">0000-0002-8509-0871</nameIdentifier>
+			<affiliation xml:lang="de">TU Braunschweig</affiliation>
+			<affiliation xml:lang="de">Institut für rechnergestützte Modellierung im Bauingenieurwesen</affiliation>
+		</creator>
+		<creator>
+			<creatorName nameType="Organizational">Institut für rechnergestützte Modellierung im Bauingenieurwesen</creatorName>
+			<affiliation xml:lang="de">TU Braunschweig</affiliation>
+		</creator>
+	</creators>
+	<publisher xml:lang="de">Institut für rechnergestützte Modellierung im Bauingenieurwesen</publisher>
+	<publicationYear>2021</publicationYear>
+	<resourceType resourceTypeGeneral="Software">Computational Fluid Dynamics Solver</resourceType>
+	<subjects>
+		<subject subjectScheme="DDC" schemeURI="https://www.oclc.org/en/dewey.html">532 Fluid Mechanics, liquid mechanics</subject>
+	</subjects>
+	<contributors>
+		<contributor contributorType="Researcher">
+			<contributorName>Ahrenholz, Benjamin</contributorName>
+			<givenName>Benjamin</givenName>
+			<familyName>Ahrenholz</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Alihussein, Hussein</contributorName>
+			<givenName>Hussein</givenName>
+			<familyName>Alihussein</familyName>
+			<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/">0000-0003-3656-7028</nameIdentifier>
+			<affiliation xml:lang="de">TU Braunschweig</affiliation>
+			<affiliation xml:lang="en">Institut für rechnergestützte Modellierung im Bauingenieurwesen</affiliation>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Bindick, Sebastian</contributorName>
+			<givenName>Sebastian</givenName>
+			<familyName>Bindick</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Brendel, Aileen</contributorName>
+			<givenName>Aileen</givenName>
+			<familyName>Brendel</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Geier, Martin</contributorName>
+			<givenName>Martin</givenName>
+			<familyName>Geier</familyName>
+			<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/">0000-0002-8367-9412</nameIdentifier>
+			<affiliation xml:lang="de">TU Braunschweig</affiliation>
+			<affiliation xml:lang="en">Institut für rechnergestützte Modellierung im Bauingenieurwesen</affiliation>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Geller, Sebastian</contributorName>
+			<givenName>Sebastian</givenName>
+			<familyName>Geller</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Goraki Fard, Ehsan</contributorName>
+			<givenName>Ehsan</givenName>
+			<familyName>Goraki Fard</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Hegewald, Jan</contributorName>
+			<givenName>Jan</givenName>
+			<familyName>Hegewald</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Janßen, Christian</contributorName>
+			<givenName>Christian</givenName>
+			<familyName>Janßen</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Kutscher, Konstantin</contributorName>
+			<givenName>Konstantin</givenName>
+			<familyName>Kutscher</familyName>
+			<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/">0000-0002-1099-1608</nameIdentifier>
+			<affiliation xml:lang="de">TU Braunschweig</affiliation>
+			<affiliation xml:lang="en">Institut für rechnergestützte Modellierung im Bauingenieurwesen</affiliation>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Lenz, Stephan</contributorName>
+			<givenName>Stephan</givenName>
+			<familyName>Lenz</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Linxweiler, Jan</contributorName>
+			<givenName>Jan</givenName>
+			<familyName>Linxweiler</familyName>
+			<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/">0000-0002-2755-5087</nameIdentifier>
+			<affiliation xml:lang="de">TU Braunschweig</affiliation>
+			<affiliation xml:lang="en">Institut für rechnergestützte Modellierung im Bauingenieurwesen</affiliation>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Lux, Lennard</contributorName>
+			<givenName>Lennard</givenName>
+			<familyName>Lux</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Marcus, Sven</contributorName>
+			<givenName>Sven</givenName>
+			<familyName>Marcus</familyName>
+			<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/">0000-0003-3689-2162</nameIdentifier>
+			<affiliation xml:lang="de">TU Braunschweig</affiliation>
+			<affiliation xml:lang="en">Universitätsbibliothek Braunschweig</affiliation>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Peters, Sören</contributorName>
+			<givenName>Sören</givenName>
+			<familyName>Peters</familyName>
+			<affiliation xml:lang="de">TU Braunschweig</affiliation>
+			<affiliation xml:lang="en">Institut für rechnergestützte Modellierung im Bauingenieurwesen</affiliation>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Safari, Hesameddin</contributorName>
+			<givenName>Hesameddin</givenName>
+			<familyName>Safari</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Schönherr, Martin</contributorName>
+			<givenName>Martin</givenName>
+			<familyName>Schönherr</familyName>
+			<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/">0000-0002-4774-1776</nameIdentifier>
+			<affiliation xml:lang="de">TU Braunschweig</affiliation>
+			<affiliation xml:lang="en">Institut für rechnergestützte Modellierung im Bauingenieurwesen</affiliation>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Stiebler, Maik</contributorName>
+			<givenName>Maik</givenName>
+			<familyName>Stiebler</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Textor, Sören</contributorName>
+			<givenName>Sören</givenName>
+			<familyName>Textor</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Tölke, Jonas</contributorName>
+			<givenName>Jonas</givenName>
+			<familyName>Tölke</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Uphoff, Sonja</contributorName>
+			<givenName>Sonja</givenName>
+			<familyName>Uphoff</familyName>
+		</contributor>
+
+		<contributor contributorType="Researcher">
+			<contributorName>Wellmann, Anna</contributorName>
+			<givenName>Anna</givenName>
+			<familyName>Wellmann</familyName>
+		</contributor>
+	</contributors>
+	<dates>
+		<date dateType="Created">2000</date>
+	</dates>
+	<formats>
+		<format>text/x-c</format>
+		<format>text/x-h</format>
+		<format>text/x-script.python</format>
+	</formats>
+	<relatedIdentifiers>
+		<relatedIdentifier relatedIdentifierType="URL" relationType="Requires" resourceTypeGeneral="Software">https://www.open-mpi.org/software/ompi/v4.1/</relatedIdentifier>
+		<relatedIdentifier relatedIdentifierType="URL" relationType="IsCompiledBy" resourceTypeGeneral="Software">https://cmake.org</relatedIdentifier>
+		<relatedIdentifier relatedIdentifierType="URL" relationType="IsCompiledBy" resourceTypeGeneral="Software">https://gcc.gnu.org</relatedIdentifier>
+		<relatedIdentifier relatedIdentifierType="URL" relationType="IsCompiledBy" resourceTypeGeneral="Software">https://clang.llvm.org</relatedIdentifier>
+		<relatedIdentifier relatedIdentifierType="URL" relationType="IsCompiledBy" resourceTypeGeneral="Software">https://visualstudio.microsoft.com/vs/features/cplusplus/</relatedIdentifier>
+	</relatedIdentifiers>
+	<rightsList>
+		<rights xml:lang="en" schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="GPL-3.0-only" rightsURI="https://www.gnu.org/licenses/gpl-3.0-standalone.html">GNU General Public License Version 3</rights>
+	</rightsList>
+	<descriptions>
+		<description descriptionType="Abstract">
+			VirtualFluids (VF) is a research code developed at the Institute for Computational Modeling in Civil Engineering (iRMB). The code is a Computational Fluid Dynamics (CFD) solver based on the Lattice Boltzmann Method (LBM) for turbulent, thermal, multiphase and multicomponent flow problems as well as for multi-field problems such as Fluid-Structure-interaction including distributed pre- and postprocessing capabilities for simulations with more than 100 billion degrees of freedom.
+		</description>
+	</descriptions>
+</resource>

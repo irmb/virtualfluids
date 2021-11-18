@@ -3,7 +3,7 @@
 #include "BCProcessor.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "CoordinateTransformation3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "D3Q27System.h"
@@ -114,7 +114,7 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
     }
 
     dataSetParam dataSetParamStr1, dataSetParamStr2, dataSetParamStr3;
-    int firstGlobalID;
+    int firstGlobalID {0};
     std::vector<double> doubleValuesArrayF; // double-values (arrays of f's) in all blocks  Fdistribution
     std::vector<double> doubleValuesArrayH1; // double-values (arrays of f's) in all blocks  H1distribution
     std::vector<double> doubleValuesArrayH2; // double-values (arrays of f's) in all blocks  H2distribution
@@ -289,7 +289,9 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -415,7 +417,7 @@ void MPIIOMigrationBECoProcessor::write4DArray(int step, Arrays arrayType, std::
         blocksCount += static_cast<int>(blocksVector[level].size());
     }
 
-    int firstGlobalID;
+    int firstGlobalID {0};
     std::vector<double> doubleValuesArray; // double-values of the data array in all blocks
     dataSetParam dataSetParamStr;
     bool firstBlock        = true;
@@ -486,7 +488,9 @@ void MPIIOMigrationBECoProcessor::write4DArray(int step, Arrays arrayType, std::
     MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
     MPI_Type_commit(&dataSetDoubleType);
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -532,7 +536,7 @@ void MPIIOMigrationBECoProcessor::write3DArray(int step, Arrays arrayType, std::
         blocksCount += static_cast<int>(blocksVector[level].size());
     }
 
-    int firstGlobalID;
+    int firstGlobalID {0};
     std::vector<double> doubleValuesArray; // double-values of the data array in all blocks
     dataSetParam dataSetParamStr;
     bool firstBlock        = true;
@@ -598,7 +602,9 @@ void MPIIOMigrationBECoProcessor::write3DArray(int step, Arrays arrayType, std::
     MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
     MPI_Type_commit(&dataSetDoubleType);
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -738,7 +744,9 @@ void MPIIOMigrationBECoProcessor::writeBoundaryConds(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1019,7 +1027,9 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
     int indexB = rank * blocksPerProcess;     // the first "my" block
     int indexE = indexB + int(myBlocksCount); // the latest "my" block
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1292,7 +1302,9 @@ void MPIIOMigrationBECoProcessor::readArray(int step, Arrays arrType, std::strin
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1446,7 +1458,9 @@ void MPIIOMigrationBECoProcessor::readBoundaryConds(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 

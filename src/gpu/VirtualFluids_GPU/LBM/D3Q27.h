@@ -21,6 +21,7 @@
 #define dirBN   /*f17*/  16
 #define dirTS   /*f18*/  17
 #define dirZERO /*f0 */  18
+#define dirREST /*f0 */  18
 
 #define dirTNE    /*f */  19
 #define dirBNE    /*f */  20

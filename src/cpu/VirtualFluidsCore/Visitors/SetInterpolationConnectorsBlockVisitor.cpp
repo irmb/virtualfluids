@@ -39,10 +39,10 @@
 #include "Grid3DSystem.h"
 #include <basics/transmitter/TbTransmitterLocal.h>
 
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "InterpolationProcessor.h"
 
-SetInterpolationConnectorsBlockVisitor::SetInterpolationConnectorsBlockVisitor(SPtr<Communicator> comm, LBMReal nue, SPtr<InterpolationProcessor> iProcessor) :
+SetInterpolationConnectorsBlockVisitor::SetInterpolationConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm, LBMReal nue, SPtr<InterpolationProcessor> iProcessor) :
 Block3DVisitor(0, Grid3DSystem::MAXLEVEL), 
 	comm(comm),
 	nue(nue),
@@ -343,7 +343,7 @@ void SetInterpolationConnectorsBlockVisitor::setInterpolationConnectors(SPtr<Blo
 	if(fBlockNE) fBlockNERank = fBlockNE->getRank();
 	int cBlockRank   = cBlock->getRank();
 
-	LBMReal omegaF;
+	LBMReal omegaF {0.0};
 	if(fBlockSW) omegaF =LBMSystem::calcCollisionFactor(nue, fBlockSW->getLevel());
 	if(fBlockNW) omegaF =LBMSystem::calcCollisionFactor(nue, fBlockNW->getLevel());
 	if(fBlockSE) omegaF =LBMSystem::calcCollisionFactor(nue, fBlockSE->getLevel());

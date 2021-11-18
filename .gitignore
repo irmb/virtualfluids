@@ -1,11 +1,7 @@
 # build directories
-buildDev/
 build/
-buildDev/
 bin/
 cmake-build-debug/
-MSVC2017/
-VS2017/
 run/
 
 # Python
@@ -22,9 +18,7 @@ __pycache__/
 
 # Simulation results
 output/
+logs/
 
 # MacOS
 .DS_Store
-
-#Cluster
-run/

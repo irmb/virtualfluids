@@ -47,6 +47,8 @@
 #include "FlowStateData/FlowStateDataConversion.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
 
+namespace GksGpu {
+
 void VtkWriter::write(std::shared_ptr<DataBase> dataBase, Parameters parameters, std::string filename)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".vtu" << " ... \n";
@@ -143,4 +145,6 @@ void VtkWriter::write(std::shared_ptr<DataBase> dataBase, Parameters parameters,
     //////////////////////////////////////////////////////////////////////////
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+}
+
 }

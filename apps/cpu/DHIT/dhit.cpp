@@ -12,7 +12,7 @@ void run(string configname)
    {
       //Sleep(30000);
 
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathname = config.getString("pathname");
@@ -29,7 +29,7 @@ void run(string configname)
       double          lambda = config.getDouble("lambda");
       double          initTime = config.getDouble("initTime");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

@@ -166,11 +166,24 @@ unsigned int BoundaryQs::getLevel()
 }
 
 
-void BoundaryQs::setValues(real** q27, unsigned int level) const
+void BoundaryQs::setValuesInVector(std::vector<std::vector<std::vector<real>>> &q27, unsigned int level) const 
+{
+    for (std::size_t column = 0; column < values[level].size(); column++)
+        for (std::size_t index = 0; index < values[level][column].size(); index++)
+            q27[level][column].push_back(values[level][column][index]);
+}
+
+void BoundaryQs::setValues(real **q27, unsigned int level) const
 {
 	for (std::size_t column = 0; column < values[level].size(); column++)
 		for (std::size_t index = 0; index < values[level][column].size(); index++)
 			q27[column][index] = values[level][column][index];
+}
+
+void BoundaryQs::setIndexInVector(std::vector<std::vector<int>> &data, unsigned int level) const 
+{
+    for (std::size_t index = 0; index < indices[level].size(); index++)
+        data[level].push_back(indices[level][index]);
 }
 
 void BoundaryQs::setIndex(int *data, unsigned int level) const

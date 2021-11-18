@@ -4,7 +4,7 @@
 #include <PointerDefinitions.h>
 
 class Grid3D;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class D3Q27TriFaceMeshInteractor;
 
 //! \brief Refine blocks on base of bounding boxes.
@@ -20,7 +20,7 @@ public:
     //! \param startDistance start distance from geometry for refinement
     //! \param stopDistance stop distance from geometry for refinement
     RefineAroundGbObjectHelper(SPtr<Grid3D> grid, int maxRefineLevel, SPtr<D3Q27TriFaceMeshInteractor> objectIter,
-                               double startDistance, double stopDistance, SPtr<Communicator> comm);
+                               double startDistance, double stopDistance, std::shared_ptr<vf::mpi::Communicator> comm);
     virtual ~RefineAroundGbObjectHelper();
     //! start refinement
     void refine();
@@ -30,7 +30,7 @@ private:
     SPtr<D3Q27TriFaceMeshInteractor> objectIter;
     int refineLevel;
     double startDistance, stopDistance;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
 };
 
 #endif

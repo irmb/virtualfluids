@@ -4,7 +4,7 @@
 #include "BCArray3D.h"
 #include "BCProcessor.h"
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "D3Q27Interactor.h"
 #include "DataSet3D.h"
 #include "GbCuboid3D.h"
@@ -14,7 +14,7 @@
 
 PressureCoefficientCoProcessor::PressureCoefficientCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                                                GbCuboid3DPtr plane, const std::string &path,
-                                                               SPtr<Communicator> comm)
+                                                               std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), plane(plane), path(path), comm(comm)
 {
     maxStep       = scheduler->getMaxEnd();
@@ -42,8 +42,8 @@ void PressureCoefficientCoProcessor::collectData(double step)
 //////////////////////////////////////////////////////////////////////////
 void PressureCoefficientCoProcessor::calculateRho()
 {
-    double f[D3Q27System::ENDF + 1];
-    double vx1, vx2, vx3, rho;
+    LBMReal f[D3Q27System::ENDF + 1];
+    LBMReal vx1, vx2, vx3, rho;
     std::vector<double> values;
     std::vector<double> rvalues;
 

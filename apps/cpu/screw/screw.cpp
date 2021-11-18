@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
          return EXIT_FAILURE;
       }
 
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(argv[1]);
 
       string          pathname     = config.getString("pathname");
@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
       int             restartStep  = config.getValue<int>("restartStep");
 
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());

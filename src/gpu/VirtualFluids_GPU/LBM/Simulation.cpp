@@ -1,16 +1,16 @@
 #include "Simulation.h"
+
+#include <stdio.h>
+#include <vector>
+
+#include <helper_timer.h>
+
 #include "LBM/LB.h"
 #include "Communication/Communicator.h"
 #include "Communication/ExchangeData27.h"
 #include "Parameter/Parameter.h"
 #include "GPU/GPU_Interface.h"
-#include "GPU/devCheck.h"
 #include "basics/utilities/UbFileOutputASCII.h"
-//////////////////////////////////////////////////////////////////////////
-#include "Input/ConfigFile.h"
-#include "Input/VtkGeometryReader.h"
-#include "Input/kFullReader.h"
-#include "Input/PositionReader.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Output/MeasurePointWriter.hpp"
 #include "Output/AnalysisData.hpp"
@@ -21,8 +21,6 @@
 #include "Core/StringUtilities/StringUtil.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Init/InitLattice.h"
-#include "Init/DefineGrid.h"
-#include "Init/SetParameter.h"
 #include "Init/VfReader.h"
 //////////////////////////////////////////////////////////////////////////
 #include "FindQ/FindQ.h"
@@ -47,7 +45,15 @@
 #include "PreProcessor/PreProcessorFactory/PreProcessorFactory.h"
 #include "Kernel/Kernel.h"
 
+#include <cuda/DeviceInfo.h>
 
+#include <logger/Logger.h>
+
+
+Simulation::Simulation(vf::gpu::Communicator& communicator) : communicator(communicator)
+{
+
+}
 
 std::string getFileName(const std::string& fname, int step, int myID)
 {
@@ -78,21 +84,18 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    this->gridProvider = gridProvider;
    this->cudaManager = cudaManager;
    gridProvider->initalGridInformations();
-   comm = Communicator::getInstanz();
    this->para = para;
 
-   para->setMyID(comm->getPID());
-   para->setNumprocs(comm->getNummberOfProcess());
-   devCheck(comm->mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
+   vf::cuda::verifyAndSetDevice(communicator.mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
+   
+   para->initLBMSimulationParameter();
 
    gridProvider->allocAndCopyForcing();
    gridProvider->allocAndCopyQuadricLimiters();
    gridProvider->setDimensions();
    gridProvider->setBoundingBox();
 
-   para->initParameter();
    para->setRe(para->getVelocity() * (real)1.0 / para->getViscosity());
-   para->setPhi((real) 0.0);
    para->setlimitOfNodesForVTK(30000000); //max 30 Million nodes per VTK file
    if (para->getDoRestart())
        para->setStartTurn(para->getTimeDoRestart());
@@ -133,6 +136,13 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    gridProvider->allocArrays_BoundaryQs();
    gridProvider->allocArrays_OffsetScale();
 
+	for( SPtr<PreCollisionInteractor> actuator: para->getActuators()){
+		actuator->init(para.get(), gridProvider.get(), cudaManager.get());
+	}
+
+	for( SPtr<PreCollisionInteractor> probe: para->getProbes()){
+		probe->init(para.get(), gridProvider.get(), cudaManager.get());
+	}
 
    //////////////////////////////////////////////////////////////////////////
    //Kernel init
@@ -251,7 +261,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
 
    //////////////////////////////////////////////////////////////////////////
    //output << "define the Grid..." ;
-   //defineGrid(para, comm);
+   //defineGrid(para, communicator);
    ////allocateMemory();
    //output << "done.\n";
 
@@ -414,7 +424,7 @@ void Simulation::run()
 	////////////////////////////////////////////////////////////////////////////////
 	for(t=para->getTStart();t<=para->getTEnd();t++)
 	{
-        updateGrid27(para.get(), comm, cudaManager.get(), pm, 0, t, kernels);
+        updateGrid27(para.get(), communicator, cudaManager.get(), pm, 0, t, kernels);
 
 	    ////////////////////////////////////////////////////////////////////////////////
 	    //Particles
@@ -429,7 +439,7 @@ void Simulation::run()
         // run Analyzers for kinetic energy and enstrophy for TGV in 3D
         // these analyzers only work on level 0
 	    ////////////////////////////////////////////////////////////////////////////////
-        if( this->kineticEnergyAnalyzer || this->enstrophyAnalyzer ) exchangeMultiGPU(para.get(), comm, cudaManager.get(), 0);
+        if( this->kineticEnergyAnalyzer || this->enstrophyAnalyzer ) exchangeMultiGPU(para.get(), communicator, cudaManager.get(), 0);
 
 	    if( this->kineticEnergyAnalyzer ) this->kineticEnergyAnalyzer->run(t);
 	    if( this->enstrophyAnalyzer     ) this->enstrophyAnalyzer->run(t);
@@ -559,7 +569,7 @@ void Simulation::run()
                     {
                         MeasurePointWriter::writeMeasurePoints(para.get(), lev, j, t);
                     }
-                    MeasurePointWriter::calcAndWriteMeanAndFluctuations(para.get(), lev, t, para->getTStartOut());
+                    //MeasurePointWriter::calcAndWriteMeanAndFluctuations(para.get(), lev, t, para->getTStartOut());
                 }
                 t_MP = 0;
             }
@@ -623,7 +633,7 @@ void Simulation::run()
 	  ////////////////////////////////////////////////////////////////////////////////
       // File IO
       ////////////////////////////////////////////////////////////////////////////////
-      //comm->startTimer();
+      //communicator->startTimer();
       if(para->getTOut()>0 && t%para->getTOut()==0 && t>para->getTStartOut())
       {
 		  //////////////////////////////////////////////////////////////////////////////////
@@ -669,7 +679,7 @@ void Simulation::run()
             {
 		        //////////////////////////////////////////////////////////////////////////
 		        //exchange data for valid post process
-		        exchangeMultiGPU(para.get(), comm, cudaManager.get(), lev);
+		        exchangeMultiGPU(para.get(), communicator, cudaManager.get(), lev);
                 //////////////////////////////////////////////////////////////////////////
                //if (para->getD3Qxx()==19)
                //{
@@ -1283,7 +1293,13 @@ void Simulation::free()
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////
+	//PreCollisionInteractors
+	for( SPtr<PreCollisionInteractor> actuator: para->getActuators()){
+		actuator->free(para.get(), cudaManager.get());
+	}
 
-    delete comm;
-
+	for( SPtr<PreCollisionInteractor> probe: para->getProbes()){
+		probe->free(para.get(), cudaManager.get());
+	}
+	//////////////////////////////////////////////////////////////////////////
 }

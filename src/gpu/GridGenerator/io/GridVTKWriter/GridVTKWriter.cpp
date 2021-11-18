@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GridVTKWriter.cpp
+//! \ingroup io
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #define _CRT_SECURE_NO_DEPRECATE
 #include "GridVTKWriter.h"
 
@@ -14,6 +46,8 @@
 #include "grid/Grid.h"
 #include "grid/NodeValues.h"
 #include "grid/Cell.h"
+
+using namespace vf::gpu;
 
 FILE* GridVTKWriter::file = nullptr;
 WRITING_FORMAT GridVTKWriter::format = WRITING_FORMAT::ASCII;
@@ -239,74 +273,6 @@ void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> 
 	}
     WbWriterVtkXmlBinary::getInstance()->writeOctsWithCellData(name, nodes, cells, celldatanames, celldata);
 }
-//deprecated
-//void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format)
-//{
-//    std::vector<UbTupleFloat3> nodes;
-//    std::vector<UbTupleUInt8> cells;
-//    std::vector<std::string> nodedatanames;
-//    std::vector< std::vector<double> > nodedata;
-//
-//    nodedatanames.push_back("types");
-//
-//
-//    nodedata.resize(nodedatanames.size());
-//
-//    CbArray3D<int> nodeNumbers(grid->getNumberOfNodesX(), grid->getNumberOfNodesY(), grid->getNumberOfNodesZ(), -1);
-//    int nr = 0;
-//
-//    for (real x = grid->getStartX(); x <= grid->getEndX(); x += grid->getDelta())
-//    {
-//        for (real y = grid->getStartY(); y <= grid->getEndY(); y += grid->getDelta())
-//        {
-//            for (real z = grid->getStartZ(); z <= grid->getEndZ(); z += grid->getDelta())
-//            {
-//                const auto xTranslate = int((x - grid->getStartX()) / grid->getDelta());
-//                const auto yTranslate = int((y - grid->getStartY()) / grid->getDelta());
-//                const auto zTranslate = int((z - grid->getStartZ()) / grid->getDelta());
-//                nodeNumbers(xTranslate, yTranslate, zTranslate) = nr++;
-//                nodes.push_back(UbTupleFloat3(float(x), float(y),float(z)));
-//
-//                const char type = grid->getFieldEntry(grid->transCoordToIndex(x, y, z));
-//                nodedata[0].push_back(type);
-//            }
-//        }
-//    }
-//
-//    int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
-//    for (real x = grid->getStartX(); x < grid->getEndX(); x += grid->getDelta())
-//    {
-//        for (real y = grid->getStartY(); y < grid->getEndY(); y += grid->getDelta())
-//        {
-//            for (real z = grid->getStartZ(); z < grid->getEndZ(); z += grid->getDelta())
-//            {
-//                const auto xTranslate = int((x - grid->getStartX()) / grid->getDelta());
-//                const auto yTranslate = int((y - grid->getStartY()) / grid->getDelta());
-//                const auto zTranslate = int((z - grid->getStartZ()) / grid->getDelta());
-//
-//				if (!nodeNumbers.indicesInRange(xTranslate + 1, yTranslate +1, zTranslate +1)) // blame Lenz
-//					continue;
-//
-//                if ((SWB = nodeNumbers(xTranslate, yTranslate, zTranslate)) >= 0
-//                    && (SEB = nodeNumbers(xTranslate + 1, yTranslate, zTranslate)) >= 0
-//                    && (NEB = nodeNumbers(xTranslate + 1, yTranslate + 1, zTranslate)) >= 0
-//                    && (NWB = nodeNumbers(xTranslate, yTranslate + 1, zTranslate)) >= 0
-//                    && (SWT = nodeNumbers(xTranslate, yTranslate, zTranslate + 1)) >= 0
-//                    && (SET = nodeNumbers(xTranslate + 1, yTranslate, zTranslate + 1)) >= 0
-//                    && (NET = nodeNumbers(xTranslate + 1, yTranslate + 1, zTranslate + 1)) >= 0
-//                    && (NWT = nodeNumbers(xTranslate, yTranslate + 1, zTranslate + 1)) >= 0)
-//                {
-//                    Cell cell(x, y, z, grid->getDelta());
-//                    if(grid->nodeInCellIs(cell, OUT_OF_GRID) || grid->nodeInCellIs(cell, INVALID_NODE))
-//                        continue;
-//
-//                    cells.push_back(makeUbTuple(uint(SWB), uint(SEB), uint(NEB), uint(NWB), uint(SWT), uint(SET), uint(NET), uint(NWT)));
-//                }
-//            }
-//        }
-//    }
-//    WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(name, nodes, cells, nodedatanames, nodedata);
-//}
 
 
 /*#################################################################################*/

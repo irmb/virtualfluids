@@ -33,12 +33,12 @@
 
 #include "NUPSCounterCoProcessor.h"
 
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "Grid3D.h"
 #include "UbScheduler.h"
 
 NUPSCounterCoProcessor::NUPSCounterCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, int numOfThreads,
-                                               SPtr<Communicator> comm)
+                                               std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), numOfThreads(numOfThreads), nup(0), nup_t(0), nupsStep(0.0), comm(comm)
 {
     if (comm->getProcessID() == comm->getRoot()) {

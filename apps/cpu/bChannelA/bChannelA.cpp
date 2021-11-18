@@ -87,7 +87,7 @@ void run(string configname)
 {
    try
    {
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathOut           = config.getValue<string>("pathOut");
@@ -111,7 +111,7 @@ void run(string configname)
       vector<double>  nupsStep          = config.getVector<double>("nupsStep");
       vector<double>  boundingBox       = config.getVector<double>("boundingBox");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

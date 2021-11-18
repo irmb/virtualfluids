@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // X
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePreCollDataXGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -30,7 +30,7 @@ void exchangePreCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborX[i].f[0],
+		comm.nbRecvDataGPU(para->getParH(level)->recvProcessNeighborX[i].f[0],
 							para->getParH(level)->recvProcessNeighborX[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighborX[i].rankNeighbor);
 	}
@@ -38,7 +38,7 @@ void exchangePreCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	////start non blocking MPI send
 	//for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	//{
-	//	comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0],
+	//	comm.nbSendDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0],
 	//						para->getParH(level)->sendProcessNeighborX[i].numberOfFs,
 	//						para->getParH(level)->sendProcessNeighborX[i].rankNeighbor);
 	//}
@@ -46,13 +46,13 @@ void exchangePreCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	////Waitall
 	//if (0 < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")))
 	//{
-	//	comm->waitallGPU();
+	//	comm.waitallGPU();
 	//}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->sendDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0],
+		comm.sendDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0],
 						  para->getParH(level)->sendProcessNeighborX[i].numberOfFs,
 						  para->getParH(level)->sendProcessNeighborX[i].rankNeighbor);
 	}
@@ -60,13 +60,13 @@ void exchangePreCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -88,7 +88,7 @@ void exchangePreCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePostCollDataXGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -111,7 +111,7 @@ void exchangePostCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborX[i].f[0],
+		comm.nbRecvDataGPU(para->getParH(level)->recvProcessNeighborX[i].f[0],
 							para->getParH(level)->recvProcessNeighborX[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighborX[i].rankNeighbor);
 	}
@@ -119,7 +119,7 @@ void exchangePostCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 	////start non blocking MPI send
 	//for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	//{
-	//	comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0],
+	//	comm.nbSendDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0],
 	//						para->getParH(level)->sendProcessNeighborX[i].numberOfFs,
 	//						para->getParH(level)->sendProcessNeighborX[i].rankNeighbor);
 	//}
@@ -127,13 +127,13 @@ void exchangePostCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 	////Waitall
 	//if (0 < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")))
 	//{
-	//	comm->waitallGPU();
+	//	comm.waitallGPU();
 	//}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->sendDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0],
+		comm.sendDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0],
 						  para->getParH(level)->sendProcessNeighborX[i].numberOfFs,
 						  para->getParH(level)->sendProcessNeighborX[i].rankNeighbor);
 	}
@@ -141,13 +141,13 @@ void exchangePostCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -176,7 +176,7 @@ void exchangePostCollDataXGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Y
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePreCollDataYGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -199,7 +199,7 @@ void exchangePreCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborY[i].f[0],
+		comm.nbRecvDataGPU(para->getParH(level)->recvProcessNeighborY[i].f[0],
 							para->getParH(level)->recvProcessNeighborY[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighborY[i].rankNeighbor);
 	}
@@ -207,7 +207,7 @@ void exchangePreCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	////start non blocking MPI send
 	//for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	//{
-	//	comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0],
+	//	comm.nbSendDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0],
 	//						para->getParH(level)->sendProcessNeighborY[i].numberOfFs,
 	//						para->getParH(level)->sendProcessNeighborY[i].rankNeighbor);
 	//}
@@ -215,13 +215,13 @@ void exchangePreCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	////Waitall
 	//if (0 < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")))
 	//{
-	//	comm->waitallGPU();
+	//	comm.waitallGPU();
 	//}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->sendDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0],
+		comm.sendDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0],
 						  para->getParH(level)->sendProcessNeighborY[i].numberOfFs,
 			              para->getParH(level)->sendProcessNeighborY[i].rankNeighbor);
 	}
@@ -229,13 +229,13 @@ void exchangePreCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -257,7 +257,7 @@ void exchangePreCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePostCollDataYGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -280,7 +280,7 @@ void exchangePostCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborY[i].f[0],
+		comm.nbRecvDataGPU(para->getParH(level)->recvProcessNeighborY[i].f[0],
 							para->getParH(level)->recvProcessNeighborY[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighborY[i].rankNeighbor);
 	}
@@ -288,7 +288,7 @@ void exchangePostCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 	////start non blocking MPI send
 	//for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	//{
-	//	comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0],
+	//	comm.nbSendDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0],
 	//						para->getParH(level)->sendProcessNeighborY[i].numberOfFs,
 	//						para->getParH(level)->sendProcessNeighborY[i].rankNeighbor);
 	//}
@@ -296,13 +296,13 @@ void exchangePostCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 	////Waitall
 	//if (0 < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")))
 	//{
-	//	comm->waitallGPU();
+	//	comm.waitallGPU();
 	//}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->sendDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0],
+		comm.sendDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0],
 						  para->getParH(level)->sendProcessNeighborY[i].numberOfFs,
 			              para->getParH(level)->sendProcessNeighborY[i].rankNeighbor);
 	}
@@ -310,13 +310,13 @@ void exchangePostCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -345,7 +345,7 @@ void exchangePostCollDataYGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Z
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePreCollDataZGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -368,7 +368,7 @@ void exchangePreCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborZ[i].f[0],
+		comm.nbRecvDataGPU(para->getParH(level)->recvProcessNeighborZ[i].f[0],
 							para->getParH(level)->recvProcessNeighborZ[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighborZ[i].rankNeighbor);
 	}
@@ -376,7 +376,7 @@ void exchangePreCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	////start non blocking MPI send
 	//for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	//{
-	//	comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0],
+	//	comm.nbSendDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0],
 	//						para->getParH(level)->sendProcessNeighborZ[i].numberOfFs,
 	//						para->getParH(level)->sendProcessNeighborZ[i].rankNeighbor);
 	//}
@@ -384,13 +384,13 @@ void exchangePreCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	////Waitall
 	//if (0 < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")))
 	//{
-	//	comm->waitallGPU();
+	//	comm.waitallGPU();
 	//}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->sendDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0],
+		comm.sendDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0],
 						  para->getParH(level)->sendProcessNeighborZ[i].numberOfFs,
 						  para->getParH(level)->sendProcessNeighborZ[i].rankNeighbor);
 	}
@@ -398,13 +398,13 @@ void exchangePreCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -426,7 +426,7 @@ void exchangePreCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePostCollDataZGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -449,7 +449,7 @@ void exchangePostCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborZ[i].f[0],
+		comm.nbRecvDataGPU(para->getParH(level)->recvProcessNeighborZ[i].f[0],
 							para->getParH(level)->recvProcessNeighborZ[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighborZ[i].rankNeighbor);
 	}
@@ -457,7 +457,7 @@ void exchangePostCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 	////start non blocking MPI send
 	//for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	//{
-	//	comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0],
+	//	comm.nbSendDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0],
 	//						para->getParH(level)->sendProcessNeighborZ[i].numberOfFs,
 	//						para->getParH(level)->sendProcessNeighborZ[i].rankNeighbor);
 	//}
@@ -465,13 +465,13 @@ void exchangePostCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 	////Waitall
 	//if (0 < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")))
 	//{
-	//	comm->waitallGPU();
+	//	comm.waitallGPU();
 	//}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->sendDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0],
+		comm.sendDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0],
 						  para->getParH(level)->sendProcessNeighborZ[i].numberOfFs,
 						  para->getParH(level)->sendProcessNeighborZ[i].rankNeighbor);
 	}
@@ -479,13 +479,13 @@ void exchangePostCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -529,7 +529,7 @@ void exchangePostCollDataZGPU27(Parameter* para, Communicator* comm, CudaMemoryM
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //1D domain decomposition
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePreCollDataGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighbors(level, "send")); i++)
 	{
@@ -547,7 +547,7 @@ void exchangePreCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMan
 		//////////////////////////////////////////////////////////////////////////
 		cudaManager->cudaCopyProcessNeighborFsDH(level, i);
 		//////////////////////////////////////////////////////////////////////////
-		comm->exchngDataGPU(para->getParH(level)->sendProcessNeighbor[i].f[0], 
+		comm.exchngDataGPU(para->getParH(level)->sendProcessNeighbor[i].f[0], 
 							para->getParH(level)->sendProcessNeighbor[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighbor[i].f[0],
 							para->getParH(level)->recvProcessNeighbor[i].numberOfFs,
@@ -574,7 +574,7 @@ void exchangePreCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMan
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePostCollDataGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighbors(level, "send")); i++)
 	{
@@ -592,7 +592,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 		//////////////////////////////////////////////////////////////////////////
 		cudaManager->cudaCopyProcessNeighborFsDH(level, i);
 		//////////////////////////////////////////////////////////////////////////
-		comm->exchngDataGPU(para->getParH(level)->sendProcessNeighbor[i].f[0], 
+		comm.exchngDataGPU(para->getParH(level)->sendProcessNeighbor[i].f[0], 
 							para->getParH(level)->sendProcessNeighbor[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighbor[i].f[0],
 							para->getParH(level)->recvProcessNeighbor[i].numberOfFs,
@@ -623,7 +623,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// X
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//void exchangePreCollDataXGPU27(Parameter* para, Communicator* comm, int level)
+//void exchangePreCollDataXGPU27(Parameter* para, vf::gpu::Communicator& comm, int level)
 //{
 //	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 //	{
@@ -641,7 +641,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 //		//////////////////////////////////////////////////////////////////////////
 //		para->cudaCopyProcessNeighborXFsDH(level, i);
 //		//////////////////////////////////////////////////////////////////////////
-//		comm->exchngDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0], 
+//		comm.exchngDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0], 
 //							para->getParH(level)->sendProcessNeighborX[i].numberOfFs,
 //							para->getParH(level)->recvProcessNeighborX[i].f[0],
 //							para->getParH(level)->recvProcessNeighborX[i].numberOfFs,
@@ -663,7 +663,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 //	}
 //}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//void exchangePostCollDataXGPU27(Parameter* para, Communicator* comm, int level)
+//void exchangePostCollDataXGPU27(Parameter* para, vf::gpu::Communicator& comm, int level)
 //{
 //	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 //	{
@@ -681,7 +681,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 //		//////////////////////////////////////////////////////////////////////////
 //		para->cudaCopyProcessNeighborXFsDH(level, i);
 //		//////////////////////////////////////////////////////////////////////////
-//		comm->exchngDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0], 
+//		comm.exchngDataGPU(para->getParH(level)->sendProcessNeighborX[i].f[0], 
 //							para->getParH(level)->sendProcessNeighborX[i].numberOfFs,
 //							para->getParH(level)->recvProcessNeighborX[i].f[0],
 //							para->getParH(level)->recvProcessNeighborX[i].numberOfFs,
@@ -710,7 +710,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// Y
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//void exchangePreCollDataYGPU27(Parameter* para, Communicator* comm, int level)
+//void exchangePreCollDataYGPU27(Parameter* para, vf::gpu::Communicator& comm, int level)
 //{
 //	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 //	{
@@ -728,7 +728,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 //		//////////////////////////////////////////////////////////////////////////
 //		para->cudaCopyProcessNeighborYFsDH(level, i);
 //		//////////////////////////////////////////////////////////////////////////
-//		comm->exchngDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0], 
+//		comm.exchngDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0], 
 //							para->getParH(level)->sendProcessNeighborY[i].numberOfFs,
 //							para->getParH(level)->recvProcessNeighborY[i].f[0],
 //							para->getParH(level)->recvProcessNeighborY[i].numberOfFs,
@@ -750,7 +750,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 //	}
 //}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//void exchangePostCollDataYGPU27(Parameter* para, Communicator* comm, int level)
+//void exchangePostCollDataYGPU27(Parameter* para, vf::gpu::Communicator& comm, int level)
 //{
 //	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 //	{
@@ -768,7 +768,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 //		//////////////////////////////////////////////////////////////////////////
 //		para->cudaCopyProcessNeighborYFsDH(level, i);
 //		//////////////////////////////////////////////////////////////////////////
-//		comm->exchngDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0], 
+//		comm.exchngDataGPU(para->getParH(level)->sendProcessNeighborY[i].f[0], 
 //							para->getParH(level)->sendProcessNeighborY[i].numberOfFs,
 //							para->getParH(level)->recvProcessNeighborY[i].f[0],
 //							para->getParH(level)->recvProcessNeighborY[i].numberOfFs,
@@ -797,7 +797,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// Z
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//void exchangePreCollDataZGPU27(Parameter* para, Communicator* comm, int level)
+//void exchangePreCollDataZGPU27(Parameter* para, vf::gpu::Communicator& comm, int level)
 //{
 //	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 //	{
@@ -815,7 +815,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 //		//////////////////////////////////////////////////////////////////////////
 //		para->cudaCopyProcessNeighborZFsDH(level, i);
 //		//////////////////////////////////////////////////////////////////////////
-//		comm->exchngDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0], 
+//		comm.exchngDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0], 
 //							para->getParH(level)->sendProcessNeighborZ[i].numberOfFs,
 //							para->getParH(level)->recvProcessNeighborZ[i].f[0],
 //							para->getParH(level)->recvProcessNeighborZ[i].numberOfFs,
@@ -837,7 +837,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 //	}
 //}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//void exchangePostCollDataZGPU27(Parameter* para, Communicator* comm, int level)
+//void exchangePostCollDataZGPU27(Parameter* para, vf::gpu::Communicator& comm, int level)
 //{
 //	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 //	{
@@ -855,7 +855,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 //		//////////////////////////////////////////////////////////////////////////
 //		para->cudaCopyProcessNeighborZFsDH(level, i);
 //		//////////////////////////////////////////////////////////////////////////
-//		comm->exchngDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0], 
+//		comm.exchngDataGPU(para->getParH(level)->sendProcessNeighborZ[i].f[0], 
 //							para->getParH(level)->sendProcessNeighborZ[i].numberOfFs,
 //							para->getParH(level)->recvProcessNeighborZ[i].f[0],
 //							para->getParH(level)->recvProcessNeighborZ[i].numberOfFs,
@@ -932,7 +932,7 @@ void exchangePostCollDataGPU27(Parameter* para, Communicator* comm, CudaMemoryMa
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // X
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePreCollDataADXGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -955,7 +955,7 @@ void exchangePreCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemory
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborADX[i].f[0],
+		comm.nbRecvDataGPU(para->getParH(level)->recvProcessNeighborADX[i].f[0],
 							para->getParH(level)->recvProcessNeighborADX[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighborADX[i].rankNeighbor);
 	}
@@ -963,7 +963,7 @@ void exchangePreCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemory
 	////start non blocking MPI send
 	//for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	//{
-	//	comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborADX[i].f[0],
+	//	comm.nbSendDataGPU(para->getParH(level)->sendProcessNeighborADX[i].f[0],
 	//						para->getParH(level)->sendProcessNeighborADX[i].numberOfFs,
 	//						para->getParH(level)->sendProcessNeighborADX[i].rankNeighbor);
 	//}
@@ -971,13 +971,13 @@ void exchangePreCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemory
 	////Waitall
 	//if (0 < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")))
 	//{
-	//	comm->waitallGPU();
+	//	comm.waitallGPU();
 	//}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->sendDataGPU(para->getParH(level)->sendProcessNeighborADX[i].f[0],
+		comm.sendDataGPU(para->getParH(level)->sendProcessNeighborADX[i].f[0],
 						  para->getParH(level)->sendProcessNeighborADX[i].numberOfFs,
 						  para->getParH(level)->sendProcessNeighborADX[i].rankNeighbor);
 	}
@@ -985,13 +985,13 @@ void exchangePreCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemory
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -1013,7 +1013,7 @@ void exchangePreCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemory
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePostCollDataADXGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1036,7 +1036,7 @@ void exchangePostCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemor
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborADX[i].f[0],
+		comm.nbRecvDataGPU(para->getParH(level)->recvProcessNeighborADX[i].f[0],
 							para->getParH(level)->recvProcessNeighborADX[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighborADX[i].rankNeighbor);
 	}
@@ -1044,7 +1044,7 @@ void exchangePostCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemor
 	////start non blocking MPI send
 	//for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	//{
-	//	comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborADX[i].f[0],
+	//	comm.nbSendDataGPU(para->getParH(level)->sendProcessNeighborADX[i].f[0],
 	//						para->getParH(level)->sendProcessNeighborADX[i].numberOfFs,
 	//						para->getParH(level)->sendProcessNeighborADX[i].rankNeighbor);
 	//}
@@ -1052,13 +1052,13 @@ void exchangePostCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemor
 	////Waitall
 	//if (0 < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")))
 	//{
-	//	comm->waitallGPU();
+	//	comm.waitallGPU();
 	//}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->sendDataGPU(para->getParH(level)->sendProcessNeighborADX[i].f[0],
+		comm.sendDataGPU(para->getParH(level)->sendProcessNeighborADX[i].f[0],
 						  para->getParH(level)->sendProcessNeighborADX[i].numberOfFs,
 						  para->getParH(level)->sendProcessNeighborADX[i].rankNeighbor);
 	}
@@ -1066,13 +1066,13 @@ void exchangePostCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemor
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -1101,7 +1101,7 @@ void exchangePostCollDataADXGPU27(Parameter* para, Communicator* comm, CudaMemor
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Y
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePreCollDataADYGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1124,7 +1124,7 @@ void exchangePreCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemory
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborADY[i].f[0],
+		comm.nbRecvDataGPU(para->getParH(level)->recvProcessNeighborADY[i].f[0],
 							para->getParH(level)->recvProcessNeighborADY[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighborADY[i].rankNeighbor);
 	}
@@ -1132,7 +1132,7 @@ void exchangePreCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemory
 	////start non blocking MPI send
 	//for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	//{
-	//	comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborADY[i].f[0],
+	//	comm.nbSendDataGPU(para->getParH(level)->sendProcessNeighborADY[i].f[0],
 	//						para->getParH(level)->sendProcessNeighborADY[i].numberOfFs,
 	//						para->getParH(level)->sendProcessNeighborADY[i].rankNeighbor);
 	//}
@@ -1140,13 +1140,13 @@ void exchangePreCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemory
 	////Waitall
 	//if (0 < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")))
 	//{
-	//	comm->waitallGPU();
+	//	comm.waitallGPU();
 	//}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->sendDataGPU(para->getParH(level)->sendProcessNeighborADY[i].f[0],
+		comm.sendDataGPU(para->getParH(level)->sendProcessNeighborADY[i].f[0],
 						  para->getParH(level)->sendProcessNeighborADY[i].numberOfFs,
 			              para->getParH(level)->sendProcessNeighborADY[i].rankNeighbor);
 	}
@@ -1154,13 +1154,13 @@ void exchangePreCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemory
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -1182,7 +1182,7 @@ void exchangePreCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemory
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePostCollDataADYGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1205,7 +1205,7 @@ void exchangePostCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemor
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborADY[i].f[0],
+		comm.nbRecvDataGPU(para->getParH(level)->recvProcessNeighborADY[i].f[0],
 							para->getParH(level)->recvProcessNeighborADY[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighborADY[i].rankNeighbor);
 	}
@@ -1213,7 +1213,7 @@ void exchangePostCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemor
 	////start non blocking MPI send
 	//for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	//{
-	//	comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborADY[i].f[0],
+	//	comm.nbSendDataGPU(para->getParH(level)->sendProcessNeighborADY[i].f[0],
 	//						para->getParH(level)->sendProcessNeighborADY[i].numberOfFs,
 	//						para->getParH(level)->sendProcessNeighborADY[i].rankNeighbor);
 	//}
@@ -1221,13 +1221,13 @@ void exchangePostCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemor
 	////Waitall
 	//if (0 < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")))
 	//{
-	//	comm->waitallGPU();
+	//	comm.waitallGPU();
 	//}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->sendDataGPU(para->getParH(level)->sendProcessNeighborADY[i].f[0],
+		comm.sendDataGPU(para->getParH(level)->sendProcessNeighborADY[i].f[0],
 						  para->getParH(level)->sendProcessNeighborADY[i].numberOfFs,
 			              para->getParH(level)->sendProcessNeighborADY[i].rankNeighbor);
 	}
@@ -1235,13 +1235,13 @@ void exchangePostCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemor
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -1270,7 +1270,7 @@ void exchangePostCollDataADYGPU27(Parameter* para, Communicator* comm, CudaMemor
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Z
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePreCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePreCollDataADZGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1293,7 +1293,7 @@ void exchangePreCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemory
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborADZ[i].f[0],
+		comm.nbRecvDataGPU(para->getParH(level)->recvProcessNeighborADZ[i].f[0],
 							para->getParH(level)->recvProcessNeighborADZ[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighborADZ[i].rankNeighbor);
 	}
@@ -1301,7 +1301,7 @@ void exchangePreCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemory
 	////start non blocking MPI send
 	//for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	//{
-	//	comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborADZ[i].f[0],
+	//	comm.nbSendDataGPU(para->getParH(level)->sendProcessNeighborADZ[i].f[0],
 	//						para->getParH(level)->sendProcessNeighborADZ[i].numberOfFs,
 	//						para->getParH(level)->sendProcessNeighborADZ[i].rankNeighbor);
 	//}
@@ -1309,13 +1309,13 @@ void exchangePreCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemory
 	////Waitall
 	//if (0 < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")))
 	//{
-	//	comm->waitallGPU();
+	//	comm.waitallGPU();
 	//}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->sendDataGPU(para->getParH(level)->sendProcessNeighborADZ[i].f[0],
+		comm.sendDataGPU(para->getParH(level)->sendProcessNeighborADZ[i].f[0],
 						  para->getParH(level)->sendProcessNeighborADZ[i].numberOfFs,
 						  para->getParH(level)->sendProcessNeighborADZ[i].rankNeighbor);
 	}
@@ -1323,13 +1323,13 @@ void exchangePreCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemory
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -1351,7 +1351,7 @@ void exchangePreCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemory
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangePostCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangePostCollDataADZGPU27(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1374,7 +1374,7 @@ void exchangePostCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemor
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(para->getParH(level)->recvProcessNeighborADZ[i].f[0],
+		comm.nbRecvDataGPU(para->getParH(level)->recvProcessNeighborADZ[i].f[0],
 							para->getParH(level)->recvProcessNeighborADZ[i].numberOfFs,
 							para->getParH(level)->recvProcessNeighborADZ[i].rankNeighbor);
 	}
@@ -1382,7 +1382,7 @@ void exchangePostCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemor
 	////start non blocking MPI send
 	//for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	//{
-	//	comm->nbSendDataGPU(para->getParH(level)->sendProcessNeighborADZ[i].f[0],
+	//	comm.nbSendDataGPU(para->getParH(level)->sendProcessNeighborADZ[i].f[0],
 	//						para->getParH(level)->sendProcessNeighborADZ[i].numberOfFs,
 	//						para->getParH(level)->sendProcessNeighborADZ[i].rankNeighbor);
 	//}
@@ -1390,13 +1390,13 @@ void exchangePostCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemor
 	////Waitall
 	//if (0 < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")))
 	//{
-	//	comm->waitallGPU();
+	//	comm.waitallGPU();
 	//}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->sendDataGPU(para->getParH(level)->sendProcessNeighborADZ[i].f[0],
+		comm.sendDataGPU(para->getParH(level)->sendProcessNeighborADZ[i].f[0],
 						  para->getParH(level)->sendProcessNeighborADZ[i].numberOfFs,
 						  para->getParH(level)->sendProcessNeighborADZ[i].rankNeighbor);
 	}
@@ -1404,13 +1404,13 @@ void exchangePostCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemor
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -1486,7 +1486,7 @@ void exchangePostCollDataADZGPU27(Parameter* para, Communicator* comm, CudaMemor
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // X
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangeCollDataF3XGPU(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangeCollDataF3XGPU(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1510,7 +1510,7 @@ void exchangeCollDataF3XGPU(Parameter* para, Communicator* comm, CudaMemoryManag
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(
+		comm.nbRecvDataGPU(
 			para->getParH(level)->recvProcessNeighborF3X[i].g[0],
 			para->getParH(level)->recvProcessNeighborF3X[i].numberOfGs,
 			para->getParH(level)->recvProcessNeighborF3X[i].rankNeighbor);
@@ -1519,7 +1519,7 @@ void exchangeCollDataF3XGPU(Parameter* para, Communicator* comm, CudaMemoryManag
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->sendDataGPU(
+		comm.sendDataGPU(
 			para->getParH(level)->sendProcessNeighborF3X[i].g[0],
 			para->getParH(level)->sendProcessNeighborF3X[i].numberOfGs,
 			para->getParH(level)->sendProcessNeighborF3X[i].rankNeighbor);
@@ -1528,13 +1528,13 @@ void exchangeCollDataF3XGPU(Parameter* para, Communicator* comm, CudaMemoryManag
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -1564,7 +1564,7 @@ void exchangeCollDataF3XGPU(Parameter* para, Communicator* comm, CudaMemoryManag
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Y
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangeCollDataF3YGPU(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangeCollDataF3YGPU(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1588,7 +1588,7 @@ void exchangeCollDataF3YGPU(Parameter* para, Communicator* comm, CudaMemoryManag
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(
+		comm.nbRecvDataGPU(
 			para->getParH(level)->recvProcessNeighborF3Y[i].g[0],
 			para->getParH(level)->recvProcessNeighborF3Y[i].numberOfGs,
 			para->getParH(level)->recvProcessNeighborF3Y[i].rankNeighbor);
@@ -1597,7 +1597,7 @@ void exchangeCollDataF3YGPU(Parameter* para, Communicator* comm, CudaMemoryManag
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->sendDataGPU(
+		comm.sendDataGPU(
 			para->getParH(level)->sendProcessNeighborF3Y[i].g[0],
 			para->getParH(level)->sendProcessNeighborF3Y[i].numberOfGs,
 			para->getParH(level)->sendProcessNeighborF3Y[i].rankNeighbor);
@@ -1606,13 +1606,13 @@ void exchangeCollDataF3YGPU(Parameter* para, Communicator* comm, CudaMemoryManag
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
@@ -1642,7 +1642,7 @@ void exchangeCollDataF3YGPU(Parameter* para, Communicator* comm, CudaMemoryManag
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Z
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void exchangeCollDataF3ZGPU(Parameter* para, Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangeCollDataF3ZGPU(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Device to Host
@@ -1666,7 +1666,7 @@ void exchangeCollDataF3ZGPU(Parameter* para, Communicator* comm, CudaMemoryManag
 	//start non blocking MPI receive
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->nbRecvDataGPU(
+		comm.nbRecvDataGPU(
 			para->getParH(level)->recvProcessNeighborF3Z[i].g[0],
 			para->getParH(level)->recvProcessNeighborF3Z[i].numberOfGs,
 			para->getParH(level)->recvProcessNeighborF3Z[i].rankNeighbor);
@@ -1675,7 +1675,7 @@ void exchangeCollDataF3ZGPU(Parameter* para, Communicator* comm, CudaMemoryManag
 	//start blocking MPI send
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->sendDataGPU(
+		comm.sendDataGPU(
 			para->getParH(level)->sendProcessNeighborF3Z[i].g[0],
 			para->getParH(level)->sendProcessNeighborF3Z[i].numberOfGs,
 			para->getParH(level)->sendProcessNeighborF3Z[i].rankNeighbor);
@@ -1684,13 +1684,13 @@ void exchangeCollDataF3ZGPU(Parameter* para, Communicator* comm, CudaMemoryManag
 	//Wait
 	for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")); i++)
 	{
-		comm->waitGPU(i);
+		comm.waitGPU(i);
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//reset the request array
 	if (0 < (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")))
 	{
-		comm->resetRequest();
+		comm.resetRequest();
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//copy Host to Device
