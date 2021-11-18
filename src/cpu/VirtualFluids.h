@@ -137,6 +137,7 @@
 #include <BoundaryConditions/MultiphaseNonReflectingOutflowBCAlgorithm.h> 
 #include <BoundaryConditions/MultiphaseVelocityBCAdapter.h>
 #include <BoundaryConditions/MultiphaseVelocityBCAlgorithm.h>
+#include <BoundaryConditions/MultiphaseSlipBCAlgorithm.h> 
 
 #include <Connectors/Block3DConnector.h>
 //#include <Connectors/Block3DConnectorFactory.h>
