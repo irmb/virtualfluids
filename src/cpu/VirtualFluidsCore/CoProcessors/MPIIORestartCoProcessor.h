@@ -60,10 +60,6 @@ public:
     //! The function truncates the data files
     void clearAllFiles(int step);
 
-protected:
-    // std::string path;
-    // std::shared_ptr<vf::mpi::Communicator> comm;
-
 private:
     // MPI_Datatype gridParamType, block3dType;
     MPI_Datatype dataSetType, dataSetSmallType, dataSetDoubleType;

@@ -13,7 +13,7 @@
 #include "EsoTwist3D.h"
 #include "DistributionArray3D.h"
 
-CalculateTorqueCoProcessor::CalculateTorqueCoProcessor( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path_, std::shared_ptr<vf::mpi::Communicator> comm) : CoProcessor(grid, s), path(path_), comm(comm), forceX1global(0), forceX2global(0), forceX3global(0)
+CalculateTorqueCoProcessor::CalculateTorqueCoProcessor( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path_, std::shared_ptr<vf::mpi::Communicator> comm) : CoProcessor(grid, s), path(path_), comm(comm), torqueX1global(0), torqueX2global(0), torqueX3global(0)
 {
    if (comm->getProcessID() == comm->getRoot())
    {
