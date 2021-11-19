@@ -128,9 +128,8 @@ void multipleLevel(const std::string& configPath)
     std::string gridPath(gridPathParent); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
     real dxGrid      = (real)0.2;
-    real vxLB = (real)0.051; // LB units
-    real Re = (real)3.0;
-    real viscosityLB = (vxLB * dxGrid) / Re;
+    real vxLB = (real)0.0005; // LB units
+    real viscosityLB = 0.001; //(vxLB * dxGrid) / Re;
 
     para->setVelocity(vxLB);
     para->setViscosity(viscosityLB);
@@ -146,7 +145,7 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "useGridGenerator = " << useGridGenerator << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "number of processes = " << para->getNumprocs() << "\n";
-
+    *logging::out << logging::Logger::INFO_HIGH << " para->useReducedCommunicationAfterFtoC = " <<  para->useReducedCommunicationAfterFtoC << "\n";
     
     // para->setTOut(10);
     // para->setTEnd(10);
@@ -231,10 +230,8 @@ void multipleLevel(const std::string& configPath)
                     gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xGridMin, xGridMax, ySplit, yGridMax, zGridMin, zGridMax));
 
-                gridBuilder->setPeriodicBoundaryCondition(false, false, true);
-
                 gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-
+                                
                 if (generatePart == 0) {
                     gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 1);
@@ -245,6 +242,7 @@ void multipleLevel(const std::string& configPath)
                     gridBuilder->setCommunicationProcess(CommunicationDirections::MY, 0);
                 }
 
+                gridBuilder->setPeriodicBoundaryCondition(false, false, false);
                 //////////////////////////////////////////////////////////////////////////
                 gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
                 gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
@@ -252,7 +250,10 @@ void multipleLevel(const std::string& configPath)
                     gridBuilder->setVelocityBoundaryCondition(SideType::MY, vxLB, 0.0, 0.0);
                 if (generatePart == 1)
                     gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
-                gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+                gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
+                gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+
+                // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////
            
             } else if (comm->getNummberOfProcess() == 4) {
@@ -296,10 +297,10 @@ void multipleLevel(const std::string& configPath)
                     gridBuilder->setSubDomainBox(
                         std::make_shared<BoundingBox>(xSplit, xGridMax, ySplit, yGridMax, zGridMin, zGridMax));
 
-                gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
                 gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-
+                gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+                                
                 if (generatePart == 0) {
                     gridBuilder->findCommunicationIndices(CommunicationDirections::PY, LBM);
                     gridBuilder->setCommunicationProcess(CommunicationDirections::PY, 1);
@@ -342,7 +343,9 @@ void multipleLevel(const std::string& configPath)
                     gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
                     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
                 }
-                gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+                gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
+                gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+                // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////
             }
             if (para->getKernelNeedsFluidNodeIndicesToRun())
@@ -366,17 +369,19 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->addGeometry(new Sphere(0.0, 0.0, 0.0, dSphere));
 
-            gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-
+            
+            gridBuilder->setPeriodicBoundaryCondition(false, false, false);
             //////////////////////////////////////////////////////////////////////////
             gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MY, vxLB, 0.0, 0.0);
             gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
 
-            gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+            // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
