@@ -222,9 +222,20 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // copy corner received node values from x 
     if (para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
+        uint indexSubdomainX = 0;
+        uint indexSubdomainY = 0;
+        uint bufferLenghtX   = 0;  
+        uint bufferLenghtY   = 0;  
         for (uint i = 0; i < para->getParH(level)->cornerNodesXtoY.recvPos.size(); i++) {
-            para->getParH(level)->sendProcessNeighborY[para->getParH(level)->cornerNodesXtoY.sendPos[i].first].f[0][para->getParH(level)->cornerNodesXtoY.sendPos[i].second] = 
-                para->getParH(level)->recvProcessNeighborX[para->getParH(level)->cornerNodesXtoY.recvPos[i].first].f[0][para->getParH(level)->cornerNodesXtoY.recvPos[i].second];
+            indexSubdomainX = para->getParH(level)->cornerNodesXtoY.recvPos[i].first;
+            indexSubdomainY = para->getParH(level)->cornerNodesXtoY.sendPos[i].first;
+            bufferLenghtX   = para->getParH(level)->recvProcessNeighborX[indexSubdomainX].numberOfNodes;
+            bufferLenghtY   = para->getParH(level)->sendProcessNeighborY[indexSubdomainY].numberOfNodes;
+
+            for (uint direction = 0; direction <= dirEND; direction++) {
+            para->getParH(level)->sendProcessNeighborY[indexSubdomainY].f[direction * bufferLenghtY][para->getParH(level)->cornerNodesXtoY.sendPos[i].second] = 
+                para->getParH(level)->recvProcessNeighborX[indexSubdomainX].f[direction * bufferLenghtX][para->getParH(level)->cornerNodesXtoY.recvPos[i].second];
+            }
         }    
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
