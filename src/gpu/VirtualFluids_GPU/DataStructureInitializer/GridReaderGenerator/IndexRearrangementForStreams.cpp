@@ -29,7 +29,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     std::vector<uint> recvIndicesForCommAfterFtoCPositions;
     recvIndicesForCommAfterFtoCPositions.resize(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCX[j].numberOfNodes *
-        2); // give vector an arbitraty size (larger than needed) // TODO: This is stupid! Find a better way
+        2); // give vector an arbitraty size (larger than needed) // TODO: Find a better way
     auto comm = vf::gpu::Communicator::getInstanz();
     comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborX[j].rankNeighbor,
@@ -38,7 +38,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     
     // resize receiving vector to correct size
     auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
-    recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end());
+    recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end()); // TODO: Find a better way
 
     // init receive indices for communication after coarse to fine
     std::cout << "reorder receive indices ";
@@ -64,7 +64,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     std::cout << "mpi send and receive ";
     std::vector<uint> recvIndicesForCommAfterFtoCPositions; 
     recvIndicesForCommAfterFtoCPositions.resize((size_t) para->getParH(level)->sendProcessNeighborsAfterFtoCY[j].numberOfNodes *
-                                                2); // give vector an arbitraty size (larger than needed) // TODO: This is stupid! Find a better way
+                                                2); // give vector an arbitraty size (larger than needed) // TODO: Find a better way
     auto comm = vf::gpu::Communicator::getInstanz();
     comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborY[j].rankNeighbor,
@@ -73,7 +73,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     
     // resize receiving vector to correct size
     auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
-    recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end());
+    recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end()); // TODO: Find a better way
 
     // init receive indices for communication after coarse to fine
     std::cout << "reorder receive indices ";
@@ -100,7 +100,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     std::cout << "mpi send and receive ";
     std::vector<uint> recvIndicesForCommAfterFtoCPositions; 
     recvIndicesForCommAfterFtoCPositions.resize((size_t) para->getParH(level)->sendProcessNeighborsAfterFtoCZ[j].numberOfNodes *
-                                                2); // give vector an arbitraty size (larger than needed) // TODO: This is stupid! Find a better way
+                                                2); // give vector an arbitraty size (larger than needed) // TODO: Find a better way
     auto comm = vf::gpu::Communicator::getInstanz();
     comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborZ[j].rankNeighbor,
@@ -109,7 +109,7 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     
     // resize receiving vector to correct size
     auto it = std::unique(recvIndicesForCommAfterFtoCPositions.begin(), recvIndicesForCommAfterFtoCPositions.end());
-    recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end());
+    recvIndicesForCommAfterFtoCPositions.erase(std::prev(it, 1), recvIndicesForCommAfterFtoCPositions.end()); // TODO: Find a better way
 
     // init receive indices for communication after coarse to fine
     std::cout << "reorder receive indices ";
@@ -251,8 +251,9 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(int *sendI
     for (uint i = 0; i < (uint)sendIndicesOther.size(); i++)
         sendIndices[i + numberOfSendNeighborsAfterFtoC] = sendIndicesOther[i];
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE
-                  << "... numberOfSendNeighborsAfterFtoC: " << numberOfSendNeighborsAfterFtoC << "\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "... Process "
+                  << " " << vf::gpu::Communicator::getInstanz()->getPID()
+                  << " numberOfSendNeighborsAfterFtoC: " << numberOfSendNeighborsAfterFtoC << "\n ";
 
     if (numberOfSendNeighborsAfterFtoC + sendIndicesOther.size() != numberOfSendIndices) {
         *logging::out << logging::Logger::LOGGER_ERROR
@@ -294,6 +295,8 @@ void IndexRearrangementForStreams::aggregateNodesInICellCFC(int level, std::vect
         nodesCFC.push_back(neighborZ[neighborY[sparseIndex]]);
         nodesCFC.push_back(neighborZ[neighborY[neighborX[sparseIndex]]]);           
     }
+
+    // remove duplicate nodes
     std::sort(nodesCFC.begin(), nodesCFC.end());
     auto iterator = std::unique(nodesCFC.begin(), nodesCFC.end());
     nodesCFC.erase(iterator, nodesCFC.end());
@@ -396,8 +399,9 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(int *recvI
     for (uint i = 0; i < (uint)recvIndicesOther.size(); i++)
         recvIndices[i + numberOfRecvNeighborsAfterFtoC] = recvIndicesOther[i];
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE
-                  << "... numberOfRecvNeighborsAfterFtoC: " << numberOfRecvNeighborsAfterFtoC << "\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "... Process "
+                  << " " << vf::gpu::Communicator::getInstanz()->getPID()
+                  << " numberOfRecvNeighborsAfterFtoC: " << numberOfRecvNeighborsAfterFtoC << "\n ";
 
     if (numberOfRecvNeighborsAfterFtoC + recvIndicesOther.size() != numberOfRecvIndices) {
         *logging::out << logging::Logger::LOGGER_ERROR
