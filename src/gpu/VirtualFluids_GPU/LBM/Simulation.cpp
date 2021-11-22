@@ -304,7 +304,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    if (para->getDevices().size() > 2) {
        output << "Find indices of corner nodes for multiGPU communication ...";
-       para->findCornerNodesCommMultiGPU();
+       para->findEdgeNodesCommMultiGPU();
        output << "done.\n";
    }
    //////////////////////////////////////////////////////////////////////////
