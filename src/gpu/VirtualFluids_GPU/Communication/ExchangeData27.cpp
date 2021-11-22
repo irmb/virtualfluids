@@ -208,7 +208,6 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
                             std::vector<ProcessNeighbor27> *recvProcessNeighborHost)
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
-
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //copy Device to Host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsY(level, "send")); i++)
@@ -216,16 +215,17 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     startNonBlockingMpiReceive((unsigned int)(*sendProcessNeighborHost).size(), comm, recvProcessNeighborHost);
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // wait for memcopy device to host to finish before sending data
     if (para->getUseStreams()) cudaStreamSynchronize(stream);
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // copy corner received node values from x 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // edge nodes: copy received node values from x
     if (para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
         uint indexSubdomainX = 0;
         uint indexSubdomainY = 0;
         uint bufferLenghtX   = 0;  
         uint bufferLenghtY   = 0;  
+
         for (uint i = 0; i < para->getParH(level)->cornerNodesXtoY.recvPos.size(); i++) {
             indexSubdomainX = para->getParH(level)->cornerNodesXtoY.recvPos[i].first;
             indexSubdomainY = para->getParH(level)->cornerNodesXtoY.sendPos[i].first;
@@ -233,12 +233,12 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
             bufferLenghtY   = para->getParH(level)->sendProcessNeighborY[indexSubdomainY].numberOfNodes;
 
             for (uint direction = 0; direction <= dirEND; direction++) {
-            para->getParH(level)->sendProcessNeighborY[indexSubdomainY].f[direction * bufferLenghtY][para->getParH(level)->cornerNodesXtoY.sendPos[i].second] = 
-                para->getParH(level)->recvProcessNeighborX[indexSubdomainX].f[direction * bufferLenghtX][para->getParH(level)->cornerNodesXtoY.recvPos[i].second];
+                (para->getParH(level)->sendProcessNeighborY[indexSubdomainY].f[0]+(direction * bufferLenghtY))[para->getParH(level)->cornerNodesXtoY.sendPos[i].second] =  
+                (para->getParH(level)->recvProcessNeighborX[indexSubdomainX].f[0]+(direction * bufferLenghtX))[para->getParH(level)->cornerNodesXtoY.recvPos[i].second];
             }
         }    
     }
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     startBlockingMpiSend((unsigned int)(*sendProcessNeighborHost).size(), comm, sendProcessNeighborHost);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Wait
