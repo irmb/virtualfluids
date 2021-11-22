@@ -2554,37 +2554,39 @@ std::unique_ptr<CudaStreamManager> &Parameter::getStreamManager() { return this-
 
 bool Parameter::getKernelNeedsFluidNodeIndicesToRun() { return this->kernelNeedsFluidNodeIndicesToRun; }
 
-void Parameter::findCornerNodesCommMultiGPU() { 
+void Parameter::findEdgeNodesCommMultiGPU() { 
 	for (uint level = 0; level < parH.size(); level++) {
-        findCornerNodesXY(level);
-		findCornerNodesXZ(level);
-        findCornerNodesYZ(level);
+        findEdgeNodesXY(level);
+		findEdgeNodesXZ(level);
+        findEdgeNodesYZ(level);
 	}
 }
 
-void Parameter::findCornerNodesXY(int level)
+void Parameter::findEdgeNodesXY(int level)
 {
+    int indexOfProcessNeighborSend;
+    int indexInSendBuffer;
     for (uint i = 0; i < (unsigned int)(this->getNumberOfProcessNeighborsX(level, "recv")); i++)
 	{
         for (int j = 0; j < parH[level]->recvProcessNeighborX[i].numberOfNodes; j++) {
             int index = parH[level]->recvProcessNeighborX[i].index[j];
-            bool foundIndex = findIndexInSendNodesXY(level, index);
+            bool foundIndex = findIndexInSendNodesXY(level, index, indexOfProcessNeighborSend, indexInSendBuffer);
             if (foundIndex){
-                this->parH[level]->cornerNodesXtoY.recvPos.push_back(std::pair(i, j));
+                this->parH[level]->edgeNodesXtoY.emplace_back(i, j, indexOfProcessNeighborSend, indexInSendBuffer);
 			}
 		}		
 	}
-	std::cout << "para->cornerNodesXtoY.sendPos.size() " << this->getParH(level)->cornerNodesXtoY.sendPos.size() << std::endl;
 }
 
-bool Parameter::findIndexInSendNodesXY(int level, int index) 
+bool Parameter::findIndexInSendNodesXY(int level, int index, int &indexOfProcessNeighborSend, int &indexInSendBuffer)
 {
     for (uint k = 0; k < (unsigned int)(this->getNumberOfProcessNeighborsY(level, "send")); k++)
 	{
         for (int l = 0; l < parH[level]->sendProcessNeighborY[k].numberOfNodes; l++)
 		{
-            if (parH[level]->sendProcessNeighborY[k].index[l] == index) {
-                this->parH[level]->cornerNodesXtoY.sendPos.push_back(std::pair(k, l));
+            if (parH[level]->sendProcessNeighborY[k].index[l] == index) {;
+                indexOfProcessNeighborSend = k;
+                indexInSendBuffer          = l;
                 return true;
             }
 		}
@@ -2592,26 +2594,29 @@ bool Parameter::findIndexInSendNodesXY(int level, int index)
     return false;
 }
 
-void Parameter::findCornerNodesXZ(int level)
+void Parameter::findEdgeNodesXZ(int level)
 {
+    int indexOfProcessNeighborSend;
+    int indexInSendBuffer;
     for (uint i = 0; i < (unsigned int)(this->getNumberOfProcessNeighborsX(level, "recv")); i++)
 	{
         for (int j = 0; j < parH[level]->recvProcessNeighborX[i].numberOfNodes; j++) {
             int index       = parH[level]->recvProcessNeighborX[i].index[j];
-            bool foundIndex = findIndexInSendNodesXZ(level, index);
+            bool foundIndex = findIndexInSendNodesXZ(level, index, indexOfProcessNeighborSend, indexInSendBuffer);
             if (foundIndex){
-                this->parH[level]->cornerNodesXtoZ.recvPos.push_back(std::pair(i, j));
+                this->parH[level]->edgeNodesXtoZ.emplace_back(i, j, indexOfProcessNeighborSend, indexInSendBuffer);
 			}
         }
 	}
 }
 
-bool Parameter::findIndexInSendNodesXZ(int level, int index)
+bool Parameter::findIndexInSendNodesXZ(int level, int index, int &indexOfProcessNeighborSend, int &indexInSendBuffer)
 {
     for (uint k = 0; k < (unsigned int)(this->getNumberOfProcessNeighborsZ(level, "send")); k++){
         for (int l = 0; l < parH[level]->sendProcessNeighborZ[k].numberOfNodes; l++){
             if (parH[level]->sendProcessNeighborZ[k].index[l] == index) {
-                this->parH[level]->cornerNodesXtoZ.sendPos.push_back(std::pair(k, l));
+                indexOfProcessNeighborSend = k;
+                indexInSendBuffer          = l;
                 return true;
             }
 		}
@@ -2619,25 +2624,28 @@ bool Parameter::findIndexInSendNodesXZ(int level, int index)
     return false;
 }
 
-void Parameter::findCornerNodesYZ(int level) 
+void Parameter::findEdgeNodesYZ(int level) 
 {
+    int indexOfProcessNeighborSend;
+    int indexInSendBuffer;
     for (uint i = 0; i < (unsigned int)(this->getNumberOfProcessNeighborsY(level, "recv")); i++){
         for (int j = 0; j < parH[level]->recvProcessNeighborY[i].numberOfNodes; j++) {
             int index = parH[level]->recvProcessNeighborY[i].index[j];
-            bool foundIndex = findIndexInSendNodesYZ(level, index);
+            bool foundIndex = findIndexInSendNodesYZ(level, index, indexOfProcessNeighborSend, indexInSendBuffer);
             if (foundIndex){
-                this->parH[level]->cornerNodesYtoZ.recvPos.push_back(std::pair(i, j));
+                this->parH[level]->edgeNodesYtoZ.emplace_back(i, j, indexOfProcessNeighborSend, indexInSendBuffer);
 			}
         }
 	}
 }
 
-bool Parameter::findIndexInSendNodesYZ(int level, int index)
+bool Parameter::findIndexInSendNodesYZ(int level, int index, int &indexOfProcessNeighborSend, int &indexInSendBuffer)
 {
     for (uint k = 0; k < (unsigned int)(this->getNumberOfProcessNeighborsZ(level, "send")); k++){
         for (int l = 0; l < parH[level]->sendProcessNeighborZ[k].numberOfNodes; l++){
             if (parH[level]->sendProcessNeighborZ[k].index[l] == index) {
-                this->parH[level]->cornerNodesYtoZ.sendPos.push_back(std::pair(k, l));
+                indexOfProcessNeighborSend = k;
+                indexInSendBuffer          = l;
                 return true;
             }
 		}

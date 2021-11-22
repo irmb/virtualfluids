@@ -321,13 +321,21 @@ struct LBMSimulationParameter
     std::vector<ProcessNeighborF3> recvProcessNeighborF3Z;
     ////////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition: position (index in array) of corner nodes in ProcessNeighbor27
-    struct cornerNodePostions {
-        std::vector<std::pair<int, int>> recvPos;
-        std::vector<std::pair<int, int>> sendPos;
+    struct EdgeNodePositions {
+        int indexOfProcessNeighborRecv;
+        int indexInRecvBuffer;
+        int indexOfProcessNeighborSend;
+        int indexInSendBuffer;
+        EdgeNodePositions(int indexOfProcessNeighborRecv, int indexInRecvBuffer, int indexOfProcessNeighborSend,
+                            int indexInSendBuffer)
+            : indexOfProcessNeighborRecv(indexOfProcessNeighborRecv), indexInRecvBuffer(indexInRecvBuffer),
+              indexOfProcessNeighborSend(indexOfProcessNeighborSend), indexInSendBuffer(indexInSendBuffer)
+        {
+        }
     };
-    cornerNodePostions cornerNodesXtoY;
-    cornerNodePostions cornerNodesXtoZ;
-    cornerNodePostions cornerNodesYtoZ;
+    std::vector<EdgeNodePositions> edgeNodesXtoY;
+    std::vector<EdgeNodePositions> edgeNodesXtoZ;
+    std::vector<EdgeNodePositions> edgeNodesYtoZ;
 
     ///////////////////////////////////////////////////////
     uint *fluidNodeIndices;
@@ -888,13 +896,13 @@ public:
     void initNumberOfProcessNeighborsAfterFtoCY(int level);
     void initNumberOfProcessNeighborsAfterFtoCZ(int level);
 
-    void findCornerNodesCommMultiGPU();
-    void findCornerNodesXY(int level);
-    bool findIndexInSendNodesXY(int level, int index);
-    void findCornerNodesXZ(int level);
-    bool findIndexInSendNodesXZ(int level, int index);
-    void findCornerNodesYZ(int level);
-    bool findIndexInSendNodesYZ(int level, int index);
+    void findEdgeNodesCommMultiGPU();
+    void findEdgeNodesXY(int level);
+    bool findIndexInSendNodesXY(int level, int index, int &indexOfProcessNeighborSend, int &indexInSendBuffer);
+    void findEdgeNodesXZ(int level);
+    bool findIndexInSendNodesXZ(int level, int index, int &indexOfProcessNeighborSend, int &indexInSendBuffer);
+    void findEdgeNodesYZ(int level);
+    bool findIndexInSendNodesYZ(int level, int index, int &indexOfProcessNeighborSend, int &indexInSendBuffer);
 
     bool useReducedCommunicationAfterFtoC{ true };
 };
