@@ -470,13 +470,12 @@ int main( int argc, char* argv[])
     {
         //str = static_cast<std::string>(argv[0]);
         
-        try
-        {
+        try {
             //////////////////////////////////////////////////////////////////////////
 
-			std::string targetPath;
+            std::string targetPath;
 
-			targetPath = __FILE__;
+            targetPath = __FILE__;
 
             if (argc == 2) {
                 configFile = argv[1];
@@ -489,16 +488,16 @@ int main( int argc, char* argv[])
             targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
 #endif
 
-			std::cout << targetPath << std::endl;
+            std::cout << targetPath << std::endl;
 
-            if (configFile.size()==0) {
+            if (configFile.size() == 0) {
                 configFile = targetPath + "configMusselOyster.txt";
             }
 
-			multipleLevel(configFile);
+            multipleLevel(configFile);
 
             //////////////////////////////////////////////////////////////////////////
-		}
+        }
         catch (const std::bad_alloc& e)
         { 
             *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";

@@ -368,19 +368,16 @@ int main( int argc, char* argv[])
     {
         //str = static_cast<std::string>(argv[0]);
         
-        try
-        {
+        try {
             //////////////////////////////////////////////////////////////////////////
 
-			std::string targetPath;
+            std::string targetPath;
 
-			targetPath = __FILE__;
+            targetPath = __FILE__;
 
             if (argc == 2) {
                 configFile = argv[1];
                 std::cout << "Using configFile command line argument: " << configFile << std::endl;
-            } else {
-                configFile = targetPath + "configMusselOyster.txt";
             }
 
 #ifdef _WIN32
@@ -389,12 +386,16 @@ int main( int argc, char* argv[])
             targetPath = targetPath.substr(0, targetPath.find_last_of('/') + 1);
 #endif
 
-			std::cout << targetPath << std::endl;
+            std::cout << targetPath << std::endl;
 
-			multipleLevel(configFile);
+            if (configFile.size() == 0) {
+                configFile = targetPath + "configMusselOyster.txt";
+            }
+
+            multipleLevel(configFile);
 
             //////////////////////////////////////////////////////////////////////////
-		}
+        }
         catch (const std::bad_alloc& e)
         { 
             *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";

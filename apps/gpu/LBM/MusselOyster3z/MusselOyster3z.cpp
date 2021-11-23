@@ -380,9 +380,7 @@ int main( int argc, char* argv[])
             if (argc == 2) {
                 configFile = argv[1];
                 std::cout << "Using configFile command line argument: " << configFile << std::endl;
-            } else {
-                configFile = targetPath + "configMusselOyster.txt";
-            }
+            } 
 
 #ifdef _WIN32
             targetPath = targetPath.substr(0, targetPath.find_last_of('\\') + 1);
@@ -391,6 +389,10 @@ int main( int argc, char* argv[])
 #endif
 
 			std::cout << targetPath << std::endl;
+
+            if (configFile.size() == 0) {
+                configFile = targetPath + "configMusselOyster.txt";
+            }  
 
 			multipleLevel(configFile);
 
