@@ -61,6 +61,15 @@ public:
     real* getBladeForcesX(){return this->bladeForcesXH;};
     real* getBladeForcesY(){return this->bladeForcesYH;};
     real* getBladeForcesZ(){return this->bladeForcesZH;};
+    void setBladeCoordsX(real* _bladeCoordsX){ this->bladeCoordsXH = _bladeCoordsX;};
+    void setBladeCoordsY(real* _bladeCoordsY){ this->bladeCoordsYH = _bladeCoordsY;};
+    void setBladeCoordsZ(real* _bladeCoordsZ){ this->bladeCoordsZH = _bladeCoordsZ;};
+    void setBladeVelocitiesX(real* _bladeVelocitiesX){ this->bladeVelocitiesXH = _bladeVelocitiesX;};
+    void setBladeVelocitiesY(real* _bladeVelocitiesY){ this->bladeVelocitiesYH = _bladeVelocitiesY;};
+    void setBladeVelocitiesZ(real* _bladeVelocitiesZ){ this->bladeVelocitiesZH = _bladeVelocitiesZ;};
+    void setBladeForcesX(real* _bladeForcesX){ this->bladeForcesXH = _bladeForcesX;};
+    void setBladeForcesY(real* _bladeForcesY){ this->bladeForcesYH = _bladeForcesY;};
+    void setBladeForcesZ(real* _bladeForcesZ){ this->bladeForcesZH = _bladeForcesZ;};
 
 private:
     void initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager);
