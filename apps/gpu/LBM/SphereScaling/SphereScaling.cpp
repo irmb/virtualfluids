@@ -599,7 +599,7 @@ void multipleLevel(const std::string& configPath)
             // std::to_string(generatePart) + "/grid/"); gridBuilder->writeArrows(outPath + 
             // std::to_string(generatePart) + " /arrow");
 
-            SimulationFileWriter::write(gridPath + "/" + std::to_string(generatePart) + "/", gridBuilder,
+            SimulationFileWriter::write(gridPath + std::to_string(generatePart) + "/", gridBuilder,
                                         FILEFORMAT::BINARY);
         } else {
 
