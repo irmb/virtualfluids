@@ -119,7 +119,7 @@ void multipleLevel(const std::string& configPath)
 
     bool useGridGenerator                  = true;
     bool useStreams                        = true;
-    bool useLevels                         = false;
+    bool useLevels                         = true;
     para->useReducedCommunicationAfterFtoC = true;
     std::string scalingType                = "weak"; // "strong" // "weak"
 
@@ -196,9 +196,9 @@ void multipleLevel(const std::string& configPath)
     if (useGridGenerator) {
         real sideLengthCube;
         if (useLevels)
-            sideLengthCube = 38; 
+            sideLengthCube = 76; 
         else
-            sideLengthCube = 60;
+            sideLengthCube = 86; // 60, 80 läuft
         real xGridMin          = 0.0; 
         real xGridMax          = sideLengthCube;
         real yGridMin          = 0.0;
@@ -218,8 +218,14 @@ void multipleLevel(const std::string& configPath)
                 real zSplit = 0.5 * sideLengthCube;
                     
                 if (scalingType == "weak"){
-                    zSplit = zGridMax;
-                    zGridMax = zGridMax + sideLengthCube;
+                    if (useLevels) {
+                        dxGrid = dxGrid / pow(2.0, (1.0/3.0));
+                        // dxGrid = round(dxGrid*100.0)/100.0  // round to tow decimal places
+                    }
+                    else {
+                        zSplit = zGridMax;
+                        zGridMax = zGridMax + sideLengthCube;
+                    }
                 }
 
                 if (generatePart == 0) {
@@ -233,13 +239,9 @@ void multipleLevel(const std::string& configPath)
 
                 if (useLevels) {
                     gridBuilder->addGrid(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1), 1);
-                    if (scalingType == "weak")
-                        std::cout << "weak scaling not implemented for multiple levels";
                 }
 
-                if (scalingType == "strong"){
-                    gridBuilder->addGeometry(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
-                } else if (scalingType == "weak"){
+                if (scalingType == "weak" && !useLevels) {
                     // Sphere* sphere1 = new  Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere);
                     // Sphere* sphere2 = new  Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 1.5 * sideLengthCube, dSphere);
                     // auto conglo = Conglomerate::makeShared();
@@ -249,6 +251,8 @@ void multipleLevel(const std::string& configPath)
 
                    TriangularMesh *sphereSTL = TriangularMesh::make(stlPath + "Spheres_2GPU.stl");
                    gridBuilder->addGeometry(sphereSTL);
+                } else {
+                    gridBuilder->addGeometry(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
                 }
 
                 if (generatePart == 0)
@@ -284,18 +288,21 @@ void multipleLevel(const std::string& configPath)
                 //////////////////////////////////////////////////////////////////////////
            
             } else if (comm->getNummberOfProcess() == 4) {
-                real ySplit;
-                real zSplit;
+                real ySplit= 0.5 * sideLengthCube;
+                real zSplit= 0.5 * sideLengthCube;
 
-                if(scalingType == "strong"){
-                    ySplit = 0.5 * sideLengthCube;
-                    zSplit = 0.5 * sideLengthCube;
-                } else if (scalingType == "weak"){
-                    ySplit = yGridMax;
-                    yGridMax = yGridMax + (yGridMax-yGridMin);
-                    zSplit = zGridMax;
-                    zGridMax = zGridMax + (zGridMax-zGridMin);
-                };
+                if (scalingType == "weak") {
+                    if (useLevels){
+                        dxGrid = dxGrid / pow(2.0, (2.0/3.0));
+                        // dxGrid = round(dxGrid*100.0)/100.0  // round to tow decimal places
+                    }
+                    else{
+                        ySplit = yGridMax;
+                        yGridMax = yGridMax + (yGridMax-yGridMin);
+                        zSplit = zGridMax;
+                        zGridMax = zGridMax + (zGridMax-zGridMin);
+                    }
+                }
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax , ySplit + overlap,
@@ -316,15 +323,13 @@ void multipleLevel(const std::string& configPath)
 
                 if (useLevels) {
                     gridBuilder->addGrid(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1), 1);                    
-                    if (scalingType == "weak")
-                        std::cout << "weak scaling not implemented for multiple levels";
                 }
 
-                if (scalingType == "strong"){
-                    gridBuilder->addGeometry(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
-                } else if (scalingType == "weak"){
+                if (scalingType == "weak" && !useLevels) {
                    TriangularMesh *sphereSTL = TriangularMesh::make(stlPath + "Spheres_4GPU.stl");
                    gridBuilder->addGeometry(sphereSTL);
+                } else {
+                    gridBuilder->addGeometry(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
                 }
 
                 if (generatePart == 0)
@@ -391,22 +396,24 @@ void multipleLevel(const std::string& configPath)
                 // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////
             } else if (comm->getNummberOfProcess() == 8) {
-                real xSplit;
-                real ySplit;
-                real zSplit;
+                real xSplit = 0.5 * sideLengthCube;
+                real ySplit = 0.5 * sideLengthCube;
+                real zSplit = 0.5 * sideLengthCube;
 
-                if(scalingType == "strong"){
-                    xSplit = 0.5 * sideLengthCube;
-                    ySplit = 0.5 * sideLengthCube;
-                    zSplit = 0.5 * sideLengthCube;
-                } else if (scalingType == "weak"){
-                    xSplit = xGridMax;
-                    xGridMax = xGridMax + (xGridMax-xGridMin);
-                    ySplit = yGridMax;
-                    yGridMax = yGridMax + (yGridMax-yGridMin);
-                    zSplit = zGridMax;
-                    zGridMax = zGridMax + (zGridMax-zGridMin);
-                };
+                if (scalingType == "weak") {
+                    if (useLevels){
+                        dxGrid = dxGrid / 2.0;
+                        // dxGrid = round(dxGrid*100.0)/100.0  // round to tow decimal places
+                    }
+                    else {
+                        xSplit = xGridMax;
+                        xGridMax = xGridMax + (xGridMax-xGridMin);
+                        ySplit = yGridMax;
+                        yGridMax = yGridMax + (yGridMax-yGridMin);
+                        zSplit = zGridMax;
+                        zGridMax = zGridMax + (zGridMax-zGridMin);
+                    }
+                }
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, ySplit + overlap,
@@ -443,15 +450,13 @@ void multipleLevel(const std::string& configPath)
 
                 if (useLevels) {
                     gridBuilder->addGrid(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1), 1);                    
-                    if (scalingType == "weak")
-                        std::cout << "weak scaling not implemented for multiple levels";
                 }
 
-                if (scalingType == "strong"){
-                    gridBuilder->addGeometry(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
-                } else if (scalingType == "weak"){
-                   TriangularMesh *sphereSTL = TriangularMesh::make(stlPath + "Spheres_4GPU.stl");
+                if (scalingType == "weak" && !useLevels) {
+                   TriangularMesh *sphereSTL = TriangularMesh::make(stlPath + "Spheres_8GPU.stl");
                    gridBuilder->addGeometry(sphereSTL);
+                } else {
+                    gridBuilder->addGeometry(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
                 }
                 
                 if (generatePart == 0)
@@ -609,9 +614,13 @@ void multipleLevel(const std::string& configPath)
                 gridBuilder->setNumberOfLayers(10, 8);
                 gridBuilder->addGrid(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1), 1);
             }
-
-            gridBuilder->addGeometry(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
-
+                
+            if (scalingType == "weak" && !useLevels){
+                   TriangularMesh *sphereSTL = TriangularMesh::make(stlPath + "Spheres_1GPU.stl");
+                   gridBuilder->addGeometry(sphereSTL);
+            } else {
+                gridBuilder->addGeometry(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere));
+            }
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
             
