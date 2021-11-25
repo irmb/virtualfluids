@@ -310,7 +310,7 @@ void MultiphaseTwoPhaseFieldsPressureFilterLBMKernel::calculate(int step)
 							+ (mfaab + mfacb + mfcab + mfccb) + (mfaba + mfabc + mfcba + mfcbc) + (mfbaa + mfbac + mfbca + mfbcc)
 							+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
-						LBMReal rho = rhoH + rhoToPhi * ((*pressure)(x1, x2, x3) - phiH);
+						LBMReal rho = rhoH + rhoToPhi * ((*phaseField)(x1, x2, x3) - phiH);
 						//! variable density -> TRANSFER!
 						//LBMReal rho = rhoH * ((*phaseField)(x1, x2, x3)) + rhoL * ((*phaseField2)(x1, x2, x3));
 

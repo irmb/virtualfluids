@@ -143,7 +143,7 @@ void run(string configname)
         //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
        // kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
-        kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphasePressureFilterCompressibleAirLBMKernel());
 
         mu::Parser fgr;
         fgr.SetExpr("-(rho-rho_l)*g_y");

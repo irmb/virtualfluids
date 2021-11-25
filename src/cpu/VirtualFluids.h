@@ -256,6 +256,7 @@
 #include <LBM/MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel.h>
 #include <LBM/MultiphaseTwoPhaseFieldsPressureFilterLBMKernel.h>
 #include <LBM/MultiphasePressureFilterLBMKernel.h>
+#include <LBM/MultiphasePressureFilterCompressibleAirLBMKernel.h>
 
 
 
