@@ -109,11 +109,11 @@ void run(string configname)
         LBMReal mu_h = rho_h * nu_h;
         
         //gravity
-        LBMReal g_y = Re* Re* nu_h* nu_h / D;
+        LBMReal g_y = Re * Re * nu_h * nu_h / (D*D*D);
         //Eotvos number
         //LBMReal Eo = 100;
         //surface tension
-        sigma = rho_h* g_y* D* D / Eo;
+        sigma = rho_h * 1000.0 * g_y * D * D / Eo;
 
         //g_y = 0;
 
