@@ -117,9 +117,9 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator = true;
-    bool useStreams       = true;
+    bool useStreams       = false;
     bool useLevels        = false;
-    para->useReducedCommunicationAfterFtoC = true;
+    para->useReducedCommunicationAfterFtoC = false;
 
     if (para->getNumprocs() == 1) {
        useStreams       = false;
@@ -131,7 +131,7 @@ void multipleLevel(const std::string& configPath)
     std::string bivalveType = "OYSTER"; // "MUSSEL" "OYSTER"
     std::string gridPath(gridPathParent + bivalveType); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
-    real dxGrid = (real)1.0;
+    real dxGrid = (real)0.1; // 0.1
     if (para->getNumprocs() == 4)
         dxGrid =0.66666667;
     else if (para->getNumprocs() == 8)  
@@ -307,7 +307,7 @@ void multipleLevel(const std::string& configPath)
            
             } else if (comm->getNummberOfProcess() == 4) {
 
-                const real xSplit = 78.0;
+                const real xSplit = 100.0;
                 const real zSplit = round(((double)bbzp + bbzm) * 0.5);
 
                 if (generatePart == 0) {
@@ -399,10 +399,9 @@ void multipleLevel(const std::string& configPath)
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
 
-            // gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" +
-            // std::to_string(generatePart) + "_"); gridBuilder->writeGridsToVtk(outPath + bivalveType + "/" +
-            // std::to_string(generatePart) + "/grid/"); gridBuilder->writeArrows(outPath + bivalveType + "/" +
-            // std::to_string(generatePart) + " /arrow");
+            gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" + std::to_string(generatePart) + "_"); 
+            // gridBuilder->writeGridsToVtk(outPath + bivalveType + "/" + std::to_string(generatePart) + "/grid/"); 
+            // gridBuilder->writeArrows(outPath + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
 
             SimulationFileWriter::write(gridPath + std::to_string(generatePart) + "/", gridBuilder,
                                         FILEFORMAT::BINARY);
@@ -433,8 +432,8 @@ void multipleLevel(const std::string& configPath)
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
 
-            // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + bivalveType + "/grid/");
-            // gridBuilder->writeArrows ("E:/temp/MusselOyster/" + bivalveType + "/arrow");
+            gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/");
+            // gridBuilder->writeArrows ((outPath + bivalveType + "/arrow");
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
         }
