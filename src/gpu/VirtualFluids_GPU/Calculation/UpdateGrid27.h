@@ -15,9 +15,7 @@ class UpdateGrid27
 public:
     UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator *comm, SPtr<CudaMemoryManager> cudaManager,
                  std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels);
-    void updateGrid(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
-                    std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
-                    std::vector<SPtr<Kernel>> &kernels);
+    void updateGrid(int level, unsigned int t);
 
 private:
     typedef void (UpdateGrid27::*collisionAndExchangeFun)(int level, unsigned int t);

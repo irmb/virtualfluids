@@ -9,15 +9,13 @@
 #include "Kernel/Kernel.h"
 #include "Parameter/CudaStreamManager.h"
 
-void UpdateGrid27::updateGrid(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
-                              std::vector<std::shared_ptr<PorousMedia>> &pm, int level, unsigned int t,
-                              std::vector<SPtr<Kernel>> &kernels)
+void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
     //////////////////////////////////////////////////////////////////////////
 
     if (level != para->getFine()) {
-        updateGrid(para, comm, cudaManager, pm, level + 1, t, kernels);
-        updateGrid(para, comm, cudaManager, pm, level + 1, t, kernels);
+        updateGrid(level + 1, t);
+        updateGrid(level + 1, t);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -26,20 +24,20 @@ void UpdateGrid27::updateGrid(Parameter *para, vf::gpu::Communicator *comm, Cuda
 
     //////////////////////////////////////////////////////////////////////////
 
-    postCollisionBC(para, level, t);
+    postCollisionBC(para.get(), level, t);
 
     //////////////////////////////////////////////////////////////////////////
 
-    swapBetweenEvenAndOddTimestep(para, level);
+    swapBetweenEvenAndOddTimestep(para.get(), level);
 
 	//////////////////////////////////////////////////////////////////////////
 
 	if (para->getUseWale())
-		calcMacroscopicQuantities(para, level);
+		calcMacroscopicQuantities(para.get(), level);
 
 	//////////////////////////////////////////////////////////////////////////
 
-    preCollisionBC(para, cudaManager, level, t);
+    preCollisionBC(para.get(), cudaManager.get(), level, t);
 
     //////////////////////////////////////////////////////////////////////////
     if( level != para->getFine() )
