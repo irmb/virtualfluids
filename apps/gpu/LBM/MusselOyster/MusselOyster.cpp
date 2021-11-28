@@ -131,7 +131,7 @@ void multipleLevel(const std::string& configPath)
     std::string bivalveType = "OYSTER"; // "MUSSEL" "OYSTER"
     std::string gridPath(gridPathParent + bivalveType); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
-    real dxGrid = (real)0.1; // 0.1
+    real dxGrid = (real)1.0; // 1.0
     if (para->getNumprocs() == 4)
         dxGrid =0.66666667;
     else if (para->getNumprocs() == 8)  
