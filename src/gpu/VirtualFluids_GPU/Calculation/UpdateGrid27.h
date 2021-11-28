@@ -63,6 +63,8 @@ extern "C" void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, C
                                  int level, int streamIndex);
 extern "C" void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
                                  int level, int streamIndex);
+extern "C" void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicator *comm,
+                                                       CudaMemoryManager *cudaManager, int level, bool useReducedComm);
 
 extern "C" void postCollisionBC(Parameter* para, int level, unsigned int t);
 

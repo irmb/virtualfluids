@@ -220,7 +220,7 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     if (para->getUseStreams()) cudaStreamSynchronize(stream);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // edge nodes: copy received node values from x
-    if (para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
+    if (para->getUseStreams()  && para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
         uint indexInSubdomainX = 0;
         uint indexInSubdomainY = 0;
         uint numNodesInBufferX = 0;
@@ -323,7 +323,7 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     if (para->getUseStreams()) cudaStreamSynchronize(stream);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // edge nodes: copy received node values from x
-    if (para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
+    if (para->getUseStreams() && para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
         uint indexInSubdomainX = 0;
         uint indexInSubdomainZ = 0;
         uint numNodesInBufferX = 0;
@@ -343,7 +343,7 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // edge nodes: copy received node values from y
-    if (para->getNumberOfProcessNeighborsY(level, "recv") > 0) {
+    if (para->getUseStreams() && para->getNumberOfProcessNeighborsY(level, "recv") > 0) {
         uint indexInSubdomainY = 0;
         uint indexInSubdomainZ = 0;
         uint numNodesInBufferY = 0;
