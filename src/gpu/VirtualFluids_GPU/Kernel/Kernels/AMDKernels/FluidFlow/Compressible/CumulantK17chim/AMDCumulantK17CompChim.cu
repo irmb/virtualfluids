@@ -30,10 +30,12 @@ void AMDCumulantK17CompChim::run()
 
 	LB_Kernel_AMDCumulantK17CompChim <<< grid, threads >>>(
 		para->getParD(level)->omega,
+		1.0,
 		para->getParD(level)->geoSP,
 		para->getParD(level)->neighborX_SP,
 		para->getParD(level)->neighborY_SP,
 		para->getParD(level)->neighborZ_SP,
+		para->getParD(level)->neighborWSB_SP,
 		para->getParD(level)->d0SP.f[0],
 		para->getParD(level)->size_Mat_SP,
 		level,

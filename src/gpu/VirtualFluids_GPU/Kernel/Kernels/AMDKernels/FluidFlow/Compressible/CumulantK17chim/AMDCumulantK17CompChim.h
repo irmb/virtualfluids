@@ -1,5 +1,5 @@
-#ifndef CUMULANT_K17_COMP_CHIM_H
-#define CUMULANT_K17_COMP_CHIM_H
+#ifndef AMDCUMULANT_K17_COMP_CHIM_H
+#define AMDCUMULANT_K17_COMP_CHIM_H
 
 #include "Kernel/KernelImp.h"
 

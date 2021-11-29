@@ -5,13 +5,15 @@
 #include <curand.h>
 
 extern "C" __global__ void LB_Kernel_AMDCumulantK17CompChim(
-	real omega,
+	real omega_in,
+	real C,
 	uint* typeOfGridNode,
 	uint* neighborX,
 	uint* neighborY,
 	uint* neighborZ,
+	uint* neighborWSB,
 	real* distributions,
-	int size_Mat,
+	unsigned long size_Mat,
 	int level,
 	bool bodyForce,
 	real* forces,
