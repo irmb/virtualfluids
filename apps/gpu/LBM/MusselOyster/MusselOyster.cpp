@@ -120,6 +120,7 @@ void multipleLevel(const std::string& configPath)
     bool useStreams       = false;
     bool useLevels        = true;
     para->useReducedCommunicationAfterFtoC = false;
+    para->setCalcTurbulenceIntensity(true);
 
     if (para->getNumprocs() == 1) {
        useStreams       = false;

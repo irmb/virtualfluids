@@ -663,7 +663,11 @@ void Parameter::setTStartOut(unsigned int tStartOut)
 }
 void Parameter::setTimestepOfCoarseLevel(unsigned int timestep)
 {
-	this->timestep = timestep;
+	this->timestep = timestep; 
+}
+void Parameter::setCalcTurbulenceIntensity(bool calcVelocityAndFluctuations) 
+{
+    this->calcVelocityAndFluctuations = calcVelocityAndFluctuations;
 }
 void Parameter::setCalcMedian(bool calcMedian)
 {
@@ -1767,7 +1771,11 @@ bool Parameter::getPrintFiles()
 }
 bool Parameter::getReadGeo()
 {
-	return ic.readGeo;
+	return ic.readGeo; 
+}
+bool Parameter::getCalcTurbulenceIntensity() 
+{ 
+	return this->calcVelocityAndFluctuations; 
 }
 real Parameter::getDiffusivity()
 {

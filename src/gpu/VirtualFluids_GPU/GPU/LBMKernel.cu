@@ -7345,6 +7345,61 @@ extern "C" void generateRandomValuesDevice( curandState* state,
    generateRandomValues<<< gridQ, threads >>> (state,randArray);
    getLastCudaError("generateRandomValues execution failed"); 
 }
+//////////////////////////////////////////////////////////////////////////
+extern "C" void CalcTurbulenceIntensityDevice(
+   real* vxx,
+   real* vyy,
+   real* vzz,
+   real* vxy,
+   real* vxz,
+   real* vyz,
+   real* vx_mean,
+   real* vy_mean,
+   real* vz_mean,
+   real* DD, 
+   uint* typeOfGridNode, 
+   unsigned int* neighborX,
+   unsigned int* neighborY,
+   unsigned int* neighborZ,
+   unsigned int size_Mat, 
+   bool evenOrOdd,
+   uint numberOfThreads)
+{
+   int Grid = (size_Mat / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridQ(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+
+   CalcTurbulenceIntensity<<<gridQ, threads>>>(
+     vxx,
+     vyy,
+     vzz,
+	 vxy,
+     vxz,
+     vyz,
+     vx_mean,
+     vy_mean,
+     vz_mean,
+     DD, 
+     typeOfGridNode, 
+     neighborX,
+     neighborY,
+     neighborZ,
+     size_Mat, 
+     evenOrOdd);
+
+   getLastCudaError("CalcTurbulenceIntensity execution failed"); 
+}
 
 
 
