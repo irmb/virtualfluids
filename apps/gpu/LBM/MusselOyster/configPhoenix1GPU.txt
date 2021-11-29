@@ -7,14 +7,14 @@ NumberOfDevices=1
 ##################################################
 #informations for Writing
 ##################################################
-Path=/work/y0078217/Results/MusselOysterResults/1GPU/
+Path=/work/y0078217/Results/MusselOysterResults/1GPUMussel2/
 #Path="F:/Work/Computations/out/MusselOyster/"
 #Prefix="MusselOyster" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
-GridPath=/work/y0078217/Grids/GridMusselOyster/MUSSEL1GPU/
+GridPath=/work/y0078217/Grids/GridMusselOyster/Mussel1GPU/
 #GridPath="C:"
 
 ##################################################
@@ -31,6 +31,6 @@ GridPath=/work/y0078217/Grids/GridMusselOyster/MUSSEL1GPU/
 ##################################################
 #simulation parameter
 ##################################################
-TimeEnd=50000
-TimeOut=500000 
+TimeEnd=500000
+TimeOut=100000 
 #TimeStartOut=0

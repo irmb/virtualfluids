@@ -117,9 +117,9 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator = true;
-    bool useStreams       = false;
+    bool useStreams       = true;
     bool useLevels        = true;
-    para->useReducedCommunicationAfterFtoC = false;
+    para->useReducedCommunicationAfterFtoC = true;
     para->setCalcTurbulenceIntensity(true);
 
     if (para->getNumprocs() == 1) {
@@ -155,6 +155,7 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityRatio((real) 0.058823529);
     para->setDensityRatio((real) 998.0);
 
+    *logging::out << logging::Logger::INFO_HIGH << "bivalveType = " << bivalveType << " \n";
     *logging::out << logging::Logger::INFO_HIGH << "velocity LB [dx/dt] = " << vxLB << " \n";
     *logging::out << logging::Logger::INFO_HIGH << "viscosity LB [dx^2/dt] = " << viscosityLB << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "velocity real [m/s] = " << vxLB * para->getVelocityRatio()<< " \n";
@@ -229,8 +230,8 @@ void multipleLevel(const std::string& configPath)
         const real xGridMax  = 600.0;      // 540.0
         const real yGridMin  = 1.0;        // 1.0;
         const real yGridMax  = 500.0;      // 440.0;
-        const real zGridMin  = -80;       // -70;
-        const real zGridMax  = 110.0;      // 100;
+        const real zGridMin  = -70;        // -70;
+        const real zGridMax  = 100.0;      // 100;
 
         TriangularMesh *bivalveSTL       = TriangularMesh::make(stlPath + bivalveType + ".stl");
         TriangularMesh *bivalveRef_1_STL = nullptr;
