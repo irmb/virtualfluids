@@ -854,6 +854,10 @@ void Parameter::setUseAMD(bool useAMD)
 {
 	ic.isAMD = useAMD;
 }
+void Parameter::setSGSConstant(real SGSConstant)
+{
+	ic.SGSConstant = SGSConstant;
+}
 void Parameter::setUseInitNeq(bool useInitNeq)
 {
 	ic.isInitNeq = useInitNeq;
@@ -2241,6 +2245,10 @@ bool Parameter::getUseWale()
 bool Parameter::getUseAMD()
 {
 	return ic.isAMD;
+}
+real Parameter::getSGSConstant()
+{
+	return ic.SGSConstant;
 }
 bool Parameter::getUseInitNeq()
 {

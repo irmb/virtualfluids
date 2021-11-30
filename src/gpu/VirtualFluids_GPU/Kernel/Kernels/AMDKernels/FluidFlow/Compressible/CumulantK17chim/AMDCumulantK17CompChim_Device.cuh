@@ -6,13 +6,16 @@
 
 extern "C" __global__ void LB_Kernel_AMDCumulantK17CompChim(
 	real omega_in,
-	real C,
+	real SGSConstant,
 	uint* typeOfGridNode,
 	uint* neighborX,
 	uint* neighborY,
 	uint* neighborZ,
 	uint* neighborWSB,
 	real* distributions,
+	real* veloX,
+    real* veloY,
+    real* veloZ,
 	unsigned long size_Mat,
 	int level,
 	bool bodyForce,

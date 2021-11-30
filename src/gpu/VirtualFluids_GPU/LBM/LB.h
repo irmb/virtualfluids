@@ -121,6 +121,7 @@ struct InitCondition
    bool isConc {false};
    bool isWale {false};
    bool isAMD {false};
+   real SGSConstant {0.0};
    bool isMeasurePoints {false};
    bool isInitNeq {false};
    bool isGeoNormal, isInflowNormal, isOutflowNormal;

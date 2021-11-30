@@ -27,17 +27,20 @@ void AMDCumulantK17CompChim::run()
 	}
 	dim3 grid(Grid1, Grid2);
 	dim3 threads(numberOfThreads, 1, 1);
-
+	//printf("size mat before %d, after %ld  \n", para->getParD(level)->size_Mat_SP, (unsigned long)para->getParD(level)->size_Mat_SP);
 	LB_Kernel_AMDCumulantK17CompChim <<< grid, threads >>>(
 		para->getParD(level)->omega,
-		1.0,
+		para->getSGSConstant(),
 		para->getParD(level)->geoSP,
 		para->getParD(level)->neighborX_SP,
 		para->getParD(level)->neighborY_SP,
 		para->getParD(level)->neighborZ_SP,
 		para->getParD(level)->neighborWSB_SP,
 		para->getParD(level)->d0SP.f[0],
-		para->getParD(level)->size_Mat_SP,
+		para->getParD(level)->vx_SP,
+		para->getParD(level)->vy_SP,
+		para->getParD(level)->vz_SP,
+		(unsigned long)para->getParD(level)->size_Mat_SP,
 		level,
 		para->getIsBodyForce(),
 		para->getForcesDev(),

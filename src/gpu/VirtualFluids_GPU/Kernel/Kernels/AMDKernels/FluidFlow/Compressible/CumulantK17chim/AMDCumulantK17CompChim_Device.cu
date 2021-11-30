@@ -38,130 +38,38 @@
 using namespace vf::lbm::constant;
 #include "Kernel/ChimeraTransformation.h"
 
-extern "C" __device__ real calcAMD( 
-    const real& C, 
-    const uint& k,
-    uint* typeOfGridNode,
-    uint* neighborX,
-    uint* neighborY,
-    uint* neighborZ,
-    uint* neighborWSB,
-    real* veloX,
-    real* veloY,
-    real* veloZ)
+extern "C" __device__ __forceinline__ real calcDerivatives(const uint& k, uint& kM, uint& kP, uint* typeOfGridNode, real* veloX, real* veloY, real* veloZ, real& dvx, real& dvy, real& dvz)
 {
-    uint kPx = neighborX[k];
-    uint kPy = neighborY[k];
-    uint kPz = neighborZ[k];
-    uint kMxyz = neighborWSB[k];
-    uint kMx = neighborZ[neighborY[kMxyz]];
-    uint kMy = neighborZ[neighborX[kMxyz]];
-    uint kMz = neighborY[neighborX[kMxyz]];
-
-    real dvxdx = c0o1;
-    real dvxdy = c0o1;
-    real dvxdz = c0o1;
-
-    real dvydx = c0o1;
-    real dvydy = c0o1;
-    real dvydz = c0o1;
-
-    real dvzdx = c0o1;
-    real dvzdy = c0o1;
-    real dvzdz = c0o1;
-
-    if(typeOfGridNode[kPx] == GEO_FLUID)
+    if(typeOfGridNode[kP] == GEO_FLUID)
     {
-        if(typeOfGridNode[kMx] == GEO_FLUID)
+        if(typeOfGridNode[kM] == GEO_FLUID)
         {
-            dvxdx = veloX[kPx] - veloX[kMx];
-            dvydx = veloY[kPx] - veloY[kMx];
-            dvzdx = veloZ[kPx] - veloZ[kMx];
+            dvx = c1o2*(veloX[kP] - veloX[kM]);
+            dvy = c1o2*(veloY[kP] - veloY[kM]);
+            dvz = c1o2*(veloZ[kP] - veloZ[kM]);
         } 
         else 
         {
-            dvxdx = veloX[kPx] - veloX[k];
-            dvydx = veloY[kPx] - veloY[k];
-            dvzdx = veloZ[kPx] - veloZ[k];
+            dvx = veloX[kP] - veloX[k];
+            dvy = veloY[kP] - veloY[k];
+            dvz = veloZ[kP] - veloZ[k];
         }
     }
     else
     {
-        if(typeOfGridNode[kMx] == GEO_FLUID)
+        if(typeOfGridNode[kM] == GEO_FLUID)
         {
-            dvxdx = veloX[k] - veloX[kMx];
-            dvydx = veloY[k] - veloY[kMx];
-            dvzdx = veloZ[k] - veloZ[kMx];
+            dvx = veloX[k] - veloX[kM];
+            dvy = veloY[k] - veloY[kM];
+            dvz = veloZ[k] - veloZ[kM];
         }
     }
-
-    if(typeOfGridNode[kPy] == GEO_FLUID)
-    {
-        if(typeOfGridNode[kMy] == GEO_FLUID)
-        {
-            dvxdy = veloX[kPy] - veloX[kMy];
-            dvydy = veloY[kPy] - veloY[kMy];
-            dvzdy = veloZ[kPy] - veloZ[kMy];
-        } 
-        else 
-        {
-            dvxdy = veloX[kPy] - veloX[k];
-            dvydy = veloY[kPy] - veloY[k];
-            dvzdy = veloZ[kPy] - veloZ[k];
-        }
-    }
-    else
-    {
-        if(typeOfGridNode[kMy] == GEO_FLUID)
-        {
-            dvxdy = veloX[k] - veloX[kMy];
-            dvydy = veloY[k] - veloY[kMy];
-            dvzdy = veloZ[k] - veloZ[kMy];
-        }
-    }        
-    
-    if(typeOfGridNode[kPz] == GEO_FLUID)
-    {
-        if(typeOfGridNode[kMz] == GEO_FLUID)
-        {
-            dvxdz = veloX[kPz] - veloX[kMz];
-            dvydz = veloY[kPz] - veloY[kMz];
-            dvzdz = veloZ[kPy] - veloZ[kMz];
-        } 
-        else 
-        {
-            dvxdz = veloX[kPz] - veloX[k];
-            dvydz = veloY[kPz] - veloY[k];
-            dvzdz = veloZ[kPz] - veloZ[k];
-        }
-    }
-    else
-    {
-        if(typeOfGridNode[kMz] == GEO_FLUID)
-        {
-            dvxdz = veloX[k] - veloX[kMz];
-            dvydz = veloY[k] - veloY[kMz];
-            dvzdz = veloZ[k] - veloZ[kMz];
-        }
-    }
-
-    real denominator =  dvxdx*dvxdx + dvydx*dvydx + dvzdx*dvzdx + 
-                        dvxdy*dvxdy + dvydy*dvydy + dvzdy*dvzdy +
-                        dvxdz*dvxdz + dvydz*dvydz + dvzdz*dvzdz;
-    real enumerator =   (dvxdx*dvxdx + dvxdy*dvxdy + dvxdz*dvxdz) * dvxdx + 
-                        (dvydx*dvydx + dvydy*dvydy + dvydz*dvydz) * dvydy + 
-                        (dvzdx*dvzdx + dvzdy*dvzdy + dvzdz*dvzdz) * dvzdz +
-                        (dvxdx*dvydx + dvxdy*dvydy + dvxdz*dvydz) * (dvxdy+dvydx) +
-                        (dvxdx*dvzdx + dvxdy*dvzdy + dvxdz*dvzdz) * (dvxdz+dvzdx) + 
-                        (dvydx*dvzdx + dvydy*dvzdy + dvydz*dvzdz) * (dvydz+dvzdy);
-
-    return max(c0o1, -C*enumerator/denominator);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void LB_Kernel_AMDCumulantK17CompChim(
 	real omega_in,
-    real C,
+    real SGSConstant,
 	uint* typeOfGridNode,
 	uint* neighborX,
 	uint* neighborY,
@@ -212,61 +120,61 @@ extern "C" __global__ void LB_Kernel_AMDCumulantK17CompChim(
         //!
         Distributions27 dist;
         if (isEvenTimestep) {
-            dist.f[dirW]    = &distributions[size_Mat * dirW];
-            dist.f[dirN]    = &distributions[size_Mat * dirN];
-            dist.f[dirS]    = &distributions[size_Mat * dirS];
-            dist.f[dirT]    = &distributions[size_Mat * dirT];
-            dist.f[dirB]    = &distributions[size_Mat * dirB];
-            dist.f[dirE]    = &distributions[size_Mat * dirE];
-            dist.f[dirNE]   = &distributions[size_Mat * dirNE];
-            dist.f[dirSW]   = &distributions[size_Mat * dirSW];
-            dist.f[dirSE]   = &distributions[size_Mat * dirSE];
-            dist.f[dirNW]   = &distributions[size_Mat * dirNW];
-            dist.f[dirTE]   = &distributions[size_Mat * dirTE];
-            dist.f[dirBW]   = &distributions[size_Mat * dirBW];
-            dist.f[dirBE]   = &distributions[size_Mat * dirBE];
-            dist.f[dirTW]   = &distributions[size_Mat * dirTW];
-            dist.f[dirTN]   = &distributions[size_Mat * dirTN];
-            dist.f[dirBS]   = &distributions[size_Mat * dirBS];
-            dist.f[dirBN]   = &distributions[size_Mat * dirBN];
-            dist.f[dirTS]   = &distributions[size_Mat * dirTS];
-            dist.f[dirZERO] = &distributions[size_Mat * dirZERO];
-            dist.f[dirTNE]  = &distributions[size_Mat * dirTNE];
-            dist.f[dirTSW]  = &distributions[size_Mat * dirTSW];
-            dist.f[dirTSE]  = &distributions[size_Mat * dirTSE];
-            dist.f[dirTNW]  = &distributions[size_Mat * dirTNW];
-            dist.f[dirBNE]  = &distributions[size_Mat * dirBNE];
-            dist.f[dirBSW]  = &distributions[size_Mat * dirBSW];
-            dist.f[dirBSE]  = &distributions[size_Mat * dirBSE];
-            dist.f[dirBNW]  = &distributions[size_Mat * dirBNW];
+            dist.f[dirE]    = &distributions[dirE * size_Mat];
+            dist.f[dirW]    = &distributions[dirW * size_Mat];
+            dist.f[dirN]    = &distributions[dirN * size_Mat];
+            dist.f[dirS]    = &distributions[dirS * size_Mat];
+            dist.f[dirT]    = &distributions[dirT * size_Mat];
+            dist.f[dirB]    = &distributions[dirB * size_Mat];
+            dist.f[dirNE]   = &distributions[dirNE * size_Mat];
+            dist.f[dirSW]   = &distributions[dirSW * size_Mat];
+            dist.f[dirSE]   = &distributions[dirSE * size_Mat];
+            dist.f[dirNW]   = &distributions[dirNW * size_Mat];
+            dist.f[dirTE]   = &distributions[dirTE * size_Mat];
+            dist.f[dirBW]   = &distributions[dirBW * size_Mat];
+            dist.f[dirBE]   = &distributions[dirBE * size_Mat];
+            dist.f[dirTW]   = &distributions[dirTW * size_Mat];
+            dist.f[dirTN]   = &distributions[dirTN * size_Mat];
+            dist.f[dirBS]   = &distributions[dirBS * size_Mat];
+            dist.f[dirBN]   = &distributions[dirBN * size_Mat];
+            dist.f[dirTS]   = &distributions[dirTS * size_Mat];
+            dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
+            dist.f[dirTNE]  = &distributions[dirTNE * size_Mat];
+            dist.f[dirTSW]  = &distributions[dirTSW * size_Mat];
+            dist.f[dirTSE]  = &distributions[dirTSE * size_Mat];
+            dist.f[dirTNW]  = &distributions[dirTNW * size_Mat];
+            dist.f[dirBNE]  = &distributions[dirBNE * size_Mat];
+            dist.f[dirBSW]  = &distributions[dirBSW * size_Mat];
+            dist.f[dirBSE]  = &distributions[dirBSE * size_Mat];
+            dist.f[dirBNW]  = &distributions[dirBNW * size_Mat];
         } else {
-            dist.f[dirW]    = &distributions[size_Mat * dirE];
-            dist.f[dirE]    = &distributions[size_Mat * dirW];
-            dist.f[dirS]    = &distributions[size_Mat * dirN];
-            dist.f[dirN]    = &distributions[size_Mat * dirS];
-            dist.f[dirB]    = &distributions[size_Mat * dirT];
-            dist.f[dirT]    = &distributions[size_Mat * dirB];
-            dist.f[dirSW]   = &distributions[size_Mat * dirNE];
-            dist.f[dirNE]   = &distributions[size_Mat * dirSW];
-            dist.f[dirNW]   = &distributions[size_Mat * dirSE];
-            dist.f[dirSE]   = &distributions[size_Mat * dirNW];
-            dist.f[dirBW]   = &distributions[size_Mat * dirTE];
-            dist.f[dirTE]   = &distributions[size_Mat * dirBW];
-            dist.f[dirTW]   = &distributions[size_Mat * dirBE];
-            dist.f[dirBE]   = &distributions[size_Mat * dirTW];
-            dist.f[dirBS]   = &distributions[size_Mat * dirTN];
-            dist.f[dirTN]   = &distributions[size_Mat * dirBS];
-            dist.f[dirTS]   = &distributions[size_Mat * dirBN];
-            dist.f[dirBN]   = &distributions[size_Mat * dirTS];
-            dist.f[dirZERO] = &distributions[size_Mat * dirZERO];
-            dist.f[dirBSW]  = &distributions[size_Mat * dirTNE];
-            dist.f[dirBNE]  = &distributions[size_Mat * dirTSW];
-            dist.f[dirBNW]  = &distributions[size_Mat * dirTSE];
-            dist.f[dirBSE]  = &distributions[size_Mat * dirTNW];
-            dist.f[dirTSW]  = &distributions[size_Mat * dirBNE];
-            dist.f[dirTNE]  = &distributions[size_Mat * dirBSW];
-            dist.f[dirTNW]  = &distributions[size_Mat * dirBSE];
-            dist.f[dirTSE]  = &distributions[size_Mat * dirBNW];
+            dist.f[dirW]    = &distributions[dirE * size_Mat];
+            dist.f[dirE]    = &distributions[dirW * size_Mat];
+            dist.f[dirS]    = &distributions[dirN * size_Mat];
+            dist.f[dirN]    = &distributions[dirS * size_Mat];
+            dist.f[dirB]    = &distributions[dirT * size_Mat];
+            dist.f[dirT]    = &distributions[dirB * size_Mat];
+            dist.f[dirSW]   = &distributions[dirNE * size_Mat];
+            dist.f[dirNE]   = &distributions[dirSW * size_Mat];
+            dist.f[dirNW]   = &distributions[dirSE * size_Mat];
+            dist.f[dirSE]   = &distributions[dirNW * size_Mat];
+            dist.f[dirBW]   = &distributions[dirTE * size_Mat];
+            dist.f[dirTE]   = &distributions[dirBW * size_Mat];
+            dist.f[dirTW]   = &distributions[dirBE * size_Mat];
+            dist.f[dirBE]   = &distributions[dirTW * size_Mat];
+            dist.f[dirBS]   = &distributions[dirTN * size_Mat];
+            dist.f[dirTN]   = &distributions[dirBS * size_Mat];
+            dist.f[dirTS]   = &distributions[dirBN * size_Mat];
+            dist.f[dirBN]   = &distributions[dirTS * size_Mat];
+            dist.f[dirZERO] = &distributions[dirZERO * size_Mat];
+            dist.f[dirBSW]  = &distributions[dirTNE * size_Mat];
+            dist.f[dirBNE]  = &distributions[dirTSW * size_Mat];
+            dist.f[dirBNW]  = &distributions[dirTSE * size_Mat];
+            dist.f[dirBSE]  = &distributions[dirTNW * size_Mat];
+            dist.f[dirTSW]  = &distributions[dirBNE * size_Mat];
+            dist.f[dirTNE]  = &distributions[dirBSW * size_Mat];
+            dist.f[dirTNW]  = &distributions[dirBSE * size_Mat];
+            dist.f[dirTSE]  = &distributions[dirBNW * size_Mat];
         }
         ////////////////////////////////////////////////////////////////////////////////
         //! - Set neighbor indices (necessary for indirect addressing)
@@ -307,7 +215,7 @@ extern "C" __global__ void LB_Kernel_AMDCumulantK17CompChim(
         real mfaaa = (dist.f[dirBSW])[kbsw];
         real mfcaa = (dist.f[dirBSE])[kbs];
         real mfaca = (dist.f[dirBNW])[kbw];
-        ////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////(unsigned long)//////////////////////////////
         //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
         //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
         //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
@@ -332,11 +240,47 @@ extern "C" __global__ void LB_Kernel_AMDCumulantK17CompChim(
                    OOrho;
 
         ////////////////////////////////////////////////////////////////////////////////////
-        //! - Calculate modified omega
+        //! - Calculate modified omega according to AMD
         //!
-        real omega = omega_in / (c1o1 + c3o1*omega_in*calcAMD(C, k, typeOfGridNode, neighborX, neighborY, neighborZ, neighborWSB, veloX, veloY, veloZ));
-        
+        real omega;
+        {
+            uint kPx = neighborX[k];
+            uint kPy = neighborY[k];
+            uint kPz = neighborZ[k];
+            uint kMxyz = neighborWSB[k];
+            uint kMx = neighborZ[neighborY[kMxyz]];
+            uint kMy = neighborZ[neighborX[kMxyz]];
+            uint kMz = neighborY[neighborX[kMxyz]];
 
+            real dvxdx = c0o1;
+            real dvxdy = c0o1;
+            real dvxdz = c0o1;
+
+            real dvydx = c0o1;
+            real dvydy = c0o1;
+            real dvydz = c0o1;
+
+            real dvzdx = c0o1;
+            real dvzdy = c0o1;
+            real dvzdz = c0o1;
+
+            calcDerivatives(k, kMx, kPx, typeOfGridNode, veloX, veloY, veloZ, dvxdx, dvydx, dvzdx);
+            calcDerivatives(k, kMy, kPy, typeOfGridNode, veloX, veloY, veloZ, dvxdy, dvydy, dvzdy);
+            calcDerivatives(k, kMz, kPz, typeOfGridNode, veloX, veloY, veloZ, dvxdz, dvydz, dvzdz);
+
+            real denominator =  dvxdx*dvxdx + dvydx*dvydx + dvzdx*dvzdx + 
+                                dvxdy*dvxdy + dvydy*dvydy + dvzdy*dvzdy +
+                                dvxdz*dvxdz + dvydz*dvydz + dvzdz*dvzdz;
+            real enumerator =   (dvxdx*dvxdx + dvxdy*dvxdy + dvxdz*dvxdz) * dvxdx + 
+                                (dvydx*dvydx + dvydy*dvydy + dvydz*dvydz) * dvydy + 
+                                (dvzdx*dvzdx + dvzdy*dvzdy + dvzdz*dvzdz) * dvzdz +
+                                (dvxdx*dvydx + dvxdy*dvydy + dvxdz*dvydz) * (dvxdy+dvydx) +
+                                (dvxdx*dvzdx + dvxdy*dvzdy + dvxdz*dvzdz) * (dvxdz+dvzdx) + 
+                                (dvydx*dvzdx + dvydy*dvzdy + dvydz*dvzdz) * (dvydz+dvzdy);
+
+            omega = omega_in / (c1o1 + c3o1*omega_in*max(c0o1, -SGSConstant*enumerator/denominator));
+        }
+        
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
         //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
