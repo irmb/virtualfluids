@@ -112,6 +112,9 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseWale"))
         this->setUseWale(configData.getValue<bool>("UseWale"));
+	//////////////////////////////////////////////////////////////////////////
+    if (configData.contains("UseAMD"))
+        this->setUseWale(configData.getValue<bool>("UseAMD"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseInitNeq"))
         this->setUseInitNeq(configData.getValue<bool>("UseInitNeq"));
@@ -846,6 +849,10 @@ void Parameter::setUseMeasurePoints(bool useMeasurePoints)
 void Parameter::setUseWale(bool useWale)
 {
 	ic.isWale = useWale;
+}
+void Parameter::setUseAMD(bool useAMD)
+{
+	ic.isAMD = useAMD;
 }
 void Parameter::setUseInitNeq(bool useInitNeq)
 {
@@ -2230,6 +2237,10 @@ bool Parameter::getUseMeasurePoints()
 bool Parameter::getUseWale()
 {
 	return ic.isWale;
+}
+bool Parameter::getUseAMD()
+{
+	return ic.isAMD;
 }
 bool Parameter::getUseInitNeq()
 {

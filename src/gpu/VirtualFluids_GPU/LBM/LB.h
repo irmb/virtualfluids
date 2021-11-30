@@ -120,6 +120,7 @@ struct InitCondition
    bool calcMedian {false};
    bool isConc {false};
    bool isWale {false};
+   bool isAMD {false};
    bool isMeasurePoints {false};
    bool isInitNeq {false};
    bool isGeoNormal, isInflowNormal, isOutflowNormal;
