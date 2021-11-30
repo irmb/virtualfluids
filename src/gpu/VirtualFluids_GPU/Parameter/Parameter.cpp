@@ -199,7 +199,18 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     if (configData.contains("FactorPressBC"))
         this->setFactorPressBC(configData.getValue<real>("FactorPressBC"));
 
+	//////////////////////////////////////////////////////////////////////////
+    // CUDA streams and optimized communication
+	if(this->getNumprocs() > 1){
+    	if (configData.contains("useStreams"))
+			if(configData.getValue<bool>("useStreams")) 
+    	    	this->setUseStreams();
+
+    	if (configData.contains("useReducedCommunicationInInterpolation"))
+       		this->useReducedCommunicationAfterFtoC = configData.getValue<bool>("useReducedCommunicationInInterpolation");
+	}
     //////////////////////////////////////////////////////////////////////////
+
     //read Geometry (STL)
     if (configData.contains("ReadGeometry"))
         this->setReadGeo(configData.getValue<bool>("ReadGeometry"));
