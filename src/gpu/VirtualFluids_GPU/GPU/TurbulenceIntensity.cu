@@ -37,11 +37,6 @@ extern "C" __global__ void CalcTurbulenceIntensity(
    unsigned int size_Mat, 
    bool isEvenTimestep)
 {
-
-   //////////////////////////////////////////////////////////////////////////
-
- 
-   ////////////////////////////////////////////////////////////////////////////////
    const unsigned k = vf::gpu::getNodeIndex();
 
    if (k >= size_Mat)
@@ -73,7 +68,6 @@ extern "C" __global__ void CalcTurbulenceIntensity(
    // velocity (for mean velocity)
    vx_mean[k] = vx_mean[k] + vx;
    vy_mean[k] = vy_mean[k] + vy;
-   vz_mean[k] = vz_mean[k] + vz;
-   
+   vz_mean[k] = vz_mean[k] + vz; 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
