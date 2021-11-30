@@ -470,7 +470,7 @@ void multipleLevel(const std::string& configPath)
 
                 if (scalingType == "weak"){
                     if (useLevels) {
-                        gridBuilder->addGeometry(new Sphere(0.0, sideLengthCube, sideLengthCube, dSphere));
+                        gridBuilder->addGeometry(new Sphere(sideLengthCube, sideLengthCube, sideLengthCube, dSphere));
                     }else{
                         TriangularMesh *sphereSTL = TriangularMesh::make(stlPath + "Spheres_8GPU.stl");
                         gridBuilder->addGeometry(sphereSTL);
