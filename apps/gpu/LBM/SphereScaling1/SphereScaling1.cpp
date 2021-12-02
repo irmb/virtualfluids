@@ -119,8 +119,8 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator                  = true;
-    bool useLevels                         = false;
-    std::string scalingType                = "strong"; // "strong" // "weak"
+    bool useLevels                         = true;
+    std::string scalingType                = "weak"; // "strong" // "weak"
     // bool useStreams                        = true;
     // para->useReducedCommunicationAfterFtoC = true;
     bool useStreams = para->getUseStreams();

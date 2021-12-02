@@ -14,7 +14,7 @@ Path=/work/y0078217/Results/SphereScalingResults/8GPU/
 ##################################################
 #informations for reading
 ##################################################
-GridPath=/work/y0078217/Grids/GridSphereScaling/SphereScaling4GPU/
+GridPath=/work/y0078217/Grids/GridSphereScaling/SphereScaling8GPU/
 #GridPath="C:"
 
 ##################################################
@@ -38,5 +38,5 @@ TimeOut=100000
 ##################################################
 # CUDA Streams and optimized communication (only used for multiple GPUs)
 ##################################################
-# useStreams = true
-# useReducedCommunicationInInterpolation = true
+useStreams = true
+useReducedCommunicationInInterpolation = true
