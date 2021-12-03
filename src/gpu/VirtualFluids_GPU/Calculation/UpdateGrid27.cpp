@@ -378,21 +378,21 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
         //           para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         //getLastCudaError("QVelDev27 execution failed");
         
-        QVelDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
-                       para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
-                       para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
-                       para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
-                       para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-                       para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        getLastCudaError("QVelDevComp27 execution failed");
+        // QVelDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+        //                para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
+        //                para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+        //                para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
+        //                para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //                para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        // getLastCudaError("QVelDevComp27 execution failed");
 
-        //QVelDevCompZeroPress27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,             para->getParD(level)->ny,
-        //                       para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,     para->getParD(level)->Qinflow.Vz,
-        //                       para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,      para->getParD(level)->Qinflow.q27[0],
-        //                       para->getParD(level)->kInflowQ,        para->getParD(level)->Qinflow.kArray, para->getParD(level)->omega,
-        //                       para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
-        //                       para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        //getLastCudaError("QVelDevCompZeroPress27 execution failed");
+        QVelDevCompZeroPress27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,             para->getParD(level)->ny,
+                              para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,     para->getParD(level)->Qinflow.Vz,
+                              para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,      para->getParD(level)->Qinflow.q27[0],
+                              para->getParD(level)->kInflowQ,        para->getParD(level)->Qinflow.kArray, para->getParD(level)->omega,
+                              para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
+                              para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        getLastCudaError("QVelDevCompZeroPress27 execution failed");
 
         //////////////////////////////////////////////////////////////////////////
         // D E P R E C A T E D
@@ -991,12 +991,12 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
 
 	if (para->getParD(level)->QPress.kQ > 0)
 	{
-		//QPressNoRhoDev27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
-		//                 para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
-		//                 para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,     para->getParD(level)->omega,
-		//                 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,  para->getParD(level)->neighborZ_SP,
-		//                 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-		//getLastCudaError("QPressNoRhoDev27 execution failed");
+		QPressNoRhoDev27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC,
+		                para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,
+		                para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,     para->getParD(level)->omega,
+		                para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,  para->getParD(level)->neighborZ_SP,
+		                para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+		getLastCudaError("QPressNoRhoDev27 execution failed");
 
 		//QPressDevEQZ27(para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
 		//               para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
@@ -1023,12 +1023,12 @@ void preCollisionBC(Parameter* para, CudaMemoryManager* cudaManager, int level, 
         //getLastCudaError("QPressDevIncompNEQ27 execution failed");
         //////////////////////////////////////////////////////////////////////////////////
         //press NEQ compressible
-        QPressDevNEQ27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
-                        para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
-                        para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(level)->omega,
-                        para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-                        para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-        getLastCudaError("QPressDevNEQ27 execution failed");
+        // QPressDevNEQ27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
+        //                 para->getParD(level)->d0SP.f[0],       para->getParD(level)->QPress.k,  
+        //                 para->getParD(level)->QPress.kN,       para->getParD(level)->QPress.kQ,    para->getParD(level)->omega,
+        //                 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+        //                 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        // getLastCudaError("QPressDevNEQ27 execution failed");
 
 	}
 
