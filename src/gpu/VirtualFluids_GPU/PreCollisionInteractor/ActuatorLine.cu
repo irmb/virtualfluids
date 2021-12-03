@@ -29,7 +29,7 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
                                       uint numberOfIndices, 
                                       real* bladeCoordsX, real* bladeCoordsY, real* bladeCoordsZ, 
                                       real* bladeVelocitiesX, real* bladeVelocitiesY, real* bladeVelocitiesZ, 
-                                      uint* bladeIndices, uint numberOfNodes)
+                                      uint* bladeIndices, uint numberOfNodes, real velocityRatio)
 {
     const uint x = threadIdx.x; 
     const uint y = blockIdx.x;
@@ -70,9 +70,9 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
     getInterpolationWeights(dW, dE, dN, dS, dT, dB, 
                             distX, distY, distZ);
 
-    bladeVelocitiesX[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx);
-    bladeVelocitiesY[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy);
-    bladeVelocitiesZ[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz);
+    bladeVelocitiesX[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx)*velocityRatio;
+    bladeVelocitiesY[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy)*velocityRatio;
+    bladeVelocitiesZ[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz)*velocityRatio;
 
 }
 
@@ -85,7 +85,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
                            real* bladeRadii,
                            real radius,
                            uint nBlades, uint nBladeNodes,
-                           real epsilon, real delta_x)
+                           real epsilon, real delta_x, real forceRatio)
 {
     const uint x = threadIdx.x; 
     const uint y = blockIdx.x;
@@ -111,6 +111,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
     real eta = 0.0f;
 
     real delta_x_cubed = pow(delta_x,3);
+    real invForceRatio = 1.f/forceRatio;
 
     for( uint blade=0; blade<nBlades; blade++)
     {    
@@ -135,9 +136,9 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
         fXYZ_Z += bladeForcesZ[nBladeNodes-1]*(radius-last_r)*eta;
     }
 
-    gridForcesX[gridIndex] = fXYZ_X;
-    gridForcesY[gridIndex] = fXYZ_Y;
-    gridForcesZ[gridIndex] = fXYZ_Z;
+    gridForcesX[gridIndex] = fXYZ_X*invForceRatio;
+    gridForcesY[gridIndex] = fXYZ_Y*invForceRatio;
+    gridForcesZ[gridIndex] = fXYZ_Z*invForceRatio;
 }
 
 
@@ -168,14 +169,11 @@ void ActuatorLine::visit(Parameter* para, CudaMemoryManager* cudaManager, int le
         this->numberOfIndices,
         this->bladeCoordsXD, this->bladeCoordsYD, this->bladeCoordsZD,  
         this->bladeVelocitiesXD, this->bladeVelocitiesYD, this->bladeVelocitiesZD,  
-        this->bladeIndicesD, this->numberOfNodes);
+        this->bladeIndicesD, this->numberOfNodes, para->getVelocityRatio());
 
     cudaManager->cudaCopyBladeVelocitiesDtoH(this);
 
-    if(true)
-    {
-        this->calcForcesEllipticWing(para);
-    }
+    this->calcBladeForces();
 
     cudaManager->cudaCopyBladeForcesHtoD(this);
 
@@ -190,7 +188,7 @@ void ActuatorLine::visit(Parameter* para, CudaMemoryManager* cudaManager, int le
         this->bladeRadiiD,
         this->diameter*0.5f,  
         this->nBlades, this->nBladeNodes,
-        this->epsilon, this->delta_x);
+        this->epsilon, this->delta_x, para->getForceRatio());
 
     real dazimuth = this->omega*this->delta_t;
 
@@ -210,7 +208,7 @@ void ActuatorLine::free(Parameter* para, CudaMemoryManager* cudaManager)
 }
 
 
-void ActuatorLine::calcForcesEllipticWing(Parameter* para)
+void ActuatorLine::calcForcesEllipticWing()
 {
     real localAzimuth;
     uint node;
@@ -227,17 +225,15 @@ void ActuatorLine::calcForcesEllipticWing(Parameter* para)
 
     real c, Cn, Ct;
 
-    real forceRatio = this->density*pow(this->delta_x,4)*pow(this->delta_t,-2);
-
     for( uint blade=0; blade<this->nBlades; blade++)
     {
         localAzimuth = this->azimuth+2*blade*vf::lbm::constant::cPi/this->nBlades;
         for( uint bladeNode=0; bladeNode<this->nBladeNodes; bladeNode++)
         {
             node = bladeNode+blade*this->nBladeNodes;
-            uXYZ_X = this->bladeVelocitiesXH[node]*para->getVelocityRatio();
-            uXYZ_Y = this->bladeVelocitiesYH[node]*para->getVelocityRatio();
-            uXYZ_Z = this->bladeVelocitiesZH[node]*para->getVelocityRatio();
+            uXYZ_X = this->bladeVelocitiesXH[node];
+            uXYZ_Y = this->bladeVelocitiesYH[node];
+            uXYZ_Z = this->bladeVelocitiesZH[node];
 
             invRotateAboutX3D(localAzimuth, uXYZ_X, uXYZ_Y, uXYZ_Z, uRTZ_X, uRTZ_Y, uRTZ_Z);
             r = this->bladeRadiiH[bladeNode];
@@ -257,11 +253,16 @@ void ActuatorLine::calcForcesEllipticWing(Parameter* para)
 
             rotateAboutX3D(localAzimuth, fRTZ_X, fRTZ_Y, fRTZ_Z, fXYZ_X, fXYZ_Y, fXYZ_Z);
         
-            this->bladeForcesXH[node] = fXYZ_X/forceRatio;
-            this->bladeForcesYH[node] = fXYZ_Y/forceRatio;
-            this->bladeForcesZH[node] = fXYZ_Z/forceRatio;
+            this->bladeForcesXH[node] = fXYZ_X;
+            this->bladeForcesYH[node] = fXYZ_Y;
+            this->bladeForcesZH[node] = fXYZ_Z;
         }
     }
+}
+
+void ActuatorLine::calcBladeForces()
+{
+    this->calcForcesEllipticWing();
 }
 
 void ActuatorLine::rotateBlades(real angle)

@@ -80,8 +80,9 @@ private:
     void initBladeForces(CudaMemoryManager* cudaManager);
     void initBladeIndices(Parameter* para, CudaMemoryManager* cudaManager);
 
-    void calcForcesEllipticWing(Parameter* para);
+    void calcForcesEllipticWing();
     void rotateBlades(real angle);
+    void calcBladeForces();
 
     void writeBladeCoords(uint t);
     void writeBladeForces(uint t);
