@@ -7,14 +7,14 @@ NumberOfDevices=4
 ##################################################
 #informations for Writing
 ##################################################
-Path=/work/y0078217/Results/MusselOysterResults/4GPU/
-#Path="F:/Work/Computations/out/MusselOyster/"
-#Prefix="MusselOyster" 
+Path=/work/y0078217/Results/MusselOysterResults/8GPUMussel05/
+#Path="F:/Work/Computations/out/SphereScaling/"
+#Prefix="SphereScaling" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
-GridPath=/work/y0078217/Grids/GridMusselOyster/MUSSEL4GPU/
+GridPath=/work/y0078217/Grids/GridMusselOyster/Mussel8GPU/
 #GridPath="C:"
 
 ##################################################
@@ -31,6 +31,12 @@ GridPath=/work/y0078217/Grids/GridMusselOyster/MUSSEL4GPU/
 ##################################################
 #simulation parameter
 ##################################################
-TimeEnd=500000
-TimeOut=100000
+TimeEnd=800000
+TimeOut=400000
 #TimeStartOut=0
+
+##################################################
+# CUDA Streams and optimized communication (only used for multiple GPUs)
+##################################################
+useStreams = true
+useReducedCommunicationInInterpolation = true
