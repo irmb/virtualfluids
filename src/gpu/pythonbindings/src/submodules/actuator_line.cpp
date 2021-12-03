@@ -1,6 +1,5 @@
 #include <pybind11/pybind11.h>
-#include <VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h>
-#include <VirtualFluids_GPU/PreCollisionInteractor/PreCollisionInteractor.h>
+#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h>
 
 namespace actuator_line
 {
@@ -11,9 +10,8 @@ namespace actuator_line
     {
         py::module alModule = parentModule.def_submodule("actuator_line");
 
-        py::class_<ActuatorLine, PreCollisionInteractor>(alModule, "ActuatorLine")
+        py::class_<ActuatorLine>(alModule, "ActuatorLine")
         .def(py::init<  const uint,
-                        const uint,
                         const real,
                         const uint,
                         const real,
@@ -25,6 +23,7 @@ namespace actuator_line
                         "n_blades", 
                         "density", 
                         "n_blade_nodes", 
+                        "epsilon",
                         "turbine_pos_y", "turbine_pos_x", "turbine_pos_z", 
                         "diameter", 
                         "level", 
