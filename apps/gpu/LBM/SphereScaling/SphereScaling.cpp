@@ -120,7 +120,7 @@ void multipleLevel(const std::string& configPath)
 
     bool useGridGenerator                  = true;
     bool useLevels                         = false;
-    std::string scalingType                = "strong"; // "strong" // "weak"
+    std::string scalingType                = "weak"; // "strong" // "weak"
     // bool useStreams                        = true;
     // para->useReducedCommunicationAfterFtoC = true;
     bool useStreams = para->getUseStreams();
@@ -252,13 +252,6 @@ void multipleLevel(const std::string& configPath)
                     if (useLevels) {
                         gridBuilder->addGeometry(new Sphere(0.0, 0.0, sideLengthCube, dSphere));
                     }else{
-                        // Sphere* sphere1 = new  Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphere);
-                        // Sphere* sphere2 = new  Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 1.5 * sideLengthCube, dSphere);
-                        // auto conglo = Conglomerate::makeShared();
-                        // conglo->add(sphere1);
-                        // conglo->add(sphere2);
-                        // gridBuilder->addGeometry(conglo.get());
-
                         TriangularMesh *sphereSTL = TriangularMesh::make(stlPath + "Spheres_2GPU.stl");
                         gridBuilder->addGeometry(sphereSTL);
                     }                    

@@ -7,7 +7,7 @@ NumberOfDevices=4
 ##################################################
 #informations for Writing
 ##################################################
-Path=/work/y0078217/Results/SphereScalingResults/8GPU/1LevStrongStream/
+Path=/work/y0078217/Results/SphereScalingResults/8GPU/1LevWeakStream/
 #Path="F:/Work/Computations/out/SphereScaling/"
 #Prefix="SphereScaling" 
 #WriteGrid=true
@@ -31,8 +31,8 @@ GridPath=/work/y0078217/Grids/GridSphereScaling/SphereScaling8GPU/
 ##################################################
 #simulation parameter
 ##################################################
-TimeEnd=100
-TimeOut=100
+TimeEnd=100000
+TimeOut=100000
 #TimeStartOut=0
 
 ##################################################

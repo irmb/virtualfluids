@@ -1,13 +1,13 @@
 ##################################################
 #GPU Mapping
 ##################################################
-Devices="0 1 2 3 4 5 6 7"
-NumberOfDevices=8
+Devices="0 1 2 3"
+NumberOfDevices=4
 
 ##################################################
 #informations for Writing
 ##################################################
-Path=/work/y0078217/Results/SphereScalingResults/8GPU/1LevWeakStream/
+Path=/work/y0078217/Results/SphereScalingResults/8GPU/2LevWeakStream/
 #Path="F:/Work/Computations/out/SphereScaling/"
 #Prefix="SphereScaling" 
 #WriteGrid=true
