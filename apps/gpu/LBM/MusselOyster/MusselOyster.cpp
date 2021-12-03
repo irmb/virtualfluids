@@ -129,11 +129,11 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    std::string bivalveType = "OYSTER"; // "MUSSEL" "OYSTER"
+    std::string bivalveType = "MUSSEL"; // "MUSSEL" "OYSTER"
     std::string gridPath(gridPathParent + bivalveType); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
-    // real dxGrid = (real)2.0; // 1.0
-    real dxGrid = (real)1.0;
+    //real dxGrid = (real)2.0; // 2.0
+    real dxGrid = (real)1.0; // 1.0
     if (para->getNumprocs() == 8)  
         dxGrid = 0.5;  
     real vxLB = (real)0.051; // LB units
@@ -189,8 +189,8 @@ void multipleLevel(const std::string& configPath)
 
     if (useStreams)
         para->setUseStreams();
-    //para->setMainKernel("CumulantK17CompChim");
-    para->setMainKernel("CumulantK17CompChimStream");
+    para->setMainKernel("CumulantK17CompChim");
+    //para->setMainKernel("CumulantK17CompChimStream");
     *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
     // if (para->getNumprocs() > 1) {
@@ -292,10 +292,10 @@ void multipleLevel(const std::string& configPath)
                 if (generatePart == 1)
                     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
-                gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+                gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);  // set pressure BC after velocity BCs
                 //////////////////////////////////////////////////////////////////////////
                 if (para->getKernelNeedsFluidNodeIndicesToRun())
                     gridBuilder->findFluidNodes(useStreams);
@@ -380,21 +380,22 @@ void multipleLevel(const std::string& configPath)
                     gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
                 }
-                if (generatePart == 1) {
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);                    
-                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-                }
                 if (generatePart == 2) {                    
                     gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
                 }
-                if (generatePart == 3) {
-                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
                 }
                 gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-                gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
+                gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);                
+                if (generatePart == 3) {
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
+                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);  // set pressure BC after velocity BCs
+
+                if (generatePart == 1) {
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);                    
+                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
+                }
                 //////////////////////////////////////////////////////////////////////////
             }
             if (para->getKernelNeedsFluidNodeIndicesToRun())
@@ -421,14 +422,14 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
             //////////////////////////////////////////////////////////////////////////
-            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
-
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);  // set pressure BC after velocity BCs
+
             //////////////////////////////////////////////////////////////////////////
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
