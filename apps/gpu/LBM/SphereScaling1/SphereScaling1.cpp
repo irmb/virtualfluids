@@ -120,7 +120,7 @@ void multipleLevel(const std::string& configPath)
 
     bool useGridGenerator                  = true;
     bool useLevels                         = true;
-    std::string scalingType                = "strong"; // "strong" // "weak"
+    std::string scalingType                = "weak"; // "strong" // "weak"
     // bool useStreams                        = true;
     // para->useReducedCommunicationAfterFtoC = true;
     bool useStreams = para->getUseStreams();
@@ -448,12 +448,7 @@ void multipleLevel(const std::string& configPath)
                     gridBuilder->addCoarseGrid(xSplit - overlap, ySplit - overlap, zSplit - overlap, xGridMax, yGridMax,
                                                zGridMax, dxGrid);
                 }
-
-                if (useLevels) {
-                    gridBuilder->addGrid(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1), 1);                    
-                }
-
-
+                
                 if (useLevels) {
                     if (scalingType == "strong"){
                         gridBuilder->addGrid(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1), 1);

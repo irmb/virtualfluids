@@ -450,11 +450,6 @@ void multipleLevel(const std::string& configPath)
                 }
 
                 if (useLevels) {
-                    gridBuilder->addGrid(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1), 1);                    
-                }
-
-
-                if (useLevels) {
                     if (scalingType == "strong"){
                         gridBuilder->addGrid(new Sphere(0.5 * sideLengthCube, 0.5 * sideLengthCube, 0.5 * sideLengthCube, dSphereLev1), 1);
                     } else if (scalingType == "weak"){
