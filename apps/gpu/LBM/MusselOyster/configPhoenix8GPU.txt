@@ -31,8 +31,8 @@ GridPath=/work/y0078217/Grids/GridMusselOyster/Mussel8GPU/
 ##################################################
 #simulation parameter
 ##################################################
-TimeEnd=800000
-TimeOut=400000
+TimeEnd=100#800000
+TimeOut=100#400000
 #TimeStartOut=0
 
 ##################################################

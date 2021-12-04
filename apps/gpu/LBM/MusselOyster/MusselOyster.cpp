@@ -189,8 +189,8 @@ void multipleLevel(const std::string& configPath)
 
     if (useStreams)
         para->setUseStreams();
-    para->setMainKernel("CumulantK17CompChim");
-    //para->setMainKernel("CumulantK17CompChimStream");
+    // para->setMainKernel("CumulantK17CompChim");
+    para->setMainKernel("CumulantK17CompChimStream");
     *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
     // if (para->getNumprocs() > 1) {
@@ -205,33 +205,34 @@ void multipleLevel(const std::string& configPath)
 
 
     if (useGridGenerator) {
-        const real bbzm = 0.0;
+        real bbzm;
         real bbzp;
         if (bivalveType == "MUSSEL")
-            bbzp = 18.3;
+            bbzp = 9.0;
         if (bivalveType == "OYSTER")
-            bbzp = 26.0;
+            bbzp = 13.0;
+        bbzm = -bbzp;
         // bounding box mussel:
         // const real bbxm = 0.0;
         // const real bbxp = 76.0;
         // const real bbym = 0.0;
         // const real bbyp = 35.0;
-        // const real bbzm = 0.0;
-        // const real bbzp = 18.3;
+        // const real bbzm = -9.15;
+        // const real bbzp = 9.15;
         // bounding box oyster:
         // const real bbxm = 0.0;
         // const real bbxp = 102.0;
         // const real bbym = 0.0;
         // const real bbyp = 72.0;
-        // const real bbzm = 0.0;
-        // const real bbzp = 26.0;
+        // const real bbzm = -13.0;
+        // const real bbzp = 13.0;
 
         const real xGridMin  = -100.0;     // -100.0;
-        const real xGridMax  = 600.0;      // 540.0
+        const real xGridMax  = 440.0;      // alt 540.0 // neu 440
         const real yGridMin  = 1.0;        // 1.0;
-        const real yGridMax  = 500.0;      // 440.0;
-        const real zGridMin  = -70;        // -70;
-        const real zGridMax  = 100.0;      // 100;
+        const real yGridMax  = 350.0;      // alt 440.0; // neu 350
+        const real zGridMin  = -85;        // -85;
+        const real zGridMax  = 85.0;       // 85;
 
         TriangularMesh *bivalveSTL       = TriangularMesh::make(stlPath + bivalveType + ".stl");
         TriangularMesh *bivalveRef_1_STL = nullptr;
@@ -246,7 +247,7 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->setNumberOfLayers(10, 8);
 
             if (comm->getNummberOfProcess() == 2) {
-                const real zSplit = round(((double)bbzp + bbzm) * 0.5);          
+                const real zSplit = 0.0; //round(((double)bbzp + bbzm) * 0.5);          
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid( xGridMin,   yGridMin,     zGridMin, 
@@ -301,8 +302,8 @@ void multipleLevel(const std::string& configPath)
                 //////////////////////////////////////////////////////////////////////////           
             } else if (comm->getNummberOfProcess() == 4) {
 
-                const real xSplit = 85.0;
-                const real zSplit = round(((double)bbzp + bbzm) * 0.5);
+                const real xSplit = 100.0;
+                const real zSplit = 0.0;
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, yGridMax,
@@ -390,9 +391,9 @@ void multipleLevel(const std::string& configPath)
                 }
                 //////////////////////////////////////////////////////////////////////////
             } else if (comm->getNummberOfProcess() == 8) {
-                real xSplit = 85;
-                real ySplit = 30;
-                real zSplit = round(((double)bbzp + bbzm) * 0.5);
+                real xSplit = 100.0; // 100.0
+                real ySplit = 32.0;  // 32.0
+                real zSplit = 0.0;
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, ySplit + overlap,
