@@ -365,7 +365,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                     if (tempSend > 0) {
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
-                        std::cout << "size of Data for X send buffer, Level " << level << " : " << tempSend
+                        std::cout << "size of Data for Y send buffer, Level " << level << " : " << tempSend
                                   << std::endl;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->sendProcessNeighborY.back().rankNeighbor =
@@ -434,7 +434,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                     if (tempSend > 0) {
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
-                        std::cout << "size of Data for X send buffer, Level " << level << " : " << tempSend
+                        std::cout << "size of Data for Z send buffer, Level " << level << " : " << tempSend
                                   << std::endl;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->sendProcessNeighborZ.back().rankNeighbor =
@@ -573,7 +573,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                     if (tempSend > 0) {
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
-                        std::cout << "size of Data for X send buffer, Level " << level << " : " << tempSend
+                        std::cout << "size of Data for Y send buffer, Level " << level << " : " << tempSend
                                   << std::endl;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->sendProcessNeighborF3Y.back().rankNeighbor =
@@ -639,7 +639,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                     if (tempSend > 0) {
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
-                        std::cout << "size of Data for X send buffer, Level " << level << " : " << tempSend
+                        std::cout << "size of Data for Z send buffer, Level " << level << " : " << tempSend
                                   << std::endl;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         para->getParH(level)->sendProcessNeighborF3Z.back().rankNeighbor =
