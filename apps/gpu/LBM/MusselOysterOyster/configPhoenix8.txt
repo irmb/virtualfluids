@@ -7,14 +7,14 @@ NumberOfDevices=4
 ##################################################
 #informations for Writing
 ##################################################
-Path=/work/y0078217/Results/MusselOysterResults/8GPUMussel05/
+Path=/work/y0078217/Results/MusselOysterResults/8GPUOyster05/
 #Path="F:/Work/Computations/out/SphereScaling/"
 #Prefix="SphereScaling" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
-GridPath=/work/y0078217/Grids/GridMusselOyster/Mussel8GPU/
+GridPath=/work/y0078217/Grids/GridMusselOyster/Oyster8GPU/
 #GridPath="C:"
 
 ##################################################
