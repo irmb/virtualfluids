@@ -905,14 +905,14 @@ public:
     void initNumberOfProcessNeighborsAfterFtoCZ(int level);
 
     void findEdgeNodesCommMultiGPU();
+    bool useReducedCommunicationAfterFtoC{ true };
+private:
     void findEdgeNodesXY(int level);
     bool findIndexInSendNodesXY(int level, int index, int &indexOfProcessNeighborSend, int &indexInSendBuffer);
     void findEdgeNodesXZ(int level);
     bool findIndexInSendNodesXZ(int level, int index, int &indexOfProcessNeighborSend, int &indexInSendBuffer);
     void findEdgeNodesYZ(int level);
     bool findIndexInSendNodesYZ(int level, int index, int &indexOfProcessNeighborSend, int &indexInSendBuffer);
-
-    bool useReducedCommunicationAfterFtoC{ true };
 };
 
 #endif
