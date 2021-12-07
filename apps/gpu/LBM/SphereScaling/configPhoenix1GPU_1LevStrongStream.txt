@@ -2,19 +2,19 @@
 #GPU Mapping
 ##################################################
 Devices="0 1 2 3"
-NumberOfDevices=4
+NumberOfDevices=1
 
 ##################################################
 #informations for Writing
 ##################################################
-Path=/work/y0078217/Results/SphereScalingResults/8GPU/2LevWeakStream/
+Path=/work/y0078217/Results/SphereScalingResults/1GPU/
 #Path="F:/Work/Computations/out/SphereScaling/"
 #Prefix="SphereScaling" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
-GridPath=/work/y0078217/Grids/GridSphereScaling/SphereScaling8GPU/
+GridPath=/work/y0078217/Grids/GridSphereScaling/SphereScaling1GPU/
 #GridPath="C:"
 
 ##################################################
@@ -31,8 +31,8 @@ GridPath=/work/y0078217/Grids/GridSphereScaling/SphereScaling8GPU/
 ##################################################
 #simulation parameter
 ##################################################
-TimeEnd=100
-TimeOut=100
+TimeEnd=100000
+TimeOut=100000
 #TimeStartOut=0
 
 ##################################################
