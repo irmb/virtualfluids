@@ -69,8 +69,15 @@ void bflow(string configname)
 
       //double nuLB = OmegaLB * R * 1e3 * R * 1e3 / Re;
 
-      double dx = deltax * 1e-3;
+      // double dx = deltax * 1e-3;
+      // double nuLB = OmegaLB * (R / dx)*(R / dx) / Re;
+
+      double dx = 1.0 * 1e-3;
       double nuLB = OmegaLB * (R / dx)*(R / dx) / Re;
+
+      //acustic scaling
+      OmegaLB /= 2.0;
+      nuLB    *= 2.0;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
       //SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter(1, 1461, 970, 1e3));
@@ -405,9 +412,9 @@ void bflow(string configname)
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(npr);
-      calculator->addCoProcessor(fp);
+      //calculator->addCoProcessor(fp);
       calculator->addCoProcessor(fp2);
-      calculator->addCoProcessor(writeMQCoProcessor);
+      //calculator->addCoProcessor(writeMQCoProcessor);
       //calculator->addCoProcessor(writeThixotropicMQCoProcessor);
       calculator->addCoProcessor(restartCoProcessor);
 
