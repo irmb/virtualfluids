@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file STLReader.cpp
+//! \ingroup io
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #define _CRT_SECURE_NO_DEPRECATE
 #include "STLReader.h"
 
@@ -181,17 +213,17 @@ std::vector<Triangle> STLReader::readBinarySTL(const std::string& name)
     FILE *file = fopen(name.c_str(), mode.c_str());
 
     char header_info[80] = "";
-    fread(header_info, sizeof(char), 80, file);
+    size_t sizef         = fread(header_info, sizeof(char), 80, file);
 
     char nTri[4];
-    fread(nTri, sizeof(char), 4, file);
+    sizef                  = fread(nTri, sizeof(char), 4, file);
     unsigned long nTriLong = *((unsigned long*)nTri);
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles: " << nTriLong << "\n";
     std::vector<Triangle> triangles;
 
     char facet[50];
     for (unsigned int i = 0; i < nTriLong; i++){
-        fread(facet, sizeof(char), 50, file);
+        sizef = fread(facet, sizeof(char), 50, file);
 
         Vertex normal = getVertexFromChar(facet);
 
@@ -201,6 +233,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const std::string& name)
 
         triangles.push_back(Triangle(p1, p2, p3, normal));
     }
+    (void)sizef;
 	fclose(file);
 
     return triangles;
@@ -272,10 +305,10 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
     char nTri[4];
     unsigned long nTriLong;
   
-    fread(header_info, sizeof(char), 80, file);
+    size_t sizef = fread(header_info, sizeof(char), 80, file);
 
 
-    fread(nTri, sizeof(char), 4, file);
+    sizef    = fread(nTri, sizeof(char), 4, file);
     nTriLong = *((unsigned long*)nTri);
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles complete geometry: " << nTriLong << "\n";
@@ -283,7 +316,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
 
     char facet[50];
     for (unsigned int i = 0; i < nTriLong; i++){
-        fread(facet, sizeof(char), 50, file);
+        sizef = fread(facet, sizeof(char), 50, file);
 
         Vertex normal = getVertexFromChar(facet);
 
@@ -298,7 +331,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
     int size = (int)triangles.size();
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles in process: " << size << "\n";
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Complete reading STL file. \n";
-
+    (void)sizef;
 	fclose(file);
 
     return triangles;

@@ -52,7 +52,7 @@ vector<double> peMaxOffset;
 string          pathOut;// = "d:/temp/thermoplastCluster";
 string          pathGeo;// = "d:/Projects/ThermoPlast/Geometrie";
 
-void addNozzle(SPtr<Grid3D> grid, SPtr<Communicator> comm, SPtr<BCAdapter> noSlipBCAdapter/*, InteractorsHelper& intHelper*/)
+void addNozzle(SPtr<Grid3D> grid, SPtr<vf::mpi::Communicator> comm, SPtr<BCAdapter> noSlipBCAdapter/*, InteractorsHelper& intHelper*/)
 {
    int myid = comm->getProcessID();
    if (myid==0) UBLOG(logINFO, "Add nozzles:start");
@@ -126,7 +126,7 @@ void addNozzle(SPtr<Grid3D> grid, SPtr<Communicator> comm, SPtr<BCAdapter> noSli
    if (myid==0) UBLOG(logINFO, "Add nozzles:end");
 }
 
-std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Communicator> comm, const SPtr<UbScheduler> peScheduler, const std::shared_ptr<LBMUnitConverter> lbmUnitConverter, int maxpeIterations)
+std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<vf::mpi::Communicator> comm, const SPtr<UbScheduler> peScheduler, const std::shared_ptr<LBMUnitConverter> lbmUnitConverter, int maxpeIterations)
 {
    double peRelaxtion = 0.7;
    //int maxpeIterations = 10000;
@@ -194,10 +194,10 @@ void createSpheres(double radius, Vector3D origin, int maxX2, int maxX3, double 
 
 void thermoplast(string configname)
 {
-   SPtr<Communicator> comm = MPICommunicator::getInstance();
+   SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
    int myid = comm->getProcessID();
 
-   ConfigurationFile   config;
+   vf::basics::ConfigurationFile   config;
    config.load(configname);
 
    vector<int>     blocknx = config.getVector<int>("blocknx");

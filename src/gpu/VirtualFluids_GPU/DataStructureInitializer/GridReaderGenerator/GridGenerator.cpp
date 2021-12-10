@@ -58,11 +58,14 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 	
 		cudaMemoryManager->cudaAllocCoord(level);
         cudaMemoryManager->cudaAllocSP(level);
-		para->cudaAllocF3SP(level);
+        //cudaMemoryManager->cudaAllocF3SP(level);
 		cudaMemoryManager->cudaAllocNeighborWSB(level);
 
         if(para->getUseWale())
             cudaMemoryManager->cudaAllocTurbulentViscosity(level);
+        
+        if(para->getIsBodyForce())
+            cudaMemoryManager->cudaAllocBodyForce(level);
 
 		builder->getNodeValues(
 			para->getParH(level)->coordX_SP,
@@ -80,6 +83,8 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
         cudaMemoryManager->cudaCopyNeighborWSB(level);
         cudaMemoryManager->cudaCopySP(level);
         cudaMemoryManager->cudaCopyCoord(level);
+        if(para->getIsBodyForce())
+            cudaMemoryManager->cudaCopyBodyForce(level);
 
         //std::cout << verifyNeighborIndices(level);
 	}
@@ -102,9 +107,9 @@ void GridGenerator::allocArrays_BoundaryValues()
         para->getParD(level)->kPressQread = numberOfPressureValues * para->getD3Qxx();
         if (numberOfPressureValues > 1)
         {
-            para->cudaAllocPress(level);
+            cudaMemoryManager->cudaAllocPress(level);
             builder->getPressureValues(para->getParH(level)->QPress.RhoBC, para->getParH(level)->QPress.k, para->getParH(level)->QPress.kN, level);
-            para->cudaCopyPress(level);
+            cudaMemoryManager->cudaCopyPress(level);
         }
     }
     
@@ -127,7 +132,7 @@ void GridGenerator::allocArrays_BoundaryValues()
         if (numberOfVelocityValues > 1)
         {
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            para->cudaAllocVeloBC(level);
+            cudaMemoryManager->cudaAllocVeloBC(level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             builder->getVelocityValues(para->getParH(level)->Qinflow.Vx, para->getParH(level)->Qinflow.Vy, para->getParH(level)->Qinflow.Vz, para->getParH(level)->Qinflow.k, level);
@@ -146,7 +151,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            para->cudaCopyVeloBC(level);
+            cudaMemoryManager->cudaCopyVeloBC(level);
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // advection - diffusion stuff
@@ -157,7 +162,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             	std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
             	std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
             	//////////////////////////////////////////////////////////////////////////
-            	para->cudaAllocTempVeloBC(level);
+                cudaMemoryManager->cudaAllocTempVeloBC(level);
             	//cout << "nach alloc " << endl;
             	//////////////////////////////////////////////////////////////////////////
             	for (int m = 0; m < numberOfVelocityValues; m++)
@@ -169,7 +174,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             	}
             	//////////////////////////////////////////////////////////////////////////
             	//cout << "vor copy " << endl;
-            	para->cudaCopyTempVeloBCHD(level);
+                cudaMemoryManager->cudaCopyTempVeloBCHD(level);
             	//cout << "nach copy " << endl;
             	//////////////////////////////////////////////////////////////////////////
             }
@@ -191,7 +196,7 @@ void GridGenerator::allocArrays_BoundaryValues()
             {
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                para->cudaAllocGeomValuesBC(i);
+                cudaMemoryManager->cudaAllocGeomValuesBC(i);
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //Indexarray
 
@@ -219,7 +224,7 @@ void GridGenerator::allocArrays_BoundaryValues()
                 //	para->getParH(i)->QGeom.Vz[m] = 0.0f;
                 //}
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                para->cudaCopyGeomValuesBC(i);
+                cudaMemoryManager->cudaCopyGeomValuesBC(i);
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //// advection - diffusion stuff
                 //if (para->getDiffOn()==true){
@@ -671,7 +676,7 @@ void GridGenerator::allocArrays_BoundaryQs()
                 para->getParD(i)->TempPress.kTemp = numberOfPressureValues;
                 std::cout << "Groesse TempPress.kTemp = " << para->getParH(i)->TempPress.kTemp << std::endl;
                 //////////////////////////////////////////////////////////////////////////
-                para->cudaAllocTempPressBC(i);
+                cudaMemoryManager->cudaAllocTempPressBC(i);
                 //cout << "nach alloc" << endl;
                 //////////////////////////////////////////////////////////////////////////
                 for (int m = 0; m < numberOfPressureValues; m++)
@@ -682,12 +687,12 @@ void GridGenerator::allocArrays_BoundaryQs()
                 }
                 //////////////////////////////////////////////////////////////////////////
                 //cout << "vor copy" << endl;
-                para->cudaCopyTempPressBCHD(i);
+                cudaMemoryManager->cudaCopyTempPressBCHD(i);
                 //cout << "nach copy" << endl;
                 //////////////////////////////////////////////////////////////////////////
             }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            para->cudaCopyPress(i);
+            cudaMemoryManager->cudaCopyPress(i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }//ende if
     }//ende oberste for schleife
@@ -743,7 +748,7 @@ void GridGenerator::allocArrays_BoundaryQs()
                 std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
                 std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
                 //////////////////////////////////////////////////////////////////////////
-                para->cudaAllocTempVeloBC(i);
+                cudaMemoryManager->cudaAllocTempVeloBC(i);
                 //cout << "nach alloc " << std::endl;
                 //////////////////////////////////////////////////////////////////////////
                 for (int m = 0; m < numberOfVelocityNodes; m++)
@@ -755,11 +760,11 @@ void GridGenerator::allocArrays_BoundaryQs()
                 }
                 //////////////////////////////////////////////////////////////////////////
                 //cout << "vor copy " << std::endl;
-                para->cudaCopyTempVeloBCHD(i);
+                cudaMemoryManager->cudaCopyTempVeloBCHD(i);
                 //cout << "nach copy " << std::endl;
                 //////////////////////////////////////////////////////////////////////////
             }
-            para->cudaCopyVeloBC(i);
+            cudaMemoryManager->cudaCopyVeloBC(i);
         }
     }
 
@@ -777,7 +782,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //para->getParH(i)->QGeom.kQ = temp4;
             //para->getParD(i)->QGeom.kQ = para->getParH(i)->QGeom.kQ;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            para->cudaAllocGeomBC(i);
+            cudaMemoryManager->cudaAllocGeomBC(i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             //////////////////////////////////////////////////////////////////////////
@@ -840,7 +845,7 @@ void GridGenerator::allocArrays_BoundaryQs()
                     para->getParD(i)->Temp.kTemp = numberOfGeometryNodes;
                     std::cout << "Groesse Temp.kTemp = " << para->getParH(i)->Temp.kTemp << std::endl;
                     //////////////////////////////////////////////////////////////////////////
-                    para->cudaAllocTempNoSlipBC(i);
+                    cudaMemoryManager->cudaAllocTempNoSlipBC(i);
                     //////////////////////////////////////////////////////////////////////////
                     for (int m = 0; m < numberOfGeometryNodes; m++)
                     {
@@ -848,11 +853,11 @@ void GridGenerator::allocArrays_BoundaryQs()
                         para->getParH(i)->Temp.k[m] = para->getParH(i)->QGeom.k[m];
                     }
                     //////////////////////////////////////////////////////////////////////////
-                    para->cudaCopyTempNoSlipBCHD(i);
+                    cudaMemoryManager->cudaCopyTempNoSlipBCHD(i);
                     //////////////////////////////////////////////////////////////////////////
                 }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            para->cudaCopyGeomBC(i);
+                cudaMemoryManager->cudaCopyGeomBC(i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
     }

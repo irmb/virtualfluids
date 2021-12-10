@@ -152,7 +152,7 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
     {
         if( parameters.spongeLayerIdx == 0 )
         {
-            real x = dataBase.faceCenter[VEC_X(faceIndex, dataBase.numberOfFaces)];
+            // real x = dataBase.faceCenter[VEC_X(faceIndex, dataBase.numberOfFaces)];
             real z = dataBase.faceCenter[VEC_Z(faceIndex, dataBase.numberOfFaces)];
 
             real muNew = parameters.mu;
@@ -168,7 +168,7 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
         }
         if( parameters.spongeLayerIdx == 1 )
         {
-            real x = dataBase.faceCenter[VEC_X(faceIndex, dataBase.numberOfFaces)];
+            // real x = dataBase.faceCenter[VEC_X(faceIndex, dataBase.numberOfFaces)];
             real z = dataBase.faceCenter[VEC_Z(faceIndex, dataBase.numberOfFaces)];
 
             real muNew = parameters.mu;

@@ -10,7 +10,7 @@ void bflow(string configname)
 {
    try
    {
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          outputPath = config.getValue<string>("outputPath");
@@ -35,9 +35,9 @@ void bflow(string configname)
       double          mu = config.getValue<double>("mu");
 
 
-      ConfigurationFile   viscosity;
+      vf::basics::ConfigurationFile   viscosity;
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

@@ -14,7 +14,7 @@ void run(string configname)
       //DEBUG///////////////////////////////////////
       //Sleep(30000);
       /////////////////////////////////////////////
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathOut = config.getValue<string>("pathOut");
@@ -33,7 +33,7 @@ void run(string configname)
       vector<int>     blockNx = config.getVector<int>("blockNx");
       double          dx = config.getValue<double>("dx");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

@@ -14,7 +14,7 @@ void run(string configname)
 {
    try
    {
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathname = config.getString("pathname");
@@ -63,7 +63,7 @@ void run(string configname)
       int             chunk = config.getValue<int>("chunk");
 
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

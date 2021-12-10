@@ -152,11 +152,10 @@ void thermalCavity( std::string path, std::string simulationName, uint _gpuIndex
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    auto gridFactory = GridFactory::make();
-    gridFactory->setGridStrategy(Device::CPU);
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
+    // auto gridFactory = GridFactory::make();
+    // gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
 
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+    auto gridBuilder = MultipleGridBuilder::makeShared();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -476,13 +475,13 @@ int main( int argc, char* argv[])
     {
         thermalCavity( path, simulationName, gpuIndex, nx, useTempLimiter, restartIter );
     }
-    catch (const std::exception& e)
-    {     
-        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-    }
     catch (const std::bad_alloc& e)
     {  
         *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+    }
+    catch (const std::exception& e)
+    {     
+        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
     }
     catch (...)
     {

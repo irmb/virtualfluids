@@ -1,8 +1,39 @@
-#ifndef Geometry_h
-#define Geometry_h
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file TriangularMesh.h
+//! \ingroup geometries
+//! \author Soeren Peters, Stephan Lenz, Martin Schoenherr
+//=======================================================================================
+#ifndef TriangularMesh_h
+#define TriangularMesh_h
 
 #include <stdio.h>
-#include <cuda_runtime.h>
 #include <vector>
 #include <string>
 #include <memory>
@@ -28,7 +59,7 @@ public:
 	GRIDGENERATOR_EXPORT TriangularMesh();
     GRIDGENERATOR_EXPORT TriangularMesh(const std::string& inputPath, const std::vector<uint> ignorePatches = std::vector<uint>());
 	GRIDGENERATOR_EXPORT TriangularMesh(const std::string& inputPath, const BoundingBox &box);
-	HOSTDEVICE GRIDGENERATOR_EXPORT ~TriangularMesh();
+	GRIDGENERATOR_EXPORT ~TriangularMesh();
 
     GRIDGENERATOR_EXPORT uint getNumberOfTriangles() const;
 
@@ -42,13 +73,13 @@ public:
 
     SPtr<GbTriFaceMesh3D> VF_GbTriFaceMesh3D;
 
-    CUDA_HOST GRIDGENERATOR_EXPORT bool operator==(const TriangularMesh &geometry) const;
+    GRIDGENERATOR_EXPORT bool operator==(const TriangularMesh &geometry) const;
 
     GRIDGENERATOR_EXPORT void findNeighbors();
 
-    HOSTDEVICE GRIDGENERATOR_EXPORT GbTriFaceMesh3D* getGbTriFaceMesh3D() const;
+    GRIDGENERATOR_EXPORT GbTriFaceMesh3D* getGbTriFaceMesh3D() const;
 
-    CUDA_HOST GRIDGENERATOR_EXPORT void generateGbTriFaceMesh3D();
+    GRIDGENERATOR_EXPORT void generateGbTriFaceMesh3D();
 
 private:
 	
@@ -58,7 +89,7 @@ private:
     static void eliminateTriangleswithIdenticialNormal(std::vector<Triangle> &triangles);
 
 public:
-    HOSTDEVICE Object* clone() const override;
+    Object* clone() const override;
     double getX1Centroid() override { throw "Not implemented in TriangularMesh"; }
     double getX1Minimum() override { return minmax.minX; }
     double getX1Maximum() override { return minmax.maxX; }
@@ -69,7 +100,7 @@ public:
     double getX3Minimum() override { return minmax.minZ; }
     double getX3Maximum() override { return minmax.maxZ; }
     void scale(double delta) override;
-    HOSTDEVICE bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset,
+    bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset,
         const double& maxOffset) override {
         return false;
     }

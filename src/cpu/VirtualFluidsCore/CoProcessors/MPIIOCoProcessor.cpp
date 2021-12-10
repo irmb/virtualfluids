@@ -1,6 +1,6 @@
 #include "MPIIOCoProcessor.h"
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "CoordinateTransformation3D.h"
 #include "Grid3D.h"
 #include "MPIIODataStructures.h"
@@ -13,7 +13,7 @@
 using namespace MPIIODataStructures;
 
 MPIIOCoProcessor::MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                   SPtr<Communicator> comm)
+                                   std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), path(path), comm(comm)
 {
     UbSystem::makeDirectory(path + "/mpi_io_cp");
@@ -203,7 +203,8 @@ void MPIIOCoProcessor::writeBlocks(int step)
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
 
-    double start, finish;
+    double start {0.};
+    double finish {0.};
     MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
 
     if (comm->isRoot()) {
@@ -240,7 +241,9 @@ void MPIIOCoProcessor::readBlocks(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: "
                            << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 

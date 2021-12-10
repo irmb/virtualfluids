@@ -6,7 +6,7 @@
 ////two plates flow with pressure drop
 //void pf4()
 //{
-//   SPtr<Communicator> comm = MPICommunicator::getInstance();
+//   SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
 //   int myid = comm->getProcessID();
 //
 //   //parameters

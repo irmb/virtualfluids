@@ -10,7 +10,7 @@
 
 class Grid3D;
 class UbScheduler;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class BCProcessor;
 class LBMKernel;
 class Grid3DVisitor;
@@ -31,7 +31,8 @@ class MPIIOMigrationBECoProcessor : public MPIIOCoProcessor
     };
 
 public:
-    MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, SPtr<Communicator> comm);
+    MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path,
+                                std::shared_ptr<vf::mpi::Communicator> comm);
     ~MPIIOMigrationBECoProcessor() override;
     //! Each timestep writes the grid into the files
     void process(double step) override;
@@ -78,10 +79,6 @@ public:
     void blocksExchange(int tagN, int ind1, int ind2, int doubleCountInBlock, std::vector<double> &pV,
                         std::vector<double> *rawDataReceive);
 
-protected:
-    // std::string path;
-    // SPtr<Communicator> comm;
-
 private:
     // MPI_Datatype gridParamType, block3dType;
     //   MPI_Datatype dataSetType, dataSetSmallType;
@@ -98,6 +95,7 @@ private:
     double nuL;
     double nuG;
     double densityRatio;
+
 };
 
 #endif

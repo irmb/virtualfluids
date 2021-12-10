@@ -11,7 +11,7 @@
 
 class Grid3D;
 class UbScheduler;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class BCProcessor;
 class LBMKernel;
 
@@ -20,7 +20,7 @@ class LBMKernel;
 class MPIIORestartCoProcessor : public MPIIOCoProcessor
 {
 public:
-    MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<Communicator> comm);
+    MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
     ~MPIIORestartCoProcessor() override;
     //! Each timestep writes the grid into the files
     void process(double step) override;
@@ -59,10 +59,6 @@ public:
     void setBCProcessor(SPtr<BCProcessor> bcProcessor);
     //! The function truncates the data files
     void clearAllFiles(int step);
-
-protected:
-    // std::string path;
-    // SPtr<Communicator> comm;
 
 private:
     // MPI_Datatype gridParamType, block3dType;

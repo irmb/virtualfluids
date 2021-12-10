@@ -25,7 +25,7 @@ void run(const char *cstr, double endTime)
 
       //UbLog::reportingLevel() = logDEBUG5;
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       string machine = string(cstr);
@@ -106,9 +106,9 @@ void run(const char *cstr, double endTime)
 
       //int H=200;//200;//392;
       ///////////////Knotenabmessungen:
-      nx[0]      = 50;//240;//120;//60;//86;//43;//65;//50;  //länge
+      nx[0]      = 50;//240;//120;//60;//86;//43;//65;//50;  //lï¿½nge
       nx[1]      = 1;//2;//6;///1;//5;// //breite
-      nx[2]      = 16;//64;//32;//18;//5;//15;//15; //höhe gebiet
+      nx[2]      = 16;//64;//32;//18;//5;//15;//15; //hï¿½he gebiet
       blocknx[0] = 25;//10;//6;
       blocknx[1] = 25;//10;//6;
       blocknx[2] = 25;//10;//6;
@@ -117,9 +117,9 @@ void run(const char *cstr, double endTime)
       refineLevel = 4;
 
       ///////////////Weltabmessungen:
-      double kanalhoeheSI  = 60.0/100.0;//60.0/100.0;//cm, Kanalhöhe
-      double kanalbreiteSI = kanalhoeheSI*((double)nx[1])/((double)nx[2]);//=kanalhöhe*nx1/nx2//1.65/100.0;//13.2/100.0;////40.0/100.0; //cm, Kanalbreite //13.2 zeilbreite
-      double kanallaengeSI = kanalhoeheSI*((double)nx[0])/((double)nx[2]);//80.0/100.0;//cm, Kanallänge, ist nicht angegeben
+      double kanalhoeheSI  = 60.0/100.0;//60.0/100.0;//cm, Kanalhï¿½he
+      double kanalbreiteSI = kanalhoeheSI*((double)nx[1])/((double)nx[2]);//=kanalhï¿½he*nx1/nx2//1.65/100.0;//13.2/100.0;////40.0/100.0; //cm, Kanalbreite //13.2 zeilbreite
+      double kanallaengeSI = kanalhoeheSI*((double)nx[0])/((double)nx[2]);//80.0/100.0;//cm, Kanallï¿½nge, ist nicht angegeben
 
       // double refinewidth1=kanalhoeheSI/10.0;
 
@@ -156,7 +156,7 @@ void run(const char *cstr, double endTime)
 
       double hReal         = 0.0105;//<-m     1.05;//Plattendicke in cm(! cm nicht m !)
       double uReal         = 15;//m/s   //Re*nueReal/hReal;
-      double lReal         = 1; //m Plattenlänge
+      double lReal         = 1; //m Plattenlï¿½nge
 
       //##Machzahl:
       //#Ma     = uReal/csReal

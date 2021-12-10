@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file SimulationFileWriter.cpp
+//! \ingroup io
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #define _CRT_SECURE_NO_DEPRECATE
 #include "SimulationFileWriter.h"
 
@@ -18,6 +50,8 @@
 #include "io/SimulationFileWriter/SimulationFileNames.h"
 
 #include "utilities/communication.h"
+
+using namespace vf::gpu;
 
 /*#################################################################################*/
 /*---------------------------------public methods----------------------------------*/
@@ -512,7 +546,7 @@ void SimulationFileWriter::writeBoundaryQsFile(SPtr<GridBuilder> builder)
 
     SideType sides[] = {SideType::MX, SideType::PX, SideType::PZ, SideType::MZ, SideType::MY, SideType::PY, SideType::GEOMETRY};
 
-    for (int side = 0; side < QFILES; side++) {
+    for (uint side = 0; side < QFILES; side++) {
 
         for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
             
@@ -573,7 +607,7 @@ void SimulationFileWriter::writeBoundaryShort(std::vector<real> boundary, int rb
 	*valueStreams[rb] << "\n";
 }
 
-void SimulationFileWriter::writeBoundaryShort(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uint side)
+void SimulationFileWriter::writeBoundaryShort(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint side)
 {
     uint numberOfBoundaryNodes = (uint)boundaryCondition->indices.size();
 

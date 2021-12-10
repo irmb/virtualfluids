@@ -81,6 +81,12 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
             para->getParH(level)->gDyvz[j] = 0.0f;
             para->getParH(level)->gDzvz[j] = 0.0f;
         }
+
+        if (para->getIsBodyForce()) {
+            para->getParH(level)->forceX_SP[j] = 0.0f;
+            para->getParH(level)->forceY_SP[j] = 0.0f;
+            para->getParH(level)->forceZ_SP[j] = 0.0f;
+        }
     }
 
 
@@ -118,6 +124,12 @@ void GridProvider::allocAndCopyForcing()
 {
     cudaMemoryManager->cudaAllocForcing();
     cudaMemoryManager->cudaCopyForcingToDevice();
+
+    for (int level = para->getCoarse(); level <= para->getFine(); level++)
+    {
+        cudaMemoryManager->cudaAllocLevelForcing(level);
+        cudaMemoryManager->cudaCopyLevelForcingToDevice(level);
+    }
 }
 
 void GridProvider::allocAndCopyQuadricLimiters()

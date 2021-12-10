@@ -30,7 +30,7 @@ void setup(const char *cstr1, const char *cstr2)
       int refineLevel = UbSystem::stringTo<int>(cf.getValue("refineLevel"));
       int blocknx = UbSystem::stringTo<int>(cf.getValue("blocknx"));
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if(machine == "Bombadil") int dumy=0; 

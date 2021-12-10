@@ -37,10 +37,12 @@
 #include <string>
 #include <vector>
 
+#include <logger/Logger.h>
+
 #include "BCArray3D.h"
 #include "Block3D.h"
 #include "CbArray3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "Grid3D.h"
 #include "LBMUnitConverter.h"
 #include "UbScheduler.h"
@@ -53,7 +55,7 @@ WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor() = defau
 //////////////////////////////////////////////////////////////////////////
 WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                                                        const std::string &path, WbWriter *const writer,
-                                                                       SPtr<Communicator> comm)
+                                                                       std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), path(path), writer(writer), comm(comm)
 {
     gridRank     = comm->getProcessID();
@@ -114,7 +116,7 @@ void WriteBoundaryConditionsCoProcessor::collectData(double step)
         } else {
             WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(cfilePath, filenames, istep, false);
         }
-        UBLOG(logINFO, "WriteBoundaryConditionsCoProcessor step: " << istep);
+        VF_LOG_INFO("WriteBoundaryConditionsCoProcessor step: {}", istep);
     }
 
     clearData();

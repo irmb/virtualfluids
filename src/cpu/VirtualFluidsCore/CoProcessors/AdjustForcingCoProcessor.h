@@ -6,7 +6,7 @@
 
 #include "CoProcessor.h"
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class UbScheduler;
 class Grid3D;
 class IntegrateValuesHelper;
@@ -21,7 +21,7 @@ class AdjustForcingCoProcessor : public CoProcessor
 {
 public:
     AdjustForcingCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                             SPtr<IntegrateValuesHelper> integrateValues, double vTarged, SPtr<Communicator> comm);
+                             SPtr<IntegrateValuesHelper> integrateValues, double vTarged, std::shared_ptr<vf::mpi::Communicator> comm);
     //!< calls collect PostprocessData
     void process(double step) override;
 
@@ -30,7 +30,7 @@ protected:
     SPtr<IntegrateValuesHelper> integrateValues;
     //!< compares velocity in integrateValues with target velocity and adjusts forcing accordingly.
     void collectData(double step);
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
 
 private:
     double vx1Targed; //!< target velocity.

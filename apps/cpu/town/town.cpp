@@ -18,7 +18,7 @@ void run(const char *cstr1, const char *cstr2)
       stringstream logFilename;
       double availMem = 0;
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       string machine = string(cstr1);

@@ -20,7 +20,7 @@ InSituCatalystCoProcessor::InSituCatalystCoProcessor() {}
 InSituCatalystCoProcessor::InSituCatalystCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, std::string script)
     : CoProcessor(grid, s)
 {
-    gridRank     = Communicator::getInstance()->getProcessID();
+    gridRank     = vf::mpi::Communicator::getInstance()->getProcessID();
     minInitLevel = this->grid->getCoarsestInitializedLevel();
     maxInitLevel = this->grid->getFinestInitializedLevel();
 

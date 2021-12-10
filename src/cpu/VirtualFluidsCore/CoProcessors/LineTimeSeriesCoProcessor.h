@@ -9,7 +9,7 @@
 #include "CoProcessor.h"
 #include "LBMSystem.h"
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class GbLine3D;
@@ -27,7 +27,7 @@ public:
 
 public:
     LineTimeSeriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<GbLine3D> line,
-                              int level, SPtr<Communicator> comm);
+                              int level, std::shared_ptr<vf::mpi::Communicator> comm);
     ~LineTimeSeriesCoProcessor() override = default;
 
     void process(double step) override;

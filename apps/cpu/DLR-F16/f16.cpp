@@ -13,7 +13,7 @@ double rangeRandom1()
 
 void setBC(SPtr<Grid3D> grid, string pathGeo, string fngFileWhole, string zigZagTape, vector<double>  boundingBox, double uLB, double rhoLB, double blockLength, SPtr<BCProcessor> bcProcessor)
 {
-   SPtr<Communicator> comm = MPICommunicator::getInstance();
+   SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
    int myid = comm->getProcessID();
    
    std::vector<std::vector<SPtr<Block3D>> > blockVector;
@@ -160,7 +160,7 @@ void run(string configname)
    try
    {
 
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathOut = config.getValue<string>("pathOut");
@@ -205,7 +205,7 @@ void run(string configname)
       int             chunk = config.getValue<int>("chunk");
 
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

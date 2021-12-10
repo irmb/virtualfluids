@@ -12,7 +12,7 @@ void run(string configname)
 
         //Sleep(30000);
 
-        ConfigurationFile config;
+        vf::basics::ConfigurationFile config;
         config.load(configname);
 
         string pathname            = config.getValue<string>("pathname");
@@ -52,7 +52,7 @@ void run(string configname)
         double beta  = 12 * sigma / interfaceThickness;
         double kappa = 1.5 * interfaceThickness * sigma;
 
-        SPtr<Communicator> comm = MPICommunicator::getInstance();
+        SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
 
         if (myid == 0)

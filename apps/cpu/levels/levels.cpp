@@ -14,13 +14,13 @@ void run(string configname)
 
       string machine = QUOTEME(CAB_MACHINE);
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
 
       int myid = comm->getProcessID();
       int mybundle = comm->getBundleID();
       int root = comm->getRoot();
 
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string pathname = config.getValue<string>("path");

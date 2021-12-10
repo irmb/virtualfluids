@@ -1,26 +1,21 @@
-#ifndef KERNEL_H
-#define KERNEL_H
+#ifndef GPU_KERNEL_H
+#define GPU_KERNEL_H
 
-#include <DataTypes.h>
-
-#include <cuda_runtime.h>
-#include <helper_functions.h>
-#include <helper_cuda.h>
+#include <vector>
 
 #include "Kernel/Utilities/KernelGroup.h"
 #include "PreProcessor/PreProcessorType.h"
 
-#include <vector>
-
+#include <helper_cuda.h>
 
 class Kernel
 {
 public:
-    virtual ~Kernel() = default;
-	virtual void run() = 0;
+    virtual ~Kernel()  = default;
+    virtual void run() = 0;
 
-	virtual bool checkParameter() = 0;
-	virtual std::vector<PreProcessorType> getPreProcessorTypes() = 0;
-	virtual KernelGroup getKernelGroup() = 0;
+    virtual bool checkParameter()                                = 0;
+    virtual std::vector<PreProcessorType> getPreProcessorTypes() = 0;
+    virtual KernelGroup getKernelGroup()                         = 0;
 };
 #endif

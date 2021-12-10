@@ -3,14 +3,14 @@
 #include "BCProcessor.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "CoordinateTransformation3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "D3Q27System.h"
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "LBMKernel.h"
-#include "MetisPartitioningGridVisitor.h"
+#include "Grid3DVisitor.h"
 #include "PointerDefinitions.h"
 #include "RenumberBlockVisitor.h"
 #include "UbFileInputASCII.h"
@@ -22,7 +22,7 @@
 
 using namespace MPIIODataStructures;
 
-MPIIOMigrationCoProcessor::MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, SPtr<Communicator> comm)
+MPIIOMigrationCoProcessor::MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Grid3DVisitor> mV, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm)
     : MPIIOCoProcessor(grid, s, path, comm)
 {
     memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));
@@ -328,7 +328,8 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -541,7 +542,9 @@ void MPIIOMigrationCoProcessor::write4DArray(int step, Arrays arrayType, std::st
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -666,7 +669,9 @@ void MPIIOMigrationCoProcessor::write3DArray(int step, Arrays arrayType, std::st
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -823,7 +828,9 @@ void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: "<< Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -934,7 +941,9 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
         UBLOG(logINFO, "MPIIOMigrationCoProcessor::readDataSet start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1217,7 +1226,9 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
         UBLOG(logINFO, "MPIIOMigrationCoProcessor::readArray start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1367,7 +1378,9 @@ void MPIIOMigrationCoProcessor::readBoundaryConds(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 

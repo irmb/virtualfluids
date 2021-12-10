@@ -1,15 +1,13 @@
-#ifndef COMMUNICATOR_H
-#define COMMUNICATOR_H
+#ifndef COMMUNICATOR_GPU_H
+#define COMMUNICATOR_GPU_H
 
 #include <vector>
-
-
 
 #include <mpi.h>
 
 #include "VirtualFluids_GPU_export.h"
 
-#include "LBM/LB.h"
+#include <basics/Core/DataTypes.h>
 
 //////////////////////////////////
 #ifdef VF_DOUBLE_ACCURACY
@@ -20,43 +18,46 @@
 //////////////////////////////////
 
 
+namespace vf::gpu
+{
+
 
 class VIRTUALFLUIDS_GPU_EXPORT Communicator
 {
 public:
-	static Communicator* getInstanz();
-	static Communicator* getInstanz(const int numberOfProcs);
-	void exchngBottomToTop(float* sbuf, float* rbuf, int count);
-	void exchngTopToBottom(float* sbuf, float* rbuf, int count);
-   void waitAll();
-   void distributeGeometry(unsigned int* dataRoot, unsigned int* dataNode, int dataSizePerNode);
-	int getPID();
-	int getNummberOfProcess();
-	int getNeighbourTop();
-	int getNeighbourBottom();
-   void exchngData(float* sbuf_t, float* rbuf_t, float* sbuf_b, float* rbuf_b, int count);
-   void exchngDataNB(float* sbuf_t, int count_st, float* rbuf_t, int count_rt, float* sbuf_b, int count_sb, float* rbuf_b, int count_rb);
-   //////////////////////////////////////////////////////////////////////////
-   void exchngDataGPU(real* sbuf, int count_s, real* rbuf, int count_r, int nb_rank);
-   void sendRecvGPU(real* sbuf, int count_s, real* rbuf, int count_r, int nb_rank);
-   void nbRecvDataGPU( real* rbuf, int count_r, int nb_rank );
-   void nbSendDataGPU( real* sbuf, int count_s, int nb_rank );
-   void waitallGPU();
-   void sendDataGPU( real* sbuf, int count_s, int nb_rank );
-   void waitGPU(int id);
-   void resetRequest();
-   void barrierGPU();
-   void barrier();
-   //////////////////////////////////////////////////////////////////////////
-   void exchngDataGeo(int* sbuf_t, int* rbuf_t, int* sbuf_b, int* rbuf_b, int count);
-	MPI_Comm getCommunicator();
-	void startTimer();
-	void stopTimer();
-	double getTime();
-	int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev);
-protected:
+    static Communicator& getInstance();
+    Communicator(const Communicator&) = delete;
+    Communicator& operator=(const Communicator&) = delete;
+
+    void exchngBottomToTop(float* sbuf, float* rbuf, int count);
+    void exchngTopToBottom(float* sbuf, float* rbuf, int count);
+    void waitAll();
+    void distributeGeometry(unsigned int* dataRoot, unsigned int* dataNode, int dataSizePerNode);
+    int getPID() const;
+    int getNummberOfProcess() const;
+    int getNeighbourTop();
+    int getNeighbourBottom();
+    void exchngData(float* sbuf_t, float* rbuf_t, float* sbuf_b, float* rbuf_b, int count);
+    void exchngDataNB(float* sbuf_t, int count_st, float* rbuf_t, int count_rt, float* sbuf_b, int count_sb, float* rbuf_b, int count_rb);
+    //////////////////////////////////////////////////////////////////////////
+    void exchngDataGPU(real* sbuf, int count_s, real* rbuf, int count_r, int nb_rank);
+    void sendRecvGPU(real* sbuf, int count_s, real* rbuf, int count_r, int nb_rank);
+    void nbRecvDataGPU( real* rbuf, int count_r, int nb_rank );
+    void nbSendDataGPU( real* sbuf, int count_s, int nb_rank );
+    void waitallGPU();
+    void sendDataGPU( real* sbuf, int count_s, int nb_rank );
+    void waitGPU(int id);
+    void resetRequest();
+    void barrierGPU();
+    void barrier();
+    //////////////////////////////////////////////////////////////////////////
+    void exchngDataGeo(int* sbuf_t, int* rbuf_t, int* sbuf_b, int* rbuf_b, int count);
+    MPI_Comm getCommunicator();
+    void startTimer();
+    void stopTimer();
+    double getTime();
+    int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev);
 private:
-   static Communicator* instanz;
    int numprocs, PID;
    int nbrbottom, nbrtop; 
    MPI_Comm comm1d, commGPU;
@@ -69,9 +70,10 @@ private:
    double starttime;
    double endtime;
    Communicator();
-   Communicator(const int numberOfProcs);
-   Communicator(const Communicator&);
+   ~Communicator();
 };
+
+}
 
 #endif
 

@@ -9,11 +9,11 @@ void run(string configname)
 {
    try
    {
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
 
       int myid = comm->getProcessID();
 
-      //ConfigurationFile config;
+      //vf::basics::ConfigurationFile config;
       //config.load(configname);
 
       //string pathname = config.getValue<string>("path");

@@ -63,6 +63,8 @@ bool HeatFluxAnalyzer::run(uint iter, Parameters parameters)
     this->heatFluxTimeSeries.push_back( q / qIdeal );
 
     if( iter % this->outputIter == 0 ) *logging::out << logging::Logger::INFO_HIGH << "q = " << q / qIdeal << "\n";
+
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

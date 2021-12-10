@@ -3,7 +3,7 @@
 #include "BCProcessor.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "CoordinateTransformation3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "D3Q27System.h"
@@ -25,7 +25,7 @@
 
 using namespace MPIIODataStructures;
 
-MPIIORestartCoProcessor::MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<Communicator> comm)
+MPIIORestartCoProcessor::MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm)
     : MPIIOCoProcessor(grid, s, path, comm)
 {
     memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));
@@ -351,7 +351,9 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
         }
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -557,7 +559,9 @@ void MPIIORestartCoProcessor::writeAverageDensityArray(int step)
         }
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -692,7 +696,9 @@ void MPIIORestartCoProcessor::writeAverageVelocityArray(int step)
         }
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -828,7 +834,9 @@ void MPIIORestartCoProcessor::writeAverageFluktuationsArray(int step)
         }
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -965,7 +973,9 @@ void MPIIORestartCoProcessor::writeAverageTripleArray(int step)
         }
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1102,7 +1112,9 @@ void MPIIORestartCoProcessor::writeShearStressValArray(int step)
         }
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1240,7 +1252,9 @@ void MPIIORestartCoProcessor::writeRelaxationFactor(int step)
         }
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1379,7 +1393,9 @@ void MPIIORestartCoProcessor::writePhaseField(int step, int fieldN)
         }
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1569,7 +1585,9 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1658,7 +1676,9 @@ void MPIIORestartCoProcessor::readDataSet(int step)
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -1908,7 +1928,9 @@ void MPIIORestartCoProcessor::readAverageDensityArray(int step)
         UBLOG(logINFO, "MPIIORestartCoProcessor::readAverageDensityArray start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -2007,7 +2029,9 @@ void MPIIORestartCoProcessor::readAverageVelocityArray(int step)
         UBLOG(logINFO, "MPIIORestartCoProcessor::readAverageVelocityArray start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -2104,7 +2128,9 @@ void MPIIORestartCoProcessor::readAverageFluktuationsArray(int step)
         UBLOG(logINFO, "MPIIORestartCoProcessor::readAverageFluktuationsArray start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -2202,7 +2228,9 @@ void MPIIORestartCoProcessor::readAverageTripleArray(int step)
         UBLOG(logINFO, "MPIIORestartCoProcessor::readAverageTripleArray start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -2299,7 +2327,9 @@ void MPIIORestartCoProcessor::readShearStressValArray(int step)
         UBLOG(logINFO, "MPIIORestartCoProcessor::readShearStressValArray start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -2396,7 +2426,9 @@ void MPIIORestartCoProcessor::readRelaxationFactor(int step)
         UBLOG(logINFO, "MPIIORestartCoProcessor::readRelaxationFactor start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -2493,7 +2525,9 @@ void MPIIORestartCoProcessor::readPhaseField(int step, int fieldN)
         UBLOG(logINFO, "MPIIORestartCoProcessor::readPhaseField start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 
@@ -2598,7 +2632,9 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
         UBLOG(logINFO, "MPIIORestartCoProcessor::readBoundaryConds start MPI IO rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
-    double start, finish;
+    
+    double start {0.};
+    double finish {0.};
     if (comm->isRoot())
         start = MPI_Wtime();
 

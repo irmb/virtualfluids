@@ -52,7 +52,7 @@ WriteMacroscopicQuantitiesPlusMassCoProcessor::WriteMacroscopicQuantitiesPlusMas
                                                                              const std::string &path,
                                                                              WbWriter *const writer,
                                                                              SPtr<LBMUnitConverter> conv,
-                                                                             SPtr<Communicator> comm)
+                                                                             std::shared_ptr<vf::mpi::Communicator> comm)
         : CoProcessor(grid, s), path(path), writer(writer), conv(conv), comm(comm)
 {
     gridRank = comm->getProcessID();

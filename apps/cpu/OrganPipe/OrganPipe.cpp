@@ -8,14 +8,14 @@ void run(string configname)
 {
    try
    {
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (myid == 0) UBLOG(logINFO, "Testcase organ pipe");
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       bool            newStart = config.getValue<bool>("newStart");

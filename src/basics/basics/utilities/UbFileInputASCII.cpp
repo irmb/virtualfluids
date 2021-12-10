@@ -1,3 +1,36 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file UbFileInputASCII.cpp
+//! \ingroup utilities
+//! \author Soeren Freudiger, Sebastian Geller
+//=======================================================================================
+#include <algorithm>
 #include <basics/utilities/UbFileInputASCII.h>
 #include <cstring>
 
@@ -138,7 +171,7 @@ bool UbFileInputASCII::containsString(const string &var)
 }
 /*==========================================================*/
 int UbFileInputASCII::readIntegerAfterString(const string &var)
-// last change [10.3.2004] at [9:46]
+// last change [29.6.2021] at [13:52]
 // suchts in einer Datei nach varname und gibt den dahinter stehenden int-Wert zurueck
 // z.B. timesteps 9
 {
@@ -155,14 +188,16 @@ int UbFileInputASCII::readIntegerAfterString(const string &var)
                                                 " wasn't found in " + this->filename));
     } while (strstr(line, var.c_str()) != line); // Ende Schleife, wenn varname ganz in zeile vorkommt
 
-    strcpy(line, (line + strlen(var.c_str()))); // zeile um "varname" kuerzen
-    while ((line[0] == ' ') || (line[0] == '\t'))
-        strcpy(line, (line + 1)); // Whitespaces entfernen
+    std::string temp{ line };
+    temp = temp.substr(var.size()); // zeile um "varname" kuerzen
 
-    return (atoi(line)); // Umwandlung in int
+    temp.erase(std::remove(temp.begin(), temp.end(), ' '), temp.end());  // remove whitespace
+    temp.erase(std::remove(temp.begin(), temp.end(), '\t'), temp.end()); // remove tabs
+
+    return std::stoi(temp);
 }
 /*==========================================================*/
-// last change [10.3.2004] at [9:46]
+// last change [29.6.2021] at [13:52]
 // sucht in einer Datei nach varname und gibt den dahinter stehenden int-Wert zurueck
 // z.B. nue 9.5
 double UbFileInputASCII::readDoubleAfterString(const string &var)
@@ -181,14 +216,16 @@ double UbFileInputASCII::readDoubleAfterString(const string &var)
     } while (/*!strncmp(varname,line,sizeof(varname))==0*/ strstr(line, var.c_str()) !=
              line); // Ende Schleife, wenn varname ganz in zeile vorkommt
 
-    strcpy(line, (line + strlen(var.c_str()))); // zeile um "varname" kuerzen
-    while ((line[0] == ' ') || (line[0] == '\t'))
-        strcpy(line, (line + 1)); // Whitespaces entfernen
+    std::string temp{ line };
+    temp = temp.substr(var.size()); // zeile um "varname" kuerzen
 
-    return (atof(line)); // Umwandlung in double
+    temp.erase(std::remove(temp.begin(), temp.end(), ' '), temp.end());  // remove whitespace
+    temp.erase(std::remove(temp.begin(), temp.end(), '\t'), temp.end()); // remove tabs
+
+    return std::stod(temp);
 }
 /*==========================================================*/
-//  [9.9.2002]
+// last change [29.6.2021] at [13:52]
 // liefert string-Wert der hinter dem uebergebenen char feld in der datei infile steht
 // zudem wird der wert in die uebergebene variable value uebertragen (falls man das ergebniss als char benoetig)
 string UbFileInputASCII::readStringAfterString(const string &var) //,char *value)
@@ -207,15 +244,13 @@ string UbFileInputASCII::readStringAfterString(const string &var) //,char *value
                                                 " wasn't found in " + this->filename));
     } while (strstr(line, var.c_str()) != line); // Ende Schleife, wenn varname ganz in zeile vorkommt
 
-    strcpy(line, (line + strlen(var.c_str()))); // zeile um "varname" kuerzen
-    while ((line[0] == ' ') || (line[0] == '\t'))
-        strcpy(line, (line + 1)); // Whitespaces entfernen
+    std::string temp{ line };
+    temp = temp.substr(var.size()); // zeile um "varname" kuerzen
 
-    char *p;
-    p = strtok(line, " ");  // schneidet alles "ab und inklusive space " nach namen ab
-    p = strtok(line, "\t"); // schneidet alles "ab und inklusive tab   " nach namen ab
+    temp.erase(std::remove(temp.begin(), temp.end(), ' '), temp.end());  // remove whitespace
+    temp.erase(std::remove(temp.begin(), temp.end(), '\t'), temp.end()); // remove tabs
 
-    return static_cast<string>(p); // Umwandlung in string
+    return temp;
 }
 /*==========================================================*/
 // last change [10.3.2004] at [9:46]

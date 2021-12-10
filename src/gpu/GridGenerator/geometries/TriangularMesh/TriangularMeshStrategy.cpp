@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file TriangularMeshStrategy.cpp
+//! \ingroup geometries
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #include "TriangularMeshStrategy.h"
 
 #include "Core/Timer/Timer.h"
@@ -9,6 +41,8 @@
 
 #include "grid/GridImp.h"
 #include "grid/NodeValues.h"
+
+using namespace vf::gpu;
 
 void TriangularMeshDiscretizationStrategy::removeOddBoundaryCellNodes(GridImp* grid)
 {
@@ -246,7 +280,7 @@ void PointUnderTriangleStrategy::meshReverse(Triangle& triangle, GridImp* grid, 
     }
 }
 
-HOSTDEVICE void PointUnderTriangleStrategy::findInsideNodes(GridImp* grid, char innerType)
+void PointUnderTriangleStrategy::findInsideNodes(GridImp* grid, char innerType)
 {
     bool foundInsideNode = true;
     while (foundInsideNode)
@@ -257,7 +291,7 @@ HOSTDEVICE void PointUnderTriangleStrategy::findInsideNodes(GridImp* grid, char 
     }
 }
 
-HOSTDEVICE void PointUnderTriangleStrategy::setInsideNode(GridImp* grid, const uint &index, bool &insideNodeFound, char innerType)
+void PointUnderTriangleStrategy::setInsideNode(GridImp* grid, const uint &index, bool &insideNodeFound, char innerType)
 {
     if (grid->isNode(index, NEGATIVE_DIRECTION_BORDER))
         return;
@@ -269,7 +303,7 @@ HOSTDEVICE void PointUnderTriangleStrategy::setInsideNode(GridImp* grid, const u
     }
 }
 
-HOSTDEVICE void PointUnderTriangleStrategy::setNegativeDirBorderTo(GridImp* grid, const uint &index, char innerType)
+void PointUnderTriangleStrategy::setNegativeDirBorderTo(GridImp* grid, const uint &index, char innerType)
 {
     if (grid->isNode(index, NEGATIVE_DIRECTION_BORDER))
         grid->setNodeTo(index, innerType);

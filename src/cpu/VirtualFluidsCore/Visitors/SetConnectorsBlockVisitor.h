@@ -41,14 +41,16 @@
 #include "Grid3DSystem.h"
 #include "Grid3D.h"
 #include "CreateTransmittersHelper.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "OneDistributionFullDirectConnector.h"
 #include "OneDistributionFullVectorConnector.h"
 #include "TwoDistributionsFullDirectConnector.h"
 #include "TwoDistributionsFullVectorConnector.h"
+#include "TwoDistributionsDoubleGhostLayerFullDirectConnector.h"
+#include "TwoDistributionsDoubleGhostLayerFullVectorConnector.h"
 #include "ThreeDistributionsFullDirectConnector.h"
-#include "ThreeDistributionsDoubleGhostLayerFullDirectConnector.h"
 #include "ThreeDistributionsFullVectorConnector.h"
+#include "ThreeDistributionsDoubleGhostLayerFullDirectConnector.h"
 #include "ThreeDistributionsDoubleGhostLayerFullVectorConnector.h"
 #include <basics/transmitter/TbTransmitterLocal.h>
 
@@ -60,20 +62,20 @@ public:
     using LocalConnector  = T1;
     using RemoteConnector = T2;
 public:
-    SetConnectorsBlockVisitor(SPtr<Communicator> comm);
+    SetConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm);
     ~SetConnectorsBlockVisitor() override;
     void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
     //////////////////////////////////////////////////////////////////////////
 protected:
     void setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block);
     void setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir);
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     int dirs;
     int gridRank;
 };
 
 template <class T1, class T2>
-SetConnectorsBlockVisitor<T1, T2>::SetConnectorsBlockVisitor(SPtr<Communicator> comm)
+SetConnectorsBlockVisitor<T1, T2>::SetConnectorsBlockVisitor(std::shared_ptr<vf::mpi::Communicator> comm)
     : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), comm(comm)
 {
 }
@@ -159,6 +161,7 @@ void SetConnectorsBlockVisitor<T1, T2>::setRemoteConnectors(SPtr<Block3D> sblock
 
 using OneDistributionSetConnectorsBlockVisitor  = SetConnectorsBlockVisitor<OneDistributionFullDirectConnector, OneDistributionFullVectorConnector>;
 using TwoDistributionsSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<TwoDistributionsFullDirectConnector, TwoDistributionsFullVectorConnector>;
+using TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<TwoDistributionsDoubleGhostLayerFullDirectConnector, TwoDistributionsDoubleGhostLayerFullVectorConnector>;
 using ThreeDistributionsSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<ThreeDistributionsFullDirectConnector, ThreeDistributionsFullVectorConnector>;
 using ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor = SetConnectorsBlockVisitor<ThreeDistributionsDoubleGhostLayerFullDirectConnector, ThreeDistributionsDoubleGhostLayerFullVectorConnector>;
 

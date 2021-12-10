@@ -1,4 +1,35 @@
-
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+//  for more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file GbTriFaceMesh3D.cpp
+//! \ingroup geometry3D
+//! \author Konstantin Kutscher, Soeren Textor, Sebastian Geller
+//=======================================================================================
 #include <geometry3d/GbTriFaceMesh3D.h>
 
 #include <basics/utilities/UbFileInputASCII.h>
@@ -1112,22 +1143,23 @@ void GbTriFaceMesh3D::readMeshFromSTLFileBinary(string filename, bool removeRedu
     }
     char title[80];
     int nFaces;
-    fread(title, 80, 1, f);
-    fread((void *)&nFaces, 4, 1, f);
+    size_t sizef = fread(title, 80, 1, f);
+    sizef        = fread((void *)&nFaces, 4, 1, f);
     float v[12]; // normal=3, vertices=3*3 = 12
     unsigned short uint16;
     // Every Face is 50 Bytes: Normal(3*float), Vertices(9*float), 2 Bytes Spacer
     for (int i = 0; i < nFaces; ++i) {
         for (size_t j = 0; j < 12; ++j) {
-            fread((void *)&v[j], sizeof(float), 1, f);
+            sizef = fread((void *)&v[j], sizeof(float), 1, f);
         }
-        fread((void *)&uint16, sizeof(unsigned short), 1, f); // spacer between successive faces
+        sizef = fread((void *)&uint16, sizeof(unsigned short), 1, f); // spacer between successive faces
         nodes->push_back(GbTriFaceMesh3D::Vertex(v[3], v[4], v[5]));
         nodes->push_back(GbTriFaceMesh3D::Vertex(v[6], v[7], v[8]));
         nodes->push_back(GbTriFaceMesh3D::Vertex(v[9], v[10], v[11]));
         triangles->push_back(GbTriFaceMesh3D::TriFace(nr, nr + 1, nr + 2));
         nr += 3;
     }
+    (void)sizef;
     fclose(f);
 
     if (removeRedundantNodes) {

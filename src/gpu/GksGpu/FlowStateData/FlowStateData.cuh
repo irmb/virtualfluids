@@ -4,14 +4,21 @@
 #ifdef __CUDACC__
 #include <cuda_runtime.h>
 #else
+#ifndef __host__
 #define __host__
+#endif
+#ifndef __device__
 #define __device__
+#endif
 #endif
 
 #include "Core/DataTypes.h"
-#include "Core/RealConstants.h"
 
 #include "Definitions/PassiveScalar.h"
+
+#include <lbm/constants/NumericConstants.h>
+
+using namespace vf::lbm::constant;
 
 namespace GksGpu {
 

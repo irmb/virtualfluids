@@ -11,7 +11,7 @@
 
 #include "CoProcessor.h"
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class DemCoProcessor;
@@ -24,7 +24,7 @@ public:
     RestartDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
                                  SPtr<DemCoProcessor> demCoProcessor,
                                  SPtr<CreateDemObjectsCoProcessor> createDemObjectsCoProcessor, double radius,
-                                 SPtr<Communicator> comm);
+                                 std::shared_ptr<vf::mpi::Communicator> comm);
     ~RestartDemObjectsCoProcessor() {}
     void process(double step) override;
     void restart(double step);
@@ -34,7 +34,7 @@ public:
 private:
     std::string path;
     double radius;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     SPtr<DemCoProcessor> demCoProcessor;
     SPtr<CreateDemObjectsCoProcessor> createDemObjectsCoProcessor;
 };

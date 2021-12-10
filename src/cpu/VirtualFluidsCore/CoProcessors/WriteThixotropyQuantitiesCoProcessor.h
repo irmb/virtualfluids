@@ -38,14 +38,14 @@
 #include "Grid3D.h"
 #include "Block3D.h"
 #include "LBMUnitConverter.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "WbWriter.h"
 
 class WriteThixotropyQuantitiesCoProcessor : public  CoProcessor
 {
 public:
 	WriteThixotropyQuantitiesCoProcessor();
-	WriteThixotropyQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, SPtr<Communicator> comm);
+	WriteThixotropyQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm);
 	~WriteThixotropyQuantitiesCoProcessor() = default;
 
    void process(double step) override;
@@ -69,7 +69,7 @@ private:
    int minInitLevel;
    int maxInitLevel;
    int gridRank;
-   SPtr<Communicator> comm;
+   std::shared_ptr<vf::mpi::Communicator> comm;
 //	double ConcentrationSum;
 };
 #endif

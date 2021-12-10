@@ -14,7 +14,7 @@ using namespace std;
 void run(string configname)
 {
     try {
-        ConfigurationFile config;
+        vf::basics::ConfigurationFile config;
         config.load(configname);
 
         string pathname            = config.getValue<string>("pathname");
@@ -48,7 +48,7 @@ void run(string configname)
         bool newStart      = config.getValue<bool>("newStart");
         double rStep = config.getValue<double>("rStep");
 
-        SPtr<Communicator> comm = MPICommunicator::getInstance();
+        SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
 
         if (myid == 0)
@@ -142,7 +142,8 @@ void run(string configname)
 
         //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
        // kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
-        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
+        //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphasePressureFilterCompressibleAirLBMKernel());
 
         mu::Parser fgr;
         fgr.SetExpr("-(rho-rho_l)*g_y");
@@ -182,7 +183,7 @@ void run(string configname)
         grid->setDeltaX(dx);
         grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
         grid->setPeriodicX1(true);
-        grid->setPeriodicX2(true);
+        grid->setPeriodicX2(false);
         grid->setPeriodicX3(true);
         grid->setGhostLayerWidth(2);
 
@@ -348,10 +349,36 @@ void run(string configname)
         //TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
         //grid->accept(setConnsVisitor);
 
-        ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        //ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        //grid->accept(setConnsVisitor);
+
+        TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
+        double t_ast, t;
+        t_ast = 2;
+        t = (int)(t_ast/std::sqrt(g_y/D));
+        visSch->addSchedule(t,t,t); //t=2
+        t_ast = 3;
+        t = (int)(t_ast/std::sqrt(g_y/D));        
+        visSch->addSchedule(t,t,t); //t=3
+        t_ast = 4;
+        t = (int)(t_ast/std::sqrt(g_y/D));        
+        visSch->addSchedule(t,t,t); //t=4
+        t_ast = 5;
+        t = (int)(t_ast/std::sqrt(g_y/D));        
+        visSch->addSchedule(t,t,t); //t=5
+        t_ast = 6;
+        t = (int)(t_ast/std::sqrt(g_y/D)); 
+        visSch->addSchedule(t,t,t); //t=6
+        t_ast = 7;
+        t = (int)(t_ast/std::sqrt(g_y/D));         
+        visSch->addSchedule(t,t,t); //t=7
+        t_ast = 9;
+        t = (int)(t_ast/std::sqrt(g_y/D));         
+        visSch->addSchedule(t,t,t); //t=9
+
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
             grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
         if(grid->getTimeStep() == 0) 
@@ -369,7 +396,6 @@ void run(string configname)
         calculator->addCoProcessor(rcp);
 
 
-
         if (myid == 0)
             UBLOG(logINFO, "Simulation-start");
         calculator->calculate();
@@ -377,8 +403,8 @@ void run(string configname)
             UBLOG(logINFO, "Simulation-end");
             
 #if defined(__unix__)
-         if (!newStart) 
-         {
+         //if (!newStart) 
+         //{
             if (myid == 0) 
             {
                 std::ofstream ostr(fileName);
@@ -391,7 +417,7 @@ void run(string configname)
                 system(str.c_str());
             }   
             //MPI_Barrier((MPI_Comm)comm->getNativeCommunicator()); 
-         }
+         //}
 #endif
 
     } catch (std::exception &e) {

@@ -19,7 +19,7 @@ void main()
       int numOfThreads = 4;
       double availMem = 10e9;
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       double dx = 1;

@@ -9,7 +9,7 @@ void run(string configname)
 {
    try
    {
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathOut = config.getValue<string>("pathOut");
@@ -49,7 +49,7 @@ void run(string configname)
       string          VRES1100_Spiegel_fein = config.getValue<string>("VRES1100_Spiegel_fein");
 
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

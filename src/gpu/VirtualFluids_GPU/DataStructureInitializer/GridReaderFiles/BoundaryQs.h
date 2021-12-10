@@ -32,7 +32,9 @@ private:
 	void init_Binary();
 
 public:
-	void setIndex(int *indices, unsigned int level) const;
+    void setIndexInVector(std::vector<std::vector<int>> &data, unsigned int level) const;
+    void setValuesInVector(std::vector<std::vector<std::vector<real>>> &q27, unsigned int level) const;
+    void setIndex(int *indices, unsigned int level) const;
 	void setValues(real** q27, unsigned int level) const;
 	void getQs(std::vector<std::vector<std::vector<real> > > &qs);
 	void getIndices(std::vector<std::vector<uint> > &indices);

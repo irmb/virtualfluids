@@ -8,7 +8,7 @@ using namespace std;
 
 void run(string configname)
 {
-   SPtr<Communicator> comm = MPICommunicator::getInstance();
+   SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
    int myid = comm->getProcessID();
 
    // Get the name of the processor
@@ -20,7 +20,7 @@ void run(string configname)
    {
       //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
 
-      ConfigurationFile   config;
+      vf::basics::ConfigurationFile   config;
       config.load(configname);
 
       string          pathOut = config.getString("pathOut");

@@ -52,7 +52,7 @@ WriteThixotropyQuantitiesCoProcessor::WriteThixotropyQuantitiesCoProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-WriteThixotropyQuantitiesCoProcessor::WriteThixotropyQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, SPtr<Communicator> comm) : CoProcessor(grid, s), path(path), writer(writer),	conv(conv),	comm(comm)
+WriteThixotropyQuantitiesCoProcessor::WriteThixotropyQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<LBMUnitConverter> conv, std::shared_ptr<vf::mpi::Communicator> comm) : CoProcessor(grid, s), path(path), writer(writer),	conv(conv),	comm(comm)
 {
 	gridRank = comm->getProcessID();
 	minInitLevel = this->grid->getCoarsestInitializedLevel();

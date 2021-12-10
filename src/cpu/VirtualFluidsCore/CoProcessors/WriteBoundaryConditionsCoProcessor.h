@@ -41,7 +41,7 @@
 #include "CoProcessor.h"
 #include "UbTuple.h"
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class WbWriter;
@@ -61,7 +61,7 @@ public:
     //! \param writer is WbWriter object
     //! \param comm is Communicator object
     WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                       WbWriter *const writer, SPtr<Communicator> comm);
+                                       WbWriter *const writer, std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteBoundaryConditionsCoProcessor() override = default;
 
     void process(double step) override;
@@ -84,6 +84,6 @@ private:
     int minInitLevel;
     int maxInitLevel;
     int gridRank;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
 };
 #endif

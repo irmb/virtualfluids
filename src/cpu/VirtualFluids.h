@@ -40,7 +40,14 @@
 #include <omp.h>
 #endif
 
+#include <mpi/Communicator.h>
+#include <mpi/MPICommunicator.h>
+#include <mpi/NullCommunicator.h>
+
 #include <basics/PointerDefinitions.h>
+
+#include <basics/config/ConfigurationFile.h>
+#include <logger/Logger.h>
 
 #include <basics/container/CbArray2D.h>
 #include <basics/container/CbArray3D.h>
@@ -137,6 +144,7 @@
 #include <BoundaryConditions/MultiphaseNonReflectingOutflowBCAlgorithm.h> 
 #include <BoundaryConditions/MultiphaseVelocityBCAdapter.h>
 #include <BoundaryConditions/MultiphaseVelocityBCAlgorithm.h>
+#include <BoundaryConditions/MultiphaseSlipBCAlgorithm.h> 
 
 #include <Connectors/Block3DConnector.h>
 //#include <Connectors/Block3DConnectorFactory.h>
@@ -247,6 +255,8 @@
 #include <LBM/MultiphaseTwoPhaseFieldsCumulantLBMKernel.h>
 #include <LBM/MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel.h>
 #include <LBM/MultiphaseTwoPhaseFieldsPressureFilterLBMKernel.h>
+#include <LBM/MultiphasePressureFilterLBMKernel.h>
+#include <LBM/MultiphasePressureFilterCompressibleAirLBMKernel.h>
 
 
 
@@ -284,17 +294,13 @@
 #include <geometry3d/KdTree/splitalgorithms/KdSplitAlgorithm.h>
 
 #include <Parallel/BlocksDistributor.h>
-#include <Parallel/Communicator.h>
-#include <Parallel/MPICommunicator.h>
 #include <Parallel/MetisPartitioner.h>
-#include <Parallel/NullCommunicator.h>
 #include <Parallel/PriorityQueueDecompositor.h>
 #include <Parallel/SimpleGeometricPartitioner.h>
 #include <Parallel/ZoltanPartitioner.h>
 
 #include <Utilities/ChangeRandomQs.hpp>
 #include <Utilities/CheckpointConverter.h>
-#include <Utilities/ConfigurationFile.hpp>
 #include <Utilities/MathUtil.hpp>
 #include <Utilities/MemoryUtil.h>
 #include <Utilities/VoxelMatrixUtil.hpp>
