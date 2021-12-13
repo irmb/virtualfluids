@@ -79,6 +79,7 @@ void UpdateGrid27::refinementAndExchange_streams(int level)
     coarseToFineWithStream(para.get(), level, para->getParD(level)->intCFBorder.ICellCFC,
                            para->getParD(level)->intCFBorder.ICellCFF, para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF,
                            borderStreamIndex);
+    cudaDeviceSynchronize(); 
 }
 
 void UpdateGrid27::refinementAndExchange_noStreams_onlyExchangeInterface(int level)
