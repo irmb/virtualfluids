@@ -2,7 +2,7 @@
 #GPU Mapping
 ##################################################
 Devices="0 1 2 3"
-NumberOfDevices=1
+NumberOfDevices=2
 
 ##################################################
 #informations for Writing
