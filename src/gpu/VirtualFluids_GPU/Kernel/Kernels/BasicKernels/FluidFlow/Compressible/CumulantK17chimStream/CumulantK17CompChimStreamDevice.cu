@@ -45,7 +45,7 @@ extern "C" __global__ void LB_Kernel_CumulantK17CompChimStream(
 	uint* neighborY,
 	uint* neighborZ,
 	real* distributions,
-	int size_Mat,
+	unsigned long size_Mat,
 	int level,
 	real* forces,
 	real* quadricLimiters,
