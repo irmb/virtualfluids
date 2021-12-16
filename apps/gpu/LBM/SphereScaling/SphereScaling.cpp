@@ -205,7 +205,7 @@ void multipleLevel(const std::string& configPath)
                 sideLengthCube = 70.0; // Phoenix: weak scaling with two levels = 70.0
         }
         else
-            sideLengthCube = 86.0; // Phoenix: 86.0
+            sideLengthCube = 92.0; // Phoenix: 86.0
         real xGridMin          = 0.0; 
         real xGridMax          = sideLengthCube;
         real yGridMin          = 0.0;
