@@ -27,7 +27,8 @@ class MPIIOMigrationBECoProcessor : public MPIIOCoProcessor
         ShearStressVal      = 5,
         RelaxationFactor    = 6,
         PhaseField1         = 7,
-        PhaseField2 = 8
+        PhaseField2         = 8,
+        PressureField = 9
     };
 
 public:

@@ -313,7 +313,7 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
                 if (zeroDistributionsH2 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
                     doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), zeroDistributionsH2->getDataVector().begin(), zeroDistributionsH2->getDataVector().end());
             }
-
+            
             ic++;
         }
     }
@@ -476,7 +476,7 @@ void MPIIOMigrationCoProcessor::write4DArray(int step, Arrays arrayType, std::st
 
     if (comm->isRoot()) 
     {
-        UBLOG(logINFO, "MPIIOMigrationCoProcessor::writeAverageDensityArray start collect data rank = " << rank);
+        UBLOG(logINFO, "MPIIOMigrationCoProcessor::write4DArray start collect data rank = " << rank);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
@@ -606,7 +606,7 @@ void MPIIOMigrationCoProcessor::write3DArray(int step, Arrays arrayType, std::st
 
     if (comm->isRoot()) 
     {
-        UBLOG(logINFO, "MPIIOMigrationCoProcessor::write3DArray start collect data rank = " << rank);
+        UBLOG(logINFO, "MPIIOMigrationCoProcessor::write3DArray start collect data to file = " << fname);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
@@ -1030,7 +1030,6 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
 
     }
     MPI_File_close(&file_handler);
-
     //----------------------------------------- H2 ----------------------------------------------------
     ic = 0;
     filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH2.bin";
@@ -1100,19 +1099,16 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
         if (multiPhase2)
             vectorsOfValuesH23.assign(doubleValuesArrayH2.data() + index, doubleValuesArrayH2.data() + index + vectorSize3);
         index += vectorSize3;
-
+ 
         SPtr<DistributionArray3D> mFdistributions(new D3Q27EsoTwist3DSplittedVector());
         dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(
-                new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValuesF1, dataSetParamStr1.nx[0], dataSetParamStr1.nx[1], dataSetParamStr1.nx[2], dataSetParamStr1.nx[3])));
+            new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValuesF1, dataSetParamStr1.nx[0], dataSetParamStr1.nx[1], dataSetParamStr1.nx[2], dataSetParamStr1.nx[3])));
         dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNonLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(
-                new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValuesF2, dataSetParamStr2.nx[0], dataSetParamStr2.nx[1], dataSetParamStr2.nx[2], dataSetParamStr2.nx[3])));
+            new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValuesF2, dataSetParamStr2.nx[0], dataSetParamStr2.nx[1], dataSetParamStr2.nx[2], dataSetParamStr2.nx[3])));
         dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
-                    vectorsOfValuesF3, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
-
-        dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX1(dataSetParamStr1.nx1);
-        dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX2(dataSetParamStr1.nx2);
-        dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX3(dataSetParamStr1.nx3);
-
+            vectorsOfValuesF3, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
+        
+        //----------------------------------------- H1 ----------------------------------------------------
        SPtr<DistributionArray3D> mH1distributions(new D3Q27EsoTwist3DSplittedVector());
        if (multiPhase1)
         {
@@ -1143,9 +1139,14 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
             dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mH2distributions)->setNX3(dataSetParamStr1.nx3);
         }
 
+        dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX1(dataSetParamStr1.nx1);
+        dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX2(dataSetParamStr1.nx2);
+        dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX3(dataSetParamStr1.nx3);
+
         // find the nesessary block and fill it
         SPtr<Block3D> block = grid->getBlock(dataSetArray[n].globalID);
         this->lbmKernel->setBlock(block);
+        this->lbmKernel->setNX(std::array<int, 3>{ {dataSetParamStr1.nx1, dataSetParamStr1.nx2, dataSetParamStr1.nx3}});
         UbTupleInt3 blockNX = grid->getBlockNX();
         this->lbmKernel->setNX(std::array<int, 3>{ { val<1>(blockNX), val<2>(blockNX), val<3>(blockNX) } });
         SPtr<LBMKernel> kernel = this->lbmKernel->clone();
@@ -1223,7 +1224,7 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
 
     if (comm->isRoot()) 
     {
-        UBLOG(logINFO, "MPIIOMigrationCoProcessor::readArray start MPI IO rank = " << rank);
+        UBLOG(logINFO, "MPIIOMigrationCoProcessor::readArray start fname = " << fname);
         UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
     
@@ -1293,7 +1294,10 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
     size_t index = 0;
     size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
     std::vector<double> vectorsOfValues;
-    for (std::size_t n = 0; n < blocksCount; n++) 
+    SPtr<CbArray4D<LBMReal, IndexerX4X3X2X1>> ___4DArray;
+    SPtr<CbArray3D<LBMReal, IndexerX3X2X1>> ___3DArray;
+
+    for (std::size_t n = 0; n < blocksCount; n++)
     {
         SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].globalID);
 
@@ -1301,9 +1305,6 @@ void MPIIOMigrationCoProcessor::readArray(int step, Arrays arrType, std::string 
         index += nextVectorSize;
 
         // fill arrays
-        SPtr<CbArray4D<LBMReal, IndexerX4X3X2X1>> ___4DArray;
-        SPtr<CbArray3D<LBMReal, IndexerX3X2X1>> ___3DArray;
-
         switch (arrType) 
         {
             case AverageDensity:

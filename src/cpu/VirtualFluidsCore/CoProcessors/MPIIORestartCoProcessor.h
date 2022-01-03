@@ -20,6 +20,18 @@ class LBMKernel;
 class MPIIORestartCoProcessor : public MPIIOCoProcessor
 {
 public:
+    enum Arrays {
+        AverageDensity = 1,
+        AverageVelocity = 2,
+        AverageFluktuations = 3,
+        AverageTriple = 4,
+        ShearStressVal = 5,
+        RelaxationFactor = 6,
+        PhaseField1 = 7,
+        PhaseField2 = 8,
+        PressureField = 9
+    };
+
     MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
     ~MPIIORestartCoProcessor() override;
     //! Each timestep writes the grid into the files
@@ -30,13 +42,16 @@ public:
     void writeBlocks(int step);
     //! Writes the datasets of the blocks into the file cpDataSet.bin
     void writeDataSet(int step);
-    void writeAverageDensityArray(int step);
-    void writeAverageVelocityArray(int step);
-    void writeAverageFluktuationsArray(int step);
-    void writeAverageTripleArray(int step);
-    void writeShearStressValArray(int step);
-    void writeRelaxationFactor(int step);
-    void writePhaseField(int step, int num);
+    void write4DArray(int step, Arrays arrType, std::string fname);
+    void write3DArray(int step, Arrays arrType, std::string fname);
+    //void writeAverageDensityArray(int step);
+    //void writeAverageVelocityArray(int step);
+    //void writeAverageFluktuationsArray(int step);
+    //void writeAverageTripleArray(int step);
+    //void writeShearStressValArray(int step);
+    //void writeRelaxationFactor(int step);
+    //void writePhaseField(int step, int num);
+    //void writePressureField(int step);
     //! Writes the boundary conditions of the blocks into the file cpBC.bin
     void writeBoundaryConds(int step);
 
@@ -44,14 +59,18 @@ public:
     void readBlocks(int step);
     //! Reads the datasets of the blocks from the file cpDataSet.bin
     void readDataSet(int step);
-    void readAverageDensityArray(int step);
-    void readAverageVelocityArray(int step);
-    void readAverageFluktuationsArray(int step);
-    void readAverageTripleArray(int step);
-    void readShearStressValArray(int step);
-    void readRelaxationFactor(int step);
-    void readPhaseField(int step, int num);
-    //! Reads the boundary conditions of the blocks from the file cpBC.bin
+    void readArray(int step, Arrays arrType, std::string fname);
+
+    //void readAverageDensityArray(int step);
+    //void readAverageVelocityArray(int step);
+    //void readAverageFluktuationsArray(int step);
+    //void readAverageTripleArray(int step);
+    //void readShearStressValArray(int step);
+    //void readRelaxationFactor(int step);
+    //void readPhaseField(int step, int num);
+    //void readPressureField(int step);
+    // 
+   //! Reads the boundary conditions of the blocks from the file cpBC.bin
     void readBoundaryConds(int step);
     //! The function sets LBMKernel
     void setLBMKernel(SPtr<LBMKernel> kernel);
@@ -68,6 +87,8 @@ private:
     MPIIODataStructures::boundCondParam boundCondParamStr;
     SPtr<LBMKernel> lbmKernel;
     SPtr<BCProcessor> bcProcessor;
+
+    //std::vector<double> doubleValuesArrayRW;
 };
 
 #endif
