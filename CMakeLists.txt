@@ -195,3 +195,8 @@ endif()
 if(BUILD_VF_GPU)
     include (gpu.cmake)
 endif()
+
+if (BUILD_VF_PYTHON_BINDINGS)
+    add_subdirectory(${VF_THIRD_DIR}/pybind11/pybind11-2.6.0)
+    add_subdirectory(pythonbindings)
+endif()

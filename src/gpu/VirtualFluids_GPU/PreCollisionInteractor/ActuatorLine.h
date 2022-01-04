@@ -70,6 +70,7 @@ public:
     void setBladeForcesX(real* _bladeForcesX){ this->bladeForcesXH = _bladeForcesX;};
     void setBladeForcesY(real* _bladeForcesY){ this->bladeForcesYH = _bladeForcesY;};
     void setBladeForcesZ(real* _bladeForcesZ){ this->bladeForcesZH = _bladeForcesZ;};
+    void calcBladeForces();
 
 private:
     void initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager);
@@ -82,7 +83,6 @@ private:
 
     void calcForcesEllipticWing();
     void rotateBlades(real angle);
-    void calcBladeForces();
 
     void writeBladeCoords(uint t);
     void writeBladeForces(uint t);

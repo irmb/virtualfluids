@@ -38,7 +38,7 @@ namespace actuator_line
         .def_property("blade_forcesX", &ActuatorLine::getBladeForcesX, &ActuatorLine::setBladeForcesX)
         .def_property("blade_forcesY", &ActuatorLine::getBladeForcesY, &ActuatorLine::setBladeForcesY)
         .def_property("blade_forcesZ", &ActuatorLine::getBladeForcesZ, &ActuatorLine::setBladeForcesZ)
-;
+        .def("calc_blade_forces", &ActuatorLine::calcBladeForces);
 
         return alModule;
     }

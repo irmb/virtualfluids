@@ -28,7 +28,7 @@
 //
 //! \file GridBuilder.h
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schï¿½nherr
 //=======================================================================================
 #ifndef GridBuilder_H
 #define GridBuilder_H
@@ -37,7 +37,7 @@
 #include <string>
 #include <memory>
 
-#include "GridGenerator/global.h"
+#include "global.h"
 
 #define GEOMQS 6
 #define INLETQS 0

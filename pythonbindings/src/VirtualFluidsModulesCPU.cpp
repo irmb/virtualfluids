@@ -1,5 +1,5 @@
 #include <pybind11/pybind11.h>
-#include "submodules/actuator_line.cpp"
+#include "cpu/cpu.cpp"
 
 namespace py_bindings
 {
@@ -7,6 +7,6 @@ namespace py_bindings
 
     PYBIND11_MODULE(pyfluids, m)
     {
-        actuator_line::makeModule(m);
+        cpu::makeModule(m);
     }
 }
