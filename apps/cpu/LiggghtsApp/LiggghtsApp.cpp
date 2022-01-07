@@ -21,7 +21,9 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     SPtr<Communicator> comm = MPICommunicator::getInstance();
-    LiggghtsCouplingWrapper wrapper(argv, (MPI_Comm)comm->getNativeCommunicator());
+    //MPI_Init(&argc, &argv);
+    MPI_Comm mpi_comm       = *(MPI_Comm*)(comm->getNativeCommunicator());
+    LiggghtsCouplingWrapper wrapper(argv, mpi_comm);
 
 	//LAMMPS_NS::LAMMPS *lmp;
  //   // custom argument vector for LAMMPS library
@@ -94,6 +96,6 @@ int main(int argc, char *argv[])
  //   delete lmp;
 
  //   // stop MPI environment
- //   MPI_Finalize();
+    //MPI_Finalize();
     return 0;
 }
