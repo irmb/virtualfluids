@@ -241,7 +241,7 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 					mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p);
 
 					mfbbb = (*this->zeroDistributionsF)(x1, x2, x3);
-
+					
 					LBMReal rhoH = 1.0;
 					LBMReal rhoL = 1.0 / densityRatio;
 
@@ -305,7 +305,7 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 	}
 
 	////!filter
-
+	//bool firstTime = true;
 	for (int x3 = minX3; x3 < maxX3; x3++) {
 		for (int x2 = minX2; x2 < maxX2; x2++) {
 			for (int x1 = minX1; x1 < maxX1; x1++) {

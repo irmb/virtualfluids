@@ -245,6 +245,11 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
                 else
                     arrPresence.isPhaseField2Present = false;
 
+                SPtr<CbArray3D<LBMReal, IndexerX3X2X1>> pressureFieldPtr = block->getKernel()->getDataSet()->getPressureField();
+                if (pressureFieldPtr)
+                    arrPresence.isPressureFieldPresent = true;
+                else
+                    arrPresence.isPressureFieldPresent = false;
 
                 firstBlock = false;
             }
@@ -398,6 +403,10 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
 
     if (arrPresence.isPhaseField2Present)
         write3DArray(step, PhaseField2, std::string("/cpPhaseField2.bin"));
+
+    if (arrPresence.isPressureFieldPresent)
+        write3DArray(step, PressureField, std::string("/cpPressureField.bin"));
+
     }
 
 void MPIIOMigrationBECoProcessor::write4DArray(int step, Arrays arrayType, std::string fname)
@@ -564,6 +573,9 @@ void MPIIOMigrationBECoProcessor::write3DArray(int step, Arrays arrayType, std::
                     break;
                 case PhaseField2:
                     ___Array = block->getKernel()->getDataSet()->getPhaseField2();
+                    break;
+                case PressureField:
+                    ___Array = block->getKernel()->getDataSet()->getPressureField();
                     break;
                 default:
                     UB_THROW(UbException(UB_EXARGS,
@@ -1217,6 +1229,7 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
             // find the nesessary block and fill it
             SPtr<Block3D> block = grid->getBlock(blockID);
             this->lbmKernel->setBlock(block);
+            this->lbmKernel->setNX(std::array<int, 3>{ {dataSetParamStr1.nx1, dataSetParamStr1.nx2, dataSetParamStr1.nx3}});
             SPtr<LBMKernel> kernel = this->lbmKernel->clone();
             LBMReal collFactor = LBMSystem::calcCollisionFactor(this->nue, block->getLevel());
             LBMReal collFactorL = LBMSystem::calcCollisionFactor(this->nuL, block->getLevel());
@@ -1285,9 +1298,12 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
     if (arrPresence.isPhaseField2Present)
         readArray(step, PhaseField2, std::string("/cpPhaseField2.bin"));
 
+    if (arrPresence.isPressureFieldPresent)
+        readArray(step, PressureField, std::string("/cpPressureField.bin"));
+
     delete[] rawDataReceiveF;
     delete[] rawDataReceiveH1;
-//    delete[] rawDataReceiveH2;
+    delete[] rawDataReceiveH2;
 }
 
 void MPIIOMigrationBECoProcessor::readArray(int step, Arrays arrType, std::string fname)
@@ -1429,6 +1445,11 @@ void MPIIOMigrationBECoProcessor::readArray(int step, Arrays arrType, std::strin
                     ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
                         vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
                     block->getKernel()->getDataSet()->setPhaseField2(___3DArray);
+                    break;
+                case PressureField:
+                    ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
+                        vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
+                    block->getKernel()->getDataSet()->setPressureField(___3DArray);
                     break;
                 default:
                     UB_THROW(UbException(UB_EXARGS, "MPIIOMigrationBECoProcessor::readArray : array type does not exist!"));

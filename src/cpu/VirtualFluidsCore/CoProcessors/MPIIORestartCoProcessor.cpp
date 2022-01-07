@@ -286,6 +286,12 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
                 else
                     arrPresence.isPhaseField2Present = false;
 
+                SPtr<CbArray3D<LBMReal, IndexerX3X2X1>> pressureFieldPtr = block->getKernel()->getDataSet()->getPressureField();
+                if (pressureFieldPtr)
+                    arrPresence.isPressureFieldPresent = true;
+                else
+                    arrPresence.isPressureFieldPresent = false;
+
                 firstBlock = false;
             }
 
@@ -440,6 +446,33 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
     MPI_File_close(&file_handler1);
 
     if (arrPresence.isAverageDensityArrayPresent)
+        write4DArray(step, AverageDensity, std::string("/cpAverageDensityArray.bin"));
+
+    if (arrPresence.isAverageVelocityArrayPresent)
+        write4DArray(step, AverageVelocity, std::string("/cpAverageVelocityArray.bin"));
+
+    if (arrPresence.isAverageFluktuationsArrayPresent)
+        write4DArray(step, AverageFluktuations, std::string("/cpAverageFluktuationsArray.bin"));
+
+    if (arrPresence.isAverageTripleArrayPresent)
+        write4DArray(step, AverageTriple, std::string("/cpAverageTripleArray.bin"));
+
+    if (arrPresence.isShearStressValArrayPresent)
+        write4DArray(step, ShearStressVal, std::string("/cpShearStressValArray.bin"));
+
+    if (arrPresence.isRelaxationFactorPresent)
+        write3DArray(step, RelaxationFactor, std::string("/cpRelaxationFactor.bin"));
+
+    if (arrPresence.isPhaseField1Present)
+        write3DArray(step, PhaseField1, std::string("/cpPhaseField1.bin"));
+
+    if (arrPresence.isPhaseField2Present)
+        write3DArray(step, PhaseField2, std::string("/cpPhaseField2.bin"));
+
+    if (arrPresence.isPressureFieldPresent)
+        write3DArray(step, PressureField, std::string("/cpPressureField.bin"));
+
+    /*if (arrPresence.isAverageDensityArrayPresent)
         writeAverageDensityArray(step);
 
     if (arrPresence.isAverageVelocityArrayPresent)
@@ -462,9 +495,327 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
 
     if (arrPresence.isPhaseField2Present)
         writePhaseField(step, 2);
+
+    if (arrPresence.isPressureFieldPresent)
+        writePressureField(step);*/
+
 }
 
-void MPIIORestartCoProcessor::writeAverageDensityArray(int step)
+void MPIIORestartCoProcessor::write4DArray(int step, Arrays arrayType, std::string fname)
+{
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
+
+    std::vector<SPtr<Block3D>> blocksVector[25];
+    int minInitLevel = this->grid->getCoarsestInitializedLevel();
+    int maxInitLevel = this->grid->getFinestInitializedLevel();
+    for (int level = minInitLevel; level <= maxInitLevel; level++)
+    {
+        grid->getBlocks(level, rank, blocksVector[level]);
+        blocksCount += static_cast<int>(blocksVector[level].size());
+    }
+
+    DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
+    std::vector<double> doubleValuesArray; // double-values of the AverageDensityArray in all blocks
+    dataSetParam dataSetParamStr;
+
+    if (comm->isRoot())
+    {
+        UBLOG(logINFO, "MPIIORestartCoProcessor::writeAverageDensityArray start collect data to file = " << fname);
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+    }
+
+    bool firstBlock = true;
+    int doubleCountInBlock = 0;
+    int ic = 0;
+    SPtr<CbArray4D<LBMReal, IndexerX4X3X2X1>> ___Array;
+
+    for (int level = minInitLevel; level <= maxInitLevel; level++)
+    {
+        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        {
+            dataSetSmallArray[ic].x1 = block->getX1(); // coordinates of the block needed to find it while regenerating the grid
+            dataSetSmallArray[ic].x2 = block->getX2();
+            dataSetSmallArray[ic].x3 = block->getX3();
+            dataSetSmallArray[ic].level = block->getLevel();
+
+            switch (arrayType)
+            {
+            case AverageDensity:
+                ___Array = block->getKernel()->getDataSet()->getAverageDensity();
+                break;
+            case AverageVelocity:
+                ___Array = block->getKernel()->getDataSet()->getAverageVelocity();
+                break;
+            case AverageFluktuations:
+                ___Array = block->getKernel()->getDataSet()->getAverageFluctuations();
+                break;
+            case AverageTriple:
+                ___Array = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
+                break;
+            case ShearStressVal:
+                ___Array = block->getKernel()->getDataSet()->getShearStressValues();
+                break;
+            default:
+                UB_THROW(UbException(UB_EXARGS, "MPIIORestartCoProcessor::write4DArray : 4D array type does not exist!"));
+                break;
+            }
+
+            if (firstBlock) // when first (any) valid block...
+            {
+                dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
+                dataSetParamStr.nx[0] = static_cast<int>(___Array->getNX1());
+                dataSetParamStr.nx[1] = static_cast<int>(___Array->getNX2());
+                dataSetParamStr.nx[2] = static_cast<int>(___Array->getNX3());
+                dataSetParamStr.nx[3] = static_cast<int>(___Array->getNX4());
+                doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+
+                firstBlock = false;
+            }
+
+            if (___Array && (dataSetParamStr.nx[0] > 0) && (dataSetParamStr.nx[1] > 0) && (dataSetParamStr.nx[2] > 0) && (dataSetParamStr.nx[3] > 0))
+                doubleValuesArray.insert(doubleValuesArray.end(), ___Array->getDataVector().begin(), ___Array->getDataVector().end());
+
+            ic++;
+        }
+    }
+ 
+     // register new MPI-types depending on the block-specific information
+    MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
+    MPI_Type_commit(&dataSetDoubleType);
+
+    if (comm->isRoot())
+    {
+        UBLOG(logINFO, "MPIIORestartCoProcessor::write4DArray start MPI IO rank = " << rank);
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+    }
+
+    // write to the file
+    // all processes calculate their offsets (quantity of bytes that the process is going to write)
+    // and notify the next process (with the rank = rank + 1)
+    MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
+    size_t next_write_offset = 0;
+
+    if (size > 1)
+    {
+        if (rank == 0)
+        {
+            next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount * (sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
+            MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
+        }
+        else
+        {
+            MPI_Recv(&write_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount * (sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
+            if (rank < size - 1)
+                MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
+        }
+    }
+
+    double start{ 0. };
+    double finish{ 0. };
+    if (comm->isRoot())
+        start = MPI_Wtime();
+
+    MPI_Info info = MPI_INFO_NULL;
+
+#ifdef HLRN_LUSTRE
+    MPI_Info_create(&info);
+    MPI_Info_set(info, "striping_factor", "40");
+    MPI_Info_set(info, "striping_unit", "4M");
+#endif
+
+    MPI_File file_handler;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+    int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+    if (rc != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename);
+
+    // each process writes the quantity of it's blocks
+    MPI_File_write_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
+    // each process writes common parameters of a dataSet
+    MPI_File_write_at(file_handler, write_offset, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
+    // each process writes data identifying blocks
+    MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
+    // each process writes the dataSet arrays
+    if (doubleValuesArray.size() > 0)
+        MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)),
+            &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+
+    MPI_File_sync(file_handler);
+    MPI_File_close(&file_handler);
+    MPI_Type_free(&dataSetDoubleType);
+
+    if (comm->isRoot())
+    {
+        finish = MPI_Wtime();
+        UBLOG(logINFO, "MPIIORestartCoProcessor::write4DArray time: " << finish - start << " s");
+    }
+
+    delete[] dataSetSmallArray;
+}
+
+void MPIIORestartCoProcessor::write3DArray(int step, Arrays arrayType, std::string fname)
+{
+   int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
+
+    std::vector<SPtr<Block3D>> blocksVector[25];
+    int minInitLevel = this->grid->getCoarsestInitializedLevel();
+    int maxInitLevel = this->grid->getFinestInitializedLevel();
+    for (int level = minInitLevel; level <= maxInitLevel; level++)
+    {
+        grid->getBlocks(level, rank, blocksVector[level]);
+        blocksCount += static_cast<int>(blocksVector[level].size());
+    }
+
+    DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
+    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks
+    dataSetParam dataSetParamStr;
+
+    if (comm->isRoot())
+    {
+        UBLOG(logINFO, "MPIIORestartCoProcessor::write3DArray start collect data to file = " << fname);
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+    }
+
+    bool firstBlock = true;
+    size_t doubleCountInBlock = 0;
+    int ic = 0;
+    SPtr<CbArray3D<LBMReal, IndexerX3X2X1>> ___Array;
+
+    for (int level = minInitLevel; level <= maxInitLevel; level++)
+    {
+        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        {
+            dataSetSmallArray[ic].x1 = block->getX1(); // coordinates of the block needed to find it while regenerating the grid
+            dataSetSmallArray[ic].x2 = block->getX2();
+            dataSetSmallArray[ic].x3 = block->getX3();
+            dataSetSmallArray[ic].level = block->getLevel();
+
+            switch (arrayType)
+            {
+            case RelaxationFactor:
+                ___Array = block->getKernel()->getDataSet()->getRelaxationFactor();
+                break;
+            case PhaseField1:
+                ___Array = block->getKernel()->getDataSet()->getPhaseField();
+                break;
+            case PhaseField2:
+                ___Array = block->getKernel()->getDataSet()->getPhaseField2();
+                break;
+            case PressureField:
+                ___Array = block->getKernel()->getDataSet()->getPressureField();
+                break;
+            default:
+                UB_THROW(UbException(UB_EXARGS, "MPIIORestartCoProcessor::write3DArray : 3D array type does not exist!"));
+                break;
+            }
+
+            if (firstBlock) // when first (any) valid block...
+            {
+                dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
+                dataSetParamStr.nx[0] = static_cast<int>(___Array->getNX1());
+                dataSetParamStr.nx[1] = static_cast<int>(___Array->getNX2());
+                dataSetParamStr.nx[2] = static_cast<int>(___Array->getNX3());
+                dataSetParamStr.nx[3] = 1;
+                doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+
+                firstBlock = false;
+            }
+
+            if (___Array && (dataSetParamStr.nx[0] > 0) && (dataSetParamStr.nx[1] > 0) && (dataSetParamStr.nx[2] > 0))
+                doubleValuesArray.insert(doubleValuesArray.end(), ___Array->getDataVector().begin(), ___Array->getDataVector().end());
+
+            ic++;
+        }
+    }
+
+     // register new MPI-types depending on the block-specific information
+    MPI_Type_contiguous(int(doubleCountInBlock), MPI_DOUBLE, &dataSetDoubleType);
+    MPI_Type_commit(&dataSetDoubleType);
+
+    if (comm->isRoot())
+    {
+        UBLOG(logINFO, "MPIIORestartCoProcessor::write3DArray start MPI IO rank = " << rank);
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+    }
+
+    // write to the file
+    // all processes calculate their offsets (quantity of bytes that the process is going to write)
+    // and notify the next process (with the rank = rank + 1)
+    MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
+    size_t next_write_offset = 0;
+
+    if (size > 1)
+    {
+        if (rank == 0)
+        {
+            next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount * (sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
+            MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
+    }
+        else
+        {
+            MPI_Recv(&write_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount * (sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
+            if (rank < size - 1)
+                MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
+        }
+}
+
+
+    double start{ 0. };
+    double finish{ 0. };
+    if (comm->isRoot())
+        start = MPI_Wtime();
+
+    MPI_Info info = MPI_INFO_NULL;
+
+#ifdef HLRN_LUSTRE
+    MPI_Info_create(&info);
+    MPI_Info_set(info, "striping_factor", "40");
+    MPI_Info_set(info, "striping_unit", "4M");
+#endif
+
+    MPI_File file_handler;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+    int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+    if (rc != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename);
+
+    // each process writes the quantity of it's blocks
+    MPI_File_write_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
+    // each process writes common parameters of a dataSet
+    MPI_File_write_at(file_handler, write_offset, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
+    // each process writes data identifying blocks
+    MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount,
+        dataSetSmallType, MPI_STATUS_IGNORE);
+    // each process writes the dataSet arrays
+    if (doubleValuesArray.size() > 0)
+        MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)),
+            &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+
+
+    MPI_File_sync(file_handler);
+    MPI_File_close(&file_handler);
+    MPI_Type_free(&dataSetDoubleType);
+
+    if (comm->isRoot())
+    {
+        finish = MPI_Wtime();
+        UBLOG(logINFO, "MPIIORestartCoProcessor ::write3DArray time: " << finish - start << " s");
+    }
+
+    delete[] dataSetSmallArray;
+}
+
+/*void MPIIORestartCoProcessor::writeAverageDensityArray(int step)
 {
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -1351,7 +1702,7 @@ void MPIIORestartCoProcessor::writePhaseField(int step, int fieldN)
                 dataSetParamStr.nx[2] = static_cast<int>(PhaseField3DPtr->getNX3());
                 dataSetParamStr.nx[3] = 1;
                 doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
-
+                std::cout << "writePhaseField"<<fieldN<< " = " << dataSetParamStr.nx[0] << " " << dataSetParamStr.nx[1] << " " << dataSetParamStr.nx[2] << std::endl;
                 firstBlock = false;
             }
             if ((dataSetParamStr.nx[0] > 0) && (dataSetParamStr.nx[1] > 0) && (dataSetParamStr.nx[2] > 0))
@@ -1439,6 +1790,147 @@ void MPIIORestartCoProcessor::writePhaseField(int step, int fieldN)
 
     delete[] dataSetSmallArray;
 }
+
+void MPIIORestartCoProcessor::writePressureField(int step)
+{
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
+
+    std::vector<SPtr<Block3D>> blocksVector[25];
+    int minInitLevel = this->grid->getCoarsestInitializedLevel();
+    int maxInitLevel = this->grid->getFinestInitializedLevel();
+    for (int level = minInitLevel; level <= maxInitLevel; level++)
+    {
+        grid->getBlocks(level, rank, blocksVector[level]);
+        blocksCount += static_cast<int>(blocksVector[level].size());
+    }
+
+    DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
+    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks
+    dataSetParam dataSetParamStr;
+
+    if (comm->isRoot())
+    {
+        UBLOG(logINFO, "MPIIORestartCoProcessor::writePressureField start collect data rank = " << rank);
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+    }
+
+    bool firstBlock = true;
+    int doubleCountInBlock = 0;
+    int ic = 0;
+    SPtr<CbArray3D<LBMReal, IndexerX3X2X1>> PressureField3DPtr;
+
+    for (int level = minInitLevel; level <= maxInitLevel; level++)
+    {
+        for (SPtr<Block3D> block : blocksVector[level]) //	blocks of the current level
+        {
+            dataSetSmallArray[ic].x1 = block->getX1(); // coordinates of the block needed to find it while regenerating the grid
+            dataSetSmallArray[ic].x2 = block->getX2();
+            dataSetSmallArray[ic].x3 = block->getX3();
+            dataSetSmallArray[ic].level = block->getLevel();
+
+            PressureField3DPtr = block->getKernel()->getDataSet()->getPressureField();
+
+            if (firstBlock) // when first (any) valid block...
+            {
+                dataSetParamStr.nx1 = dataSetParamStr.nx2 = dataSetParamStr.nx3 = 0;
+                dataSetParamStr.nx[0] = static_cast<int>(PressureField3DPtr->getNX1());
+                dataSetParamStr.nx[1] = static_cast<int>(PressureField3DPtr->getNX2());
+                dataSetParamStr.nx[2] = static_cast<int>(PressureField3DPtr->getNX3());
+                dataSetParamStr.nx[3] = 1;
+                doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+
+                firstBlock = false;
+            }
+
+            if ((dataSetParamStr.nx[0] > 0) && (dataSetParamStr.nx[1] > 0) && (dataSetParamStr.nx[2] > 0))
+                doubleValuesArray.insert(doubleValuesArray.end(), PressureField3DPtr->getDataVector().begin(),
+                    PressureField3DPtr->getDataVector().end());
+ 
+            ic++;
+        }
+    }
+    //doubleValuesArrayRW.assign(doubleValuesArray.begin(), doubleValuesArray.end());
+    //std::cout << "doubleValuesArrayRW = " << doubleValuesArrayRW.size() << std::endl;
+   // register new MPI-types depending on the block-specific information
+    MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+    MPI_Type_commit(&dataSetDoubleType);
+
+    if (comm->isRoot())
+    {
+        UBLOG(logINFO, "MPIIORestartCoProcessor::writePressureField start MPI IO rank = " << rank);
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+    }
+
+    // write to the file
+    // all processes calculate their offsets (quantity of bytes that the process is going to write)
+    // and notify the next process (with the rank = rank + 1)
+    MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
+    size_t next_write_offset = 0;
+
+    if (size > 1)
+    {
+        if (rank == 0)
+        {
+            next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount * (sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
+            MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
+        }
+        else
+        {
+            MPI_Recv(&write_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount * (sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
+            if (rank < size - 1)
+                MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
+        }
+    }
+
+
+    double start{ 0. };
+    double finish{ 0. };
+    if (comm->isRoot())
+        start = MPI_Wtime();
+
+    MPI_Info info = MPI_INFO_NULL;
+
+#ifdef HLRN_LUSTRE
+    MPI_Info_create(&info);
+    MPI_Info_set(info, "striping_factor", "40");
+    MPI_Info_set(info, "striping_unit", "4M");
+#endif
+
+    MPI_File file_handler;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpPressureField.bin";
+    int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
+    if (rc != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename);
+
+    // each process writes the quantity of it's blocks
+    MPI_File_write_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
+    // each process writes common parameters of a dataSet
+    MPI_File_write_at(file_handler, write_offset, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
+    // each process writes data identifying blocks
+    MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount,
+        dataSetSmallType, MPI_STATUS_IGNORE);
+    // each process writes the dataSet arrays
+    if (doubleValuesArray.size() > 0)
+        MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)),
+            &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+
+    MPI_File_sync(file_handler);
+    MPI_File_close(&file_handler);
+    MPI_Type_free(&dataSetDoubleType);
+
+    if (comm->isRoot())
+    {
+        finish = MPI_Wtime();
+        UBLOG(logINFO, "MPIIORestartCoProcessor::writePressureField time: " << finish - start << " s");
+    }
+
+    delete[] dataSetSmallArray;
+}*/
 
 void MPIIORestartCoProcessor::writeBoundaryConds(int step)
 {
@@ -1854,6 +2346,7 @@ void MPIIORestartCoProcessor::readDataSet(int step)
         SPtr<Block3D> block = grid->getBlock(dataSetArray[n].x1, dataSetArray[n].x2, dataSetArray[n].x3, dataSetArray[n].level);
    
         this->lbmKernel->setBlock(block);
+        this->lbmKernel->setNX(std::array<int, 3>{{dataSetParamStr1.nx1, dataSetParamStr1.nx2, dataSetParamStr1.nx3}});
         SPtr<LBMKernel> kernel = this->lbmKernel->clone();
         kernel->setGhostLayerWidth(dataSetArray[n].ghostLayerWidth);
         kernel->setCollisionFactor(dataSetArray[n].collFactor);
@@ -1892,7 +2385,7 @@ void MPIIORestartCoProcessor::readDataSet(int step)
     MPI_File_read_at(file_handler1, (MPI_Offset)0, &arrPresence, 1, arrayPresenceType, MPI_STATUS_IGNORE);
     MPI_File_close(&file_handler1);
 
-    if (arrPresence.isAverageDensityArrayPresent)
+    /*if (arrPresence.isAverageDensityArrayPresent)
         readAverageDensityArray(step);
 
     if (arrPresence.isAverageVelocityArrayPresent)
@@ -1915,9 +2408,192 @@ void MPIIORestartCoProcessor::readDataSet(int step)
 
     if (arrPresence.isPhaseField2Present)
         readPhaseField(step, 2);
+
+    if (arrPresence.isPressureFieldPresent)
+        readPressureField(step);*/
+
+    if (arrPresence.isAverageDensityArrayPresent)
+        readArray(step, AverageDensity, std::string("/cpAverageDensityArray.bin"));
+
+    if (arrPresence.isAverageVelocityArrayPresent)
+        readArray(step, AverageVelocity, std::string("/cpAverageVelocityArray.bin"));
+
+    if (arrPresence.isAverageFluktuationsArrayPresent)
+        readArray(step, AverageFluktuations, std::string("/cpAverageFluktuationsArray.bin"));
+
+    if (arrPresence.isAverageTripleArrayPresent)
+        readArray(step, AverageTriple, std::string("/cpAverageTripleArray.bin"));
+
+    if (arrPresence.isShearStressValArrayPresent)
+        readArray(step, ShearStressVal, std::string("/cpShearStressValArray.bin"));
+
+    if (arrPresence.isRelaxationFactorPresent)
+        readArray(step, RelaxationFactor, std::string("/cpRelaxationFactor.bin"));
+
+    if (arrPresence.isPhaseField1Present)
+        readArray(step, PhaseField1, std::string("/cpPhaseField1.bin"));
+
+    if (arrPresence.isPhaseField2Present)
+        readArray(step, PhaseField2, std::string("/cpPhaseField2.bin"));
+
+    if (arrPresence.isPressureFieldPresent)
+        readArray(step, PressureField, std::string("/cpPressureField.bin"));
+
 }
 
-void MPIIORestartCoProcessor::readAverageDensityArray(int step)
+void MPIIORestartCoProcessor::readArray(int step, Arrays arrType, std::string fname)
+{
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (comm->isRoot())
+    {
+        UBLOG(logINFO, "MPIIORestartCoProcessor::readArray start fname = " << fname);
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+    }
+
+    double start{ 0. };
+    double finish{ 0. };
+    if (comm->isRoot())
+        start = MPI_Wtime();
+
+    MPI_File file_handler;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+    int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
+    if (rc != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename);
+
+    // read count of blocks
+    size_t blocksCount = 0;
+    dataSetParam dataSetParamStr;
+    memset(&dataSetParamStr, 0, sizeof(dataSetParam));
+
+    MPI_File_read_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
+    MPI_File_read_at(file_handler, (MPI_Offset)(size * sizeof(int)), &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
+
+    DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
+    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
+
+    // define MPI_types depending on the block-specific information
+    MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+    MPI_Type_commit(&dataSetDoubleType);
+
+    // calculate the read offset
+    MPI_Offset read_offset = (MPI_Offset)(size * sizeof(int));
+    size_t next_read_offset = 0;
+
+    if (size > 1)
+    {
+        if (rank == 0)
+        {
+            next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount * (sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
+            MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
+        }
+        else
+        {
+            MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount * (sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
+            if (rank < size - 1)
+                MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
+        }
+    }
+
+    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
+    if (doubleCountInBlock > 0)
+        MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)),
+            &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+    MPI_File_close(&file_handler);
+    MPI_Type_free(&dataSetDoubleType);
+
+    if (comm->isRoot())
+    {
+        finish = MPI_Wtime();
+        UBLOG(logINFO, "MPIIORestartCoProcessor::readArray time: " << finish - start << " s");
+        UBLOG(logINFO, "MPIIORestartCoProcessor::readArray start of restore of data, rank = " << rank);
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+    }
+
+    //----------------------------- restore data ---------------------------------
+    SPtr<CbArray4D<LBMReal, IndexerX4X3X2X1>> ___4DArray;
+    SPtr<CbArray3D<LBMReal, IndexerX3X2X1>> ___3DArray;
+
+    size_t index = 0;
+    size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+    std::vector<double> vectorsOfValues;
+    for (std::size_t n = 0; n < blocksCount; n++)
+    {
+        vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
+        index += nextVectorSize;
+
+        // find the nesessary block and fill it
+        SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
+
+       // fill arrays
+       switch (arrType)
+        {
+        case AverageDensity:
+            ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(
+                vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+            block->getKernel()->getDataSet()->setAverageDensity(___4DArray);
+            break;
+        case AverageVelocity:
+            ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(
+                vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+            block->getKernel()->getDataSet()->setAverageVelocity(___4DArray);
+            break;
+        case AverageFluktuations:
+            ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(
+                vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+            block->getKernel()->getDataSet()->setAverageFluctuations(___4DArray);
+            break;
+        case AverageTriple:
+            ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(
+                vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+            block->getKernel()->getDataSet()->setAverageTriplecorrelations(___4DArray);
+            break;
+        case ShearStressVal:
+            ___4DArray = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(
+                vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2], dataSetParamStr.nx[3]));
+            block->getKernel()->getDataSet()->setShearStressValues(___4DArray);
+            break;
+        case RelaxationFactor:
+            ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
+                vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
+            block->getKernel()->getDataSet()->setRelaxationFactor(___3DArray);
+            break;
+        case PhaseField1:
+            ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
+                vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
+            block->getKernel()->getDataSet()->setPhaseField(___3DArray);
+            break;
+        case PhaseField2:
+            ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
+                vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
+            block->getKernel()->getDataSet()->setPhaseField2(___3DArray);
+            break;
+        case PressureField:
+            ___3DArray = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
+                vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
+            block->getKernel()->getDataSet()->setPressureField(___3DArray);
+            break;
+        default:
+            UB_THROW(UbException(UB_EXARGS, "MPIIORestartCoProcessor::readArray : array type does not exist!"));
+            break;
+        }
+    }
+
+    if (comm->isRoot())
+    {
+        UBLOG(logINFO, "MPIIORestartCoProcessor::readArray end of restore of data, rank = " << rank);
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+    }
+
+    delete[] dataSetSmallArray;
+}
+
+/*void MPIIORestartCoProcessor::readAverageDensityArray(int step)
 {
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -2592,6 +3268,7 @@ void MPIIORestartCoProcessor::readPhaseField(int step, int fieldN)
     size_t index = 0;
     size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
     std::vector<double> vectorsOfValues;
+    std::cout << "readPhaseField"<< fieldN<<" = " << dataSetParamStr.nx[0] << " " << dataSetParamStr.nx[1] << " " << dataSetParamStr.nx[2] << std::endl;
 
     for (int n = 0; n < blocksCount; n++)
     {
@@ -2609,6 +3286,12 @@ void MPIIORestartCoProcessor::readPhaseField(int step, int fieldN)
             block->getKernel()->getDataSet()->setPhaseField(mPhaseField);
         else
             block->getKernel()->getDataSet()->setPhaseField2(mPhaseField);
+       int nx1 = static_cast<int>(block->getKernel()->getDataSet()->getPhaseField()->getNX1());
+       int nx2 = static_cast<int>(block->getKernel()->getDataSet()->getPhaseField()->getNX2());
+       int nx3 = static_cast<int>(block->getKernel()->getDataSet()->getPhaseField()->getNX3());
+        dataSetParamStr.nx[3] = 1;
+        doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+        std::cout << "writePhaseField" << fieldN << " = " << nx1 << " " << nx2 << " " << nx3 << std::endl;
 
     }
 
@@ -2620,6 +3303,106 @@ void MPIIORestartCoProcessor::readPhaseField(int step, int fieldN)
 
     delete[] dataSetSmallArray;
 }
+
+void MPIIORestartCoProcessor::readPressureField(int step)
+{
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (comm->isRoot())
+    {
+        UBLOG(logINFO, "MPIIORestartCoProcessor::readPressureField start MPI IO rank = " << rank);
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+    }
+
+    double start{ 0. };
+    double finish{ 0. };
+    if (comm->isRoot())
+        start = MPI_Wtime();
+
+    MPI_File file_handler;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpPressureField.bin";
+    int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
+    if (rc != MPI_SUCCESS)
+        throw UbException(UB_EXARGS, "couldn't open file " + filename);
+
+    // read count of blocks
+    int blocksCount = 0;
+    dataSetParam dataSetParamStr;
+    MPI_File_read_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
+    MPI_File_read_at(file_handler, (MPI_Offset)(size * sizeof(int)), &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
+
+    DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
+    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
+
+    // define MPI_types depending on the block-specific information
+    MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+    MPI_Type_commit(&dataSetDoubleType);
+
+    // calculate the read offset
+    MPI_Offset read_offset = (MPI_Offset)(size * sizeof(int));
+    size_t next_read_offset = 0;
+
+    if (size > 1)
+    {
+        if (rank == 0)
+        {
+            next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount * (sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
+            MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
+        }
+        else
+        {
+            MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount * (sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
+            if (rank < size - 1)
+                MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
+        }
+    }
+
+    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
+    if (doubleCountInBlock > 0)
+        MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)),
+            &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+    MPI_File_close(&file_handler);
+    MPI_Type_free(&dataSetDoubleType);
+
+    if (comm->isRoot())
+    {
+        finish = MPI_Wtime();
+        UBLOG(logINFO, "MPIIORestartCoProcessor::readPressureField time: " << finish - start << " s");
+        UBLOG(logINFO, "MPIIORestartCoProcessor::readPressureField start of restore of data, rank = " << rank);
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+    }
+
+    size_t index = 0;
+    size_t nextVectorSize = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
+    std::vector<double> vectorsOfValues;
+
+    for (int n = 0; n < blocksCount; n++)
+    {
+        vectorsOfValues.assign(doubleValuesArray.data() + index, doubleValuesArray.data() + index + nextVectorSize);
+        index += nextVectorSize;
+    
+        // fill Pressure array
+        SPtr<PressureFieldArray3D> mPressureField;
+        mPressureField = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(
+            vectorsOfValues, dataSetParamStr.nx[0], dataSetParamStr.nx[1], dataSetParamStr.nx[2]));
+
+        // find the nesessary block and fill it
+        SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
+        block->getKernel()->getDataSet()->setPressureField(mPressureField);
+    }
+
+    if (comm->isRoot())
+    {
+        UBLOG(logINFO, "MPIIORestartCoProcessor::readPressureField end of restore of data, rank = " << rank);
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+    }
+
+    delete[] dataSetSmallArray;
+}*/
 
 void MPIIORestartCoProcessor::readBoundaryConds(int step)
 {
