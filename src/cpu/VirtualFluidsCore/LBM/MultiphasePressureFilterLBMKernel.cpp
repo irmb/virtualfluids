@@ -50,12 +50,12 @@ void MultiphasePressureFilterLBMKernel::initDataSet()
 	SPtr<DistributionArray3D> f(new D3Q27EsoTwist3DSplittedVector( nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9));
 	SPtr<DistributionArray3D> h(new D3Q27EsoTwist3DSplittedVector( nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9)); // For phase-field
 
-	SPtr<PhaseFieldArray3D> divU1(new PhaseFieldArray3D(            nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
+	//SPtr<PhaseFieldArray3D> divU1(new PhaseFieldArray3D(            nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
 	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure(new  CbArray3D<LBMReal, IndexerX3X2X1>(    nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
 	pressureOld = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new  CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
 	dataSet->setFdistributions(f);
 	dataSet->setHdistributions(h); // For phase-field
-	dataSet->setPhaseField(divU1);
+	//dataSet->setPhaseField(divU1);
 	dataSet->setPressureField(pressure);
 
 	phaseField = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.0));
@@ -1494,30 +1494,6 @@ LBMReal MultiphasePressureFilterLBMKernel::gradX3_phi()
 		+WEIGTH[N] * (phi[T] - phi[B]));
 }
 
-LBMReal MultiphasePressureFilterLBMKernel::gradX1_phi2()
-{
-	using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[TNE] * (((phi2[TNE] - phi2[BSW]) + (phi2[BSE] - phi2[TNW])) + ((phi2[TSE] - phi2[BNW]) + (phi2[BNE] - phi2[TSW])))
-		+ WEIGTH[NE] * (((phi2[TE] - phi2[BW]) + (phi2[BE] - phi2[TW])) + ((phi2[SE] - phi2[NW]) + (phi2[NE] - phi2[SW])))) +
-		+WEIGTH[N] * (phi2[E] - phi2[W]));
-}
-
-LBMReal MultiphasePressureFilterLBMKernel::gradX2_phi2()
-{
-	using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[TNE] * (((phi2[TNE] - phi2[BSW]) - (phi2[BSE] - phi2[TNW])) + ((phi2[BNE] - phi2[TSW]) - (phi2[TSE] - phi2[BNW])))
-		+ WEIGTH[NE] * (((phi2[TN] - phi2[BS]) + (phi2[BN] - phi2[TS])) + ((phi2[NE] - phi2[SW]) - (phi2[SE] - phi2[NW])))) +
-		+WEIGTH[N] * (phi2[N] - phi2[S]));
-}
-
-LBMReal MultiphasePressureFilterLBMKernel::gradX3_phi2()
-{
-	using namespace D3Q27System;
-	return 3.0 * ((WEIGTH[TNE] * (((phi2[TNE] - phi2[BSW]) - (phi2[BSE] - phi2[TNW])) + ((phi2[TSE] - phi2[BNW]) - (phi2[BNE] - phi2[TSW])))
-		+ WEIGTH[NE] * (((phi2[TE] - phi2[BW]) - (phi2[BE] - phi2[TW])) + ((phi2[TS] - phi2[BN]) + (phi2[TN] - phi2[BS])))) +
-		+WEIGTH[N] * (phi2[T] - phi2[B]));
-}
-
 LBMReal MultiphasePressureFilterLBMKernel::nabla2_phi()
 {
 	using namespace D3Q27System;
@@ -1611,27 +1587,6 @@ void MultiphasePressureFilterLBMKernel::findNeighbors(CbArray3D<LBMReal, Indexer
 			phi[k] = (*ph)(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k]);
 		} else {
 			phi[k] = 0.0;
-		}
-	}
-}
-
-void MultiphasePressureFilterLBMKernel::findNeighbors2(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2,
-	int x3)
-{
-	using namespace D3Q27System;
-
-	SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
-
-	phi2[REST] = (*ph)(x1, x2, x3);
-
-
-	for (int k = FSTARTDIR; k <= FENDDIR; k++) {
-
-		if (!bcArray->isSolid(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k])) {
-			phi2[k] = (*ph)(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k]);
-		}
-		else {
-			phi2[k] = 0.0;
 		}
 	}
 }

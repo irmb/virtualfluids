@@ -51,12 +51,6 @@ public:
     virtual ~MultiphasePressureFilterLBMKernel(void) = default;
     void calculate(int step) override;
     SPtr<LBMKernel> clone() override;
-
-
-    ///refactor
-    //CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure;
-
-
     double getCalculationTime() override { return .0; }
 protected:
     virtual void initDataSet();
@@ -68,8 +62,6 @@ protected:
     void backwardInverseChimeraWithKincompressible(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2, LBMReal Kinverse, LBMReal K, LBMReal oneMinusRho);
     void forwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
     void backwardChimera(LBMReal& mfa, LBMReal& mfb, LBMReal& mfc, LBMReal vv, LBMReal v2);
-
-    LBMReal f1[D3Q27System::ENDF+1];
 
     CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF;
     CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF;
@@ -85,22 +77,13 @@ protected:
     CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr divU; 
 
     LBMReal h  [D3Q27System::ENDF+1];
-    LBMReal h2[D3Q27System::ENDF + 1];
-    LBMReal g  [D3Q27System::ENDF+1];
     LBMReal phi[D3Q27System::ENDF+1];
-    LBMReal phi2[D3Q27System::ENDF + 1];
-    LBMReal pr1[D3Q27System::ENDF+1];
-    LBMReal phi_cutoff[D3Q27System::ENDF+1];
 
     LBMReal gradX1_phi();
     LBMReal gradX2_phi();
     LBMReal gradX3_phi();
-    LBMReal gradX1_phi2();
-    LBMReal gradX2_phi2();
-    LBMReal gradX3_phi2();
     void computePhasefield();
     void findNeighbors(CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr ph /*Phase-Field*/, int x1, int x2, int x3);
-    void findNeighbors2(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr ph, int x1, int x2, int x3);
 
     LBMReal nabla2_phi();
 
