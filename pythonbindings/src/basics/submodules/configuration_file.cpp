@@ -6,13 +6,12 @@ namespace configuration
 
     namespace py = pybind11;
 
-    py::module makeModule(py::module_ &parentModule)
+    void makeModule(py::module_ &parentModule)
     {
-        py::module configModule = parentModule.def_submodule("configuration");
 
-        py::class_<vf::basics::ConfigurationFile>(configModule, "ConfigurationFile")
+        py::class_<vf::basics::ConfigurationFile>(parentModule, "ConfigurationFile")
+        .def(py::init<>())
         .def("load", &vf::basics::ConfigurationFile::load);
 
-        return configModule;
     }
 }

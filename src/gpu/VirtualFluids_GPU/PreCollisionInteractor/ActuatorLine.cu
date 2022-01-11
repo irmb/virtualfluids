@@ -144,6 +144,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
 
 void ActuatorLine::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
 {
+    if(!para->getIsBodyForce()) throw std::runtime_error("try to allocate ActuatorLine but BodyForce is not set in Parameter.");
     this->initBladeRadii(cudaManager);
     this->initBladeCoords(cudaManager);    
     this->initBladeIndices(para, cudaManager);
@@ -156,7 +157,7 @@ void ActuatorLine::init(Parameter* para, GridProvider* gridProvider, CudaMemoryM
 void ActuatorLine::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
 {
     if (level != this->level) return;
-    
+
     cudaManager->cudaCopyBladeCoordsHtoD(this);
 
     uint numberOfThreads = para->getParH(level)->numberofthreads;

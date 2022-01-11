@@ -137,8 +137,3 @@ if(BUILD_VF_TRAFFIC)
     add_subdirectory(src/gpu/Traffic)
     add_subdirectory(apps/gpu/LBM/TrafficTest)
 endif()
-
-if(BUILD_VF_PYTHON_BINDINGS)
-    add_subdirectory(${VF_THIRD_DIR}/pybind11/pybind11-2.6.0)
-    add_subdirectory(src/gpu/pythonbindings)
-endif()

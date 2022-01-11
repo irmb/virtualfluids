@@ -3,7 +3,6 @@
 #include "lbm/lbm.cpp"
 #include "gpu/gpu.cpp"
 #include "logger/logger.cpp"
-#
 
 namespace py_bindings
 {
@@ -15,5 +14,6 @@ namespace py_bindings
         gpu::makeModule(m);
         lbm::makeModule(m);
         logger::makeModule(m);
+        py::add_ostream_redirect(m, "ostream_redirect");
     }
 }

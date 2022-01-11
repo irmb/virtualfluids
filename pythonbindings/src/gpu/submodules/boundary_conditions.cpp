@@ -5,11 +5,10 @@ namespace boundary_conditions
 {
     namespace py = pybind11;
 
-    py::module makeModule(py::module_ &parentModule)
+    void makeModule(py::module_ &parentModule)
     {
-        py::module boundaryConditionsModule = parentModule.def_submodule("boundary_conditions");
 
-        py::enum_<SideType>(boundaryConditionsModule, "side_type")
+        py::enum_<SideType>(parentModule, "SideType")
         .value("MX", SideType::MX)
         .value("PX", SideType::PX)
         .value("MY", SideType::MY)
@@ -19,6 +18,5 @@ namespace boundary_conditions
         .value("GEOMETRY", SideType::GEOMETRY)
         .export_values();
 
-        return boundaryConditionsModule;
     }
 }

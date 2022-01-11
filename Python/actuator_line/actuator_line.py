@@ -1,69 +1,103 @@
-from pyfluids import Simulation
-from pyfluids.boundaryconditions import NoSlipBoundaryCondition, VelocityBoundaryCondition
-from pyfluids.geometry import GbCuboid3D
-from pyfluids.kernel import LBMKernel, KernelType
-from pyfluids.parameters import GridParameters, PhysicalParameters, RuntimeParameters
-from pyfluids.writer import Writer, OutputFormat
-from pymuparser import Parser
+#%%
+import numpy as np
+from pathlib import Path
+from mpi4py import MPI
+from pyfluids import basics, gpu, logger
+#%%
+reference_diameter = 126
 
-runtime_params = RuntimeParameters()
-runtime_params.number_of_threads = 4
-runtime_params.number_of_timesteps = 10000
-runtime_params.timestep_log_interval = 1000
+length = np.array([30,8,8])*reference_diameter
+viscosity = 1.56e-5
+velocity = 9
+mach = 0.1
+nodes_per_diameter = 32
 
-physical_params = PhysicalParameters()
-physical_params.lattice_viscosity = 0.005
+sim_name = "ActuatorLine"
+config_file = (Path(__file__).parent/Path("config.txt"))
+timeStepOut = 500
+t_end = 50
 
-grid_params = GridParameters()
-grid_params.number_of_nodes_per_direction = [64, 64, 64]
-grid_params.blocks_per_direction = [2, 2, 2]
-grid_params.node_distance = 1 / 10
+#%%
+logger.Logger.initialize_logger()
+basics.logger.Logger.add_stdout()
+basics.logger.Logger.set_debug_level(basics.logger.Level.INFO_LOW)
+basics.logger.Logger.time_stamp(basics.logger.TimeStamp.ENABLE)
+basics.logger.Logger.enable_printed_rank_numbers(True)
+#%%
+grid_builder = gpu.MultipleGridBuilder.make_shared()
+dx = reference_diameter/nodes_per_diameter
 
+grid_builder.add_coarse_grid(0.0, 0.0, 0.0, *length, dx)
+grid_builder.set_periodic_boundary_condition(False, False, False)
+grid_builder.build_grids(basics.LbmOrGks.LBM, False)
+# %%
+comm = gpu.Communicator.get_instanz()
+#%%
+config = basics.ConfigurationFile()
+config.load(str(config_file))
+#%%
+para = gpu.Parameter(config, comm.get_number_of_process(), comm.get_pid())
 
-def run_simulation(physical_params=physical_params, grid_params=grid_params, runtime_params=runtime_params):
-    simulation = Simulation()
-    kernel = LBMKernel(KernelType.CompressibleCumulantFourthOrderViscosity)
+dt = dx * mach / (np.sqrt(3) * velocity)
+velocity_lb = velocity * dt / dx # LB units
+viscosity_lb = viscosity * dt / (dx * dx) # LB units
 
-    writer = Writer()
-    writer.output_path = "./output"
-    writer.output_format = OutputFormat.BINARY
+#%%
+para.set_devices([0])
+para.set_output_prefix(sim_name)
+para.set_f_name(para.get_output_path() + "/" + para.get_output_prefix())
+para.set_print_files(True)
+para.set_max_level(1)
+#%%
+para.set_velocity(velocity_lb)
+para.set_viscosity(viscosity_lb)    
+para.set_velocity_ratio(dx/dt)
+para.set_main_kernel("CumulantK17CompChim")
 
-    simulation.set_grid_parameters(grid_params)
-    simulation.set_physical_parameters(physical_params)
-    simulation.set_runtime_parameters(runtime_params)
-    simulation.set_kernel_config(kernel)
-    simulation.set_writer(writer)
+def init_func(coord_x, coord_y, coord_z):
+    return [0.0, velocity_lb, 0.0, 0.0]
 
-    no_slip_bc_adapter = NoSlipBoundaryCondition()
+para.set_initial_condition(init_func)
+para.set_t_out(timeStepOut)
+para.set_t_end(int(t_end/dt))
+para.set_is_body_force(True)
 
-    fct = Parser()
-    fct.expression = "u"
-    fct.define_constant("u", 0.005)
-    velocity_bc_adapter = VelocityBoundaryCondition(True, True, False, fct, 0, -10.0)
+#%%
+grid_builder.set_velocity_boundary_condition(gpu.SideType.MX, velocity_lb, 0.0, 0.0)
+grid_builder.set_velocity_boundary_condition(gpu.SideType.PX, velocity_lb, 0.0, 0.0)
 
-    g_min_x1, g_min_x2, g_min_x3 = 0, 0, 0
-    g_max_x1 = grid_params.number_of_nodes_per_direction[0] * grid_params.node_distance
-    g_max_x2 = grid_params.number_of_nodes_per_direction[1] * grid_params.node_distance
-    g_max_x3 = grid_params.number_of_nodes_per_direction[2] * grid_params.node_distance
+grid_builder.set_velocity_boundary_condition(gpu.SideType.MY, velocity_lb, 0.0, 0.0)
+grid_builder.set_velocity_boundary_condition(gpu.SideType.PY, velocity_lb, 0.0, 0.0)
 
-    dx = grid_params.node_distance
+grid_builder.set_velocity_boundary_condition(gpu.SideType.MZ, velocity_lb, 0.0, 0.0)
+grid_builder.set_velocity_boundary_condition(gpu.SideType.PZ, velocity_lb, 0.0, 0.0)
 
-    wall_x_min = GbCuboid3D(g_min_x1 - dx, g_min_x2 - dx, g_min_x3 - dx, g_min_x1, g_max_x2 + dx, g_max_x3)
-    wall_x_max = GbCuboid3D(g_max_x1, g_min_x2 - dx, g_min_x3 - dx, g_max_x1 + dx, g_max_x2 + dx, g_max_x3)
-    wall_y_min = GbCuboid3D(g_min_x1 - dx, g_min_x2 - dx, g_min_x3 - dx, g_max_x1 + dx, g_min_x2, g_max_x3)
-    wall_y_max = GbCuboid3D(g_min_x1 - dx, g_max_x2, g_min_x3 - dx, g_max_x1 + dx, g_max_x2 + dx, g_max_x3)
-    wall_z_min = GbCuboid3D(g_min_x1 - dx, g_min_x2 - dx, g_min_x3 - dx, g_max_x1 + dx, g_max_x2 + dx, g_min_x3)
-    wall_z_max = GbCuboid3D(g_min_x1 - dx, g_min_x2 - dx, g_max_x3, g_max_x1 + dx, g_max_x2 + dx, g_max_x3 + dx)
+#%%
+cuda_memory_manager = gpu.CudaMemoryManager.make(para)
+grid_generator = gpu.GridProvider.make_grid_generator(grid_builder, para, cuda_memory_manager)
+#%%
+turb_pos = np.array([3,3,3])*reference_diameter
+epsilon = 5
+density = 1.225
+level = 0
+n_blades = 3
+n_blade_nodes = 32
+alm = gpu.ActuatorLine(n_blades, density, n_blade_nodes, epsilon, *turb_pos, reference_diameter, level, dt, dx)
+para.add_actuator(alm)
+#%%
+point_probe = gpu.probes.PointProbe("pointProbe", 100, 500, 100)
+point_probe.add_probe_points_from_list(np.array([1,2,5])*reference_diameter, np.array([3,3,3])*reference_diameter, np.array([3,3,3])*reference_diameter)
+para.add_probe(point_probe)
 
-    simulation.add_object(wall_x_min, no_slip_bc_adapter, 1, "/geo/wallXmin")
-    simulation.add_object(wall_x_max, no_slip_bc_adapter, 1, "/geo/wallXmax")
-    simulation.add_object(wall_y_min, no_slip_bc_adapter, 1, "/geo/wallYmin")
-    simulation.add_object(wall_y_max, no_slip_bc_adapter, 1, "/geo/wallYmax")
-    simulation.add_object(wall_z_min, no_slip_bc_adapter, 1, "/geo/wallZmin")
-    simulation.add_object(wall_z_max, velocity_bc_adapter, 1, "/geo/wallZmax")
-
-    simulation.run_simulation()
-
-
-if __name__ == "__main__":
-    run_simulation()
+plane_probe = gpu.probes.PlaneProbe("plane_probe", 100, 500, 100)
+plane_probe.set_probe_plane(5*reference_diameter, 0, 0, dx, length[1], length[2])
+para.add_probe(plane_probe)
+#%%
+sim = gpu.Simulation()
+kernel_factory = gpu.KernelFactory.get_instance()
+sim.set_factories(kernel_factory, gpu.PreProcessorFactory.get_instance())
+sim.init(para, grid_generator, gpu.FileWriter(), cuda_memory_manager)
+#%%
+sim.run()
+sim.free()
+MPI.Finalize()

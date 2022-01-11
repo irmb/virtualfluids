@@ -15,16 +15,13 @@ namespace simulation
 
     namespace py = pybind11;
 
-    py::module makeModule(py::module_ &parentModule)
+    void makeModule(py::module_ &parentModule)
     {
-        py::module simModule = parentModule.def_submodule("simulation");
-
-        py::class_<Simulation>(simModule, "Simulation")
+        py::class_<Simulation>(parentModule, "Simulation")
+        .def(py::init<>())
         .def("set_factories", &Simulation::setFactories)
         .def("init", &Simulation::init)
         .def("run", &Simulation::run)
         .def("free", &Simulation::free);
-
-        return simModule;
     }
 }

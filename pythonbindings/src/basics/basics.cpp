@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 #include "submodules/logger.cpp"
 #include "submodules/configuration_file.cpp"
+#include "submodules/lbm_or_gks.cpp"
 
 namespace basics
 {
@@ -12,6 +13,7 @@ namespace basics
 
         logging::makeModule(basicsModule);
         configuration::makeModule(basicsModule);
+        lbmOrGks::makeModule(basicsModule);
         
         return basicsModule;
     }

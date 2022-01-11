@@ -199,7 +199,7 @@ void multipleLevel(const std::string& configPath)
         uint nBladeNodes = 32;
 
 
-        SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx) );
+        SPtr<ActuatorLine> actuator_line = SPtr<ActuatorLine>( new ActuatorLine(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx) );
         para->addActuator( actuator_line );
 
         SPtr<PointProbe> pointProbe = SPtr<PointProbe>( new PointProbe("pointProbe", 100, 500, 100) );
