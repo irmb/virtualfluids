@@ -10,6 +10,5 @@ namespace lbmOrGks
          py::enum_<LbmOrGks>(parentModule, "LbmOrGks")
          .value("LBM", LbmOrGks::LBM)
          .value("GKS", LbmOrGks::GKS);
-
     }
 }

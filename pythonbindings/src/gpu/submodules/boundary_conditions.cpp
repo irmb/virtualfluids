@@ -7,7 +7,6 @@ namespace boundary_conditions
 
     void makeModule(py::module_ &parentModule)
     {
-
         py::enum_<SideType>(parentModule, "SideType")
         .value("MX", SideType::MX)
         .value("PX", SideType::PX)
@@ -17,6 +16,5 @@ namespace boundary_conditions
         .value("PZ", SideType::PZ)
         .value("GEOMETRY", SideType::GEOMETRY)
         .export_values();
-
     }
 }

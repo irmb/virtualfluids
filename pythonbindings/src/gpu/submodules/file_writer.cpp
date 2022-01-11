@@ -5,15 +5,13 @@
 
 namespace file_writer
 {
-
     namespace py = pybind11;
 
     void makeModule(py::module_ &parentModule)
     {
-        py::class_<DataWriter, std::shared_ptr<DataWriter>>(parentModule, "DataWriter");
+        py::class_<DataWriter, std::shared_ptr<DataWriter>>(parentModule, "_DataWriter");
 
         py::class_<FileWriter, DataWriter, std::shared_ptr<FileWriter>>(parentModule, "FileWriter")
         .def(py::init<>());
-
     }
 }

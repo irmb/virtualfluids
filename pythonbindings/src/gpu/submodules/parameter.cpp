@@ -7,12 +7,10 @@
 
 namespace parameter
 {
-
     namespace py = pybind11;
 
     void makeModule(py::module_ &parentModule)
     {
-
         py::class_<Parameter, std::shared_ptr<Parameter>>(parentModule, "Parameter")
         .def(py::init<
                 const vf::basics::ConfigurationFile&, 
@@ -53,12 +51,8 @@ namespace parameter
                 vx = values[1];
                 vy = values[2];
                 vz = values[3];
-
-            }
-            );
-        }
-        )
-        .def("get_initial_condition", &Parameter::getInitialCondition)
+            });
+        })
         .def("add_actuator", &Parameter::addActuator)
         .def("add_probe", &Parameter::addProbe)
         .def("get_output_path", &Parameter::getOutputPath)

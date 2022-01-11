@@ -1,6 +1,5 @@
 #include <pybind11/pybind11.h>
 #include <gpu/VirtualFluids_GPU/LBM/Simulation.h>
-
 #include <gpu/VirtualFluids_GPU/Communication/Communicator.h>
 #include <gpu/VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactory.h>
 #include <gpu/VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactory.h>
@@ -12,7 +11,6 @@
 
 namespace simulation
 {
-
     namespace py = pybind11;
 
     void makeModule(py::module_ &parentModule)

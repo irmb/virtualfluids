@@ -2,10 +2,8 @@
 #include <gpu/VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactory.h>
 #include <gpu/VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h>
 
-
 namespace pre_processor_factory
 {
-
     namespace py = pybind11;
 
     void makeModule(py::module_ &parentModule)
@@ -14,6 +12,5 @@ namespace pre_processor_factory
 
         py::class_<PreProcessorFactoryImp, PreProcessorFactory, std::shared_ptr<PreProcessorFactoryImp>>(parentModule, "PreProcessorFactory")
         .def("get_instance", &PreProcessorFactoryImp::getInstance, py::return_value_policy::reference);
-
     }
 }

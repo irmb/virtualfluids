@@ -6,7 +6,6 @@
 
 namespace actuator_line
 {
-
     namespace py = pybind11;
 
     void makeModule(py::module_ &parentModule)

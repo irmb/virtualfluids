@@ -31,7 +31,6 @@ void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) co
 
 void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level) const
 {
-    printf("before \n");
     for (int j = 1; j <= numberOfNodes; j++)
     {
         const real coordX = para->getParH(level)->coordX_SP[j];
@@ -89,8 +88,6 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
             para->getParH(level)->forceZ_SP[j] = 0.0f;
         }
     }
-    printf("after \n");
-
 
 
 }

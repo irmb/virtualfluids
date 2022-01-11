@@ -4,10 +4,8 @@
 #include <gpu/VirtualFluids_GPU/Parameter/Parameter.h>
 #include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
 
-
 namespace grid_provider
 {
-
     namespace py = pybind11;
 
     void makeModule(py::module_ &parentModule)

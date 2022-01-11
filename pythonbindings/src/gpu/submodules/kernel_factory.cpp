@@ -2,10 +2,8 @@
 #include <gpu/VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h>
 #include <gpu/VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactory.h>
 
-
 namespace kernel_factory
 {
-
     namespace py = pybind11;
 
     void makeModule(py::module_ &parentModule)

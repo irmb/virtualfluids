@@ -7,7 +7,6 @@
 
 namespace grid_builder
 {
-
     namespace py = pybind11;
 
     void makeModule(py::module_ &parentModule)
