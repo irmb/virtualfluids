@@ -39,7 +39,7 @@
 
 #include "CoProcessor.h"
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class WbWriter;
@@ -57,7 +57,7 @@ public:
     //! \param writer is WbWriter object
     //! \param comm is Communicator object
     WriteBlocksCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, WbWriter *const writer,
-                           SPtr<Communicator> comm);
+                           std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteBlocksCoProcessor() override;
 
     void process(double step) override;
@@ -69,7 +69,7 @@ protected:
 
     std::string path;
     WbWriter *writer;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
 };
 
 #endif

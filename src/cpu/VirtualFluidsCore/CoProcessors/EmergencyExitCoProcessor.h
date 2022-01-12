@@ -14,7 +14,7 @@
 #include "CoProcessor.h"
 
 class MPIIORestartCoProcessor;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 
@@ -22,7 +22,7 @@ class EmergencyExitCoProcessor : public CoProcessor
 {
 public:
     EmergencyExitCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                             SPtr<MPIIORestartCoProcessor> rp, SPtr<Communicator> comm);
+                             SPtr<MPIIORestartCoProcessor> rp, std::shared_ptr<vf::mpi::Communicator> comm);
     ~EmergencyExitCoProcessor() override;
 
     void process(double step) override;
@@ -35,7 +35,7 @@ protected:
 
 private:
     std::string path;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     SPtr<MPIIORestartCoProcessor> rp;
     std::string metafile;
 };

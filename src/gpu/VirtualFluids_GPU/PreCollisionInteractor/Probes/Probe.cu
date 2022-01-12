@@ -224,7 +224,7 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
 }
 
 
-void Probe::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
+void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
 {
 
     if(t>this->tStartAvg)

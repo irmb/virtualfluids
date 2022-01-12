@@ -57,7 +57,7 @@ public:
         assert("Output starts before averaging!" && tStartOut>=tStartAvg);
     }
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
-    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
+    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
     void free(Parameter* para, CudaMemoryManager* cudaManager) override;
 
     SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }

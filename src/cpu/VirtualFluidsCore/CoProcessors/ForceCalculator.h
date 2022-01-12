@@ -14,14 +14,14 @@
 #include "Vector3D.h"
 
 class D3Q27Interactor;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class DistributionArray3D;
 class BoundaryConditions;
 
 class ForceCalculator
 {
 public:
-    ForceCalculator(std::shared_ptr<Communicator> comm);
+    ForceCalculator(std::shared_ptr<vf::mpi::Communicator> comm);
     virtual ~ForceCalculator();
 
     void calculateForces(std::vector<std::shared_ptr<D3Q27Interactor>> interactors);
@@ -34,7 +34,7 @@ public:
 private:
     void gatherGlobalForces();
 
-    std::shared_ptr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
 
     double forceX1global;
     double forceX2global;

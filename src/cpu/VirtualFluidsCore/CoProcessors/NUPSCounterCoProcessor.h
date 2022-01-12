@@ -39,7 +39,7 @@
 #include "CoProcessor.h"
 #include "basics/utilities/UbTiming.h"
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 
@@ -54,7 +54,7 @@ public:
     //! \param s is UbScheduler object for scheduling of observer
     //! \param numOfThreads is number of threads
     //! \param comm is Communicator object
-    NUPSCounterCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, int numOfThreads, SPtr<Communicator> comm);
+    NUPSCounterCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, int numOfThreads, std::shared_ptr<vf::mpi::Communicator> comm);
     ~NUPSCounterCoProcessor() override;
 
     void process(double step) override;
@@ -70,7 +70,7 @@ protected:
     double nup;
     double nup_t;
     double nupsStep;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
 };
 
 #endif

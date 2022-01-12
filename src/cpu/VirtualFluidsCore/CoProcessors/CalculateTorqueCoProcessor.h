@@ -17,7 +17,7 @@
 #include "D3Q27System.h"
 
 class ForceCalculator;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class D3Q27Interactor;
@@ -28,7 +28,7 @@ class CalculateTorqueCoProcessor: public CoProcessor
 {
 public:
    //! Constructor
-   CalculateTorqueCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<Communicator> comm);
+   CalculateTorqueCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
 	virtual ~CalculateTorqueCoProcessor();             
 	void process(double step); 
    void addInteractor(SPtr<D3Q27Interactor> interactor);
@@ -38,7 +38,7 @@ protected:
    UbTupleDouble3 getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc);
 private:
    std::string path;
-   SPtr<Communicator> comm;
+   std::shared_ptr<vf::mpi::Communicator> comm;
    std::vector<SPtr<D3Q27Interactor> > interactors;
    double forceX1global;
    double forceX2global;

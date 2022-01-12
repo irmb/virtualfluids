@@ -4,7 +4,7 @@
 #include "BCArray3D.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "D3Q27Interactor.h"
 #include "DataSet3D.h"
 #include "DistributionArray3D.h"
@@ -14,7 +14,7 @@
 #include "UbScheduler.h"
 
 CalculateForcesCoProcessor::CalculateForcesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                                       SPtr<Communicator> comm, double v, double a)
+                                                       std::shared_ptr<vf::mpi::Communicator> comm, double v, double a)
     : CoProcessor(grid, s), path(path), comm(comm), v(v), a(a), forceX1global(0), forceX2global(0), forceX3global(0)
 {
     if (comm->getProcessID() == comm->getRoot()) {

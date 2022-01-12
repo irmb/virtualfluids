@@ -23,7 +23,6 @@
 #ENDIF()
 
 SET(USE_METIS ON CACHE BOOL "include METIS library support")
-SET(USE_MPI ON CACHE BOOL "include MPI library support")
 SET(USE_VTK OFF CACHE BOOL "include VTK library support")
 SET(USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
 
@@ -49,9 +48,6 @@ ENDIF()
 
 IF(${USE_METIS})
     list(APPEND VF_COMPILER_DEFINITION VF_METIS)
-ENDIF()
-IF(${USE_MPI})
-    list(APPEND VF_COMPILER_DEFINITION VF_MPI)
 ENDIF()
 IF(${USE_VTK})
     list(APPEND VF_COMPILER_DEFINITION VF_VTK)

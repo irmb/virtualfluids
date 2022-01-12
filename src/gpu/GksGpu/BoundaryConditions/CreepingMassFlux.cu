@@ -91,7 +91,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
                                                           const uint startIndex,
                                                           const uint index)
 {
-    uint ghostCellIdx  = boundaryCondition.ghostCells [ startIndex + index ];
+    // uint ghostCellIdx  = boundaryCondition.ghostCells [ startIndex + index ];
     uint domainCellIdx = boundaryCondition.domainCells[ startIndex + index ];
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

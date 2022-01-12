@@ -4,7 +4,7 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-#include "Kernel/Utilities/CudaGrid.h"
+#include <cuda/CudaGrid.h>
 #include "lbm/constants/NumericConstants.h"
 #include "VirtualFluids_GPU/GPU/GeometryUtils.h"
 
@@ -164,14 +164,14 @@ void ActuatorLine::init(Parameter* para, GridProvider* gridProvider, CudaMemoryM
 }
 
 
-void ActuatorLine::visit(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
+void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
 {
     if (level != this->level) return;
 
     cudaManager->cudaCopyBladeCoordsHtoD(this);
 
     uint numberOfThreads = para->getParH(level)->numberofthreads;
-    vf::gpu::CudaGrid bladeGrid = vf::gpu::CudaGrid(numberOfThreads, this->numberOfNodes);
+    vf::cuda::CudaGrid bladeGrid = vf::cuda::CudaGrid(numberOfThreads, this->numberOfNodes);
 
     interpolateVelocities<<< bladeGrid.grid, bladeGrid.threads >>>(
         para->getParD(this->level)->coordX_SP, para->getParD(this->level)->coordY_SP, para->getParD(this->level)->coordZ_SP,        
@@ -188,7 +188,8 @@ void ActuatorLine::visit(Parameter* para, CudaMemoryManager* cudaManager, int le
 
     cudaManager->cudaCopyBladeForcesHtoD(this);
 
-    vf::gpu::CudaGrid sphereGrid = vf::gpu::CudaGrid(numberOfThreads, this->numberOfIndices);
+    vf::cuda::CudaGrid sphereGrid = vf::cuda::CudaGrid(numberOfThreads, this->numberOfIndices);
+
     applyBodyForces<<<sphereGrid.grid, sphereGrid.threads>>>(
         para->getParD(this->level)->coordX_SP, para->getParD(this->level)->coordY_SP, para->getParD(this->level)->coordZ_SP,        
         para->getParD(this->level)->forceX_SP, para->getParD(this->level)->forceY_SP, para->getParD(this->level)->forceZ_SP,        

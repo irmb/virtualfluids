@@ -67,7 +67,7 @@ void run(string configname)
       double beta  = 12*sigma/interfaceThickness;
 	  double kappa = 1.5*interfaceThickness*sigma;
 	  
-	  CommunicatorPtr comm = MPICommunicator::getInstance();
+	  CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

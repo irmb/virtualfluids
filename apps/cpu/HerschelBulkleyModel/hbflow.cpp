@@ -38,7 +38,7 @@ void bflow(string configname)
 //      double          Bn = config.getValue<double>("Bn");
       double          scaleFactor = config.getValue<double>("scaleFactor");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

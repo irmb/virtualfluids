@@ -34,7 +34,6 @@
 #define TriangularMesh_h
 
 #include <stdio.h>
-#include <cuda_runtime.h>
 #include <vector>
 #include <string>
 #include <memory>

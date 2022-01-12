@@ -50,7 +50,7 @@ using namespace std;
 
 Grid3D::Grid3D() { levelSet.resize(Grid3DSystem::MAXLEVEL + 1); }
 //////////////////////////////////////////////////////////////////////////
-Grid3D::Grid3D(SPtr<Communicator> comm)
+Grid3D::Grid3D(std::shared_ptr<vf::mpi::Communicator> comm)
 
 {
     levelSet.resize(Grid3DSystem::MAXLEVEL + 1);
@@ -58,7 +58,7 @@ Grid3D::Grid3D(SPtr<Communicator> comm)
     rank = comm->getProcessID();
 }
 //////////////////////////////////////////////////////////////////////////
-Grid3D::Grid3D(SPtr<Communicator> comm, int blockNx1, int blockNx2, int blockNx3, int gridNx1, int gridNx2, int gridNx3)
+Grid3D::Grid3D(std::shared_ptr<vf::mpi::Communicator> comm, int blockNx1, int blockNx2, int blockNx3, int gridNx1, int gridNx2, int gridNx3)
     :
 
       blockNx1(blockNx1), blockNx2(blockNx2), blockNx3(blockNx2), nx1(gridNx1), nx2(gridNx2), nx3(gridNx3)
@@ -2299,7 +2299,7 @@ void Grid3D::renumberBlockIDs()
 
 
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::updateDistributedBlocks(SPtr<Communicator> comm)
+void Grid3D::updateDistributedBlocks(std::shared_ptr<vf::mpi::Communicator> comm)
 {
 
     std::vector<int> blocks;

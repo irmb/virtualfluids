@@ -1,5 +1,5 @@
 #include "EmergencyExitCoProcessor.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "Grid3D.h"
 #include "MPIIORestartCoProcessor.h"
 #include "UbLogger.h"
@@ -8,7 +8,7 @@
 #include <basics/utilities/UbFileOutputASCII.h>
 
 EmergencyExitCoProcessor::EmergencyExitCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                                   SPtr<MPIIORestartCoProcessor> rp, SPtr<Communicator> comm)
+                                                   SPtr<MPIIORestartCoProcessor> rp, std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), path(path), rp(rp), comm(comm)
 {
     this->path = path + "/exit";

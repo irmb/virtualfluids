@@ -1,4 +1,4 @@
-#include "Calculation/UpdateGrid27.h"
+#include "UpdateGrid27.h"
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 #include "Calculation/DragLift.h"
@@ -9,7 +9,7 @@
 #include "Kernel/Kernel.h"
 
 void updateGrid27(Parameter* para, 
-                  vf::gpu::Communicator* comm, 
+                  vf::gpu::Communicator& comm, 
                   CudaMemoryManager* cudaManager, 
                   std::vector<std::shared_ptr<PorousMedia>>& pm, 
                   int level, 
@@ -60,9 +60,9 @@ void updateGrid27(Parameter* para,
         coarseToFine(para, level);
     }
 
-    visitActuators(para, cudaManager, level, t);
+    interactWithActuators(para, cudaManager, level, t);
 
-    visitProbes(para, cudaManager, level, t);
+    interactWithProbes(para, cudaManager, level, t);
 }
 
 void collision(Parameter* para, std::vector<std::shared_ptr<PorousMedia>>& pm, int level, unsigned int t, std::vector < SPtr< Kernel>>& kernels)
@@ -153,7 +153,7 @@ void collisionAdvectionDiffusion(Parameter* para, int level)
 	}
 }
 
-void exchangeMultiGPU(Parameter* para, vf::gpu::Communicator* comm, CudaMemoryManager* cudaManager, int level)
+void exchangeMultiGPU(Parameter* para, vf::gpu::Communicator& comm, CudaMemoryManager* cudaManager, int level)
 {
     if (para->getNumprocs() > 1)
 	{
@@ -1264,18 +1264,18 @@ void coarseToFine(Parameter* para, int level)
 
 }
 
-void visitActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
+void interactWithActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
 {
     for( SPtr<PreCollisionInteractor> actuator: para->getActuators() )
     {
-        actuator->visit(para, cudaManager, level, t);
+        actuator->interact(para, cudaManager, level, t);
     }
 }
 
-void visitProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
+void interactWithProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
 {
     for( SPtr<PreCollisionInteractor> probe: para->getProbes() )
     {
-        probe->visit(para, cudaManager, level, t);
+        probe->interact(para, cudaManager, level, t);
     }
 }

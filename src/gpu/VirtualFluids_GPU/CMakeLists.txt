@@ -5,7 +5,7 @@ if(MSVC)
     set(additional_libraries ws2_32 Traffic) # ws_32 throws an error on Phoenix
 endif()
 
-vf_add_library(PUBLIC_LINK basics lbmCuda PRIVATE_LINK ${additional_libraries} GridGenerator MPI::MPI_CXX)
+vf_add_library(PUBLIC_LINK basics lbmCuda PRIVATE_LINK ${additional_libraries} GridGenerator MPI::MPI_CXX cuda)
 
 
 #SET(TPN_WIN32 "/EHsc")

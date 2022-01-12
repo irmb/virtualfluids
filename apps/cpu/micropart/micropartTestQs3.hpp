@@ -9,7 +9,7 @@ void micropartTestQs3(const char *cstr)
 {
    try
    {
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
       int numprocs = comm->getNumberOfProcesses();
 
@@ -436,7 +436,7 @@ void micropartTestQs3(const char *cstr)
 
          // if(myid == 0)
          // {
-         // //Abstände "q" als Linien rausschreiben
+         // //Abstï¿½nde "q" als Linien rausschreiben
          // std::vector< UbTupleFloat3 > nodes;
          // std::vector< UbTupleInt2 >   lines;
          // geoInt->addQsLineSet(nodes, lines);

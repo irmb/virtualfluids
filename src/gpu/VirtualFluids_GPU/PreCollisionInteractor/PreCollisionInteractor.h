@@ -31,7 +31,7 @@ public:
     }
 
     virtual void init(Parameter *para, GridProvider *gridProvider, CudaMemoryManager *cudaManager) = 0;
-    virtual void visit(Parameter *para, CudaMemoryManager *cudaManager, int level, uint t) = 0;
+    virtual void interact(Parameter *para, CudaMemoryManager *cudaManager, int level, uint t) = 0;
     virtual void free(Parameter *para, CudaMemoryManager *cudaManager) = 0;
 
 protected:

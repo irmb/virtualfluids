@@ -30,7 +30,7 @@ InSituVTKCoProcessor::InSituVTKCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> 
                                            SPtr<LBMUnitConverter> conv)
     : CoProcessor(grid, s), conv(conv)
 {
-    gridRank     = Communicator::getInstance()->getProcessID();
+    gridRank     = vf::mpi::Communicator::getInstance()->getProcessID();
     minInitLevel = this->grid->getCoarsestInitializedLevel();
     maxInitLevel = this->grid->getFinestInitializedLevel();
 
@@ -269,7 +269,7 @@ void InSituVTKCoProcessor::readConfigFile(const std::string &configFile)
     string dummy;
     int wRank = 0;
     getline(ifs, dummy);
-    int np = Communicator::getInstance()->getNumberOfProcesses();
+    int np = vf::mpi::Communicator::getInstance()->getNumberOfProcesses();
 
     while (ifs.good()) {
         getline(ifs, dummy, ';');

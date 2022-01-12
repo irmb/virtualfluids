@@ -10,7 +10,7 @@
 #include "LBMKernel.h"
 
 //////////////////////////////////////////////////////////////////////////
-IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, SPtr<Communicator> comm, double minX1, double minX2,
+IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm, double minX1, double minX2,
                                              double minX3, double maxX1, double maxX2, double maxX3)
     :
 
@@ -21,7 +21,7 @@ IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, SPtr<Communicato
     init(-1);
 }
 //////////////////////////////////////////////////////////////////////////
-IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, SPtr<Communicator> comm, double minX1, double minX2,
+IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm, double minX1, double minX2,
                                              double minX3, double maxX1, double maxX2, double maxX3, int level)
     :
 

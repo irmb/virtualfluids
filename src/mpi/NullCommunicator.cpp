@@ -33,9 +33,17 @@
 
 #include "NullCommunicator.h"
 
-NullCommunicator::NullCommunicator() = default;
-//////////////////////////////////////////////////////////////////////////
-NullCommunicator::~NullCommunicator() = default;
+namespace vf::mpi 
+{
+
+// std::shared_ptr<Communicator> NullCommunicator::getInstance()
+// {
+//     std::lock_guard<std::mutex> myLock(instantiation_mutex);
+//     if (!instance){
+//         instance = std::shared_ptr<NullCommunicator>(new NullCommunicator);
+//     }
+//     return instance;
+// }
 //////////////////////////////////////////////////////////////////////////
 int NullCommunicator::getBundleID() { return 0; }
 //////////////////////////////////////////////////////////////////////////
@@ -62,3 +70,6 @@ void NullCommunicator::allGatherInts(std::vector<int> &svalues, std::vector<int>
 void NullCommunicator::sendSerializedObject(std::stringstream &ss, int target) {}
 //////////////////////////////////////////////////////////////////////////
 void NullCommunicator::receiveSerializedObject(std::stringstream &ss, int source) {}
+
+
+}

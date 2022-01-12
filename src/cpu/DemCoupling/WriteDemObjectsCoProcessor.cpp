@@ -3,7 +3,7 @@
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "DemCoProcessor.h"
 #include "Grid3D.h"
 #include "UbScheduler.h"
@@ -13,7 +13,7 @@ WriteDemObjectsCoProcessor::WriteDemObjectsCoProcessor() {}
 //////////////////////////////////////////////////////////////////////////
 WriteDemObjectsCoProcessor::WriteDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
                                                        WbWriter *const writer, SPtr<DemCoProcessor> demCoProcessor,
-                                                       SPtr<Communicator> comm)
+                                                       std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), path(path), writer(writer), demCoProcessor(demCoProcessor), comm(comm)
 {
 }

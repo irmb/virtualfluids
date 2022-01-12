@@ -8,7 +8,7 @@
 #include "CoProcessor.h"
 #include "UbTuple.h"
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class WbWriter;
@@ -18,7 +18,7 @@ class TurbulenceIntensityCoProcessor : public CoProcessor
 {
 public:
     TurbulenceIntensityCoProcessor(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer,
-                                   SPtr<UbScheduler> s, SPtr<Communicator> comm);
+                                   SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm);
     void process(double step) override;
 
 protected:
@@ -39,7 +39,7 @@ private:
     int gridRank;
     std::string path;
     WbWriter *writer;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     enum Values { AvVx = 0, AvVy = 1, AvVz = 2, AvVxxyyzz = 3 };
 };
 #endif

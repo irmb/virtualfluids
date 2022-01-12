@@ -38,8 +38,11 @@
 
 #include "GksGpu_export.h"
 
+namespace GksGpu {
+
 struct DataBase;
 struct Parameters;
+
 
 class GKSGPU_EXPORT VtkWriter
 {
@@ -48,5 +51,7 @@ public:
                        Parameters parameters, 
                        std::string filename );
 };
+
+}
 
 #endif
