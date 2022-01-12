@@ -33,7 +33,7 @@ grid_builder.add_coarse_grid(0.0, 0.0, 0.0, *length, dx)
 grid_builder.set_periodic_boundary_condition(False, False, False)
 grid_builder.build_grids(basics.LbmOrGks.LBM, False)
 # %%
-comm = gpu.Communicator.get_instanz()
+comm = gpu.Communicator.get_instance()
 #%%
 config = basics.ConfigurationFile()
 config.load(str(config_file))
@@ -96,7 +96,7 @@ plane_probe = gpu.probes.PlaneProbe("plane_probe", str(output_path), 100, 500, 1
 plane_probe.set_probe_plane(5*reference_diameter, 0, 0, dx, length[1], length[2])
 para.add_probe(plane_probe)
 #%%
-sim = gpu.Simulation()
+sim = gpu.Simulation(comm)
 kernel_factory = gpu.KernelFactory.get_instance()
 sim.set_factories(kernel_factory, gpu.PreProcessorFactory.get_instance())
 sim.init(para, grid_generator, gpu.FileWriter(), cuda_memory_manager)

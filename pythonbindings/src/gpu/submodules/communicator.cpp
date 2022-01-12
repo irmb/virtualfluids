@@ -7,9 +7,8 @@ namespace communicator
 
     void makeModule(py::module_ &parentModule)
     {
-        py::class_<vf::gpu::Communicator>(parentModule, "Communicator")
-        .def("get_instanz", py::overload_cast<>(&vf::gpu::Communicator::getInstanz), py::return_value_policy::reference)
-        // .def("get_instanz", py::overload_cast<const int>(&vf::gpu::Communicator::getInstanz), py::return_value_policy::reference)
+        py::class_<vf::gpu::Communicator, std::unique_ptr<vf::gpu::Communicator, py::nodelete>>(parentModule, "Communicator")
+        .def("get_instance", &vf::gpu::Communicator::getInstance, py::return_value_policy::reference)
         .def("get_number_of_process", &vf::gpu::Communicator::getNummberOfProcess)
         .def("get_pid", &vf::gpu::Communicator::getPID);
     }

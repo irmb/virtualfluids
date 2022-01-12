@@ -16,7 +16,7 @@ namespace simulation
     void makeModule(py::module_ &parentModule)
     {
         py::class_<Simulation>(parentModule, "Simulation")
-        .def(py::init<>())
+        .def(py::init<vf::gpu::Communicator&>(), "communicator")
         .def("set_factories", &Simulation::setFactories)
         .def("init", &Simulation::init)
         .def("run", &Simulation::run)
