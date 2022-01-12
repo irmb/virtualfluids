@@ -11,6 +11,8 @@
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
+#include "Kernel/Utilities/DistributionHelper.cuh"
+#include "lbm/MacroscopicQuantities.h"
 
 __host__ __device__ __inline__ real calcGaussian3D(real posX, real posY, real posZ, real destX, real destY, real destZ, real epsilon)
 {
@@ -23,9 +25,10 @@ __host__ __device__ __inline__ real calcGaussian3D(real posX, real posY, real po
 
 
 __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real* gridCoordsZ, 
-                                      uint* neighborsX, uint* neighborsY, uint* neighborsZ, 
+                                      uint* neighborX, uint* neighborY, uint* neighborZ, 
                                       uint* neighborsWSB, 
-                                      real* vx, real* vy, real* vz, 
+                                      real* distributions, 
+                                      uint size_Mat, bool isEvenTimestep,
                                       uint numberOfIndices, 
                                       real* bladeCoordsX, real* bladeCoordsY, real* bladeCoordsZ, 
                                       real* bladeVelocitiesX, real* bladeVelocitiesY, real* bladeVelocitiesZ, 
@@ -54,11 +57,11 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
     k = findNearestCellBSW(old_index, 
                            gridCoordsX, gridCoordsY, gridCoordsZ, 
                            bladePosX, bladePosY, bladePosZ, 
-                           neighborsX, neighborsY, neighborsZ, neighborsWSB);
+                           neighborX, neighborY, neighborZ, neighborsWSB);
         
     bladeIndices[node] = k;
 
-    getNeighborIndicesOfBSW(k, ke, kn, kt, kne, kte, ktn, ktne, neighborsX, neighborsY, neighborsZ);
+    getNeighborIndicesOfBSW(k, ke, kn, kt, kne, kte, ktn, ktne, neighborX, neighborY, neighborZ);
 
     real dW, dE, dN, dS, dT, dB;
 
@@ -70,9 +73,23 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
     getInterpolationWeights(dW, dE, dN, dS, dT, dB, 
                             distX, distY, distZ);
 
-    bladeVelocitiesX[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx);
-    bladeVelocitiesY[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy);
-    bladeVelocitiesZ[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz);
+    real vx[8], vy[8], vz[8];
+    uint ks[8] = {k, ke, kn, kt, kne, kte, ktn, ktne};
+
+    for(uint i=0; i<8; i++)
+    {
+        vf::gpu::DistributionWrapper distr_wrapper(distributions, size_Mat, isEvenTimestep, ks[i], neighborX, neighborY, neighborZ);
+        const auto& distribution = distr_wrapper.distribution;
+
+        real rho = vf::lbm::getDensity(distribution.f);
+        vx[i] = vf::lbm::getCompressibleVelocityX1(distribution.f, rho);
+        vy[i] = vf::lbm::getCompressibleVelocityX2(distribution.f, rho);
+        vz[i] = vf::lbm::getCompressibleVelocityX3(distribution.f, rho);
+    }
+    
+    bladeVelocitiesX[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, 0, 1, 2, 3, 4, 5, 6, 7, vx);
+    bladeVelocitiesY[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, 0, 1, 2, 3, 4, 5, 6, 7, vy);
+    bladeVelocitiesZ[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, 0, 1, 2, 3, 4, 5, 6, 7, vz);
 
 }
 
@@ -134,10 +151,9 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
         fXYZ_Y += bladeForcesY[nBladeNodes-1]*(radius-last_r)*eta;
         fXYZ_Z += bladeForcesZ[nBladeNodes-1]*(radius-last_r)*eta;
     }
-
-    gridForcesX[gridIndex] = fXYZ_X;
-    gridForcesY[gridIndex] = fXYZ_Y;
-    gridForcesZ[gridIndex] = fXYZ_Z;
+    atomicAdd(&gridForcesX[gridIndex], fXYZ_X);
+    atomicAdd(&gridForcesY[gridIndex], fXYZ_Y);
+    atomicAdd(&gridForcesZ[gridIndex], fXYZ_Z);
 }
 
 
@@ -164,7 +180,7 @@ void ActuatorLine::interact(Parameter* para, CudaMemoryManager* cudaManager, int
     interpolateVelocities<<< bladeGrid.grid, bladeGrid.threads >>>(
         para->getParD(this->level)->coordX_SP, para->getParD(this->level)->coordY_SP, para->getParD(this->level)->coordZ_SP,        
         para->getParD(this->level)->neighborX_SP, para->getParD(this->level)->neighborY_SP, para->getParD(this->level)->neighborZ_SP, para->getParD(this->level)->neighborWSB_SP,
-        para->getParD(this->level)->vx_SP, para->getParD(this->level)->vy_SP, para->getParD(this->level)->vz_SP,
+        para->getParD(this->level)->d0SP.f[0], para->getParD(this->level)->size_Mat_SP, para->getParD(this->level)->evenOrOdd,
         this->numberOfIndices,
         this->bladeCoordsXD, this->bladeCoordsYD, this->bladeCoordsZD,  
         this->bladeVelocitiesXD, this->bladeVelocitiesYD, this->bladeVelocitiesZD,  

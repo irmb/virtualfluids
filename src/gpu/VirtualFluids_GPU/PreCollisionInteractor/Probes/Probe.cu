@@ -11,6 +11,8 @@
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
+#include "Kernel/Utilities/DistributionHelper.cuh"
+#include "lbm/MacroscopicQuantities.h"
 
 
 std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable variable)
@@ -86,7 +88,8 @@ __device__ void calculateQuantities(uint n, real* quantityArray, bool* quantitie
 __global__ void interpQuantities(   uint* pointIndices,
                                     uint nPoints, uint n,
                                     real* distX, real* distY, real* distZ,
-                                    real* vx, real* vy, real* vz, real* rho,            
+                                    real* distributions, 
+                                    uint size_Mat, bool isEvenTimestep,           
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
                                     uint* quantityArrayOffsets, real* quantityArray,
@@ -118,18 +121,34 @@ __global__ void interpQuantities(   uint* pointIndices,
         real dW, dE, dN, dS, dT, dB;
         getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX[node], distY[node], distZ[node]);
 
+        real rho[8], vx[8], vy[8], vz[8];
+        uint ks[8] = {k, ke, kn, kt, kne, kte, ktn, ktne};
 
-        u_interpX  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
-        u_interpY  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
-        u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
-        rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
+        for(uint i=0; i<8; i++)
+        {
+            vf::gpu::DistributionWrapper distr_wrapper(distributions, size_Mat, isEvenTimestep, ks[i], neighborX, neighborY, neighborZ);
+            const auto& distribution = distr_wrapper.distribution;
+
+            rho[i] = vf::lbm::getDensity(distribution.f);
+            vx[i] = vf::lbm::getCompressibleVelocityX1(distribution.f, rho[i]);
+            vy[i] = vf::lbm::getCompressibleVelocityX2(distribution.f, rho[i]);
+            vz[i] = vf::lbm::getCompressibleVelocityX3(distribution.f, rho[i]);
+    }
+
+
+        u_interpX  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, 0, 1, 2, 3, 4, 5, 6, 7, vx );
+        u_interpY  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, 0, 1, 2, 3, 4, 5, 6, 7, vy );
+        u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, 0, 1, 2, 3, 4, 5, 6, 7, vz );
+        rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, 0, 1, 2, 3, 4, 5, 6, 7, rho );
     }
     else
     {
-        u_interpX = vx[k];
-        u_interpY = vy[k];
-        u_interpZ = vz[k];
-        rho_interp = rho[k];
+        vf::gpu::DistributionWrapper distr_wrapper(distributions, size_Mat, isEvenTimestep, k, neighborX, neighborY, neighborZ);
+        const auto& distribution = distr_wrapper.distribution;
+
+        u_interpX = vf::lbm::getCompressibleVelocityX1(distribution.f, rho_interp);
+        u_interpY = vf::lbm::getCompressibleVelocityX2(distribution.f, rho_interp);
+        u_interpZ = vf::lbm::getCompressibleVelocityX3(distribution.f, rho_interp);
     }
 
     calculateQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
