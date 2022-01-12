@@ -12,6 +12,11 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 
+__host__ __device__ __inline__ uint calcNode(uint bladeNode, uint blade, uint nBlades)
+{
+    return bladeNode*nBlades+blade;
+}
+
 __host__ __device__ __inline__ real calcGaussian3D(real posX, real posY, real posZ, real destX, real destY, real destZ, real epsilon)
 {
     real distX = destX-posX;
@@ -58,6 +63,8 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
         
     bladeIndices[node] = k;
 
+    //TODO calculate velocities from distributions
+
     getNeighborIndicesOfBSW(k, ke, kn, kt, kne, kte, ktn, ktne, neighborsX, neighborsY, neighborsZ);
 
     real dW, dE, dN, dS, dT, dB;
@@ -73,7 +80,6 @@ __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real
     bladeVelocitiesX[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx)*velocityRatio;
     bladeVelocitiesY[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy)*velocityRatio;
     bladeVelocitiesZ[node] = trilinearInterpolation(dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz)*velocityRatio;
-
 }
 
 
@@ -113,29 +119,32 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
     real delta_x_cubed = pow(delta_x,3);
     real invForceRatio = 1.f/forceRatio;
 
-    for( uint blade=0; blade<nBlades; blade++)
-    {    
-        real last_r = 0.0f;
-        real r = 0.0f;
+    real last_r = 0.0f;
+    real r = 0.0f;
 
-        for( uint bladeNode=0; bladeNode<nBladeNodes; bladeNode++)
-        {
-            int node = bladeNode+blade*nBladeNodes;
+    for( uint bladeNode=0; bladeNode<nBladeNodes; bladeNode++)
+    {
+        r = bladeRadii[bladeNode];
+
+        for( uint blade=0; blade<nBlades; blade++)
+        {   
+            uint node = calcNode(bladeNode, blade, nBlades);
             eta = calcGaussian3D(posX, posY, posZ, bladeCoordsX[node], bladeCoordsY[node], bladeCoordsZ[node], epsilon)*delta_x_cubed;
-            r = bladeRadii[bladeNode];
 
             fXYZ_X += bladeForcesX[node]*(r-last_r)*eta;
             fXYZ_Y += bladeForcesY[node]*(r-last_r)*eta;
             fXYZ_Z += bladeForcesZ[node]*(r-last_r)*eta;
+        } 
 
-            last_r = r;
-        }    
-
-        fXYZ_X += bladeForcesX[nBladeNodes-1]*(radius-last_r)*eta;
-        fXYZ_Y += bladeForcesY[nBladeNodes-1]*(radius-last_r)*eta;
-        fXYZ_Z += bladeForcesZ[nBladeNodes-1]*(radius-last_r)*eta;
+        last_r = r;
     }
 
+    for( uint blade=0; blade<nBlades; blade++)
+    {  
+        fXYZ_X += bladeForcesX[calcNode(nBladeNodes-1, blade, nBlades)]*(radius-last_r)*eta;
+        fXYZ_Y += bladeForcesY[calcNode(nBladeNodes-1, blade, nBlades)]*(radius-last_r)*eta;
+        fXYZ_Z += bladeForcesZ[calcNode(nBladeNodes-1, blade, nBlades)]*(radius-last_r)*eta;
+    }
     gridForcesX[gridIndex] = fXYZ_X*invForceRatio;
     gridForcesY[gridIndex] = fXYZ_Y*invForceRatio;
     gridForcesZ[gridIndex] = fXYZ_Z*invForceRatio;
@@ -145,6 +154,7 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
 void ActuatorLine::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
 {
     if(!para->getIsBodyForce()) throw std::runtime_error("try to allocate ActuatorLine but BodyForce is not set in Parameter.");
+    // if(!para->getCalcMacQuantsEveryTimeStep()) throw std::runtime_error("try to allocate ActuatorLine but does not compute macroscopic quantities every time step.");
     this->initBladeRadii(cudaManager);
     this->initBladeCoords(cudaManager);    
     this->initBladeIndices(para, cudaManager);
@@ -179,7 +189,6 @@ void ActuatorLine::visit(Parameter* para, CudaMemoryManager* cudaManager, int le
     cudaManager->cudaCopyBladeForcesHtoD(this);
 
     vf::gpu::CudaGrid sphereGrid = vf::gpu::CudaGrid(numberOfThreads, this->numberOfIndices);
-
     applyBodyForces<<<sphereGrid.grid, sphereGrid.threads>>>(
         para->getParD(this->level)->coordX_SP, para->getParD(this->level)->coordY_SP, para->getParD(this->level)->coordZ_SP,        
         para->getParD(this->level)->forceX_SP, para->getParD(this->level)->forceY_SP, para->getParD(this->level)->forceZ_SP,        
@@ -189,11 +198,11 @@ void ActuatorLine::visit(Parameter* para, CudaMemoryManager* cudaManager, int le
         this->bladeRadiiD,
         this->diameter*0.5f,  
         this->nBlades, this->nBladeNodes,
-        this->epsilon, this->delta_x, para->getForceRatio());
+        this->epsilon, this->delta_x, this->density*pow(para->getViscosityRatio(),2));
 
     real dazimuth = this->omega*this->delta_t;
 
-    this->azimuth += dazimuth;
+    this->azimuth = fmod(this->azimuth+dazimuth,2*vf::lbm::constant::cPi);
     this->rotateBlades(dazimuth);
 }
 
@@ -226,18 +235,21 @@ void ActuatorLine::calcForcesEllipticWing()
 
     real c, Cn, Ct;
 
-    for( uint blade=0; blade<this->nBlades; blade++)
-    {
-        localAzimuth = this->azimuth+2*blade*vf::lbm::constant::cPi/this->nBlades;
-        for( uint bladeNode=0; bladeNode<this->nBladeNodes; bladeNode++)
+        
+    for( uint bladeNode=0; bladeNode<this->nBladeNodes; bladeNode++)
+    {   
+        r = this->bladeRadiiH[bladeNode];
+        
+        for( uint blade=0; blade<this->nBlades; blade++)
         {
-            node = bladeNode+blade*this->nBladeNodes;
+            localAzimuth = this->azimuth+2*blade*vf::lbm::constant::cPi/this->nBlades;
+            node = calcNode(bladeNode, blade, this->nBlades);
             uXYZ_X = this->bladeVelocitiesXH[node];
             uXYZ_Y = this->bladeVelocitiesYH[node];
             uXYZ_Z = this->bladeVelocitiesZH[node];
 
             invRotateAboutX3D(localAzimuth, uXYZ_X, uXYZ_Y, uXYZ_Z, uRTZ_X, uRTZ_Y, uRTZ_Z);
-            r = this->bladeRadiiH[bladeNode];
+            
 
             u_rel = uRTZ_X;
             v_rel = uRTZ_Y+this->omega*r;
@@ -299,20 +311,22 @@ void ActuatorLine::initBladeCoords(CudaMemoryManager* cudaManager)
 {   
     cudaManager->cudaAllocBladeCoords(this);
 
-    for( uint blade=0; blade<this->nBlades; blade++)
+    for(uint bladeNode=0; bladeNode<this->nBladeNodes; bladeNode++)
     {
-        real localAzimuth = this->azimuth+(2*vf::lbm::constant::cPi/this->nBlades)*blade;
-        for(uint node=0; node<this->nBladeNodes; node++)
+        real x = 0.f;
+        real y = 0.f;
+        real z = this->bladeRadiiH[bladeNode];
+        for( uint blade=0; blade<this->nBlades; blade++)
         {
+            uint node = calcNode(bladeNode, blade, this->nBlades);
+
+            real localAzimuth = this->azimuth+(2*vf::lbm::constant::cPi/this->nBlades)*blade;
             real coordX, coordY, coordZ;
-            real x,y,z;
-            x = 0.f;
-            y = 0.f;
-            z = this->bladeRadiiH[node];
+
             rotateAboutX3D(localAzimuth, x, y, z, coordX, coordY, coordZ);
-            this->bladeCoordsXH[node+this->nBladeNodes*blade] = coordX+this->turbinePosX;
-            this->bladeCoordsYH[node+this->nBladeNodes*blade] = coordY+this->turbinePosY;
-            this->bladeCoordsZH[node+this->nBladeNodes*blade] = coordZ+this->turbinePosZ;
+            this->bladeCoordsXH[node] = coordX+this->turbinePosX;
+            this->bladeCoordsYH[node] = coordY+this->turbinePosY;
+            this->bladeCoordsZH[node] = coordZ+this->turbinePosZ;
         }
     }
     cudaManager->cudaCopyBladeCoordsHtoD(this);
@@ -382,4 +396,35 @@ void ActuatorLine::initBoundingSphere(Parameter* para, CudaMemoryManager* cudaMa
     cudaManager->cudaAllocSphereIndices(this);
     std::copy(nodesInSphere.begin(), nodesInSphere.end(), this->boundingSphereIndicesH);
     cudaManager->cudaCopySphereIndicesHtoD(this);
+}
+
+void ActuatorLine::setBladeCoords(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ)
+{ 
+
+    for(uint node=0; node<this->numberOfNodes; node++)
+    {
+        this->bladeCoordsXH[node] = _bladeCoordsX[node];
+        this->bladeCoordsYH[node] = _bladeCoordsY[node];
+        this->bladeCoordsZH[node] = _bladeCoordsZ[node];
+    }
+}
+
+void ActuatorLine::setBladeVelocities(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ)
+{ 
+    for(uint node=0; node<this->numberOfNodes; node++)
+    {
+        this->bladeVelocitiesXH[node] = _bladeVelocitiesX[node];
+        this->bladeVelocitiesYH[node] = _bladeVelocitiesY[node];
+        this->bladeVelocitiesZH[node] = _bladeVelocitiesZ[node];
+    }
+}
+
+void ActuatorLine::setBladeForces(real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ)
+{ 
+    for(uint node=0; node<this->numberOfNodes; node++)
+    {
+        this->bladeForcesXH[node] = _bladeForcesX[node];
+        this->bladeForcesYH[node] = _bladeForcesY[node];
+        this->bladeForcesZH[node] = _bladeForcesZ[node];
+    }
 }

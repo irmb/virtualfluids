@@ -23,10 +23,12 @@ namespace probes
         py::class_<PointProbe, Probe, std::shared_ptr<PointProbe>>(probeModule, "PointProbe")
         .def(py::init<
                         const std::string,
+                        const std::string,
                         uint,
                         uint, 
                         uint>(), 
                         "probe_name",
+                        "output_path"
                         "t_start_avg",
                         "t_start_out",
                         "t_out")
@@ -36,10 +38,12 @@ namespace probes
         py::class_<PlaneProbe, Probe, std::shared_ptr<PlaneProbe>>(probeModule, "PlaneProbe")
         .def(py::init<
                         const std::string,
+                        const std::string,
                         uint,
                         uint, 
                         uint>(), 
                         "probe_name",
+                        "output_path"
                         "t_start_avg",
                         "t_start_out",
                         "t_out")

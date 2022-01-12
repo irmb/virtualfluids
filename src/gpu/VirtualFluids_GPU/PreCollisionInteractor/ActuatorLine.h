@@ -3,11 +3,12 @@
 
 #include "PreCollisionInteractor.h"
 #include "PointerDefinitions.h"
+#include "VirtualFluids_GPU_export.h"
 
 class Parameter;
 class GridProvider;
 
-class ActuatorLine : public PreCollisionInteractor
+class VIRTUALFLUIDS_GPU_EXPORT ActuatorLine : public PreCollisionInteractor
 {
 public:
     ActuatorLine(
@@ -35,23 +36,22 @@ public:
         this->numberOfNodes = this->nBladeNodes*this->nBlades;
         this->omega = 1.0f;
         this->azimuth = 0.0f;
+    };
 
-    }
+    virtual ~ActuatorLine(){};
 
-    virtual  ~ActuatorLine()
-    {
-        
-    }
-
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
-    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t);
-    void free(Parameter* para, CudaMemoryManager* cudaManager);
+    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
+    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
+    void free(Parameter* para, CudaMemoryManager* cudaManager) override;
     void write(uint t);
 
     uint getNBladeNodes(){return this->nBladeNodes;};
     uint getNBlades(){return this->nBlades;};
     uint getNumberOfIndices(){return this->numberOfIndices;};
     uint getNumberOfNodes(){return this->numberOfNodes;};
+    real getOmega(){ return this->omega; };
+    real getAzimuth(){ return this->azimuth; };
+    real* getBladeRadii(){return this->bladeRadiiH;};
     real* getBladeCoordsX(){return this->bladeCoordsXH;};
     real* getBladeCoordsY(){return this->bladeCoordsYH;};
     real* getBladeCoordsZ(){return this->bladeCoordsZH;};
@@ -61,16 +61,13 @@ public:
     real* getBladeForcesX(){return this->bladeForcesXH;};
     real* getBladeForcesY(){return this->bladeForcesYH;};
     real* getBladeForcesZ(){return this->bladeForcesZH;};
-    void setBladeCoordsX(real* _bladeCoordsX){ this->bladeCoordsXH = _bladeCoordsX;};
-    void setBladeCoordsY(real* _bladeCoordsY){ this->bladeCoordsYH = _bladeCoordsY;};
-    void setBladeCoordsZ(real* _bladeCoordsZ){ this->bladeCoordsZH = _bladeCoordsZ;};
-    void setBladeVelocitiesX(real* _bladeVelocitiesX){ this->bladeVelocitiesXH = _bladeVelocitiesX;};
-    void setBladeVelocitiesY(real* _bladeVelocitiesY){ this->bladeVelocitiesYH = _bladeVelocitiesY;};
-    void setBladeVelocitiesZ(real* _bladeVelocitiesZ){ this->bladeVelocitiesZH = _bladeVelocitiesZ;};
-    void setBladeForcesX(real* _bladeForcesX){ this->bladeForcesXH = _bladeForcesX;};
-    void setBladeForcesY(real* _bladeForcesY){ this->bladeForcesYH = _bladeForcesY;};
-    void setBladeForcesZ(real* _bladeForcesZ){ this->bladeForcesZH = _bladeForcesZ;};
-    void calcBladeForces();
+
+    void setOmega(real _omega){ this->omega = _omega; };
+    void setAzimuth(real _azimuth){ this->azimuth = _azimuth; };
+    void setBladeCoords(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ);
+    void setBladeVelocities(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ);
+    void setBladeForces(real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ);
+    virtual void calcBladeForces();
 
 private:
     void initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager);
@@ -84,9 +81,9 @@ private:
     void calcForcesEllipticWing();
     void rotateBlades(real angle);
 
-    void writeBladeCoords(uint t);
-    void writeBladeForces(uint t);
-    void writeBladeVelocities(uint t);
+    void writeBladeCoords(uint t){};
+    void writeBladeForces(uint t){};
+    void writeBladeVelocities(uint t){};
     
 
 public:
@@ -114,6 +111,6 @@ private:
     const int level;
     uint numberOfIndices;
     uint numberOfNodes;
-    };
+};
 
 #endif

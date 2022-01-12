@@ -38,4 +38,7 @@ extern "C" void fineToCoarse(Parameter* para, int level);
 
 extern "C" void coarseToFine(Parameter* para, int level);
 
+extern "C" void visitActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+extern "C" void visitProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+
 #endif

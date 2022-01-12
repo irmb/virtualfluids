@@ -13,7 +13,9 @@ mach = 0.1
 nodes_per_diameter = 32
 
 sim_name = "ActuatorLine"
-config_file = (Path(__file__).parent/Path("config.txt"))
+config_file = Path(__file__).parent/Path("config.txt")
+output_path = Path(__file__).parent/Path("output")
+output_path.mkdir(exist_ok=True)
 timeStepOut = 500
 t_end = 50
 
@@ -45,6 +47,7 @@ viscosity_lb = viscosity * dt / (dx * dx) # LB units
 #%%
 para.set_devices([0])
 para.set_output_prefix(sim_name)
+para.set_output_path(str(output_path))
 para.set_f_name(para.get_output_path() + "/" + para.get_output_prefix())
 para.set_print_files(True)
 para.set_max_level(1)
@@ -85,11 +88,11 @@ n_blade_nodes = 32
 alm = gpu.ActuatorLine(n_blades, density, n_blade_nodes, epsilon, *turb_pos, reference_diameter, level, dt, dx)
 para.add_actuator(alm)
 #%%
-point_probe = gpu.probes.PointProbe("pointProbe", 100, 500, 100)
+point_probe = gpu.probes.PointProbe("pointProbe", str(output_path), 100, 500, 100)
 point_probe.add_probe_points_from_list(np.array([1,2,5])*reference_diameter, np.array([3,3,3])*reference_diameter, np.array([3,3,3])*reference_diameter)
 para.add_probe(point_probe)
 
-plane_probe = gpu.probes.PlaneProbe("plane_probe", 100, 500, 100)
+plane_probe = gpu.probes.PlaneProbe("plane_probe", str(output_path), 100, 500, 100)
 plane_probe.set_probe_plane(5*reference_diameter, 0, 0, dx, length[1], length[2])
 para.add_probe(plane_probe)
 #%%

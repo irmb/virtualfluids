@@ -8,9 +8,6 @@
 #include "Communication/ExchangeData27.h"
 #include "Kernel/Kernel.h"
 
-void visitActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
-void visitProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
-
 void updateGrid27(Parameter* para, 
                   vf::gpu::Communicator* comm, 
                   CudaMemoryManager* cudaManager, 

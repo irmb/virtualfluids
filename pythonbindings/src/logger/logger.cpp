@@ -1,7 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <logger/Logger.h>
 
-
 namespace logger
 {
     namespace py = pybind11;

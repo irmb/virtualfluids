@@ -43,10 +43,12 @@ class Probe : public PreCollisionInteractor
 public:
     Probe(
         const std::string _probeName,
+        const std::string _outputPath,
         uint _tStartAvg,
         uint _tStartOut,
         uint _tOut
     ):  probeName(_probeName),
+        outputPath(_outputPath),
         tStartAvg(_tStartAvg),
         tStartOut(_tStartOut),
         tOut(_tOut),
@@ -54,9 +56,9 @@ public:
     {
         assert("Output starts before averaging!" && tStartOut>=tStartAvg);
     }
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
-    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t);
-    void free(Parameter* para, CudaMemoryManager* cudaManager);
+    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
+    void visit(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
+    void free(Parameter* para, CudaMemoryManager* cudaManager) override;
 
     SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }
 
@@ -80,6 +82,7 @@ private:
     
 private:
     const std::string probeName;
+    const std::string outputPath;
 
     std::vector<SPtr<ProbeStruct>> probeParams;
     bool quantities[int(PostProcessingVariable::LAST)];

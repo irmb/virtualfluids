@@ -296,7 +296,7 @@ void Probe::writeCollectionFile(Parameter* para, int t)
 
     std::ofstream file;
 
-    file.open( filename + ".pvtu" );
+    file.open(this->outputPath + "/" + filename + ".pvtu" );
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -390,7 +390,7 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
                 }
             }
         }}
-        WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(fnames[part], nodes, nodedatanames, nodedata);
+        WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(this->outputPath + "/" + fnames[part], nodes, nodedatanames, nodedata);
     }
 }
 
