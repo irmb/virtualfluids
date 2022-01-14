@@ -103,16 +103,16 @@ void CalculateTorqueCoProcessor::calculateForces()
 
          SPtr<ILBMKernel> kernel = block->getKernel();
 
-         if (kernel->getCompressible())
-         {
-            calcMacrosFct = &D3Q27System::calcCompMacroscopicValues;
-            compressibleFactor = 1.0;
-         }
-         else
-         {
-            calcMacrosFct = &D3Q27System::calcIncompMacroscopicValues;
-            compressibleFactor = 0.0;
-         }
+         //if (kernel->getCompressible())
+         //{
+         //   calcMacrosFct = &D3Q27System::calcCompMacroscopicValues;
+         //   compressibleFactor = 1.0;
+         //}
+         //else
+         //{
+         //   calcMacrosFct = &D3Q27System::calcIncompMacroscopicValues;
+         //   compressibleFactor = 0.0;
+         //}
 
          SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
          SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions(); 
@@ -160,10 +160,10 @@ void CalculateTorqueCoProcessor::calculateForces()
          //if we have got discretization with more level
          // deltaX is LBM deltaX and equal LBM deltaT 
          //double deltaX = 0.5; // LBMSystem::getDeltaT(block->getLevel()); //grid->getDeltaT(block);
-         double deltaXquadrat = deltaX*deltaX;
-         torqueX1 *= deltaXquadrat;
-         torqueX2 *= deltaXquadrat;
-         torqueX3 *= deltaXquadrat;
+         //double deltaXquadrat = deltaX*deltaX;
+         //torqueX1 *= deltaXquadrat;
+         //torqueX2 *= deltaXquadrat;
+         //torqueX3 *= deltaXquadrat;
 
          distributions->swap();
 
@@ -181,6 +181,8 @@ void CalculateTorqueCoProcessor::calculateForces()
    values.push_back(torqueX1global);
    values.push_back(torqueX2global);
    values.push_back(torqueX3global);
+
+   //UBLOG(logINFO, "counter = " << counter);
 
    rvalues = comm->gather(values);
    if (comm->getProcessID() == comm->getRoot())
@@ -204,8 +206,8 @@ UbTupleDouble3 CalculateTorqueCoProcessor::getForces(int x1, int x2, int x3,  SP
 
    LBMReal fs[D3Q27System::ENDF + 1];
    distributions->getDistributionInv(fs, x1, x2, x3);
-   LBMReal /*rho = 0.0,*/ vx1 = 0.0, vx2 = 0.0, vx3 = 0.0, drho = 0.0;
-   calcMacrosFct(fs, drho, vx1, vx2, vx3);
+   //LBMReal /*rho = 0.0,*/ vx1 = 0.0, vx2 = 0.0, vx3 = 0.0, drho = 0.0;
+   //calcMacrosFct(fs, drho, vx1, vx2, vx3);
    //rho = 1.0 + drho * compressibleFactor;
    
    if(bc)

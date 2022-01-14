@@ -87,6 +87,7 @@ SPtr<LBMKernel> MultiphasePressureFilterLBMKernel::clone()
 	kernel->setDeltaT(deltaT);
 	kernel->setGhostLayerWidth(2);
 	dynamicPointerCast<MultiphasePressureFilterLBMKernel>(kernel)->initForcing();
+    dynamicPointerCast<MultiphasePressureFilterLBMKernel>(kernel)->setPhaseFieldBC(this->phaseFieldBC);
 
 	return kernel;
 }
@@ -252,14 +253,8 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 						+ (mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc) + mfbbb;
 
 					LBMReal rho = rhoH + rhoToPhi * ((*phaseField)(x1, x2, x3) - phiH);
-					//! variable density -> TRANSFER!
-					//LBMReal rho = rhoH * ((*phaseField)(x1, x2, x3)) + rhoL * ((*phaseField2)(x1, x2, x3));
 
 					(*pressureOld)(x1, x2, x3) = (*pressure)(x1, x2, x3) + rho * c1o3 * drho;
-
-					//(*pressure)(x1, x2, x3) = (((*phaseField)(x1, x2, x3)) + ((*phaseField2)(x1, x2, x3)) - c1) * c1o3;
-					////!!!!!! relplace by pointer swap!
-					//(*pressureOld)(x1, x2, x3) = (*pressure)(x1, x2, x3);
 				}
 			}
 		}
@@ -1586,7 +1581,7 @@ void MultiphasePressureFilterLBMKernel::findNeighbors(CbArray3D<LBMReal, Indexer
 		if (!bcArray->isSolid(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k])) {
 			phi[k] = (*ph)(x1 + DX1[k], x2 + DX2[k], x3 + DX3[k]);
 		} else {
-			phi[k] = 0.0;
+            phi[k] = phaseFieldBC;
 		}
 	}
 }

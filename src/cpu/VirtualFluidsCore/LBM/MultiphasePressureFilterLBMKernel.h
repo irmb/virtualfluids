@@ -52,6 +52,16 @@ public:
     void calculate(int step) override;
     SPtr<LBMKernel> clone() override;
     double getCalculationTime() override { return .0; }
+
+    void setPhaseFieldBC(LBMReal bc)
+    {
+        phaseFieldBC = bc;
+    }
+    LBMReal getPhaseFieldBC()
+    {
+        return phaseFieldBC;
+    }
+
 protected:
     virtual void initDataSet();
     void swapDistributions() override;
@@ -94,6 +104,8 @@ protected:
     LBMReal forcingX1;
     LBMReal forcingX2;
     LBMReal forcingX3;
+
+    LBMReal phaseFieldBC { 0.0 }; // if 0.0 then light fluid on the wall, else if 1.0 havy fluid
 };
 
 #endif

@@ -73,7 +73,7 @@ void run(string configname)
 
 #if defined(__unix__)
          double lastTimeStep = 0;
-         if (!newStart) 
+         //if (!newStart) 
          {
              std::ifstream ifstr(fileName);
              ifstr >> lastTimeStep;
@@ -143,7 +143,7 @@ void run(string configname)
         //kernel = SPtr<LBMKernel>(new MultiphaseScratchCumulantLBMKernel());
        // kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
-        kernel = SPtr<LBMKernel>(new MultiphasePressureFilterCompressibleAirLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
 
         mu::Parser fgr;
         fgr.SetExpr("-(rho-rho_l)*g_y");

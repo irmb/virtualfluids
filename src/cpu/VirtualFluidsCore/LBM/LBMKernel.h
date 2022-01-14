@@ -165,7 +165,7 @@ protected:
     LBMReal phiH;
     LBMReal tauH;
     LBMReal mob;
-    LBMReal interfaceWidth;
+    LBMReal interfaceWidth { 4.0 };
 
 private:
     void checkFunction(mu::Parser fct);
