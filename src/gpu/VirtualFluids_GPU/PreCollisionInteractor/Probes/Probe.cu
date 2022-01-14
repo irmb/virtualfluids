@@ -177,7 +177,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         
         this->addProbeStruct(cudaManager, probeIndices_level, 
                             distX_level, distY_level, distZ_level, 
-                            pointCoordsX_level, pointCoordsX_level, pointCoordsX_level, 
+                            pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level, 
                             level);
     }
 }
