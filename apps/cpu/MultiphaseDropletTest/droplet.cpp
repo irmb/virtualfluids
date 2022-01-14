@@ -71,19 +71,19 @@ void run(string configname)
         
         std::string fileName = "./LastTimeStep" + std::to_string((int)boundingBox[1]) + ".txt";
 
-#if defined(__unix__)
-         double lastTimeStep = 0;
-         //if (!newStart) 
-         {
-             std::ifstream ifstr(fileName);
-             ifstr >> lastTimeStep;
-             restartStep = lastTimeStep;
-             if(endTime >= lastTimeStep)
-                endTime = lastTimeStep + rStep;
-             else
-                return;
-         }    
-#endif
+//#if defined(__unix__)
+//         double lastTimeStep = 0;
+//         //if (!newStart) 
+//         {
+//             std::ifstream ifstr(fileName);
+//             ifstr >> lastTimeStep;
+//             restartStep = lastTimeStep;
+//             if(endTime >= lastTimeStep)
+//                endTime = lastTimeStep + rStep;
+//             else
+//                return;
+//         }    
+//#endif
 
         //Sleep(30000);
 
@@ -402,23 +402,23 @@ void run(string configname)
         if (myid == 0)
             UBLOG(logINFO, "Simulation-end");
             
-#if defined(__unix__)
-         //if (!newStart) 
-         //{
-            if (myid == 0) 
-            {
-                std::ofstream ostr(fileName);
-                ostr << endTime;
-                cout << "start sbatch\n";
-                //system("./start.sh");
-                //system("echo test!");
-                std::string str = "sbatch startJob" + std::to_string((int)boundingBox[1]) + ".sh";
-                //system("sbatch startJob512.sh");
-                system(str.c_str());
-            }   
-            //MPI_Barrier((MPI_Comm)comm->getNativeCommunicator()); 
-         //}
-#endif
+//#if defined(__unix__)
+//         //if (!newStart) 
+//         //{
+//            if (myid == 0) 
+//            {
+//                std::ofstream ostr(fileName);
+//                ostr << endTime;
+//                cout << "start sbatch\n";
+//                //system("./start.sh");
+//                //system("echo test!");
+//                std::string str = "sbatch startJob" + std::to_string((int)boundingBox[1]) + ".sh";
+//                //system("sbatch startJob512.sh");
+//                system(str.c_str());
+//            }   
+//            //MPI_Barrier((MPI_Comm)comm->getNativeCommunicator()); 
+//         //}
+//#endif
 
     } catch (std::exception &e) {
         cerr << e.what() << endl << flush;
