@@ -113,7 +113,7 @@ void run(string configname)
         //Eotvos number
         //LBMReal Eo = 100;
         //surface tension
-        sigma = rho_h * 1000.0 * g_y * D * D / Eo;
+        sigma = rho_h * g_y * D * D / Eo;
 
         //g_y = 0;
 
