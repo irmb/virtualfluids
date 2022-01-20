@@ -151,9 +151,9 @@ __global__ void applyBodyForces(real* gridCoordsX, real* gridCoordsY, real* grid
         fXYZ_Y += bladeForcesY[nBladeNodes-1]*(radius-last_r)*eta;
         fXYZ_Z += bladeForcesZ[nBladeNodes-1]*(radius-last_r)*eta;
     }
-    atomicAdd(&gridForcesX[gridIndex], fXYZ_X);
-    atomicAdd(&gridForcesY[gridIndex], fXYZ_Y);
-    atomicAdd(&gridForcesZ[gridIndex], fXYZ_Z);
+    atomicAdd(&gridForcesX[gridIndex], fXYZ_X*invForceRatio);
+    atomicAdd(&gridForcesY[gridIndex], fXYZ_Y*invForceRatio);
+    atomicAdd(&gridForcesZ[gridIndex], fXYZ_Z*invForceRatio);
 }
 
 
@@ -291,7 +291,7 @@ void ActuatorLine::rotateBlades(real angle)
         real newCoordX, newCoordY, newCoordZ;
         rotateAboutX3D(angle, oldCoordX, oldCoordY, oldCoordZ, newCoordX, newCoordY, newCoordZ, this->turbinePosX, this->turbinePosY, this->turbinePosZ);
         
-        this->bladeCoordsYH[node] = newCoordX;
+        this->bladeCoordsXH[node] = newCoordX;
         this->bladeCoordsYH[node] = newCoordY;
         this->bladeCoordsZH[node] = newCoordZ;
     }

@@ -38,6 +38,7 @@ std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable v
     return varNames;
 }
 
+
 __device__ void calculateQuantities(uint n, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
 {
     //"https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm"
@@ -84,6 +85,7 @@ __device__ void calculateQuantities(uint n, real* quantityArray, bool* quantitie
         }
     }
 }
+
 
 __global__ void interpQuantities(   uint* pointIndices,
                                     uint nPoints, uint n,
@@ -180,8 +182,14 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
                             pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level, 
                             level);
     }
-}
 
+    for( int var=0; var < int(PostProcessingVariable::LAST); var++)
+    {
+        if(!this->quantities[var]) continue;
+        std::vector<std::string> names = getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var));
+        this->varNames.insert(this->varNames.end(), names.begin(), names.end());
+    }
+}
 
 
 void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& probeIndices,
@@ -217,14 +225,14 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
 
     cudaManager->cudaAllocProbeQuantitiesAndOffsets(this, level);
 
-    for( int var=0; var<int(PostProcessingVariable::LAST); var++){
-    if(this->quantities[var])
+    for( int var=0; var<int(PostProcessingVariable::LAST); var++)
     {
+        if(!this->quantities[var]) continue;
 
         probeParams[level]->quantitiesH[var] = true;
         probeParams[level]->arrayOffsetsH[var] = arrOffset;
         arrOffset += uint(getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var)).size());
-    }}
+    }
     
     cudaManager->cudaCopyProbeQuantitiesAndOffsetsHtoD(this, level);
 
@@ -313,39 +321,43 @@ void Probe::writeCollectionFile(Parameter* para, int t)
                                            + "_t_" + StringUtil::toString<int>(t) 
                                            + ".vtk";
 
-    std::ofstream file;
+    std::vector<std::string> cellNames;
 
-    file.open( filename + ".pvtu" );
+    WbWriterVtkXmlBinary::getInstance()->writeParallelFile(filename, this->fileNamesForCollectionFile, this->varNames, cellNames);
 
-    //////////////////////////////////////////////////////////////////////////
+    // std::ofstream file;
+
+    // file.open( filename + ".pvtu" );
+
+    // //////////////////////////////////////////////////////////////////////////
     
-    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
-    file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
+    // file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
+    // file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
 
-    file << "    <PPointData>" << std::endl;
+    // file << "    <PPointData>" << std::endl;
 
-    for(std::string varName: this->getVarNames())
-    {
-        file << "       <DataArray type=\"Float64\" Name=\""<< varName << "\" /> " << std::endl;
-    }
-    file << "    </PPointData>" << std::endl;
+    // for(std::string varName: this->getVarNames())
+    // {
+    //     file << "       <DataArray type=\"Float64\" Name=\""<< varName << "\" /> " << std::endl;
+    // }
+    // file << "    </PPointData>" << std::endl;
 
-    file << "    <PPoints>" << std::endl;
-    file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
-    file << "    </PPoints>" << std::endl;
+    // file << "    <PPoints>" << std::endl;
+    // file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
+    // file << "    </PPoints>" << std::endl;
 
-    for( auto& fname : this->fileNamesForCollectionFile )
-    {
-        const auto filenameWithoutPath=fname.substr( fname.find_last_of('/') + 1 );
-        file << "    <Piece Source=\"" << filenameWithoutPath << ".bin.vtu\"/>" << std::endl;
-    }
+    // for( auto& fname : this->fileNamesForCollectionFile )
+    // {
+    //     const auto filenameWithoutPath=fname.substr( fname.find_last_of('/') + 1 );
+    //     file << "    <Piece Source=\"" << filenameWithoutPath << ".bin.vtu\"/>" << std::endl;
+    // }
 
-    file << "  </PUnstructuredGrid>" << std::endl;
-    file << "</VTKFile>" << std::endl;
+    // file << "  </PUnstructuredGrid>" << std::endl;
+    // file << "</VTKFile>" << std::endl;
 
-    //////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
 
-    file.close();
+    // file.close();
 
     this->fileNamesForCollectionFile.clear();
 }
@@ -353,12 +365,11 @@ void Probe::writeCollectionFile(Parameter* para, int t)
 void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>& fnames, int t)
 {
     std::vector< UbTupleFloat3 > nodes;
-    std::vector< std::string > nodedatanames = this->getVarNames();
 
     uint startpos = 0;
     uint endpos = 0;
     uint sizeOfNodes = 0;
-    std::vector< std::vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(this->varNames.size());
 
     SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 
@@ -380,9 +391,10 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
 
         for( auto it=nodedata.begin(); it!=nodedata.end(); it++) it->resize(sizeOfNodes);
 
-        for( int var=0; var < int(PostProcessingVariable::LAST); var++){
-        if(this->quantities[var])
+        for( int var=0; var < int(PostProcessingVariable::LAST); var++)
         {
+            if(!this->quantities[var]) continue;
+        
             PostProcessingVariable quantity = static_cast<PostProcessingVariable>(var);
             real coeff;
             uint n_arrs = uint(getPostProcessingVariableNames(quantity).size());
@@ -408,20 +420,8 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
                     nodedata[arrOff+arr][pos-startpos] = double(probeStruct->quantitiesArrayH[(arrOff+arr)*arrLen+pos]*coeff);
                 }
             }
-        }}
-        WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(fnames[part], nodes, nodedatanames, nodedata);
+        }
+        WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(fnames[part], nodes, this->varNames, nodedata);
     }
-}
-
-std::vector<std::string> Probe::getVarNames()
-{
-    std::vector<std::string> varNames;
-    for( int var=0; var < int(PostProcessingVariable::LAST); var++){
-    if(this->quantities[var])
-    {
-        std::vector<std::string> names = getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var));
-        varNames.insert(varNames.end(), names.begin(), names.end());
-    }}
-    return varNames;
 }
 

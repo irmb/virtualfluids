@@ -77,7 +77,7 @@ private:
     void write(Parameter* para, int level, int t);
     void writeCollectionFile(Parameter* para, int t);
     void writeGridFiles(Parameter* para, int level, std::vector<std::string >& fnames, int t);
-    std::vector<std::string> getVarNames();
+    std::vector<std::string> getVarNames(){ return this->varNames; };
     
 private:
     const std::string probeName;
