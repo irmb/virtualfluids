@@ -12,6 +12,7 @@ enum class PostProcessingVariable{
     // In writeGridFiles add lb->rw conversion factor
     // In getPostProcessingVariableNames add names
     // If new quantity depends on other quantities i.e. mean, catch in addPostProcessingVariable
+    Instantaneous,
     Means,
     Variances,
     LAST,
@@ -30,8 +31,7 @@ struct ProbeStruct{
 __global__ void interpQuantities(   uint* pointIndices,
                                     uint nPoints, uint n,
                                     real* distX, real* distY, real* distZ,
-                                    real* distributions, 
-                                    uint size_Mat, bool isEvenTimestep,
+                                    real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
                                     uint* quantityArrayOffsets, real* quantityArray,
@@ -44,10 +44,12 @@ class Probe : public PreCollisionInteractor
 public:
     Probe(
         const std::string _probeName,
+        const std::string _outputPath,
         uint _tStartAvg,
         uint _tStartOut,
         uint _tOut
     ):  probeName(_probeName),
+        outputPath(_outputPath),
         tStartAvg(_tStartAvg),
         tStartOut(_tStartOut),
         tOut(_tOut),
@@ -55,9 +57,10 @@ public:
     {
         assert("Output starts before averaging!" && tStartOut>=tStartAvg);
     }
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
-    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t);
-    void free(Parameter* para, CudaMemoryManager* cudaManager);
+    
+    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
+    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
+    void free(Parameter* para, CudaMemoryManager* cudaManager) override;
 
     SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }
 
@@ -77,13 +80,14 @@ private:
     void write(Parameter* para, int level, int t);
     void writeCollectionFile(Parameter* para, int t);
     void writeGridFiles(Parameter* para, int level, std::vector<std::string >& fnames, int t);
-    std::vector<std::string> getVarNames(){ return this->varNames; };
+    std::vector<std::string> getVarNames();
     
 private:
     const std::string probeName;
+    const std::string outputPath;
 
     std::vector<SPtr<ProbeStruct>> probeParams;
-    bool quantities[int(PostProcessingVariable::LAST)];
+    bool quantities[int(PostProcessingVariable::LAST)] = {};
     std::vector<std::string> fileNamesForCollectionFile;
     std::vector<std::string> varNames;
 

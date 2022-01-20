@@ -44,7 +44,7 @@ void PlaneProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* p
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
     interpQuantities<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints, probeStruct->vals,
                                                     probeStruct->distXD, probeStruct->distYD, probeStruct->distZD,
-                                                    para->getParD(level)->d0SP.f[0], para->getParD(level)->size_Mat_SP, para->getParD(level)->evenOrOdd,
+                                                    para->getParD(level)->vx_SP, para->getParD(level)->vy_SP, para->getParD(level)->vz_SP, para->getParD(level)->rho_SP, 
                                                     para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP, 
                                                     probeStruct->quantitiesD, probeStruct->arrayOffsetsD, probeStruct->quantitiesArrayD, false);
 

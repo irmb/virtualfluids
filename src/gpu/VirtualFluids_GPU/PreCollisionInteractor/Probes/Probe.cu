@@ -11,8 +11,6 @@
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
-#include "Kernel/Utilities/DistributionHelper.cuh"
-#include "lbm/MacroscopicQuantities.h"
 
 
 std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable variable)
@@ -20,6 +18,12 @@ std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable v
     std::vector<std::string> varNames;
     switch (variable)
     {
+    case PostProcessingVariable::Instantaneous:
+        varNames.push_back("vx");
+        varNames.push_back("vy");
+        varNames.push_back("vz");
+        varNames.push_back("rho");
+        break;
     case PostProcessingVariable::Means:
         varNames.push_back("vx_mean");
         varNames.push_back("vy_mean");
@@ -38,12 +42,20 @@ std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable v
     return varNames;
 }
 
-
 __device__ void calculateQuantities(uint n, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
 {
     //"https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm"
     // also has extensions for higher order and covariances
     real inv_n = 1/real(n);
+
+    if(quantities[int(PostProcessingVariable::Instantaneous)])
+    {
+        uint arrOff = quantityArrayOffsets[int(PostProcessingVariable::Instantaneous)];
+        quantityArray[(arrOff+0)*nPoints+node] = vx;
+        quantityArray[(arrOff+1)*nPoints+node] = vy;
+        quantityArray[(arrOff+2)*nPoints+node] = vz;
+        quantityArray[(arrOff+3)*nPoints+node] = rho;
+    }
 
     if(quantities[int(PostProcessingVariable::Means)])
     {
@@ -86,12 +98,10 @@ __device__ void calculateQuantities(uint n, real* quantityArray, bool* quantitie
     }
 }
 
-
 __global__ void interpQuantities(   uint* pointIndices,
                                     uint nPoints, uint n,
                                     real* distX, real* distY, real* distZ,
-                                    real* distributions, 
-                                    uint size_Mat, bool isEvenTimestep,           
+                                    real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
                                     uint* quantityArrayOffsets, real* quantityArray,
@@ -123,40 +133,23 @@ __global__ void interpQuantities(   uint* pointIndices,
         real dW, dE, dN, dS, dT, dB;
         getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX[node], distY[node], distZ[node]);
 
-        real rho[8], vx[8], vy[8], vz[8];
-        uint ks[8] = {k, ke, kn, kt, kne, kte, ktn, ktne};
 
-        for(uint i=0; i<8; i++)
-        {
-            vf::gpu::DistributionWrapper distr_wrapper(distributions, size_Mat, isEvenTimestep, ks[i], neighborX, neighborY, neighborZ);
-            const auto& distribution = distr_wrapper.distribution;
-
-            rho[i] = vf::lbm::getDensity(distribution.f);
-            vx[i] = vf::lbm::getCompressibleVelocityX1(distribution.f, rho[i]);
-            vy[i] = vf::lbm::getCompressibleVelocityX2(distribution.f, rho[i]);
-            vz[i] = vf::lbm::getCompressibleVelocityX3(distribution.f, rho[i]);
-    }
-
-
-        u_interpX  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, 0, 1, 2, 3, 4, 5, 6, 7, vx );
-        u_interpY  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, 0, 1, 2, 3, 4, 5, 6, 7, vy );
-        u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, 0, 1, 2, 3, 4, 5, 6, 7, vz );
-        rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, 0, 1, 2, 3, 4, 5, 6, 7, rho );
+        u_interpX  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
+        u_interpY  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
+        u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
+        rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
     }
     else
     {
-        vf::gpu::DistributionWrapper distr_wrapper(distributions, size_Mat, isEvenTimestep, k, neighborX, neighborY, neighborZ);
-        const auto& distribution = distr_wrapper.distribution;
-
-        u_interpX = vf::lbm::getCompressibleVelocityX1(distribution.f, rho_interp);
-        u_interpY = vf::lbm::getCompressibleVelocityX2(distribution.f, rho_interp);
-        u_interpZ = vf::lbm::getCompressibleVelocityX3(distribution.f, rho_interp);
+        u_interpX = vx[k];
+        u_interpY = vy[k];
+        u_interpZ = vz[k];
+        rho_interp = rho[k];
     }
 
     calculateQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
 
 }
-
 
 void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
 {
@@ -182,15 +175,7 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
                             pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level, 
                             level);
     }
-
-    for( int var=0; var < int(PostProcessingVariable::LAST); var++)
-    {
-        if(!this->quantities[var]) continue;
-        std::vector<std::string> names = getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var));
-        this->varNames.insert(this->varNames.end(), names.begin(), names.end());
-    }
 }
-
 
 void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& probeIndices,
                                       std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
@@ -225,14 +210,14 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
 
     cudaManager->cudaAllocProbeQuantitiesAndOffsets(this, level);
 
-    for( int var=0; var<int(PostProcessingVariable::LAST); var++)
+    for( int var=0; var<int(PostProcessingVariable::LAST); var++){
+    if(this->quantities[var])
     {
-        if(!this->quantities[var]) continue;
 
         probeParams[level]->quantitiesH[var] = true;
         probeParams[level]->arrayOffsetsH[var] = arrOffset;
         arrOffset += uint(getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var)).size());
-    }
+    }}
     
     cudaManager->cudaCopyProbeQuantitiesAndOffsetsHtoD(this, level);
 
@@ -249,7 +234,6 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
     }
     cudaManager->cudaCopyProbeQuantityArrayHtoD(this, level);
 }
-
 
 void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
 {
@@ -281,8 +265,6 @@ void Probe::free(Parameter* para, CudaMemoryManager* cudaManager)
         cudaManager->cudaFreeProbeQuantitiesAndOffsets(this, level);
     }
 }
-
-
 
 void Probe::addPostProcessingVariable(PostProcessingVariable variable)
 {
@@ -321,43 +303,39 @@ void Probe::writeCollectionFile(Parameter* para, int t)
                                            + "_t_" + StringUtil::toString<int>(t) 
                                            + ".vtk";
 
-    std::vector<std::string> cellNames;
+    std::ofstream file;
 
-    WbWriterVtkXmlBinary::getInstance()->writeParallelFile(filename, this->fileNamesForCollectionFile, this->varNames, cellNames);
+    file.open(this->outputPath + "/" + filename + ".pvtu" );
 
-    // std::ofstream file;
-
-    // file.open( filename + ".pvtu" );
-
-    // //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
     
-    // file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
-    // file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
+    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
+    file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
 
-    // file << "    <PPointData>" << std::endl;
+    file << "    <PPointData>" << std::endl;
 
-    // for(std::string varName: this->getVarNames())
-    // {
-    //     file << "       <DataArray type=\"Float64\" Name=\""<< varName << "\" /> " << std::endl;
-    // }
-    // file << "    </PPointData>" << std::endl;
+    for(std::string varName: this->getVarNames())
+    {
+        file << "       <DataArray type=\"Float64\" Name=\""<< varName << "\" /> " << std::endl;
+    }
+    file << "    </PPointData>" << std::endl;
 
-    // file << "    <PPoints>" << std::endl;
-    // file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
-    // file << "    </PPoints>" << std::endl;
+    file << "    <PPoints>" << std::endl;
+    file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
+    file << "    </PPoints>" << std::endl;
 
-    // for( auto& fname : this->fileNamesForCollectionFile )
-    // {
-    //     const auto filenameWithoutPath=fname.substr( fname.find_last_of('/') + 1 );
-    //     file << "    <Piece Source=\"" << filenameWithoutPath << ".bin.vtu\"/>" << std::endl;
-    // }
+    for( auto& fname : this->fileNamesForCollectionFile )
+    {
+        const auto filenameWithoutPath=fname.substr( fname.find_last_of('/') + 1 );
+        file << "    <Piece Source=\"" << filenameWithoutPath << ".bin.vtu\"/>" << std::endl;
+    }
 
-    // file << "  </PUnstructuredGrid>" << std::endl;
-    // file << "</VTKFile>" << std::endl;
+    file << "  </PUnstructuredGrid>" << std::endl;
+    file << "</VTKFile>" << std::endl;
 
-    // //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-    // file.close();
+    file.close();
 
     this->fileNamesForCollectionFile.clear();
 }
@@ -365,11 +343,12 @@ void Probe::writeCollectionFile(Parameter* para, int t)
 void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>& fnames, int t)
 {
     std::vector< UbTupleFloat3 > nodes;
+    std::vector< std::string > nodedatanames = this->getVarNames();
 
     uint startpos = 0;
     uint endpos = 0;
     uint sizeOfNodes = 0;
-    std::vector< std::vector< double > > nodedata(this->varNames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 
@@ -391,16 +370,18 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
 
         for( auto it=nodedata.begin(); it!=nodedata.end(); it++) it->resize(sizeOfNodes);
 
-        for( int var=0; var < int(PostProcessingVariable::LAST); var++)
+        for( int var=0; var < int(PostProcessingVariable::LAST); var++){
+        if(this->quantities[var])
         {
-            if(!this->quantities[var]) continue;
-        
             PostProcessingVariable quantity = static_cast<PostProcessingVariable>(var);
             real coeff;
             uint n_arrs = uint(getPostProcessingVariableNames(quantity).size());
 
             switch(quantity)
             {
+            case PostProcessingVariable::Instantaneous:
+                coeff = para->getVelocityRatio();
+            break;
             case PostProcessingVariable::Means:
                 coeff = para->getVelocityRatio();
             break;
@@ -420,8 +401,19 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
                     nodedata[arrOff+arr][pos-startpos] = double(probeStruct->quantitiesArrayH[(arrOff+arr)*arrLen+pos]*coeff);
                 }
             }
-        }
-        WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(fnames[part], nodes, this->varNames, nodedata);
+        }}
+        WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(this->outputPath + "/" + fnames[part], nodes, nodedatanames, nodedata);
     }
 }
 
+std::vector<std::string> Probe::getVarNames()
+{
+    std::vector<std::string> varNames;
+    for( int var=0; var < int(PostProcessingVariable::LAST); var++){
+    if(this->quantities[var])
+    {
+        std::vector<std::string> names = getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var));
+        varNames.insert(varNames.end(), names.begin(), names.end());
+    }}
+    return varNames;
+}
