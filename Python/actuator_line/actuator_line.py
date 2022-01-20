@@ -90,9 +90,11 @@ para.add_actuator(alm)
 #%%
 point_probe = gpu.probes.PointProbe("pointProbe", str(output_path), 100, 500, 100)
 point_probe.add_probe_points_from_list(np.array([1,2,5])*reference_diameter, np.array([3,3,3])*reference_diameter, np.array([3,3,3])*reference_diameter)
+point_probe.add_post_processing_variable(gpu.probes.PostProcessingVariable.Means)
+
 para.add_probe(point_probe)
 
-plane_probe = gpu.probes.PlaneProbe("plane_probe", str(output_path), 100, 500, 100)
+plane_probe = gpu.probes.PlaneProbe("planeProbe", str(output_path), 100, 500, 100)
 plane_probe.set_probe_plane(5*reference_diameter, 0, 0, dx, length[1], length[2])
 para.add_probe(plane_probe)
 #%%
