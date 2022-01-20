@@ -11,7 +11,7 @@ namespace basics
     {
         py::module basicsModule = parentModule.def_submodule("basics");
 
-        logging::makeModule(basicsModule);
+        logger::makeModule(basicsModule);
         configuration::makeModule(basicsModule);
         lbmOrGks::makeModule(basicsModule);
         

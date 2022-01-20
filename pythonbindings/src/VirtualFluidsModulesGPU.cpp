@@ -13,7 +13,7 @@ namespace py_bindings
         basics::makeModule(m);
         gpu::makeModule(m);
         lbm::makeModule(m);
-        logger::makeModule(m);
+        logging::makeModule(m);
         py::add_ostream_redirect(m, "ostream_redirect");
     }
 }

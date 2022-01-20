@@ -3,7 +3,7 @@
 #include <basics/Core/Logger/Logger.h>
 #include <basics/Core/Logger/implementations/LoggerImp.h>
 
-namespace logging
+namespace logger
 {
     namespace py = pybind11;
 
