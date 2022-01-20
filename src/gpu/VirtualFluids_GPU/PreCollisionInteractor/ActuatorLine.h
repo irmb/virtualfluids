@@ -36,6 +36,7 @@ public:
         this->numberOfNodes = this->nBladeNodes*this->nBlades;
         this->omega = 1.0f;
         this->azimuth = 0.0f;
+        this->yaw = 0.0f;
     };
 
     virtual ~ActuatorLine(){};
@@ -51,6 +52,10 @@ public:
     uint getNumberOfNodes(){return this->numberOfNodes;};
     real getOmega(){ return this->omega; };
     real getAzimuth(){ return this->azimuth; };
+    real getDensity(){ return this->density; };
+    real getPositionX(){ return this->turbinePosX; };
+    real getPositionY(){ return this->turbinePosY; };
+    real getPositionZ(){ return this->turbinePosZ; };
     real* getBladeRadii(){return this->bladeRadiiH;};
     real* getBladeCoordsX(){return this->bladeCoordsXH;};
     real* getBladeCoordsY(){return this->bladeCoordsYH;};
@@ -64,6 +69,7 @@ public:
 
     void setOmega(real _omega){ this->omega = _omega; };
     void setAzimuth(real _azimuth){ this->azimuth = _azimuth; };
+    void setYaw(real _yaw){ this->yaw = _yaw; };
     void setBladeCoords(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ);
     void setBladeVelocities(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ);
     void setBladeForces(real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ);
@@ -103,7 +109,7 @@ public:
 private:
     const real density;
     real turbinePosX, turbinePosY, turbinePosZ;
-    real omega, azimuth, delta_t, delta_x;
+    real omega, azimuth, yaw, delta_t, delta_x;
     const real diameter;
     const uint nBladeNodes;
     const uint nBlades;

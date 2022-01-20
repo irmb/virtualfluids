@@ -13,7 +13,8 @@ namespace probes
     {
         py::module probeModule = parentModule.def_submodule("probes");
 
-        py::enum_<PostProcessingVariable>(probeModule, "PostProcessingVariables")
+        py::enum_<PostProcessingVariable>(probeModule, "PostProcessingVariable")
+        .value("Instantaneous", PostProcessingVariable::Instantaneous)
         .value("Means", PostProcessingVariable::Means)
         .value("Variances", PostProcessingVariable::Variances);
 
