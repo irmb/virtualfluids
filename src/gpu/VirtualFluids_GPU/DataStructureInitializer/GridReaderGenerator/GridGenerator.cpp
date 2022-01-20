@@ -61,7 +61,7 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
         //cudaMemoryManager->cudaAllocF3SP(level);
 		cudaMemoryManager->cudaAllocNeighborWSB(level);
 
-        if(para->getUseWale())
+        if(para->getUseTurbulentViscosity())
             cudaMemoryManager->cudaAllocTurbulentViscosity(level);
         
         if(para->getIsBodyForce())

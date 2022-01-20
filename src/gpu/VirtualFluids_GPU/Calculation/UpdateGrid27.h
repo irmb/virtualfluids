@@ -38,4 +38,6 @@ extern "C" void fineToCoarse(Parameter* para, int level);
 
 extern "C" void coarseToFine(Parameter* para, int level);
 
+extern "C" void calcTurbulentViscosity(Parameter* para, int level);
+
 #endif

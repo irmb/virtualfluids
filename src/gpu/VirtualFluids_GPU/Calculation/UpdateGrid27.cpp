@@ -7,6 +7,7 @@
 //#include "Output/UnstructuredGridWriter.hpp"
 #include "Communication/ExchangeData27.h"
 #include "Kernel/Kernel.h"
+#include "GPU/TurbulentViscosity.h"
 
 void interactWithActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
 void interactWithProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
@@ -47,6 +48,9 @@ void updateGrid27(Parameter* para,
 
 	if (para->getUseWale())
 		calcMacroscopicQuantities(para, level);
+
+    if (para->getUseTurbulentViscosity())
+        calcTurbulentViscosity(para, level);
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -1281,4 +1285,10 @@ void interactWithProbes(Parameter* para, CudaMemoryManager* cudaManager, int lev
     {
         probe->interact(para, cudaManager, level, t);
     }
+}
+
+void calcTurbulentViscosity(Parameter* para, int level)
+{
+    if(para->getUseAMD())
+        calcTurbulentViscosityAMD(para, level);
 }

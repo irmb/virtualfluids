@@ -38,47 +38,19 @@
 using namespace vf::lbm::constant;
 #include "Kernel/ChimeraTransformation.h"
 
-extern "C" __device__ __forceinline__ real calcDerivatives(const uint& k, uint& kM, uint& kP, uint* typeOfGridNode, real* veloX, real* veloY, real* veloZ, real& dvx, real& dvy, real& dvz)
-{
-    if(typeOfGridNode[kP] == GEO_FLUID)
-    {
-        if(typeOfGridNode[kM] == GEO_FLUID)
-        {
-            dvx = c1o2*(veloX[kP] - veloX[kM]);
-            dvy = c1o2*(veloY[kP] - veloY[kM]);
-            dvz = c1o2*(veloZ[kP] - veloZ[kM]);
-        } 
-        else 
-        {
-            dvx = veloX[kP] - veloX[k];
-            dvy = veloY[kP] - veloY[k];
-            dvz = veloZ[kP] - veloZ[k];
-        }
-    }
-    else
-    {
-        if(typeOfGridNode[kM] == GEO_FLUID)
-        {
-            dvx = veloX[k] - veloX[kM];
-            dvy = veloY[k] - veloY[kM];
-            dvz = veloZ[k] - veloZ[kM];
-        }
-    }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_AMDCumulantK17CompChim(
+extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 	real omega_in,
-    real SGSConstant,
 	uint* typeOfGridNode,
 	uint* neighborX,
 	uint* neighborY,
 	uint* neighborZ,
-    uint* neighborWSB,
 	real* distributions,
-    real* veloX,
-    real* veloY,
-    real* veloZ,
+    real* vx,
+    real* vy,
+    real* vz,
+    real* turbulentViscosity,
 	unsigned long size_Mat,
 	int level,
     bool bodyForce,
@@ -238,48 +210,6 @@ extern "C" __global__ void LB_Kernel_AMDCumulantK17CompChim(
         real vvz = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
                     (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) + (mfbbc - mfbba)) *
                    OOrho;
-
-        ////////////////////////////////////////////////////////////////////////////////////
-        //! - Calculate modified omega according to AMD
-        //!
-        real omega;
-        {
-            uint kPx = neighborX[k];
-            uint kPy = neighborY[k];
-            uint kPz = neighborZ[k];
-            uint kMxyz = neighborWSB[k];
-            uint kMx = neighborZ[neighborY[kMxyz]];
-            uint kMy = neighborZ[neighborX[kMxyz]];
-            uint kMz = neighborY[neighborX[kMxyz]];
-
-            real dvxdx = c0o1;
-            real dvxdy = c0o1;
-            real dvxdz = c0o1;
-
-            real dvydx = c0o1;
-            real dvydy = c0o1;
-            real dvydz = c0o1;
-
-            real dvzdx = c0o1;
-            real dvzdy = c0o1;
-            real dvzdz = c0o1;
-
-            calcDerivatives(k, kMx, kPx, typeOfGridNode, veloX, veloY, veloZ, dvxdx, dvydx, dvzdx);
-            calcDerivatives(k, kMy, kPy, typeOfGridNode, veloX, veloY, veloZ, dvxdy, dvydy, dvzdy);
-            calcDerivatives(k, kMz, kPz, typeOfGridNode, veloX, veloY, veloZ, dvxdz, dvydz, dvzdz);
-
-            real denominator =  dvxdx*dvxdx + dvydx*dvydx + dvzdx*dvzdx + 
-                                dvxdy*dvxdy + dvydy*dvydy + dvzdy*dvzdy +
-                                dvxdz*dvxdz + dvydz*dvydz + dvzdz*dvzdz;
-            real enumerator =   (dvxdx*dvxdx + dvxdy*dvxdy + dvxdz*dvxdz) * dvxdx + 
-                                (dvydx*dvydx + dvydy*dvydy + dvydz*dvydz) * dvydy + 
-                                (dvzdx*dvzdx + dvzdy*dvzdy + dvzdz*dvzdz) * dvzdz +
-                                (dvxdx*dvydx + dvxdy*dvydy + dvxdz*dvydz) * (dvxdy+dvydx) +
-                                (dvxdx*dvzdx + dvxdy*dvzdy + dvxdz*dvzdz) * (dvxdz+dvzdx) + 
-                                (dvydx*dvzdx + dvydy*dvzdy + dvydz*dvzdz) * (dvydz+dvzdy);
-
-            omega = omega_in / (c1o1 + c3o1*omega_in*max(c0o1, -SGSConstant*enumerator/denominator));
-        }
         
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
@@ -384,6 +314,10 @@ extern "C" __global__ void LB_Kernel_AMDCumulantK17CompChim(
         //!  - Fifth order cumulants \f$ C_{221}, C_{212}, C_{122}\f$: \f$\omega_9=O5=1.0\f$.
         //!  - Sixth order cumulant \f$ C_{222}\f$: \f$\omega_{10}=O6=1.0\f$.
         //!
+                ////////////////////////////////////////////////////////////////////////////////////
+        //! - Calculate modified omega with turbulent viscosity
+        //!
+        real omega = omega_in / (c1o1 + c3o1*omega_in*max(c0o1, turbulentViscosity[k]));
         ////////////////////////////////////////////////////////////
         // 2.
         real OxxPyyPzz = c1o1;
@@ -725,5 +659,9 @@ extern "C" __global__ void LB_Kernel_AMDCumulantK17CompChim(
         (dist.f[dirTSW])[ksw]  = mfcca;
         (dist.f[dirBNW])[kbw]  = mfcac;
         (dist.f[dirBSW])[kbsw] = mfccc;
+
+        vx[k] = vvx;
+        vy[k] = vvy;
+        vz[k] = vvz;
     }
 }

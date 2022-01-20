@@ -4,15 +4,15 @@
 #include "Kernel/Utilities/CheckParameterStrategy/CheckParameterStrategy.h"
 
 
-class AMDFluidFlowCompStrategy : public CheckParameterStrategy
+class TurbulentViscosityFluidFlowCompStrategy : public CheckParameterStrategy
 {
 public:
-    static std::shared_ptr<AMDFluidFlowCompStrategy> getInstance();
+    static std::shared_ptr<TurbulentViscosityFluidFlowCompStrategy> getInstance();
 
 	bool checkParameter(std::shared_ptr<Parameter> para);
 
 private:
-    AMDFluidFlowCompStrategy();
+    TurbulentViscosityFluidFlowCompStrategy();
 
 };
 #endif 

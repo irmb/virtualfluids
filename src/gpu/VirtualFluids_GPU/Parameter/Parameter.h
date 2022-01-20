@@ -450,6 +450,7 @@ public:
     void setStreetVelocityFile(bool streetVelocityFile);
     void setUseMeasurePoints(bool useMeasurePoints);
     void setUseWale(bool useWale);
+    void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setUseAMD( bool useAMD);
     void setSGSConstant( real SGSConstant);
     void setUseInitNeq(bool useInitNeq);
@@ -710,6 +711,7 @@ public:
     bool isStreetVelocityFile();
     bool getUseMeasurePoints();
     bool getUseWale();
+    bool getUseTurbulentViscosity();
     bool getUseAMD();
     real getSGSConstant();
     bool getUseInitNeq();
