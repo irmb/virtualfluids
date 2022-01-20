@@ -47,6 +47,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 	uint* neighborY,
 	uint* neighborZ,
 	real* distributions,
+    real* rho,
     real* vx,
     real* vy,
     real* vz,
@@ -198,8 +199,8 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
                      ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) +
                     mfbbb;
 
-        real rho   = c1o1 + drho;
-        real OOrho = c1o1 / rho;
+        real rrho   = c1o1 + drho;
+        real OOrho = c1o1 / rrho;
 
         real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
                     (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) + (mfcbb - mfabb)) *
@@ -583,6 +584,13 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         mfaba = -mfaba;
         mfaab = -mfaab;
 
+
+        //Write to array here to distribute read/write
+        rho[k] = drho;
+        vx[k] = vvx;
+        vy[k] = vvy;
+        vz[k] = vvz;
+
         ////////////////////////////////////////////////////////////////////////////////////
         //! - Chimera transform from central moments to well conditioned distributions as defined in Appendix J in
         //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
@@ -660,8 +668,6 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         (dist.f[dirBNW])[kbw]  = mfcac;
         (dist.f[dirBSW])[kbsw] = mfccc;
 
-        vx[k] = vvx;
-        vy[k] = vvy;
-        vz[k] = vvz;
+
     }
 }

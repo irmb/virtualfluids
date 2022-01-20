@@ -19,6 +19,7 @@ void TurbulentViscosityCumulantK17CompChim::run()
 		para->getParD(level)->neighborY_SP,
 		para->getParD(level)->neighborZ_SP,
 		para->getParD(level)->d0SP.f[0],
+		para->getParD(level)->rho_SP,
 		para->getParD(level)->vx_SP,
 		para->getParD(level)->vy_SP,
 		para->getParD(level)->vz_SP,

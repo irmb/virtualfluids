@@ -11,6 +11,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
 	uint* neighborY,
 	uint* neighborZ,
 	real* distributions,
+	real* rho,
 	real* vx,
     real* vy,
     real* vz,
