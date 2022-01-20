@@ -12,6 +12,7 @@ enum class PostProcessingVariable{
     // In writeGridFiles add lb->rw conversion factor
     // In getPostProcessingVariableNames add names
     // If new quantity depends on other quantities i.e. mean, catch in addPostProcessingVariable
+    Instantaneous,
     Means,
     Variances,
     LAST,
@@ -56,6 +57,7 @@ public:
     {
         assert("Output starts before averaging!" && tStartOut>=tStartAvg);
     }
+    
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
     void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
     void free(Parameter* para, CudaMemoryManager* cudaManager) override;
@@ -85,7 +87,7 @@ private:
     const std::string outputPath;
 
     std::vector<SPtr<ProbeStruct>> probeParams;
-    bool quantities[int(PostProcessingVariable::LAST)];
+    bool quantities[int(PostProcessingVariable::LAST)] = {};
     std::vector<std::string> fileNamesForCollectionFile;
     std::vector<std::string> varNames;
 
