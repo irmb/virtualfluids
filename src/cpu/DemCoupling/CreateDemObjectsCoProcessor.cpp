@@ -1,5 +1,5 @@
 #include "CreateDemObjectsCoProcessor.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "DemCoProcessor.h"
 #include "EquilibriumReconstructor.h"
 #include "ExtrapolationReconstructor.h"
@@ -19,7 +19,7 @@
 #include "muParser.h"
 
 CreateDemObjectsCoProcessor::CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
-                                                         std::shared_ptr<Communicator> comm,
+                                                         std::shared_ptr<vf::mpi::Communicator> comm,
                                                          SPtr<DemCoProcessor> demCoProcessor,
                                                          SPtr<PhysicsEngineMaterialAdapter> demObjectMaterial,
                                                          double tolerance)

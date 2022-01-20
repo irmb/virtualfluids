@@ -52,7 +52,7 @@ void run(string configname)
         double beta  = 12 * sigma / interfaceThickness;
         double kappa = 1.5 * interfaceThickness * sigma;
 
-        SPtr<Communicator> comm = MPICommunicator::getInstance();
+        SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
 
         if (myid == 0)

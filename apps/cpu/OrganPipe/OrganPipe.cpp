@@ -8,7 +8,7 @@ void run(string configname)
 {
    try
    {
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (myid == 0) UBLOG(logINFO, "Testcase organ pipe");

@@ -9,18 +9,14 @@
 #include <exception>
 #include <memory>
 
-#include "mpi.h"
-
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
 #include "PointerDefinitions.h"
 
-#include "Core/LbmOrGks.h"
 #include "Core/StringUtilities/StringUtil.h"
 
 #include "Core/VectorTypes.h"
-#include "Core/Logger/Logger.h"
 
 #include <basics/config/ConfigurationFile.h>
 
@@ -117,142 +113,122 @@ void multipleLevel(const std::string& configPath)
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if( lbmOrGks == LBM )
-    {
-        vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
+    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
-        vf::basics::ConfigurationFile config;
-        config.load(configPath);
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
+    vf::basics::ConfigurationFile config;
+    config.load(configPath);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
+    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        const real dt = dx * mach / (sqrt(3) * velocity);
+    const real dt = dx * mach / (sqrt(3) * velocity);
 
-        const real velocityLB = velocity * dt / dx; // LB units
+    const real velocityLB = velocity * dt / dx; // LB units
 
-        const real viscosityLB = viscosity * dt / (dx * dx); // LB units
+    const real viscosityLB = viscosity * dt / (dx * dx); // LB units
 
-        VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
-        VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
+    VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
+    VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		para->setDevices(std::vector<uint>{(uint)0});
+    para->setDevices(std::vector<uint>{(uint)0});
 
-        para->setOutputPrefix( simulationName );
+    para->setOutputPrefix( simulationName );
 
-        para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
+    para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
 
-        para->setPrintFiles(true);
+    para->setPrintFiles(true);
 
-        para->setMaxLevel(1);
+    para->setMaxLevel(1);
 
-        para->setVelocity(velocityLB);
-        para->setViscosity(viscosityLB);
+    para->setVelocity(velocityLB);
+    para->setViscosity(viscosityLB);
 
-        para->setVelocityRatio( dx / dt );
+    para->setVelocityRatio( dx / dt );
 
-		para->setMainKernel("CumulantK17CompChim");
+    para->setMainKernel("CumulantK17CompChim");
 
-		para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
-            rho = (real)0.0;
-            vx  = velocityLB;
-            vy  = (real)0.0;
-            vz  = (real)0.0;
-        });
+    para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
+        rho = (real)0.0;
+        vx  = velocityLB;
+        vy  = (real)0.0;
+        vz  = (real)0.0;
+    });
 
-        para->setTOut( timeStepOut );
-        para->setTEnd( uint(tEnd/dt) );
+    para->setTOut( timeStepOut );
+    para->setTEnd( uint(tEnd/dt) );
 
-        para->setIsBodyForce( true );
+    para->setIsBodyForce( true );
 
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB,  0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PX,  velocityLB,  0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MY,  velocityLB,  0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PY,  velocityLB,  0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB,  0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB,  0.0, 0.0);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB,  0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PX,  velocityLB,  0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MY,  velocityLB,  0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PY,  velocityLB,  0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB,  0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB,  0.0, 0.0);
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
+    SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
-        SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
-        real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
-        real epsilon = 5.f; // width of gaussian smearing
-        real density = 1.225f;
-        int level = 0;
-        uint nBlades = 3;
-        uint nBladeNodes = 32;
+    real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
+    real epsilon = 5.f; // width of gaussian smearing
+    real density = 1.225f;
+    int level = 0;
+    uint nBlades = 3;
+    uint nBladeNodes = 32;
 
 
-        SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx) );
-        para->addActuator( actuator_line );
+    SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx) );
+    para->addActuator( actuator_line );
 
-        SPtr<PointProbe> pointProbe = SPtr<PointProbe>( new PointProbe("pointProbe", 100, 500, 100) );
-        std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
-        std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
-        std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
-        pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
-        // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
-        pointProbe->addPostProcessingVariable(PostProcessingVariable::Means);
-        pointProbe->addPostProcessingVariable(PostProcessingVariable::Variances);
-        para->addProbe( pointProbe );
+    SPtr<PointProbe> pointProbe = SPtr<PointProbe>( new PointProbe("pointProbe", 100, 500, 100) );
+    std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
+    std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+    std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
+    pointProbe->addProbePointsFromList(probeCoordsX, probeCoordsY, probeCoordsZ);
+    // pointProbe->addProbePointsFromXNormalPlane(2*D, 0.0, 0.0, L_y, L_z, (uint)L_y/dx, (uint)L_z/dx);
+    pointProbe->addPostProcessingVariable(PostProcessingVariable::Means);
+    pointProbe->addPostProcessingVariable(PostProcessingVariable::Variances);
+    para->addProbe( pointProbe );
 
-        SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", 100, 500, 100) );
-        planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
-        planeProbe->addPostProcessingVariable(PostProcessingVariable::Means);
-        para->addProbe( planeProbe );
+    SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", 100, 500, 100) );
+    planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
+    planeProbe->addPostProcessingVariable(PostProcessingVariable::Means);
+    para->addProbe( planeProbe );
 
 
 
 
-        Simulation sim;
-        SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-        SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
-        SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
-        sim.setFactories(kernelFactory, preProcessorFactory);
-        sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);        
-        sim.run();
-        sim.free();
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    }
+    Simulation sim(communicator);
+    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
+    SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
+    SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
+    sim.setFactories(kernelFactory, preProcessorFactory);
+    sim.init(para, gridGenerator, fileWriter, cudaMemoryManager);        
+    sim.run();
+    sim.free();
 }
 
 int main( int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
-    std::string str, str2; 
     if ( argv != NULL )
     {
-        //str = static_cast<std::string>(argv[0]);
-        
         try
         {
-            //////////////////////////////////////////////////////////////////////////
-
             vf::logging::Logger::initalizeLogger();
 
             if( argc > 1){ path = argv[1]; }
 
-			multipleLevel(path + "/configActuatorLine.txt");
-
-            //////////////////////////////////////////////////////////////////////////
-		}
+            multipleLevel(path + "/configActuatorLine.txt");
+        }
         catch (const spdlog::spdlog_ex &ex) {
             std::cout << "Log initialization failed: " << ex.what() << std::endl;
         }
@@ -270,7 +246,5 @@ int main( int argc, char* argv[])
             VF_LOG_CRITICAL("Unknown exception!");
         }
     }
-
-    MPI_Finalize();
     return 0;
 }

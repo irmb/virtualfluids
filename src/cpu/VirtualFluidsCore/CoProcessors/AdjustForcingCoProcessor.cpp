@@ -6,7 +6,7 @@
 
 #include <fstream>
 
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "Grid3D.h"
 #include "IntegrateValuesHelper.h"
 #include "UbScheduler.h"
@@ -14,7 +14,7 @@
 
 AdjustForcingCoProcessor::AdjustForcingCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
                                                    SPtr<IntegrateValuesHelper> integrateValues, double vTarged,
-                                                   SPtr<Communicator> comm)
+                                                   std::shared_ptr<vf::mpi::Communicator> comm)
 
     : CoProcessor(grid, s), path(path), integrateValues(integrateValues), comm(comm), vx1Targed(vTarged)
 {

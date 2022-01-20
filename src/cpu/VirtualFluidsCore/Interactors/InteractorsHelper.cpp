@@ -34,7 +34,7 @@
 #include "InteractorsHelper.h"
 
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "SetBcBlocksBlockVisitor.h"
 #include "SetSolidBlocksBlockVisitor.h"
 #include <Grid3D.h>
@@ -100,6 +100,6 @@ void InteractorsHelper::updateGrid()
         ids.push_back(block->getGlobalID());
 
     std::vector<int> rids;
-    Communicator::getInstance()->allGather(ids, rids);
+    vf::mpi::Communicator::getInstance()->allGather(ids, rids);
     grid->deleteBlocks(rids);
 }

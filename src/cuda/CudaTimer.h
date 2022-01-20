@@ -1,11 +1,13 @@
-#ifndef CudaTimer_H
-#define CudaTimer_H
+#ifndef CUDA_CudaTimer_H
+#define CUDA_CudaTimer_H
 
 
 #include <cuda_runtime.h>
 #include <helper_functions.h>
 #include <helper_cuda.h>
 
+namespace vf::cuda
+{
 
 class CudaTimer
 {
@@ -29,5 +31,7 @@ private:
     double ftimeE {0.0};
 
 };
+
+}
 
 #endif

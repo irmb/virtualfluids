@@ -24,7 +24,7 @@ void run(const char *cstr)
 
       UbLog::reportingLevel() = logINFO;
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       string machine = string(cstr);
@@ -222,10 +222,10 @@ void run(const char *cstr)
          ///interactoren
          //int bbOption1 = 0; //0=simple Bounce Back, 1=quadr. BB
          //D3Q27BoundaryConditionAdapterPtr bcObst(new D3Q27NoSlipBCAdapter(bbOption1));
-         ///////würfel unten version ende
+         ///////wï¿½rfel unten version ende
          ////////////////////////////////////////////////////////////////////////////////
          ////////PM grid
-         //Temporär:
+         //Temporï¿½r:
          //double  H=1.0;
 
          vector<D3Q27InteractorPtr> D3Q27InteractorPtrarray;

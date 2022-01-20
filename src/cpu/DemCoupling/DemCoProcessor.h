@@ -31,15 +31,14 @@ class PePhysicsEngineGeometryAdapter;
 class UbScheduler;
 class Grid3D;
 class ForceCalculator;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class MovableObjectInteractor;
-class Communicator;
 class BoundaryConditionsBlockVisitor;
 
 class DemCoProcessor : public CoProcessor
 {
 public:
-    DemCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, std::shared_ptr<Communicator> comm,
+    DemCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm,
                    std::shared_ptr<ForceCalculator> forceCalculator,
                    std::shared_ptr<PhysicsEngineSolverAdapter> physicsEngineSolver, double intermediatePeSteps = 1.0);
     virtual ~DemCoProcessor();
@@ -74,7 +73,7 @@ private:
     std::shared_ptr<PePhysicsEngineGeometryAdapter> getPeGeoAdapter(unsigned long long systemId);
 
 private:
-    std::shared_ptr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     std::vector<std::shared_ptr<MovableObjectInteractor>> interactors;
     std::shared_ptr<ForceCalculator> forceCalculator;
     std::shared_ptr<PePhysicsEngineSolverAdapter> physicsEngineSolver;

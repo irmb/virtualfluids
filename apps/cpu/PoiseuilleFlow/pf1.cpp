@@ -7,7 +7,7 @@ using namespace std;
 //pipe flow with forcing
 void pf1()
 {
-   SPtr<Communicator> comm = MPICommunicator::getInstance();
+   SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
    int myid = comm->getProcessID();
 
    //parameters

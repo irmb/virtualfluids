@@ -48,7 +48,7 @@
 #define VF_LOG_TRACE(...) spdlog::trace(__VA_ARGS__)
 #define VF_LOG_DEBUG(...) spdlog::debug(__VA_ARGS__)
 #define VF_LOG_INFO(...) spdlog::info(__VA_ARGS__)
-#define VF_LOG_WARNING(...) spdlog::warning(__VA_ARGS__)
+#define VF_LOG_WARNING(...) spdlog::warn(__VA_ARGS__)
 #define VF_LOG_CRITICAL(...) spdlog::critical(__VA_ARGS__)
 
 

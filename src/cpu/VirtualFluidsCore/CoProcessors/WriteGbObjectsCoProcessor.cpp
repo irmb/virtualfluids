@@ -1,5 +1,5 @@
 #include "WriteGbObjectsCoProcessor.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "GbObject3D.h"
 #include "UbScheduler.h"
 #include "WbWriterVtkXmlASCII.h"
@@ -7,7 +7,7 @@
 #include <vector>
 
 WriteGbObjectsCoProcessor::WriteGbObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                                     WbWriter *const writer, SPtr<Communicator> comm)
+                                                     WbWriter *const writer, std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), path(path), writer(writer), comm(comm)
 {
 }

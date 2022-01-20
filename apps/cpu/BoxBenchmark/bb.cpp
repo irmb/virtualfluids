@@ -37,7 +37,7 @@ void run(string configname)
 
       //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG3");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

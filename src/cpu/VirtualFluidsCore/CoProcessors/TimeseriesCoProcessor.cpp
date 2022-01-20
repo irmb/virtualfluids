@@ -9,14 +9,14 @@
 
 #include <fstream>
 
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "Grid3D.h"
 #include "IntegrateValuesHelper.h"
 #include "LBMUnitConverter.h"
 #include "UbScheduler.h"
 
 TimeseriesCoProcessor::TimeseriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<IntegrateValuesHelper> h1,
-                                             const std::string &path, SPtr<Communicator> comm)
+                                             const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), h1(h1), path(path), comm(comm)
 {
     if (comm->getProcessID() == comm->getRoot()) {

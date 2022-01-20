@@ -2,14 +2,14 @@
 
 #include "MetisPartitioningGridVisitor.h"
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "D3Q27System.h"
 #include "Grid3D.h"
 #include <cmath>
 
 using namespace std;
 
-MetisPartitioningGridVisitor::MetisPartitioningGridVisitor(SPtr<Communicator> comm, GraphType graphType, int numOfDirs,
+MetisPartitioningGridVisitor::MetisPartitioningGridVisitor(std::shared_ptr<vf::mpi::Communicator> comm, GraphType graphType, int numOfDirs,
                                                            MetisPartitioner::PartType partType, bool threads,
                                                            int numberOfThreads)
     : Grid3DVisitor(), numberOfThreads(numberOfThreads), numOfDirs(numOfDirs), comm(comm), threads(threads),

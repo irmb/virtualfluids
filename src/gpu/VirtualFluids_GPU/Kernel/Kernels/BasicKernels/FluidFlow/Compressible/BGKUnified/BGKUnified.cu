@@ -4,7 +4,6 @@
 
 #include "Parameter/Parameter.h"
 #include "../RunLBMKernel.cuh"
-#include "Kernel/Utilities/CudaGrid.h"
 
 #include <lbm/BGK.h>
 
@@ -26,7 +25,7 @@ BGKUnified::BGKUnified(std::shared_ptr<Parameter> para, int level)
 
     myKernelGroup = BasicKernel;
 
-    this->cudaGrid = CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->size_Mat_SP);
+    this->cudaGrid = cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->size_Mat_SP);
 }
 
 
