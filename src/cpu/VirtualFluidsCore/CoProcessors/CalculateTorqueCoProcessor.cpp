@@ -82,8 +82,6 @@ void CalculateTorqueCoProcessor::calculateForces()
    torqueX2global = 0.0;
    torqueX3global = 0.0;
 
-   int counter = 0;
-
    for(SPtr<D3Q27Interactor> interactor : interactors)
    {
       double x1Centre = interactor->getGbObject3D()->getX1Centroid();
