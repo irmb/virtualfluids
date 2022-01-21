@@ -111,16 +111,18 @@ void bflow(string configname)
 
       //// rotation around X-axis
       mu::Parser fctVy;
-      fctVy.SetExpr("-Omega*(x3-z0-r)");
+      fctVy.SetExpr("-Omega*(x3-z0-r)/deltax");
       fctVy.DefineConst("Omega", OmegaLB);
       fctVy.DefineConst("r", 0.5 * (g_maxX3 - g_minX3));
       fctVy.DefineConst("z0", g_minX3);
+      fctVy.DefineConst("deltax", deltax);
 
       mu::Parser fctVz;
-      fctVz.SetExpr("Omega*(x2-y0-r)");
+      fctVz.SetExpr("Omega*(x2-y0-r)/deltax");
       fctVz.DefineConst("Omega", OmegaLB);
       fctVz.DefineConst("r", 0.5 * (g_maxX2 - g_minX2));
       fctVz.DefineConst("y0", g_minX2);
+      fctVz.DefineConst("deltax", deltax);
 
       mu::Parser fctVx;
       fctVx.SetExpr("0.0");
@@ -218,6 +220,8 @@ void bflow(string configname)
       
       SPtr<GbTriFaceMesh3D> stator = make_shared<GbTriFaceMesh3D>();
       stator->readMeshFromSTLFileBinary(geoPath + "/" + geoFile, false);
+      //stator->scale(2.0, 2.0, 2.0);
+      //stator->translate(16.0, 0.0, 0.0);
       //stator->translate(4.0, -73.0, -6.0);
 
       SPtr<D3Q27Interactor> statorInt = SPtr<D3Q27TriFaceMeshInteractor>(
