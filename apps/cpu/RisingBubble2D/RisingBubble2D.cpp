@@ -283,7 +283,7 @@ void run(string configname)
                 UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
             }
 
-            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nuL, nuG, densityRatio, beta, kappa, theta, availMem,
+            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nuL, nuG, densityRatio, availMem,
                 needMem);
 
             grid->accept(kernelVisitor);

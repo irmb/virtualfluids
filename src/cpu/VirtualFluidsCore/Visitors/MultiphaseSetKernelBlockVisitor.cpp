@@ -19,9 +19,8 @@
 //   }
 //}
 //////////////////////////////////////////////////////////////////////////
-MultiphaseSetKernelBlockVisitor::MultiphaseSetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nuL, LBMReal nuG, LBMReal densityRatio, LBMReal beta, LBMReal kappa,
-	LBMReal contactAngle, double availMem, double needMem, MultiphaseSetKernelBlockVisitor::Action action /*= SetKernelBlockVisitor::New*/) :
-	Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nuL(nuL), nuG(nuG), densityRatio(densityRatio), beta(beta), kappa(kappa), contactAngle(contactAngle), action(action), dataSetFlag(true)
+MultiphaseSetKernelBlockVisitor::MultiphaseSetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nuL, LBMReal nuG, LBMReal densityRatio, double availMem, double needMem, MultiphaseSetKernelBlockVisitor::Action action /*= SetKernelBlockVisitor::New*/) :
+	Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nuL(nuL), nuG(nuG), densityRatio(densityRatio), action(action), dataSetFlag(true)
 {
 	if (needMem > availMem)
 	{
@@ -36,10 +35,6 @@ void MultiphaseSetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> blo
 		LBMReal collFactorL = LBMSystem::calcCollisionFactor(nuL, block->getLevel());
 		LBMReal collFactorG = LBMSystem::calcCollisionFactor(nuG, block->getLevel());
 		kernel->setCollisionFactorMultiphase(collFactorL, collFactorG);
-		
-		//kernel->setDensityRatio(densityRatio);
-		//kernel->setMultiphaseModelParameters(beta, kappa);
-		//kernel->setContactAngle(contactAngle);
 
 		kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
 		kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));
