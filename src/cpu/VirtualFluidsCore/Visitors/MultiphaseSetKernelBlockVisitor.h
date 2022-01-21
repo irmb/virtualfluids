@@ -46,7 +46,7 @@ public:
 
 	//SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue, double availMem, double needMem);
 
-	MultiphaseSetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nuL, LBMReal nuG, LBMReal densityRatio, double availMem, double needMem, 
+	MultiphaseSetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nuL, LBMReal nuG, double availMem, double needMem, 
 		MultiphaseSetKernelBlockVisitor::Action action = MultiphaseSetKernelBlockVisitor::NewKernel);
 
 	virtual ~MultiphaseSetKernelBlockVisitor() {}
@@ -59,7 +59,6 @@ private:
 	SPtr<LBMKernel> kernel;
 	LBMReal nuL;
 	LBMReal nuG;
-	LBMReal densityRatio;
 	Action action;
 	bool dataSetFlag;
 };
