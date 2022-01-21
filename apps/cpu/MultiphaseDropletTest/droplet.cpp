@@ -46,7 +46,7 @@ void run(string configname)
         double cpStart     = config.getValue<double>("cpStart");
         double cpStep      = config.getValue<double>("cpStep");
         bool newStart      = config.getValue<bool>("newStart");
-        double rStep = config.getValue<double>("rStep");
+        //double rStep = config.getValue<double>("rStep");
 
         SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
