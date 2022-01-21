@@ -95,7 +95,7 @@ void run(string configname)
         LBMReal D  = 2.0*radius;
 
         //density retio
-        LBMReal r_rho = densityRatio;
+        //LBMReal r_rho = densityRatio;
 
         //density of heavy fluid
         LBMReal rho_h = 1.0;
