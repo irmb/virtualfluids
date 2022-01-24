@@ -18,6 +18,12 @@ std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable v
     std::vector<std::string> varNames;
     switch (variable)
     {
+    case PostProcessingVariable::Instantaneous:
+        varNames.push_back("vx");
+        varNames.push_back("vy");
+        varNames.push_back("vz");
+        varNames.push_back("rho");
+        break;
     case PostProcessingVariable::Means:
         varNames.push_back("vx_mean");
         varNames.push_back("vy_mean");
@@ -41,6 +47,15 @@ __device__ void calculateQuantities(uint n, real* quantityArray, bool* quantitie
     //"https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm"
     // also has extensions for higher order and covariances
     real inv_n = 1/real(n);
+
+    if(quantities[int(PostProcessingVariable::Instantaneous)])
+    {
+        uint arrOff = quantityArrayOffsets[int(PostProcessingVariable::Instantaneous)];
+        quantityArray[(arrOff+0)*nPoints+node] = vx;
+        quantityArray[(arrOff+1)*nPoints+node] = vy;
+        quantityArray[(arrOff+2)*nPoints+node] = vz;
+        quantityArray[(arrOff+3)*nPoints+node] = rho;
+    }
 
     if(quantities[int(PostProcessingVariable::Means)])
     {
@@ -136,7 +151,6 @@ __global__ void interpQuantities(   uint* pointIndices,
 
 }
 
-
 void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
 {
 
@@ -158,12 +172,10 @@ void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager*
         
         this->addProbeStruct(cudaManager, probeIndices_level, 
                             distX_level, distY_level, distZ_level, 
-                            pointCoordsX_level, pointCoordsX_level, pointCoordsX_level, 
+                            pointCoordsX_level, pointCoordsY_level, pointCoordsZ_level, 
                             level);
     }
 }
-
-
 
 void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& probeIndices,
                                       std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
@@ -223,7 +235,6 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
     cudaManager->cudaCopyProbeQuantityArrayHtoD(this, level);
 }
 
-
 void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
 {
 
@@ -254,8 +265,6 @@ void Probe::free(Parameter* para, CudaMemoryManager* cudaManager)
         cudaManager->cudaFreeProbeQuantitiesAndOffsets(this, level);
     }
 }
-
-
 
 void Probe::addPostProcessingVariable(PostProcessingVariable variable)
 {
@@ -296,7 +305,7 @@ void Probe::writeCollectionFile(Parameter* para, int t)
 
     std::ofstream file;
 
-    file.open( filename + ".pvtu" );
+    file.open(this->outputPath + "/" + filename + ".pvtu" );
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -370,6 +379,9 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
 
             switch(quantity)
             {
+            case PostProcessingVariable::Instantaneous:
+                coeff = para->getVelocityRatio();
+            break;
             case PostProcessingVariable::Means:
                 coeff = para->getVelocityRatio();
             break;
@@ -390,7 +402,7 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
                 }
             }
         }}
-        WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(fnames[part], nodes, nodedatanames, nodedata);
+        WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(this->outputPath + "/" + fnames[part], nodes, nodedatanames, nodedata);
     }
 }
 
@@ -405,4 +417,3 @@ std::vector<std::string> Probe::getVarNames()
     }}
     return varNames;
 }
-
