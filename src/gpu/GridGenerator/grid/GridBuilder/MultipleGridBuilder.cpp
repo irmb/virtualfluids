@@ -28,7 +28,7 @@
 //
 //! \file MultipleGridBuilder.cpp
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schï¿½nherr
 //=======================================================================================
 #include "MultipleGridBuilder.h"
 

@@ -13,10 +13,10 @@ class OneDirectionalAcousticScaling:
         self._runtime_params = runtime_parameters
         self._kernel = kernel
 
-    def configuration_for_scale_level(self, level: int = 1) -> (GridParameters,
+    def configuration_for_scale_level(self, level: int = 1) -> tuple[GridParameters,
                                                                 PhysicalParameters,
                                                                 RuntimeParameters,
-                                                                LBMKernel):
+                                                                LBMKernel]:
         if level < 0:
             raise ValueError("level must be >= 0")
 
