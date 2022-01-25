@@ -12,11 +12,11 @@ extern "C" __host__ __device__ __forceinline__ void calcDerivatives(const uint& 
 {
     bool fluidP = (typeOfGridNode[kP] == GEO_FLUID);
     bool fluidM = (typeOfGridNode[kM] == GEO_FLUID);
-    real dif = c1o1/real(max(fluidP+fluidM, 1));
+    real div = (fluidM & fluidP) ? c1o2 : c1o1;
 
-    dvx = ((fluidP*vx[kP]+(1-fluidP)*vx[k])-(fluidM*vx[kM]+(1-fluidM)*vx[k]))*dif;
-    dvy = ((fluidP*vy[kP]+(1-fluidP)*vy[k])-(fluidM*vy[kM]+(1-fluidM)*vy[k]))*dif;
-    dvz = ((fluidP*vz[kP]+(1-fluidP)*vz[k])-(fluidM*vz[kM]+(1-fluidM)*vz[k]))*dif;
+    dvx = ((fluidP ? vx[kP] : vx[k])-(fluidM ? vx[kM] : vx[k]))*div;
+    dvy = ((fluidP ? vy[kP] : vy[k])-(fluidM ? vy[kM] : vy[k]))*div;
+    dvz = ((fluidP ? vz[kP] : vz[k])-(fluidM ? vz[kM] : vz[k]))*div;
 }
 
 extern "C" __global__ void calcAMD(real* vx,
