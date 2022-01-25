@@ -38,14 +38,13 @@ vf_gpu_cmake_args = [
 ]
 
 
-class CommandMixin(object):
+class CommandMixin:
     user_options = [
         ('GPU', None, 'compile pyfluids with GPU backend'),
     ]
 
     def initialize_options(self):
         super().initialize_options()
-        # Initialize options
         self.GPU = False
 
     def finalize_options(self):
@@ -53,7 +52,8 @@ class CommandMixin(object):
 
     def run(self):
         global GPU
-        GPU = self.GPU # will be 1 or None
+        GPU = self.GPU
+        super().run()
 
 class InstallCommand(CommandMixin, install):
     user_options = getattr(install, 'user_options', []) + CommandMixin.user_options
@@ -67,8 +67,11 @@ class CMakeExtension(Extension):
         self.sourcedir = os.path.abspath(sourcedir)
 
 
-class CMakeBuild(build_ext):
+class CMakeBuild(CommandMixin, build_ext):
+    user_options = getattr(build_ext, 'user_options', []) + CommandMixin.user_options
+
     def run(self):
+        super().run()
         try:
             out = subprocess.check_output(['cmake', '--version'])
         except OSError:
