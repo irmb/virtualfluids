@@ -12,6 +12,7 @@
 #include "submodules/kernel_factory.cpp"
 #include "submodules/pre_processor_factory.cpp"
 #include "submodules/file_writer.cpp"
+#include "submodules/grid_generator.cpp"
 
 namespace gpu
 {
@@ -33,6 +34,7 @@ namespace gpu
         kernel_factory::makeModule(gpuModule);
         pre_processor_factory::makeModule(gpuModule);
         file_writer::makeModule(gpuModule);
+        grid_generator::makeModule(gpuModule);
         return gpuModule;
     }
 }

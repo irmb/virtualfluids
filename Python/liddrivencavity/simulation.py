@@ -1,9 +1,9 @@
-from pyfluids import Simulation
-from pyfluids.boundaryconditions import NoSlipBoundaryCondition, VelocityBoundaryCondition
-from pyfluids.geometry import GbCuboid3D
-from pyfluids.kernel import LBMKernel, KernelType
-from pyfluids.parameters import GridParameters, PhysicalParameters, RuntimeParameters
-from pyfluids.writer import Writer, OutputFormat
+from pyfluids.cpu import Simulation
+from pyfluids.cpu.boundaryconditions import NoSlipBoundaryCondition, VelocityBoundaryCondition
+from pyfluids.cpu.geometry import GbCuboid3D
+from pyfluids.cpu.kernel import LBMKernel, KernelType
+from pyfluids.cpu.parameters import GridParameters, PhysicalParameters, RuntimeParameters
+from pyfluids.cpu.writer import Writer, OutputFormat
 from pymuparser import Parser
 
 runtime_params = RuntimeParameters()
