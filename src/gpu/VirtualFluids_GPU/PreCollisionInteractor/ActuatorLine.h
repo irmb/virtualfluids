@@ -32,8 +32,8 @@ public:
         level(_level),
         PreCollisionInteractor()
     {
-        this->deltaT = _deltaT/pow(2,this->level);
-        this->deltaX = _deltaX/pow(2,this->level);
+        this->deltaT = _deltaT*exp2(-this->level);
+        this->deltaX = _deltaX*exp2(-this->level);
         this->invDeltaX = c1o1/this->deltaX;
         this->forceRatio = this->density*pow(this->deltaX,4)*pow(this->deltaT,-2);
         this->invEpsilonSqrd = c1o1/(this->epsilon*this->epsilon);
