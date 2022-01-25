@@ -6,23 +6,60 @@ import subprocess
 
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
+from setuptools.command.install import install
+from setuptools.command.develop import develop
 from distutils.version import LooseVersion
+
+# Installation via pip: pip install -e .
+# If GPU backend: pip install -e . --install-option="--GPU"
 
 vf_cmake_args = [
     "-DBUILD_VF_PYTHON_BINDINGS=ON",
-    "-DBUILD_VF_DOUBLE_ACCURACY=OFF",
     "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache",
     "-DCMAKE_CUDA_COMPILER_LAUNCHER=ccache",
     "-DCMAKE_C_COMPILER_LAUNCHER=ccache",
-    "-DBUILD_VF_CPU:BOOL=OFF",
-    "-DBUILD_VF_GPU:BOOL=ON",
-    "-DUSE_METIS=ON",
     "-DUSE_MPI=ON",
     "-DBUILD_SHARED_LIBS=OFF",
-    "-DBUILD_VF_UNIT_TESTS:BOOL=OFF",
     "-DBUILD_WARNINGS_AS_ERRORS=OFF"
 ]
 
+vf_cpu_cmake_args = [
+    "-DBUILD_VF_DOUBLE_ACCURACY=ON",
+    "-DBUILD_VF_CPU:BOOL=ON",
+    "-DBUILD_VF_UNIT_TESTS:BOOL=ON",
+    "-DUSE_METIS=ON",
+]
+
+vf_gpu_cmake_args = [
+    "-DBUILD_VF_DOUBLE_ACCURACY=OFF",
+    "-DBUILD_VF_GPU:BOOL=ON",
+    "-DBUILD_VF_UNIT_TESTS:BOOL=OFF",
+    "-DUSE_METIS=OFF",
+]
+
+
+class CommandMixin(object):
+    user_options = [
+        ('GPU', None, 'compile pyfluids with GPU backend'),
+    ]
+
+    def initialize_options(self):
+        super().initialize_options()
+        # Initialize options
+        self.GPU = False
+
+    def finalize_options(self):
+        super().finalize_options()
+
+    def run(self):
+        global GPU
+        GPU = self.GPU # will be 1 or None
+
+class InstallCommand(CommandMixin, install):
+    user_options = getattr(install, 'user_options', []) + CommandMixin.user_options
+
+class DevelopCommand(CommandMixin, develop):
+    user_options = getattr(develop, 'user_options', []) + CommandMixin.user_options
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
@@ -68,6 +105,7 @@ class CMakeBuild(build_ext):
             build_args += ['--', '-j2']
 
         cmake_args.extend(vf_cmake_args)
+        cmake_args.extend(vf_gpu_cmake_args if GPU else vf_cpu_cmake_args)
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
@@ -82,6 +120,6 @@ setup(
     name='pyfluids',
     version='0.0.1',
     ext_modules=[CMakeExtension('pyfluids')],
-    cmdclass=dict(build_ext=CMakeBuild),
+    cmdclass={"install": InstallCommand, "develop": DevelopCommand, "build_ext":CMakeBuild},
     zip_safe=False,
 )
