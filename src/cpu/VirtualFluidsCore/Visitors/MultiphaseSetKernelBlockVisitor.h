@@ -42,10 +42,6 @@ class MultiphaseSetKernelBlockVisitor : public Block3DVisitor
 public:
 	enum Action { NewKernel, ChangeKernel, ChangeKernelWithData};
 public:
-	//SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue);
-
-	//SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue, double availMem, double needMem);
-
 	MultiphaseSetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nuL, LBMReal nuG, double availMem, double needMem, 
 		MultiphaseSetKernelBlockVisitor::Action action = MultiphaseSetKernelBlockVisitor::NewKernel);
 

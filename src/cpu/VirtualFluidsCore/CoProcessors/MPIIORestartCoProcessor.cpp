@@ -2500,9 +2500,11 @@ void MPIIORestartCoProcessor::readArray(int step, Arrays arrType, std::string fn
         }
     }
 
-    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
+    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam)), dataSetSmallArray, (int)blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
     if (doubleCountInBlock > 0)
-        MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)),
+        MPI_File_read_at(
+            file_handler,
+            (MPI_Offset)(read_offset + sizeof(dataSetParam) + (int)blocksCount * sizeof(DataSetSmallRestart)),
             &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
     MPI_File_close(&file_handler);
     MPI_Type_free(&dataSetDoubleType);
