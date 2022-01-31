@@ -6,7 +6,7 @@ from pyfluids import basics, gpu, logger
 #%%
 reference_diameter = 126
 
-length = np.array([30,8,8])*reference_diameter
+length = np.array([29,6,6])*reference_diameter
 viscosity = 1.56e-5
 velocity = 9
 mach = 0.1
@@ -55,7 +55,9 @@ para.set_max_level(1)
 para.set_velocity(velocity_lb)
 para.set_viscosity(viscosity_lb)    
 para.set_velocity_ratio(dx/dt)
-para.set_main_kernel("CumulantK17CompChim")
+para.set_main_kernel("TurbulentViscosityCumulantK17CompChim")
+para.set_use_AMD(True)
+para.set_SGS_constant(0.083)
 
 def init_func(coord_x, coord_y, coord_z):
     return [0.0, velocity_lb, 0.0, 0.0]
@@ -67,13 +69,14 @@ para.set_is_body_force(True)
 
 #%%
 grid_builder.set_velocity_boundary_condition(gpu.SideType.MX, velocity_lb, 0.0, 0.0)
-grid_builder.set_velocity_boundary_condition(gpu.SideType.PX, velocity_lb, 0.0, 0.0)
 
 grid_builder.set_velocity_boundary_condition(gpu.SideType.MY, velocity_lb, 0.0, 0.0)
 grid_builder.set_velocity_boundary_condition(gpu.SideType.PY, velocity_lb, 0.0, 0.0)
 
 grid_builder.set_velocity_boundary_condition(gpu.SideType.MZ, velocity_lb, 0.0, 0.0)
 grid_builder.set_velocity_boundary_condition(gpu.SideType.PZ, velocity_lb, 0.0, 0.0)
+
+grid_builder.set_pressure_boundary_condition(gpu.SideType.PX, 0.0)
 
 #%%
 cuda_memory_manager = gpu.CudaMemoryManager.make(para)
