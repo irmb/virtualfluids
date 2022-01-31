@@ -83,7 +83,7 @@ std::string path(".");
 
 std::string simulationName("ActuatorLine");
 
-const uint timeStepOut = 500;
+const float tOut = 100;
 const float tEnd = 280; // total time of simulation in s
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,7 +158,7 @@ void multipleLevel(const std::string& configPath)
         vz  = (real)0.0;
     });
 
-    para->setTOut( timeStepOut );
+    para->setTOut( uint(tOut/dt) );
     para->setTEnd( uint(tEnd/dt) );
 
     para->setIsBodyForce( true );
@@ -166,11 +166,12 @@ void multipleLevel(const std::string& configPath)
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB,  0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PX,  velocityLB,  0.0, 0.0);
+
     gridBuilder->setVelocityBoundaryCondition(SideType::MY,  velocityLB,  0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PY,  velocityLB,  0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB,  0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB,  0.0, 0.0);
+    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

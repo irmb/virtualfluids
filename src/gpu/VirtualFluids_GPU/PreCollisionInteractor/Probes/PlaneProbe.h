@@ -12,8 +12,8 @@ public:
         uint _tStartAvg,
         uint _tStartOut,
         uint _tOut
-    ): Probe(_probeName,
-             _outputPath, 
+    ): Probe(_probeName, 
+             _outputPath,
              _tStartAvg, 
              _tStartOut, 
              _tOut)
