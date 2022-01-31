@@ -56,6 +56,7 @@ public:
     uint getNNodes(){ return this->nNodes; };
     real getOmega(){ return this->omega; };
     real getAzimuth(){ return this->azimuth; };
+    real getYaw(){ return this->yaw; };
     real getDensity(){ return this->density; };
     real getPositionX(){ return this->turbinePosX; };
     real getPositionY(){ return this->turbinePosY; };
@@ -70,14 +71,6 @@ public:
     real* getBladeForcesX(){ return this->bladeForcesXH; };
     real* getBladeForcesY(){ return this->bladeForcesYH; };
     real* getBladeForcesZ(){ return this->bladeForcesZH; };
-
-    void setOmega(real _omega){ this->omega = _omega; };
-    void setAzimuth(real _azimuth){ this->azimuth = _azimuth; };
-    void setYaw(real _yaw){ this->yaw = _yaw; };
-    void setBladeCoords(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ);
-    void setBladeVelocities(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ);
-    void setBladeForces(real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ);
-    virtual void calcBladeForces();
 
     void setOmega(real _omega){ this->omega = _omega; };
     void setAzimuth(real _azimuth){ this->azimuth = _azimuth; };
