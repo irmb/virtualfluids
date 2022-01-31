@@ -450,6 +450,9 @@ public:
     void setStreetVelocityFile(bool streetVelocityFile);
     void setUseMeasurePoints(bool useMeasurePoints);
     void setUseWale(bool useWale);
+    void setUseTurbulentViscosity(bool useTurbulentViscosity);
+    void setUseAMD( bool useAMD);
+    void setSGSConstant( real SGSConstant);
     void setUseInitNeq(bool useInitNeq);
     void setSimulatePorousMedia(bool simulatePorousMedia);
     void setIsF3(bool isF3);
@@ -708,6 +711,9 @@ public:
     bool isStreetVelocityFile();
     bool getUseMeasurePoints();
     bool getUseWale();
+    bool getUseTurbulentViscosity();
+    bool getUseAMD();
+    real getSGSConstant();
     bool getUseInitNeq();
     bool getSimulatePorousMedia();
     bool getIsF3();
