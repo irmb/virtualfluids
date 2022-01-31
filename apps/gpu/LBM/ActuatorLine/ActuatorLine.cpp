@@ -144,11 +144,11 @@ void multipleLevel(const std::string& configPath)
 
     para->setMaxLevel(1);
 
+
     para->setVelocity(velocityLB);
     para->setViscosity(viscosityLB);
-
     para->setVelocityRatio( dx / dt );
-
+    para->setViscosityRatio( dx*dx/dt );
     para->setMainKernel("CumulantK17CompChim");
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
@@ -185,7 +185,6 @@ void multipleLevel(const std::string& configPath)
     int level = 0;
     uint nBlades = 3;
     uint nBladeNodes = 32;
-
 
     SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx) );
     para->addActuator( actuator_line );

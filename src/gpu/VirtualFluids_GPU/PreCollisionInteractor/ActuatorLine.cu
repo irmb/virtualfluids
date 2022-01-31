@@ -28,25 +28,26 @@ __host__ __device__ __forceinline__ real distSqrd(real distX, real distY, real d
 }
 
 __host__ __device__ __inline__ void rotateFromBladeToGlobal(
-                            real coordX_BF, real coordY_BF, real coordZ_BF, 
-                            real& coordX_GF, real& coordY_GF, real& coordZ_GF,
-                            real azimuth, real yaw)
+                            real& bladeCoordX_BF, real& bladeCoordY_BF, real& bladeCoordZ_BF, 
+                            real& bladeCoordX_GF, real& bladeCoordY_GF, real& bladeCoordZ_GF,
+                            real& azimuth, real& yaw)
 {
     real tmpX, tmpY, tmpZ;
 
-    rotateAboutX3D(azimuth, coordX_BF, coordY_BF, coordZ_BF, tmpX, tmpY, tmpZ);
-    rotateAboutZ3D(yaw, tmpX, tmpY, tmpZ, coordX_GF, coordY_GF, coordZ_GF);
+    rotateAboutX3D(azimuth, bladeCoordX_BF, bladeCoordY_BF, bladeCoordZ_BF, tmpX, tmpY, tmpZ);
+    rotateAboutZ3D(yaw, tmpX, tmpY, tmpZ, bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF);
+
 }
 
 __host__ __device__ __inline__ void rotateFromGlobalToBlade(
-                            real& coordX_BF, real& coordY_BF, real& coordZ_BF, 
-                            real coordX_GF, real coordY_GF, real coordZ_GF,
-                            real azimuth, real yaw)
+                            real& bladeCoordX_BF, real& bladeCoordY_BF, real& bladeCoordZ_BF, 
+                            real& bladeCoordX_GF, real& bladeCoordY_GF, real& bladeCoordZ_GF,
+                            real& azimuth, real& yaw)
 {
     real tmpX, tmpY, tmpZ;
 
-    invRotateAboutZ3D(yaw, coordX_GF, coordY_GF, coordZ_GF, tmpX, tmpY, tmpZ);
-    invRotateAboutX3D(azimuth, tmpX, tmpY, tmpZ, coordX_BF, coordY_BF, coordZ_BF);
+    invRotateAboutZ3D(yaw, bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF, tmpX, tmpY, tmpZ);
+    invRotateAboutX3D(azimuth, tmpX, tmpY, tmpZ, bladeCoordX_BF, bladeCoordY_BF, bladeCoordZ_BF);
 }
 
 __global__ void interpolateVelocities(real* gridCoordsX, real* gridCoordsY, real* gridCoordsZ, 
@@ -362,6 +363,7 @@ void ActuatorLine::initBladeIndices(Parameter* para, CudaMemoryManager* cudaMana
     cudaManager->cudaAllocBladeIndices(this);
 
     for(uint node=0; node<this->nNodes; node++)
+
     {
         this->bladeIndicesH[node] = 1;
     }

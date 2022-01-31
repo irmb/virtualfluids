@@ -1,6 +1,6 @@
 import unittest
 
-from pyfluids.kernel import LBMKernel, KernelType
+from pyfluids.cpu.kernel import LBMKernel, KernelType
 
 
 class TestLBMKernel(unittest.TestCase):
