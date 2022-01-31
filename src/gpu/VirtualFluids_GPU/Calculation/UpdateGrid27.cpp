@@ -9,9 +9,6 @@
 #include "Kernel/Kernel.h"
 #include "GPU/TurbulentViscosity.h"
 
-void interactWithActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
-void interactWithProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
-
 void updateGrid27(Parameter* para, 
                   vf::gpu::Communicator& comm, 
                   CudaMemoryManager* cudaManager, 

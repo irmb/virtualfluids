@@ -3,11 +3,12 @@
 
 #include "PreCollisionInteractor.h"
 #include "PointerDefinitions.h"
+#include "VirtualFluids_GPU_export.h"
 
 class Parameter;
 class GridProvider;
 
-class ActuatorLine : public PreCollisionInteractor
+class VIRTUALFLUIDS_GPU_EXPORT ActuatorLine : public PreCollisionInteractor
 {
 public:
     ActuatorLine(
@@ -35,23 +36,27 @@ public:
         this->numberOfNodes = this->nBladeNodes*this->nBlades;
         this->omega = 1.0f;
         this->azimuth = 0.0f;
+        this->yaw = 0.0f;
+    };
 
-    }
+    virtual ~ActuatorLine(){};
 
-    virtual  ~ActuatorLine()
-    {
-        
-    }
-
-    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager);
-    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t);
-    void free(Parameter* para, CudaMemoryManager* cudaManager);
+    void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
+    void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
+    void free(Parameter* para, CudaMemoryManager* cudaManager) override;
     void write(uint t);
 
     uint getNBladeNodes(){return this->nBladeNodes;};
     uint getNBlades(){return this->nBlades;};
     uint getNumberOfIndices(){return this->numberOfIndices;};
     uint getNumberOfNodes(){return this->numberOfNodes;};
+    real getOmega(){ return this->omega; };
+    real getAzimuth(){ return this->azimuth; };
+    real getDensity(){ return this->density; };
+    real getPositionX(){ return this->turbinePosX; };
+    real getPositionY(){ return this->turbinePosY; };
+    real getPositionZ(){ return this->turbinePosZ; };
+    real* getBladeRadii(){return this->bladeRadiiH;};
     real* getBladeCoordsX(){return this->bladeCoordsXH;};
     real* getBladeCoordsY(){return this->bladeCoordsYH;};
     real* getBladeCoordsZ(){return this->bladeCoordsZH;};
@@ -62,6 +67,14 @@ public:
     real* getBladeForcesY(){return this->bladeForcesYH;};
     real* getBladeForcesZ(){return this->bladeForcesZH;};
 
+    void setOmega(real _omega){ this->omega = _omega; };
+    void setAzimuth(real _azimuth){ this->azimuth = _azimuth; };
+    void setYaw(real _yaw){ this->yaw = _yaw; };
+    void setBladeCoords(real* _bladeCoordsX, real* _bladeCoordsY, real* _bladeCoordsZ);
+    void setBladeVelocities(real* _bladeVelocitiesX, real* _bladeVelocitiesY, real* _bladeVelocitiesZ);
+    void setBladeForces(real* _bladeForcesX, real* _bladeForcesY, real* _bladeForcesZ);
+    virtual void calcBladeForces();
+
 private:
     void initBoundingSphere(Parameter* para, CudaMemoryManager* cudaManager);
 
@@ -71,12 +84,12 @@ private:
     void initBladeForces(CudaMemoryManager* cudaManager);
     void initBladeIndices(Parameter* para, CudaMemoryManager* cudaManager);
 
-    void calcForcesEllipticWing(Parameter* para);
+    void calcForcesEllipticWing();
     void rotateBlades(real angle);
 
-    void writeBladeCoords(uint t);
-    void writeBladeForces(uint t);
-    void writeBladeVelocities(uint t);
+    void writeBladeCoords(uint t){};
+    void writeBladeForces(uint t){};
+    void writeBladeVelocities(uint t){};
     
 
 public:
@@ -96,7 +109,7 @@ public:
 private:
     const real density;
     real turbinePosX, turbinePosY, turbinePosZ;
-    real omega, azimuth, delta_t, delta_x;
+    real omega, azimuth, yaw, delta_t, delta_x;
     const real diameter;
     const uint nBladeNodes;
     const uint nBlades;
@@ -104,6 +117,6 @@ private:
     const int level;
     uint numberOfIndices;
     uint numberOfNodes;
-    };
+};
 
 #endif

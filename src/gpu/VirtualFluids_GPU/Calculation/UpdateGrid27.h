@@ -40,4 +40,8 @@ extern "C" void coarseToFine(Parameter* para, int level);
 
 extern "C" void calcTurbulentViscosity(Parameter* para, int level);
 
+extern "C" void interactWithActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+
+extern "C" void interactWithProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t);
+
 #endif

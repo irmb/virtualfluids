@@ -12,7 +12,7 @@ vf_add_library(PUBLIC_LINK basics lbmCuda PRIVATE_LINK ${additional_libraries} G
 #https://stackoverflow.com/questions/6832666/lnk2019-when-including-asio-headers-solution-generated-with-cmake
 #https://stackoverflow.com/questions/27442885/syntax-error-with-stdnumeric-limitsmax
 
-set_target_properties(VirtualFluids_GPU PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+set_target_properties(VirtualFluids_GPU PROPERTIES CUDA_SEPARABLE_COMPILATION ON POSITION_INDEPENDENT_CODE ON)
 
 
 vf_add_tests()
