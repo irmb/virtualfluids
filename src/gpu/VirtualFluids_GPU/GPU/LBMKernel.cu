@@ -3727,6 +3727,46 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
       getLastCudaError("QSlipGeomDeviceComp27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void QStressDevComp27(unsigned int numberOfThreads,
+							   real* DD, 
+							   int* k_Q, 
+							   real* QQ,
+							   unsigned int sizeQ,
+							   real om1, 
+							   unsigned int* neighborX,
+							   unsigned int* neighborY,
+							   unsigned int* neighborZ,
+							   unsigned int size_Mat, 
+							   bool evenOrOdd)
+{
+   int Grid = (sizeQ / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridQ(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+   
+      QStressDeviceComp27<<< gridQ, threads >>> (DD, 
+											   k_Q, 
+											   QQ,
+											   sizeQ,
+											   om1, 
+											   neighborX,
+											   neighborY,
+											   neighborZ,
+											   size_Mat, 
+											   evenOrOdd);
+      getLastCudaError("QSlipDeviceComp27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDev27(unsigned int numberOfThreads,
                              int nx,
                              int ny,

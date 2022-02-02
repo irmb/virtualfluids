@@ -274,9 +274,6 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////
     // S L I P
     //////////////////////////////////////////////////////////////////////////
-    // printf("kSlipQ %u\n", para->getParD(level)->kSlipQ );
-    // printf("kQ %u\n", para->getParD(level)->kQ );
-    // printf("kQGeo %u\n", para->getParD(level)->QGeom.kQ );
     if (para->getParD(level)->kSlipQ > 0)
     {
         //QSlipDev27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QSlip.k,
@@ -286,6 +283,18 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
         //getLastCudaError("Slip27 execution failed");
 
         QSlipDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QSlip.k,
+                        para->getParD(level)->QSlip.q27[0],    para->getParD(level)->kSlipQ,       para->getParD(level)->omega,
+                        para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                        para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        getLastCudaError("QSlipDev27 execution failed");
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // S T R E S S (wall model)
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getParD(level)->kStressQ > 0)
+    {
+        QStressDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QSlip.k,
                         para->getParD(level)->QSlip.q27[0],    para->getParD(level)->kSlipQ,       para->getParD(level)->omega,
                         para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
                         para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);

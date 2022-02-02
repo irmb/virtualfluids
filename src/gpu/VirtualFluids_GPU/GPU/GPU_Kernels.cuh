@@ -944,6 +944,18 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 												 unsigned int size_Mat, 
 												 bool evenOrOdd);
 
+// Stress BCs (wall model)
+extern "C" __global__ void QStressDeviceComp27(real* DD, 
+											 int* k_Q, 
+											 real* QQ,
+											 unsigned int sizeQ,
+											 real om1, 
+											 unsigned int* neighborX,
+											 unsigned int* neighborY,
+											 unsigned int* neighborZ,
+											 unsigned int size_Mat, 
+											 bool evenOrOdd);
+
 //Pressure BCs
 extern "C" __global__ void QPressDevice27(int inx,
                                            int iny,

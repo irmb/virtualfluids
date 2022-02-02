@@ -996,6 +996,18 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
 								   unsigned int size_Mat, 
 								   bool evenOrOdd);
 
+extern "C" void QStressDevComp27(unsigned int numberOfThreads,
+							   real* DD, 
+							   int* k_Q, 
+							   real* QQ,
+							   unsigned int sizeQ,
+							   real om1, 
+							   unsigned int* neighborX,
+							   unsigned int* neighborY,
+							   unsigned int* neighborZ,
+							   unsigned int size_Mat, 
+							   bool evenOrOdd);
+
 extern "C" void QPressDev27(unsigned int numberOfThreads,
                           int nx,
                           int ny,
