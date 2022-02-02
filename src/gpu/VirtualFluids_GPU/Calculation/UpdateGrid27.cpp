@@ -274,7 +274,9 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////
     // S L I P
     //////////////////////////////////////////////////////////////////////////
-
+    // printf("kSlipQ %u\n", para->getParD(level)->kSlipQ );
+    // printf("kQ %u\n", para->getParD(level)->kQ );
+    // printf("kQGeo %u\n", para->getParD(level)->QGeom.kQ );
     if (para->getParD(level)->kSlipQ > 0)
     {
         //QSlipDev27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QSlip.k,

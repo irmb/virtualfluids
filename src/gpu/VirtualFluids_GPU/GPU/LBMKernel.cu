@@ -3621,7 +3621,7 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
    }
    dim3 gridQ(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
-
+   
       QSlipDeviceComp27<<< gridQ, threads >>> (DD, 
 											   k_Q, 
 											   QQ,

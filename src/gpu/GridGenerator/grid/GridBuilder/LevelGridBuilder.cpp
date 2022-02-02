@@ -28,7 +28,7 @@
 //
 //! \file LevelGridBuilder.cpp
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schï¿½nherr
 //=======================================================================================
 #include "LevelGridBuilder.h"
 
@@ -159,7 +159,9 @@ void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
         noSlipBoundaryCondition->side = side;
         noSlipBoundaryCondition->side->addIndices(grids, level, noSlipBoundaryCondition);
 
-        boundaryConditions[level]->noSlipBoundaryConditions.push_back(noSlipBoundaryCondition);
+        noSlipBoundaryCondition->fillVelocityLists();
+
+        boundaryConditions[level]->velocityBoundaryConditions.push_back(noSlipBoundaryCondition); //now effectively just a wrapper for velocityBC with zero velocity. No distinction in Gridgenerator.
     }
 }
 
@@ -352,6 +354,7 @@ void LevelGridBuilder::getSlipQs(real* qs[27], int level) const
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
             {
                 qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
+                // printf("dir %i \t q %f \n", dir, boundaryCondition->qs[index][dir]);
             }
             allIndicesCounter++;
         }

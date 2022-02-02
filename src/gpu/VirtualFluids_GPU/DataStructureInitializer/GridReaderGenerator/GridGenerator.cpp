@@ -112,6 +112,25 @@ void GridGenerator::allocArrays_BoundaryValues()
             cudaMemoryManager->cudaCopyPress(level);
         }
     }
+
+    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
+        const auto numberOfSlipValues = int(builder->getSlipSize(level));
+
+        std::cout << "size slip level " << level << " : " << numberOfSlipValues << std::endl;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParH(level)->QSlip.kQ = numberOfSlipValues;
+        para->getParD(level)->QSlip.kQ = numberOfSlipValues;
+        para->getParH(level)->kSlipQ   = numberOfSlipValues; //redundant with QSlip.kQ?
+        para->getParD(level)->kSlipQ   = numberOfSlipValues;
+        para->getParH(level)->kSlipQread = numberOfSlipValues * para->getD3Qxx();
+        para->getParD(level)->kSlipQread = numberOfSlipValues * para->getD3Qxx();
+        if (numberOfSlipValues > 1)
+        {
+            cudaMemoryManager->cudaAllocSlipBC(level);
+            // builder->getSlipValues(para->getParH->QSlip., level); //skipping normals for now
+            cudaMemoryManager->cudaCopySlipBC(level);
+        }
+    }
     
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
@@ -697,7 +716,51 @@ void GridGenerator::allocArrays_BoundaryQs()
         }//ende if
     }//ende oberste for schleife
 
-
+    for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
+        int numberOfSlipValues = (int)builder->getSlipSize(i);
+        if (numberOfSlipValues > 0)
+        {
+            std::cout << "size Slip:  " << i << " : " << numberOfSlipValues << std::endl;
+            //cout << "Groesse Pressure:  " << i << " : " << temp1 << "MyID: " << para->getMyID() << endl;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //preprocessing
+            real* QQ = para->getParH(i)->QSlip.q27[0];
+            unsigned int sizeQ = para->getParH(i)->QSlip.kQ;
+            QforBoundaryConditions Q;
+            Q.q27[dirE] = &QQ[dirE   *sizeQ];
+            Q.q27[dirW] = &QQ[dirW   *sizeQ];
+            Q.q27[dirN] = &QQ[dirN   *sizeQ];
+            Q.q27[dirS] = &QQ[dirS   *sizeQ];
+            Q.q27[dirT] = &QQ[dirT   *sizeQ];
+            Q.q27[dirB] = &QQ[dirB   *sizeQ];
+            Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
+            Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
+            Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
+            Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
+            Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
+            Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
+            Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
+            Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
+            Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
+            Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
+            Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
+            Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
+            Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+            Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
+            Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
+            Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
+            Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
+            Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
+            Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
+            Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
+            Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
+            
+            builder->getSlipQs(Q.q27, i);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            cudaMemoryManager->cudaCopySlipBC(i);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }//ende if
+    }//ende oberste for schleife
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
         const auto numberOfVelocityNodes = int(builder->getVelocitySize(i));

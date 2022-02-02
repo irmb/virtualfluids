@@ -923,6 +923,8 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
 	  bool x = false;
 	  bool y = false;
 	  bool z = false;
+     
+   //   printf("qs: \t %f \t %f \n", q_dirE[k],q_dirT[k] );
 
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
