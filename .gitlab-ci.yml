@@ -20,7 +20,7 @@ stages:
 .gnu_build_template:
   stage: build
 
-  image: irmb/virtualfluids-deps-ubuntu20.04
+  image: git.rz.tu-bs.de:4567/irmb/virtualfluids:latest
 
   tags:
     - gpu
