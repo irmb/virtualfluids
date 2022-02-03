@@ -1,7 +1,7 @@
 ###############################################################################
 ##                       VirtualFluids CI Pipeline                           ##
 ###############################################################################
-image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04_python:1.0
 
 stages:
   - build
@@ -20,7 +20,7 @@ stages:
 .gnu_build_template:
   stage: build
 
-  image: git.rz.tu-bs.de:4567/irmb/virtualfluids:latest
+  image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04:1.0
 
   tags:
     - gpu
@@ -121,8 +121,6 @@ msvc_16:
 gcc_9_python:
   stage: build_python
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
   needs: ["gcc_9"]
 
   cache:
@@ -149,7 +147,7 @@ gcc_9_python:
 build_singularity_image:
   stage: container_upload
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
 
   needs:
     - gcc_9_python
@@ -171,7 +169,7 @@ build_singularity_image:
 gcc_9_unit_tests:
   stage: test
 
-  image: irmb/virtualfluids-deps-ubuntu20.04:latest
+  image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04
 
   needs: ["gcc_9"]
 
@@ -203,7 +201,7 @@ msvc_16_unit_tests:
 gcc_9_python_bindings_test:
   stage: test
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
 
   needs: ["gcc_9_python"]
 
@@ -220,7 +218,7 @@ gcc_9_python_bindings_test:
 gcc_9_python_slurm_test:
   stage: test
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
 
   needs: ["gcc_9_python"]
 
@@ -281,7 +279,7 @@ nvidia_test:
 gpu_numerical_tests:
   stage: benchmark
 
-  image: irmb/virtualfluids-deps-ubuntu20.04
+  image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04
 
   when: manual
 
@@ -328,7 +326,7 @@ gpu_numerical_tests:
 clang_build_analyzer_clang_10:
   stage: analyze
 
-  image: irmb/virtualfluids-deps-ubuntu20.04
+  image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04
 
   only: ["schedules"]
 
@@ -362,7 +360,7 @@ clang_build_analyzer_clang_10:
 include_what_you_use_clang_10:
   stage: analyze
 
-  image: irmb/virtualfluids-deps-ubuntu20.04
+  image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04
 
   only: ["schedules"]
 
@@ -394,7 +392,7 @@ include_what_you_use_clang_10:
 cppcheck:
   stage: analyze
 
-  image: irmb/virtualfluids-deps-ubuntu20.04
+  image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04
 
   only:
     - develop@irmb/VirtualFluids_dev
@@ -422,7 +420,7 @@ cppcheck:
 lizard:
   stage: analyze
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
 
   only:
     - develop@irmb/VirtualFluids_dev
@@ -450,7 +448,7 @@ lizard:
 gcov_gcc_9:
   stage: analyze
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
 
   only:
     - develop@irmb/VirtualFluids_dev
@@ -494,7 +492,7 @@ gcov_gcc_9:
 clang-tidy:
   stage: analyze
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
 
   only:
     - develop@irmb/VirtualFluids_dev
@@ -553,7 +551,7 @@ pages:
 .deploy_template:
   stage: deploy
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
 
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -615,8 +613,6 @@ vf_wheel_to_jupyterhub:
 # This job only run on the development branch of the parent repository, not on forks!
 sonar-scanner:
   stage: deploy
-
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
 
   tags:
     - linux
