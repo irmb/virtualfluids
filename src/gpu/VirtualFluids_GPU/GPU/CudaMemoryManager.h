@@ -164,6 +164,10 @@ public:
     void cudaAllocSlipBC(int lev);
     void cudaCopySlipBC(int lev);
     void cudaFreeSlipBC(int lev);
+
+    void cudaAllocStressBC(int lev);
+    void cudaCopyStressBC(int lev);
+    void cudaFreeStressBC(int lev);
     
     void cudaAllocGeomValuesBC(int lev);
     void cudaCopyGeomValuesBC(int lev);

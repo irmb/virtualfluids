@@ -187,6 +187,10 @@ void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
     for (int index = 0; index < (int)this->size; index++)
         this->findEndOfGridStopperNode(index);
 
+#pragma omp parallel for
+    for (int index = 0; index < (int)this->size; index++)
+        this->findEndOfGridStopperPeriodicNode(index);
+    
     *logging::out << logging::Logger::INFO_INTERMEDIATE
         << "Grid created: " << "from (" << this->startX << ", " << this->startY << ", " << this->startZ << ") to (" << this->endX << ", " << this->endY << ", " << this->endZ << ")\n"
         << "nodes: " << this->nx << " x " << this->ny << " x " << this->nz << " = " << this->size << "\n";
@@ -440,10 +444,30 @@ void GridImp::findEndOfGridStopperNode(uint index)
         else
             this->field.setFieldEntryToStopperOutOfGridBoundary(index);
     }
-
+    
 	if (isValidEndOfGridBoundaryStopper(index))
 		this->field.setFieldEntryToStopperOutOfGridBoundary(index);
 }
+
+void GridImp::findEndOfGridStopperPeriodicNode(uint index)
+{   
+    if(   this->getPeriodicityX()  && 
+        ( this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || this->field.is(index, STOPPER_OUT_OF_GRID) ) &&
+        ( hasNeighborOfTypeInDir(index, FLUID, Direction( 1,0,0)) || hasNeighborOfTypeInDir(index, FLUID, Direction(-1,0,0) ) ) ) 
+            this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
+
+    if(   this->getPeriodicityY()  && 
+        ( this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || this->field.is(index, STOPPER_OUT_OF_GRID) ) &&
+        ( hasNeighborOfTypeInDir(index, FLUID, Direction( 0,1,0)) || hasNeighborOfTypeInDir(index, FLUID, Direction(0,-1,0) ) ) ) 
+            this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
+
+    if(   this->getPeriodicityZ()  && 
+        ( this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || this->field.is(index, STOPPER_OUT_OF_GRID) ) &&
+        ( hasNeighborOfTypeInDir(index, FLUID, Direction( 0,0,1)) || hasNeighborOfTypeInDir(index, FLUID, Direction(0,0,-1) ) ) ) 
+            this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
+
+}
+
 
 void GridImp::findSolidStopperNode(uint index)
 {
@@ -612,6 +636,17 @@ bool GridImp::hasNeighborOfType(uint index, char type) const
 	return false;
 }
 
+bool GridImp::hasNeighborOfTypeInDir(uint index, char type, Direction dir) const
+{
+	real x, y, z;
+	this->transIndexToCoords(index, x, y, z);
+    const uint neighborIndex = this->transCoordToIndex(x + dir[0] * this->getDelta(), y + dir[1] * this->getDelta(), z + dir[2] * this->getDelta());
+
+    if (neighborIndex == INVALID_INDEX) return false;
+
+    return this->field.is(neighborIndex, type);
+}
+
 bool GridImp::nodeInNextCellIs(int index, char type) const
 {
     real x, y, z;
@@ -767,9 +802,9 @@ void GridImp::setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheW
 
 uint GridImp::transCoordToIndex(const real &x, const real &y, const real &z) const
 {
-    const uint xIndex = getXIndex(x);
-    const uint yIndex = getYIndex(y);
-    const uint zIndex = getZIndex(z);
+    uint xIndex = getXIndex(x);
+    uint yIndex = getYIndex(y);
+    uint zIndex = getZIndex(z);
 
 	if (xIndex >= nx || yIndex >= ny || zIndex >= nz)
         return INVALID_INDEX;
@@ -972,7 +1007,7 @@ real GridImp::getNeighborCoord(bool periodicity, real startCoord, real coords[3]
 
         //////////////////////////////////////////////////////////////////////////
 
-        if( field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) )
+        if( field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) || field.is(neighborIndex, STOPPER_OUT_OF_GRID_PERIODIC) )
             return getFirstFluidNode(coords, direction, startCoord);
         else
             return coords[direction] + delta;
@@ -1446,7 +1481,6 @@ void GridImp::calculateQs(const uint index, const Vertex &point, Object* object)
                     
                 this->qPatches[ this->qIndices[index] ] = 0;
 
-				//printf("%d %f \n", this->qIndices[index], subdistance);
 			}
 		}
 	}

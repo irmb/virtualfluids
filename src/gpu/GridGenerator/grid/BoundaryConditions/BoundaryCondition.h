@@ -118,6 +118,49 @@ public:
     }
 
     void fillSlipNormalLists()
+    {   
+        for (uint index : this->indices) {
+            (void)index;
+            this->normalXList.push_back(normalX);
+            this->normalYList.push_back(normalY);
+            this->normalZList.push_back(normalZ);
+        }
+    }
+
+    real getNormalx() { return this->normalX; }
+    real getNormaly() { return this->normalY; }
+    real getNormalz() { return this->normalZ; }
+
+    real getNormalx(uint index) { return this->normalXList[index]; }
+    real getNormaly(uint index) { return this->normalYList[index]; }
+    real getNormalz(uint index) { return this->normalZList[index]; }
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+class StressBoundaryCondition : public gg::BoundaryCondition
+{
+public:
+    static SPtr<StressBoundaryCondition> make(real normalX, real normalY, real normalZ, uint samplingOffset)
+    {
+        return SPtr<StressBoundaryCondition>(new StressBoundaryCondition(normalX, normalY, normalZ, samplingOffset));
+    }
+
+    real normalX, normalY, normalZ;
+    uint samplingOffset;
+    std::vector<real> normalXList, normalYList, normalZList;
+    std::vector<uint> velocitySamplingIndices;
+
+protected:
+    StressBoundaryCondition(real normalX, real normalY, real normalZ, uint samplingOffset) :   normalX(normalX), normalY(normalY), normalZ(normalZ), samplingOffset(samplingOffset){ }
+
+public:
+    virtual char getType() const override
+    {
+        return vf::gpu::BC_STRESS;
+    }
+    
+    void fillStressNormalLists()
     {
         for (uint index : this->indices) {
             (void)index;

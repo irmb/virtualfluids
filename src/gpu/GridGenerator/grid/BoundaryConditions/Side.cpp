@@ -58,11 +58,13 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                 grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
                 setPressureNeighborIndices(boundaryCondition, grid, index);
+                setStressSamplingIndices(boundaryCondition, grid, index);
 
                 setQs(grid, boundaryCondition, index);
 
                 boundaryCondition->patches.push_back(0);
             }
+
         }
     }
 }
@@ -91,6 +93,30 @@ void Side::setPressureNeighborIndices(SPtr<BoundaryCondition> boundaryCondition,
     }
 }
 
+void Side::setStressSamplingIndices(SPtr<BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index)
+{
+    auto stressBoundaryCondition = std::dynamic_pointer_cast<StressBoundaryCondition>(boundaryCondition);
+    if (stressBoundaryCondition)
+    {
+        real x, y, z;
+        grid->transIndexToCoords(index, x, y, z);
+
+        real nx = x;
+        real ny = y;
+        real nz = z;
+
+        if (boundaryCondition->side->getCoordinate() == X_INDEX)
+            nx = boundaryCondition->side->getDirection() * stressBoundaryCondition->samplingOffset * grid->getDelta() + x;
+        if (boundaryCondition->side->getCoordinate() == Y_INDEX)
+            ny = boundaryCondition->side->getDirection() * stressBoundaryCondition->samplingOffset * grid->getDelta() + y;
+        if (boundaryCondition->side->getCoordinate() == Z_INDEX)
+            nz = boundaryCondition->side->getDirection() * stressBoundaryCondition->samplingOffset * grid->getDelta() + z;
+
+        uint samplingIndex = grid->transCoordToIndex(nx, ny, nz);
+        stressBoundaryCondition->velocitySamplingIndices.push_back(samplingIndex);
+    }
+}
+
 void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uint index)
 {
 
@@ -106,13 +132,14 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         z += grid->getDirection()[dir * DIMENSION + 2] * grid->getDelta();
 
         uint neighborIndex = grid->transCoordToIndex( x, y, z );
-
+                
         if( grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
             grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID ||
             grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_SOLID )
             qNode[dir] = 0.5;
         else
             qNode[dir] = -1.0;
+
     }
 
     boundaryCondition->qs.push_back(qNode);

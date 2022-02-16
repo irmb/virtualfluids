@@ -120,15 +120,34 @@ void GridGenerator::allocArrays_BoundaryValues()
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->QSlip.kQ = numberOfSlipValues;
         para->getParD(level)->QSlip.kQ = numberOfSlipValues;
-        para->getParH(level)->kSlipQ   = numberOfSlipValues; //redundant with QSlip.kQ?
+        para->getParH(level)->kSlipQ   = numberOfSlipValues;
         para->getParD(level)->kSlipQ   = numberOfSlipValues;
         para->getParH(level)->kSlipQread = numberOfSlipValues * para->getD3Qxx();
         para->getParD(level)->kSlipQread = numberOfSlipValues * para->getD3Qxx();
         if (numberOfSlipValues > 1)
         {
             cudaMemoryManager->cudaAllocSlipBC(level);
-            // builder->getSlipValues(para->getParH->QSlip., level); //skipping normals for now
+            builder->getSlipValues(para->getParH(level)->QSlip.normalX, para->getParH(level)->QSlip.normalY, para->getParH(level)->QSlip.normalZ, para->getParH(level)->QSlip.k, level);
             cudaMemoryManager->cudaCopySlipBC(level);
+        }
+    }
+
+    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
+        const auto numberOfStressValues = int(builder->getStressSize(level));
+
+        std::cout << "size stress level " << level << " : " << numberOfStressValues << std::endl;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParH(level)->QStress.kQ = numberOfStressValues;
+        para->getParD(level)->QStress.kQ = numberOfStressValues;
+        para->getParH(level)->kStressQ   = numberOfStressValues;
+        para->getParD(level)->kStressQ   = numberOfStressValues;
+        para->getParH(level)->kStressQread = numberOfStressValues * para->getD3Qxx();
+        para->getParD(level)->kStressQread = numberOfStressValues * para->getD3Qxx();
+        if (numberOfStressValues > 1)
+        {
+            cudaMemoryManager->cudaAllocStressBC(level);
+            builder->getStressValues(para->getParH(level)->QStress.normalX, para->getParH(level)->QStress.normalY, para->getParH(level)->QStress.normalZ, para->getParH(level)->QStress.k, para->getParH(level)->QStress.kN, level);
+            cudaMemoryManager->cudaCopyStressBC(level);
         }
     }
     
@@ -155,18 +174,6 @@ void GridGenerator::allocArrays_BoundaryValues()
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             builder->getVelocityValues(para->getParH(level)->Qinflow.Vx, para->getParH(level)->Qinflow.Vy, para->getParH(level)->Qinflow.Vz, para->getParH(level)->Qinflow.k, level);
-
-
-            //for (int i = 0; i < numberOfVelocityValues; i++)
-            //{
-            //    std::cout << "index: " << para->getParH(level)->Qinflow.k[i];
-            //    std::cout << " (x,y,z)" << para->getParH(level)->coordX_SP[para->getParH(level)->Qinflow.k[i]];
-            //    std::cout << ", " << para->getParH(level)->coordY_SP[para->getParH(level)->Qinflow.k[i]];
-            //    std::cout << ", " << para->getParH(level)->coordZ_SP[para->getParH(level)->Qinflow.k[i]];
-            //    std::cout << " geo: " << para->getParH(level)->geoSP[para->getParH(level)->Qinflow.k[i]];
-            //    std::cout << std::endl;
-            //}
-
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -758,6 +765,52 @@ void GridGenerator::allocArrays_BoundaryQs()
             builder->getSlipQs(Q.q27, i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaCopySlipBC(i);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }//ende if
+    }//ende oberste for schleife
+
+    for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
+        int numberOfStressValues = (int)builder->getStressSize(i);
+        if (numberOfStressValues > 0)
+        {
+            std::cout << "size Stress:  " << i << " : " << numberOfStressValues << std::endl;
+            //cout << "Groesse Pressure:  " << i << " : " << temp1 << "MyID: " << para->getMyID() << endl;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //preprocessing
+            real* QQ = para->getParH(i)->QStress.q27[0];
+            unsigned int sizeQ = para->getParH(i)->QStress.kQ;
+            QforBoundaryConditions Q;
+            Q.q27[dirE] = &QQ[dirE   *sizeQ];
+            Q.q27[dirW] = &QQ[dirW   *sizeQ];
+            Q.q27[dirN] = &QQ[dirN   *sizeQ];
+            Q.q27[dirS] = &QQ[dirS   *sizeQ];
+            Q.q27[dirT] = &QQ[dirT   *sizeQ];
+            Q.q27[dirB] = &QQ[dirB   *sizeQ];
+            Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
+            Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
+            Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
+            Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
+            Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
+            Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
+            Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
+            Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
+            Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
+            Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
+            Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
+            Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
+            Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+            Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
+            Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
+            Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
+            Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
+            Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
+            Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
+            Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
+            Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
+            
+            builder->getStressQs(Q.q27, i);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            cudaMemoryManager->cudaCopyStressBC(i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }//ende if
     }//ende oberste for schleife

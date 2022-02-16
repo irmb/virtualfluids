@@ -102,3 +102,4 @@ void GeometryBoundaryCondition::setTangentialVelocityForPatch(SPtr<Grid> grid, u
         }
     }
 }
+

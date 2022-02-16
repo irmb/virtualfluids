@@ -1355,15 +1355,19 @@ void CudaMemoryManager::cudaAllocSlipBC(int lev)
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QSlip.q27[0]), parameter->getD3Qxx()*mem_size_Q_q      ));
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QSlip.k),                            mem_size_Q_k      ));
-    //checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QSlip.qread),             mem_size_Q_q_read ));//Geller
-    //checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QSlip.valueQ),            mem_size_Q_value  ));//Geller
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QSlip.normalX),                      mem_size_Q_q    ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QSlip.normalY),                      mem_size_Q_q    ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QSlip.normalZ),                      mem_size_Q_q    ));
     
     //Device
     checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QSlip.q27[0]),     parameter->getD3Qxx()* mem_size_Q_q     ));
     checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QSlip.k),                                 mem_size_Q_k     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QSlip.normalX),                           mem_size_Q_q     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QSlip.normalY),                           mem_size_Q_q     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QSlip.normalZ),                           mem_size_Q_q     ));
     
     //////////////////////////////////////////////////////////////////////////
-    double tmp = (double)mem_size_Q_k + (double)parameter->getD3Qxx()*(double)mem_size_Q_q;
+    double tmp = (double)mem_size_Q_k + (double)parameter->getD3Qxx()*(double)mem_size_Q_q + 3.0*(double)mem_size_Q_q;;
     setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopySlipBC(int lev)
@@ -1371,16 +1375,69 @@ void CudaMemoryManager::cudaCopySlipBC(int lev)
     unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QSlip.kQ;
     unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QSlip.kQ;
     
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QSlip.q27[0], parameter->getParH(lev)->QSlip.q27[0], parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QSlip.k,      parameter->getParH(lev)->QSlip.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QSlip.q27[0], parameter->getParH(lev)->QSlip.q27[0],  parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QSlip.k,      parameter->getParH(lev)->QSlip.k,                              mem_size_Q_k,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QSlip.normalX, parameter->getParH(lev)->QSlip.normalX,                       mem_size_Q_q,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QSlip.normalY, parameter->getParH(lev)->QSlip.normalY,                       mem_size_Q_q,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QSlip.normalZ, parameter->getParH(lev)->QSlip.normalZ,                       mem_size_Q_q,       cudaMemcpyHostToDevice));
 }
 void CudaMemoryManager::cudaFreeSlipBC(int lev)
 {
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QSlip.q27[0]));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QSlip.k));
-    //checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QSlip.valueQ));
-    //checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QSlip.qread));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QSlip.normalX));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QSlip.normalY));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QSlip.normalZ));
 }
+//Stress
+void CudaMemoryManager::cudaAllocStressBC(int lev)
+{
+    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QStress.kQ;
+    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QStress.kQ;
+    
+    //Host
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.q27[0]), parameter->getD3Qxx()*mem_size_Q_q      ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.k),                            mem_size_Q_k      ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.kN),                            mem_size_Q_k     ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.normalX),                      mem_size_Q_q      ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.normalY),                      mem_size_Q_q      ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.normalZ),                      mem_size_Q_q      ));
+    
+    //Device
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.q27[0]),     parameter->getD3Qxx()* mem_size_Q_q     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.k),                                 mem_size_Q_k     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.kN),                                 mem_size_Q_k    ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.normalX),                           mem_size_Q_q     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.normalY),                           mem_size_Q_q     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.normalZ),                           mem_size_Q_q     ));
+    
+    //////////////////////////////////////////////////////////////////////////
+    double tmp = 2*(double)mem_size_Q_k + (double)parameter->getD3Qxx()*(double)mem_size_Q_q + 3.0*(double)mem_size_Q_q;
+    setMemsizeGPU(tmp, false);
+}
+void CudaMemoryManager::cudaCopyStressBC(int lev)
+{
+    unsigned int mem_size_Q_k = sizeof(int)*parameter->getParH(lev)->QStress.kQ;
+    unsigned int mem_size_Q_q = sizeof(real)*parameter->getParH(lev)->QStress.kQ;
+    
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.q27[0],  parameter->getParH(lev)->QStress.q27[0], parameter->getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.k,       parameter->getParH(lev)->QStress.k,                             mem_size_Q_k,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.kN,      parameter->getParH(lev)->QStress.kN,                            mem_size_Q_k,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.normalX, parameter->getParH(lev)->QStress.normalX,                       mem_size_Q_q,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.normalY, parameter->getParH(lev)->QStress.normalY,                       mem_size_Q_q,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.normalZ, parameter->getParH(lev)->QStress.normalZ,                       mem_size_Q_q,       cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaFreeStressBC(int lev)
+{
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.q27[0]));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.k));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.kN));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.normalX));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.normalY));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.normalZ));
+}
+
+
 
 //Test roundoff error
 void CudaMemoryManager::cudaAllocTestRE(int lev, unsigned int size)

@@ -67,6 +67,7 @@ public:
 	void setFieldEntryToInvalidSolid(uint index);
     void setFieldEntryToStopperOutOfGrid(uint index);
     void setFieldEntryToStopperOutOfGridBoundary(uint index);
+    void setFieldEntryToStopperOutOfGridPeriodic(uint index);
     void setFieldEntryToStopperCoarseUnderFine(uint index);
     void setFieldEntryToInvalidCoarseUnderFine(uint index);
     void setFieldEntryToInvalidOutOfGrid(uint index);
