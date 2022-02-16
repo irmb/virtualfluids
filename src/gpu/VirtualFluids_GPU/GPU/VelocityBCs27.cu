@@ -2471,39 +2471,6 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
       //(D.f[dirZERO])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //ToDo anders Klammern
-      // if(VeloX<0.000001) VeloX=vx1;
-
-      // if(k==0){ // 3071 9120 9215
-      //    printf("======================================\n");
-      //    printf("k \t %u\n", k);
-      //    printf("E \t %f \n", q_dirE[k]);
-      //    printf("NE \t %f \n", q_dirNE[k]);
-      //    printf("W \t %f \n", q_dirW[k]);
-      //    printf("NW \t %f \n", q_dirNW[k]);
-      //    printf("N \t %f \n", q_dirN[k]);
-      //    printf("S \t %f \n", q_dirS[k]);
-      //    printf("SE \t %f \n", q_dirSE[k]);
-      //    printf("NE \t %f \n", q_dirNE[k]);
-      //    printf("SW \t %f \n", q_dirSW[k]);
-      //    printf("B \t %f \n", q_dirB[k]);
-      //    printf("BS \t %f \n", q_dirBS[k]);
-      //    printf("BN \t %f \n", q_dirBN[k]);
-      //    printf("BW \t %f \n", q_dirBW[k]);
-      //    printf("BE \t %f \n", q_dirBE[k]);
-      //    printf("BNE \t %f \n", q_dirBNE[k]);
-      //    printf("BNW \t %f \n", q_dirBNW[k]);
-      //    printf("BSE \t %f \n", q_dirBSE[k]);
-      //    printf("BSW \t %f \n", q_dirBSW[k]);
-      //    printf("T \t %f \n", q_dirT[k]);
-      //    printf("TS \t %f \n", q_dirTS[k]);
-      //    printf("TN \t %f \n", q_dirTN[k]);
-      //    printf("TW \t %f \n", q_dirTW[k]);
-      //    printf("TE \t %f \n", q_dirTE[k]);
-      //    printf("TNE \t %f \n", q_dirTNE[k]);
-      //    printf("TNW \t %f \n", q_dirTNW[k]);
-      //    printf("TSE \t %f \n", q_dirTSE[k]);
-      //    printf("TSW \t %f \n\n", q_dirTSW[k]);
-      // }
 
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)

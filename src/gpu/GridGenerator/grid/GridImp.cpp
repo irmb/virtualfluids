@@ -466,6 +466,23 @@ void GridImp::findEndOfGridStopperPeriodicNode(uint index)
         ( hasNeighborOfTypeInDir(index, FLUID, Direction( 0,0,1)) || hasNeighborOfTypeInDir(index, FLUID, Direction(0,0,-1) ) ) ) 
             this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
 
+    if( ( this->getPeriodicityX()  && this->getPeriodicityY() ) &&
+        ( this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || this->field.is(index, STOPPER_OUT_OF_GRID) ) &&
+        ( hasNeighborOfTypeInDir(index, FLUID, Direction( 1,1,0)) || hasNeighborOfTypeInDir(index, FLUID, Direction(-1,-1,0)) ||
+          hasNeighborOfTypeInDir(index, FLUID, Direction(-1,1,0)) || hasNeighborOfTypeInDir(index, FLUID, Direction( 1,-1,0)) ) ) 
+            this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
+
+    if( ( this->getPeriodicityX()  && this->getPeriodicityZ() ) &&
+        ( this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || this->field.is(index, STOPPER_OUT_OF_GRID) ) &&
+        ( hasNeighborOfTypeInDir(index, FLUID, Direction( 1,0,1)) || hasNeighborOfTypeInDir(index, FLUID, Direction(-1,0,-1)) ||
+          hasNeighborOfTypeInDir(index, FLUID, Direction(-1,0,1)) || hasNeighborOfTypeInDir(index, FLUID, Direction( 1,0,-1)) ) ) 
+            this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
+
+    if( ( this->getPeriodicityY()  && this->getPeriodicityZ() ) &&
+        ( this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || this->field.is(index, STOPPER_OUT_OF_GRID) ) &&
+        ( hasNeighborOfTypeInDir(index, FLUID, Direction( 0,1,1)) || hasNeighborOfTypeInDir(index, FLUID, Direction( 0,-1,-1)) ||
+          hasNeighborOfTypeInDir(index, FLUID, Direction( 0,-1,1)) || hasNeighborOfTypeInDir(index, FLUID, Direction( 0,1,-1)) ) ) 
+            this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
 }
 
 

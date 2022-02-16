@@ -309,6 +309,7 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, in
     bool isStopper = grid->getFieldEntry(index) == STOPPER_SOLID                || 
                      grid->getFieldEntry(index) == STOPPER_OUT_OF_GRID          || 
                      grid->getFieldEntry(index) == STOPPER_OUT_OF_GRID_BOUNDARY || 
+                     grid->getFieldEntry(index) == STOPPER_OUT_OF_GRID_PERIODIC ||
                      grid->getFieldEntry(index) == STOPPER_COARSE_UNDER_FINE;
     int type = !isStopper ? 19 : 16;
 

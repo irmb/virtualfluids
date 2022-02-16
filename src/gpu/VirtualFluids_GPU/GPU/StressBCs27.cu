@@ -275,9 +275,41 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Compute incoming f's with zero wall velocity
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real VeloX=0.0, VeloY=0.0, VeloZ=0.0; 
+      real VeloX=0.057735, VeloY=0.0, VeloZ=0.0; 
+      
+      // if(k==3071){ // 3071 9120 9215
+      //    printf("======================================\n");
+      //    printf("k \t %u\n", k);
+      //    printf("E \t %f \n", q_dirE[k]);
+      //    printf("NE \t %f \n", q_dirNE[k]);
+      //    printf("W \t %f \n", q_dirW[k]);
+      //    printf("NW \t %f \n", q_dirNW[k]);
+      //    printf("N \t %f \n", q_dirN[k]);
+      //    printf("S \t %f \n", q_dirS[k]);
+      //    printf("SE \t %f \n", q_dirSE[k]);
+      //    printf("NE \t %f \n", q_dirNE[k]);
+      //    printf("SW \t %f \n", q_dirSW[k]);
+      //    printf("B \t %f \n", q_dirB[k]);
+      //    printf("BS \t %f \n", q_dirBS[k]);
+      //    printf("BN \t %f \n", q_dirBN[k]);
+      //    printf("BW \t %f \n", q_dirBW[k]);
+      //    printf("BE \t %f \n", q_dirBE[k]);
+      //    printf("BNE \t %f \n", q_dirBNE[k]);
+      //    printf("BNW \t %f \n", q_dirBNW[k]);
+      //    printf("BSE \t %f \n", q_dirBSE[k]);
+      //    printf("BSW \t %f \n", q_dirBSW[k]);
+      //    printf("T \t %f \n", q_dirT[k]);
+      //    printf("TS \t %f \n", q_dirTS[k]);
+      //    printf("TN \t %f \n", q_dirTN[k]);
+      //    printf("TW \t %f \n", q_dirTW[k]);
+      //    printf("TE \t %f \n", q_dirTE[k]);
+      //    printf("TNE \t %f \n", q_dirTNE[k]);
+      //    printf("TNW \t %f \n", q_dirTNW[k]);
+      //    printf("TSE \t %f \n", q_dirTSE[k]);
+      //    printf("TSW \t %f \n\n", q_dirTSW[k]);
+      // }
+
       //ToDo anders Klammern
-      // printf("qs at %u: \t %f \t %f \t %f \t %f \t %f \t %f \t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\t %f\n",k, q_dirE[k],q_dirW[k],q_dirN[k],q_dirS[k], q_dirT[k],q_dirB[k], q_dirNE[k], q_dirSW[k], q_dirSE[k],q_dirNW[k],q_dirTE[k],   q_dirBW[k], q_dirBE[k], q_dirTW[k],q_dirTN[k], q_dirBS[k], q_dirBN[k], q_dirTS[k], q_dirTNE[k], q_dirTSW[k], q_dirTSE[k], q_dirTNW[k], q_dirBNE[k], q_dirBSW[k], q_dirBSE[k], q_dirBNW[k]);
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
@@ -486,13 +518,12 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          //(D.f[dirBSE])[kbse]=zero;
       }
 
-      // // incoming f's from bounce back
+      // incoming f's from bounce back
       // real f_E_in,  f_W_in,  f_N_in,  f_S_in,  f_T_in,  f_B_in,   f_NE_in,  f_SW_in,  f_SE_in,  f_NW_in,  f_TE_in,  f_BW_in,  f_BE_in,
       //    f_TW_in, f_TN_in, f_BS_in, f_BN_in, f_TS_in, f_TNE_in, f_TSW_in, f_TSE_in, f_TNW_in, f_BNE_in, f_BSW_in, f_BSE_in, f_BNW_in;
       // // momentum exchanged with wall at rest
       // real wallMomentumX = 0.0, wallMomentumY = 0.0, wallMomentumZ = 0.0;
 
-      // // printf("qs: \t %f \t %f \t %f \t %f \t %f \t %f \n",q_dirE[k],q_dirW[k],q_dirN[k],q_dirS[k], q_dirT[k],q_dirB[k] );
       // q = q_dirE[k];
       // if (q>=c0o1 && q<=c1o1)
       // {
@@ -729,17 +760,14 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       //    wallMomentumZ += f_TNW+f_BSE_in;
       // }
 
-      // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      // //Compute wall velocity
-      // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      // real VeloX=0.0, VeloY=0.0, VeloZ=0.0; 
+      // // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // // //Compute wall velocity
+      // // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // real VeloX=0.1, VeloY=0.0, VeloZ=0.0; 
 
-
-      // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      // //Add wall velocity and write f's
-      // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+      // // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // // //Add wall velocity and write f's
+      // // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       // q = q_dirE[k];
       // if (q>=c0o1 && q<=c1o1)

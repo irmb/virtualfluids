@@ -182,8 +182,8 @@ void multipleLevel(const std::string& configPath)
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     uint samplingOffset = 1;
-    // gridBuilder->setStressBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0, samplingOffset);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
+    gridBuilder->setStressBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0, samplingOffset);
+    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::MZ, velocity*dt/dx, 0.0, 0.0);
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     // gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
