@@ -23,7 +23,7 @@ void perm(const char *configname)
          throw exceptionText;
       }
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (machine == "BOMBADIL")

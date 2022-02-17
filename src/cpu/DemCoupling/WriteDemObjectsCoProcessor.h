@@ -11,7 +11,7 @@
 
 #include "CoProcessor.h"
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class DemCoProcessor;
@@ -22,14 +22,14 @@ class WriteDemObjectsCoProcessor : public CoProcessor
 public:
     WriteDemObjectsCoProcessor();
     WriteDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, WbWriter *const writer,
-                               SPtr<DemCoProcessor> demCoProcessor, SPtr<Communicator> comm);
+                               SPtr<DemCoProcessor> demCoProcessor, std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteDemObjectsCoProcessor() {}
     void process(double step) override;
 
 private:
     std::string path;
     WbWriter *writer;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     SPtr<DemCoProcessor> demCoProcessor;
 };
 #endif

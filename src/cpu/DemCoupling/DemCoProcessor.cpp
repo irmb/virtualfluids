@@ -1,7 +1,7 @@
 #include "DemCoProcessor.h"
 
 #include "BCProcessor.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "DataSet3D.h"
 #include "DistributionArray3D.h"
 #include "ForceCalculator.h"
@@ -29,7 +29,7 @@
 #include <array>
 #include <functional>
 
-DemCoProcessor::DemCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Communicator> comm,
+DemCoProcessor::DemCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm,
                                std::shared_ptr<ForceCalculator> forceCalculator,
                                std::shared_ptr<PhysicsEngineSolverAdapter> physicsEngineSolver,
                                double intermediatePeSteps)

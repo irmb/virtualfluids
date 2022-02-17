@@ -7,6 +7,6 @@ if(BUILD_VF_CPU)
     vf_add_tests()
 endif()
 
-if(BUILD_VF_GPU)
+if(BUILD_VF_GPU OR BUILD_VF_GKS)
     add_subdirectory(cuda)
 endif()

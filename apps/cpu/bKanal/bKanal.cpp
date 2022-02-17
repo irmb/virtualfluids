@@ -24,7 +24,7 @@ void run(const char *cstr)
 
       UbLog::reportingLevel() = logINFO;
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       string machine = string(cstr);
@@ -81,9 +81,9 @@ void run(const char *cstr)
 
       int H=200;//200;//392;
 
-      //  nx[0]      =8;//ok mit 8// (int)(3.0*(double)H/8.0/8.0);//2;// (int)(0.3*(double)H/6.0/4.0);//das "/4" hier ist wegen der verfeinerung da! //länge
+      //  nx[0]      =8;//ok mit 8// (int)(3.0*(double)H/8.0/8.0);//2;// (int)(0.3*(double)H/6.0/4.0);//das "/4" hier ist wegen der verfeinerung da! //lï¿½nge
       //  nx[1]      =8;//ok mit 8// (int)(2.0*(double)H/8.0/8.0);//2;// (int)(0.2*(double)H/6.0/4.0);//  //breite
-      nx[2]      = (int)(2.0*(double)H/5.0/8.0);// //höhe gebiet
+      nx[2]      = (int)(2.0*(double)H/5.0/8.0);// //hï¿½he gebiet
 
       //(3/2/2)-ratio:
       nx[1]=nx[2];
@@ -267,10 +267,10 @@ void run(const char *cstr)
          ///interactoren
          //int bbOption1 = 0; //0=simple Bounce Back, 1=quadr. BB
          //D3Q27BoundaryConditionAdapterPtr bcObst(new D3Q27NoSlipBCAdapter(bbOption1));
-         ///////würfel unten version ende
+         ///////wï¿½rfel unten version ende
          ////////////////////////////////////////////////////////////////////////////////
          ////////PM grid
-         //Temporär:
+         //Temporï¿½r:
          //double  H=1.0;
 
          vector<D3Q27InteractorPtr> D3Q27InteractorPtrarray;

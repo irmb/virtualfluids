@@ -10,18 +10,14 @@
 #include <memory>
 #include <filesystem>
 
-#include "mpi.h"
-
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
 #include "PointerDefinitions.h"
 
-#include "Core/LbmOrGks.h"
 #include "Core/StringUtilities/StringUtil.h"
 
 #include "Core/VectorTypes.h"
-#include "Core/Logger/Logger.h"
 
 #include <basics/config/ConfigurationFile.h>
 
@@ -99,6 +95,8 @@ const real dt = (real)1.0e-3; //0.5e-3;
 
 const uint nx = 64;
 
+std::string path(".");
+
 std::string simulationName("DrivenCavityChim");
 
 const uint timeStepOut = 10000;
@@ -145,12 +143,12 @@ void multipleLevel(const std::string& configPath)
     {
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
+        vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
         vf::basics::ConfigurationFile config;
         config.load(configPath);
 
-        SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
+        SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -208,7 +206,7 @@ void multipleLevel(const std::string& configPath)
 
         SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
-        Simulation sim;
+        Simulation sim(communicator);
         SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
         SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
         SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
@@ -336,8 +334,6 @@ void multipleLevel(const std::string& configPath)
 
 int main( int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
-
     try
     {
         vf::logging::Logger::initalizeLogger();
@@ -364,6 +360,5 @@ int main( int argc, char* argv[])
         VF_LOG_CRITICAL("Unknown exception!");
     }
 
-   MPI_Finalize();
    return 0;
 }

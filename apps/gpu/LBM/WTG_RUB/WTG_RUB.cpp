@@ -54,6 +54,7 @@
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
+#include <logger/Logger.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,12 +190,12 @@ void multipleLevel(const std::string& configPath)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
+    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
 
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
+    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const real velocityLB = (real)0.0844; // LB units
@@ -325,7 +326,7 @@ void multipleLevel(const std::string& configPath)
 
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
-    Simulation sim;
+    Simulation sim (communicator);
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
     SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
     SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
@@ -719,31 +720,31 @@ std::string chooseVariation()
 
 int main( int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
-    if ( argv != NULL )
+    try
     {
-        try
-        {
-            // assuming that the config files is stored parallel to this file.
-            std::filesystem::path filePath = __FILE__;
-            filePath.replace_filename("configDrivenCavity.txt");
+        vf::logging::Logger::initalizeLogger();
 
-            multipleLevel(filePath.string());
-        }
-        catch (const std::bad_alloc& e)
-        { 
-            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
-        }
-        catch (const std::exception& e)
-        {   
-            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-        }
-        catch (...)
-        {
-            *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
-        }
+        // assuming that the config files is stored parallel to this file.
+        std::filesystem::path filePath = __FILE__;
+        filePath.replace_filename("configDrivenCavity.txt");
+
+        multipleLevel(filePath.string());
+    }
+    catch (const spdlog::spdlog_ex &ex) {
+        std::cout << "Log initialization failed: " << ex.what() << std::endl;
+    }
+    catch (const std::bad_alloc& e)
+    { 
+        VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
+    }
+    catch (const std::exception& e)
+    {   
+        VF_LOG_CRITICAL("exception: {}", e.what());
+    }
+    catch (...)
+    {
+        VF_LOG_CRITICAL("Unknown exception!");
     }
 
-   MPI_Finalize();
    return 0;
 }

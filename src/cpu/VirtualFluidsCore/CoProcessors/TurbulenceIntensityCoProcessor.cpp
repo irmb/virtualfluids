@@ -3,7 +3,7 @@
 #include "BCArray3D.h"
 #include "BCProcessor.h"
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "LBMKernel.h"
@@ -14,7 +14,7 @@
 
 TurbulenceIntensityCoProcessor::TurbulenceIntensityCoProcessor(SPtr<Grid3D> grid, const std::string &path,
                                                                WbWriter *const writer, SPtr<UbScheduler> s,
-                                                               SPtr<Communicator> comm)
+                                                               std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), path(path), comm(comm), writer(writer)
 {
     init();

@@ -1,6 +1,6 @@
 #include "MPIIOCoProcessor.h"
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "CoordinateTransformation3D.h"
 #include "Grid3D.h"
 #include "MPIIODataStructures.h"
@@ -13,7 +13,7 @@
 using namespace MPIIODataStructures;
 
 MPIIOCoProcessor::MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                   SPtr<Communicator> comm)
+                                   std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), path(path), comm(comm)
 {
     UbSystem::makeDirectory(path + "/mpi_io_cp");

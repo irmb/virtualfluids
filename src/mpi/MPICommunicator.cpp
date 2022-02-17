@@ -5,11 +5,22 @@
 
 #include <sstream>
 using namespace std;
+
+namespace vf::mpi 
+{
+std::shared_ptr<Communicator> MPICommunicator::getInstance()
+{
+    std::lock_guard<std::mutex> myLock(instantiation_mutex);
+    if (!instance){
+        instance = std::shared_ptr<MPICommunicator>(new MPICommunicator);
+    }
+    return instance;
+}
 //////////////////////////////////////////////////////////////////////////
 MPICommunicator::MPICommunicator()
 {
     // proof if MPI is initialized
-    int mpiInitialized = (int)false;
+    int mpiInitialized = 0; // false
     MPI_Initialized(&mpiInitialized);
     if (!mpiInitialized) {
         MPI_Init(NULL, NULL);
@@ -25,19 +36,12 @@ MPICommunicator::MPICommunicator()
 MPICommunicator::~MPICommunicator()
 {
     // proof if MPI is finalized
-    int _mpiFinalized = (int)false;
+    int _mpiFinalized = 0; // false
     MPI_Finalized(&_mpiFinalized);
     if (!_mpiFinalized) {
         MPI_Finalize();
         // UBLOG(logINFO, "MPI_Finalize()");
     }
-}
-//////////////////////////////////////////////////////////////////////////
-SPtr<Communicator> MPICommunicator::getInstance()
-{
-    if (!Communicator::instance)
-        Communicator::instance = SPtr<Communicator>(new MPICommunicator());
-    return Communicator::instance;
 }
 //////////////////////////////////////////////////////////////////////////
 void MPICommunicator::abort(int errorcode) { MPI_Abort(comm, errorcode); }
@@ -164,4 +168,7 @@ void MPICommunicator::broadcast(float &value) { broadcast<float>(value); }
 void MPICommunicator::broadcast(double &value) { broadcast<double>(value); }
 //////////////////////////////////////////////////////////////////////////
 void MPICommunicator::broadcast(long int &value) { broadcast<long int>(value); }
+
+}
+
 #endif

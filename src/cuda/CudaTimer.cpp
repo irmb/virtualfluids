@@ -1,5 +1,8 @@
 #include "CudaTimer.h"
 
+namespace vf::cuda
+{
+
 void CudaTimer::createSdkTimer()
 {
     sdkCreateTimer(&sdkTimer);
@@ -48,4 +51,6 @@ void CudaTimer::deleteEventTimer()
 {
     checkCudaErrors(cudaEventDestroy(start_t));
     checkCudaErrors(cudaEventDestroy(stop_t));
+}
+
 }

@@ -42,7 +42,7 @@ void run(string configname)
       double          refineDistance = config.getDouble("refineDistance");
       vector<double>  nupsStep = config.getVector<double>("nupsStep");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

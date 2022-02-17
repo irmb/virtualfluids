@@ -33,7 +33,7 @@ void run(string configname)
       vector<int>     blockNx = config.getVector<int>("blockNx");
       double          dx = config.getValue<double>("dx");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

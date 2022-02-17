@@ -29,7 +29,7 @@ void run(string configname)
       double          lambda = config.getDouble("lambda");
       double          initTime = config.getDouble("initTime");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

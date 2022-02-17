@@ -30,7 +30,7 @@ void run(int tn)
       int numOfThreads = 1;
       double availMem = 0;
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      CommunicatorPtr comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if(machine == "BOMBADIL") 

@@ -25,7 +25,7 @@ CumulantK15Unified::CumulantK15Unified(std::shared_ptr<Parameter> para, int leve
 
     myKernelGroup = BasicKernel;
 
-    this->cudaGrid = CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->size_Mat_SP);
+    this->cudaGrid = cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->size_Mat_SP);
 }
 
 void CumulantK15Unified::run()

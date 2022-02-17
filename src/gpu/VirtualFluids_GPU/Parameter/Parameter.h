@@ -40,7 +40,7 @@
 
 #include "LBM/D3Q27.h"
 #include "LBM/LB.h"
-
+#include "PreCollisionInteractor/PreCollisionInteractor.h"
 
 #include "VirtualFluids_GPU_export.h"
 
@@ -524,6 +524,11 @@ public:
 
     void setADKernel(std::string adKernel);
 
+    //adder
+
+	void addActuator(SPtr<PreCollisionInteractor> actuator);
+	void addProbe(SPtr<PreCollisionInteractor> probes);
+
     // getter
     double *getForcesDouble();
     real *getForcesHost();
@@ -652,7 +657,10 @@ public:
     real getViscosityRatio();
     real getVelocityRatio();
     real getDensityRatio();
-    real getPressRatio();
+    real getPressRatio();    
+    real getTimeRatio();
+    real getLengthRatio();
+    real getForceRatio();    
     real getRealX();
     real getRealY();
     real getRe();
@@ -679,6 +687,8 @@ public:
     TempVelforBoundaryConditions *getTempVelD();
     TempPressforBoundaryConditions *getTempPressH();
     TempPressforBoundaryConditions *getTempPressD();
+    std::vector<SPtr<PreCollisionInteractor>> getActuators();
+    std::vector<SPtr<PreCollisionInteractor>> getProbes();
     unsigned int getTimeDoCheckPoint();
     unsigned int getTimeDoRestart();
     bool getDoCheckPoint();
@@ -763,7 +773,7 @@ private:
     bool calcCp { false };
     bool writeVeloASCII { false };
     bool calcPlaneConc { false };
-    bool isBodyForce;
+    bool isBodyForce { false };
     int diffMod {27};
     int maxlevel {0};
     int coarse {0};
@@ -808,6 +818,10 @@ private:
     real Phi {0.0};
 	real angularVelocity;
     unsigned int startTurn;
+
+    // PreCollisionInteractors //////////////
+    std::vector<SPtr<PreCollisionInteractor>> actuators;
+	std::vector<SPtr<PreCollisionInteractor>> probes;
 
     // Step of Ensight writing//
     unsigned int stepEnsight;

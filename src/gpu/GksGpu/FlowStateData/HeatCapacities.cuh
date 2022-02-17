@@ -1,12 +1,16 @@
 //#ifndef HeatCapacities_H
 //#define HeatCapacities_H
 //
-//#ifdef __CUDACC__
-//#include <cuda_runtime.h>
-//#else
-//#define __host__
-//#define __device__
-//#endif
+// #ifdef __CUDACC__
+// #include <cuda_runtime.h>
+// #else
+// #ifndef __host__
+// #define __host__
+// #endif
+// #ifndef __device__
+// #define __device__
+// #endif
+// #endif
 //
 //#include "Core/DataTypes.h"
 //#include "Core/RealConstants.h"

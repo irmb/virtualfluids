@@ -4,7 +4,7 @@
 #include "LBMKernel.h"
 
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "UbScheduler.h"
@@ -16,7 +16,7 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor() = default;
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string &path,
                                                              WbWriter *const writer, SPtr<UbScheduler> s,
-                                                             SPtr<Communicator> comm, int options)
+                                                             std::shared_ptr<vf::mpi::Communicator> comm, int options)
     : CoProcessor(grid, s), path(path), writer(writer), comm(comm), options(options)
 {
     init();
@@ -26,7 +26,7 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, 
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string &path,
                                                              WbWriter *const writer, SPtr<UbScheduler> s,
-                                                             SPtr<Communicator> comm, int options,
+                                                             std::shared_ptr<vf::mpi::Communicator> comm, int options,
                                                              std::vector<int> levels, std::vector<double> &levelCoords,
                                                              std::vector<double> &bounds, bool timeAveraging)
     : CoProcessor(grid, s), path(path), writer(writer), comm(comm), options(options), levels(levels),

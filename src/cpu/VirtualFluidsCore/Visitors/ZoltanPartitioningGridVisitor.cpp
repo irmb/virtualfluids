@@ -9,7 +9,7 @@
 
 using namespace std;
 
-ZoltanPartitioningGridVisitor::ZoltanPartitioningGridVisitor(SPtr<Communicator> comm, int numOfDirs,
+ZoltanPartitioningGridVisitor::ZoltanPartitioningGridVisitor(std::shared_ptr<vf::mpi::Communicator> comm, int numOfDirs,
                                                              int numOfLocalParts)
     : comm(comm), numOfDirs(numOfDirs), numOfLocalParts(numOfLocalParts)
 {

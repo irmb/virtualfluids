@@ -1,9 +1,9 @@
 #include "Communicator.h"
+
 #include <mpi.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <vector>
-#include <string.h>
+
+#include <logger/Logger.h>
 
 #if defined (_WIN32) || defined (_WIN64)
    #include <Winsock2.h>
@@ -12,13 +12,19 @@
 #endif
 //lib for windows Ws2_32.lib
 
-namespace vf
+namespace vf::gpu
 {
-namespace gpu
-{
+
 
 Communicator::Communicator()
 {
+    int mpiInitialized = 0; // false
+    MPI_Initialized(&mpiInitialized);
+    if (!mpiInitialized) {
+        MPI_Init(NULL, NULL);
+        VF_LOG_TRACE("vf::gpu::Communicator(): MPI_Init");
+    }
+
     MPI_Comm_rank(MPI_COMM_WORLD, &PID);
     MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
 
@@ -29,21 +35,25 @@ Communicator::Communicator()
     // Get my position in this communicator, and my neighbors
     MPI_Cart_shift(comm1d, 0, 1, &nbrbottom, &nbrtop);
 }
-// Crap by Martin Sch.
-Communicator::Communicator(const int numberOfProcs)
+
+Communicator::~Communicator()
 {
-    MPI_Comm_rank(MPI_COMM_WORLD, &PID);
-    MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
-    commGPU = MPI_COMM_WORLD;
-    requestGPU.resize(0);
-    rcount = 0;
+    // proof if MPI is finalized
+    int _mpiFinalized = 0; // false
+    MPI_Finalized(&_mpiFinalized);
+    if (!_mpiFinalized) {
+        MPI_Finalize();
+        VF_LOG_TRACE("vf::gpu::~Communicator(): MPI_Finalize");
+    }
 }
-Communicator *Communicator::instanz = 0;
-Communicator *Communicator::getInstanz()
+
+
+// C++11 thread safe singelton implementation:
+// https://stackoverflow.com/questions/1661529/is-meyers-implementation-of-the-singleton-pattern-thread-safe
+Communicator& Communicator::getInstance()
 {
-    if (instanz == 0)
-        instanz = new Communicator(0);
-    return instanz;
+    static Communicator comm;
+    return comm;
 }
 
 void Communicator::exchngBottomToTop(float *sbuf, float *rbuf, int count)
@@ -189,7 +199,7 @@ int Communicator::mapCudaDevice(const int &rank, const int &size, const std::vec
                     counter++;
             }
             if (counter >= maxdev) {
-                fprintf(stderr, "More processes than GPUs!\n");
+                VF_LOG_CRITICAL("More processes than GPUs!");
                 exit(1);
             }
             map[i] = devices[counter];
@@ -198,12 +208,11 @@ int Communicator::mapCudaDevice(const int &rank, const int &size, const std::vec
 
     MPI_Scatter(map, 1, MPI_UNSIGNED, &device, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
 
-    printf("Rank: %d runs on host: %s with GPU: %d\n", rank, hostname, device);
+    VF_LOG_INFO("Rank: {} runs on host: {} with GPU: {}", rank, hostname, device);
 
     free(map);
     free(host);
     return device;
 }
 
-} // namespace GPU
-} // namespace VF
+}

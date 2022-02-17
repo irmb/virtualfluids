@@ -34,12 +34,17 @@
 #include "Communicator.h"
 #include <basics/utilities/UbException.h>
 
-SPtr<Communicator> Communicator::instance = SPtr<Communicator>();
+namespace vf::mpi 
+{
+std::mutex Communicator::instantiation_mutex = std::mutex();
+std::shared_ptr<Communicator> Communicator::instance = std::shared_ptr<Communicator>();
 //////////////////////////////////////////////////////////////////////////
-SPtr<Communicator> Communicator::getInstance()
+std::shared_ptr<Communicator> Communicator::getInstance()
 {
     if (!instance)
         UB_THROW(UbException(UB_EXARGS, "Communicator isn't initialized correctly! You can not create a new instance "
                                         "of abstract Communicator class!"));
     return instance;
+}
+
 }

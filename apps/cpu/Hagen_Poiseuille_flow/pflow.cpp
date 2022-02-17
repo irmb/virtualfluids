@@ -29,7 +29,7 @@ using namespace std;
 //      double          deltax = config.getDouble("deltax");
 //
 //
-//      SPtr<Communicator> comm = MPICommunicator::getInstance();
+//      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
 //      int myid = comm->getProcessID();
 //
 //      if (logToFile)
@@ -322,7 +322,7 @@ void pflowdp(string configname)
       double          cpStepStart = config.getValue<double>("cpStepStart");
       bool            newStart = config.getValue<bool>("newStart");
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       LBMReal rhoLB = 0.0;

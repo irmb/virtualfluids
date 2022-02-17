@@ -14,7 +14,7 @@
 #include "CoProcessor.h"
 #include "LBMSystem.h"
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class LBMUnitConverter;
@@ -26,7 +26,7 @@ public:
     PressureDifferenceCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
                                   SPtr<IntegrateValuesHelper> h1, SPtr<IntegrateValuesHelper> h2, LBMReal rhoReal,
                                   LBMReal uReal, LBMReal uLB,
-                                  /*const SPtr<LBMUnitConverter> conv,*/ SPtr<Communicator> comm);
+                                  /*const SPtr<LBMUnitConverter> conv,*/ std::shared_ptr<vf::mpi::Communicator> comm);
     ~PressureDifferenceCoProcessor() override;
 
     void process(double step) override;
@@ -36,7 +36,7 @@ protected:
     std::string path;
     SPtr<LBMUnitConverter> conv;
     void collectData(double step);
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     LBMReal factor1; //= (1/3)*rhoReal*(uReal/uLB)^2 for calculation pReal = rhoLB * (1/3)*rhoReal*(uReal/uLB)^2,
                      //rhoReal and uReal in SI
     LBMReal factor2; //= rhoReal*(uReal/uLB)^2       for calculation pReal = press * rhoReal*(uReal/uLB)^2, rhoReal and

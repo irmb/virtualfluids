@@ -13,7 +13,7 @@
 
 #include "CoProcessor.h"
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class IntegrateValuesHelper;
@@ -27,7 +27,7 @@ class TimeseriesCoProcessor : public CoProcessor
 {
 public:
     TimeseriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<IntegrateValuesHelper> h1,
-                          const std::string &path, SPtr<Communicator> comm);
+                          const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm);
     ~TimeseriesCoProcessor() override;
 
     //! calls collectData.
@@ -38,7 +38,7 @@ protected:
 
     //! object that can compute spacial average values in 3D-subdomain.
     SPtr<IntegrateValuesHelper> h1;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
 
 private:
     std::string path; //! output filename, e.g.  pathname + "/steps/timeseries"

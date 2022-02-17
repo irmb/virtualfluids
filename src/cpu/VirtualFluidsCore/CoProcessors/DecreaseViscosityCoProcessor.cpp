@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "Grid3D.h"
 #include "LBMKernel.h"
 #include "UbScheduler.h"
 
 DecreaseViscosityCoProcessor::DecreaseViscosityCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, mu::Parser *nueFunc,
-                                                           SPtr<Communicator> comm)
+                                                           std::shared_ptr<vf::mpi::Communicator> comm)
 
     : CoProcessor(grid, s), nueFunc(nueFunc), comm(comm)
 {
