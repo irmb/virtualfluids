@@ -37,7 +37,6 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "GridGenerator_export.h"
 #include "global.h"
 
 #include "geometries/Triangle/Triangle.h"

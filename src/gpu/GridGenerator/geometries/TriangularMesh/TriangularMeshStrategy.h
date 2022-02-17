@@ -34,7 +34,6 @@
 #define TriangularMeshStrategy_H
 
 #include "global.h"
-#include "GridGenerator_export.h"
 
 class GridImp;
 class TriangularMesh;

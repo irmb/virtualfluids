@@ -160,24 +160,24 @@ void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
 #pragma omp parallel for
         for (int xIdx = 0; xIdx < (int)this->nx; xIdx++) {
             for (uint yIdx = 0; yIdx < this->ny; yIdx++) {
-                this->fixRefinementIntoWall(xIdx, yIdx, 0, 3);
-                this->fixRefinementIntoWall(xIdx, yIdx, this->nz - 1, -3);
+                this->fixRefinementIntoWall( xIdx, yIdx, 0           ,  3 );
+                this->fixRefinementIntoWall( xIdx, yIdx, this->nz - 1, -3 );
             }
         }
 
 #pragma omp parallel for
         for (int xIdx = 0; xIdx < (int)this->nx; xIdx++) {
             for (uint zIdx = 0; zIdx < this->nz; zIdx++) {
-                this->fixRefinementIntoWall(xIdx, 0, zIdx, 2);
-                this->fixRefinementIntoWall(xIdx, this->ny - 1, zIdx, -2);
+                this->fixRefinementIntoWall( xIdx, 0           , zIdx,  2 );
+                this->fixRefinementIntoWall( xIdx, this->ny - 1, zIdx, -2 );
             }
         }
 
 #pragma omp parallel for
         for (int yIdx = 0; yIdx < (int)this->ny; yIdx++) {
             for (uint zIdx = 0; zIdx < this->nz; zIdx++) {
-                this->fixRefinementIntoWall(0, yIdx, zIdx, 1);
-                this->fixRefinementIntoWall(this->nx - 1, yIdx, zIdx, -1);
+                this->fixRefinementIntoWall( 0           , yIdx, zIdx,  1 );
+                this->fixRefinementIntoWall( this->nx - 1, yIdx, zIdx, -1 );
             }
         }
     }

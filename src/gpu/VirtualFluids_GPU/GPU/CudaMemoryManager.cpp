@@ -2984,7 +2984,7 @@ void CudaMemoryManager::setMemsizeGPU(double admem, bool reset)
 
 double CudaMemoryManager::getMemsizeGPU()
 {
-	return memsizeGPU;
+	return this->memsizeGPU;
 }
 
 CudaMemoryManager::CudaMemoryManager(std::shared_ptr<Parameter> parameter)

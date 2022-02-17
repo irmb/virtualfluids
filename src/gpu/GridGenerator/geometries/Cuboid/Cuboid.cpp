@@ -113,18 +113,12 @@ double Cuboid::getMaximum(double x1, double x2)
 bool Cuboid::isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset)
 {
     //false, if 'not in Object' or 'on Boundary'!
-    if (vf::Math::lessEqual((real)x1, (real)this->getX1Minimum() + (real)minOffset))
-        return false;
-    if (vf::Math::lessEqual((real)x2, (real)this->getX2Minimum() + (real)minOffset))
-        return false;
-    if (vf::Math::lessEqual((real)x3, (real)this->getX3Minimum() + (real)minOffset))
-        return false;
-    if (vf::Math::greaterEqual((real)x1, (real)this->getX1Maximum() - (real)maxOffset))
-        return false;
-    if (vf::Math::greaterEqual((real)x2, (real)this->getX2Maximum() - (real)maxOffset))
-        return false;
-    if (vf::Math::greaterEqual((real)x3, (real)this->getX3Maximum() - (real)maxOffset))
-        return false;
+    if (vf::Math::lessEqual(   (real)x1, (real)this->getX1Minimum() + (real)minOffset))  return false;
+    if (vf::Math::lessEqual(   (real)x2, (real)this->getX2Minimum() + (real)minOffset))  return false;
+    if (vf::Math::lessEqual(   (real)x3, (real)this->getX3Minimum() + (real)minOffset))  return false;
+    if (vf::Math::greaterEqual((real)x1, (real)this->getX1Maximum() - (real)maxOffset))  return false;
+    if (vf::Math::greaterEqual((real)x2, (real)this->getX2Maximum() - (real)maxOffset))  return false;
+    if (vf::Math::greaterEqual((real)x3, (real)this->getX3Maximum() - (real)maxOffset))  return false;
 
     return true;
 }

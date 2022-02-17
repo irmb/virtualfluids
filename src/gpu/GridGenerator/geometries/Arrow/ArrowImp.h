@@ -36,7 +36,6 @@
 #include <memory>
 
 #include "global.h"
-#include "GridGenerator_export.h"
 
 #include "Arrow.h"
 
