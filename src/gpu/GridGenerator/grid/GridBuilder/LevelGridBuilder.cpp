@@ -92,18 +92,26 @@ void LevelGridBuilder::setSlipBoundaryCondition(SideType sideType, real nomalX, 
 
 void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz)
 {
-    SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
+    if (sideType == SideType::GEOMETRY)
+        setVelocityGeometryBoundaryCondition(vx, vy, vz);
+    else
+    {
+        for (uint level = 0; level < getNumberOfGridLevels(); level++)
+        {
+            SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
 
-    auto side = SideFactory::make(sideType);
+            auto side = SideFactory::make(sideType);
 
-    velocityBoundaryCondition->side = side;
-    velocityBoundaryCondition->side->addIndices(grids, 0, velocityBoundaryCondition);
+            velocityBoundaryCondition->side = side;
+            velocityBoundaryCondition->side->addIndices(grids, level, velocityBoundaryCondition);
 
-    velocityBoundaryCondition->fillVelocityLists();
+            velocityBoundaryCondition->fillVelocityLists();
 
-    boundaryConditions[0]->velocityBoundaryConditions.push_back(velocityBoundaryCondition);
+            boundaryConditions[level]->velocityBoundaryConditions.push_back(velocityBoundaryCondition);
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Velocity BC on level " << 0 << " with " << (int)velocityBoundaryCondition->indices.size() <<"\n";
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Velocity BC on level " << level << " with " << (int)velocityBoundaryCondition->indices.size() <<"\n";
+        }
+    }
 }
 
 void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, real vz)

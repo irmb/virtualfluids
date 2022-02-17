@@ -34,7 +34,6 @@
 #define SPHERE_H
 
 #include "global.h"
-#include "GridGenerator_export.h"
 #include "geometries/Object.h"
 
 class GRIDGENERATOR_EXPORT Sphere : public Object

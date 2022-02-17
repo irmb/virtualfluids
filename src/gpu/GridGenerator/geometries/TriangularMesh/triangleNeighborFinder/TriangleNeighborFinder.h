@@ -33,8 +33,7 @@
 #ifndef TriangleNeighborFinder_h
 #define TriangleNeighborFinder_h
 
-#include "GridGenerator/global.h"
-#include "GridGenerator_export.h"
+#include "global.h"
 #include <vector>
 
 struct IDS {
