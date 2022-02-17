@@ -190,6 +190,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       f_TNE  = (D.f[dirBSW ])[kbsw ];
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
+
       ////////////////////////////////////////////////////////////////////////////////
       real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
@@ -275,38 +276,68 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Compute incoming f's with zero wall velocity
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real VeloX=0.057735, VeloY=0.0, VeloZ=0.0; 
+      real VeloX=0.05, VeloY=0.0, VeloZ=0.0; 
       
       // if(k==3071){ // 3071 9120 9215
       //    printf("======================================\n");
+      //    printf("Stress=====================\n");
       //    printf("k \t %u\n", k);
-      //    printf("E \t %f \n", q_dirE[k]);
-      //    printf("NE \t %f \n", q_dirNE[k]);
-      //    printf("W \t %f \n", q_dirW[k]);
-      //    printf("NW \t %f \n", q_dirNW[k]);
-      //    printf("N \t %f \n", q_dirN[k]);
-      //    printf("S \t %f \n", q_dirS[k]);
-      //    printf("SE \t %f \n", q_dirSE[k]);
-      //    printf("NE \t %f \n", q_dirNE[k]);
-      //    printf("SW \t %f \n", q_dirSW[k]);
-      //    printf("B \t %f \n", q_dirB[k]);
-      //    printf("BS \t %f \n", q_dirBS[k]);
-      //    printf("BN \t %f \n", q_dirBN[k]);
-      //    printf("BW \t %f \n", q_dirBW[k]);
-      //    printf("BE \t %f \n", q_dirBE[k]);
-      //    printf("BNE \t %f \n", q_dirBNE[k]);
-      //    printf("BNW \t %f \n", q_dirBNW[k]);
-      //    printf("BSE \t %f \n", q_dirBSE[k]);
-      //    printf("BSW \t %f \n", q_dirBSW[k]);
-      //    printf("T \t %f \n", q_dirT[k]);
-      //    printf("TS \t %f \n", q_dirTS[k]);
-      //    printf("TN \t %f \n", q_dirTN[k]);
-      //    printf("TW \t %f \n", q_dirTW[k]);
-      //    printf("TE \t %f \n", q_dirTE[k]);
-      //    printf("TNE \t %f \n", q_dirTNE[k]);
-      //    printf("TNW \t %f \n", q_dirTNW[k]);
-      //    printf("TSE \t %f \n", q_dirTSE[k]);
-      //    printf("TSW \t %f \n\n", q_dirTSW[k]);
+      //    printf("kQk \t %u\n", KQK);
+      // //    printf("E \t %f \n", q_dirE[k]);
+      // //    printf("NE \t %f \n", q_dirNE[k]);
+      // //    printf("W \t %f \n", q_dirW[k]);
+      // //    printf("NW \t %f \n", q_dirNW[k]);
+      // //    printf("N \t %f \n", q_dirN[k]);
+      // //    printf("S \t %f \n", q_dirS[k]);
+      // //    printf("SE \t %f \n", q_dirSE[k]);
+      // //    printf("NE \t %f \n", q_dirNE[k]);
+      // //    printf("SW \t %f \n", q_dirSW[k]);
+      // //    printf("B \t %f \n", q_dirB[k]);
+      // //    printf("BS \t %f \n", q_dirBS[k]);
+      // //    printf("BN \t %f \n", q_dirBN[k]);
+      // //    printf("BW \t %f \n", q_dirBW[k]);
+      // //    printf("BE \t %f \n", q_dirBE[k]);
+      // //    printf("BNE \t %f \n", q_dirBNE[k]);
+      // //    printf("BNW \t %f \n", q_dirBNW[k]);
+      // //    printf("BSE \t %f \n", q_dirBSE[k]);
+      // //    printf("BSW \t %f \n", q_dirBSW[k]);
+      // //    printf("T \t %f \n", q_dirT[k]);
+      // //    printf("TS \t %f \n", q_dirTS[k]);
+      // //    printf("TN \t %f \n", q_dirTN[k]);
+      // //    printf("TW \t %f \n", q_dirTW[k]);
+      // //    printf("TE \t %f \n", q_dirTE[k]);
+      // //    printf("TNE \t %f \n", q_dirTNE[k]);
+      // //    printf("TNW \t %f \n", q_dirTNW[k]);
+      // //    printf("TSE \t %f \n", q_dirTSE[k]);
+      // //    printf("TSW \t %f \n\n", q_dirTSW[k]);
+
+      //    printf("E \t %f \n", f_E);
+      //    printf("NE \t %f \n", f_NE);
+      //    printf("W \t %f \n", f_W);
+      //    printf("NW \t %f \n", f_NW);
+      //    printf("N \t %f \n", f_N);
+      //    printf("S \t %f \n", f_S);
+      //    printf("SE \t %f \n", f_SE);
+      //    printf("NE \t %f \n", f_NE);
+      //    printf("SW \t %f \n", f_SW);
+      //    printf("B \t %f \n", f_B);
+      //    printf("BS \t %f \n", f_BS);
+      //    printf("BN \t %f \n", f_BN);
+      //    printf("BW \t %f \n", f_BW);
+      //    printf("BE \t %f \n", f_BE);
+      //    printf("BNE \t %f \n", f_BNE);
+      //    printf("BNW \t %f \n", f_BNW);
+      //    printf("BSE \t %f \n", f_BSE);
+      //    printf("BSW \t %f \n", f_BSW);
+      //    printf("T \t %f \n", f_T);
+      //    printf("TS \t %f \n", f_TS);
+      //    printf("TN \t %f \n", f_TN);
+      //    printf("TW \t %f \n", f_TW);
+      //    printf("TE \t %f \n", f_TE);
+      //    printf("TNE \t %f \n", f_TNE);
+      //    printf("TNW \t %f \n", f_TNW);
+      //    printf("TSE \t %f \n", f_TSE);
+      //    printf("TSW \t %f \n\n", f_TSW);
       // }
 
       //ToDo anders Klammern
@@ -424,7 +455,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
 
       q = q_dirTN[k];
       if (q>=c0o1 && q<=c1o1)
-      {
+      { 
          feq=c1o54* (drho/*+three*(     vx2+vx3)*/+c9o2*(     vx2+vx3)*(     vx2+vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dirBS])[kbs]=(c1o1-q)/(c1o1+q)*(f_TN-f_BS+(f_TN+f_BS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TN+f_BS)-c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q) - c1o54 * drho;
          //(D.f[dirBS])[kbs]=zero;

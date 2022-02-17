@@ -53,7 +53,7 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                                             || grid->getFieldEntry(index) == vf::gpu::FLUID_CFC
                                             || grid->getFieldEntry(index) == vf::gpu::FLUID_CFF
                                             || grid->getFieldEntry(index) == vf::gpu::FLUID_FCC
-                                            || grid->getFieldEntry(index) == vf::gpu::FLUID_FCF ) )
+                                            || grid->getFieldEntry(index) == vf::gpu::FLUID_FCF ))
             {
                 grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
@@ -246,6 +246,6 @@ void PZ::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     real coordinateNormal = grid[level]->getEndZ() - grid[level]->getDelta();
 
     if( coordinateNormal < grid[0]->getEndZ() - grid[0]->getDelta() ) return;
-
+    
     Side::addIndices(grid[level], boundaryCondition, "z", coordinateNormal, startInner, endInner, startOuter, endOuter);
 }

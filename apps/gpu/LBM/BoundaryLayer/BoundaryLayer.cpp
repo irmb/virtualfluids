@@ -161,6 +161,7 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityRatio( dx*dx/dt );
     // para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
     // para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
+    para->setMainKernel("CumulantK17CompChim");
     // para->setUseAMD(true);
     // para->setSGSConstant(0.083);
 
@@ -175,18 +176,19 @@ void multipleLevel(const std::string& configPath)
     para->setTEnd( uint(tEnd/dt) );
 
     // para->setTOut( 1 );
-    // para->setTEnd( 20 );
+    // para->setTEnd( 2 );
 
     // para->setIsBodyForce( true );
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     uint samplingOffset = 1;
+    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
+    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
     gridBuilder->setStressBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0, samplingOffset);
-    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, velocity*dt/dx, 0.0, 0.0);
-    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
-    // gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
+    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.05, 0.0, 0.0);
+    
+    gridBuilder->setSlipBoundaryCondition(SideType::MZ,  0.0,  0.0, 0.0);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);

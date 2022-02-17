@@ -803,6 +803,7 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
       unsigned int kbne = kb;
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
+      
       ////////////////////////////////////////////////////////////////////////////////
       real f_W    = (D.f[dirE   ])[ke   ];
       real f_E    = (D.f[dirW   ])[kw   ];
@@ -923,10 +924,6 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
 	  bool x = false;
 	  bool y = false;
 	  bool z = false;
-     
-   // printf("qs at %u=======================: \n%f \n %f \n %f \n %f \n %f \n %f \n %f\n %f\n %f\n %f\n %f\n %f\n %f\n %f\n %f\n %f\n %f\n %f\n %f\n %f\n %f\n %f\n %f \n %f\n %f\n %f\n\n",k, q_dirE[k],q_dirW[k],q_dirN[k],q_dirS[k], q_dirT[k],q_dirB[k], q_dirNE[k], q_dirSW[k], q_dirSE[k],q_dirNW[k],q_dirTE[k],   q_dirBW[k], q_dirBE[k], q_dirTW[k],q_dirTN[k], q_dirBS[k], q_dirBN[k], q_dirTS[k], q_dirTNE[k], q_dirTSW[k], q_dirTSE[k], q_dirTNW[k], q_dirBNE[k], q_dirBSW[k], q_dirBSE[k], q_dirBNW[k]);
-      // if (k==10000) printf("BEFORE: vx1: %g \t vx2: %g \t vx3: %g \t RHO: %g \n", vx1,vx2,vx3,drho);
-      // if (k==10000) printf("BEFORE: x: %u \t  y: %u \t z: %u \n  VeloX: %g \t VeloY: %g \t VeloZ: %g \n", x,y,z, VeloX,VeloY,VeloZ);
 
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
