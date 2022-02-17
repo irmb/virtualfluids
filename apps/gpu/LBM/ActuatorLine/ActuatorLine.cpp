@@ -83,7 +83,7 @@ std::string path(".");
 
 std::string simulationName("ActuatorLine");
 
-const uint timeStepOut = 500;
+const float tOut = 100;
 const float tEnd = 280; // total time of simulation in s
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,11 +146,11 @@ void multipleLevel(const std::string& configPath)
 
     para->setMaxLevel(1);
 
+
     para->setVelocity(velocityLB);
     para->setViscosity(viscosityLB);
-
     para->setVelocityRatio( dx / dt );
-
+    para->setViscosityRatio( dx*dx/dt );
     para->setMainKernel("CumulantK17CompChim");
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
@@ -160,7 +160,7 @@ void multipleLevel(const std::string& configPath)
         vz  = (real)0.0;
     });
 
-    para->setTOut( timeStepOut );
+    para->setTOut( uint(tOut/dt) );
     para->setTEnd( uint(tEnd/dt) );
 
     para->setIsBodyForce( true );
@@ -168,11 +168,12 @@ void multipleLevel(const std::string& configPath)
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     gridBuilder->setVelocityBoundaryCondition(SideType::MX,  velocityLB,  0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PX,  velocityLB,  0.0, 0.0);
+
     gridBuilder->setVelocityBoundaryCondition(SideType::MY,  velocityLB,  0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PY,  velocityLB,  0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB,  0.0, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB,  0.0, 0.0);
+    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -187,11 +188,10 @@ void multipleLevel(const std::string& configPath)
     uint nBlades = 3;
     uint nBladeNodes = 32;
 
-
     SPtr<ActuatorLine> actuator_line =SPtr<ActuatorLine>( new ActuatorLine(nBlades, density, nBladeNodes, epsilon, turbPos[0], turbPos[1], turbPos[2], reference_diameter, level, dt, dx) );
     para->addActuator( actuator_line );
 
-    SPtr<PointProbe> pointProbe = SPtr<PointProbe>( new PointProbe("pointProbe", 100, 500, 100) );
+    SPtr<PointProbe> pointProbe = SPtr<PointProbe>( new PointProbe("pointProbe", para->getOutputPath(), 100, 500, 100) );
     std::vector<real> probeCoordsX = {reference_diameter,2*reference_diameter,5*reference_diameter};
     std::vector<real> probeCoordsY = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
     std::vector<real> probeCoordsZ = {3*reference_diameter,3*reference_diameter,3*reference_diameter};
@@ -201,7 +201,7 @@ void multipleLevel(const std::string& configPath)
     pointProbe->addPostProcessingVariable(PostProcessingVariable::Variances);
     para->addProbe( pointProbe );
 
-    SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", 100, 500, 100) );
+    SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", para->getOutputPath(), 100, 500, 100) );
     planeProbe->setProbePlane(5*reference_diameter, 0, 0, dx, L_y, L_z);
     planeProbe->addPostProcessingVariable(PostProcessingVariable::Means);
     para->addProbe( planeProbe );
