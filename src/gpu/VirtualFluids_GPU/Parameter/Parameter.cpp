@@ -112,6 +112,9 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseWale"))
         this->setUseWale(configData.getValue<bool>("UseWale"));
+	//////////////////////////////////////////////////////////////////////////
+    if (configData.contains("UseAMD"))
+        this->setUseAMD(configData.getValue<bool>("UseAMD"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseInitNeq"))
         this->setUseInitNeq(configData.getValue<bool>("UseInitNeq"));
@@ -843,9 +846,25 @@ void Parameter::setUseMeasurePoints(bool useMeasurePoints)
 {
 	ic.isMeasurePoints = useMeasurePoints;
 }
+void Parameter::setUseTurbulentViscosity(bool useTurbulentViscosity)
+{
+	ic.isTurbulentViscosity = useTurbulentViscosity;
+}
 void Parameter::setUseWale(bool useWale)
 {
 	ic.isWale = useWale;
+	if (useWale) setUseTurbulentViscosity(true);
+}
+
+void Parameter::setUseAMD(bool useAMD)
+{
+	ic.isAMD = useAMD;
+	if (useAMD) setUseTurbulentViscosity(true);
+
+}
+void Parameter::setSGSConstant(real SGSConstant)
+{
+	ic.SGSConstant = SGSConstant;
 }
 void Parameter::setUseInitNeq(bool useInitNeq)
 {
@@ -2230,6 +2249,17 @@ bool Parameter::getUseMeasurePoints()
 bool Parameter::getUseWale()
 {
 	return ic.isWale;
+}
+bool Parameter::getUseAMD()
+{
+	return ic.isAMD;
+}bool Parameter::getUseTurbulentViscosity()
+{
+	return ic.isTurbulentViscosity;
+}
+real Parameter::getSGSConstant()
+{
+	return ic.SGSConstant;
 }
 bool Parameter::getUseInitNeq()
 {

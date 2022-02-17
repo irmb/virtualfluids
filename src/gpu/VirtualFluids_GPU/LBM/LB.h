@@ -120,6 +120,9 @@ struct InitCondition
    bool calcMedian {false};
    bool isConc {false};
    bool isWale {false};
+   bool isTurbulentViscosity {false};
+   bool isAMD {false};
+   real SGSConstant {0.0};
    bool isMeasurePoints {false};
    bool isInitNeq {false};
    bool isGeoNormal, isInflowNormal, isOutflowNormal;

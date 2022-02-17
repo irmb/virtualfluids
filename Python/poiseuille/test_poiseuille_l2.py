@@ -5,8 +5,8 @@ import unittest
 import matplotlib.pyplot as plt
 import numpy as np
 import pyvista as pv
-from pyfluids.kernel import LBMKernel, KernelType
-from pyfluids.parameters import GridParameters, PhysicalParameters, RuntimeParameters
+from pyfluids.cpu.kernel import LBMKernel, KernelType
+from pyfluids.cpu.parameters import GridParameters, PhysicalParameters, RuntimeParameters
 from scipy import stats
 
 from errors import normalized_l2_error
