@@ -106,11 +106,11 @@ void Side::setStressSamplingIndices(SPtr<BoundaryCondition> boundaryCondition, S
         real nz = z;
 
         if (boundaryCondition->side->getCoordinate() == X_INDEX)
-            nx = boundaryCondition->side->getDirection() * stressBoundaryCondition->samplingOffset * grid->getDelta() + x;
+            nx = -boundaryCondition->side->getDirection() * stressBoundaryCondition->samplingOffset * grid->getDelta() + x;
         if (boundaryCondition->side->getCoordinate() == Y_INDEX)
-            ny = boundaryCondition->side->getDirection() * stressBoundaryCondition->samplingOffset * grid->getDelta() + y;
+            ny = -boundaryCondition->side->getDirection() * stressBoundaryCondition->samplingOffset * grid->getDelta() + y;
         if (boundaryCondition->side->getCoordinate() == Z_INDEX)
-            nz = boundaryCondition->side->getDirection() * stressBoundaryCondition->samplingOffset * grid->getDelta() + z;
+            nz = -boundaryCondition->side->getDirection() * stressBoundaryCondition->samplingOffset * grid->getDelta() + z;
 
         uint samplingIndex = grid->transCoordToIndex(nx, ny, nz);
         stressBoundaryCondition->velocitySamplingIndices.push_back(samplingIndex);

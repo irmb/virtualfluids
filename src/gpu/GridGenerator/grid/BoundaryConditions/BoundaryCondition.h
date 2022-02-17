@@ -177,6 +177,8 @@ public:
     real getNormalx(uint index) { return this->normalXList[index]; }
     real getNormaly(uint index) { return this->normalYList[index]; }
     real getNormalz(uint index) { return this->normalZList[index]; }
+
+    void fillSamplingIndices(std::vector<SPtr<Grid> > grid, uint level, uint samplingOffset);
 };
 
 //////////////////////////////////////////////////////////////////////////

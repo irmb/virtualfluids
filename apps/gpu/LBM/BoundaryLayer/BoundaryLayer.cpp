@@ -185,10 +185,10 @@ void multipleLevel(const std::string& configPath)
     uint samplingOffset = 1;
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-    gridBuilder->setStressBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0, samplingOffset);
-    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.05, 0.0, 0.0);
+    gridBuilder->setStressBoundaryCondition(SideType::MZ, 0.0, 0.0, 1.0, samplingOffset);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.05, 0.0, 0.0);
     
-    gridBuilder->setSlipBoundaryCondition(SideType::MZ,  0.0,  0.0, 0.0);
+    // gridBuilder->setSlipBoundaryCondition(SideType::MZ,  0.0,  0.0, 0.0);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
