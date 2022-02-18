@@ -238,7 +238,7 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
 void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
 {
 
-    if(t>this->tStartAvg)
+    if(t>this->tStartAvg && t%this->tAvg==0)
     {
         SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 

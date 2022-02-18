@@ -196,7 +196,7 @@ void multipleLevel(const std::string& configPath)
 
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
-    SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartOutProbe/dt, tOutProbe/dt) );
+    SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, 1, tStartOutProbe/dt, tOutProbe/dt) );
     planeProbe->setProbePlane(L_x/2, 0, 0, dx, L_y, L_z);
     planeProbe->addPostProcessingVariable(PostProcessingVariable::Means);
     para->addProbe( planeProbe );

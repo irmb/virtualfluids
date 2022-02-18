@@ -46,11 +46,13 @@ public:
         const std::string _probeName,
         const std::string _outputPath,
         uint _tStartAvg,
+        uint _tAvg,
         uint _tStartOut,
         uint _tOut
     ):  probeName(_probeName),
         outputPath(_outputPath),
         tStartAvg(_tStartAvg),
+        tAvg(_tAvg),
         tStartOut(_tStartOut),
         tOut(_tOut),
         PreCollisionInteractor()
@@ -92,6 +94,7 @@ private:
     std::vector<std::string> varNames;
 
     uint tStartAvg;
+    uint tAvg;
     uint tStartOut;
     uint tOut;
 };

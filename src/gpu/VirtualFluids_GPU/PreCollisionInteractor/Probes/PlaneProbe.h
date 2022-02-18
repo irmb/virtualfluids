@@ -10,11 +10,13 @@ public:
         const std::string _probeName,
         const std::string _outputPath,
         uint _tStartAvg,
+        uint _tAvg,
         uint _tStartOut,
         uint _tOut
     ): Probe(_probeName, 
              _outputPath,
              _tStartAvg, 
+             _tAvg,
              _tStartOut, 
              _tOut)
     {}
