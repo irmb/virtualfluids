@@ -1,5 +1,5 @@
-from pyfluids.kernel import LBMKernel
-from pyfluids.parameters import GridParameters, PhysicalParameters, RuntimeParameters
+from pyfluids.cpu.kernel import LBMKernel
+from pyfluids.cpu.parameters import GridParameters, PhysicalParameters, RuntimeParameters
 
 
 class OneDirectionalAcousticScaling:

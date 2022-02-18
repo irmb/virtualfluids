@@ -83,7 +83,8 @@ std::string simulationName("");
 // 1: original setup of Lennard Lux (6 level, 4.0 cm -> 1.25 mm)
 // 2: setup 1 of MSch               (4 level, 1.0 cm -> 1.25 mm)
 // 3: setup 2 of MSch               (5 level, 1.6 cm -> 1.0  mm)
-int setupDomain = 3;
+// 4: setup 3 of MSch (small/test)  (3 level, 4.0 cm -> 1.0  cm)
+int setupDomain = 4;
 
 std::string path("D:/out/WTG_RUB"); //Mollok
 std::string inputPath("D:/out/WTG_RUB/input/");
@@ -110,7 +111,9 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::timeStamp(logging::Logger::ENABLE);
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
-    auto gridBuilder = MultipleGridBuilder::makeShared();
+    auto gridFactory = GridFactory::make();
+    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
+    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -131,6 +134,10 @@ void multipleLevel(const std::string& configPath)
         dx          = (real)1.6;
         maxLevel    = 4;
         viscosityLB = (real)9.375e-06; // LB units
+    } else if (setupDomain == 4) {
+        dx = (real)4.0;
+        maxLevel = 2;
+        viscosityLB = (real)3.75e-06; // LB units
     }
     
     real x_min = 0.0;
@@ -154,15 +161,15 @@ void multipleLevel(const std::string& configPath)
 
     // MeasurePoints [MP01-15: lvl maxLevel],[MP16-41: lvl 1]; disable when reducing numberOfLevels --> dx might be too
     // large if MP01-15 are used with low resolution dx, MPs might be placed in solid City-geometry
-    bool useMP                   = true;
+    bool useMP                   = false;//true;
     bool measureVeloProfilesOnly = false;
 
     // Two Components: true->DiffOn, false->DiffOff
     bool diffOnOff = false;
 
     // Resetting diff or flow field, e.g. after restart, do not reset diff/flow at start of measureRun ;-)
-    bool reset_diff = true;
-    bool reset_flow = true;
+    bool reset_diff = false;
+    bool reset_flow = false;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     gridBuilder->addCoarseGrid(x_min, y_min, z_min, 
@@ -484,19 +491,19 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
         // FG4 -> dx = 1.0 mm;   lvl 4
         //
         //// FineGrid Level 1 ->dx = 8.0 mm; lvl 1
-        //auto FG1 = new Cuboid(-20, -20, -5 + z_offset, 800, 200, 75 + z_offset);
+        // auto FG1 = new Cuboid(-20, -20, -5 + z_offset, 800, 200, 75 + z_offset);
 
         // FineGrid Level 1 -> dx = 8.0 mm; lvl 1
         auto FG1_1 = new Cuboid(-20, -20, -5 + z_offset, 780, 200, 30 + z_offset);
-        auto FG1_2 = new Cuboid(500, -20,  5 + z_offset, 720, 210, 75 + z_offset);
-        auto FG1   = new Conglomerate();
+        auto FG1_2 = new Cuboid(500, -20, 5 + z_offset, 720, 210, 75 + z_offset);
+        auto FG1 = new Conglomerate();
         FG1->add(FG1_1);
         FG1->add(FG1_2);
 
         // FineGrid Level 2 -> dx = 4.0 mm; lvl 2
         auto FG2_1 = new Cuboid(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
-        auto FG2_2 = new Cuboid(520, -20,  5 + z_offset, 700, 210, 50 + z_offset);
-        auto FG2   = new Conglomerate();
+        auto FG2_2 = new Cuboid(520, -20, 5 + z_offset, 700, 210, 50 + z_offset);
+        auto FG2 = new Conglomerate();
         FG2->add(FG2_1);
         FG2->add(FG2_2);
 
@@ -525,6 +532,34 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
                         }
                     }
                 }
+            }
+        }
+    }
+    else if (setupDomain == 4) {
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+        // creates Cuboids (FG1 to FG2, lvl 1 to lvl 2) depending on
+        // maxLevel and rotationOfCity; also adds FineGrids(FGs) to gridbuilder
+
+        // GridList(CG = coarse grid, fg = fine grid)
+        // CG  -> dx = 4 cm;      lvl 0
+        // FG1 -> dx = 2 cm;      lvl 1
+        // FG2 -> dx = 1 cm;      lvl 2
+        //
+        // FineGrid Level 1 ->dx = 2 cm; lvl 1
+        auto FG1 = new Cuboid(-20, -20, -5 + z_offset, 800, 200, 75 + z_offset);
+
+        // FineGrid Level 2 -> dx = 1 cm; lvl 2
+        auto FG2_1 = new Cuboid(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
+        auto FG2_2 = new Cuboid(500, -20, 5 + z_offset, 680, 210, 50 + z_offset);
+        auto FG2 = new Conglomerate();
+        FG2->add(FG2_1);
+        FG2->add(FG2_2);
+
+        // Adding FineGrids 1 to 2 depending on maxLevel
+        if (maxLevel >= 1) {
+            gridBuilder->addGrid(FG1, 1);
+            if (maxLevel >= 2) {
+                gridBuilder->addGrid(FG2, 2);
             }
         }
     }

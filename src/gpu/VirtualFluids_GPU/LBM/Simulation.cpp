@@ -368,8 +368,8 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    output << "used Device Memory: " << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n";
    //////////////////////////////////////////////////////////////////////////
 
-   InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
-   InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
+   //InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
+   //InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
 }
 
 void Simulation::bulk()

@@ -381,7 +381,7 @@ private:
     CudaMemoryManager(const CudaMemoryManager&);
 
     std::shared_ptr<Parameter> parameter;
-	double memsizeGPU;
+	double memsizeGPU = 0.;
 
 };
 #endif
