@@ -129,10 +129,6 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
 
         real coords[3] = {x,y,z};
 
-<<<<<<< HEAD
-        uint neighborIndex = grid->transCoordToIndex( x, y, z );
-                
-=======
         real neighborX = x + grid->getDirection()[dir * DIMENSION + 0] * grid->getDelta();
         real neighborY = y + grid->getDirection()[dir * DIMENSION + 1] * grid->getDelta();
         real neighborZ = z + grid->getDirection()[dir * DIMENSION + 2] * grid->getDelta();
@@ -157,7 +153,6 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         }
 
         uint neighborIndex = grid->transCoordToIndex( neighborX, neighborY, neighborZ );
->>>>>>> 0e7d4d5b7412ee1b29c2c26a60ccbf7a9166da7d
         if( grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
             grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_OUT_OF_GRID ||
             grid->getFieldEntry(neighborIndex) == vf::gpu::STOPPER_SOLID )
