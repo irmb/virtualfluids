@@ -120,7 +120,7 @@ bool Field::isStopperSolid(uint index) const
 
 bool Field::isStopper(uint index) const
 {
-    return isStopperOutOfGrid(index) || isStopperCoarseUnderFine(index) || isStopperSolid(index) || is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || is(index, STOPPER_OUT_OF_GRID_PERIODIC);
+    return isStopperOutOfGrid(index) || isStopperCoarseUnderFine(index) || isStopperSolid(index) || is(index, STOPPER_OUT_OF_GRID_BOUNDARY);
 }
 
 bool Field::isQ(uint index) const
@@ -159,11 +159,6 @@ void Field::setFieldEntryToStopperOutOfGrid(uint index)
 void Field::setFieldEntryToStopperOutOfGridBoundary(uint index)
 {
     this->field[index] = STOPPER_OUT_OF_GRID_BOUNDARY;
-}
-
-void Field::setFieldEntryToStopperOutOfGridPeriodic(uint index)
-{
-    this->field[index] = STOPPER_OUT_OF_GRID_PERIODIC;
 }
 
 void Field::setFieldEntryToStopperCoarseUnderFine(uint index)

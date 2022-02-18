@@ -62,7 +62,6 @@ static constexpr char STOPPER_OUT_OF_GRID          = 30;
 static constexpr char STOPPER_COARSE_UNDER_FINE    = 31;
 static constexpr char STOPPER_SOLID                = 32;
 static constexpr char STOPPER_OUT_OF_GRID_BOUNDARY = 33;
-static constexpr char STOPPER_OUT_OF_GRID_PERIODIC = 34;
 
 static constexpr char INVALID_OUT_OF_GRID       = 40;
 static constexpr char INVALID_COARSE_UNDER_FINE = 41;

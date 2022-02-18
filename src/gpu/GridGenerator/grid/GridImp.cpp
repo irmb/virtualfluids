@@ -186,10 +186,6 @@ void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
 #pragma omp parallel for
     for (int index = 0; index < (int)this->size; index++)
         this->findEndOfGridStopperNode(index);
-
-#pragma omp parallel for
-    for (int index = 0; index < (int)this->size; index++)
-        this->findEndOfGridStopperPeriodicNode(index);
     
     *logging::out << logging::Logger::INFO_INTERMEDIATE
         << "Grid created: " << "from (" << this->startX << ", " << this->startY << ", " << this->startZ << ") to (" << this->endX << ", " << this->endY << ", " << this->endZ << ")\n"
@@ -448,43 +444,6 @@ void GridImp::findEndOfGridStopperNode(uint index)
 	if (isValidEndOfGridBoundaryStopper(index))
 		this->field.setFieldEntryToStopperOutOfGridBoundary(index);
 }
-
-void GridImp::findEndOfGridStopperPeriodicNode(uint index)
-{   
-    if(   this->getPeriodicityX()  && 
-        ( this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || this->field.is(index, STOPPER_OUT_OF_GRID) ) &&
-        ( hasNeighborOfTypeInDir(index, FLUID, Direction( 1,0,0)) || hasNeighborOfTypeInDir(index, FLUID, Direction(-1,0,0) ) ) ) 
-            this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
-
-    if(   this->getPeriodicityY()  && 
-        ( this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || this->field.is(index, STOPPER_OUT_OF_GRID) ) &&
-        ( hasNeighborOfTypeInDir(index, FLUID, Direction( 0,1,0)) || hasNeighborOfTypeInDir(index, FLUID, Direction(0,-1,0) ) ) ) 
-            this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
-
-    if(   this->getPeriodicityZ()  && 
-        ( this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || this->field.is(index, STOPPER_OUT_OF_GRID) ) &&
-        ( hasNeighborOfTypeInDir(index, FLUID, Direction( 0,0,1)) || hasNeighborOfTypeInDir(index, FLUID, Direction(0,0,-1) ) ) ) 
-            this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
-
-    if( ( this->getPeriodicityX()  && this->getPeriodicityY() ) &&
-        ( this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || this->field.is(index, STOPPER_OUT_OF_GRID) ) &&
-        ( hasNeighborOfTypeInDir(index, FLUID, Direction( 1,1,0)) || hasNeighborOfTypeInDir(index, FLUID, Direction(-1,-1,0)) ||
-          hasNeighborOfTypeInDir(index, FLUID, Direction(-1,1,0)) || hasNeighborOfTypeInDir(index, FLUID, Direction( 1,-1,0)) ) ) 
-            this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
-
-    if( ( this->getPeriodicityX()  && this->getPeriodicityZ() ) &&
-        ( this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || this->field.is(index, STOPPER_OUT_OF_GRID) ) &&
-        ( hasNeighborOfTypeInDir(index, FLUID, Direction( 1,0,1)) || hasNeighborOfTypeInDir(index, FLUID, Direction(-1,0,-1)) ||
-          hasNeighborOfTypeInDir(index, FLUID, Direction(-1,0,1)) || hasNeighborOfTypeInDir(index, FLUID, Direction( 1,0,-1)) ) ) 
-            this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
-
-    if( ( this->getPeriodicityY()  && this->getPeriodicityZ() ) &&
-        ( this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY) || this->field.is(index, STOPPER_OUT_OF_GRID) ) &&
-        ( hasNeighborOfTypeInDir(index, FLUID, Direction( 0,1,1)) || hasNeighborOfTypeInDir(index, FLUID, Direction( 0,-1,-1)) ||
-          hasNeighborOfTypeInDir(index, FLUID, Direction( 0,-1,1)) || hasNeighborOfTypeInDir(index, FLUID, Direction( 0,1,-1)) ) ) 
-            this->field.setFieldEntryToStopperOutOfGridPeriodic(index);
-}
-
 
 void GridImp::findSolidStopperNode(uint index)
 {
@@ -1024,7 +983,7 @@ real GridImp::getNeighborCoord(bool periodicity, real startCoord, real coords[3]
 
         //////////////////////////////////////////////////////////////////////////
 
-        if( field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) || field.is(neighborIndex, STOPPER_OUT_OF_GRID_PERIODIC) )
+        if( field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) )
             return getFirstFluidNode(coords, direction, startCoord);
         else
             return coords[direction] + delta;
