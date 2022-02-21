@@ -28,14 +28,21 @@ struct ProbeStruct{
     uint *arrayOffsetsH, *arrayOffsetsD;
 };
 
-__global__ void interpQuantities(   uint* pointIndices,
+__global__ void calcQuantities(   uint* pointIndices,
+                                    uint nPoints, uint n,
+                                    real* vx, real* vy, real* vz, real* rho,            
+                                    uint* neighborX, uint* neighborY, uint* neighborZ,
+                                    bool* quantities,
+                                    uint* quantityArrayOffsets, real* quantityArray
+                                );
+
+__global__ void interpAndCalcQuantities(   uint* pointIndices,
                                     uint nPoints, uint n,
                                     real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray,
-                                    bool interpolate
+                                    uint* quantityArrayOffsets, real* quantityArray
                                 );
 
 

@@ -98,14 +98,12 @@ __device__ void calculateQuantities(uint n, real* quantityArray, bool* quantitie
     }
 }
 
-__global__ void interpQuantities(   uint* pointIndices,
+__global__ void calcQuantities(   uint* pointIndices,
                                     uint nPoints, uint n,
-                                    real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray,
-                                    bool interpolate
+                                    uint* quantityArrayOffsets, real* quantityArray
                                 )
 {
     const uint x = threadIdx.x; 
@@ -124,28 +122,51 @@ __global__ void interpQuantities(   uint* pointIndices,
     uint k = pointIndices[node];
     real u_interpX, u_interpY, u_interpZ, rho_interp;
 
-    if(interpolate)
-    {
-        uint ke, kn, kt, kne, kte, ktn, ktne;
-        getNeighborIndicesOfBSW(  k, ke, kn, kt, kne, kte, ktn, ktne, neighborX, neighborY, neighborZ);
+    u_interpX = vx[k];
+    u_interpY = vy[k];
+    u_interpZ = vz[k];
+    rho_interp = rho[k];
 
-        // Trilinear interpolation of macroscopic quantities to probe point
-        real dW, dE, dN, dS, dT, dB;
-        getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX[node], distY[node], distZ[node]);
+    calculateQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
 
+}
 
-        u_interpX  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
-        u_interpY  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
-        u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
-        rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
-    }
-    else
-    {
-        u_interpX = vx[k];
-        u_interpY = vy[k];
-        u_interpZ = vz[k];
-        rho_interp = rho[k];
-    }
+__global__ void interpAndCalcQuantities(   uint* pointIndices,
+                                    uint nPoints, uint n,
+                                    real* distX, real* distY, real* distZ,
+                                    real* vx, real* vy, real* vz, real* rho,            
+                                    uint* neighborX, uint* neighborY, uint* neighborZ,
+                                    bool* quantities,
+                                    uint* quantityArrayOffsets, real* quantityArray
+                                )
+{
+    const uint x = threadIdx.x; 
+    const uint y = blockIdx.x;
+    const uint z = blockIdx.y;
+
+    const uint nx = blockDim.x;
+    const uint ny = gridDim.x;
+
+    const uint node = nx*(ny*z + y) + x;
+
+    if(node>=nPoints) return;
+
+    // Get indices of neighbor nodes. 
+    // node referring to BSW cell as seen from probe point
+    uint k = pointIndices[node];
+    real u_interpX, u_interpY, u_interpZ, rho_interp;
+
+    uint ke, kn, kt, kne, kte, ktn, ktne;
+    getNeighborIndicesOfBSW(  k, ke, kn, kt, kne, kte, ktn, ktne, neighborX, neighborY, neighborZ);
+
+    // Trilinear interpolation of macroscopic quantities to probe point
+    real dW, dE, dN, dS, dT, dB;
+    getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX[node], distY[node], distZ[node]);
+
+    u_interpX  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
+    u_interpY  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
+    u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
+    rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
 
     calculateQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
 
