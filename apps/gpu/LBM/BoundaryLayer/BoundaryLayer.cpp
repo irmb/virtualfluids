@@ -47,6 +47,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
@@ -196,10 +197,9 @@ void multipleLevel(const std::string& configPath)
 
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
-    SPtr<PlaneProbe> planeProbe = SPtr<PlaneProbe>( new PlaneProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, 1, tStartOutProbe/dt, tOutProbe/dt) );
-    planeProbe->setProbePlane(L_x/2, 0, 0, dx, L_y, L_z);
-    planeProbe->addPostProcessingVariable(PostProcessingVariable::Means);
-    para->addProbe( planeProbe );
+    SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, 1, tStartOutProbe/dt, tOutProbe/dt, 'z') );
+    planarAverageProbe->addPostProcessingVariable(PostProcessingVariable::Means);
+    para->addProbe( planarAverageProbe );
 
 
     Simulation sim(communicator);

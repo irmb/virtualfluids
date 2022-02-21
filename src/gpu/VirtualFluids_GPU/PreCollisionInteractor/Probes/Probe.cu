@@ -184,7 +184,7 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
 {
     probeParams[level] = SPtr<ProbeStruct>(new ProbeStruct);
     probeParams[level]->vals = 1;
-    probeParams[level]->nPoints = uint(probeIndices.size());
+    probeParams[level]->nPoints = uint(pointCoordsX.size()); // Note, cannot be probeIndices.size() indices because there are more indices than points in PlanarAverageProbe
 
     probeParams[level]->pointCoordsX = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
     probeParams[level]->pointCoordsY = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
@@ -194,16 +194,20 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
     std::copy(pointCoordsY.begin(), pointCoordsY.end(), probeParams[level]->pointCoordsY);
     std::copy(pointCoordsZ.begin(), pointCoordsZ.end(), probeParams[level]->pointCoordsZ);
 
-    // Might have to catch nPoints=0 ?!?!
-    cudaManager->cudaAllocProbeDistances(this, level);
+    // Note, dist only needed for kernels that do interpolate
+    if( distX.size()>0 && distY.size()>0 && distZ.size()>0 )
+    {
+        cudaManager->cudaAllocProbeDistances(this, level);
+
+        std::copy(distX.begin(), distX.end(), probeParams[level]->distXH);
+        std::copy(distY.begin(), distY.end(), probeParams[level]->distYH);
+        std::copy(distZ.begin(), distZ.end(), probeParams[level]->distZH);
+        std::copy(probeIndices.begin(), probeIndices.end(), probeParams[level]->pointIndicesH);
+
+        cudaManager->cudaCopyProbeDistancesHtoD(this, level);
+    }
+
     cudaManager->cudaAllocProbeIndices(this, level);
-
-    std::copy(distX.begin(), distX.end(), probeParams[level]->distXH);
-    std::copy(distY.begin(), distY.end(), probeParams[level]->distYH);
-    std::copy(distZ.begin(), distZ.end(), probeParams[level]->distZH);
-    std::copy(probeIndices.begin(), probeIndices.end(), probeParams[level]->pointIndicesH);
-
-    cudaManager->cudaCopyProbeDistancesHtoD(this, level);
     cudaManager->cudaCopyProbeIndicesHtoD(this, level);
 
     uint arrOffset = 0;
