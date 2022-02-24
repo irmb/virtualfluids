@@ -36,13 +36,60 @@ std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable v
         varNames.push_back("vz_var");
         varNames.push_back("rho_var");
         break;
+    case PostProcessingVariable::SpatialMeans:
+        varNames.push_back("<vx>");
+        varNames.push_back("<vy>");
+        varNames.push_back("<vz>");
+        break;
+    case PostProcessingVariable::SpatioTemporalMeans:
+        varNames.push_back("<vx>_mean");
+        varNames.push_back("<vy>_mean");
+        varNames.push_back("<vz>_mean");
+        break;
+    case PostProcessingVariable::SpatialCovariances:
+        varNames.push_back("<vxvx>");
+        varNames.push_back("<vyvy>");
+        varNames.push_back("<vzvz>");
+        varNames.push_back("<vxvy>");
+        varNames.push_back("<vxvz>");
+        varNames.push_back("<vyvz>");
+        break;
+    case PostProcessingVariable::SpatioTemporalCovariances:
+        varNames.push_back("<vxvx>_mean");
+        varNames.push_back("<vyvy>_mean");
+        varNames.push_back("<vzvz>_mean");
+        varNames.push_back("<vxvy>_mean");
+        varNames.push_back("<vxvz>_mean");
+        varNames.push_back("<vyvz>_mean");
+        break;
+    case PostProcessingVariable::SpatialSkewness:
+        varNames.push_back("<Sx>");
+        varNames.push_back("<Sy>");
+        varNames.push_back("<Sz>");
+        break;
+    case PostProcessingVariable::SpatioTemporalSkewness:
+        varNames.push_back("<Sx>_mean");
+        varNames.push_back("<Sy>_mean");
+        varNames.push_back("<Sz>_mean");
+        break;
+    case PostProcessingVariable::SpatialFlatness:
+        varNames.push_back("<Fx>");
+        varNames.push_back("<Fy>");
+        varNames.push_back("<Fz>");
+        break;
+    case PostProcessingVariable::SpatioTemporalFlatness:
+        varNames.push_back("<Fx>_mean");
+        varNames.push_back("<Fy>_mean");
+        varNames.push_back("<Fz>_mean");
+        break;
+
     default:
         break;
     }
     return varNames;
 }
 
-__device__ void calculateQuantities(uint n, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
+__device__ void calculatePointwiseQuantities(uint n, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
 {
     //"https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm"
     // also has extensions for higher order and covariances
@@ -98,7 +145,7 @@ __device__ void calculateQuantities(uint n, real* quantityArray, bool* quantitie
     }
 }
 
-__global__ void calcQuantities(   uint* pointIndices,
+__global__ void calcQuantitiesKernel(   uint* pointIndices,
                                     uint nPoints, uint n,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
@@ -127,11 +174,11 @@ __global__ void calcQuantities(   uint* pointIndices,
     u_interpZ = vz[k];
     rho_interp = rho[k];
 
-    calculateQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
+    calculatePointwiseQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
 
 }
 
-__global__ void interpAndCalcQuantities(   uint* pointIndices,
+__global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
                                     uint nPoints, uint n,
                                     real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
@@ -168,7 +215,7 @@ __global__ void interpAndCalcQuantities(   uint* pointIndices,
     u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
     rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
 
-    calculateQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
+    calculatePointwiseQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
 
 }
 
@@ -205,7 +252,8 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
 {
     probeParams[level] = SPtr<ProbeStruct>(new ProbeStruct);
     probeParams[level]->vals = 1;
-    probeParams[level]->nPoints = uint(pointCoordsX.size()); // Note, cannot be probeIndices.size() indices because there are more indices than points in PlanarAverageProbe
+    probeParams[level]->nPoints  = uint(pointCoordsX.size()); // Note, need to have both nPoints and nIndices because they differ in PlanarAverage
+    probeParams[level]->nIndices = uint(probeIndices.size());
 
     probeParams[level]->pointCoordsX = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
     probeParams[level]->pointCoordsY = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
@@ -218,31 +266,31 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
     // Note, dist only needed for kernels that do interpolate
     if( distX.size()>0 && distY.size()>0 && distZ.size()>0 )
     {
+        probeParams[level]->hasDistances=true;
         cudaManager->cudaAllocProbeDistances(this, level);
-
         std::copy(distX.begin(), distX.end(), probeParams[level]->distXH);
         std::copy(distY.begin(), distY.end(), probeParams[level]->distYH);
         std::copy(distZ.begin(), distZ.end(), probeParams[level]->distZH);
-        std::copy(probeIndices.begin(), probeIndices.end(), probeParams[level]->pointIndicesH);
-
         cudaManager->cudaCopyProbeDistancesHtoD(this, level);
-    }
-
+    }  
+    
     cudaManager->cudaAllocProbeIndices(this, level);
+    std::copy(probeIndices.begin(), probeIndices.end(), probeParams[level]->pointIndicesH);
     cudaManager->cudaCopyProbeIndicesHtoD(this, level);
 
     uint arrOffset = 0;
 
     cudaManager->cudaAllocProbeQuantitiesAndOffsets(this, level);
 
-    for( int var=0; var<int(PostProcessingVariable::LAST); var++){
-    if(this->quantities[var])
+    for( int var=0; var<int(PostProcessingVariable::LAST); var++)
     {
-
-        probeParams[level]->quantitiesH[var] = true;
-        probeParams[level]->arrayOffsetsH[var] = arrOffset;
-        arrOffset += uint(getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var)).size());
-    }}
+        if(this->quantities[var])
+        {
+            probeParams[level]->quantitiesH[var] = true;
+            probeParams[level]->arrayOffsetsH[var] = arrOffset;
+            arrOffset += uint(getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var)).size());
+        }
+    }
     
     cudaManager->cudaCopyProbeQuantitiesAndOffsetsHtoD(this, level);
 
@@ -283,8 +331,9 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level,
 void Probe::free(Parameter* para, CudaMemoryManager* cudaManager)
 {
     for(int level=0; level<=para->getMaxLevel(); level++)
-    {
-        cudaManager->cudaFreeProbeDistances(this, level);
+    {   
+        if(this->probeParams[level]->hasDistances)
+            cudaManager->cudaFreeProbeDistances(this, level);
         cudaManager->cudaFreeProbeIndices(this, level);
         cudaManager->cudaFreeProbeQuantityArray(this, level);
         cudaManager->cudaFreeProbeQuantitiesAndOffsets(this, level);
@@ -293,6 +342,8 @@ void Probe::free(Parameter* para, CudaMemoryManager* cudaManager)
 
 void Probe::addPostProcessingVariable(PostProcessingVariable variable)
 {
+    assert(this->isAvailablePostprocessingVariable(variable));
+
     this->quantities[int(variable)] = true;
     switch(variable)
     {

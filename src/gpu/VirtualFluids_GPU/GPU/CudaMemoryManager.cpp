@@ -2932,18 +2932,18 @@ void CudaMemoryManager::cudaFreeProbeDistances(Probe* probe, int level)
 
 void CudaMemoryManager::cudaAllocProbeIndices(Probe* probe, int level)
 {
-    size_t tmp = sizeof(int)*probe->getProbeStruct(level)->nPoints;
+    size_t tmp = sizeof(int)*probe->getProbeStruct(level)->nIndices;
     checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->pointIndicesH, tmp) );
     checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->pointIndicesD, tmp) );
     setMemsizeGPU(1.f*tmp, false);
 }
 void CudaMemoryManager::cudaCopyProbeIndicesHtoD(Probe* probe, int level)
 {
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->pointIndicesD, probe->getProbeStruct(level)->pointIndicesH, sizeof(int)*probe->getProbeStruct(level)->nPoints, cudaMemcpyHostToDevice) );
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->pointIndicesD, probe->getProbeStruct(level)->pointIndicesH, sizeof(int)*probe->getProbeStruct(level)->nIndices, cudaMemcpyHostToDevice) );
 }
 void CudaMemoryManager::cudaCopyProbeIndicesDtoH(Probe* probe, int level)
 {
-    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->pointIndicesH, probe->getProbeStruct(level)->pointIndicesD, sizeof(int)*probe->getProbeStruct(level)->nPoints, cudaMemcpyDeviceToHost) );
+    checkCudaErrors( cudaMemcpy(probe->getProbeStruct(level)->pointIndicesH, probe->getProbeStruct(level)->pointIndicesD, sizeof(int)*probe->getProbeStruct(level)->nIndices, cudaMemcpyDeviceToHost) );
 }
 void CudaMemoryManager::cudaFreeProbeIndices(Probe* probe, int level)
 {

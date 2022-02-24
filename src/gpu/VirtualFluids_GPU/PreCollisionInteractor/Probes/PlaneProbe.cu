@@ -10,6 +10,50 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 
+
+bool PlaneProbe::isAvailablePostProcessingVariable(PostProcessingVariable _variable)
+{
+    bool isAvailable = false;
+
+    switch (_variable)
+    {
+    case PostProcessingVariable::Instantaneous:
+        isAvailable = true;
+        break;
+    case PostProcessingVariable::Means:
+        isAvailable = true;
+        break;
+    case PostProcessingVariable::Variances:
+        isAvailable = true;
+        break;
+    case PostProcessingVariable::SpatialMeans:
+        isAvailable = false;
+        break;
+    case PostProcessingVariable::SpatioTemporalMeans:
+        isAvailable = false;
+        break;
+    case PostProcessingVariable::SpatialCovariances:
+        isAvailable = false;
+        break;
+    case PostProcessingVariable::SpatioTemporalCovariances:
+        isAvailable = false;
+        break;
+    case PostProcessingVariable::SpatialSkewness:
+        isAvailable = false;
+        break;
+    case PostProcessingVariable::SpatioTemporalSkewness:
+        isAvailable = false;
+        break;
+    case PostProcessingVariable::SpatialFlatness:
+        isAvailable = false;
+        break;
+    case PostProcessingVariable::SpatioTemporalFlatness:
+        isAvailable = false;
+        break;
+    }
+    return isAvailable;
+}
+
 void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
                             std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                             std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
@@ -42,7 +86,7 @@ void PlaneProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
 void PlaneProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
-    calcQuantities<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints, probeStruct->vals,
+    calcQuantitiesKernel<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints, probeStruct->vals,
     para->getParD(level)->vx_SP, para->getParD(level)->vy_SP, para->getParD(level)->vz_SP, para->getParD(level)->rho_SP, 
     para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP, 
     probeStruct->quantitiesD, probeStruct->arrayOffsetsD, probeStruct->quantitiesArrayD);

@@ -82,7 +82,7 @@ const real velocity  = u_star/kappa*log(L_z/z0); //max mean velocity at the top 
 
 const real mach = 0.1;
 
-const uint nodes_per_H = 16;
+const uint nodes_per_H = 8;
 
 std::string path(".");
 
@@ -92,6 +92,7 @@ std::string simulationName("BoundayLayer");
 const float tOut = 4000;
 const float tEnd = 40000; // total time of simulation
 const float tStartAveraging =  0;
+const float tAveraging      =  4000;
 const float tStartOutProbe  =  0;
 const float tOutProbe       = 1000; 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,7 +179,7 @@ void multipleLevel(const std::string& configPath)
     para->setTEnd( uint(tEnd/dt) );
 
     // para->setTOut( 1 );
-    // para->setTEnd( 2 );
+    // para->setTEnd( 4 );
 
     // para->setIsBodyForce( true );
 
@@ -197,7 +198,7 @@ void multipleLevel(const std::string& configPath)
 
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
-    SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, 1, tStartOutProbe/dt, tOutProbe/dt, 'z') );
+    SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
     planarAverageProbe->addPostProcessingVariable(PostProcessingVariable::Means);
     para->addProbe( planarAverageProbe );
 
