@@ -71,13 +71,15 @@ public:
         uint _tStartAvg,
         uint _tAvg,
         uint _tStartOut,
-        uint _tOut
+        uint _tOut,
+        bool _hasDeviceQuantityArray
     ):  probeName(_probeName),
         outputPath(_outputPath),
         tStartAvg(_tStartAvg),
         tAvg(_tAvg),
         tStartOut(_tStartOut),
         tOut(_tOut),
+        hasDeviceQuantityArray(_hasDeviceQuantityArray),
         PreCollisionInteractor()
     {
         assert("Output starts before averaging!" && tStartOut>=tStartAvg);
@@ -90,6 +92,9 @@ public:
     SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }
 
     void addPostProcessingVariable(PostProcessingVariable _variable);
+    void addAllAvailablePostProcessingVariables();
+    
+    bool getHasDeviceQuantityArray();
 
 private:
     virtual bool isAvailablePostProcessingVariable(PostProcessingVariable _variable) = 0;
@@ -115,6 +120,7 @@ private:
 
     std::vector<SPtr<ProbeStruct>> probeParams;
     bool quantities[int(PostProcessingVariable::LAST)] = {};
+    bool hasDeviceQuantityArray; 
     std::vector<std::string> fileNamesForCollectionFile;
     std::vector<std::string> varNames;
 

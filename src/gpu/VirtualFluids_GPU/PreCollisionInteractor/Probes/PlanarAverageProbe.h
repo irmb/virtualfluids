@@ -26,10 +26,12 @@ public:
              _tStartAvg, 
              _tAvg,
              _tStartOut, 
-             _tOut),
+             _tOut,
+             false),
         planeNormal(_planeNormal)
     {
         assert(_planeNormal == 'x' || _planeNormal == 'y' || _planeNormal == 'z');
+        // this->hasDeviceQuantityArray = false;
     }
 
 

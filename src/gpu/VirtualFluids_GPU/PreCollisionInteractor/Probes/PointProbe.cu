@@ -12,43 +12,26 @@
 
 bool PointProbe::isAvailablePostProcessingVariable(PostProcessingVariable _variable)
 {
-    bool isAvailable = false;
-
+    bool isAvailable;
     switch (_variable)
     {
-    case PostProcessingVariable::Instantaneous:
-        isAvailable = true;
-        break;
-    case PostProcessingVariable::Means:
-        isAvailable = true;
-        break;
-    case PostProcessingVariable::Variances:
-        isAvailable = true;
-        break;
-    case PostProcessingVariable::SpatialMeans:
-        isAvailable = false;
-        break;
-    case PostProcessingVariable::SpatioTemporalMeans:
-        isAvailable = false;
-        break;
-    case PostProcessingVariable::SpatialCovariances:
-        isAvailable = false;
-        break;
-    case PostProcessingVariable::SpatioTemporalCovariances:
-        isAvailable = false;
-        break;
-    case PostProcessingVariable::SpatialSkewness:
-        isAvailable = false;
-        break;
-    case PostProcessingVariable::SpatioTemporalSkewness:
-        isAvailable = false;
-        break;
-    case PostProcessingVariable::SpatialFlatness:
-        isAvailable = false;
-        break;
-    case PostProcessingVariable::SpatioTemporalFlatness:
-        isAvailable = false;
-        break;
+        case PostProcessingVariable::Instantaneous:
+        case PostProcessingVariable::Means:
+        case PostProcessingVariable::Variances:
+            isAvailable = true;
+            break;
+        case PostProcessingVariable::SpatialMeans:
+        case PostProcessingVariable::SpatioTemporalMeans:
+        case PostProcessingVariable::SpatialCovariances:
+        case PostProcessingVariable::SpatioTemporalCovariances:
+        case PostProcessingVariable::SpatialSkewness:
+        case PostProcessingVariable::SpatioTemporalSkewness:
+        case PostProcessingVariable::SpatialFlatness:
+        case PostProcessingVariable::SpatioTemporalFlatness:
+            isAvailable = false;
+            break;
+        default:
+            isAvailable = false;
     }
     return isAvailable;
 }

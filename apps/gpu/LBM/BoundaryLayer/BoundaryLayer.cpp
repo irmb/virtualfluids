@@ -91,10 +91,10 @@ std::string simulationName("BoundayLayer");
 // all in s
 const float tOut = 4000;
 const float tEnd = 40000; // total time of simulation
-const float tStartAveraging =  0;
+const float tStartAveraging =  4000;
 const float tAveraging      =  4000;
-const float tStartOutProbe  =  0;
-const float tOutProbe       = 1000; 
+const float tStartOutProbe  =  4000;
+const float tOutProbe       = 4000; 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,9 +199,9 @@ void multipleLevel(const std::string& configPath)
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
     SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
-    planarAverageProbe->addPostProcessingVariable(PostProcessingVariable::Means);
+    // planarAverageProbe->addPostProcessingVariable(PostProcessingVariable::SpatialMeans);
+    planarAverageProbe->addAllAvailablePostProcessingVariables();
     para->addProbe( planarAverageProbe );
-
 
     Simulation sim(communicator);
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());

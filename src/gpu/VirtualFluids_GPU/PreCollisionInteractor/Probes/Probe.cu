@@ -37,50 +37,50 @@ std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable v
         varNames.push_back("rho_var");
         break;
     case PostProcessingVariable::SpatialMeans:
-        varNames.push_back("<vx>");
-        varNames.push_back("<vy>");
-        varNames.push_back("<vz>");
+        varNames.push_back("vx_spatMean");
+        varNames.push_back("vy_spatMean");
+        varNames.push_back("vz_spatMean");
         break;
     case PostProcessingVariable::SpatioTemporalMeans:
-        varNames.push_back("<vx>_mean");
-        varNames.push_back("<vy>_mean");
-        varNames.push_back("<vz>_mean");
+        varNames.push_back("vx_spatTmpMean");
+        varNames.push_back("vy_spatTmpMean");
+        varNames.push_back("vz_spatTmpMean");
         break;
     case PostProcessingVariable::SpatialCovariances:
-        varNames.push_back("<vxvx>");
-        varNames.push_back("<vyvy>");
-        varNames.push_back("<vzvz>");
-        varNames.push_back("<vxvy>");
-        varNames.push_back("<vxvz>");
-        varNames.push_back("<vyvz>");
+        varNames.push_back("vxvx_spatMean");
+        varNames.push_back("vyvy_spatMean");
+        varNames.push_back("vzvz_spatMean");
+        varNames.push_back("vxvy_spatMean");
+        varNames.push_back("vxvz_spatMean");
+        varNames.push_back("vyvz_spatMean");
         break;
     case PostProcessingVariable::SpatioTemporalCovariances:
-        varNames.push_back("<vxvx>_mean");
-        varNames.push_back("<vyvy>_mean");
-        varNames.push_back("<vzvz>_mean");
-        varNames.push_back("<vxvy>_mean");
-        varNames.push_back("<vxvz>_mean");
-        varNames.push_back("<vyvz>_mean");
+        varNames.push_back("vxvx_spatTmpMean");
+        varNames.push_back("vyvy_spatTmpMean");
+        varNames.push_back("vzvz_spatTmpMean");
+        varNames.push_back("vxvy_spatTmpMean");
+        varNames.push_back("vxvz_spatTmpMean");
+        varNames.push_back("vyvz_spatTmpMean");
         break;
     case PostProcessingVariable::SpatialSkewness:
-        varNames.push_back("<Sx>");
-        varNames.push_back("<Sy>");
-        varNames.push_back("<Sz>");
+        varNames.push_back("Sx_spatMean");
+        varNames.push_back("Sy_spatMean");
+        varNames.push_back("Sz_spatMean");
         break;
     case PostProcessingVariable::SpatioTemporalSkewness:
-        varNames.push_back("<Sx>_mean");
-        varNames.push_back("<Sy>_mean");
-        varNames.push_back("<Sz>_mean");
+        varNames.push_back("Sx_spatTmpMean");
+        varNames.push_back("Sy_spatTmpMean");
+        varNames.push_back("Sz_spatTmpMean");
         break;
     case PostProcessingVariable::SpatialFlatness:
-        varNames.push_back("<Fx>");
-        varNames.push_back("<Fy>");
-        varNames.push_back("<Fz>");
+        varNames.push_back("Fx_spatMean");
+        varNames.push_back("Fy_spatMean");
+        varNames.push_back("Fz_spatMean");
         break;
     case PostProcessingVariable::SpatioTemporalFlatness:
-        varNames.push_back("<Fx>_mean");
-        varNames.push_back("<Fy>_mean");
-        varNames.push_back("<Fz>_mean");
+        varNames.push_back("Fx_spatTmpMean");
+        varNames.push_back("Fy_spatTmpMean");
+        varNames.push_back("Fz_spatTmpMean");
         break;
 
     default:
@@ -219,6 +219,8 @@ __global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
 
 }
 
+bool Probe::getHasDeviceQuantityArray(){ return this->hasDeviceQuantityArray; }
+
 void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
 {
 
@@ -305,7 +307,8 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
             probeParams[level]->quantitiesArrayH[arr*probeParams[level]->nPoints+point] = 0.0f;
         }
     }
-    cudaManager->cudaCopyProbeQuantityArrayHtoD(this, level);
+    if(this->hasDeviceQuantityArray)
+        cudaManager->cudaCopyProbeQuantityArrayHtoD(this, level);
 }
 
 void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
@@ -320,7 +323,8 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level,
 
         if(max(int(t) - int(this->tStartOut), -1) % this->tOut == 0)
         {
-            cudaManager->cudaCopyProbeQuantityArrayDtoH(this, level);
+            if(this->hasDeviceQuantityArray)
+                cudaManager->cudaCopyProbeQuantityArrayDtoH(this, level);
 
             this->write(para, level, t);
         }
@@ -342,7 +346,7 @@ void Probe::free(Parameter* para, CudaMemoryManager* cudaManager)
 
 void Probe::addPostProcessingVariable(PostProcessingVariable variable)
 {
-    assert(this->isAvailablePostprocessingVariable(variable));
+    assert(this->isAvailablePostProcessingVariable(variable));
 
     this->quantities[int(variable)] = true;
     switch(variable)
@@ -350,6 +354,15 @@ void Probe::addPostProcessingVariable(PostProcessingVariable variable)
         case PostProcessingVariable::Variances: 
             this->addPostProcessingVariable(PostProcessingVariable::Means); break;
         default: break;
+    }
+}
+
+void Probe::addAllAvailablePostProcessingVariables()
+{
+    for( int var=0; var < int(PostProcessingVariable::LAST); var++)
+    {
+        if(this->isAvailablePostProcessingVariable(static_cast<PostProcessingVariable>(var))) 
+            this->addPostProcessingVariable(static_cast<PostProcessingVariable>(var));
     }
 }
 
@@ -456,14 +469,22 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
             switch(quantity)
             {
             case PostProcessingVariable::Instantaneous:
-                coeff = para->getVelocityRatio();
-            break;
             case PostProcessingVariable::Means:
+            case PostProcessingVariable::SpatialMeans:
+            case PostProcessingVariable::SpatioTemporalMeans:
                 coeff = para->getVelocityRatio();
-            break;
+                break;
             case PostProcessingVariable::Variances:
+            case PostProcessingVariable::SpatialCovariances:
+            case PostProcessingVariable::SpatioTemporalCovariances:
                 coeff = pow(para->getVelocityRatio(),2);
-            break;
+                break;
+            case PostProcessingVariable::SpatialSkewness:
+            case PostProcessingVariable::SpatioTemporalSkewness:
+            case PostProcessingVariable::SpatialFlatness:
+            case PostProcessingVariable::SpatioTemporalFlatness:
+                coeff = 1.f;
+                break;
             default: break;
             }
 

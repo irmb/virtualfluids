@@ -2956,8 +2956,11 @@ void CudaMemoryManager::cudaAllocProbeQuantityArray(Probe* probe, int level)
     size_t tmp = sizeof(real)*probe->getProbeStruct(level)->nArrays*probe->getProbeStruct(level)->nPoints;
 
     checkCudaErrors( cudaMallocHost((void**) &probe->getProbeStruct(level)->quantitiesArrayH, tmp) );
-    checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->quantitiesArrayD, tmp) );
-    setMemsizeGPU(1.f*tmp, false);
+    if(probe->getHasDeviceQuantityArray())
+    {
+        checkCudaErrors( cudaMalloc    ((void**) &probe->getProbeStruct(level)->quantitiesArrayD, tmp) );
+        setMemsizeGPU(1.f*tmp, false);
+    }
 }
 
 void CudaMemoryManager::cudaCopyProbeQuantityArrayHtoD(Probe* probe, int level)
@@ -2971,7 +2974,8 @@ void CudaMemoryManager::cudaCopyProbeQuantityArrayDtoH(Probe* probe, int level)
 void CudaMemoryManager::cudaFreeProbeQuantityArray(Probe* probe, int level)
 {
     checkCudaErrors( cudaFreeHost(probe->getProbeStruct(level)->quantitiesArrayH) );
-    checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->quantitiesArrayD) );
+    if(probe->getHasDeviceQuantityArray())
+        checkCudaErrors( cudaFree    (probe->getProbeStruct(level)->quantitiesArrayD) );
 }
 
 void CudaMemoryManager::cudaAllocProbeQuantitiesAndOffsets(Probe* probe, int level)

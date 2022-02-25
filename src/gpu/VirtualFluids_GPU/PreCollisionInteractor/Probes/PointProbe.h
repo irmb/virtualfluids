@@ -18,7 +18,8 @@ public:
              _tStartAvg, 
              _tAvg,
              _tStartOut, 
-             _tOut)
+             _tOut,
+             true)
     {}
 
     void addProbePointsFromList(std::vector<real>& _pointCoordsX, std::vector<real>& _pointCoordsY, std::vector<real>& _pointCoordsZ);
