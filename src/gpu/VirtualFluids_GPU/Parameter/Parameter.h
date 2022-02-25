@@ -189,9 +189,9 @@ struct LBMSimulationParameter
     unsigned int mem_size_kFC_off;
 
     // BC's////////////////////
-    QforBoundaryConditions QWall, Qinflow, Qoutflow, QSlip;
-    unsigned int kQ = 0, kInflowQ = 0, kOutflowQ = 0, kSlipQ = 0;
-    unsigned int kQread, kInflowQread, kOutflowQread, kSlipQread;
+    QforBoundaryConditions QWall, Qinflow, Qoutflow, QSlip, QStress;
+    unsigned int kQ = 0, kInflowQ = 0, kOutflowQ = 0, kSlipQ = 0, kStressQ = 0;
+    unsigned int kQread, kInflowQread, kOutflowQread, kSlipQread, kStressQread;
 
     QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1;
     QforBoundaryConditions QPropeller;

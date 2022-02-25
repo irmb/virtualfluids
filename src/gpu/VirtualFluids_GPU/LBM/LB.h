@@ -187,6 +187,7 @@ typedef struct QforBC{
    int kQ=0;
    int kArray;
    real *Vx, *Vy, *Vz, *deltaVz, *RhoBC;
+   real *normalX, *normalY, *normalZ;
 }QforBoundaryConditions;
 
 //BCTemp

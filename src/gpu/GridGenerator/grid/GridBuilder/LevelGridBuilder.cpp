@@ -28,7 +28,7 @@
 //
 //! \file LevelGridBuilder.cpp
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schï¿½nherr
 //=======================================================================================
 #include "LevelGridBuilder.h"
 
@@ -84,26 +84,50 @@ void LevelGridBuilder::setSlipBoundaryCondition(SideType sideType, real nomalX, 
     slipBoundaryCondition->side->addIndices(grids, 0, slipBoundaryCondition);
 
     slipBoundaryCondition->fillSlipNormalLists();
-
     boundaryConditions[0]->slipBoundaryConditions.push_back(slipBoundaryCondition);
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Slip BC on level " << 0 << " with " << (int)slipBoundaryCondition->indices.size() << "\n";
 }
 
-void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz)
+void LevelGridBuilder::setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ, uint samplingOffset)
 {
-    SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
+    SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset);
 
     auto side = SideFactory::make(sideType);
 
-    velocityBoundaryCondition->side = side;
-    velocityBoundaryCondition->side->addIndices(grids, 0, velocityBoundaryCondition);
+    stressBoundaryCondition->side = side;
+    stressBoundaryCondition->side->addIndices(grids, 0, stressBoundaryCondition);
 
-    velocityBoundaryCondition->fillVelocityLists();
+    stressBoundaryCondition->fillStressNormalLists();
+    // stressBoundaryCondition->fillSamplingIndices(grids, 0, samplingOffset); //redundant with Side::setStressSamplingIndices but potentially a better approach for cases with complex geometries
 
-    boundaryConditions[0]->velocityBoundaryConditions.push_back(velocityBoundaryCondition);
+    boundaryConditions[0]->stressBoundaryConditions.push_back(stressBoundaryCondition);
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Velocity BC on level " << 0 << " with " << (int)velocityBoundaryCondition->indices.size() <<"\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Stress BC on level " << 0 << " with " << (int)stressBoundaryCondition->indices.size() << "\n";
+}
+
+void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz)
+{
+    if (sideType == SideType::GEOMETRY)
+        setVelocityGeometryBoundaryCondition(vx, vy, vz);
+    else
+    {
+        for (uint level = 0; level < getNumberOfGridLevels(); level++)
+        {
+            SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
+
+            auto side = SideFactory::make(sideType);
+
+            velocityBoundaryCondition->side = side;
+            velocityBoundaryCondition->side->addIndices(grids, level, velocityBoundaryCondition);
+
+            velocityBoundaryCondition->fillVelocityLists();
+
+            boundaryConditions[level]->velocityBoundaryConditions.push_back(velocityBoundaryCondition);
+
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Velocity BC on level " << level << " with " << (int)velocityBoundaryCondition->indices.size() <<"\n";
+        }
+    }
 }
 
 void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, real vz)
@@ -159,7 +183,9 @@ void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
         noSlipBoundaryCondition->side = side;
         noSlipBoundaryCondition->side->addIndices(grids, level, noSlipBoundaryCondition);
 
-        boundaryConditions[level]->noSlipBoundaryConditions.push_back(noSlipBoundaryCondition);
+        noSlipBoundaryCondition->fillVelocityLists();
+
+        boundaryConditions[level]->velocityBoundaryConditions.push_back(noSlipBoundaryCondition); //now effectively just a wrapper for velocityBC with zero velocity. No distinction in Gridgenerator.
     }
 }
 
@@ -333,7 +359,7 @@ void LevelGridBuilder::getSlipValues(real* normalX, real* normalY, real* normalZ
         for (uint index = 0; index < boundaryCondition->indices.size(); index++)
         {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[index]) + 1;
-
+            
             normalX[allIndicesCounter] = boundaryCondition->getNormalx(index);
             normalY[allIndicesCounter] = boundaryCondition->getNormaly(index);
             normalZ[allIndicesCounter] = boundaryCondition->getNormalz(index);
@@ -346,6 +372,51 @@ void LevelGridBuilder::getSlipQs(real* qs[27], int level) const
 {
     int allIndicesCounter = 0;
     for (auto boundaryCondition : boundaryConditions[level]->slipBoundaryConditions)
+    {
+        for (uint index = 0; index < boundaryCondition->indices.size(); index++)
+        {
+            for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
+            {
+                qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
+            }
+            allIndicesCounter++;
+        }
+    }
+}
+
+uint LevelGridBuilder::getStressSize(int level) const
+{
+    uint size = 0;
+    for (auto boundaryCondition : boundaryConditions[level]->stressBoundaryConditions)
+    {
+        size += uint(boundaryCondition->indices.size());
+    }
+    return size;
+}
+
+void LevelGridBuilder::getStressValues(real* normalX, real* normalY, real* normalZ, int* indices, int* samplingIndices, int level) const
+{
+    int allIndicesCounter = 0;
+    for (auto boundaryCondition : boundaryConditions[level]->stressBoundaryConditions)
+    {
+        for (uint index = 0; index < boundaryCondition->indices.size(); index++)
+        {
+            indices[allIndicesCounter]          = grids[level]->getSparseIndex(boundaryCondition->indices[index]) + 1;
+            samplingIndices[allIndicesCounter]  = grids[level]->getSparseIndex(boundaryCondition->velocitySamplingIndices[index]) + 1;
+            if(index==100)
+                printf("IDX %u \t IDXs %u\n",boundaryCondition->indices[index], boundaryCondition->velocitySamplingIndices[index] );
+            normalX[allIndicesCounter] = boundaryCondition->getNormalx(index);
+            normalY[allIndicesCounter] = boundaryCondition->getNormaly(index);
+            normalZ[allIndicesCounter] = boundaryCondition->getNormalz(index);
+            allIndicesCounter++;
+        }
+    }
+}
+
+void LevelGridBuilder::getStressQs(real* qs[27], int level) const
+{
+    int allIndicesCounter = 0;
+    for (auto boundaryCondition : boundaryConditions[level]->stressBoundaryConditions)
     {
         for (uint index = 0; index < boundaryCondition->indices.size(); index++)
         {

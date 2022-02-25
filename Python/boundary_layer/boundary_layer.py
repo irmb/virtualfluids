@@ -12,7 +12,7 @@ velocity = 9
 mach = 0.1
 nodes_per_diameter = 32
 
-sim_name = "ActuatorLine"
+sim_name = "BoundaryLayer"
 config_file = Path(__file__).parent/Path("config.txt")
 output_path = Path(__file__).parent/Path("output")
 output_path.mkdir(exist_ok=True)

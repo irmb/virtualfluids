@@ -2354,6 +2354,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
       unsigned int kbne = kb;
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
+
       ////////////////////////////////////////////////////////////////////////////////
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
@@ -2470,9 +2471,8 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
       //Test
       //(D.f[dirZERO])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	  //ToDo anders Klammern
-
+      //ToDo anders Klammern
+ 
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {

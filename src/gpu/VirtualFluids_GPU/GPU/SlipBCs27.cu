@@ -803,6 +803,7 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
       unsigned int kbne = kb;
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
+      
       ////////////////////////////////////////////////////////////////////////////////
       real f_W    = (D.f[dirE   ])[ke   ];
       real f_E    = (D.f[dirW   ])[kw   ];
@@ -1076,6 +1077,7 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
 	     VeloZ = fac*vx3;
 		 if (x == true) VeloX = c0o1;
 		 if (z == true) VeloZ = c0o1;
+      //  if (k==10000) printf("AFTER x: %u \t  y: %u \t z: %u \n  VeloX: %f \t VeloY: %f \t VeloZ: %f \n\n", x,y,z, VeloX,VeloY,VeloZ);
          feq=c1o54* (drho/*+three*( vx1    +vx3)*/+c9o2*( vx1    +vx3)*( vx1    +vx3) * (c1o1 + drho)-cu_sq); 
          (D.f[dirBW])[kbw]=(c1o1-q)/(c1o1+q)*(f_TE-f_BW+(f_TE+f_BW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TE+f_BW)-c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q) - c1o54 * drho;
          //feq=c1over54* (drho+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); 

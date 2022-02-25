@@ -40,7 +40,8 @@ namespace actuator_line
                         "delta_t", 
                         "delta_x")
         .def_property("omega", &ActuatorLine::getOmega, &ActuatorLine::setOmega)
-        .def_property("azimuth", &ActuatorLine::getAzimuth, &ActuatorLine::getAzimuth)
+        .def_property("azimuth", &ActuatorLine::getAzimuth, &ActuatorLine::setAzimuth)
+        .def_property("yaw", &ActuatorLine::getYaw, &ActuatorLine::setYaw)
         .def_property_readonly("n_blades", &ActuatorLine::getNBlades)
         .def_property_readonly("n_blade_nodes", &ActuatorLine::getNBladeNodes)
         .def_property_readonly("n_nodes", &ActuatorLine::getNNodes)

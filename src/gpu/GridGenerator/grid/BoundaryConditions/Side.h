@@ -78,10 +78,33 @@ protected:
 
     static void setPressureNeighborIndices(SPtr<gg::BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index);
 
+    static void setStressSamplingIndices(SPtr<gg::BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index);
+
     static void setQs(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint index);
 
 private:
     static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2);
+};
+
+class Geometry : public Side
+{
+public:
+    void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override;
+
+    int getCoordinate() const override
+    {
+        return X_INDEX;
+    }
+
+    int getDirection() const override
+    {
+        return NEGATIVE_DIR;
+    }
+
+    SideType whoAmI() const override
+    {
+        return SideType::GEOMETRY;
+    }
 };
 
 class MX : public Side
@@ -233,7 +256,7 @@ public:
         case SideType::PZ:
             return SPtr<Side>(new PZ());
         case SideType::GEOMETRY:
-            throw std::runtime_error("SideFactory::make() - SideType::GEOMETRY not supported.");
+            return SPtr<Side>(new Geometry());
         default:
             throw std::runtime_error("SideFactory::make() - SideType not valid.");
         }

@@ -8,34 +8,57 @@
 
 enum class PostProcessingVariable{ 
     // HowTo add new PostProcessingVariable: Add enum here, LAST has to stay last
-    // In interpQuantities add computation of quantity in switch statement
+    // In calculatePointwiseQuantities add computation of quantity in switch statement (for point-wise statistics) 
+    //  or, alternatively, in .... (for spatial statistics)
     // In writeGridFiles add lb->rw conversion factor
     // In getPostProcessingVariableNames add names
+    // In isAvailableProcessingVariableNames add name in switch statement or set statement to true if the variable is 
+    //  only new for the specific probe type
     // If new quantity depends on other quantities i.e. mean, catch in addPostProcessingVariable
+    
+    // Variables available in Point and Plane probe (all temporal pointwise statistics)
     Instantaneous,
     Means,
     Variances,
+
+    // Variables available in PlanarAverage probe
+    SpatialMeans,
+    SpatioTemporalMeans,
+    SpatialCovariances,
+    SpatioTemporalCovariances,
+    SpatialSkewness,
+    SpatioTemporalSkewness,
+    SpatialFlatness,
+    SpatioTemporalFlatness,
     LAST,
 };
 
 struct ProbeStruct{
-    uint nPoints, nArrays, vals;
+    uint nPoints, nIndices, nArrays, vals;
     uint *pointIndicesH, *pointIndicesD;
     real *pointCoordsX, *pointCoordsY, *pointCoordsZ;
+    bool hasDistances=false;
     real *distXH, *distYH, *distZH, *distXD, *distYD, *distZD;
     real *quantitiesArrayH, *quantitiesArrayD;
     bool *quantitiesH, *quantitiesD;
     uint *arrayOffsetsH, *arrayOffsetsD;
 };
 
-__global__ void interpQuantities(   uint* pointIndices,
+__global__ void calcQuantitiesKernel(   uint* pointIndices,
+                                    uint nPoints, uint n,
+                                    real* vx, real* vy, real* vz, real* rho,            
+                                    uint* neighborX, uint* neighborY, uint* neighborZ,
+                                    bool* quantities,
+                                    uint* quantityArrayOffsets, real* quantityArray
+                                );
+
+__global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
                                     uint nPoints, uint n,
                                     real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray,
-                                    bool interpolate
+                                    uint* quantityArrayOffsets, real* quantityArray
                                 );
 
 
@@ -46,13 +69,17 @@ public:
         const std::string _probeName,
         const std::string _outputPath,
         uint _tStartAvg,
+        uint _tAvg,
         uint _tStartOut,
-        uint _tOut
+        uint _tOut,
+        bool _hasDeviceQuantityArray
     ):  probeName(_probeName),
         outputPath(_outputPath),
         tStartAvg(_tStartAvg),
+        tAvg(_tAvg),
         tStartOut(_tStartOut),
         tOut(_tOut),
+        hasDeviceQuantityArray(_hasDeviceQuantityArray),
         PreCollisionInteractor()
     {
         assert("Output starts before averaging!" && tStartOut>=tStartAvg);
@@ -65,8 +92,13 @@ public:
     SPtr<ProbeStruct> getProbeStruct(int level){ return this->probeParams[level]; }
 
     void addPostProcessingVariable(PostProcessingVariable _variable);
+    void addAllAvailablePostProcessingVariables();
+    
+    bool getHasDeviceQuantityArray();
 
 private:
+    virtual bool isAvailablePostProcessingVariable(PostProcessingVariable _variable) = 0;
+
     virtual void findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
                        std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                        std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
@@ -88,10 +120,12 @@ private:
 
     std::vector<SPtr<ProbeStruct>> probeParams;
     bool quantities[int(PostProcessingVariable::LAST)] = {};
+    bool hasDeviceQuantityArray; 
     std::vector<std::string> fileNamesForCollectionFile;
     std::vector<std::string> varNames;
 
     uint tStartAvg;
+    uint tAvg;
     uint tStartOut;
     uint tOut;
 };

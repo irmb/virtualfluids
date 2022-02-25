@@ -56,6 +56,7 @@ public:
     uint getNNodes(){ return this->nNodes; };
     real getOmega(){ return this->omega; };
     real getAzimuth(){ return this->azimuth; };
+    real getYaw(){ return this->yaw; };
     real getDensity(){ return this->density; };
     real getPositionX(){ return this->turbinePosX; };
     real getPositionY(){ return this->turbinePosY; };

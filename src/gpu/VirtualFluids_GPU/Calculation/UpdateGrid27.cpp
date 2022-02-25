@@ -274,7 +274,6 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////
     // S L I P
     //////////////////////////////////////////////////////////////////////////
-
     if (para->getParD(level)->kSlipQ > 0)
     {
         //QSlipDev27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QSlip.k,
@@ -285,6 +284,21 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
 
         QSlipDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QSlip.k,
                         para->getParD(level)->QSlip.q27[0],    para->getParD(level)->kSlipQ,       para->getParD(level)->omega,
+                        para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                        para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        getLastCudaError("QSlipDev27 execution failed");
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // S T R E S S (wall model)
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getParD(level)->kStressQ > 0)
+    {
+        QStressDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0], 
+                        para->getParD(level)->QStress.k, para->getParD(level)->QStress.kN, 
+                        para->getParD(level)->QStress.q27[0], para->getParD(level)->kStressQ, para->getParD(level)->omega,            
+                        para->getParD(level)->vx_SP, para->getParD(level)->vy_SP, para->getParD(level)->vy_SP,
+                        para->getParD(level)->QStress.normalX, para->getParD(level)->QStress.normalY, para->getParD(level)->QStress.normalZ,
                         para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
                         para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         getLastCudaError("QSlipDev27 execution failed");

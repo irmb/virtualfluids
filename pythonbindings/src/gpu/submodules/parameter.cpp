@@ -46,6 +46,9 @@ namespace parameter
         .def("set_SGS_constant", &Parameter::setSGSConstant)
         .def("set_main_kernel", &Parameter::setMainKernel)
         .def("set_AD_kernel", &Parameter::setADKernel)
+        .def("set_use_AMD", &Parameter::setUseAMD)
+        .def("set_use_Wale", &Parameter::setUseWale)
+        .def("set_SGS_constant", &Parameter::setSGSConstant)
         .def("set_initial_condition", [](Parameter &para, std::function<std::vector<float>(real, real, real)> &init_func)
         {
             para.setInitialCondition([init_func](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz)
