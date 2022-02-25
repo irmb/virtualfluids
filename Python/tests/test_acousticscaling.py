@@ -1,8 +1,8 @@
 import unittest
 from typing import List
 
-from pyfluids.kernel import LBMKernel, KernelType
-from pyfluids.parameters import GridParameters, PhysicalParameters, RuntimeParameters
+from pyfluids.cpu.kernel import LBMKernel, KernelType
+from pyfluids.cpu.parameters import GridParameters, PhysicalParameters, RuntimeParameters
 
 from acousticscaling import OneDirectionalAcousticScaling
 

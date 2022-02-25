@@ -1,9 +1,9 @@
-from pyfluids import Simulation
-from pyfluids.boundaryconditions import NoSlipBoundaryCondition
-from pyfluids.geometry import GbCuboid3D, State
-from pyfluids.kernel import LBMKernel, KernelType
-from pyfluids.parameters import RuntimeParameters, GridParameters, PhysicalParameters
-from pyfluids.writer import Writer, OutputFormat
+from pyfluids.cpu import Simulation
+from pyfluids.cpu.boundaryconditions import NoSlipBoundaryCondition
+from pyfluids.cpu.geometry import GbCuboid3D, State
+from pyfluids.cpu.kernel import LBMKernel, KernelType
+from pyfluids.cpu.parameters import RuntimeParameters, GridParameters, PhysicalParameters
+from pyfluids.cpu.writer import Writer, OutputFormat
 
 default_grid_params = GridParameters()
 default_grid_params.node_distance = 10 / 32

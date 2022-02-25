@@ -1,6 +1,6 @@
 import unittest
 
-from pyfluids.geometry import *
+from pyfluids.cpu.geometry import *
 
 
 class TestGeometry(unittest.TestCase):
