@@ -168,6 +168,10 @@ public:
     void cudaAllocStressBC(int lev);
     void cudaCopyStressBC(int lev);
     void cudaFreeStressBC(int lev);
+
+    void cudaAllocWallModel(int lev);
+    void cudaCopyWallModel(int lev);
+    void cudaFreeWallModel(int lev);
     
     void cudaAllocGeomValuesBC(int lev);
     void cudaCopyGeomValuesBC(int lev);

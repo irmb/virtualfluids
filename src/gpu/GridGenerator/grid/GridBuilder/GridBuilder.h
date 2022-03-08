@@ -99,7 +99,7 @@ public:
     virtual void getSlipQs(real* qs[27], int level) const = 0;
 
     virtual uint getStressSize(int level) const = 0;
-    virtual void getStressValues(real *normalX, real *normalY, real *normalZ, int *indices, int* samplingIndices, int level) const = 0;
+    virtual void getStressValues(real *normalX, real *normalY, real *normalZ, int *indices, int* samplingIndices, int* samplingOffsets, real* z0, int level) const = 0;
     virtual void getStressQs(real* qs[27], int level) const = 0;
 
     virtual uint getVelocitySize(int level) const = 0;

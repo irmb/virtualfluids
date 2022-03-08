@@ -203,6 +203,9 @@ struct LBMSimulationParameter
     QforBoundaryConditions QInlet, QOutlet, QPeriodic;
     unsigned int kInletQread, kOutletQread;
     unsigned int kPressQ = 0, kPressQread;
+
+    WallModelSettings wallModel;
+    
     // testRoundoffError
     Distributions27 kDistTestRE;
 

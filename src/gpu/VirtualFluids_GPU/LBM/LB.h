@@ -214,6 +214,12 @@ typedef struct TempPressforBC{
    int kTemp=0;
 }TempPressforBoundaryConditions;
 
+// Settings for wall model used in StressBC
+typedef struct WMSettings{
+   real* z0;
+   int* samplingOffset;
+}WallModelSettings;
+
 //measurePoints
 typedef struct MeasP{
 	std::string name;

@@ -18,6 +18,8 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
                                     real* normalX,
                                     real* normalY,
                                     real* normalZ,
+                                    int* samplingOffset,
+                                    real* z0,
 											   unsigned int* neighborX,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
@@ -586,6 +588,39 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       // //Compute wall velocity
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real VeloX=0.0, VeloY=0.0, VeloZ=0.0; 
+
+      real wallNormalX = normalX[k_N[k]];
+      real wallNormalY = normalY[k_N[k]];
+      real wallNormalZ = normalZ[k_N[k]];
+
+      //Sample velocity at exchange location
+      real vxEL = vx[k_N[k]];
+      real vyEL = vy[k_N[k]];
+      real vzEL = vz[k_N[k]];
+
+      //Subtract wall-normal velocity component
+      real vDotN = vxEL*wallNormalX+vyEL*wallNormalY+vzEL*wallNormalZ;
+      vxEL -= vDotN*wallNormalX;
+      vyEL -= vDotN*wallNormalY;
+      vzEL -= vDotN*wallNormalZ;
+      real vMag = sqrt(vxEL*vxEL+vyEL*vyEL+vzEL*vzEL);
+
+      //Compute wall shear stress tau_w via MOST
+      real z = (real)samplingOffset[k_N[k]] + 0.5; //assuming q=0.5, could be replaced by wall distance via wall normal
+      real kappa = 0.4;
+      real u_star = vMag*kappa/(log(z/z0[k_N[k]]));
+      real tau_w = u_star*u_star;                  //assuming rho=1
+      real A = 1.0;                                //wall area (obviously 1 for grid aligned walls, can come from grid builder later)
+
+      //Momentum to be applied via wall velocity
+      real F_x = (tau_w*A) * (vxEL/vMag) - wallMomentumX;
+      real F_y = (tau_w*A) * (vyEL/vMag) - wallMomentumY;
+      real F_z = (tau_w*A) * (vzEL/vMag) - wallMomentumZ;
+      
+      //Corresponding wall velocity (only valid for wall-normals in z)
+      VeloX = -3.0*F_x;
+      VeloY = -3.0*F_y;
+      VeloZ = -3.0*F_z;
 
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // //Add wall velocity and write f's

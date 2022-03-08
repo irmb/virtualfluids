@@ -1436,8 +1436,37 @@ void CudaMemoryManager::cudaFreeStressBC(int lev)
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.normalY));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.normalZ));
 }
-
-
+// Wall model
+void CudaMemoryManager::cudaAllocWallModel(int lev)
+{
+    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QStress.kQ;
+    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QStress.kQ;
+    
+    //Host
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->wallModel.samplingOffset),                            mem_size_Q_k      ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->wallModel.z0),                            mem_size_Q_q      ));
+    
+    //Device
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->wallModel.samplingOffset),  mem_size_Q_k));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->wallModel.z0),  mem_size_Q_q));
+    
+    //////////////////////////////////////////////////////////////////////////
+    double tmp = (double)mem_size_Q_k + (double)mem_size_Q_q;
+    setMemsizeGPU(tmp, false);
+}
+void CudaMemoryManager::cudaCopyWallModel(int lev)
+{
+    unsigned int mem_size_Q_k      = sizeof(int)*parameter->getParH(lev)->QStress.kQ;
+    unsigned int mem_size_Q_q      = sizeof(real)*parameter->getParH(lev)->QStress.kQ;
+    
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->wallModel.samplingOffset,       parameter->getParH(lev)->wallModel.samplingOffset,                             mem_size_Q_k,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->wallModel.z0,       parameter->getParH(lev)->wallModel.z0,                             mem_size_Q_q,       cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaFreeWallModel(int lev)
+{
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->wallModel.samplingOffset));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->wallModel.z0));
+}
 
 //Test roundoff error
 void CudaMemoryManager::cudaAllocTestRE(int lev, unsigned int size)
