@@ -36,6 +36,7 @@
 #include "Calculation/Cp.h"
 #include "Calculation/Calc2ndMoments.h"
 #include "Calculation/CalcMedian.h"
+#include "Calculation/CalcTurbulenceIntensity.h"
 #include "Calculation/ForceCalculations.h"
 #include "Calculation/PorousMedia.h"
 //////////////////////////////////////////////////////////////////////////
@@ -202,11 +203,19 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    if (para->getCalcMedian())
    {
-       output << "alloc Calculation for Mean Valus  " << "\n";
+       output << "alloc Calculation for Mean Values  " << "\n";
 	   if (para->getDiffOn())	allocMedianAD(para.get(), cudaManager.get());
 	   else						allocMedian(para.get(), cudaManager.get());
    }
 
+
+   //////////////////////////////////////////////////////////////////////////
+   // Turbulence Intensity
+   //////////////////////////////////////////////////////////////////////////
+   if (para->getCalcTurbulenceIntensity()) {
+       output << "alloc arrays for calculating Turbulence Intensity  " << "\n";
+       allocTurbulenceIntensity(para.get(), cudaManager.get());
+   }
 
    //////////////////////////////////////////////////////////////////////////
    //allocate memory and initialize 2nd, 3rd and higher order moments
@@ -374,6 +383,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
 
    //////////////////////////////////////////////////////////////////////////
    output << "used Device Memory: " << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n";
+   std::cout << "Process " << comm->getPID() <<": used device memory" << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n" << std::endl;
    //////////////////////////////////////////////////////////////////////////
 
    //InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
@@ -402,6 +412,7 @@ void Simulation::run()
    ftimeE   = 0.0f;
    ftimeS   = 0.0f;
    unsigned int t, t_prev;
+   uint t_turbulenceIntensity = 0;
    unsigned int t_MP = 0;
    //////////////////////////////////////////////////////////////////////////
    para->setStepEnsight(0);
@@ -506,6 +517,30 @@ void Simulation::run()
         
           }
         }
+
+		if (para->getCalcTurbulenceIntensity()) {
+            for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
+				CalcTurbulenceIntensityDevice(
+				    para->getParD(lev)->vxx,
+				    para->getParD(lev)->vyy,
+				    para->getParD(lev)->vzz,
+				    para->getParD(lev)->vxy,
+				    para->getParD(lev)->vxz,
+				    para->getParD(lev)->vyz,
+				    para->getParD(lev)->vx_mean,
+				    para->getParD(lev)->vy_mean,
+				    para->getParD(lev)->vz_mean,
+				    para->getParD(lev)->d0SP.f[0], 
+				    para->getParD(lev)->geoSP,
+				    para->getParD(lev)->neighborX_SP,
+				    para->getParD(lev)->neighborY_SP, 
+				    para->getParD(lev)->neighborZ_SP,
+				    para->getParD(lev)->size_Mat_SP,
+				    para->getParD(lev)->evenOrOdd,
+				    para->getParD(lev)->numberofthreads
+				);
+			}
+		}
         ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -952,8 +987,19 @@ void Simulation::run()
 				resetMedian(para.get());
 				/////////////////////////////////
 			}
+            if (para->getCalcTurbulenceIntensity()) 
+			{
+                uint t_diff = t - t_turbulenceIntensity;
+                calcTurbulenceIntensity(para.get(), cudaManager.get(), t_diff);
+                //writeAllTiDatafToFile(para.get(), t);
+            }
 			////////////////////////////////////////////////////////////////////////
 			dataWriter->writeTimestep(para, t);
+			////////////////////////////////////////////////////////////////////////
+            if (para->getCalcTurbulenceIntensity()) {
+                t_turbulenceIntensity = t;
+                resetVelocityFluctuationsAndMeans(para.get(), cudaManager.get());
+            }
 			////////////////////////////////////////////////////////////////////////
             if (para->getCalcDragLift()) printDragLift(para.get(), cudaManager.get(), t);
 			////////////////////////////////////////////////////////////////////////
@@ -1334,6 +1380,10 @@ void Simulation::free()
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////
+	// Turbulence Intensity
+	if (para->getCalcTurbulenceIntensity()) {
+        cudaFreeTurbulenceIntensityArrays(para.get(), cudaManager.get());
+	}
 
     delete comm;
 

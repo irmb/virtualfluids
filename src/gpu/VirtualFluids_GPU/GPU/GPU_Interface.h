@@ -2526,4 +2526,23 @@ extern "C" void generateRandomValuesDevice(curandState* state,
 										   real* randArray,
 										   unsigned int numberOfThreads);
 
+extern "C" void CalcTurbulenceIntensityDevice(
+   real* vxx,
+   real* vyy,
+   real* vzz,
+   real* vxy,
+   real* vxz,
+   real* vyz,
+   real* vx_mean,
+   real* vy_mean,
+   real* vz_mean,
+   real* DD, 
+   uint *typeOfGridNode, 
+   unsigned int* neighborX,
+   unsigned int* neighborY,
+   unsigned int* neighborZ,
+   unsigned int size_Mat, 
+   bool evenOrOdd,
+   uint numberOfThreads);
+
 #endif
