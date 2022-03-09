@@ -139,13 +139,13 @@ void multipleLevel(const std::string& configPath)
     real vxLB = (real)0.051; // LB units
     real Re = (real)300.0;
 
-    real heightBivalve;
-    if (bivalveType == "MUSSEL")
-        heightBivalve = (real)35.0; 
-    else if (bivalveType == "OYSTER")
-        heightBivalve = (real)72.0;
-    else
-        std::cerr << "Error: unknown bivalveType" << std::endl;
+    // real heightBivalve;
+    // if (bivalveType == "MUSSEL")
+    //     heightBivalve = (real)35.0; 
+    // else if (bivalveType == "OYSTER")
+    //     heightBivalve = (real)72.0;
+    // else
+    //     std::cerr << "Error: unknown bivalveType" << std::endl;
     real length = 1.0 / dxGrid; // heightBivalve / dxGrid
     real viscosityLB = (vxLB * length) / Re;
 
@@ -205,13 +205,13 @@ void multipleLevel(const std::string& configPath)
 
 
     if (useGridGenerator) {
-        real bbzm;
-        real bbzp;
-        if (bivalveType == "MUSSEL")
-            bbzp = 9.0;
-        if (bivalveType == "OYSTER")
-            bbzp = 13.0;
-        bbzm = -bbzp;
+        // real bbzm;
+        // real bbzp;
+        // if (bivalveType == "MUSSEL")
+        //     bbzp = 9.0;
+        // if (bivalveType == "OYSTER")
+        //     bbzp = 13.0;
+        // bbzm = -bbzp;
         // bounding box mussel:
         // const real bbxm = 0.0;
         // const real bbxp = 76.0;
