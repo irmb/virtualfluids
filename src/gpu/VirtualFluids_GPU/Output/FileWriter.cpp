@@ -184,7 +184,7 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
     //nodedatanames.push_back("sendNodes");
     //nodedatanames.push_back("sparseIndex");
 
-    uint firstTurbNode = nodedatanames.size();
+    uint firstTurbNode = (uint) nodedatanames.size();
     if (para->getCalcTurbulenceIntensity()) {
         nodedatanames.push_back("vxx");
         nodedatanames.push_back("vyy");
