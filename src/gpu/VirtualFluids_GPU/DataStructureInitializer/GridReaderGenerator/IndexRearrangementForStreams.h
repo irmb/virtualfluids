@@ -1,7 +1,7 @@
 #ifndef IndexRearrangementForStreams_H
 #define IndexRearrangementForStreams_H
 
-#include "../GridProvider.h"
+#include <gpu/VirtualFluids_GPU/DataStructureInitializer/GridProvider.h>
 
 #include <vector>
 #include <string>

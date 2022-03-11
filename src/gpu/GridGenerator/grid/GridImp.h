@@ -5,12 +5,12 @@
 
 #include "Core/LbmOrGks.h"
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
-#include "grid/distributions/Distribution.h"
-#include "grid/Grid.h"
-#include "grid/Cell.h"
-#include "grid/Field.h" 
+#include "gpu/GridGenerator/grid/distributions/Distribution.h"
+#include "gpu/GridGenerator/grid/Grid.h"
+#include "gpu/GridGenerator/grid/Cell.h"
+#include "gpu/GridGenerator/grid/Field.h" 
 
 class TriangularMesh;
 struct Vertex;

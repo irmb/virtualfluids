@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
 #define DIR_END_MAX 27
 

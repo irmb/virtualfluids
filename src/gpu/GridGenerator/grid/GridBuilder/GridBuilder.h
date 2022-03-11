@@ -5,7 +5,7 @@
 #include <string>
 #include <memory>
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
 #define GEOMQS 6
 #define INLETQS 0

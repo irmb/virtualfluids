@@ -9,7 +9,7 @@
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 
-#include <GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h>
+#include <gpu/GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h>
 
 class Parameter;
 class GridBuilder;
