@@ -39,7 +39,7 @@ extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
-private:
+protected:
     CUDA_HOST GridImp();
     CUDA_HOST GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level);
 

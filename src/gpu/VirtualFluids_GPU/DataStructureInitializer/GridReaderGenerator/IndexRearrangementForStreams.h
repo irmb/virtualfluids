@@ -77,6 +77,10 @@ private:
     // split interpolation cells
     void getGridInterfaceIndicesBorderBulkCF(int level);
     void getGridInterfaceIndicesBorderBulkFC(int level);
+
+
+
+    friend class IndexRearrangementForStreamsTest;
 };
 
 #endif

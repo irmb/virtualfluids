@@ -488,7 +488,7 @@ void IndexRearrangementForStreams::splitCoarseToFineIntoBorderAndBulk(const uint
 
 void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level) 
 { 
-    // this function reorders the arrays of CFC/CFF indices and sets pointers and sizes of the new subarrays
+    // this function reorders the arrays of CFC/CFF indices and sets the pointers and sizes of the new subarrays
      
     // create some local variables for better readability
     uint *iCellCfcAll    = para->getParH(level)->intCF.ICellCFC;
@@ -559,8 +559,8 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level
     for (uint i = 0; i < (uint)iCellCfcBulkVector.size(); i++) {
         para->getParH(level)->intCFBulk.ICellCFC[i]                       = iCellCfcBulkVector[i];
         para->getParH(level)->intCFBulk.ICellCFF[i]                       = iCellCffBulkVector[i];
-        para->getParH(level)->offCF.xOffCF[i + xOffCFBorderVector.size()] = xOffCFBulkVector[i];
-        para->getParH(level)->offCF.yOffCF[i + yOffCFBorderVector.size()] = yOffCFBulkVector[i];
-        para->getParH(level)->offCF.zOffCF[i + zOffCFBorderVector.size()] = zOffCFBulkVector[i];
+        para->getParH(level)->offCFBulk.xOffCF[i]                         = xOffCFBulkVector[i];
+        para->getParH(level)->offCFBulk.yOffCF[i]                         = yOffCFBulkVector[i];
+        para->getParH(level)->offCFBulk.zOffCF[i]                         = zOffCFBulkVector[i];
     }
 }
