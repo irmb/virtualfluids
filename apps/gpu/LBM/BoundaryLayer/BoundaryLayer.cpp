@@ -76,25 +76,25 @@ const real z0  = 0.1; // roughness length in m
 const real u_star = 0.4; //friction velocity in m/s
 const real kappa = 0.4; // von Karman constant 
 
-const real viscosity = 20.0;//1.56e-5;
+const real viscosity = 1.56e-5;
 
 const real velocity  = u_star/kappa*log(L_z/z0); //max mean velocity at the top in m/s
 
 const real mach = 0.1;
 
-const uint nodes_per_H = 8;
+const uint nodes_per_H = 32;
 
 std::string path(".");
 
 std::string simulationName("BoundayLayer");
 
 // all in s
-const float tOut = 4000;
-const float tEnd = 40000; // total time of simulation
-const float tStartAveraging =  4000;
-const float tAveraging      =  4000;
-const float tStartOutProbe  =  4000;
-const float tOutProbe       = 4000; 
+const float tOut = 10000;
+const float tEnd = 50000; // total time of simulation
+const float tStartAveraging =  0;
+const float tAveraging      =  1000;
+const float tStartOutProbe  =  0;
+const float tOutProbe       =  1000; 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -143,8 +143,10 @@ void multipleLevel(const std::string& configPath)
     const real pressureGradientLB = u_star * u_star / H / (dx/(dt*dt)); // LB units
 
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
+    VF_LOG_INFO("dt   = {}", dt);
+    VF_LOG_INFO("dx   = {}", dx);
     VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
-
+    VF_LOG_INFO("u* /(dx/dt) = {}", u_star*dt/dx);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     para->setDevices(std::vector<uint>{(uint)0});
@@ -162,17 +164,16 @@ void multipleLevel(const std::string& configPath)
     para->setViscosity(viscosityLB);
     para->setVelocityRatio( dx / dt );
     para->setViscosityRatio( dx*dx/dt );
-    // para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
-    // para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
-    para->setMainKernel("CumulantK17CompChim");
-    // para->setUseAMD(true);
-    // para->setSGSConstant(0.083);
+    // para->setMainKernel("CumulantK17CompChim");
+    para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
+    para->setUseAMD(true);
+    para->setSGSConstant(0.083); 
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-        vx  = velocityLB;
+        vx  = (0.4/0.4 * log(coordZ/z0)) * dt / dx; //10*coordZ/H * dt / dx;
         vy  = (real)0.0;
-        vz  = (real)0.0;
+        vz  = 8.0*u_star/0.4*(sin(8.0*coordY*3.14/H)*sin(8.0*coordZ*3.14/H)+sin(3.14*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
     });
 
     para->setTOut( uint(tOut/dt) );
@@ -186,14 +187,12 @@ void multipleLevel(const std::string& configPath)
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     uint samplingOffset = 1;
-    real z0 = 0.1;
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
     gridBuilder->setStressBoundaryCondition(SideType::MZ, 0.0, 0.0, 1.0, samplingOffset, z0/dx);
     
-    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.05, 0.0, 0.0);
-    
-    // gridBuilder->setSlipBoundaryCondition(SideType::MZ,  0.0,  0.0, 0.0);
+    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 10.0*dt/dx, 0.0, 0.0);
+    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);

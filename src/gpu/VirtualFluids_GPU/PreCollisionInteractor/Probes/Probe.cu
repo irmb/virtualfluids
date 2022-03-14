@@ -314,21 +314,19 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
 void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
 {
 
-    if(t>this->tStartAvg && t%this->tAvg==0)
+    if(max(int(t) - int(this->tStartAvg), -1) % this->tAvg==0)
     {
         SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 
         this->calculateQuantities(probeStruct, para, level);
         probeStruct->vals++;
+    }
 
-        if(max(int(t) - int(this->tStartOut), -1) % this->tOut == 0)
-        {
-            if(this->hasDeviceQuantityArray)
-                cudaManager->cudaCopyProbeQuantityArrayDtoH(this, level);
-
-            this->write(para, level, t);
-        }
-
+    if(max(int(t) - int(this->tStartOut), -1) % this->tOut == 0)
+    {
+        if(this->hasDeviceQuantityArray)
+            cudaManager->cudaCopyProbeQuantityArrayDtoH(this, level);
+        this->write(para, level, t);
     }
 }
 

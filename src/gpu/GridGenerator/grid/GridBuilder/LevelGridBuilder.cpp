@@ -413,7 +413,6 @@ void LevelGridBuilder::getStressValues(real* normalX, real* normalY, real* norma
 
             samplingOffset[allIndicesCounter] = boundaryCondition->getSamplingOffset(index);
             z0[allIndicesCounter] = boundaryCondition->getZ0(index);
-
             allIndicesCounter++;
         }
     }

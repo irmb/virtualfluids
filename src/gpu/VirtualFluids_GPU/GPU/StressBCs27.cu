@@ -589,9 +589,9 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real VeloX=0.0, VeloY=0.0, VeloZ=0.0; 
 
-      real wallNormalX = normalX[k_N[k]];
-      real wallNormalY = normalY[k_N[k]];
-      real wallNormalZ = normalZ[k_N[k]];
+      real wallNormalX = normalX[k];
+      real wallNormalY = normalY[k];
+      real wallNormalZ = normalZ[k];
 
       //Sample velocity at exchange location
       real vxEL = vx[k_N[k]];
@@ -604,24 +604,36 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       vyEL -= vDotN*wallNormalY;
       vzEL -= vDotN*wallNormalZ;
       real vMag = sqrt(vxEL*vxEL+vyEL*vyEL+vzEL*vzEL);
-
-      //Compute wall shear stress tau_w via MOST
-      real z = (real)samplingOffset[k_N[k]] + 0.5; //assuming q=0.5, could be replaced by wall distance via wall normal
-      real kappa = 0.4;
-      real u_star = vMag*kappa/(log(z/z0[k_N[k]]));
-      real tau_w = u_star*u_star;                  //assuming rho=1
-      real A = 1.0;                                //wall area (obviously 1 for grid aligned walls, can come from grid builder later)
-
-      //Momentum to be applied via wall velocity
-      real F_x = (tau_w*A) * (vxEL/vMag) - wallMomentumX;
-      real F_y = (tau_w*A) * (vyEL/vMag) - wallMomentumY;
-      real F_z = (tau_w*A) * (vzEL/vMag) - wallMomentumZ;
       
-      //Corresponding wall velocity (only valid for wall-normals in z)
-      VeloX = -3.0*F_x;
-      VeloY = -3.0*F_y;
-      VeloZ = -3.0*F_z;
+      
+      //Compute wall shear stress tau_w via MOST
+      real z = (real)samplingOffset[k] + 0.5; //assuming q=0.5, could be replaced by wall distance via wall normal
+      real kappa = 0.4;
+      real u_star = vMag*kappa/(log(z/z0[k]));
 
+      // u_star = 0.0025074002;
+      real tau_w = u_star*u_star;                  //assuming rho=1
+      real A = 1.0;                                //wall area (obviously 1 for grid aligned walls, can come from grid builder later for complex geometries)
+      
+      //Momentum to be applied via wall velocity
+      real wallMomDotN = wallMomentumX*wallNormalX+wallMomentumY*wallNormalY+wallMomentumZ*wallNormalZ;
+      real F_x = (tau_w*A) * (vxEL/vMag) - ( wallMomentumX - wallMomDotN*wallNormalX);
+      real F_y = (tau_w*A) * (vyEL/vMag) - ( wallMomentumY - wallMomDotN*wallNormalY);
+      real F_z = (tau_w*A) * (vzEL/vMag) - ( wallMomentumZ - wallMomDotN*wallNormalZ);
+
+      //Corresponding wall velocity (only valid for wall-normals in z)
+      q = 0.5f;
+      VeloX = -3.0*F_x*(c1o1+q);
+      VeloY = -3.0*F_y*(c1o1+q);
+      VeloZ = -3.0*F_z*(c1o1+q);
+      if(false && k==0)
+      {     
+         printf("==========================samp, z, z0: \t %i \t %f \t %f  \n u,v,w, vMag \t %f \t %f \t %f \t %f \n", samplingOffset[k], z, z0[k], vxEL,vyEL,vzEL,vMag );
+         printf("u_star: %f \t\n\n", u_star);
+         printf("Velo: %f \t %f \t %f \t\n", VeloX, VeloY, VeloZ);
+         printf("Wall tan momentum: %f \t %f \t %f \t\n", wallMomentumX - wallMomDotN*wallMomentumX, wallMomentumY - wallMomDotN*wallMomentumY, wallMomentumZ - wallMomDotN*wallMomentumZ);
+         printf("FMEM before:\t %1.14f \t %1.14f \t %1.14f \nFWM: \t %1.14f \t %1.14f \t %1.14f \n", wallMomentumX, wallMomentumY, wallMomentumZ, (tau_w*A) * (vxEL/vMag), (tau_w*A) * (vyEL/vMag), (tau_w*A) * (vzEL/vMag));
+      } 
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // //Add wall velocity and write f's
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -630,157 +642,216 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirW])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ))/(c1o1+q);
+         wallMomentumX += -(c6o1*c2o27*( VeloX     ))/(c1o1+q);
       }
 
       q = q_dirW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirE])[ke] = f_E_in - (c6o1*c2o27*(-VeloX     ))/(c1o1+q);
+         wallMomentumX -= - (c6o1*c2o27*(-VeloX     ))/(c1o1+q);
       }
 
       q = q_dirN[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirS])[ks] = f_S_in - (c6o1*c2o27*( VeloY     ))/(c1o1+q);
+         wallMomentumY += - (c6o1*c2o27*( VeloY     ))/(c1o1+q);
       }
 
       q = q_dirS[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirN])[kn] = f_N_in - (c6o1*c2o27*(-VeloY     ))/(c1o1+q);
+         wallMomentumY -=  -(c6o1*c2o27*(-VeloY     ))/(c1o1+q);
       }
 
       q = q_dirT[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirB])[kb] = f_B_in - (c6o1*c2o27*( VeloZ     ))/(c1o1+q);
+         wallMomentumZ += - (c6o1*c2o27*( VeloZ     ))/(c1o1+q);
       }
 
       q = q_dirB[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirT])[kt] = f_T_in - (c6o1*c2o27*(-VeloZ     ))/(c1o1+q);
+         wallMomentumZ -= -(c6o1*c2o27*(-VeloZ     ))/(c1o1+q);
       }
 
       q = q_dirNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirSW])[ksw] = f_SW_in - (c6o1*c1o54*(VeloX+VeloY))/(c1o1+q);
+         wallMomentumX +=  -(c6o1*c1o54*(VeloX+VeloY))/(c1o1+q);
+         wallMomentumY +=  -(c6o1*c1o54*(VeloX+VeloY))/(c1o1+q);
       }
 
       q = q_dirSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirNE])[kne] = f_NE_in - (c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q);
+         wallMomentumX -= - (c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q);
+         wallMomentumY -= - (c6o1*c1o54*(-VeloX-VeloY))/(c1o1+q);
       }
 
       q = q_dirSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirNW])[knw] = f_NW_in - (c6o1*c1o54*( VeloX-VeloY))/(c1o1+q);
+         wallMomentumX += -(c6o1*c1o54*( VeloX-VeloY))/(c1o1+q);
+         wallMomentumY -= -(c6o1*c1o54*( VeloX-VeloY))/(c1o1+q);
       }
 
       q = q_dirNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirSE])[kse] = f_SE_in - (c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q);
+         wallMomentumX -= - (c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q);
+         wallMomentumY += - (c6o1*c1o54*(-VeloX+VeloY))/(c1o1+q);
       }
 
       q = q_dirTE[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirBW])[kbw] = f_BW_in - (c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q); 
+         wallMomentumX += - (c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q);
+         wallMomentumZ += - (c6o1*c1o54*( VeloX+VeloZ))/(c1o1+q);
       }
 
       q = q_dirBW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirTE])[kte] = f_TE_in - (c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q);
+         wallMomentumX -= - (c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q);
+         wallMomentumZ -= - (c6o1*c1o54*(-VeloX-VeloZ))/(c1o1+q);
       }
 
       q = q_dirBE[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirTW])[ktw] = f_TW_in - (c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q);
+         wallMomentumX += - (c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q);
+         wallMomentumZ -= - (c6o1*c1o54*( VeloX-VeloZ))/(c1o1+q);
       }
 
       q = q_dirTW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirBE])[kbe] = f_BE_in - (c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q);
+         wallMomentumX -= - (c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q);
+         wallMomentumZ += - (c6o1*c1o54*(-VeloX+VeloZ))/(c1o1+q);
       }
 
       q = q_dirTN[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirBS])[kbs] = f_BS_in - (c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q);
+         wallMomentumY += - (c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q);
+         wallMomentumZ += - (c6o1*c1o54*( VeloY+VeloZ))/(c1o1+q);
       }
 
       q = q_dirBS[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirTN])[ktn] = f_TN_in - (c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q);
+         wallMomentumY -= - (c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q);
+         wallMomentumZ -= - (c6o1*c1o54*( -VeloY-VeloZ))/(c1o1+q);
       }
 
       q = q_dirBN[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirTS])[kts] = f_TS_in - (c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q);
+         wallMomentumY += - (c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q);
+         wallMomentumZ -= - (c6o1*c1o54*( VeloY-VeloZ))/(c1o1+q);
       }
 
       q = q_dirTS[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirBN])[kbn] = f_BN_in - (c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q);
+         wallMomentumY -= - (c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q);
+         wallMomentumZ += - (c6o1*c1o54*( -VeloY+VeloZ))/(c1o1+q);
       }
 
       q = q_dirTNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirBSW])[kbsw] = f_BSW_in - (c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q);
+         wallMomentumX += - (c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q);
+         wallMomentumY += - (c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q);
+         wallMomentumZ += - (c6o1*c1o216*( VeloX+VeloY+VeloZ))/(c1o1+q);
       }
 
       q = q_dirBSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirTNE])[ktne] = f_TNE_in - (c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q);
+         wallMomentumX -= - (c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q);
+         wallMomentumY -= - (c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q);
+         wallMomentumZ -= - (c6o1*c1o216*(-VeloX-VeloY-VeloZ))/(c1o1+q);
       }
 
       q = q_dirBNE[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirTSW])[ktsw] = f_TSW_in - (c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q);
+         wallMomentumX += - (c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q);
+         wallMomentumY += - (c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q);
+         wallMomentumZ -= - (c6o1*c1o216*( VeloX+VeloY-VeloZ))/(c1o1+q);
       }
 
       q = q_dirTSW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirBNE])[kbne] = f_BNE_in - (c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q);
+         wallMomentumX -= - (c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q);
+         wallMomentumY -= - (c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q);
+         wallMomentumZ += - (c6o1*c1o216*(-VeloX-VeloY+VeloZ))/(c1o1+q);
       }
 
       q = q_dirTSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirBNW])[kbnw] = f_BNW_in - (c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q);
+         wallMomentumX += - (c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q);
+         wallMomentumY -= - (c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q);
+         wallMomentumZ += - (c6o1*c1o216*( VeloX-VeloY+VeloZ))/(c1o1+q);
       }
 
       q = q_dirBNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirTSE])[ktse] = f_TSE_in - (c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q);
+         wallMomentumX -= - (c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q);
+         wallMomentumY += - (c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q);
+         wallMomentumZ -= - (c6o1*c1o216*(-VeloX+VeloY-VeloZ))/(c1o1+q);
       }
 
       q = q_dirBSE[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirTNW])[ktnw] = f_TNW_in - (c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q);
+         wallMomentumX += - (c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q);
+         wallMomentumY -= - (c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q);
+         wallMomentumZ -= - (c6o1*c1o216*( VeloX-VeloY-VeloZ))/(c1o1+q);
       }
 
       q = q_dirTNW[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirBSE])[kbse] = f_BSE_in - (c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
+         wallMomentumX -= - (c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
+         wallMomentumY += - (c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
+         wallMomentumZ += - (c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
       }
+
+      if(false && k==0)
+      {     
+         printf("FMEM after: \t %1.14f \t %1.14f \t %1.14f  \n \n", wallMomentumX,wallMomentumY,wallMomentumZ );
+      } 
 
    }
 }
