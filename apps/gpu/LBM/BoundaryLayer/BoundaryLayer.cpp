@@ -202,6 +202,7 @@ void multipleLevel(const std::string& configPath)
     SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
     // planarAverageProbe->addPostProcessingVariable(PostProcessingVariable::SpatialMeans);
     planarAverageProbe->addAllAvailablePostProcessingVariables();
+    planarAverageProbe->setFileNameToTOut();
     para->addProbe( planarAverageProbe );
 
     Simulation sim(communicator);

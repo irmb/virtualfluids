@@ -386,8 +386,9 @@ void Probe::write(Parameter* para, int level, int t)
 
 void Probe::writeCollectionFile(Parameter* para, int t)
 {
+    int t_write = this->fileNameLU ? t: t/this->tOut; 
     std::string filename = this->probeName + "_bin_ID_" + StringUtil::toString<int>(para->getMyID()) 
-                                           + "_t_" + StringUtil::toString<int>(t) 
+                                           + "_t_" + StringUtil::toString<int>(t_write) 
                                            + ".vtk";
 
     std::ofstream file;
