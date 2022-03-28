@@ -100,7 +100,7 @@ void MultiphaseVelocityBCAlgorithm::applyBC()
    else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::S)) { nx2 += 1; }
    else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::T)) { nx3 -= 1; }
    else if (bcPtr->hasVelocityBoundaryFlag(D3Q27System::B)) { nx3 += 1; }
-   else UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on velocity boundary..."));
+   //else UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on velocity boundary..."));
    
    phiBC = bcPtr->getBoundaryPhaseField();
    

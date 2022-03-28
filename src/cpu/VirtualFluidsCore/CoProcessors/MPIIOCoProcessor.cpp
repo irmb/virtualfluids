@@ -55,7 +55,7 @@ MPIIOCoProcessor::MPIIOCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const
     //-----------------------------------------------------------------------
 
     MPI_Datatype typesBC[3] = { MPI_LONG_LONG_INT, MPI_FLOAT, MPI_CHAR };
-    int blocksBC[3]         = { 5, 33, 1 };
+    int blocksBC[3]         = { 5, 34, 1 };
     MPI_Aint offsetsBC[3], lbBC, extentBC;
 
     offsetsBC[0] = 0;
