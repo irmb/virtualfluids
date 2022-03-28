@@ -47,8 +47,8 @@ MultiphasePressureFilterLBMKernel::MultiphasePressureFilterLBMKernel() { this->c
 //////////////////////////////////////////////////////////////////////////
 void MultiphasePressureFilterLBMKernel::initDataSet()
 {
-	SPtr<DistributionArray3D> f(new D3Q27EsoTwist3DSplittedVector( nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9));
-	SPtr<DistributionArray3D> h(new D3Q27EsoTwist3DSplittedVector( nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.9)); // For phase-field
+	SPtr<DistributionArray3D> f(new D3Q27EsoTwist3DSplittedVector( nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
+	SPtr<DistributionArray3D> h(new D3Q27EsoTwist3DSplittedVector( nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0)); // For phase-field
 
 	//SPtr<PhaseFieldArray3D> divU1(new PhaseFieldArray3D(            nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
 	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure(new  CbArray3D<LBMReal, IndexerX3X2X1>(    nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
@@ -58,7 +58,7 @@ void MultiphasePressureFilterLBMKernel::initDataSet()
 	//dataSet->setPhaseField(divU1);
 	dataSet->setPressureField(pressure);
 
-	phaseField = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, -999.0));
+	phaseField = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
 
 	divU = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(nx[0] + 4, nx[1] + 4, nx[2] + 4, 0.0));
 }
@@ -156,6 +156,21 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 	nonLocalDistributionsH1 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getNonLocalDistributions();
 	zeroDistributionsH1     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getZeroDistributions();
 
+
+	/*std::vector<double> doubleValuesArrayFtemp; // double-values (arrays of f's) in all blocks  Fdistribution
+	doubleValuesArrayFtemp.insert(doubleValuesArrayFtemp.end(), localDistributionsF->getDataVector().begin(), localDistributionsF->getDataVector().end());
+	doubleValuesArrayFtemp.insert(doubleValuesArrayFtemp.end(), nonLocalDistributionsF->getDataVector().begin(), nonLocalDistributionsF->getDataVector().end());
+	doubleValuesArrayFtemp.insert(doubleValuesArrayFtemp.end(), zeroDistributionsF->getDataVector().begin(), zeroDistributionsF->getDataVector().end());
+
+	for (int i = 0; i < doubleValuesArrayFtemp.size(); i++)
+	{
+		if (UbMath::isNaN(doubleValuesArrayFtemp[i]) || UbMath::isInfinity(doubleValuesArrayFtemp[i]))
+			std::cout << "doubleValuesArrayFtemp[i] is NAN  " << i << std::endl;
+	}*/
+	//std::cout << "localDistributionsF=" << localDistributionsF->getNX1() << " " << localDistributionsF->getNX2() << " " << localDistributionsF->getNX3() << " " << localDistributionsF->getNX4() << std::endl;
+	//std::cout << "nonLocalDistributionsF=" << nonLocalDistributionsF->getNX1() << " " << nonLocalDistributionsF->getNX2() << " " << nonLocalDistributionsF->getNX3() << " " << nonLocalDistributionsF->getNX4() << std::endl;
+	//std::cout << "zeroDistributionsF=" << zeroDistributionsF->getNX1() << " " << zeroDistributionsF->getNX2() << " " << zeroDistributionsF->getNX3() << std::endl;
+
 	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure = dataSet->getPressureField();
 
 	SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
@@ -170,6 +185,12 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 	int maxX1 = bcArrayMaxX1 - ghostLayerWidth;
 	int maxX2 = bcArrayMaxX2 - ghostLayerWidth;
 	int maxX3 = bcArrayMaxX3 - ghostLayerWidth;
+
+//	std::cout << "MultiphasePressureFilterLBMKernel::calculate bcArrayMaxX1=" << bcArrayMaxX1 << " , bcArrayMaxX2=" << bcArrayMaxX2 << ", bcArrayMaxX3=" << bcArrayMaxX3 << std::endl;
+//	std::cout << "MultiphasePressureFilterLBMKernel::calculate minX1=" << minX1 << " , minX2=" << minX2 << ", minX3=" << minX3 << std::endl;
+//	std::cout << "MultiphasePressureFilterLBMKernel::calculate maxX1=" << maxX1 << " , maxX2=" << maxX2 << ", maxX3=" << maxX3 << std::endl;
+//	std::cout << "dataSetParamStr1=" << localDistributionsF->getNX1() << " " << localDistributionsF->getNX2() << " " << localDistributionsF->getNX3() << " " << localDistributionsF->getNX4() << std::endl;
+//	std::cout << "nx=" << dataSet->getFdistributions()->getNX1() << " " << dataSet->getFdistributions()->getNX2() << " " << dataSet->getFdistributions()->getNX3() << std::endl;
 
 	for (int x3 = minX3-ghostLayerWidth; x3 < maxX3+ghostLayerWidth; x3++) {
 		for (int x2 = minX2-ghostLayerWidth; x2 < maxX2+ghostLayerWidth; x2++) {
@@ -243,6 +264,34 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 
 					mfbbb = (*this->zeroDistributionsF)(x1, x2, x3);
 					
+					/*if (UbMath::isNaN(mfcbb) || UbMath::isInfinity(mfcbb)) std::cout << "mfcbb is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfbcb) || UbMath::isInfinity(mfbcb)) std::cout << "mfbcb is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfbbc) || UbMath::isInfinity(mfbbc)) std::cout << "mfbbc is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfccb) || UbMath::isInfinity(mfccb)) std::cout << "mfccb is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfacb) || UbMath::isInfinity(mfacb)) std::cout << "mfacb is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfcbc) || UbMath::isInfinity(mfcbc)) std::cout << "mfcbc is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfabc) || UbMath::isInfinity(mfabc)) std::cout << "mfabc is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfbcc) || UbMath::isInfinity(mfbcc)) std::cout << "mfbcc is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfbac) || UbMath::isInfinity(mfbac)) std::cout << "mfbac is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfccc) || UbMath::isInfinity(mfccc)) std::cout << "mfccc is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfacc) || UbMath::isInfinity(mfacc)) std::cout << "mfacc is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfcac) || UbMath::isInfinity(mfcac)) std::cout << "mfcac is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfaac) || UbMath::isInfinity(mfaac)) std::cout << "mfaac is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfabb) || UbMath::isInfinity(mfabb)) std::cout << "mfabb is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfbab) || UbMath::isInfinity(mfbab)) std::cout << "mfbab is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfbba) || UbMath::isInfinity(mfbba)) std::cout << "mfbba is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfaab) || UbMath::isInfinity(mfaab)) std::cout << "mfaab is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfcab) || UbMath::isInfinity(mfcab)) std::cout << "mfcab is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfaba) || UbMath::isInfinity(mfaba)) std::cout << "mfaba is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfcba) || UbMath::isInfinity(mfcba)) std::cout << "mfcba is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfbaa) || UbMath::isInfinity(mfbaa)) std::cout << "mfbaa is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfbca) || UbMath::isInfinity(mfbca)) std::cout << "mfbca is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfaaa) || UbMath::isInfinity(mfaaa)) std::cout << "mfaaa is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfcaa) || UbMath::isInfinity(mfcaa)) std::cout << "mfcaa is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfaca) || UbMath::isInfinity(mfaca)) std::cout << "mfaca is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfcca) || UbMath::isInfinity(mfcca)) std::cout << "mfcca is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
+					if (UbMath::isNaN(mfbbb) || UbMath::isInfinity(mfbbb)) std::cout << "mfbbb is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;*/
+
 					LBMReal rhoH = 1.0;
 					LBMReal rhoL = 1.0 / densityRatio;
 
@@ -1200,7 +1249,8 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 					(*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) = mfaac   ;//* rho * c1o3;
 
 					(*this->zeroDistributionsF)(x1, x2, x3) = mfbbb;// *rho* c1o3;
-																																		// !Old Kernel
+									
+																			// !Old Kernel
 /////////////////////  P H A S E - F I E L D   S O L V E R
 ////////////////////////////////////////////
 /////CUMULANT PHASE-FIELD
@@ -1462,6 +1512,23 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 			}
 		}
 	}
+
+	/*std::vector<double> doubleValuesArrayFtemp; // double-values (arrays of f's) in all blocks  Fdistribution
+	doubleValuesArrayFtemp.insert(doubleValuesArrayFtemp.end(), *this->localDistributionsF->getDataVector().begin(),
+		*this->localDistributionsF->getDataVector().end());
+	doubleValuesArrayFtemp.insert(doubleValuesArrayFtemp.end(), *this->nonLocalDistributionsF->getDataVector().begin(),
+		*this->nonLocalDistributionsF->getDataVector().end());
+	doubleValuesArrayFtemp.insert(doubleValuesArrayFtemp.end(), *this->zeroDistributionsF->getDataVector().begin(),
+		*this->zeroDistributionsF->getDataVector().end());
+
+	for (int i = 0; i < doubleValuesArrayFtemp.size(); i++)
+	{
+		if (UbMath::isNaN(doubleValuesArrayFtemp[i]) || UbMath::isInfinity(doubleValuesArrayFtemp[i]))
+			std::cout << "doubleValuesArrayFtemp[i] is NAN  " << i << std::endl;
+	}*/
+
+	//std::cout << "MPIIOMigrationCoProcessor::readDataSet posle NAN ni4ego net" << std::endl;*/
+
 }
 //////////////////////////////////////////////////////////////////////////
 

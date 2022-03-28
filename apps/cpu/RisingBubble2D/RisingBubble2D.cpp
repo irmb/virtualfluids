@@ -46,7 +46,7 @@ void run(string configname)
         double cpStart     = config.getValue<double>("cpStart");
         double cpStep      = config.getValue<double>("cpStep");
         bool newStart      = config.getValue<bool>("newStart");
-        //double rStep = config.getValue<double>("rStep");
+        double rStep = config.getValue<double>("rStep");
 
         std::shared_ptr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
@@ -85,7 +85,7 @@ void run(string configname)
 //         }    
 //#endif
 
-        //Sleep(30000);
+        //Sleep(20000);
 
         // LBMReal dLB = 0; // = length[1] / dx;
         LBMReal rhoLB = 0.0;
@@ -95,18 +95,18 @@ void run(string configname)
         LBMReal D  = 2.0*radius;
 
         //density retio
-        //LBMReal r_rho = densityRatio;
+        LBMReal r_rho = densityRatio;
 
         //density of heavy fluid
         LBMReal rho_h = 1.0;
         //density of light fluid
-        //LBMReal rho_l = rho_h / r_rho;
+        LBMReal rho_l = rho_h / r_rho;
 
         //kinimatic viscosity
         LBMReal nu_h = nuL;
         //LBMReal nu_l = nuG;
         //#dynamic viscosity
-        //LBMReal mu_h = rho_h * nu_h;
+        LBMReal mu_h = rho_h * nu_h;
         
         //gravity
         LBMReal g_y = Re * Re * nu_h * nu_h / (D*D*D);
@@ -174,7 +174,7 @@ void run(string configname)
         SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
         noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseNoSlipBCAlgorithm()));
         SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
-        slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseSlipBCAlgorithm()));
+        noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new MultiphaseSlipBCAlgorithm()));
         //////////////////////////////////////////////////////////////////////////////////
         // BC visitor
         MultiphaseBoundaryConditionsBlockVisitor bcVisitor;
@@ -197,55 +197,52 @@ void run(string configname)
         SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
         //SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, metisVisitor, pathname, comm));
         //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, metisVisitor, pathname, comm));
-        //rcp->setNu(nuLB);
-        //rcp->setNuLG(nuL, nuG);
+        // rcp->setNu(nuLB);
+       //  rcp->setNuLG(nuL, nuG);
         //rcp->setDensityRatio(densityRatio);
 
         rcp->setLBMKernel(kernel);
         rcp->setBCProcessor(bcProc);
         //////////////////////////////////////////////////////////////////////////
-        // bounding box
-        double g_minX1 = boundingBox[0];
-        double g_minX2 = boundingBox[2];
-        double g_minX3 = boundingBox[4];
-
-        double g_maxX1 = boundingBox[1];
-        double g_maxX2 = boundingBox[3];
-        double g_maxX3 = boundingBox[5];
-
-        double dx2 = 2.0 * dx;
-        GbCuboid3DPtr wallXmin(
-            new GbCuboid3D(g_minX1 - dx2, g_minX2 - dx2, g_minX3 - dx2, g_minX1, g_maxX2 + dx2, g_maxX3 + dx2));
-        GbSystem3D::writeGeoObject(wallXmin.get(), pathname + "/geo/wallXmin", WbWriterVtkXmlASCII::getInstance());
-        GbCuboid3DPtr wallXmax(
-            new GbCuboid3D(g_maxX1, g_minX2 - dx2, g_minX3 - dx2, g_maxX1 + dx2, g_maxX2 + dx2, g_maxX3 + dx2));
-        GbSystem3D::writeGeoObject(wallXmax.get(), pathname + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
-
-        GbCuboid3DPtr wallYmin(
-            new GbCuboid3D(g_minX1 - dx2, g_minX2 - dx2, g_minX3 - dx2, g_maxX1 + dx2, g_minX2, g_maxX3 + dx2));
-        GbSystem3D::writeGeoObject(wallYmin.get(), pathname + "/geo/wallYmin", WbWriterVtkXmlASCII::getInstance());
-        GbCuboid3DPtr wallYmax(
-            new GbCuboid3D(g_minX1 - dx2, g_maxX2, g_minX3 - dx2, g_maxX1 + dx2, g_maxX2 + dx2, g_maxX3 + dx2));
-        GbSystem3D::writeGeoObject(wallYmax.get(), pathname + "/geo/wallYmax", WbWriterVtkXmlASCII::getInstance());
-
-        SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, slipBCAdapter, Interactor3D::SOLID));
-        SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, slipBCAdapter, Interactor3D::SOLID));
-
-        SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-        SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
         if (newStart) {
+
+            // bounding box
+            double g_minX1 = boundingBox[0];
+            double g_minX2 = boundingBox[2];
+            double g_minX3 = boundingBox[4];
+
+            double g_maxX1 = boundingBox[1];
+            double g_maxX2 = boundingBox[3];
+            double g_maxX3 = boundingBox[5];
 
             // geometry
             SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
             if (myid == 0)
                 GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube",
-                                           WbWriterVtkXmlBinary::getInstance());
+                    WbWriterVtkXmlBinary::getInstance());
+
+
 
             GenBlocksGridVisitor genBlocks(gridCube);
             grid->accept(genBlocks);
 
+            double dx2 = 2.0 * dx;
+            GbCuboid3DPtr wallXmin(new GbCuboid3D(g_minX1 - dx2, g_minX2 - dx2, g_minX3 - dx2, g_minX1, g_maxX2 + dx2, g_maxX3 + dx2));
+            GbSystem3D::writeGeoObject(wallXmin.get(), pathname + "/geo/wallXmin", WbWriterVtkXmlASCII::getInstance());
+            GbCuboid3DPtr wallXmax(new GbCuboid3D(g_maxX1, g_minX2 - dx2, g_minX3 - dx2, g_maxX1 + dx2, g_maxX2 + dx2, g_maxX3 + dx2));
+            GbSystem3D::writeGeoObject(wallXmax.get(), pathname + "/geo/wallXmax", WbWriterVtkXmlASCII::getInstance());
 
+            GbCuboid3DPtr wallYmin(new GbCuboid3D(g_minX1 - dx2, g_minX2 - dx2, g_minX3 - dx2, g_maxX1 + dx2, g_minX2, g_maxX3 + dx2));
+            GbSystem3D::writeGeoObject(wallYmin.get(), pathname + "/geo/wallYmin", WbWriterVtkXmlASCII::getInstance());
+            GbCuboid3DPtr wallYmax(new GbCuboid3D(g_minX1 - dx2, g_maxX2, g_minX3 - dx2, g_maxX1 + dx2, g_maxX2 + dx2, g_maxX3 + dx2));
+            GbSystem3D::writeGeoObject(wallYmax.get(), pathname + "/geo/wallYmax", WbWriterVtkXmlASCII::getInstance());
+
+            SPtr<D3Q27Interactor> wallXminInt(new D3Q27Interactor(wallXmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallXmaxInt(new D3Q27Interactor(wallXmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+
+            SPtr<D3Q27Interactor> wallYminInt(new D3Q27Interactor(wallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+            SPtr<D3Q27Interactor> wallYmaxInt(new D3Q27Interactor(wallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
  
             SPtr<WriteBlocksCoProcessor> ppblocks(new WriteBlocksCoProcessor(
                 grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
@@ -352,28 +349,7 @@ void run(string configname)
             }
 
             rcp->restart((int)restartStep);
-            //grid->setTimeStep(restartStep);
-
-            //rcp->readBlocks((int)restartStep);
-            //rcp->readDataSet((int)restartStep);
-            //rcp->readBoundaryConds((int)restartStep);
-            //grid->setTimeStep((int)restartStep);
-
-            //SetBcBlocksBlockVisitor v2(wallXminInt);
-            //grid->accept(v2);
-            //wallXminInt->initInteractor();
-
-            //SetBcBlocksBlockVisitor v3(wallXmaxInt);
-            //grid->accept(v3);
-            //wallXmaxInt->initInteractor();
-
-            //SetBcBlocksBlockVisitor v4(wallYminInt);
-            //grid->accept(v4);
-            //wallYminInt->initInteractor();
-
-            //SetBcBlocksBlockVisitor v1(wallYmaxInt);
-            //grid->accept(v1);
-            //wallYmaxInt->initInteractor();
+            grid->setTimeStep(restartStep);
 
             if (myid == 0)
                 UBLOG(logINFO, "Restart - end");
@@ -416,9 +392,8 @@ void run(string configname)
 
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
             grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
-        //if(grid->getTimeStep() == 0) 
-            //pp->process(0);
-        pp->process(grid->getTimeStep());
+        if(grid->getTimeStep() == 0) 
+            pp->process(0);
 
         SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
         SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
