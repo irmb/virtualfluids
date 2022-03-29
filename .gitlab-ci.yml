@@ -446,7 +446,7 @@ gcov_gcc_9:
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update
-    - pip3 install gcovr==5.0
+    - pip3 install 'jinja2<3.1' gcovr==5.0
     - gcovr --version
 
   script:
