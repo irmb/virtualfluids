@@ -1,7 +1,7 @@
 ###############################################################################
 ##                       VirtualFluids CI Pipeline                           ##
 ###############################################################################
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04_python:1.0
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.2
 
 stages:
   - build
@@ -19,8 +19,6 @@ stages:
 ###############################################################################
 .gnu_build_template:
   stage: build
-
-  image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04:1.0
 
   tags:
     - gpu
@@ -169,8 +167,6 @@ build_singularity_image:
 gcc_9_unit_tests:
   stage: test
 
-  image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04
-
   needs: ["gcc_9"]
 
   before_script:
@@ -279,8 +275,6 @@ nvidia_test:
 gpu_numerical_tests:
   stage: benchmark
 
-  image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04
-
   when: manual
 
   needs: []
@@ -326,8 +320,6 @@ gpu_numerical_tests:
 clang_build_analyzer_clang_10:
   stage: analyze
 
-  image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04
-
   only: ["schedules"]
 
   needs: []
@@ -360,8 +352,6 @@ clang_build_analyzer_clang_10:
 include_what_you_use_clang_10:
   stage: analyze
 
-  image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04
-
   only: ["schedules"]
 
   needs: []
@@ -391,8 +381,6 @@ include_what_you_use_clang_10:
 ###############################################################################
 cppcheck:
   stage: analyze
-
-  image: git.rz.tu-bs.de:4567/irmb/virtualfluids_dev/ubuntu20_04
 
   only:
     - develop@irmb/VirtualFluids_dev
