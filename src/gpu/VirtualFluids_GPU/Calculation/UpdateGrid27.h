@@ -32,10 +32,11 @@ private:
     void collisionAndExchange_streams(int level, unsigned int t);
 
     // functions for refinement and exchange
-    void refinementAndExchange_noRefinementAndExchange(int level);
-    void refinementAndExchange_streams(int level);
+    void refinementAndExchange_streams_onlyExchangeInterface(int level);
+    void refinementAndExchange_streams_completeExchange(int level);
     void refinementAndExchange_noStreams_onlyExchangeInterface(int level);
     void refinementAndExchange_noStreams_completeExchange(int level);
+    void refinementAndExchange_noRefinementAndExchange(int level);
     void refinementAndExchange_noExchange(int level);
 
 

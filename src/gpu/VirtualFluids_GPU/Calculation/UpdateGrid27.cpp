@@ -48,7 +48,7 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 
 void UpdateGrid27::refinementAndExchange_noRefinementAndExchange(int level) {}
 
-void UpdateGrid27::refinementAndExchange_streams(int level)
+void UpdateGrid27::refinementAndExchange_streams_onlyExchangeInterface(int level)
 {
     int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
     int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
@@ -74,6 +74,40 @@ void UpdateGrid27::refinementAndExchange_streams(int level)
 
     // exchange
     exchangeMultiGPUAfterFtoC(para.get(), comm, cudaManager.get(), level, borderStreamIndex);
+
+    // coarse to fine border
+    coarseToFineWithStream(para.get(), level, para->getParD(level)->intCFBorder.ICellCFC,
+                           para->getParD(level)->intCFBorder.ICellCFF, para->getParD(level)->intCFBorder.kCF, para->getParD(level)->offCF,
+                           borderStreamIndex);
+    cudaDeviceSynchronize(); 
+}
+
+void UpdateGrid27::refinementAndExchange_streams_completeExchange(int level)
+{
+    int borderStreamIndex = para->getStreamManager()->getBorderStreamIndex();
+    int bulkStreamIndex   = para->getStreamManager()->getBulkStreamIndex();
+
+    // fine to coarse border
+    fineToCoarseWithStream(para.get(), level, para->getParD(level)->intFCBorder.ICellFCC,
+                           para->getParD(level)->intFCBorder.ICellFCF, para->getParD(level)->intFCBorder.kFC,
+                           borderStreamIndex);
+
+    // prepare exchange and trigger bulk kernel when finished
+    prepareExchangeMultiGPU(para.get(), level, borderStreamIndex);
+    if (para->getUseStreams())
+        para->getStreamManager()->triggerStartBulkKernel(borderStreamIndex);
+
+    // launch bulk kernels (f to c and c to f)
+    para->getStreamManager()->waitOnStartBulkKernelEvent(bulkStreamIndex);
+    fineToCoarseWithStream(para.get(), level, para->getParD(level)->intFCBulk.ICellFCC,
+                           para->getParD(level)->intFCBulk.ICellFCF, para->getParD(level)->intFCBulk.kFC,
+                           bulkStreamIndex);
+    coarseToFineWithStream(para.get(), level, para->getParD(level)->intCFBulk.ICellCFC,
+                           para->getParD(level)->intCFBulk.ICellCFF, para->getParD(level)->intCFBulk.kCF, para->getParD(level)->offCFBulk,
+                           bulkStreamIndex);
+
+    // exchange
+    exchangeMultiGPU(para.get(), comm, cudaManager.get(), level, borderStreamIndex);
 
     // coarse to fine border
     coarseToFineWithStream(para.get(), level, para->getParD(level)->intCFBorder.ICellCFC,
@@ -1533,14 +1567,18 @@ void UpdateGrid27::chooseFunctionForRefinementAndExchange()
         this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noExchange;
         std::cout << "refinementAndExchange_noExchange()" << std::endl;
     
-    } else if (para->getUseStreams() && para->getNumprocs() > 1 && para->useReducedCommunicationAfterFtoC) {
-        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_streams;
-        std::cout << "refinementAndExchange_streams()" << std::endl;
+    } else if (para->getNumprocs() > 1 && para->getUseStreams() && para->useReducedCommunicationAfterFtoC) {
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_streams_onlyExchangeInterface;
+        std::cout << "refinementAndExchange_streams_onlyExchangeInterface()" << std::endl;
     
-    } else if (para->getNumprocs() > 1 && para->useReducedCommunicationAfterFtoC) {
+    } else if(para->getNumprocs() > 1 && para->getUseStreams() && !para->useReducedCommunicationAfterFtoC){
+        this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_streams_completeExchange; 
+        std::cout << "refinementAndExchange_streams_completeExchange()" << std::endl;
+    
+    } else if (para->getNumprocs() > 1 && !para->getUseStreams() && para->useReducedCommunicationAfterFtoC) {
         this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noStreams_onlyExchangeInterface;
         std::cout << "refinementAndExchange_noStreams_onlyExchangeInterface()" << std::endl;
-    
+
     } else {
         this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noStreams_completeExchange;
         std::cout << "refinementAndExchange_noStreams_completeExchange()" << std::endl;
