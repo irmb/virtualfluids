@@ -35,13 +35,12 @@
 #define D3Q27SYSTEM_H
 
 #include <cmath>
-#include <iostream>
 #include <string>
+#include <iostream>
 
 #include "LBMSystem.h"
 #include "UbException.h"
 #include "UbMath.h"
-
 
 //! \brief namespace for global system-functions
 namespace D3Q27System
@@ -147,7 +146,6 @@ static const int ET_TSE = 11;
 static const int ET_BNW = 11;
 static const int ET_TSW = 12;
 static const int ET_BNE = 12;
-
 
 //////////////////////////////////////////////////////////////////////////
 // MACROSCOPIC VALUES

@@ -140,8 +140,8 @@
 #include <BoundaryConditions/SimpleSlipBCAlgorithm.h>
 #include <BoundaryConditions/RheologyPowellEyringModelNoSlipBCAlgorithm.h>
 #include <BoundaryConditions/RheologyBinghamModelVelocityBCAlgorithm.h>
-#include <BoundaryConditions/MultiphaseNoSlipBCAlgorithm.h> 
-#include <BoundaryConditions/MultiphaseNonReflectingOutflowBCAlgorithm.h> 
+#include <BoundaryConditions/MultiphaseNoSlipBCAlgorithm.h>
+#include <BoundaryConditions/MultiphaseNonReflectingOutflowBCAlgorithm.h>
 #include <BoundaryConditions/MultiphaseVelocityBCAdapter.h>
 #include <BoundaryConditions/MultiphaseVelocityBCAlgorithm.h>
 

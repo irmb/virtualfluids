@@ -39,7 +39,6 @@
 #include "Block3D.h"
 #include "BCArray3D.h"
 
-
 #define PROOF_CORRECTNESS
 
 using namespace UbMath;
