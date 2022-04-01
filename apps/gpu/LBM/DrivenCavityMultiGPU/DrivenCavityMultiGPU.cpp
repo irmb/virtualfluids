@@ -189,9 +189,9 @@ void multipleLevel(const std::string& configPath)
         const real zGridMin  = -0.5 * L;     
         const real zGridMax  = 0.5 * L;
 
-        TriangularMesh *bivalveRef_1_STL = nullptr;
+        TriangularMesh *level1_STL = nullptr;
         if (useLevels)
-            bivalveRef_1_STL = TriangularMesh::make(stlPath + "_Level1.stl");
+            level1_STL = TriangularMesh::make(stlPath + "_Level1.stl");
 
 
         if (para->getNumprocs() > 1) {
@@ -217,7 +217,7 @@ void multipleLevel(const std::string& configPath)
 
 
                 if (useLevels) {
-                    gridBuilder->addGrid(bivalveRef_1_STL, 1);
+                    gridBuilder->addGrid(level1_STL, 1);
                 }
 
                 if (generatePart == 0){
@@ -274,7 +274,7 @@ void multipleLevel(const std::string& configPath)
                 }
 
                 if (useLevels) {
-                    gridBuilder->addGrid(bivalveRef_1_STL, 1);
+                    gridBuilder->addGrid(level1_STL, 1);
                 }
 
                 if (generatePart == 0)
@@ -374,7 +374,7 @@ void multipleLevel(const std::string& configPath)
                 }
 
                 if (useLevels) {
-                    gridBuilder->addGrid(bivalveRef_1_STL, 1);
+                    gridBuilder->addGrid(level1_STL, 1);
                 }
                 
                 if (generatePart == 0)
@@ -516,9 +516,9 @@ void multipleLevel(const std::string& configPath)
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(para->getUseStreams());
 
-            // gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" + std::to_string(generatePart) + "_"); 
-            // gridBuilder->writeGridsToVtk(outPath + bivalveType + "/" + std::to_string(generatePart) + "/grid/"); 
-            // gridBuilder->writeArrows(outPath + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
+            // gridBuilder->writeGridsToVtk(outPath +  "/grid/part" + std::to_string(generatePart) + "_"); 
+            // gridBuilder->writeGridsToVtk(outPath + "/" + std::to_string(generatePart) + "/grid/"); 
+            // gridBuilder->writeArrows(outPath + "/" + std::to_string(generatePart) + " /arrow");
 
             SimulationFileWriter::write(gridPath + std::to_string(generatePart) + "/", gridBuilder,
                                         FILEFORMAT::BINARY);
@@ -528,7 +528,7 @@ void multipleLevel(const std::string& configPath)
 
             if (useLevels) {
                 gridBuilder->setNumberOfLayers(10, 8);
-                gridBuilder->addGrid(bivalveRef_1_STL, 1);
+                gridBuilder->addGrid(level1_STL, 1);
             }
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
@@ -546,8 +546,8 @@ void multipleLevel(const std::string& configPath)
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(para->getUseStreams());
 
-            // gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/");
-            // gridBuilder->writeArrows ((outPath + bivalveType + "/arrow");
+            // gridBuilder->writeGridsToVtk(outPath +  "/grid/");
+            // gridBuilder->writeArrows(outPath + "/arrow");
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
         }
