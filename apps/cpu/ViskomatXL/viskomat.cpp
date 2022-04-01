@@ -363,12 +363,12 @@ void bflow(string configname)
       }
       else
       {
-         //restartCoProcessor->restart((int)restartStep);
+         restartCoProcessor->restart((int)restartStep);
          
-         restartCoProcessor->readBlocks((int)restartStep);
-         restartCoProcessor->readDataSet((int)restartStep);
-         //restartCoProcessor->readBoundaryConds((int)restartStep);
-         grid->setTimeStep((int)restartStep);
+         //restartCoProcessor->readBlocks((int)restartStep);
+         //restartCoProcessor->readDataSet((int)restartStep);
+         ////restartCoProcessor->readBoundaryConds((int)restartStep);
+         //grid->setTimeStep((int)restartStep);
          
          SetBcBlocksBlockVisitor v2(wallXmaxInt);
          grid->accept(v2);
@@ -413,7 +413,7 @@ void bflow(string configname)
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, outputPath, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
       //writeMQCoProcessor->process(100);
 
-      SPtr<UbScheduler> forceSch(new UbScheduler(100));
+      SPtr<UbScheduler> forceSch(new UbScheduler(1000));
       SPtr<CalculateTorqueCoProcessor> fp = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueRotor.csv", comm);
       fp->addInteractor(rotorInt);
       SPtr<CalculateTorqueCoProcessor> fp2 = make_shared<CalculateTorqueCoProcessor>(grid, forceSch, outputPath + "/torque/TorqueStator.csv", comm);
