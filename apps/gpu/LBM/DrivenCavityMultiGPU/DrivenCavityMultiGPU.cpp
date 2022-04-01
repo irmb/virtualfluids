@@ -124,8 +124,8 @@ void multipleLevel(const std::string& configPath)
     const uint nx = 64;
     std::string simulationName("DrivenCavityChimMultiGPU");
 
-    para->setTOut(10000);
-    para->setTEnd(10000);
+    // para->setTOut(10000);   // set in config
+    // para->setTEnd(10000);   // set in config
 
 
     const real dxGrid = L / real(nx);
