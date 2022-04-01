@@ -1,9 +1,3 @@
-if(BUILD_NUMERIC_TESTS)
-    set(CMAKE_CXX_STANDARD 17)
-endif()
-
-#############################################################
-
 IF( BUILD_VF_GKS )
     # only use this with device of CC larger than 6.0
     set(CMAKE_CUDA_FLAGS "-Xptxas=\"-v\"" CACHE STRING "" FORCE)

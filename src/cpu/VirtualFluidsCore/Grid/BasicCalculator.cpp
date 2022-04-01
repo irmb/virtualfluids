@@ -324,7 +324,7 @@ void BasicCalculator::interpolation(int startLevel, int maxInitLevel)
 //////////////////////////////////////////////////////////////////////////
 void BasicCalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
 {
-    // startLevel bis maxInitLevel
+    // from startLevel to maxInitLevel
     for (int level = startLevel; level <= maxInitLevel; level++) {
         int size = (int)blocks[level].size();
 #ifdef _OPENMP
@@ -349,7 +349,7 @@ void BasicCalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
 //////////////////////////////////////////////////////////////////////////
 void BasicCalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
 {
-    // startLevel bis maxInitLevel
+    //  from startLevel to maxInitLevel
     for (int level = startLevel; level <= maxInitLevel; level++) {
         int size = (int)blocks[level].size();
 #ifdef _OPENMP

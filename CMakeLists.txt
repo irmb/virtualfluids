@@ -97,6 +97,7 @@ IF( BUILD_VF_DOUBLE_ACCURACY )
     list(APPEND VF_COMPILER_DEFINITION VF_DOUBLE_ACCURACY)
 ENDIF()
 
+# set gpu features
 if(BUILD_VF_GPU OR BUILD_VF_GKS)
     include(CheckLanguage)
     check_language(CUDA)

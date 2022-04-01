@@ -2,7 +2,7 @@
 
 VirtualFluids (VF) is a research code developed at the Institute for Computational Modeling in Civil Engineering (iRMB). The code is a Computational Fluid Dynamics (CFD) solver based on the Lattice Boltzmann Method (LBM) for turbulent, thermal, multiphase and multicomponent flow problems as well as for multi-field problems such as Fluid-Structure-interaction including distributed pre- and postprocessing capabilities for simulations with more than 100 billion degrees of freedom.
 
-## Getting Started
+## Getting Start
 ### Suported Platforms
 VirtualFluids has been used on a variety of platforms:
  - Linux
@@ -10,17 +10,17 @@ VirtualFluids has been used on a variety of platforms:
  - Windows
  - Cygwin
 ### Software Requirements
- 
+
  - [CMake](https://cmake.org/) (minimum version 3.15)
  - C++ compiler with C++14 support
  - [Paraview](https://www.paraview.org/) (most recent version)
 
-with usage of the GPU:  
+with usage of the GPU:
  - CUDA [developer.nvidia.com/cuda-zone](https://developer.nvidia.com/cuda-zone):
     * Minimum CUDA Version 9.0
     * Minimum Compute Capability 3.0, because of maximal number of Blocks in x direction
     * Recommended Compute Capability 6.0, because of atomics for double precision floating point data (GKS only)
-    
+
 
 ### Contributing
 To contribute to VirtualFluids please follow these [instructions](CONTRIBUTING.md).
@@ -41,11 +41,11 @@ Alternatively enable the options via the cmake-gui.
 ### <a id="options"></a> Options
 - BUILD_VF_CPU
   - Build VirtualFluids CPU variant
-- BUILD_VF_GPU 
+- BUILD_VF_GPU
   - Build VirtualFluids GPU variant
 - BUILD_VF_UNIT_TESTS
   -  Build VirtualFluids unit tests
-- VF_DOUBLE_ACCURACY 
+- VF_DOUBLE_ACCURACY
     - GPU change between Double and Single Precision
 
 ### Result Files
@@ -62,7 +62,7 @@ The doxygen generated documentation can be found [here](https://irmb.gitlab-page
 
 
 ## Known Issues
-If you notice any problems on your platform, please report an [issue](https://git.rz.tu-bs.de/irmb/virtualfluids/-/issues/new). 
+If you notice any problems on your platform, please report an [issue](https://git.rz.tu-bs.de/irmb/virtualfluids/-/issues/new).
 
 
 ## Authors
