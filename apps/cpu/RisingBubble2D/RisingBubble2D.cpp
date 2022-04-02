@@ -196,11 +196,7 @@ void run(string configname)
         SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
         SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
         //SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, metisVisitor, pathname, comm));
-<<<<<<< HEAD
         //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
-=======
-        //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, metisVisitor, pathname, comm));
->>>>>>> 2d5b026e0450341bc450d1ab0085bd1940db01c7
         // rcp->setNu(nuLB);
        //  rcp->setNuLG(nuL, nuG);
         //rcp->setDensityRatio(densityRatio);
