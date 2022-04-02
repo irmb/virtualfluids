@@ -28,7 +28,7 @@ void run(string configname)
         double nuG             = config.getValue<double>("nuG");
         double densityRatio    = config.getValue<double>("densityRatio");
         double sigma           = config.getValue<double>("sigma");
-        int interfaceThickness = config.getValue<int>("interfaceThickness");
+        int interfaceWidth = config.getValue<int>("interfaceWidth");
         //double radius          = config.getValue<double>("radius");
         double theta           = config.getValue<double>("contactAngle");
         double gr              = config.getValue<double>("gravity");
@@ -49,8 +49,8 @@ void run(string configname)
         double cpStep      = config.getValue<double>("cpStep");
         bool newStart      = config.getValue<bool>("newStart");
 
-        double beta  = 12 * sigma / interfaceThickness;
-        double kappa = 1.5 * interfaceThickness * sigma;
+        double beta = 12 * sigma / interfaceWidth;
+        double kappa = 1.5 * interfaceWidth * sigma;
 
         SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
         int myid                = comm->getProcessID();
@@ -89,7 +89,8 @@ void run(string configname)
         //kernel = SPtr<LBMKernel>(new MultiphaseCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsCumulantLBMKernel());
         //kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsVelocityCumulantLBMKernel());
-        kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
+       // kernel = SPtr<LBMKernel>(new MultiphaseTwoPhaseFieldsPressureFilterLBMKernel());
+        kernel = SPtr<LBMKernel>(new MultiphasePressureFilterLBMKernel());
 
         kernel->setWithForcing(true);
         kernel->setForcingX1(0.0);
@@ -107,6 +108,7 @@ void run(string configname)
         kernel->setDensityRatio(densityRatio);
         kernel->setMultiphaseModelParameters(beta, kappa);
         kernel->setContactAngle(theta);
+        kernel->setInterfaceWidth(interfaceWidth);
 
         SPtr<BCProcessor> bcProc(new BCProcessor());
         // BCProcessorPtr bcProc(new ThinWallBCProcessor());
@@ -114,9 +116,9 @@ void run(string configname)
         kernel->setBCProcessor(bcProc);
 
         SPtr<Grid3D> grid(new Grid3D(comm));
-        // grid->setPeriodicX1(true);
-        // grid->setPeriodicX2(true);
-        // grid->setPeriodicX3(true);
+         //grid->setPeriodicX1(true);
+         //grid->setPeriodicX2(true);
+         //grid->setPeriodicX3(true);
         grid->setGhostLayerWidth(2);
 
        
@@ -347,8 +349,7 @@ void run(string configname)
                 UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
             }
 
-            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nuL, nuG, densityRatio, beta, kappa, theta, availMem,
-                needMem);
+            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nuL, nuG, availMem, needMem);
 
             grid->accept(kernelVisitor);
 
@@ -363,10 +364,52 @@ void run(string configname)
             mu::Parser fct1;
             fct1.SetExpr("phiL");
             fct1.DefineConst("phiL", phiL);
-            MultiphaseInitDistributionsBlockVisitor initVisitor(interfaceThickness);
+            //MultiphaseInitDistributionsBlockVisitor initVisitor(interfaceThickness);
+            MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
             initVisitor.setPhi(fct1);
             grid->accept(initVisitor);
+///////////////////////////////////////////////////////////////////////////////////////////
+            //{
+                // std::vector<std::vector<SPtr<Block3D>>> blockVector;
+                // int gridRank = comm->getProcessID();
+                // int minInitLevel = grid->getCoarsestInitializedLevel();
+                // int maxInitLevel = grid->getFinestInitializedLevel();
+                // blockVector.resize(maxInitLevel + 1);
+                // for (int level = minInitLevel; level <= maxInitLevel; level++) {
+                //    grid->getBlocks(level, gridRank, true, blockVector[level]);
+                //}
+                //    for (int level = minInitLevel; level <= maxInitLevel; level++) {
+                //    for (SPtr<Block3D> block : blockVector[level]) {
+                //        if (block) {
+                //            int ix1 = block->getX1();
+                //            int ix2 = block->getX2();
+                //            int ix3 = block->getX3();
+                //            int level = block->getLevel();
 
+                //            for (int dir = 0; dir < D3Q27System::ENDDIR; dir++) {
+                //                SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, ix1, ix2, ix3, level);
+
+                //                if (!neighBlock) {
+
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+            //    SPtr<Block3D> block = grid->getBlock(0, 0, 0, 0);
+            //    SPtr<LBMKernel> kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
+            //    SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+
+            //    for (int ix3 = 0; ix3 <= 13; ix3++) {
+            //        for (int ix2 = 0; ix2 <= 13; ix2++) {
+            //            for (int ix1 = 0; ix1 <= 13; ix1++) {
+            //                if (ix1 == 0 || ix2 == 0 || ix3 == 0 || ix1 == 13 || ix2 == 13 || ix3 == 13)
+            //                    bcArray->setUndefined(ix1, ix2, ix3);
+            //            }
+            //        }
+            //    }
+            //}
+            ////////////////////////////////////////////////////////////////////////////////////////////
             // boundary conditions grid
             {
                 SPtr<UbScheduler> geoSch(new UbScheduler(1));
@@ -403,9 +446,10 @@ void run(string configname)
 
        //ThreeDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
 
-       grid->accept(bcVisitor);
+        grid->accept(bcVisitor);
 
-        ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        //ThreeDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
+        TwoDistributionsDoubleGhostLayerSetConnectorsBlockVisitor setConnsVisitor(comm);
         grid->accept(setConnsVisitor);
 
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));

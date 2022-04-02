@@ -85,7 +85,7 @@ void run(string configname)
 //         }    
 //#endif
 
-        //Sleep(30000);
+        //Sleep(20000);
 
         // LBMReal dLB = 0; // = length[1] / dx;
         LBMReal rhoLB = 0.0;
@@ -196,10 +196,14 @@ void run(string configname)
         SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
         SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(grid, rSch, pathname, comm));
         //SPtr<MPIIOMigrationCoProcessor> rcp(new MPIIOMigrationCoProcessor(grid, rSch, metisVisitor, pathname, comm));
+<<<<<<< HEAD
         //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, pathname, comm));
+=======
+        //SPtr<MPIIOMigrationBECoProcessor> rcp(new MPIIOMigrationBECoProcessor(grid, rSch, metisVisitor, pathname, comm));
+>>>>>>> 2d5b026e0450341bc450d1ab0085bd1940db01c7
         // rcp->setNu(nuLB);
-        // rcp->setNuLG(nuL, nuG);
-        // rcp->setDensityRatio(densityRatio);
+       //  rcp->setNuLG(nuL, nuG);
+        //rcp->setDensityRatio(densityRatio);
 
         rcp->setLBMKernel(kernel);
         rcp->setBCProcessor(bcProc);
@@ -283,8 +287,7 @@ void run(string configname)
                 UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
             }
 
-            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nuL, nuG, densityRatio, beta, kappa, theta, availMem,
-                needMem);
+            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nuL, nuG, availMem, needMem);
 
             grid->accept(kernelVisitor);
 

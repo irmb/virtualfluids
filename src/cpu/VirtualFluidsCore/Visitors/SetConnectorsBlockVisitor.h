@@ -70,8 +70,7 @@ protected:
     void setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block);
     void setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir);
     std::shared_ptr<vf::mpi::Communicator> comm;
-    int dirs;
-    int gridRank;
+    int gridRank{0};
 };
 
 template <class T1, class T2>
