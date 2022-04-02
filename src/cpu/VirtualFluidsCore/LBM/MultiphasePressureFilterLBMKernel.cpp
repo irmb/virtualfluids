@@ -156,21 +156,6 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 	nonLocalDistributionsH1 = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getNonLocalDistributions();
 	zeroDistributionsH1     = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getHdistributions())->getZeroDistributions();
 
-
-	/*std::vector<double> doubleValuesArrayFtemp; // double-values (arrays of f's) in all blocks  Fdistribution
-	doubleValuesArrayFtemp.insert(doubleValuesArrayFtemp.end(), localDistributionsF->getDataVector().begin(), localDistributionsF->getDataVector().end());
-	doubleValuesArrayFtemp.insert(doubleValuesArrayFtemp.end(), nonLocalDistributionsF->getDataVector().begin(), nonLocalDistributionsF->getDataVector().end());
-	doubleValuesArrayFtemp.insert(doubleValuesArrayFtemp.end(), zeroDistributionsF->getDataVector().begin(), zeroDistributionsF->getDataVector().end());
-
-	for (int i = 0; i < doubleValuesArrayFtemp.size(); i++)
-	{
-		if (UbMath::isNaN(doubleValuesArrayFtemp[i]) || UbMath::isInfinity(doubleValuesArrayFtemp[i]))
-			std::cout << "doubleValuesArrayFtemp[i] is NAN  " << i << std::endl;
-	}*/
-	//std::cout << "localDistributionsF=" << localDistributionsF->getNX1() << " " << localDistributionsF->getNX2() << " " << localDistributionsF->getNX3() << " " << localDistributionsF->getNX4() << std::endl;
-	//std::cout << "nonLocalDistributionsF=" << nonLocalDistributionsF->getNX1() << " " << nonLocalDistributionsF->getNX2() << " " << nonLocalDistributionsF->getNX3() << " " << nonLocalDistributionsF->getNX4() << std::endl;
-	//std::cout << "zeroDistributionsF=" << zeroDistributionsF->getNX1() << " " << zeroDistributionsF->getNX2() << " " << zeroDistributionsF->getNX3() << std::endl;
-
 	CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr pressure = dataSet->getPressureField();
 
 	SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
@@ -185,12 +170,6 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 	int maxX1 = bcArrayMaxX1 - ghostLayerWidth;
 	int maxX2 = bcArrayMaxX2 - ghostLayerWidth;
 	int maxX3 = bcArrayMaxX3 - ghostLayerWidth;
-
-//	std::cout << "MultiphasePressureFilterLBMKernel::calculate bcArrayMaxX1=" << bcArrayMaxX1 << " , bcArrayMaxX2=" << bcArrayMaxX2 << ", bcArrayMaxX3=" << bcArrayMaxX3 << std::endl;
-//	std::cout << "MultiphasePressureFilterLBMKernel::calculate minX1=" << minX1 << " , minX2=" << minX2 << ", minX3=" << minX3 << std::endl;
-//	std::cout << "MultiphasePressureFilterLBMKernel::calculate maxX1=" << maxX1 << " , maxX2=" << maxX2 << ", maxX3=" << maxX3 << std::endl;
-//	std::cout << "dataSetParamStr1=" << localDistributionsF->getNX1() << " " << localDistributionsF->getNX2() << " " << localDistributionsF->getNX3() << " " << localDistributionsF->getNX4() << std::endl;
-//	std::cout << "nx=" << dataSet->getFdistributions()->getNX1() << " " << dataSet->getFdistributions()->getNX2() << " " << dataSet->getFdistributions()->getNX3() << std::endl;
 
 	for (int x3 = minX3-ghostLayerWidth; x3 < maxX3+ghostLayerWidth; x3++) {
 		for (int x2 = minX2-ghostLayerWidth; x2 < maxX2+ghostLayerWidth; x2++) {
@@ -263,34 +242,6 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 					mfcca = (*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p);
 
 					mfbbb = (*this->zeroDistributionsF)(x1, x2, x3);
-					
-					/*if (UbMath::isNaN(mfcbb) || UbMath::isInfinity(mfcbb)) std::cout << "mfcbb is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfbcb) || UbMath::isInfinity(mfbcb)) std::cout << "mfbcb is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfbbc) || UbMath::isInfinity(mfbbc)) std::cout << "mfbbc is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfccb) || UbMath::isInfinity(mfccb)) std::cout << "mfccb is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfacb) || UbMath::isInfinity(mfacb)) std::cout << "mfacb is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfcbc) || UbMath::isInfinity(mfcbc)) std::cout << "mfcbc is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfabc) || UbMath::isInfinity(mfabc)) std::cout << "mfabc is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfbcc) || UbMath::isInfinity(mfbcc)) std::cout << "mfbcc is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfbac) || UbMath::isInfinity(mfbac)) std::cout << "mfbac is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfccc) || UbMath::isInfinity(mfccc)) std::cout << "mfccc is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfacc) || UbMath::isInfinity(mfacc)) std::cout << "mfacc is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfcac) || UbMath::isInfinity(mfcac)) std::cout << "mfcac is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfaac) || UbMath::isInfinity(mfaac)) std::cout << "mfaac is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfabb) || UbMath::isInfinity(mfabb)) std::cout << "mfabb is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfbab) || UbMath::isInfinity(mfbab)) std::cout << "mfbab is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfbba) || UbMath::isInfinity(mfbba)) std::cout << "mfbba is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfaab) || UbMath::isInfinity(mfaab)) std::cout << "mfaab is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfcab) || UbMath::isInfinity(mfcab)) std::cout << "mfcab is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfaba) || UbMath::isInfinity(mfaba)) std::cout << "mfaba is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfcba) || UbMath::isInfinity(mfcba)) std::cout << "mfcba is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfbaa) || UbMath::isInfinity(mfbaa)) std::cout << "mfbaa is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfbca) || UbMath::isInfinity(mfbca)) std::cout << "mfbca is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfaaa) || UbMath::isInfinity(mfaaa)) std::cout << "mfaaa is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfcaa) || UbMath::isInfinity(mfcaa)) std::cout << "mfcaa is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfaca) || UbMath::isInfinity(mfaca)) std::cout << "mfaca is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfcca) || UbMath::isInfinity(mfcca)) std::cout << "mfcca is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;
-					if (UbMath::isNaN(mfbbb) || UbMath::isInfinity(mfbbb)) std::cout << "mfbbb is NAN  " << x1 << " " << x2 << " " << x3 << std::endl;*/
 
 					LBMReal rhoH = 1.0;
 					LBMReal rhoL = 1.0 / densityRatio;
@@ -349,7 +300,7 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 	}
 
 	////!filter
-	//bool firstTime = true;
+
 	for (int x3 = minX3; x3 < maxX3; x3++) {
 		for (int x2 = minX2; x2 < maxX2; x2++) {
 			for (int x1 = minX1; x1 < maxX1; x1++) {
@@ -524,6 +475,124 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 					vvx += mu * dX1_phi * c1o2 / rho;
 					vvy += mu * dX2_phi * c1o2 / rho ;
 					vvz += mu * dX3_phi * c1o2 / rho;
+
+					//Abbas
+					LBMReal pStar = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
+						+ (((mfaab + mfccb) + (mfacb + mfcab)) + ((mfaba + mfcbc) + (mfabc + mfcba)) + ((mfbaa + mfbcc) + (mfbac + mfbca))))
+						+ ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb) * c1o3;
+
+					LBMReal M200 = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
+						+ (((mfaab + mfccb) + (mfacb + mfcab)) + ((mfaba + mfcbc) + (mfabc + mfcba))))
+						+ ((mfabb + mfcbb))));
+					LBMReal M020 = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
+						+ (((mfaab + mfccb) + (mfacb + mfcab)) + ((mfbaa + mfbcc) + (mfbac + mfbca))))
+						+ ((mfbab + mfbcb))));
+					LBMReal M002 = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
+						+ (+((mfaba + mfcbc) + (mfabc + mfcba)) + ((mfbaa + mfbcc) + (mfbac + mfbca))))
+						+ ((mfbba + mfbbc))));
+
+					LBMReal M110 = ((((((mfaaa + mfccc) + (-mfcac - mfaca)) + ((mfaac + mfcca) + (-mfcaa - mfacc)))
+						+ (((mfaab + mfccb) + (-mfacb - mfcab))))
+						));
+					LBMReal M101 = ((((((mfaaa + mfccc) - (mfaac + mfcca)) + ((mfcac + mfaca) - (mfcaa + mfacc)))
+						+ (((mfaba + mfcbc) + (-mfabc - mfcba))))
+						));
+					LBMReal M011 = ((((((mfaaa + mfccc) - (mfaac + mfcca)) + ((mfcaa + mfacc) - (mfcac + mfaca)))
+						+ (((mfbaa + mfbcc) + (-mfbac - mfbca))))
+						));
+					LBMReal vvxI = vvx;
+					LBMReal vvyI = vvy;
+					LBMReal vvzI = vvz;
+
+					LBMReal collFactorStore = collFactorM;
+					LBMReal stress;
+					for (int iter = 0; iter < 1; iter++) {
+						LBMReal OxxPyyPzz = 1.0;
+						LBMReal mxxPyyPzz = (M200 - vvxI * vvxI) + (M020 - vvyI * vvyI) + (M002 - vvzI * vvzI);
+						mxxPyyPzz -= c3 * pStar;
+
+						LBMReal mxxMyy = (M200 - vvxI * vvxI) - (M020 - vvyI * vvyI);
+						LBMReal mxxMzz = (M200 - vvxI * vvxI) - (M002 - vvzI * vvzI);
+						LBMReal mxy = M110 - vvxI * vvyI;
+						LBMReal mxz = M101 - vvxI * vvzI;
+						LBMReal myz = M011 - vvyI * vvzI;
+
+						///////Bingham
+						//LBMReal dxux = -c1o2 * collFactorM * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (/*mfaaa*/ -mxxPyyPzz);
+						//LBMReal dyuy = dxux + collFactorM * c3o2 * mxxMyy;
+						//LBMReal dzuz = dxux + collFactorM * c3o2 * mxxMzz;
+						//LBMReal Dxy = -three * collFactorM * mxy;
+						//LBMReal Dxz = -three * collFactorM * mxz;
+						//LBMReal Dyz = -three * collFactorM * myz;
+
+						//LBMReal tau0 = phi[REST] * 1.0e-7;//(phi[REST]>0.01)?1.0e-6: 0;
+						//LBMReal shearRate =fabs(pStar)*0.0e-2+ sqrt(c2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz) / (rho);
+						//collFactorM = collFactorM * (UbMath::one - (collFactorM * tau0) / (shearRate * c1o3 /* *rho*/ + 1.0e-15));
+						//collFactorM = (collFactorM < -1000000) ? -1000000 : collFactorM;
+						////if(collFactorM < 0.1) {
+						////	int test = 1;
+						////}
+						//////!Bingham
+
+
+						mxxMyy *= c1 - collFactorM * c1o2;
+						mxxMzz *= c1 - collFactorM * c1o2;
+						mxy *= c1 - collFactorM * c1o2;
+						mxz *= c1 - collFactorM * c1o2;
+						myz *= c1 - collFactorM * c1o2;
+						mxxPyyPzz *= c1 - OxxPyyPzz * c1o2;
+						//mxxPyyPzz += c3 * pStar;
+						LBMReal mxx = (mxxMyy + mxxMzz + mxxPyyPzz) * c1o3;
+						LBMReal myy = (-c2 * mxxMyy + mxxMzz + mxxPyyPzz) * c1o3;
+						LBMReal mzz = (mxxMyy - c2 * mxxMzz + mxxPyyPzz) * c1o3;
+						vvxI = vvx - (mxx * dX1_phi + mxy * dX2_phi + mxz * dX3_phi) * rhoToPhi / (rho);
+						vvyI = vvy - (mxy * dX1_phi + myy * dX2_phi + myz * dX3_phi) * rhoToPhi / (rho);
+						vvzI = vvz - (mxz * dX1_phi + myz * dX2_phi + mzz * dX3_phi) * rhoToPhi / (rho);
+
+
+
+					}
+
+
+					forcingX1 += c2 * (vvxI - vvx);
+					forcingX2 += c2 * (vvyI - vvy);
+					forcingX3 += c2 * (vvzI - vvz);
+
+					mfabb += c1o2 * (-forcingX1) * c2o9;
+					mfbab += c1o2 * (-forcingX2) * c2o9;
+					mfbba += c1o2 * (-forcingX3) * c2o9;
+					mfaab += c1o2 * (-forcingX1 - forcingX2) * c1o18;
+					mfcab += c1o2 * (forcingX1 - forcingX2) * c1o18;
+					mfaba += c1o2 * (-forcingX1 - forcingX3) * c1o18;
+					mfcba += c1o2 * (forcingX1 - forcingX3) * c1o18;
+					mfbaa += c1o2 * (-forcingX2 - forcingX3) * c1o18;
+					mfbca += c1o2 * (forcingX2 - forcingX3) * c1o18;
+					mfaaa += c1o2 * (-forcingX1 - forcingX2 - forcingX3) * c1o72;
+					mfcaa += c1o2 * (forcingX1 - forcingX2 - forcingX3) * c1o72;
+					mfaca += c1o2 * (-forcingX1 + forcingX2 - forcingX3) * c1o72;
+					mfcca += c1o2 * (forcingX1 + forcingX2 - forcingX3) * c1o72;
+					mfcbb += c1o2 * (forcingX1)*c2o9;
+					mfbcb += c1o2 * (forcingX2)*c2o9;
+					mfbbc += c1o2 * (forcingX3)*c2o9;
+					mfccb += c1o2 * (forcingX1 + forcingX2) * c1o18;
+					mfacb += c1o2 * (-forcingX1 + forcingX2) * c1o18;
+					mfcbc += c1o2 * (forcingX1 + forcingX3) * c1o18;
+					mfabc += c1o2 * (-forcingX1 + forcingX3) * c1o18;
+					mfbcc += c1o2 * (forcingX2 + forcingX3) * c1o18;
+					mfbac += c1o2 * (-forcingX2 + forcingX3) * c1o18;
+					mfccc += c1o2 * (forcingX1 + forcingX2 + forcingX3) * c1o72;
+					mfacc += c1o2 * (-forcingX1 + forcingX2 + forcingX3) * c1o72;
+					mfcac += c1o2 * (forcingX1 - forcingX2 + forcingX3) * c1o72;
+					mfaac += c1o2 * (-forcingX1 - forcingX2 + forcingX3) * c1o72;
+
+
+
+					vvx = vvxI;
+					vvy = vvyI;
+					vvz = vvzI;
+
+					//!Abbas
+
 
 					LBMReal vx2;
 					LBMReal vy2;
@@ -807,7 +876,7 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 
 					LBMReal OxyyPxzz = 8.0 * (collFactorM - 2.0) * (OxxPyyPzz * (3.0 * collFactorM - 1.0) - 5.0 * collFactorM) / (8.0 * (5.0 - 2.0 * collFactorM) * collFactorM + OxxPyyPzz * (8.0 + collFactorM * (9.0 * collFactorM - 26.0)));
 					LBMReal OxyyMxzz = 8.0 * (collFactorM - 2.0) * (collFactorM + OxxPyyPzz * (3.0 * collFactorM - 7.0)) / (OxxPyyPzz * (56.0 - 42.0 * collFactorM + 9.0 * collFactorM * collFactorM) - 8.0 * collFactorM);
-					//    LBMReal Oxyz = 24.0 * (collFactorM - 2.0) * (4.0 * collFactorM * collFactorM + collFactorM * OxxPyyPzz * (18.0 - 13.0 * collFactorM) + OxxPyyPzz * OxxPyyPzz * (2.0 + collFactorM * (6.0 * collFactorM - 11.0))) / (16.0 * collFactorM * collFactorM * (collFactorM - 6.0) - 2.0 * collFactorM * OxxPyyPzz * (216.0 + 5.0 * collFactorM * (9.0 * collFactorM - 46.0)) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (3.0 * collFactorM - 10.0) * (15.0 * collFactorM - 28.0) - 48.0));
+					LBMReal Oxyz = 24.0 * (collFactorM - 2.0) * (4.0 * collFactorM * collFactorM + collFactorM * OxxPyyPzz * (18.0 - 13.0 * collFactorM) + OxxPyyPzz * OxxPyyPzz * (2.0 + collFactorM * (6.0 * collFactorM - 11.0))) / (16.0 * collFactorM * collFactorM * (collFactorM - 6.0) - 2.0 * collFactorM * OxxPyyPzz * (216.0 + 5.0 * collFactorM * (9.0 * collFactorM - 46.0)) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (3.0 * collFactorM - 10.0) * (15.0 * collFactorM - 28.0) - 48.0));
 					LBMReal A = (4.0 * collFactorM * collFactorM + 2.0 * collFactorM * OxxPyyPzz * (collFactorM - 6.0) + OxxPyyPzz * OxxPyyPzz * (collFactorM * (10.0 - 3.0 * collFactorM) - 4.0)) / ((collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
 					//FIXME:  warning C4459: declaration of 'B' hides global declaration (message : see declaration of 'D3Q27System::B' )
 					LBMReal BB = (4.0 * collFactorM * OxxPyyPzz * (9.0 * collFactorM - 16.0) - 4.0 * collFactorM * collFactorM - 2.0 * OxxPyyPzz * OxxPyyPzz * (2.0 + 9.0 * collFactorM * (collFactorM - 2.0))) / (3.0 * (collFactorM - OxxPyyPzz) * (OxxPyyPzz * (2.0 + 3.0 * collFactorM) - 8.0 * collFactorM));
@@ -897,7 +966,7 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 					LBMReal mxyyMxzz = mfbca - mfbac;
 
 					//relax
-					wadjust = OxyyMxzz + (1. - OxyyMxzz) * fabs(mfbbb) / (fabs(mfbbb) + qudricLimit);
+					wadjust = Oxyz + (1. - Oxyz) * fabs(mfbbb) / (fabs(mfbbb) + qudricLimit);
 					mfbbb += wadjust * (-mfbbb);
 					wadjust = OxyyPxzz + (1. - OxyyPxzz) * fabs(mxxyPyzz) / (fabs(mxxyPyzz) + qudricLimit);
 					mxxyPyzz += wadjust * (-mxxyPyzz);
@@ -974,13 +1043,13 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 
 					////////////////////////////////////////////////////////////////////////////////////
 					//forcing
-					mfbaa = -mfbaa;
-					mfaba = -mfaba;
-					mfaab = -mfaab;
+					//mfbaa = -mfbaa;
+					//mfaba = -mfaba;
+					//mfaab = -mfaab;
 					//////////////////////////////////////////////////////////////////////////////////////
-					mfbaa += c1o3 * (c1 / collFactorM - c1o2) * rhoToPhi * (2 * dxux * dX1_phi + Dxy * dX2_phi + Dxz * dX3_phi) / (rho);
-					mfaba += c1o3 * (c1 / collFactorM - c1o2) * rhoToPhi * (Dxy * dX1_phi + 2 * dyuy * dX2_phi + Dyz * dX3_phi) / (rho);
-					mfaab += c1o3 * (c1 / collFactorM - c1o2) * rhoToPhi * (Dxz * dX1_phi + Dyz * dX2_phi + 2 * dyuy * dX3_phi) / (rho);
+					//mfbaa += c1o3 * (c1 / collFactorM - c1o2) * rhoToPhi * (2 * dxux * dX1_phi + Dxy * dX2_phi + Dxz * dX3_phi) / (rho);
+					//mfaba += c1o3 * (c1 / collFactorM - c1o2) * rhoToPhi * (Dxy * dX1_phi + 2 * dyuy * dX2_phi + Dyz * dX3_phi) / (rho);
+					//mfaab += c1o3 * (c1 / collFactorM - c1o2) * rhoToPhi * (Dxz * dX1_phi + Dyz * dX2_phi + 2 * dyuy * dX3_phi) / (rho);
 					////////////////////////////////////////////////////////////////////////////////////
 					//back
 					////////////////////////////////////////////////////////////////////////////////////
@@ -1190,6 +1259,38 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 					mfbcc = m1;
 					mfccc = m2;
 
+					////forcing
+
+					mfabb += c1o2 * (-forcingX1) * c2o9;
+					mfbab += c1o2 * (-forcingX2) * c2o9;
+					mfbba += c1o2 * (-forcingX3) * c2o9;
+					mfaab += c1o2 * (-forcingX1 - forcingX2) * c1o18;
+					mfcab += c1o2 * (forcingX1 - forcingX2) * c1o18;
+					mfaba += c1o2 * (-forcingX1 - forcingX3) * c1o18;
+					mfcba += c1o2 * (forcingX1 - forcingX3) * c1o18;
+					mfbaa += c1o2 * (-forcingX2 - forcingX3) * c1o18;
+					mfbca += c1o2 * (forcingX2 - forcingX3) * c1o18;
+					mfaaa += c1o2 * (-forcingX1 - forcingX2 - forcingX3) * c1o72;
+					mfcaa += c1o2 * (forcingX1 - forcingX2 - forcingX3) * c1o72;
+					mfaca += c1o2 * (-forcingX1 + forcingX2 - forcingX3) * c1o72;
+					mfcca += c1o2 * (forcingX1 + forcingX2 - forcingX3) * c1o72;
+					mfcbb += c1o2 * (forcingX1)*c2o9;
+					mfbcb += c1o2 * (forcingX2)*c2o9;
+					mfbbc += c1o2 * (forcingX3)*c2o9;
+					mfccb += c1o2 * (forcingX1 + forcingX2) * c1o18;
+					mfacb += c1o2 * (-forcingX1 + forcingX2) * c1o18;
+					mfcbc += c1o2 * (forcingX1 + forcingX3) * c1o18;
+					mfabc += c1o2 * (-forcingX1 + forcingX3) * c1o18;
+					mfbcc += c1o2 * (forcingX2 + forcingX3) * c1o18;
+					mfbac += c1o2 * (-forcingX2 + forcingX3) * c1o18;
+					mfccc += c1o2 * (forcingX1 + forcingX2 + forcingX3) * c1o72;
+					mfacc += c1o2 * (-forcingX1 + forcingX2 + forcingX3) * c1o72;
+					mfcac += c1o2 * (forcingX1 - forcingX2 + forcingX3) * c1o72;
+					mfaac += c1o2 * (-forcingX1 - forcingX2 + forcingX3) * c1o72;
+
+
+
+
 					//////////////////////////////////////////////////////////////////////////
 					//proof correctness
 					//////////////////////////////////////////////////////////////////////////
@@ -1249,8 +1350,7 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 					(*this->nonLocalDistributionsF)(D3Q27System::ET_BNE, x1, x2, x3p) = mfaac   ;//* rho * c1o3;
 
 					(*this->zeroDistributionsF)(x1, x2, x3) = mfbbb;// *rho* c1o3;
-									
-																			// !Old Kernel
+																																		// !Old Kernel
 /////////////////////  P H A S E - F I E L D   S O L V E R
 ////////////////////////////////////////////
 /////CUMULANT PHASE-FIELD
@@ -1512,23 +1612,6 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 			}
 		}
 	}
-
-	/*std::vector<double> doubleValuesArrayFtemp; // double-values (arrays of f's) in all blocks  Fdistribution
-	doubleValuesArrayFtemp.insert(doubleValuesArrayFtemp.end(), *this->localDistributionsF->getDataVector().begin(),
-		*this->localDistributionsF->getDataVector().end());
-	doubleValuesArrayFtemp.insert(doubleValuesArrayFtemp.end(), *this->nonLocalDistributionsF->getDataVector().begin(),
-		*this->nonLocalDistributionsF->getDataVector().end());
-	doubleValuesArrayFtemp.insert(doubleValuesArrayFtemp.end(), *this->zeroDistributionsF->getDataVector().begin(),
-		*this->zeroDistributionsF->getDataVector().end());
-
-	for (int i = 0; i < doubleValuesArrayFtemp.size(); i++)
-	{
-		if (UbMath::isNaN(doubleValuesArrayFtemp[i]) || UbMath::isInfinity(doubleValuesArrayFtemp[i]))
-			std::cout << "doubleValuesArrayFtemp[i] is NAN  " << i << std::endl;
-	}*/
-
-	//std::cout << "MPIIOMigrationCoProcessor::readDataSet posle NAN ni4ego net" << std::endl;*/
-
 }
 //////////////////////////////////////////////////////////////////////////
 

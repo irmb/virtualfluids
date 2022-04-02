@@ -27,7 +27,7 @@ void run(string configname)
         vector<int> blocknx = config.getVector<int>("blocknx");
         //vector<double> boundingBox = config.getVector<double>("boundingBox");
         // vector<double>  length = config.getVector<double>("length");
-        double uLB = config.getValue<double>("uLB");
+        double U_LB = config.getValue<double>("U_LB");
         // double uF2                         = config.getValue<double>("uF2");
         //double nuL = config.getValue<double>("nuL");
         //double nuG = config.getValue<double>("nuG");
@@ -36,7 +36,7 @@ void run(string configname)
         int interfaceWidth = config.getValue<int>("interfaceWidth");
         //double D          = config.getValue<double>("D");
         double theta = config.getValue<double>("contactAngle");
-        double deltaXfactor = config.getValue<double>("deltaXfactor");
+        double D_LB = config.getValue<double>("D_LB");
         double phiL = config.getValue<double>("phi_L");
         double phiH = config.getValue<double>("phi_H");
         double tauH = config.getValue<double>("Phase-field Relaxation");
@@ -46,16 +46,15 @@ void run(string configname)
         double outTime = config.getValue<double>("outTime");
         double availMem = config.getValue<double>("availMem");
         //int refineLevel = config.getValue<int>("refineLevel");
-        double Re = config.getValue<double>("Re");
-        double dx = D/deltaXfactor;
+        //double Re = config.getValue<double>("Re");
+        
         bool logToFile = config.getValue<bool>("logToFile");
         double restartStep = config.getValue<double>("restartStep");
         double cpStart = config.getValue<double>("cpStart");
         double cpStep = config.getValue<double>("cpStep");
         bool newStart = config.getValue<bool>("newStart");
 
-        double beta = 12 * sigma / interfaceWidth;
-        double kappa = 1.5 * interfaceWidth * sigma;
+
 
         int caseN = config.getValue<int>("case");
 
@@ -123,9 +122,39 @@ void run(string configname)
                 break;
         }
 
+        double Re = rho_h * Uo * D / mu_h;
+        double We = rho_h * Uo * Uo * D / sigma;
+
+        double dx = D / D_LB;
+        double nu_h = U_LB * D_LB / Re;
+        double nu_l = nu_h;
+
+        double rho_h_LB = 1;
+        //surface tension
+        double sigma_LB = rho_h_LB * U_LB * U_LB * D_LB / We;
+
         // LBMReal dLB = 0; // = length[1] / dx;
         LBMReal rhoLB = 0.0;
-        LBMReal nuLB = nuL; //(uLB*dLB) / Re;
+        LBMReal nuLB = nu_l; //(uLB*dLB) / Re;
+
+        double beta = 12.0 * sigma_LB / interfaceWidth;
+        double kappa = 1.5 * interfaceWidth * sigma_LB;
+
+        if (myid == 0) {
+            UBLOG(logINFO, "Parameters:");
+            UBLOG(logINFO, "U_LB = " << U_LB);
+            UBLOG(logINFO, "rho = " << rhoLB);
+            UBLOG(logINFO, "nu_l = " << nu_l);
+            UBLOG(logINFO, "nu_h = " << nu_h);
+            UBLOG(logINFO, "Re = " << Re);
+            UBLOG(logINFO, "We = " << We);
+            UBLOG(logINFO, "dx = " << dx);
+            UBLOG(logINFO, "sigma = " << sigma);
+            UBLOG(logINFO, "density ratio = " << r_rho);
+            // UBLOG(logINFO, "number of levels = " << refineLevel + 1);
+            UBLOG(logINFO, "numOfThreads = " << numOfThreads);
+            UBLOG(logINFO, "path = " << pathname);
+        }
 
         SPtr<LBMUnitConverter> conv(new LBMUnitConverter());
 
@@ -152,8 +181,8 @@ void run(string configname)
 
         // nuL, nuG, densityRatio, beta, kappa, theta,
 
-        kernel->setCollisionFactorMultiphase(nuL, nuG);
-        kernel->setDensityRatio(densityRatio);
+        kernel->setCollisionFactorMultiphase(nu_h, nu_l);
+        kernel->setDensityRatio(r_rho);
         kernel->setMultiphaseModelParameters(beta, kappa);
         kernel->setContactAngle(theta);
         kernel->setInterfaceWidth(interfaceWidth);
@@ -201,7 +230,7 @@ void run(string configname)
 
         mu::Parser fctF2;
         fctF2.SetExpr("vy1");
-        fctF2.DefineConst("vy1", uLB);
+        fctF2.DefineConst("vy1", U_LB);
 
         double startTime = 30;
         SPtr<BCAdapter> velBCAdapterF1(
@@ -305,11 +334,6 @@ void run(string configname)
             // double blockLength = blocknx[0] * dx;
 
             if (myid == 0) {
-                UBLOG(logINFO, "uLb = " << uLB);
-                UBLOG(logINFO, "rho = " << rhoLB);
-                UBLOG(logINFO, "nuLb = " << nuLB);
-                UBLOG(logINFO, "Re = " << Re);
-                UBLOG(logINFO, "dx = " << dx);
                 UBLOG(logINFO, "Preprocess - start");
             }
 
@@ -426,7 +450,7 @@ void run(string configname)
                 UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
             }
 
-            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nuL, nuG, availMem, needMem);
+            MultiphaseSetKernelBlockVisitor kernelVisitor(kernel, nu_h, nu_l, availMem, needMem);
 
             grid->accept(kernelVisitor);
 
@@ -499,25 +523,13 @@ void run(string configname)
             if (myid == 0)
                 UBLOG(logINFO, "Preprocess - end");
         } else {
-            if (myid == 0) {
-                UBLOG(logINFO, "Parameters:");
-                UBLOG(logINFO, "uLb = " << uLB);
-                UBLOG(logINFO, "rho = " << rhoLB);
-                UBLOG(logINFO, "nuLb = " << nuLB);
-                UBLOG(logINFO, "Re = " << Re);
-                UBLOG(logINFO, "dx = " << dx);
-                //UBLOG(logINFO, "number of levels = " << refineLevel + 1);
-                UBLOG(logINFO, "numOfThreads = " << numOfThreads);
-                UBLOG(logINFO, "path = " << pathname);
-            }
-
             rcp->restart((int)restartStep);
             grid->setTimeStep(restartStep);
 
             if (myid == 0)
                 UBLOG(logINFO, "Restart - end");
         }
-
+        
         //  TwoDistributionsSetConnectorsBlockVisitor setConnsVisitor(comm);
         //  grid->accept(setConnsVisitor);
 
@@ -532,7 +544,7 @@ void run(string configname)
         SPtr<UbScheduler> visSch(new UbScheduler(outTime));
         double t_ast, t;
         t_ast = 7.19;
-        t = (int)(t_ast/(uLB/(deltaXfactor)));
+        t = (int)(t_ast/(U_LB/(D_LB)));
         visSch->addSchedule(t,t,t); //t=7.19
         SPtr<WriteMultiphaseQuantitiesCoProcessor> pp(new WriteMultiphaseQuantitiesCoProcessor(
             grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
