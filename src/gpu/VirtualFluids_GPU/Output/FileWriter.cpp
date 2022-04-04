@@ -92,18 +92,18 @@ void VIRTUALFLUIDS_GPU_EXPORT FileWriter::writeCollectionFile(std::shared_ptr<Pa
     file.open( filename + ".pvtu" );
 
     //////////////////////////////////////////////////////////////////////////
-    
-    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
+    file << "<?xml version=\"1.0\"?>" << std::endl;
+    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\">" << std::endl;
     file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
 
     file << "    <PPointData>" << std::endl;
-    file << "       <DataArray type=\"Float32\" Name=\"press\" /> " << std::endl;
-    file << "       <DataArray type=\"Float32\" Name=\"rho\"   /> " << std::endl;
-    file << "       <DataArray type=\"Float32\" Name=\"vx1\"   /> " << std::endl;
-    file << "       <DataArray type=\"Float32\" Name=\"vx2\"   /> " << std::endl;
-    file << "       <DataArray type=\"Float32\" Name=\"vx3\"   /> " << std::endl;
-    file << "       <DataArray type=\"Float32\" Name=\"geo\"   /> " << std::endl;
-    if( para->getDiffOn() ) file << "       <DataArray type=\"Float32\" Name=\"conc\"  /> " << std::endl;
+    file << "       <PDataArray type=\"Float64\" Name=\"press\" /> " << std::endl;
+    file << "       <PDataArray type=\"Float64\" Name=\"rho\"   /> " << std::endl;
+    file << "       <PDataArray type=\"Float64\" Name=\"vx1\"   /> " << std::endl;
+    file << "       <PDataArray type=\"Float64\" Name=\"vx2\"   /> " << std::endl;
+    file << "       <PDataArray type=\"Float64\" Name=\"vx3\"   /> " << std::endl;
+    file << "       <PDataArray type=\"Float64\" Name=\"geo\"   /> " << std::endl;
+    if( para->getDiffOn() ) file << "       <PDataArray type=\"Float64\" Name=\"conc\"  /> " << std::endl;
     file << "    </PPointData>" << std::endl;
 
     file << "    <PPoints>" << std::endl;
