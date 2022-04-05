@@ -375,7 +375,9 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 					LBMReal normX2 = dX2_phi / denom;
 					LBMReal normX3 = dX3_phi / denom;
 
-
+					dX1_phi = normX1 * (1.0 - phi[REST]) * (phi[REST]) * oneOverInterfaceScale;
+                    dX2_phi = normX2 * (1.0 - phi[REST]) * (phi[REST]) * oneOverInterfaceScale;
+                    dX3_phi = normX3 * (1.0 - phi[REST]) * (phi[REST]) * oneOverInterfaceScale;
 
 					collFactorM = collFactorL + (collFactorL - collFactorG) * (phi[REST] - phiH) / (phiH - phiL);
 
@@ -467,14 +469,18 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 					forcingX2 = muForcingX2.Eval()/rho - gradPy/rho;
 					forcingX3 = muForcingX3.Eval()/rho - gradPz/rho;
 
+					forcingX1 += mu * dX1_phi / rho;
+                    forcingX2 += mu * dX2_phi / rho;
+                    forcingX3 += mu * dX3_phi / rho;
+
 					vvx += forcingX1 * deltaT * 0.5; // X
 					vvy += forcingX2 * deltaT * 0.5; // Y
 					vvz += forcingX3 * deltaT * 0.5; // Z
 
                     ///surface tension force
-					vvx += mu * dX1_phi * c1o2 / rho;
-					vvy += mu * dX2_phi * c1o2 / rho ;
-					vvz += mu * dX3_phi * c1o2 / rho;
+					//vvx += mu * dX1_phi * c1o2 / rho;
+					//vvy += mu * dX2_phi * c1o2 / rho ;
+					//vvz += mu * dX3_phi * c1o2 / rho;
 
 					//Abbas
 					LBMReal pStar = ((((((mfaaa + mfccc) + (mfaac + mfcca)) + ((mfcac + mfaca) + (mfcaa + mfacc)))
@@ -541,7 +547,7 @@ void MultiphasePressureFilterLBMKernel::calculate(int step)
 						mxz *= c1 - collFactorM * c1o2;
 						myz *= c1 - collFactorM * c1o2;
 						mxxPyyPzz *= c1 - OxxPyyPzz * c1o2;
-						//mxxPyyPzz += c3 * pStar;
+						//mxxPyyPzz += c3o2 * pStar;
 						LBMReal mxx = (mxxMyy + mxxMzz + mxxPyyPzz) * c1o3;
 						LBMReal myy = (-c2 * mxxMyy + mxxMzz + mxxPyyPzz) * c1o3;
 						LBMReal mzz = (mxxMyy - c2 * mxxMzz + mxxPyyPzz) * c1o3;

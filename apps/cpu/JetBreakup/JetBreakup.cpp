@@ -462,10 +462,21 @@ void run(string configname)
             intHelper.setBC();
 
             // initialization of distributions
+            //mu::Parser fct1;
+            //fct1.SetExpr("phiL");
+            //fct1.DefineConst("phiL", phiL);
+            LBMReal x1c = 0;  // (g_maxX1 - g_minX1-1)/2; //
+            LBMReal x2c = (g_maxX2 - g_minX2)/2;
+            LBMReal x3c = (g_maxX3 - g_minX3)/2;
+            
             mu::Parser fct1;
-            fct1.SetExpr("phiL");
-            fct1.DefineConst("phiL", phiL);
-            // MultiphaseInitDistributionsBlockVisitor initVisitor(interfaceThickness);
+            fct1.SetExpr("0.5-0.5*tanh(2*(sqrt((x1-x1c)^2+(x2-x2c)^2+(x3-x3c)^2)-radius)/interfaceThickness)");
+            fct1.DefineConst("x1c", x1c);
+            fct1.DefineConst("x2c", x2c);
+            fct1.DefineConst("x3c", x3c);
+            fct1.DefineConst("radius", 0.5*D);
+            fct1.DefineConst("interfaceThickness", interfaceWidth*dx);
+
             MultiphaseVelocityFormInitDistributionsBlockVisitor initVisitor;
             initVisitor.setPhi(fct1);
             grid->accept(initVisitor);
