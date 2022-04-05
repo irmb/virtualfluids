@@ -82,7 +82,7 @@ const real velocity  = u_star/kappa*log(L_z/z0); //max mean velocity at the top 
 
 const real mach = 0.1;
 
-const uint nodes_per_H = 32;
+const uint nodes_per_H = 64;
 
 std::string path(".");
 
@@ -90,9 +90,9 @@ std::string simulationName("BoundayLayer");
 
 // all in s
 const float tOut = 10000;
-const float tEnd = 50000; // total time of simulation
-const float tStartAveraging =  0;
-const float tAveraging      =  1000;
+const float tEnd = 100000; // total time of simulation
+const float tStartAveraging =  50000;
+const float tAveraging      =  200;
 const float tStartOutProbe  =  0;
 const float tOutProbe       =  1000; 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,7 +159,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setMaxLevel(1);
 
-    // para->setForcing(pressureGradientLB, 0, 0);
+    para->setForcing(pressureGradientLB, 0, 0);
     para->setVelocity(velocityLB);
     para->setViscosity(viscosityLB);
     para->setVelocityRatio( dx / dt );
@@ -168,6 +168,7 @@ void multipleLevel(const std::string& configPath)
     para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
     para->setUseAMD(true);
     para->setSGSConstant(0.083); 
+    // para->setQuadricLimiters( 0.001, 0.001, 0.001);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
@@ -202,7 +203,7 @@ void multipleLevel(const std::string& configPath)
     SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
     // planarAverageProbe->addPostProcessingVariable(PostProcessingVariable::SpatialMeans);
     planarAverageProbe->addAllAvailablePostProcessingVariables();
-    planarAverageProbe->setFileNameToTOut();
+    planarAverageProbe->setFileNameToNOut();
     para->addProbe( planarAverageProbe );
 
     Simulation sim(communicator);

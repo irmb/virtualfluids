@@ -366,6 +366,8 @@ void Probe::addAllAvailablePostProcessingVariables()
 
 void Probe::write(Parameter* para, int level, int t)
 {
+    int t_write = this->fileNameLU ? t: t/this->tOut; 
+
     const uint numberOfParts = this->getProbeStruct(level)->nPoints / para->getlimitOfNodesForVTK() + 1;
 
     std::vector<std::string> fnames;
@@ -374,7 +376,7 @@ void Probe::write(Parameter* para, int level, int t)
         std::string fname = this->probeName + "_bin_lev_" + StringUtil::toString<int>(level)
                                          + "_ID_" + StringUtil::toString<int>(para->getMyID())
                                          + "_Part_" + StringUtil::toString<int>(i) 
-                                         + "_t_" + StringUtil::toString<int>(t) 
+                                         + "_t_" + StringUtil::toString<int>(t_write) 
                                          + ".vtk";
 		fnames.push_back(fname);
         this->fileNamesForCollectionFile.push_back(fname);

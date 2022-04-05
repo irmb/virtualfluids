@@ -96,7 +96,7 @@ public:
     
     bool getHasDeviceQuantityArray();
 
-    void setFileNameToTOut(){this->fileNameLU = false;}
+    void setFileNameToNOut(){this->fileNameLU = false;}
 
 private:
     virtual bool isAvailablePostProcessingVariable(PostProcessingVariable _variable) = 0;
@@ -131,7 +131,7 @@ private:
     uint tStartOut;
     uint tOut;
 
-    bool fileNameLU = true; //if true, written file name contains time step in LU, else is number of written probe files
+    bool fileNameLU = true; //if true, written file name contains time step in LU, else is the number of the written probe files
 };
 
 #endif

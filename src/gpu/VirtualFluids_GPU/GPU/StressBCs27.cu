@@ -12,12 +12,16 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
 											   real* QQ,
                                     unsigned int sizeQ,
                                     real om1, 
+                                    real* turbViscosity,
                                     real* vx,
                                     real* vy,
                                     real* vz,
                                     real* normalX,
                                     real* normalY,
                                     real* normalZ,
+                                    real* vx_bc,
+                                    real* vy_bc,
+                                    real* vz_bc,
                                     int* samplingOffset,
                                     real* z0,
 											   unsigned int* neighborX,
@@ -214,6 +218,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
 
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
 
+      real om_turb = om1 / (c1o1 + c3o1*om1*max(c0o1, turbViscosity[k_N[k]]));
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)      //get adress where incoming f's should be written to
       {
@@ -352,7 +357,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
-         f_W_in=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_E+f_W))/(c1o1+q) - c2o27 * drho;
+         f_W_in=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_E+f_W))/(c1o1+q) - c2o27 * drho;
          wallMomentumX += f_E+f_W_in;
       }
 
@@ -360,7 +365,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
-         f_E_in=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_W+f_E))/(c1o1+q) - c2o27 * drho;
+         f_E_in=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_W+f_E))/(c1o1+q) - c2o27 * drho;
          wallMomentumX -= f_W+f_E_in;
       }
 
@@ -368,7 +373,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*(    vx2     )*/+c9o2*(     vx2    )*(     vx2    ) * (c1o1 + drho)-cu_sq); 
-         f_S_in=(c1o1-q)/(c1o1+q)*(f_N-f_S+(f_N+f_S-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_N+f_S))/(c1o1+q) - c2o27 * drho;
+         f_S_in=(c1o1-q)/(c1o1+q)*(f_N-f_S+(f_N+f_S-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_N+f_S))/(c1o1+q) - c2o27 * drho;
          wallMomentumY += f_N+f_S_in;
       }
 
@@ -376,7 +381,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*(   -vx2     )*/+c9o2*(    -vx2    )*(    -vx2    ) * (c1o1 + drho)-cu_sq); 
-         f_N_in=(c1o1-q)/(c1o1+q)*(f_S-f_N+(f_S+f_N-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_S+f_N))/(c1o1+q) - c2o27 * drho;
+         f_N_in=(c1o1-q)/(c1o1+q)*(f_S-f_N+(f_S+f_N-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_S+f_N))/(c1o1+q) - c2o27 * drho;
          wallMomentumY -= f_S+f_N_in;
       }
 
@@ -384,7 +389,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*(         vx3)*/+c9o2*(         vx3)*(         vx3) * (c1o1 + drho)-cu_sq); 
-         f_B_in=(c1o1-q)/(c1o1+q)*(f_T-f_B+(f_T+f_B-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_T+f_B))/(c1o1+q) - c2o27 * drho;
+         f_B_in=(c1o1-q)/(c1o1+q)*(f_T-f_B+(f_T+f_B-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_T+f_B))/(c1o1+q) - c2o27 * drho;
          wallMomentumZ += f_T+f_B_in;
       }
 
@@ -392,7 +397,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*(        -vx3)*/+c9o2*(        -vx3)*(        -vx3) * (c1o1 + drho)-cu_sq); 
-         f_T_in=(c1o1-q)/(c1o1+q)*(f_B-f_T+(f_B+f_T-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_B+f_T))/(c1o1+q) - c2o27 * drho;
+         f_T_in=(c1o1-q)/(c1o1+q)*(f_B-f_T+(f_B+f_T-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_B+f_T))/(c1o1+q) - c2o27 * drho;
          wallMomentumZ -= f_B+f_T_in;
       }
 
@@ -400,7 +405,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o54* (drho/*+three*( vx1+vx2    )*/+c9o2*( vx1+vx2    )*( vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
-         f_SW_in=(c1o1-q)/(c1o1+q)*(f_NE-f_SW+(f_NE+f_SW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NE+f_SW))/(c1o1+q) - c1o54 * drho;
+         f_SW_in=(c1o1-q)/(c1o1+q)*(f_NE-f_SW+(f_NE+f_SW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_NE+f_SW))/(c1o1+q) - c1o54 * drho;
          wallMomentumX += f_NE+f_SW_in;
          wallMomentumY += f_NE+f_SW_in;
       }
@@ -409,7 +414,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o54* (drho/*+three*(-vx1-vx2    )*/+c9o2*(-vx1-vx2    )*(-vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
-         f_NE_in=(c1o1-q)/(c1o1+q)*(f_SW-f_NE+(f_SW+f_NE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SW+f_NE))/(c1o1+q) - c1o54 * drho;
+         f_NE_in=(c1o1-q)/(c1o1+q)*(f_SW-f_NE+(f_SW+f_NE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_SW+f_NE))/(c1o1+q) - c1o54 * drho;
          wallMomentumX -= f_SW+f_NE_in;
          wallMomentumY -= f_SW+f_NE_in;
       }
@@ -418,7 +423,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o54* (drho/*+three*( vx1-vx2    )*/+c9o2*( vx1-vx2    )*( vx1-vx2    ) * (c1o1 + drho)-cu_sq); 
-         f_NW_in=(c1o1-q)/(c1o1+q)*(f_SE-f_NW+(f_SE+f_NW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_SE+f_NW))/(c1o1+q) - c1o54 * drho;
+         f_NW_in=(c1o1-q)/(c1o1+q)*(f_SE-f_NW+(f_SE+f_NW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_SE+f_NW))/(c1o1+q) - c1o54 * drho;
          wallMomentumX += f_SE+f_NW_in;
          wallMomentumY -= f_SE+f_NW_in;
       }
@@ -427,7 +432,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o54* (drho/*+three*(-vx1+vx2    )*/+c9o2*(-vx1+vx2    )*(-vx1+vx2    ) * (c1o1 + drho)-cu_sq); 
-         f_SE_in=(c1o1-q)/(c1o1+q)*(f_NW-f_SE+(f_NW+f_SE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_NW+f_SE))/(c1o1+q) - c1o54 * drho;
+         f_SE_in=(c1o1-q)/(c1o1+q)*(f_NW-f_SE+(f_NW+f_SE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_NW+f_SE))/(c1o1+q) - c1o54 * drho;
          wallMomentumX -= f_NW+f_SE_in;
          wallMomentumY += f_NW+f_SE_in;
       }
@@ -436,7 +441,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o54* (drho/*+three*( vx1    +vx3)*/+c9o2*( vx1    +vx3)*( vx1    +vx3) * (c1o1 + drho)-cu_sq); 
-         f_BW_in=(c1o1-q)/(c1o1+q)*(f_TE-f_BW+(f_TE+f_BW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TE+f_BW))/(c1o1+q) - c1o54 * drho;
+         f_BW_in=(c1o1-q)/(c1o1+q)*(f_TE-f_BW+(f_TE+f_BW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TE+f_BW))/(c1o1+q) - c1o54 * drho;
          wallMomentumX += f_TE+f_BW_in;
          wallMomentumZ += f_TE+f_BW_in;
       }
@@ -445,7 +450,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o54* (drho/*+three*(-vx1    -vx3)*/+c9o2*(-vx1    -vx3)*(-vx1    -vx3) * (c1o1 + drho)-cu_sq); 
-         f_TE_in=(c1o1-q)/(c1o1+q)*(f_BW-f_TE+(f_BW+f_TE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BW+f_TE))/(c1o1+q) - c1o54 * drho;
+         f_TE_in=(c1o1-q)/(c1o1+q)*(f_BW-f_TE+(f_BW+f_TE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BW+f_TE))/(c1o1+q) - c1o54 * drho;
          wallMomentumX -= f_BW+f_TE_in;
          wallMomentumZ -= f_BW+f_TE_in;
       }
@@ -454,7 +459,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o54* (drho/*+three*( vx1    -vx3)*/+c9o2*( vx1    -vx3)*( vx1    -vx3) * (c1o1 + drho)-cu_sq); 
-         f_TW_in=(c1o1-q)/(c1o1+q)*(f_BE-f_TW+(f_BE+f_TW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BE+f_TW))/(c1o1+q) - c1o54 * drho;
+         f_TW_in=(c1o1-q)/(c1o1+q)*(f_BE-f_TW+(f_BE+f_TW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BE+f_TW))/(c1o1+q) - c1o54 * drho;
          wallMomentumX += f_BE+f_TW_in;
          wallMomentumZ -= f_BE+f_TW_in;
       }
@@ -463,7 +468,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o54* (drho/*+three*(-vx1    +vx3)*/+c9o2*(-vx1    +vx3)*(-vx1    +vx3) * (c1o1 + drho)-cu_sq); 
-         f_BE_in=(c1o1-q)/(c1o1+q)*(f_TW-f_BE+(f_TW+f_BE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TW+f_BE))/(c1o1+q) - c1o54 * drho;
+         f_BE_in=(c1o1-q)/(c1o1+q)*(f_TW-f_BE+(f_TW+f_BE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TW+f_BE))/(c1o1+q) - c1o54 * drho;
          wallMomentumX -= f_TW+f_BE_in;
          wallMomentumZ += f_TW+f_BE_in;
       }
@@ -472,7 +477,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o54* (drho/*+three*(     vx2+vx3)*/+c9o2*(     vx2+vx3)*(     vx2+vx3) * (c1o1 + drho)-cu_sq); 
-         f_BS_in=(c1o1-q)/(c1o1+q)*(f_TN-f_BS+(f_TN+f_BS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TN+f_BS))/(c1o1+q) - c1o54 * drho;
+         f_BS_in=(c1o1-q)/(c1o1+q)*(f_TN-f_BS+(f_TN+f_BS-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TN+f_BS))/(c1o1+q) - c1o54 * drho;
          wallMomentumY += f_TN+f_BS_in;
          wallMomentumZ += f_TN+f_BS_in;
       }
@@ -481,7 +486,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o54* (drho/*+three*(    -vx2-vx3)*/+c9o2*(    -vx2-vx3)*(    -vx2-vx3) * (c1o1 + drho)-cu_sq); 
-         f_TN_in=(c1o1-q)/(c1o1+q)*(f_BS-f_TN+(f_BS+f_TN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BS+f_TN))/(c1o1+q) - c1o54 * drho;
+         f_TN_in=(c1o1-q)/(c1o1+q)*(f_BS-f_TN+(f_BS+f_TN-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BS+f_TN))/(c1o1+q) - c1o54 * drho;
          wallMomentumY -= f_BS+f_TN_in;
          wallMomentumZ -= f_BS+f_TN_in;
       }
@@ -490,7 +495,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o54* (drho/*+three*(     vx2-vx3)*/+c9o2*(     vx2-vx3)*(     vx2-vx3) * (c1o1 + drho)-cu_sq); 
-         f_TS_in=(c1o1-q)/(c1o1+q)*(f_BN-f_TS+(f_BN+f_TS-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BN+f_TS))/(c1o1+q) - c1o54 * drho;
+         f_TS_in=(c1o1-q)/(c1o1+q)*(f_BN-f_TS+(f_BN+f_TS-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BN+f_TS))/(c1o1+q) - c1o54 * drho;
          wallMomentumY += f_BN+f_TS_in;
          wallMomentumZ -= f_BN+f_TS_in;
       }
@@ -499,7 +504,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o54* (drho/*+three*(    -vx2+vx3)*/+c9o2*(    -vx2+vx3)*(    -vx2+vx3) * (c1o1 + drho)-cu_sq); 
-         f_BN_in=(c1o1-q)/(c1o1+q)*(f_TS-f_BN+(f_TS+f_BN-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TS+f_BN))/(c1o1+q) - c1o54 * drho;
+         f_BN_in=(c1o1-q)/(c1o1+q)*(f_TS-f_BN+(f_TS+f_BN-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TS+f_BN))/(c1o1+q) - c1o54 * drho;
          wallMomentumY -= f_TS+f_BN_in;
          wallMomentumZ += f_TS+f_BN_in;
       }
@@ -508,7 +513,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o216*(drho/*+three*( vx1+vx2+vx3)*/+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
-         f_BSW_in=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNE+f_BSW))/(c1o1+q) - c1o216 * drho;
+         f_BSW_in=(c1o1-q)/(c1o1+q)*(f_TNE-f_BSW+(f_TNE+f_BSW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TNE+f_BSW))/(c1o1+q) - c1o216 * drho;
          wallMomentumX += f_TNE+f_BSW_in;
          wallMomentumY += f_TNE+f_BSW_in;
          wallMomentumZ += f_TNE+f_BSW_in;
@@ -518,7 +523,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o216*(drho/*+three*(-vx1-vx2-vx3)*/+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
-         f_TNE_in=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSW+f_TNE))/(c1o1+q) - c1o216 * drho;
+         f_TNE_in=(c1o1-q)/(c1o1+q)*(f_BSW-f_TNE+(f_BSW+f_TNE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BSW+f_TNE))/(c1o1+q) - c1o216 * drho;
          wallMomentumX -= f_BSW+f_TNE_in;
          wallMomentumY -= f_BSW+f_TNE_in;
          wallMomentumZ -= f_BSW+f_TNE_in;
@@ -528,7 +533,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o216*(drho/*+three*( vx1+vx2-vx3)*/+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
-         f_TSW_in=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNE+f_TSW))/(c1o1+q) - c1o216 * drho;
+         f_TSW_in=(c1o1-q)/(c1o1+q)*(f_BNE-f_TSW+(f_BNE+f_TSW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BNE+f_TSW))/(c1o1+q) - c1o216 * drho;
          wallMomentumX += f_BNE+f_TSW_in;
          wallMomentumY += f_BNE+f_TSW_in;
          wallMomentumZ -= f_BNE+f_TSW_in;
@@ -538,7 +543,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o216*(drho/*+three*(-vx1-vx2+vx3)*/+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
-         f_BNE_in=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSW+f_BNE))/(c1o1+q) - c1o216 * drho;
+         f_BNE_in=(c1o1-q)/(c1o1+q)*(f_TSW-f_BNE+(f_TSW+f_BNE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TSW+f_BNE))/(c1o1+q) - c1o216 * drho;
          wallMomentumX -= f_TSW+f_BNE_in;
          wallMomentumY -= f_TSW+f_BNE_in;
          wallMomentumZ += f_TSW+f_BNE_in;
@@ -548,7 +553,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o216*(drho/*+three*( vx1-vx2+vx3)*/+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3) * (c1o1 + drho)-cu_sq); 
-         f_BNW_in=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TSE+f_BNW))/(c1o1+q) - c1o216 * drho;
+         f_BNW_in=(c1o1-q)/(c1o1+q)*(f_TSE-f_BNW+(f_TSE+f_BNW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TSE+f_BNW))/(c1o1+q) - c1o216 * drho;
          wallMomentumX += f_TSE+f_BNW_in;
          wallMomentumY -= f_TSE+f_BNW_in;
          wallMomentumZ += f_TSE+f_BNW_in;
@@ -558,7 +563,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o216*(drho/*+three*(-vx1+vx2-vx3)*/+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3) * (c1o1 + drho)-cu_sq); 
-         f_TSE_in=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BNW+f_TSE))/(c1o1+q) - c1o216 * drho;
+         f_TSE_in=(c1o1-q)/(c1o1+q)*(f_BNW-f_TSE+(f_BNW+f_TSE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BNW+f_TSE))/(c1o1+q) - c1o216 * drho;
          wallMomentumX -= f_BNW+f_TSE_in;
          wallMomentumY += f_BNW+f_TSE_in;
          wallMomentumZ -= f_BNW+f_TSE_in;
@@ -568,7 +573,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o216*(drho/*+three*( vx1-vx2-vx3)*/+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3) * (c1o1 + drho)-cu_sq); 
-         f_TNW_in=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_BSE+f_TNW))/(c1o1+q) - c1o216 * drho;
+         f_TNW_in=(c1o1-q)/(c1o1+q)*(f_BSE-f_TNW+(f_BSE+f_TNW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BSE+f_TNW))/(c1o1+q) - c1o216 * drho;
          wallMomentumX += f_BSE+f_TNW_in;
          wallMomentumY -= f_BSE+f_TNW_in;
          wallMomentumZ -= f_BSE+f_TNW_in;
@@ -578,7 +583,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c1o216*(drho/*+three*(-vx1+vx2+vx3)*/+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3) * (c1o1 + drho)-cu_sq); 
-         f_BSE_in=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNW+f_BSE))/(c1o1+q) - c1o216 * drho;
+         f_BSE_in=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TNW+f_BSE))/(c1o1+q) - c1o216 * drho;
          wallMomentumX -= f_TNW+f_BSE_in;
          wallMomentumY += f_TNW+f_BSE_in;
          wallMomentumZ += f_TNW+f_BSE_in;
@@ -593,10 +598,14 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       real wallNormalY = normalY[k];
       real wallNormalZ = normalZ[k];
 
-      //Sample velocity at exchange location
-      real vxEL = vx[k_N[k]];
-      real vyEL = vy[k_N[k]];
-      real vzEL = vz[k_N[k]];
+      //Sample velocity at exchange location and filter temporally
+      real eps = 0.001;
+      real vxEL = eps*vx[k_N[k]]+(1.0-eps)*vx_bc[k];
+      real vyEL = eps*vy[k_N[k]]+(1.0-eps)*vy_bc[k];
+      real vzEL = eps*vz[k_N[k]]+(1.0-eps)*vz_bc[k];
+      vx_bc[k] = vxEL;
+      vy_bc[k] = vyEL;
+      vz_bc[k] = vzEL;
 
       //Subtract wall-normal velocity component
       real vDotN = vxEL*wallNormalX+vyEL*wallNormalY+vzEL*wallNormalZ;
@@ -611,7 +620,6 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       real kappa = 0.4;
       real u_star = vMag*kappa/(log(z/z0[k]));
 
-      // u_star = 0.0025074002;
       real tau_w = u_star*u_star;                  //assuming rho=1
       real A = 1.0;                                //wall area (obviously 1 for grid aligned walls, can come from grid builder later for complex geometries)
       

@@ -1398,21 +1398,27 @@ void CudaMemoryManager::cudaAllocStressBC(int lev)
     //Host
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.q27[0]), parameter->getD3Qxx()*mem_size_Q_q      ));
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.k),                            mem_size_Q_k      ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.kN),                            mem_size_Q_k     ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.kN),                           mem_size_Q_k     ));
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.normalX),                      mem_size_Q_q      ));
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.normalY),                      mem_size_Q_q      ));
     checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.normalZ),                      mem_size_Q_q      ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.Vx),                           mem_size_Q_q      ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.Vy),                           mem_size_Q_q      ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->QStress.Vz),                           mem_size_Q_q      ));
     
     //Device
     checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.q27[0]),     parameter->getD3Qxx()* mem_size_Q_q     ));
     checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.k),                                 mem_size_Q_k     ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.kN),                                 mem_size_Q_k    ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.kN),                                mem_size_Q_k    ));
     checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.normalX),                           mem_size_Q_q     ));
     checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.normalY),                           mem_size_Q_q     ));
     checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.normalZ),                           mem_size_Q_q     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.Vx),                                mem_size_Q_q     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.Vy),                                mem_size_Q_q     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->QStress.Vz),                                mem_size_Q_q     ));
     
     //////////////////////////////////////////////////////////////////////////
-    double tmp = 2*(double)mem_size_Q_k + (double)parameter->getD3Qxx()*(double)mem_size_Q_q + 3.0*(double)mem_size_Q_q;
+    double tmp = 2*(double)mem_size_Q_k + (double)parameter->getD3Qxx()*(double)mem_size_Q_q + 6.0*(double)mem_size_Q_q;
     setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopyStressBC(int lev)
@@ -1426,6 +1432,9 @@ void CudaMemoryManager::cudaCopyStressBC(int lev)
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.normalX, parameter->getParH(lev)->QStress.normalX,                       mem_size_Q_q,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.normalY, parameter->getParH(lev)->QStress.normalY,                       mem_size_Q_q,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.normalZ, parameter->getParH(lev)->QStress.normalZ,                       mem_size_Q_q,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.Vx, parameter->getParH(lev)->QStress.Vx,                                 mem_size_Q_q,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.Vy, parameter->getParH(lev)->QStress.Vy,                                 mem_size_Q_q,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->QStress.Vz, parameter->getParH(lev)->QStress.Vz,                                 mem_size_Q_q,       cudaMemcpyHostToDevice));
 }
 void CudaMemoryManager::cudaFreeStressBC(int lev)
 {
@@ -1435,6 +1444,9 @@ void CudaMemoryManager::cudaFreeStressBC(int lev)
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.normalX));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.normalY));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.normalZ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.Vx));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.Vy));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->QStress.Vz));
 }
 // Wall model
 void CudaMemoryManager::cudaAllocWallModel(int lev)
