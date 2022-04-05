@@ -15,7 +15,7 @@ To contribute use a merge request as follows:
 - Run the tests.
 - Write or adapt tests as needed.
 - Add or change the documentation as needed.
-- Push your branch to your fork on gitea, the remote `origin`.
+- Push your branch to your fork on gitlab, the remote `origin`.
 - From your fork open a merge request in the correct branch. Target the project's `develop` or `open_source` branch
 - …
 - If we requests further changes just push them to your branch. The MR will be updated automatically.
