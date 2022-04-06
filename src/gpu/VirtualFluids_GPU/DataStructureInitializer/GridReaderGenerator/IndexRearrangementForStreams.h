@@ -79,8 +79,6 @@ private:
     void getGridInterfaceIndicesBorderBulkFC(int level);
 
 
-
-    friend class IndexRearrangementForStreamsTest;
 };
 
 #endif

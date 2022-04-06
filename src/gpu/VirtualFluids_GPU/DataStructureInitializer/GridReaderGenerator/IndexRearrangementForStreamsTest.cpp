@@ -97,7 +97,7 @@ static void initParameterClass(std::shared_ptr<Parameter> &para);
 class IndexRearrangementForStreamsTest
 {
 public:
-    static void setUpAndRun_getGridInterfaceIndicesBorderBulkCF(CFBorderBulk &cf, std::shared_ptr<Parameter> para)
+    static void setUpAndRun_splitCoarseToFineIntoBorderAndBulk(CFBorderBulk &cf, std::shared_ptr<Parameter> para)
     {
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, nullptr, Distribution(), 1);
@@ -119,7 +119,7 @@ public:
 
         IndexRearrangementForStreams testSubject = IndexRearrangementForStreams(para, builder);
 
-        testSubject.getGridInterfaceIndicesBorderBulkCF(cf.level);
+        testSubject.splitCoarseToFineIntoBorderAndBulk(cf.level);
     };
 };
 
@@ -168,7 +168,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, sizeIsConstant)
     CFBorderBulk cf;
     SPtr<Parameter> para;
     initParameterClass(para);
-    IndexRearrangementForStreamsTest::setUpAndRun_getGridInterfaceIndicesBorderBulkCF(cf, para);
+    IndexRearrangementForStreamsTest::setUpAndRun_splitCoarseToFineIntoBorderAndBulk(cf, para);
     EXPECT_TRUE(para->getParH(cf.level)->intCFBorder.kCF + para->getParH(cf.level)->intCFBulk.kCF == cf.sizeOfICellCf);
 }
 
@@ -177,7 +177,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, borderSizeCFC)
     CFBorderBulk cf;
     SPtr<Parameter> para;
     initParameterClass(para);
-    IndexRearrangementForStreamsTest::setUpAndRun_getGridInterfaceIndicesBorderBulkCF(cf, para);
+    IndexRearrangementForStreamsTest::setUpAndRun_splitCoarseToFineIntoBorderAndBulk(cf, para);
     EXPECT_EQ(para->getParH(cf.level)->intCFBorder.kCF, (uint)cf.iCellCfcBorder_expected.size());
 }
 
@@ -186,7 +186,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, borderVectorCFC)
     CFBorderBulk cf;
     SPtr<Parameter> para;
     initParameterClass(para);
-    IndexRearrangementForStreamsTest::setUpAndRun_getGridInterfaceIndicesBorderBulkCF(cf, para);
+    IndexRearrangementForStreamsTest::setUpAndRun_splitCoarseToFineIntoBorderAndBulk(cf, para);
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBorder.ICellCFC, cf.iCellCfcBorder_expected));
 }
 
@@ -195,7 +195,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, bulkSizeCFC)
     CFBorderBulk cf;
     SPtr<Parameter> para;
     initParameterClass(para);
-    IndexRearrangementForStreamsTest::setUpAndRun_getGridInterfaceIndicesBorderBulkCF(cf, para);
+    IndexRearrangementForStreamsTest::setUpAndRun_splitCoarseToFineIntoBorderAndBulk(cf, para);
     EXPECT_EQ(para->getParH(cf.level)->intCFBulk.kCF, (uint)cf.iCellCfcBulk_expected.size());
 }
 
@@ -204,7 +204,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, bulkVectorCFC)
     CFBorderBulk cf;
     SPtr<Parameter> para;
     initParameterClass(para);
-    IndexRearrangementForStreamsTest::setUpAndRun_getGridInterfaceIndicesBorderBulkCF(cf, para);
+    IndexRearrangementForStreamsTest::setUpAndRun_splitCoarseToFineIntoBorderAndBulk(cf, para);
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBulk.ICellCFC, cf.iCellCfcBulk_expected));
 }
 
@@ -213,7 +213,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, borderSizeCFF)
     CFBorderBulk cf;
     SPtr<Parameter> para;
     initParameterClass(para);
-    IndexRearrangementForStreamsTest::setUpAndRun_getGridInterfaceIndicesBorderBulkCF(cf, para);
+    IndexRearrangementForStreamsTest::setUpAndRun_splitCoarseToFineIntoBorderAndBulk(cf, para);
     EXPECT_EQ(para->getParH(cf.level)->intCFBorder.kCF, (uint)cf.iCellCffBorder_expected.size());
 }
 
@@ -222,7 +222,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, borderVectorCFF)
     CFBorderBulk cf;
     SPtr<Parameter> para;
     initParameterClass(para);
-    IndexRearrangementForStreamsTest::setUpAndRun_getGridInterfaceIndicesBorderBulkCF(cf, para);
+    IndexRearrangementForStreamsTest::setUpAndRun_splitCoarseToFineIntoBorderAndBulk(cf, para);
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBorder.ICellCFF, cf.iCellCffBorder_expected));
 }
 
@@ -231,7 +231,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, bulkSizeCFF)
     CFBorderBulk cf;
     SPtr<Parameter> para;
     initParameterClass(para);
-    IndexRearrangementForStreamsTest::setUpAndRun_getGridInterfaceIndicesBorderBulkCF(cf, para);
+    IndexRearrangementForStreamsTest::setUpAndRun_splitCoarseToFineIntoBorderAndBulk(cf, para);
     EXPECT_EQ(para->getParH(cf.level)->intCFBulk.kCF, (uint)cf.iCellCffBulk_expected.size());
 }
 
@@ -240,7 +240,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, bulkVectorCFF)
     CFBorderBulk cf;
     SPtr<Parameter> para;
     initParameterClass(para);
-    IndexRearrangementForStreamsTest::setUpAndRun_getGridInterfaceIndicesBorderBulkCF(cf, para);
+    IndexRearrangementForStreamsTest::setUpAndRun_splitCoarseToFineIntoBorderAndBulk(cf, para);
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBulk.ICellCFF, cf.iCellCffBulk_expected));
 }
 
@@ -249,7 +249,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, offsetsVectorsCFC)
     CFBorderBulk cf;
     SPtr<Parameter> para;
     initParameterClass(para);
-    IndexRearrangementForStreamsTest::setUpAndRun_getGridInterfaceIndicesBorderBulkCF(cf, para);
+    IndexRearrangementForStreamsTest::setUpAndRun_splitCoarseToFineIntoBorderAndBulk(cf, para);
 
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCF.xOffCF, cf.offsetCFx_Border_expected));
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCFBulk.xOffCF, cf.offsetCFx_Bulk_expected));
