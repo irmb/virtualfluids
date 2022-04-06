@@ -30,6 +30,7 @@ private:
 public:
     GridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(Device(), ""), grid(grid){};
     SPtr<Grid> getGrid(uint level) override{ return grid; };
+    std::shared_ptr<Grid> getGrid(int level, int box) override {return grid; };
 };
 
 
