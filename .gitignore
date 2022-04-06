@@ -19,5 +19,8 @@ __pycache__/
 # Simulation results
 output/
 
+# Scripts
+scripts/
+
 # MacOS
 .DS_Store
