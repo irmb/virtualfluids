@@ -69,7 +69,7 @@ struct CFBorderBulk {
     std::vector<uint> fluidNodeIndicesBorder = { 10, 11, 12, 13, 14, 15, 16 };
     std::vector<uint> iCellCFC               = { 1, 11, 3, 13, 5, 15, 7 };
     std::vector<uint> iCellCFF               = { 2, 12, 4, 14, 6, 16, 8 };
-    uint sizeOfICellCf                       = iCellCFC.size();
+    uint sizeOfICellCf                       = (uint) iCellCFC.size();
     uint neighborX_SP[17]                    = { 0u };
     uint neighborY_SP[17]                    = { 0u };
     uint neighborZ_SP[17]                    = { 0u };
