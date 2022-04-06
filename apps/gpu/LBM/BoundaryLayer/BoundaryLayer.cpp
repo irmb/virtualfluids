@@ -167,7 +167,7 @@ void multipleLevel(const std::string& configPath)
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
     para->setUseAMD(true);
-    para->setSGSConstant(0.083); 
+    para->setSGSConstant(0.2); 
     // para->setQuadricLimiters( 0.000001, 0.000001, 0.000001);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {

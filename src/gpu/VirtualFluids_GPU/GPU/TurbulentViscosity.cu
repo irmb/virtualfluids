@@ -69,7 +69,7 @@ extern "C" __global__ void calcAMD(real* vx,
                         (dvxdx*dvzdx + dvxdy*dvzdy + dvxdz*dvzdz) * (dvxdz+dvzdx) + 
                         (dvydx*dvzdx + dvydy*dvzdy + dvydz*dvzdz) * (dvydz+dvzdy);
 
-    turbulentViscosity[k] = -SGSConstant*enumerator/denominator;
+    turbulentViscosity[k] = max(c0o1,-SGSConstant*enumerator)/denominator;
 }
 
 extern "C" void calcTurbulentViscosityAMD(Parameter* para, int level)

@@ -219,7 +219,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
       
       real om_turb = om1 / (c1o1 + c3o1*om1*max(c0o1, turbViscosity[k_Q[k]]));
-      if(k==0){printf("om\t %f \t vis %f \t om_turb \t %f \n", om1, turbViscosity[k_Q[k]], om_turb);}
+      // if(k==0){printf("om\t %f \t vis %f \t om_turb \t %f \n", om1, turbViscosity[k_Q[k]], om_turb);}
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)      //get adress where incoming f's should be written to
       {

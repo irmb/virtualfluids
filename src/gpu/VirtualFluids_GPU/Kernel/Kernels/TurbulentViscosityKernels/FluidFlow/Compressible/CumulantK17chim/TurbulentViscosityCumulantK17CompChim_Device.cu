@@ -318,7 +318,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
                 ////////////////////////////////////////////////////////////////////////////////////
         //! - Calculate modified omega with turbulent viscosity
         //!
-        real omega = omega_in / (c1o1 + c3o1*omega_in*max(c0o1, turbulentViscosity[k]));
+        real omega = omega_in / (c1o1 + c3o1*omega_in*turbulentViscosity[k]);
         ////////////////////////////////////////////////////////////
         // 2.
         real OxxPyyPzz = c1o1;
