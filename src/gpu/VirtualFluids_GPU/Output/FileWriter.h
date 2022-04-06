@@ -26,6 +26,7 @@ private:
 	//void VIRTUALFLUIDS_GPU_EXPORT writeParticle(Parameter* para, unsigned int t);
     void VIRTUALFLUIDS_GPU_EXPORT writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int level,
                                                          std::vector<std::string> &fname);
+    void testForSendNodeX(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode);
     void testForSendNodeY(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode);
     void testForSendNodeZ(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode);
     void testForCommunicationNode(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode,

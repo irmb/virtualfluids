@@ -30,8 +30,8 @@ GridPath=/work/y0078217/Grids/GridDrivenCavityMultiGPU/4GPU/
 ##################################################
 #simulation parameter
 ##################################################
-TimeEnd=1000
-TimeOut=100
+TimeEnd=1
+TimeOut=1
 #TimeStartOut=0
 
 ##################################################
