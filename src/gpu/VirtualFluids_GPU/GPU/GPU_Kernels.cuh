@@ -916,6 +916,18 @@ extern "C" __global__ void QSlipDeviceComp27(real* DD,
 											 unsigned int size_Mat, 
 											 bool evenOrOdd);
 
+extern "C" __global__ void QSlipDeviceComp27TurbViscosity(real* DD, 
+											 int* k_Q, 
+											 real* QQ,
+											 unsigned int sizeQ,
+											 real om1, 
+											 unsigned int* neighborX,
+											 unsigned int* neighborY,
+											 unsigned int* neighborZ,
+											 real* turbViscosity,
+											 unsigned int size_Mat, 
+											 bool evenOrOdd);
+
 extern "C" __global__ void QSlipGeomDeviceComp27(real* DD, 
 												 int* k_Q, 
 												 real* QQ,
@@ -968,6 +980,28 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
 											 unsigned int* neighborZ,
 											 unsigned int size_Mat, 
 											 bool evenOrOdd);
+
+extern "C" __global__ void BBStressDevice27( real* DD, 
+												int* k_Q, 
+												int* k_N, 
+												real* QQ,
+												unsigned int sizeQ,
+												real* vx,
+												real* vy,
+												real* vz,
+												real* normalX,
+												real* normalY,
+												real* normalZ,
+												real* vx_bc,
+												real* vy_bc,
+												real* vz_bc,
+												int* samplingOffset,
+												real* z0,
+												unsigned int* neighborX,
+												unsigned int* neighborY,
+												unsigned int* neighborZ,
+												unsigned int size_Mat, 
+												bool evenOrOdd);
 
 //Pressure BCs
 extern "C" __global__ void QPressDevice27(int inx,

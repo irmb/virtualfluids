@@ -168,7 +168,7 @@ void multipleLevel(const std::string& configPath)
     para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
     para->setUseAMD(true);
     para->setSGSConstant(0.083); 
-    // para->setQuadricLimiters( 0.001, 0.001, 0.001);
+    // para->setQuadricLimiters( 0.000001, 0.000001, 0.000001);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
@@ -192,7 +192,7 @@ void multipleLevel(const std::string& configPath)
     // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
     gridBuilder->setStressBoundaryCondition(SideType::MZ, 0.0, 0.0, 1.0, samplingOffset, z0/dx);
     
-    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 10.0*dt/dx, 0.0, 0.0);
+    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
