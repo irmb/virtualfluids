@@ -416,6 +416,11 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(int *recvI
 
 void IndexRearrangementForStreams::splitFineToCoarseIntoBorderAndBulk(const uint &level)
 {
+    // For communication hiding, the interpolation cells from the fine to the coarse grid need to be split into two
+    // groups:
+    // - cells which are at the border between two gpus --> "border"
+    // - the other cells which are not directly related to the communication betweeen the two gpus --> "bulk"
+
     this->getGridInterfaceIndicesBorderBulkFC(level);
 
     para->getParD(level)->intFCBorder.kFC      = para->getParH(level)->intFCBorder.kFC;
@@ -430,7 +435,9 @@ void IndexRearrangementForStreams::splitFineToCoarseIntoBorderAndBulk(const uint
 
 void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkFC(int level)
 {
-    // this function reorders the arrays of FCC/FCF indices and return pointers and sizes of the new subarrays
+    // This function reorders the arrays of FCC/FCF indices and return pointers and sizes of the new subarrays:
+    // The coarse cells for interpolation from fine to coarse (iCellFCC) are divided into two subgroups: border and bulk.
+    // The fine cells (iCellFCF) are reordered accordingly.
 
     // create some local variables for better readability
     uint *iCellFccAll = para->getParH(level)->intFC.ICellFCC;
@@ -473,6 +480,11 @@ void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkFC(int level
 
 void IndexRearrangementForStreams::splitCoarseToFineIntoBorderAndBulk(const uint &level)
 {
+    // For communication hiding, the interpolation cells from the coarse to the fine grid need to be split into two groups:
+    // - cells which are at the border between two gpus --> "border"
+    // - the other cells which are not directly related to the communication betweeen the two gpus --> "bulk"
+
+
     this->getGridInterfaceIndicesBorderBulkCF(level);
 
     para->getParD(level)->intCFBorder.kCF      = para->getParH(level)->intCFBorder.kCF;
@@ -488,8 +500,10 @@ void IndexRearrangementForStreams::splitCoarseToFineIntoBorderAndBulk(const uint
 
 void IndexRearrangementForStreams::getGridInterfaceIndicesBorderBulkCF(int level) 
 { 
-    // this function reorders the arrays of CFC/CFF indices and sets the pointers and sizes of the new subarrays
-     
+    // This function reorders the arrays of CFC/CFF indices and sets the pointers and sizes of the new subarrays:
+    // The coarse cells for interpolation from coarse to fine (iCellCFC) are divided into two subgroups: border and bulk. 
+    // The fine cells (iCellCFF) are reordered accordingly. The offset cells (xOffCF, yOffCF, zOffCF) must be reordered in the same way.
+    
     // create some local variables for better readability
     uint *iCellCfcAll    = para->getParH(level)->intCF.ICellCFC;
     uint *iCellCffAll    = para->getParH(level)->intCF.ICellCFF;
