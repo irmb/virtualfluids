@@ -164,7 +164,7 @@ bool vectorsAreEqual(real *vector1, std::vector<uint> vectorExpected)
 
 
 
-TEST(GridImpTest_IndicesCFBorderBulk, sizeIsConstant)
+TEST(IndexRearrangementForStreamsTest_IndicesCFBorderBulk, sizeIsConstant)
 {
     CFBorderBulk cf;
     SPtr<Parameter> para;
@@ -173,7 +173,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, sizeIsConstant)
     EXPECT_TRUE(para->getParH(cf.level)->intCFBorder.kCF + para->getParH(cf.level)->intCFBulk.kCF == cf.sizeOfICellCf);
 }
 
-TEST(GridImpTest_IndicesCFBorderBulk, borderSizeCFC)
+TEST(IndexRearrangementForStreamsTest_IndicesCFBorderBulk, borderSizeCFC)
 {
     CFBorderBulk cf;
     SPtr<Parameter> para;
@@ -182,7 +182,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, borderSizeCFC)
     EXPECT_EQ(para->getParH(cf.level)->intCFBorder.kCF, (uint)cf.iCellCfcBorder_expected.size());
 }
 
-TEST(GridImpTest_IndicesCFBorderBulk, borderVectorCFC)
+TEST(IndexRearrangementForStreamsTest_IndicesCFBorderBulk, borderVectorCFC)
 {
     CFBorderBulk cf;
     SPtr<Parameter> para;
@@ -191,7 +191,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, borderVectorCFC)
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBorder.ICellCFC, cf.iCellCfcBorder_expected));
 }
 
-TEST(GridImpTest_IndicesCFBorderBulk, bulkSizeCFC)
+TEST(IndexRearrangementForStreamsTest_IndicesCFBorderBulk, bulkSizeCFC)
 {
     CFBorderBulk cf;
     SPtr<Parameter> para;
@@ -200,7 +200,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, bulkSizeCFC)
     EXPECT_EQ(para->getParH(cf.level)->intCFBulk.kCF, (uint)cf.iCellCfcBulk_expected.size());
 }
 
-TEST(GridImpTest_IndicesCFBorderBulk, bulkVectorCFC)
+TEST(IndexRearrangementForStreamsTest_IndicesCFBorderBulk, bulkVectorCFC)
 {
     CFBorderBulk cf;
     SPtr<Parameter> para;
@@ -209,7 +209,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, bulkVectorCFC)
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBulk.ICellCFC, cf.iCellCfcBulk_expected));
 }
 
-TEST(GridImpTest_IndicesCFBorderBulk, borderSizeCFF)
+TEST(IndexRearrangementForStreamsTest_IndicesCFBorderBulk, borderSizeCFF)
 {
     CFBorderBulk cf;
     SPtr<Parameter> para;
@@ -218,7 +218,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, borderSizeCFF)
     EXPECT_EQ(para->getParH(cf.level)->intCFBorder.kCF, (uint)cf.iCellCffBorder_expected.size());
 }
 
-TEST(GridImpTest_IndicesCFBorderBulk, borderVectorCFF)
+TEST(IndexRearrangementForStreamsTest_IndicesCFBorderBulk, borderVectorCFF)
 {
     CFBorderBulk cf;
     SPtr<Parameter> para;
@@ -227,7 +227,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, borderVectorCFF)
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBorder.ICellCFF, cf.iCellCffBorder_expected));
 }
 
-TEST(GridImpTest_IndicesCFBorderBulk, bulkSizeCFF)
+TEST(IndexRearrangementForStreamsTest_IndicesCFBorderBulk, bulkSizeCFF)
 {
     CFBorderBulk cf;
     SPtr<Parameter> para;
@@ -236,7 +236,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, bulkSizeCFF)
     EXPECT_EQ(para->getParH(cf.level)->intCFBulk.kCF, (uint)cf.iCellCffBulk_expected.size());
 }
 
-TEST(GridImpTest_IndicesCFBorderBulk, bulkVectorCFF)
+TEST(IndexRearrangementForStreamsTest_IndicesCFBorderBulk, bulkVectorCFF)
 {
     CFBorderBulk cf;
     SPtr<Parameter> para;
@@ -245,7 +245,7 @@ TEST(GridImpTest_IndicesCFBorderBulk, bulkVectorCFF)
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->intCFBulk.ICellCFF, cf.iCellCffBulk_expected));
 }
 
-TEST(GridImpTest_IndicesCFBorderBulk, offsetsVectorsCFC)
+TEST(IndexRearrangementForStreamsTest_IndicesCFBorderBulk, offsetsVectorsCFC)
 {
     CFBorderBulk cf;
     SPtr<Parameter> para;
