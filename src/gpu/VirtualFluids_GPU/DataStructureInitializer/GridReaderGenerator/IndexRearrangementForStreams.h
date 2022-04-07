@@ -40,18 +40,18 @@ public:
 
 private:
     // communication after coarse to fine
-    void copyProcessNeighborToCommAfterFtoCX(const uint &level, int j);
-    void copyProcessNeighborToCommAfterFtoCY(const uint &level, int j);
-    void copyProcessNeighborToCommAfterFtoCZ(const uint &level, int j);
+    void copyProcessNeighborToCommAfterFtoCX(const uint &level, int indexOfProcessNeighbor);
+    void copyProcessNeighborToCommAfterFtoCY(const uint &level, int indexOfProcessNeighbor);
+    void copyProcessNeighborToCommAfterFtoCZ(const uint &level, int indexOfProcessNeighbor);
 
-    void reorderSendIndicesForCommAfterFtoCX(int direction, int level, int j,
+    void reorderSendIndicesForCommAfterFtoCX(int direction, int level, int indexOfProcessNeighbor,
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    void reorderSendIndicesForCommAfterFtoCY(int direction, int level, int j,
+    void reorderSendIndicesForCommAfterFtoCY(int direction, int level, int indexOfProcessNeighbor,
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    void reorderSendIndicesForCommAfterFtoCZ(int direction, int level, int j,
+    void reorderSendIndicesForCommAfterFtoCZ(int direction, int level, int indexOfProcessNeighbor,
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
     void reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &numberOfSendNeighborsAfterFtoC, int direction,
-                                            int level, int j, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+                                            int level, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
 
     bool isSparseIndexInICellFCC(uint sizeOfICellFCC, int sparseIndexSend, int level);
     void aggregateNodesInICellCFC(int level, std::vector<uint> &nodesCFC);
@@ -65,20 +65,20 @@ private:
                                        std::vector<int> &sendOrReceiveIndicesAfterFtoC,
                                        std::vector<int> &sendOrIndicesOther);
 
-    void reorderRecvIndicesForCommAfterFtoCX(int direction, int level, int j,
+    void reorderRecvIndicesForCommAfterFtoCX(int direction, int level, int indexOfProcessNeighbor,
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    void reorderRecvIndicesForCommAfterFtoCY(int direction, int level, int j,
+    void reorderRecvIndicesForCommAfterFtoCY(int direction, int level, int indexOfProcessNeighbor,
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    void reorderRecvIndicesForCommAfterFtoCZ(int direction, int level, int j,
+    void reorderRecvIndicesForCommAfterFtoCZ(int direction, int level, int indexOfProcessNeighbor,
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
     void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC, int direction,
-                                            int level, int j, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+                                            int level, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
     
     // split interpolation cells
     void getGridInterfaceIndicesBorderBulkCF(int level);
     void getGridInterfaceIndicesBorderBulkFC(int level);
 
-
+    friend class IndexRearrangementForStreamsTest;
 };
 
 #endif

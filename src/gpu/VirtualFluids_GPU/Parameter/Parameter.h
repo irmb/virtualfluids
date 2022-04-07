@@ -900,9 +900,9 @@ public:
     std::unique_ptr<CudaStreamManager> &getStreamManager();
     bool getKernelNeedsFluidNodeIndicesToRun();
 
-    void initNumberOfProcessNeighborsAfterFtoCX(int level);
-    void initNumberOfProcessNeighborsAfterFtoCY(int level);
-    void initNumberOfProcessNeighborsAfterFtoCZ(int level);
+    void initProcessNeighborsAfterFtoCX(int level);
+    void initProcessNeighborsAfterFtoCY(int level);
+    void initProcessNeighborsAfterFtoCZ(int level);
 
     void findEdgeNodesCommMultiGPU();
     bool useReducedCommunicationAfterFtoC{ true };
