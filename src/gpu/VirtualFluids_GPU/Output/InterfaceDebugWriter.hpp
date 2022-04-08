@@ -13,8 +13,7 @@
 #include "Core/StringUtilities/StringUtil.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-
-//using namespace std;
+#include "VirtualFluids_GPU/Communication/Communicator.h"
 
 namespace InterfaceDebugWriter
 {
@@ -597,6 +596,122 @@ namespace InterfaceDebugWriter
 			}
 			std::string filenameVec = para->getFName()+"_CellsCFF_"+StringUtil::toString<int>(level);
 			WbWriterVtkXmlBinary::getInstance()->writeOcts(filenameVec,nodesVec,cellsVec);
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////
+	// Functions for version with streams
+	//////////////////////////////////////////////////////////////////////////
+	void checkForSendNodeInX(int pos, int& sendDir, int& sendDirectionInCommAfterFtoC, Parameter* para, int level){
+		for(uint pn=0; pn<(uint)para->getParH(level)->sendProcessNeighborX.size(); pn++)
+		{
+            for(int j=0; j<para->getParH(level)->sendProcessNeighborX[pn].numberOfNodes; j++)
+			{
+				if (pos == para->getParH(level)->sendProcessNeighborX[pn].index[j]) {
+					sendDir=2.0;
+                    if(j < para->getParH(level)->sendProcessNeighborsAfterFtoCX[pn].numberOfNodes)
+                    {
+                        sendDirectionInCommAfterFtoC=2.0;
+                    }
+                    return;
+				}
+			}
+		}
+	}
+	
+	void checkForSendNodeInY(const int pos, int& sendDir, int& sendDirectionInCommAfterFtoC, Parameter* para, int level){
+		for(uint pn=0; pn<(uint)para->getParH(level)->sendProcessNeighborY.size(); pn++)
+		{
+			for(int j=0; j<para->getParH(level)->sendProcessNeighborY[pn].numberOfNodes; j++)
+			{
+				if (pos == para->getParH(level)->sendProcessNeighborY[pn].index[j]) {
+					sendDir+=4.0;
+					if(j < para->getParH(level)->sendProcessNeighborsAfterFtoCY[pn].numberOfNodes)
+                    {
+						sendDirectionInCommAfterFtoC+=4.0;
+                    }
+					return;
+				}
+			}
+		}
+	}
+
+	void checkForSendNodeInZ(const int pos, int& sendDir, int& sendDirectionInCommAfterFtoC, Parameter* para, int level){
+		for(uint pn=0; pn<(uint)para->getParH(level)->sendProcessNeighborZ.size(); pn++)
+		{
+			for(int j=0; j<para->getParH(level)->sendProcessNeighborZ[pn].numberOfNodes; j++)
+			{
+				if (pos == para->getParH(level)->sendProcessNeighborZ[pn].index[j]) {
+					sendDir+=8.0;
+					if(j < para->getParH(level)->sendProcessNeighborsAfterFtoCZ[pn].numberOfNodes)
+                    {
+						sendDirectionInCommAfterFtoC+=8.0;
+                    }
+					return;
+				}
+			}
+		}
+	}
+
+	void writeInterfaceFCC_Send(Parameter* para){
+		std::vector< UbTupleFloat3 > nodesVec;
+		int nodeNumberVec = 0;
+
+		// nodedata
+		std::vector< std::string > datanames = {"sparse index", "borderBulk", "sendDirection", "sendDirectionInCommAfterFtoC"};
+		// sendDirection: x = 2, y = 4, z = 8
+		// borderBulk: border = 1, bulk = 0
+		std::vector< std::vector<double>> nodedata;
+
+		for (int level = 0; level < para->getMaxLevel(); level++)
+		{
+			nodeNumberVec += (int) para->getParH(level)->intFC.kFC;
+		}
+
+		nodesVec.resize(nodeNumberVec);
+		nodedata.resize(datanames.size(), std::vector<double>(nodeNumberVec));
+
+		int nodeCount = 0;
+		for (int level = 0; level < para->getMaxLevel(); level++)
+		{
+			for(unsigned int u=0;u<para->getParH(level)->intFC.kFC;u++)
+			{
+				int pos  = para->getParH(level)->intFC.ICellFCC[u];
+				nodedata[0][nodeCount]=pos;
+
+				// coordinate section
+				double x1 = para->getParH(level)->coordX_SP[pos];
+				double x2 = para->getParH(level)->coordY_SP[pos];
+				double x3 = para->getParH(level)->coordZ_SP[pos];
+				nodesVec[nodeCount]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
+
+				// nodedata section
+				int sendDir = 0;
+				int sendDirectionInCommAfterFtoC = 0;
+
+				checkForSendNodeInX(pos, sendDir, sendDirectionInCommAfterFtoC, para, level);
+				checkForSendNodeInY(pos, sendDir, sendDirectionInCommAfterFtoC, para, level);
+				checkForSendNodeInZ(pos, sendDir, sendDirectionInCommAfterFtoC, para, level);
+				nodedata[2][nodeCount]=sendDir;
+                nodedata[3][nodeCount]=sendDirectionInCommAfterFtoC;
+				nodedata[1][nodeCount]= u < para->getParH(level)->intFCBorder.kFC;
+
+				nodeCount++;
+			}
+			std::string filenameVec = para->getFName()+"_writeInterfaceFCC_Send_PID_" + std::to_string(vf::gpu::Communicator::getInstanz()->getPID()) + "_" + StringUtil::toString<int>(level);
+			
+			WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec,nodesVec, datanames, nodedata);
 		}
 	}
 }
