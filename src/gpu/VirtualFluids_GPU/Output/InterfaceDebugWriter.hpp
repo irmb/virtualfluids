@@ -714,6 +714,180 @@ namespace InterfaceDebugWriter
 			WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec,nodesVec, datanames, nodedata);
 		}
 	}
+
+    void addToNodesVector(const int level, const int pos, std::vector< UbTupleFloat3 >& nodesVec, Parameter* para){
+        double x1 = para->getParH(level)->coordX_SP[pos];
+		double x2 = para->getParH(level)->coordY_SP[pos];
+		double x3 = para->getParH(level)->coordZ_SP[pos];
+		nodesVec.push_back( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
+    }
+
+    void writeSendNodesStream(Parameter* para){
+		std::vector< UbTupleFloat3 > nodesVec;
+
+		// nodedata
+		std::vector< std::string > datanames = {"sparse index", "sendDirection", "sendDirectionInCommAfterFtoC", "inICcellFCC"};
+		// sendDirection: x = 2, y = 4, z = 8
+		std::vector< std::vector<double>> nodedata;
+        nodedata.resize(datanames.size());
+
+        int pos;
+        int sendDirectionInCommAfterFtoC;
+		for (int level = 0; level < para->getMaxLevel(); level++)
+		{
+            // X
+            for (int pn = 0; pn <(int)para->getParH(level)->sendProcessNeighborX.size(); pn++){
+                for (int i = 0; i < para->getParH(level)->sendProcessNeighborX[pn].numberOfNodes; i++){                    
+                    pos = para->getParH(level)->sendProcessNeighborX[pn].index[i];    
+                    nodedata[0].push_back(pos);
+                    addToNodesVector(level, pos, nodesVec, para);
+
+                    nodedata[1].push_back(2.0);
+					sendDirectionInCommAfterFtoC = (i < para->getParH(level)->sendProcessNeighborsAfterFtoCX[pn].numberOfNodes) ? 2.0: 0.0;
+                    nodedata[2].push_back(sendDirectionInCommAfterFtoC);                
+                }
+            }
+
+            // Y 
+            for (int pn = 0; pn <(int)para->getParH(level)->sendProcessNeighborY.size(); pn++){              
+                for (int i = 0; i < para->getParH(level)->sendProcessNeighborY[pn].numberOfNodes; i++){
+                    pos = para->getParH(level)->sendProcessNeighborY[pn].index[i];
+                    
+					sendDirectionInCommAfterFtoC=(i < para->getParH(level)->sendProcessNeighborsAfterFtoCY[pn].numberOfNodes) ? 4.0 : 0.0;
+
+                    auto it = std::find(nodedata[0].begin(), nodedata[0].end(), pos);
+                    if(it == nodedata[0].end()){
+                        nodedata[0].push_back(pos);                        
+                        addToNodesVector(level, pos, nodesVec, para);
+                        nodedata[1].push_back(4.0);
+                        nodedata[2].push_back(sendDirectionInCommAfterFtoC);    
+                    }else{
+                        int posInVectors = it - nodedata[0].begin();
+                        nodedata[1][posInVectors] += 4.0;
+                        nodedata[2][posInVectors] += sendDirectionInCommAfterFtoC;
+                    }
+                }
+            }
+
+            // Z 
+            for (int pn = 0; pn <(int)para->getParH(level)->sendProcessNeighborZ.size(); pn++){ 
+                for (int i = 0; i < para->getParH(level)->sendProcessNeighborZ[pn].numberOfNodes; i++){
+                    pos = para->getParH(level)->sendProcessNeighborZ[pn].index[i];
+
+					sendDirectionInCommAfterFtoC=(i < para->getParH(level)->sendProcessNeighborsAfterFtoCZ[pn].numberOfNodes) ? 8.0 : 0.0;
+
+                    auto it = std::find(nodedata[0].begin(), nodedata[0].end(), pos);
+                    if(it == nodedata[0].end()){
+                        nodedata[0].push_back(pos);
+                        addToNodesVector(level, pos, nodesVec, para);                        
+                        nodedata[1].push_back(8.0);
+                        nodedata[2].push_back(sendDirectionInCommAfterFtoC);    
+                    }else{
+                        int posInVectors = it - nodedata[0].begin();
+                        nodedata[1][posInVectors] += 8.0;
+                        nodedata[2][posInVectors] += sendDirectionInCommAfterFtoC;
+                    }
+                }
+			}
+
+            // check if node is in iCellFCC
+            nodedata[3].resize(nodedata[0].size());
+            for(int i = 0; i < (int)nodedata[0].size(); i++){
+                pos = nodedata[0][i];
+                for(unsigned int u=0;u<para->getParH(level)->intFC.kFC;u++)
+			    {
+				    if(para->getParH(level)->intFC.ICellFCC[u]==(uint)pos)
+                    {
+                        nodedata[3][i] = 1.0;
+                        break;
+                    }
+                    nodedata[3][i] = 0.0;
+                }
+            }
+	        std::string filenameVec = para->getFName()+"_writeSendNodesStreams_PID_" + std::to_string(vf::gpu::Communicator::getInstanz()->getPID()) + "_" +StringUtil::toString<int>(level);
+			
+		    WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);
+        }
+	}
+
+    void writeRecvNodesStream(Parameter* para){
+		std::vector< UbTupleFloat3 > nodesVec;
+
+		// nodedata
+		std::vector< std::string > datanames = {"sparse index", "recvDirection", "recvDirectionInCommAfterFtoC"};
+		// sendDirection: x = 2, y = 4, z = 8
+		std::vector< std::vector<double>> nodedata;
+        nodedata.resize(datanames.size());
+
+        int pos;
+        int recvDirectionInCommAfterFtoC;
+		for (int level = 0; level < para->getMaxLevel(); level++)
+		{
+            // X
+            for (int pn = 0; pn <(int)para->getParH(level)->recvProcessNeighborX.size(); pn++){
+                for (int i = 0; i < para->getParH(level)->recvProcessNeighborX[pn].numberOfNodes; i++){                    
+                    pos = para->getParH(level)->recvProcessNeighborX[pn].index[i];    
+                    nodedata[0].push_back(pos);
+                    addToNodesVector(level, pos, nodesVec, para);
+
+                    nodedata[1].push_back(2.0);
+					recvDirectionInCommAfterFtoC = (i < para->getParH(level)->recvProcessNeighborsAfterFtoCX[pn].numberOfNodes) ? 2.0: 0.0;
+                    nodedata[2].push_back(recvDirectionInCommAfterFtoC);                
+                }
+            }
+
+            // Y 
+            for (int pn = 0; pn <(int)para->getParH(level)->recvProcessNeighborY.size(); pn++){              
+                for (int i = 0; i < para->getParH(level)->recvProcessNeighborY[pn].numberOfNodes; i++){
+                    pos = para->getParH(level)->recvProcessNeighborY[pn].index[i];
+                    
+					recvDirectionInCommAfterFtoC=(i < para->getParH(level)->recvProcessNeighborsAfterFtoCY[pn].numberOfNodes) ? 4.0 : 0.0;
+
+                    auto it = std::find(nodedata[0].begin(), nodedata[0].end(), pos);
+                    if(it == nodedata[0].end()){
+                        nodedata[0].push_back(pos);                        
+                        addToNodesVector(level, pos, nodesVec, para);
+                        nodedata[1].push_back(4.0);
+                        nodedata[2].push_back(recvDirectionInCommAfterFtoC);    
+                    }else{
+                        int posInVectors = it - nodedata[0].begin();
+                        nodedata[1][posInVectors] += 4.0;
+                        nodedata[2][posInVectors] += recvDirectionInCommAfterFtoC;
+                    }
+                }
+            }
+
+            // Z 
+            for (int pn = 0; pn <(int)para->getParH(level)->recvProcessNeighborZ.size(); pn++){ 
+                for (int i = 0; i < para->getParH(level)->recvProcessNeighborZ[pn].numberOfNodes; i++){
+                    pos = para->getParH(level)->recvProcessNeighborZ[pn].index[i];
+
+					recvDirectionInCommAfterFtoC=(i < para->getParH(level)->recvProcessNeighborsAfterFtoCZ[pn].numberOfNodes) ? 8.0 : 0.0;
+
+                    auto it = std::find(nodedata[0].begin(), nodedata[0].end(), pos);
+                    if(it == nodedata[0].end()){
+                        nodedata[0].push_back(pos);
+                        addToNodesVector(level, pos, nodesVec, para);                        
+                        nodedata[1].push_back(8.0);
+                        nodedata[2].push_back(recvDirectionInCommAfterFtoC);    
+                    }else{
+                        int posInVectors = it - nodedata[0].begin();
+                        nodedata[1][posInVectors] += 8.0;
+                        nodedata[2][posInVectors] += recvDirectionInCommAfterFtoC;
+                    }
+                }
+			}
+
+            // recv nodes are not in iCellFCC, because they are ghost nodes
+
+	        std::string filenameVec = para->getFName()+"_writeRecvNodesStreams_PID_" + std::to_string(vf::gpu::Communicator::getInstanz()->getPID()) + "_" +StringUtil::toString<int>(level);
+			
+		    WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(filenameVec, nodesVec, datanames, nodedata);
+        }
+	}
+
+	
+
 }
 
 #endif

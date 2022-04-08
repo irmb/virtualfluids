@@ -386,8 +386,15 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    // std::cout << "Process " << comm->getPID() <<": used device memory" << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n" << std::endl;
    //////////////////////////////////////////////////////////////////////////
 
-   //InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
+   InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
    //InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
+
+   // writers for Version with communication hiding
+   if(para->getNumprocs() > 1 && para->getUseStreams()){
+   	InterfaceDebugWriter::writeInterfaceFCC_Send(para.get());
+   	InterfaceDebugWriter::writeSendNodesStream(para.get());
+   	InterfaceDebugWriter::writeRecvNodesStream(para.get());
+   }
 }
 
 void Simulation::allocNeighborsOffsetsScalesAndBoundaries(SPtr<GridProvider> &gridProvider)
