@@ -222,16 +222,15 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(int *sendI
     int sparseIndexSend;
     std::vector<int> sendIndicesAfterFtoC;
     std::vector<int> sendIndicesOther;
-    std::array<int, 7> neighbors;
     uint numberOfSendIndices = builder->getNumberOfSendIndices(direction, level);
 
     //iCellFCC
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
-        neighbors.fill(-1);
-        sparseIndexSend = sendIndices[posInSendIndices];  
-        if (isSparseIndexInICellFCC(para->getParH(level)->intFC.kFC, sparseIndexSend, level))
+        sparseIndexSend = sendIndices[posInSendIndices];
+        if (isSparseIndexInICellFCC(para->getParH(level)->intFC.kFC, sparseIndexSend, level)){
             addUniqueIndexToCommunicationVectors(sendIndicesAfterFtoC, sparseIndexSend,
                                                  sendIndicesForCommAfterFtoCPositions, posInSendIndices);
+        }
     }
 
     // iCellCFC
