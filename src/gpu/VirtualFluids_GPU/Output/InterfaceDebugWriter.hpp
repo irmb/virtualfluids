@@ -555,7 +555,7 @@ void writeInterfaceCellsDebugCFF(Parameter *para)
 //////////////////////////////////////////////////////////////////////////
 // Functions for version with streams
 //////////////////////////////////////////////////////////////////////////
-void checkForSendOrRecvNode(int pos, int &commDir, int &commDirectionInCommAfterFtoC,
+void checkForSendOrRecvNode(int pos, int &commDir, int &commDirectionInCommAfterFtoC, int& indexInCommVector,
                             std::vector<ProcessNeighbor27> &sendRecvProcessNeighbor,
                             std::vector<ProcessNeighbor27> &sendRecvProcessNeighborsAfterFtoC, double indicator)
 {
@@ -563,6 +563,7 @@ void checkForSendOrRecvNode(int pos, int &commDir, int &commDirectionInCommAfter
         for (int j = 0; j < sendRecvProcessNeighbor[pn].numberOfNodes; j++) {
             if (pos == sendRecvProcessNeighbor[pn].index[j]) {
                 commDir = indicator;
+                indexInCommVector = j;
                 if (j < sendRecvProcessNeighborsAfterFtoC[pn].numberOfNodes) {
                     commDirectionInCommAfterFtoC = indicator;
                 }
@@ -572,39 +573,39 @@ void checkForSendOrRecvNode(int pos, int &commDir, int &commDirectionInCommAfter
     }
 }
 
-void checkForRecvNodeX(int pos, int &recvDir, int &recvDirectionInCommAfterFtoC, Parameter *para, int level)
+void checkForRecvNodeX(int pos, int &recvDir, int &recvDirectionInCommAfterFtoC, int& recvIndex, Parameter *para, int level)
 {
-    checkForSendOrRecvNode(pos, recvDir, recvDirectionInCommAfterFtoC, para->getParH(level)->recvProcessNeighborX,
+    checkForSendOrRecvNode(pos, recvDir, recvDirectionInCommAfterFtoC, recvIndex, para->getParH(level)->recvProcessNeighborX,
                            para->getParH(level)->recvProcessNeighborsAfterFtoCX, 2.0);
 }
 
-void checkForRecvNodeY(int pos, int &recvDir, int &recvDirectionInCommAfterFtoC, Parameter *para, int level)
+void checkForRecvNodeY(int pos, int &recvDir, int &recvDirectionInCommAfterFtoC, int& recvIndex, Parameter *para, int level)
 {
-    checkForSendOrRecvNode(pos, recvDir, recvDirectionInCommAfterFtoC, para->getParH(level)->recvProcessNeighborY,
+    checkForSendOrRecvNode(pos, recvDir, recvDirectionInCommAfterFtoC, recvIndex, para->getParH(level)->recvProcessNeighborY,
                            para->getParH(level)->recvProcessNeighborsAfterFtoCY, 4.0);
 }
 
-void checkForRecvNodeZ(int pos, int &recvDir, int &recvDirectionInCommAfterFtoC, Parameter *para, int level)
+void checkForRecvNodeZ(int pos, int &recvDir, int &recvDirectionInCommAfterFtoC, int& recvIndex, Parameter *para, int level)
 {
-    checkForSendOrRecvNode(pos, recvDir, recvDirectionInCommAfterFtoC, para->getParH(level)->recvProcessNeighborZ,
+    checkForSendOrRecvNode(pos, recvDir, recvDirectionInCommAfterFtoC, recvIndex, para->getParH(level)->recvProcessNeighborZ,
                            para->getParH(level)->recvProcessNeighborsAfterFtoCZ, 8.0);
 }
 
-void checkForSendNodeX(int pos, int &sendDir, int &sendDirectionInCommAfterFtoC, Parameter *para, int level)
+void checkForSendNodeX(int pos, int &sendDir, int &sendDirectionInCommAfterFtoC, int& sendIndex, Parameter *para, int level)
 {
-    checkForSendOrRecvNode(pos, sendDir, sendDirectionInCommAfterFtoC, para->getParH(level)->sendProcessNeighborX,
+    checkForSendOrRecvNode(pos, sendDir, sendDirectionInCommAfterFtoC, sendIndex, para->getParH(level)->sendProcessNeighborX,
                            para->getParH(level)->sendProcessNeighborsAfterFtoCX, 2.0);
 }
 
-void checkForSendNodeY(int pos, int &sendDir, int &sendDirectionInCommAfterFtoC, Parameter *para, int level)
+void checkForSendNodeY(int pos, int &sendDir, int &sendDirectionInCommAfterFtoC, int& sendIndex, Parameter *para, int level)
 {
-    checkForSendOrRecvNode(pos, sendDir, sendDirectionInCommAfterFtoC, para->getParH(level)->sendProcessNeighborY,
+    checkForSendOrRecvNode(pos, sendDir, sendDirectionInCommAfterFtoC, sendIndex, para->getParH(level)->sendProcessNeighborY,
                            para->getParH(level)->sendProcessNeighborsAfterFtoCY, 4.0);
 }
 
-void checkForSendNodeZ(int pos, int &sendDir, int &sendDirectionInCommAfterFtoC, Parameter *para, int level)
+void checkForSendNodeZ(int pos, int &sendDir, int &sendDirectionInCommAfterFtoC, int& sendIndex, Parameter *para, int level)
 {
-    checkForSendOrRecvNode(pos, sendDir, sendDirectionInCommAfterFtoC, para->getParH(level)->sendProcessNeighborZ,
+    checkForSendOrRecvNode(pos, sendDir, sendDirectionInCommAfterFtoC, sendIndex, para->getParH(level)->sendProcessNeighborZ,
                            para->getParH(level)->sendProcessNeighborsAfterFtoCZ, 8.0);
 }
 
@@ -615,7 +616,7 @@ void writeInterfaceFCC_Send(Parameter *para)
 
     // nodedata
     std::vector<std::string> datanames = { "sparse index", "borderBulk", "sendDirection",
-                                           "sendDirectionInCommAfterFtoC" };
+                                           "sendDirectionInCommAfterFtoC", "sendIndex" };
     // sendDirection: x = 2, y = 4, z = 8
     // borderBulk: border = 1, bulk = 0
     std::vector<std::vector<double>> nodedata;
@@ -643,12 +644,14 @@ void writeInterfaceFCC_Send(Parameter *para)
             nodedata[1][nodeCount]           = u < para->getParH(level)->intFCBorder.kFC;
             int sendDir                      = 0.0;
             int sendDirectionInCommAfterFtoC = 0.0;
+            int sendIndex                    = 0.0;
 
-            checkForSendNodeX(pos, sendDir, sendDirectionInCommAfterFtoC, para, level);
-            checkForSendNodeY(pos, sendDir, sendDirectionInCommAfterFtoC, para, level);
-            checkForSendNodeZ(pos, sendDir, sendDirectionInCommAfterFtoC, para, level);
+            checkForSendNodeX(pos, sendDir, sendIndex, sendDirectionInCommAfterFtoC, para, level);
+            checkForSendNodeY(pos, sendDir, sendIndex, sendDirectionInCommAfterFtoC, para, level);
+            checkForSendNodeZ(pos, sendDir, sendIndex, sendDirectionInCommAfterFtoC, para, level);
             nodedata[2][nodeCount] = sendDir;
             nodedata[3][nodeCount] = sendDirectionInCommAfterFtoC;
+            nodedata[4][nodeCount] = sendIndex;
 
             nodeCount++;
         }
@@ -667,8 +670,8 @@ void writeInterfaceCFC_Recv(Parameter *para)
 
     // nodedata
     std::vector<std::string> datanames = { "sparse index", "borderBulk", "recvDirection",
-                                           "recvDirectionInCommAfterFtoC" };
-    // sendDirection: x = 2, y = 4, z = 8
+                                           "recvDirectionInCommAfterFtoC", "recvIndex"};
+    // recvDirection: x = 2, y = 4, z = 8
     // borderBulk: border = 1, bulk = 0
     std::vector<std::vector<double>> nodedata;
 
@@ -695,13 +698,14 @@ void writeInterfaceCFC_Recv(Parameter *para)
             nodedata[1][nodeCount]           = u < para->getParH(level)->intCFBorder.kCF;
             int recvDir                      = 0.0;
             int recvDirectionInCommAfterFtoC = 0.0;
+            int recvIndex                    = 0.0;
 
-            checkForRecvNodeX(pos, recvDir, recvDirectionInCommAfterFtoC, para, level);
-            checkForRecvNodeY(pos, recvDir, recvDirectionInCommAfterFtoC, para, level);
-            checkForRecvNodeZ(pos, recvDir, recvDirectionInCommAfterFtoC, para, level);
+            checkForRecvNodeX(pos, recvDir, recvIndex, recvDirectionInCommAfterFtoC, para, level);
+            checkForRecvNodeY(pos, recvDir, recvIndex, recvDirectionInCommAfterFtoC, para, level);
+            checkForRecvNodeZ(pos, recvDir, recvIndex, recvDirectionInCommAfterFtoC, para, level);
             nodedata[2][nodeCount] = recvDir;
             nodedata[3][nodeCount] = recvDirectionInCommAfterFtoC;
-
+            nodedata[4][nodeCount] = recvIndex;
             nodeCount++;
         }
         std::string filenameVec = para->getFName() + "_writeInterfaceCFC_Recv_PID_" +
@@ -725,7 +729,7 @@ void writeSendNodesStream(Parameter *para)
     std::vector<UbTupleFloat3> nodesVec;
 
     // nodedata
-    std::vector<std::string> datanames = { "sparse index", "sendDirection", "sendDirectionInCommAfterFtoC",
+    std::vector<std::string> datanames = { "sparse index", "sendDirection", "sendDirectionInCommAfterFtoC", "sendIndex",
                                            "inICcellFCC" };
     // sendDirection: x = 2, y = 4, z = 8
     std::vector<std::vector<double>> nodedata;
@@ -745,6 +749,7 @@ void writeSendNodesStream(Parameter *para)
                 sendDirectionInCommAfterFtoC =
                     (i < para->getParH(level)->sendProcessNeighborsAfterFtoCX[pn].numberOfNodes) ? 2.0 : 0.0;
                 nodedata[2].push_back(sendDirectionInCommAfterFtoC);
+                nodedata[3].push_back((double)i);
             }
         }
 
@@ -762,10 +767,12 @@ void writeSendNodesStream(Parameter *para)
                     addToNodesVector(level, pos, nodesVec, para);
                     nodedata[1].push_back(4.0);
                     nodedata[2].push_back(sendDirectionInCommAfterFtoC);
+                    nodedata[3].push_back((double) i);
                 } else {
                     int posInVectors = it - nodedata[0].begin();
                     nodedata[1][posInVectors] += 4.0;
                     nodedata[2][posInVectors] += sendDirectionInCommAfterFtoC;
+                    nodedata[3][posInVectors] = (double)i;
                 }
             }
         }
@@ -784,24 +791,26 @@ void writeSendNodesStream(Parameter *para)
                     addToNodesVector(level, pos, nodesVec, para);
                     nodedata[1].push_back(8.0);
                     nodedata[2].push_back(sendDirectionInCommAfterFtoC);
+                    nodedata[3].push_back((double) i);
                 } else {
                     int posInVectors = it - nodedata[0].begin();
                     nodedata[1][posInVectors] += 8.0;
                     nodedata[2][posInVectors] += sendDirectionInCommAfterFtoC;
+                    nodedata[3][posInVectors] = (double)i;
                 }
             }
         }
 
         // check if node is in iCellFCC
-        nodedata[3].resize(nodedata[0].size());
+        nodedata[4].resize(nodedata[0].size());
         for (int i = 0; i < (int)nodedata[0].size(); i++) {
             pos = nodedata[0][i];
             for (unsigned int u = 0; u < para->getParH(level)->intFC.kFC; u++) {
                 if (para->getParH(level)->intFC.ICellFCC[u] == (uint)pos) {
-                    nodedata[3][i] = 1.0;
+                    nodedata[4][i] = 1.0;
                     break;
                 }
-                nodedata[3][i] = 0.0;
+                nodedata[4][i] = 0.0;
             }
         }
         std::string filenameVec = para->getFName() + "_writeSendNodesStreams_PID_" +
@@ -817,7 +826,7 @@ void writeRecvNodesStream(Parameter *para)
     std::vector<UbTupleFloat3> nodesVec;
 
     // nodedata
-    std::vector<std::string> datanames = { "sparse index", "recvDirection", "recvDirectionInCommAfterFtoC" };
+    std::vector<std::string> datanames = { "sparse index", "recvDirection", "recvDirectionInCommAfterFtoC", "recvIndex" };
     // sendDirection: x = 2, y = 4, z = 8
     std::vector<std::vector<double>> nodedata;
     nodedata.resize(datanames.size());
@@ -836,6 +845,7 @@ void writeRecvNodesStream(Parameter *para)
                 recvDirectionInCommAfterFtoC =
                     (i < para->getParH(level)->recvProcessNeighborsAfterFtoCX[pn].numberOfNodes) ? 2.0 : 0.0;
                 nodedata[2].push_back(recvDirectionInCommAfterFtoC);
+                nodedata[3].push_back(i);
             }
         }
 
@@ -853,10 +863,12 @@ void writeRecvNodesStream(Parameter *para)
                     addToNodesVector(level, pos, nodesVec, para);
                     nodedata[1].push_back(4.0);
                     nodedata[2].push_back(recvDirectionInCommAfterFtoC);
+                    nodedata[3].push_back(i);
                 } else {
                     int posInVectors = it - nodedata[0].begin();
                     nodedata[1][posInVectors] += 4.0;
                     nodedata[2][posInVectors] += recvDirectionInCommAfterFtoC;
+                    nodedata[3][posInVectors] += i;
                 }
             }
         }
@@ -875,10 +887,12 @@ void writeRecvNodesStream(Parameter *para)
                     addToNodesVector(level, pos, nodesVec, para);
                     nodedata[1].push_back(8.0);
                     nodedata[2].push_back(recvDirectionInCommAfterFtoC);
+                    nodedata[3].push_back(i);
                 } else {
                     int posInVectors = it - nodedata[0].begin();
                     nodedata[1][posInVectors] += 8.0;
                     nodedata[2][posInVectors] += recvDirectionInCommAfterFtoC;
+                    nodedata[3][posInVectors] += i;
                 }
             }
         }

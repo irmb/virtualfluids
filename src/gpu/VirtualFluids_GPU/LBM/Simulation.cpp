@@ -386,7 +386,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    // std::cout << "Process " << comm->getPID() <<": used device memory" << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n" << std::endl;
    //////////////////////////////////////////////////////////////////////////
 
-   InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
+   //InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
    //InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
 
    // writers for Version with communication hiding
