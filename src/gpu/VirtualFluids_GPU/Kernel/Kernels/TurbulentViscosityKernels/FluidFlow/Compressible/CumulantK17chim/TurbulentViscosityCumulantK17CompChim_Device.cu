@@ -315,7 +315,7 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         //!  - Fifth order cumulants \f$ C_{221}, C_{212}, C_{122}\f$: \f$\omega_9=O5=1.0\f$.
         //!  - Sixth order cumulant \f$ C_{222}\f$: \f$\omega_{10}=O6=1.0\f$.
         //!
-                ////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////
         //! - Calculate modified omega with turbulent viscosity
         //!
         real omega = omega_in / (c1o1 + c3o1*omega_in*turbulentViscosity[k]);
@@ -429,6 +429,15 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         real dxux = c1o2 * (-omega) * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (mfaaa - mxxPyyPzz);
         real dyuy = dxux + omega * c3o2 * mxxMyy;
         real dzuz = dxux + omega * c3o2 * mxxMzz;
+
+        //Smagorinsky for debugging
+        if(true)
+        {
+            real Sbar = sqrt(c2o1*(dxux*dxux+dyuy*dyuy+dzuz*dzuz)+Dxy*Dxy+Dxz*Dxz+Dyz*Dyz);
+            real Cs = 0.05f;
+            turbulentViscosity[k] = Cs*Cs*Sbar;
+        }
+
         ////////////////////////////////////////////////////////////
         //! - Relaxation of second order cumulants with correction terms according to Eq. (33)-(35) in
         //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017),

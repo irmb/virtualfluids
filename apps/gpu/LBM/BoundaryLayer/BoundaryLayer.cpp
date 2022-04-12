@@ -90,8 +90,8 @@ std::string simulationName("BoundayLayer");
 
 // all in s
 const float tOut = 10000;
-const float tEnd = 100000; // total time of simulation
-const float tStartAveraging =  50000;
+const float tEnd = 50000; // total time of simulation
+const float tStartAveraging =  10000;
 const float tAveraging      =  200;
 const float tStartOutProbe  =  0;
 const float tOutProbe       =  1000; 
@@ -166,9 +166,10 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityRatio( dx*dx/dt );
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
-    para->setUseAMD(true);
-    para->setSGSConstant(0.2); 
-    // para->setQuadricLimiters( 0.000001, 0.000001, 0.000001);
+    para->setUseTurbulentViscosity(true);
+    // para->setUseAMD(true);
+    // para->setSGSConstant(0.083); 
+    // para->setQuadricLimiters( 0.0001, 0.0001, 0.0001);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;

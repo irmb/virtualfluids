@@ -30,6 +30,9 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
                                     unsigned int size_Mat, 
                                     bool evenOrOdd)
 {
+
+   bool printOut = false;
+
    Distributions27 D;
    if (evenOrOdd==true)//get right array of post coll f's
    {
@@ -218,6 +221,13 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
 
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
       
+      if(printOut && k==0)
+      { 
+         printf("========================== \n");
+         printf("turb 0, turb sampl.: %1.14f \t %1.14f \n",turbViscosity[k_Q[k]], turbViscosity[k_N[k]] );
+      }
+
+
       real om_turb = om1 / (c1o1 + c3o1*om1*max(c0o1, turbViscosity[k_Q[k]]));
       // if(k==0){printf("om\t %f \t vis %f \t om_turb \t %f \n", om1, turbViscosity[k_Q[k]], om_turb);}
       //////////////////////////////////////////////////////////////////////////
@@ -600,7 +610,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       real wallNormalZ = normalZ[k];
 
       //Sample velocity at exchange location and filter temporally
-      real eps = 0.001;
+      real eps = 1.0;
       real vxEL = eps*vx[k_N[k]]+(1.0-eps)*vx_bc[k];
       real vyEL = eps*vy[k_N[k]]+(1.0-eps)*vy_bc[k];
       real vzEL = eps*vz[k_N[k]]+(1.0-eps)*vz_bc[k];
@@ -635,13 +645,13 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       VeloX = -3.0*F_x*(c1o1+q);
       VeloY = -3.0*F_y*(c1o1+q);
       VeloZ = -3.0*F_z*(c1o1+q);
-      if(false && k==0)
+      if(printOut && k==0)
       {     
-         printf("==========================samp, z, z0: \t %i \t %f \t %f  \n u,v,w, vMag \t %f \t %f \t %f \t %f \n", samplingOffset[k], z, z0[k], vxEL,vyEL,vzEL,vMag );
+         printf("samp, z, z0: \t %i \t %f \t %f  \nu,v,w, vMag \t %f \t %f \t %f \t %f \n", samplingOffset[k], z, z0[k], vxEL,vyEL,vzEL,vMag );
          printf("u_star: %f \t\n\n", u_star);
-         printf("Velo: %f \t %f \t %f \t\n", VeloX, VeloY, VeloZ);
-         printf("Wall tan momentum: %f \t %f \t %f \t\n", wallMomentumX - wallMomDotN*wallMomentumX, wallMomentumY - wallMomDotN*wallMomentumY, wallMomentumZ - wallMomDotN*wallMomentumZ);
-         printf("FMEM before:\t %1.14f \t %1.14f \t %1.14f \nFWM: \t %1.14f \t %1.14f \t %1.14f \n", wallMomentumX, wallMomentumY, wallMomentumZ, (tau_w*A) * (vxEL/vMag), (tau_w*A) * (vyEL/vMag), (tau_w*A) * (vzEL/vMag));
+         printf("Velo: \t %1.14f  \t %1.14f  \t %1.14f  \t\n", VeloX, VeloY, VeloZ);
+         printf("Wall tan momen.: %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumX - wallMomDotN*wallNormalX, wallMomentumY - wallMomDotN*wallNormalY, wallMomentumZ - wallMomDotN*wallNormalZ);
+         printf("FMEM before:\t %1.14f \t %1.14f \t %1.14f \nFWM: \t\t %1.14f \t %1.14f \t %1.14f \n", wallMomentumX, wallMomentumY, wallMomentumZ, (tau_w*A) * (vxEL/vMag), (tau_w*A) * (vyEL/vMag), (tau_w*A) * (vzEL/vMag));
       } 
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // //Add wall velocity and write f's
@@ -857,7 +867,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          wallMomentumZ += - (c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
       }
 
-      if(false && k==0)
+      if(printOut && k==0)
       {     
          printf("FMEM after: \t %1.14f \t %1.14f \t %1.14f  \n \n", wallMomentumX,wallMomentumY,wallMomentumZ );
       } 
@@ -1379,6 +1389,16 @@ extern "C" __global__ void BBStressDevice27( real* DD,
       VeloX = -3.0*F_x;
       VeloY = -3.0*F_y;
       VeloZ = -3.0*F_z;
+
+      if(true && k==0)
+      {     
+         printf("==========================samp, z, z0: \t %i \t %f \t %f  \n u,v,w, vMag \t %f \t %f \t %f \t %f \n", samplingOffset[k], z, z0[k], vxEL,vyEL,vzEL,vMag );
+         printf("u_star: %f \t\n\n", u_star);
+         printf("Velo: %f \t %f \t %f \t\n", VeloX, VeloY, VeloZ);
+         printf("Wall tan momentum: %f \t %f \t %f \t\n", wallMomentumX - wallMomDotN*wallMomentumX, wallMomentumY - wallMomDotN*wallMomentumY, wallMomentumZ - wallMomDotN*wallMomentumZ);
+         printf("FMEM before:\t %1.14f \t %1.14f \t %1.14f \nFWM: \t %1.14f \t %1.14f \t %1.14f \n", wallMomentumX, wallMomentumY, wallMomentumZ, (tau_w*A) * (vxEL/vMag), (tau_w*A) * (vyEL/vMag), (tau_w*A) * (vzEL/vMag));
+      } 
+
 
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // //Add wall velocity and write f's
