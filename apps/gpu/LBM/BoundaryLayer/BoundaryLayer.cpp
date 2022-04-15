@@ -76,13 +76,13 @@ const real z0  = 0.1; // roughness length in m
 const real u_star = 0.4; //friction velocity in m/s
 const real kappa = 0.4; // von Karman constant 
 
-const real viscosity = 1.56e-5;
+const real viscosity = 0.0001;//1.56e-5;
 
 const real velocity  = u_star/kappa*log(L_z/z0); //max mean velocity at the top in m/s
 
 const real mach = 0.1;
 
-const uint nodes_per_H = 64;
+const uint nodes_per_H = 32;
 
 std::string path(".");
 
@@ -90,11 +90,11 @@ std::string simulationName("BoundayLayer");
 
 // all in s
 const float tOut = 10000;
-const float tEnd = 50000; // total time of simulation
-const float tStartAveraging =  10000;
+const float tEnd = 100000; // total time of simulation
+const float tStartAveraging =  50000;
 const float tAveraging      =  200;
 const float tStartOutProbe  =  0;
-const float tOutProbe       =  1000; 
+const float tOutProbe       =  10000; 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,10 +166,12 @@ void multipleLevel(const std::string& configPath)
     para->setViscosityRatio( dx*dx/dt );
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
-    para->setUseTurbulentViscosity(true);
-    // para->setUseAMD(true);
-    // para->setSGSConstant(0.083); 
-    // para->setQuadricLimiters( 0.0001, 0.0001, 0.0001);
+    // para->setUseTurbulentViscosity(true);
+    para->setUseAMD(true);
+    para->setSGSConstant(0.083); 
+    para->setQuadricLimiters( 10000.0, 10000.0, 10000.0);
+
+    // para->setCalcDragLift(true);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;

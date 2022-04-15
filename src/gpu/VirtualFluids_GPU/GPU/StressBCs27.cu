@@ -221,14 +221,15 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
 
       real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (c1o1 + drho);
       
+      real om_turb = om1 / (c1o1 + c3o1*om1*max(c0o1, turbViscosity[k_Q[k]]));
+     
       if(printOut && k==0)
       { 
-         printf("========================== \n");
+         printf("========================== %u ========================== \n", k_Q[k]);
          printf("turb 0, turb sampl.: %1.14f \t %1.14f \n",turbViscosity[k_Q[k]], turbViscosity[k_N[k]] );
+         printf("omega, omega turb: %1.14f \t %1.14f \n",om1, om_turb);
       }
 
-
-      real om_turb = om1 / (c1o1 + c3o1*om1*max(c0o1, turbViscosity[k_Q[k]]));
       // if(k==0){printf("om\t %f \t vis %f \t om_turb \t %f \n", om1, turbViscosity[k_Q[k]], om_turb);}
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)      //get adress where incoming f's should be written to
@@ -293,83 +294,22 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //Compute incoming f's with zero wall velocity
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      // real VeloX=0.0, VeloY=0.0, VeloZ=0.0; 
-      
-      // if(k==3071){ // 3071 9120 9215
-      //    printf("======================================\n");
-      //    printf("Stress=====================\n");
-      //    printf("k \t %u\n", k);
-      //    printf("kQk \t %u\n", KQK);
-      // //    printf("E \t %f \n", q_dirE[k]);
-      // //    printf("NE \t %f \n", q_dirNE[k]);
-      // //    printf("W \t %f \n", q_dirW[k]);
-      // //    printf("NW \t %f \n", q_dirNW[k]);
-      // //    printf("N \t %f \n", q_dirN[k]);
-      // //    printf("S \t %f \n", q_dirS[k]);
-      // //    printf("SE \t %f \n", q_dirSE[k]);
-      // //    printf("NE \t %f \n", q_dirNE[k]);
-      // //    printf("SW \t %f \n", q_dirSW[k]);
-      // //    printf("B \t %f \n", q_dirB[k]);
-      // //    printf("BS \t %f \n", q_dirBS[k]);
-      // //    printf("BN \t %f \n", q_dirBN[k]);
-      // //    printf("BW \t %f \n", q_dirBW[k]);
-      // //    printf("BE \t %f \n", q_dirBE[k]);
-      // //    printf("BNE \t %f \n", q_dirBNE[k]);
-      // //    printf("BNW \t %f \n", q_dirBNW[k]);
-      // //    printf("BSE \t %f \n", q_dirBSE[k]);
-      // //    printf("BSW \t %f \n", q_dirBSW[k]);
-      // //    printf("T \t %f \n", q_dirT[k]);
-      // //    printf("TS \t %f \n", q_dirTS[k]);
-      // //    printf("TN \t %f \n", q_dirTN[k]);
-      // //    printf("TW \t %f \n", q_dirTW[k]);
-      // //    printf("TE \t %f \n", q_dirTE[k]);
-      // //    printf("TNE \t %f \n", q_dirTNE[k]);
-      // //    printf("TNW \t %f \n", q_dirTNW[k]);
-      // //    printf("TSE \t %f \n", q_dirTSE[k]);
-      // //    printf("TSW \t %f \n\n", q_dirTSW[k]);
-
-      //    printf("E \t %f \n", f_E);
-      //    printf("NE \t %f \n", f_NE);
-      //    printf("W \t %f \n", f_W);
-      //    printf("NW \t %f \n", f_NW);
-      //    printf("N \t %f \n", f_N);
-      //    printf("S \t %f \n", f_S);
-      //    printf("SE \t %f \n", f_SE);
-      //    printf("NE \t %f \n", f_NE);
-      //    printf("SW \t %f \n", f_SW);
-      //    printf("B \t %f \n", f_B);
-      //    printf("BS \t %f \n", f_BS);
-      //    printf("BN \t %f \n", f_BN);
-      //    printf("BW \t %f \n", f_BW);
-      //    printf("BE \t %f \n", f_BE);
-      //    printf("BNE \t %f \n", f_BNE);
-      //    printf("BNW \t %f \n", f_BNW);
-      //    printf("BSE \t %f \n", f_BSE);
-      //    printf("BSW \t %f \n", f_BSW);
-      //    printf("T \t %f \n", f_T);
-      //    printf("TS \t %f \n", f_TS);
-      //    printf("TN \t %f \n", f_TN);
-      //    printf("TW \t %f \n", f_TW);
-      //    printf("TE \t %f \n", f_TE);
-      //    printf("TNE \t %f \n", f_TNE);
-      //    printf("TNW \t %f \n", f_TNW);
-      //    printf("TSE \t %f \n", f_TSE);
-      //    printf("TSW \t %f \n\n", f_TSW);
-      // }
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       // incoming f's from bounce back
-      real f_E_in,  f_W_in,  f_N_in,  f_S_in,  f_T_in,  f_B_in,   f_NE_in,  f_SW_in,  f_SE_in,  f_NW_in,  f_TE_in,  f_BW_in,  f_BE_in,
-         f_TW_in, f_TN_in, f_BS_in, f_BN_in, f_TS_in, f_TNE_in, f_TSW_in, f_TSE_in, f_TNW_in, f_BNE_in, f_BSW_in, f_BSE_in, f_BNW_in;
+      real f_E_in = 0.0,  f_W_in = 0.0,  f_N_in = 0.0,  f_S_in = 0.0,  f_T_in = 0.0,  f_B_in = 0.0,   f_NE_in = 0.0,  f_SW_in = 0.0,  f_SE_in = 0.0,  f_NW_in = 0.0,  f_TE_in = 0.0,  f_BW_in = 0.0,  f_BE_in = 0.0, f_TW_in = 0.0, f_TN_in = 0.0, f_BS_in = 0.0, f_BN_in = 0.0, f_TS_in = 0.0, f_TNE_in = 0.0, f_TSW_in = 0.0, f_TSE_in = 0.0, f_TNW_in = 0.0, f_BNE_in = 0.0, f_BSW_in = 0.0, f_BSE_in = 0.0, f_BNW_in = 0.0;
       // momentum exchanged with wall at rest
       real wallMomentumX = 0.0, wallMomentumY = 0.0, wallMomentumZ = 0.0;
-
+      real wallMomentumXPost = 0.0, wallMomentumYPost = 0.0, wallMomentumZPost = 0.0;
+      real wallMomentumXPre = 0.0, wallMomentumYPre = 0.0, wallMomentumZPre = 0.0;
       q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
          feq=c2o27* (drho/*+three*( vx1        )*/+c9o2*( vx1        )*( vx1        ) * (c1o1 + drho)-cu_sq); 
          f_W_in=(c1o1-q)/(c1o1+q)*(f_E-f_W+(f_E+f_W-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_E+f_W))/(c1o1+q) - c2o27 * drho;
          wallMomentumX += f_E+f_W_in;
+         wallMomentumXPost += f_E;
+         wallMomentumXPre += f_W_in;
       }
 
       q = q_dirW[k];
@@ -378,6 +318,8 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          feq=c2o27* (drho/*+three*(-vx1        )*/+c9o2*(-vx1        )*(-vx1        ) * (c1o1 + drho)-cu_sq); 
          f_E_in=(c1o1-q)/(c1o1+q)*(f_W-f_E+(f_W+f_E-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_W+f_E))/(c1o1+q) - c2o27 * drho;
          wallMomentumX -= f_W+f_E_in;
+         wallMomentumXPost -= f_W;//+f_E_in;
+         wallMomentumXPre -= f_E_in;
       }
 
       q = q_dirN[k];
@@ -386,6 +328,8 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          feq=c2o27* (drho/*+three*(    vx2     )*/+c9o2*(     vx2    )*(     vx2    ) * (c1o1 + drho)-cu_sq); 
          f_S_in=(c1o1-q)/(c1o1+q)*(f_N-f_S+(f_N+f_S-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_N+f_S))/(c1o1+q) - c2o27 * drho;
          wallMomentumY += f_N+f_S_in;
+         wallMomentumYPost += f_N;//+f_S_in;
+         wallMomentumYPre += f_S_in;
       }
 
       q = q_dirS[k];
@@ -394,6 +338,8 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          feq=c2o27* (drho/*+three*(   -vx2     )*/+c9o2*(    -vx2    )*(    -vx2    ) * (c1o1 + drho)-cu_sq); 
          f_N_in=(c1o1-q)/(c1o1+q)*(f_S-f_N+(f_S+f_N-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_S+f_N))/(c1o1+q) - c2o27 * drho;
          wallMomentumY -= f_S+f_N_in;
+         wallMomentumYPost -= f_S;//+f_N_in;
+         wallMomentumYPre -= f_N_in;
       }
 
       q = q_dirT[k];
@@ -402,6 +348,8 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          feq=c2o27* (drho/*+three*(         vx3)*/+c9o2*(         vx3)*(         vx3) * (c1o1 + drho)-cu_sq); 
          f_B_in=(c1o1-q)/(c1o1+q)*(f_T-f_B+(f_T+f_B-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_T+f_B))/(c1o1+q) - c2o27 * drho;
          wallMomentumZ += f_T+f_B_in;
+         wallMomentumZPost += f_T;//+f_B_in;
+         wallMomentumZPre += f_B_in;
       }
 
       q = q_dirB[k];
@@ -410,6 +358,8 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          feq=c2o27* (drho/*+three*(        -vx3)*/+c9o2*(        -vx3)*(        -vx3) * (c1o1 + drho)-cu_sq); 
          f_T_in=(c1o1-q)/(c1o1+q)*(f_B-f_T+(f_B+f_T-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_B+f_T))/(c1o1+q) - c2o27 * drho;
          wallMomentumZ -= f_B+f_T_in;
+         wallMomentumZPost -= f_B;//+f_T_in;
+         wallMomentumZPre -= f_T_in;
       }
 
       q = q_dirNE[k];
@@ -419,6 +369,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          f_SW_in=(c1o1-q)/(c1o1+q)*(f_NE-f_SW+(f_NE+f_SW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_NE+f_SW))/(c1o1+q) - c1o54 * drho;
          wallMomentumX += f_NE+f_SW_in;
          wallMomentumY += f_NE+f_SW_in;
+         wallMomentumXPost += f_NE;//+f_SW_in;
+         wallMomentumYPost += f_NE;//+f_SW_in;
+         wallMomentumXPre += f_SW_in;
+         wallMomentumYPre += f_SW_in;
       }
 
       q = q_dirSW[k];
@@ -428,6 +382,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          f_NE_in=(c1o1-q)/(c1o1+q)*(f_SW-f_NE+(f_SW+f_NE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_SW+f_NE))/(c1o1+q) - c1o54 * drho;
          wallMomentumX -= f_SW+f_NE_in;
          wallMomentumY -= f_SW+f_NE_in;
+         wallMomentumXPost -= f_SW;//+f_NE_in;
+         wallMomentumYPost -= f_SW;//+f_NE_in;
+         wallMomentumXPre -= f_NE_in;
+         wallMomentumYPre -= f_NE_in;
       }
 
       q = q_dirSE[k];
@@ -437,6 +395,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          f_NW_in=(c1o1-q)/(c1o1+q)*(f_SE-f_NW+(f_SE+f_NW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_SE+f_NW))/(c1o1+q) - c1o54 * drho;
          wallMomentumX += f_SE+f_NW_in;
          wallMomentumY -= f_SE+f_NW_in;
+         wallMomentumXPost += f_SE;//+f_NW_in;
+         wallMomentumYPost -= f_SE;//+f_NW_in;
+         wallMomentumXPre += f_NW_in;
+         wallMomentumYPre -= f_NW_in;
       }
 
       q = q_dirNW[k];
@@ -446,6 +408,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          f_SE_in=(c1o1-q)/(c1o1+q)*(f_NW-f_SE+(f_NW+f_SE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_NW+f_SE))/(c1o1+q) - c1o54 * drho;
          wallMomentumX -= f_NW+f_SE_in;
          wallMomentumY += f_NW+f_SE_in;
+         wallMomentumXPost -= f_NW;//+f_SE_in;
+         wallMomentumYPost += f_NW;//+f_SE_in;
+         wallMomentumXPre -= f_SE_in;
+         wallMomentumYPre += f_SE_in;
       }
 
       q = q_dirTE[k];
@@ -455,6 +421,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          f_BW_in=(c1o1-q)/(c1o1+q)*(f_TE-f_BW+(f_TE+f_BW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TE+f_BW))/(c1o1+q) - c1o54 * drho;
          wallMomentumX += f_TE+f_BW_in;
          wallMomentumZ += f_TE+f_BW_in;
+         wallMomentumXPost += f_TE;//+f_BW_in;
+         wallMomentumZPost += f_TE;//+f_BW_in;
+         wallMomentumXPre += f_BW_in;
+         wallMomentumZPre += f_BW_in;
       }
 
       q = q_dirBW[k];
@@ -464,6 +434,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          f_TE_in=(c1o1-q)/(c1o1+q)*(f_BW-f_TE+(f_BW+f_TE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BW+f_TE))/(c1o1+q) - c1o54 * drho;
          wallMomentumX -= f_BW+f_TE_in;
          wallMomentumZ -= f_BW+f_TE_in;
+         wallMomentumXPost -= f_BW;//+f_TE_in;
+         wallMomentumZPost -= f_BW;//+f_TE_in;
+         wallMomentumXPre -= f_TE_in;
+         wallMomentumZPre -= f_TE_in;
       }
 
       q = q_dirBE[k];
@@ -473,6 +447,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          f_TW_in=(c1o1-q)/(c1o1+q)*(f_BE-f_TW+(f_BE+f_TW-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BE+f_TW))/(c1o1+q) - c1o54 * drho;
          wallMomentumX += f_BE+f_TW_in;
          wallMomentumZ -= f_BE+f_TW_in;
+         wallMomentumXPost += f_BE;//+f_TW_in;
+         wallMomentumZPost -= f_BE;//+f_TW_in;
+         wallMomentumXPre += f_TW_in;
+         wallMomentumZPre -= f_TW_in;
       }
 
       q = q_dirTW[k];
@@ -482,6 +460,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          f_BE_in=(c1o1-q)/(c1o1+q)*(f_TW-f_BE+(f_TW+f_BE-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TW+f_BE))/(c1o1+q) - c1o54 * drho;
          wallMomentumX -= f_TW+f_BE_in;
          wallMomentumZ += f_TW+f_BE_in;
+         wallMomentumXPost -= f_TW;//+f_BE_in;
+         wallMomentumZPost += f_TW;//+f_BE_in;
+         wallMomentumXPre -= f_BE_in;
+         wallMomentumZPre += f_BE_in;
       }
 
       q = q_dirTN[k];
@@ -491,6 +473,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          f_BS_in=(c1o1-q)/(c1o1+q)*(f_TN-f_BS+(f_TN+f_BS-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TN+f_BS))/(c1o1+q) - c1o54 * drho;
          wallMomentumY += f_TN+f_BS_in;
          wallMomentumZ += f_TN+f_BS_in;
+         wallMomentumYPost += f_TN;//+f_BS_in;
+         wallMomentumZPost += f_TN;//+f_BS_in;
+         wallMomentumYPre += f_BS_in;
+         wallMomentumZPre += f_BS_in;
       }
 
       q = q_dirBS[k];
@@ -500,6 +486,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          f_TN_in=(c1o1-q)/(c1o1+q)*(f_BS-f_TN+(f_BS+f_TN-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BS+f_TN))/(c1o1+q) - c1o54 * drho;
          wallMomentumY -= f_BS+f_TN_in;
          wallMomentumZ -= f_BS+f_TN_in;
+         wallMomentumYPost -= f_BS;//+f_TN_in;
+         wallMomentumZPost -= f_BS;//+f_TN_in;
+         wallMomentumYPre -= f_TN_in;
+         wallMomentumZPre -= f_TN_in;
       }
 
       q = q_dirBN[k];
@@ -509,6 +499,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          f_TS_in=(c1o1-q)/(c1o1+q)*(f_BN-f_TS+(f_BN+f_TS-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_BN+f_TS))/(c1o1+q) - c1o54 * drho;
          wallMomentumY += f_BN+f_TS_in;
          wallMomentumZ -= f_BN+f_TS_in;
+         wallMomentumYPost += f_BN;//+f_TS_in;
+         wallMomentumZPost -= f_BN;//+f_TS_in;
+         wallMomentumYPre += f_TS_in;
+         wallMomentumZPre -= f_TS_in;
       }
 
       q = q_dirTS[k];
@@ -518,6 +512,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          f_BN_in=(c1o1-q)/(c1o1+q)*(f_TS-f_BN+(f_TS+f_BN-c2o1*feq*om_turb)/(c1o1-om_turb))*c1o2+(q*(f_TS+f_BN))/(c1o1+q) - c1o54 * drho;
          wallMomentumY -= f_TS+f_BN_in;
          wallMomentumZ += f_TS+f_BN_in;
+         wallMomentumYPost -= f_TS;//+f_BN_in;
+         wallMomentumZPost += f_TS;//+f_BN_in;
+         wallMomentumYPre -= f_BN_in;
+         wallMomentumZPre += f_BN_in;
       }
 
       q = q_dirTNE[k];
@@ -528,6 +526,12 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          wallMomentumX += f_TNE+f_BSW_in;
          wallMomentumY += f_TNE+f_BSW_in;
          wallMomentumZ += f_TNE+f_BSW_in;
+         wallMomentumXPost += f_TNE;//+f_BSW_in;
+         wallMomentumYPost += f_TNE;//+f_BSW_in;
+         wallMomentumZPost += f_TNE;//+f_BSW_in;
+         wallMomentumXPre += f_BSW_in;
+         wallMomentumYPre += f_BSW_in;
+         wallMomentumZPre += f_BSW_in;
       }
 
       q = q_dirBSW[k];
@@ -538,6 +542,12 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          wallMomentumX -= f_BSW+f_TNE_in;
          wallMomentumY -= f_BSW+f_TNE_in;
          wallMomentumZ -= f_BSW+f_TNE_in;
+         wallMomentumXPost -= f_BSW;//+f_TNE_in;
+         wallMomentumYPost -= f_BSW;//+f_TNE_in;
+         wallMomentumZPost -= f_BSW;//+f_TNE_in;
+         wallMomentumXPre -= f_TNE_in;
+         wallMomentumYPre -= f_TNE_in;
+         wallMomentumZPre -= f_TNE_in;
       }
 
       q = q_dirBNE[k];
@@ -548,6 +558,12 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          wallMomentumX += f_BNE+f_TSW_in;
          wallMomentumY += f_BNE+f_TSW_in;
          wallMomentumZ -= f_BNE+f_TSW_in;
+         wallMomentumXPost += f_BNE;//+f_TSW_in;
+         wallMomentumYPost += f_BNE;//+f_TSW_in;
+         wallMomentumZPost -= f_BNE;//+f_TSW_in;
+         wallMomentumXPre += f_TSW_in;
+         wallMomentumYPre += f_TSW_in;
+         wallMomentumZPre -= f_TSW_in;
       }
 
       q = q_dirTSW[k];
@@ -558,6 +574,12 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          wallMomentumX -= f_TSW+f_BNE_in;
          wallMomentumY -= f_TSW+f_BNE_in;
          wallMomentumZ += f_TSW+f_BNE_in;
+         wallMomentumXPost -= f_TSW;//+f_BNE_in;
+         wallMomentumYPost -= f_TSW;//+f_BNE_in;
+         wallMomentumZPost += f_TSW;//+f_BNE_in;
+         wallMomentumXPre -= f_BNE_in;
+         wallMomentumYPre -= f_BNE_in;
+         wallMomentumZPre += f_BNE_in;
       }
 
       q = q_dirTSE[k];
@@ -568,6 +590,12 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          wallMomentumX += f_TSE+f_BNW_in;
          wallMomentumY -= f_TSE+f_BNW_in;
          wallMomentumZ += f_TSE+f_BNW_in;
+         wallMomentumXPost += f_TSE;//+f_BNW_in;
+         wallMomentumYPost -= f_TSE;//+f_BNW_in;
+         wallMomentumZPost += f_TSE;//+f_BNW_in;
+         wallMomentumXPre += f_BNW_in;
+         wallMomentumYPre -= f_BNW_in;
+         wallMomentumZPre += f_BNW_in;
       }
 
       q = q_dirBNW[k];
@@ -578,6 +606,12 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          wallMomentumX -= f_BNW+f_TSE_in;
          wallMomentumY += f_BNW+f_TSE_in;
          wallMomentumZ -= f_BNW+f_TSE_in;
+         wallMomentumXPost -= f_BNW;//+f_TSE_in;
+         wallMomentumYPost += f_BNW;//+f_TSE_in;
+         wallMomentumZPost -= f_BNW;//+f_TSE_in;
+         wallMomentumXPre -= f_TSE_in;
+         wallMomentumYPre += f_TSE_in;
+         wallMomentumZPre -= f_TSE_in;
       }
 
       q = q_dirBSE[k];
@@ -588,6 +622,12 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          wallMomentumX += f_BSE+f_TNW_in;
          wallMomentumY -= f_BSE+f_TNW_in;
          wallMomentumZ -= f_BSE+f_TNW_in;
+         wallMomentumXPost += f_BSE;//+f_TNW_in;
+         wallMomentumYPost -= f_BSE;//+f_TNW_in;
+         wallMomentumZPost -= f_BSE;//+f_TNW_in;
+         wallMomentumXPre += f_TNW_in;
+         wallMomentumYPre -= f_TNW_in;
+         wallMomentumZPre -= f_TNW_in;
       }
 
       q = q_dirTNW[k];
@@ -598,7 +638,46 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          wallMomentumX -= f_TNW+f_BSE_in;
          wallMomentumY += f_TNW+f_BSE_in;
          wallMomentumZ += f_TNW+f_BSE_in;
+         wallMomentumXPost -= f_TNW;//+f_BSE_in;
+         wallMomentumYPost += f_TNW;//+f_BSE_in;
+         wallMomentumZPost += f_TNW;//+f_BSE_in;
+         wallMomentumXPre -= f_BSE_in;
+         wallMomentumYPre += f_BSE_in;
+         wallMomentumZPre += f_BSE_in;
       }
+
+      if(false && k==0)
+		{
+			printf("E \t %f \t %f \t %f \n", q_dirE[k], f_E, f_E_in);
+			printf("NE \t %f \t %f \t %f \n",q_dirNE[k], f_NE, f_NE_in);
+			printf("W \t %f \t %f \t %f \n", q_dirW[k], f_W, f_W_in);
+			printf("NW \t %f \t %f \t %f \n", q_dirNW[k], f_NW, f_NW_in);
+			printf("N \t %f \t %f \t %f \n", q_dirN[k], f_N, f_N_in);
+			printf("S \t %f \t %f \t %f \n", q_dirS[k], f_S, f_S_in);
+			printf("SE \t %f \t %f \t %f \n", q_dirSE[k], f_SE, f_SE_in);
+			printf("NE \t %f \t %f \t %f \n", q_dirNE[k], f_NE, f_NE_in);
+			printf("SW \t %f \t %f \t %f \n", q_dirSW[k], f_SW, f_SW_in);
+			printf("B \t %f \t %f \t %f \n", q_dirB[k], f_B, f_B_in);
+			printf("BS \t %f \t %f \t %f \n", q_dirBS[k], f_BS, f_BS_in);
+			printf("BN \t %f \t %f \t %f \n", q_dirBN[k], f_BN, f_BN_in);
+			printf("BW \t %f \t %f \t %f \n", q_dirBW[k], f_BW, f_BW_in);
+			printf("BE \t %f \t %f \t %f \n", q_dirBE[k], f_BE, f_BE_in);
+			printf("BNE \t %f \t %f \t %f \n", q_dirBNE[k], f_BNE, f_BNE_in);
+			printf("BNW \t %f \t %f \t %f \n", q_dirBNW[k], f_BNW, f_BNW_in);
+			printf("BSE \t %f \t %f \t %f \n", q_dirBSE[k], f_BSE, f_BSE_in);
+			printf("BSW \t %f \t %f \t %f \n", q_dirBSW[k], f_BSW, f_BSW_in);
+			printf("T \t %f \t %f \t %f \n", q_dirT[k], f_T, f_T_in);
+			printf("TS \t %f \t %f \t %f \n", q_dirTS[k], f_TS, f_TS_in);
+			printf("TN \t %f \t %f \t %f \n", q_dirTN[k], f_TN, f_TN_in);
+			printf("TW \t %f \t %f \t %f \n", q_dirTW[k], f_TW, f_TW_in);
+			printf("TE \t %f \t %f \t %f \n", q_dirTE[k], f_TE, f_TE_in);
+			printf("TNE \t %f \t %f \t %f \n", q_dirTNE[k], f_TNE, f_TNE_in);
+			printf("TNW \t %f \t %f \t %f \n", q_dirTNW[k], f_TNW, f_TNW_in);
+			printf("TSE \t %f \t %f \t %f \n", q_dirTSE[k], f_TSE, f_TSE_in);
+			printf("TSW \t %f \t %f \t %f \n\n", q_dirTSW[k], f_TSW, f_TSW_in);
+		}
+
+
 
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // //Compute wall velocity
@@ -610,7 +689,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       real wallNormalZ = normalZ[k];
 
       //Sample velocity at exchange location and filter temporally
-      real eps = 1.0;
+      real eps = 0.1;
       real vxEL = eps*vx[k_N[k]]+(1.0-eps)*vx_bc[k];
       real vyEL = eps*vy[k_N[k]]+(1.0-eps)*vy_bc[k];
       real vzEL = eps*vz[k_N[k]]+(1.0-eps)*vz_bc[k];
@@ -642,16 +721,25 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
 
       //Corresponding wall velocity (only valid for wall-normals in z)
       q = 0.5f; 
-      VeloX = -3.0*F_x*(c1o1+q);
+      VeloX = -3.0*F_x*(c1o1+q); 
       VeloY = -3.0*F_y*(c1o1+q);
       VeloZ = -3.0*F_z*(c1o1+q);
+      // VeloX = ( VeloX*vxEL>=c0o1? VeloX: c0o1);
+      // VeloY = ( VeloY*vxEL>=c0o1? VeloY: c0o1);
+      // VeloZ = ( VeloZ*vxEL>=c0o1? VeloZ: c0o1);
+      VeloX = max(VeloX, -0.2);
+
       if(printOut && k==0)
       {     
          printf("samp, z, z0: \t %i \t %f \t %f  \nu,v,w, vMag \t %f \t %f \t %f \t %f \n", samplingOffset[k], z, z0[k], vxEL,vyEL,vzEL,vMag );
+         printf("dudz: \t %1.14f \n", vx[k_N[k]]-vx[k_Q[k]]);
+         printf("nu_t * dudz: \t %1.14f \n", turbViscosity[k_Q[k]]*(vx[k_N[k]]-vx[k_Q[k]]) );
          printf("u_star: %f \t\n\n", u_star);
-         printf("Velo: \t %1.14f  \t %1.14f  \t %1.14f  \t\n", VeloX, VeloY, VeloZ);
+         printf("Wall velo: \t %1.14f  \t %1.14f  \t %1.14f  \t\n", VeloX, VeloY, VeloZ);
          printf("Wall tan momen.: %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumX - wallMomDotN*wallNormalX, wallMomentumY - wallMomDotN*wallNormalY, wallMomentumZ - wallMomDotN*wallNormalZ);
          printf("FMEM before:\t %1.14f \t %1.14f \t %1.14f \nFWM: \t\t %1.14f \t %1.14f \t %1.14f \n", wallMomentumX, wallMomentumY, wallMomentumZ, (tau_w*A) * (vxEL/vMag), (tau_w*A) * (vyEL/vMag), (tau_w*A) * (vzEL/vMag));
+         // printf("FMEM post: \t %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumXPost, wallMomentumYPost, wallMomentumZPost);
+         // printf("FMEM pre: \t %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumXPre, wallMomentumYPre, wallMomentumZPre);        
       } 
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // //Add wall velocity and write f's
@@ -871,6 +959,8 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       {     
          printf("FMEM after: \t %1.14f \t %1.14f \t %1.14f  \n \n", wallMomentumX,wallMomentumY,wallMomentumZ );
       } 
+      // turbViscosity[k_Q[k]]=0.1*0.4*0.5;
+      // turbViscosity[neighborZ[k_Q[k]]]=0.1*0.5*0.4*0.5;
 
    }
 }
