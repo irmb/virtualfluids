@@ -10,6 +10,7 @@
 #include <DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h>
 #include <gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h>
 #include <gpu/GridGenerator/grid/GridImp.h>
+#include <gpu/GridGenerator/utilities/communication.h>
 
 
 auto RealEq = [](auto value) { 
@@ -27,10 +28,14 @@ private:
     SPtr<Grid> grid;
     GridBuilderDouble()=default;
 
+    uint numberOfSendIndices;
 public:
     GridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(Device(), ""), grid(grid){};
     SPtr<Grid> getGrid(uint level) override{ return grid; };
     std::shared_ptr<Grid> getGrid(int level, int box) override {return grid; };
+
+    void setNumberOfSendIndices(uint numberOfSendIndices){this->numberOfSendIndices=numberOfSendIndices;};
+    uint getNumberOfSendIndices(int direction, uint level) override {return numberOfSendIndices;};
 };
 
 
@@ -92,6 +97,22 @@ struct CFBorderBulk {
     std::vector<uint> offsetCFz_Bulk_expected   = { 1001, 1003, 1005, 1007 };
 };
 
+struct SendIndicesForCommAfterFtoCX {
+    // data to work on
+    std::vector<int> sendIndices = { 10, 11, 12, 13, 14, 15, 16 };
+    int level = 0;
+    int direction = CommunicationDirections::MX;
+    int indexOfProcessNeighbor = 0;
+
+    // output data
+    std::vector<uint> sendIndicesForCommAfterFtoCPositions;
+    int numberOfSendNeighborsAfterFtoC;
+
+    // expected data
+  
+};
+
+
 
 static void initParameterClass(std::shared_ptr<Parameter> &para);
 
@@ -121,6 +142,22 @@ public:
         IndexRearrangementForStreams testSubject = IndexRearrangementForStreams(para, builder);
 
         testSubject.splitCoarseToFineIntoBorderAndBulk(cf.level);
+    };
+
+    static void setUpAndRun_reorderSendIndicesForCommAfterFtoCX(SendIndicesForCommAfterFtoCX &si, std::shared_ptr<Parameter> para)
+    {
+        SPtr<GridImpDouble> grid =
+            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, nullptr, Distribution(), 1);
+        std::shared_ptr<GridBuilderDouble> builder = std::make_shared<GridBuilderDouble>(grid);
+
+        builder->setNumberOfSendIndices((uint) si.sendIndices.size());
+
+
+        IndexRearrangementForStreams testSubject = IndexRearrangementForStreams(para, builder);
+        para->getParH(si.level)->sendProcessNeighborX[si.indexOfProcessNeighbor].index=si.sendIndices.data();
+        para->getParH(si.level)->sendProcessNeighborsAfterFtoCX[si.indexOfProcessNeighbor].numberOfNodes=0;
+
+        testSubject.reorderSendIndicesForCommAfterFtoCX(si.direction, si.level, si.indexOfProcessNeighbor, si.sendIndicesForCommAfterFtoCPositions);
     };
 };
 
@@ -157,6 +194,14 @@ bool vectorsAreEqual(real *vector1, std::vector<uint> vectorExpected)
 }
 
 
+TEST(IndexRearrangementForStreamsTest_reorderSendIndicesForCommAfterFtoCX, wip)
+{
+    SendIndicesForCommAfterFtoCX si;
+    SPtr<Parameter> para;
+    initParameterClass(para);
+    IndexRearrangementForStreamsTest::setUpAndRun_reorderSendIndicesForCommAfterFtoCX(si, para);
+    EXPECT_TRUE(false);
+}
 
 
 
