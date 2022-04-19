@@ -143,10 +143,10 @@ void multipleLevel(const std::string& configPath)
     para->setDensityRatio((real) 1.0); // correct value?
 
 	para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
-           rho = (real)0.0;
-           vx  = (real)0.0; //(6 * velocityLB * coordZ * (L - coordZ) / (L * L));
-           vy  = (real)0.0;
-           vz  = (real)0.0;
+           rho = (real) 1.0;
+           vx  = (real) (coordX * velocityLB);
+           vy  = (real) (coordY * velocityLB);
+           vz  = (real) (coordZ * velocityLB);
     });
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
