@@ -135,11 +135,7 @@ void initParameterClass(std::shared_ptr<Parameter> &para)
 
 bool vectorsAreEqual(std::vector<uint> vector1, std::vector<uint> vectorExpected)
 {
-    for (uint i = 0; i < (uint)vectorExpected.size(); i++) {
-        if (vector1[i] != vectorExpected[i])
-            return false;
-    }
-    return true;
+    return vector1 == vectorExpected;
 }
 
 bool vectorsAreEqual(uint *vector1, std::vector<uint> vectorExpected)
