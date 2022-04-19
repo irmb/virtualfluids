@@ -256,8 +256,8 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
             if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatialCovariances)])
             {   // <u_i' u_j'> = <u_i u_j> - <u_i>*<u_i> 
                 real vx2 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow2<real>(), 0.f, thrust::plus<real>())/N;
-                real vy2 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow2<real>(), 0.f, thrust::plus<real>())/N;
-                real vz2 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow2<real>(), 0.f, thrust::plus<real>())/N;
+                real vy2 = thrust::transform_reduce(vy_iter_begin, vy_iter_end, pow2<real>(), 0.f, thrust::plus<real>())/N;
+                real vz2 = thrust::transform_reduce(vz_iter_begin, vz_iter_end, pow2<real>(), 0.f, thrust::plus<real>())/N;
                 real vxvy = thrust::inner_product(vx_iter_begin, vx_iter_end, vy_iter_begin, 0.f)/N;
                 real vxvz = thrust::inner_product(vx_iter_begin, vx_iter_end, vz_iter_begin, 0.f)/N;
                 real vyvz = thrust::inner_product(vy_iter_begin, vy_iter_end, vz_iter_begin, 0.f)/N;
@@ -265,8 +265,8 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                 real spatMean_vyvy = vy2-spatMean_vy*spatMean_vy;
                 real spatMean_vzvz = vz2-spatMean_vz*spatMean_vz;
                 real spatMean_vxvy = vxvy-spatMean_vx*spatMean_vy;
-                real spatMean_vxvz = vxvy-spatMean_vx*spatMean_vz;
-                real spatMean_vyvz = vxvy-spatMean_vy*spatMean_vz;
+                real spatMean_vxvz = vxvz-spatMean_vx*spatMean_vz;
+                real spatMean_vyvz = vyvz-spatMean_vy*spatMean_vz;
 
                 uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatialCovariances)];
                 probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] = spatMean_vxvx;
@@ -297,8 +297,8 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                 if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatialSkewness)])
                 {   // <u_i'^3> = <u_i^3> - <u_i>^3 - 3 <u_i> <u_i'^2>
                     real vx3 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow3<real>(), 0.f, thrust::plus<real>())/N;
-                    real vy3 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow3<real>(), 0.f, thrust::plus<real>())/N;
-                    real vz3 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow3<real>(), 0.f, thrust::plus<real>())/N;
+                    real vy3 = thrust::transform_reduce(vy_iter_begin, vy_iter_end, pow3<real>(), 0.f, thrust::plus<real>())/N;
+                    real vz3 = thrust::transform_reduce(vz_iter_begin, vz_iter_end, pow3<real>(), 0.f, thrust::plus<real>())/N;
                     real spatMean_vxvxvx = vx3 - spatMean_vx*spatMean_vx*spatMean_vx - 3*spatMean_vx*spatMean_vxvx;
                     real spatMean_vyvyvy = vy3 - spatMean_vy*spatMean_vy*spatMean_vy - 3*spatMean_vy*spatMean_vyvy;
                     real spatMean_vzvzvz = vz3 - spatMean_vz*spatMean_vz*spatMean_vz - 3*spatMean_vz*spatMean_vzvz;
@@ -326,8 +326,8 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                     if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatialFlatness)])
                     {   // <u_i'^4> = <u_i^4> - <u_i>^4 - 6 <u_i>^2 <u_i'^2> - 4 <u> <u'^3>
                         real vx4 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow4<real>(), 0.f, thrust::plus<real>())/N;
-                        real vy4 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow4<real>(), 0.f, thrust::plus<real>())/N;
-                        real vz4 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow4<real>(), 0.f, thrust::plus<real>())/N;
+                        real vy4 = thrust::transform_reduce(vy_iter_begin, vy_iter_end, pow4<real>(), 0.f, thrust::plus<real>())/N;
+                        real vz4 = thrust::transform_reduce(vz_iter_begin, vz_iter_end, pow4<real>(), 0.f, thrust::plus<real>())/N;
                         real spatMean_vxvxvxvx = vx4 - spatMean_vx*spatMean_vx*spatMean_vx*spatMean_vx - 6*spatMean_vx*spatMean_vx*spatMean_vxvx - 4*spatMean_vx*spatMean_vxvxvx;
                         real spatMean_vyvyvyvy = vy4 - spatMean_vy*spatMean_vy*spatMean_vy*spatMean_vy - 6*spatMean_vy*spatMean_vx*spatMean_vyvy - 4*spatMean_vy*spatMean_vyvyvy;
                         real spatMean_vzvzvzvz = vz4 - spatMean_vz*spatMean_vz*spatMean_vz*spatMean_vz - 6*spatMean_vz*spatMean_vx*spatMean_vzvz - 4*spatMean_vz*spatMean_vzvzvz;

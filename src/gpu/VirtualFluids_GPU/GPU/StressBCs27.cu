@@ -689,7 +689,7 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       real wallNormalZ = normalZ[k];
 
       //Sample velocity at exchange location and filter temporally
-      real eps = 0.1;
+      real eps = 0.01;
       real vxEL = eps*vx[k_N[k]]+(1.0-eps)*vx_bc[k];
       real vyEL = eps*vy[k_N[k]]+(1.0-eps)*vy_bc[k];
       real vzEL = eps*vz[k_N[k]]+(1.0-eps)*vz_bc[k];
@@ -1480,21 +1480,13 @@ extern "C" __global__ void BBStressDevice27( real* DD,
       VeloY = -3.0*F_y;
       VeloZ = -3.0*F_z;
 
-      if(true && k==0)
-      {     
-         printf("==========================samp, z, z0: \t %i \t %f \t %f  \n u,v,w, vMag \t %f \t %f \t %f \t %f \n", samplingOffset[k], z, z0[k], vxEL,vyEL,vzEL,vMag );
-         printf("u_star: %f \t\n\n", u_star);
-         printf("Velo: %f \t %f \t %f \t\n", VeloX, VeloY, VeloZ);
-         printf("Wall tan momentum: %f \t %f \t %f \t\n", wallMomentumX - wallMomDotN*wallMomentumX, wallMomentumY - wallMomDotN*wallMomentumY, wallMomentumZ - wallMomDotN*wallMomentumZ);
-         printf("FMEM before:\t %1.14f \t %1.14f \t %1.14f \nFWM: \t %1.14f \t %1.14f \t %1.14f \n", wallMomentumX, wallMomentumY, wallMomentumZ, (tau_w*A) * (vxEL/vMag), (tau_w*A) * (vyEL/vMag), (tau_w*A) * (vzEL/vMag));
-      } 
-
+      VeloX = max(VeloX, -0.2);
 
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // //Add wall velocity and write f's
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-q = q_dirE[k];
+      q = q_dirE[k];
       if (q>=c0o1 && q<=c1o1)
       {
          (D.f[dirW])[kw] = f_W_in - (c6o1*c2o27*( VeloX     ));

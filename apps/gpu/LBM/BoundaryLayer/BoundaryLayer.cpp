@@ -76,22 +76,22 @@ const real z0  = 0.1; // roughness length in m
 const real u_star = 0.4; //friction velocity in m/s
 const real kappa = 0.4; // von Karman constant 
 
-const real viscosity = 0.0001;//1.56e-5;
+const real viscosity = 1.56e-5;
 
 const real velocity  = u_star/kappa*log(L_z/z0); //max mean velocity at the top in m/s
 
 const real mach = 0.1;
 
-const uint nodes_per_H = 32;
+const uint nodes_per_H = 128;
 
 std::string path(".");
 
 std::string simulationName("BoundayLayer");
 
 // all in s
-const float tOut = 10000;
-const float tEnd = 100000; // total time of simulation
-const float tStartAveraging =  50000;
+const float tOut = 50000;
+const float tEnd = 200000; // total time of simulation
+const float tStartAveraging =  80000;
 const float tAveraging      =  200;
 const float tStartOutProbe  =  0;
 const float tOutProbe       =  10000; 
@@ -149,7 +149,7 @@ void multipleLevel(const std::string& configPath)
     VF_LOG_INFO("u* /(dx/dt) = {}", u_star*dt/dx);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    para->setDevices(std::vector<uint>{(uint)0});
+    para->setDevices(std::vector<uint>{(uint)1});
 
     para->setOutputPrefix( simulationName );
 
@@ -168,8 +168,8 @@ void multipleLevel(const std::string& configPath)
     para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
     // para->setUseTurbulentViscosity(true);
     para->setUseAMD(true);
-    para->setSGSConstant(0.083); 
-    para->setQuadricLimiters( 10000.0, 10000.0, 10000.0);
+    para->setSGSConstant(0.2); 
+    para->setQuadricLimiters( 100000.0, 100000.0, 100000.0);
 
     // para->setCalcDragLift(true);
 
