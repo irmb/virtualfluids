@@ -303,6 +303,27 @@ void scatterNodesFromRecvBufferZGPU27AfterFtoC(Parameter *para, int level, int s
                                   (unsigned int)(para->getNumberOfProcessNeighborsZ(level, "send")));
 }
 
+void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes, std::vector<ProcessNeighbor27> &recvProcessNeighborHostAllNodes, std::vector<ProcessNeighbor27> &sendProcessNeighborHostAllNodes,  
+                   std::vector<ProcessNeighbor27> &sendProcessNeighborHost)
+{
+        uint indexInSubdomainX = 0;
+        uint indexInSubdomainZ = 0;
+        uint numNodesInBufferX = 0;
+        uint numNodesInBufferZ = 0;
+#pragma omp parallel for
+        for (uint i = 0; i < edgeNodes.size(); i++) {
+            indexInSubdomainX = edgeNodes[i].indexOfProcessNeighborRecv;
+            indexInSubdomainZ = edgeNodes[i].indexOfProcessNeighborSend;
+            numNodesInBufferX = recvProcessNeighborHostAllNodes[indexInSubdomainX].numberOfNodes;
+            numNodesInBufferZ = sendProcessNeighborHostAllNodes[indexInSubdomainZ].numberOfNodes;
+
+            for (uint direction = 0; direction <= dirEND; direction++) {
+                (sendProcessNeighborHostAllNodes[indexInSubdomainZ].f[0] + (direction * numNodesInBufferZ))[edgeNodes[i].indexInSendBuffer] =
+                    (recvProcessNeighborHostAllNodes[indexInSubdomainX].f[0] + (direction * numNodesInBufferX))[edgeNodes[i].indexInRecvBuffer];
+            }
+        }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
                             int streamIndex, 
@@ -324,22 +345,8 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // edge nodes: copy received node values from x
     if (para->getUseStreams() && para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
-        uint indexInSubdomainX = 0;
-        uint indexInSubdomainZ = 0;
-        uint numNodesInBufferX = 0;
-        uint numNodesInBufferZ = 0;
-#pragma omp parallel for
-        for (uint i = 0; i < para->getParH(level)->edgeNodesXtoZ.size(); i++) {
-            indexInSubdomainX = para->getParH(level)->edgeNodesXtoZ[i].indexOfProcessNeighborRecv;
-            indexInSubdomainZ = para->getParH(level)->edgeNodesXtoZ[i].indexOfProcessNeighborSend;
-            numNodesInBufferX = para->getParH(level)->recvProcessNeighborX[indexInSubdomainX].numberOfNodes;
-            numNodesInBufferZ = para->getParH(level)->sendProcessNeighborZ[indexInSubdomainZ].numberOfNodes;
-
-            for (uint direction = 0; direction <= dirEND; direction++) {
-                (para->getParH(level)->sendProcessNeighborZ[indexInSubdomainZ].f[0] + (direction * numNodesInBufferZ))[para->getParH(level)->edgeNodesXtoZ[i].indexInSendBuffer] =
-                    (para->getParH(level)->recvProcessNeighborX[indexInSubdomainX].f[0] + (direction * numNodesInBufferX))[para->getParH(level)->edgeNodesXtoZ[i].indexInRecvBuffer];
-            }
-        }
+        copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, para->getParH(level)->recvProcessNeighborX, para->getParH(level)->sendProcessNeighborZ, 
+                      *sendProcessNeighborHost);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // edge nodes: copy received node values from y
