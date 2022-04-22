@@ -317,6 +317,11 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeN
             numNodesInBufferX = recvProcessNeighborHostAllNodes[indexInSubdomainX].numberOfNodes;
             numNodesInBufferZ = sendProcessNeighborHostAllNodes[indexInSubdomainZ].numberOfNodes;
 
+            if(edgeNodes[i].indexInSendBuffer >= sendProcessNeighborHost[indexInSubdomainZ].numberOfNodes){
+                // for reduced communication after fine to coarse: only copy send nodes which are not part of the reduced comm
+                continue;
+            }
+
             for (uint direction = 0; direction <= dirEND; direction++) {
                 (sendProcessNeighborHostAllNodes[indexInSubdomainZ].f[0] + (direction * numNodesInBufferZ))[edgeNodes[i].indexInSendBuffer] =
                     (recvProcessNeighborHostAllNodes[indexInSubdomainX].f[0] + (direction * numNodesInBufferX))[edgeNodes[i].indexInRecvBuffer];
