@@ -126,6 +126,11 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    output << "vis_ratio:  "   << para->getViscosityRatio() << "\n";
    output << "u0_ratio:   "   << para->getVelocityRatio()  << "\n";
    output << "delta_rho:  "   << para->getDensityRatio()   << "\n";
+   output << "QuadricLimiters:  "   << para->getQuadricLimitersHost()[0] << "\t"
+   									<< para->getQuadricLimitersHost()[1] << "\t"
+									<< para->getQuadricLimitersHost()[2] << "\n";
+   if(para->getUseAMD())
+		output << "AMD SGS model:  "   << para->getSGSConstant()   << "\n";
    //////////////////////////////////////////////////////////////////////////
 
    /////////////////////////////////////////////////////////////////////////

@@ -1470,9 +1470,9 @@ extern "C" __global__ void BBStressDevice27( real* DD,
       
       //Momentum to be applied via wall velocity
       real wallMomDotN = wallMomentumX*wallNormalX+wallMomentumY*wallNormalY+wallMomentumZ*wallNormalZ;
-      real F_x = (tau_w*A) * (vxEL/vMag) - ( wallMomentumX - wallMomDotN*wallNormalX);
-      real F_y = (tau_w*A) * (vyEL/vMag) - ( wallMomentumY - wallMomDotN*wallNormalY);
-      real F_z = (tau_w*A) * (vzEL/vMag) - ( wallMomentumZ - wallMomDotN*wallNormalZ);
+      real F_x = (tau_w*A) * (vx[k_Q[k]]/vMag) - ( wallMomentumX - wallMomDotN*wallNormalX);
+      real F_y = (tau_w*A) * (vy[k_Q[k]]/vMag) - ( wallMomentumY - wallMomDotN*wallNormalY);
+      real F_z = 0.0;//(tau_w*A) * (vzEL/vMag) - ( wallMomentumZ - wallMomDotN*wallNormalZ);
 
       //Corresponding wall velocity (only valid for wall-normals in z)
       q = 0.5f; 
@@ -1480,7 +1480,20 @@ extern "C" __global__ void BBStressDevice27( real* DD,
       VeloY = -3.0*F_y;
       VeloZ = -3.0*F_z;
 
-      VeloX = max(VeloX, -0.2);
+      VeloX = max(VeloX, -2.0*vxEL);
+
+      if(false && k==0)
+      {     
+         printf("samp, z, z0: \t %i \t %f \t %f  \nu,v,w, vMag \t %f \t %f \t %f \t %f \n", samplingOffset[k], z, z0[k], vxEL,vyEL,vzEL,vMag );
+         printf("dudz: \t %1.14f \n", vx[k_N[k]]-vx[k_Q[k]]);
+         printf("u_star: %f \t\n\n", u_star);
+         printf("Wall velo: \t %1.14f  \t %1.14f  \t %1.14f  \t\n", VeloX, VeloY, VeloZ);
+         printf("Wall tan momen.: %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumX - wallMomDotN*wallNormalX, wallMomentumY - wallMomDotN*wallNormalY, wallMomentumZ - wallMomDotN*wallNormalZ);
+         printf("FMEM before:\t %1.14f \t %1.14f \t %1.14f \nFWM: \t\t %1.14f \t %1.14f \t %1.14f \n", wallMomentumX, wallMomentumY, wallMomentumZ, (tau_w*A) * (vxEL/vMag), (tau_w*A) * (vyEL/vMag), (tau_w*A) * (vzEL/vMag));
+         // printf("FMEM post: \t %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumXPost, wallMomentumYPost, wallMomentumZPost);
+         // printf("FMEM pre: \t %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumXPre, wallMomentumYPre, wallMomentumZPre);        
+      } 
+
 
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // //Add wall velocity and write f's

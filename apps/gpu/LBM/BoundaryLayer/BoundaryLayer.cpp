@@ -91,7 +91,7 @@ std::string simulationName("BoundayLayer");
 // all in s
 const float tOut = 50000;
 const float tEnd = 200000; // total time of simulation
-const float tStartAveraging =  80000;
+const float tStartAveraging =  50000;
 const float tAveraging      =  200;
 const float tStartOutProbe  =  0;
 const float tOutProbe       =  10000; 
@@ -149,7 +149,7 @@ void multipleLevel(const std::string& configPath)
     VF_LOG_INFO("u* /(dx/dt) = {}", u_star*dt/dx);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    para->setDevices(std::vector<uint>{(uint)1});
+    // para->setDevices(std::vector<uint>{(uint)0});
 
     para->setOutputPrefix( simulationName );
 
@@ -167,9 +167,9 @@ void multipleLevel(const std::string& configPath)
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
     // para->setUseTurbulentViscosity(true);
-    para->setUseAMD(true);
-    para->setSGSConstant(0.2); 
-    para->setQuadricLimiters( 100000.0, 100000.0, 100000.0);
+    // para->setUseAMD(true);
+    // para->setSGSConstant(0.083); 
+    // para->setQuadricLimiters( 1.0, 1.0, 1.0);
 
     // para->setCalcDragLift(true);
 
