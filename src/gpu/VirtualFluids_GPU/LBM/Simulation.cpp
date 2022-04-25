@@ -17,6 +17,7 @@
 #include "Output/MeasurePointWriter.hpp"
 #include "Output/AnalysisData.hpp"
 #include "Output/InterfaceDebugWriter.hpp"
+#include "Output/EdgeNodeDebugWriter.hpp"
 #include "Output/VeloASCIIWriter.hpp"
 //////////////////////////////////////////////////////////////////////////
 #include "Utilities/Buffer2D.hpp"
@@ -389,12 +390,13 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
    //InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
 
-   // writers for Version with communication hiding
+   // writers for version with communication hiding
    if(para->getNumprocs() > 1 && para->getUseStreams()){
    	InterfaceDebugWriter::writeInterfaceFCC_Send(para.get());
     InterfaceDebugWriter::writeInterfaceCFC_Recv(para.get());
    	InterfaceDebugWriter::writeSendNodesStream(para.get());
    	InterfaceDebugWriter::writeRecvNodesStream(para.get());
+	EdgeNodeDebugWriter::writeEdgeNodesXZ_Send(para.get());
    }
 }
 
