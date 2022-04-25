@@ -392,11 +392,12 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
 
    // writers for version with communication hiding
    if(para->getNumprocs() > 1 && para->getUseStreams()){
-   	InterfaceDebugWriter::writeInterfaceFCC_Send(para.get());
-    InterfaceDebugWriter::writeInterfaceCFC_Recv(para.get());
-   	InterfaceDebugWriter::writeSendNodesStream(para.get());
-   	InterfaceDebugWriter::writeRecvNodesStream(para.get());
+   	// InterfaceDebugWriter::writeInterfaceFCC_Send(para.get());
+    // InterfaceDebugWriter::writeInterfaceCFC_Recv(para.get());
+   	// InterfaceDebugWriter::writeSendNodesStream(para.get());
+   	// InterfaceDebugWriter::writeRecvNodesStream(para.get());
 	EdgeNodeDebugWriter::writeEdgeNodesXZ_Send(para);
+	EdgeNodeDebugWriter::writeEdgeNodesXZ_Recv(para);
    }
 }
 
