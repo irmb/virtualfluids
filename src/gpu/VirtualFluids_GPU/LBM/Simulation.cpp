@@ -396,7 +396,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
     InterfaceDebugWriter::writeInterfaceCFC_Recv(para.get());
    	InterfaceDebugWriter::writeSendNodesStream(para.get());
    	InterfaceDebugWriter::writeRecvNodesStream(para.get());
-	EdgeNodeDebugWriter::writeEdgeNodesXZ_Send(para.get());
+	EdgeNodeDebugWriter::writeEdgeNodesXZ_Send(para);
    }
 }
 

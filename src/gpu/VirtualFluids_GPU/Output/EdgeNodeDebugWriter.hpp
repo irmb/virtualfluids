@@ -18,11 +18,16 @@
 namespace EdgeNodeDebugWriter
 {
 
-void writeEdgeNodesXZ_Send(Parameter *para)
+void addCoordinatesToNodeVector(SPtr<LBMSimulationParameter> parH, std::vector<UbTupleFloat3> &nodesVec, int indexInNodesVector, int sparseIndexOfNode){
+            double x1           = parH->coordX_SP[sparseIndexOfNode];
+            double x2           = parH->coordY_SP[sparseIndexOfNode];
+            double x3           = parH->coordZ_SP[sparseIndexOfNode];
+            nodesVec[indexInNodesVector] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
+}
+
+void writeEdgeNodesXZ_Send(SPtr<Parameter> para)
 {
     std::vector<UbTupleFloat3> nodesVec;
-
-    // nodedata
     std::vector<std::string> datanames = { "SparseIndex", "ProcessNeighbor", "IndexInSendVector", "AfterFtoC" };
     std::vector<std::vector<double>> nodedata;
 
@@ -30,14 +35,12 @@ void writeEdgeNodesXZ_Send(Parameter *para)
     for (int level = 0; level < para->getMaxLevel(); level++){
         numberOfNodes += (int) para->getParH(level)->edgeNodesXtoZ.size();
     }
-
     nodesVec.resize(numberOfNodes);
     nodedata.resize(datanames.size(), std::vector<double>(numberOfNodes));
 
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
         for (int u = 0; u < numberOfNodes; u++) {
-            // node data section
             int indexOfProcessNeighborSend = para->getParH(level)->edgeNodesXtoZ[u].indexOfProcessNeighborSend;
             int indexInSendBuffer = para->getParH(level)->edgeNodesXtoZ[u].indexInSendBuffer;
             int sparseIndex = para->getParH(level)->sendProcessNeighborZ[indexOfProcessNeighborSend].index[indexInSendBuffer];
@@ -46,11 +49,7 @@ void writeEdgeNodesXZ_Send(Parameter *para)
             nodedata[2][nodeCount] = indexInSendBuffer;
             nodedata[3][nodeCount] = indexInSendBuffer < para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighborSend].numberOfNodes;
 
-            // coordinate section
-            double x1           = para->getParH(level)->coordX_SP[sparseIndex];
-            double x2           = para->getParH(level)->coordY_SP[sparseIndex];
-            double x3           = para->getParH(level)->coordZ_SP[sparseIndex];
-            nodesVec[nodeCount] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
+            addCoordinatesToNodeVector(para->getParH(level), nodesVec, nodeCount, sparseIndex);
 
             nodeCount++;
         }
