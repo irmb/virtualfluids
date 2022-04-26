@@ -37,20 +37,30 @@ TEST(ExchangeData27Test, copyEdgeNodes_XZ_CommunicationAfterFtoC)
     para->getParH(level)->edgeNodesXtoZ.emplace_back(0,2,0,3);
     para->getParH(level)->edgeNodesXtoZ.emplace_back(0,7,0,8);
 
-    int numNodes = 5;
+    int numNodes = 10;
+    int numNodesAfterFtoC = 5;
+    
     
     std::vector<ProcessNeighbor27> recvProcessNeighborHost(1);
-    std::vector<real> recvFs(27*numNodes, 0.1);
+    std::vector<real> recvFs(numNodes, 0.5);
+    for (LBMSimulationParameter::EdgeNodePositions edgeNode : para->getParH(level)->edgeNodesXtoZ){
+        recvFs[edgeNode.indexInRecvBuffer] = 0.1;        
+    }
+    for (uint direction = 0; direction <= dirEND; direction ++){
+        recvFs.insert(recvFs.end(), recvFs.begin(), recvFs.begin()+10);
+    }
     recvProcessNeighborHost[0].f[0] = recvFs.data();
     recvProcessNeighborHost[0].numberOfNodes = numNodes;
+
+
     
     std::vector<ProcessNeighbor27> sendProcessNeighborHost(1);
-    std::vector<real> sendFs(27*numNodes, 0.0);
+    std::vector<real> sendFs(27*numNodesAfterFtoC, 0.0);
     sendProcessNeighborHost[0].f[0] = sendFs.data();
-    sendProcessNeighborHost[0].numberOfNodes = numNodes;
+    sendProcessNeighborHost[0].numberOfNodes = numNodesAfterFtoC;
 
     // expected
-    std::vector<real> expectedFs(numNodes, 0.0);
+    std::vector<real> expectedFs(numNodesAfterFtoC, 0.0);
     expectedFs[1] = 0.1;
     expectedFs[3] = 0.1;
     std::vector<real> expectedFsAllDirections;
@@ -63,7 +73,7 @@ TEST(ExchangeData27Test, copyEdgeNodes_XZ_CommunicationAfterFtoC)
 
     // convert result to std::vector
     std::vector<real> result;
-    result.assign(sendProcessNeighborHost[0].f[0],  sendProcessNeighborHost[0].f[0] + 27*numNodes);
+    result.assign(sendProcessNeighborHost[0].f[0],  sendProcessNeighborHost[0].f[0] + 27*numNodesAfterFtoC);
 
     EXPECT_THAT(result, testing::Eq(expectedFsAllDirections));
 }
