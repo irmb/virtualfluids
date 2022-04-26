@@ -250,8 +250,7 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // edge nodes: copy received node values from x
     if (para->getUseStreams() && para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
-        copyEdgeNodes(para->getParH(level)->edgeNodesXtoY, para->getParH(level)->recvProcessNeighborX, para->getParH(level)->sendProcessNeighborY, 
-                      *sendProcessNeighborHost);
+        copyEdgeNodes(para->getParH(level)->edgeNodesXtoY, para->getParH(level)->recvProcessNeighborX, *sendProcessNeighborHost);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     startBlockingMpiSend((unsigned int)(*sendProcessNeighborHost).size(), comm, sendProcessNeighborHost);
@@ -339,14 +338,12 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // edge nodes: copy received node values from x
     if (para->getUseStreams() && para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
-        copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, para->getParH(level)->recvProcessNeighborX, para->getParH(level)->sendProcessNeighborZ, 
-                      *sendProcessNeighborHost);
+        copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, para->getParH(level)->recvProcessNeighborX, *sendProcessNeighborHost);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // edge nodes: copy received node values from y
     if (para->getUseStreams() && para->getNumberOfProcessNeighborsY(level, "recv") > 0) {
-        copyEdgeNodes(para->getParH(level)->edgeNodesYtoZ, para->getParH(level)->recvProcessNeighborY, para->getParH(level)->sendProcessNeighborZ, 
-                      *sendProcessNeighborHost);
+        copyEdgeNodes(para->getParH(level)->edgeNodesYtoZ, para->getParH(level)->recvProcessNeighborY, *sendProcessNeighborHost);
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     startBlockingMpiSend((unsigned int)(*sendProcessNeighborHost).size(), comm, sendProcessNeighborHost);
