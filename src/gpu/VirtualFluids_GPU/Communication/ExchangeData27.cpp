@@ -70,29 +70,34 @@ void startNonBlockingMpiReceive(unsigned int numberOfSendProcessNeighbors, vf::g
 }
 
 
-void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes, std::vector<ProcessNeighbor27> &recvProcessNeighborHostAllNodes, std::vector<ProcessNeighbor27> &sendProcessNeighborHostAllNodes,  
-                   std::vector<ProcessNeighbor27> &sendProcessNeighborHost)
+void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes,
+                   std::vector<ProcessNeighbor27> &recvProcessNeighborHost, std::vector<ProcessNeighbor27> &sendProcessNeighborHost)
 {
-    uint indexInSubdomainRecv = 0;
-    uint indexInSubdomainSend = 0;
-    uint numNodesInBufferRecv = 0;
-    uint numNodesInBufferSend = 0;
+    
+    int indexInSubdomainRecv = 0;
+    int indexInSubdomainSend = 0;
+    int numNodesInBufferRecv = 0;
+    int numNodesInBufferSend = 0;
+    
 #pragma omp parallel for
     for (uint i = 0; i < edgeNodes.size(); i++) {
         indexInSubdomainRecv = edgeNodes[i].indexOfProcessNeighborRecv;
         indexInSubdomainSend = edgeNodes[i].indexOfProcessNeighborSend;
-        numNodesInBufferRecv = recvProcessNeighborHostAllNodes[indexInSubdomainRecv].numberOfNodes;
-        numNodesInBufferSend = sendProcessNeighborHostAllNodes[indexInSubdomainSend].numberOfNodes;
-        if(edgeNodes[i].indexInSendBuffer >= sendProcessNeighborHost[indexInSubdomainSend].numberOfNodes){
+        numNodesInBufferRecv = recvProcessNeighborHost[indexInSubdomainRecv].numberOfNodes;
+        numNodesInBufferSend = sendProcessNeighborHost[indexInSubdomainSend].numberOfNodes;
+        if(edgeNodes[i].indexInSendBuffer >= numNodesInBufferSend){
             // for reduced communication after fine to coarse: only copy send nodes which are not part of the reduced comm
             continue;
         }
-        for (uint direction = 0; direction <= dirEND; direction++) {
-            (sendProcessNeighborHostAllNodes[indexInSubdomainSend].f[0] + (direction * numNodesInBufferSend))[edgeNodes[i].indexInSendBuffer] = 1000;
-               // (recvProcessNeighborHostAllNodes[indexInSubdomainRecv].f[0] + (direction * numNodesInBufferRecv))[edgeNodes[i].indexInRecvBuffer];
+
+        for (int direction = 0; direction <= (int) dirEND; direction++) {
+            (sendProcessNeighborHost[indexInSubdomainSend].f[0] + (direction * numNodesInBufferSend))[edgeNodes[i].indexInSendBuffer] =
+                (recvProcessNeighborHost[indexInSubdomainRecv].f[0] + (direction * numNodesInBufferRecv))[edgeNodes[i].indexInRecvBuffer];
         }
     }
 }
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // X
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
