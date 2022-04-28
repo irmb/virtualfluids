@@ -38,5 +38,5 @@ TimeOut=1000 # 400000
 ##################################################
 # CUDA Streams and optimized communication (only used for multiple GPUs)
 ##################################################
-useStreams = false
+useStreams = true
 useReducedCommunicationInInterpolation = true
