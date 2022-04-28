@@ -181,10 +181,6 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
     nodedatanames.push_back("vx2");
     nodedatanames.push_back("vx3");
     nodedatanames.push_back("geo");
-    nodedatanames.push_back("sendNodesX");
-    nodedatanames.push_back("sendNodesY");
-    nodedatanames.push_back("sendNodesZ");
-    //nodedatanames.push_back("sparseIndex");
 
     uint firstTurbNode = (uint) nodedatanames.size();
     if (para->getCalcTurbulenceIntensity()) {
@@ -240,19 +236,6 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
                 nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
                 nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
                 nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
-
-                // nodedata[6][dn1] = (double) pos;
-                int sendNodeX = 0; // 0 - not a sendNode; 1 - sendNode; 2 - sendNode in communication after fine to coarse
-                testForSendNodeX(para, level, pos, sendNodeX); // slow and should not be done multiple times --> use for debugging only!
-                nodedata[6][dn1] = (double) sendNodeX;
-
-                int sendNodeY = 0; // 0 - not a sendNode; 1 - sendNode; 2 - sendNode in communication after fine to coarse
-                testForSendNodeY(para, level, pos, sendNodeY); // slow and should not be done multiple times --> use for debugging only!
-                nodedata[7][dn1] = (double) sendNodeY;
-
-                int sendNodeZ = 0; // 0 - not a sendNode; 1 - sendNode; 2 - sendNode in communication after fine to coarse
-                testForSendNodeZ(para, level, pos, sendNodeZ); // slow and should not be done multiple times --> use for debugging only!
-                nodedata[8][dn1] = (double) sendNodeZ;
 
                 if (para->getCalcTurbulenceIntensity()) {
                     nodedata[firstTurbNode    ][dn1] = (double)para->getParH(level)->vxx[pos];
