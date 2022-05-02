@@ -290,41 +290,6 @@ void FileWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int lev
     }
 }
 
-void FileWriter::testForSendNodeX(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode)
-{
-    testForCommunicationNode(para, level, pos, sendNode, &para->getParH(level)->sendProcessNeighborX,
-                        &para->getParH(level)->sendProcessNeighborsAfterFtoCX);
-}
-
-void FileWriter::testForSendNodeY(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode)
-{
-    testForCommunicationNode(para, level, pos, sendNode, &para->getParH(level)->sendProcessNeighborY,
-                        &para->getParH(level)->sendProcessNeighborsAfterFtoCY);
-}
-
-void FileWriter::testForSendNodeZ(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode)
-{
-    testForCommunicationNode(para, level, pos, sendNode, &para->getParH(level)->sendProcessNeighborZ,
-                             &para->getParH(level)->sendProcessNeighborsAfterFtoCZ);
-}
-
-void FileWriter::testForCommunicationNode(std::shared_ptr<Parameter> &para, int level, unsigned int pos, int &sendNode,
-                                     std::vector<PN27> *sendOrRecvProcessNeighbor,
-                                     std::vector<PN27> *sendOrRecvProcessNeighborAfterFtoC)
-{
-    for (uint direction = 0; direction < (uint)sendOrRecvProcessNeighbor->size(); direction++) {
-        for (int i = 0; i < (*sendOrRecvProcessNeighbor)[direction].numberOfNodes; i++) {
-            if (pos == (uint)(*sendOrRecvProcessNeighbor)[direction].index[i]) {
-                sendNode = 1;
-                if (level < para->getMaxLevel() && i < (*sendOrRecvProcessNeighborAfterFtoC)[direction].numberOfNodes) {
-                    sendNode = 2;
-                }
-                return;
-            }
-        }
-    }
-}
-
 void FileWriter::writeUnstrucuredGridLTConc(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)
 {
     std::vector< UbTupleFloat3 > nodes;
