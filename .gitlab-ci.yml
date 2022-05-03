@@ -383,12 +383,13 @@ cppcheck:
   #only:
   #  - develop@irmb/VirtualFluids_dev
   rules:
+    - if: '$CI_PROJECT_NAMESPACE == "irmb" && $CI_COMMIT_BRANCH == develop'
     - when: manual
 
   needs: []
 
   before_script:
-    - echo $CI_REPOSITORY_URL
+    - echo $CI_PROJECT_NAMESPACE
     - cppcheck --version
 
   script:
