@@ -382,6 +382,7 @@ cppcheck:
 
   rules:
     - if: '$CI_PROJECT_NAMESPACE == "irmb" && $CI_COMMIT_BRANCH == "develop" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
     - when: manual
 
   needs: []
