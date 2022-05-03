@@ -232,12 +232,12 @@ void multipleLevel(const std::string& configPath)
         // const real bbzm = -13.0;
         // const real bbzp = 13.0;
 
-        const real xGridMin  = -100.0;     // -100.0;
-        const real xGridMax  = 470.0;      // alt 540.0 // neu 440 // mit groesserem Level 1 470
+        const real xGridMin  = -50.0;     // -100.0;
+        const real xGridMax  = 250.0;      // alt 540.0 // neu 440 // mit groesserem Level 1 470
         const real yGridMin  = 1.0;        // 1.0;
-        const real yGridMax  = 350.0;      // alt 440.0; // neu 350
-        const real zGridMin  = -85;        // -85;
-        const real zGridMax  = 85.0;       // 85;
+        const real yGridMax  = 200.0;      // alt 440.0; // neu 350
+        const real zGridMin  = -45;        // -85;
+        const real zGridMax  = 45.0;       // 85;
 
         TriangularMesh *bivalveSTL       = TriangularMesh::make(stlPath + bivalveType + ".stl");
         TriangularMesh *bivalveRef_1_STL = nullptr;
