@@ -1,4 +1,3 @@
-
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <string>
@@ -73,11 +72,17 @@
 // std::string stlPath("C:/Users/Master/Documents/MasterAnna/STL/");
 // std::string simulationName("MusselOyster");
 
-// Phoenix
-std::string outPath("/work/y0078217/Results/MusselOysterResults/");
-std::string gridPathParent = "/work/y0078217/Grids/GridMusselOyster/";
-std::string stlPath("/home/y0078217/STL/MusselOyster/");
+//  Aragorn
+std::string outPath("/workspaces/VirtualFluids_dev/output/MusselOysterResults/");
+std::string gridPathParent = "/workspaces/VirtualFluids_dev/output/MusselOysterResults/grid/";
+std::string stlPath("/workspaces/VirtualFluids_dev/STL/MusselOyster/");
 std::string simulationName("MusselOyster");
+
+// Phoenix
+// std::string outPath("/work/y0078217/Results/MusselOysterResults/");
+// std::string gridPathParent = "/work/y0078217/Grids/GridMusselOyster/";
+// std::string stlPath("/home/y0078217/STL/MusselOyster/");
+// std::string simulationName("MusselOyster");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
