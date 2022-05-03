@@ -380,8 +380,6 @@ include_what_you_use_clang_10:
 cppcheck:
   stage: analyze
 
-  #only:
-  #  - develop@irmb/VirtualFluids_dev
   rules:
     - if: '$CI_PROJECT_NAMESPACE == "irmb" && $CI_COMMIT_BRANCH == "develop"'
     - when: manual
