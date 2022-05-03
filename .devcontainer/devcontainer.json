@@ -11,5 +11,11 @@
     ],  
     "runArgs": ["--gpus","all"],  
     "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.2",
-    "containerEnv": {"HOME": "/workspaces/" }
+    "containerEnv": {"HOME": "/workspaces/"},
+    "mounts": [
+        "source=/mnt/d/output,target=/${containerWorkspaceFolder}/output,type=bind,consistency=cached", 
+        "source=${localEnv:HOME}/STLs,target=${containerWorkspaceFolder}/stl,type=bind,consistency=cached",    
+        // https://code.visualstudio.com/remote/advancedcontainers/add-local-file-mount
+        // https://code.visualstudio.com/docs/remote/devcontainerjson-reference#_variables-in-devcontainerjson
+    ]
 }
