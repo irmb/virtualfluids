@@ -380,12 +380,15 @@ include_what_you_use_clang_10:
 cppcheck:
   stage: analyze
 
-  only:
-    - develop@irmb/VirtualFluids_dev
+  #only:
+  #  - develop@irmb/VirtualFluids_dev
+  rules:
+    - when: manual
 
   needs: []
 
   before_script:
+    - echo $CI_REPOSITORY_URL
     - cppcheck --version
 
   script:
