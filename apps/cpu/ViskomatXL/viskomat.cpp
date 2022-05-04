@@ -69,15 +69,19 @@ void bflow(string configname)
 
       //double nuLB = OmegaLB * R * 1e3 * R * 1e3 / Re;
 
-      // double dx = deltax * 1e-3;
-      // double nuLB = OmegaLB * (R / dx)*(R / dx) / Re;
-
-      double dx = 1.0 * 1e-3;
+      double dx = deltax * 1e-3;
       double nuLB = OmegaLB * (R / dx)*(R / dx) / Re;
 
+      double Bm = tau0/(mu*Omega);
+      double tau0LB = Bm*nuLB*OmegaLB;
+
+
+      //double dx = 1.0 * 1e-3;
+      //double nuLB = OmegaLB * (R / dx)*(R / dx) / Re;
+
       //acustic scaling
-      OmegaLB /= 2.0;
-      nuLB    *= 2.0;
+      // OmegaLB /= 2.0;
+      // nuLB    *= 2.0;
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
       //SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter(1, 1461, 970, 1e3));
@@ -97,13 +101,13 @@ void bflow(string configname)
       SPtr<Rheology> thix = Rheology::getInstance();
       //thix->setPowerIndex(n);
       //thix->setViscosityParameter(k);
-      thix->setYieldStress(tau0);
+      thix->setYieldStress(tau0LB);
       //thix->setOmegaMin(omegaMin);
 
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
       noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
       //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyHerschelBulkleyModelNoSlipBCAlgorithm()));
-      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
+      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new RheologyBinghamModelNoSlipBCAlgorithm()));
 
       SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
       slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SimpleSlipBCAlgorithm()));
@@ -167,8 +171,8 @@ void bflow(string configname)
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel()); 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel()); 
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CumulantK17LBMKernel()); 
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new RheologyBinghamModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new HerschelBulkleyModelLBMKernel());
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new BinghamModelLBMKernel());
       kernel->setBCProcessor(bcProc);
@@ -265,11 +269,14 @@ void bflow(string configname)
          UBLOG(logINFO, "N = " << N << " rpm");
          UBLOG(logINFO, "Omega = " << Omega << " rad/s");
          UBLOG(logINFO, "mu = " << mu << " Pa s");
+         UBLOG(logINFO, "tau0 = " << tau0<< " Pa");
+         UBLOG(logINFO, "rho = " << rho<< " kg/m^3");
          UBLOG(logINFO, "Re = " << Re);
-         UBLOG(logINFO, "rho = " << rhoLB);
+         UBLOG(logINFO, "Bm = " << Bm);
+         UBLOG(logINFO, "rhoLB = " << rhoLB);
          UBLOG(logINFO, "uLB = " << OmegaLB);
          UBLOG(logINFO, "nuLB = " << nuLB);
-         UBLOG(logINFO, "tau0 = " << tau0);
+         UBLOG(logINFO, "tau0LB = " << tau0LB);
          UBLOG(logINFO, "deltax = " << deltax << " mm");
          UBLOG(logINFO, "number of levels = " << refineLevel + 1);
          UBLOG(logINFO, "number of threads = " << numOfThreads);
