@@ -31,6 +31,6 @@ GridPath=/work/y0078217/Grids/GridMusselOyster/Mussel1GPU/
 ##################################################
 #simulation parameter
 ##################################################
-TimeEnd=400000 #400000 / 200000
-TimeOut=200000 #200000 / 100000
+TimeEnd=10000 #400000 / 200000
+TimeOut=5000 #200000 / 100000
 #TimeStartOut=0

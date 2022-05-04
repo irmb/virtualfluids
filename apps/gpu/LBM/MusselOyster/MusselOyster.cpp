@@ -546,12 +546,12 @@ void multipleLevel(const std::string& configPath)
                 if (generatePart == 2) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MY,  0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
-                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);   // set pressure BC after velocity BCs
                 }
                 if (generatePart == 3) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
-                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);   // set pressure BC after velocity BCs
                 }
                 if (generatePart == 4) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
@@ -579,8 +579,8 @@ void multipleLevel(const std::string& configPath)
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
 
-            //gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" + std::to_string(generatePart) + "_"); 
-            gridBuilder->writeGridsToVtk(outPath + bivalveType + "/" + std::to_string(generatePart) + "/grid/"); 
+            gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" + std::to_string(generatePart) + "_"); 
+            //gridBuilder->writeGridsToVtk(outPath + bivalveType + "/" + std::to_string(generatePart) + "/grid/"); 
             // gridBuilder->writeArrows(outPath + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
 
             SimulationFileWriter::write(gridPath + std::to_string(generatePart) + "/", gridBuilder,
