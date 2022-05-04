@@ -82,14 +82,14 @@ const real velocity  = u_star/kappa*log(L_z/z0); //max mean velocity at the top 
 
 const real mach = 0.1;
 
-const uint nodes_per_H = 128;
+const uint nodes_per_H =64;
 
 std::string path(".");
 
 std::string simulationName("BoundayLayer");
 
 // all in s
-const float tOut = 50000;
+const float tOut = 10000;
 const float tEnd = 200000; // total time of simulation
 const float tStartAveraging =  50000;
 const float tAveraging      =  200;
@@ -119,7 +119,10 @@ void multipleLevel(const std::string& configPath)
 	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
 							   L_x,  L_y,  L_z, dx);
 
-	gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+    gridBuilder->setNumberOfLayers(0,0);
+    gridBuilder->addGrid( new Cuboid( 200., 200., 200., 500. , 500., 500.  ), 1 );
+
+    gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
@@ -147,6 +150,21 @@ void multipleLevel(const std::string& configPath)
     VF_LOG_INFO("dx   = {}", dx);
     VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
     VF_LOG_INFO("u* /(dx/dt) = {}", u_star*dt/dx);
+    VF_LOG_INFO("dpdx /(dx/dt^2) = {}", pressureGradientLB);
+    
+    double u_DP = 9.9*dt/dx;
+    double dpdx_DP = u_star * u_star / H / (dx/(dt*dt));
+    printf( "%1.20f \t %1.20f \t %1.20f \n" ,u_DP ,dpdx_DP, (double)(u_DP+dpdx_DP));
+    real u_SP = 10.0*dt/dx;
+    real dpdx_SP = u_star * u_star / H / (dx/(dt*dt));
+    printf( "%1.20f \t %1.20f \t %1.20f \n" ,u_SP ,dpdx_SP,(real)(u_SP+dpdx_SP));
+    real A = (u_SP+dpdx_DP);
+    A -= u_SP;
+    printf("%1.20f \n", (double)(A/dpdx_DP));
+    double B = u_SP+dpdx_DP;
+    B-= u_SP;
+    printf("%1.20f \n", (double)(A/B));
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // para->setDevices(std::vector<uint>{(uint)0});
@@ -157,7 +175,7 @@ void multipleLevel(const std::string& configPath)
 
     para->setPrintFiles(true);
 
-    para->setMaxLevel(1);
+    // para->setMaxLevel(1);
 
     para->setForcing(pressureGradientLB, 0, 0);
     para->setVelocity(velocityLB);
@@ -171,7 +189,6 @@ void multipleLevel(const std::string& configPath)
     // para->setSGSConstant(0.083); 
     // para->setQuadricLimiters( 1.0, 1.0, 1.0);
 
-    // para->setCalcDragLift(true);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
@@ -190,7 +207,7 @@ void multipleLevel(const std::string& configPath)
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    uint samplingOffset = 1;
+    uint samplingOffset = 2;
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
     gridBuilder->setStressBoundaryCondition(SideType::MZ, 0.0, 0.0, 1.0, samplingOffset, z0/dx);

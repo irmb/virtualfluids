@@ -88,5 +88,6 @@ extern "C" void calcTurbulentViscosityAMD(Parameter* para, int level)
         para->getParD(level)->size_Mat_SP,
         para->getSGSConstant()
     );
+    getLastCudaError("calcAMD execution failed");
 }
     

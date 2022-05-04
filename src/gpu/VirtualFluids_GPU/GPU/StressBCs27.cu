@@ -6,6 +6,58 @@
 using namespace vf::lbm::constant;
 
 //////////////////////////////////////////////////////////////////////////////
+extern "C" __host__ __device__ __forceinline__ void iMEM(uint k, uint kN,
+                                                         real* _wallNormalX, real* _wallNormalY, real* _wallNormalZ,
+                                                         real* vx, real* vy, real* vz,
+                                                         real* vx_bc, real* vy_bc, real* vz_bc,
+                                                         int* samplingOffset,
+                                                         real q,
+                                                         real forceFactor, //e.g., 1.0 for simple-bounce back, or (1+q) for interp. bounce-back as in Geier et al (2015)
+                                                         real eps,
+                                                         real* z0,
+                                                         real wallMomentumX, real wallMomentumY, real wallMomentumZ,
+                                                         real& wallVelocityX, real& wallVelocityY, real&wallVelocityZ)
+{
+      real wallNormalX = _wallNormalX[k];
+      real wallNormalY = _wallNormalY[k];
+      real wallNormalZ = _wallNormalZ[k];
+
+      //Sample velocity at exchange location and filter temporally
+      real vxEL = eps*vx[kN]+(1.0-eps)*vx_bc[k];
+      real vyEL = eps*vy[kN]+(1.0-eps)*vy_bc[k];
+      real vzEL = eps*vz[kN]+(1.0-eps)*vz_bc[k];
+      vx_bc[k] = vxEL;
+      vy_bc[k] = vyEL;
+      vz_bc[k] = vzEL;
+
+      //Subtract wall-normal velocity component
+      real vDotN = vxEL*wallNormalX+vyEL*wallNormalY+vzEL*wallNormalZ;
+      vxEL -= vDotN*wallNormalX;
+      vyEL -= vDotN*wallNormalY;
+      vzEL -= vDotN*wallNormalZ;
+      real vMag = sqrt(vxEL*vxEL+vyEL*vyEL+vzEL*vzEL);
+            
+      //Compute wall shear stress tau_w via MOST
+      real z = (real)samplingOffset[k] + 0.5; //assuming q=0.5, could be replaced by wall distance via wall normal
+      real kappa = 0.4;
+      real u_star = vMag*kappa/(log(z/z0[k]));
+
+      real tau_w = u_star*u_star;                  //assuming rho=1
+      real A = 1.0;                                //wall area (obviously 1 for grid aligned walls, can come from grid builder later for complex geometries)
+      
+      //Momentum to be applied via wall velocity
+      real wallMomDotN = wallMomentumX*wallNormalX+wallMomentumY*wallNormalY+wallMomentumZ*wallNormalZ;
+      real F_x = (tau_w*A) * (vxEL/vMag) - ( wallMomentumX - wallMomDotN*wallNormalX);
+      real F_y = (tau_w*A) * (vyEL/vMag) - ( wallMomentumY - wallMomDotN*wallNormalY);
+      real F_z = (tau_w*A) * (vzEL/vMag) - ( wallMomentumZ - wallMomDotN*wallNormalZ);
+
+      //Compute  wall velocity and clip (clipping only necessary for initial boundary layer development)
+      wallVelocityX = min(4.0*vxEL, max(-4.0*vxEL, -3.0*F_x*forceFactor));
+      wallVelocityY = min(4.0*vyEL, max(-4.0*vyEL, -3.0*F_y*forceFactor));
+      wallVelocityZ = min(4.0*vzEL, max(-4.0*vzEL, -3.0*F_z*forceFactor));
+}
+
+//////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QStressDeviceComp27(real* DD, 
 											   int* k_Q, 
                                     int* k_N, 
@@ -223,12 +275,12 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       
       real om_turb = om1 / (c1o1 + c3o1*om1*max(c0o1, turbViscosity[k_Q[k]]));
      
-      if(printOut && k==0)
-      { 
-         printf("========================== %u ========================== \n", k_Q[k]);
-         printf("turb 0, turb sampl.: %1.14f \t %1.14f \n",turbViscosity[k_Q[k]], turbViscosity[k_N[k]] );
-         printf("omega, omega turb: %1.14f \t %1.14f \n",om1, om_turb);
-      }
+      // if(printOut && k==0)
+      // { 
+      //    printf("========================== %u ========================== \n", k_Q[k]);
+      //    printf("turb 0, turb sampl.: %1.14f \t %1.14f \n",turbViscosity[k_Q[k]], turbViscosity[k_N[k]] );
+      //    printf("omega, omega turb: %1.14f \t %1.14f \n",om1, om_turb);
+      // }
 
       // if(k==0){printf("om\t %f \t vis %f \t om_turb \t %f \n", om1, turbViscosity[k_Q[k]], om_turb);}
       //////////////////////////////////////////////////////////////////////////
@@ -646,101 +698,70 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          wallMomentumZPre += f_BSE_in;
       }
 
-      if(false && k==0)
-		{
-			printf("E \t %f \t %f \t %f \n", q_dirE[k], f_E, f_E_in);
-			printf("NE \t %f \t %f \t %f \n",q_dirNE[k], f_NE, f_NE_in);
-			printf("W \t %f \t %f \t %f \n", q_dirW[k], f_W, f_W_in);
-			printf("NW \t %f \t %f \t %f \n", q_dirNW[k], f_NW, f_NW_in);
-			printf("N \t %f \t %f \t %f \n", q_dirN[k], f_N, f_N_in);
-			printf("S \t %f \t %f \t %f \n", q_dirS[k], f_S, f_S_in);
-			printf("SE \t %f \t %f \t %f \n", q_dirSE[k], f_SE, f_SE_in);
-			printf("NE \t %f \t %f \t %f \n", q_dirNE[k], f_NE, f_NE_in);
-			printf("SW \t %f \t %f \t %f \n", q_dirSW[k], f_SW, f_SW_in);
-			printf("B \t %f \t %f \t %f \n", q_dirB[k], f_B, f_B_in);
-			printf("BS \t %f \t %f \t %f \n", q_dirBS[k], f_BS, f_BS_in);
-			printf("BN \t %f \t %f \t %f \n", q_dirBN[k], f_BN, f_BN_in);
-			printf("BW \t %f \t %f \t %f \n", q_dirBW[k], f_BW, f_BW_in);
-			printf("BE \t %f \t %f \t %f \n", q_dirBE[k], f_BE, f_BE_in);
-			printf("BNE \t %f \t %f \t %f \n", q_dirBNE[k], f_BNE, f_BNE_in);
-			printf("BNW \t %f \t %f \t %f \n", q_dirBNW[k], f_BNW, f_BNW_in);
-			printf("BSE \t %f \t %f \t %f \n", q_dirBSE[k], f_BSE, f_BSE_in);
-			printf("BSW \t %f \t %f \t %f \n", q_dirBSW[k], f_BSW, f_BSW_in);
-			printf("T \t %f \t %f \t %f \n", q_dirT[k], f_T, f_T_in);
-			printf("TS \t %f \t %f \t %f \n", q_dirTS[k], f_TS, f_TS_in);
-			printf("TN \t %f \t %f \t %f \n", q_dirTN[k], f_TN, f_TN_in);
-			printf("TW \t %f \t %f \t %f \n", q_dirTW[k], f_TW, f_TW_in);
-			printf("TE \t %f \t %f \t %f \n", q_dirTE[k], f_TE, f_TE_in);
-			printf("TNE \t %f \t %f \t %f \n", q_dirTNE[k], f_TNE, f_TNE_in);
-			printf("TNW \t %f \t %f \t %f \n", q_dirTNW[k], f_TNW, f_TNW_in);
-			printf("TSE \t %f \t %f \t %f \n", q_dirTSE[k], f_TSE, f_TSE_in);
-			printf("TSW \t %f \t %f \t %f \n\n", q_dirTSW[k], f_TSW, f_TSW_in);
-		}
-
-
+      // if(false && k==0)
+		// {
+		// 	printf("E \t %f \t %f \t %f \n", q_dirE[k], f_E, f_E_in);
+		// 	printf("NE \t %f \t %f \t %f \n",q_dirNE[k], f_NE, f_NE_in);
+		// 	printf("W \t %f \t %f \t %f \n", q_dirW[k], f_W, f_W_in);
+		// 	printf("NW \t %f \t %f \t %f \n", q_dirNW[k], f_NW, f_NW_in);
+		// 	printf("N \t %f \t %f \t %f \n", q_dirN[k], f_N, f_N_in);
+		// 	printf("S \t %f \t %f \t %f \n", q_dirS[k], f_S, f_S_in);
+		// 	printf("SE \t %f \t %f \t %f \n", q_dirSE[k], f_SE, f_SE_in);
+		// 	printf("NE \t %f \t %f \t %f \n", q_dirNE[k], f_NE, f_NE_in);
+		// 	printf("SW \t %f \t %f \t %f \n", q_dirSW[k], f_SW, f_SW_in);
+		// 	printf("B \t %f \t %f \t %f \n", q_dirB[k], f_B, f_B_in);
+		// 	printf("BS \t %f \t %f \t %f \n", q_dirBS[k], f_BS, f_BS_in);
+		// 	printf("BN \t %f \t %f \t %f \n", q_dirBN[k], f_BN, f_BN_in);
+		// 	printf("BW \t %f \t %f \t %f \n", q_dirBW[k], f_BW, f_BW_in);
+		// 	printf("BE \t %f \t %f \t %f \n", q_dirBE[k], f_BE, f_BE_in);
+		// 	printf("BNE \t %f \t %f \t %f \n", q_dirBNE[k], f_BNE, f_BNE_in);
+		// 	printf("BNW \t %f \t %f \t %f \n", q_dirBNW[k], f_BNW, f_BNW_in);
+		// 	printf("BSE \t %f \t %f \t %f \n", q_dirBSE[k], f_BSE, f_BSE_in);
+		// 	printf("BSW \t %f \t %f \t %f \n", q_dirBSW[k], f_BSW, f_BSW_in);
+		// 	printf("T \t %f \t %f \t %f \n", q_dirT[k], f_T, f_T_in);
+		// 	printf("TS \t %f \t %f \t %f \n", q_dirTS[k], f_TS, f_TS_in);
+		// 	printf("TN \t %f \t %f \t %f \n", q_dirTN[k], f_TN, f_TN_in);
+		// 	printf("TW \t %f \t %f \t %f \n", q_dirTW[k], f_TW, f_TW_in);
+		// 	printf("TE \t %f \t %f \t %f \n", q_dirTE[k], f_TE, f_TE_in);
+		// 	printf("TNE \t %f \t %f \t %f \n", q_dirTNE[k], f_TNE, f_TNE_in);
+		// 	printf("TNW \t %f \t %f \t %f \n", q_dirTNW[k], f_TNW, f_TNW_in);
+		// 	printf("TSE \t %f \t %f \t %f \n", q_dirTSE[k], f_TSE, f_TSE_in);
+		// 	printf("TSW \t %f \t %f \t %f \n\n", q_dirTSW[k], f_TSW, f_TSW_in);
+		// }
 
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // //Compute wall velocity
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real VeloX=0.0, VeloY=0.0, VeloZ=0.0; 
 
-      real wallNormalX = normalX[k];
-      real wallNormalY = normalY[k];
-      real wallNormalZ = normalZ[k];
+      q = 0.5f;
+      real eps = 0.001f;
 
-      //Sample velocity at exchange location and filter temporally
-      real eps = 0.01;
-      real vxEL = eps*vx[k_N[k]]+(1.0-eps)*vx_bc[k];
-      real vyEL = eps*vy[k_N[k]]+(1.0-eps)*vy_bc[k];
-      real vzEL = eps*vz[k_N[k]]+(1.0-eps)*vz_bc[k];
-      vx_bc[k] = vxEL;
-      vy_bc[k] = vyEL;
-      vz_bc[k] = vzEL;
+      iMEM( k, k_N[k], 
+            normalX, normalY, normalZ,
+            vx, vy, vz,
+            vx_bc, vy_bc, vz_bc,
+            samplingOffset,
+            q,
+            1.0+q,
+            eps,
+            z0,
+            wallMomentumX, wallMomentumY, wallMomentumZ,
+            VeloX, VeloY, VeloZ);
 
-      //Subtract wall-normal velocity component
-      real vDotN = vxEL*wallNormalX+vyEL*wallNormalY+vzEL*wallNormalZ;
-      vxEL -= vDotN*wallNormalX;
-      vyEL -= vDotN*wallNormalY;
-      vzEL -= vDotN*wallNormalZ;
-      real vMag = sqrt(vxEL*vxEL+vyEL*vyEL+vzEL*vzEL);
-      
-      
-      //Compute wall shear stress tau_w via MOST
-      real z = (real)samplingOffset[k] + 0.5; //assuming q=0.5, could be replaced by wall distance via wall normal
-      real kappa = 0.4;
-      real u_star = vMag*kappa/(log(z/z0[k]));
-
-      real tau_w = u_star*u_star;                  //assuming rho=1
-      real A = 1.0;                                //wall area (obviously 1 for grid aligned walls, can come from grid builder later for complex geometries)
-      
-      //Momentum to be applied via wall velocity
-      real wallMomDotN = wallMomentumX*wallNormalX+wallMomentumY*wallNormalY+wallMomentumZ*wallNormalZ;
-      real F_x = (tau_w*A) * (vxEL/vMag) - ( wallMomentumX - wallMomDotN*wallNormalX);
-      real F_y = (tau_w*A) * (vyEL/vMag) - ( wallMomentumY - wallMomDotN*wallNormalY);
-      real F_z = (tau_w*A) * (vzEL/vMag) - ( wallMomentumZ - wallMomDotN*wallNormalZ);
-
-      //Corresponding wall velocity (only valid for wall-normals in z)
-      q = 0.5f; 
-      VeloX = -3.0*F_x*(c1o1+q); 
-      VeloY = -3.0*F_y*(c1o1+q);
-      VeloZ = -3.0*F_z*(c1o1+q);
-      // VeloX = ( VeloX*vxEL>=c0o1? VeloX: c0o1);
-      // VeloY = ( VeloY*vxEL>=c0o1? VeloY: c0o1);
-      // VeloZ = ( VeloZ*vxEL>=c0o1? VeloZ: c0o1);
-      VeloX = max(VeloX, -0.2);
-
-      if(printOut && k==0)
-      {     
-         printf("samp, z, z0: \t %i \t %f \t %f  \nu,v,w, vMag \t %f \t %f \t %f \t %f \n", samplingOffset[k], z, z0[k], vxEL,vyEL,vzEL,vMag );
-         printf("dudz: \t %1.14f \n", vx[k_N[k]]-vx[k_Q[k]]);
-         printf("nu_t * dudz: \t %1.14f \n", turbViscosity[k_Q[k]]*(vx[k_N[k]]-vx[k_Q[k]]) );
-         printf("u_star: %f \t\n\n", u_star);
-         printf("Wall velo: \t %1.14f  \t %1.14f  \t %1.14f  \t\n", VeloX, VeloY, VeloZ);
-         printf("Wall tan momen.: %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumX - wallMomDotN*wallNormalX, wallMomentumY - wallMomDotN*wallNormalY, wallMomentumZ - wallMomDotN*wallNormalZ);
-         printf("FMEM before:\t %1.14f \t %1.14f \t %1.14f \nFWM: \t\t %1.14f \t %1.14f \t %1.14f \n", wallMomentumX, wallMomentumY, wallMomentumZ, (tau_w*A) * (vxEL/vMag), (tau_w*A) * (vyEL/vMag), (tau_w*A) * (vzEL/vMag));
+      // if(printOut && k==0)
+      // {     
+      //    printf("samp, z, z0: \t %i \t %f \t %f  \nu,v,w, vMag \t %f \t %f \t %f \t %f \n", samplingOffset[k], z, z0[k], vxEL,vyEL,vzEL,vMag );
+      //    printf("dudz: \t %1.14f \n", vx[k_N[k]]-vx[k_Q[k]]);
+      //    printf("nu_t * dudz: \t %1.14f \n", turbViscosity[k_Q[k]]*(vx[k_N[k]]-vx[k_Q[k]]) );
+      //    printf("u_star: %f \t\n\n", u_star);
+      //    printf("Wall velo: \t %1.14f  \t %1.14f  \t %1.14f  \t\n", VeloX, VeloY, VeloZ);
+      //    printf("Wall tan momen.: %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumX - wallMomDotN*wallNormalX, wallMomentumY - wallMomDotN*wallNormalY, wallMomentumZ - wallMomDotN*wallNormalZ);
+      //    printf("FMEM before:\t %1.14f \t %1.14f \t %1.14f \nFWM: \t\t %1.14f \t %1.14f \t %1.14f \n", wallMomentumX, wallMomentumY, wallMomentumZ, (tau_w*A) * (vxEL/vMag), (tau_w*A) * (vyEL/vMag), (tau_w*A) * (vzEL/vMag));
          // printf("FMEM post: \t %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumXPost, wallMomentumYPost, wallMomentumZPost);
          // printf("FMEM pre: \t %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumXPre, wallMomentumYPre, wallMomentumZPre);        
-      } 
+      // } 
+
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // //Add wall velocity and write f's
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -955,12 +976,10 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
          wallMomentumZ += - (c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
       }
 
-      if(printOut && k==0)
-      {     
-         printf("FMEM after: \t %1.14f \t %1.14f \t %1.14f  \n \n", wallMomentumX,wallMomentumY,wallMomentumZ );
-      } 
-      // turbViscosity[k_Q[k]]=0.1*0.4*0.5;
-      // turbViscosity[neighborZ[k_Q[k]]]=0.1*0.5*0.4*0.5;
+      // if(printOut && k==0)
+      // {     
+      //    printf("FMEM after: \t %1.14f \t %1.14f \t %1.14f  \n \n", wallMomentumX,wallMomentumY,wallMomentumZ );
+      // } 
 
    }
 }
@@ -1220,6 +1239,7 @@ extern "C" __global__ void BBStressDevice27( real* DD,
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real f_E_in,  f_W_in,  f_N_in,  f_S_in,  f_T_in,  f_B_in,   f_NE_in,  f_SW_in,  f_SE_in,  f_NW_in,  f_TE_in,  f_BW_in,  f_BE_in,
          f_TW_in, f_TN_in, f_BS_in, f_BN_in, f_TS_in, f_TNE_in, f_TSW_in, f_TSE_in, f_TNW_in, f_BNE_in, f_BSW_in, f_BSE_in, f_BNW_in;
+      
       // momentum exchanged with wall at rest
       real wallMomentumX = 0.0, wallMomentumY = 0.0, wallMomentumZ = 0.0;
       
@@ -1434,66 +1454,25 @@ extern "C" __global__ void BBStressDevice27( real* DD,
          wallMomentumZ += f_TNW+f_BSE_in;
       }
 
-   // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // //Compute wall velocity
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       real VeloX=0.0, VeloY=0.0, VeloZ=0.0; 
 
-      real wallNormalX = normalX[k];
-      real wallNormalY = normalY[k];
-      real wallNormalZ = normalZ[k];
+      q = 0.5f;
+      real eps = 0.001f;
 
-      //Sample velocity at exchange location and filter temporally
-      real eps = 0.001;
-      real vxEL = eps*vx[k_N[k]]+(1.0-eps)*vx_bc[k];
-      real vyEL = eps*vy[k_N[k]]+(1.0-eps)*vy_bc[k];
-      real vzEL = eps*vz[k_N[k]]+(1.0-eps)*vz_bc[k];
-      vx_bc[k] = vxEL;
-      vy_bc[k] = vyEL;
-      vz_bc[k] = vzEL;
-
-      //Subtract wall-normal velocity component
-      real vDotN = vxEL*wallNormalX+vyEL*wallNormalY+vzEL*wallNormalZ;
-      vxEL -= vDotN*wallNormalX;
-      vyEL -= vDotN*wallNormalY;
-      vzEL -= vDotN*wallNormalZ;
-      real vMag = sqrt(vxEL*vxEL+vyEL*vyEL+vzEL*vzEL);
-      
-      
-      //Compute wall shear stress tau_w via MOST
-      real z = (real)samplingOffset[k] + 0.5; //assuming q=0.5, could be replaced by wall distance via wall normal
-      real kappa = 0.4;
-      real u_star = vMag*kappa/(log(z/z0[k]));
-
-      real tau_w = u_star*u_star;                  //assuming rho=1
-      real A = 1.0;                                //wall area (obviously 1 for grid aligned walls, can come from grid builder later for complex geometries)
-      
-      //Momentum to be applied via wall velocity
-      real wallMomDotN = wallMomentumX*wallNormalX+wallMomentumY*wallNormalY+wallMomentumZ*wallNormalZ;
-      real F_x = (tau_w*A) * (vx[k_Q[k]]/vMag) - ( wallMomentumX - wallMomDotN*wallNormalX);
-      real F_y = (tau_w*A) * (vy[k_Q[k]]/vMag) - ( wallMomentumY - wallMomDotN*wallNormalY);
-      real F_z = 0.0;//(tau_w*A) * (vzEL/vMag) - ( wallMomentumZ - wallMomDotN*wallNormalZ);
-
-      //Corresponding wall velocity (only valid for wall-normals in z)
-      q = 0.5f; 
-      VeloX = -3.0*F_x;
-      VeloY = -3.0*F_y;
-      VeloZ = -3.0*F_z;
-
-      VeloX = max(VeloX, -2.0*vxEL);
-
-      if(false && k==0)
-      {     
-         printf("samp, z, z0: \t %i \t %f \t %f  \nu,v,w, vMag \t %f \t %f \t %f \t %f \n", samplingOffset[k], z, z0[k], vxEL,vyEL,vzEL,vMag );
-         printf("dudz: \t %1.14f \n", vx[k_N[k]]-vx[k_Q[k]]);
-         printf("u_star: %f \t\n\n", u_star);
-         printf("Wall velo: \t %1.14f  \t %1.14f  \t %1.14f  \t\n", VeloX, VeloY, VeloZ);
-         printf("Wall tan momen.: %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumX - wallMomDotN*wallNormalX, wallMomentumY - wallMomDotN*wallNormalY, wallMomentumZ - wallMomDotN*wallNormalZ);
-         printf("FMEM before:\t %1.14f \t %1.14f \t %1.14f \nFWM: \t\t %1.14f \t %1.14f \t %1.14f \n", wallMomentumX, wallMomentumY, wallMomentumZ, (tau_w*A) * (vxEL/vMag), (tau_w*A) * (vyEL/vMag), (tau_w*A) * (vzEL/vMag));
-         // printf("FMEM post: \t %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumXPost, wallMomentumYPost, wallMomentumZPost);
-         // printf("FMEM pre: \t %1.14f \t %1.14f \t %1.14f \t\n", wallMomentumXPre, wallMomentumYPre, wallMomentumZPre);        
-      } 
-
+      iMEM( k, k_N[k], 
+            normalX, normalY, normalZ,
+            vx, vy, vz,
+            vx_bc, vy_bc, vz_bc,
+            samplingOffset,
+            q,
+            1.0,
+            eps,
+            z0,
+            wallMomentumX, wallMomentumY, wallMomentumZ,
+            VeloX, VeloY, VeloZ);
 
       // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // //Add wall velocity and write f's

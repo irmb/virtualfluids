@@ -433,17 +433,17 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         //Smagorinsky for debugging
         // if(true)
         // {   
-        //     if(false && k==99976)
-        //     {
-        //         printf("dudz+dwdu: \t %1.14f \n", Dxz );
-        //         printf("dvdz+dudy: \t %1.14f \n", Dxy );  
-        //         printf("dwdy+dvdz: \t %1.14f \n", Dyz );  
-        //         printf("nu_t * dudz+dwdu: \t %1.14f \n", turbulentViscosity[k]*Dxz );
-        //         printf("nu_t * dvdz+dudy: \t %1.14f \n", turbulentViscosity[k]*Dxy );  
-        //         printf("nu_t * dwdy+dvdz: \t %1.14f \n", turbulentViscosity[k]*Dyz );      
-        //     } 
+            // if(false && k==99976)
+            // {
+            //     printf("dudz+dwdu: \t %1.14f \n", Dxz );
+            //     printf("dvdz+dudy: \t %1.14f \n", Dxy );  
+            //     printf("dwdy+dvdz: \t %1.14f \n", Dyz );  
+            //     printf("nu_t * dudz+dwdu: \t %1.14f \n", turbulentViscosity[k]*Dxz );
+            //     printf("nu_t * dvdz+dudy: \t %1.14f \n", turbulentViscosity[k]*Dxy );  
+            //     printf("nu_t * dwdy+dvdz: \t %1.14f \n", turbulentViscosity[k]*Dyz );      
+            // } 
         //     real Sbar = sqrt(c2o1*(dxux*dxux+dyuy*dyuy+dzuz*dzuz)+Dxy*Dxy+Dxz*Dxz+Dyz*Dyz);
-        //     real Cs = 0.05f;
+        //     real Cs = 0.08f;
         //     turbulentViscosity[k] = Cs*Cs*Sbar;
         // }
 
