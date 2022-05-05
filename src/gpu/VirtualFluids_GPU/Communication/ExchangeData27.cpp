@@ -252,7 +252,7 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     if (para->getUseStreams() && para->getNumberOfProcessNeighborsX(level, "recv") > 0 && para->getParH(level)->sendProcessNeighborY.size() != 0) {
         if(  para->getParH(level)->sendProcessNeighborY[0].numberOfNodes == (*sendProcessNeighborHost)[0].numberOfNodes){
             // check if in communication of all nodes (as opposed to reduced communication after fine to coarse)
-           copyEdgeNodes(para->getParH(level)->edgeNodesXtoY, para->getParH(level)->recvProcessNeighborX, *sendProcessNeighborHost);
+            copyEdgeNodes(para->getParH(level)->edgeNodesXtoY, para->getParH(level)->recvProcessNeighborX, *sendProcessNeighborHost);
         } else{
             copyEdgeNodes(para->getParH(level)->edgeNodesXtoY, para->getParH(level)->recvProcessNeighborsAfterFtoCX, *sendProcessNeighborHost);
         }
