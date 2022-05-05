@@ -14,8 +14,6 @@
     "containerEnv": {"HOME": "/workspaces/"},
     "mounts": [
         "source=/mnt/d/output,target=/${containerWorkspaceFolder}/output,type=bind", 
-        "source=${localEnv:HOME}/STLs,target=${containerWorkspaceFolder}/stl,type=bind",    
-        // https://code.visualstudio.com/remote/advancedcontainers/add-local-file-mount
-        // https://code.visualstudio.com/docs/remote/devcontainerjson-reference#_variables-in-devcontainerjson
+        "source=${localEnv:HOME}/STLs,target=${containerWorkspaceFolder}/stl,type=bind"    
     ]
 }
