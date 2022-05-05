@@ -29,7 +29,8 @@ protected:
     SPtr<Parameter> para;
     int level    = 0;
     int numNodes = 10;
-
+    std::vector<real> recvFs;
+    
     void SetUp() override
     {
         para = initParameterClass();
@@ -43,21 +44,28 @@ protected:
         para->getParH(level)->edgeNodesXtoZ.emplace_back(0, 7, 0, 8);
         para->getParH(level)->edgeNodesXtoZ.emplace_back(0, 7, 0, 8);
     }
+
+    SPtr<std::vector<ProcessNeighbor27>> setUpRecvProcessNeighbors(int numberOfNodesInRecv){
+        SPtr<std::vector<ProcessNeighbor27>>recvProcessNeighborHost=std::make_shared<std::vector<ProcessNeighbor27>>(1);
+        recvFs.resize(numberOfNodesInRecv);
+        std::fill(recvFs.begin(), recvFs.end(), 0.5); // 0.5s should not be copied
+        for (LBMSimulationParameter::EdgeNodePositions edgeNode : para->getParH(level)->edgeNodesXtoZ) {
+            recvFs[edgeNode.indexInRecvBuffer] = 0.1; // 0.1s should be copied
+        }
+        setUpFsByCopyingF0(recvFs, numberOfNodesInRecv);
+        (*recvProcessNeighborHost)[0].f[0]          = recvFs.data();
+        (*recvProcessNeighborHost)[0].numberOfNodes = numberOfNodesInRecv;
+        return recvProcessNeighborHost;
+    }   
+
 };
 
 TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAfterFtoC_recvVectorFullSize)
 {
-    int numNodesAfterFtoC = 5; // indexInSend < 5 --> in AfterFToC
+    int numNodesAfterFtoC = 5; // indexInSend < 5 --> mode is in AfterFToC
 
     // recvProcessNeighborHost
-    std::vector<ProcessNeighbor27> recvProcessNeighborHost(1);
-    std::vector<real> recvFs(numNodes, 0.5); // 0.5s should not be copied
-    for (LBMSimulationParameter::EdgeNodePositions edgeNode : para->getParH(level)->edgeNodesXtoZ) {
-        recvFs[edgeNode.indexInRecvBuffer] = 0.1; // 0.1s should be copied
-    }
-    setUpFsByCopyingF0(recvFs, numNodes);
-    recvProcessNeighborHost[0].f[0]          = recvFs.data();
-    recvProcessNeighborHost[0].numberOfNodes = numNodes;
+    SPtr<std::vector<ProcessNeighbor27>>recvProcessNeighborHost = setUpRecvProcessNeighbors(numNodes);
 
     // sendProcessNeighborHost
     std::vector<ProcessNeighbor27> sendProcessNeighborHost(1);
@@ -72,7 +80,7 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAft
     setUpFsByCopyingF0(expectedFs, numNodesAfterFtoC);
 
     // act
-    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost);
+    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, *recvProcessNeighborHost, sendProcessNeighborHost);
 
     // convert result to std::vector
     std::vector<real> result;
@@ -83,17 +91,8 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAft
 
 TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicateAll)
 {
-    int numNodes = 10;
-
     // recvProcessNeighborHost
-    std::vector<ProcessNeighbor27> recvProcessNeighborHost(1);
-    std::vector<real> recvFs(numNodes, 0.5); // 0.5s should not be copied
-    for (LBMSimulationParameter::EdgeNodePositions edgeNode : para->getParH(level)->edgeNodesXtoZ) {
-        recvFs[edgeNode.indexInRecvBuffer] = 0.1; // 0.1s should be copied
-    }
-    setUpFsByCopyingF0(recvFs, numNodes);
-    recvProcessNeighborHost[0].f[0]          = recvFs.data();
-    recvProcessNeighborHost[0].numberOfNodes = numNodes;
+    SPtr<std::vector<ProcessNeighbor27>>recvProcessNeighborHost = setUpRecvProcessNeighbors(numNodes);
 
     // sendProcessNeighborHost
     std::vector<ProcessNeighbor27> sendProcessNeighborHost(1);
@@ -110,7 +109,7 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicateAll)
     setUpFsByCopyingF0(expectedFs, numNodes);
 
     // act
-    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost);
+    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, *recvProcessNeighborHost, sendProcessNeighborHost);
 
     // convert result to std::vector
     std::vector<real> result;
