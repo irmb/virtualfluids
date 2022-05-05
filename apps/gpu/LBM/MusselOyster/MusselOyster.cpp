@@ -579,7 +579,7 @@ void multipleLevel(const std::string& configPath)
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
 
-            gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" + std::to_string(generatePart) + "_"); 
+            //gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" + std::to_string(generatePart) + "_"); 
             //gridBuilder->writeGridsToVtk(outPath + bivalveType + "/" + std::to_string(generatePart) + "/grid/"); 
             // gridBuilder->writeArrows(outPath + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
 
