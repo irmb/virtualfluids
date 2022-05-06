@@ -1,7 +1,7 @@
 ###############################################################################
 ##                       VirtualFluids CI Pipeline                           ##
 ###############################################################################
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.2
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.3
 
 stages:
   - build
@@ -145,8 +145,6 @@ gcc_9_python:
 build_singularity_image:
   stage: container_upload
 
-
-
   needs:
     - gcc_9_python
 
@@ -197,8 +195,6 @@ msvc_16_unit_tests:
 gcc_9_python_bindings_test:
   stage: test
 
-
-
   needs: ["gcc_9_python"]
 
   before_script:
@@ -213,8 +209,6 @@ gcc_9_python_bindings_test:
 ###############################################################################
 gcc_9_python_slurm_test:
   stage: test
-
-
 
   needs: ["gcc_9_python"]
 
@@ -379,22 +373,28 @@ include_what_you_use_clang_10:
     - make
 
 ###############################################################################
+.analyze_template:
+
+  rules: # dont create MR pipeline, run always on irmb/develop and manual in all other cases
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: '$CI_PROJECT_NAMESPACE == "irmb" && $CI_COMMIT_BRANCH == "develop"'
+      when: always
+    - when: manual
+      allow_failure: true
+
 cppcheck:
   stage: analyze
 
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
   before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
-    - apt-get install -y cppcheck
+    - cppcheck --version
 
   script:
     - cd $CI_PROJECT_DIR
-    - cppcheck --version
     - cppcheck src --enable=all --xml 2> cppcheck.xml
 
   artifacts:
@@ -408,10 +408,7 @@ cppcheck:
 lizard:
   stage: analyze
 
-
-
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
@@ -436,17 +433,11 @@ lizard:
 gcov_gcc_9:
   stage: analyze
 
-
-
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
   before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
-    - pip3 install 'jinja2<3.1' gcovr==5.0
     - gcovr --version
 
   script:
@@ -480,10 +471,7 @@ gcov_gcc_9:
 clang-tidy:
   stage: analyze
 
-
-
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
