@@ -377,8 +377,7 @@ include_what_you_use_clang_10:
     - make
 
 ###############################################################################
-cppcheck:
-  stage: analyze
+extends: .analyze_template
 
   rules: # dont create MR pipeline, run always on irmb/develop and manual in all other cases
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -387,10 +386,14 @@ cppcheck:
       when: always
     - when: manual
 
+cppcheck:
+  stage: analyze
+
+  extends: .analyze_template
+
   needs: []
 
   before_script:
-    - echo $CI_PROJECT_NAMESPACE
     - cppcheck --version
 
   script:
@@ -408,8 +411,7 @@ cppcheck:
 lizard:
   stage: analyze
 
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
@@ -434,8 +436,7 @@ lizard:
 gcov_gcc_9:
   stage: analyze
 
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
@@ -473,10 +474,7 @@ gcov_gcc_9:
 clang-tidy:
   stage: analyze
 
-
-
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
