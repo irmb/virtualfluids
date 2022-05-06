@@ -195,8 +195,6 @@ msvc_16_unit_tests:
 gcc_9_python_bindings_test:
   stage: test
 
-
-
   needs: ["gcc_9_python"]
 
   before_script:
@@ -211,8 +209,6 @@ gcc_9_python_bindings_test:
 ###############################################################################
 gcc_9_python_slurm_test:
   stage: test
-
-
 
   needs: ["gcc_9_python"]
 
@@ -385,6 +381,7 @@ include_what_you_use_clang_10:
     - if: '$CI_PROJECT_NAMESPACE == "irmb" && $CI_COMMIT_BRANCH == "develop"'
       when: always
     - when: manual
+      allow_failure: true
 
 cppcheck:
   stage: analyze
