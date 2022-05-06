@@ -380,7 +380,9 @@ include_what_you_use_clang_10:
 cppcheck:
   stage: analyze
 
-  rules:
+  rules: # dont create MR pipeline, run always on irmb/develop and manual in all other cases
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: '$CI_PROJECT_NAMESPACE == "irmb" && $CI_COMMIT_BRANCH == "develop"'
       when: always
     - when: manual
