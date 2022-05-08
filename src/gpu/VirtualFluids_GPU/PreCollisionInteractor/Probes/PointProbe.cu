@@ -68,7 +68,7 @@ void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
     }
 }
 
-void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level)
+void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
     interpAndCalcQuantitiesKernel<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints, probeStruct->vals,

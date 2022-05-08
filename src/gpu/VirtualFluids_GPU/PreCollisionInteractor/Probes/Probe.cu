@@ -318,8 +318,8 @@ void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level,
     {
         SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 
-        this->calculateQuantities(probeStruct, para, level);
-        probeStruct->vals++;
+        this->calculateQuantities(probeStruct, para, t, level);
+        if(t>=this->tStartTmpAveraging) probeStruct->vals++;
     }
 
     if(max(int(t) - int(this->tStartOut), -1) % this->tOut == 0)

@@ -69,6 +69,7 @@ public:
         const std::string _probeName,
         const std::string _outputPath,
         uint _tStartAvg,
+        uint _tStartTmpAvg,
         uint _tAvg,
         uint _tStartOut,
         uint _tOut,
@@ -80,6 +81,7 @@ public:
         tStartOut(_tStartOut),
         tOut(_tOut),
         hasDeviceQuantityArray(_hasDeviceQuantityArray),
+        tStartTmpAveraging(_tStartTmpAvg),
         PreCollisionInteractor()
     {
         assert("Output starts before averaging!" && tStartOut>=tStartAvg);
@@ -95,8 +97,10 @@ public:
     void addAllAvailablePostProcessingVariables();
     
     bool getHasDeviceQuantityArray();
+    uint getTStartTmpAveraging(){return this->tStartTmpAveraging;}
 
     void setFileNameToNOut(){this->fileNameLU = false;}
+    void setTStartTmpAveraging(uint _tStartTmpAveraging){this->tStartTmpAveraging = _tStartTmpAveraging;}
 
 private:
     virtual bool isAvailablePostProcessingVariable(PostProcessingVariable _variable) = 0;
@@ -109,7 +113,7 @@ private:
                         std::vector<real>& distX, std::vector<real>& distY, std::vector<real>& distZ,   
                         std::vector<real>& pointCoordsX, std::vector<real>& pointCoordsY, std::vector<real>& pointCoordsZ,
                         int level);
-    virtual void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level) = 0;
+    virtual void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) = 0;
 
     void write(Parameter* para, int level, int t);
     void writeCollectionFile(Parameter* para, int t);
@@ -127,6 +131,7 @@ private:
     std::vector<std::string> varNames;
 
     uint tStartAvg;
+    uint tStartTmpAveraging; //only non-zero in PlanarAverageProbe to switch on Spatio-temporal averaging (while only doing spatial averaging for t<tStartTmpAvg) 
     uint tAvg;
     uint tStartOut;
     uint tOut;

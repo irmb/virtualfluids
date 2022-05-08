@@ -16,19 +16,22 @@ public:
         const std::string _probeName,
         const std::string _outputPath,
         uint _tStartAvg,
+        uint _tStartTmpAvg,
         uint _tAvg,
         uint _tStartOut,
         uint _tOut,
         char _planeNormal
     ):  Probe(_probeName, 
              _outputPath,
-             _tStartAvg, 
+             _tStartAvg,
+             _tStartTmpAvg,
              _tAvg,
              _tStartOut, 
              _tOut,
              false),
         planeNormal(_planeNormal)
-    {
+
+    {   
         assert(_planeNormal == 'x' || _planeNormal == 'y' || _planeNormal == 'z');
         // this->hasDeviceQuantityArray = false;
     }
@@ -41,7 +44,7 @@ private:
                     std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                     std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                     int level) override;
-    void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level) override;
+    void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) override;
 
 private:
     real posX, posY, posZ;

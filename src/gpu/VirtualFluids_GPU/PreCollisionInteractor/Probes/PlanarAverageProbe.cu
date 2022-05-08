@@ -202,7 +202,7 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level)
+void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
 {   
     // Definition of normal and inplane directions for moveIndices kernels
     uint *neighborNormal, *neighborInplane1, *neighborInplane2;
@@ -224,6 +224,8 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
         neighborInplane1 = para->getParD(level)->neighborX_SP;
         neighborInplane2 = para->getParD(level)->neighborY_SP;
     }
+
+    bool doTmpAveraging = (t>this->getTStartTmpAveraging());
 
     // Pointer casts to use device arrays in thrust reductions
     thrust::device_ptr<uint> indices_thrust = thrust::device_pointer_cast(probeStruct->pointIndicesD);
@@ -260,7 +262,7 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
             probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] = spatMean_vy;
             probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] = spatMean_vz;
 
-            if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatioTemporalMeans)])
+            if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatioTemporalMeans)] && doTmpAveraging)
             {
             uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatioTemporalMeans)];
             real spatTmpMean_vx_old = probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node];
@@ -295,7 +297,7 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                 probeStruct->quantitiesArrayH[(arrOff+4)*nPoints+node] = spatMean_vxvz;
                 probeStruct->quantitiesArrayH[(arrOff+5)*nPoints+node] = spatMean_vyvz;
 
-                if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatioTemporalCovariances)])
+                if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatioTemporalCovariances)] && doTmpAveraging)
                 {
                     uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatioTemporalCovariances)];
                     real spatTmpMean_vxvx_old = probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node];
@@ -333,7 +335,7 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                     probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] = spatMean_Sy;
                     probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] = spatMean_Sz;
 
-                    if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatioTemporalSkewness)])
+                    if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatioTemporalSkewness)] && doTmpAveraging)
                     {
                         uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatioTemporalSkewness)];
                         real spatTmpMean_Sx_old = probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node];
@@ -362,7 +364,7 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                         probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] = spatMean_Fy;
                         probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] = spatMean_Fz;
 
-                        if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatioTemporalFlatness)])
+                        if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatioTemporalFlatness)] && doTmpAveraging)
                         {
                             uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatioTemporalFlatness)];
                             real spatTmpMean_Fx_old = probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node];
@@ -387,4 +389,6 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
         } 
     }
     this->isEvenTAvg=!this->isEvenTAvg;
+
+    getLastCudaError("PlanarAverageProbe::calculateQuantities execution failed");
 }

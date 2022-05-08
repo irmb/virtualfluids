@@ -16,6 +16,7 @@ public:
     ): Probe(_probeName, 
              _outputPath,
              _tStartAvg, 
+             0,
              _tAvg,
              _tStartOut, 
              _tOut,
@@ -39,7 +40,7 @@ private:
                     std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                     std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
                     int level) override;
-    void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level) override;
+    void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) override;
 
 private:
     real posX, posY, posZ;
