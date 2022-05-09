@@ -126,6 +126,11 @@ void multipleLevel(const std::string& configPath)
 	gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
 								0.5 * L,  0.5 * L,  0.5 * L, dx);
 
+    gridBuilder->setNumberOfLayers(12, 8);
+
+    gridBuilder->addGrid( new Cuboid( -0.1 * L, -0.1 * L, -0.1 * L,
+                                       0.1 * L , 0.1 * L,  0.1 * L), 1);
+
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
@@ -172,7 +177,7 @@ void multipleLevel(const std::string& configPath)
 
         para->setPrintFiles(true);
 
-        para->setMaxLevel(1);
+        para->setMaxLevel(2);
 
         para->setVelocity(velocityLB);
         para->setViscosity(viscosityLB);
