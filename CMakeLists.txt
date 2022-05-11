@@ -104,7 +104,7 @@ if(BUILD_VF_GPU OR BUILD_VF_GKS)
     if(NOT CMAKE_CUDA_COMPILER)
         message(FATAL_ERROR "CUDA Compiler was requested but is not found on the system.")
     endif()
-
+    
     set(CMAKE_CUDA_STANDARD 17)
     set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
 

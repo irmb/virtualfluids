@@ -186,7 +186,9 @@ typedef struct QforBC{
    real* q19[19];
    int kQ=0;
    int kArray;
-   real *Vx, *Vy, *Vz, *deltaVz, *RhoBC;
+   real *Vx,      *Vy,      *Vz;
+   real *Vx1,     *Vy1,     *Vz1;
+   real *deltaVz, *RhoBC;
    real *normalX, *normalY, *normalZ;
 }QforBoundaryConditions;
 

@@ -133,5 +133,17 @@
             ],
             "displayName": "gpu numerical tests msvc configuration"
         }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug",
+            "description": "",
+            "displayName": "Debug"
+        },
+        {
+            "name": "release",
+            "description": "Build Release version",
+            "displayName": "Release"
+        }
     ]
 }

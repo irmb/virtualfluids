@@ -103,7 +103,9 @@ public:
 
     GRIDGENERATOR_EXPORT uint getStressSize(int level) const override;
     GRIDGENERATOR_EXPORT virtual void getStressValues(  real* normalX, real* normalY, real* normalZ, 
-                                                        real* vx, real* vy, real* vz, int* indices, int* samplingIndices, int* samplingOffsets, real* z0, int level) const override;
+                                                        real* vx,      real* vy,      real* vz, 
+                                                        real* vx1,     real* vy1,     real* vz1, 
+                                                        int* indices, int* samplingIndices, int* samplingOffsets, real* z0, int level) const override;
     GRIDGENERATOR_EXPORT virtual void getStressQs(real* qs[27], int level) const override;
         
     GRIDGENERATOR_EXPORT uint getVelocitySize(int level) const override;

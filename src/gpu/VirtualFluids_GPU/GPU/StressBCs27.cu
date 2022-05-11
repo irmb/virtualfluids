@@ -9,10 +9,12 @@ using namespace vf::lbm::constant;
 extern "C" __host__ __device__ __forceinline__ void iMEM(uint k, uint kN,
                                                          real* _wallNormalX, real* _wallNormalY, real* _wallNormalZ,
                                                          real* vx, real* vy, real* vz,
-                                                         real* vx_bc, real* vy_bc, real* vz_bc,
+                                                         real* vx_el,      real* vy_el,      real* vz_el,      //mean (temporally filtered) velocities at exchange location
+                                                         real* vx_w_mean,  real* vy_w_mean,  real* vz_w_mean,  //mean (temporally filtered) velocities at wall-adjactent node
+                                                         real  vx_w_inst,  real  vy_w_inst,  real  vz_w_inst,  //instantaneous velocities at wall-adjactent node
                                                          int* samplingOffset,
                                                          real q,
-                                                         real forceFactor, //e.g., 1.0 for simple-bounce back, or (1+q) for interp. bounce-back as in Geier et al (2015)
+                                                         real forceFactor, //e.g., 1.0 for simple-bounce back, or (1+q) for interpolated single-node bounce-back as in Geier et al (2015)
                                                          real eps,
                                                          real* z0,
                                                          real wallMomentumX, real wallMomentumY, real wallMomentumZ,
@@ -23,38 +25,70 @@ extern "C" __host__ __device__ __forceinline__ void iMEM(uint k, uint kN,
       real wallNormalZ = _wallNormalZ[k];
 
       //Sample velocity at exchange location and filter temporally
-      real vxEL = eps*vx[kN]+(1.0-eps)*vx_bc[k];
-      real vyEL = eps*vy[kN]+(1.0-eps)*vy_bc[k];
-      real vzEL = eps*vz[kN]+(1.0-eps)*vz_bc[k];
-      vx_bc[k] = vxEL;
-      vy_bc[k] = vyEL;
-      vz_bc[k] = vzEL;
+      real _vx_el = eps*vx[kN]+(1.0-eps)*vx_el[k];
+      real _vy_el = eps*vy[kN]+(1.0-eps)*vy_el[k];
+      real _vz_el = eps*vz[kN]+(1.0-eps)*vz_el[k];
+      vx_el[k] = _vx_el;
+      vy_el[k] = _vy_el;
+      vz_el[k] = _vz_el;
 
-      //Subtract wall-normal velocity component
-      real vDotN = vxEL*wallNormalX+vyEL*wallNormalY+vzEL*wallNormalZ;
-      vxEL -= vDotN*wallNormalX;
-      vyEL -= vDotN*wallNormalY;
-      vzEL -= vDotN*wallNormalZ;
-      real vMag = sqrt(vxEL*vxEL+vyEL*vyEL+vzEL*vzEL);
+      //filter velocity at wall-adjacent node
+      real _vx_w_mean = eps*vx_w_inst+(1.0-eps)*vx_w_mean[k];
+      real _vy_w_mean = eps*vy_w_inst+(1.0-eps)*vy_w_mean[k];
+      real _vz_w_mean = eps*vz_w_inst+(1.0-eps)*vz_w_mean[k];
+      vx_w_mean[k] = _vx_w_mean;
+      vy_w_mean[k] = _vy_w_mean;
+      vz_w_mean[k] = _vz_w_mean;
+
+      //Subtract wall-normal velocity components
+      real vDotN_el = _vx_el*wallNormalX + _vy_el*wallNormalY + _vz_el*wallNormalZ;
+      _vx_el -= vDotN_el*wallNormalX;
+      _vy_el -= vDotN_el*wallNormalY;
+      _vz_el -= vDotN_el*wallNormalZ;
+      real vMag_el = sqrt( _vx_el*_vx_el + _vy_el*_vy_el + _vz_el*_vz_el );
+
+      real vDotN_w_mean = _vx_w_mean*wallNormalX + _vy_w_mean*wallNormalY + _vz_w_mean*wallNormalZ;
+      _vx_w_mean -= vDotN_w_mean*wallNormalX;
+      _vy_w_mean -= vDotN_w_mean*wallNormalY;
+      _vz_w_mean -= vDotN_w_mean*wallNormalZ;
+      real vMag_w_mean = sqrt( _vx_w_mean*_vx_w_mean + _vy_w_mean*_vy_w_mean + _vz_w_mean*_vz_w_mean );
+
+      real vDotN_w = vx_w_inst*wallNormalX + vy_w_inst*wallNormalY + vz_w_inst*wallNormalZ;
+      real _vx_w = vx_w_inst-vDotN_w*wallNormalX;
+      real _vy_w = vy_w_inst-vDotN_w*wallNormalY;
+      real _vz_w = vz_w_inst-vDotN_w*wallNormalZ;
             
       //Compute wall shear stress tau_w via MOST
       real z = (real)samplingOffset[k] + 0.5; //assuming q=0.5, could be replaced by wall distance via wall normal
       real kappa = 0.4;
-      real u_star = vMag*kappa/(log(z/z0[k]));
+      real u_star = vMag_el*kappa/(log(z/z0[k]));
 
-      real tau_w = u_star*u_star;                  //assuming rho=1
+      real tau_w = u_star*u_star;                  //actually tau_w/rho, but would be divided by rho later anyways
       real A = 1.0;                                //wall area (obviously 1 for grid aligned walls, can come from grid builder later for complex geometries)
       
-      //Momentum to be applied via wall velocity
+      //Scale wall force with near wall velocity, i.e., Schumann-Grötzbach (SG) approach
+      // if(k==1)
+      // {
+      //    printf("v_EL: %f \t %f \t %f \t %f \n", _vx_el/vMag_el, _vy_el/vMag_el, _vz_el/vMag_el, vMag_el );
+      //    printf("v_1: %f \t %f \t %f \t %f \n",  _vx_w, _vy_w, _vz_w, vMag_w_mean );
+      //    printf("v_1: %f \t %f \t %f \t %f \n\n", _vx_w/vMag_w_mean, _vy_w/vMag_w_mean, _vz_w/vMag_w_mean, vMag_w_mean );
+      // }
+      //                                                v- old alternative: do not scale SG-like but only set direction via velocity at exchange location
+      real F_w_x = (tau_w*A) * (_vx_w/vMag_w_mean);//(_vx_el/vMag_el) 
+      real F_w_y = (tau_w*A) * (_vy_w/vMag_w_mean);//(_vy_el/vMag_el)
+      real F_w_z = (tau_w*A) * (_vz_w/vMag_w_mean);//(_vz_el/vMag_el)
+      
+      //Momentum to be applied via wall velocity 
       real wallMomDotN = wallMomentumX*wallNormalX+wallMomentumY*wallNormalY+wallMomentumZ*wallNormalZ;
-      real F_x = (tau_w*A) * (vxEL/vMag) - ( wallMomentumX - wallMomDotN*wallNormalX);
-      real F_y = (tau_w*A) * (vyEL/vMag) - ( wallMomentumY - wallMomDotN*wallNormalY);
-      real F_z = (tau_w*A) * (vzEL/vMag) - ( wallMomentumZ - wallMomDotN*wallNormalZ);
+      real F_x =  F_w_x - ( wallMomentumX - wallMomDotN*wallNormalX);
+      real F_y =  F_w_y - ( wallMomentumY - wallMomDotN*wallNormalY);
+      real F_z =  F_w_z - ( wallMomentumZ - wallMomDotN*wallNormalZ);
 
       //Compute  wall velocity and clip (clipping only necessary for initial boundary layer development)
-      wallVelocityX = min(4.0*vxEL, max(-4.0*vxEL, -3.0*F_x*forceFactor));
-      wallVelocityY = min(4.0*vyEL, max(-4.0*vyEL, -3.0*F_y*forceFactor));
-      wallVelocityZ = min(4.0*vzEL, max(-4.0*vzEL, -3.0*F_z*forceFactor));
+      real clipWallVelo = 2.0;
+      wallVelocityX = min(clipWallVelo*_vx_el, max(-clipWallVelo*_vx_el, -3.0*F_x*forceFactor));
+      wallVelocityY = min(clipWallVelo*_vy_el, max(-clipWallVelo*_vy_el, -3.0*F_y*forceFactor));
+      wallVelocityZ = min(clipWallVelo*_vz_el, max(-clipWallVelo*_vz_el, -3.0*F_z*forceFactor));
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -71,9 +105,12 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
                                     real* normalX,
                                     real* normalY,
                                     real* normalZ,
-                                    real* vx_bc,
-                                    real* vy_bc,
-                                    real* vz_bc,
+                                    real* vx_el,
+                                    real* vy_el,
+                                    real* vz_el,
+                                    real* vx_w_mean,
+                                    real* vy_w_mean,
+                                    real* vz_w_mean,
                                     int* samplingOffset,
                                     real* z0,
 											   unsigned int* neighborX,
@@ -740,7 +777,9 @@ extern "C" __global__ void QStressDeviceComp27(real* DD,
       iMEM( k, k_N[k], 
             normalX, normalY, normalZ,
             vx, vy, vz,
-            vx_bc, vy_bc, vz_bc,
+            vx_el,      vy_el,      vz_el,
+            vx_w_mean,  vy_w_mean,  vz_w_mean,
+            vx1,        vx2,        vx3,
             samplingOffset,
             q,
             1.0+q,
@@ -996,9 +1035,12 @@ extern "C" __global__ void BBStressDevice27( real* DD,
                                              real* normalX,
                                              real* normalY,
                                              real* normalZ,
-                                             real* vx_bc,
-                                             real* vy_bc,
-                                             real* vz_bc,
+                                             real* vx_el,
+                                             real* vy_el,
+                                             real* vz_el,
+                                             real* vx_w_mean,
+                                             real* vy_w_mean,
+                                             real* vz_w_mean,
                                              int* samplingOffset,
                                              real* z0,
                                              unsigned int* neighborX,
@@ -1116,7 +1158,7 @@ extern "C" __global__ void BBStressDevice27( real* DD,
       ////////////////////////////////////////////////////////////////////////////////
       //index
       unsigned int KQK  = k_Q[k];
-      //unsigned int kzero= KQK;
+      unsigned int kzero= KQK;
       unsigned int ke   = KQK;
       unsigned int kw   = neighborX[KQK];
       unsigned int kn   = KQK;
@@ -1174,6 +1216,25 @@ extern "C" __global__ void BBStressDevice27( real* DD,
       f_TNE  = (D.f[dirBSW ])[kbsw ];
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
+
+      ////////////////////////////////////////////////////////////////////////////////
+      real vx1, vx2, vx3, drho;
+      drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
+                f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
+                f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
+
+      vx1    =  (((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+                ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
+                (f_E - f_W)) / (c1o1 + drho); 
+         
+
+      vx2    =   ((-(f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+                 ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
+                 (f_N - f_S)) / (c1o1 + drho); 
+
+      vx3    =   (((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
+                 (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
+                 (f_T - f_B)) / (c1o1 + drho); 
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -1465,7 +1526,9 @@ extern "C" __global__ void BBStressDevice27( real* DD,
       iMEM( k, k_N[k], 
             normalX, normalY, normalZ,
             vx, vy, vz,
-            vx_bc, vy_bc, vz_bc,
+            vx_el,      vy_el,      vz_el,
+            vx_w_mean,  vy_w_mean,  vz_w_mean,
+            vx1,        vx2,        vx3,
             samplingOffset,
             q,
             1.0,

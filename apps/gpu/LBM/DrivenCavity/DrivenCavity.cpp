@@ -29,6 +29,8 @@
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridFactory.h"
+#include "geometries/Cuboid/Cuboid.h"
+#include "geometries/Conglomerate/Conglomerate.h"
 
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
@@ -125,6 +127,11 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
 								0.5 * L,  0.5 * L,  0.5 * L, dx);
+    
+    gridBuilder->setNumberOfLayers(12, 8);
+
+    gridBuilder->addGrid( new Cuboid( -0.1 * L, -0.1 * L, -0.1 * L,
+                                       0.1 * L , 0.1 * L,  0.1 * L), 1);
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -164,7 +171,7 @@ void multipleLevel(const std::string& configPath)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		para->setDevices(std::vector<uint>{(uint)0});
+		para->setDevices(std::vector<uint>{(uint)1});
 
         para->setOutputPrefix( simulationName );
 
@@ -172,14 +179,14 @@ void multipleLevel(const std::string& configPath)
 
         para->setPrintFiles(true);
 
-        para->setMaxLevel(1);
+        para->setMaxLevel(2);
 
         para->setVelocity(velocityLB);
         para->setViscosity(viscosityLB);
 
         para->setVelocityRatio(velocity/ velocityLB);
 
-		//para->setMainKernel("CumulantK17CompChim");
+		para->setMainKernel("CumulantK15Comp");
 
 		para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
             rho = (real)0.0;

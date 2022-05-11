@@ -397,7 +397,8 @@ uint LevelGridBuilder::getStressSize(int level) const
 }
 
 void LevelGridBuilder::getStressValues( real* normalX, real* normalY, real* normalZ, 
-                                        real* vx, real* vy, real* vz, 
+                                        real* vx,      real* vy,      real* vz, 
+                                        real* vx1,     real* vy1,     real* vz1, 
                                         int* indices, int* samplingIndices, int* samplingOffset, real* z0, int level) const
 {
 

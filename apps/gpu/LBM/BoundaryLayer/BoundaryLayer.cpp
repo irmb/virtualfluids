@@ -57,47 +57,15 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//          U s e r    s e t t i n g s
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-LbmOrGks lbmOrGks = LBM;
-
-const real H = 1000.0; // boundary layer height in m
-
-const real L_x = 6*H;
-const real L_y = 4*H;
-const real L_z = 1*H;
-
-const real z0  = 0.1; // roughness length in m
-const real u_star = 0.4; //friction velocity in m/s
-const real kappa = 0.4; // von Karman constant 
-
-const real viscosity = 1.56e-5;
-
-const real velocity  = u_star/kappa*log(L_z/z0); //max mean velocity at the top in m/s
-
-const real mach = 0.1;
-
-const uint nodes_per_H =64;
 
 std::string path(".");
 
 std::string simulationName("BoundayLayer");
 
-// all in s
-const float tOut = 10000;
-const float tEnd = 200000; // total time of simulation
-const float tStartAveraging =  50000;
-const float tAveraging      =  200;
-const float tStartOutProbe  =  0;
-const float tOutProbe       =  10000; 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 void multipleLevel(const std::string& configPath)
 {
@@ -111,22 +79,6 @@ void multipleLevel(const std::string& configPath)
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	const real dx = L_z/real(nodes_per_H);
-
-	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
-							   L_x,  L_y,  L_z, dx);
-
-    gridBuilder->setNumberOfLayers(0,0);
-    gridBuilder->addGrid( new Cuboid( 200., 200., 200., 500. , 500., 500.  ), 1 );
-
-    gridBuilder->setPeriodicBoundaryCondition(true, true, false);
-
-	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
@@ -135,7 +87,49 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
     SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //          U s e r    s e t t i n g s
+    //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    LbmOrGks lbmOrGks = LBM;
+
+    const real H = 1000.0; // boundary layer height in m
+
+    const real L_x = 6*H;
+    const real L_y = 4*H;
+    const real L_z = 1*H;
+
+    const real z0  = 0.1; // roughness length in m
+    const real u_star = 0.4; //friction velocity in m/s
+    const real kappa = 0.4; // von Karman constant 
+
+    const real viscosity = 1.56e-5;
+
+    const real velocity  = u_star/kappa*log(L_z/z0); //max mean velocity at the top in m/s
+
+    const real mach = config.contains("Ma")? config.getValue<real>("Ma"): 0.1;
+
+    const uint nodes_per_H = config.contains("nz")? config.getValue<uint>("nz"): 64;
+
+    // all in s
+    const float tStartOut   = config.getValue<real>("tStartOut");
+    const float tOut        = config.getValue<real>("tOut");
+    const float tEnd        = config.getValue<real>("tEnd"); // total time of simulation
+
+    const float tStartAveraging     =  config.getValue<real>("tStartAveraging");
+    const float tStartTmpAveraging  =  config.getValue<real>("tStartTmpAveraging");
+    const float tAveraging          =  config.getValue<real>("tAveraging");
+    const float tStartOutProbe      =  config.getValue<real>("tStartOutProbe");
+    const float tOutProbe           =  config.getValue<real>("tOutProbe"); 
+
+
+    const real dx = L_z/real(nodes_per_H);
 
     const real dt = dx * mach / (sqrt(3) * velocity);
 
@@ -152,22 +146,22 @@ void multipleLevel(const std::string& configPath)
     VF_LOG_INFO("u* /(dx/dt) = {}", u_star*dt/dx);
     VF_LOG_INFO("dpdx /(dx/dt^2) = {}", pressureGradientLB);
     
-    double u_DP = 9.9*dt/dx;
-    double dpdx_DP = u_star * u_star / H / (dx/(dt*dt));
-    printf( "%1.20f \t %1.20f \t %1.20f \n" ,u_DP ,dpdx_DP, (double)(u_DP+dpdx_DP));
-    real u_SP = 10.0*dt/dx;
+    // double u_DP = 9.9*dt/dx;
+    // double dpdx_DP = u_star * u_star / H / (dx/(dt*dt));
+    // printf( "%1.20f \t %1.20f \t %1.20f \n" ,u_DP ,dpdx_DP, (double)(u_DP+dpdx_DP));
+    real u_SP = 9.9*dt/dx;
     real dpdx_SP = u_star * u_star / H / (dx/(dt*dt));
-    printf( "%1.20f \t %1.20f \t %1.20f \n" ,u_SP ,dpdx_SP,(real)(u_SP+dpdx_SP));
-    real A = (u_SP+dpdx_DP);
+    printf( " u = %1.20f \t dpdx = %1.20f \t u+dpdx = %1.20f \n" ,u_SP ,dpdx_SP,(real)(u_SP+dpdx_SP));
+    real A = (u_SP+dpdx_SP);
     A -= u_SP;
-    printf("%1.20f \n", (double)(A/dpdx_DP));
-    double B = u_SP+dpdx_DP;
-    B-= u_SP;
-    printf("%1.20f \n", (double)(A/B));
-    
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    double res_A = (double)A-(double)dpdx_SP;
+    printf("Res A: %1.20f \n", res_A);
+    real res_B = A-dpdx_SP;  
+    // double B = (double)u_SP+dpdx_SP;
+    // B-= u_SP;
+    printf("Res B: %1.20f \n", res_B);
 
-    // para->setDevices(std::vector<uint>{(uint)0});
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     para->setOutputPrefix( simulationName );
 
@@ -175,20 +169,43 @@ void multipleLevel(const std::string& configPath)
 
     para->setPrintFiles(true);
 
-    // para->setMaxLevel(1);
-
     para->setForcing(pressureGradientLB, 0, 0);
     para->setVelocity(velocityLB);
     para->setViscosity(viscosityLB);
     para->setVelocityRatio( dx / dt );
     para->setViscosityRatio( dx*dx/dt );
-    // para->setMainKernel("CumulantK17CompChim");
-    para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
-    // para->setUseTurbulentViscosity(true);
-    // para->setUseAMD(true);
-    // para->setSGSConstant(0.083); 
-    // para->setQuadricLimiters( 1.0, 1.0, 1.0);
 
+    if(para->getUseAMD())
+        para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
+    else 
+        para->setMainKernel("CumulantK17CompChim");
+    
+    para->setIsBodyForce( config.getValue<bool>("bodyForce") );
+
+    para->setTStartOut(uint(tStartOut/dt) );
+    para->setTOut( uint(tOut/dt) );
+    para->setTEnd( uint(tEnd/dt) );
+
+    // para->setTOut( 100 );
+    // para->setTEnd( 100000 );
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
+                                L_x,  L_y,  L_z, dx);
+    // gridBuilder->setNumberOfLayers(0,0);
+    // gridBuilder->addGrid( new Cuboid( 300., 300., 300., 1000. , 1000., 600.), 1 );
+
+    gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+
+	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
+
+    uint samplingOffset = 2;
+    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+    gridBuilder->setStressBoundaryCondition(SideType::MZ, 0.0, 0.0, 1.0, samplingOffset, z0/dx);
+    
+    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
+    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
@@ -196,32 +213,13 @@ void multipleLevel(const std::string& configPath)
         vy  = (real)0.0;
         vz  = 8.0*u_star/0.4*(sin(8.0*coordY*3.14/H)*sin(8.0*coordZ*3.14/H)+sin(3.14*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
     });
-
-    para->setTOut( uint(tOut/dt) );
-    para->setTEnd( uint(tEnd/dt) );
-
-    // para->setTOut( 1 );
-    // para->setTEnd( 4 );
-
-    // para->setIsBodyForce( true );
-
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    uint samplingOffset = 2;
-    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
-    // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-    gridBuilder->setStressBoundaryCondition(SideType::MZ, 0.0, 0.0, 1.0, samplingOffset, z0/dx);
-    
-    // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
-    gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
-    SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
-    // planarAverageProbe->addPostProcessingVariable(PostProcessingVariable::SpatialMeans);
+    SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
     planarAverageProbe->addAllAvailablePostProcessingVariables();
     planarAverageProbe->setFileNameToNOut();
     para->addProbe( planarAverageProbe );

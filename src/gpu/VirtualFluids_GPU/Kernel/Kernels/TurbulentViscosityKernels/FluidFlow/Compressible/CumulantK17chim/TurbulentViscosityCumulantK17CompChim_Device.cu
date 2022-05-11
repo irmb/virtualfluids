@@ -231,15 +231,39 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
             fy += bodyForceY[k];
             fz += bodyForceZ[k];
 
-            //Reset body force
-            bodyForceX[k] = 0.0f;
-            bodyForceY[k] = 0.0f;
-            bodyForceZ[k] = 0.0f;
+            real vx = vvx;
+            real vy = vvy;
+            real vz = vvz;
+            real acc_x = fx * c1o2 / factor;
+            real acc_y = fy * c1o2 / factor;
+            real acc_z = fz * c1o2 / factor;
+
+            vvx += acc_x;
+            vvy += acc_y;
+            vvz += acc_z;
+            
+        //    // Reset body force
+        // bodyForceX[k] = 0.0f;
+        // bodyForceY[k] = 0.0f;
+        // bodyForceZ[k] = 0.0f;
+
+            bodyForceX[k] = (acc_x-(double)(vvx-vx))*factor*c2o1;
+            bodyForceY[k] = (acc_y-(double)(vvy-vy))*factor*c2o1;
+            bodyForceZ[k] = (acc_z-(double)(vvz-vz))*factor*c2o1;
+            // if(k==100000)
+            // {
+            //     printf("Res A: %1.20f \n", acc_x-(double)(vvx-vx));
+            //     printf("Res B: %1.20f \n", acc_x-(vvx-vx));
+            //     printf("Res/dpdx: %1.20f \n\n", (acc_x-(vvx-vx))/acc_x);
+            // }
+        }
+        else{
+            vvx += fx * c1o2 / factor;
+            vvy += fy * c1o2 / factor;
+            vvz += fz * c1o2 / factor;
         }
         
-        vvx += fx * c1o2 / factor;
-        vvy += fy * c1o2 / factor;
-        vvz += fz * c1o2 / factor;
+
         ////////////////////////////////////////////////////////////////////////////////////
         // calculate the square of velocities for this lattice node
         real vx2 = vvx * vvx;
