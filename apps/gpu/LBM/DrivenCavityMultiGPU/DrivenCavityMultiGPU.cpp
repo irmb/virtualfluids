@@ -29,7 +29,7 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridFactory.h"
 
-#include "geometries/Sphere/Sphere.h"
+#include "geometries/Cuboid/Cuboid.h"
 #include "geometries/TriangularMesh/TriangularMesh.h"
 
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
@@ -70,14 +70,17 @@
 //  Tesla 03
 // std::string outPath("E:/temp/DrivenCavityMultiGPUResults/");
 // std::string gridPath = "D:/STLs/DrivenCavity";
-// std::string stlPath("C:/Users/Master/Documents/MasterAnna/STL/");
 // std::string simulationName("DrivenCavityMultiGPU");
 
 // Phoenix
-std::string outPath("/work/y0078217/Results/DrivenCavityMultiGPUResults/");
-std::string gridPath = "/work/y0078217/Grids/GridDrivenCavityMultiGPU/";
-std::string stlPath("/home/y0078217/STL/DrivenCavityMultiGPU/DrivenCavity");
-std::string simulationName("DrivenCavityMultiGPU");
+// std::string outPath("/work/y0078217/Results/DrivenCavityMultiGPUResults/");
+// std::string gridPath = "/work/y0078217/Grids/GridDrivenCavityMultiGPU/";
+// std::string simulationName("DrivenCavityMultiGPU");
+
+//  Aragorn
+std::string outPath("/workspaces/VirtualFluids_dev/output/DrivenCavity_Results/");
+std::string gridPath = "/workspaces/VirtualFluids_dev/output/DrivenCavity_Results/grid/";
+std::string simulationName("DrivenCavity");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,9 +192,9 @@ void multipleLevel(const std::string& configPath)
         const real zGridMin  = -0.5 * L;     
         const real zGridMax  = 0.5 * L;
 
-        TriangularMesh *level1_STL = nullptr;
+        Cuboid *level1 = nullptr;
         if (useLevels)
-            level1_STL = TriangularMesh::make(stlPath + "_Level1.stl");
+            level1 = new Cuboid(-0.25 * L,-0.25 * L, -0.25 * L, 0.25 * L, 0.25 * L, 0.25 * L);  
 
 
         if (para->getNumprocs() > 1) {
@@ -217,7 +220,7 @@ void multipleLevel(const std::string& configPath)
 
 
                 if (useLevels) {
-                    gridBuilder->addGrid(level1_STL, 1);
+                    gridBuilder->addGrid(level1, 1);
                 }
 
                 if (generatePart == 0){
@@ -274,7 +277,7 @@ void multipleLevel(const std::string& configPath)
                 }
 
                 if (useLevels) {
-                    gridBuilder->addGrid(level1_STL, 1);
+                    gridBuilder->addGrid(level1, 1);
                 }
 
                 if (generatePart == 0)
@@ -374,7 +377,7 @@ void multipleLevel(const std::string& configPath)
                 }
 
                 if (useLevels) {
-                    gridBuilder->addGrid(level1_STL, 1);
+                    gridBuilder->addGrid(level1, 1);
                 }
                 
                 if (generatePart == 0)
@@ -528,11 +531,10 @@ void multipleLevel(const std::string& configPath)
 
             if (useLevels) {
                 gridBuilder->setNumberOfLayers(10, 8);
-                gridBuilder->addGrid(level1_STL, 1);
+                gridBuilder->addGrid(level1, 1);
             }
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
             //////////////////////////////////////////////////////////////////////////
             gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
@@ -546,7 +548,7 @@ void multipleLevel(const std::string& configPath)
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(para->getUseStreams());
 
-            // gridBuilder->writeGridsToVtk(outPath +  "/grid/");
+            gridBuilder->writeGridsToVtk(outPath +  "/grid/");
             // gridBuilder->writeArrows(outPath + "/arrow");
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
