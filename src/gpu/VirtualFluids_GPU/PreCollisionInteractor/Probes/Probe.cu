@@ -277,6 +277,22 @@ void Probe::addPostProcessingVariable(PostProcessingVariable variable)
     }
 }
 
+std::string Probe::makeParallelFileName(int id, int t)
+{
+    return this->probeName + "_bin_ID_" + StringUtil::toString<int>(id) 
+                                           + "_t_" + StringUtil::toString<int>(t) 
+                                           + ".vtk";
+}
+
+std::string Probe::makeGridFileName(int level, int id, int t, uint part)
+{
+    return this->probeName + "_bin_lev_" + StringUtil::toString<int>(level)
+                                         + "_ID_" + StringUtil::toString<int>(id)
+                                         + "_Part_" + StringUtil::toString<int>(part) 
+                                         + "_t_" + StringUtil::toString<int>(t) 
+                                         + ".vtk";
+}
+
 void Probe::write(Parameter* para, int level, int t)
 {
     const uint numberOfParts = this->getProbeStruct(level)->nPoints / para->getlimitOfNodesForVTK() + 1;
@@ -284,126 +300,82 @@ void Probe::write(Parameter* para, int level, int t)
     std::vector<std::string> fnames;
     for (uint i = 1; i <= numberOfParts; i++)
 	{
-        std::string fname = this->probeName + "_bin_lev_" + StringUtil::toString<int>(level)
-                                         + "_ID_" + StringUtil::toString<int>(para->getMyID())
-                                         + "_Part_" + StringUtil::toString<int>(i) 
-                                         + "_t_" + StringUtil::toString<int>(t) 
-                                         + ".vtk";
-		fnames.push_back(fname);
-        this->fileNamesForCollectionFile.push_back(fname);
+        this->writeGridFile(para, level, t, i);
     }
-    this->writeGridFiles(para, level, fnames, t);
-
-    if(level == 0) this->writeCollectionFile(para, t);
+    if(level == 0) this->writeParallelFile(para, t);
 }
 
-void Probe::writeCollectionFile(Parameter* para, int t)
+void Probe::writeParallelFile(Parameter* para, int t)
 {
-    std::string filename = this->probeName + "_bin_ID_" + StringUtil::toString<int>(para->getMyID()) 
-                                           + "_t_" + StringUtil::toString<int>(t) 
-                                           + ".vtk";
+    std::string filename = this->outputPath + "/" + this->makeParallelFileName(para->getMyID(), t);
 
-    std::ofstream file;
+    std::vector<std::string> cellNames;
 
-    file.open(this->outputPath + "/" + filename + ".pvtu" );
-
-    //////////////////////////////////////////////////////////////////////////
-    
-    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
-    file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
-
-    file << "    <PPointData>" << std::endl;
-
-    for(std::string varName: this->getVarNames())
-    {
-        file << "       <DataArray type=\"Float64\" Name=\""<< varName << "\" /> " << std::endl;
-    }
-    file << "    </PPointData>" << std::endl;
-
-    file << "    <PPoints>" << std::endl;
-    file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
-    file << "    </PPoints>" << std::endl;
-
-    for( auto& fname : this->fileNamesForCollectionFile )
-    {
-        const auto filenameWithoutPath=fname.substr( fname.find_last_of('/') + 1 );
-        file << "    <Piece Source=\"" << filenameWithoutPath << ".bin.vtu\"/>" << std::endl;
-    }
-
-    file << "  </PUnstructuredGrid>" << std::endl;
-    file << "</VTKFile>" << std::endl;
-
-    //////////////////////////////////////////////////////////////////////////
-
-    file.close();
+    getWriter()->writeParallelFile(filename, fileNamesForCollectionFile, varNames, cellNames);
 
     this->fileNamesForCollectionFile.clear();
 }
 
-void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>& fnames, int t)
+void Probe::writeGridFile(Parameter* para, int level, int t, uint part)
 {
+    std::string fname = this->outputPath + "/" + this->makeGridFileName(level, para->getMyID(), t, part);
+
     std::vector< UbTupleFloat3 > nodes;
     std::vector< std::string > nodedatanames = this->getVarNames();
 
-    uint startpos = 0;
-    uint endpos = 0;
-    uint sizeOfNodes = 0;
     std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 
-    for (uint part = 0; part < fnames.size(); part++)
-    {        
-        startpos = part * para->getlimitOfNodesForVTK();
-        sizeOfNodes = min(para->getlimitOfNodesForVTK(), probeStruct->nPoints - startpos);
-        endpos = startpos + sizeOfNodes;
+    uint startpos = part * para->getlimitOfNodesForVTK();
+    uint sizeOfNodes = min(para->getlimitOfNodesForVTK(), probeStruct->nPoints - startpos);
+    uint endpos = startpos + sizeOfNodes;
 
-        //////////////////////////////////////////////////////////////////////////
-        nodes.resize(sizeOfNodes);
+    //////////////////////////////////////////////////////////////////////////
+    nodes.resize(sizeOfNodes);
 
-        for (uint pos = startpos; pos < endpos; pos++)
+    for (uint pos = startpos; pos < endpos; pos++)
+    {
+        nodes[pos-startpos] = makeUbTuple(  float(probeStruct->pointCoordsX[pos]),
+                                            float(probeStruct->pointCoordsY[pos]),
+                                            float(probeStruct->pointCoordsZ[pos]));
+    }
+
+    for( auto it=nodedata.begin(); it!=nodedata.end(); it++) it->resize(sizeOfNodes);
+
+    for( int var=0; var < int(PostProcessingVariable::LAST); var++){
+    if(this->quantities[var])
+    {
+        PostProcessingVariable quantity = static_cast<PostProcessingVariable>(var);
+        real coeff;
+        uint n_arrs = uint(getPostProcessingVariableNames(quantity).size());
+
+        switch(quantity)
         {
-            nodes[pos-startpos] = makeUbTuple(  float(probeStruct->pointCoordsX[pos]),
-                                                float(probeStruct->pointCoordsY[pos]),
-                                                float(probeStruct->pointCoordsZ[pos]));
+        case PostProcessingVariable::Instantaneous:
+            coeff = para->getVelocityRatio();
+        break;
+        case PostProcessingVariable::Means:
+            coeff = para->getVelocityRatio();
+        break;
+        case PostProcessingVariable::Variances:
+            coeff = pow(para->getVelocityRatio(),2);
+        break;
+        default: break;
         }
 
-        for( auto it=nodedata.begin(); it!=nodedata.end(); it++) it->resize(sizeOfNodes);
+        uint arrOff = probeStruct->arrayOffsetsH[var];
+        uint arrLen = probeStruct->nPoints;
 
-        for( int var=0; var < int(PostProcessingVariable::LAST); var++){
-        if(this->quantities[var])
+        for(uint arr=0; arr<n_arrs; arr++)
         {
-            PostProcessingVariable quantity = static_cast<PostProcessingVariable>(var);
-            real coeff;
-            uint n_arrs = uint(getPostProcessingVariableNames(quantity).size());
-
-            switch(quantity)
+            for (uint pos = startpos; pos < endpos; pos++)
             {
-            case PostProcessingVariable::Instantaneous:
-                coeff = para->getVelocityRatio();
-            break;
-            case PostProcessingVariable::Means:
-                coeff = para->getVelocityRatio();
-            break;
-            case PostProcessingVariable::Variances:
-                coeff = pow(para->getVelocityRatio(),2);
-            break;
-            default: break;
+                nodedata[arrOff+arr][pos-startpos] = double(probeStruct->quantitiesArrayH[(arrOff+arr)*arrLen+pos]*coeff);
             }
-
-            uint arrOff = probeStruct->arrayOffsetsH[var];
-            uint arrLen = probeStruct->nPoints;
-
-            for(uint arr=0; arr<n_arrs; arr++)
-            {
-                for (uint pos = startpos; pos < endpos; pos++)
-                {
-                    nodedata[arrOff+arr][pos-startpos] = double(probeStruct->quantitiesArrayH[(arrOff+arr)*arrLen+pos]*coeff);
-                }
-            }
-        }}
-        WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(this->outputPath + "/" + fnames[part], nodes, nodedatanames, nodedata);
-    }
+        }
+    }}
+    this->fileNamesForCollectionFile.push_back(getWriter()->writeNodesWithNodeData(fname, nodes, nodedatanames, nodedata));
 }
 
 std::vector<std::string> Probe::getVarNames()
