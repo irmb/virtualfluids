@@ -870,6 +870,10 @@ void Parameter::setSGSConstant(real SGSConstant)
 {
 	ic.SGSConstant = SGSConstant;
 }
+void Parameter::setHasWallModelMonitor(bool hasWallModelMonitor)
+{
+	ic.hasWallModelMonitor = hasWallModelMonitor;
+}
 void Parameter::setUseInitNeq(bool useInitNeq)
 {
 	ic.isInitNeq = useInitNeq;
@@ -2264,6 +2268,10 @@ bool Parameter::getUseAMD()
 real Parameter::getSGSConstant()
 {
 	return ic.SGSConstant;
+}
+bool Parameter::getHasWallModelMonitor()
+{
+	return ic.hasWallModelMonitor;
 }
 bool Parameter::getUseInitNeq()
 {

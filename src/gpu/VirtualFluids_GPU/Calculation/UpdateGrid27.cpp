@@ -305,6 +305,8 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
         //                 para->getParD(level)->QStress.Vx,      para->getParD(level)->QStress.Vy,        para->getParD(level)->QStress.Vz,
         //                 para->getParD(level)->QStress.Vx1,     para->getParD(level)->QStress.Vy1,       para->getParD(level)->QStress.Vz1,
         //                 para->getParD(level)->wallModel.samplingOffset, para->getParD(level)->wallModel.z0,
+                        // para->getHasWallModelMonitor(),        para->getParD(level)->wallModel.u_star,
+                        // para->getParD(level)->wallModel.Fx,    para->getParD(level)->wallModel.Fy,      para->getParD(level)->wallModel.Fz,
         //                 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,      para->getParD(level)->neighborZ_SP, 
         //                 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         // getLastCudaError("QStressDevComp27 execution failed");
@@ -317,6 +319,8 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
                         para->getParD(level)->QStress.Vx,      para->getParD(level)->QStress.Vy,        para->getParD(level)->QStress.Vz,
                         para->getParD(level)->QStress.Vx1,     para->getParD(level)->QStress.Vy1,       para->getParD(level)->QStress.Vz1,
                         para->getParD(level)->wallModel.samplingOffset, para->getParD(level)->wallModel.z0,
+                        para->getHasWallModelMonitor(),        para->getParD(level)->wallModel.u_star,
+                        para->getParD(level)->wallModel.Fx,    para->getParD(level)->wallModel.Fy,      para->getParD(level)->wallModel.Fz,
                         para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,      para->getParD(level)->neighborZ_SP, 
                         para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         getLastCudaError("BBStressDevice27 execution failed");

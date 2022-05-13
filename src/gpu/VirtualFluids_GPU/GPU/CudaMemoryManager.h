@@ -169,9 +169,9 @@ public:
     void cudaCopyStressBC(int lev);
     void cudaFreeStressBC(int lev);
 
-    void cudaAllocWallModel(int lev);
-    void cudaCopyWallModel(int lev);
-    void cudaFreeWallModel(int lev);
+    void cudaAllocWallModel(int lev, bool hasWallModelMonitor);
+    void cudaCopyWallModel(int lev,  bool hasWallModelMonitor);
+    void cudaFreeWallModel(int lev,  bool hasWallModelMonitor);
     
     void cudaAllocGeomValuesBC(int lev);
     void cudaCopyGeomValuesBC(int lev);

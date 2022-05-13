@@ -202,8 +202,12 @@ void multipleLevel(const std::string& configPath)
 
     uint samplingOffset = 2;
     // gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
-    gridBuilder->setStressBoundaryCondition(SideType::MZ, 0.0, 0.0, 1.0, samplingOffset, z0/dx);
-    
+    gridBuilder->setStressBoundaryCondition(SideType::MZ, 
+                                            0.0, 0.0, 1.0,              // wall normals
+                                            samplingOffset, z0/dx);     // wall model settinng
+    para->setHasWallModelMonitor(true);
+
+
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
 
@@ -220,7 +224,7 @@ void multipleLevel(const std::string& configPath)
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
     SPtr<PlanarAverageProbe> planarAverageProbe = SPtr<PlanarAverageProbe>( new PlanarAverageProbe("planeProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt, 'z') );
-    planarAverageProbe->addAllAvailablePostProcessingVariables();
+    planarAverageProbe->addAllAvailableStatistics();
     planarAverageProbe->setFileNameToNOut();
     para->addProbe( planarAverageProbe );
 

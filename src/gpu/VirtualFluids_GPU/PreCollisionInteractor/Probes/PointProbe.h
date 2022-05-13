@@ -1,3 +1,41 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file PointProbe.h
+//! \author Henry Korb, Henrik Asmuth
+//! \date 13/05/2022
+//! \brief Probe computing statistics for a set of points in space
+//!
+//! The set of points can be defined by providing a list or on an x-normal plane (the latter being somewhat redundant with PlaneProbe)
+//! All statistics are temporal.
+//!
+//=======================================================================================
+
 #ifndef PointProbe_H
 #define PointProbe_H
 
@@ -27,7 +65,9 @@ public:
     void addProbePointsFromXNormalPlane(real pos_x, real pos0_y, real pos0_z, real pos1_y, real pos1_z, uint n_y, uint n_z);
     
 private:
-    bool isAvailablePostProcessingVariable(PostProcessingVariable _variable) override;
+    bool isAvailableStatistic(Statistic _variable) override;
+
+    std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable) override;
 
     void findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
                     std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      

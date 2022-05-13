@@ -147,13 +147,16 @@ void GridGenerator::allocArrays_BoundaryValues()
         if (numberOfStressValues > 1)
         {
             cudaMemoryManager->cudaAllocStressBC(level);
-            cudaMemoryManager->cudaAllocWallModel(level);
+            cudaMemoryManager->cudaAllocWallModel(level, para->getHasWallModelMonitor());
             builder->getStressValues(   para->getParH(level)->QStress.normalX,  para->getParH(level)->QStress.normalY,  para->getParH(level)->QStress.normalZ, 
                                         para->getParH(level)->QStress.Vx,       para->getParH(level)->QStress.Vy,       para->getParH(level)->QStress.Vz,
                                         para->getParH(level)->QStress.Vx1,      para->getParH(level)->QStress.Vy1,      para->getParH(level)->QStress.Vz1,
-                                        para->getParH(level)->QStress.k,        para->getParH(level)->QStress.kN,       para->getParH(level)->wallModel.samplingOffset, para->getParH(level)->wallModel.z0, level);
+                                        para->getParH(level)->QStress.k,        para->getParH(level)->QStress.kN,       
+                                        para->getParH(level)->wallModel.samplingOffset, para->getParH(level)->wallModel.z0, 
+                                        level);
+
             cudaMemoryManager->cudaCopyStressBC(level);
-            cudaMemoryManager->cudaCopyWallModel(level);
+            cudaMemoryManager->cudaCopyWallModel(level, para->getHasWallModelMonitor());
         }
     }
     

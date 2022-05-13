@@ -126,6 +126,7 @@ struct InitCondition
    bool isMeasurePoints {false};
    bool isInitNeq {false};
    bool isGeoNormal, isInflowNormal, isOutflowNormal;
+   bool hasWallModelMonitor {false};
    bool simulatePorousMedia {false};
    bool streetVelocityFile {false};
 };
@@ -217,10 +218,15 @@ typedef struct TempPressforBC{
 }TempPressforBoundaryConditions;
 
 // Settings for wall model used in StressBC
-typedef struct WMSettings{
+typedef struct WMparas{
    real* z0;
    int* samplingOffset;
-}WallModelSettings;
+   bool hasMonitor;
+   real* u_star;
+   real* Fx;
+   real* Fy;
+   real* Fz;
+}WallModelParameters;
 
 //measurePoints
 typedef struct MeasP{

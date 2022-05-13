@@ -26,50 +26,44 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file PlaneProbe.h
-//! \author Henry Korb, Henrik Asmuth
+//! \file WallModelProbe.h
+//! \author Henrik Asmuth
 //! \date 13/05/2022
-//! \brief Probe computing point-wise statistics for a set of points across a plane
+//! \brief Probe computing statistics of all relevant wall model quantities used in the StressBC kernels
 //!
-//! The set of points can be defined by providing a list or on an x-normal plane.
-//! All statistics are temporal.
+//! Computes spatial statistics for all grid points of the StressBC 
+//! The spatial statistics can additionally be averaged in time.
 //!
 //=======================================================================================
 
-#ifndef PlaneProbe_H
-#define PlaneProbe_H
+#ifndef WallModelProbe_H
+#define WallModelProbe_H
 
 #include "Probe.h"
 
-class PlaneProbe : public Probe
+///////////////////////////////////////////////////////////////////////////////////
+
+class WallModelProbe : public Probe
 {
 public: 
-    PlaneProbe(
+    WallModelProbe(
         const std::string _probeName,
         const std::string _outputPath,
         uint _tStartAvg,
+        uint _tStartTmpAvg,
         uint _tAvg,
         uint _tStartOut,
-        uint _tOut
-    ): Probe(_probeName, 
+        uint _tOut,
+        char _planeNormal
+    ):  Probe(_probeName, 
              _outputPath,
-             _tStartAvg, 
-             0,
+             _tStartAvg,
+             _tStartTmpAvg,
              _tAvg,
              _tStartOut, 
              _tOut,
-             true)
-    {}
+             false){}
 
-    void setProbePlane(real _posX, real _posY, real _posZ, real _deltaX, real _deltaY, real _deltaZ)
-    {
-        this->posX = _posX; 
-        this->posY = _posY; 
-        this->posZ = _posZ;         
-        this->deltaX = _deltaX; 
-        this->deltaY = _deltaY; 
-        this->deltaZ = _deltaZ; 
-    }
 
 private:
     bool isAvailableStatistic(Statistic _variable) override;
@@ -83,8 +77,7 @@ private:
     void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) override;
 
 private:
-    real posX, posY, posZ;
-    real deltaX, deltaY, deltaZ;
+    uint tProbe = 0;
 };
 
 #endif

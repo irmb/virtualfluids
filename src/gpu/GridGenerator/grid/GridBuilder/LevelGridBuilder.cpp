@@ -89,7 +89,9 @@ void LevelGridBuilder::setSlipBoundaryCondition(SideType sideType, real nomalX, 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Slip BC on level " << 0 << " with " << (int)slipBoundaryCondition->indices.size() << "\n";
 }
 
-void LevelGridBuilder::setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ, uint samplingOffset, real z0)
+void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType, 
+                                                    real nomalX, real normalY, real normalZ, 
+                                                    uint samplingOffset, real z0)
 {
     SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0);
 

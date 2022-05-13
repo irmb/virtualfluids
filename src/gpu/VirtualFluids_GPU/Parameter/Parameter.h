@@ -204,7 +204,7 @@ struct LBMSimulationParameter
     unsigned int kInletQread, kOutletQread;
     unsigned int kPressQ = 0, kPressQread;
 
-    WallModelSettings wallModel;
+    WallModelParameters wallModel;
     
     // testRoundoffError
     Distributions27 kDistTestRE;
@@ -456,6 +456,7 @@ public:
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setUseAMD( bool useAMD);
     void setSGSConstant( real SGSConstant);
+    void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
     void setSimulatePorousMedia(bool simulatePorousMedia);
     void setIsF3(bool isF3);
@@ -717,6 +718,7 @@ public:
     bool getUseTurbulentViscosity();
     bool getUseAMD();
     real getSGSConstant();
+    bool getHasWallModelMonitor();
     bool getUseInitNeq();
     bool getSimulatePorousMedia();
     bool getIsF3();
