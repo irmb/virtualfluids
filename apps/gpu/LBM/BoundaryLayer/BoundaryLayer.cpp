@@ -48,6 +48,7 @@
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
@@ -137,6 +138,7 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosityLB = viscosity * dt / (dx * dx); // LB units
 
+    const real pressureGradient = u_star * u_star / H ;
     const real pressureGradientLB = u_star * u_star / H / (dx/(dt*dt)); // LB units
 
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
@@ -144,6 +146,7 @@ void multipleLevel(const std::string& configPath)
     VF_LOG_INFO("dx   = {}", dx);
     VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
     VF_LOG_INFO("u* /(dx/dt) = {}", u_star*dt/dx);
+    VF_LOG_INFO("dpdx  = {}", pressureGradient);
     VF_LOG_INFO("dpdx /(dx/dt^2) = {}", pressureGradientLB);
     
     // double u_DP = 9.9*dt/dx;
@@ -174,6 +177,7 @@ void multipleLevel(const std::string& configPath)
     para->setViscosity(viscosityLB);
     para->setVelocityRatio( dx / dt );
     para->setViscosityRatio( dx*dx/dt );
+    para->setDensityRatio( 1.0 );
 
     if(para->getUseAMD())
         para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
@@ -227,6 +231,15 @@ void multipleLevel(const std::string& configPath)
     planarAverageProbe->addAllAvailableStatistics();
     planarAverageProbe->setFileNameToNOut();
     para->addProbe( planarAverageProbe );
+
+    para->setHasWallModelMonitor(true);
+    SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt) );
+    wallModelProbe->addAllAvailableStatistics();
+    wallModelProbe->setFileNameToNOut();
+    wallModelProbe->setForceOutputToStress(true);
+    if(para->getIsBodyForce())
+        wallModelProbe->setEvaluatePressureGradient(true);
+    para->addProbe( wallModelProbe );
 
     Simulation sim(communicator);
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());

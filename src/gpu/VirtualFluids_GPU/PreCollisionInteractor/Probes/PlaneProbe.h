@@ -58,7 +58,8 @@ public:
              _tAvg,
              _tStartOut, 
              _tOut,
-             true)
+             true,
+             false)
     {}
 
     void setProbePlane(real _posX, real _posY, real _posZ, real _deltaX, real _deltaY, real _deltaZ)

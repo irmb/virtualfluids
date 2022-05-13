@@ -53,8 +53,7 @@ public:
         uint _tStartTmpAvg,
         uint _tAvg,
         uint _tStartOut,
-        uint _tOut,
-        char _planeNormal
+        uint _tOut
     ):  Probe(_probeName, 
              _outputPath,
              _tStartAvg,
@@ -62,8 +61,12 @@ public:
              _tAvg,
              _tStartOut, 
              _tOut,
-             false){}
+             false,
+             true){}
 
+
+    void setForceOutputToStress(bool _outputStress){ this->outputStress = _outputStress; }
+    void setEvaluatePressureGradient(bool _evalPressGrad){ this->evaluatePressureGradient = _evalPressGrad; }
 
 private:
     bool isAvailableStatistic(Statistic _variable) override;
@@ -78,6 +81,8 @@ private:
 
 private:
     uint tProbe = 0;
+    bool outputStress = false; //!> if true, output wall force is converted to a stress 
+    bool evaluatePressureGradient = false; //!> if true, mean global pressure gradient will also be evaluated
 };
 
 #endif

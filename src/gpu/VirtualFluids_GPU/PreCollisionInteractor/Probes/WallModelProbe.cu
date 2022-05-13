@@ -112,9 +112,15 @@ std::vector<PostProcessingVariable> WallModelProbe::getPostProcessingVariables(S
         postProcessingVariables.push_back( PostProcessingVariable("vy1_spatMean",    this->velocityRatio) );
         postProcessingVariables.push_back( PostProcessingVariable("vz1_spatMean",    this->velocityRatio) );
         postProcessingVariables.push_back( PostProcessingVariable("u_star_spatMean", this->velocityRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatMean",     this->forceRatio) ); 
-        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatMean",     this->forceRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatMean",     this->forceRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatMean",     this->outputStress? this->stressRatio: this->forceRatio) ); 
+        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatMean",     this->outputStress? this->stressRatio: this->forceRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatMean",     this->outputStress? this->stressRatio: this->forceRatio) );
+        if(this->evaluatePressureGradient)
+        {
+            postProcessingVariables.push_back( PostProcessingVariable("dpdx_spatMean",     this->accelerationRatio) ); 
+            postProcessingVariables.push_back( PostProcessingVariable("dpdy_spatMean",     this->accelerationRatio) );
+            postProcessingVariables.push_back( PostProcessingVariable("dpdz_spatMean",     this->accelerationRatio) );
+        }
         break;
     case Statistic::SpatioTemporalMeans:
         postProcessingVariables.push_back( PostProcessingVariable("vx_el_spatTmpMean",  this->velocityRatio) );
@@ -124,9 +130,15 @@ std::vector<PostProcessingVariable> WallModelProbe::getPostProcessingVariables(S
         postProcessingVariables.push_back( PostProcessingVariable("vy1_spatTmpMean",    this->velocityRatio) );
         postProcessingVariables.push_back( PostProcessingVariable("vz1_spatTmpMean",    this->velocityRatio) );
         postProcessingVariables.push_back( PostProcessingVariable("u_star_spatTmpMean", this->velocityRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatTmpMean",     this->forceRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatTmpMean",     this->forceRatio) );
-        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatTmpMean",     this->forceRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatTmpMean",     this->outputStress? this->stressRatio: this->forceRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatTmpMean",     this->outputStress? this->stressRatio: this->forceRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatTmpMean",     this->outputStress? this->stressRatio: this->forceRatio) );
+        if(this->evaluatePressureGradient)
+        {
+            postProcessingVariables.push_back( PostProcessingVariable("dpdx_spatTmpMean",     this->accelerationRatio) ); 
+            postProcessingVariables.push_back( PostProcessingVariable("dpdy_spatTmpMean",     this->accelerationRatio) );
+            postProcessingVariables.push_back( PostProcessingVariable("dpdz_spatTmpMean",     this->accelerationRatio) );
+        }
         break;
 
     default:
@@ -151,11 +163,23 @@ void WallModelProbe::findPoints(Parameter* para, GridProvider* gridProvider, std
     
     for(uint t=0; t<nt; t++)
     {
-        pointCoordsX_level.push_back(t*dt); // x coord will serve as time in this probe
+        pointCoordsX_level.push_back(dt*(t*this->tAvg)+this->tStartAvg); // x coord will serve as time in this probe
         pointCoordsY_level.push_back(0);
         pointCoordsZ_level.push_back(0);
     }
 
+    if(this->evaluatePressureGradient)
+    {
+        assert(para->getIsBodyForce());
+        // Find all fluid nodes
+        for(uint j=1; j<para->getParH(level)->size_Mat_SP; j++ )
+        {
+            if( para->getParH(level)->geoSP[j] == GEO_FLUID) 
+            {
+                probeIndices_level.push_back(j);
+            }
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -175,11 +199,24 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
     thrust::device_ptr<real> Fx_thrust      = thrust::device_pointer_cast(para->getParD(level)->wallModel.Fx);
     thrust::device_ptr<real> Fy_thrust      = thrust::device_pointer_cast(para->getParD(level)->wallModel.Fy);
     thrust::device_ptr<real> Fz_thrust      = thrust::device_pointer_cast(para->getParD(level)->wallModel.Fz);
+    thrust::device_ptr<real> dpdx_thrust    = thrust::device_pointer_cast(para->getParD(level)->forceX_SP);
+    thrust::device_ptr<real> dpdy_thrust    = thrust::device_pointer_cast(para->getParD(level)->forceY_SP);
+    thrust::device_ptr<real> dpdz_thrust    = thrust::device_pointer_cast(para->getParD(level)->forceZ_SP);
+
+    thrust::device_ptr<uint> indices_thrust = thrust::device_pointer_cast(probeStruct->pointIndicesD);
+    typedef thrust::device_vector<real>::iterator valIterator;
+    typedef thrust::device_vector<uint>::iterator indIterator;
+    thrust::permutation_iterator<valIterator, indIterator> dpdx_iter_begin(dpdx_thrust, indices_thrust);
+    thrust::permutation_iterator<valIterator, indIterator> dpdx_iter_end  (dpdx_thrust, indices_thrust+probeStruct->nIndices);
+    thrust::permutation_iterator<valIterator, indIterator> dpdy_iter_begin(dpdy_thrust, indices_thrust);
+    thrust::permutation_iterator<valIterator, indIterator> dpdy_iter_end  (dpdy_thrust, indices_thrust+probeStruct->nIndices);
+    thrust::permutation_iterator<valIterator, indIterator> dpdz_iter_begin(dpdz_thrust, indices_thrust);
+    thrust::permutation_iterator<valIterator, indIterator> dpdz_iter_end  (dpdz_thrust, indices_thrust+probeStruct->nIndices);
 
     real N = para->getParD(level)->kStressQ;
     real n = (real)probeStruct->vals;
     int nPoints = probeStruct->nPoints;
-    //TODO: make node timestep
+
     if(probeStruct->quantitiesH[int(Statistic::SpatialMeans)])
     {
         // Compute the instantaneous spatial means of the velocity moments 
@@ -206,6 +243,20 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
         probeStruct->quantitiesArrayH[(arrOff+8)*nPoints+tProbe] = spatMean_Fy;
         probeStruct->quantitiesArrayH[(arrOff+9)*nPoints+tProbe] = spatMean_Fz;
 
+        real spatMean_dpdx;
+        real spatMean_dpdy;
+        real spatMean_dpdz;
+        if(this->evaluatePressureGradient)
+        {
+            real N_fluid = (real)probeStruct->nIndices;
+            spatMean_dpdx      = thrust::reduce(dpdx_iter_begin, dpdx_iter_end)/N_fluid;
+            spatMean_dpdy      = thrust::reduce(dpdy_iter_begin, dpdy_iter_end)/N_fluid;
+            spatMean_dpdz      = thrust::reduce(dpdz_iter_begin, dpdz_iter_end)/N_fluid;
+            probeStruct->quantitiesArrayH[(arrOff+10)*nPoints+tProbe] = spatMean_dpdx;
+            probeStruct->quantitiesArrayH[(arrOff+11)*nPoints+tProbe] = spatMean_dpdy;
+            probeStruct->quantitiesArrayH[(arrOff+12)*nPoints+tProbe] = spatMean_dpdz;
+        }
+
         if(probeStruct->quantitiesH[int(Statistic::SpatioTemporalMeans)] && doTmpAveraging)
         {
             uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatioTemporalMeans)];
@@ -230,9 +281,20 @@ void WallModelProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Paramete
             probeStruct->quantitiesArrayH[(arrOff+7)*nPoints+tProbe] += (spatMean_Fx-spatMean_Fx_old)/n;
             probeStruct->quantitiesArrayH[(arrOff+8)*nPoints+tProbe] += (spatMean_Fy-spatMean_Fy_old)/n;
             probeStruct->quantitiesArrayH[(arrOff+9)*nPoints+tProbe] += (spatMean_Fz-spatMean_Fz_old)/n;
+
+            if(this->evaluatePressureGradient)
+            {
+            real spatMean_dpdx_old     = probeStruct->quantitiesArrayH[(arrOff+10)*nPoints+tProbe];
+            real spatMean_dpdy_old     = probeStruct->quantitiesArrayH[(arrOff+11)*nPoints+tProbe];
+            real spatMean_dpdz_old     = probeStruct->quantitiesArrayH[(arrOff+12)*nPoints+tProbe];
+            probeStruct->quantitiesArrayH[(arrOff+10)*nPoints+tProbe] += (spatMean_dpdx-spatMean_dpdx_old)/n;
+            probeStruct->quantitiesArrayH[(arrOff+11)*nPoints+tProbe] += (spatMean_dpdy-spatMean_dpdy_old)/n;
+            probeStruct->quantitiesArrayH[(arrOff+12)*nPoints+tProbe] += (spatMean_dpdz-spatMean_dpdz_old)/n;
+            }
         }    
     }
 
     this->tProbe += 1;
     getLastCudaError("WallModelProbe::calculateQuantities execution failed");
 }
+

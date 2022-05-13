@@ -179,9 +179,11 @@ bool Probe::getHasDeviceQuantityArray(){ return this->hasDeviceQuantityArray; }
 
 void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
 {
-    this->velocityRatio = para->getVelocityRatio();
-    this->densityRatio  = para->getDensityRatio();
-    this->forceRatio    = para->getForceRatio();
+    this->velocityRatio      = para->getVelocityRatio();
+    this->densityRatio       = para->getDensityRatio();
+    this->forceRatio         = para->getForceRatio();
+    this->stressRatio        = para->getDensityRatio()*pow(para->getVelocityRatio(), 2.0);
+    this->accelerationRatio = para->getVelocityRatio()/para->getTimeRatio();
 
     probeParams.resize(para->getMaxLevel()+1);
 
@@ -334,15 +336,15 @@ void Probe::write(Parameter* para, int level, int t)
 	{
         std::string fname = this->probeName + "_bin_lev_" + StringUtil::toString<int>(level)
                                          + "_ID_" + StringUtil::toString<int>(para->getMyID())
-                                         + "_Part_" + StringUtil::toString<int>(i) 
-                                         + "_t_" + StringUtil::toString<int>(t_write) 
-                                         + ".vtk";
+                                         + "_Part_" + StringUtil::toString<int>(i);
+        if(!this->outputTimeSeries) fname += "_t_" + StringUtil::toString<int>(t_write);
+        fname += ".vtk";
 		fnames.push_back(fname);
         this->fileNamesForCollectionFile.push_back(fname);
     }
     this->writeGridFiles(para, level, fnames, t);
 
-    if(level == 0) this->writeCollectionFile(para, t);
+    if(level == 0 && !this->outputTimeSeries) this->writeCollectionFile(para, t);
 }
 
 void Probe::writeCollectionFile(Parameter* para, int t)
@@ -404,7 +406,8 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
     for (uint part = 0; part < fnames.size(); part++)
     {        
         startpos = part * para->getlimitOfNodesForVTK();
-        sizeOfNodes = min(para->getlimitOfNodesForVTK(), probeStruct->nPoints - startpos);
+        uint nDataPoints = this->outputTimeSeries? probeStruct->vals: probeStruct->nPoints;
+        sizeOfNodes = min(para->getlimitOfNodesForVTK(), nDataPoints - startpos);
         endpos = startpos + sizeOfNodes;
 
         //////////////////////////////////////////////////////////////////////////
@@ -419,7 +422,7 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
 
         for( auto it=nodedata.begin(); it!=nodedata.end(); it++) it->resize(sizeOfNodes);
 
-        for( int var=0; var < int(Statistic::LAST); var++){            //TODO
+        for( int var=0; var < int(Statistic::LAST); var++){           
             if(this->quantities[var])
             {
                 Statistic statistic = static_cast<Statistic>(var);
@@ -446,17 +449,6 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
     }
 }
 
-// std::vector<std::string> Probe::getVarNames() //TODO
-// {
-//     std::vector<std::string> varNames;
-//     for( int var=0; var < int(PostProcessingVariable::LAST); var++){
-//     if(this->quantities[var])
-//     {
-//         std::vector<std::string> names = getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var));
-//         varNames.insert(varNames.end(), names.begin(), names.end());
-//     }}
-//     return varNames;
-// }
 std::vector<std::string> Probe::getVarNames()
 {
     std::vector<std::string> varNames;

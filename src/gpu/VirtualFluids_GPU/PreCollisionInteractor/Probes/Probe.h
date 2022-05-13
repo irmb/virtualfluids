@@ -33,10 +33,11 @@
 //!
 //! Any probe should be initiated in the app and added via para->addProbe( someProbe )
 //! Note, that all probes generally require that macroscopic variables have been updated in the 
-//! time step they are called. Most collision kernels (atm, all except TurbulentViscosityCumulantK17CompChim )
+//! time step they are called in. Most collision kernels (atm, all except TurbulentViscosityCumulantK17CompChim )
 //! don't do this and would require an explicit call of calcMacroscopicQuantities. It does seem quite 
 //! inexpensive though to simply save vx, vy, etc., directly in the collider.
 //!
+//! \todo might have to adapt conversionFactors when using grid refinement
 //=======================================================================================
 
 #ifndef Probe_H
@@ -51,7 +52,7 @@
 //! \note How to add new Statistics 
 //! Generally, the Statistic enum refers to the type of statistic to be calculated. 
 //! It then depends on the derived probe class, which of these statistics are available. 
-//! Some type of statistics are simply only suitable for a certain class, others might 
+//! Some type of statistics are only suitable for a certain probe class, others might 
 //! simply not have been implemented, yet.
 //! For the same reasons it is also probe-specific, for which quantities (e.g. velocities, rho, etc.) these statistics are computed. 
 //! The specific quantity (e.g., mean of vx, or variance of rho) is defined as PostProcessingVariable in getPostProcessingVariables of each respective probe.
@@ -61,9 +62,10 @@
 //!     1. Add enum here, LAST has to stay last
 //!     2. For PointProbe and PlaneProbe: add the computation of the statistic in switch statement in calculatePointwiseQuantities. 
 //!     3. For PlanarAverageProbe and WallModelProbe: add the computation directly in calculateQuantities.
-//!     4. In getPostProcessingVariables add the static in the switch statement and add the corresponding PostProcessingVariable
+//!     4. In getPostProcessingVariables add the static in the switch statement and add the corresponding PostProcessingVariables
 //!     5. Add Statistic to isAvailableStatistic of the respective probe
-//!     6. When adding new quantities to existing statistics (e.g., add rho to PlanarAverageProbe which currently only computes velocity stats) only do steps 2 to 4
+//!
+//!  When adding new quantities to existing statistics (e.g., add rho to PlanarAverageProbe which currently only computes stats of velocity) only do steps 2 to 4
 //!
 
 enum class Statistic{ 
@@ -134,15 +136,17 @@ public:
         uint _tAvg,
         uint _tStartOut,
         uint _tOut,
-        bool _hasDeviceQuantityArray
+        bool _hasDeviceQuantityArray,
+        bool _outputTimeSeries
     ):  probeName(_probeName),
         outputPath(_outputPath),
         tStartAvg(_tStartAvg),
+        tStartTmpAveraging(_tStartTmpAvg),
         tAvg(_tAvg),
         tStartOut(_tStartOut),
         tOut(_tOut),
         hasDeviceQuantityArray(_hasDeviceQuantityArray),
-        tStartTmpAveraging(_tStartTmpAvg),
+        outputTimeSeries(_outputTimeSeries),        
         PreCollisionInteractor()
     {
         assert("Output starts before averaging!" && tStartOut>=tStartAvg);
@@ -178,7 +182,7 @@ private:
                         int level);
     virtual void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) = 0;
 
-    virtual void write(Parameter* para, int level, int t);
+    void write(Parameter* para, int level, int t);
     void writeCollectionFile(Parameter* para, int t);
     void writeGridFiles(Parameter* para, int level, std::vector<std::string >& fnames, int t);
     std::vector<std::string> getVarNames();
@@ -189,7 +193,8 @@ private:
 
     std::vector<SPtr<ProbeStruct>> probeParams;
     bool quantities[int(Statistic::LAST)] = {};
-    bool hasDeviceQuantityArray; 
+    bool hasDeviceQuantityArray;    //!> flag initiating memCopy in Point and PlaneProbe. Other probes are only based on thrust reduce functions and therefore dont need explict memCopy in interact()
+    bool outputTimeSeries;          //!> flag initiating overwrite of output vtk files, skipping collection files and limiting the length of the written data to the current time step (currently only used for WallModelProbe)
     std::vector<std::string> fileNamesForCollectionFile;
     std::vector<std::string> varNames;
 
@@ -205,6 +210,8 @@ protected:
     real velocityRatio;
     real densityRatio;
     real forceRatio;
+    real stressRatio;
+    real accelerationRatio;
 };
 
 #endif

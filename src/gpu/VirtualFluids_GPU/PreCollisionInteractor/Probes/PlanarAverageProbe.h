@@ -67,6 +67,7 @@ public:
              _tAvg,
              _tStartOut, 
              _tOut,
+             false,
              false),
         planeNormal(_planeNormal)
 
