@@ -406,7 +406,7 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
     for (uint part = 0; part < fnames.size(); part++)
     {        
         startpos = part * para->getlimitOfNodesForVTK();
-        uint nDataPoints = this->outputTimeSeries? probeStruct->vals: probeStruct->nPoints;
+        uint nDataPoints = this->outputTimeSeries? this->tProbe: probeStruct->nPoints;
         sizeOfNodes = min(para->getlimitOfNodesForVTK(), nDataPoints - startpos);
         endpos = startpos + sizeOfNodes;
 

@@ -80,7 +80,6 @@ private:
     void calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level) override;
 
 private:
-    uint tProbe = 0;
     bool outputStress = false; //!> if true, output wall force is converted to a stress 
     bool evaluatePressureGradient = false; //!> if true, mean global pressure gradient will also be evaluated
 };

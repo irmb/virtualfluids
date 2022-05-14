@@ -202,10 +202,12 @@ private:
 
 protected:
     uint tStartAvg;
-    uint tStartTmpAveraging; //!> only non-zero in PlanarAverageProbe to switch on Spatio-temporal averaging (while only doing spatial averaging for t<tStartTmpAveraging) 
+    uint tStartTmpAveraging; //!> only non-zero in PlanarAverageProbe and WallModelProbe to switch on Spatio-temporal averaging (while only doing spatial averaging for t<tStartTmpAveraging) 
     uint tAvg;
     uint tStartOut;
     uint tOut;
+
+    uint tProbe = 0; //!> counter for number of probe evaluations. Only used when outputting timeseries
 
     real velocityRatio;
     real densityRatio;

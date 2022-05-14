@@ -112,7 +112,7 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosity = 1.56e-5;
 
-    const real velocity  = u_star/kappa*log(L_z/z0); //max mean velocity at the top in m/s
+    const real velocity  = 2.0*u_star/kappa*log(L_z/z0); //2 times max mean velocity at the top in m/s
 
     const real mach = config.contains("Ma")? config.getValue<real>("Ma"): 0.1;
 
@@ -139,7 +139,7 @@ void multipleLevel(const std::string& configPath)
     const real viscosityLB = viscosity * dt / (dx * dx); // LB units
 
     const real pressureGradient = u_star * u_star / H ;
-    const real pressureGradientLB = u_star * u_star / H / (dx/(dt*dt)); // LB units
+    const real pressureGradientLB = pressureGradient * (dt*dt)/dx; // LB units
 
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
     VF_LOG_INFO("dt   = {}", dt);
@@ -215,11 +215,12 @@ void multipleLevel(const std::string& configPath)
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
 
+    real cPi = 3.1415926535897932384626433832795;
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-        vx  = (0.4/0.4 * log(coordZ/z0)) * dt / dx; //10*coordZ/H * dt / dx;
-        vy  = (real)0.0;
-        vz  = 8.0*u_star/0.4*(sin(8.0*coordY*3.14/H)*sin(8.0*coordZ*3.14/H)+sin(3.14*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
+        vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
+        vy  =  2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; ;
+        vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
     });
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -233,7 +234,7 @@ void multipleLevel(const std::string& configPath)
     para->addProbe( planarAverageProbe );
 
     para->setHasWallModelMonitor(true);
-    SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt , tStartOutProbe/dt, tOutProbe/dt) );
+    SPtr<WallModelProbe> wallModelProbe = SPtr<WallModelProbe>( new WallModelProbe("wallModelProbe", para->getOutputPath(), tStartAveraging/dt, tStartTmpAveraging/dt, tAveraging/dt/4.0 , tStartOutProbe/dt, tOutProbe/dt) );
     wallModelProbe->addAllAvailableStatistics();
     wallModelProbe->setFileNameToNOut();
     wallModelProbe->setForceOutputToStress(true);

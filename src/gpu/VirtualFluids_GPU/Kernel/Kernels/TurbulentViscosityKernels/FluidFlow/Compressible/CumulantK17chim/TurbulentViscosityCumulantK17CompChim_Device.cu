@@ -227,9 +227,13 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         real fz = forces[2];
 
         if( bodyForce ){
-            fx += bodyForceX[k];
-            fy += bodyForceY[k];
-            fz += bodyForceZ[k];
+            bool monitorTotalForce = true;
+            if(!monitorTotalForce)
+            {
+                fx += fx-bodyForceX[k]; 
+                fy += fy-bodyForceY[k];
+                fz += fz-bodyForceZ[k];
+            }
 
             real vx = vvx;
             real vy = vvy;
@@ -247,9 +251,20 @@ extern "C" __global__ void LB_Kernel_TurbulentViscosityCumulantK17CompChim(
         // bodyForceY[k] = 0.0f;
         // bodyForceZ[k] = 0.0f;
 
-            bodyForceX[k] = (acc_x-(double)(vvx-vx))*factor*c2o1;
-            bodyForceY[k] = (acc_y-(double)(vvy-vy))*factor*c2o1;
-            bodyForceZ[k] = (acc_z-(double)(vvz-vz))*factor*c2o1;
+            if(monitorTotalForce)
+            {   // monitor total applied force without round-off correction    
+                bodyForceX[k] = (vvx-vx)*factor*c2o1;
+                bodyForceY[k] = (vvy-vy)*factor*c2o1;
+                bodyForceZ[k] = (vvz-vz)*factor*c2o1;
+            }
+            else
+            {
+                // Round-off correction
+                bodyForceX[k] = (acc_x-(double)(vvx-vx))*factor*c2o1;
+                bodyForceY[k] = (acc_y-(double)(vvy-vy))*factor*c2o1;
+                bodyForceZ[k] = (acc_z-(double)(vvz-vz))*factor*c2o1;
+            }
+
             // if(k==100000)
             // {
             //     printf("Res A: %1.20f \n", acc_x-(double)(vvx-vx));
