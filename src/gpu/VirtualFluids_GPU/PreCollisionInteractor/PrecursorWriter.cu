@@ -100,7 +100,7 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
                 int idx;
                 index1d(idx, idxY, idxZ, ny, nz);
                 indicesOnPlane.push_back(idx);
-                printf("idx %d, idy %d, idz %d, ny %d, nz %d\n", idx, idxY, idxZ, ny, nz);
+                // printf("idx %d, idy %d, idz %d, ny %d, nz %d\n", idx, idxY, idxZ, ny, nz);
         }
         int npoints = indicesOnGrid.size();
 
@@ -112,10 +112,11 @@ void PrecursorWriter::init(Parameter* para, GridProvider* gridProvider, CudaMemo
         std::copy(indicesOnGrid.begin(), indicesOnGrid.end(), precursorStructs[level]->indicesH);
         std::copy(indicesOnPlane.begin(), indicesOnPlane.end(), precursorStructs[level]->indicesOnPlane);
         precursorStructs[level]->spacing = makeUbTuple(dx, dx, tSave*para->getTimeRatio());
-        precursorStructs[level]->origin = makeUbTuple(lowestY, lowestZ, 0);
+        precursorStructs[level]->origin = makeUbTuple(lowestY, lowestZ);
         precursorStructs[level]->extent = makeUbTuple(0, ny-1, 0, nz-1);
-        precursorStructs[level]->ny = ny;
-        precursorStructs[level]->nz = nz;
+        precursorStructs[level]->nPointsInPlane = ny*nz;
+        precursorStructs[level]->timestepsPerFile = min(para->getlimitOfNodesForVTK()/(ny*nz), maxtimestepsPerFile);
+        precursorStructs[level]->filesWritten = 0;
     }
 }
 
@@ -127,8 +128,8 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
         vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, precursorStruct->nPoints);
 
         fillArray<<<grid.grid, grid.threads>>>(precursorStruct->nPoints, precursorStruct->indicesD, 
-                        precursorStruct->vxD, precursorStruct->vyD, precursorStruct->vzD, 
-                        para->getParD(level)->vx_SP, para->getParD(level)->vy_SP, para->getParD(level)->vz_SP);
+                                                precursorStruct->vxD, precursorStruct->vyD, precursorStruct->vzD, 
+                                                para->getParD(level)->vx_SP, para->getParD(level)->vy_SP, para->getParD(level)->vz_SP);
 
         cudaManager->cudaCopyPrecursorWriterVelocitiesDtoH(this, level);
         
@@ -140,80 +141,54 @@ void PrecursorWriter::interact(Parameter* para, CudaMemoryManager* cudaManager, 
         vy[level].push_back(new_vy);
         vz[level].push_back(new_vz);
 
-        if(t>this->tStartOut? ((t-tStartOut) % this->tWrite) == 0 : false)
-        {
+
+        if(vx[level].size() > precursorStruct->timestepsPerFile)
             this->write(para, level);
-        }
+
     }
 }
 
 
 void PrecursorWriter::free(Parameter* para, CudaMemoryManager* cudaManager)
 {
-    if(vx[0].size()>0)
-    {
-        for(int level=0; level<=para->getMaxLevel(); level++)
-            write(para, level);
-    }
     for(int level=0; level<=para->getMaxLevel(); level++)
+    {
+        if(vx[level].size()>0)
+            write(para, level);
+
         cudaManager->cudaFreePrecursorWriter(this, level);
+    }
 }
 
 
 void PrecursorWriter::write(Parameter* para, int level)
 {
-    const uint timestepsPerFile = para->getlimitOfNodesForVTK() / this->getPrecursorStruct(level)->nPoints;
-
-    const uint numberOfParts = this->vx[level].size() / timestepsPerFile + 1;
-
-    for (uint part = 0; part < numberOfParts; part++)
-	{
-        this->writeGridFile(para, level, part, timestepsPerFile);
-    }
-
-    if(level == 0) this->writeParallelFile(para, level, numberOfParts);
-
-    nFilesWritten++;
-    pieceSources.clear();
-    pieceExtents.clear();
-    vx[level].clear();
-    vy[level].clear();
-    vz[level].clear();
-}
-
-
-void PrecursorWriter::writeGridFile(Parameter* para, int level, uint part, int numberOfTimestepsPerPart)
-{
-    std::string fname = this->makeGridFileName(level, para->getMyID(), part) + getWriter()->getFileExtension();
+    SPtr<PrecursorStruct> precursorStruct = this->getPrecursorStruct(level);
+    std::string fname = this->makeFileName(level, para->getMyID(), precursorStruct->filesWritten) + getWriter()->getFileExtension();
     std::string wholeName = outputPath + "/" + fname;
 
-    SPtr<PrecursorStruct> precursorStruct = this->getPrecursorStruct(level);
-    uint nPointsInPlane = precursorStruct->ny*precursorStruct->nz;
+    uint nPointsInPlane = precursorStruct->nPointsInPlane;
 
-    int nTotalTimesteps = vx[level].size();
-    int startTime = numberOfTimestepsPerPart*part;
-    int nTimesteps = min(numberOfTimestepsPerPart, nTotalTimesteps-startTime);
+    int nTimesteps = vx[level].size();
+    int startTime = precursorStruct->filesWritten*precursorStruct->timestepsPerFile;
 
-    printf("points in plane %d, total timesteps %d, ntimesteps %d \n", nPointsInPlane, nTotalTimesteps, nTimesteps);
+    // printf("points in plane %d, total timesteps %d, ntimesteps %d \n", nPointsInPlane, nTotalTimesteps, nTimesteps);
     std::vector<double> vxDouble(nPointsInPlane*nTimesteps, NAN), vyDouble(nPointsInPlane*nTimesteps, NAN), vzDouble(nPointsInPlane*nTimesteps, NAN);
-
-
-    UbTupleInt6 wholeExtent = makeUbTuple(  val<1>(precursorStruct->extent),    val<2>(precursorStruct->extent), 
-                                            val<3>(precursorStruct->extent),    val<4>(precursorStruct->extent), 
-                                            0,                                  nTotalTimesteps-1);
 
     UbTupleInt6 extent = makeUbTuple(   val<1>(precursorStruct->extent),    val<2>(precursorStruct->extent), 
                                         val<3>(precursorStruct->extent),    val<4>(precursorStruct->extent), 
-                                        0,                                  nTimesteps-1);
+                                        startTime,                          startTime+nTimesteps-1);
+
+    UbTupleFloat3 origin = makeUbTuple( val<1>(precursorStruct->origin), val<1>(precursorStruct->origin), 0.f);
 
     real coeff = para->getVelocityRatio();
         
-    for( uint timestep=startTime; timestep<nTimesteps; timestep++)
+    for( uint timestep=0; timestep<nTimesteps; timestep++)
     {
         for (uint pos = 0; pos < this->getPrecursorStruct(level)->nPoints; pos++)
         {
 
-            int indexOnPlane = precursorStruct->indicesOnPlane[pos]+(timestep-startTime)*nPointsInPlane;
+            int indexOnPlane = precursorStruct->indicesOnPlane[pos]+timestep*nPointsInPlane;
             // printf("timestep %i, pos %i, iOP %i \n", timestep, pos, indexOnPlane);
             // printf("vx %f, vy %f, vz%f nodedata x %f\n", vx[level][timestep][pos]*coeff, vy[level][timestep][pos]*coeff, vz[level][timestep][pos]*coeff, vxDouble[indexOnPlane]);
             vxDouble[indexOnPlane] = double(vx[level][timestep][pos]*coeff);
@@ -222,44 +197,20 @@ void PrecursorWriter::writeGridFile(Parameter* para, int level, uint part, int n
         }
     }
 
-    std::vector<std::vector<double>> nodedata;
+    vx[level].clear();
+    vy[level].clear();
+    vz[level].clear();
 
-    nodedata.push_back(vxDouble);
-    nodedata.push_back(vyDouble);
-    nodedata.push_back(vzDouble);
+    std::vector<std::vector<double>> nodedata = {vxDouble, vyDouble, vzDouble};
 
     std::vector<std::vector<double>> celldata;
-    pieceExtents.push_back(extent);
-    pieceSources.push_back(fname);
-    getWriter()->writeData(wholeName, nodedatanames, celldatanames, nodedata, celldata, wholeExtent, precursorStruct->origin, precursorStruct->spacing, extent);
+    getWriter()->writeData(wholeName, nodedatanames, celldatanames, nodedata, celldata, extent, origin, precursorStruct->spacing, extent);
+    precursorStruct->filesWritten++;
 }
 
-
-void PrecursorWriter::writeParallelFile(Parameter* para, int level, uint parts)
-{
-    std::string fname = makeParallelFileName(level, para->getMyID());
-    std::string wholeName = outputPath + "/" + fname;
-
-    SPtr<PrecursorStruct> precursorStruct = this->getPrecursorStruct(level);
-
-
-    UbTupleInt6 wholeExtent = makeUbTuple(val<1>(precursorStruct->extent), val<2>(precursorStruct->extent), 
-                                            val<3>(precursorStruct->extent), val<4>(precursorStruct->extent), 
-                                            val<5>(pieceExtents.front()),    val<6>(pieceExtents.back()));
-
-    getWriter()->writeParallelFile(wholeName, wholeExtent, this->getPrecursorStruct(level)->origin, this->getPrecursorStruct(level)->spacing, pieceSources, pieceExtents, nodedatanames, celldatanames);
-}
-
-std::string PrecursorWriter::makeGridFileName(int level, int id, uint part)
+std::string PrecursorWriter::makeFileName(int level, int id, uint filesWritten)
 {
     return fileName + "_lev_" + StringUtil::toString<int>(level)
                     + "_ID_" + StringUtil::toString<int>(id)
-                    + "_Part_" + StringUtil::toString<int>(part) 
-                    + "_File_" + StringUtil::toString<int>(nFilesWritten);
-}
-std::string PrecursorWriter::makeParallelFileName(int level, int id)
-{
-    return fileName + "_lev_" + StringUtil::toString<int>(level)
-                    + "_ID_" + StringUtil::toString<int>(id)
-                    + "_File_" + StringUtil::toString<int>(nFilesWritten);
+                    + "_File_" + StringUtil::toString<int>(filesWritten);
 }

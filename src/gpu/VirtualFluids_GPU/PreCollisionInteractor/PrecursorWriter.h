@@ -21,10 +21,10 @@ struct PrecursorStruct
     real *vyH, *vyD;
     real *vzH, *vzD;
     UbTupleInt4 extent;
-    UbTupleFloat3 origin;
+    UbTupleFloat2 origin;
     UbTupleFloat3 spacing;
     int* indicesOnPlane;
-    uint ny, nz;
+    uint nPointsInPlane, timestepsPerFile, filesWritten;
 };
 
 class PrecursorWriter : public PreCollisionInteractor
@@ -38,7 +38,7 @@ public:
         real _zMin, real _zMax,
         uint _tStartOut,
         uint _tSave,
-        uint _tWrite
+        uint _maxTimestepsPerFile=uint(1e4)
     ): 
     fileName(_fileName), 
     outputPath(_outputPath), 
@@ -49,10 +49,8 @@ public:
     zMax(_zMax),
     tStartOut(_tStartOut), 
     tSave(_tSave),
-    tWrite(_tWrite)
-    {
-        nFilesWritten = 0;
-    };
+    maxtimestepsPerFile(_maxTimestepsPerFile)
+    {};
     void init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager) override;
     void interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t) override;
     void free(Parameter* para, CudaMemoryManager* cudaManager) override;
@@ -61,20 +59,16 @@ public:
 private:
     WbWriterVtkXmlImageBinary* getWriter(){ return WbWriterVtkXmlImageBinary::getInstance(); };
     void write(Parameter* para, int level);
-    void writeGridFile(Parameter* para, int level, uint part, int numberOfTimestepsPerPart);
-    void writeParallelFile(Parameter* para, int level, uint parts);
-    std::string makeGridFileName(int level, int id, uint part);
-    std::string makeParallelFileName(int level, int id);
+    std::string makeFileName(int level, int id, uint part);
 
 private:
     std::vector<SPtr<PrecursorStruct>> precursorStructs;
     std::vector<std::vector<std::vector<real>>> vx, vy, vz; // level, time, array
     std::string fileName, outputPath;
     std::vector<std::string> nodedatanames = {"vx", "vy", "vz"};
-    std::vector<std::string> celldatanames, pieceSources;
-    uint tStartOut, tSave, tWrite, nFilesWritten;
+    std::vector<std::string> celldatanames;
+    uint tStartOut, tSave, maxtimestepsPerFile;
     real xPos, yMin, yMax, zMin, zMax;
-    std::vector<UbTupleInt6> pieceExtents;
 };
 
 #endif //PRECURSORPROBE_H_
