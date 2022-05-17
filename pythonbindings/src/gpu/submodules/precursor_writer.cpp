@@ -22,6 +22,6 @@ namespace precursor_writer
                         "x_pos",
                         "y_min", "y_max",
                         "z_min", "z_max",
-                        "t_start_out", "t_save", "t_write");
+                        "t_start_out", "t_save", "max_timesteps_per_file");
     }
 }
