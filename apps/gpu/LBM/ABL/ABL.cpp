@@ -68,8 +68,8 @@ LbmOrGks lbmOrGks = LBM;
 
 const real reference_height = 2000.f; // boundary layer height in m
 
-const real L_x = 1*reference_height;
-const real L_y = 1*reference_height;
+const real L_x = 6*reference_height;
+const real L_y = 4*reference_height;
 const real L_z = reference_height;
 
 const real viscosity = 1.56e-5;
@@ -78,14 +78,14 @@ const real velocity  = 9.0;
 
 const real mach = 0.1;
 
-const uint nodes_per_height = 5;
+const uint nodes_per_height = 128;
 
 std::string path(".");
 
 std::string simulationName("ABL");
 
-const float tOut = 100;
-const float tEnd = 1000; // total time of simulation in s
+const float tOut = 1000;
+const float tEnd = 10000; // total time of simulation in s
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,7 +180,7 @@ void multipleLevel(const std::string& configPath)
     real x_pos = L_x/2;
 
 
-    auto precursor_writer = SPtr<PrecursorWriter>( new PrecursorWriter("Precursor", "output", x_pos, 0, L_y, 0, L_z, 10, 5, 40) );
+    auto precursor_writer = SPtr<PrecursorWriter>( new PrecursorWriter("Precursor", "output", x_pos, 0, L_y, 0, L_z, 100, 10, 10000) );
     para->addProbe( precursor_writer );
 
     Simulation sim(communicator);
