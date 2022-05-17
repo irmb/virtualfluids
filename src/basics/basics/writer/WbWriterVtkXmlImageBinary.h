@@ -72,8 +72,8 @@ public:
                                 const double &timestep, const bool &sepGroups);
     std::string addFilesToCollection(const std::string &filename, const std::vector<std::string> &filenames,
                                      const double &timestep, const bool &sepGroups);
-    std::string writeParallelFile(const std::string &filename, const std::string &wholeExtent, const std::string &origin, const std::string &spacing, 
-                                std::vector<std::string> &pieceSources, std::vector<std::string> &pieceExtents,
+    std::string writeParallelFile(const std::string &filename, const UbTupleInt6 &wholeExtent, const UbTupleFloat3 &origin, const UbTupleFloat3 &spacing, 
+                                std::vector<std::string> &pieceSources, std::vector<UbTupleInt6> &pieceExtents,
                                 std::vector<std::string> &pointDataNames, std::vector<std::string> &cellDataNames);
 
     //////////////////////////////////////////////////////////////////////////
@@ -97,12 +97,14 @@ public:
     std::string writeOctsWithNodeData(const std::string &filename, std::vector<UbTupleFloat3> &nodes,
                                       std::vector<UbTupleUInt8> &cells, std::vector<std::string> &datanames,
                                       std::vector<std::vector<double>> &nodedata) override;
+    void writeData(const std::string &vtkfilename,
+                                            std::vector<std::string> &pointDataNames, std::vector<std::string> &cellDataNames,
+                                            std::vector<std::vector<double>> &nodedata, std::vector<std::vector<double>> &celldata, 
+                                            UbTupleInt6 &wholeExtent,
+                                            UbTupleFloat3 &origin, UbTupleFloat3 &spacing, UbTupleInt6 &extent);
 
 private:
-    void getMetaDataOfImage(std::vector<UbTupleFloat3> &nodes, UbTupleFloat3& origin, UbTupleFloat3& spacing, UbTupleFloat3& extent);
-    void WriteData(const std::string &vtkfilename, std::vector<UbTupleFloat3> &nodes,
-                                            std::vector<std::string> &pointDataNames, std::vector<std::string> &cellDataNames,
-                                            std::vector<std::vector<double>> &nodedata, std::vector<std::vector<double>> &celldata);
+    void getMetaDataOfImage(std::vector<UbTupleFloat3> &nodes, UbTupleFloat3& origin, UbTupleFloat3& spacing, UbTupleInt6& extent);
 };
 
 #endif // WBWRITERVTKXMLIMAGEBINARY_H
