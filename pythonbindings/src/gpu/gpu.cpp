@@ -5,14 +5,13 @@
 #include "submodules/parameter.cpp"
 #include "submodules/boundary_conditions.cpp"
 #include "submodules/communicator.cpp"
-#include "submodules/grid_builder.cpp"
 #include "submodules/cuda_memory_manager.cpp"
-#include "submodules/grid_provider.cpp"
 #include "submodules/probes.cpp"
 #include "submodules/kernel_factory.cpp"
 #include "submodules/pre_processor_factory.cpp"
 #include "submodules/file_writer.cpp"
-#include "submodules/grid_generator.cpp"
+#include "grid/grid.cpp"
+#include "submodules/precursor_writer.cpp"
 
 namespace gpu
 {
@@ -27,14 +26,13 @@ namespace gpu
         actuator_line::makeModule(gpuModule);
         boundary_conditions::makeModule(gpuModule);
         communicator::makeModule(gpuModule); 
-        grid_builder::makeModule(gpuModule);
         cuda_memory_manager::makeModule(gpuModule);
-        grid_provider::makeModule(gpuModule);
         probes::makeModule(gpuModule);
         kernel_factory::makeModule(gpuModule);
         pre_processor_factory::makeModule(gpuModule);
         file_writer::makeModule(gpuModule);
-        grid_generator::makeModule(gpuModule);
+        grid::makeModule(gpuModule);
+        precursor_writer::makeModule(gpuModule);
         return gpuModule;
     }
 }

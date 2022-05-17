@@ -1,8 +1,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
-#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h>
 #include <gpu/VirtualFluids_GPU/PreCollisionInteractor/PreCollisionInteractor.h>
+#include <gpu/VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h>
 class PyActuatorLine : public ActuatorLine 
 {
 public:
