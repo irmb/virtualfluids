@@ -154,7 +154,12 @@ string WbWriterVtkXmlImageBinary::writeParallelFile(const string &filename, cons
         out << "    </PCellData>\n";
     }
     for (size_t s = 0; s < pieceSources.size(); s++)
-        out << "    <Piece Extent=\"" << pieceExtents[s] << "\" Source=\"" << pieceSources[s] << "\"/>\n";
+        out << "    <Piece Extent=\""   << val<1>(pieceExtents[s]) << " " 
+                                        << val<2>(pieceExtents[s]) << " " 
+                                        << val<3>(pieceExtents[s]) << " " 
+                                        << val<4>(pieceExtents[s]) << " " 
+                                        << val<5>(pieceExtents[s]) << " "
+                                        << val<6>(pieceExtents[s]) << "\" Source=\"" << pieceSources[s] << "\"/>\n";
     out << "  </PImageData>\n";
     out << "</VTKFile>";
     out << endl;
@@ -336,7 +341,6 @@ void WbWriterVtkXmlImageBinary::writeData(const string &vtkfilename,
         out.write((char *)&bytesScalarData, bytesPerByteVal);
         for (size_t d = 0; d < nodedata[s].size(); ++d) {
             double tmp = nodedata[s][d];
-            printf("write idx %lu with val %f\n", d, tmp);
             out.write((char *)&tmp, sizeof(double));
         }
     }
