@@ -20,6 +20,8 @@ class Parameter;
 class PorousMedia;
 class ActuatorLine;
 class Probe;
+class VelocitySetter;
+class PrecursorWriter;
 
 class VIRTUALFLUIDS_GPU_EXPORT CudaMemoryManager
 {
@@ -56,8 +58,9 @@ public:
 	void cudaFreeNeighborWSB(int lev);
 
 	void cudaAllocVeloBC(int lev);
-	void cudaCopyVeloBC(int lev);
-	void cudaFreeVeloBC(int lev);
+	void cudaCopyVeloBC(int lev);	
+    void cudaCopyVeloBCVelocities(int lev);
+    void cudaFreeVeloBC(int lev);
     
 	void cudaAllocOutflowBC(int lev);
 	void cudaCopyOutflowBC(int lev);
@@ -371,6 +374,16 @@ public:
     void cudaCopyProbeQuantitiesAndOffsetsHtoD(Probe* probe, int level);
     void cudaCopyProbeQuantitiesAndOffsetsDtoH(Probe* probe, int level);
     void cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int level);
+
+    void cudaAllocVelocitySetterArrays(VelocitySetter* setter);
+    void cudaCopyVelocitySetterLastArrays(VelocitySetter* setter);
+    void cudaCopyVelocitySetterNextArrays(VelocitySetter* setter);
+    void cudaFreeVelocitySetterArrays(VelocitySetter* setter);
+
+    void cudaAllocPrecursorWriter(PrecursorWriter* writer, int level);
+    void cudaCopyPrecursorWriterIndicesHtoD(PrecursorWriter* writer, int level);
+    void cudaCopyPrecursorWriterVelocitiesDtoH(PrecursorWriter* writer, int level);
+    void cudaFreePrecursorWriter(PrecursorWriter* writer, int level);
 
 private:
     CudaMemoryManager(std::shared_ptr<Parameter> parameter);
