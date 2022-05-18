@@ -186,7 +186,7 @@ void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
 #pragma omp parallel for
     for (int index = 0; index < (int)this->size; index++)
         this->findEndOfGridStopperNode(index);
-
+    
     *logging::out << logging::Logger::INFO_INTERMEDIATE
         << "Grid created: " << "from (" << this->startX << ", " << this->startY << ", " << this->startZ << ") to (" << this->endX << ", " << this->endY << ", " << this->endZ << ")\n"
         << "nodes: " << this->nx << " x " << this->ny << " x " << this->nz << " = " << this->size << "\n";
@@ -440,7 +440,7 @@ void GridImp::findEndOfGridStopperNode(uint index)
         else
             this->field.setFieldEntryToStopperOutOfGridBoundary(index);
     }
-
+    
 	if (isValidEndOfGridBoundaryStopper(index))
 		this->field.setFieldEntryToStopperOutOfGridBoundary(index);
 }
@@ -612,6 +612,17 @@ bool GridImp::hasNeighborOfType(uint index, char type) const
 	return false;
 }
 
+bool GridImp::hasNeighborOfTypeInDir(uint index, char type, Direction dir) const
+{
+	real x, y, z;
+	this->transIndexToCoords(index, x, y, z);
+    const uint neighborIndex = this->transCoordToIndex(x + dir[0] * this->getDelta(), y + dir[1] * this->getDelta(), z + dir[2] * this->getDelta());
+
+    if (neighborIndex == INVALID_INDEX) return false;
+
+    return this->field.is(neighborIndex, type);
+}
+
 bool GridImp::nodeInNextCellIs(int index, char type) const
 {
     real x, y, z;
@@ -767,9 +778,9 @@ void GridImp::setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheW
 
 uint GridImp::transCoordToIndex(const real &x, const real &y, const real &z) const
 {
-    const uint xIndex = getXIndex(x);
-    const uint yIndex = getYIndex(y);
-    const uint zIndex = getZIndex(z);
+    uint xIndex = getXIndex(x);
+    uint yIndex = getYIndex(y);
+    uint zIndex = getZIndex(z);
 
 	if (xIndex >= nx || yIndex >= ny || zIndex >= nz)
         return INVALID_INDEX;
@@ -1448,7 +1459,6 @@ void GridImp::calculateQs(const uint index, const Vertex &point, Object* object)
                     
                 this->qPatches[ this->qIndices[index] ] = 0;
 
-				//printf("%d %f \n", this->qIndices[index], subdistance);
 			}
 		}
 	}

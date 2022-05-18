@@ -37,6 +37,9 @@
 #include "Calculation/ForceCalculations.h"
 #include "Calculation/PorousMedia.h"
 //////////////////////////////////////////////////////////////////////////
+#include "Output/Timer.h"
+#include "Output/TimeStepTimer.h"
+//////////////////////////////////////////////////////////////////////////
 #include "Restart/RestartObject.h"
 //////////////////////////////////////////////////////////////////////////
 #include "DataStructureInitializer/GridProvider.h"
@@ -126,6 +129,11 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    output << "vis_ratio:  "   << para->getViscosityRatio() << "\n";
    output << "u0_ratio:   "   << para->getVelocityRatio()  << "\n";
    output << "delta_rho:  "   << para->getDensityRatio()   << "\n";
+   output << "QuadricLimiters:  "   << para->getQuadricLimitersHost()[0] << "\t"
+   									<< para->getQuadricLimitersHost()[1] << "\t"
+									<< para->getQuadricLimitersHost()[2] << "\n";
+   if(para->getUseAMD())
+		output << "AMD SGS model:  "   << para->getSGSConstant()   << "\n";
    //////////////////////////////////////////////////////////////////////////
 
    /////////////////////////////////////////////////////////////////////////
@@ -379,14 +387,9 @@ void Simulation::bulk()
 
 void Simulation::run()
 {
-   double ftimeE, ftimeS, fnups, durchsatz;
-   float timerE, timerS;
-   timerE   = 0.0f;
-   timerS   = 0.0f;
-   ftimeE   = 0.0f;
-   ftimeS   = 0.0f;
    unsigned int t, t_prev;
    unsigned int t_MP = 0;
+
    //////////////////////////////////////////////////////////////////////////
    para->setStepEnsight(0);
 
@@ -404,28 +407,21 @@ void Simulation::run()
    }
    //////////////////////////////////////////////////////////////////////////
 
-   //Timer SDK
-   StopWatchInterface *sdkTimer = NULL;
-   sdkCreateTimer(&sdkTimer);
-   sdkStartTimer(&sdkTimer);
-   //Timer Event
-   cudaEvent_t start_t, stop_t;
-   checkCudaErrors( cudaEventCreate(&start_t));
-   checkCudaErrors( cudaEventCreate(&stop_t));
-   checkCudaErrors( cudaEventRecord(start_t));
-
    t_prev = para->getTimeCalcMedStart();
 
-   output << "Processing time (ms) \t Nups in Mio \t Durchsatz in GB/sec\n";
+	output << "getMaxLevel = " << para->getMaxLevel() << "\n";
 
-   output << "getMaxLevel = " << para->getMaxLevel() << "\n";
+	Timer* averageTimer = new Timer("Average performance");
+	averageTimer->startTimer();
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Time loop
 	////////////////////////////////////////////////////////////////////////////////
 	for(t=para->getTStart();t<=para->getTEnd();t++)
 	{
+		
         updateGrid27(para.get(), communicator, cudaManager.get(), pm, 0, t, kernels);
-
+		
 	    ////////////////////////////////////////////////////////////////////////////////
 	    //Particles
 	    ////////////////////////////////////////////////////////////////////////////////
@@ -497,14 +493,8 @@ void Simulation::run()
         ////////////////////////////////////////////////////////////////////////////////
         if(para->getDoCheckPoint() && para->getTimeDoCheckPoint()>0 && t%para->getTimeDoCheckPoint()==0 && t>0 && !para->overWritingRestart(t))
         {
+			averageTimer->stopTimer();
             //////////////////////////////////////////////////////////////////////////
-            //Timer SDK
-            sdkStopTimer(&sdkTimer);
-            sdkResetTimer(&sdkTimer);
-            //////////////////////////////////////////////////////////////////////////
-            //Timer Event
-            checkCudaErrors( cudaEventRecord(stop_t));
-            checkCudaErrors( cudaEventSynchronize(stop_t));
             
             if( para->getDoCheckPoint() )
             {
@@ -523,11 +513,7 @@ void Simulation::run()
                 output << "\n fertig\n";
             }
             //////////////////////////////////////////////////////////////////////////
-            //Timer SDK
-            sdkStartTimer(&sdkTimer);
-            //////////////////////////////////////////////////////////////////////////
-            //Timer Event
-            checkCudaErrors( cudaEventRecord(start_t));
+			averageTimer->startTimer();
         }
         //////////////////////////////////////////////////////////////////////////////
 
@@ -641,36 +627,10 @@ void Simulation::run()
 		  //else                                    para->getParD(0)->evenOrOdd=true;
 		  //////////////////////////////////////////////////////////////////////////////////
 
-		  
-		 //////////////////////////////////////////////////////////////////////////
-		 //Timer SDK
-		 checkCudaErrors(cudaDeviceSynchronize());
-		 sdkStopTimer(&sdkTimer);
-		 timerS = sdkGetTimerValue(&sdkTimer);
-		 sdkResetTimer(&sdkTimer);
-		 ftimeS += timerS;
-		 fnups = 0.0;
-		 durchsatz = 0.0;
-		 for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-		 {
-			 fnups += 1000.0 * (t-para->getTStart()) * para->getParH(lev)->size_Mat_SP * pow(2.,lev) / (ftimeS*1.0E6);
-			 durchsatz  +=  (27.0+1.0) * 4.0 * 1000.0 * (t-para->getTStart()) * para->getParH(lev)->size_Mat_SP  / (ftimeS*1.0E9);
-		 }
-		 output << timerS << " / " << ftimeS << " \t " <<  fnups << " \t " << durchsatz << "\n";
-         //////////////////////////////////////////////////////////////////////////
-		 //Timer Event
-		 checkCudaErrors( cudaEventRecord(stop_t));
-         checkCudaErrors( cudaEventSynchronize(stop_t));
-         checkCudaErrors( cudaEventElapsedTime( &timerE, start_t, stop_t));
-         ftimeE += timerE;
-         fnups = 0.0;
-         durchsatz = 0.0;
-         for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-         {
-            fnups += 1000.0 * (t-para->getTStart()) * para->getParH(lev)->size_Mat_SP * pow(2.,lev) / (ftimeE*1.0E6);
-            durchsatz  +=  (27.0+1.0) * 4.0 * 1000.0 * (t-para->getTStart()) * para->getParH(lev)->size_Mat_SP  / (ftimeE*1.0E9);
-         }
-         output << timerE << " / " << ftimeE << " \t " <<  fnups << " \t " << durchsatz << "\n";
+		//////////////////////////////////////////////////////////////////////////
+		averageTimer->stopTimer();
+		averageTimer->outputPerformance(t, para.get());
+		//////////////////////////////////////////////////////////////////////////
 
          if( para->getPrintFiles() )
          {
@@ -942,44 +902,11 @@ void Simulation::run()
 			output << "done.\n";
 			////////////////////////////////////////////////////////////////////////
          }
-		 sdkStartTimer(&sdkTimer);
-         checkCudaErrors( cudaEventRecord(start_t));
+
+		////////////////////////////////////////////////////////////////////////
+		averageTimer->startTimer();
       }
 	}
-
-
-	//////////////////////////////////////////////////////////////////////////
-	//Timer SDK
-	sdkStopTimer(&sdkTimer);
-	timerS = sdkGetTimerValue(&sdkTimer);
-	ftimeS += timerS;
-	fnups = 0.0;
-	durchsatz = 0.0;
-	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-	{
-		fnups += 1000.0 * (t-para->getTStart()) * para->getParH(lev)->size_Mat_SP * pow(2.,lev) / (ftimeS*1.0E6);
-		durchsatz  +=  (27.0+1.0) * 4.0 * 1000.0 * (t-para->getTStart()) * para->getParH(lev)->size_Mat_SP / (ftimeS*1.0E9);
-	}
-	output << "Processing time: " << ftimeS << "(ms)\n";
-	output << "Nups in Mio: " << fnups << "\n";
-	output << "Durchsatz in GB/sec: " << durchsatz << "\n";
-    //////////////////////////////////////////////////////////////////////////
-	//Timer Event
-    checkCudaErrors( cudaEventRecord(stop_t));
-    checkCudaErrors( cudaEventSynchronize(stop_t));
-    checkCudaErrors( cudaEventElapsedTime( &timerE, start_t, stop_t ));
-    ftimeE += timerE;
-    fnups = 0.0;
-    durchsatz = 0.0;
-    for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-    {
-       fnups += 1000.0 * (t-para->getTStart()) * para->getParH(lev)->size_Mat_SP * pow(2.,lev) / (ftimeE*1.0E6);
-       durchsatz  +=  (27.0+1.0) * 4.0 * 1000.0 * (t-para->getTStart()) * para->getParH(lev)->size_Mat_SP / (ftimeE*1.0E9);
-    }
-    output << "Processing time: " << ftimeE << "(ms)\n";
-    output << "Nups in Mio: " << fnups << "\n";
-    output << "Durchsatz in GB/sec: " << durchsatz << "\n";
-	//////////////////////////////////////////////////////////////////////////
 
 	////////////////////////////////////////////////////////////////////////////////
 	//printDragLift(para);
@@ -1019,11 +946,7 @@ void Simulation::run()
 	//		MeasurePointWriter::writeMeasurePoints(para, lev, j, 0);
 	//	}
 	//}                                                  
- //  //////////////////////////////////////////////////////////////////////////
-
-	checkCudaErrors(cudaEventDestroy(start_t));
-	checkCudaErrors(cudaEventDestroy(stop_t));
-	sdkDeleteTimer(&sdkTimer);   
+ //  //////////////////////////////////////////////////////////////////////////  
 }
 
 void Simulation::porousMedia()

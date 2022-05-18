@@ -130,7 +130,7 @@ bool Field::isQ(uint index) const
 
 bool Field::isBoundaryConditionNode(uint index) const
 {
-    return  field[index] == BC_SOLID || field[index] == BC_OUTFLOW || field[index] == BC_VELOCITY || field[index] == BC_PRESSURE || field[index] == BC_SLIP;
+    return  field[index] == BC_SOLID || field[index] == BC_OUTFLOW || field[index] == BC_VELOCITY || field[index] == BC_PRESSURE || field[index] == BC_SLIP || field[index] == BC_STRESS;
 }
 
 // --------------------------------------------------------- //

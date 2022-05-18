@@ -3604,6 +3604,8 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
 							   unsigned int* neighborX,
 							   unsigned int* neighborY,
 							   unsigned int* neighborZ,
+                        real* turbViscosity,
+                        bool useTurbViscosity,
 							   unsigned int size_Mat, 
 							   bool evenOrOdd)
 {
@@ -3621,7 +3623,24 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
    }
    dim3 gridQ(Grid1, Grid2);
    dim3 threads(numberOfThreads, 1, 1 );
-
+   
+   if(useTurbViscosity)
+   {
+      QSlipDeviceComp27TurbViscosity<<< gridQ, threads >>> (DD, 
+											   k_Q, 
+											   QQ,
+											   sizeQ,
+											   om1, 
+											   neighborX,
+											   neighborY,
+											   neighborZ,
+                                    turbViscosity,
+											   size_Mat, 
+											   evenOrOdd);
+      getLastCudaError("QSlipDeviceComp27TurbViscosity execution failed");
+   }
+   else
+   {
       QSlipDeviceComp27<<< gridQ, threads >>> (DD, 
 											   k_Q, 
 											   QQ,
@@ -3632,7 +3651,8 @@ extern "C" void QSlipDevComp27(unsigned int numberOfThreads,
 											   neighborZ,
 											   size_Mat, 
 											   evenOrOdd);
-      getLastCudaError("QSlipDeviceComp27 execution failed"); 
+      getLastCudaError("QSlipDeviceComp27 execution failed");
+   }       
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QSlipGeomDevComp27(unsigned int numberOfThreads,
@@ -3725,6 +3745,167 @@ extern "C" void QSlipNormDevComp27(unsigned int numberOfThreads,
 												   size_Mat, 
 												   evenOrOdd);
       getLastCudaError("QSlipGeomDeviceComp27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void QStressDevComp27(unsigned int numberOfThreads,
+							   real* DD, 
+							   int* k_Q, 
+                        int* k_N,
+							   real* QQ,
+							   unsigned int sizeQ,
+							   real om1,
+                        real* turbViscosity, 
+                        real* vx,
+                        real* vy,
+                        real* vz,
+                        real* normalX,
+                        real* normalY,
+                        real* normalZ,
+                        real* vx_bc,
+                        real* vy_bc,
+                        real* vz_bc,
+                        real* vx1,
+                        real* vy1,
+                        real* vz1,
+                        int* samplingOffset,
+                        real* z0,
+                        bool  hasWallModelMonitor,
+                        real* u_star,
+                        real* Fx,
+                        real* Fy,
+                        real* Fz,
+							   unsigned int* neighborX,
+							   unsigned int* neighborY,
+							   unsigned int* neighborZ,
+							   unsigned int size_Mat, 
+							   bool evenOrOdd)
+{
+   int Grid = (sizeQ / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridQ(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+   
+      QStressDeviceComp27<<< gridQ, threads >>> (DD, 
+											   k_Q,
+                                    k_N, 
+											   QQ,
+											   sizeQ,
+											   om1,
+                                    turbViscosity, 
+                                    vx,
+                                    vy,
+                                    vz,
+                                    normalX,
+                                    normalY,
+                                    normalZ,
+                                    vx_bc,
+                                    vy_bc,
+                                    vz_bc,
+                                    vx1,
+                                    vy1,
+                                    vz1,
+                                    samplingOffset,
+                                    z0,
+                                    hasWallModelMonitor,
+                                    u_star,
+                                    Fx,
+                                    Fy,
+                                    Fz,
+											   neighborX,
+											   neighborY,
+											   neighborZ,
+											   size_Mat, 
+											   evenOrOdd);
+      getLastCudaError("QSlipDeviceComp27 execution failed"); 
+}
+
+//////////////////////////////////////////////////////////////////////////
+extern "C" void BBStressDev27(unsigned int numberOfThreads,
+							   real* DD, 
+							   int* k_Q, 
+                        int* k_N,
+							   real* QQ,
+							   unsigned int sizeQ,
+                        real* vx,
+                        real* vy,
+                        real* vz,
+                        real* normalX,
+                        real* normalY,
+                        real* normalZ,
+                        real* vx_bc,
+                        real* vy_bc,
+                        real* vz_bc,
+                        real* vx1,
+                        real* vy1,
+                        real* vz1,
+                        int* samplingOffset,
+                        real* z0,
+                        bool  hasWallModelMonitor,
+                        real* u_star,
+                        real* Fx,
+                        real* Fy,
+                        real* Fz,
+							   unsigned int* neighborX,
+							   unsigned int* neighborY,
+							   unsigned int* neighborZ,
+							   unsigned int size_Mat, 
+							   bool evenOrOdd)
+{
+   int Grid = (sizeQ / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridQ(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+   
+   BBStressDevice27<<< gridQ, threads >>> (DD, 
+											   k_Q,
+                                    k_N, 
+											   QQ,
+											   sizeQ,
+                                    vx,
+                                    vy,
+                                    vz,
+                                    normalX,
+                                    normalY,
+                                    normalZ,
+                                    vx_bc,
+                                    vy_bc,
+                                    vz_bc,
+                                    vx1,
+                                    vy1,
+                                    vz1,
+                                    samplingOffset,
+                                    z0,
+                                    hasWallModelMonitor,
+                                    u_star,
+                                    Fx,
+                                    Fy,
+                                    Fz,
+											   neighborX,
+											   neighborY,
+											   neighborZ,
+											   size_Mat, 
+											   evenOrOdd);
+      getLastCudaError("BBStressDevice27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void QPressDev27(unsigned int numberOfThreads,
