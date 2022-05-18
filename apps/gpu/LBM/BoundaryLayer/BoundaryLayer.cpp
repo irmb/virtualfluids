@@ -112,7 +112,7 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosity = 1.56e-5;
 
-    const real velocity  = 2.0*u_star/kappa*log(L_z/z0); //2 times max mean velocity at the top in m/s
+    const real velocity  = 0.5*u_star/kappa*log(L_z/z0); //0.5 times max mean velocity at the top in m/s
 
     const real mach = config.contains("Ma")? config.getValue<real>("Ma"): 0.1;
 
@@ -148,21 +148,6 @@ void multipleLevel(const std::string& configPath)
     VF_LOG_INFO("u* /(dx/dt) = {}", u_star*dt/dx);
     VF_LOG_INFO("dpdx  = {}", pressureGradient);
     VF_LOG_INFO("dpdx /(dx/dt^2) = {}", pressureGradientLB);
-    
-    // double u_DP = 9.9*dt/dx;
-    // double dpdx_DP = u_star * u_star / H / (dx/(dt*dt));
-    // printf( "%1.20f \t %1.20f \t %1.20f \n" ,u_DP ,dpdx_DP, (double)(u_DP+dpdx_DP));
-    real u_SP = 9.9*dt/dx;
-    real dpdx_SP = u_star * u_star / H / (dx/(dt*dt));
-    printf( " u = %1.20f \t dpdx = %1.20f \t u+dpdx = %1.20f \n" ,u_SP ,dpdx_SP,(real)(u_SP+dpdx_SP));
-    real A = (u_SP+dpdx_SP);
-    A -= u_SP;
-    double res_A = (double)A-(double)dpdx_SP;
-    printf("Res A: %1.20f \n", res_A);
-    real res_B = A-dpdx_SP;  
-    // double B = (double)u_SP+dpdx_SP;
-    // B-= u_SP;
-    printf("Res B: %1.20f \n", res_B);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -219,7 +204,7 @@ void multipleLevel(const std::string& configPath)
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
         vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
-        vy  =  2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; ;
+        vy  =  2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; 
         vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
     });
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
