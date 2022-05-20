@@ -211,7 +211,6 @@ public:
     bool nodeInNextCellIs(int index, char type) const;
     bool hasAllNeighbors(uint index) const;
     bool hasNeighborOfType(uint index, char type) const;
-    bool hasNeighborOfTypeInDir(uint index, char type, Direction dir) const;
     bool cellContainsOnly(Cell &cell, char type) const;
     bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
 

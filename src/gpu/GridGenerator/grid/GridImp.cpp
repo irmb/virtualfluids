@@ -612,17 +612,6 @@ bool GridImp::hasNeighborOfType(uint index, char type) const
 	return false;
 }
 
-bool GridImp::hasNeighborOfTypeInDir(uint index, char type, Direction dir) const
-{
-	real x, y, z;
-	this->transIndexToCoords(index, x, y, z);
-    const uint neighborIndex = this->transCoordToIndex(x + dir[0] * this->getDelta(), y + dir[1] * this->getDelta(), z + dir[2] * this->getDelta());
-
-    if (neighborIndex == INVALID_INDEX) return false;
-
-    return this->field.is(neighborIndex, type);
-}
-
 bool GridImp::nodeInNextCellIs(int index, char type) const
 {
     real x, y, z;
@@ -778,9 +767,9 @@ void GridImp::setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheW
 
 uint GridImp::transCoordToIndex(const real &x, const real &y, const real &z) const
 {
-    uint xIndex = getXIndex(x);
-    uint yIndex = getYIndex(y);
-    uint zIndex = getZIndex(z);
+    const uint xIndex = getXIndex(x);
+    const uint yIndex = getYIndex(y);
+    const uint zIndex = getZIndex(z);
 
 	if (xIndex >= nx || yIndex >= ny || zIndex >= nz)
         return INVALID_INDEX;
