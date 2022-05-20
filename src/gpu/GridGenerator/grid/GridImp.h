@@ -53,19 +53,19 @@ class BoundingBox;
 class TriangularMeshDiscretizationStrategy;
 
 #ifdef __GNUC__
-#ifndef __clang__
-#pragma push
-#pragma diag_suppress = 3156
-#endif
+    #ifndef __clang__
+        #pragma push
+        #pragma diag_suppress = 3156
+    #endif
 #endif
 
 // GCC:  warning #3156-D: extern declaration of the entity DIRECTIONS is treated as a static definition
 extern int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 #ifdef __GNUC__
-#ifndef __clang__
-#pragma pop
-#endif
+    #ifndef __clang__
+        #pragma pop
+    #endif
 #endif
 
 class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, public Grid
@@ -246,6 +246,7 @@ public:
     uint getNumberOfNodesCF() const override;
     uint getNumberOfNodesFC() const override;
     void getGridInterfaceIndices(uint *iCellCfc, uint *iCellCff, uint *iCellFcc, uint *iCellFcf) const override;
+
     static void getGridInterface(uint *gridInterfaceList, const uint *oldGridInterfaceList, uint size);
 
     int *getNeighborsX() const override;
@@ -266,6 +267,7 @@ public:
 public:
     virtual void findSparseIndices(SPtr<Grid> fineGrid) override;
 
+    void findForGridInterfaceNewIndices(SPtr<GridImp> fineGrid);
     void updateSparseIndices();
     void setNeighborIndices(uint index);
     real getFirstFluidNode(real coords[3], int direction, real startCoord) const override;
@@ -304,7 +306,11 @@ public:
     void findQsPrimitive(Object *object);
 
 private:
-    enum class qComputationStageType { FindSolidBoundaryNodes, ComputeQs } qComputationStage;
+
+    enum class qComputationStageType{
+        FindSolidBoundaryNodes,
+        ComputeQs
+    } qComputationStage;
 
 public:
     void enableFindSolidBoundaryNodes() override

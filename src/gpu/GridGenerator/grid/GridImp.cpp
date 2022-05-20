@@ -868,6 +868,7 @@ void GridImp::findSparseIndices(SPtr<Grid> finerGrid)
 
     if (fineGrid) {
         fineGrid->updateSparseIndices();
+        this->findForGridInterfaceNewIndices(fineGrid);
     }
 
     const uint newGridSize = this->getSparseSize();
@@ -875,6 +876,16 @@ void GridImp::findSparseIndices(SPtr<Grid> finerGrid)
                   << ", delete nodes:" << this->getSize() - newGridSize << "\n";
 }
 
+void GridImp::findForGridInterfaceNewIndices(SPtr<GridImp> fineGrid)
+{
+#pragma omp parallel for
+    for (int index = 0; index < (int)this->getNumberOfNodesCF(); index++)
+        this->gridInterface->findForGridInterfaceSparseIndexCF(this, fineGrid.get(), index);
+
+#pragma omp parallel for
+    for (int index = 0; index < (int)this->getNumberOfNodesFC(); index++)
+        this->gridInterface->findForGridInterfaceSparseIndexFC(this, fineGrid.get(), index);
+}
 
 void GridImp::updateSparseIndices()
 {
