@@ -45,4 +45,4 @@ RUN apt-get update &&   \
         pyvista          \
         numpy            \
         ansible          \
-        gcovr==5.1
+        'jinja2<3.1' gcovr==5.0
