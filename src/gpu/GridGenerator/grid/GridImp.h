@@ -28,7 +28,7 @@
 //
 //! \file GridImp.h
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schï¿½nherr
 //=======================================================================================
 #ifndef GRID_IMP_H
 #define GRID_IMP_H
@@ -197,6 +197,7 @@ public:
     void fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir);
     void findStopperNode(uint index);
     void findEndOfGridStopperNode(uint index);
+    void findEndOfGridStopperPeriodicNode(uint index);
     void findSolidStopperNode(uint index);
     void findBoundarySolidNode(uint index);
 
@@ -209,7 +210,7 @@ public:
     bool isNode(uint index, char type) const;
     bool nodeInNextCellIs(int index, char type) const;
     bool hasAllNeighbors(uint index) const;
-    bool hasNeighborOfType(uint index, char type)const;
+    bool hasNeighborOfType(uint index, char type) const;
     bool cellContainsOnly(Cell &cell, char type) const;
     bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
 
