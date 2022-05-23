@@ -5,8 +5,7 @@
 
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 #include "PointerDefinitions.h"
-#include "WbWriter.h"
-#include "WbWriterVtkXMLBinary.h"
+#include "WbWriterVtkXmlBinary.h"
 
 enum class PostProcessingVariable{ 
     // HowTo add new PostProcessingVariable: Add enum here, LAST has to stay last
@@ -19,6 +18,9 @@ enum class PostProcessingVariable{
     Variances,
     LAST,
 };
+
+std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable variable);
+
 
 struct ProbeStruct{
     uint nPoints, nArrays, vals;
@@ -68,8 +70,8 @@ public:
 
     void addPostProcessingVariable(PostProcessingVariable _variable);
 
-private:
-    virtual WbWriter* getWriter(){ return WbWriterVtkXmlBinary::getInstance(); };
+protected:
+    virtual WbWriterVtkXmlBinary* getWriter(){ return WbWriterVtkXmlBinary::getInstance(); };
     virtual void findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
                        std::vector<real>& distX_level, std::vector<real>& distY_level, std::vector<real>& distZ_level,      
                        std::vector<real>& pointCoordsX_level, std::vector<real>& pointCoordsY_level, std::vector<real>& pointCoordsZ_level,
@@ -87,8 +89,8 @@ private:
     std::vector<std::string> getVarNames();
     std::string makeGridFileName(int level, int id, int t, uint part);
     std::string makeParallelFileName(int id, int t);
-    
-private:
+
+protected:
     const std::string probeName;
     const std::string outputPath;
 
@@ -100,7 +102,6 @@ private:
     uint tStartAvg;
     uint tStartOut;
     uint tOut;
-
 };
 
 #endif

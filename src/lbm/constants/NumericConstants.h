@@ -228,6 +228,7 @@ static constexpr float c290o1 = 290.0f;
 static constexpr float c367o1 = 367.0f;
 
 static constexpr float Op0000002 = 0.0000002f;
+static constexpr float c4o10 = 0.4f;
 static constexpr float c10eM30 = 1e-30f;
 static constexpr float c10eM10 = 1e-10f;
 static constexpr float smallSingle = 0.0000000002f;
