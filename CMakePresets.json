@@ -9,7 +9,12 @@
         {
             "name": "default",
             "hidden": true,
-            "binaryDir": "${sourceDir}/build/",
+            "binaryDir": "${sourceDir}/build/"
+        },
+        {
+            "name": "unit_tests",
+            "inherits": "default",
+            "hidden": true,
             "cacheVariables": {
                 "BUILD_VF_UNIT_TESTS": "ON"
             }
@@ -48,7 +53,8 @@
         {
             "name": "default_gpu_numerical_tests",
             "inherits": [
-                "default_gpu"
+                "default_gpu",
+                "unit_tests"
             ],
             "hidden": true,
             "description": "GPU numerical tests of VirtualFluids",
@@ -63,7 +69,8 @@
             "description": "All build of VirtualFluids",
             "inherits": [
                 "default_cpu",
-                "default_gpu"
+                "default_gpu",
+                "unit_tests"
             ],
             "cacheVariables": {
                 "BUILD_VF_DOUBLE_ACCURACY": "ON"
@@ -132,6 +139,118 @@
                 "default_gpu_numerical_tests"
             ],
             "displayName": "gpu numerical tests msvc configuration"
+        },
+        {
+            "name": "debug",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "release",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "min_size_rel",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "MinSizeRel"
+            }
+        },
+        {
+            "name": "rel_with_deb_info",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "debug_make_gpu",
+            "displayName": "Debug GPU",
+            "inherits": [
+                "gpu_make",
+                "debug"
+            ]
+        },
+        {
+            "name": "release_make_gpu",
+            "displayName": "Release GPU",
+            "inherits": [
+                "gpu_make",
+                "release"
+            ]
+        },
+        {
+            "name": "min_size_rel_make_gpu",
+            "displayName": "MinSizeRel GPU",
+            "inherits": [
+                "gpu_make",
+                "min_size_rel"
+            ]
+        },
+        {
+            "name": "rel_with_deb_info_make_gpu",
+            "displayName": "RelWithDebInfo GPU",
+            "inherits": [
+                "gpu_make",
+                "rel_with_deb_info"
+            ]
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "Default",
+            "jobs": 4,
+            "configurePreset": "default"
+        },
+        {
+            "name": "GPU",
+            "configurePreset": "gpu_make",
+            "hidden": true,
+            "targets": [
+                "ActuatorLine",
+                "DrivenCavity",
+                "ABL"
+            ],
+            "inherits": [
+                "default"
+            ]
+        },
+        {
+            "name": "Debug_GPU",
+            "displayName": "Debug",
+            "description": "Compile GPU version with debug information",
+            "configurePreset": "debug_make_gpu",
+            "inherits": [
+                "GPU"
+            ]
+        },
+        {
+            "name": "MinSizeRel_GPU",
+            "displayName": "MinSizeRel",
+            "configurePreset": "min_size_rel_make_gpu",
+            "inherits": [
+                "GPU"
+            ]
+        },
+        {
+            "name": "RelWithDebInfo_GPU",
+            "displayName": "RelWithDebInfo",
+            "configurePreset": "rel_with_deb_info_make_gpu",
+            "inherits": [
+                "GPU"
+            ]
+        },
+        {
+            "name": "Release_GPU",
+            "description": "Build release version of GPU",
+            "displayName": "Release GPU",
+            "configurePreset": "release_make_gpu",
+            "inherits":["GPU"]
         }
     ]
 }
