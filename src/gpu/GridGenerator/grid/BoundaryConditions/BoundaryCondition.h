@@ -63,6 +63,8 @@ public:
     bool isSide(SideType side) const;
 
     real getQ(uint index, uint dir) { return this->qs[index][dir]; }
+
+    void getCoords( SPtr<Grid> grid, std::vector<real>& x, std::vector<real>& y, std::vector<real>& z);
 };
 
 }
@@ -175,11 +177,11 @@ public:
     real getVy(uint index) { return this->vyList[index]; }
     real getVz(uint index) { return this->vzList[index]; }
 
+
     void setVelocityProfile( SPtr<Grid> grid, std::function<void(real,real,real,real&,real&,real&)> velocityProfile );
 };
 
 //////////////////////////////////////////////////////////////////////////
-
 
 class GeometryBoundaryCondition : public VelocityBoundaryCondition
 {
@@ -214,5 +216,14 @@ public:
                                                   real v, real r );
 };
 
-
+class PrecursorBoundaryCondition : public VelocityBoundaryCondition
+{
+public:
+    static SPtr<PrecursorBoundaryCondition> make(real vx, real vy, real vz)
+    {
+        return SPtr<PrecursorBoundaryCondition>(new PrecursorBoundaryCondition(vx, vy, vz));
+    }
+private:
+    PrecursorBoundaryCondition(real vx, real vy, real vz) : VelocityBoundaryCondition( vx, vy, vz) { };
+};
 #endif
