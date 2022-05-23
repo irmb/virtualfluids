@@ -186,7 +186,7 @@ void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
 #pragma omp parallel for
     for (int index = 0; index < (int)this->size; index++)
         this->findEndOfGridStopperNode(index);
-
+    
     *logging::out << logging::Logger::INFO_INTERMEDIATE
         << "Grid created: " << "from (" << this->startX << ", " << this->startY << ", " << this->startZ << ") to (" << this->endX << ", " << this->endY << ", " << this->endZ << ")\n"
         << "nodes: " << this->nx << " x " << this->ny << " x " << this->nz << " = " << this->size << "\n";
@@ -440,7 +440,7 @@ void GridImp::findEndOfGridStopperNode(uint index)
         else
             this->field.setFieldEntryToStopperOutOfGridBoundary(index);
     }
-
+    
 	if (isValidEndOfGridBoundaryStopper(index))
 		this->field.setFieldEntryToStopperOutOfGridBoundary(index);
 }
@@ -868,6 +868,7 @@ void GridImp::findSparseIndices(SPtr<Grid> finerGrid)
 
     if (fineGrid) {
         fineGrid->updateSparseIndices();
+        this->findForGridInterfaceNewIndices(fineGrid);
     }
 
     const uint newGridSize = this->getSparseSize();
@@ -875,6 +876,16 @@ void GridImp::findSparseIndices(SPtr<Grid> finerGrid)
                   << ", delete nodes:" << this->getSize() - newGridSize << "\n";
 }
 
+void GridImp::findForGridInterfaceNewIndices(SPtr<GridImp> fineGrid)
+{
+#pragma omp parallel for
+    for (int index = 0; index < (int)this->getNumberOfNodesCF(); index++)
+        this->gridInterface->findForGridInterfaceSparseIndexCF(this, fineGrid.get(), index);
+
+#pragma omp parallel for
+    for (int index = 0; index < (int)this->getNumberOfNodesFC(); index++)
+        this->gridInterface->findForGridInterfaceSparseIndexFC(this, fineGrid.get(), index);
+}
 
 void GridImp::updateSparseIndices()
 {
@@ -1448,7 +1459,6 @@ void GridImp::calculateQs(const uint index, const Vertex &point, Object* object)
                     
                 this->qPatches[ this->qIndices[index] ] = 0;
 
-				//printf("%d %f \n", this->qIndices[index], subdistance);
 			}
 		}
 	}

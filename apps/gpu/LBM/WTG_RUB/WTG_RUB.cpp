@@ -68,7 +68,7 @@
 
 LbmOrGks lbmOrGks = LBM;
 
-const real L  = 1.0;
+// const real L  = 1.0;
 
 const real velocity  = 1.0;
 
@@ -89,7 +89,7 @@ int setupDomain = 4;
 std::string path("D:/out/WTG_RUB"); //Mollok
 std::string inputPath("D:/out/WTG_RUB/input/");
 
-const uint timeStepStartOut = 0;
+// const uint timeStepStartOut = 0;
 const uint timeStepOut = 10000;
 const uint timeStepEnd = 100000;
 
@@ -127,7 +127,7 @@ void multipleLevel(const std::string& configPath)
         maxLevel    = 5;
         viscosityLB = (real)3.75e-06; // LB units
     } else if (setupDomain == 2) {
-        dx          = (real)1;   
+        dx          = (real)1;
         maxLevel    = 3;
         viscosityLB = (real)1.5e-05; // LB units
     } else if (setupDomain == 3) {
@@ -139,7 +139,7 @@ void multipleLevel(const std::string& configPath)
         maxLevel = 2;
         viscosityLB = (real)3.75e-06; // LB units
     }
-    
+
     real x_min = 0.0;
     real x_max = 1250.0;
     real y_min = 0.0;
@@ -165,14 +165,14 @@ void multipleLevel(const std::string& configPath)
     bool measureVeloProfilesOnly = false;
 
     // Two Components: true->DiffOn, false->DiffOff
-    bool diffOnOff = false;
+    // bool diffOnOff = false;
 
     // Resetting diff or flow field, e.g. after restart, do not reset diff/flow at start of measureRun ;-)
-    bool reset_diff = false;
+    // bool reset_diff = false;
     bool reset_flow = false;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->addCoarseGrid(x_min, y_min, z_min, 
+    gridBuilder->addCoarseGrid(x_min, y_min, z_min,
                                x_max, y_max, z_max, dx);
 
     gridBuilder->setNumberOfLayers(0, 0);
@@ -477,7 +477,7 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
                 }
             }
         }
-    } 
+    }
     else if (setupDomain == 3) {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
         // creates Cuboids (FG1 to FG2, lvl 1 to lvl 2) and add STLs (FG3 to FG4, lvl 3 to lvl 4) depending on maxLevel
@@ -767,11 +767,11 @@ int main( int argc, char* argv[])
         std::cout << "Log initialization failed: " << ex.what() << std::endl;
     }
     catch (const std::bad_alloc& e)
-    { 
+    {
         VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
     }
     catch (const std::exception& e)
-    {   
+    {
         VF_LOG_CRITICAL("exception: {}", e.what());
     }
     catch (...)

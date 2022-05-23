@@ -28,7 +28,7 @@
 //
 //! \file GridImp.h
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schï¿½nherr
 //=======================================================================================
 #ifndef GRID_IMP_H
 #define GRID_IMP_H
@@ -53,19 +53,19 @@ class BoundingBox;
 class TriangularMeshDiscretizationStrategy;
 
 #ifdef __GNUC__
-#ifndef __clang__
-#pragma push
-#pragma diag_suppress = 3156
-#endif
+    #ifndef __clang__
+        #pragma push
+        #pragma diag_suppress = 3156
+    #endif
 #endif
 
 // GCC:  warning #3156-D: extern declaration of the entity DIRECTIONS is treated as a static definition
 extern int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 #ifdef __GNUC__
-#ifndef __clang__
-#pragma pop
-#endif
+    #ifndef __clang__
+        #pragma pop
+    #endif
 #endif
 
 class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, public Grid
@@ -197,6 +197,7 @@ public:
     void fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir);
     void findStopperNode(uint index);
     void findEndOfGridStopperNode(uint index);
+    void findEndOfGridStopperPeriodicNode(uint index);
     void findSolidStopperNode(uint index);
     void findBoundarySolidNode(uint index);
 
@@ -209,7 +210,7 @@ public:
     bool isNode(uint index, char type) const;
     bool nodeInNextCellIs(int index, char type) const;
     bool hasAllNeighbors(uint index) const;
-    bool hasNeighborOfType(uint index, char type)const;
+    bool hasNeighborOfType(uint index, char type) const;
     bool cellContainsOnly(Cell &cell, char type) const;
     bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
 
@@ -246,6 +247,7 @@ public:
     uint getNumberOfNodesCF() const override;
     uint getNumberOfNodesFC() const override;
     void getGridInterfaceIndices(uint *iCellCfc, uint *iCellCff, uint *iCellFcc, uint *iCellFcf) const override;
+
     static void getGridInterface(uint *gridInterfaceList, const uint *oldGridInterfaceList, uint size);
 
     int *getNeighborsX() const override;
@@ -266,6 +268,7 @@ public:
 public:
     virtual void findSparseIndices(SPtr<Grid> fineGrid) override;
 
+    void findForGridInterfaceNewIndices(SPtr<GridImp> fineGrid);
     void updateSparseIndices();
     void setNeighborIndices(uint index);
     real getFirstFluidNode(real coords[3], int direction, real startCoord) const override;
@@ -304,7 +307,11 @@ public:
     void findQsPrimitive(Object *object);
 
 private:
-    enum class qComputationStageType { FindSolidBoundaryNodes, ComputeQs } qComputationStage;
+
+    enum class qComputationStageType{
+        FindSolidBoundaryNodes,
+        ComputeQs
+    } qComputationStage;
 
 public:
     void enableFindSolidBoundaryNodes() override

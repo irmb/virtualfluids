@@ -79,7 +79,7 @@ protected:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-//! \brief forward chimera transformation \ref forwardInverseChimeraWithK 
+//! \brief forward chimera transformation \ref forwardInverseChimeraWithK
 //! Transformation from distributions to central moments according to Eq. (6)-(14) in
 //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
 //! Modified for lower round-off errors.
@@ -112,7 +112,7 @@ inline void CumulantK17LBMKernel::backwardInverseChimeraWithK(LBMReal& mfa, LBMR
     mfb = m1;
 }
 ////////////////////////////////////////////////////////////////////////////////
-//! \brief forward chimera transformation \ref forwardChimera 
+//! \brief forward chimera transformation \ref forwardChimera
 //! Transformation from distributions to central moments according to Eq. (6)-(14) in
 //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
 //! for \f$ K_{abc}=0 \f$. This is to avoid unnessary floating point operations.
@@ -128,7 +128,7 @@ inline void CumulantK17LBMKernel::forwardChimera(LBMReal& mfa, LBMReal& mfb, LBM
     mfa = m1;
 }
 ////////////////////////////////////////////////////////////////////////////////
-//! \brief backward chimera transformation \ref backwardChimera 
+//! \brief backward chimera transformation \ref backwardChimera
 //! Transformation from central moments to distributions according to Eq. (57)-(65) in
 //! <a href="https://doi.org/10.1016/j.jcp.2017.05.040"><b>[ M. Geier et al. (2017), DOI:10.1016/j.jcp.2017.05.040 ]</b></a>
 //! for \f$ K_{abc}=0 \f$. This is to avoid unnessary floating point operations.

@@ -54,6 +54,7 @@ void gg::BoundaryCondition::getCoords(SPtr<Grid> grid, std::vector<real>& x, std
         z.push_back(zTmp);
     }
 }
+//////////////////////////////////////////////////////////////////////////
 
 void VelocityBoundaryCondition::setVelocityProfile(
     SPtr<Grid> grid, std::function<void(real, real, real, real &, real &, real &)> velocityProfile)
@@ -67,6 +68,8 @@ void VelocityBoundaryCondition::setVelocityProfile(
         velocityProfile(x, y, z, this->vxList[index], this->vyList[index], this->vzList[index]);
     }
 }
+
+//////////////////////////////////////////////////////////////////////////
 
 void GeometryBoundaryCondition::setTangentialVelocityForPatch(SPtr<Grid> grid, uint patch, 
                                                               real p1x, real p1y, real p1z, 
@@ -115,3 +118,23 @@ void GeometryBoundaryCondition::setTangentialVelocityForPatch(SPtr<Grid> grid, u
         }
     }
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+void StressBoundaryCondition::fillSamplingIndices(std::vector<SPtr<Grid> > grid, uint level, uint samplingOffset)
+{
+
+    for( uint i = 0; i < this->indices.size(); i++ )
+    {
+        real x, y, z;
+        grid[level]->transIndexToCoords(this->indices[i], x, y, z);
+
+        real x_sampling = x + this->getNormalx(i)*samplingOffset*grid[level]->getDelta();
+        real y_sampling = y + this->getNormaly(i)*samplingOffset*grid[level]->getDelta();
+        real z_sampling = z + this->getNormalz(i)*samplingOffset*grid[level]->getDelta();
+
+        this->velocitySamplingIndices.push_back( grid[level]->transCoordToIndex(x_sampling, y_sampling, z_sampling) );
+    }
+    
+}
+

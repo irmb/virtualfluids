@@ -120,7 +120,7 @@ public:
     }
 
     void fillSlipNormalLists()
-    {
+    {   
         for (uint index : this->indices) {
             (void)index;
             this->normalXList.push_back(normalX);
@@ -136,6 +136,77 @@ public:
     real getNormalx(uint index) { return this->normalXList[index]; }
     real getNormaly(uint index) { return this->normalYList[index]; }
     real getNormalz(uint index) { return this->normalZList[index]; }
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+class StressBoundaryCondition : public gg::BoundaryCondition
+{
+public:
+    static SPtr<StressBoundaryCondition> make(real normalX, real normalY, real normalZ, uint samplingOffset, real z0)
+    {
+        return SPtr<StressBoundaryCondition>(new StressBoundaryCondition(normalX, normalY, normalZ, samplingOffset, z0));
+    }
+
+    real normalX, normalY, normalZ;
+    uint samplingOffset;
+    real z0;
+    std::vector<real> normalXList, normalYList, normalZList;
+    std::vector<uint> samplingOffsetList;
+    std::vector<real> z0List;
+    std::vector<uint> velocitySamplingIndices;
+
+protected:
+    StressBoundaryCondition(real normalX, real normalY, real normalZ, uint samplingOffset, real z0) :   normalX(normalX), normalY(normalY), normalZ(normalZ), samplingOffset(samplingOffset), z0(z0){ }
+
+public:
+    virtual char getType() const override
+    {
+        return vf::gpu::BC_STRESS;
+    }
+    
+    void fillStressNormalLists()
+    {
+        for (uint index : this->indices) {
+            (void)index;
+            this->normalXList.push_back(normalX);
+            this->normalYList.push_back(normalY);
+            this->normalZList.push_back(normalZ);
+        }
+    }
+
+    void fillZ0Lists()
+    {
+        for (uint index : this->indices) {
+            (void)index;
+            this->z0List.push_back(z0);
+        }
+    }
+
+    void fillSamplingOffsetLists()
+    {
+        for (uint index : this->indices) {
+            (void)index;
+            this->samplingOffsetList.push_back(samplingOffset);
+        }
+    }
+
+    real getNormalx() { return this->normalX; }
+    real getNormaly() { return this->normalY; }
+    real getNormalz() { return this->normalZ; }
+
+    real getNormalx(uint index) { return this->normalXList[index]; }
+    real getNormaly(uint index) { return this->normalYList[index]; }
+    real getNormalz(uint index) { return this->normalZList[index]; }
+
+    uint getSamplingOffset() { return this->samplingOffset; }
+    uint getSamplingOffset(uint index) { return this->samplingOffsetList[index]; }
+
+    real getZ0() { return this->z0; }
+    real getZ0(uint index) { return this->z0List[index]; }
+
+    void fillSamplingIndices(std::vector<SPtr<Grid> > grid, uint level, uint samplingOffset);
+
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -189,9 +189,9 @@ struct LBMSimulationParameter
     unsigned int mem_size_kFC_off;
 
     // BC's////////////////////
-    QforBoundaryConditions QWall, Qinflow, Qoutflow, QSlip;
-    unsigned int kQ = 0, kInflowQ = 0, kOutflowQ = 0, kSlipQ = 0, kPrecursor=0;
-    unsigned int kQread, kInflowQread, kOutflowQread, kSlipQread;
+    QforBoundaryConditions QWall, Qinflow, Qoutflow, QSlip, QStress;
+    unsigned int kQ = 0, kInflowQ = 0, kOutflowQ = 0, kSlipQ = 0, kStressQ = 0, kPrecursorQ = 0;
+    unsigned int kQread, kInflowQread, kOutflowQread, kSlipQread, kStressQread, kPrecursorQread;
 
     QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1;
     QforBoundaryConditions QPropeller;
@@ -203,6 +203,9 @@ struct LBMSimulationParameter
     QforBoundaryConditions QInlet, QOutlet, QPeriodic;
     unsigned int kInletQread, kOutletQread;
     unsigned int kPressQ = 0, kPressQread;
+
+    WallModelParameters wallModel;
+    
     // testRoundoffError
     Distributions27 kDistTestRE;
 
@@ -453,6 +456,7 @@ public:
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setUseAMD( bool useAMD);
     void setSGSConstant( real SGSConstant);
+    void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
     void setSimulatePorousMedia(bool simulatePorousMedia);
     void setIsF3(bool isF3);
@@ -714,6 +718,7 @@ public:
     bool getUseTurbulentViscosity();
     bool getUseAMD();
     real getSGSConstant();
+    bool getHasWallModelMonitor();
     bool getUseInitNeq();
     bool getSimulatePorousMedia();
     bool getIsF3();

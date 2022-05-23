@@ -1,9 +1,3 @@
-if(BUILD_NUMERIC_TESTS)
-    set(CMAKE_CXX_STANDARD 17)
-endif()
-
-#############################################################
-
 IF( BUILD_VF_GKS )
     # only use this with device of CC larger than 6.0
     set(CMAKE_CUDA_FLAGS "-Xptxas=\"-v\"" CACHE STRING "" FORCE)
@@ -37,13 +31,15 @@ IF (BUILD_VF_GPU)
     #add_subdirectory(targets/apps/LBM/BaselNU)
     #add_subdirectory(targets/apps/LBM/BaselMultiGPU)
 
-    #add_subdirectory(apps/gpu/LBM/DrivenCavity)
+    add_subdirectory(apps/gpu/LBM/DrivenCavity)
     add_subdirectory(apps/gpu/LBM/WTG_RUB)
     #add_subdirectory(apps/gpu/LBM/gridGeneratorTest)
     #add_subdirectory(apps/gpu/LBM/TGV_3D)
     #add_subdirectory(apps/gpu/LBM/TGV_3D_MultiGPU)
     add_subdirectory(apps/gpu/LBM/ActuatorLine)
     add_subdirectory(apps/gpu/LBM/ABL)
+    #add_subdirectory(apps/gpu/LBM/ActuatorLine)
+    add_subdirectory(apps/gpu/LBM/BoundaryLayer)
 ELSE()
     MESSAGE( STATUS "exclude Virtual Fluids GPU." )
 ENDIF()

@@ -28,7 +28,7 @@
 //
 //! \file LevelGridBuilder.h
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Schönherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schï¿½nherr
 //=======================================================================================
 #ifndef LEVEL_GRID_BUILDER_H
 #define LEVEL_GRID_BUILDER_H
@@ -54,6 +54,7 @@ class BoundingBox;
 class Side;
 class VelocityBoundaryCondition;
 class SlipBoundaryCondition;
+class StressBoundaryCondition;
 class PressureBoundaryCondition;
 class GeometryBoundaryCondition;
 enum class SideType;
@@ -73,6 +74,7 @@ public:
     GRIDGENERATOR_EXPORT virtual ~LevelGridBuilder();
 
     GRIDGENERATOR_EXPORT void setSlipBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ);
+    GRIDGENERATOR_EXPORT void setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ, uint samplingOffset, real z0);
     GRIDGENERATOR_EXPORT void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
     GRIDGENERATOR_EXPORT void setPressureBoundaryCondition(SideType sideType, real rho);
     GRIDGENERATOR_EXPORT void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
@@ -99,6 +101,13 @@ public:
     GRIDGENERATOR_EXPORT virtual void getSlipValues(real* normalX, real* normalY, real* normalZ, int* indices, int level) const override;
     GRIDGENERATOR_EXPORT virtual void getSlipQs(real* qs[27], int level) const override;
 
+    GRIDGENERATOR_EXPORT uint getStressSize(int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getStressValues(  real* normalX, real* normalY, real* normalZ, 
+                                                        real* vx,      real* vy,      real* vz, 
+                                                        real* vx1,     real* vy1,     real* vz1, 
+                                                        int* indices, int* samplingIndices, int* samplingOffsets, real* z0, int level) const override;
+    GRIDGENERATOR_EXPORT virtual void getStressQs(real* qs[27], int level) const override;
+        
     GRIDGENERATOR_EXPORT uint getVelocitySize(int level) const override;
     GRIDGENERATOR_EXPORT virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const override;
     GRIDGENERATOR_EXPORT virtual void getVelocityQs(real* qs[27], int level) const override;
@@ -127,11 +136,13 @@ protected:
 
         std::vector<SPtr<SlipBoundaryCondition>> slipBoundaryConditions;
 
+        std::vector<SPtr<StressBoundaryCondition>> stressBoundaryConditions;
+
         std::vector<SPtr<VelocityBoundaryCondition>> velocityBoundaryConditions;
 
         std::vector<SPtr<PressureBoundaryCondition>> pressureBoundaryConditions;
 
-        std::vector<SPtr<VelocityBoundaryCondition> > noSlipBoundaryConditions;
+        std::vector<SPtr<VelocityBoundaryCondition>> noSlipBoundaryConditions;
 
         SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
     };
