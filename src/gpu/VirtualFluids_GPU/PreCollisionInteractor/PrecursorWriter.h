@@ -15,7 +15,7 @@ class GridProvider;
 
 struct PrecursorStruct
 {
-    uint nPoints;
+    uint nPoints, nPointsInPlane, timestepsPerFile, filesWritten, timestepsBuffered;
     uint *indicesH, *indicesD;
     real *vxH, *vxD;
     real *vyH, *vyD;
@@ -24,7 +24,6 @@ struct PrecursorStruct
     UbTupleFloat2 origin;
     UbTupleFloat3 spacing;
     int* indicesOnPlane;
-    uint nPointsInPlane, timestepsPerFile, filesWritten;
 };
 
 class PrecursorWriter : public PreCollisionInteractor
@@ -56,14 +55,13 @@ public:
     void free(Parameter* para, CudaMemoryManager* cudaManager) override;
 
     SPtr<PrecursorStruct> getPrecursorStruct(int level){return precursorStructs[level];}
+    static std::string makeFileName(std::string fileName, int level, int id, uint part);
 private:
     WbWriterVtkXmlImageBinary* getWriter(){ return WbWriterVtkXmlImageBinary::getInstance(); };
     void write(Parameter* para, int level);
-    std::string makeFileName(int level, int id, uint part);
 
 private:
     std::vector<SPtr<PrecursorStruct>> precursorStructs;
-    std::vector<std::vector<std::vector<real>>> vx, vy, vz; // level, time, array
     std::string fileName, outputPath;
     std::vector<std::string> nodedatanames = {"vx", "vy", "vz"};
     std::vector<std::string> celldatanames;
