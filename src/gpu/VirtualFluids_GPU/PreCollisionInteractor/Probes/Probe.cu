@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file Probe.h
+//! \author Henry Korb, Henrik Asmuth
+//=======================================================================================
+
 #include "Probe.h"
 
 #include <cuda.h>
@@ -13,54 +45,25 @@
 #include "GPU/CudaMemoryManager.h"
 
 
-std::vector<std::string> getPostProcessingVariableNames(PostProcessingVariable variable)
-{
-    std::vector<std::string> varNames;
-    switch (variable)
-    {
-    case PostProcessingVariable::Instantaneous:
-        varNames.push_back("vx");
-        varNames.push_back("vy");
-        varNames.push_back("vz");
-        varNames.push_back("rho");
-        break;
-    case PostProcessingVariable::Means:
-        varNames.push_back("vx_mean");
-        varNames.push_back("vy_mean");
-        varNames.push_back("vz_mean");
-        varNames.push_back("rho_mean");
-        break;
-    case PostProcessingVariable::Variances:
-        varNames.push_back("vx_var");
-        varNames.push_back("vy_var");
-        varNames.push_back("vz_var");
-        varNames.push_back("rho_var");
-        break;
-    default:
-        break;
-    }
-    return varNames;
-}
-
-__device__ void calculateQuantities(uint n, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
+__device__ void calculatePointwiseQuantities(uint n, real* quantityArray, bool* quantities, uint* quantityArrayOffsets, uint nPoints, uint node, real vx, real vy, real vz, real rho)
 {
     //"https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm"
     // also has extensions for higher order and covariances
     real inv_n = 1/real(n);
 
-    if(quantities[int(PostProcessingVariable::Instantaneous)])
+    if(quantities[int(Statistic::Instantaneous)])
     {
-        uint arrOff = quantityArrayOffsets[int(PostProcessingVariable::Instantaneous)];
+        uint arrOff = quantityArrayOffsets[int(Statistic::Instantaneous)];
         quantityArray[(arrOff+0)*nPoints+node] = vx;
         quantityArray[(arrOff+1)*nPoints+node] = vy;
         quantityArray[(arrOff+2)*nPoints+node] = vz;
         quantityArray[(arrOff+3)*nPoints+node] = rho;
     }
 
-    if(quantities[int(PostProcessingVariable::Means)])
+    if(quantities[int(Statistic::Means)])
     {
         
-        uint arrOff = quantityArrayOffsets[int(PostProcessingVariable::Means)];
+        uint arrOff = quantityArrayOffsets[int(Statistic::Means)];
         real vx_m_old  = quantityArray[(arrOff+0)*nPoints+node];
         real vy_m_old  = quantityArray[(arrOff+1)*nPoints+node];
         real vz_m_old  = quantityArray[(arrOff+2)*nPoints+node];
@@ -76,9 +79,9 @@ __device__ void calculateQuantities(uint n, real* quantityArray, bool* quantitie
         quantityArray[(arrOff+2)*nPoints+node] = vz_m_new;
         quantityArray[(arrOff+3)*nPoints+node] = rho_m_new;
     
-        if(quantities[int(PostProcessingVariable::Variances)])
+        if(quantities[int(Statistic::Variances)])
         {
-            arrOff = quantityArrayOffsets[int(PostProcessingVariable::Variances)];
+            arrOff = quantityArrayOffsets[int(Statistic::Variances)];
 
             real vx_var_old  = quantityArray[(arrOff+0)*nPoints+node];
             real vy_var_old  = quantityArray[(arrOff+1)*nPoints+node];
@@ -98,14 +101,12 @@ __device__ void calculateQuantities(uint n, real* quantityArray, bool* quantitie
     }
 }
 
-__global__ void interpQuantities(   uint* pointIndices,
+__global__ void calcQuantitiesKernel(   uint* pointIndices,
                                     uint nPoints, uint n,
-                                    real* distX, real* distY, real* distZ,
                                     real* vx, real* vy, real* vz, real* rho,            
                                     uint* neighborX, uint* neighborY, uint* neighborZ,
                                     bool* quantities,
-                                    uint* quantityArrayOffsets, real* quantityArray,
-                                    bool interpolate
+                                    uint* quantityArrayOffsets, real* quantityArray
                                 )
 {
     const uint x = threadIdx.x; 
@@ -124,35 +125,65 @@ __global__ void interpQuantities(   uint* pointIndices,
     uint k = pointIndices[node];
     real u_interpX, u_interpY, u_interpZ, rho_interp;
 
-    if(interpolate)
-    {
-        uint ke, kn, kt, kne, kte, ktn, ktne;
-        getNeighborIndicesOfBSW(  k, ke, kn, kt, kne, kte, ktn, ktne, neighborX, neighborY, neighborZ);
+    u_interpX = vx[k];
+    u_interpY = vy[k];
+    u_interpZ = vz[k];
+    rho_interp = rho[k];
 
-        // Trilinear interpolation of macroscopic quantities to probe point
-        real dW, dE, dN, dS, dT, dB;
-        getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX[node], distY[node], distZ[node]);
-
-
-        u_interpX  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
-        u_interpY  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
-        u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
-        rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
-    }
-    else
-    {
-        u_interpX = vx[k];
-        u_interpY = vy[k];
-        u_interpZ = vz[k];
-        rho_interp = rho[k];
-    }
-
-    calculateQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
+    calculatePointwiseQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
 
 }
 
+__global__ void interpAndCalcQuantitiesKernel(   uint* pointIndices,
+                                    uint nPoints, uint n,
+                                    real* distX, real* distY, real* distZ,
+                                    real* vx, real* vy, real* vz, real* rho,            
+                                    uint* neighborX, uint* neighborY, uint* neighborZ,
+                                    bool* quantities,
+                                    uint* quantityArrayOffsets, real* quantityArray
+                                )
+{
+    const uint x = threadIdx.x; 
+    const uint y = blockIdx.x;
+    const uint z = blockIdx.y;
+
+    const uint nx = blockDim.x;
+    const uint ny = gridDim.x;
+
+    const uint node = nx*(ny*z + y) + x;
+
+    if(node>=nPoints) return;
+
+    // Get indices of neighbor nodes. 
+    // node referring to BSW cell as seen from probe point
+    uint k = pointIndices[node];
+    real u_interpX, u_interpY, u_interpZ, rho_interp;
+
+    uint ke, kn, kt, kne, kte, ktn, ktne;
+    getNeighborIndicesOfBSW(  k, ke, kn, kt, kne, kte, ktn, ktne, neighborX, neighborY, neighborZ);
+
+    // Trilinear interpolation of macroscopic quantities to probe point
+    real dW, dE, dN, dS, dT, dB;
+    getInterpolationWeights(dW, dE, dN, dS, dT, dB, distX[node], distY[node], distZ[node]);
+
+    u_interpX  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vx );
+    u_interpY  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vy );
+    u_interpZ  = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, vz );
+    rho_interp = trilinearInterpolation( dW, dE, dN, dS, dT, dB, k, ke, kn, kt, kne, kte, ktn, ktne, rho );
+
+    calculatePointwiseQuantities(n, quantityArray, quantities, quantityArrayOffsets, nPoints, node, u_interpX, u_interpY, u_interpZ, rho_interp);
+
+}
+
+bool Probe::getHasDeviceQuantityArray(){ return this->hasDeviceQuantityArray; }
+
 void Probe::init(Parameter* para, GridProvider* gridProvider, CudaMemoryManager* cudaManager)
 {
+    this->velocityRatio      = para->getVelocityRatio();
+    this->densityRatio       = para->getDensityRatio();
+    this->forceRatio         = para->getForceRatio();
+    this->stressRatio        = para->getDensityRatio()*pow(para->getVelocityRatio(), 2.0);
+    this->accelerationRatio = para->getVelocityRatio()/para->getTimeRatio();
 
     probeParams.resize(para->getMaxLevel()+1);
 
@@ -184,7 +215,8 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
 {
     probeParams[level] = SPtr<ProbeStruct>(new ProbeStruct);
     probeParams[level]->vals = 1;
-    probeParams[level]->nPoints = uint(probeIndices.size());
+    probeParams[level]->nPoints  = uint(pointCoordsX.size()); // Note, need to have both nPoints and nIndices because they differ in PlanarAverage
+    probeParams[level]->nIndices = uint(probeIndices.size());
 
     probeParams[level]->pointCoordsX = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
     probeParams[level]->pointCoordsY = (real*)malloc(probeParams[level]->nPoints*sizeof(real));
@@ -194,30 +226,34 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
     std::copy(pointCoordsY.begin(), pointCoordsY.end(), probeParams[level]->pointCoordsY);
     std::copy(pointCoordsZ.begin(), pointCoordsZ.end(), probeParams[level]->pointCoordsZ);
 
-    // Might have to catch nPoints=0 ?!?!
-    cudaManager->cudaAllocProbeDistances(this, level);
+    // Note, dist only needed for kernels that do interpolate
+    if( distX.size()>0 && distY.size()>0 && distZ.size()>0 )
+    {
+        probeParams[level]->hasDistances=true;
+        cudaManager->cudaAllocProbeDistances(this, level);
+        std::copy(distX.begin(), distX.end(), probeParams[level]->distXH);
+        std::copy(distY.begin(), distY.end(), probeParams[level]->distYH);
+        std::copy(distZ.begin(), distZ.end(), probeParams[level]->distZH);
+        cudaManager->cudaCopyProbeDistancesHtoD(this, level);
+    }  
+    
     cudaManager->cudaAllocProbeIndices(this, level);
-
-    std::copy(distX.begin(), distX.end(), probeParams[level]->distXH);
-    std::copy(distY.begin(), distY.end(), probeParams[level]->distYH);
-    std::copy(distZ.begin(), distZ.end(), probeParams[level]->distZH);
     std::copy(probeIndices.begin(), probeIndices.end(), probeParams[level]->pointIndicesH);
-
-    cudaManager->cudaCopyProbeDistancesHtoD(this, level);
     cudaManager->cudaCopyProbeIndicesHtoD(this, level);
 
     uint arrOffset = 0;
 
     cudaManager->cudaAllocProbeQuantitiesAndOffsets(this, level);
 
-    for( int var=0; var<int(PostProcessingVariable::LAST); var++){
-    if(this->quantities[var])
+    for( int var=0; var<int(Statistic::LAST); var++)
     {
-
-        probeParams[level]->quantitiesH[var] = true;
-        probeParams[level]->arrayOffsetsH[var] = arrOffset;
-        arrOffset += uint(getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var)).size());
-    }}
+        if(this->quantities[var])
+        {
+            probeParams[level]->quantitiesH[var] = true;
+            probeParams[level]->arrayOffsetsH[var] = arrOffset;
+            arrOffset += uint( this->getPostProcessingVariables(static_cast<Statistic>(var)).size() ); 
+        }
+    }
     
     cudaManager->cudaCopyProbeQuantitiesAndOffsetsHtoD(this, level);
 
@@ -232,53 +268,67 @@ void Probe::addProbeStruct(CudaMemoryManager* cudaManager, std::vector<int>& pro
             probeParams[level]->quantitiesArrayH[arr*probeParams[level]->nPoints+point] = 0.0f;
         }
     }
-    cudaManager->cudaCopyProbeQuantityArrayHtoD(this, level);
+    if(this->hasDeviceQuantityArray)
+        cudaManager->cudaCopyProbeQuantityArrayHtoD(this, level);
 }
 
 void Probe::interact(Parameter* para, CudaMemoryManager* cudaManager, int level, uint t)
 {
-
-    if(t>this->tStartAvg)
+    if(max(int(t) - int(this->tStartAvg), -1) % this->tAvg==0)
     {
         SPtr<ProbeStruct> probeStruct = this->getProbeStruct(level);
 
-        this->calculateQuantities(probeStruct, para, level);
-        probeStruct->vals++;
+        this->calculateQuantities(probeStruct, para, t, level);
+        if(t>=this->tStartTmpAveraging) probeStruct->vals++;
+    }
 
-        if(max(int(t) - int(this->tStartOut), -1) % this->tOut == 0)
-        {
+    if(max(int(t) - int(this->tStartOut), -1) % this->tOut == 0)
+    {
+        if(this->hasDeviceQuantityArray)
             cudaManager->cudaCopyProbeQuantityArrayDtoH(this, level);
-
-            this->write(para, level, t);
-        }
-
+        this->write(para, level, t);
     }
 }
 
 void Probe::free(Parameter* para, CudaMemoryManager* cudaManager)
 {
     for(int level=0; level<=para->getMaxLevel(); level++)
-    {
-        cudaManager->cudaFreeProbeDistances(this, level);
+    {   
+        if(this->probeParams[level]->hasDistances)
+            cudaManager->cudaFreeProbeDistances(this, level);
         cudaManager->cudaFreeProbeIndices(this, level);
         cudaManager->cudaFreeProbeQuantityArray(this, level);
         cudaManager->cudaFreeProbeQuantitiesAndOffsets(this, level);
     }
 }
 
-void Probe::addPostProcessingVariable(PostProcessingVariable variable)
+void Probe::addStatistic(Statistic variable)
 {
+    assert(this->isAvailableStatistic(variable));
+
     this->quantities[int(variable)] = true;
     switch(variable)
     {
-        case PostProcessingVariable::Variances: 
-            this->addPostProcessingVariable(PostProcessingVariable::Means); break;
+        case Statistic::Variances: 
+            this->addStatistic(Statistic::Means); break;
+
         default: break;
+    }
+}
+
+void Probe::addAllAvailableStatistics()
+{
+    for( int var=0; var < int(Statistic::LAST); var++)
+    {
+        if(this->isAvailableStatistic(static_cast<Statistic>(var))) 
+            this->addStatistic(static_cast<Statistic>(var));
     }
 }
 
 void Probe::write(Parameter* para, int level, int t)
 {
+    int t_write = this->fileNameLU ? t: t/this->tOut; 
+
     const uint numberOfParts = this->getProbeStruct(level)->nPoints / para->getlimitOfNodesForVTK() + 1;
 
     std::vector<std::string> fnames;
@@ -286,21 +336,22 @@ void Probe::write(Parameter* para, int level, int t)
 	{
         std::string fname = this->probeName + "_bin_lev_" + StringUtil::toString<int>(level)
                                          + "_ID_" + StringUtil::toString<int>(para->getMyID())
-                                         + "_Part_" + StringUtil::toString<int>(i) 
-                                         + "_t_" + StringUtil::toString<int>(t) 
-                                         + ".vtk";
+                                         + "_Part_" + StringUtil::toString<int>(i);
+        if(!this->outputTimeSeries) fname += "_t_" + StringUtil::toString<int>(t_write);
+        fname += ".vtk";
 		fnames.push_back(fname);
         this->fileNamesForCollectionFile.push_back(fname);
     }
     this->writeGridFiles(para, level, fnames, t);
 
-    if(level == 0) this->writeCollectionFile(para, t);
+    if(level == 0 && !this->outputTimeSeries) this->writeCollectionFile(para, t);
 }
 
 void Probe::writeCollectionFile(Parameter* para, int t)
 {
+    int t_write = this->fileNameLU ? t: t/this->tOut; 
     std::string filename = this->probeName + "_bin_ID_" + StringUtil::toString<int>(para->getMyID()) 
-                                           + "_t_" + StringUtil::toString<int>(t) 
+                                           + "_t_" + StringUtil::toString<int>(t_write) 
                                            + ".vtk";
 
     std::ofstream file;
@@ -314,7 +365,7 @@ void Probe::writeCollectionFile(Parameter* para, int t)
 
     file << "    <PPointData>" << std::endl;
 
-    for(std::string varName: this->getVarNames())
+    for(std::string varName: this->getVarNames()) //TODO
     {
         file << "       <DataArray type=\"Float64\" Name=\""<< varName << "\" /> " << std::endl;
     }
@@ -355,7 +406,8 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
     for (uint part = 0; part < fnames.size(); part++)
     {        
         startpos = part * para->getlimitOfNodesForVTK();
-        sizeOfNodes = min(para->getlimitOfNodesForVTK(), probeStruct->nPoints - startpos);
+        uint nDataPoints = this->outputTimeSeries? this->tProbe: probeStruct->nPoints;
+        sizeOfNodes = min(para->getlimitOfNodesForVTK(), nDataPoints - startpos);
         endpos = startpos + sizeOfNodes;
 
         //////////////////////////////////////////////////////////////////////////
@@ -370,38 +422,29 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
 
         for( auto it=nodedata.begin(); it!=nodedata.end(); it++) it->resize(sizeOfNodes);
 
-        for( int var=0; var < int(PostProcessingVariable::LAST); var++){
-        if(this->quantities[var])
-        {
-            PostProcessingVariable quantity = static_cast<PostProcessingVariable>(var);
-            real coeff;
-            uint n_arrs = uint(getPostProcessingVariableNames(quantity).size());
-
-            switch(quantity)
+        for( int var=0; var < int(Statistic::LAST); var++){           
+            if(this->quantities[var])
             {
-            case PostProcessingVariable::Instantaneous:
-                coeff = para->getVelocityRatio();
-            break;
-            case PostProcessingVariable::Means:
-                coeff = para->getVelocityRatio();
-            break;
-            case PostProcessingVariable::Variances:
-                coeff = pow(para->getVelocityRatio(),2);
-            break;
-            default: break;
-            }
+                Statistic statistic = static_cast<Statistic>(var);
+                real coeff;
 
-            uint arrOff = probeStruct->arrayOffsetsH[var];
-            uint arrLen = probeStruct->nPoints;
+                std::vector<PostProcessingVariable> postProcessingVariables = this->getPostProcessingVariables(statistic);
+                uint n_arrs = uint(postProcessingVariables.size());
 
-            for(uint arr=0; arr<n_arrs; arr++)
-            {
-                for (uint pos = startpos; pos < endpos; pos++)
+                uint arrOff = probeStruct->arrayOffsetsH[var];
+                uint arrLen = probeStruct->nPoints;
+
+                for(uint arr=0; arr<n_arrs; arr++)
                 {
-                    nodedata[arrOff+arr][pos-startpos] = double(probeStruct->quantitiesArrayH[(arrOff+arr)*arrLen+pos]*coeff);
+                    coeff = postProcessingVariables[arr].conversionFactor;
+                    
+                    for (uint pos = startpos; pos < endpos; pos++)
+                    {
+                        nodedata[arrOff+arr][pos-startpos] = double(probeStruct->quantitiesArrayH[(arrOff+arr)*arrLen+pos]*coeff);
+                    }
                 }
             }
-        }}
+        }
         WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(this->outputPath + "/" + fnames[part], nodes, nodedatanames, nodedata);
     }
 }
@@ -409,11 +452,14 @@ void Probe::writeGridFiles(Parameter* para, int level, std::vector<std::string>&
 std::vector<std::string> Probe::getVarNames()
 {
     std::vector<std::string> varNames;
-    for( int var=0; var < int(PostProcessingVariable::LAST); var++){
-    if(this->quantities[var])
+    for( int statistic=0; statistic < int(Statistic::LAST); statistic++)
     {
-        std::vector<std::string> names = getPostProcessingVariableNames(static_cast<PostProcessingVariable>(var));
-        varNames.insert(varNames.end(), names.begin(), names.end());
-    }}
+        if(this->quantities[statistic])
+        {
+            std::vector<PostProcessingVariable> postProcessingVariables = this->getPostProcessingVariables(static_cast<Statistic>(statistic));            
+            for(int i = 0; i<postProcessingVariables.size(); i++) 
+                varNames.push_back(postProcessingVariables[i].name);
+        }
+    }
     return varNames;
 }
