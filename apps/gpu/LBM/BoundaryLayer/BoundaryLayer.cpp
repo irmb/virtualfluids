@@ -63,6 +63,7 @@ std::string path(".");
 
 std::string simulationName("BoundayLayer");
 
+using namespace vf::lbm::constant;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,10 +120,18 @@ void multipleLevel(const std::string& configPath)
     const uint nodes_per_H = config.contains("nz")? config.getValue<uint>("nz"): 64;
 
     const bool writePrecursor       = config.contains("writePrecursor") ? config.getValue<bool>("writePrecursor") : false;
-    const int nTWritePrecursor      = config.contains("nTimestepsWritePrecursor") ? config.getValue<int>("nTimestepsWritePrecursor") : 10;
-    const real posXPrecursor        = config.contains("posXPrecursor") ? config.getValue<real>("posXPrecursor") : L_x/2.f;
-    const bool readPrecursor        = config.contains("readPrecursor") ? config.getValue<bool>("readPrecursor") : false;
-    const int nTReadPrecursor       = config.contains("nTimestepsReadPrecursor") ? config.getValue<int>("nTimestepsReadPrecursor") : 10;
+    int nTWritePrecursor; real tStartPrecursor, posXPrecursor;
+    if(writePrecursor)
+    {
+        nTWritePrecursor      = config.getValue<int>("nTimestepsWritePrecursor");
+        tStartPrecursor      = config.getValue<real>("tStartPrecursor");
+        posXPrecursor        = config.getValue<real>("posXPrecursor");
+    }
+
+    const bool readPrecursor = config.contains("readPrecursor") ? config.getValue<bool>("readPrecursor") : false;
+    int nTReadPrecursor;
+    if(readPrecursor)
+        nTReadPrecursor = config.getValue<int>("nTimestepsReadPrecursor");
     // all in s
     const float tStartOut   = config.getValue<real>("tStartOut");
     const float tOut        = config.getValue<real>("tOut");
@@ -252,7 +261,7 @@ void multipleLevel(const std::string& configPath)
 
     if(writePrecursor)
     {
-        auto precursor_writer = SPtr<PrecursorWriter>( new PrecursorWriter("Precursor", "precursor", x_pos, 0, L_y, 0, L_z, uint(tStartPrecursor/dt), nTWritePrecursor, 10000) );
+        auto precursor_writer = SPtr<PrecursorWriter>( new PrecursorWriter("Precursor", "precursor", posXPrecursor, 0, L_y, 0, L_z, uint(tStartPrecursor/dt), nTWritePrecursor, 10000) );
         para->addProbe( precursor_writer );
     }
 
