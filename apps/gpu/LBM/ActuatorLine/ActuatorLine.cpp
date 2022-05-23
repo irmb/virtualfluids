@@ -137,8 +137,6 @@ void multipleLevel(const std::string& configPath)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    VelocityReader* vel_reader = new VelocityReader(path+"/Slice", "vti", 0, L_y, 0, L_z);
-
     para->setDevices(std::vector<uint>{(uint)0});
 
     para->setOutputPrefix( simulationName );

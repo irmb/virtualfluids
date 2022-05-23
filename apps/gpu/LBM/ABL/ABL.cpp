@@ -19,6 +19,7 @@
 #include "Core/VectorTypes.h"
 
 #include <basics/config/ConfigurationFile.h>
+#include "lbm/constants/NumericConstants.h"
 
 #include <logger/Logger.h>
 
@@ -53,6 +54,7 @@
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/PrecursorWriter.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,18 +76,31 @@ const real L_z = reference_height;
 
 const real viscosity = 1.56e-5;
 
-const real velocity  = 9.0;
+const real z0 = 0.1; // roughness length in m
+const real u_star = 0.4; //friction velocity in m/s
+const real kappa = 0.4; // von Karman constant 
+
+
+const real velocity  = 0.5*u_star/kappa*log(L_z/z0);
 
 const real mach = 0.1;
 
-const uint nodes_per_height = 128;
+const uint nodes_per_height = 64;
 
 std::string path(".");
 
 std::string simulationName("ABL");
 
-const float tOut = 1000;
-const float tEnd = 10000; // total time of simulation in s
+real turnOverTime = L_z/velocity;
+const float tOut = 10*turnOverTime;
+const float tEnd = 1000*turnOverTime; // total time of simulation in s
+
+
+const float tStartPrecursor = 1*turnOverTime;
+const uint nTReadPrecursor = 10;
+const uint nTWritePrecursor = 10;
+bool readPrecursor = true;
+bool writePrecursor = false;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,10 +124,10 @@ void multipleLevel(const std::string& configPath)
 	const real dx = reference_height/real(nodes_per_height);
 
 	gridBuilder->addCoarseGrid(0.0, 0.0, 0.0,
-							   L_x,  L_y,  L_z, dx);
+							   L_x, L_y, L_z, dx);
 
-	gridBuilder->setPeriodicBoundaryCondition(true, true, false);
-
+    gridBuilder->setPeriodicBoundaryCondition(false, true, false);
+    
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,8 +147,13 @@ void multipleLevel(const std::string& configPath)
 
     const real viscosityLB = viscosity * dt / (dx * dx); // LB units
 
+    const real pressureGradient = u_star * u_star / reference_height ;
+    const real pressureGradientLB = pressureGradient * (dt*dt)/dx; // LB units
+
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
     VF_LOG_INFO("viscosity [10^8 dx^2/dt] = {}", viscosityLB*1e8);
+
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -145,31 +165,53 @@ void multipleLevel(const std::string& configPath)
 
     para->setPrintFiles(true);
 
-    para->setMaxLevel(1);
-
 
     para->setVelocity(velocityLB);
     para->setViscosity(viscosityLB);
     para->setVelocityRatio( dx / dt );
     para->setViscosityRatio( dx*dx/dt );
-    para->setMainKernel("CumulantK17CompChim");
+    para->setMainKernel("TurbulentViscosityCumulantK17CompChim");
+
+    para->setForcing(pressureGradientLB, 0, 0);
 
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-        vx  = velocityLB;
-        vy  = (real)0.0;
-        vz  = (real)0.0;
+        vx  = (u_star/c4o10 * log(coordZ/z0) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/L_z)/(pow(coordZ/L_z,c2o1)+c1o1))  * dt / dx; 
+        vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/L_z)/(pow(coordZ/L_z,c2o1)+c1o1)  * dt / dx; 
+        vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/L_z)*sin(cPi*c8o1*coordZ/L_z)+sin(cPi*c8o1*coordX/L_x))/(pow(L_z*c1o2-coordZ, c2o1)+c1o1) * dt / dx;
     });
 
     para->setTOut( uint(tOut/dt) );
     para->setTEnd( uint(tEnd/dt) );
 
-    para->setIsBodyForce( true );
-
+    para->setIsBodyForce( false );
+    para->setUseAMD( true );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    gridBuilder->setVelocityBoundaryCondition(SideType::MZ,  velocityLB,  0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  velocityLB,  0.0, 0.0);
+    // This order works!
+    // gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+    // gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.f,0.f,1.f);
+    // gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
+
+    gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
+    gridBuilder->setSlipBoundaryCondition(SideType::MZ, 0.f, 0.f, 0.f);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
+    // gridBuilder->setSlipBoundaryCondition(SideType::PZ, 0.f, 0.f, 0.f);
+
+    if(false)
+    {
+        auto precursor = SPtr<VTKFileCollection>( new VTKFileCollection("precursor/Precursor") );
+        auto velocitySetter = SPtr<VelocitySetter>( new VelocitySetter(precursor, nTReadPrecursor) );
+
+        for(int level=0; level<para->getMaxLevel()+1; level++)
+        {
+            auto velBC = gridBuilder->getBoundaryCondition(SideType::MX, level);
+    
+            velocitySetter->setBCArrays(gridBuilder->getGrid(level), velBC);
+        }
+        para->addActuator(velocitySetter);
+    }
+    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -179,9 +221,11 @@ void multipleLevel(const std::string& configPath)
 
     real x_pos = L_x/2;
 
-
-    auto precursor_writer = SPtr<PrecursorWriter>( new PrecursorWriter("Precursor", "output", x_pos, 0, L_y, 0, L_z, 100, 10, 10000) );
-    para->addProbe( precursor_writer );
+    if(writePrecursor)
+    {
+        auto precursor_writer = SPtr<PrecursorWriter>( new PrecursorWriter("Precursor", "precursor", x_pos, 0, L_y, 0, L_z, uint(tStartPrecursor/dt), nTWritePrecursor, 10000) );
+        para->addProbe( precursor_writer );
+    }
 
     Simulation sim(communicator);
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
