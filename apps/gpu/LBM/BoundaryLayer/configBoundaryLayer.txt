@@ -5,4 +5,26 @@ Path = .
 ##################################################
 #informations for reading
 ##################################################
-GridPath= .
+GridPath = .
+##################################################
+Devices = 1 
+##################################################
+tStartOut           = 0
+tOut                = 100000
+tEnd                = 300000
+##################################################
+tStartAveraging     = 0
+tStartTmpAveraging  = 100000
+tAveraging          = 200
+tStartOutProbe      = 0
+tOutProbe           = 1000 
+##################################################
+Ma = 0.1
+nz = 96 
+
+bodyForce = true
+UseAMD = true
+SGSconstant = 0.2
+QuadricLimiterP = 100000.0
+QuadricLimiterM = 100000.0
+QuadricLimiterD = 100000.0

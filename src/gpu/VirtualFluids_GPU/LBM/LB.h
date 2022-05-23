@@ -126,6 +126,7 @@ struct InitCondition
    bool isMeasurePoints {false};
    bool isInitNeq {false};
    bool isGeoNormal, isInflowNormal, isOutflowNormal;
+   bool hasWallModelMonitor {false};
    bool simulatePorousMedia {false};
    bool streetVelocityFile {false};
 };
@@ -186,7 +187,9 @@ typedef struct QforBC{
    real* q19[19];
    int kQ=0;
    int kArray;
-   real *Vx, *Vy, *Vz, *deltaVz, *RhoBC;
+   real *Vx,      *Vy,      *Vz;
+   real *Vx1,     *Vy1,     *Vz1;
+   real *deltaVz, *RhoBC;
    real *normalX, *normalY, *normalZ;
 }QforBoundaryConditions;
 
@@ -213,6 +216,17 @@ typedef struct TempPressforBC{
    real* velo;
    int kTemp=0;
 }TempPressforBoundaryConditions;
+
+// Settings for wall model used in StressBC
+typedef struct WMparas{
+   real* z0;
+   int* samplingOffset;
+   bool hasMonitor;
+   real* u_star;
+   real* Fx;
+   real* Fy;
+   real* Fz;
+}WallModelParameters;
 
 //measurePoints
 typedef struct MeasP{

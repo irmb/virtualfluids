@@ -1,3 +1,4 @@
+#include "Probe.h"
 #include "PlanarAverageProbe.h"
 
 #include <cuda/CudaGrid.h>
@@ -15,6 +16,7 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////////
 /// Functors for thrust reductions
@@ -46,6 +48,25 @@ struct pow4 : public thrust::unary_function<T,T>
     return x * x * x * x;
   }
 };
+
+struct nth_moment
+{
+    const float mean;
+    const int n;
+
+    nth_moment(float _mean, int _n) : mean(_mean), n(_n) {}
+
+    __host__ __device__
+        float operator()(const float& x) const { 
+            
+            real fluctuation = x-mean;
+            real moment = fluctuation;
+            for(int i = 1; i<n; i++) moment *= fluctuation;
+            
+            return moment;
+        }
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -87,31 +108,92 @@ __global__ void moveIndicesInNegNormalDir( uint* pointIndices, uint nPoints, uin
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-bool PlanarAverageProbe::isAvailablePostProcessingVariable(PostProcessingVariable _variable)
+bool PlanarAverageProbe::isAvailableStatistic(Statistic _variable)
 {
     bool isAvailable;
 
     switch (_variable)
     {
-        case PostProcessingVariable::Instantaneous:
-        case PostProcessingVariable::Means:
-        case PostProcessingVariable::Variances:
+        case Statistic::Instantaneous:
+        case Statistic::Means:
+        case Statistic::Variances:
             isAvailable = false;
             break;
-        case PostProcessingVariable::SpatialMeans:
-        case PostProcessingVariable::SpatioTemporalMeans:
-        case PostProcessingVariable::SpatialCovariances:
-        case PostProcessingVariable::SpatioTemporalCovariances:
-        case PostProcessingVariable::SpatialSkewness:
-        case PostProcessingVariable::SpatioTemporalSkewness:
-        case PostProcessingVariable::SpatialFlatness:
-        case PostProcessingVariable::SpatioTemporalFlatness:
+        case Statistic::SpatialMeans:
+        case Statistic::SpatioTemporalMeans:
+        case Statistic::SpatialCovariances:
+        case Statistic::SpatioTemporalCovariances:
+        case Statistic::SpatialSkewness:
+        case Statistic::SpatioTemporalSkewness:
+        case Statistic::SpatialFlatness:
+        case Statistic::SpatioTemporalFlatness:
             isAvailable =  true;
             break;
         default:
             isAvailable =  false;
     }
     return isAvailable;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+std::vector<PostProcessingVariable> PlanarAverageProbe::getPostProcessingVariables(Statistic statistic)
+{
+    std::vector<PostProcessingVariable> postProcessingVariables;
+    switch (statistic)
+    {
+    case Statistic::SpatialMeans:
+        postProcessingVariables.push_back( PostProcessingVariable("vx_spatMean",  velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vy_spatMean",  this->velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vz_spatMean",  this->velocityRatio) );
+        break;
+    case Statistic::SpatioTemporalMeans:
+        postProcessingVariables.push_back( PostProcessingVariable("vx_spatTmpMean",  this->velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vy_spatTmpMean",  this->velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vz_spatTmpMean",  this->velocityRatio) );
+        break;
+    case Statistic::SpatialCovariances:
+        postProcessingVariables.push_back( PostProcessingVariable("vxvx_spatMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vyvy_spatMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vzvz_spatMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvy_spatMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvz_spatMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vyvz_spatMean",  pow(this->velocityRatio, 2.0)) );
+        break;
+    case Statistic::SpatioTemporalCovariances:
+        postProcessingVariables.push_back( PostProcessingVariable("vxvx_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vyvy_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vzvz_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvy_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vxvz_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vyvz_spatTmpMean",  pow(this->velocityRatio, 2.0)) );
+        break;
+    case Statistic::SpatialSkewness:
+        postProcessingVariables.push_back( PostProcessingVariable("Sx_spatMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sy_spatMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sz_spatMean",  1.0) );
+        break;
+    case Statistic::SpatioTemporalSkewness:
+        postProcessingVariables.push_back( PostProcessingVariable("Sx_spatTmpMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sy_spatTmpMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Sz_spatTmpMean",  1.0) );
+        break;
+    case Statistic::SpatialFlatness:
+        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatMean",  1.0) );
+        break;
+    case Statistic::SpatioTemporalFlatness:
+        postProcessingVariables.push_back( PostProcessingVariable("Fx_spatTmpMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fy_spatTmpMean",  1.0) );
+        postProcessingVariables.push_back( PostProcessingVariable("Fz_spatTmpMean",  1.0) );
+        break;
+
+    default:
+        printf("Statistic unavailable in PlanarAverageProbe\n");
+        assert(false);
+        break;
+    }
+    return postProcessingVariables;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -183,7 +265,7 @@ void PlanarAverageProbe::findPoints(Parameter* para, GridProvider* gridProvider,
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level)
+void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
 {   
     // Definition of normal and inplane directions for moveIndices kernels
     uint *neighborNormal, *neighborInplane1, *neighborInplane2;
@@ -206,6 +288,8 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
         neighborInplane2 = para->getParD(level)->neighborY_SP;
     }
 
+    bool doTmpAveraging = (t>this->getTStartTmpAveraging());
+
     // Pointer casts to use device arrays in thrust reductions
     thrust::device_ptr<uint> indices_thrust = thrust::device_pointer_cast(probeStruct->pointIndicesD);
     thrust::device_ptr<real> vx_thrust = thrust::device_pointer_cast(para->getParD(level)->vx_SP);
@@ -214,7 +298,7 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
 
     real N = (real)probeStruct->nIndices;
     real n = (real)probeStruct->vals;
-    int nPoints = probeStruct->nPoints;
+    uint nPoints = probeStruct->nPoints;
     // Permutation iterators for direct iteration over the velocities of the planes
     typedef thrust::device_vector<real>::iterator valIterator;
     typedef thrust::device_vector<uint>::iterator indIterator;
@@ -225,25 +309,25 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
     thrust::permutation_iterator<valIterator, indIterator> vz_iter_begin(vz_thrust, indices_thrust);
     thrust::permutation_iterator<valIterator, indIterator> vz_iter_end  (vz_thrust, indices_thrust+probeStruct->nIndices);
 
-    for( int i=0; i<nPoints; i++ )
+    for( uint i=0; i<nPoints; i++ )
     {
         uint node = this->isEvenTAvg? i : nPoints-1-i; // Note, loop moves in positive normal dir at even calls and in negative normal dir in odd calls
 
-        if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatialMeans)])
+        if(probeStruct->quantitiesH[int(Statistic::SpatialMeans)])
         {
             // Compute the instantaneous spatial means of the velocity moments 
             real spatMean_vx = thrust::reduce(vx_iter_begin, vx_iter_end)/N;
             real spatMean_vy = thrust::reduce(vy_iter_begin, vy_iter_end)/N;
             real spatMean_vz = thrust::reduce(vz_iter_begin, vz_iter_end)/N;
 
-            uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatialMeans)];
+            uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatialMeans)];
             probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] = spatMean_vx;
             probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] = spatMean_vy;
             probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] = spatMean_vz;
 
-            if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatioTemporalMeans)])
+            if(probeStruct->quantitiesH[int(Statistic::SpatioTemporalMeans)] && doTmpAveraging)
             {
-            uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatioTemporalMeans)];
+            uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatioTemporalMeans)];
             real spatTmpMean_vx_old = probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node];
             real spatTmpMean_vy_old = probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node];
             real spatTmpMean_vz_old = probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node];
@@ -253,11 +337,11 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
             probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] += (spatMean_vz-spatTmpMean_vz_old)/n;
             }
         
-            if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatialCovariances)])
+            if(probeStruct->quantitiesH[int(Statistic::SpatialCovariances)])
             {   // <u_i' u_j'> = <u_i u_j> - <u_i>*<u_i> 
                 real vx2 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow2<real>(), 0.f, thrust::plus<real>())/N;
-                real vy2 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow2<real>(), 0.f, thrust::plus<real>())/N;
-                real vz2 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow2<real>(), 0.f, thrust::plus<real>())/N;
+                real vy2 = thrust::transform_reduce(vy_iter_begin, vy_iter_end, pow2<real>(), 0.f, thrust::plus<real>())/N;
+                real vz2 = thrust::transform_reduce(vz_iter_begin, vz_iter_end, pow2<real>(), 0.f, thrust::plus<real>())/N;
                 real vxvy = thrust::inner_product(vx_iter_begin, vx_iter_end, vy_iter_begin, 0.f)/N;
                 real vxvz = thrust::inner_product(vx_iter_begin, vx_iter_end, vz_iter_begin, 0.f)/N;
                 real vyvz = thrust::inner_product(vy_iter_begin, vy_iter_end, vz_iter_begin, 0.f)/N;
@@ -265,10 +349,10 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                 real spatMean_vyvy = vy2-spatMean_vy*spatMean_vy;
                 real spatMean_vzvz = vz2-spatMean_vz*spatMean_vz;
                 real spatMean_vxvy = vxvy-spatMean_vx*spatMean_vy;
-                real spatMean_vxvz = vxvy-spatMean_vx*spatMean_vz;
-                real spatMean_vyvz = vxvy-spatMean_vy*spatMean_vz;
+                real spatMean_vxvz = vxvz-spatMean_vx*spatMean_vz;
+                real spatMean_vyvz = vyvz-spatMean_vy*spatMean_vz;
 
-                uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatialCovariances)];
+                uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatialCovariances)];
                 probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] = spatMean_vxvx;
                 probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] = spatMean_vyvy;
                 probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] = spatMean_vzvz;
@@ -276,9 +360,9 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                 probeStruct->quantitiesArrayH[(arrOff+4)*nPoints+node] = spatMean_vxvz;
                 probeStruct->quantitiesArrayH[(arrOff+5)*nPoints+node] = spatMean_vyvz;
 
-                if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatioTemporalCovariances)])
+                if(probeStruct->quantitiesH[int(Statistic::SpatioTemporalCovariances)] && doTmpAveraging)
                 {
-                    uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatioTemporalCovariances)];
+                    uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatioTemporalCovariances)];
                     real spatTmpMean_vxvx_old = probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node];
                     real spatTmpMean_vyvy_old = probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node];
                     real spatTmpMean_vzvz_old = probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node];
@@ -294,26 +378,29 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                     probeStruct->quantitiesArrayH[(arrOff+5)*nPoints+node] += (spatMean_vyvz-spatTmpMean_vyvz_old)/n;
                 }
 
-                if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatialSkewness)])
+                if(probeStruct->quantitiesH[int(Statistic::SpatialSkewness)])
                 {   // <u_i'^3> = <u_i^3> - <u_i>^3 - 3 <u_i> <u_i'^2>
-                    real vx3 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow3<real>(), 0.f, thrust::plus<real>())/N;
-                    real vy3 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow3<real>(), 0.f, thrust::plus<real>())/N;
-                    real vz3 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow3<real>(), 0.f, thrust::plus<real>())/N;
-                    real spatMean_vxvxvx = vx3 - spatMean_vx*spatMean_vx*spatMean_vx - 3*spatMean_vx*spatMean_vxvx;
-                    real spatMean_vyvyvy = vy3 - spatMean_vy*spatMean_vy*spatMean_vy - 3*spatMean_vy*spatMean_vyvy;
-                    real spatMean_vzvzvz = vz3 - spatMean_vz*spatMean_vz*spatMean_vz - 3*spatMean_vz*spatMean_vzvz;
-                    real spatMean_Sx = ( vx3 - 3*spatMean_vx*spatMean_vxvx - spatMean_vx*spatMean_vx*spatMean_vx )/pow(spatMean_vxvx, 1.5f);
-                    real spatMean_Sy = ( vy3 - 3*spatMean_vy*spatMean_vyvy - spatMean_vy*spatMean_vy*spatMean_vy )/pow(spatMean_vyvy, 1.5f);
-                    real spatMean_Sz = ( vz3 - 3*spatMean_vz*spatMean_vzvz - spatMean_vz*spatMean_vz*spatMean_vz )/pow(spatMean_vzvz, 1.5f);
+                    // real vx3 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow3<real>(), 0.f, thrust::plus<real>())/N;
+                    // real vy3 = thrust::transform_reduce(vy_iter_begin, vy_iter_end, pow3<real>(), 0.f, thrust::plus<real>())/N;
+                    // real vz3 = thrust::transform_reduce(vz_iter_begin, vz_iter_end, pow3<real>(), 0.f, thrust::plus<real>())/N;
+                    real spatMean_vxvxvx = thrust::transform_reduce(vx_iter_begin, vx_iter_end, nth_moment(spatMean_vx, 3), 0.f, thrust::plus<real>())/N; 
+                    //vx3 - spatMean_vx*spatMean_vx*spatMean_vx - 3*spatMean_vx*spatMean_vxvx; -> alternative only using vx3, etc. but containing some bug. Potentially better in terms of round-off errors.
+                    real spatMean_vyvyvy = thrust::transform_reduce(vy_iter_begin, vy_iter_end, nth_moment(spatMean_vy, 3), 0.f, thrust::plus<real>())/N; 
+                    //vy3 - spatMean_vy*spatMean_vy*spatMean_vy - 3*spatMean_vy*spatMean_vzvz;
+                    real spatMean_vzvzvz = thrust::transform_reduce(vz_iter_begin, vz_iter_end, nth_moment(spatMean_vz, 3), 0.f, thrust::plus<real>())/N; 
+                    //vz3 - spatMean_vz*spatMean_vz*spatMean_vz - 3*spatMean_vz*spatMean_vzvz;
+                    real spatMean_Sx = spatMean_vxvxvx/pow(spatMean_vxvx, 1.5f);
+                    real spatMean_Sy = spatMean_vyvyvy/pow(spatMean_vyvy, 1.5f);
+                    real spatMean_Sz = spatMean_vzvzvz/pow(spatMean_vzvz, 1.5f);
 
-                    uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatialSkewness)];
+                    uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatialSkewness)];
                     probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] = spatMean_Sx;
                     probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] = spatMean_Sy;
                     probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] = spatMean_Sz;
 
-                    if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatioTemporalSkewness)])
+                    if(probeStruct->quantitiesH[int(Statistic::SpatioTemporalSkewness)] && doTmpAveraging)
                     {
-                        uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatioTemporalSkewness)];
+                        uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatioTemporalSkewness)];
                         real spatTmpMean_Sx_old = probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node];
                         real spatTmpMean_Sy_old = probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node];
                         real spatTmpMean_Sz_old = probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node];
@@ -323,26 +410,26 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                         probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] += (spatMean_Sz-spatTmpMean_Sz_old)/n;
                     }
 
-                    if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatialFlatness)])
+                    if(probeStruct->quantitiesH[int(Statistic::SpatialFlatness)])
                     {   // <u_i'^4> = <u_i^4> - <u_i>^4 - 6 <u_i>^2 <u_i'^2> - 4 <u> <u'^3>
-                        real vx4 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow4<real>(), 0.f, thrust::plus<real>())/N;
-                        real vy4 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow4<real>(), 0.f, thrust::plus<real>())/N;
-                        real vz4 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow4<real>(), 0.f, thrust::plus<real>())/N;
-                        real spatMean_vxvxvxvx = vx4 - spatMean_vx*spatMean_vx*spatMean_vx*spatMean_vx - 6*spatMean_vx*spatMean_vx*spatMean_vxvx - 4*spatMean_vx*spatMean_vxvxvx;
-                        real spatMean_vyvyvyvy = vy4 - spatMean_vy*spatMean_vy*spatMean_vy*spatMean_vy - 6*spatMean_vy*spatMean_vx*spatMean_vyvy - 4*spatMean_vy*spatMean_vyvyvy;
-                        real spatMean_vzvzvzvz = vz4 - spatMean_vz*spatMean_vz*spatMean_vz*spatMean_vz - 6*spatMean_vz*spatMean_vx*spatMean_vzvz - 4*spatMean_vz*spatMean_vzvzvz;
-                        real spatMean_Fx = ( vx4 - 3*spatMean_vx*spatMean_vxvx - spatMean_vx*spatMean_vx*spatMean_vx*spatMean_vx )/(spatMean_vxvx*spatMean_vxvx);
-                        real spatMean_Fy = ( vy4 - 3*spatMean_vy*spatMean_vyvy - spatMean_vx*spatMean_vy*spatMean_vy*spatMean_vy )/(spatMean_vyvy*spatMean_vyvy);
-                        real spatMean_Fz = ( vz4 - 3*spatMean_vz*spatMean_vzvz - spatMean_vx*spatMean_vz*spatMean_vz*spatMean_vz )/(spatMean_vzvz*spatMean_vzvz);
+                        // real vx4 = thrust::transform_reduce(vx_iter_begin, vx_iter_end, pow4<real>(), 0.f, thrust::plus<real>())/N;
+                        // real vy4 = thrust::transform_reduce(vy_iter_begin, vy_iter_end, pow4<real>(), 0.f, thrust::plus<real>())/N;
+                        // real vz4 = thrust::transform_reduce(vz_iter_begin, vz_iter_end, pow4<real>(), 0.f, thrust::plus<real>())/N;
+                        real spatMean_vxvxvxvx = thrust::transform_reduce(vx_iter_begin, vx_iter_end, nth_moment(spatMean_vx, 4), 0.f, thrust::plus<real>())/N; //vx4 - spatMean_vx*spatMean_vx*spatMean_vx*spatMean_vx - 6*spatMean_vx*spatMean_vx*vx2 - 4*spatMean_vx*vx3;
+                        real spatMean_vyvyvyvy = thrust::transform_reduce(vy_iter_begin, vy_iter_end, nth_moment(spatMean_vy, 4), 0.f, thrust::plus<real>())/N; //vy4 - spatMean_vy*spatMean_vy*spatMean_vy*spatMean_vy - 6*spatMean_vy*spatMean_vx*vy2 - 4*spatMean_vy*vy3;
+                        real spatMean_vzvzvzvz = thrust::transform_reduce(vz_iter_begin, vz_iter_end, nth_moment(spatMean_vz, 4), 0.f, thrust::plus<real>())/N; //vz4 - spatMean_vz*spatMean_vz*spatMean_vz*spatMean_vz - 6*spatMean_vz*spatMean_vx*vz2 - 4*spatMean_vz*vz3;
+                        real spatMean_Fx = spatMean_vxvxvxvx/(spatMean_vxvx*spatMean_vxvx);
+                        real spatMean_Fy = spatMean_vyvyvyvy/(spatMean_vyvy*spatMean_vyvy);
+                        real spatMean_Fz = spatMean_vzvzvzvz/(spatMean_vzvz*spatMean_vzvz);
 
-                        uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatialFlatness)];
+                        uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatialFlatness)];
                         probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node] = spatMean_Fx;
                         probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node] = spatMean_Fy;
                         probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node] = spatMean_Fz;
 
-                        if(probeStruct->quantitiesH[int(PostProcessingVariable::SpatioTemporalFlatness)])
+                        if(probeStruct->quantitiesH[int(Statistic::SpatioTemporalFlatness)] && doTmpAveraging)
                         {
-                            uint arrOff = probeStruct->arrayOffsetsH[int(PostProcessingVariable::SpatioTemporalFlatness)];
+                            uint arrOff = probeStruct->arrayOffsetsH[int(Statistic::SpatioTemporalFlatness)];
                             real spatTmpMean_Fx_old = probeStruct->quantitiesArrayH[(arrOff+0)*nPoints+node];
                             real spatTmpMean_Fy_old = probeStruct->quantitiesArrayH[(arrOff+1)*nPoints+node];
                             real spatTmpMean_Fz_old = probeStruct->quantitiesArrayH[(arrOff+2)*nPoints+node];
@@ -355,19 +442,6 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
                 }
         }
     }
-        // checkCudaErrors( cudaMemcpy(probeStruct->pointIndicesH, probeStruct->pointIndicesD, sizeof(int)*probeStruct->nIndices, cudaMemcpyDeviceToHost) );
-        // if(i<2)
-        // {
-        //     for( int j=0; j<9; j++ )
-        //     {   //if((real)vx_iter_begin[j] != (real)vx_thrust[indices_thrust[j]])
-        //         {
-        //         printf("z: %u \t %f  \t N %f \n", idx, probeStruct->pointCoordsZ[idx], N);
-        //         printf("IDX: \t %u  \t %u \n", probeStruct->pointIndicesH[j], (uint)indices_thrust[j]);  
-        //         printf("vx[%u] permutation: \t %f \t %f \t %f \t %f \n\n", j, (real)vx_iter_begin[j], (real)vx_iter_begin[8], mean_vx, vx2);
-        //         }
-        //     }
-        // }
-
         if(i<probeStruct->nPoints-1)
         {
             vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nIndices);
@@ -378,4 +452,6 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
         } 
     }
     this->isEvenTAvg=!this->isEvenTAvg;
+
+    getLastCudaError("PlanarAverageProbe::calculateQuantities execution failed");
 }

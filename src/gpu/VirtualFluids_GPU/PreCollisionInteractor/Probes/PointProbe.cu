@@ -1,3 +1,4 @@
+#include "Probe.h"
 #include "PointProbe.h"
 
 #include <cuda.h>
@@ -10,30 +11,62 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 
-bool PointProbe::isAvailablePostProcessingVariable(PostProcessingVariable _variable)
+bool PointProbe::isAvailableStatistic(Statistic _variable)
 {
     bool isAvailable;
     switch (_variable)
     {
-        case PostProcessingVariable::Instantaneous:
-        case PostProcessingVariable::Means:
-        case PostProcessingVariable::Variances:
+        case Statistic::Instantaneous:
+        case Statistic::Means:
+        case Statistic::Variances:
             isAvailable = true;
             break;
-        case PostProcessingVariable::SpatialMeans:
-        case PostProcessingVariable::SpatioTemporalMeans:
-        case PostProcessingVariable::SpatialCovariances:
-        case PostProcessingVariable::SpatioTemporalCovariances:
-        case PostProcessingVariable::SpatialSkewness:
-        case PostProcessingVariable::SpatioTemporalSkewness:
-        case PostProcessingVariable::SpatialFlatness:
-        case PostProcessingVariable::SpatioTemporalFlatness:
+        case Statistic::SpatialMeans:
+        case Statistic::SpatioTemporalMeans:
+        case Statistic::SpatialCovariances:
+        case Statistic::SpatioTemporalCovariances:
+        case Statistic::SpatialSkewness:
+        case Statistic::SpatioTemporalSkewness:
+        case Statistic::SpatialFlatness:
+        case Statistic::SpatioTemporalFlatness:
             isAvailable = false;
             break;
         default:
             isAvailable = false;
     }
     return isAvailable;
+}
+
+std::vector<PostProcessingVariable> PointProbe::getPostProcessingVariables(Statistic statistic)
+{
+    std::vector<PostProcessingVariable> postProcessingVariables;
+    switch (statistic)
+    {
+    case Statistic::Instantaneous:
+        postProcessingVariables.push_back( PostProcessingVariable("vx",  velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vy",  this->velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vz",  this->velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("rho", this->densityRatio ) );
+        break;
+    case Statistic::Means:
+        postProcessingVariables.push_back( PostProcessingVariable("vx_mean",  this->velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vy_mean",  this->velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("vz_mean",  this->velocityRatio) );
+        postProcessingVariables.push_back( PostProcessingVariable("rho_mean", this->densityRatio ) );
+        break;
+    case Statistic::Variances:
+        postProcessingVariables.push_back( PostProcessingVariable("vx_var",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vy_var",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("vz_var",  pow(this->velocityRatio, 2.0)) );
+        postProcessingVariables.push_back( PostProcessingVariable("rho_var", pow(this->densityRatio,  2.0)) );
+        break;
+
+    default:
+        printf("Statistic unavailable in PointProbe\n");
+        assert(false);
+        break;
+    }
+    return postProcessingVariables;
 }
 
 void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::vector<int>& probeIndices_level,
@@ -68,7 +101,7 @@ void PointProbe::findPoints(Parameter* para, GridProvider* gridProvider, std::ve
     }
 }
 
-void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, int level)
+void PointProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Parameter* para, uint t, int level)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParH(level)->numberofthreads, probeStruct->nPoints);
     interpAndCalcQuantitiesKernel<<<grid.grid, grid.threads>>>(  probeStruct->pointIndicesD, probeStruct->nPoints, probeStruct->vals,

@@ -22,6 +22,8 @@ message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER ".cmake")
 set(libraryFolder "libs")
@@ -97,6 +99,7 @@ IF( BUILD_VF_DOUBLE_ACCURACY )
     list(APPEND VF_COMPILER_DEFINITION VF_DOUBLE_ACCURACY)
 ENDIF()
 
+# set gpu features
 if(BUILD_VF_GPU OR BUILD_VF_GKS)
     include(CheckLanguage)
     check_language(CUDA)
@@ -167,7 +170,9 @@ endif()
 
 if(BUILD_USE_MPI)
     find_package(MPI REQUIRED)
-    list(APPEND VF_COMPILER_DEFINITION VF_MPI)
+    if(BUILD_VF_CPU)
+        list(APPEND VF_COMPILER_DEFINITION VF_MPI)
+    endif()
 endif()
 
 # boost
