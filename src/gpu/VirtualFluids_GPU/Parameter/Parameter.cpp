@@ -109,12 +109,15 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseMeasurePoints"))
         this->setUseMeasurePoints(configData.getValue<bool>("UseMeasurePoints"));
-    //////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseWale"))
         this->setUseWale(configData.getValue<bool>("UseWale"));
 	//////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseAMD"))
         this->setUseAMD(configData.getValue<bool>("UseAMD"));
+	//////////////////////////////////////////////////////////////////////////
+    if (configData.contains("SGSconstant"))
+        this->setSGSConstant(configData.getValue<real>("SGSconstant"));
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("UseInitNeq"))
         this->setUseInitNeq(configData.getValue<bool>("UseInitNeq"));
@@ -572,11 +575,12 @@ void Parameter::setForcing(real forcingX, real forcingY, real forcingZ)
 	this->hostForcing[2] = forcingZ;
 }
 void Parameter::setQuadricLimiters(real quadricLimiterP, real quadricLimiterM, real quadricLimiterD)
-{
+{	
 	this->hostQuadricLimiters[0] = quadricLimiterP;
 	this->hostQuadricLimiters[1] = quadricLimiterM;
 	this->hostQuadricLimiters[2] = quadricLimiterD;
 }
+
 void Parameter::setPhi(real inPhi)
 {
 	Phi = inPhi;
@@ -865,6 +869,10 @@ void Parameter::setUseAMD(bool useAMD)
 void Parameter::setSGSConstant(real SGSConstant)
 {
 	ic.SGSConstant = SGSConstant;
+}
+void Parameter::setHasWallModelMonitor(bool hasWallModelMonitor)
+{
+	ic.hasWallModelMonitor = hasWallModelMonitor;
 }
 void Parameter::setUseInitNeq(bool useInitNeq)
 {
@@ -2260,6 +2268,10 @@ bool Parameter::getUseAMD()
 real Parameter::getSGSConstant()
 {
 	return ic.SGSConstant;
+}
+bool Parameter::getHasWallModelMonitor()
+{
+	return ic.hasWallModelMonitor;
 }
 bool Parameter::getUseInitNeq()
 {
