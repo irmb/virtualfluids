@@ -19,6 +19,7 @@
 #include "Core/VectorTypes.h"
 
 #include <basics/config/ConfigurationFile.h>
+#include "lbm/constants/NumericConstants.h"
 
 #include <logger/Logger.h>
 
@@ -32,8 +33,6 @@
 
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 #include "GridGenerator/io/GridVTKWriter/GridVTKWriter.h"
-#include "GridGenerator/io/STLReaderWriter/STLReader.h"
-#include "GridGenerator/io/STLReaderWriter/STLWriter.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -44,11 +43,12 @@
 #include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU/Output/FileWriter.h"
-#include "VirtualFluids_GPU/PreCollisionInteractor/ActuatorLine.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PointProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlaneProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/PlanarAverageProbe.h"
 #include "VirtualFluids_GPU/PreCollisionInteractor/Probes/WallModelProbe.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/PrecursorWriter.h"
+#include "VirtualFluids_GPU/PreCollisionInteractor/VelocitySetter.h"
 
 #include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
 #include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
@@ -118,6 +118,11 @@ void multipleLevel(const std::string& configPath)
 
     const uint nodes_per_H = config.contains("nz")? config.getValue<uint>("nz"): 64;
 
+    const bool writePrecursor       = config.contains("writePrecursor") ? config.getValue<bool>("writePrecursor") : false;
+    const int nTWritePrecursor      = config.contains("nTimestepsWritePrecursor") ? config.getValue<int>("nTimestepsWritePrecursor") : 10;
+    const real posXPrecursor        = config.contains("posXPrecursor") ? config.getValue<real>("posXPrecursor") : L_x/2.f;
+    const bool readPrecursor        = config.contains("readPrecursor") ? config.getValue<bool>("readPrecursor") : false;
+    const int nTReadPrecursor       = config.contains("nTimestepsReadPrecursor") ? config.getValue<int>("nTimestepsReadPrecursor") : 10;
     // all in s
     const float tStartOut   = config.getValue<real>("tStartOut");
     const float tOut        = config.getValue<real>("tOut");
@@ -185,7 +190,7 @@ void multipleLevel(const std::string& configPath)
     // gridBuilder->setNumberOfLayers(0,0);
     // gridBuilder->addGrid( new Cuboid( 300., 300., 300., 1000. , 1000., 600.), 1 );
 
-    gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+    gridBuilder->setPeriodicBoundaryCondition(!readPrecursor, true, false);
 
 	gridBuilder->buildGrids(lbmOrGks, false); // buildGrids() has to be called before setting the BCs!!!!
 
@@ -200,13 +205,31 @@ void multipleLevel(const std::string& configPath)
     // gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
     gridBuilder->setSlipBoundaryCondition(SideType::PZ,  0.0,  0.0, 0.0);
 
-    real cPi = 3.1415926535897932384626433832795;
+    if(readPrecursor)
+    {
+        gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
+
+        auto precursor = SPtr<VTKFileCollection>( new VTKFileCollection("precursor/Precursor") );
+        auto velocitySetter = SPtr<VelocitySetter>( new VelocitySetter(precursor, nTReadPrecursor) );
+
+        for(int level=0; level<para->getMaxLevel()+1; level++)
+        {
+            auto velBC = gridBuilder->getBoundaryCondition(SideType::MX, level);
+    
+            velocitySetter->setBCArrays(gridBuilder->getGrid(level), velBC);
+        }
+        para->addActuator(velocitySetter);
+        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.f);
+    }
+
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
         rho = (real)0.0;
-        vx  = (u_star/0.4 * log(coordZ/z0) + 2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1))  * dt / dx; 
-        vy  =  2.0*sin(cPi*16.0f*coordX/L_x)*sin(cPi*8.0f*coordZ/H)/(pow(coordZ/H,c2o1)+c1o1)  * dt / dx; 
-        vz  = 8.0*u_star/0.4*(sin(cPi*8.0*coordY/H)*sin(cPi*8.0*coordZ/H)+sin(cPi*8.0*coordX/L_x))/(pow(L_z/2.0-coordZ, c2o1)+c1o1) * dt / dx;
+        vx  = (u_star/c4o10 * log(coordZ/z0) + c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/L_z)/(pow(coordZ/L_z,c2o1)+c1o1))  * dt / dx; 
+        vy  = c2o1*sin(cPi*c16o1*coordX/L_x)*sin(cPi*c8o1*coordZ/L_z)/(pow(coordZ/L_z,c2o1)+c1o1)  * dt / dx; 
+        vz  = c8o1*u_star/c4o10*(sin(cPi*c8o1*coordY/L_z)*sin(cPi*c8o1*coordZ/L_z)+sin(cPi*c8o1*coordX/L_x))/(pow(L_z*c1o2-coordZ, c2o1)+c1o1) * dt / dx;
     });
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
@@ -226,6 +249,13 @@ void multipleLevel(const std::string& configPath)
     if(para->getIsBodyForce())
         wallModelProbe->setEvaluatePressureGradient(true);
     para->addProbe( wallModelProbe );
+
+    if(writePrecursor)
+    {
+        auto precursor_writer = SPtr<PrecursorWriter>( new PrecursorWriter("Precursor", "precursor", x_pos, 0, L_y, 0, L_z, uint(tStartPrecursor/dt), nTWritePrecursor, 10000) );
+        para->addProbe( precursor_writer );
+    }
+
 
     Simulation sim(communicator);
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());

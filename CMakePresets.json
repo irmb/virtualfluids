@@ -214,7 +214,7 @@
             "targets": [
                 "ActuatorLine",
                 "DrivenCavity",
-                "ABL"
+                "BoundaryLayer"
             ],
             "inherits": [
                 "default"
