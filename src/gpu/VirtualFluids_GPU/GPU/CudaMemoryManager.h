@@ -375,10 +375,11 @@ public:
     void cudaCopyProbeQuantitiesAndOffsetsDtoH(Probe* probe, int level);
     void cudaFreeProbeQuantitiesAndOffsets(Probe* probe, int level);
 
-    void cudaAllocVelocitySetterArrays(VelocitySetter* setter);
-    void cudaCopyVelocitySetterLastArrays(VelocitySetter* setter);
-    void cudaCopyVelocitySetterNextArrays(VelocitySetter* setter);
-    void cudaFreeVelocitySetterArrays(VelocitySetter* setter);
+    void cudaAllocVelocityReaderArrays(VelocitySetter* setter, int level);
+    void cudaCopyVelocityReaderIndexAndWeightArraysHtoD(VelocitySetter* setter, int level);
+    void cudaCopyVelocityReaderNextVelocitiesHtoD(VelocitySetter* setter, int level);
+    void cudaFreeVelocityReaderArrays(VelocitySetter* setter, int level);
+
 
     void cudaAllocPrecursorWriter(PrecursorWriter* writer, int level);
     void cudaCopyPrecursorWriterIndicesHtoD(PrecursorWriter* writer, int level);

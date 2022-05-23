@@ -190,7 +190,7 @@ struct LBMSimulationParameter
 
     // BC's////////////////////
     QforBoundaryConditions QWall, Qinflow, Qoutflow, QSlip;
-    unsigned int kQ = 0, kInflowQ = 0, kOutflowQ = 0, kSlipQ = 0;
+    unsigned int kQ = 0, kInflowQ = 0, kOutflowQ = 0, kSlipQ = 0, kPrecursor=0;
     unsigned int kQread, kInflowQread, kOutflowQread, kSlipQread;
 
     QforBoundaryConditions QpressX0, QpressX1, QpressY0, QpressY1, QpressZ0, QpressZ1;
