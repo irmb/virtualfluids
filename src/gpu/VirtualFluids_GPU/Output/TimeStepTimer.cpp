@@ -44,14 +44,14 @@ void TimeStepTimer::outputPerformance(uint t, Parameter* para)
     if(t%this->tActivate==0)
     {
         
-        real tCollision         = this->collisionTimer->getTotalElapsedTime();
-        real tPostCollisionBC   = this->postCollisionBCTimer->getTotalElapsedTime();
-        real tPreCollisionBC    = this->preCollisionBCTimer->getTotalElapsedTime();
-        real tEddyViscosity     = this->eddyViscosityTimer->getTotalElapsedTime();
-        real tAcutator          = this->actuatorTimer->getTotalElapsedTime();
-        real tProbe             = this->probeTimer->getTotalElapsedTime();
-        real tExchange          = this->exchangeTimer->getTotalElapsedTime();
-        real tTotal             = tCollision+tPostCollisionBC+tPreCollisionBC+tEddyViscosity+tAcutator+tProbe+tExchange;
+        float tCollision         = this->collisionTimer->getTotalElapsedTime();
+        float tPostCollisionBC   = this->postCollisionBCTimer->getTotalElapsedTime();
+        float tPreCollisionBC    = this->preCollisionBCTimer->getTotalElapsedTime();
+        float tEddyViscosity     = this->eddyViscosityTimer->getTotalElapsedTime();
+        float tAcutator          = this->actuatorTimer->getTotalElapsedTime();
+        float tProbe             = this->probeTimer->getTotalElapsedTime();
+        float tExchange          = this->exchangeTimer->getTotalElapsedTime();
+        float tTotal             = tCollision+tPostCollisionBC+tPreCollisionBC+tEddyViscosity+tAcutator+tProbe+tExchange;
         
         VF_LOG_INFO(" --- Collision \t {}%",        (tCollision/tTotal)*100 );
         VF_LOG_INFO(" --- PostCollisionBCs \t {}%", (tPostCollisionBC/tTotal)*100 );

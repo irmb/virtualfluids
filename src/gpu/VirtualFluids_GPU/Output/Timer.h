@@ -29,14 +29,14 @@ class Timer
     void resetTimer();
     void outputPerformance(uint t, Parameter* para);
 
-    real getElapsedTime(){ return this->elapsedTime; }
-    real getTotalElapsedTime(){ return this->totalElapsedTime; }
+    float getElapsedTime(){ return this->elapsedTime; }
+    float getTotalElapsedTime(){ return this->totalElapsedTime; }
 
     private:
     
     cudaEvent_t start_t, stop_t;
-    real elapsedTime = 0.0;
-    real totalElapsedTime = 0.0;
+    float elapsedTime = 0.0;
+    float totalElapsedTime = 0.0;
     std::string name;
 
     bool firstOutput = true;
