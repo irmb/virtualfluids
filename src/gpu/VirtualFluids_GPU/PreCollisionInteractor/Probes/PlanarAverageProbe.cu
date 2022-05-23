@@ -16,6 +16,7 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "GPU/CudaMemoryManager.h"
 
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////////
 /// Functors for thrust reductions
