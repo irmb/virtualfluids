@@ -298,7 +298,7 @@ void PlanarAverageProbe::calculateQuantities(SPtr<ProbeStruct> probeStruct, Para
 
     real N = (real)probeStruct->nIndices;
     real n = (real)probeStruct->vals;
-    int nPoints = probeStruct->nPoints;
+    uint nPoints = probeStruct->nPoints;
     // Permutation iterators for direct iteration over the velocities of the planes
     typedef thrust::device_vector<real>::iterator valIterator;
     typedef thrust::device_vector<uint>::iterator indIterator;
