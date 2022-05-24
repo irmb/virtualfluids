@@ -93,21 +93,24 @@ void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
                                                     real nomalX, real normalY, real normalZ, 
                                                     uint samplingOffset, real z0)
 {
-    SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0);
+    for (uint level = 0; level < getNumberOfGridLevels(); level++)
+    {
+        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0);
 
-    auto side = SideFactory::make(sideType);
+        auto side = SideFactory::make(sideType);
 
-    stressBoundaryCondition->side = side;
-    stressBoundaryCondition->side->addIndices(grids, 0, stressBoundaryCondition);
+        stressBoundaryCondition->side = side;
+        stressBoundaryCondition->side->addIndices(grids, level, stressBoundaryCondition);
 
-    stressBoundaryCondition->fillStressNormalLists();
-    stressBoundaryCondition->fillSamplingOffsetLists();
-    stressBoundaryCondition->fillZ0Lists();
-    // stressBoundaryCondition->fillSamplingIndices(grids, 0, samplingOffset); //redundant with Side::setStressSamplingIndices but potentially a better approach for cases with complex geometries
+        stressBoundaryCondition->fillStressNormalLists();
+        stressBoundaryCondition->fillSamplingOffsetLists();
+        stressBoundaryCondition->fillZ0Lists();
+        // stressBoundaryCondition->fillSamplingIndices(grids, 0, samplingOffset); //redundant with Side::setStressSamplingIndices but potentially a better approach for cases with complex geometries
 
-    boundaryConditions[0]->stressBoundaryConditions.push_back(stressBoundaryCondition);
+        boundaryConditions[level]->stressBoundaryConditions.push_back(stressBoundaryCondition);
 
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Stress BC on level " << 0 << " with " << (int)stressBoundaryCondition->indices.size() << "\n";
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Stress BC on level " << level << " with " << (int)stressBoundaryCondition->indices.size() << "\n";
+    }
 }
 
 void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz)
