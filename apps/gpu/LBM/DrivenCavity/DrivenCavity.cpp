@@ -95,7 +95,7 @@ const real dt = (real)1.0e-3; //0.5e-3;
 
 const uint nx = 64;
 
-std::string path(".");
+std::string path("D:/out/DrivenCavity/new");
 
 std::string simulationName("DrivenCavityChim");
 
@@ -123,8 +123,18 @@ void multipleLevel(const std::string& configPath)
 
 	real dx = L / real(nx);
 
-	gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
-								0.5 * L,  0.5 * L,  0.5 * L, dx);
+	//gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
+	//							0.5 * L,  0.5 * L,  0.5 * L, dx);
+
+	gridBuilder->addCoarseGrid(-2.0 * dx, -0.5 * L, -0.5 * L,
+								2.0 * dx,  0.5 * L,  0.5 * L, dx);
+
+    auto refBox = new Cuboid(-0.1 * L, -0.1 * L, -0.1 * L,
+                              0.1 * L,  0.1 * L,  0.1 * L);
+
+    gridBuilder->addGrid(refBox, 1);
+
+    gridBuilder->setNumberOfLayers(0, 0);
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -166,13 +176,15 @@ void multipleLevel(const std::string& configPath)
 
 		para->setDevices(std::vector<uint>{(uint)0});
 
+        para->setOutputPath( path );
+
         para->setOutputPrefix( simulationName );
 
         para->setFName(para->getOutputPath() + "/" + para->getOutputPrefix());
 
         para->setPrintFiles(true);
 
-        para->setMaxLevel(1);
+        para->setMaxLevel(2);
 
         para->setVelocity(velocityLB);
         para->setViscosity(viscosityLB);
@@ -199,6 +211,10 @@ void multipleLevel(const std::string& configPath)
 	    //gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
 	    gridBuilder->setVelocityBoundaryCondition(SideType::PZ,  vx,  vx, 0.0);
 	    //gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        gridBuilder->writeGridsToVtk(path + "/grid/");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

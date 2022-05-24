@@ -28,7 +28,7 @@
 //
 //! \file GridImp.h
 //! \ingroup grid
-//! \author Soeren Peters, Stephan Lenz, Martin Sch�nherr
+//! \author Soeren Peters, Stephan Lenz, Martin Schoenherr
 //=======================================================================================
 #ifndef GRID_IMP_H
 #define GRID_IMP_H
@@ -197,7 +197,6 @@ public:
     void fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir);
     void findStopperNode(uint index);
     void findEndOfGridStopperNode(uint index);
-    void findEndOfGridStopperPeriodicNode(uint index);
     void findSolidStopperNode(uint index);
     void findBoundarySolidNode(uint index);
 
