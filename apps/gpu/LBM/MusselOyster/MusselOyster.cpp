@@ -144,14 +144,6 @@ void multipleLevel(const std::string& configPath)
     real vxLB = (real)0.051; // LB units
     real Re = (real)300.0;
 
-    // real heightBivalve;
-    // if (bivalveType == "MUSSEL")
-    //     heightBivalve = (real)35.0; 
-    // else if (bivalveType == "OYSTER")
-    //     heightBivalve = (real)72.0;
-    // else
-    //     std::cerr << "Error: unknown bivalveType" << std::endl;
-    real length = 1.0 / dxGrid; // heightBivalve / dxGrid
     real viscosityLB = (vxLB * length) / Re;
 
     para->setVelocity(vxLB);
@@ -170,7 +162,6 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "number of processes = " << para->getNumprocs() << "\n";
 
-    
     // para->setTOut(1000);
     // para->setTEnd(10000);
 
@@ -198,46 +189,19 @@ void multipleLevel(const std::string& configPath)
     para->setMainKernel("CumulantK17CompChimStream");
     *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
-    // if (para->getNumprocs() > 1) {
-    //     para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
-    //     para->setMaxDev(2);
-    // } else 
-    //     para->setDevices(std::vector<uint>{ (uint)0 });
-
-
-
     //////////////////////////////////////////////////////////////////////////
 
 
     if (useGridGenerator) {
-        // real bbzm;
-        // real bbzp;
-        // if (bivalveType == "MUSSEL")
-        //     bbzp = 9.0;
-        // if (bivalveType == "OYSTER")
-        //     bbzp = 13.0;
-        // bbzm = -bbzp;
-        // bounding box mussel:
-        // const real bbxm = 0.0;
-        // const real bbxp = 76.0;
-        // const real bbym = 0.0;
-        // const real bbyp = 35.0;
-        // const real bbzm = -9.15;
-        // const real bbzp = 9.15;
-        // bounding box oyster:
-        // const real bbxm = 0.0;
-        // const real bbxp = 102.0;
-        // const real bbym = 0.0;
-        // const real bbyp = 72.0;
-        // const real bbzm = -13.0;
-        // const real bbzp = 13.0;
-
-        const real xGridMin  = -50.0;     // -100.0;
-        const real xGridMax  = 250.0;      // alt 540.0 // neu 440 // mit groesserem Level 1 470
+        const real xGridMin  = -100.0;     // -100.0;
+        const real xGridMax  = 470.0;      // alt 540.0 // neu 440 // mit groesserem Level 1 470
         const real yGridMin  = 1.0;        // 1.0;
-        const real yGridMax  = 200.0;      // alt 440.0; // neu 350
-        const real zGridMin  = -45;        // -85;
-        const real zGridMax  = 45.0;       // 85;
+        const real yGridMax  = 350.0;      // alt 440.0; // neu 350
+        const real zGridMin  = -85;        // -85;
+        const real zGridMax  = 85.0;       // 85;
+
+        // height MUSSEL = 35.0
+        // height Oyster = 72.0
 
         TriangularMesh *bivalveSTL       = TriangularMesh::make(stlPath + bivalveType + ".stl");
         TriangularMesh *bivalveRef_1_STL = nullptr;
@@ -579,12 +543,12 @@ void multipleLevel(const std::string& configPath)
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(useStreams);
 
-            //gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" + std::to_string(generatePart) + "_"); 
-            //gridBuilder->writeGridsToVtk(outPath + bivalveType + "/" + std::to_string(generatePart) + "/grid/"); 
+            // std::cout << "Writing grids to vtk" << outPath <<  bivalveType << "/grid/part" << std::to_string(generatePart) + "...";
+            // gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
+            // std::cout << "... done" << std::endl;
             // gridBuilder->writeArrows(outPath + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
-
-            SimulationFileWriter::write(gridPath + std::to_string(generatePart) + "/", gridBuilder,
-                                        FILEFORMAT::BINARY);
+            // SimulationFileWriter::write(gridPath + std::to_string(generatePart) + "/", gridBuilder,
+            //                             FILEFORMAT::BINARY);
         } else {
 
             gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
@@ -617,41 +581,6 @@ void multipleLevel(const std::string& configPath)
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
         }
-        
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // const real velocityLB = velocity * dt / dx; // LB units
-
-        // const real vx = velocityLB / (real)sqrt(2.0); // LB units
-        // const real vy = velocityLB / (real)sqrt(2.0); // LB units
-
-        // const real viscosityLB = nx * velocityLB / Re; // LB units
-
-        //*logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
-        //*logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        // para->setVelocity(velocityLB);
-        // para->setViscosity(viscosityLB);
-
-        // para->setVelocityRatio(velocity/ velocityLB);
-
-        // para->setMainKernel("CumulantK17CompChim");
-
-        // para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz)
-        // {
-        //          rho = (real)0.0;
-        //          vx  = (real)0.0; //(6 * velocityLB * coordZ * (L - coordZ) / (L * L));
-        //          vy  = (real)0.0;
-        //          vz  = (real)0.0;
-        //      });
-
-
-
-       //return;
     }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

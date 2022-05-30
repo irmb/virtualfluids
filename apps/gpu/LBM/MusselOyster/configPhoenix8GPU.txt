@@ -7,14 +7,14 @@ NumberOfDevices=4
 ##################################################
 #informations for Writing
 ##################################################
-Path=/work/y0078217/Results/MusselOysterResults/8GPUMussel05/
-#Path="F:/Work/Computations/out/SphereScaling/"
-#Prefix="SphereScaling" 
+Path=/work/y0078217/Results/MusselOysterResults/8GPUOyster05/
+#Path="F:/Work/Computations/out/MusselOyster/"
+#Prefix="MusselOyster" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
-GridPath=/work/y0078217/Grids/GridMusselOyster/Mussel8GPU/
+GridPath=/work/y0078217/Grids/GridMusselOyster/Oyster8GPU/
 #GridPath="C:"
 
 ##################################################
@@ -31,8 +31,8 @@ GridPath=/work/y0078217/Grids/GridMusselOyster/Mussel8GPU/
 ##################################################
 #simulation parameter
 ##################################################
-TimeEnd=800000 # 800000
-TimeOut=200000 # 400000
+TimeEnd=400000 # 800000
+TimeOut=100000 # 400000
 #TimeStartOut=0
 
 ##################################################
