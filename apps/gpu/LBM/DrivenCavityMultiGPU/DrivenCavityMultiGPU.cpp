@@ -110,7 +110,7 @@ void multipleLevel(const std::string& configPath)
 
     bool useGridGenerator = true;
     bool useLevels        = true;
-    // para->setUseStreams();                            // set in config
+    // para->setUseStreams(useStreams);                  // set in config
     // para->useReducedCommunicationAfterFtoC = true;    // set in config
     para->setCalcTurbulenceIntensity(false);
 
