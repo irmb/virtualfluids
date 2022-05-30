@@ -128,7 +128,6 @@ void multipleLevel(const std::string& configPath)
     para->setCalcTurbulenceIntensity(true);
 
     if (para->getNumprocs() == 1) {
-       useStreams       = false;
        para->useReducedCommunicationAfterFtoC = false;
     }
 
@@ -192,8 +191,8 @@ void multipleLevel(const std::string& configPath)
         para->setMaxLevel(1);
 
 
-    if (useStreams)
-        para->setUseStreams();
+
+    para->setUseStreams(useStreams);
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("CumulantK17CompChimStream");
     *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
