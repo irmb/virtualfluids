@@ -142,8 +142,8 @@ void multipleLevel(const std::string& configPath)
         dxGrid = 0.5;  
     real vxLB = (real)0.051; // LB units
     real Re = (real)300.0;
-
-    real viscosityLB = (vxLB * length) / Re;
+    real referenceLength = 1.0 / dxGrid; // heightBivalve / dxGrid
+    real viscosityLB = (vxLB * referenceLength) / Re;
 
     para->setVelocity(vxLB);
     para->setViscosity(viscosityLB);
