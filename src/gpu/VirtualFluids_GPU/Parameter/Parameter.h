@@ -890,12 +890,18 @@ private:
     // initial condition
     std::function<void(real, real, real, real &, real &, real &, real &)> initialCondition;
 
+
+    ////////////////////////////////////////////////////////////////////////////
     // cuda streams
+
+    //! determines whether streams and thus communication hiding should be used
     bool useStreams{ false };
     std::unique_ptr<CudaStreamManager> cudaStreamManager;
 
 public:
-    void setUseStreams();
+    //! \brief sets whether streams and thus communication hiding should be used        
+    //! \details This function is only useful for simulations on multiple GPUs. If there is only one MPI process, the passed value is automatically overwritten with false.
+    void setUseStreams(bool useStreams);
     bool getUseStreams();
     std::unique_ptr<CudaStreamManager> &getStreamManager();
     bool getKernelNeedsFluidNodeIndicesToRun();

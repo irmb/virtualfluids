@@ -86,7 +86,7 @@ std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name
     std::ifstream file;
     file.open(name.c_str(), std::ifstream::in);
 
-    if( !file.is_open() ) throw std::runtime_error(name + "cannot be opened!");
+    if( !file.is_open() ) throw std::runtime_error(name + " cannot be opened!");
 
     uint currentPatchIndex = 0;
 

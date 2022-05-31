@@ -119,14 +119,12 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator                  = true;
-    bool useLevels                         = false;
-    std::string scalingType                = "strong"; // "strong" // "weak"
-    // bool useStreams                        = true;
-    // para->useReducedCommunicationAfterFtoC = true;
-    bool useStreams = para->getUseStreams();
+    bool useLevels                         = true;
+    std::string scalingType                = "strong";   // "strong" // "weak"
+    // para->setUseStreams(true);                        // set in config
+    // para->useReducedCommunicationAfterFtoC = true;    // set in config
 
     if (para->getNumprocs() == 1) {
-       useStreams       = false;
        para->useReducedCommunicationAfterFtoC = false;
     }
     if (scalingType != "weak" && scalingType != "strong")
@@ -150,7 +148,7 @@ void multipleLevel(const std::string& configPath)
     *logging::out << logging::Logger::INFO_HIGH << "viscosity real [m^2/s] = " << viscosityLB * para->getViscosityRatio() << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "dxGrid = " << dxGrid << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "useGridGenerator = " << useGridGenerator << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << para->getUseStreams() << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "number of processes = " << para->getNumprocs() << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "para->useReducedCommunicationAfterFtoC = " <<  para->useReducedCommunicationAfterFtoC << "\n";
     *logging::out << logging::Logger::INFO_HIGH << "scalingType = " <<  scalingType << "\n";
@@ -175,8 +173,6 @@ void multipleLevel(const std::string& configPath)
         para->setMaxLevel(1);
 
 
-    if (useStreams)
-        para->setUseStreams();
     //para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("CumulantK17CompChimStream");
     *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
@@ -607,7 +603,7 @@ void multipleLevel(const std::string& configPath)
                 //////////////////////////////////////////////////////////////////////////                
             }
             if (para->getKernelNeedsFluidNodeIndicesToRun())
-                gridBuilder->findFluidNodes(useStreams);
+                gridBuilder->findFluidNodes(para->getUseStreams());
 
             // gridBuilder->writeGridsToVtk(outPath + "grid/part" +
             // std::to_string(generatePart) + "_"); gridBuilder->writeGridsToVtk(outPath +
@@ -654,7 +650,7 @@ void multipleLevel(const std::string& configPath)
             // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
             //////////////////////////////////////////////////////////////////////////
             if (para->getKernelNeedsFluidNodeIndicesToRun())
-                gridBuilder->findFluidNodes(useStreams);
+                gridBuilder->findFluidNodes(para->getUseStreams());
 
             // gridBuilder->writeGridsToVtk("E:/temp/MusselOyster/" + "/grid/");
             // gridBuilder->writeArrows ("E:/temp/MusselOyster/" + "/arrow");

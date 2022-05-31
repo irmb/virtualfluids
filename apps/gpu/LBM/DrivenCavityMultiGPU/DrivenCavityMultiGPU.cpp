@@ -1,3 +1,4 @@
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <string>
@@ -28,7 +29,7 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridFactory.h"
 
-#include "geometries/Sphere/Sphere.h"
+#include "geometries/Cuboid/Cuboid.h"
 #include "geometries/TriangularMesh/TriangularMesh.h"
 
 #include "GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
@@ -66,23 +67,20 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Tesla 03
-// std::string outPath("E:/temp/MusselOysterResults/");
-// std::string gridPathParent = "E:/temp/GridMussel/";
-// std::string stlPath("C:/Users/Master/Documents/MasterAnna/STL/");
-// std::string simulationName("MusselOyster");
-
-// Aragorn
-// std::string outPath("/workspaces/VirtualFluids_dev/output/MusselOysterResults/");
-// std::string gridPathParent = "/workspaces/VirtualFluids_dev/output/MusselOysterResults/grid/";
-// std::string stlPath("/workspaces/VirtualFluids_dev/stl/MusselOyster/");
-// std::string simulationName("MusselOyster");
+//  Tesla 03
+// std::string outPath("E:/temp/DrivenCavityMultiGPUResults/");
+// std::string gridPath = "D:/STLs/DrivenCavity";
+// std::string simulationName("DrivenCavityMultiGPU");
 
 // Phoenix
-std::string outPath("/work/y0078217/Results/MusselOysterResults/");
-std::string gridPathParent = "/work/y0078217/Grids/GridMusselOyster/";
-std::string stlPath("/home/y0078217/STL/MusselOyster/");
-std::string simulationName("MusselOyster");
+// std::string outPath("/work/y0078217/Results/DrivenCavityMultiGPUResults/");
+// std::string gridPath = "/work/y0078217/Grids/GridDrivenCavityMultiGPU/";
+// std::string simulationName("DrivenCavityMultiGPU");
+
+//  Aragorn
+std::string outPath("/workspaces/VirtualFluids_dev/output/DrivenCavity_Results/");
+std::string gridPath = "/workspaces/VirtualFluids_dev/output/DrivenCavity_Results/grid/";
+std::string simulationName("DrivenCavity");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,61 +106,53 @@ void multipleLevel(const std::string& configPath)
     SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
 
 
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool useGridGenerator = true;
-    bool useStreams       = true;
     bool useLevels        = true;
-    para->useReducedCommunicationAfterFtoC = true;
-    para->setCalcTurbulenceIntensity(true);
+    // para->setUseStreams(useStreams);                  // set in config
+    // para->useReducedCommunicationAfterFtoC = true;    // set in config
+    para->setCalcTurbulenceIntensity(false);
 
     if (para->getNumprocs() == 1) {
        para->useReducedCommunicationAfterFtoC = false;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    std::string bivalveType = "MUSSEL"; // "MUSSEL" "OYSTER"
-    std::string gridPath(gridPathParent + bivalveType); // only for GridGenerator, for GridReader the gridPath needs to be set in the config file
 
-    // real dxGrid = (real)2.0; // 2.0
-    real dxGrid = (real)1.0; // 1.0
-    if (para->getNumprocs() == 8)  
-        dxGrid = 0.5;  
-    real vxLB = (real)0.051; // LB units
-    real Re = (real)300.0;
-    real referenceLength = 1.0 / dxGrid; // heightBivalve / dxGrid
-    real viscosityLB = (vxLB * referenceLength) / Re;
+    const real L  = 1.0;
+    const real Re = 1000.0; //1000
+    const real velocity  = 1.0;
+    const real dt = (real)1.0e-3; //0.5e-3;
+    const uint nx = 64;
+    std::string simulationName("DrivenCavityChimMultiGPU");
 
-    para->setVelocity(vxLB);
+    // para->setTOut(10000);   // set in config
+    // para->setTEnd(10000);   // set in config
+
+
+    const real dxGrid = L / real(nx);
+    const real velocityLB = velocity * dt / dxGrid; // LB units
+	const real vxLB = velocityLB / (real)sqrt(2.0); // LB units
+	const real vyLB = velocityLB / (real)sqrt(2.0); // LB units
+    const real viscosityLB = nx * velocityLB / Re; // LB units
+
+    *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
+    *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
+
+    para->setVelocity(velocityLB);
     para->setViscosity(viscosityLB);
-    para->setVelocityRatio((real) 58.82352941);
-    para->setViscosityRatio((real) 0.058823529);
-    para->setDensityRatio((real) 998.0);
+    para->setVelocityRatio(velocity/ velocityLB);
+    para->setDensityRatio((real) 1.0); // correct value?
 
-    *logging::out << logging::Logger::INFO_HIGH << "bivalveType = " << bivalveType << " \n";
-    *logging::out << logging::Logger::INFO_HIGH << "velocity LB [dx/dt] = " << vxLB << " \n";
-    *logging::out << logging::Logger::INFO_HIGH << "viscosity LB [dx^2/dt] = " << viscosityLB << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "velocity real [m/s] = " << vxLB * para->getVelocityRatio()<< " \n";
-    *logging::out << logging::Logger::INFO_HIGH << "viscosity real [m^2/s] = " << viscosityLB * para->getViscosityRatio() << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "dxGrid = " << dxGrid << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "useGridGenerator = " << useGridGenerator << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "useStreams = " << useStreams << "\n";
-    *logging::out << logging::Logger::INFO_HIGH << "number of processes = " << para->getNumprocs() << "\n";
+	para->setInitialCondition([&](real coordX, real coordY, real coordZ, real &rho, real &vx, real &vy, real &vz) {
+           rho = (real) 1.0;
+           vx  = (real) (coordX * velocityLB);
+           vy  = (real) (coordY * velocityLB);
+           vz  = (real) (coordZ * velocityLB);
+    });
 
-    // para->setTOut(1000);
-    // para->setTEnd(10000);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     para->setCalcDragLift(false);
     para->setUseWale(false);
@@ -182,40 +172,42 @@ void multipleLevel(const std::string& configPath)
         para->setMaxLevel(1);
 
 
-
-    para->setUseStreams(useStreams);
     // para->setMainKernel("CumulantK17CompChim");
     para->setMainKernel("CumulantK17CompChimStream");
     *logging::out << logging::Logger::INFO_HIGH << "Kernel: " << para->getMainKernel() << "\n";
 
-    //////////////////////////////////////////////////////////////////////////
+    // if (para->getNumprocs() > 1) {
+    //     para->setDevices(std::vector<uint>{ (uint)0, (uint)1 });
+    //     para->setMaxDev(2);
+    // } else 
+    //     para->setDevices(std::vector<uint>{ (uint)0 });
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (useGridGenerator) {
-        const real xGridMin  = -100.0;     // -100.0;
-        const real xGridMax  = 470.0;      // alt 540.0 // neu 440 // mit groesserem Level 1 470
-        const real yGridMin  = 1.0;        // 1.0;
-        const real yGridMax  = 350.0;      // alt 440.0; // neu 350
-        const real zGridMin  = -85;        // -85;
-        const real zGridMax  = 85.0;       // 85;
+        const real xGridMin  = -0.5 * L;
+        const real xGridMax  = 0.5 * L;
+        const real yGridMin  = -0.5 * L;
+        const real yGridMax  = 0.5 * L;
+        const real zGridMin  = -0.5 * L;     
+        const real zGridMax  = 0.5 * L;
 
-        // height MUSSEL = 35.0
-        // height Oyster = 72.0
-
-        TriangularMesh *bivalveSTL       = TriangularMesh::make(stlPath + bivalveType + ".stl");
-        TriangularMesh *bivalveRef_1_STL = nullptr;
+        Cuboid *level1 = nullptr;
         if (useLevels)
-            bivalveRef_1_STL = TriangularMesh::make(stlPath + bivalveType + "_Level1.stl");
+            level1 = new Cuboid(-0.25 * L,-0.25 * L, -0.25 * L, 0.25 * L, 0.25 * L, 0.25 * L);  
 
 
         if (para->getNumprocs() > 1) {
-            const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
 
+            const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
             real overlap = (real)8.0 * dxGrid;
             gridBuilder->setNumberOfLayers(10, 8);
 
+            const real xSplit = 0.0;
+            const real ySplit = 0.0;
+            const real zSplit = 0.0;
+
             if (comm->getNummberOfProcess() == 2) {
-                const real zSplit = 0.0; //round(((double)bbzp + bbzm) * 0.5);          
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid( xGridMin,   yGridMin,     zGridMin, 
@@ -228,10 +220,8 @@ void multipleLevel(const std::string& configPath)
 
 
                 if (useLevels) {
-                    gridBuilder->addGrid(bivalveRef_1_STL, 1);
+                    gridBuilder->addGrid(level1, 1);
                 }
-
-                gridBuilder->addGeometry(bivalveSTL);
 
                 if (generatePart == 0){
                     gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xGridMin,    xGridMax,
@@ -259,19 +249,15 @@ void multipleLevel(const std::string& configPath)
                 gridBuilder->setPeriodicBoundaryCondition(false, false, false);
                 ////////////////////////////////////////////////////////////////////////// 
                 if (generatePart == 0)
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
                 if (generatePart == 1)
                     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
-                gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+                gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-                gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
-                gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-                gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);  // set pressure BC after velocity BCs
+                gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
+                gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////           
             } else if (comm->getNummberOfProcess() == 4) {
-
-                const real xSplit = 100.0;
-                const real zSplit = 0.0;
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, yGridMax,
@@ -291,10 +277,8 @@ void multipleLevel(const std::string& configPath)
                 }
 
                 if (useLevels) {
-                    gridBuilder->addGrid(bivalveRef_1_STL, 1);
+                    gridBuilder->addGrid(level1, 1);
                 }
-
-                gridBuilder->addGeometry(bivalveSTL);
 
                 if (generatePart == 0)
                     gridBuilder->setSubDomainBox(
@@ -339,29 +323,25 @@ void multipleLevel(const std::string& configPath)
                 gridBuilder->setPeriodicBoundaryCondition(false, false, false);
                 //////////////////////////////////////////////////////////////////////////
                 if (generatePart == 0) {
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
                 }
                 if (generatePart == 2) {                    
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
                 }
-                gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-                gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);                
+                gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);                
                 if (generatePart == 3) {
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
-                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);  // set pressure BC after velocity BCs
                 }
                 if (generatePart == 1) {
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);                    
-                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);                    
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
                 }
                 //////////////////////////////////////////////////////////////////////////
             } else if (comm->getNummberOfProcess() == 8) {
-                real xSplit = 140.0; // 100.0 // mit groesserem Level 1 140.0
-                real ySplit = 32.0;  // 32.0
-                real zSplit = 0.0;
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, ySplit + overlap,
@@ -397,10 +377,8 @@ void multipleLevel(const std::string& configPath)
                 }
 
                 if (useLevels) {
-                    gridBuilder->addGrid(bivalveRef_1_STL, 1);
+                    gridBuilder->addGrid(level1, 1);
                 }
-
-                gridBuilder->addGeometry(bivalveSTL);
                 
                 if (generatePart == 0)
                     gridBuilder->setSubDomainBox(
@@ -497,86 +475,81 @@ void multipleLevel(const std::string& configPath)
 
                 //////////////////////////////////////////////////////////////////////////
                 if (generatePart == 0) {
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::MY,  0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
                 }
                 if (generatePart == 1) {
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
                 }
                 if (generatePart == 2) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MY,  0.0, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
-                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);   // set pressure BC after velocity BCs
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
                 }
                 if (generatePart == 3) {
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
-                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);   // set pressure BC after velocity BCs
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
                 }
                 if (generatePart == 4) {
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::MY,  0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
                 }
                 if (generatePart == 5) {
-                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
                 }
                 if (generatePart == 6) {
                     gridBuilder->setVelocityBoundaryCondition(SideType::MY,  0.0, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
-                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);  // set pressure BC after velocity BCs
                 }
                 if (generatePart == 7) {
-                    gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
+                    gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
                     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
-                    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);  // set pressure BC after velocity BCs
                 }
-                // gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////                
             }
             if (para->getKernelNeedsFluidNodeIndicesToRun())
-                gridBuilder->findFluidNodes(useStreams);
+                gridBuilder->findFluidNodes(para->getUseStreams());
 
-            // std::cout << "Writing grids to vtk" << outPath <<  bivalveType << "/grid/part" << std::to_string(generatePart) + "...";
-            // gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/part" + std::to_string(generatePart) + "_");
-            // std::cout << "... done" << std::endl;
-            // gridBuilder->writeArrows(outPath + bivalveType + "/" + std::to_string(generatePart) + " /arrow");
-            // SimulationFileWriter::write(gridPath + std::to_string(generatePart) + "/", gridBuilder,
-            //                             FILEFORMAT::BINARY);
+            // gridBuilder->writeGridsToVtk(outPath +  "/grid/part" + std::to_string(generatePart) + "_"); 
+            // gridBuilder->writeGridsToVtk(outPath + "/" + std::to_string(generatePart) + "/grid/"); 
+            // gridBuilder->writeArrows(outPath + "/" + std::to_string(generatePart) + " /arrow");
+
+            SimulationFileWriter::write(gridPath + std::to_string(generatePart) + "/", gridBuilder,
+                                        FILEFORMAT::BINARY);
         } else {
 
             gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zGridMax, dxGrid);
 
             if (useLevels) {
                 gridBuilder->setNumberOfLayers(10, 8);
-                gridBuilder->addGrid(bivalveRef_1_STL, 1);
+                gridBuilder->addGrid(level1, 1);
             }
 
-            gridBuilder->addGeometry(bivalveSTL);
-
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-
             gridBuilder->setPeriodicBoundaryCondition(false, false, false);
             //////////////////////////////////////////////////////////////////////////
-            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vxLB, 0.0, 0.0);
-            gridBuilder->setVelocityBoundaryCondition(SideType::PY, vxLB, 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-            gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vxLB, 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
             gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vxLB, 0.0, 0.0);
-            gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);  // set pressure BC after velocity BCs
 
             //////////////////////////////////////////////////////////////////////////
             if (para->getKernelNeedsFluidNodeIndicesToRun())
-                gridBuilder->findFluidNodes(useStreams);
+                gridBuilder->findFluidNodes(para->getUseStreams());
 
-            // gridBuilder->writeGridsToVtk(outPath +  bivalveType + "/grid/");
-            // gridBuilder->writeArrows ((outPath + bivalveType + "/arrow");
+            gridBuilder->writeGridsToVtk(outPath +  "/grid/");
+            // gridBuilder->writeArrows(outPath + "/arrow");
 
             SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
         }
@@ -635,7 +608,7 @@ int main( int argc, char* argv[])
             std::cout << targetPath << std::endl;
 
             if (configFile.size() == 0) {
-                configFile = targetPath + "configMusselOyster.txt";
+                configFile = targetPath + "configDrivenCavityMultiGPU.txt";
             }
 
             multipleLevel(configFile);

@@ -8,6 +8,9 @@
 # Phoenix openmpi
 # mpirun -np 4 nvprof -f -o MusselOyster.%q{OMPI_COMM_WORLD_RANK}.nvprof "./VirtualFluids_dev/build/bin/MusselOyster" "./VirtualFluids_dev/apps/gpu/LBM/SphereScaling/configPhoenix4GPU.txt"
 
+# Aragorn
+ ./bin/MusselOyster "../apps/gpu/LBM/MusselOyster/configMusselOyster.txt"
+
 ##################################################
 #GPU Mapping
 ##################################################
@@ -17,16 +20,15 @@ NumberOfDevices=2
 ##################################################
 #informations for Writing
 ##################################################
-Path=/work/y0078217/Results/MusselOysterResults/
-#Path=E:/temp/MusselOysterResults/
-#Path="F:/Work/Computations/out/MusselOyster/"
+#Path=/work/y0078217/Results/MusselOysterResults/
+Path=/workspaces/VirtualFluids_dev/output/MusselOysterResults/
 #Prefix="MusselOyster" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
-GridPath=E/work/y0078217/Grids/GridMusselOyster/
-#GridPath=E:/temp/GridMussel/MUSSEL/
+#GridPath=E:/work/y0078217/Grids/GridMusselOyster/
+GridPath=/workspaces/VirtualFluids_dev/output/MusselOysterResults/grid/
 #GridPath="C:"
 
 ##################################################
@@ -44,5 +46,5 @@ GridPath=E/work/y0078217/Grids/GridMusselOyster/
 #simulation parameter
 ##################################################
 TimeEnd=10000
-TimeOut=1000 
+TimeOut=10000 
 #TimeStartOut=0

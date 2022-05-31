@@ -21,6 +21,9 @@ extern "C" void collectNodesInSendBufferGPU(Parameter *para, int level, int stre
 extern "C" void scatterNodesFromRecvBufferGPU(Parameter *para, int level, int streamIndex,
                                               std::vector<ProcessNeighbor27> *recvProcessNeighborDev,
                                               unsigned int numberOfRecvProcessNeighbors);
+extern "C" void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes, 
+                              std::vector<ProcessNeighbor27> &recvProcessNeighborHost,
+                              std::vector<ProcessNeighbor27> &sendProcessNeighborHost);
 
 // x
 extern "C" void prepareExchangeCollDataXGPU27AllNodes(Parameter *para, int level, int streamIndex);

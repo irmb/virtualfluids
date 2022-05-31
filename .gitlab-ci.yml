@@ -482,7 +482,9 @@ gcov_gcc_9:
       - coverage/
 
     reports:
-      cobertura: coverage/coverage.xml
+      coverage_report: 
+        coverage_format: cobertura
+        path: coverage/coverage.xml
 
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
