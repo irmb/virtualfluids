@@ -280,7 +280,7 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
     // iCellFCC
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
         sparseIndexSend = sendIndices[posInSendIndices];
-        if (isSparseIndexInICellFCC(para->getParH(level)->intFC.kFC, sparseIndexSend, level)){
+        if (isSparseIndexInICellFCC(para->getParH(level)->intFC.kFC, sparseIndexSend, level)) {
             addUniqueIndexToCommunicationVectors(sendIndicesAfterFtoC, sparseIndexSend,
                                                  sendIndicesForCommAfterFtoCPositions, posInSendIndices);
         }
@@ -416,8 +416,9 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoCY(
 void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoCZ(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
-    int *recvIndices                    = para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].index;
-    int &numberOfRecvNeighborsAfterFtoC = para->getParH(level)->recvProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes;
+    int *recvIndices = para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].index;
+    int &numberOfRecvNeighborsAfterFtoC =
+        para->getParH(level)->recvProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes;
     reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNeighborsAfterFtoC, direction, level,
                                        sendIndicesForCommAfterFtoCPositions);
 }

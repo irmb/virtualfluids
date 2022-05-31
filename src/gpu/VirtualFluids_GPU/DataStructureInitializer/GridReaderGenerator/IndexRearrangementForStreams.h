@@ -3,15 +3,14 @@
 //! \author Anna Wellmann
 //! \ref master thesis of Anna Wellmann
 
-
 #ifndef IndexRearrangementForStreams_H
 #define IndexRearrangementForStreams_H
 
 #include <gpu/VirtualFluids_GPU/DataStructureInitializer/GridProvider.h>
 
-#include <vector>
-#include <string>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "LBM/LB.h"
 
@@ -19,22 +18,22 @@ class Parameter;
 class GridBuilder;
 namespace vf
 {
-	namespace gpu
-	{
-		class Communicator;
-	}
+namespace gpu
+{
+class Communicator;
 }
+} // namespace vf
 
 class IndexRearrangementForStreams
 {
 private:
-	std::shared_ptr<GridBuilder> builder;
+    std::shared_ptr<GridBuilder> builder;
     std::shared_ptr<Parameter> para;
 
 public:
     //! \brief construct IndexRearrangementForStreams object
     IndexRearrangementForStreams(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder);
-    
+
     //////////////////////////////////////////////////////////////////////////
     // communication after coarse to fine
     //////////////////////////////////////////////////////////////////////////
@@ -48,7 +47,8 @@ public:
     //////////////////////////////////////////////////////////////////////////
 
     //! \brief split the interpolation cells from coarse to fine into border an bulk
-    //! \details For communication hiding, the interpolation cells from the coarse to the fine grid need to be split into two groups:
+    //! \details For communication hiding, the interpolation cells from the coarse to the fine grid need to be split
+    //! into two groups:
     //!
     //! - cells which are at the border between two gpus --> "border"
     //!
@@ -57,7 +57,8 @@ public:
     void splitCoarseToFineIntoBorderAndBulk(const uint &level);
 
     //! \brief split the interpolation cells from fine to coarse into border an bulk
-    //! \details For communication hiding, the interpolation cells from the fine to the coarse grid need to be split into two groups:
+    //! \details For communication hiding, the interpolation cells from the fine to the coarse grid need to be split
+    //! into two groups:
     //!
     //! - cells which are at the border between two gpus --> "border"
     //!
@@ -65,7 +66,6 @@ public:
     //!
     //! \ref see master thesis of Anna Wellmann (p. 62-68)
     void splitFineToCoarseIntoBorderAndBulk(const uint &level);
-
 
 private:
     //////////////////////////////////////////////////////////////////////////
@@ -89,9 +89,10 @@ private:
     void addUniqueIndexToCommunicationVectors(std::vector<int> &sendIndicesAfterFtoC, int &sparseIndexSend,
                                               std::vector<unsigned int> &sendIndicesForCommAfterFtoCPositions,
                                               uint &posInSendIndices) const;
-    void findIfSparseIndexIsInSendIndicesAndAddToCommVectors(int sparseIndex, int *sendIndices, uint numberOfSendIndices,
-                                                             std::vector<int> &sendIndicesAfterFtoC,
-                                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
+    void
+    findIfSparseIndexIsInSendIndicesAndAddToCommVectors(int sparseIndex, int *sendIndices, uint numberOfSendIndices,
+                                                        std::vector<int> &sendIndicesAfterFtoC,
+                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
     void findIndicesNotInCommAfterFtoC(const uint &numberOfSendOrRecvIndices, int *sendOrReceiveIndices,
                                        std::vector<int> &sendOrReceiveIndicesAfterFtoC,
                                        std::vector<int> &sendOrIndicesOther);
@@ -105,20 +106,20 @@ private:
     void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC, int direction,
                                             int level, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
 
- private:   
+private:
     //////////////////////////////////////////////////////////////////////////
     // split interpolation cells
     //////////////////////////////////////////////////////////////////////////
 
-    //! \brief This function reorders the arrays of CFC/CFF indices and sets the pointers and sizes of the new subarrays:
-    //! \details The coarse cells for interpolation from coarse to fine (iCellCFC) are divided into two subgroups: border and
-    //! bulk. The fine cells (iCellCFF) are reordered accordingly. The offset cells (xOffCF, yOffCF, zOffCF) must be
-    //! reordered in the same way.
+    //! \brief This function reorders the arrays of CFC/CFF indices and sets the pointers and sizes of the new
+    //! subarrays: \details The coarse cells for interpolation from coarse to fine (iCellCFC) are divided into two
+    //! subgroups: border and bulk. The fine cells (iCellCFF) are reordered accordingly. The offset cells (xOffCF,
+    //! yOffCF, zOffCF) must be reordered in the same way.
     void getGridInterfaceIndicesBorderBulkCF(int level);
 
     //! \brief This function reorders the arrays of FCC/FCF indices and return pointers and sizes of the new subarrays:
-    //! \details The coarse cells for interpolation from fine to coarse (iCellFCC) are divided into two subgroups: border and
-    //! bulk. The fine cells (iCellFCF) are reordered accordingly.
+    //! \details The coarse cells for interpolation from fine to coarse (iCellFCC) are divided into two subgroups:
+    //! border and bulk. The fine cells (iCellFCF) are reordered accordingly.
     void getGridInterfaceIndicesBorderBulkFC(int level);
 };
 
