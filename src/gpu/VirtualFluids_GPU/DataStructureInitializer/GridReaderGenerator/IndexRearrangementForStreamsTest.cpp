@@ -11,6 +11,16 @@
 #include <gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h>
 #include <gpu/GridGenerator/grid/GridImp.h>
 
+template <typename T>
+bool vectorsAreEqual(T *vector1, std::vector<T> vectorExpected)
+{
+    for (uint i = 0; i < vectorExpected.size(); i++) {
+        if (vector1[i] != vectorExpected[i])
+            return false;
+    }
+    return true;
+}
+
 class LevelGridBuilderDouble : public LevelGridBuilder
 {
 private:
@@ -83,6 +93,21 @@ struct CFBorderBulk {
     std::vector<real> offsetCFz_Bulk_expected   = { 1001, 1003, 1005, 1007 };
 };
 
+struct FCBorderBulk {
+    // data to work on
+    std::vector<uint> fluidNodeIndicesBorder = { 110, 111, 112, 113, 114, 115, 116 };
+    std::vector<uint> iCellFCC               = { 11, 111, 13, 113, 15, 115, 17 };
+    std::vector<uint> iCellFCF               = { 12, 112, 14, 114, 16, 116, 18 };
+    uint sizeOfICellFC                       = (uint)iCellFCC.size();
+    int level                                = 1;
+
+    // expected data
+    std::vector<uint> iCellFccBorder_expected = { 111, 113, 115 };
+    std::vector<uint> iCellFccBulk_expected   = { 11, 13, 15, 17 };
+    std::vector<uint> iCellFcfBorder_expected = { 112, 114, 116 };
+    std::vector<uint> iCellFcfBulk_expected   = { 12, 14, 16, 18 };
+};
+
 static SPtr<Parameter> initParameterClass()
 {
     std::filesystem::path filePath = __FILE__; //  assuming that the config file is stored parallel to this file.
@@ -90,16 +115,6 @@ static SPtr<Parameter> initParameterClass()
     vf::basics::ConfigurationFile config;
     config.load(filePath.string());
     return std::make_shared<Parameter>(config, 1, 0);
-}
-
-template <typename T>
-bool vectorsAreEqual(T *vector1, std::vector<T> vectorExpected)
-{
-    for (uint i = 0; i < vectorExpected.size(); i++) {
-        if (vector1[i] != vectorExpected[i])
-            return false;
-    }
-    return true;
 }
 
 class IndexRearrangementForStreamsTest_IndicesCFBorderBulkTest : public testing::Test
@@ -141,6 +156,39 @@ private:
     }
 };
 
+class IndexRearrangementForStreamsTest_IndicesFCBorderBulkTest : public testing::Test
+{
+public:
+    FCBorderBulk fc;
+    SPtr<Parameter> para;
+
+private:
+    static std::unique_ptr<IndexRearrangementForStreams> createTestSubjectFCBorderBulk(FCBorderBulk &fc,
+                                                                                       std::shared_ptr<Parameter> para)
+    {
+        SPtr<GridImpDouble> grid =
+            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, nullptr, Distribution(), 1);
+        grid->setFluidNodeIndicesBorder(fc.fluidNodeIndicesBorder);
+        std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
+
+        para->setMaxLevel(fc.level + 1); // setMaxLevel resizes parH and parD
+        para->parH[fc.level]                    = std::make_shared<LBMSimulationParameter>();
+        para->parD[fc.level]                    = std::make_shared<LBMSimulationParameter>();
+        para->getParH(fc.level)->intFC.ICellFCC = &(fc.iCellFCC.front());
+        para->getParH(fc.level)->intFC.ICellFCF = &(fc.iCellFCF.front());
+        para->getParH(fc.level)->intFC.kFC      = fc.sizeOfICellFC;
+
+        return std::make_unique<IndexRearrangementForStreams>(para, builder);
+    };
+
+    void SetUp() override
+    {
+        para             = initParameterClass();
+        auto testSubject = createTestSubjectFCBorderBulk(fc, para);
+        testSubject->splitFineToCoarseIntoBorderAndBulk(fc.level);
+    }
+};
+
 TEST_F(IndexRearrangementForStreamsTest_IndicesCFBorderBulkTest, splitCoarseToFineIntoBorderAndBulk)
 {
     EXPECT_THAT(para->getParH(cf.level)->intCFBorder.kCF + para->getParH(cf.level)->intCFBulk.kCF,
@@ -172,4 +220,29 @@ TEST_F(IndexRearrangementForStreamsTest_IndicesCFBorderBulkTest, splitCoarseToFi
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCFBulk.yOffCF, cf.offsetCFy_Bulk_expected));
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCF.zOffCF, cf.offsetCFz_Border_expected));
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCFBulk.zOffCF, cf.offsetCFz_Bulk_expected));
+}
+
+TEST_F(IndexRearrangementForStreamsTest_IndicesFCBorderBulkTest, splitFineToCoarseIntoBorderAndBulk)
+{
+    EXPECT_THAT(para->getParH(fc.level)->intFCBorder.kFC + para->getParH(fc.level)->intFCBulk.kFC,
+                testing::Eq(fc.sizeOfICellFC))
+        << "The number of interpolation cells from coarse to fine changed during reordering.";
+
+    // check coarse to fine border (coarse nodes)
+    EXPECT_THAT(para->getParH(fc.level)->intFCBorder.kFC, testing::Eq((uint)fc.iCellFccBorder_expected.size()));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBorder.ICellFCC, fc.iCellFccBorder_expected))
+        << "intFCBorder.ICellFCC does not match the expected border vector";
+    // check coarse to fine border (fine nodes)
+    EXPECT_THAT(para->getParH(fc.level)->intFCBorder.kFC, testing::Eq((uint)fc.iCellFcfBorder_expected.size()));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBorder.ICellFCF, fc.iCellFcfBorder_expected))
+        << "intFCBorder.ICellFCF does not match the expected border vector";
+
+    // check coarse to fine bulk (coarse nodes)
+    EXPECT_THAT(para->getParH(fc.level)->intFCBulk.kFC, testing::Eq((uint)fc.iCellFccBulk_expected.size()));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBulk.ICellFCC, fc.iCellFccBulk_expected))
+        << "intFCBulk.ICellFCC does not match the expected bulk vector";
+    // check coarse to fine bulk (fine nodes)
+    EXPECT_THAT(para->getParH(fc.level)->intFCBulk.kFC, testing::Eq((uint)fc.iCellFcfBulk_expected.size()));
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBulk.ICellFCF, fc.iCellFcfBulk_expected))
+        << "intFCBulk.ICellFCF does not match the expected bulk vector";
 }
