@@ -37,8 +37,19 @@ public:
     //////////////////////////////////////////////////////////////////////////
     // communication after coarse to fine
     //////////////////////////////////////////////////////////////////////////
+
+    //! \brief initialize the arrays for the communication after the interpolation from fine to coarse in x direction
+    //! \details Only the nodes involved in the interpolation need to be exchanged. Therefore in this method all nodes,
+    //! which are part of the interpolation as well as the communication, are identified.
+    //!
+    //! \ref see master thesis of Anna
+    //! Wellmann (p. 59-62: "Reduzieren der auszutauschenden Knoten")
     void initCommunicationArraysForCommAfterFinetoCoarseX(const uint &level, int j, int direction);
+    //! \brief initialize the arrays for the communication after the interpolation from fine to coarse in y direction
+    //! \details --> see x direction
     void initCommunicationArraysForCommAfterFinetoCoarseY(const uint &level, int j, int direction);
+    //! \brief initialize the arrays for the communication after the interpolation from fine to coarse in z direction
+    //! \details --> see x direction
     void initCommunicationArraysForCommAfterFinetoCoarseZ(const uint &level, int j, int direction);
 
 public:
@@ -52,8 +63,9 @@ public:
     //!
     //! - cells which are at the border between two gpus --> "border"
     //!
-    //! - the other cells which are not directly related to the communication betweeen the two gpus --> "bulk"
-    //! \ref see master thesis of Anna Wellmann (p. 62-68)
+    //! - the other cells which are not directly related to the communication between the two gpus --> "bulk"
+    //!
+    //! \ref see master thesis of Anna Wellmann (p. 62-68: "Überdeckung der reduzierten Kommunikation")
     void splitCoarseToFineIntoBorderAndBulk(const uint &level);
 
     //! \brief split the interpolation cells from fine to coarse into border an bulk
@@ -62,15 +74,18 @@ public:
     //!
     //! - cells which are at the border between two gpus --> "border"
     //!
-    //! - the other cells which are not directly related to the communication betweeen the two gpus --> "bulk"
+    //! - the other cells which are not directly related to the communication between the two gpus --> "bulk"
     //!
-    //! \ref see master thesis of Anna Wellmann (p. 62-68)
+    //! \ref see master thesis of Anna Wellmann (p. 62-68: "Überdeckung der reduzierten Kommunikation")
     void splitFineToCoarseIntoBorderAndBulk(const uint &level);
 
 private:
     //////////////////////////////////////////////////////////////////////////
     // communication after coarse to fine
     //////////////////////////////////////////////////////////////////////////
+
+    //! \brief inits pointers for reduced communication after interpolation fine to coarse by copying them from "normal"
+    //! communication
     void copyProcessNeighborToCommAfterFtoCX(const uint &level, int indexOfProcessNeighbor);
     void copyProcessNeighborToCommAfterFtoCY(const uint &level, int indexOfProcessNeighbor);
     void copyProcessNeighborToCommAfterFtoCZ(const uint &level, int indexOfProcessNeighbor);
@@ -81,18 +96,32 @@ private:
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
     void reorderSendIndicesForCommAfterFtoCZ(int direction, int level, int indexOfProcessNeighbor,
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    void reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &numberOfSendNeighborsAfterFtoC, int direction,
-                                            int level, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
 
+    //! \brief the send indices are reordered for the communication after the interpolation from fine to coarse
+    //! \details The indices of nodes which are part of the interpolation are moved to the front of vector with the send
+    //! indices. 
+    //! \pre para->getParH(level)->intCF needs to be inititalized 
+    //! \param sendIndices is the pointer to the vector with the send indices, which will be reordered in this function
+    //! \param numberOfSendNodesAfterFtoC will be set in this method 
+    //! \param sendIndicesForCommAfterFtoCPositions stores each sendIndex's positions before reordering
+    void reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &numberOfSendNodesAfterFtoC, int direction,
+                                            int level, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
+    //! \brief check if a sparse index occurs in the ICellFCC
     bool isSparseIndexInICellFCC(uint sizeOfICellFCC, int sparseIndexSend, int level);
+    //! \brief aggregate all nodes in the coarse cells for the interpolation in coarse to fine
+    //! \details For the coarse cells in the interpolation from coarse to fine only one node is stored. This methods
+    //! looks for the other nodes of each cell and puts them into vector. Duplicate nodes are only stored once.
     void aggregateNodesInICellCFC(int level, std::vector<uint> &nodesCFC);
+    //! \brief add index to sendIndicesAfterFtoC and sendIndicesForCommAfterFtoCPositions, but omit indices which are already in sendIndicesAfterFtoC
     void addUniqueIndexToCommunicationVectors(std::vector<int> &sendIndicesAfterFtoC, int &sparseIndexSend,
                                               std::vector<unsigned int> &sendIndicesForCommAfterFtoCPositions,
                                               uint &posInSendIndices) const;
+    //! \brief find if a sparse index is a send index. If true, call addUniqueIndexToCommunicationVectors()
     void
     findIfSparseIndexIsInSendIndicesAndAddToCommVectors(int sparseIndex, int *sendIndices, uint numberOfSendIndices,
                                                         std::vector<int> &sendIndicesAfterFtoC,
                                                         std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
+    //! \brief find all indices which are not part of the communication after the interpolation from fine to coarse
     void findIndicesNotInCommAfterFtoC(const uint &numberOfSendOrRecvIndices, int *sendOrReceiveIndices,
                                        std::vector<int> &sendOrReceiveIndicesAfterFtoC,
                                        std::vector<int> &sendOrIndicesOther);
@@ -103,7 +132,14 @@ private:
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
     void reorderRecvIndicesForCommAfterFtoCZ(int direction, int level, int indexOfProcessNeighbor,
                                              std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
-    void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, int &numberOfRecvNeighborsAfterFtoC, int direction,
+                                             
+    //! \brief reorder the receive indices in the same way that the send indices were reordered.
+    //! \details When the send indices are reordered, the receive indices need to be reordered accordingly.
+    //! \pre sendIndicesForCommAfterFtoCPositions should not be empty
+    //! \param recvIndices is the pointer to the vector with the receive indices, which will be reordered in this function
+    //! \param numberOfRecvNodesAfterFtoC will be set in this function
+    //! \param sendIndicesForCommAfterFtoCPositions stores each sendIndex's positions before reordering and is used to reorder the receive indices in the same way
+    void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, int &numberOfRecvNodesAfterFtoC, int direction,
                                             int level, std::vector<uint> &sendIndicesForCommAfterFtoCPositions);
 
 private:

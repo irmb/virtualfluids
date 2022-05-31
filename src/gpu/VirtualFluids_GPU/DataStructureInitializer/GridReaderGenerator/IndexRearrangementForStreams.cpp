@@ -233,9 +233,9 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoCX(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
     int *sendIndices = para->getParH(level)->sendProcessNeighborX[indexOfProcessNeighbor].index;
-    int &numberOfSendNeighborsAfterFtoC =
+    int &numberOfSendNodesAfterFtoC =
         para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes;
-    reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNeighborsAfterFtoC, direction, level,
+    reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNodesAfterFtoC, direction, level,
                                        sendIndicesForCommAfterFtoCPositions);
 }
 
@@ -243,9 +243,9 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoCY(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
     int *sendIndices = para->getParH(level)->sendProcessNeighborY[indexOfProcessNeighbor].index;
-    int &numberOfSendNeighborsAfterFtoC =
+    int &numberOfSendNodesAfterFtoC =
         para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes;
-    reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNeighborsAfterFtoC, direction, level,
+    reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNodesAfterFtoC, direction, level,
                                        sendIndicesForCommAfterFtoCPositions);
 }
 
@@ -253,14 +253,14 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoCZ(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
     int *sendIndices = para->getParH(level)->sendProcessNeighborZ[indexOfProcessNeighbor].index;
-    int &numberOfSendNeighborsAfterFtoC =
+    int &numberOfSendNodesAfterFtoC =
         para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes;
-    reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNeighborsAfterFtoC, direction, level,
+    reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNodesAfterFtoC, direction, level,
                                        sendIndicesForCommAfterFtoCPositions);
 }
 
 void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
-    int *sendIndices, int &numberOfSendNeighborsAfterFtoC, int direction, int level,
+    int *sendIndices, int &numberOfSendNodesAfterFtoC, int direction, int level,
     std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE
@@ -268,7 +268,7 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
                   << " direction: " << direction;
     if (para->getParH(level)->intCF.kCF == 0 || para->getParH(level)->intFC.kFC == 0)
         *logging::out << logging::Logger::LOGGER_ERROR
-                      << "reorderSendIndicesForCommAfterFtoC(): iCellFCC needs to be inititalized before calling "
+                      << "reorderSendIndicesForCommAfterFtoC(): para->getParH(level)->intCF needs to be inititalized before calling "
                          "this function "
                       << "\n";
 
@@ -293,25 +293,25 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
         findIfSparseIndexIsInSendIndicesAndAddToCommVectors(sparseIndex, sendIndices, numberOfSendIndices,
                                                             sendIndicesAfterFtoC, sendIndicesForCommAfterFtoCPositions);
 
-    numberOfSendNeighborsAfterFtoC = (int)sendIndicesAfterFtoC.size();
+    numberOfSendNodesAfterFtoC = (int)sendIndicesAfterFtoC.size();
 
     findIndicesNotInCommAfterFtoC(numberOfSendIndices, sendIndices, sendIndicesAfterFtoC, sendIndicesOther);
 
     // copy new vectors back to sendIndices array
-    for (int i = 0; i < numberOfSendNeighborsAfterFtoC; i++)
+    for (int i = 0; i < numberOfSendNodesAfterFtoC; i++)
         sendIndices[i] = sendIndicesAfterFtoC[i];
     for (uint i = 0; i < (uint)sendIndicesOther.size(); i++)
-        sendIndices[i + numberOfSendNeighborsAfterFtoC] = sendIndicesOther[i];
+        sendIndices[i + numberOfSendNodesAfterFtoC] = sendIndicesOther[i];
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "... Process "
                   << " " << vf::gpu::Communicator::getInstanz()->getPID()
-                  << " numberOfSendNeighborsAfterFtoC: " << numberOfSendNeighborsAfterFtoC << "\n ";
+                  << " numberOfSendNodesAfterFtoC: " << numberOfSendNodesAfterFtoC << "\n ";
 
-    if (numberOfSendNeighborsAfterFtoC + sendIndicesOther.size() != numberOfSendIndices) {
+    if (numberOfSendNodesAfterFtoC + sendIndicesOther.size() != numberOfSendIndices) {
         *logging::out << logging::Logger::LOGGER_ERROR
                       << "reorderSendIndicesForCommAfterFtoC(): incorrect number of nodes"
                       << "\n";
-        std::cout << "numberOfSendNeighborsAfterFtoC = " << numberOfSendNeighborsAfterFtoC
+        std::cout << "numberOfSendNodesAfterFtoC = " << numberOfSendNodesAfterFtoC
                   << ", sendOrIndicesOther.size() = " << sendIndicesOther.size()
                   << ", numberOfSendOrRecvIndices = " << numberOfSendIndices << std::endl;
     }
@@ -358,7 +358,7 @@ void IndexRearrangementForStreams::addUniqueIndexToCommunicationVectors(
     std::vector<int> &sendIndicesAfterFtoC, int &sparseIndexSend,
     std::vector<unsigned int> &sendIndicesForCommAfterFtoCPositions, uint &posInSendIndices) const
 {
-    // add index to corresponding vectors but omit indices which are already in sendIndicesAfterFtoC
+    // add index to corresponding vectors, but omit indices which are already in sendIndicesAfterFtoC
     if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSend) ==
         sendIndicesAfterFtoC.end()) {
         sendIndicesAfterFtoC.push_back(sparseIndexSend);
@@ -399,8 +399,8 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoCX(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
     int *recvIndices                    = para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].index;
-    int &numberOfRecvNeighborsAfterFtoC = para->getParH(level)->recvProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes;
-    reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNeighborsAfterFtoC, direction, level,
+    int &numberOfRecvNodesAfterFtoC = para->getParH(level)->recvProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes;
+    reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNodesAfterFtoC, direction, level,
                                        sendIndicesForCommAfterFtoCPositions);
 }
 
@@ -408,8 +408,8 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoCY(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
     int *recvIndices                    = para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].index;
-    int &numberOfRecvNeighborsAfterFtoC = para->getParH(level)->recvProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes;
-    reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNeighborsAfterFtoC, direction, level,
+    int &numberOfRecvNodesAfterFtoC = para->getParH(level)->recvProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes;
+    reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNodesAfterFtoC, direction, level,
                                        sendIndicesForCommAfterFtoCPositions);
 }
 
@@ -417,14 +417,14 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoCZ(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
     int *recvIndices = para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].index;
-    int &numberOfRecvNeighborsAfterFtoC =
+    int &numberOfRecvNodesAfterFtoC =
         para->getParH(level)->recvProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes;
-    reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNeighborsAfterFtoC, direction, level,
+    reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNodesAfterFtoC, direction, level,
                                        sendIndicesForCommAfterFtoCPositions);
 }
 
 void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
-    int *recvIndices, int &numberOfRecvNeighborsAfterFtoC, int direction, int level,
+    int *recvIndices, int &numberOfRecvNodesAfterFtoC, int direction, int level,
     std::vector<uint> &sendIndicesForCommAfterFtoCPositions)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE
@@ -445,23 +445,23 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
 
     findIndicesNotInCommAfterFtoC(numberOfRecvIndices, recvIndices, recvIndicesAfterFtoC, recvIndicesOther);
 
-    numberOfRecvNeighborsAfterFtoC = (int)recvIndicesAfterFtoC.size();
+    numberOfRecvNodesAfterFtoC = (int)recvIndicesAfterFtoC.size();
 
     // copy new vectors back to sendIndices array
-    for (int i = 0; i < numberOfRecvNeighborsAfterFtoC; i++)
+    for (int i = 0; i < numberOfRecvNodesAfterFtoC; i++)
         recvIndices[i] = recvIndicesAfterFtoC[i];
     for (uint i = 0; i < (uint)recvIndicesOther.size(); i++)
-        recvIndices[i + numberOfRecvNeighborsAfterFtoC] = recvIndicesOther[i];
+        recvIndices[i + numberOfRecvNodesAfterFtoC] = recvIndicesOther[i];
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "... Process "
                   << " " << vf::gpu::Communicator::getInstanz()->getPID()
-                  << " numberOfRecvNeighborsAfterFtoC: " << numberOfRecvNeighborsAfterFtoC << "\n ";
+                  << " numberOfRecvNodesAfterFtoC: " << numberOfRecvNodesAfterFtoC << "\n ";
 
-    if (numberOfRecvNeighborsAfterFtoC + recvIndicesOther.size() != numberOfRecvIndices) {
+    if (numberOfRecvNodesAfterFtoC + recvIndicesOther.size() != numberOfRecvIndices) {
         *logging::out << logging::Logger::LOGGER_ERROR
                       << "reorderRecvIndicesForCommAfterFtoC(): incorrect number of nodes"
                       << "\n";
-        std::cout << "numberOfRecvNeighborsAfterFtoC = " << numberOfRecvNeighborsAfterFtoC
+        std::cout << "numberOfRecvNodesAfterFtoC = " << numberOfRecvNodesAfterFtoC
                   << ", recvIndicesOther.size() = " << recvIndicesOther.size()
                   << ", numberOfRecvIndices = " << numberOfRecvIndices << std::endl;
     }
