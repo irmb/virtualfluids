@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <iostream>
+#include <mpi.h>
 
 #include <Parameter/Parameter.h>
 #include <basics/config/ConfigurationFile.h>
@@ -29,12 +30,13 @@ private:
     LevelGridBuilderDouble() = default;
 
     uint numberOfSendIndices;
+
 public:
     LevelGridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(Device(), ""), grid(grid){};
     SPtr<Grid> getGrid(uint level) override { return grid; };
     std::shared_ptr<Grid> getGrid(int level, int box) override { return grid; };
-    void setNumberOfSendIndices(uint numberOfSendIndices){this->numberOfSendIndices=numberOfSendIndices;};
-    uint getNumberOfSendIndices(int direction, uint level) override {return numberOfSendIndices;};
+    void setNumberOfSendIndices(uint numberOfSendIndices) { this->numberOfSendIndices = numberOfSendIndices; };
+    uint getNumberOfSendIndices(int direction, uint level) override { return numberOfSendIndices; };
 };
 
 class GridImpDouble : public GridImp
@@ -111,22 +113,6 @@ struct FCBorderBulk {
     std::vector<uint> iCellFcfBorder_expected = { 112, 114, 116 };
     std::vector<uint> iCellFcfBulk_expected   = { 12, 14, 16, 18 };
 };
-
-
-struct SendIndicesForCommAfterFtoCX {
-    // data to work on
-    std::vector<int> sendIndices = { 10, 11, 12, 13, 14, 15, 16 };
-    int level = 0;
-    int direction = CommunicationDirections::MX;
-    int indexOfProcessNeighbor = 0;
-
-    // output data
-    std::vector<uint> sendIndicesForCommAfterFtoCPositions;
-    int numberOfSendNeighborsAfterFtoC;
-
-    // expected data  
-};
-
 
 static SPtr<Parameter> initParameterClass()
 {
@@ -267,28 +253,84 @@ TEST_F(IndexRearrangementForStreamsTest_IndicesFCBorderBulkTest, splitFineToCoar
         << "intFCBulk.ICellFCF does not match the expected bulk vector";
 }
 
+struct SendIndicesForCommAfterFtoCX {
+    // data to work on
+    std::vector<int> sendIndices = { 10, 11, 12, 13, 14, 15, 16 };
+    int level                    = 0;
+    int direction                = CommunicationDirections::MX;
+    int numberOfProcessNeighbors = 1;
+    int indexOfProcessNeighbor   = 0;
 
-static void setUpAndRun_reorderSendIndicesForCommAfterFtoCX(SendIndicesForCommAfterFtoCX &si, std::shared_ptr<Parameter> para)
+    std::vector<uint> iCellCFC = { 8, 10, 12 };
+    std::vector<uint> iCellFCC = { 14, 16, 18 };
+    uint kCF                   = (uint)iCellCFC.size();
+    uint kFC                   = (uint)iCellFCC.size();
+    uint neighborX_SP[18]      = { 0u };
+    uint neighborY_SP[18]      = { 0u };
+    uint neighborZ_SP[18]      = { 0u };
+
+    // output data
+    std::vector<uint> sendIndicesForCommAfterFtoCPositions;
+
+    // expected data
+    std::vector<uint> sendIndicesForCommAfterFtoCPositions_expected = { 4, 6, 0, 2 };
+    std::vector<int> sendProcessNeighborX_expected                  = { 14, 16, 10, 12, 11, 13, 15 };
+    int numberOfSendNodesAfterFtoC_expected = sendIndicesForCommAfterFtoCPositions_expected.size();
+};
+
+class IndexRearrangementForStreamsTest_reorderSendIndices : public testing::Test
+{
+public:
+    SendIndicesForCommAfterFtoCX si;
+    SPtr<Parameter> para;
+
+    static std::unique_ptr<IndexRearrangementForStreams>
+    createTestSubjectReorderSendIndices(SendIndicesForCommAfterFtoCX &si, std::shared_ptr<Parameter> para)
     {
+        logging::Logger::addStream(&std::cout);
+        MPI_Init(NULL, NULL);
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, nullptr, Distribution(), 1);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
-        builder->setNumberOfSendIndices((uint) si.sendIndices.size());
+        builder->setNumberOfSendIndices((uint)si.sendIndices.size());
+        para->setMaxLevel(si.level + 1); // setMaxLevel resizes parH and parD
+        para->parH[si.level] = std::make_shared<LBMSimulationParameter>();
+        para->parD[si.level] = std::make_shared<LBMSimulationParameter>();
 
+        para->getParH(si.level)->intFC.kFC      = si.kFC;
+        para->getParH(si.level)->intFC.ICellFCC = &(si.iCellFCC.front());
+        para->getParH(si.level)->intCF.ICellCFC = &(si.iCellCFC.front());
+        para->getParH(si.level)->intCF.kCF      = si.kCF;
+        para->getParH(si.level)->neighborX_SP   = si.neighborX_SP;
+        para->getParH(si.level)->neighborY_SP   = si.neighborY_SP;
+        para->getParH(si.level)->neighborZ_SP   = si.neighborZ_SP;
 
-        IndexRearrangementForStreams testSubject = IndexRearrangementForStreams(para, builder);
-        para->getParH(si.level)->sendProcessNeighborX[si.indexOfProcessNeighbor].index=si.sendIndices.data();
-        para->getParH(si.level)->sendProcessNeighborsAfterFtoCX[si.indexOfProcessNeighbor].numberOfNodes=0;
+        para->setNumberOfProcessNeighborsX(si.numberOfProcessNeighbors, si.level, "send");
+        para->getParH(si.level)->sendProcessNeighborX[si.indexOfProcessNeighbor].index = si.sendIndices.data();
+        para->initProcessNeighborsAfterFtoCX(si.level);
 
-        // testSubject.reorderSendIndicesForCommAfterFtoCX(si.direction, si.level, si.indexOfProcessNeighbor, si.sendIndicesForCommAfterFtoCPositions);
+        return std::make_unique<IndexRearrangementForStreams>(IndexRearrangementForStreams(para, builder));
     };
 
+    void SetUp() override
+    {
+        para             = initParameterClass();
+        auto testSubject = createTestSubjectReorderSendIndices(si, para);
+        testSubject->reorderSendIndicesForCommAfterFtoCX(si.direction, si.level, si.indexOfProcessNeighbor,
+                                                         si.sendIndicesForCommAfterFtoCPositions);
+    };
+};
 
-TEST(IndexRearrangementForStreamsTest_reorderSendIndicesForCommAfterFtoCX, wip)
+TEST_F(IndexRearrangementForStreamsTest_reorderSendIndices, reorderSendIndicesForCommAfterFtoCX)
 {
-    SendIndicesForCommAfterFtoCX si;
-    SPtr<Parameter> para = initParameterClass();
-    // IndexRearrangementForStreamsTest::setUpAndRun_reorderSendIndicesForCommAfterFtoCX(si, para);
-    EXPECT_TRUE(false);
+    EXPECT_THAT(si.sendIndicesForCommAfterFtoCPositions.size(),
+                testing::Eq(si.sendIndicesForCommAfterFtoCPositions_expected.size()));
+    EXPECT_THAT(si.sendIndicesForCommAfterFtoCPositions, testing::Eq(si.sendIndicesForCommAfterFtoCPositions_expected));
+
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(si.level)->sendProcessNeighborX[si.indexOfProcessNeighbor].index,
+                                si.sendProcessNeighborX_expected))
+        << "sendProcessNeighborX[].index does not match the expected vector";
+    EXPECT_THAT(para->getParH(si.level)->sendProcessNeighborsAfterFtoCX[si.indexOfProcessNeighbor].numberOfNodes,
+                testing::Eq(si.numberOfSendNodesAfterFtoC_expected));
 }

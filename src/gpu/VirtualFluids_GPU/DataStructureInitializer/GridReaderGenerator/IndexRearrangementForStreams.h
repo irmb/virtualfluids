@@ -157,6 +157,10 @@ private:
     //! \details The coarse cells for interpolation from fine to coarse (iCellFCC) are divided into two subgroups:
     //! border and bulk. The fine cells (iCellFCF) are reordered accordingly.
     void getGridInterfaceIndicesBorderBulkFC(int level);
+
+
+    // used for tests
+    friend class IndexRearrangementForStreamsTest_reorderSendIndices;
 };
 
 #endif
