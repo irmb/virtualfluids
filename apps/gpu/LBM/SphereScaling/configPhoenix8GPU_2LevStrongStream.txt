@@ -1,20 +1,20 @@
 ##################################################
 #GPU Mapping
 ##################################################
-Devices="0"
-NumberOfDevices=1
+Devices="0 1 2 3"
+NumberOfDevices=4
 
 ##################################################
 #informations for Writing
 ##################################################
-Path=/work/y0078217/Results/MusselOysterResults/1GPUMussel1/
-#Path="F:/Work/Computations/out/MusselOyster/"
-#Prefix="MusselOyster" 
+Path=/work/y0078217/Results/SphereScalingResults/8GPU/2LevStrongStream/
+#Path="F:/Work/Computations/out/SphereScaling/"
+#Prefix="SphereScaling" 
 #WriteGrid=true
 ##################################################
 #informations for reading
 ##################################################
-GridPath=/work/y0078217/Grids/GridMusselOyster/Mussel1GPU/
+GridPath=/work/y0078217/Grids/GridSphereScaling/SphereScaling8GPU/
 #GridPath="C:"
 
 ##################################################
@@ -31,6 +31,12 @@ GridPath=/work/y0078217/Grids/GridMusselOyster/Mussel1GPU/
 ##################################################
 #simulation parameter
 ##################################################
-TimeEnd=10000 #400000 / 200000
-TimeOut=5000 #200000 / 100000
+TimeEnd=10000
+TimeOut=10000
 #TimeStartOut=0
+
+##################################################
+# CUDA Streams and optimized communication (only used for multiple GPUs)
+##################################################
+useStreams = true
+useReducedCommunicationInInterpolation = true

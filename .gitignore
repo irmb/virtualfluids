@@ -16,11 +16,14 @@ __pycache__/
 .sync/
 .idea/
 
-# Simulation results
+# simulation results
 output/
 
-# Scripts
+# scripts
 scripts/
+
+# stl files
+stl/
 
 # MacOS
 .DS_Store

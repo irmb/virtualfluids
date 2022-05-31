@@ -10,5 +10,10 @@
     "notskm.clang-tidy"  
     ],  
     "runArgs": ["--gpus","all"],  
-    "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.2"  
+    "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.2",
+    "containerEnv": {"HOME": "/workspaces/"},
+    "mounts": [
+        "source=/mnt/d/output,target=/${containerWorkspaceFolder}/output,type=bind", 
+        "source=${localEnv:HOME}/STLs,target=${containerWorkspaceFolder}/stl,type=bind"    
+    ]
 }

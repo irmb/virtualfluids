@@ -69,6 +69,35 @@ void startNonBlockingMpiReceive(unsigned int numberOfSendProcessNeighbors, vf::g
     }
 }
 
+
+void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes,
+                   std::vector<ProcessNeighbor27> &recvProcessNeighborHost, std::vector<ProcessNeighbor27> &sendProcessNeighborHost)
+{
+    
+    int indexInSubdomainRecv = 0;
+    int indexInSubdomainSend = 0;
+    int numNodesInBufferRecv = 0;
+    int numNodesInBufferSend = 0;
+    
+#pragma omp parallel for
+    for (uint i = 0; i < edgeNodes.size(); i++) {
+        indexInSubdomainRecv = edgeNodes[i].indexOfProcessNeighborRecv;
+        indexInSubdomainSend = edgeNodes[i].indexOfProcessNeighborSend;
+        numNodesInBufferRecv = recvProcessNeighborHost[indexInSubdomainRecv].numberOfNodes;
+        numNodesInBufferSend = sendProcessNeighborHost[indexInSubdomainSend].numberOfNodes;
+        if(edgeNodes[i].indexInSendBuffer >= numNodesInBufferSend){
+            // for reduced communication after fine to coarse: only copy send nodes which are not part of the reduced comm
+            continue;
+        }
+
+        for (int direction = 0; direction <= (int) dirEND; direction++) {
+            (sendProcessNeighborHost[indexInSubdomainSend].f[0] + (direction * numNodesInBufferSend))[edgeNodes[i].indexInSendBuffer] =
+                (recvProcessNeighborHost[indexInSubdomainRecv].f[0] + (direction * numNodesInBufferRecv))[edgeNodes[i].indexInRecvBuffer];
+        }
+    }
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // X
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,23 +249,13 @@ void exchangeCollDataYGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     if (para->getUseStreams()) cudaStreamSynchronize(stream);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // edge nodes: copy received node values from x
-    if (para->getUseStreams()  && para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
-        uint indexInSubdomainX = 0;
-        uint indexInSubdomainY = 0;
-        uint numNodesInBufferX = 0;
-        uint numNodesInBufferY = 0;  
-#pragma omp parallel for
-        for (uint i = 0; i < para->getParH(level)->edgeNodesXtoY.size(); i++) {
-            indexInSubdomainX = para->getParH(level)->edgeNodesXtoY[i].indexOfProcessNeighborRecv;
-            indexInSubdomainY = para->getParH(level)->edgeNodesXtoY[i].indexOfProcessNeighborSend;
-            numNodesInBufferX = para->getParH(level)->recvProcessNeighborX[indexInSubdomainX].numberOfNodes;
-            numNodesInBufferY = para->getParH(level)->sendProcessNeighborY[indexInSubdomainY].numberOfNodes;
-
-            for (uint direction = 0; direction <= dirEND; direction++) {
-                (para->getParH(level)->sendProcessNeighborY[indexInSubdomainY].f[0]+(direction * numNodesInBufferY))[para->getParH(level)->edgeNodesXtoY[i].indexInSendBuffer] =  
-                (para->getParH(level)->recvProcessNeighborX[indexInSubdomainX].f[0]+(direction * numNodesInBufferX))[para->getParH(level)->edgeNodesXtoY[i].indexInRecvBuffer];
-            }
-        }    
+    if (para->getUseStreams() && para->getNumberOfProcessNeighborsX(level, "recv") > 0 && para->getParH(level)->sendProcessNeighborY.size() != 0) {
+        if(  para->getParH(level)->sendProcessNeighborY[0].numberOfNodes == (*sendProcessNeighborHost)[0].numberOfNodes){
+            // check if in communication of all nodes (as opposed to reduced communication after fine to coarse)
+            copyEdgeNodes(para->getParH(level)->edgeNodesXtoY, para->getParH(level)->recvProcessNeighborX, *sendProcessNeighborHost);
+        } else{
+            copyEdgeNodes(para->getParH(level)->edgeNodesXtoY, para->getParH(level)->recvProcessNeighborsAfterFtoCX, *sendProcessNeighborHost);
+        }
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     startBlockingMpiSend((unsigned int)(*sendProcessNeighborHost).size(), comm, sendProcessNeighborHost);
@@ -323,42 +342,22 @@ void exchangeCollDataZGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
     if (para->getUseStreams()) cudaStreamSynchronize(stream);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // edge nodes: copy received node values from x
-    if (para->getUseStreams() && para->getNumberOfProcessNeighborsX(level, "recv") > 0) {
-        uint indexInSubdomainX = 0;
-        uint indexInSubdomainZ = 0;
-        uint numNodesInBufferX = 0;
-        uint numNodesInBufferZ = 0;
-#pragma omp parallel for
-        for (uint i = 0; i < para->getParH(level)->edgeNodesXtoZ.size(); i++) {
-            indexInSubdomainX = para->getParH(level)->edgeNodesXtoZ[i].indexOfProcessNeighborRecv;
-            indexInSubdomainZ = para->getParH(level)->edgeNodesXtoZ[i].indexOfProcessNeighborSend;
-            numNodesInBufferX = para->getParH(level)->recvProcessNeighborX[indexInSubdomainX].numberOfNodes;
-            numNodesInBufferZ = para->getParH(level)->sendProcessNeighborZ[indexInSubdomainZ].numberOfNodes;
-
-            for (uint direction = 0; direction <= dirEND; direction++) {
-                (para->getParH(level)->sendProcessNeighborZ[indexInSubdomainZ].f[0] + (direction * numNodesInBufferZ))[para->getParH(level)->edgeNodesXtoZ[i].indexInSendBuffer] =
-                    (para->getParH(level)->recvProcessNeighborX[indexInSubdomainX].f[0] + (direction * numNodesInBufferX))[para->getParH(level)->edgeNodesXtoZ[i].indexInRecvBuffer];
-            }
+    if (para->getUseStreams() && para->getNumberOfProcessNeighborsX(level, "recv") > 0 && para->getParH(level)->sendProcessNeighborZ.size() != 0) {
+        if( para->getParH(level)->sendProcessNeighborZ[0].numberOfNodes == (*sendProcessNeighborHost)[0].numberOfNodes){
+             // check if in communication of all nodes (as opposed to reduced communication after fine to coarse)
+            copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, para->getParH(level)->recvProcessNeighborX, *sendProcessNeighborHost);
+        } else{
+            copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, para->getParH(level)->recvProcessNeighborsAfterFtoCX, *sendProcessNeighborHost);
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // edge nodes: copy received node values from y
-    if (para->getUseStreams() && para->getNumberOfProcessNeighborsY(level, "recv") > 0) {
-        uint indexInSubdomainY = 0;
-        uint indexInSubdomainZ = 0;
-        uint numNodesInBufferY = 0;
-        uint numNodesInBufferZ = 0;
-#pragma omp parallel for
-        for (uint i = 0; i < para->getParH(level)->edgeNodesYtoZ.size(); i++) {
-            indexInSubdomainY = para->getParH(level)->edgeNodesYtoZ[i].indexOfProcessNeighborRecv;
-            indexInSubdomainZ = para->getParH(level)->edgeNodesYtoZ[i].indexOfProcessNeighborSend;
-            numNodesInBufferY = para->getParH(level)->recvProcessNeighborY[indexInSubdomainY].numberOfNodes;
-            numNodesInBufferZ = para->getParH(level)->sendProcessNeighborZ[indexInSubdomainZ].numberOfNodes;
-
-            for (uint direction = 0; direction <= dirEND; direction++) {
-                (para->getParH(level)->sendProcessNeighborZ[indexInSubdomainZ].f[0] + (direction * numNodesInBufferZ))[para->getParH(level)->edgeNodesYtoZ[i].indexInSendBuffer] =
-                    (para->getParH(level)->recvProcessNeighborY[indexInSubdomainY].f[0] + (direction * numNodesInBufferY))[para->getParH(level)->edgeNodesYtoZ[i].indexInRecvBuffer];
-            }
+    if (para->getUseStreams() && para->getNumberOfProcessNeighborsY(level, "recv") > 0  && para->getParH(level)->sendProcessNeighborZ.size() != 0) {
+        if( para->getParH(level)->sendProcessNeighborZ[0].numberOfNodes == (*sendProcessNeighborHost)[0].numberOfNodes){ 
+            // check if in communication of all nodes (as opposed to reduced communication after fine to coarse)
+            copyEdgeNodes(para->getParH(level)->edgeNodesYtoZ, para->getParH(level)->recvProcessNeighborY, *sendProcessNeighborHost);
+        } else{
+            copyEdgeNodes(para->getParH(level)->edgeNodesYtoZ, para->getParH(level)->recvProcessNeighborsAfterFtoCY, *sendProcessNeighborHost);
         }
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
