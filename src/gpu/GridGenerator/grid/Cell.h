@@ -1,9 +1,9 @@
 #ifndef CELL_H
 #define CELL_H
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
-#include "utilities/cuda/cudaDefines.h"
+#include "gpu/GridGenerator/utilities/cuda/cudaDefines.h"
 
 struct Point
 {

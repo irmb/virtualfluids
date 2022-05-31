@@ -339,7 +339,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                         builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborX[j].index, direction,
                                                    level);
                         if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
-                            indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseX(level, j, direction);                        
+                            indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseX(level, j, direction);             
                         ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborXIndex(level, j);
                         ////////////////////////////////////////////////////////////////////////////////////////
@@ -408,7 +408,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                         builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborY[j].index, direction,
                                                    level);
                         if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
-                            indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseY(level, j, direction);                       
+                            indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseY(level, j, direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
                         cudaMemoryManager->cudaCopyProcessNeighborYIndex(level, j);
                         ////////////////////////////////////////////////////////////////////////////////////////

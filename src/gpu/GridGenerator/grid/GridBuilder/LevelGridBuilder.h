@@ -6,11 +6,11 @@
 #include <memory>
 #include <array>
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
-#include "grid/GridBuilder/GridBuilder.h"
-#include "grid/Grid.h"
-#include "grid/GridInterface.h"
+#include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
+#include "gpu/GridGenerator/grid/Grid.h"
+#include "gpu/GridGenerator/grid/GridInterface.h"
 
 struct Vertex;
 class  Grid;

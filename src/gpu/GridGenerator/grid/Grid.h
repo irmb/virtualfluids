@@ -3,11 +3,11 @@
 
 #include "Core/LbmOrGks.h"
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
-#include "geometries/Vertex/Vertex.h"
+#include "gpu/GridGenerator/geometries/Vertex/Vertex.h"
 
-#include "grid/Cell.h"
+#include "gpu/GridGenerator/grid/Cell.h"
 
 class TriangularMesh;
 struct Vertex;

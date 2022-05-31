@@ -5,12 +5,12 @@
 
 #include "Core/LbmOrGks.h"
 
-#include "global.h"
+#include "gpu/GridGenerator/global.h"
 
-#include "grid/distributions/Distribution.h"
-#include "grid/Grid.h"
-#include "grid/Cell.h"
-#include "grid/Field.h" 
+#include "gpu/GridGenerator/grid/distributions/Distribution.h"
+#include "gpu/GridGenerator/grid/Grid.h"
+#include "gpu/GridGenerator/grid/Cell.h"
+#include "gpu/GridGenerator/grid/Field.h" 
 
 class TriangularMesh;
 struct Vertex;
@@ -39,7 +39,7 @@ extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
-private:
+protected:
     CUDA_HOST GridImp();
     CUDA_HOST GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level);
 

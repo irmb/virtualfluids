@@ -899,16 +899,16 @@ private:
     std::unique_ptr<CudaStreamManager> cudaStreamManager;
 
 public:
-    //! sets whether streams and thus communication hiding should be used
-    /*! This function is only useful for simulations on multiple GPUs. If there is only one MPI process, the passed value is automatically overwritten with false. */ 
+    //! \brief sets whether streams and thus communication hiding should be used        
+    //! \details This function is only useful for simulations on multiple GPUs. If there is only one MPI process, the passed value is automatically overwritten with false.
     void setUseStreams(bool useStreams);
     bool getUseStreams();
     std::unique_ptr<CudaStreamManager> &getStreamManager();
     bool getKernelNeedsFluidNodeIndicesToRun();
 
-    void initNumberOfProcessNeighborsAfterFtoCX(int level);
-    void initNumberOfProcessNeighborsAfterFtoCY(int level);
-    void initNumberOfProcessNeighborsAfterFtoCZ(int level);
+    void initProcessNeighborsAfterFtoCX(int level);
+    void initProcessNeighborsAfterFtoCY(int level);
+    void initProcessNeighborsAfterFtoCZ(int level);
 
     void findEdgeNodesCommMultiGPU();
     bool useReducedCommunicationAfterFtoC{ true };

@@ -1486,7 +1486,7 @@ bool Parameter::findIndexInSendNodesYZ(int level, int index, int &indexOfProcess
     return false;
 }
 
-void Parameter::initNumberOfProcessNeighborsAfterFtoCX(int level)
+void Parameter::initProcessNeighborsAfterFtoCX(int level)
 {
     this->getParH(level)->sendProcessNeighborsAfterFtoCX.resize(this->getParH(level)->sendProcessNeighborX.size());
     this->getParH(level)->recvProcessNeighborsAfterFtoCX.resize(this->getParH(level)->recvProcessNeighborX.size());
@@ -1496,7 +1496,7 @@ void Parameter::initNumberOfProcessNeighborsAfterFtoCX(int level)
         this->getParH(level)->recvProcessNeighborsAfterFtoCX.size());
 }
 
-void Parameter::initNumberOfProcessNeighborsAfterFtoCY(int level)
+void Parameter::initProcessNeighborsAfterFtoCY(int level)
 {
     this->getParH(level)->sendProcessNeighborsAfterFtoCY.resize(this->getParH(level)->sendProcessNeighborY.size());
     this->getParH(level)->recvProcessNeighborsAfterFtoCY.resize(this->getParH(level)->recvProcessNeighborY.size());
@@ -1506,7 +1506,7 @@ void Parameter::initNumberOfProcessNeighborsAfterFtoCY(int level)
         this->getParH(level)->recvProcessNeighborsAfterFtoCY.size());
 }
 
-void Parameter::initNumberOfProcessNeighborsAfterFtoCZ(int level)
+void Parameter::initProcessNeighborsAfterFtoCZ(int level)
 {
     this->getParH(level)->sendProcessNeighborsAfterFtoCZ.resize(this->getParH(level)->sendProcessNeighborZ.size());
     this->getParH(level)->recvProcessNeighborsAfterFtoCZ.resize(this->getParH(level)->recvProcessNeighborZ.size());

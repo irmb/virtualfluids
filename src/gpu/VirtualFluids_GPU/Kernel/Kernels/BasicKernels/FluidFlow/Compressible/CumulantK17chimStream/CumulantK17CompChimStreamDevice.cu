@@ -26,9 +26,9 @@
 //  You should have received a copy of the GNU General Public License along
 //  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
 //
-//! \file Cumulant27chim.cu
+//! \file Cumulant27chimStream.cu
 //! \ingroup GPU
-//! \author Martin Schoenherr
+//! \author Martin Schoenherr, Anna Wellmann
 //=======================================================================================
 /* Device code */
 #include "LBM/LB.h" 
