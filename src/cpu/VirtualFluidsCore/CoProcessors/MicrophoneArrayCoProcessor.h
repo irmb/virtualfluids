@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class Vector3D;
@@ -23,7 +23,7 @@ class MicrophoneArrayCoProcessor : public CoProcessor
 {
 public:
     MicrophoneArrayCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                               SPtr<Communicator> comm);
+                               std::shared_ptr<vf::mpi::Communicator> comm);
     ~MicrophoneArrayCoProcessor() override;
 
     //! calls collectData.
@@ -38,7 +38,7 @@ protected:
 
 private:
     std::string path;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
 
     struct Mic {
         unsigned int id;

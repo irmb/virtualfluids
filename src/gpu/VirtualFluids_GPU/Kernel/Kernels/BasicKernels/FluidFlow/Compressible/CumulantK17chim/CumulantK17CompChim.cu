@@ -23,7 +23,11 @@ void CumulantK17CompChim::run()
 		para->getParD(level)->d0SP.f[0],
 		para->getParD(level)->size_Mat_SP,
 		level,
+		para->getIsBodyForce(),
 		para->getForcesDev(),
+		para->getParD(level)->forceX_SP,
+		para->getParD(level)->forceY_SP,
+		para->getParD(level)->forceZ_SP,
         para->getQuadricLimitersDev(),
 		para->getParD(level)->evenOrOdd);
 	getLastCudaError("LB_Kernel_CumulantK17CompChim execution failed");

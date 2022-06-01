@@ -10,20 +10,18 @@
 #include <memory>
 #include <filesystem>
 
-#include "mpi.h"
-
 //////////////////////////////////////////////////////////////////////////
 
 #include "Core/DataTypes.h"
 #include "PointerDefinitions.h"
 
-#include "Core/LbmOrGks.h"
 #include "Core/StringUtilities/StringUtil.h"
 
 #include "Core/VectorTypes.h"
-#include "Core/Logger/Logger.h"
 
 #include <basics/config/ConfigurationFile.h>
+
+#include <logger/Logger.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -97,6 +95,8 @@ const real dt = (real)1.0e-3; //0.5e-3;
 
 const uint nx = 64;
 
+std::string path("D:/out/DrivenCavity/new");
+
 std::string simulationName("DrivenCavityChim");
 
 const uint timeStepOut = 10000;
@@ -114,9 +114,7 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
     auto gridFactory = GridFactory::make();
-    gridFactory->setGridStrategy(Device::CPU);
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,8 +123,18 @@ void multipleLevel(const std::string& configPath)
 
 	real dx = L / real(nx);
 
-	gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
-								0.5 * L,  0.5 * L,  0.5 * L, dx);
+	//gridBuilder->addCoarseGrid(-0.5 * L, -0.5 * L, -0.5 * L,
+	//							0.5 * L,  0.5 * L,  0.5 * L, dx);
+
+	gridBuilder->addCoarseGrid(-2.0 * dx, -0.5 * L, -0.5 * L,
+								2.0 * dx,  0.5 * L,  0.5 * L, dx);
+
+    auto refBox = new Cuboid(-0.1 * L, -0.1 * L, -0.1 * L,
+                              0.1 * L,  0.1 * L,  0.1 * L);
+
+    gridBuilder->addGrid(refBox, 1);
+
+    gridBuilder->setNumberOfLayers(0, 0);
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -145,12 +153,12 @@ void multipleLevel(const std::string& configPath)
     {
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
+        vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
         vf::basics::ConfigurationFile config;
         config.load(configPath);
 
-        SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
+        SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -161,12 +169,14 @@ void multipleLevel(const std::string& configPath)
 
         const real viscosityLB = nx * velocityLB / Re; // LB units
 
-        *logging::out << logging::Logger::INFO_HIGH << "velocity  [dx/dt] = " << velocityLB << " \n";
-        *logging::out << logging::Logger::INFO_HIGH << "viscosity [dx^2/dt] = " << viscosityLB << "\n";
+        VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
+        VF_LOG_INFO("viscosity [dx^2/dt] = {}", viscosityLB);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		para->setDevices(std::vector<uint>{(uint)0});
+
+        para->setOutputPath( path );
 
         para->setOutputPrefix( simulationName );
 
@@ -174,7 +184,7 @@ void multipleLevel(const std::string& configPath)
 
         para->setPrintFiles(true);
 
-        para->setMaxLevel(1);
+        para->setMaxLevel(2);
 
         para->setVelocity(velocityLB);
         para->setViscosity(viscosityLB);
@@ -204,11 +214,15 @@ void multipleLevel(const std::string& configPath)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        gridBuilder->writeGridsToVtk(path + "/grid/");
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
         SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
-        Simulation sim;
+        Simulation sim(communicator);
         SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
         SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
         SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
@@ -336,29 +350,31 @@ void multipleLevel(const std::string& configPath)
 
 int main( int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
-
     try
     {
+        vf::logging::Logger::initalizeLogger();
+
         // assuming that the config files is stored parallel to this file.
         std::filesystem::path filePath = __FILE__;
         filePath.replace_filename("configDrivenCavity.txt");
 
-		multipleLevel(filePath.string());
-	}
+        multipleLevel(filePath.string());
+    }
+    catch (const spdlog::spdlog_ex &ex) {
+        std::cout << "Log initialization failed: " << ex.what() << std::endl;
+    }
     catch (const std::bad_alloc& e)
     { 
-        *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
+        VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
     }
     catch (const std::exception& e)
     {   
-        *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
+        VF_LOG_CRITICAL("exception: {}", e.what());
     }
     catch (...)
     {
-        *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
+        VF_LOG_CRITICAL("Unknown exception!");
     }
 
-   MPI_Finalize();
    return 0;
 }

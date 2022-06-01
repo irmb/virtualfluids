@@ -41,7 +41,7 @@ __global__ void runKernel(KernelFunctor kernel, GPUKernelParameter kernelParamet
 
     DistributionWrapper distributionWrapper {
         kernelParameter.distributions,
-        kernelParameter.size_Mat,
+        (unsigned int)kernelParameter.size_Mat,
         kernelParameter.isEvenTimestep,
         k,
         kernelParameter.neighborX,

@@ -5,7 +5,7 @@
 
 #include <memory>
 
-#include "Utilities/CudaGrid.h"
+#include <cuda/CudaGrid.h>
 
 class CheckParameterStrategy;
 class Parameter;
@@ -32,7 +32,7 @@ protected:
     std::vector<PreProcessorType> myPreProcessorTypes;
     KernelGroup myKernelGroup;
 
-    vf::gpu::CudaGrid cudaGrid;
+    vf::cuda::CudaGrid cudaGrid;
     
     std::unique_ptr<std::pair<dim3, dim3>> calcGridDimensions(unsigned int size_Mat, int numberOfThreads);
 };

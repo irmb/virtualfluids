@@ -50,7 +50,7 @@ CreateTransmittersHelper::CreateTransmittersHelper() = default;
 //////////////////////////////////////////////////////////////////////////
 void CreateTransmittersHelper::createTransmitters(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir, IBlock ib,
                                                   TransmitterPtr &sender, TransmitterPtr &receiver,
-                                                  SPtr<Communicator> comm, TransmitterType tType)
+                                                  std::shared_ptr<vf::mpi::Communicator> comm, TransmitterType tType)
 {
     // SourceBlock
     int srcLevel = sblock->getLevel();

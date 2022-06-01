@@ -48,6 +48,9 @@
 #include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/CumulantK15/WaleCumulantK15Comp.h"
 #include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/CumulantK15BySoniMalav/WaleBySoniMalavCumulantK15Comp.h"
 
+//turbulent viscosity kernel
+#include "Kernel/Kernels/TurbulentViscosityKernels/FluidFlow/Compressible/CumulantK17chim/TurbulentViscosityCumulantK17CompChim.h"
+
 //strategies
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Compressible/FluidFlowCompStrategy.h"
 #include "Kernel/Kernels/BasicKernels/FluidFlow/Incompressible/FluidFlowIncompStrategy.h"
@@ -57,7 +60,7 @@
 #include "Kernel/Kernels/BasicKernels/AdvectionDiffusion/Incompressible/Mod7/ADMod7IncompStrategy.h"
 #include "Kernel/Kernels/PorousMediaKernels/FluidFlow/Compressible/PMFluidFlowCompStrategy.h"
 #include "Kernel/Kernels/WaleKernels/FluidFlow/Compressible/WaleFluidFlowCompStrategy.h"
-
+#include "Kernel/Kernels/TurbulentViscosityKernels/FluidFlow/Compressible/TurbulentViscosityFluidFlowCompStrategy.h"
 
 std::shared_ptr<KernelFactoryImp> KernelFactoryImp::getInstance()
 {
@@ -198,6 +201,10 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
         newKernel     = WaleBySoniMalavCumulantK15Comp::getNewInstance(para, level);// ||
         checkStrategy = WaleFluidFlowCompStrategy::getInstance();                    // wale model
     }                                                                           //===============
+    else if (kernel == "TurbulentViscosityCumulantK17CompChim"){                               // AMD model
+        newKernel     = TurbulentViscosityCumulantK17CompChim::getNewInstance(para, level);    //      ||
+        checkStrategy = TurbulentViscosityFluidFlowCompStrategy::getInstance();                //      \/
+    }
     else {
         throw std::runtime_error("KernelFactory does not know the KernelType.");
     }

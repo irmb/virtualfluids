@@ -3,14 +3,11 @@
 
 #include <vector>
 
-
-
-
 #include <mpi.h>
 
 #include "VirtualFluids_GPU_export.h"
 
-#include "LBM/LB.h"
+#include <basics/Core/DataTypes.h>
 
 //////////////////////////////////
 #ifdef VF_DOUBLE_ACCURACY
@@ -21,17 +18,17 @@
 //////////////////////////////////
 
 
-namespace vf
-{
-namespace gpu
+namespace vf::gpu
 {
 
 
 class VIRTUALFLUIDS_GPU_EXPORT Communicator
 {
 public:
-    static Communicator* getInstanz();
-    static Communicator* getInstanz(const int numberOfProcs);
+    static Communicator& getInstance();
+    Communicator(const Communicator&) = delete;
+    Communicator& operator=(const Communicator&) = delete;
+
     void exchngBottomToTop(float* sbuf, float* rbuf, int count);
     void exchngTopToBottom(float* sbuf, float* rbuf, int count);
     void waitAll();
@@ -63,28 +60,23 @@ public:
     std::vector<double> gatherNUPS(double processNups);
     //////////////////////////////////////////////////////////////////////////
     void exchangeIndices(uint *rbuf, int count_r, int nb_rank_r, uint *sbuf, int count_s, int nb_rank_s);
-
-protected:
 private:
-     static Communicator* instanz;
-     int numprocs, PID;
-     int nbrbottom, nbrtop; 
-     MPI_Comm comm1d, commGPU;
-     MPI_Status status[4];
-     MPI_Request request[4];
-     //////////////////////////////////////////////////////////////////////////
-     std::vector<MPI_Request> requestGPU;
-     int rcount;
-     //////////////////////////////////////////////////////////////////////////
-     double starttime;
-     double endtime;
-     Communicator();
-     Communicator(const int numberOfProcs);
-     Communicator(const Communicator&);
+   int numprocs, PID;
+   int nbrbottom, nbrtop; 
+   MPI_Comm comm1d, commGPU;
+   MPI_Status status[4];
+   MPI_Request request[4];
+   //////////////////////////////////////////////////////////////////////////
+   std::vector<MPI_Request> requestGPU;
+   int rcount;
+   //////////////////////////////////////////////////////////////////////////
+   double starttime;
+   double endtime;
+   Communicator();
+   ~Communicator();
 };
 
-} // namespace GPU
-} // namespace VF
+}
 
 #endif
 

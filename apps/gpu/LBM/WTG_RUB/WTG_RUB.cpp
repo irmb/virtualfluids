@@ -54,6 +54,7 @@
 
 #include "VirtualFluids_GPU/GPU/CudaMemoryManager.h"
 
+#include <logger/Logger.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,7 +68,7 @@
 
 LbmOrGks lbmOrGks = LBM;
 
-const real L  = 1.0;
+// const real L  = 1.0;
 
 const real velocity  = 1.0;
 
@@ -82,7 +83,8 @@ std::string simulationName("");
 // 1: original setup of Lennard Lux (6 level, 4.0 cm -> 1.25 mm)
 // 2: setup 1 of MSch               (4 level, 1.0 cm -> 1.25 mm)
 // 3: setup 2 of MSch               (5 level, 1.6 cm -> 1.0  mm)
-int setupDomain = 3;
+// 4: setup 3 of MSch (small/test)  (3 level, 4.0 cm -> 1.0  cm)
+int setupDomain = 4;
 
 // std::string path("D:/out/WTG_RUB"); // Mollok
 // std::string inputPath("D:/out/WTG_RUB/input/");
@@ -90,7 +92,7 @@ int setupDomain = 3;
 std::string path("/workspaces/VirtualFluids_dev/output/WTG_RUB_Results/"); // Aragorn
 std::string inputPath("/workspaces/VirtualFluids_dev/stl/WTG_RUB/");
 
-const uint timeStepStartOut = 0;
+// const uint timeStepStartOut = 0;
 const uint timeStepOut = 10000;
 const uint timeStepEnd = 100000;
 
@@ -113,9 +115,7 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
     auto gridFactory = GridFactory::make();
-    gridFactory->setGridStrategy(Device::CPU);
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,15 +130,19 @@ void multipleLevel(const std::string& configPath)
         maxLevel    = 5;
         viscosityLB = (real)3.75e-06; // LB units
     } else if (setupDomain == 2) {
-        dx          = (real)1;   
+        dx          = (real)1;
         maxLevel    = 3;
         viscosityLB = (real)1.5e-05; // LB units
     } else if (setupDomain == 3) {
         dx          = (real)1.6;
         maxLevel    = 4;
         viscosityLB = (real)9.375e-06; // LB units
+    } else if (setupDomain == 4) {
+        dx = (real)4.0;
+        maxLevel = 2;
+        viscosityLB = (real)3.75e-06; // LB units
     }
-    
+
     real x_min = 0.0;
     real x_max = 1250.0;
     real y_min = 0.0;
@@ -160,18 +164,18 @@ void multipleLevel(const std::string& configPath)
 
     // MeasurePoints [MP01-15: lvl maxLevel],[MP16-41: lvl 1]; disable when reducing numberOfLevels --> dx might be too
     // large if MP01-15 are used with low resolution dx, MPs might be placed in solid City-geometry
-    bool useMP                   = true;
+    bool useMP                   = false;//true;
     bool measureVeloProfilesOnly = false;
 
     // Two Components: true->DiffOn, false->DiffOff
-    bool diffOnOff = false;
+    // bool diffOnOff = false;
 
     // Resetting diff or flow field, e.g. after restart, do not reset diff/flow at start of measureRun ;-)
-    bool reset_diff = true;
-    bool reset_flow = true;
+    // bool reset_diff = false;
+    bool reset_flow = false;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->addCoarseGrid(x_min, y_min, z_min, 
+    gridBuilder->addCoarseGrid(x_min, y_min, z_min,
                                x_max, y_max, z_max, dx);
 
     gridBuilder->setNumberOfLayers(0, 0);
@@ -194,12 +198,12 @@ void multipleLevel(const std::string& configPath)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    vf::gpu::Communicator* comm = vf::gpu::Communicator::getInstanz();
+    vf::gpu::Communicator& communicator = vf::gpu::Communicator::getInstance();
 
     vf::basics::ConfigurationFile config;
     config.load(configPath);
 
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
+    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const real velocityLB = (real)0.0844; // LB units
@@ -330,7 +334,7 @@ void multipleLevel(const std::string& configPath)
 
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
 
-    Simulation sim;
+    Simulation sim (communicator);
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
     SPtr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
     SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
@@ -476,7 +480,7 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
                 }
             }
         }
-    } 
+    }
     else if (setupDomain == 3) {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
         // creates Cuboids (FG1 to FG2, lvl 1 to lvl 2) and add STLs (FG3 to FG4, lvl 3 to lvl 4) depending on maxLevel
@@ -490,19 +494,19 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
         // FG4 -> dx = 1.0 mm;   lvl 4
         //
         //// FineGrid Level 1 ->dx = 8.0 mm; lvl 1
-        //auto FG1 = new Cuboid(-20, -20, -5 + z_offset, 800, 200, 75 + z_offset);
+        // auto FG1 = new Cuboid(-20, -20, -5 + z_offset, 800, 200, 75 + z_offset);
 
         // FineGrid Level 1 -> dx = 8.0 mm; lvl 1
         auto FG1_1 = new Cuboid(-20, -20, -5 + z_offset, 780, 200, 30 + z_offset);
-        auto FG1_2 = new Cuboid(500, -20,  5 + z_offset, 720, 210, 75 + z_offset);
-        auto FG1   = new Conglomerate();
+        auto FG1_2 = new Cuboid(500, -20, 5 + z_offset, 720, 210, 75 + z_offset);
+        auto FG1 = new Conglomerate();
         FG1->add(FG1_1);
         FG1->add(FG1_2);
 
         // FineGrid Level 2 -> dx = 4.0 mm; lvl 2
         auto FG2_1 = new Cuboid(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
-        auto FG2_2 = new Cuboid(520, -20,  5 + z_offset, 700, 210, 50 + z_offset);
-        auto FG2   = new Conglomerate();
+        auto FG2_2 = new Cuboid(520, -20, 5 + z_offset, 700, 210, 50 + z_offset);
+        auto FG2 = new Conglomerate();
         FG2->add(FG2_1);
         FG2->add(FG2_2);
 
@@ -531,6 +535,34 @@ void addFineGrids(SPtr<MultipleGridBuilder> gridBuilder, uint &maxLevel, real &r
                         }
                     }
                 }
+            }
+        }
+    }
+    else if (setupDomain == 4) {
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+        // creates Cuboids (FG1 to FG2, lvl 1 to lvl 2) depending on
+        // maxLevel and rotationOfCity; also adds FineGrids(FGs) to gridbuilder
+
+        // GridList(CG = coarse grid, fg = fine grid)
+        // CG  -> dx = 4 cm;      lvl 0
+        // FG1 -> dx = 2 cm;      lvl 1
+        // FG2 -> dx = 1 cm;      lvl 2
+        //
+        // FineGrid Level 1 ->dx = 2 cm; lvl 1
+        auto FG1 = new Cuboid(-20, -20, -5 + z_offset, 800, 200, 75 + z_offset);
+
+        // FineGrid Level 2 -> dx = 1 cm; lvl 2
+        auto FG2_1 = new Cuboid(-20, -20, -5 + z_offset, 760, 200, 10 + z_offset);
+        auto FG2_2 = new Cuboid(500, -20, 5 + z_offset, 680, 210, 50 + z_offset);
+        auto FG2 = new Conglomerate();
+        FG2->add(FG2_1);
+        FG2->add(FG2_2);
+
+        // Adding FineGrids 1 to 2 depending on maxLevel
+        if (maxLevel >= 1) {
+            gridBuilder->addGrid(FG1, 1);
+            if (maxLevel >= 2) {
+                gridBuilder->addGrid(FG2, 2);
             }
         }
     }
@@ -724,31 +756,31 @@ std::string chooseVariation()
 
 int main( int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
-    if ( argv != NULL )
+    try
     {
-        try
-        {
-            // assuming that the config files is stored parallel to this file.
-            std::filesystem::path filePath = __FILE__;
-            filePath.replace_filename("configDrivenCavity.txt");
+        vf::logging::Logger::initalizeLogger();
 
-            multipleLevel(filePath.string());
-        }
-        catch (const std::bad_alloc& e)
-        { 
-            *logging::out << logging::Logger::LOGGER_ERROR << "Bad Alloc:" << e.what() << "\n";
-        }
-        catch (const std::exception& e)
-        {   
-            *logging::out << logging::Logger::LOGGER_ERROR << e.what() << "\n";
-        }
-        catch (...)
-        {
-            *logging::out << logging::Logger::LOGGER_ERROR << "Unknown exception!\n";
-        }
+        // assuming that the config files is stored parallel to this file.
+        std::filesystem::path filePath = __FILE__;
+        filePath.replace_filename("configDrivenCavity.txt");
+
+        multipleLevel(filePath.string());
+    }
+    catch (const spdlog::spdlog_ex &ex) {
+        std::cout << "Log initialization failed: " << ex.what() << std::endl;
+    }
+    catch (const std::bad_alloc& e)
+    {
+        VF_LOG_CRITICAL("Bad Alloc: {}", e.what());
+    }
+    catch (const std::exception& e)
+    {
+        VF_LOG_CRITICAL("exception: {}", e.what());
+    }
+    catch (...)
+    {
+        VF_LOG_CRITICAL("Unknown exception!");
     }
 
-   MPI_Finalize();
    return 0;
 }

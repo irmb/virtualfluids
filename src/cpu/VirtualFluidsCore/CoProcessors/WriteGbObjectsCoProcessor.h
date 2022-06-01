@@ -7,7 +7,7 @@
 #include <vector>
 
 class GbObject3D;
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class WbWriter;
@@ -21,7 +21,7 @@ class WriteGbObjectsCoProcessor : public CoProcessor
 {
 public:
     WriteGbObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, WbWriter *const writer,
-                              SPtr<Communicator> comm);
+                              std::shared_ptr<vf::mpi::Communicator> comm);
     ~WriteGbObjectsCoProcessor() override;
     //! calls collectData.
     void process(double step) override;
@@ -35,7 +35,7 @@ private:
     std::vector<SPtr<GbObject3D>> objects;
     std::string path;
     WbWriter *writer;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
 };
 
 #endif // WriteGbObjectsCoProcessor_h__

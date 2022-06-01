@@ -3,7 +3,7 @@
 #include "BCProcessor.h"
 #include "Block3D.h"
 #include "BoundaryConditions.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "CoordinateTransformation3D.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "D3Q27System.h"
@@ -25,7 +25,7 @@ using namespace MPIIODataStructures;
 #define MESSAGE_TAG 80
 #define SEND_BLOCK_SIZE 100000
 
-MPIIOMigrationBECoProcessor::MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<Communicator> comm)
+MPIIOMigrationBECoProcessor::MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::mpi::Communicator> comm)
     : MPIIOCoProcessor(grid, s, path, comm), nue(-999.999), nuL(-999.999), nuG(-999.999), densityRatio(-999.999)
 {
     memset(&boundCondParamStr, 0, sizeof(boundCondParamStr));

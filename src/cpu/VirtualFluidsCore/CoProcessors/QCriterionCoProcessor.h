@@ -13,7 +13,7 @@
 #include "LBMSystem.h"
 #include "UbTuple.h"
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class WbWriter;
@@ -29,7 +29,7 @@ class QCriterionCoProcessor : public CoProcessor
 {
 public:
     QCriterionCoProcessor(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer, SPtr<UbScheduler> s,
-                          SPtr<Communicator> comm);
+                          std::shared_ptr<vf::mpi::Communicator> comm);
     //! Make update if timestep is write-timestep specified in SPtr<UbScheduler> s
     void process(double step) override;
 
@@ -58,7 +58,7 @@ private:
     int gridRank; // comm-Rank des aktuellen prozesses
     std::string path;
     WbWriter *writer;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     enum Values { xdir = 0, ydir = 1, zdir = 2 }; // labels for the different components
 };
 

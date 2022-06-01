@@ -33,15 +33,16 @@
 
 #include "WriteBlocksCoProcessor.h"
 #include "basics/writer/WbWriterVtkXmlASCII.h"
+#include <logger/Logger.h>
 
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "D3Q27System.h"
 #include "Grid3D.h"
 #include "UbScheduler.h"
 
 WriteBlocksCoProcessor::WriteBlocksCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                               WbWriter *const writer, SPtr<Communicator> comm)
+                                               WbWriter *const writer, std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), path(path), writer(writer), comm(comm)
 {
 }
@@ -180,6 +181,6 @@ void WriteBlocksCoProcessor::collectData(double step)
                                                                      istep, false);
         }
 
-        UBLOG(logINFO, "WriteBlocksCoProcessor step: " << istep);
+        VF_LOG_INFO("WriteBlocksCoProcessor step: {}", istep);
     }
 }

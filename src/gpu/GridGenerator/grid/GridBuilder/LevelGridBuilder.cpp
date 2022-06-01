@@ -1,3 +1,35 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file LevelGridBuilder.cpp
+//! \ingroup grid
+//! \author Soeren Peters, Stephan Lenz, Martin Sch�nherr
+//=======================================================================================
 #include "LevelGridBuilder.h"
 
 #include <stdio.h>
@@ -5,35 +37,30 @@
 #include <algorithm>
 
 #include "geometries/Arrow/ArrowImp.h"
-#include "geometries/Triangle/Triangle.h"
 #include "geometries/BoundingBox/BoundingBox.h"
+#include "geometries/Triangle/Triangle.h"
 #include "geometries/TriangularMesh/TriangularMesh.h"
 
 #include "grid/BoundaryConditions/BoundaryCondition.h"
 #include "grid/BoundaryConditions/Side.h"
-#include "grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h"
-#include "grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
-#include "grid/partition/Partition.h"
-#include "grid/NodeValues.h"
+#include "grid/Grid.h"
 #include "grid/GridFactory.h"
 #include "grid/GridInterface.h"
-#include "grid/Grid.h"
+#include "grid/NodeValues.h"
 
 #include "io/GridVTKWriter/GridVTKWriter.h"
-#include "io/SimulationFileWriter/SimulationFileWriter.h"
-#include "io/VTKWriterWrapper/UnstructuredGridWrapper.h"
-#include "io/VTKWriterWrapper/PolyDataWriterWrapper.h"
 #include "io/QLineWriter.h"
+#include "io/SimulationFileWriter/SimulationFileWriter.h"
 
-#include "utilities/transformator/ArrowTransformator.h"
 #include "utilities/communication.h"
+#include "utilities/transformator/ArrowTransformator.h"
 
 #define GEOFLUID 19
 #define GEOSOLID 16
 
 using namespace vf::gpu;
 
-LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : device(device), d3qxx(d3qxx)
+LevelGridBuilder::LevelGridBuilder()
 {
     this->communicationProcesses[CommunicationDirections::MX] = INVALID_INDEX;
     this->communicationProcesses[CommunicationDirections::PX] = INVALID_INDEX;
@@ -43,9 +70,45 @@ LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : de
     this->communicationProcesses[CommunicationDirections::PZ] = INVALID_INDEX;
 }
 
-std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, const std::string& d3qxx)
+std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared()
 {
-    return SPtr<LevelGridBuilder>(new LevelGridBuilder(device, d3qxx));
+    return SPtr<LevelGridBuilder>(new LevelGridBuilder());
+}
+
+void LevelGridBuilder::setSlipBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ)
+{
+    SPtr<SlipBoundaryCondition> slipBoundaryCondition = SlipBoundaryCondition::make(nomalX, normalY, normalZ);
+
+    auto side = SideFactory::make(sideType);
+
+    slipBoundaryCondition->side = side;
+    slipBoundaryCondition->side->addIndices(grids, 0, slipBoundaryCondition);
+
+    slipBoundaryCondition->fillSlipNormalLists();
+    boundaryConditions[0]->slipBoundaryConditions.push_back(slipBoundaryCondition);
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Slip BC on level " << 0 << " with " << (int)slipBoundaryCondition->indices.size() << "\n";
+}
+
+void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType, 
+                                                    real nomalX, real normalY, real normalZ, 
+                                                    uint samplingOffset, real z0)
+{
+    SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0);
+
+    auto side = SideFactory::make(sideType);
+
+    stressBoundaryCondition->side = side;
+    stressBoundaryCondition->side->addIndices(grids, 0, stressBoundaryCondition);
+
+    stressBoundaryCondition->fillStressNormalLists();
+    stressBoundaryCondition->fillSamplingOffsetLists();
+    stressBoundaryCondition->fillZ0Lists();
+    // stressBoundaryCondition->fillSamplingIndices(grids, 0, samplingOffset); //redundant with Side::setStressSamplingIndices but potentially a better approach for cases with complex geometries
+
+    boundaryConditions[0]->stressBoundaryConditions.push_back(stressBoundaryCondition);
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Stress BC on level " << 0 << " with " << (int)stressBoundaryCondition->indices.size() << "\n";
 }
 
 void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz)
@@ -125,14 +188,16 @@ void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
         noSlipBoundaryCondition->side = side;
         noSlipBoundaryCondition->side->addIndices(grids, level, noSlipBoundaryCondition);
 
-        boundaryConditions[level]->noSlipBoundaryConditions.push_back(noSlipBoundaryCondition);
+        noSlipBoundaryCondition->fillVelocityLists();
+
+        boundaryConditions[level]->velocityBoundaryConditions.push_back(noSlipBoundaryCondition); //now effectively just a wrapper for velocityBC with zero velocity. No distinction in Gridgenerator.
     }
 }
 
 GRIDGENERATOR_EXPORT void LevelGridBuilder::setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall)
 {
-    for( uint level = 0; level < this->grids.size(); level++ )
-        grids[level]->setEnableFixRefinementIntoTheWall( enableFixRefinementIntoTheWall );
+    for (uint level = 0; level < this->grids.size(); level++)
+        grids[level]->setEnableFixRefinementIntoTheWall(enableFixRefinementIntoTheWall);
 }
 
 GRIDGENERATOR_EXPORT void LevelGridBuilder::setCommunicationProcess(int direction, uint process)
@@ -143,19 +208,6 @@ GRIDGENERATOR_EXPORT void LevelGridBuilder::setCommunicationProcess(int directio
 GRIDGENERATOR_EXPORT uint LevelGridBuilder::getCommunicationProcess(int direction)
 {
     return this->communicationProcesses[direction];
-}
-
-
-
-void LevelGridBuilder::copyDataFromGpu()
-{
-    for (const auto& grid : grids)
-    {
-        auto gridGpuStrategy = std::dynamic_pointer_cast<GridGpuStrategy>(grid->getGridStrategy());
-        if(gridGpuStrategy)
-            gridGpuStrategy->copyDataFromGPU(std::static_pointer_cast<GridImp>(grid));
-    }
-        
 }
 
 LevelGridBuilder::~LevelGridBuilder()
@@ -174,7 +226,7 @@ void LevelGridBuilder::getGridInformations(std::vector<int>& gridX, std::vector<
     std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY,
     std::vector<int>& distZ)
 {
-    for (const auto& grid : grids)
+    for (const auto &grid : grids)
     {
         gridX.push_back(int(grid->getNumberOfNodesX()));
         gridY.push_back(int(grid->getNumberOfNodesY()));
@@ -292,7 +344,6 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
     grids[level]->getNodeValues(xCoords, yCoords, zCoords, neighborX, neighborY, neighborZ, neighborNegative, geo);
 }
 
-//TODO: add getSlipSize...
 
 GRIDGENERATOR_EXPORT void LevelGridBuilder::getFluidNodeIndices(uint *fluidNodeIndices, const int level) const 
 { 
@@ -314,6 +365,100 @@ GRIDGENERATOR_EXPORT uint LevelGridBuilder::getNumberOfFluidNodesBorder(unsigned
     return grids[level]->getNumberOfFluidNodesBorder();
 }
 
+uint LevelGridBuilder::getSlipSize(int level) const
+{
+    uint size = 0;
+    for (auto boundaryCondition : boundaryConditions[level]->slipBoundaryConditions)
+    {
+        size += uint(boundaryCondition->indices.size());
+    }
+    return size;
+}
+
+void LevelGridBuilder::getSlipValues(real* normalX, real* normalY, real* normalZ, int* indices, int level) const
+{
+    int allIndicesCounter = 0;
+    for (auto boundaryCondition : boundaryConditions[level]->slipBoundaryConditions)
+    {
+        for (uint index = 0; index < boundaryCondition->indices.size(); index++)
+        {
+            indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[index]) + 1;
+            
+            normalX[allIndicesCounter] = boundaryCondition->getNormalx(index);
+            normalY[allIndicesCounter] = boundaryCondition->getNormaly(index);
+            normalZ[allIndicesCounter] = boundaryCondition->getNormalz(index);
+            allIndicesCounter++;
+        }
+    }
+}
+
+void LevelGridBuilder::getSlipQs(real* qs[27], int level) const
+{
+    int allIndicesCounter = 0;
+    for (auto boundaryCondition : boundaryConditions[level]->slipBoundaryConditions)
+    {
+        for (uint index = 0; index < boundaryCondition->indices.size(); index++)
+        {
+            for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
+            {
+                qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
+            }
+            allIndicesCounter++;
+        }
+    }
+}
+
+uint LevelGridBuilder::getStressSize(int level) const
+{
+    uint size = 0;
+    for (auto boundaryCondition : boundaryConditions[level]->stressBoundaryConditions)
+    {
+        size += uint(boundaryCondition->indices.size());
+    }
+    return size;
+}
+
+void LevelGridBuilder::getStressValues( real* normalX, real* normalY, real* normalZ, 
+                                        real* vx,      real* vy,      real* vz, 
+                                        real* vx1,     real* vy1,     real* vz1, 
+                                        int* indices, int* samplingIndices, int* samplingOffset, real* z0, int level) const
+{
+
+    int allIndicesCounter = 0;
+    for (auto boundaryCondition : boundaryConditions[level]->stressBoundaryConditions)
+    {
+        for (uint index = 0; index < boundaryCondition->indices.size(); index++)
+        {
+            indices[allIndicesCounter]          = grids[level]->getSparseIndex(boundaryCondition->indices[index]) + 1;
+            samplingIndices[allIndicesCounter]  = grids[level]->getSparseIndex(boundaryCondition->velocitySamplingIndices[index]) + 1;
+
+            normalX[allIndicesCounter] = boundaryCondition->getNormalx(index);
+            normalY[allIndicesCounter] = boundaryCondition->getNormaly(index);
+            normalZ[allIndicesCounter] = boundaryCondition->getNormalz(index);
+
+            samplingOffset[allIndicesCounter] = boundaryCondition->getSamplingOffset(index);
+            z0[allIndicesCounter] = boundaryCondition->getZ0(index);
+            allIndicesCounter++;
+        }
+    }
+}
+
+void LevelGridBuilder::getStressQs(real* qs[27], int level) const
+{
+    int allIndicesCounter = 0;
+    for (auto boundaryCondition : boundaryConditions[level]->stressBoundaryConditions)
+    {
+        for (uint index = 0; index < boundaryCondition->indices.size(); index++)
+        {
+            for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
+            {
+                qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
+            }
+            allIndicesCounter++;
+        }
+    }
+}
+
 uint LevelGridBuilder::getVelocitySize(int level) const
 {
     uint size = 0;
@@ -324,9 +469,6 @@ uint LevelGridBuilder::getVelocitySize(int level) const
     return size;
 }
 
-//TODO: add getSlipIndices...
-
-
 void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const
 {
     int allIndicesCounter = 0;
@@ -335,9 +477,26 @@ void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indi
         for(std::size_t i = 0; i < boundaryCondition->indices.size(); i++)
         {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) +1;  
-            vx[allIndicesCounter] = (real)boundaryCondition->getVx((uint)i);
-            vy[allIndicesCounter] = (real)boundaryCondition->getVy((uint)i);
-            vz[allIndicesCounter] = (real)boundaryCondition->getVz((uint)i);
+
+            vx[allIndicesCounter] = boundaryCondition->getVx((uint)i);
+            vy[allIndicesCounter] = boundaryCondition->getVy((uint)i);
+            vz[allIndicesCounter] = boundaryCondition->getVz((uint)i);
+            allIndicesCounter++;
+        }
+    }
+}
+
+void LevelGridBuilder::getVelocityQs(real* qs[27], int level) const
+{
+    int allIndicesCounter = 0;
+    for (auto boundaryCondition : boundaryConditions[level]->velocityBoundaryConditions)
+    {
+        for ( uint index = 0; index < boundaryCondition->indices.size(); index++ )
+        {
+            for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
+            {
+                qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
+            }
             allIndicesCounter++;
         }
     }
@@ -370,39 +529,6 @@ void LevelGridBuilder::getPressureValues(real* rho, int* indices, int* neighborI
     }
 }
 
-
-void LevelGridBuilder::getVelocityQs(real* qs[27], int level) const
-{
-    int allIndicesCounter = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->velocityBoundaryConditions)
-    {
-        for ( uint index = 0; index < boundaryCondition->indices.size(); index++ )
-        {
-            for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
-            {
-                qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
-
-                //real x,y,z;
-                //grids[level]->transIndexToCoords( index, x, y, z );
-
-                //x += grids[level]->getDirection()[dir * DIMENSION + 0] * grids[level]->getDelta();
-                //y += grids[level]->getDirection()[dir * DIMENSION + 1] * grids[level]->getDelta();
-                //z += grids[level]->getDirection()[dir * DIMENSION + 2] * grids[level]->getDelta();
-
-                //uint neighborIndex = grids[level]->transCoordToIndex( x, y, z );
-
-                //if( grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY ||
-                //    grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID || 
-                //    grids[level]->getFieldEntry(neighborIndex) == STOPPER_SOLID)
-                //    qs[dir][allIndicesCounter] = 0.5;
-                //else
-                //    qs[dir][allIndicesCounter] = -1.0;
-            }
-            allIndicesCounter++;
-        }
-    }
-}
-
 void LevelGridBuilder::getPressureQs(real* qs[27], int level) const
 {
     int allIndicesCounter = 0;
@@ -413,28 +539,11 @@ void LevelGridBuilder::getPressureQs(real* qs[27], int level) const
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
             {
                 qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
-
-                //real x,y,z;
-                //grids[level]->transIndexToCoords( index, x, y, z );
-
-                //x += grids[level]->getDirection()[dir * DIMENSION + 0] * grids[level]->getDelta();
-                //y += grids[level]->getDirection()[dir * DIMENSION + 1] * grids[level]->getDelta();
-                //z += grids[level]->getDirection()[dir * DIMENSION + 2] * grids[level]->getDelta();
-
-                //uint neighborIndex = grids[level]->transCoordToIndex( x, y, z );
-
-                //if( grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY ||
-                //    grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID || 
-                //    grids[level]->getFieldEntry(neighborIndex) == STOPPER_SOLID)
-                //    qs[dir][allIndicesCounter] = 0.5;
-                //else
-                //    qs[dir][allIndicesCounter] = -1.0;
             }
             allIndicesCounter++;
         }
     }
 }
-
 
 uint LevelGridBuilder::getGeometrySize(int level) const
 {
@@ -457,7 +566,6 @@ bool LevelGridBuilder::hasGeometryValues() const
     return geometryHasValues;
 }
 
-
 void LevelGridBuilder::getGeometryValues(real* vx, real* vy, real* vz, int level) const
 {
     for (uint i = 0; i < boundaryConditions[level]->geometryBoundaryCondition->indices.size(); i++)
@@ -467,7 +575,6 @@ void LevelGridBuilder::getGeometryValues(real* vx, real* vy, real* vz, int level
 		vz[i] = boundaryConditions[level]->geometryBoundaryCondition->getVz(i);
     }
 }
-
 
 void LevelGridBuilder::getGeometryQs(real* qs[27], int level) const
 {
@@ -480,28 +587,28 @@ void LevelGridBuilder::getGeometryQs(real* qs[27], int level) const
     }
 }
 
-
-
-
-
 void LevelGridBuilder::writeArrows(std::string fileName) const 
 {
     QLineWriter::writeArrows(fileName, boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition, grids[getNumberOfGridLevels() - 1]);
 }
 
-GRIDGENERATOR_EXPORT SPtr<BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideType side, uint level) const
+GRIDGENERATOR_EXPORT SPtr<gg::BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideType side, uint level) const
 {
-    for( auto bc : this->boundaryConditions[level]->pressureBoundaryConditions )
-        if( bc->isSide(side) )
+    for (auto bc : this->boundaryConditions[level]->slipBoundaryConditions)
+        if (bc->isSide(side))
             return bc;
-    
-    for( auto bc : this->boundaryConditions[level]->velocityBoundaryConditions )
+
+    for (auto bc : this->boundaryConditions[level]->velocityBoundaryConditions)
         if( bc->isSide(side) )
             return bc;
 
+    for (auto bc : this->boundaryConditions[level]->pressureBoundaryConditions)
+        if (bc->isSide(side))
+            return bc;
+
     auto bc = this->boundaryConditions[level]->geometryBoundaryCondition;
-    
-    if( bc && bc->isSide(side) )
+
+    if (bc && bc->isSide(side))
         return bc;
 
     return nullptr;

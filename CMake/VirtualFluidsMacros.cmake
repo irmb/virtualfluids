@@ -21,6 +21,7 @@ endfunction()
 include(${VF_CMAKE_DIR}/CMakeSetCompilerFlags.cmake)
 include(${VF_CMAKE_DIR}/FileUtilities.cmake)
 include(${VF_CMAKE_DIR}/3rd.cmake)
+include(${VF_CMAKE_DIR}/Sanitizers.cmake)
 
 ###############################################################################################################
 # Reset the compiler and linker flags
@@ -151,6 +152,9 @@ function(vf_add_library)
             LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
             ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
             PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
+    # sanitizers
+    enable_sanitizers(${library_name})
 
     # link time optimization
     if(BUILD_VF_LTO)

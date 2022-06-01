@@ -1,4 +1,4 @@
-#include "Calculation/UpdateGrid27.h"
+#include "UpdateGrid27.h"
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 #include "Calculation/DragLift.h"
@@ -8,6 +8,7 @@
 #include "Communication/ExchangeData27.h"
 #include "Kernel/Kernel.h"
 #include "Parameter/CudaStreamManager.h"
+#include "GPU/TurbulentViscosity.h"
 
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
@@ -35,6 +36,9 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 	if (para->getUseWale())
 		calcMacroscopicQuantities(para.get(), level);
 
+    if (para->getUseTurbulentViscosity())
+        calcTurbulentViscosity(para, level);
+
 	//////////////////////////////////////////////////////////////////////////
 
     preCollisionBC(para.get(), cudaManager.get(), level, t);
@@ -44,6 +48,10 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
     {
         (this->*refinementAndExchange)(level);
     }
+        
+    interactWithActuators(para, cudaManager, level, t);
+    
+    interactWithProbes(para, cudaManager, level, t);
 }
 
 void UpdateGrid27::refinementAndExchange_noRefinementAndExchange(int level) {}
@@ -299,8 +307,6 @@ void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamInde
 void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
                       int streamIndex)
 {
-    // St. Lenz: exchange for post-collision data and pre-collision data are identical!
-
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition
     exchangeCollDataXGPU27AllNodes(para, comm, cudaManager, level, streamIndex);
@@ -481,7 +487,6 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
     //////////////////////////////////////////////////////////////////////////
     // S L I P
     //////////////////////////////////////////////////////////////////////////
-
     if (para->getParD(level)->kSlipQ > 0)
     {
         //QSlipDev27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QSlip.k,
@@ -493,8 +498,44 @@ void postCollisionBC(Parameter* para, int level, unsigned int t)
         QSlipDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0],    para->getParD(level)->QSlip.k,
                         para->getParD(level)->QSlip.q27[0],    para->getParD(level)->kSlipQ,       para->getParD(level)->omega,
                         para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                        para->getParD(level)->turbViscosity,   para->getUseTurbulentViscosity(),
                         para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
         getLastCudaError("QSlipDev27 execution failed");
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // S T R E S S (wall model)
+    //////////////////////////////////////////////////////////////////////////
+    if (para->getParD(level)->kStressQ > 0)
+    {
+        // QStressDevComp27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0], 
+        //                 para->getParD(level)->QStress.k,       para->getParD(level)->QStress.kN, 
+        //                 para->getParD(level)->QStress.q27[0],  para->getParD(level)->kStressQ,          
+        //                 para->getParD(level)->omega,           para->getParD(level)->turbViscosity,  
+        //                 para->getParD(level)->vx_SP,           para->getParD(level)->vy_SP,             para->getParD(level)->vy_SP,
+        //                 para->getParD(level)->QStress.normalX, para->getParD(level)->QStress.normalY,   para->getParD(level)->QStress.normalZ,
+        //                 para->getParD(level)->QStress.Vx,      para->getParD(level)->QStress.Vy,        para->getParD(level)->QStress.Vz,
+        //                 para->getParD(level)->QStress.Vx1,     para->getParD(level)->QStress.Vy1,       para->getParD(level)->QStress.Vz1,
+        //                 para->getParD(level)->wallModel.samplingOffset, para->getParD(level)->wallModel.z0,
+                        // para->getHasWallModelMonitor(),        para->getParD(level)->wallModel.u_star,
+                        // para->getParD(level)->wallModel.Fx,    para->getParD(level)->wallModel.Fy,      para->getParD(level)->wallModel.Fz,
+        //                 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,      para->getParD(level)->neighborZ_SP, 
+        //                 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        // getLastCudaError("QStressDevComp27 execution failed");
+
+        BBStressDev27( para->getParD(level)->numberofthreads, para->getParD(level)->d0SP.f[0], 
+                        para->getParD(level)->QStress.k,       para->getParD(level)->QStress.kN, 
+                        para->getParD(level)->QStress.q27[0],  para->getParD(level)->kStressQ,          
+                        para->getParD(level)->vx_SP,           para->getParD(level)->vy_SP,             para->getParD(level)->vy_SP,
+                        para->getParD(level)->QStress.normalX, para->getParD(level)->QStress.normalY,   para->getParD(level)->QStress.normalZ,
+                        para->getParD(level)->QStress.Vx,      para->getParD(level)->QStress.Vy,        para->getParD(level)->QStress.Vz,
+                        para->getParD(level)->QStress.Vx1,     para->getParD(level)->QStress.Vy1,       para->getParD(level)->QStress.Vz1,
+                        para->getParD(level)->wallModel.samplingOffset, para->getParD(level)->wallModel.z0,
+                        para->getHasWallModelMonitor(),        para->getParD(level)->wallModel.u_star,
+                        para->getParD(level)->wallModel.Fx,    para->getParD(level)->wallModel.Fy,      para->getParD(level)->wallModel.Fz,
+                        para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,      para->getParD(level)->neighborZ_SP, 
+                        para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+        getLastCudaError("BBStressDevice27 execution failed");
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -1583,4 +1624,26 @@ void UpdateGrid27::chooseFunctionForRefinementAndExchange()
         this->refinementAndExchange = &UpdateGrid27::refinementAndExchange_noStreams_completeExchange;
         std::cout << "refinementAndExchange_noStreams_completeExchange()" << std::endl;
     }
+}
+
+void interactWithActuators(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
+{
+    for( SPtr<PreCollisionInteractor> actuator: para->getActuators() )
+    {
+        actuator->interact(para, cudaManager, level, t);
+    }
+}
+
+void interactWithProbes(Parameter* para, CudaMemoryManager* cudaManager, int level, unsigned int t)
+{
+    for( SPtr<PreCollisionInteractor> probe: para->getProbes() )
+    {
+        probe->interact(para, cudaManager, level, t);
+    }
+}
+
+void calcTurbulentViscosity(Parameter* para, int level)
+{
+    if(para->getUseAMD())
+        calcTurbulentViscosityAMD(para, level);
 }

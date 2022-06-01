@@ -13,13 +13,7 @@
 
 #include "VirtualFluids_GPU_export.h"
 
-namespace vf
-{
-namespace gpu
-{
-class Communicator;
-}
-}
+namespace vf::gpu { class Communicator; }
 
 class CudaMemoryManager;
 class Parameter;
@@ -39,6 +33,7 @@ class UpdateGrid27;
 class VIRTUALFLUIDS_GPU_EXPORT Simulation
 {
 public:
+	Simulation(vf::gpu::Communicator& communicator);
 	void run();
     void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter,
               std::shared_ptr<CudaMemoryManager> cudaManager);
@@ -70,7 +65,7 @@ protected:
 
 	LogWriter output;
 
-    vf::gpu::Communicator* comm;
+	vf::gpu::Communicator& communicator;
     SPtr<Parameter> para;
     SPtr<GridProvider> gridProvider;
     SPtr<DataWriter> dataWriter;

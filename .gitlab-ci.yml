@@ -1,7 +1,7 @@
 ###############################################################################
 ##                       VirtualFluids CI Pipeline                           ##
 ###############################################################################
-image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.3
 
 stages:
   - build
@@ -19,8 +19,6 @@ stages:
 ###############################################################################
 .gnu_build_template:
   stage: build
-
-  image: irmb/virtualfluids-deps-ubuntu20.04
 
   tags:
     - gpu
@@ -51,7 +49,7 @@ stages:
     - cd $CI_PROJECT_DIR/$BUILD_FOLDER
     - rm -r -f ./*
     - cmake .. -LAH
-      --preset=all_make_ccache
+      --preset=all_make
       -DBUILD_WARNINGS_AS_ERRORS=ON
       -DCMAKE_CUDA_ARCHITECTURES=60
     - make -j4
@@ -121,8 +119,6 @@ msvc_16:
 gcc_9_python:
   stage: build_python
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
   needs: ["gcc_9"]
 
   cache:
@@ -149,8 +145,6 @@ gcc_9_python:
 build_singularity_image:
   stage: container_upload
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
   needs:
     - gcc_9_python
 
@@ -170,8 +164,6 @@ build_singularity_image:
 ###############################################################################
 gcc_9_unit_tests:
   stage: test
-
-  image: irmb/virtualfluids-deps-ubuntu20.04:latest
 
   needs: ["gcc_9"]
 
@@ -203,8 +195,6 @@ msvc_16_unit_tests:
 gcc_9_python_bindings_test:
   stage: test
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
   needs: ["gcc_9_python"]
 
   before_script:
@@ -219,8 +209,6 @@ gcc_9_python_bindings_test:
 ###############################################################################
 gcc_9_python_slurm_test:
   stage: test
-
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
 
   needs: ["gcc_9_python"]
 
@@ -281,8 +269,6 @@ nvidia_test:
 gpu_numerical_tests:
   stage: benchmark
 
-  image: irmb/virtualfluids-deps-ubuntu20.04
-
   when: manual
 
   needs: []
@@ -301,7 +287,7 @@ gpu_numerical_tests:
     - cd $CI_PROJECT_DIR/build
     - rm -r -f ./*
     - cmake ..
-      --preset=gpu_numerical_tests_ccache_make
+      --preset=gpu_numerical_tests_make
       -DCMAKE_CUDA_ARCHITECTURES=60
       -DPATH_NUMERICAL_TESTS=/tmp/test_data/numerical_tests_gpu
     - make -j4
@@ -327,8 +313,6 @@ gpu_numerical_tests:
 ###############################################################################
 clang_build_analyzer_clang_10:
   stage: analyze
-
-  image: irmb/virtualfluids-deps-ubuntu20.04
 
   only: ["schedules"]
 
@@ -362,8 +346,6 @@ clang_build_analyzer_clang_10:
 include_what_you_use_clang_10:
   stage: analyze
 
-  image: irmb/virtualfluids-deps-ubuntu20.04
-
   only: ["schedules"]
 
   needs: []
@@ -391,24 +373,28 @@ include_what_you_use_clang_10:
     - make
 
 ###############################################################################
+.analyze_template:
+
+  rules: # dont create MR pipeline, run always on irmb/develop and manual in all other cases
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: '$CI_PROJECT_NAMESPACE == "irmb" && $CI_COMMIT_BRANCH == "develop"'
+      when: always
+    - when: manual
+      allow_failure: true
+
 cppcheck:
   stage: analyze
 
-  image: irmb/virtualfluids-deps-ubuntu20.04
-
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
   before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
-    - apt-get install -y cppcheck
+    - cppcheck --version
 
   script:
     - cd $CI_PROJECT_DIR
-    - cppcheck --version
     - cppcheck src --enable=all --xml 2> cppcheck.xml
 
   artifacts:
@@ -422,10 +408,7 @@ cppcheck:
 lizard:
   stage: analyze
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
@@ -450,17 +433,11 @@ lizard:
 gcov_gcc_9:
   stage: analyze
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
   before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update
-    - pip3 install gcovr
     - gcovr --version
 
   script:
@@ -496,10 +473,7 @@ gcov_gcc_9:
 clang-tidy:
   stage: analyze
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
-
-  only:
-    - develop@irmb/VirtualFluids_dev
+  extends: .analyze_template
 
   needs: []
 
@@ -512,7 +486,6 @@ clang-tidy:
     - mkdir -p $CI_PROJECT_DIR/build
     - cd $CI_PROJECT_DIR/build
     - cmake ..
-      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       -DBUILD_VF_CPU=ON
       -DBUILD_VF_GPU=OFF
     - python3 ../utilities/filterCompileCommands.py compile_commands.json
@@ -555,7 +528,7 @@ pages:
 .deploy_template:
   stage: deploy
 
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
+
 
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -617,8 +590,6 @@ vf_wheel_to_jupyterhub:
 # This job only run on the development branch of the parent repository, not on forks!
 sonar-scanner:
   stage: deploy
-
-  image: irmb/virtualfluids-python-deps-ubuntu20.04:latest
 
   tags:
     - linux

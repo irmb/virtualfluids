@@ -23,7 +23,7 @@
 #include <LBM/CompressibleOffsetMomentsInterpolationProcessor.h>
 #include <LBM/LBMKernel.h>
 #include <LBM/LBMUnitConverter.h>
-#include <Parallel/MPICommunicator.h>
+#include <mpi/MPICommunicator.h>
 #include <Visitors/GenBlocksGridVisitor.h>
 #include <Visitors/InitDistributionsBlockVisitor.h>
 #include <Visitors/MetisPartitioningGridVisitor.h>
@@ -36,7 +36,7 @@
 
 Simulation::Simulation()
 {
-    this->communicator = MPICommunicator::getInstance();
+    this->communicator = vf::mpi::MPICommunicator::getInstance();
     this->grid = std::shared_ptr<Grid3D>(new Grid3D(communicator));
     this->interactors = std::vector<std::shared_ptr<Interactor3D>>();
     this->bcVisitor = BoundaryConditionsBlockVisitor();

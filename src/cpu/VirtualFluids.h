@@ -40,9 +40,14 @@
 #include <omp.h>
 #endif
 
+#include <mpi/Communicator.h>
+#include <mpi/MPICommunicator.h>
+#include <mpi/NullCommunicator.h>
+
 #include <basics/PointerDefinitions.h>
 
 #include <basics/config/ConfigurationFile.h>
+#include <logger/Logger.h>
 
 #include <basics/container/CbArray2D.h>
 #include <basics/container/CbArray3D.h>
@@ -135,8 +140,8 @@
 #include <BoundaryConditions/SimpleSlipBCAlgorithm.h>
 #include <BoundaryConditions/RheologyPowellEyringModelNoSlipBCAlgorithm.h>
 #include <BoundaryConditions/RheologyBinghamModelVelocityBCAlgorithm.h>
-#include <BoundaryConditions/MultiphaseNoSlipBCAlgorithm.h> 
-#include <BoundaryConditions/MultiphaseNonReflectingOutflowBCAlgorithm.h> 
+#include <BoundaryConditions/MultiphaseNoSlipBCAlgorithm.h>
+#include <BoundaryConditions/MultiphaseNonReflectingOutflowBCAlgorithm.h>
 #include <BoundaryConditions/MultiphaseVelocityBCAdapter.h>
 #include <BoundaryConditions/MultiphaseVelocityBCAlgorithm.h>
 
@@ -283,10 +288,7 @@
 #include <geometry3d/KdTree/splitalgorithms/KdSplitAlgorithm.h>
 
 #include <Parallel/BlocksDistributor.h>
-#include <Parallel/Communicator.h>
-#include <Parallel/MPICommunicator.h>
 #include <Parallel/MetisPartitioner.h>
-#include <Parallel/NullCommunicator.h>
 #include <Parallel/PriorityQueueDecompositor.h>
 #include <Parallel/SimpleGeometricPartitioner.h>
 #include <Parallel/ZoltanPartitioner.h>

@@ -29,7 +29,7 @@ void chanel(const char *cstr)
 
       string comm_type = cf.getValue("comm");
       if(comm_type == "MPI")
-         comm = MPICommunicator::getInstance();
+         comm = vf::mpi::MPICommunicator::getInstance();
       else if(comm_type == "BOND")
          comm = BondCommunicator::getInstance();
       

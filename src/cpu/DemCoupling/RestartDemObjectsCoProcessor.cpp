@@ -1,6 +1,6 @@
 #include "RestartDemObjectsCoProcessor.h"
 
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "CreateDemObjectsCoProcessor.h"
 #include "DemCoProcessor.h"
 #include "GbSphere3D.h"
@@ -15,7 +15,7 @@ RestartDemObjectsCoProcessor::RestartDemObjectsCoProcessor() {}
 
 RestartDemObjectsCoProcessor::RestartDemObjectsCoProcessor(
     SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, SPtr<DemCoProcessor> demCoProcessor,
-    SPtr<CreateDemObjectsCoProcessor> createDemObjectsCoProcessor, double radius, SPtr<Communicator> comm)
+    SPtr<CreateDemObjectsCoProcessor> createDemObjectsCoProcessor, double radius, std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), path(path), demCoProcessor(demCoProcessor),
       createDemObjectsCoProcessor(createDemObjectsCoProcessor), radius(radius), comm(comm)
 {

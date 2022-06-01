@@ -63,7 +63,7 @@ void run(string configname)
       int             chunk = config.getValue<int>("chunk");
 
 
-      SPtr<Communicator> comm = MPICommunicator::getInstance();
+      SPtr<vf::mpi::Communicator> comm = vf::mpi::MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)

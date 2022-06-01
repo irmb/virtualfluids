@@ -9,7 +9,7 @@
 #include "IntegrateValuesHelper.h"
 #include "LBMSystem.h"
 
-class Communicator;
+namespace vf::mpi {class Communicator;}
 class Grid3D;
 class UbScheduler;
 class WbWriter;
@@ -41,9 +41,9 @@ public:
 public:
     TimeAveragedValuesCoProcessor();
     TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer,
-                                  SPtr<UbScheduler> s, SPtr<Communicator> comm, int options);
+                                  SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm, int options);
     TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string &path, WbWriter *const writer,
-                                  SPtr<UbScheduler> s, SPtr<Communicator> comm, int options, std::vector<int> levels,
+                                  SPtr<UbScheduler> s, std::shared_ptr<vf::mpi::Communicator> comm, int options, std::vector<int> levels,
                                   std::vector<double> &levelCoords, std::vector<double> &bounds,
                                   bool timeAveraging = true);
     //! Make update
@@ -70,7 +70,7 @@ protected:
     void calculateAverageValuesForPlane(std::vector<IntegrateValuesHelper::CalcNodes> &cnodes);
 
 private:
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleUInt8> cells;
     std::vector<std::string> datanames;

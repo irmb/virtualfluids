@@ -114,7 +114,7 @@ public:
     /*==========================================================*/
     virtual void addInfo(const std::string &err_str)
     {
-        exceptionData.push_back(makeUbTuple((std::string) "-", 0, (std::string) "unknown", err_str));
+        exceptionData.push_back(makeUbTuple(std::string("-"), 0, std::string("unknown"), err_str));
     }
     /*==========================================================*/
     // add exception

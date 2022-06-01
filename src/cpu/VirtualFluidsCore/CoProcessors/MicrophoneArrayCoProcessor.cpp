@@ -2,7 +2,7 @@
 #include "BCArray3D.h"
 #include "BCProcessor.h"
 #include "Block3D.h"
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "D3Q27System.h"
 #include "DataSet3D.h"
 #include "DistributionArray3D.h"
@@ -13,7 +13,7 @@
 #include <sstream>
 
 MicrophoneArrayCoProcessor::MicrophoneArrayCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
-                                                       SPtr<Communicator> comm)
+                                                       std::shared_ptr<vf::mpi::Communicator> comm)
     : CoProcessor(grid, s), path(path), comm(comm)
 {
     count = 0;

@@ -1,7 +1,7 @@
 #ifndef BlocksDistributor_H
 #define BlocksDistributor_H
 
-#include "Communicator.h"
+#include <mpi/Communicator.h>
 #include "Grid3D.h"
 
 #include <PointerDefinitions.h>
@@ -9,13 +9,13 @@
 class BlocksDistributor
 {
 public:
-    BlocksDistributor(SPtr<Grid3D> grid, SPtr<Communicator> comm);
+    BlocksDistributor(SPtr<Grid3D> grid, std::shared_ptr<vf::mpi::Communicator> comm);
     ~BlocksDistributor();
 
 protected:
 private:
     SPtr<Grid3D> grid;
-    SPtr<Communicator> comm;
+    std::shared_ptr<vf::mpi::Communicator> comm;
 };
 
 #endif

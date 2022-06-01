@@ -3,32 +3,32 @@
 VirtualFluids (VF) is a research code developed at the Institute for Computational Modeling in Civil Engineering (iRMB). The code is a Computational Fluid Dynamics (CFD) solver based on the Lattice Boltzmann Method (LBM) for turbulent, thermal, multiphase and multicomponent flow problems as well as for multi-field problems such as Fluid-Structure-interaction including distributed pre- and postprocessing capabilities for simulations with more than 100 billion degrees of freedom.
 
 ## Getting Start
-### Suported Platforms
-VirtualFluids has been used on a variety of platforms:
+VirtualFluids is mainly supported on these two platforms:
  - Linux
- - Mac OS X
  - Windows
- - Cygwin
+
+VirtualFluids can also be build and used in a Docker image. An ubuntu development environment is located in the [container registry](https://git.rz.tu-bs.de/irmb/virtualfluids/container_registry).
+An extensive guide about the usage and development in VirtualFluids with docker can be found [here](https://git.rz.tu-bs.de/irmb/virtualfluids/-/wikis/Getting-Start-with-the-development-of-VirtualFluids).
+
+
+The following is a brief explanation of how to use it without Docker:
 ### Software Requirements
- 
+
  - [CMake](https://cmake.org/) (minimum version 3.15)
  - C++ compiler with C++14 support
- - [Paraview](https://www.paraview.org/) (most recent version)
+ - [Paraview](https://www.paraview.org/) for visualizations (most recent version)
 
-with usage of the GPU:  
+
+with usage of the GPU:
  - CUDA [developer.nvidia.com/cuda-zone](https://developer.nvidia.com/cuda-zone):
     * Minimum CUDA Version 9.0
     * Minimum Compute Capability 3.0, because of maximal number of Blocks in x direction
     * Recommended Compute Capability 6.0, because of atomics for double precision floating point data (GKS only)
-    
 
-### Contributing
-To contribute to VirtualFluids please follow these [instructions](CONTRIBUTING.md).
 
 ### Build VirtualFluids
 ```shell
-$ mkdir build
-$ cd build
+$ mkdir build && cd build
 ```
 Pass the relevant [options](#options) to cmake.
 E.g. for the CPU part:
@@ -41,11 +41,11 @@ Alternatively enable the options via the cmake-gui.
 ### <a id="options"></a> Options
 - BUILD_VF_CPU
   - Build VirtualFluids CPU variant
-- BUILD_VF_GPU 
+- BUILD_VF_GPU
   - Build VirtualFluids GPU variant
 - BUILD_VF_UNIT_TESTS
   -  Build VirtualFluids unit tests
-- VF_DOUBLE_ACCURACY 
+- VF_DOUBLE_ACCURACY
     - GPU change between Double and Single Precision
 
 ### Result Files
@@ -55,14 +55,15 @@ The CPU part generates a set of multiple output directories in the prescribed ou
 
 A GPU computation generates a the time series of output files directly in the output path. In Paraview these time series can be read directly.
 
-
+## Contributing
+To contribute to VirtualFluids please follow these [instructions](CONTRIBUTING.md).
 
 ## Documentation
 The doxygen generated documentation can be found [here](https://irmb.gitlab-pages.rz.tu-bs.de/VirtualFluids_dev).
 
 
 ## Known Issues
-If you notice any problems on your platform, please report an [issue](https://git.rz.tu-bs.de/irmb/virtualfluids/-/issues/new). 
+If you notice any problems on your platform, please report an [issue](https://git.rz.tu-bs.de/irmb/virtualfluids/-/issues/new).
 
 
 ## Authors

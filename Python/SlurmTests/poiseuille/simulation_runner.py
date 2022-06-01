@@ -2,7 +2,7 @@ import os
 
 from SlurmTests.poiseuille.settings import Scaling
 from poiseuille.simulation import run_simulation
-from pyfluids.writer import Writer, OutputFormat
+from pyfluids.cpu.writer import Writer, OutputFormat
 
 
 scale_level = int(os.environ["PYFLUIDS_SCALE_LEVEL"])

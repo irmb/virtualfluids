@@ -1,26 +1,63 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __         
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |        
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |        
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |        
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____    
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|   
+//      \    \  |    |   ________________________________________________________________    
+//       \    \ |    |  |  ______________________________________________________________|   
+//        \    \|    |  |  |         __          __     __     __     ______      _______    
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)   
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______    
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/   
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can 
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of 
+//  the License, or (at your option) any later version.
+//  
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT 
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+//  for more details.
+//  
+//  You should have received a copy of the GNU General Public License along
+//  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+//
+//! \file BoundaryCondition.cpp
+//! \ingroup grid
+//! \author Soeren Peters, Stephan Lenz
+//=======================================================================================
 #include "BoundaryCondition.h"
 
 #include <cmath>
-#include "GridGenerator_export.h"
+
 #include "grid/BoundaryConditions/Side.h"
 #include "grid/Grid.h"
 
-bool BoundaryCondition::isSide( SideType side ) const
+bool gg::BoundaryCondition::isSide( SideType side ) const
 {
     return this->side->whoAmI() == side;
 }
 
-GRIDGENERATOR_EXPORT void VelocityBoundaryCondition::setVelocityProfile(SPtr<Grid> grid, std::function<void(real, real, real, real&, real&, real&)> velocityProfile)
+//////////////////////////////////////////////////////////////////////////
+
+void VelocityBoundaryCondition::setVelocityProfile(
+    SPtr<Grid> grid, std::function<void(real, real, real, real &, real &, real &)> velocityProfile)
 {
-    for( uint index = 0; index < this->indices.size(); index++ ){
+    for (uint index = 0; index < this->indices.size(); index++) {
 
-            real x, y, z;
+        real x, y, z;
 
-            grid->transIndexToCoords( this->indices[index], x, y, z );
+        grid->transIndexToCoords(this->indices[index], x, y, z);
 
-            velocityProfile(x,y,z,this->vxList[index],this->vyList[index],this->vzList[index]);
+        velocityProfile(x, y, z, this->vxList[index], this->vyList[index], this->vzList[index]);
     }
 }
+
+//////////////////////////////////////////////////////////////////////////
 
 void GeometryBoundaryCondition::setTangentialVelocityForPatch(SPtr<Grid> grid, uint patch, 
                                                               real p1x, real p1y, real p1z, 
@@ -69,3 +106,23 @@ void GeometryBoundaryCondition::setTangentialVelocityForPatch(SPtr<Grid> grid, u
         }
     }
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+void StressBoundaryCondition::fillSamplingIndices(std::vector<SPtr<Grid> > grid, uint level, uint samplingOffset)
+{
+
+    for( uint i = 0; i < this->indices.size(); i++ )
+    {
+        real x, y, z;
+        grid[level]->transIndexToCoords(this->indices[i], x, y, z);
+
+        real x_sampling = x + this->getNormalx(i)*samplingOffset*grid[level]->getDelta();
+        real y_sampling = y + this->getNormaly(i)*samplingOffset*grid[level]->getDelta();
+        real z_sampling = z + this->getNormalz(i)*samplingOffset*grid[level]->getDelta();
+
+        this->velocitySamplingIndices.push_back( grid[level]->transCoordToIndex(x_sampling, y_sampling, z_sampling) );
+    }
+    
+}
+
