@@ -110,7 +110,7 @@ static SPtr<Parameter> initParameterClass()
 
 class IndexRearrangementForStreamsTest_IndicesCFBorderBulkTest : public testing::Test
 {
-public:
+protected:
     CFBorderBulk cf;
     SPtr<Parameter> para;
     std::unique_ptr<IndexRearrangementForStreams> testSubject;
@@ -198,7 +198,7 @@ struct FCBorderBulk {
 
 class IndexRearrangementForStreamsTest_IndicesFCBorderBulkTest : public testing::Test
 {
-public:
+protected:
     FCBorderBulk fc;
     SPtr<Parameter> para;
     std::unique_ptr<IndexRearrangementForStreams> testSubject;
@@ -281,11 +281,17 @@ struct SendIndicesForCommAfterFtoCX {
 
 class IndexRearrangementForStreamsTest_reorderSendIndices : public testing::Test
 {
-public:
+protected:
     SendIndicesForCommAfterFtoCX si;
     SPtr<Parameter> para;
     std::unique_ptr<IndexRearrangementForStreams> testSubject;
 
+    void act()
+    {
+        testSubject->reorderSendIndicesForCommAfterFtoCX(si.direction, si.level, si.indexOfProcessNeighbor,
+                                                         si.sendIndicesForCommAfterFtoCPositions);
+    };
+private:
     std::unique_ptr<IndexRearrangementForStreams> createTestSubjectReorderSendIndices()
     {
         logging::Logger::addStream(&std::cout);
@@ -318,12 +324,6 @@ public:
     {
         para        = initParameterClass();
         testSubject = createTestSubjectReorderSendIndices();
-    };
-
-    void act()
-    {
-        testSubject->reorderSendIndicesForCommAfterFtoCX(si.direction, si.level, si.indexOfProcessNeighbor,
-                                                         si.sendIndicesForCommAfterFtoCPositions);
     };
 };
 
