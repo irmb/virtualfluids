@@ -99,21 +99,6 @@ struct CFBorderBulk {
     std::vector<real> offsetCFz_Bulk_expected   = { 1001, 1003, 1005, 1007 };
 };
 
-struct FCBorderBulk {
-    // data to work on
-    std::vector<uint> fluidNodeIndicesBorder = { 110, 111, 112, 113, 114, 115, 116 };
-    std::vector<uint> iCellFCC               = { 11, 111, 13, 113, 15, 115, 17 };
-    std::vector<uint> iCellFCF               = { 12, 112, 14, 114, 16, 116, 18 };
-    uint sizeOfICellFC                       = (uint)iCellFCC.size();
-    int level                                = 1;
-
-    // expected data
-    std::vector<uint> iCellFccBorder_expected = { 111, 113, 115 };
-    std::vector<uint> iCellFccBulk_expected   = { 11, 13, 15, 17 };
-    std::vector<uint> iCellFcfBorder_expected = { 112, 114, 116 };
-    std::vector<uint> iCellFcfBulk_expected   = { 12, 14, 16, 18 };
-};
-
 static SPtr<Parameter> initParameterClass()
 {
     std::filesystem::path filePath = __FILE__; //  assuming that the config file is stored parallel to this file.
@@ -128,10 +113,10 @@ class IndexRearrangementForStreamsTest_IndicesCFBorderBulkTest : public testing:
 public:
     CFBorderBulk cf;
     SPtr<Parameter> para;
+    std::unique_ptr<IndexRearrangementForStreams> testSubject;
 
 private:
-    static std::unique_ptr<IndexRearrangementForStreams> createTestSubjectCFBorderBulk(CFBorderBulk &cf,
-                                                                                       std::shared_ptr<Parameter> para)
+    std::unique_ptr<IndexRearrangementForStreams> createTestSubjectCFBorderBulk()
     {
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, nullptr, Distribution(), 1);
@@ -156,14 +141,15 @@ private:
 
     void SetUp() override
     {
-        para             = initParameterClass();
-        auto testSubject = createTestSubjectCFBorderBulk(cf, para);
-        testSubject->splitCoarseToFineIntoBorderAndBulk(cf.level);
+        para        = initParameterClass();
+        testSubject = createTestSubjectCFBorderBulk();
     }
 };
 
 TEST_F(IndexRearrangementForStreamsTest_IndicesCFBorderBulkTest, splitCoarseToFineIntoBorderAndBulk)
 {
+    testSubject->splitCoarseToFineIntoBorderAndBulk(cf.level);
+
     EXPECT_THAT(para->getParH(cf.level)->intCFBorder.kCF + para->getParH(cf.level)->intCFBulk.kCF,
                 testing::Eq(cf.sizeOfICellCf))
         << "The number of interpolation cells from coarse to fine changed during reordering.";
@@ -195,15 +181,30 @@ TEST_F(IndexRearrangementForStreamsTest_IndicesCFBorderBulkTest, splitCoarseToFi
     EXPECT_TRUE(vectorsAreEqual(para->getParH(cf.level)->offCFBulk.zOffCF, cf.offsetCFz_Bulk_expected));
 }
 
+struct FCBorderBulk {
+    // data to work on
+    std::vector<uint> fluidNodeIndicesBorder = { 110, 111, 112, 113, 114, 115, 116 };
+    std::vector<uint> iCellFCC               = { 11, 111, 13, 113, 15, 115, 17 };
+    std::vector<uint> iCellFCF               = { 12, 112, 14, 114, 16, 116, 18 };
+    uint sizeOfICellFC                       = (uint)iCellFCC.size();
+    int level                                = 1;
+
+    // expected data
+    std::vector<uint> iCellFccBorder_expected = { 111, 113, 115 };
+    std::vector<uint> iCellFccBulk_expected   = { 11, 13, 15, 17 };
+    std::vector<uint> iCellFcfBorder_expected = { 112, 114, 116 };
+    std::vector<uint> iCellFcfBulk_expected   = { 12, 14, 16, 18 };
+};
+
 class IndexRearrangementForStreamsTest_IndicesFCBorderBulkTest : public testing::Test
 {
 public:
     FCBorderBulk fc;
     SPtr<Parameter> para;
+    std::unique_ptr<IndexRearrangementForStreams> testSubject;
 
 private:
-    static std::unique_ptr<IndexRearrangementForStreams> createTestSubjectFCBorderBulk(FCBorderBulk &fc,
-                                                                                       std::shared_ptr<Parameter> para)
+    std::unique_ptr<IndexRearrangementForStreams> createTestSubjectFCBorderBulk()
     {
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, nullptr, Distribution(), 1);
@@ -222,14 +223,15 @@ private:
 
     void SetUp() override
     {
-        para             = initParameterClass();
-        auto testSubject = createTestSubjectFCBorderBulk(fc, para);
-        testSubject->splitFineToCoarseIntoBorderAndBulk(fc.level);
+        para        = initParameterClass();
+        testSubject = createTestSubjectFCBorderBulk();
     }
 };
 
 TEST_F(IndexRearrangementForStreamsTest_IndicesFCBorderBulkTest, splitFineToCoarseIntoBorderAndBulk)
 {
+    testSubject->splitFineToCoarseIntoBorderAndBulk(fc.level);
+
     EXPECT_THAT(para->getParH(fc.level)->intFCBorder.kFC + para->getParH(fc.level)->intFCBulk.kFC,
                 testing::Eq(fc.sizeOfICellFC))
         << "The number of interpolation cells from coarse to fine changed during reordering.";
@@ -252,7 +254,6 @@ TEST_F(IndexRearrangementForStreamsTest_IndicesFCBorderBulkTest, splitFineToCoar
     EXPECT_TRUE(vectorsAreEqual(para->getParH(fc.level)->intFCBulk.ICellFCF, fc.iCellFcfBulk_expected))
         << "intFCBulk.ICellFCF does not match the expected bulk vector";
 }
-
 struct SendIndicesForCommAfterFtoCX {
     // data to work on
     std::vector<int> sendIndices = { 10, 11, 12, 13, 14, 15, 16 };
@@ -275,7 +276,7 @@ struct SendIndicesForCommAfterFtoCX {
     // expected data
     std::vector<uint> sendIndicesForCommAfterFtoCPositions_expected = { 4, 6, 0, 2 };
     std::vector<int> sendProcessNeighborX_expected                  = { 14, 16, 10, 12, 11, 13, 15 };
-    int numberOfSendNodesAfterFtoC_expected = sendIndicesForCommAfterFtoCPositions_expected.size();
+    int numberOfSendNodesAfterFtoC_expected = (int)sendIndicesForCommAfterFtoCPositions_expected.size();
 };
 
 class IndexRearrangementForStreamsTest_reorderSendIndices : public testing::Test
@@ -283,9 +284,9 @@ class IndexRearrangementForStreamsTest_reorderSendIndices : public testing::Test
 public:
     SendIndicesForCommAfterFtoCX si;
     SPtr<Parameter> para;
+    std::unique_ptr<IndexRearrangementForStreams> testSubject;
 
-    static std::unique_ptr<IndexRearrangementForStreams>
-    createTestSubjectReorderSendIndices(SendIndicesForCommAfterFtoCX &si, std::shared_ptr<Parameter> para)
+    std::unique_ptr<IndexRearrangementForStreams> createTestSubjectReorderSendIndices()
     {
         logging::Logger::addStream(&std::cout);
         MPI_Init(NULL, NULL);
@@ -315,8 +316,12 @@ public:
 
     void SetUp() override
     {
-        para             = initParameterClass();
-        auto testSubject = createTestSubjectReorderSendIndices(si, para);
+        para        = initParameterClass();
+        testSubject = createTestSubjectReorderSendIndices();
+    };
+
+    void act()
+    {
         testSubject->reorderSendIndicesForCommAfterFtoCX(si.direction, si.level, si.indexOfProcessNeighbor,
                                                          si.sendIndicesForCommAfterFtoCPositions);
     };
@@ -324,13 +329,15 @@ public:
 
 TEST_F(IndexRearrangementForStreamsTest_reorderSendIndices, reorderSendIndicesForCommAfterFtoCX)
 {
+    act();
+
     EXPECT_THAT(si.sendIndicesForCommAfterFtoCPositions.size(),
                 testing::Eq(si.sendIndicesForCommAfterFtoCPositions_expected.size()));
     EXPECT_THAT(si.sendIndicesForCommAfterFtoCPositions, testing::Eq(si.sendIndicesForCommAfterFtoCPositions_expected));
 
+    EXPECT_THAT(para->getParH(si.level)->sendProcessNeighborsAfterFtoCX[si.indexOfProcessNeighbor].numberOfNodes,
+                testing::Eq(si.numberOfSendNodesAfterFtoC_expected));
     EXPECT_TRUE(vectorsAreEqual(para->getParH(si.level)->sendProcessNeighborX[si.indexOfProcessNeighbor].index,
                                 si.sendProcessNeighborX_expected))
         << "sendProcessNeighborX[].index does not match the expected vector";
-    EXPECT_THAT(para->getParH(si.level)->sendProcessNeighborsAfterFtoCX[si.indexOfProcessNeighbor].numberOfNodes,
-                testing::Eq(si.numberOfSendNodesAfterFtoC_expected));
 }
