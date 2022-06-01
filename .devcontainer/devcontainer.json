@@ -1,16 +1,16 @@
 {  
-    "name": "virtual-fluids-env",  
-    "extensions": [  
-    "twxs.cmake",  
-    "mhutchie.git-graph",  
-    "donjayamanne.githistory",  
-    "ms-vscode.cpptools",
-    "ms-vscode.cpptools-extension-pack",
-    "xaver.clang-format",  
-    "notskm.clang-tidy",
-     "streetsidesoftware.code-spell-checker"
-    ],  
-    "runArgs": ["--gpus","all"],  
+    "name": "virtual-fluids-environment",
+    "extensions": [
+        "mhutchie.git-graph",
+        "donjayamanne.githistory",
+        "twxs.cmake",
+        "ms-vscode.cpptools",
+        "visualstudioexptteam.vscodeintellicode",
+        "xaver.clang-format",
+        "notskm.clang-tidy",
+        "streetsidesoftware.code-spell-checker"
+    ],
+    "runArgs": ["--gpus","all"],
     "image": "git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu20_04:1.2",
     "containerEnv": {"HOME": "/workspaces/"},
     "mounts": [
