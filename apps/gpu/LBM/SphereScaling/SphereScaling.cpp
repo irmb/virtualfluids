@@ -615,10 +615,9 @@ void multipleLevel(const std::string &configPath)
             if (para->getKernelNeedsFluidNodeIndicesToRun())
                 gridBuilder->findFluidNodes(para->getUseStreams());
 
-            // gridBuilder->writeGridsToVtk(outPath + "grid/part" +
-            // std::to_string(generatePart) + "_"); gridBuilder->writeGridsToVtk(outPath +
-            // std::to_string(generatePart) + "/grid/"); gridBuilder->writeArrows(outPath +
-            // std::to_string(generatePart) + " /arrow");
+            // gridBuilder->writeGridsToVtk(outPath + "grid/part" + std::to_string(generatePart) + "_");
+            // gridBuilder->writeGridsToVtk(outPath +std::to_string(generatePart) + "/grid/");
+            // gridBuilder->writeArrows(outPath + std::to_string(generatePart) + " /arrow");
 
             SimulationFileWriter::write(gridPath + std::to_string(generatePart) + "/", gridBuilder, FILEFORMAT::BINARY);
         } else {
