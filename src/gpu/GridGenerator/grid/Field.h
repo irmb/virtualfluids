@@ -52,7 +52,6 @@ public:
     bool isCoarseToFineNode(uint index) const;
     bool isFineToCoarseNode(uint index) const;
 	bool isFluid(uint index) const;
-    bool isFluidNodeOfSpecialInterest(uint index) const;
 	bool isInvalidSolid(uint index) const;
     bool isQ(uint index) const;
     bool isBoundaryConditionNode(uint index) const;

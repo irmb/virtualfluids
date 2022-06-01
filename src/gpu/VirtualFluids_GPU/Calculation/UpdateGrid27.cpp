@@ -37,7 +37,7 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
 		calcMacroscopicQuantities(para.get(), level);
 
     if (para->getUseTurbulentViscosity())
-        calcTurbulentViscosity(para, level);
+        calcTurbulentViscosity(para.get(), level);
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -49,9 +49,9 @@ void UpdateGrid27::updateGrid(int level, unsigned int t)
         (this->*refinementAndExchange)(level);
     }
         
-    interactWithActuators(para, cudaManager, level, t);
+    interactWithActuators(para.get(), cudaManager.get(), level, t);
     
-    interactWithProbes(para, cudaManager, level, t);
+    interactWithProbes(para.get(), cudaManager.get(), level, t);
 }
 
 void UpdateGrid27::refinementAndExchange_noRefinementAndExchange(int level) {}
@@ -304,7 +304,7 @@ void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamInde
     prepareExchangeCollDataZGPU27AfterFtoC(para, level, streamIndex);
 }
 
-void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
+void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager, int level,
                       int streamIndex)
 {
     //////////////////////////////////////////////////////////////////////////
@@ -335,7 +335,7 @@ void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryMa
     // 1D domain decomposition
     // exchangePostCollDataGPU27(para, comm, level);
 }
-void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level, bool useReducedComm)
+void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager, int level, bool useReducedComm)
 {
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition
@@ -377,7 +377,7 @@ void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicat
         exchangePostCollDataADZGPU27(para, comm, cudaManager, level);
     }
 }
-void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager, int level,
+void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager, int level,
                                int streamIndex)
 {
     //////////////////////////////////////////////////////////////////////////
@@ -1562,7 +1562,7 @@ void coarseToFineWithStream(Parameter *para, int level, uint *iCellCFC, uint *iC
 }
 
 
-UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator *comm, SPtr<CudaMemoryManager> cudaManager,
+UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaManager,
                            std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels)
     : para(para), comm(comm), cudaManager(cudaManager), pm(pm), kernels(kernels)
 { 

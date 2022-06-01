@@ -604,10 +604,6 @@ void Parameter::setOutputCount(unsigned int outputCount)
 {
 	this->outputCount = outputCount;
 }
-void Parameter::setPhi(real inPhi) { Phi = inPhi; }
-void Parameter::setAngularVelocity(real inAngVel) { angularVelocity = inAngVel; }
-void Parameter::setStepEnsight(unsigned int step) { this->stepEnsight = step; }
-void Parameter::setOutputCount(unsigned int outputCount) { this->outputCount = outputCount; }
 void Parameter::setlimitOfNodesForVTK(unsigned int limitOfNodesForVTK)
 {
     this->limitOfNodesForVTK = limitOfNodesForVTK;
@@ -667,6 +663,18 @@ void Parameter::setViscosityRatio(real ViscosityRatio) { ic.vis_ratio = Viscosit
 void Parameter::setVelocityRatio(real VelocityRatio) { ic.u0_ratio = VelocityRatio; }
 void Parameter::setDensityRatio(real DensityRatio) { ic.delta_rho = DensityRatio; }
 void Parameter::setPressRatio(real PressRatio) { ic.delta_press = PressRatio; }
+real Parameter::getTimeRatio()
+{
+	return this->getViscosityRatio()*pow(this->getVelocityRatio(),-2);
+}
+real Parameter::getForceRatio()
+{
+	return this->getDensityRatio()*pow(this->getViscosityRatio(),2);
+}
+real Parameter::getLengthRatio()
+{
+	return this->getViscosityRatio()/this->getVelocityRatio();
+}
 void Parameter::setRealX(real RealX) { ic.RealX = RealX; }
 void Parameter::setRealY(real RealY) { ic.RealY = RealY; }
 void Parameter::setPressInID(unsigned int PressInID) { ic.PressInID = PressInID; }
@@ -691,7 +699,6 @@ void Parameter::setIsCp(bool isCp) { ic.isCp = isCp; }
 void Parameter::setConcFile(bool concFile) { ic.isConc = concFile; }
 void Parameter::setStreetVelocityFile(bool streetVelocityFile) { ic.streetVelocityFile = streetVelocityFile; }
 void Parameter::setUseMeasurePoints(bool useMeasurePoints) { ic.isMeasurePoints = useMeasurePoints; }
-void Parameter::setUseWale(bool useWale) { ic.isWale = useWale; }
 void Parameter::setUseInitNeq(bool useInitNeq) { ic.isInitNeq = useInitNeq; }
 void Parameter::setSimulatePorousMedia(bool simulatePorousMedia) { ic.simulatePorousMedia = simulatePorousMedia; }
 void Parameter::setUseTurbulentViscosity(bool useTurbulentViscosity)
@@ -1048,7 +1055,23 @@ void Parameter::setMultiKernelOn(bool isOn) { this->multiKernelOn = isOn; }
 void Parameter::setMultiKernelLevel(std::vector<int> kernelLevel) { this->multiKernelLevel = kernelLevel; }
 void Parameter::setMultiKernel(std::vector<std::string> kernel) { this->multiKernel = kernel; }
 void Parameter::setADKernel(std::string adKernel) { this->adKernel = adKernel; }
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//add-methods
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void Parameter::addActuator(SPtr<PreCollisionInteractor> actuator)
+{
+	actuators.push_back(actuator);
+}
+void Parameter::addProbe(SPtr<PreCollisionInteractor> probe)
+{
+	probes.push_back(probe);
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // get-methods
@@ -1259,8 +1282,32 @@ bool Parameter::getConcFile() { return ic.isConc; }
 bool Parameter::isStreetVelocityFile() { return ic.streetVelocityFile; }
 bool Parameter::getUseMeasurePoints() { return ic.isMeasurePoints; }
 bool Parameter::getUseWale() { return ic.isWale; }
+bool Parameter::getUseAMD()
+{
+	return ic.isAMD;
+}bool Parameter::getUseTurbulentViscosity()
+{
+	return ic.isTurbulentViscosity;
+}
+real Parameter::getSGSConstant()
+{
+	return ic.SGSConstant;
+}
+bool Parameter::getHasWallModelMonitor()
+{
+	return ic.hasWallModelMonitor;
+}
+std::vector<SPtr<PreCollisionInteractor>> Parameter::getActuators()
+{
+	return actuators;
+}
+std::vector<SPtr<PreCollisionInteractor>> Parameter::getProbes()
+{
+	return probes;
+}
 bool Parameter::getUseInitNeq() { return ic.isInitNeq; }
 bool Parameter::getSimulatePorousMedia() { return ic.simulatePorousMedia; }
+
 
 bool Parameter::getIsF3() { return this->isF3; }
 

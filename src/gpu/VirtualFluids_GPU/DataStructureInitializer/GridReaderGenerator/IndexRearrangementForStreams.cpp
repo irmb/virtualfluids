@@ -34,8 +34,8 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     recvIndicesForCommAfterFtoCPositions.resize(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes *
         2); // give vector an arbitraty size (larger than needed) // TODO: Find a better way
-    auto comm = vf::gpu::Communicator::getInstanz();
-    comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
+    vf::gpu::Communicator& comm = vf::gpu::Communicator::getInstance();
+    comm.exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].rankNeighbor,
                           sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->sendProcessNeighborX[indexOfProcessNeighbor].rankNeighbor);
@@ -76,8 +76,8 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     recvIndicesForCommAfterFtoCPositions.resize(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes *
         2); // give vector an arbitraty size (larger than needed) // TODO: Find a better way
-    auto comm = vf::gpu::Communicator::getInstanz();
-    comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
+    vf::gpu::Communicator& comm = vf::gpu::Communicator::getInstance();
+    comm.exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].rankNeighbor,
                           sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->sendProcessNeighborY[indexOfProcessNeighbor].rankNeighbor);
@@ -119,8 +119,8 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     recvIndicesForCommAfterFtoCPositions.resize(
         (size_t)para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes *
         2); // give vector an arbitraty size (larger than needed) // TODO: Find a better way
-    auto comm = vf::gpu::Communicator::getInstanz();
-    comm->exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
+    vf::gpu::Communicator& comm = vf::gpu::Communicator::getInstance();
+    comm.exchangeIndices(recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor,
                           sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
                           para->getParH(level)->sendProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor);
@@ -304,7 +304,7 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
         sendIndices[i + numberOfSendNodesAfterFtoC] = sendIndicesOther[i];
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "... Process "
-                  << " " << vf::gpu::Communicator::getInstanz()->getPID()
+                  << " " << vf::gpu::Communicator::getInstance().getPID()
                   << " numberOfSendNodesAfterFtoC: " << numberOfSendNodesAfterFtoC << "\n ";
 
     if (numberOfSendNodesAfterFtoC + sendIndicesOther.size() != numberOfSendIndices) {
@@ -454,7 +454,7 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
         recvIndices[i + numberOfRecvNodesAfterFtoC] = recvIndicesOther[i];
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "... Process "
-                  << " " << vf::gpu::Communicator::getInstanz()->getPID()
+                  << " " << vf::gpu::Communicator::getInstance().getPID()
                   << " numberOfRecvNodesAfterFtoC: " << numberOfRecvNodesAfterFtoC << "\n ";
 
     if (numberOfRecvNodesAfterFtoC + recvIndicesOther.size() != numberOfRecvIndices) {

@@ -32,7 +32,7 @@ private:
     uint numberOfSendIndices;
 
 public:
-    LevelGridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(Device(), ""), grid(grid){};
+    LevelGridBuilderDouble(SPtr<Grid> grid) : LevelGridBuilder(), grid(grid){};
     SPtr<Grid> getGrid(uint level) override { return grid; };
     std::shared_ptr<Grid> getGrid(int level, int box) override { return grid; };
     void setNumberOfSendIndices(uint numberOfSendIndices) { this->numberOfSendIndices = numberOfSendIndices; };
@@ -46,17 +46,17 @@ private:
 
 public:
     GridImpDouble(Object *object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta,
-                  SPtr<GridStrategy> gridStrategy, Distribution d, uint level)
-        : GridImp(object, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, d, level)
+                  Distribution d, uint level)
+        : GridImp(object, startX, startY, startZ, endX, endY, endZ, delta, d, level)
     {
     }
 
     static SPtr<GridImpDouble> makeShared(Object *object, real startX, real startY, real startZ, real endX, real endY,
-                                          real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d,
+                                          real endZ, real delta, Distribution d,
                                           uint level)
     {
         SPtr<GridImpDouble> grid(
-            new GridImpDouble(object, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, d, level));
+            new GridImpDouble(object, startX, startY, startZ, endX, endY, endZ, delta, d, level));
         return grid;
     }
 
@@ -119,7 +119,7 @@ private:
     std::unique_ptr<IndexRearrangementForStreams> createTestSubjectCFBorderBulk()
     {
         SPtr<GridImpDouble> grid =
-            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, nullptr, Distribution(), 1);
+            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
         grid->setFluidNodeIndicesBorder(cf.fluidNodeIndicesBorder);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
@@ -207,7 +207,7 @@ private:
     std::unique_ptr<IndexRearrangementForStreams> createTestSubjectFCBorderBulk()
     {
         SPtr<GridImpDouble> grid =
-            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, nullptr, Distribution(), 1);
+            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
         grid->setFluidNodeIndicesBorder(fc.fluidNodeIndicesBorder);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
@@ -297,7 +297,7 @@ private:
         logging::Logger::addStream(&std::cout);
         MPI_Init(NULL, NULL);
         SPtr<GridImpDouble> grid =
-            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, nullptr, Distribution(), 1);
+            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
 
         builder->setNumberOfSendIndices((uint)si.sendIndices.size());

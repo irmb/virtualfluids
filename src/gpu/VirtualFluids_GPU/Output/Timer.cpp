@@ -3,6 +3,7 @@
 #include <cuda_runtime.h>
 #include "UbScheduler.h"
 #include "Timer.h"
+#include "VirtualFluids_GPU/Communication/Communicator.h"
 
 
 void Timer::initTimer()
@@ -48,4 +49,18 @@ void Timer::outputPerformance(uint t, Parameter* para)
     }
 
     VF_LOG_INFO(" --- {} --- {}/{} \t {} \t {}", this->name, this->elapsedTime, this->totalElapsedTime, fnups, bandwidth  );
+
+    // When using multiple GPUs, get Nups of all processes
+	if (para->getMaxDev() > 1) {
+        vf::gpu::Communicator& comm=vf::gpu::Communicator::getInstance();
+        std::vector<double> nups = comm.gatherNUPS(fnups);
+        if (comm.getPID() == 0) {
+			double sum = 0;
+            for (uint pid = 0; pid < nups.size(); pid++) {
+                VF_LOG_INFO("Process {}: \t NUPS in Mio: {}", pid, nups[pid]);
+                sum += nups[pid];
+			}
+            VF_LOG_INFO("Sum of all processes: Nups in Mio: {}", sum);
+		}
+	}
 }

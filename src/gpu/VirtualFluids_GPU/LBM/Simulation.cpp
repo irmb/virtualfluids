@@ -392,7 +392,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    // Init UpdateGrid
    //////////////////////////////////////////////////////////////////////////
-   this->updateGrid27 = std::make_unique<UpdateGrid27>(para, comm, cudaManager, pm, kernels);
+   this->updateGrid27 = std::make_unique<UpdateGrid27>(para, communicator, cudaManager, pm, kernels);
 
    //////////////////////////////////////////////////////////////////////////
    //Print Init
@@ -405,7 +405,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
 
    //////////////////////////////////////////////////////////////////////////
    output << "used Device Memory: " << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n";
-   // std::cout << "Process " << comm->getPID() <<": used device memory" << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n" << std::endl;
+   // std::cout << "Process " << communicator.getPID() <<": used device memory" << cudaManager->getMemsizeGPU() / 1000000.0 << " MB\n" << std::endl;
    //////////////////////////////////////////////////////////////////////////
 
    //InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
@@ -487,7 +487,7 @@ void Simulation::run()
 	    ////////////////////////////////////////////////////////////////////////////////
         if (this->kineticEnergyAnalyzer || this->enstrophyAnalyzer) {
             prepareExchangeMultiGPU(para.get(), 0, -1);
-            exchangeMultiGPU(para.get(), comm, cudaManager.get(), 0, -1);
+            exchangeMultiGPU(para.get(), communicator, cudaManager.get(), 0, -1);
         }
 
 	    if( this->kineticEnergyAnalyzer ) this->kineticEnergyAnalyzer->run(t);
@@ -717,7 +717,7 @@ void Simulation::run()
 		        //////////////////////////////////////////////////////////////////////////
 		        //exchange data for valid post process
                 prepareExchangeMultiGPU(para.get(), lev, -1);
-		        exchangeMultiGPU(para.get(), comm, cudaManager.get(), lev, -1);
+		        exchangeMultiGPU(para.get(), communicator, cudaManager.get(), lev, -1);
                 //////////////////////////////////////////////////////////////////////////
                //if (para->getD3Qxx()==19)
                //{
@@ -997,19 +997,7 @@ void Simulation::run()
       }
 	}
 
-	//////////////////////////////////////////////////////////////////////////
-    // When using multiple GPUs, get Nups of all processes
-	if (para->getMaxDev() > 1) {
-        std::vector<double> nups = comm->gatherNUPS(fnups);
-        if (comm->getPID() == 0) {
-			double sum = 0;
-            for (uint pid = 0; pid < nups.size(); pid++) {
-                output << "Process " << pid << ": Nups in Mio: " << nups[pid] << "\n";
-                sum += nups[pid];
-			}
-            output << "Sum of all processes: Nups in Mio: " << sum << "\n";
-		}
-	}
+	/////////////////////////////////////////////////////////////////////////
 
 	////////////////////////////////////////////////////////////////////////////////
 	//printDragLift(para);
@@ -1337,4 +1325,5 @@ void Simulation::free()
 		probe->free(para.get(), cudaManager.get());
 	}
 	//////////////////////////////////////////////////////////////////////////
+    }
 }

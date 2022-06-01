@@ -70,7 +70,7 @@ extern int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 class GRIDGENERATOR_EXPORT GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
-private:
+protected:
     GridImp() = default;
     GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution d, uint level);
 
@@ -355,7 +355,7 @@ public:
     void findFluidNodeIndicesBorder() override;
 
     uint getNumberOfFluidNodes() const override;
-    CUDA_HOST void getFluidNodeIndices(uint *fluidNodeIndices) const override;
+    void getFluidNodeIndices(uint *fluidNodeIndices) const override;
 
     uint getNumberOfFluidNodesBorder() const override;
     void getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const override;

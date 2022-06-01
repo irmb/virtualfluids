@@ -13,7 +13,7 @@ class Kernel;
 class UpdateGrid27
 {
 public:
-    UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator *comm, SPtr<CudaMemoryManager> cudaManager,
+    UpdateGrid27(SPtr<Parameter> para, vf::gpu::Communicator &comm, SPtr<CudaMemoryManager> cudaManager,
                  std::vector<std::shared_ptr<PorousMedia>> &pm, std::vector<SPtr<Kernel>> &kernels);
     void updateGrid(int level, unsigned int t);
 
@@ -41,7 +41,7 @@ private:
 
 
     SPtr<Parameter> para;
-    vf::gpu::Communicator *comm;
+    vf::gpu::Communicator& comm;
     SPtr<CudaMemoryManager> cudaManager;
     std::vector<std::shared_ptr<PorousMedia>> pm;
     std::vector<SPtr<Kernel>> kernels;
@@ -60,11 +60,11 @@ extern "C" void collisionAdvectionDiffusion(Parameter* para, int level);
 extern "C" void prepareExchangeMultiGPU(Parameter *para, int level, int streamIndex);
 extern "C" void prepareExchangeMultiGPUAfterFtoC(Parameter *para, int level, int streamIndex);
 
-extern "C" void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+extern "C" void exchangeMultiGPU(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager,
                                  int level, int streamIndex);
-extern "C" void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator *comm, CudaMemoryManager *cudaManager,
+extern "C" void exchangeMultiGPUAfterFtoC(Parameter *para, vf::gpu::Communicator &comm, CudaMemoryManager *cudaManager,
                                  int level, int streamIndex);
-extern "C" void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicator *comm,
+extern "C" void exchangeMultiGPU_noStreams_withPrepare(Parameter *para, vf::gpu::Communicator &comm,
                                                        CudaMemoryManager *cudaManager, int level, bool useReducedComm);
 
 extern "C" void postCollisionBC(Parameter* para, int level, unsigned int t);

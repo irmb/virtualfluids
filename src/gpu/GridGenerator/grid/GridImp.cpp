@@ -1871,7 +1871,7 @@ uint GridImp::getSparseSize() const
     return this->sparseSize; 
 }
 
-HOSTDEVICE uint GridImp::getNumberOfFluidNodes() const { 
+uint GridImp::getNumberOfFluidNodes() const { 
     return (uint)this->fluidNodeIndices.size(); 
 }
 
@@ -2065,7 +2065,7 @@ void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *n
     }
 }
 
-CUDA_HOST void GridImp::getFluidNodeIndices(uint *fluidNodeIndices) const 
+void GridImp::getFluidNodeIndices(uint *fluidNodeIndices) const 
 { 
     for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndices.size(); nodeNumber++)
         fluidNodeIndices[nodeNumber] = this->fluidNodeIndices[nodeNumber];
