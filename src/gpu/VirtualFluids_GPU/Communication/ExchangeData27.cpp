@@ -89,6 +89,7 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeN
             continue;
         }
 
+        // copy fs for all directions
         for (int direction = 0; direction <= (int)dirEND; direction++) {
             (sendProcessNeighborHost[indexInSubdomainSend].f[0] +
              (direction * numNodesInBufferSend))[edgeNodes[i].indexInSendBuffer] =
@@ -154,25 +155,29 @@ void exchangeCollDataXGPU27(Parameter *para, vf::gpu::Communicator *comm, CudaMe
 {
     cudaStream_t stream = (streamIndex == -1) ? CU_STREAM_LEGACY : para->getStreamManager()->getStream(streamIndex);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // copy Device to Host
+    //! \details steps: 
+
+    //! 1. copy data from device to host
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
         cudaManager->cudaCopyProcessNeighborXFsDH(level, i, (*sendProcessNeighborDev)[i].memsizeFs, streamIndex);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //! 2. start non-blocking receive (MPI)
     startNonBlockingMpiReceive((unsigned int)(*sendProcessNeighborHost).size(), comm, recvProcessNeighborHost);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // wait for memcopy device to host to finish before sending data
+    //! 3. before sending data, wait for memcopy (from device to host) to finish 
     if (para->getUseStreams()) cudaStreamSynchronize(stream); 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //! 4. send data to neighboring process (MPI)
     startBlockingMpiSend((unsigned int)(*sendProcessNeighborHost).size(), comm, sendProcessNeighborHost);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // wait
+    //! 5. wait for until data is received
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++) comm->waitGPU(i);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // reset the request array
+    //! 6. reset the request array, which was used for the mpi communication
     if (0 < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send"))) comm->resetRequest();
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // copy Host to Device
+    //! 7. copy received data from host to device
     for (unsigned int i = 0; i < (unsigned int)(para->getNumberOfProcessNeighborsX(level, "send")); i++)
         cudaManager->cudaCopyProcessNeighborXFsHD(level, i, (*recvProcessNeighborDev)[i].memsizeFs, streamIndex);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
