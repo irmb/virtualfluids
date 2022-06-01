@@ -84,8 +84,11 @@ std::string simulationName("");
 // 3: setup 2 of MSch               (5 level, 1.6 cm -> 1.0  mm)
 int setupDomain = 3;
 
-std::string path("D:/out/WTG_RUB"); //Mollok
-std::string inputPath("D:/out/WTG_RUB/input/");
+// std::string path("D:/out/WTG_RUB"); // Mollok
+// std::string inputPath("D:/out/WTG_RUB/input/");
+
+std::string path("/workspaces/VirtualFluids_dev/output/WTG_RUB_Results/"); // Aragorn
+std::string inputPath("/workspaces/VirtualFluids_dev/stl/WTG_RUB/");
 
 const uint timeStepStartOut = 0;
 const uint timeStepOut = 10000;
