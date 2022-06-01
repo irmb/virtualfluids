@@ -31,7 +31,7 @@ protected:
     int level    = 0;
     int numNodes = 10;
     std::vector<real> recvFs;
-    std::vector<real> sendFs;    
+    std::vector<real> sendFs;
     std::vector<ProcessNeighbor27> sendProcessNeighborHost;
     std::vector<ProcessNeighbor27> recvProcessNeighborHost;
 
@@ -47,15 +47,14 @@ protected:
         para->getParH(level)->edgeNodesXtoZ.emplace_back(0, 7, 0, 8);
         para->getParH(level)->edgeNodesXtoZ.emplace_back(0, 7, 0, 8);
         para->getParH(level)->edgeNodesXtoZ.emplace_back(0, 7, 0, 8);
-
     }
 
-   void setUpRecvProcessNeighbors(int numberOfNodesInRecv)
+    void setUpRecvProcessNeighbors(int numberOfNodesInRecv)
     {
         recvFs.resize(numberOfNodesInRecv);
         std::fill(recvFs.begin(), recvFs.end(), 0.5); // 0.5s should not be copied
         for (LBMSimulationParameter::EdgeNodePositions edgeNode : para->getParH(level)->edgeNodesXtoZ) {
-            if(edgeNode.indexInRecvBuffer>numberOfNodesInRecv){
+            if (edgeNode.indexInRecvBuffer > numberOfNodesInRecv) {
                 continue;
             }
             recvFs[edgeNode.indexInRecvBuffer] = 0.1; // 0.1s should be copied
