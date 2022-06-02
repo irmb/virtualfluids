@@ -9,7 +9,10 @@
 #include "PointerDefinitions.h"
 #include "VirtualFluids_GPU_export.h"
 #include "gpu/GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
-#include "Communication/Communicator.h"
+namespace vf::gpu
+{
+class Communicator;
+}
 
 class Parameter;
 class GridBuilder;
