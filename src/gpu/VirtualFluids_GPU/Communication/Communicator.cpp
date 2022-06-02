@@ -28,6 +28,10 @@ Communicator::Communicator()
     MPI_Comm_rank(MPI_COMM_WORLD, &PID);
     MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
 
+    commGPU = MPI_COMM_WORLD;
+    requestGPU.resize(0);
+    rcount = 0;
+
     // Get a new communicator for a decomposition of the domain
     int isperiodic[1] = { 0 };
     MPI_Cart_create(MPI_COMM_WORLD, 1, &numprocs, isperiodic, 1, &comm1d);

@@ -1510,7 +1510,6 @@ bool Parameter::findIndexInSendNodesXY(int level, int index, int &indexOfProcess
     for (uint k = 0; k < (unsigned int)(this->getNumberOfProcessNeighborsY(level, "send")); k++) {
         for (int l = 0; l < parH[level]->sendProcessNeighborY[k].numberOfNodes; l++) {
             if (parH[level]->sendProcessNeighborY[k].index[l] == index) {
-                ;
                 indexOfProcessNeighborSend = k;
                 indexInSendBuffer          = l;
                 return true;
