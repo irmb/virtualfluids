@@ -10,6 +10,7 @@
 #include "Communication/ExchangeData27.h"
 #include "Parameter/Parameter.h"
 #include "Parameter/CudaStreamManager.h"
+#include "Parameter/EdgeNodeFinder.h"
 #include "GPU/GPU_Interface.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
@@ -335,7 +336,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    if (para->getDevices().size() > 2) {
        output << "Find indices of edge nodes for multiGPU communication ...";
-       para->findEdgeNodesCommMultiGPU();
+       vf::gpu::findEdgeNodesCommMultiGPU(para);
        output << "done.\n";
    }
    //////////////////////////////////////////////////////////////////////////
