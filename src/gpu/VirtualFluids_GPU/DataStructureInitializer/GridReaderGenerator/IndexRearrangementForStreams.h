@@ -29,10 +29,10 @@ class IndexRearrangementForStreams
 private:
     std::shared_ptr<GridBuilder> builder;
     std::shared_ptr<Parameter> para;
-
+    vf::gpu::Communicator& communicator;
 public:
     //! \brief construct IndexRearrangementForStreams object
-    IndexRearrangementForStreams(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder);
+    IndexRearrangementForStreams(std::shared_ptr<Parameter> para, std::shared_ptr<GridBuilder> builder, vf::gpu::Communicator& communicator);
 
     //////////////////////////////////////////////////////////////////////////
     // communication after coarse to fine

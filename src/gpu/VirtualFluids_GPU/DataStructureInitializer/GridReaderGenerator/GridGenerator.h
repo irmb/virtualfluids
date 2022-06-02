@@ -32,12 +32,11 @@ private:
     std::unique_ptr<IndexRearrangementForStreams> indexRearrangement;
 
 public:
-    VIRTUALFLUIDS_GPU_EXPORT GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
+    VIRTUALFLUIDS_GPU_EXPORT GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager, vf::gpu::Communicator& communicator);
 	VIRTUALFLUIDS_GPU_EXPORT virtual ~GridGenerator();
 
 	void allocArrays_CoordNeighborGeo() override;
     void allocArrays_BoundaryValues() override;
-    void initalValuesDomainDecompostion();
 
 	void allocArrays_BoundaryQs() override;
     void allocArrays_OffsetScale() override;
@@ -73,6 +72,7 @@ private:
 	void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
 	bool hasQs(int channelSide, unsigned int level) const;
     
+    void initalValuesDomainDecompostion();
 public:
     void initalGridInformations() override;
 

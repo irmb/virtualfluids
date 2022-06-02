@@ -358,7 +358,7 @@ void multipleLevel(const std::string& configPath)
             //SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
 
             //return;
-            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -434,7 +434,7 @@ void multipleLevel(const std::string& configPath)
             //SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
 
             //return;
-            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -623,7 +623,7 @@ void multipleLevel(const std::string& configPath)
             //SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
             SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
             
-            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -759,13 +759,13 @@ void multipleLevel(const std::string& configPath)
 
             //return;
             
-            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+            //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         }
 
     }
     else
     {
-        //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+        //gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
         //gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }
 
@@ -780,7 +780,7 @@ void multipleLevel(const std::string& configPath)
     SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
     SPtr<GridProvider> gridGenerator;
-    if( useGridGenerator ) gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+    if( useGridGenerator ) gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
     else                   gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
 
     Simulation sim;

@@ -179,7 +179,7 @@ void multipleLevel(const std::string& configPath)
 
     SPtr<CudaMemoryManager> cudaMemoryManager = CudaMemoryManager::make(para);
 
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
 
     real turbPos[3] = {3*reference_diameter, 3*reference_diameter, 3*reference_diameter};
     real epsilon = 5.f; // width of gaussian smearing

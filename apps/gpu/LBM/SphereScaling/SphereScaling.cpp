@@ -674,7 +674,7 @@ void multipleLevel(const std::string &configPath)
 
     SPtr<GridProvider> gridGenerator;
     if (useGridGenerator)
-        gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager);
+        gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemoryManager, communicator);
     else {
         gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }

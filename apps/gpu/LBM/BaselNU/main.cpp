@@ -170,7 +170,7 @@ void multipleLevel(const std::string& configPath)
 
 		return;
 
-		gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemManager);
+		gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para, cudaMemManager, communicator);
 		//gridGenerator = GridGenerator::make(gridBuilder, para);
 
 	}

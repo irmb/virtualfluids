@@ -5,13 +5,13 @@
 #include <iostream>
 #include <mpi.h>
 
-#include <Parameter/Parameter.h>
-#include <basics/config/ConfigurationFile.h>
-
-#include <DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h>
-#include <gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h>
-#include <gpu/GridGenerator/grid/GridImp.h>
-#include <gpu/GridGenerator/utilities/communication.h>
+#include "Parameter/Parameter.h"
+#include "basics/config/ConfigurationFile.h"
+#include "DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h"
+#include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
+#include "gpu/GridGenerator/grid/GridImp.h"
+#include "gpu/GridGenerator/utilities/communication.h"
+#include "gpu/VirtualFluids_GPU/Communication/Communicator.cpp"
 
 template <typename T>
 bool vectorsAreEqual(T *vector1, std::vector<T> vectorExpected)
@@ -136,7 +136,7 @@ private:
         para->getParH(cf.level)->offCF.yOffCF   = &(cf.offsetCFy.front());
         para->getParH(cf.level)->offCF.zOffCF   = &(cf.offsetCFz.front());
 
-        return std::make_unique<IndexRearrangementForStreams>(para, builder);
+        return std::make_unique<IndexRearrangementForStreams>(para, builder, vf::gpu::Communicator::getInstance());
     };
 
     void SetUp() override
@@ -218,7 +218,7 @@ private:
         para->getParH(fc.level)->intFC.ICellFCF = &(fc.iCellFCF.front());
         para->getParH(fc.level)->intFC.kFC      = fc.sizeOfICellFC;
 
-        return std::make_unique<IndexRearrangementForStreams>(para, builder);
+        return std::make_unique<IndexRearrangementForStreams>(para, builder, vf::gpu::Communicator::getInstance());
     };
 
     void SetUp() override
@@ -296,6 +296,7 @@ private:
     {
         logging::Logger::addStream(&std::cout);
         MPI_Init(NULL, NULL);
+
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
         std::shared_ptr<LevelGridBuilderDouble> builder = std::make_shared<LevelGridBuilderDouble>(grid);
@@ -317,7 +318,7 @@ private:
         para->getParH(si.level)->sendProcessNeighborX[si.indexOfProcessNeighbor].index = si.sendIndices.data();
         para->initProcessNeighborsAfterFtoCX(si.level);
 
-        return std::make_unique<IndexRearrangementForStreams>(IndexRearrangementForStreams(para, builder));
+        return std::make_unique<IndexRearrangementForStreams>(IndexRearrangementForStreams(para, builder, vf::gpu::Communicator::getInstance()));
     };
 
     void SetUp() override
