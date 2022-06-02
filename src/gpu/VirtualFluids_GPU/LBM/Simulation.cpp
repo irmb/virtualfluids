@@ -575,19 +575,19 @@ void Simulation::run()
             
             if( para->getDoCheckPoint() )
             {
-                output << "Dateien fuer CheckPoint kopieren t=" << t << "...\n";
+                output << "Copy data for CheckPoint t=" << t << "...\n";
                 
                 for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
                 {
                     cudaManager->cudaCopyFsForCheckPoint(lev);
                 }
                 
-                output << "Dateien fuer CheckPoint schreiben t=" << t << "...";
+                output << "Write data for CheckPoint t=" << t << "...";
 
 				const auto name = getFileName(para->getFName(), t, para->getMyID());
 				restart_object->serialize(name, para);
 
-                output << "\n fertig\n";
+                output << "\n done\n";
             }
             //////////////////////////////////////////////////////////////////////////
 			averageTimer->startTimer();
@@ -711,7 +711,7 @@ void Simulation::run()
 
          if( para->getPrintFiles() )
          {
-            output << "Dateien schreiben t=" << t << "...";
+            output << "Write files t=" << t << "... ";
             for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
             {
 		        //////////////////////////////////////////////////////////////////////////

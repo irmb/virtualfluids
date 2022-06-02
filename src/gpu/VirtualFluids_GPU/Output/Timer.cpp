@@ -44,15 +44,15 @@ void Timer::outputPerformance(uint t, Parameter* para, vf::gpu::Communicator& co
 
     if(this->firstOutput && communicator.getPID() == 0) //only display the legend once
     {
-        VF_LOG_INFO("PID \t --- {} --- Processing time (ms) \t Nups in Mio \t Bandwidth in GB/sec", this->name );
+        VF_LOG_INFO("PID \t --- {} ---  Processing time (ms) \t Nups in Mio \t Bandwidth in GB/sec", this->name );
         this->firstOutput = false;
     }
 
-    VF_LOG_INFO(" {} \t --- {} --- {}/{} \t {} \t {}",  communicator.getPID(), this->name, this->elapsedTime, this->totalElapsedTime, fnups, bandwidth);
+    VF_LOG_INFO(" {} \t --- {} --- {:>8.1f}/ {:<8.1f} \t   {:5.1f} \t       {:4.1f}",  communicator.getPID(), this->name, this->elapsedTime, this->totalElapsedTime, fnups, bandwidth);
 
     // When using multiple GPUs, sum the nups of all processes
     if (communicator.getNummberOfProcess() > 1) {
         double nupsSum =  communicator.sumNups(fnups);
-        VF_LOG_INFO("Sum of all {}\t processes: Nups in Mio: {}", communicator.getNummberOfProcess(), nupsSum);
+        VF_LOG_INFO("Sum of all {}\t processes: Nups in Mio: {:.1f}", communicator.getNummberOfProcess(), nupsSum);
     }
 }
