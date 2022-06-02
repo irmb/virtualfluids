@@ -93,16 +93,14 @@ void multipleLevel(const std::string &configPath)
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
     auto gridFactory = GridFactory::make();
-    gridFactory->setGridStrategy(Device::CPU);
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
-    vf::gpu::Communicator *comm = vf::gpu::Communicator::getInstanz();
+    vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
     vf::basics::ConfigurationFile config;
     std::cout << configPath << std::endl;
     config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
+    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -187,7 +185,7 @@ void multipleLevel(const std::string &configPath)
 
         if (para->getNumprocs() > 1) {
 
-            const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
+            const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
             real overlap            = (real)8.0 * dxGrid;
             gridBuilder->setNumberOfLayers(10, 8);
 
@@ -195,7 +193,7 @@ void multipleLevel(const std::string &configPath)
             const real ySplit = 0.0;
             const real zSplit = 0.0;
 
-            if (comm->getNummberOfProcess() == 2) {
+            if (communicator.getNummberOfProcess() == 2) {
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xGridMax, yGridMax, zSplit + overlap,
@@ -242,7 +240,7 @@ void multipleLevel(const std::string &configPath)
                 gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
                 gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
                 //////////////////////////////////////////////////////////////////////////
-            } else if (comm->getNummberOfProcess() == 4) {
+            } else if (communicator.getNummberOfProcess() == 4) {
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, yGridMax,
@@ -326,7 +324,7 @@ void multipleLevel(const std::string &configPath)
                     gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
                 }
                 //////////////////////////////////////////////////////////////////////////
-            } else if (comm->getNummberOfProcess() == 8) {
+            } else if (communicator.getNummberOfProcess() == 8) {
 
                 if (generatePart == 0) {
                     gridBuilder->addCoarseGrid(xGridMin, yGridMin, zGridMin, xSplit + overlap, ySplit + overlap,
@@ -548,7 +546,7 @@ void multipleLevel(const std::string &configPath)
         gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }
 
-    Simulation sim;
+    Simulation sim(communicator);
     SPtr<FileWriter> fileWriter                      = SPtr<FileWriter>(new FileWriter());
     SPtr<KernelFactoryImp> kernelFactory             = KernelFactoryImp::getInstance();
     SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();

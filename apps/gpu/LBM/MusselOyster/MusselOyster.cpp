@@ -95,16 +95,14 @@ void multipleLevel(const std::string &configPath)
     logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
     auto gridFactory = GridFactory::make();
-    gridFactory->setGridStrategy(Device::CPU);
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
-    vf::gpu::Communicator *comm = vf::gpu::Communicator::getInstanz();
+    vf::gpu::Communicator &communicator = vf::gpu::Communicator::getInstance();
     vf::basics::ConfigurationFile config;
     std::cout << configPath << std::endl;
     config.load(configPath);
-    SPtr<Parameter> para = std::make_shared<Parameter>(config, comm->getNummberOfProcess(), comm->getPID());
+    SPtr<Parameter> para = std::make_shared<Parameter>(config, communicator.getNummberOfProcess(), communicator.getPID());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,12 +201,12 @@ void multipleLevel(const std::string &configPath)
             bivalveRef_1_STL = TriangularMesh::make(stlPath + bivalveType + "_Level1.stl");
 
         if (para->getNumprocs() > 1) {
-            const uint generatePart = vf::gpu::Communicator::getInstanz()->getPID();
+            const uint generatePart = vf::gpu::Communicator::getInstance().getPID();
 
             real overlap = (real)8.0 * dxGrid;
             gridBuilder->setNumberOfLayers(10, 8);
 
-            if (comm->getNummberOfProcess() == 2) {
+            if (communicator.getNummberOfProcess() == 2) {
                 const real zSplit = 0.0; // round(((double)bbzp + bbzm) * 0.5);
 
                 if (generatePart == 0) {
@@ -259,7 +257,7 @@ void multipleLevel(const std::string &configPath)
                 gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
                 gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
                 //////////////////////////////////////////////////////////////////////////
-            } else if (comm->getNummberOfProcess() == 4) {
+            } else if (communicator.getNummberOfProcess() == 4) {
 
                 const real xSplit = 100.0;
                 const real zSplit = 0.0;
@@ -349,7 +347,7 @@ void multipleLevel(const std::string &configPath)
                     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0); // set pressure BC after velocity BCs
                 }
                 //////////////////////////////////////////////////////////////////////////
-            } else if (comm->getNummberOfProcess() == 8) {
+            } else if (communicator.getNummberOfProcess() == 8) {
                 real xSplit = 140.0; // 100.0 // mit groesserem Level 1 140.0
                 real ySplit = 32.0;  // 32.0
                 real zSplit = 0.0;
@@ -581,7 +579,7 @@ void multipleLevel(const std::string &configPath)
         gridGenerator = GridProvider::makeGridReader(FILEFORMAT::BINARY, para, cudaMemoryManager);
     }
 
-    Simulation sim;
+    Simulation sim(communicator);
     SPtr<FileWriter> fileWriter                      = SPtr<FileWriter>(new FileWriter());
     SPtr<KernelFactoryImp> kernelFactory             = KernelFactoryImp::getInstance();
     SPtr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
