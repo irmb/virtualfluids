@@ -231,6 +231,16 @@ std::vector<double> Communicator::gatherNUPS(double processNups)
     return std::vector<double>(); 
 }
 
+double Communicator::sumNups(double processNups)
+{ 
+    double *buffer_send = &processNups;
+    double *buffer_recv = (double *)malloc(sizeof(double));
+
+    MPI_Reduce(buffer_send, buffer_recv, 1, MPI_DOUBLE, MPI_SUM, 0, commGPU);
+
+    return *buffer_recv;
+}
+
 void vf::gpu::Communicator::exchangeIndices(uint *rbuf, int count_r, int nb_rank_r, uint *sbuf, int count_s,
                                             int nb_rank_s)
 {

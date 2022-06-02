@@ -31,7 +31,7 @@ void Timer::resetTimer()
         this->totalElapsedTime = 0.0;
 }
 
-void Timer::outputPerformance(uint t, Parameter* para)
+void Timer::outputPerformance(uint t, Parameter* para, vf::gpu::Communicator& communicator)
 {
     real fnups      = 0.0;
     real bandwidth  = 0.0;
@@ -42,25 +42,17 @@ void Timer::outputPerformance(uint t, Parameter* para)
         bandwidth   += (27.0+1.0) * 4.0 * 1000.0 * (t-para->getTStart()) * para->getParH(lev)->size_Mat_SP  / (this->totalElapsedTime*1.0E9);
     }
 
-    if(this->firstOutput)
+    if(this->firstOutput && communicator.getPID() == 0) //only display the legend once
     {
-        VF_LOG_INFO(" --- {} --- Processing time (ms) \t Nups in Mio \t Bandwidth in GB/sec", this->name );
+        VF_LOG_INFO("PID \t --- {} --- Processing time (ms) \t Nups in Mio \t Bandwidth in GB/sec", this->name );
         this->firstOutput = false;
     }
 
-    VF_LOG_INFO(" --- {} --- {}/{} \t {} \t {}", this->name, this->elapsedTime, this->totalElapsedTime, fnups, bandwidth  );
+    VF_LOG_INFO(" {} \t --- {} --- {}/{} \t {} \t {}",  communicator.getPID(), this->name, this->elapsedTime, this->totalElapsedTime, fnups, bandwidth);
 
-    // When using multiple GPUs, get Nups of all processes
-	if (para->getMaxDev() > 1) {
-        vf::gpu::Communicator& comm=vf::gpu::Communicator::getInstance();
-        std::vector<double> nups = comm.gatherNUPS(fnups);
-        if (comm.getPID() == 0) {
-			double sum = 0;
-            for (uint pid = 0; pid < nups.size(); pid++) {
-                VF_LOG_INFO("Process {}: \t NUPS in Mio: {}", pid, nups[pid]);
-                sum += nups[pid];
-			}
-            VF_LOG_INFO("Sum of all processes: Nups in Mio: {}", sum);
-		}
-	}
+    // When using multiple GPUs, sum the nups of all processes
+    if (communicator.getNummberOfProcess() > 1) {
+        double nupsSum =  communicator.sumNups(fnups);
+        VF_LOG_INFO("Sum of all {}\t processes: Nups in Mio: {}", communicator.getNummberOfProcess(), nupsSum);
+    }
 }

@@ -706,7 +706,7 @@ void Simulation::run()
 
 		//////////////////////////////////////////////////////////////////////////
 		averageTimer->stopTimer();
-		averageTimer->outputPerformance(t, para.get());
+		averageTimer->outputPerformance(t, para.get(), communicator);
 		//////////////////////////////////////////////////////////////////////////
 
          if( para->getPrintFiles() )

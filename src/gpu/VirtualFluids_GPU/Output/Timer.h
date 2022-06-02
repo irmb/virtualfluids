@@ -9,6 +9,10 @@
 #include "logger/Logger.h"
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu{
+    class Communicator;
+}
+
 class Timer
 {
     public:
@@ -27,7 +31,7 @@ class Timer
     void startTimer();
     void stopTimer();
     void resetTimer();
-    void outputPerformance(uint t, Parameter* para);
+    void outputPerformance(uint t, Parameter* para, vf::gpu::Communicator& communicator);
 
     float getElapsedTime(){ return this->elapsedTime; }
     float getTotalElapsedTime(){ return this->totalElapsedTime; }
