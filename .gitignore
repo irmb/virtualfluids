@@ -21,12 +21,6 @@ __pycache__/
 output/
 logs/
 
-# Input files
-stl/
-
-# Scripts
-scripts/
-
 # scripts
 scripts/
 
